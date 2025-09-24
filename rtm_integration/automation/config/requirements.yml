@@ -1,0 +1,34 @@
+priorities:
+- High
+- Medium
+- Low
+requirement_types:
+- Functional
+- Performance
+- Safety
+- Design
+- Interface
+sbs_structure:
+  level_0:
+  - QSYS
+  - QSYS-PR
+  level_1:
+  - QPLANT
+  - QINFRA
+  - QCELL
+  - QDIST
+  level_2:
+  - WCS
+  - QRB
+  level_3:
+  - PVPS
+  - HP
+  - CC
+  - TURBINES
+  - BATH-4K
+  - BATH-2K
+verification_methods:
+- Test
+- Analysis
+- Inspection
+- Demonstration
