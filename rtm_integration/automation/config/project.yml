@@ -1,0 +1,47 @@
+integration:
+  automation_enabled: true
+  repositories:
+    GBOGEB/ABACUS:
+      description: Main project repository with system documentation
+      integration_points:
+      - requirements
+      - documentation
+      - system_specs
+    GBOGEB/DOCX_RTM_Automation:
+      description: Automated RTM processing and document generation
+      integration_points:
+      - rtm_data
+      - automation_scripts
+      - templates
+    HEPAK projects:
+      description: Cryogenic properties and thermodynamic calculations
+      integration_points:
+      - properties
+      - calculations
+      - validation
+    KEB Digital Twin:
+      description: Digital twin integration for cryogenic system
+      integration_points:
+      - component_mapping
+      - system_model
+      - data_integration
+    pipeline-automation-hub:
+      description: CI/CD pipeline automation
+      integration_points:
+      - workflows
+      - automation
+      - deployment
+  validation_required: true
+project:
+  description: Requirements Traceability Matrix for MYRRHA QPLANT
+  maintainer: SCK CEN QPLANT Team
+  name: QPLANT Cryogenic System
+  version: 1.0.0
+rtm:
+  last_updated: '2025-09-24T10:47:47.984279'
+  sbs_levels: 4
+  source_documents:
+  - Addendum II - Cryoplant Technical Requirements_1209_0948.pdf
+  - Addendum II - Cryoplant Technical Requirements_1209_1547.docx
+  total_requirements: 16
+  version: '1.0'
