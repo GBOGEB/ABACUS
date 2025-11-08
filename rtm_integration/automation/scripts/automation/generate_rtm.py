@@ -11,11 +11,14 @@ from pathlib import Path
 # Add package to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from rtm_generator import RTMGenerator
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+try:
+    from rtm_generator import RTMGenerator
+except ImportError as e:
+    logger.error("Failed to import RTMGenerator from rtm_generator: %s", e)
+    sys.exit(1)
 def main():
     logger.info("Starting RTM generation (via new package)...")
     
