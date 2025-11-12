@@ -1,0 +1,3025 @@
+{
+  "generated_at": "2025-11-12T19:14:19.174078",
+  "total_artifacts": 61,
+  "artifact_types": [
+    "text",
+    "markdown",
+    "code"
+  ],
+  "rankings": [
+    {
+      "artifact_id": "artifact_030b5fb2",
+      "artifact_type": "text",
+      "artifact_path": ".pre-commit-config.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 1,
+        "global_rank": 31,
+        "percentile": 0.5081967213114754
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for .pre-commit-config.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for .pre-commit-config.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to .pre-commit-config.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in .pre-commit-config.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_239826be",
+      "artifact_type": "text",
+      "artifact_path": "artifact_rankings.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 2,
+        "global_rank": 32,
+        "percentile": 0.4918032786885246
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for artifact_rankings.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for artifact_rankings.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to artifact_rankings.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in artifact_rankings.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_78639b77",
+      "artifact_type": "markdown",
+      "artifact_path": "BOOTSTRAP_SUMMARY.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 1,
+        "global_rank": 33,
+        "percentile": 0.47540983606557374
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for BOOTSTRAP_SUMMARY.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for BOOTSTRAP_SUMMARY.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to BOOTSTRAP_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in BOOTSTRAP_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_b1f85d10",
+      "artifact_type": "text",
+      "artifact_path": "canonical.index.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 3,
+        "global_rank": 34,
+        "percentile": 0.45901639344262296
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for canonical.index.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for canonical.index.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to canonical.index.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in canonical.index.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_2b604629",
+      "artifact_type": "text",
+      "artifact_path": "canonical.index.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 4,
+        "global_rank": 35,
+        "percentile": 0.4426229508196721
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for canonical.index.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for canonical.index.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to canonical.index.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in canonical.index.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_be9f7988",
+      "artifact_type": "markdown",
+      "artifact_path": "CICD_INTEGRATION.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 2,
+        "global_rank": 36,
+        "percentile": 0.4262295081967213
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for CICD_INTEGRATION.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for CICD_INTEGRATION.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to CICD_INTEGRATION.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in CICD_INTEGRATION.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_ea2c882a",
+      "artifact_type": "markdown",
+      "artifact_path": "DOW_CORE_ENGINE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 3,
+        "global_rank": 37,
+        "percentile": 0.4098360655737705
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DOW_CORE_ENGINE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DOW_CORE_ENGINE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DOW_CORE_ENGINE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DOW_CORE_ENGINE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_4547d105",
+      "artifact_type": "text",
+      "artifact_path": "dow_engine_config.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 5,
+        "global_rank": 38,
+        "percentile": 0.39344262295081966
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dow_engine_config.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dow_engine_config.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dow_engine_config.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dow_engine_config.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_018a6181",
+      "artifact_type": "markdown",
+      "artifact_path": "DOW_QUICKSTART.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 4,
+        "global_rank": 39,
+        "percentile": 0.3770491803278688
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DOW_QUICKSTART.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DOW_QUICKSTART.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DOW_QUICKSTART.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DOW_QUICKSTART.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_beae4558",
+      "artifact_type": "code",
+      "artifact_path": "generate_files.py",
+      "metrics": {
+        "quality_score": 0.733,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5699
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 3,
+        "global_rank": 3,
+        "percentile": 0.9672131147540983
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for generate_files.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for generate_files.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to generate_files.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_903a0b99",
+      "artifact_type": "text",
+      "artifact_path": "improvement_plan.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 6,
+        "global_rank": 40,
+        "percentile": 0.36065573770491804
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for improvement_plan.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for improvement_plan.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to improvement_plan.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in improvement_plan.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_3027fb55",
+      "artifact_type": "markdown",
+      "artifact_path": "PHASE4_RANKING_GUIDE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 5,
+        "global_rank": 41,
+        "percentile": 0.3442622950819672
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for PHASE4_RANKING_GUIDE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for PHASE4_RANKING_GUIDE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to PHASE4_RANKING_GUIDE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in PHASE4_RANKING_GUIDE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_be9373f1",
+      "artifact_type": "text",
+      "artifact_path": "pyproject.toml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 7,
+        "global_rank": 42,
+        "percentile": 0.32786885245901637
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for pyproject.toml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for pyproject.toml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to pyproject.toml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in pyproject.toml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_9e829c91",
+      "artifact_type": "text",
+      "artifact_path": "ranking_report.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 43,
+        "percentile": 0.3114754098360656
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for ranking_report.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ranking_report.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ranking_report.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in ranking_report.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_64acb909",
+      "artifact_type": "markdown",
+      "artifact_path": "README.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 6,
+        "global_rank": 44,
+        "percentile": 0.29508196721311475
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for README.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for README.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to README.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in README.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_e3b0c442",
+      "artifact_type": "text",
+      "artifact_path": "requirements.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 9,
+        "global_rank": 45,
+        "percentile": 0.2786885245901639
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for requirements.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for requirements.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to requirements.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in requirements.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_552dcc43",
+      "artifact_type": "code",
+      "artifact_path": "run_cicd_integration.py",
+      "metrics": {
+        "quality_score": 0.64,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.542
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 5,
+        "global_rank": 5,
+        "percentile": 0.9344262295081968
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_cicd_integration.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_cicd_integration.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_cicd_integration.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_39ce29e4",
+      "artifact_type": "code",
+      "artifact_path": "run_dow_engine.py",
+      "metrics": {
+        "quality_score": 0.534,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5102
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 13,
+        "global_rank": 13,
+        "percentile": 0.8032786885245902
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for run_dow_engine.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_dow_engine.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_dow_engine.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_dow_engine.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_02735da7",
+      "artifact_type": "code",
+      "artifact_path": "run_full_dmaic_pipeline.py",
+      "metrics": {
+        "quality_score": 0.901,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.6203
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 1,
+        "global_rank": 1,
+        "percentile": 1.0
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_full_dmaic_pipeline.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_full_dmaic_pipeline.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_full_dmaic_pipeline.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e17454af",
+      "artifact_type": "code",
+      "artifact_path": "run_phase4_phase5.py",
+      "metrics": {
+        "quality_score": 0.6779999999999999,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5534
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 4,
+        "global_rank": 4,
+        "percentile": 0.9508196721311475
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_phase4_phase5.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_phase4_phase5.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_phase4_phase5.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_420e808d",
+      "artifact_type": "markdown",
+      "artifact_path": ".pytest_cache\\README.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 7,
+        "global_rank": 46,
+        "percentile": 0.26229508196721313
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for README.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for README.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to README.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in README.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_10a10425",
+      "artifact_type": "text",
+      "artifact_path": "config\\repos.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 10,
+        "global_rank": 47,
+        "percentile": 0.2459016393442623
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for repos.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for repos.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to repos.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in repos.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_3245d069",
+      "artifact_type": "text",
+      "artifact_path": "dictionaries\\allowlist.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 11,
+        "global_rank": 48,
+        "percentile": 0.22950819672131148
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for allowlist.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for allowlist.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to allowlist.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in allowlist.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_1a05d5f4",
+      "artifact_type": "text",
+      "artifact_path": "docs\\ASCII_pipeline.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 12,
+        "global_rank": 49,
+        "percentile": 0.21311475409836064
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for ASCII_pipeline.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ASCII_pipeline.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ASCII_pipeline.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in ASCII_pipeline.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_0063251c",
+      "artifact_type": "markdown",
+      "artifact_path": "docs\\MASTER_Markwon_slug.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 50,
+        "percentile": 0.19672131147540983
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for MASTER_Markwon_slug.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for MASTER_Markwon_slug.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to MASTER_Markwon_slug.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in MASTER_Markwon_slug.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_4444cf78",
+      "artifact_type": "markdown",
+      "artifact_path": "docs\\MERMAID.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 9,
+        "global_rank": 51,
+        "percentile": 0.18032786885245902
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for MERMAID.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for MERMAID.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to MERMAID.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in MERMAID.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "md_ae861e30",
+      "artifact_type": "markdown",
+      "artifact_path": "docs\\PERSISTENCE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 10,
+        "global_rank": 52,
+        "percentile": 0.16393442622950818
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for PERSISTENCE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for PERSISTENCE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to PERSISTENCE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in PERSISTENCE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_f2c357d6",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\__init__.py",
+      "metrics": {
+        "quality_score": 0.517,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5051
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 17,
+        "global_rank": 17,
+        "percentile": 0.7377049180327869
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_a6ce508e",
+      "artifact_type": "text",
+      "artifact_path": "governance\\HANDOVER_glob.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 13,
+        "global_rank": 53,
+        "percentile": 0.14754098360655737
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for HANDOVER_glob.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for HANDOVER_glob.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to HANDOVER_glob.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in HANDOVER_glob.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_62ed649b",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\document_artefact_runner_stub.py",
+      "metrics": {
+        "quality_score": 0.521,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5063
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 16,
+        "global_rank": 16,
+        "percentile": 0.7540983606557377
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for document_artefact_runner_stub.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for document_artefact_runner_stub.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for document_artefact_runner_stub.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to document_artefact_runner_stub.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e3b0c442",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\__init__.py",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.35
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 27,
+        "global_rank": 27,
+        "percentile": 0.5737704918032787
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e4448fed",
+      "artifact_type": "code",
+      "artifact_path": "tests\\test_runners.py",
+      "metrics": {
+        "quality_score": 0.507,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5021
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 26,
+        "global_rank": 26,
+        "percentile": 0.5901639344262295
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for test_runners.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for test_runners.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for test_runners.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to test_runners.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_a5c3a1c6",
+      "artifact_type": "text",
+      "artifact_path": ".github\\workflows\\cd.yml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 14,
+        "global_rank": 54,
+        "percentile": 0.13114754098360656
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for cd.yml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for cd.yml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to cd.yml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in cd.yml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_ec34b1ce",
+      "artifact_type": "text",
+      "artifact_path": ".github\\workflows\\ci.yml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 15,
+        "global_rank": 55,
+        "percentile": 0.11475409836065574
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for ci.yml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ci.yml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ci.yml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in ci.yml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_c7c1b118",
+      "artifact_type": "text",
+      "artifact_path": "config\\mcp\\codex_mcp.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 16,
+        "global_rank": 56,
+        "percentile": 0.09836065573770492
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for codex_mcp.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for codex_mcp.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to codex_mcp.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in codex_mcp.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_e79498f0",
+      "artifact_type": "text",
+      "artifact_path": "config\\mcp\\github_copilot_mcp.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 17,
+        "global_rank": 57,
+        "percentile": 0.08196721311475409
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for github_copilot_mcp.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for github_copilot_mcp.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to github_copilot_mcp.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in github_copilot_mcp.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_2e673589",
+      "artifact_type": "text",
+      "artifact_path": "data\\output\\batch_results.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 18,
+        "global_rank": 58,
+        "percentile": 0.06557377049180328
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for batch_results.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for batch_results.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to batch_results.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in batch_results.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_34941065",
+      "artifact_type": "text",
+      "artifact_path": "data\\output\\phase0.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 19,
+        "global_rank": 59,
+        "percentile": 0.04918032786885246
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase0.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase0.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase0.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in phase0.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_34941065",
+      "artifact_type": "text",
+      "artifact_path": "data\\output\\t.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 20,
+        "global_rank": 60,
+        "percentile": 0.03278688524590164
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for t.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for t.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to t.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in t.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_9acaeeb0",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\core\\dmaic.py",
+      "metrics": {
+        "quality_score": 0.5609999999999999,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5183
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 10,
+        "global_rank": 10,
+        "percentile": 0.8524590163934426
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for dmaic.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_ef0a2957",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\core\\engine.py",
+      "metrics": {
+        "quality_score": 0.632,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5396
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 6,
+        "global_rank": 6,
+        "percentile": 0.9180327868852459
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for engine.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for engine.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to engine.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_152c73a6",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\core\\ranking.py",
+      "metrics": {
+        "quality_score": 0.865,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.6095
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 2,
+        "global_rank": 2,
+        "percentile": 0.9836065573770492
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ranking.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for ranking.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ranking.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_025475f3",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\git\\repo_manager.py",
+      "metrics": {
+        "quality_score": 0.585,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5255
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 8,
+        "percentile": 0.8852459016393442
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for repo_manager.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for repo_manager.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for repo_manager.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to repo_manager.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_71aa696c",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\ingest\\file_ingest.py",
+      "metrics": {
+        "quality_score": 0.585,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5255
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 9,
+        "global_rank": 9,
+        "percentile": 0.8688524590163934
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for file_ingest.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for file_ingest.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for file_ingest.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to file_ingest.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_13f295dd",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\models\\artifact.py",
+      "metrics": {
+        "quality_score": 0.591,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5273
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 7,
+        "global_rank": 7,
+        "percentile": 0.9016393442622951
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for artifact.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for artifact.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for artifact.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to artifact.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_54afbb09",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\output\\index_generator.py",
+      "metrics": {
+        "quality_score": 0.539,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5117
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 12,
+        "global_rank": 12,
+        "percentile": 0.819672131147541
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for index_generator.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for index_generator.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for index_generator.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to index_generator.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_17e1d9ed",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\utils\\checksum.py",
+      "metrics": {
+        "quality_score": 0.515,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5045000000000001
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 18,
+        "global_rank": 18,
+        "percentile": 0.7213114754098361
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for checksum.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for checksum.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for checksum.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to checksum.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "artifact_40612ef3",
+      "artifact_type": "text",
+      "artifact_path": "governance\\rtm\\code_RTM.yaml",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 21,
+        "global_rank": 61,
+        "percentile": 0.01639344262295082
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for code_RTM.yaml",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for code_RTM.yaml",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to code_RTM.yaml",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in code_RTM.yaml",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_49d2c5f1",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\batch\\worker.py",
+      "metrics": {
+        "quality_score": 0.526,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5078
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 15,
+        "global_rank": 15,
+        "percentile": 0.7704918032786885
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for worker.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for worker.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for worker.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to worker.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e3b0c442",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\batch\\__init__.py",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.35
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 28,
+        "global_rank": 28,
+        "percentile": 0.5573770491803278
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_0f050300",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\dmaic\\engine.py",
+      "metrics": {
+        "quality_score": 0.528,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5084000000000001
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 14,
+        "global_rank": 14,
+        "percentile": 0.7868852459016393
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for engine.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for engine.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for engine.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to engine.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e3b0c442",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\dmaic\\__init__.py",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.35
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 29,
+        "global_rank": 29,
+        "percentile": 0.5409836065573771
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_dcc9d173",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase0_runner.py",
+      "metrics": {
+        "quality_score": 0.51,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.503
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 19,
+        "global_rank": 19,
+        "percentile": 0.7049180327868853
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase0_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase0_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase0_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase0_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_fc34f2c2",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase1_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 20,
+        "global_rank": 20,
+        "percentile": 0.6885245901639344
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase1_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase1_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase1_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase1_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_878f723e",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase2_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 21,
+        "global_rank": 21,
+        "percentile": 0.6721311475409836
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase2_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase2_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase2_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase2_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_542dae8f",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase3_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 22,
+        "global_rank": 22,
+        "percentile": 0.6557377049180327
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase3_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase3_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase3_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase3_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_36f5ea04",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase4_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 23,
+        "global_rank": 23,
+        "percentile": 0.639344262295082
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase4_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase4_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase4_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase4_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_78a45da8",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase5_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 24,
+        "global_rank": 24,
+        "percentile": 0.6229508196721312
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase5_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase5_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase5_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase5_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_a8627048",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\phase6_runner.py",
+      "metrics": {
+        "quality_score": 0.509,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5027
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 25,
+        "global_rank": 25,
+        "percentile": 0.6065573770491803
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for phase6_runner.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for phase6_runner.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for phase6_runner.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to phase6_runner.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_a2995011",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\_runner_common.py",
+      "metrics": {
+        "quality_score": 0.543,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5129
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 11,
+        "global_rank": 11,
+        "percentile": 0.8360655737704918
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for _runner_common.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for _runner_common.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for _runner_common.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to _runner_common.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    },
+    {
+      "artifact_id": "code_e3b0c442",
+      "artifact_type": "code",
+      "artifact_path": "scripts\\runners\\__init__.py",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.35
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 30,
+        "global_rank": 30,
+        "percentile": 0.5245901639344263
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-12T19:13:58.733803"
+    }
+  ],
+  "summary": {
+    "avg_quality": 0.24696721311475409,
+    "avg_complexity": 0.0,
+    "avg_overall": 0.3478606557377049,
+    "high_priority_actions": 207
+  }
+}
