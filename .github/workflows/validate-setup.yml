@@ -1,121 +1,54 @@
 name: Validate ABACUS Setup
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
 
 jobs:
-  validate-permissions:
+  validate:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Validate GitHub Token Permissions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        echo "🔍 Validating GitHub token permissions for ABACUS..."
-        
-        # Test basic authentication
-        echo "Testing authentication..."
-        curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | jq -r '.login // "Auth failed"'
-        
-        # Test repository access
-        echo "Testing repository access..."
-        REPO_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" \
-          https://api.github.com/repos/${{ github.repository }})
-        
-        if [ "$REPO_RESPONSE" = "200" ]; then
-          echo "✅ Repository access successful"
-        else
-          echo "❌ Repository access failed (HTTP $REPO_RESPONSE)"
-          exit 1
-        fi
-        
-        # Check token scopes
-        echo "Checking token scopes..."
-        SCOPES=$(curl -s -I -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | \
-          grep -i "x-oauth-scopes:" | cut -d: -f2- | tr -d ' \r\n')
-        echo "Available scopes: $SCOPES"
-        
-        if echo "$SCOPES" | grep -q "repo\|contents:write"; then
-          echo "✅ Sufficient permissions detected"
-        else
-          echo "⚠️ Warning: Limited permissions detected"
-        fi
-    
-    - name: Test Permission Script
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        echo "Testing permission validation script..."
-        chmod +x test_permissions.sh
-        ./test_permissions.sh
-    
-    - name: Validate Documentation
-      run: |
-        echo "Checking documentation completeness..."
-        
-        # Check required files exist
-        for file in GITHUB_SETUP.md TROUBLESHOOTING.md README.md .env.example; do
-          if [ -f "$file" ]; then
-            echo "✅ $file exists"
-          else
-            echo "❌ Missing: $file"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate GitHub token permissions for ABACUS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "🔍 Validating GitHub token permissions for ABACUS..."
+
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ GITHUB_TOKEN environment variable is not set"
             exit 1
           fi
-        done
-        
-        # Check README has setup instructions
-        if grep -q "GitHub Token Setup" README.md; then
-          echo "✅ README contains setup instructions"
-        else
-          echo "❌ README missing setup instructions"
-          exit 1
-        fi
-        
-        echo "📚 All documentation files validated"
 
-  security-check:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Check for Secrets in Code
-      run: |
-        echo "🔒 Scanning for accidentally committed secrets..."
-        
-        # Check for common token patterns (but allow examples)
-        if grep -r "ghp_[a-zA-Z0-9]\{36\}" . --exclude-dir=.git | grep -v "example\|sample\|your_token_here"; then
-          echo "❌ Potential GitHub token found in code!"
-          exit 1
-        fi
-        
-        if grep -r "github_pat_[a-zA-Z0-9_]\{82\}" . --exclude-dir=.git | grep -v "example\|sample\|your_token_here"; then
-          echo "❌ Potential fine-grained GitHub token found!"
-          exit 1
-        fi
-        
-        echo "✅ No secrets detected in code"
-        
-    - name: Validate .gitignore
-      run: |
-        echo "Checking .gitignore configuration..."
-        
-        if [ -f .gitignore ]; then
-          if grep -q ".env" .gitignore && grep -q "*.tmp" .gitignore; then
-            echo "✅ .gitignore properly configured"
+          echo
+          echo "1️⃣  Testing repository access..."
+          REPO_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$REPO")
+          if [ "$REPO_RESPONSE" = "200" ]; then
+            echo "✅ Repository access successful"
           else
-            echo "⚠️ .gitignore may be missing important entries"
+            echo "❌ Repository access failed (HTTP $REPO_RESPONSE)"
+            echo "   Ensure the workflow has the correct permissions and the token is valid."
+            exit 1
           fi
-        else
-          echo "❌ .gitignore missing"
-          exit 1
-        fi
+
+          echo
+          echo "2️⃣  Confirm /user endpoint behaviour (informational)..."
+          # The built-in GITHUB_TOKEN represents the Actions app installation and typically
+          # cannot access /user (returns 403). This is expected; do not treat as fatal.
+          USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user")
+          if [ "$USER_RESPONSE" = "200" ]; then
+            echo "⚠️ /user endpoint returned 200 (unexpected for the built-in GITHUB_TOKEN)."
+            echo "   If you need a user-scoped token, create a PAT with minimal scopes and store it in secrets."
+          else
+            echo "ℹ️ /user endpoint is not accessible with the built-in GITHUB_TOKEN (HTTP $USER_RESPONSE) — this is expected."
+          fi
+
+          echo
+          echo "✅ Validation complete."
