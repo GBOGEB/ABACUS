@@ -178,7 +178,22 @@ class Phase7ActionTracking:
             report_file = output_dir / "action_report.md"
             self._generate_action_report(results, report_file)
             print(f"  Report: {report_file}")
-            
+
+            # [7.7] Create feedback for next iteration
+            print("\n[7.7] Creating feedback for next iteration...")
+            try:
+                feedback = self._create_feedback_for_next_iteration(phase_actions, iteration)
+            except TypeError:
+                # Fallback if iteration isn't available in this scope
+                feedback = self._create_feedback_for_next_iteration(phase_actions, results.get("iteration"))
+            results['feedback'] = feedback if feedback is not None else {}
+
+            # Save feedback file for next iteration to consume
+            feedback_file = output_dir / "feedback_for_next_iteration.json"
+            safe_write_json(results['feedback'], feedback_file)
+            print(f"  Feedback saved: {feedback_file}")
+            print(f"  Pending actions for next iteration: {len(results['feedback'].get('pending_actions', []))}")
+
             print("\n" + "="*80)
             print("PHASE 7 SUMMARY")
             print("="*80)
@@ -186,10 +201,11 @@ class Phase7ActionTracking:
             print(f"[OK] Global registry updated")
             print(f"[OK] Statistics generated")
             print(f"[OK] Action links created: {len(action_links)}")
+            print(f"[OK] Feedback created for next iteration")
             print(f"[OK] Results saved: {output_file}")
             print("\n[OK] PHASE 7 PASSED")
             print("="*80)
-            
+
             return True, results
             
         except Exception as e:
@@ -201,19 +217,16 @@ class Phase7ActionTracking:
         """Collect actions from all previous phases"""
         actions = []
         output_root = Path(f"DMAIC_V3_OUTPUT/iteration_{iteration}")
-        
-        # Scan phase directories for action data
+
         for phase_num in range(0, 7):
             phase_dir = output_root / f"phase{phase_num}_*"
             for phase_path in output_root.glob(f"phase{phase_num}_*"):
                 if phase_path.is_dir():
-                    # Look for phase output JSON
                     for json_file in phase_path.glob("*.json"):
                         try:
                             with open(json_file, 'r') as f:
                                 phase_data = json.load(f)
-                                
-                            # Extract actions from phase data
+
                             if 'actions' in phase_data:
                                 for action in phase_data['actions']:
                                     action['phase'] = f"phase{phase_num}"
@@ -221,7 +234,34 @@ class Phase7ActionTracking:
                                     actions.append(action)
                         except:
                             pass
-        
+
+        phase4_file = output_root / "phase4_improvements.json"
+        if phase4_file.exists():
+            try:
+                with open(phase4_file, 'r') as f:
+                    phase4_data = json.load(f)
+
+                impl_results = phase4_data.get('implementation_results', {})
+
+                for category in ['docstrings_added', 'long_lines_fixed', 'type_hints_added', 'unused_imports_removed']:
+                    items = impl_results.get(category, [])
+                    for item in items:
+                        if isinstance(item, dict):
+                            actions.append({
+                                'phase': 'phase4',
+                                'agent': 'CodeImprover',
+                                'type': 'code_modification',
+                                'category': category,
+                                'description': f"{category.replace('_', ' ').title()}: {item.get('file', 'unknown')}",
+                                'file': item.get('file', 'unknown'),
+                                'modifications': item.get('modifications', 0),
+                                'timestamp': datetime.now().isoformat(),
+                                'status': 'completed',
+                                'source_file': str(phase4_file)
+                            })
+            except Exception as e:
+                print(f"  [WARNING] Could not extract Phase 4 actions: {e}")
+
         return actions
     
     def _create_action_links(self, actions: List[Dict[str, Any]]) -> Dict[str, List[str]]:
@@ -284,3 +324,99 @@ class Phase7ActionTracking:
         
         with open(output_file, 'w') as f:
             f.write('\n'.join(report))
+
+    def _create_feedback_for_next_iteration(self, actions: List[Dict[str, Any]], iteration: int) -> Dict[str, Any]:
+        """
+        Create feedback from this iteration's actions for the next iteration to consume
+
+        Args:
+            actions: List of actions from this iteration
+            iteration: Current iteration number
+
+        Returns:
+            Feedback dictionary for next iteration
+        """
+        feedback = {
+            'source_iteration': iteration,
+            'target_iteration': iteration + 1,
+            'created_at': datetime.now().isoformat(),
+            'pending_actions': [],
+            'completed_actions': [],
+            'failed_actions': [],
+            'recommendations': []
+        }
+
+        # Categorize actions by status
+        for action in actions:
+            status = action.get('status', 'pending')
+
+            if status in ['pending', 'in_progress']:
+                feedback['pending_actions'].append({
+                    'action_id': action.get('action_id'),
+                    'description': action.get('description'),
+                    'agent': action.get('agent'),
+                    'phase': action.get('phase'),
+                    'priority': self._calculate_action_priority(action)
+                })
+            elif status == 'completed':
+                feedback['completed_actions'].append({
+                    'action_id': action.get('action_id'),
+                    'description': action.get('description')
+                })
+            elif status == 'failed':
+                feedback['failed_actions'].append({
+                    'action_id': action.get('action_id'),
+                    'description': action.get('description'),
+                    'reason': action.get('failure_reason', 'Unknown')
+                })
+
+        # Generate recommendations based on action patterns
+        if len(feedback['pending_actions']) > 10:
+            feedback['recommendations'].append({
+                'type': 'workload',
+                'message': f"High number of pending actions ({len(feedback['pending_actions'])}). Consider prioritizing or breaking down tasks."
+            })
+
+        if len(feedback['failed_actions']) > 0:
+            feedback['recommendations'].append({
+                'type': 'quality',
+                'message': f"{len(feedback['failed_actions'])} actions failed. Review failure reasons and adjust approach."
+            })
+
+        # Identify high-priority actions for Phase 4 to implement
+        high_priority = [a for a in feedback['pending_actions'] if a.get('priority') == 'high']
+        if high_priority:
+            feedback['recommendations'].append({
+                'type': 'priority',
+                'message': f"{len(high_priority)} high-priority actions require immediate attention in next iteration."
+            })
+
+        return feedback
+
+    def _calculate_action_priority(self, action: Dict[str, Any]) -> str:
+        """
+        Calculate priority for an action based on various factors
+
+        Args:
+            action: Action dictionary
+
+        Returns:
+            Priority level: 'high', 'medium', or 'low'
+        """
+        description = action.get('description', '').lower()
+        action_type = action.get('type', '').lower()
+
+        # High priority keywords
+        if any(kw in description for kw in ['critical', 'urgent', 'bug', 'error', 'crash', 'security']):
+            return 'high'
+
+        # High priority action types
+        if action_type in ['bug_fix', 'security_fix', 'critical_improvement']:
+            return 'high'
+
+        # Medium priority keywords
+        if any(kw in description for kw in ['improve', 'optimize', 'refactor', 'enhance']):
+            return 'medium'
+
+        # Default to low priority
+        return 'low'

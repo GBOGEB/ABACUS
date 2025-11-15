@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-11-14T19:32:34.416802",
+  "tests_run": 18,
+  "tests_passed": 4,
+  "tests_failed": 14,
+  "validations": [
+    {
+      "test": "Book missing: DMAIC/DMAIC_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Architecture/Architecture_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Planning/Planning_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Reference/Reference_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Changelog/Changelog_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Execution_Logs/Execution_Logs_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Assessment/Assessment_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: Uncategorized/Uncategorized_BOOK_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Book missing: MASTER_INDEX_*.md",
+      "status": "FAIL",
+      "details": "No books found"
+    },
+    {
+      "test": "Document registry",
+      "status": "FAIL",
+      "details": "Registry file not found"
+    },
+    {
+      "test": "DMAIC book",
+      "status": "FAIL",
+      "details": "No DMAIC books found"
+    },
+    {
+      "test": "CI/CD configurations",
+      "status": "PASS",
+      "details": "Found 5 config(s)"
+    },
+    {
+      "test": "CI/CD config valid: cd-main.yml",
+      "status": "PASS",
+      "details": "Valid YAML"
+    },
+    {
+      "test": "CI/CD config valid: ci-main.yml",
+      "status": "PASS",
+      "details": "Valid YAML"
+    },
+    {
+      "test": "CI/CD config valid: ci-phase0.yml",
+      "status": "PASS",
+      "details": "Valid YAML"
+    },
+    {
+      "test": "Import: DMAIC_V3.config",
+      "status": "FAIL",
+      "details": "Import failed: No module named 'DMAIC_V3'"
+    },
+    {
+      "test": "Import: DMAIC_V3.phases.phase6_knowledge",
+      "status": "FAIL",
+      "details": "Import failed: No module named 'DMAIC_V3'"
+    },
+    {
+      "test": "Import: master_document_system.core.temporal_tracker",
+      "status": "FAIL",
+      "details": "Import failed: No module named 'master_document_system'"
+    }
+  ]
+}

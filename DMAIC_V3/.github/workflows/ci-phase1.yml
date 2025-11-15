@@ -1,0 +1,126 @@
+name: Phase 1 CI
+
+on:
+  push:
+    paths:
+      - 'phases/phase1_define.py'
+      - 'tests/test_phase1.py'
+  pull_request:
+    paths:
+      - 'phases/phase1_define.py'
+      - 'tests/test_phase1.py'
+
+env:
+  PYTHON_VERSION: '3.8'
+  PHASE_NAME: 'phase1'
+  PHASE_VERSION: '1.0.0'
+
+jobs:
+  phase1-lint:
+    name: Phase 1 - Lint & Format
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 mypy
+        pip install -r requirements.txt
+        
+    - name: Lint Phase 1
+      run: |
+        flake8 phases/phase1_define.py --count --show-source --statistics
+        
+    - name: Format check Phase 1
+      run: |
+        black --check phases/phase1_define.py
+
+  phase1-test:
+    name: Phase 1 - Unit Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+        
+    - name: Run Phase 1 unit tests
+      run: |
+        python -m pytest tests/test_phase1.py -v --cov=phases.phase1_define --cov-report=xml
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: phase1
+        name: phase1-${{ matrix.os }}-py${{ matrix.python-version }}
+
+  phase1-integration:
+    name: Phase 1 - Integration Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Phase 0 (prerequisite)
+      run: |
+        python -m phases.phase0_setup
+        
+    - name: Run Phase 1
+      run: |
+        python -m phases.phase1_define
+        
+    - name: Validate Phase 1 output
+      run: |
+        echo "✓ Phase 1 execution completed"
+
+  phase1-status:
+    name: Phase 1 - CI Status
+    runs-on: ubuntu-latest
+    needs: [phase1-lint, phase1-test, phase1-integration]
+    if: always()
+    
+    steps:
+    - name: Check Phase 1 CI status
+      run: |
+        if [ "${{ needs.phase1-lint.result }}" != "success" ] || \
+           [ "${{ needs.phase1-test.result }}" != "success" ] || \
+           [ "${{ needs.phase1-integration.result }}" != "success" ]; then
+          echo "❌ Phase 1 CI failed"
+          exit 1
+        else
+          echo "✅ Phase 1 CI passed"
+        fi

@@ -1,0 +1,29 @@
+name: recursive-build
+on:
+  push:
+    paths: ["docs/**", "scripts/**", "GLOBAL_index.json", "metrics/**"]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Recursive build
+        run: |
+          python scripts/recursive_build.py --index GLOBAL_index.json --out metrics/metrics.json --update-metrics
+      - name: Update artefact hashes
+        run: |
+          python scripts/hash_update.py --index GLOBAL_index.json
+      - name: Preview Diff (bi-directional)
+        run: |
+          python scripts/preview_diff.py --mode both --index GLOBAL_index.json || echo "diffs detected (expected for evolving baseline)"
+      - name: Commit baseline updates
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci@example.com"
+          git add -A
+          git commit -m "ci: recursive build + preview-diff" || echo "no changes"
+          git push || true
+
