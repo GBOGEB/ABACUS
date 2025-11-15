@@ -1,0 +1,26 @@
+name: Inventory Scan
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || true
+      - name: Run inventory scan
+        run: |
+          python runners/dmaic_runner.py --action inventory
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: inventory-results
+          path: DMAIC_V3_OUTPUT/inventory/

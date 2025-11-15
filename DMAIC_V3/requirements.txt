@@ -1,0 +1,156 @@
+# DMAIC V3.0 Engine - Canonical Requirements
+# Python >= 3.8
+# Last Updated: 2024
+# Version: 3.0.0
+
+# ============================================================================
+# CORE DEPENDENCIES
+# ============================================================================
+
+# Path handling (backport for Python < 3.4)
+pathlib2>=2.3.7; python_version < '3.4'
+
+# Dataclasses backport for Python < 3.7
+dataclasses>=0.6; python_version < '3.7'
+
+# Type hints
+typing-extensions>=4.0.0
+
+# ============================================================================
+# DATA PROCESSING
+# ============================================================================
+
+# Data manipulation and analysis
+pandas>=1.3.0,<2.0.0
+numpy>=1.21.0,<2.0.0
+
+# ============================================================================
+# VISUALIZATION
+# ============================================================================
+
+# Plotting and visualization
+matplotlib>=3.4.0,<4.0.0
+seaborn>=0.11.0,<1.0.0
+
+# ============================================================================
+# REPORTING & DOCUMENTATION
+# ============================================================================
+
+# Markdown processing
+markdown>=3.3.0,<4.0.0
+
+# Template engine
+jinja2>=3.0.0,<4.0.0
+
+# ============================================================================
+# STATE MANAGEMENT & SERIALIZATION
+# ============================================================================
+
+# YAML support
+pyyaml>=6.0,<7.0
+
+# JSON schema validation
+jsonschema>=4.0.0,<5.0.0
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+
+# Date/time utilities
+python-dateutil>=2.8.0,<3.0.0
+
+# Progress bars
+tqdm>=4.62.0,<5.0.0
+
+# Cross-platform colored terminal output
+colorama>=0.4.4,<1.0.0; platform_system == "Windows"
+
+# ============================================================================
+# FILE OPERATIONS
+# ============================================================================
+
+# File watching and monitoring
+watchdog>=2.1.0,<3.0.0
+
+# ============================================================================
+# HASHING & CHECKSUMS (for idempotency)
+# ============================================================================
+
+# Already in standard library (hashlib), but for reference:
+# - sha256
+# - md5
+
+# ============================================================================
+# LOGGING & MONITORING
+# ============================================================================
+
+# Structured logging (optional, using standard logging for now)
+# python-json-logger>=2.0.0,<3.0.0
+
+# ============================================================================
+# DEVELOPMENT DEPENDENCIES
+# ============================================================================
+
+# Testing framework
+pytest>=7.0.0,<8.0.0
+pytest-cov>=3.0.0,<4.0.0
+pytest-mock>=3.6.0,<4.0.0
+
+# Code formatting
+black>=22.0.0,<23.0.0
+
+# Linting
+flake8>=4.0.0,<5.0.0
+pylint>=2.12.0,<3.0.0
+
+# Type checking
+mypy>=0.950,<1.0.0
+
+# Documentation
+sphinx>=4.0.0,<5.0.0
+sphinx-rtd-theme>=1.0.0,<2.0.0
+
+# ============================================================================
+# OPTIONAL: ENHANCED FEATURES
+# ============================================================================
+
+# Rich terminal output (optional but recommended)
+# rich>=12.0.0,<13.0.0
+
+# Enhanced CLI (optional)
+# click>=8.0.0,<9.0.0
+
+# Async support (for future versions)
+# aiofiles>=0.8.0,<1.0.0
+# asyncio (standard library)
+
+# Database support (for future state management)
+# sqlalchemy>=1.4.0,<2.0.0
+
+# ============================================================================
+# PLATFORM-SPECIFIC
+# ============================================================================
+
+# Windows-specific
+pywin32>=300; platform_system == "Windows"
+
+# Unix-specific
+# (most Unix tools are in standard library)
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# 
+# Installation:
+#   pip install -r requirements.txt
+#
+# Development installation:
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# Upgrade all:
+#   pip install --upgrade -r requirements.txt
+#
+# Freeze current environment:
+#   pip freeze > requirements-frozen.txt
+#
+# ============================================================================

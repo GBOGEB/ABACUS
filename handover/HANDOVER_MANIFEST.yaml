@@ -1,0 +1,31 @@
+manifest_version: "1.0"
+handover:
+  name: "DMAIC V3.3 Handover"
+  version: "3.3.0"
+  produced_at: "auto"  # populated by CI logs; see artifacts timestamps
+  producers:
+    - DMAIC V3 Team
+  consumers:
+    - MCP/Agent: consumes knowledge_packages/*.json|yaml, DMAIC_V3_OUTPUT/reports/*.json
+    - IDE/Engineer: reads PDF/MD, runs engine/scripts locally
+    - CI/CD: validates docs, builds artifacts, uploads handover bundles
+  formats:
+    - pdf: handover/DMAIC_V3_3_HANDOVER_BOOK.pdf
+    - zip: handover/DMAIC_V3_3_HANDOVER_GLOOB.zip
+    - zip_manifest: handover/DMAIC_V3_3_HANDOVER_GLOOB_MANIFEST.zip
+    - tar_gz_all: handover/DMAIC_V3_3_HANDOVER_ALL.tar.gz
+    - zip_all: handover/DMAIC_V3_3_HANDOVER_ALL.zip
+  acceptance_criteria:
+    - "Convergence report present and JSON-valid"
+    - "Knowledge packages exist (json & yaml)"
+    - "Engine version prints 3.3.0"
+    - "Markdown/YAML/JSON lint pass"
+checks:
+  commands:
+    - name: engine_version
+      run: "python -m DMAIC_V3.dmaic_v3_engine --version"
+      expect_contains: "DMAIC V3 Engine 3.3.0"
+    - name: json_validate
+      run: "python - << 'PY'\nimport json,glob\nbad=[]\nfor f in glob.glob('**/*.json',recursive=True):\n  try:\n    json.load(open(f,'r',encoding='utf-8'))\n  except Exception as e:\n    bad.append((f,str(e)))\nif bad:\n  print('Invalid JSON files:')\n  [print('-',b[0],b[1]) for b in bad]\n  raise SystemExit(1)\nprint('All JSON valid.')\nPY"
+bundles:
+  - name: "DMAIC_V

@@ -1,0 +1,34 @@
+name: Sprint Trigger
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+    inputs:
+      sprint_number:
+        description: 'Sprint number to execute'
+        required: true
+        default: '5'
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || true
+      - name: Run sprint
+        run: |
+          python runners/dmaic_runner.py --action run-sprint --sprint ${{ github.event.inputs.sprint_number }}
+      - name: Generate report
+        run: |
+          python scoring/iterative_scoring.py --iteration ${{ github.event.inputs.sprint_number }}
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: sprint-results
+          path: DMAIC_V3_OUTPUT/sprints/

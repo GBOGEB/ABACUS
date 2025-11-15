@@ -1,0 +1,27 @@
+name: export-docs
+on:
+  push:
+    paths: ["docs/**", "GLOBAL_index.json"]
+  workflow_dispatch:
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render Markdown to PDF/DOCX via Pandoc
+        uses: docker://pandoc/core:3.1
+        with:
+          args: --version
+      - name: Export
+        run: |
+          mkdir -p out
+          for f in $(git ls-files 'docs/**/*.md'); do
+            base=$(basename "$f" .md)
+            docker run --rm -v $PWD:/data pandoc/core:3.1 "$f" -o "out/${base}.pdf"
+            docker run --rm -v $PWD:/data pandoc/core:3.1 "$f" -o "out/${base}.docx"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exported-docs
+          path: out/
+
