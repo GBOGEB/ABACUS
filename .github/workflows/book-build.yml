@@ -1,0 +1,73 @@
+name: Build DMAIC V3 BOOK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'book.yaml'
+      - 'scripts/build_book.py'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'book.yaml'
+      - 'scripts/build_book.py'
+  workflow_dispatch:
+
+jobs:
+  build-book:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xelatex texlive-fonts-recommended texlive-fonts-extra
+      
+      - name: Verify Pandoc installation
+        run: pandoc --version
+      
+      - name: Build DMAIC V3 BOOK
+        run: python scripts/build_book.py
+      
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DMAIC_V3_BOOK_PDF
+          path: build/DMAIC_V3_BOOK.pdf
+          retention-days: 30
+      
+      - name: Upload HTML artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DMAIC_V3_BOOK_HTML
+          path: build/DMAIC_V3_BOOK.html
+          retention-days: 30
+      
+      - name: Upload EPUB artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DMAIC_V3_BOOK_EPUB
+          path: build/DMAIC_V3_BOOK.epub
+          retention-days: 30
+      
+      - name: Build summary
+        run: |
+          echo "## DMAIC V3 BOOK Build Complete ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Artifacts Generated:" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 PDF: build/DMAIC_V3_BOOK.pdf" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 HTML: build/DMAIC_V3_BOOK.html" >> $GITHUB_STEP_SUMMARY
+          echo "- 📱 EPUB: build/DMAIC_V3_BOOK.epub" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### File Sizes:" >> $GITHUB_STEP_SUMMARY
+          ls -lh build/ >> $GITHUB_STEP_SUMMARY

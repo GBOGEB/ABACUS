@@ -1,0 +1,57 @@
+================================================================================
+ARTIFACT RANKING REPORT
+================================================================================
+Generated: 2025-11-12T19:14:19.260076
+Total Artifacts: 61
+
+TOP 10 ARTIFACTS (Global Ranking)
+--------------------------------------------------------------------------------
+#  1 | code       | Score: 0.620 | run_full_dmaic_pipeline.py
+#  2 | code       | Score: 0.610 | dow_engine\core\ranking.py
+#  3 | code       | Score: 0.570 | generate_files.py
+#  4 | code       | Score: 0.553 | run_phase4_phase5.py
+#  5 | code       | Score: 0.542 | run_cicd_integration.py
+#  6 | code       | Score: 0.540 | dow_engine\core\engine.py
+#  7 | code       | Score: 0.527 | dow_engine\models\artifact.py
+#  8 | code       | Score: 0.525 | dow_engine\git\repo_manager.py
+#  9 | code       | Score: 0.525 | dow_engine\ingest\file_ingest.py
+# 10 | code       | Score: 0.518 | dow_engine\core\dmaic.py
+
+BOTTOM 10 ARTIFACTS (Need Improvement)
+--------------------------------------------------------------------------------
+# 31 | text       | Score: 0.200 | .pre-commit-config.yaml
+# 32 | text       | Score: 0.200 | artifact_rankings.json
+# 33 | markdown   | Score: 0.200 | BOOTSTRAP_SUMMARY.md
+# 34 | text       | Score: 0.200 | canonical.index.json
+# 35 | text       | Score: 0.200 | canonical.index.yaml
+# 36 | markdown   | Score: 0.200 | CICD_INTEGRATION.md
+# 37 | markdown   | Score: 0.200 | DOW_CORE_ENGINE.md
+# 38 | text       | Score: 0.200 | dow_engine_config.yaml
+# 39 | markdown   | Score: 0.200 | DOW_QUICKSTART.md
+# 40 | text       | Score: 0.200 | improvement_plan.txt
+
+RANKINGS BY TYPE
+--------------------------------------------------------------------------------
+
+CODE (Top 5):
+  # 1 | Score: 0.620 | run_full_dmaic_pipeline.py
+  # 2 | Score: 0.610 | ranking.py
+  # 3 | Score: 0.570 | generate_files.py
+  # 4 | Score: 0.553 | run_phase4_phase5.py
+  # 5 | Score: 0.542 | run_cicd_integration.py
+
+MARKDOWN (Top 5):
+  # 1 | Score: 0.200 | BOOTSTRAP_SUMMARY.md
+  # 2 | Score: 0.200 | CICD_INTEGRATION.md
+  # 3 | Score: 0.200 | DOW_CORE_ENGINE.md
+  # 4 | Score: 0.200 | DOW_QUICKSTART.md
+  # 5 | Score: 0.200 | PHASE4_RANKING_GUIDE.md
+
+TEXT (Top 5):
+  # 1 | Score: 0.200 | .pre-commit-config.yaml
+  # 2 | Score: 0.200 | artifact_rankings.json
+  # 3 | Score: 0.200 | canonical.index.json
+  # 4 | Score: 0.200 | canonical.index.yaml
+  # 5 | Score: 0.200 | dow_engine_config.yaml
+
+================================================================================

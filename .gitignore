@@ -1,51 +1,129 @@
-# Temporary files
-/tmp/
-*.tmp
-*.temp
-
-# Environment variables (never commit tokens!)
-.env
-.env.local
-.env.*.local
-
-# IDE and editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Log files
-*.log
-logs/
-
-# Package managers
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 venv/
+venv_*/
 ENV/
+env/
+.venv
 
-# Test artifacts
-coverage/
-*.cover
-.coverage
+# Virtual Environments
+venv_dmaic_v3/
+temp_venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Testing
 .pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+temp/
+temp_*/
+tmp/
+*.tmp
+*.temp
+.cache/
+
+# Output directories (keep structure, ignore content)
+DMAIC_CANONICAL_DEEP_OUTPUT/
+DMAIC_CANONICAL_OUTPUT/
+DMAIC_CANONICAL_TEST/
+DMAIC_PRODUCTION_FULL/
+DMAIC_PRODUCTION_OUTPUT/
+DMAIC_SAMPLE_TEST/
+DMAIC_TEST_OUTPUT/
+DMAIC_TEST_SAMPLE/
+DMAIC_V2_OUTPUT/
+DMAIC_V2.3_ITERATION_*/
+smoke_test_outputs_*/
+output/
+outputs/
+
+# Excel temp files
+~$*.xlsx
+~$*.xlsm
+~$*.xls
+~$*.docx
+~$*.pptx
+~$*.pptm
+
+# Large data files
+*.csv
+*.parquet
+*.h5
+*.hdf5
+
+# Sensitive data
+*.key
+*.pem
+*.env
+.env.*
+secrets/
+credentials/
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*_backup.*
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Keep important config files
+!deployment/*.yaml
+!deployment/*.yml
+!deployment/*.json
+!DMAIC_V3/**/*.py
+!DMAIC_V3/**/*.yaml
+!DMAIC_V3/**/*.json
+!DMAIC_V3/**/*.md
+
+# Keep documentation
+!*.md
+!docs/
+!README.md
+!DEPLOY_NOW.md
+!GITHUB_SETUP_GUIDE.md

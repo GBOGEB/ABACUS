@@ -1,0 +1,1078 @@
+version: 1.0.0
+generated_at: '2025-11-12T19:14:08.650263'
+engine: DOW v1.0.0
+artifacts:
+- id: artifact_030b5fb2
+  type: text
+  path: .pre-commit-config.yaml
+  checksum: 030b5fb26214dabf449c115dcbc08ceb2f279a87b31eaa73df0fe73023dc95e1
+  size_bytes: 736
+  metadata:
+    created_at: '2025-11-12T17:23:26.188836'
+    modified_at: '2025-11-12T18:18:40.909465'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_239826be
+  type: text
+  path: artifact_rankings.json
+  checksum: 239826be20189c803a69db8720688274aa6f28e6fec49b91360f2b808832d267
+  size_bytes: 91360
+  metadata:
+    created_at: '2025-11-12T18:55:01.555133'
+    modified_at: '2025-11-12T19:09:12.336773'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_78639b77
+  type: markdown
+  path: BOOTSTRAP_SUMMARY.md
+  checksum: 78639b771e4f4749ab8a0cba343eef43ce235f692a10b1b92dd9b30b4d060699
+  size_bytes: 4900
+  metadata:
+    created_at: '2025-11-12T18:31:22.638480'
+    modified_at: '2025-11-12T18:31:31.898935'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: ABACUS v0.3.1 CI/CD Pack - Bootstrap Complete
+  headings:
+  - '# ABACUS v0.3.1 CI/CD Pack - Bootstrap Complete'
+  - '## Summary'
+  - '## What Was Created'
+  - '### Directory Structure'
+  - '## Key Features'
+  - '### 1. Phase Runners (0-6)'
+  - '### 2. DMAIC Engine'
+  - '### 3. Batch Worker'
+  - '### 4. CI/CD Workflows'
+  - '### 5. MCP Stubs'
+  - '### 6. Document Artefact Runner'
+  - '### 7. Governance'
+  - '## Verification'
+  - '## Next Steps'
+  - '## Files Generated'
+  - '## Status'
+  word_count: 599
+- id: artifact_b1f85d10
+  type: text
+  path: canonical.index.json
+  checksum: b1f85d10caf2cf80e30103a04246f94783ce7f98a15955dbc14634c84e5ef10f
+  size_bytes: 36291
+  metadata:
+    created_at: '2025-11-12T18:55:01.419955'
+    modified_at: '2025-11-12T19:09:12.242154'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_2b604629
+  type: text
+  path: canonical.index.yaml
+  checksum: 2b6046293a510d5088efb5b129f3c35cfa82bf0c491dd678845bd0caea4ea9a4
+  size_bytes: 27347
+  metadata:
+    created_at: '2025-11-12T18:55:01.424956'
+    modified_at: '2025-11-12T19:09:12.325612'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_be9f7988
+  type: markdown
+  path: CICD_INTEGRATION.md
+  checksum: be9f79885e8b9db2e56176a8055085b3bd4907285f50f1b1eda4cf8a10c137b9
+  size_bytes: 11532
+  metadata:
+    created_at: '2025-11-12T19:12:12.028775'
+    modified_at: '2025-11-12T19:13:31.518981'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: DOW Engine - CI/CD Integration
+  headings:
+  - '# DOW Engine - CI/CD Integration'
+  - '## Overview'
+  - '## Quick Start'
+  - '### Local Development'
+  - '# Run full DMAIC pipeline (Phases 1-5)'
+  - '# Run CI/CD integration with Git commits'
+  - '# Run Phase 4+5 only'
+  - '# Basic DOW engine'
+  - '## CI/CD Pipeline'
+  - '### GitHub Actions Workflow'
+  - '## Quality Gates'
+  - '### Gate Definitions'
+  - '# Gate 1: Average Score Threshold'
+  - '# Gate 2: Top 10% Quality'
+  - '# Gate 3: Rank 5 Limit'
+  - '# Gate 4: High-Priority Actions'
+  - '### Enforcement'
+  - '# In GitHub Actions'
+  - '## Automated Improvements'
+  - '### Auto-Fix Workflow'
+  - '# Format code'
+  - '# Add docstrings (placeholder - implement with tool)'
+  - '# python scripts/add_docstrings.py'
+  - '## Automated Improvements'
+  - '## Integration with Existing DMAIC'
+  - '### Phase 0-3 Integration'
+  - '# Existing DMAIC phases'
+  - '# DOW Engine integration'
+  - '# Feedback to existing DMAIC'
+  - '## Continuous Improvement Loop'
+  - '### Iteration Script'
+  - '#!/usr/bin/env python3'
+  - '# Run 10 iterations'
+  - '## Monitoring & Reporting'
+  - '### Metrics Dashboard'
+  - '#!/usr/bin/env python3'
+  - '## Pre-commit Hooks'
+  - '### `.pre-commit-config.yaml`'
+  - '### Install'
+  - '## Docker Integration'
+  - '### `Dockerfile`'
+  - '### `docker-compose.yml`'
+  - '### Run'
+  - '## Feedback Loops'
+  - '### Phase 1 & 2 Feedback'
+  - '# In Phase 5 (Control)'
+  - '### Automated Feedback'
+  - '## Status & Metrics'
+  - '### Current State'
+  - '### Target State'
+  - '## Next Steps'
+  - '## Files'
+  word_count: 1170
+- id: md_ea2c882a
+  type: markdown
+  path: DOW_CORE_ENGINE.md
+  checksum: ea2c882af584df070a52f623552826174041e6080cdc6ff9be9fce05f958886e
+  size_bytes: 12343
+  metadata:
+    created_at: '2025-11-12T18:40:20.852098'
+    modified_at: '2025-11-12T18:40:34.147265'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: 'DOW - Devour of Words: Core Pipeline Engine'
+  headings:
+  - '# DOW - Devour of Words: Core Pipeline Engine'
+  - '## Overview'
+  - '## Core Philosophy'
+  - '## Core Skills (SELF_SKILLS)'
+  - '### 1. DMAIC (Define-Measure-Analyze-Improve-Control)'
+  - '### 2. Refactor'
+  - '### 3. Recursive Processing'
+  - '### 4. Hierarchical Source Tracking'
+  - '### 5. Continuous Improvement'
+  - '## Core Functions'
+  - '### Ingestion Functions'
+  - '### Processing Functions'
+  - '### Analysis Functions'
+  - '### Transformation Functions'
+  - '### Output Functions'
+  - '### Git Integration Functions'
+  - '## Core Attributes'
+  - '### Engine Attributes'
+  - '### Processing Attributes'
+  - '### Quality Attributes'
+  - '### Git Attributes'
+  - '## Core File Structure'
+  - '## Canonical Index Format'
+  - '### canonical.index.json (Machine-Readable)'
+  - '### canonical.index.yaml (Human-Readable)'
+  - '## Git Roundtrip Workflow'
+  - '### 1. Clone & Prepare'
+  - '### 2. Process with DOW'
+  - '### 3. Validate & Commit'
+  - '# Ensure no binaries'
+  - '# Run tests'
+  - '# Commit changes'
+  - '### 4. Push & Verify'
+  - '# Verify local clone can run'
+  - '## Recursive Iteration Modes'
+  - '### Full Recursion'
+  - '### Step Recursion'
+  - '### Partial Recursion'
+  - '### Global Recursion'
+  - '### Compare Mode'
+  - '### Clone Mode'
+  - '### Split Mode'
+  - '## Quality Gates'
+  - '## Integration with ABACUS v0.3.1'
+  - '## Next Steps'
+  word_count: 1326
+- id: artifact_4547d105
+  type: text
+  path: dow_engine_config.yaml
+  checksum: 4547d105d44da1aa9fa9037f92129e47ca59945de92100b65a9690f08f86774e
+  size_bytes: 1116
+  metadata:
+    created_at: '2025-11-12T18:43:19.036539'
+    modified_at: '2025-11-12T18:43:38.565749'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_018a6181
+  type: markdown
+  path: DOW_QUICKSTART.md
+  checksum: 018a61812de2437bba0f61d785e4a4c6bc4d51447374d7e0bfdb15dd35bcc8ba
+  size_bytes: 1875
+  metadata:
+    created_at: '2025-11-12T18:43:59.765516'
+    modified_at: '2025-11-12T18:46:46.285719'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: DOW Engine - Quick Start
+  headings:
+  - '# DOW Engine - Quick Start'
+  - '## Installation'
+  - '## Usage'
+  - '### Basic Run'
+  - '### Programmatic Usage'
+  - '### With Git Integration'
+  - '## Output Files'
+  - '## Configuration'
+  - '## Architecture'
+  - '## Next Steps'
+  word_count: 204
+- id: code_beae4558
+  type: code
+  path: generate_files.py
+  checksum: beae4558278539f4f60d8421e34321803c7f2d1dc90803076e8a42506150c236
+  size_bytes: 8375
+  metadata:
+    created_at: '2025-11-12T18:18:27.376310'
+    modified_at: '2025-11-12T18:18:51.804973'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 233
+  complexity: 0
+  dependencies: []
+- id: artifact_903a0b99
+  type: text
+  path: improvement_plan.txt
+  checksum: 903a0b99c4d34a6fd9b301bc739e8d339c1e1b55e817cd7a985d8c2dd48fccdc
+  size_bytes: 4471
+  metadata:
+    created_at: '2025-11-12T19:08:26.671266'
+    modified_at: '2025-11-12T19:08:26.962109'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_3027fb55
+  type: markdown
+  path: PHASE4_RANKING_GUIDE.md
+  checksum: 3027fb55afd2c0f3bee988732c6f1927d9408e54fc70fb8abc86700491f0bdb6
+  size_bytes: 9749
+  metadata:
+    created_at: '2025-11-12T18:58:03.942177'
+    modified_at: '2025-11-12T18:58:27.134847'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: DOW Engine - Phase 4+ Integration Guide
+  headings:
+  - '# DOW Engine - Phase 4+ Integration Guide'
+  - '## Overview'
+  - '## Phase 4+ Features'
+  - '### 1. Artifact Ranking System'
+  - '### 2. Three-Tier Ranking'
+  - '#### Self-Rank (1-5 Scale)'
+  - '#### Type-Rank'
+  - '#### Global-Rank'
+  - '## Running Phase 4+ Analysis'
+  - '### Basic Execution'
+  - '### Programmatic Usage'
+  - '## Ranking Report Structure'
+  - '### Example Output'
+  - '#  1 | code       | Score: 0.570 | generate_files.py'
+  - '#  2 | code       | Score: 0.569 | dow_engine\core\ranking.py'
+  - '#  3 | code       | Score: 0.540 | dow_engine\core\engine.py'
+  - '# 42 | text       | Score: 0.200 | .pre-commit-config.yaml'
+  - '# 43 | markdown   | Score: 0.200 | BOOTSTRAP_SUMMARY.md'
+  - '# 1 | Score: 0.570 | generate_files.py'
+  - '# 2 | Score: 0.569 | ranking.py'
+  - '# 1 | Score: 0.200 | BOOTSTRAP_SUMMARY.md'
+  - '## Integration with DMAIC Phases'
+  - '### Phase 4 (Improve) - Ranking Integration'
+  - '### Phase 5 (Control) - Quality Gates'
+  - '## Customizing Ranking Metrics'
+  - '## Ranking Data Structure'
+  - '### JSON Format'
+  - '## Advanced Queries'
+  - '### Find Artifacts by Self-Rank'
+  - '### Find Top N by Type'
+  - '### Filter by Percentile'
+  - '## Next Steps'
+  - '## Phase 4+ Workflow'
+  - '## Continuous Improvement Loop'
+  word_count: 899
+- id: artifact_be9373f1
+  type: text
+  path: pyproject.toml
+  checksum: be9373f14671e7cc531821088e123267a7fcbdd8c3dd96cfe43f7b1b9278c28a
+  size_bytes: 316
+  metadata:
+    created_at: '2025-11-12T17:23:26.192418'
+    modified_at: '2025-11-12T18:18:40.782809'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_9e829c91
+  type: text
+  path: ranking_report.txt
+  checksum: 9e829c91f90429ca0fb62410bc634b9b5508778d0646fe243b2f9ec2e5b37c99
+  size_bytes: 2583
+  metadata:
+    created_at: '2025-11-12T18:55:01.561130'
+    modified_at: '2025-11-12T19:09:12.339522'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_64acb909
+  type: markdown
+  path: README.md
+  checksum: 64acb909e7558a61b04a6afb7a6ad5296a2b100646f4fde8ebdea77ddd862332
+  size_bytes: 6464
+  metadata:
+    created_at: '2025-11-12T17:23:26.176817'
+    modified_at: '2025-11-12T19:00:45.515275'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: ABACUS v0.3.1 - DOW Engine Integration
+  headings:
+  - '# ABACUS v0.3.1 - DOW Engine Integration'
+  - '## ✅ Completed: Phase 4+ Implementation'
+  - '### DOW (Devour of Words) Engine'
+  - '### Phase 4+ Features'
+  - '#### 1. **Artifact Ranking System** ✅'
+  - '#### 2. **Phase 4 (Improve)** ✅'
+  - '#### 3. **Phase 5 (Control)** ✅'
+  - '## File Structure'
+  - '## Usage Examples'
+  - '### Basic Run'
+  - '### Phase 4+5 Run'
+  - '### Programmatic Usage'
+  - '## Integration with Existing DMAIC'
+  - '## Next Steps'
+  - '### Immediate (Phase 4+)'
+  - '### Short-term'
+  - '### Long-term'
+  - '## Quality Improvement Roadmap'
+  - '## Documentation'
+  - '## Key Features'
+  - '## Status'
+  word_count: 761
+- id: artifact_e3b0c442
+  type: text
+  path: requirements.txt
+  checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  size_bytes: 0
+  metadata:
+    created_at: '2025-11-12T17:23:26.192418'
+    modified_at: '2025-11-12T18:18:40.791565'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: code_552dcc43
+  type: code
+  path: run_cicd_integration.py
+  checksum: 552dcc43fd274a501ff4d9bd5791019544cb8938c7d89dcf7fc2710023e8a6cf
+  size_bytes: 4721
+  metadata:
+    created_at: '2025-11-12T19:11:08.384473'
+    modified_at: '2025-11-12T19:11:44.959460'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 140
+  complexity: 0
+  dependencies: []
+- id: code_39ce29e4
+  type: code
+  path: run_dow_engine.py
+  checksum: 39ce29e4cfad2ed989cbc1d7dc864179795af15be4f7f6ebc69e9f420fcbf5a7
+  size_bytes: 929
+  metadata:
+    created_at: '2025-11-12T18:43:39.194041'
+    modified_at: '2025-11-12T18:43:49.758965'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 34
+  complexity: 0
+  dependencies: []
+- id: code_02735da7
+  type: code
+  path: run_full_dmaic_pipeline.py
+  checksum: 02735da7776071405063a9cd59ca8f431b49e1f30ebaab6f1342d9bed928cd5d
+  size_bytes: 14051
+  metadata:
+    created_at: '2025-11-12T19:07:46.081575'
+    modified_at: '2025-11-12T19:08:00.702754'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 401
+  complexity: 0
+  dependencies: []
+- id: code_e17454af
+  type: code
+  path: run_phase4_phase5.py
+  checksum: e17454afca47400178a5a8b10726c363293d35d182560194744844eb13fba6e0
+  size_bytes: 6098
+  metadata:
+    created_at: '2025-11-12T18:58:53.538133'
+    modified_at: '2025-11-12T18:59:05.634353'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 178
+  complexity: 0
+  dependencies: []
+- id: md_420e808d
+  type: markdown
+  path: .pytest_cache\README.md
+  checksum: 420e808d79a6c25d3cda0af33bc4782314a14949866682c68ce8149e89b66b70
+  size_bytes: 310
+  metadata:
+    created_at: '2025-11-12T18:23:22.180555'
+    modified_at: '2025-11-12T18:23:22.181557'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: 'pytest cache directory #'
+  headings:
+  - '# pytest cache directory #'
+  word_count: 40
+- id: artifact_10a10425
+  type: text
+  path: config\repos.yaml
+  checksum: 10a1042535808ef85e9d3e1d4b20a9ce1848afc1fd6b6dc24b174662628aaf9e
+  size_bytes: 361
+  metadata:
+    created_at: '2025-11-12T17:23:26.196939'
+    modified_at: '2025-11-12T18:18:40.816382'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_3245d069
+  type: text
+  path: dictionaries\allowlist.txt
+  checksum: 3245d06998063c3f4147239b335d8b0e64116a965163ac68ac82896bffec1e6e
+  size_bytes: 44
+  metadata:
+    created_at: '2025-11-12T18:18:40.883797'
+    modified_at: '2025-11-12T18:18:40.884799'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_1a05d5f4
+  type: text
+  path: docs\ASCII_pipeline.txt
+  checksum: 1a05d5f4fba70259f09fe9c0b1d65691c78a868638aba551fec34ec0349f25e0
+  size_bytes: 611
+  metadata:
+    created_at: '2025-11-12T17:23:26.564829'
+    modified_at: '2025-11-12T18:18:40.860790'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: md_0063251c
+  type: markdown
+  path: docs\MASTER_Markwon_slug.md
+  checksum: 0063251c6246413644a10caf4707da1207067efbdbc840b437121f0c97a6cdc4
+  size_bytes: 129
+  metadata:
+    created_at: '2025-11-12T17:23:26.575673'
+    modified_at: '2025-11-12T18:18:40.879796'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: Master Markdown Slug
+  headings:
+  - '# Master Markdown Slug'
+  word_count: 14
+- id: md_4444cf78
+  type: markdown
+  path: docs\MERMAID.md
+  checksum: 4444cf78e07ca5dda4663723e1192c41a07e94ebdba34974475620f9550cc00b
+  size_bytes: 440
+  metadata:
+    created_at: '2025-11-12T17:23:26.574350'
+    modified_at: '2025-11-12T18:18:40.866785'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: ''
+  headings: []
+  word_count: 58
+- id: md_ae861e30
+  type: markdown
+  path: docs\PERSISTENCE.md
+  checksum: ae861e30ef519b724c8e899ba3ec3325d929fa7cbcd6880f444581c3f493e713
+  size_bytes: 303
+  metadata:
+    created_at: '2025-11-12T17:23:26.575673'
+    modified_at: '2025-11-12T18:18:40.876794'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  title: Persistence Strategy
+  headings:
+  - '# Persistence Strategy'
+  word_count: 38
+- id: code_f2c357d6
+  type: code
+  path: dow_engine\__init__.py
+  checksum: f2c357d64d76cdf249fbad4dfe0570ca262d974050c00ad270ac59f3571e15f4
+  size_bytes: 428
+  metadata:
+    created_at: '2025-11-12T18:43:01.957583'
+    modified_at: '2025-11-12T18:47:56.601659'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 17
+  complexity: 0
+  dependencies: []
+- id: artifact_a6ce508e
+  type: text
+  path: governance\HANDOVER_glob.yaml
+  checksum: a6ce508e414c75cfb808837d1fa5ee953e01b4f29fde102bca62acc5d54a8afd
+  size_bytes: 1090
+  metadata:
+    created_at: '2025-11-12T18:19:11.285680'
+    modified_at: '2025-11-12T18:20:56.323301'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: code_62ed649b
+  type: code
+  path: scripts\document_artefact_runner_stub.py
+  checksum: 62ed649bf68f0e3c2cbaeeabf2c5b753ff05cf3447d353cc9d0523704f84d490
+  size_bytes: 705
+  metadata:
+    created_at: '2025-11-12T17:23:26.564829'
+    modified_at: '2025-11-12T18:18:40.840302'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 21
+  complexity: 0
+  dependencies: []
+- id: code_e3b0c442
+  type: code
+  path: scripts\__init__.py
+  checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  size_bytes: 0
+  metadata:
+    created_at: '2025-11-12T18:20:05.817991'
+    modified_at: '2025-11-12T18:20:05.817991'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 0
+  complexity: 0
+  dependencies: []
+- id: code_e4448fed
+  type: code
+  path: tests\test_runners.py
+  checksum: e4448fed82da4976ed55be4f67166af64d8afb600262b2a5c17fcc5b28b7954c
+  size_bytes: 313
+  metadata:
+    created_at: '2025-11-12T17:23:26.564829'
+    modified_at: '2025-11-12T18:18:40.847298'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 7
+  complexity: 0
+  dependencies: []
+- id: artifact_a5c3a1c6
+  type: text
+  path: .github\workflows\cd.yml
+  checksum: a5c3a1c6e37bcdf7aafcdaf0d9f5222147dfd73db5e6564b5501fcfd691ecca4
+  size_bytes: 563
+  metadata:
+    created_at: '2025-11-12T17:23:26.176817'
+    modified_at: '2025-11-12T18:16:49.735704'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_ec34b1ce
+  type: text
+  path: .github\workflows\ci.yml
+  checksum: ec34b1ce91c191f90b09318aa3a19fc394ef3ee003d3635f24c982b430aa391e
+  size_bytes: 1033
+  metadata:
+    created_at: '2025-11-12T17:23:26.176817'
+    modified_at: '2025-11-12T18:16:59.513739'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_c7c1b118
+  type: text
+  path: config\mcp\codex_mcp.yaml
+  checksum: c7c1b118a29fb4247df0fcc20ee4281cf4c3046596c19436d34ee45d9441f25e
+  size_bytes: 126
+  metadata:
+    created_at: '2025-11-12T17:23:26.270333'
+    modified_at: '2025-11-12T18:18:40.831885'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_e79498f0
+  type: text
+  path: config\mcp\github_copilot_mcp.yaml
+  checksum: e79498f050c5c927f5883d006f47ffce324f98e2bde9d6a50ab5443e3b01df32
+  size_bytes: 167
+  metadata:
+    created_at: '2025-11-12T17:23:26.204962'
+    modified_at: '2025-11-12T18:18:40.821852'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_2e673589
+  type: text
+  path: data\output\batch_results.json
+  checksum: 2e673589a00f1f2d6c3ee762105ca19e4ffd4ffffdbfc7b6f50dd7358ab18dd3
+  size_bytes: 267
+  metadata:
+    created_at: '2025-11-12T18:22:15.994353'
+    modified_at: '2025-11-12T18:22:16.091935'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_34941065
+  type: text
+  path: data\output\phase0.json
+  checksum: 34941065c9bc8a65e89d46d5cd96a78816dee813da078e552574465b1a15ec40
+  size_bytes: 120
+  metadata:
+    created_at: '2025-11-12T18:21:52.008226'
+    modified_at: '2025-11-12T18:21:52.009230'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: artifact_34941065
+  type: text
+  path: data\output\t.json
+  checksum: 34941065c9bc8a65e89d46d5cd96a78816dee813da078e552574465b1a15ec40
+  size_bytes: 120
+  metadata:
+    created_at: '2025-11-12T18:23:22.026617'
+    modified_at: '2025-11-12T18:23:22.027613'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: code_9acaeeb0
+  type: code
+  path: dow_engine\core\dmaic.py
+  checksum: 9acaeeb09e7aa62622f1188a81e7aeaaf0a9b5ed9af51e1723bc3253aec13d14
+  size_bytes: 2003
+  metadata:
+    created_at: '2025-11-12T18:42:24.535654'
+    modified_at: '2025-11-12T18:42:34.942152'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 61
+  complexity: 0
+  dependencies: []
+- id: code_ef0a2957
+  type: code
+  path: dow_engine\core\engine.py
+  checksum: ef0a2957cf37a13f8f4060b43ed098aeb1033c98b6e9ebca93ae8b26d56a805c
+  size_bytes: 4421
+  metadata:
+    created_at: '2025-11-12T18:42:48.908139'
+    modified_at: '2025-11-12T18:51:15.938052'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 132
+  complexity: 0
+  dependencies: []
+- id: code_152c73a6
+  type: code
+  path: dow_engine\core\ranking.py
+  checksum: 152c73a65d08e1720fb097b5c4f08de9d5f0526eb621b4347e22e0ae0460763e
+  size_bytes: 13727
+  metadata:
+    created_at: '2025-11-12T18:49:51.934640'
+    modified_at: '2025-11-12T19:06:37.973604'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 365
+  complexity: 0
+  dependencies: []
+- id: code_025475f3
+  type: code
+  path: dow_engine\git\repo_manager.py
+  checksum: 025475f362571a95836062d7d90f3751d7b92927cff7c0ffb0573086119c5793
+  size_bytes: 2615
+  metadata:
+    created_at: '2025-11-12T18:41:46.686052'
+    modified_at: '2025-11-12T18:54:41.672597'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 85
+  complexity: 0
+  dependencies: []
+- id: code_71aa696c
+  type: code
+  path: dow_engine\ingest\file_ingest.py
+  checksum: 71aa696c3a9fe1a08e899a9dfb227469d324aace63093c2aa5126e7f5f04a07e
+  size_bytes: 2480
+  metadata:
+    created_at: '2025-11-12T18:42:06.201937'
+    modified_at: '2025-11-12T18:47:49.971406'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 85
+  complexity: 0
+  dependencies: []
+- id: code_13f295dd
+  type: code
+  path: dow_engine\models\artifact.py
+  checksum: 13f295dd36936713d4ca27392e039807c8528e7acc173be25add2ea5a79ccc8a
+  size_bytes: 2510
+  metadata:
+    created_at: '2025-11-12T18:40:53.513369'
+    modified_at: '2025-11-12T18:41:01.788800'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 91
+  complexity: 0
+  dependencies: []
+- id: code_54afbb09
+  type: code
+  path: dow_engine\output\index_generator.py
+  checksum: 54afbb09de0c05bbd61abe4b3fcca82f89070795a17a5fa351363dbbd7b61396
+  size_bytes: 1330
+  metadata:
+    created_at: '2025-11-12T18:41:25.222984'
+    modified_at: '2025-11-12T18:41:33.789298'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 39
+  complexity: 0
+  dependencies: []
+- id: code_17e1d9ed
+  type: code
+  path: dow_engine\utils\checksum.py
+  checksum: 17e1d9ed2f46e08650c35241daa69563faab393215a3551411ece09e1c98b073
+  size_bytes: 417
+  metadata:
+    created_at: '2025-11-12T18:41:09.510281'
+    modified_at: '2025-11-12T18:41:21.020630'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 15
+  complexity: 0
+  dependencies: []
+- id: artifact_40612ef3
+  type: text
+  path: governance\rtm\code_RTM.yaml
+  checksum: 40612ef34c1097019106971ab6615b884dcf1e689a1539c74d53b6706b152c12
+  size_bytes: 1511
+  metadata:
+    created_at: '2025-11-12T18:18:40.898571'
+    modified_at: '2025-11-12T18:18:40.899570'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+- id: code_49d2c5f1
+  type: code
+  path: scripts\batch\worker.py
+  checksum: 49d2c5f16362f2c76291fa1969ace20635b1de498b7fa440e7e44b6172c0ac49
+  size_bytes: 895
+  metadata:
+    created_at: '2025-11-12T17:23:26.559021'
+    modified_at: '2025-11-12T18:18:40.837005'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 26
+  complexity: 0
+  dependencies: []
+- id: code_e3b0c442
+  type: code
+  path: scripts\batch\__init__.py
+  checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  size_bytes: 0
+  metadata:
+    created_at: '2025-11-12T18:20:06.824047'
+    modified_at: '2025-11-12T18:20:06.824047'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 0
+  complexity: 0
+  dependencies: []
+- id: code_0f050300
+  type: code
+  path: scripts\dmaic\engine.py
+  checksum: 0f0503004236357a6e463b79b18a91e3cf8e110dfcc05e702acfb5ad830c2729
+  size_bytes: 1106
+  metadata:
+    created_at: '2025-11-12T17:23:26.497770'
+    modified_at: '2025-11-12T18:24:21.155578'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 28
+  complexity: 0
+  dependencies: []
+- id: code_e3b0c442
+  type: code
+  path: scripts\dmaic\__init__.py
+  checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  size_bytes: 0
+  metadata:
+    created_at: '2025-11-12T18:20:06.768588'
+    modified_at: '2025-11-12T18:20:06.768588'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 0
+  complexity: 0
+  dependencies: []
+- id: code_dcc9d173
+  type: code
+  path: scripts\runners\phase0_runner.py
+  checksum: dcc9d173054c9ab4fb32a2eba85979c6b604db2a3c285fff2c62ea297810b9ab
+  size_bytes: 330
+  metadata:
+    created_at: '2025-11-12T18:18:40.911462'
+    modified_at: '2025-11-12T18:34:25.547482'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 10
+  complexity: 0
+  dependencies: []
+- id: code_fc34f2c2
+  type: code
+  path: scripts\runners\phase1_runner.py
+  checksum: fc34f2c29f1b0e1567292ce561636168a0fb1a3051acd00d3a977ca7752e0038
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.915464'
+    modified_at: '2025-11-12T18:21:17.972456'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_878f723e
+  type: code
+  path: scripts\runners\phase2_runner.py
+  checksum: 878f723e6865247020aa3de65e40ceb930c861479a81f21e6bf9ea284298c57b
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.918462'
+    modified_at: '2025-11-12T18:21:17.989338'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_542dae8f
+  type: code
+  path: scripts\runners\phase3_runner.py
+  checksum: 542dae8f5975f5463e62ce67d3df481c65047d897b499bd563748ae8e5c09f01
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.975349'
+    modified_at: '2025-11-12T18:21:18.001352'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_36f5ea04
+  type: code
+  path: scripts\runners\phase4_runner.py
+  checksum: 36f5ea0408ff075399338b87a9590ba94fd159c9ff61eb972b65e13950d4ac75
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.978351'
+    modified_at: '2025-11-12T18:21:18.012876'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_78a45da8
+  type: code
+  path: scripts\runners\phase5_runner.py
+  checksum: 78a45da86668c4f97497e5c02c49f02d48417f8f7df16570f95ae6355976984c
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.981348'
+    modified_at: '2025-11-12T18:21:18.026433'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_a8627048
+  type: code
+  path: scripts\runners\phase6_runner.py
+  checksum: a86270486aab10c26c3d5544ca13ccf6c825a64ac0d587400269789a21a945a0
+  size_bytes: 324
+  metadata:
+    created_at: '2025-11-12T18:18:40.984350'
+    modified_at: '2025-11-12T18:21:18.045685'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 9
+  complexity: 0
+  dependencies: []
+- id: code_a2995011
+  type: code
+  path: scripts\runners\_runner_common.py
+  checksum: a29950113f7044f8521e53b73728b52d1cf3d4a2c43d4a5b0c5d5f0499609f50
+  size_bytes: 1770
+  metadata:
+    created_at: '2025-11-12T17:23:26.558326'
+    modified_at: '2025-11-12T18:22:44.579537'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 43
+  complexity: 0
+  dependencies: []
+- id: code_e3b0c442
+  type: code
+  path: scripts\runners\__init__.py
+  checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  size_bytes: 0
+  metadata:
+    created_at: '2025-11-12T18:20:06.814516'
+    modified_at: '2025-11-12T18:20:06.814516'
+    author: DOW_ENGINE
+    version: 1.0.0
+    tags: []
+    custom: {}
+  language: python
+  lines: 0
+  complexity: 0
+  dependencies: []
+statistics:
+  total_artifacts: 61
+  total_size_bytes: 289446
+  total_lines: 2065
+  languages:
+    python: 30
+git:
+  repository: unknown
+  branch: unknown
+  commit: unknown
+  clean: false

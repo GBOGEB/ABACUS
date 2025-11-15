@@ -1,0 +1,240 @@
+# Orchestrator Configuration for 12-CLUSTER System
+
+debug:
+  enabled: true
+  wait_for_client: false
+
+agents:
+  cryo_optimizer:
+    file: "local_mcp/agents/cryo_analysis_v3_DMAIC_ULTRA_OPTIMIZED.py"
+    timeout: 300
+    priority: high
+
+  document_consumer:
+    file: "local_mcp/agents/CANONICAL_DOCUMENT_CONSUMER_v6.1.0_OPTIMIZED.py"
+    timeout: 600
+    priority: medium
+
+  smoke_tester:
+    file: "local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py"
+    timeout: 180
+    priority: high
+
+  quick_smoke:
+    file: "local_mcp/agents/analysis_smoke_test_OPTIMIZED.py"
+    timeout: 30
+    priority: high
+
+  artifact_analyzer:
+    file: "local_mcp/agents/comprehensive_artifact_analyzer_OPTIMIZED.py"
+    timeout: 300
+    priority: medium
+
+  recursive_framework:
+    file: "local_mcp/agents/COMPREHENSIVE_RECURSIVE_CRYO_PROCESS_FRAMEWORK_OPTIMIZED.py"
+    timeout: 300
+    priority: medium
+
+  documentation_framework:
+    file: "local_mcp/agents/CRYO_LINAC_COMPREHENSIVE_DOCUMENTATION_FRAMEWORK_ULTRA_OPTIMIZED.py"
+    timeout: 180
+    priority: low
+
+  # DOW Integration Agents
+  dow_metadata_injector:
+    file: "DMAIC_V3/local_mcp/agents/dow_metadata_injector.py"
+    timeout: 120
+    priority: critical
+    description: "Injects DOW metadata into JSON outputs"
+
+  dow_recursive_hooks_injector:
+    file: "DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py"
+    timeout: 180
+    priority: critical
+    description: "Injects recursive hooks into JSON outputs"
+
+  dow_convergence_calculator:
+    file: "DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py"
+    timeout: 120
+    priority: high
+    description: "Calculates convergence metrics for iterations"
+
+  dow_knowledge_extractor:
+    file: "DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py"
+    timeout: 180
+    priority: high
+    description: "Extracts knowledge patterns from outputs"
+
+  recursive_self_ranking:
+    file: "DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py"
+    timeout: 300
+    priority: high
+    description: "Performs recursive self-ranking with DOW integration"
+
+pipelines:
+  run_pipeline:
+    description: "Default pipeline for all agents"
+    stages:
+      - name: "validation"
+        agents:
+          - quick_smoke
+        parallel: false
+        critical: true
+
+      - name: "analysis"
+        agents:
+          - cryo_optimizer
+          - artifact_analyzer
+        parallel: true
+        critical: false
+
+      - name: "processing"
+        agents:
+          - document_consumer
+          - recursive_framework
+        parallel: true
+        critical: false
+
+      - name: "documentation"
+        agents:
+          - documentation_framework
+        parallel: false
+        critical: false
+
+  quick_test:
+    description: "Quick test pipeline"
+    stages:
+      - name: "smoke_test"
+        agents:
+          - quick_smoke
+        parallel: false
+        critical: true
+
+  test_pipeline:
+    description: "Test pipeline with stub agents"
+    stages:
+      - name: "validation"
+        agents:
+          - quick_smoke
+        parallel: false
+        critical: true
+
+      - name: "analysis"
+        agents:
+          - quick_smoke
+        parallel: true
+        critical: false
+
+  full_optimization:
+    description: "Full optimization cycle"
+    stages:
+      - name: "validation"
+        agents:
+          - smoke_tester
+        parallel: false
+        critical: true
+
+      - name: "optimization"
+        agents:
+          - cryo_optimizer
+          - document_consumer
+          - artifact_analyzer
+          - recursive_framework
+        parallel: true
+        critical: false
+
+      - name: "documentation"
+        agents:
+          - documentation_framework
+        parallel: false
+        critical: false
+
+  # DOW Integration Pipeline
+  dow_integration:
+    description: "DOW Integration Pipeline - Injects DOW structure into all outputs"
+    stages:
+      - name: "metadata_injection"
+        agents:
+          - dow_metadata_injector
+        parallel: false
+        critical: true
+        description: "Inject DOW metadata into JSON files"
+
+      - name: "recursive_hooks_injection"
+        agents:
+          - dow_recursive_hooks_injector
+        parallel: false
+        critical: true
+        description: "Inject recursive hooks into JSON files"
+
+      - name: "convergence_calculation"
+        agents:
+          - dow_convergence_calculator
+        parallel: false
+        critical: true
+        description: "Calculate convergence metrics"
+
+      - name: "knowledge_extraction"
+        agents:
+          - dow_knowledge_extractor
+        parallel: false
+        critical: true
+        description: "Extract knowledge patterns"
+
+      - name: "recursive_ranking"
+        agents:
+          - recursive_self_ranking
+        parallel: false
+        critical: true
+        description: "Perform recursive self-ranking"
+
+      - name: "validation"
+        agents:
+          - smoke_tester
+        parallel: false
+        critical: true
+        description: "Validate DOW integration"
+
+  # Full DMAIC Iteration with DOW
+  dmaic_iteration_with_dow:
+    description: "Full DMAIC iteration with DOW integration"
+    stages:
+      - name: "pre_validation"
+        agents:
+          - quick_smoke
+        parallel: false
+        critical: true
+
+      - name: "dmaic_phases"
+        agents:
+          - cryo_optimizer
+          - artifact_analyzer
+          - document_consumer
+        parallel: false
+        critical: true
+        description: "Execute DMAIC phases"
+
+      - name: "dow_integration"
+        agents:
+          - dow_metadata_injector
+          - dow_recursive_hooks_injector
+          - dow_convergence_calculator
+          - dow_knowledge_extractor
+        parallel: false
+        critical: true
+        description: "Apply DOW structure"
+
+      - name: "ranking_and_validation"
+        agents:
+          - recursive_self_ranking
+          - smoke_tester
+        parallel: false
+        critical: true
+        description: "Rank and validate outputs"
+
+      - name: "documentation"
+        agents:
+          - documentation_framework
+        parallel: false
+        critical: false
+        description: "Generate documentation"

@@ -1,0 +1,70 @@
+=== BEGIN HANDOVER COPY_GLOBS (DMAIC_V3_CODE_TWIN) ===
+# Root reference files
+./CI_CD_COMPLETION_REPORT.md
+./manifest.json
+./ranking.json
+./ranking.yaml
+./index.json
+
+# Handover package (docs, scripts, templates)
+./handover/**
+# (Includes: CANONICAL_HANDOVER.md, COLD_START_TROUBLESHOOTING.md,
+# COPY_GLOBS.txt, GLOOB.yaml, HANDOVER_CHAT_READY.md,
+# HANDOVER_MANIFEST.yaml, HANDOVER_MESSAGE_TEMPLATE.md,
+# MARKDOWN_DRIVEN_EXECUTION.md, PR_BODY.md, READY_CHECK.sh,
+# ROUNDTRIP_GUIDE.md, RUN_STATS.md, TOOLS_AND_EDITORS.md)
+
+# Code twin documentation (new)
+./DMAIC_V3_DOCS/ADR_CODE_001_CANONICAL_RECURSIVE_CHECK.md
+./DMAIC_V3_DOCS/OCE_CODE_001_DIGITAL_TWIN_OPERATION.md
+./DMAIC_V3_DOCS/code_RTM.yaml
+./DMAIC_V3_DOCS/GLOBAL_STRUCTURE_CODE_TWIN.md
+
+# Optionally include the whole DMAIC_V3_DOCS for completeness
+./DMAIC_V3_DOCS/**
+
+# DMAIC_V3 core code twin (agents, convergence, core, workflows)
+./DMAIC_V3/agents/**
+./DMAIC_V3/convergence/**
+./DMAIC_V3/core/**
+./DMAIC_V3/.github/**
+./DMAIC_V3/requirements.txt
+./DMAIC_V3/README.md
+./DMAIC_V3/VERSION
+./DMAIC_V3/VERSION_HISTORY.md
+./DMAIC_V3/*.md
+./DMAIC_V3/*.json
+./DMAIC_V3/*.log
+
+# Canonical + test + production outputs (SUT + reference)
+./DMAIC_CANONICAL_DEEP_OUTPUT/**
+./DMAIC_CANONICAL_OUTPUT/**
+./DMAIC_CANONICAL_TEST/**
+./DMAIC_PRODUCTION_FULL/**
+./DMAIC_PRODUCTION_OUTPUT/**
+./DMAIC_TEST_OUTPUT/**
+./DMAIC_TEST_SAMPLE/**
+./DMAIC_SAMPLE_TEST/**
+./DMAIC_V2_OUTPUT/**
+./DMAIC_V2.3_ITERATION_1/**
+./DMAIC_V2.3_ITERATION_2/**
+./DMAIC_V2.3_ITERATION_3/**
+./DMAIC_V3_OUTPUT/**
+./DMAIC_V23_OUTPUT/**
+
+# Metrics and recent analysis (last-7-days SUT context)
+./dmaic_metrics/**
+./document_outputs_v2.3/**
+./DMAIC_V3_OUTPUT_ARCHIVE_BROKEN_20251114_141608/**
+./DMAIC_V3_OUTPUT_ARCHIVE_BROKEN_20251114_142201/**
+
+# Docs + versioned docs + DOW integration
+./docs/**
+./docs_versioned/**
+./DOW/**
+
+# Any additional project docs you want in the handover bundle
+./document_outputs_v2.3/**
+./Documents/**
+
+=== END HANDOVER COPY_GLOBS (DMAIC_V3_CODE_TWIN) ===

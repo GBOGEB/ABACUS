@@ -1,0 +1,290 @@
+name: Main CD Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  PYTHON_VERSION: '3.8'
+
+jobs:
+  validate-tag:
+    name: Validate Release Tag
+    runs-on: ubuntu-latest
+    
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      is_prerelease: ${{ steps.check_prerelease.outputs.is_prerelease }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get version from tag
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+        
+    - name: Check if pre-release
+      id: check_prerelease
+      run: |
+        VERSION=${{ steps.get_version.outputs.version }}
+        if [[ "$VERSION" =~ (alpha|beta|rc) ]]; then
+          echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          echo "Pre-release detected"
+        else
+          echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          echo "Stable release"
+        fi
+
+  build-release:
+    name: Build Release Package
+    runs-on: ubuntu-latest
+    needs: validate-tag
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel setuptools twine
+        pip install -r requirements.txt
+        
+    - name: Update version in files
+      run: |
+        VERSION=${{ needs.validate-tag.outputs.version }}
+        echo "$VERSION" > VERSION
+        sed -i "s/__version__ = .*/__version__ = \"$VERSION\"/" config.py
+        
+    - name: Build package
+      run: |
+        python -m build
+        
+    - name: Check package
+      run: |
+        twine check dist/*
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-packages
+        path: dist/
+        retention-days: 30
+
+  generate-changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    needs: validate-tag
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Generate changelog
+      id: changelog
+      run: |
+        VERSION=${{ needs.validate-tag.outputs.version }}
+        PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
+        if [ -z "$PREV_TAG" ]; then
+          echo "First release"
+          CHANGELOG="Initial release of DMAIC V3.0"
+        else
+          echo "Generating changelog from $PREV_TAG to v$VERSION"
+          CHANGELOG=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+        fi
+        
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Upload changelog
+      uses: actions/upload-artifact@v3
+      with:
+        name: changelog
+        path: CHANGELOG.md
+        retention-days: 30
+
+  run-tests:
+    name: Run Full Test Suite
+    runs-on: ubuntu-latest
+    needs: validate-tag
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+        
+    - name: Run all tests
+      run: |
+        python test_dmaic_v3_foundation.py
+        
+    - name: Run Phase 0
+      run: |
+        python -m phases.phase0_setup
+
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-tag, build-release, generate-changelog, run-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: release-packages
+        path: dist/
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Release v${{ needs.validate-tag.outputs.version }}
+        body: |
+          # DMAIC V3.0 - Release v${{ needs.validate-tag.outputs.version }}
+          
+          ## 🎉 What's New
+          
+          ${{ needs.generate-changelog.outputs.changelog }}
+          
+          ## 📦 Installation
+          
+          ```bash
+          pip install dmaic-v3==${{ needs.validate-tag.outputs.version }}
+          ```
+          
+          ## 📚 Documentation
+          
+          See [README.md](README.md) for full documentation.
+          
+          ## 🔄 Upgrade Guide
+          
+          ```bash
+          pip install --upgrade dmaic-v3
+          ```
+          
+          ---
+          
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }}
+        files: |
+          dist/*
+          README.md
+          CHANGELOG.md
+          LICENSE
+        draft: false
+        prerelease: ${{ needs.validate-tag.outputs.is_prerelease == 'true' }}
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [validate-tag, build-release, run-tests]
+    if: needs.validate-tag.outputs.is_prerelease == 'false'
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: release-packages
+        path: dist/
+        
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip_existing: true
+      continue-on-error: true
+
+  notify-release:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    needs: [validate-tag, create-github-release]
+    if: always()
+    
+    steps:
+    - name: Send Slack notification
+      if: env.SLACK_WEBHOOK != ''
+      run: |
+        curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "text": "🚀 DMAIC V3.0 Release v${{ needs.validate-tag.outputs.version }} published!",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*DMAIC V3.0 Release*\n\nVersion: `v${{ needs.validate-tag.outputs.version }}`\nStatus: ${{ job.status }}\n\n<https://github.com/${{ github.repository }}/releases/tag/v${{ needs.validate-tag.outputs.version }}|View Release>"
+                }
+              }
+            ]
+          }'
+      continue-on-error: true
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  update-documentation:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    needs: [validate-tag, create-github-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Update version badge
+      run: |
+        VERSION=${{ needs.validate-tag.outputs.version }}
+        echo "Latest version: v$VERSION" > VERSION_BADGE.txt
+        
+    - name: Trigger documentation build
+      run: |
+        echo "Documentation update triggered for v${{ needs.validate-tag.outputs.version }}"
+      continue-on-error: true
+
+  cd-status-check:
+    name: CD Status Check
+    runs-on: ubuntu-latest
+    needs: [validate-tag, build-release, run-tests, create-github-release]
+    if: always()
+    
+    steps:
+    - name: Check CD status
+      run: |
+        if [ "${{ needs.build-release.result }}" != "success" ] || \
+           [ "${{ needs.run-tests.result }}" != "success" ] || \
+           [ "${{ needs.create-github-release.result }}" != "success" ]; then
+          echo "❌ CD pipeline failed"
+          exit 1
+        else
+          echo "✅ CD pipeline completed successfully"
+          echo "🎉 Release v${{ needs.validate-tag.outputs.version }} published!"
+        fi

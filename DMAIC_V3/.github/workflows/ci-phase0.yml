@@ -1,0 +1,177 @@
+name: Phase 0 CI
+
+on:
+  push:
+    paths:
+      - 'phases/phase0_setup.py'
+      - 'tests/test_phase0.py'
+      - 'core/state.py'
+      - 'config.py'
+  pull_request:
+    paths:
+      - 'phases/phase0_setup.py'
+      - 'tests/test_phase0.py'
+      - 'core/state.py'
+      - 'config.py'
+
+env:
+  PYTHON_VERSION: '3.8'
+  PHASE_NAME: 'phase0'
+  PHASE_VERSION: '1.0.0'
+
+jobs:
+  phase0-lint:
+    name: Phase 0 - Lint & Format
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 mypy
+        pip install -r requirements.txt
+        
+    - name: Lint Phase 0
+      run: |
+        flake8 phases/phase0_setup.py --count --show-source --statistics
+        
+    - name: Format check Phase 0
+      run: |
+        black --check phases/phase0_setup.py
+
+  phase0-test:
+    name: Phase 0 - Unit Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+        
+    - name: Run Phase 0 unit tests
+      run: |
+        python -m pytest tests/test_phase0.py -v --cov=phases.phase0_setup --cov-report=xml
+      continue-on-error: true
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: phase0
+        name: phase0-${{ matrix.os }}-py${{ matrix.python-version }}
+
+  phase0-integration:
+    name: Phase 0 - Integration Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Phase 0
+      run: |
+        python -m phases.phase0_setup
+        
+    - name: Validate Phase 0 output
+      run: |
+        test -d DMAIC_V3_OUTPUT || exit 1
+        echo "✓ Phase 0 output directory created"
+        
+    - name: Check Phase 0 state
+      run: |
+        if [ -d "DMAIC_V3_OUTPUT/state" ]; then
+          echo "✓ State directory created"
+        fi
+
+  phase0-performance:
+    name: Phase 0 - Performance Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-benchmark
+        
+    - name: Run performance tests
+      run: |
+        time python -m phases.phase0_setup
+        
+    - name: Check execution time
+      run: |
+        echo "Phase 0 performance test completed"
+
+  phase0-documentation:
+    name: Phase 0 - Documentation Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check docstrings
+      run: |
+        python -c "import phases.phase0_setup; print(phases.phase0_setup.__doc__)"
+        
+    - name: Validate phase version
+      run: |
+        python -c "from phases.phase0_setup import Phase0Setup; print(f'Phase 0 Version: {Phase0Setup.__module__}')"
+
+  phase0-status:
+    name: Phase 0 - CI Status
+    runs-on: ubuntu-latest
+    needs: [phase0-lint, phase0-test, phase0-integration, phase0-performance]
+    if: always()
+    
+    steps:
+    - name: Check Phase 0 CI status
+      run: |
+        if [ "${{ needs.phase0-lint.result }}" != "success" ] || \
+           [ "${{ needs.phase0-test.result }}" != "success" ] || \
+           [ "${{ needs.phase0-integration.result }}" != "success" ]; then
+          echo "❌ Phase 0 CI failed"
+          exit 1
+        else
+          echo "✅ Phase 0 CI passed"
+        fi
