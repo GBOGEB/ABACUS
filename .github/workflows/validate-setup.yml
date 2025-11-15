@@ -1,0 +1,54 @@
+name: Validate ABACUS Setup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate GitHub token permissions for ABACUS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "🔍 Validating GitHub token permissions for ABACUS..."
+
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ GITHUB_TOKEN environment variable is not set"
+            exit 1
+          fi
+
+          echo
+          echo "1️⃣  Testing repository access..."
+          REPO_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$REPO")
+          if [ "$REPO_RESPONSE" = "200" ]; then
+            echo "✅ Repository access successful"
+          else
+            echo "❌ Repository access failed (HTTP $REPO_RESPONSE)"
+            echo "   Ensure the workflow has the correct permissions and the token is valid."
+            exit 1
+          fi
+
+          echo
+          echo "2️⃣  Confirm /user endpoint behaviour (informational)..."
+          # The built-in GITHUB_TOKEN represents the Actions app installation and typically
+          # cannot access /user (returns 403). This is expected; do not treat as fatal.
+          USER_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/user")
+          if [ "$USER_RESPONSE" = "200" ]; then
+            echo "⚠️ /user endpoint returned 200 (unexpected for the built-in GITHUB_TOKEN)."
+            echo "   If you need a user-scoped token, create a PAT with minimal scopes and store it in secrets."
+          else
+            echo "ℹ️ /user endpoint is not accessible with the built-in GITHUB_TOKEN (HTTP $USER_RESPONSE) — this is expected."
+          fi
+
+          echo
+          echo "✅ Validation complete."
