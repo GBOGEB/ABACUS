@@ -1,0 +1,261 @@
+# Ranking Configuration for DOW Integration
+# Version: 3.3.0
+# Purpose: Configure recursive self-ranking with DOW integration
+
+ranking_version: "3.3.0"
+enabled: true
+
+# Ranking Criteria and Weights
+criteria:
+  size:
+    weight: 0.3
+    description: "File size importance"
+    thresholds:
+      large: 10485760      # 10 MB
+      medium: 1048576      # 1 MB
+      small: 102400        # 100 KB
+      tiny: 10240          # 10 KB
+      
+  importance:
+    weight: 0.3
+    description: "File importance in pipeline"
+    levels:
+      critical: 30         # Core pipeline files
+      high: 20            # Important supporting files
+      medium: 15          # Standard files
+      low: 10             # Optional files
+      minimal: 5          # Auxiliary files
+      
+  dow_integration:
+    weight: 0.2
+    description: "DOW structure compliance"
+    levels:
+      full: 20            # All DOW components present
+      partial: 10         # Some DOW components present
+      minimal: 5          # Basic structure only
+      none: 0             # No DOW structure
+      
+  quality:
+    weight: 0.2
+    description: "Output quality assessment"
+    levels:
+      excellent: 20       # >90% quality score
+      good: 15           # 70-90% quality score
+      moderate: 10       # 50-70% quality score
+      poor: 5            # 30-50% quality score
+      broken: 0          # <30% quality score
+
+# Scoring Configuration
+scoring:
+  max_score: 100
+  pass_threshold: 50
+  convergence_threshold: 0.95
+  
+  # Quality Score Components
+  quality_components:
+    metadata_present: 0.2
+    recursive_hooks_present: 0.2
+    convergence_metrics_present: 0.2
+    knowledge_gain_present: 0.2
+    data_completeness: 0.2
+
+# Category Definitions
+categories:
+  critical:
+    min_score: 90
+    max_count: 10
+    description: "Mission-critical files"
+    
+  high:
+    min_score: 70
+    max_count: 30
+    description: "High-priority files"
+    
+  medium:
+    min_score: 50
+    max_count: 50
+    description: "Standard priority files"
+    
+  low:
+    min_score: 0
+    max_count: 100
+    description: "Low-priority files"
+
+# Output Configuration
+output:
+  format: "json"
+  destination: "ranking.json"
+  include_details: true
+  include_metrics: true
+  include_recommendations: true
+  
+  # Output Structure
+  structure:
+    - ranking_version
+    - generated
+    - total_artifacts
+    - ranked_artifacts
+    - top_30
+    - bottom_30
+    - categories
+    - metrics
+    - convergence_status
+
+# Execution Configuration
+execution:
+  runner: "DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py"
+  schedule: "after_each_iteration"
+  parallel: false
+  timeout: 300  # 5 minutes
+  retry_on_failure: true
+  max_retries: 3
+
+# Target Directories
+targets:
+  primary: "DMAIC_CANONICAL_OUTPUT"
+  secondary:
+    - "DMAIC_V3_OUTPUT/iteration_*"
+    - "DMAIC_V3_OUTPUT/sprints/iteration_*"
+  
+  # File Patterns to Include
+  include_patterns:
+    - "*.json"
+    - "phase*.json"
+    - "*_metrics.json"
+    - "*_analysis.json"
+  
+  # File Patterns to Exclude
+  exclude_patterns:
+    - "*_backup.json"
+    - "*_temp.json"
+    - "*_test.json"
+
+# DOW Integration Checks
+dow_checks:
+  metadata:
+    required_fields:
+      - version
+      - timestamp
+      - iteration
+      - phase
+      - generator
+      - dow_compliant
+    
+  recursive_hooks:
+    required_fields:
+      - consumed_from
+      - feeds_into
+      - iteration_lineage
+      - version_history
+    
+  convergence_metrics:
+    required_fields:
+      - quality_score
+      - completeness
+      - improvement_from_previous
+      - convergence_status
+      - calculated_at
+    
+  knowledge_gain:
+    required_fields:
+      - patterns_discovered
+      - insights_generated
+      - learnings_captured
+      - improvements_suggested
+      - extracted_at
+
+# Convergence Detection
+convergence:
+  enabled: true
+  
+  # Convergence Criteria
+  criteria:
+    min_quality_score: 0.95
+    min_completeness: 0.95
+    max_improvement_delta: 0.01
+    consecutive_stable_iterations: 3
+  
+  # Convergence Actions
+  actions:
+    on_converged:
+      - log_convergence
+      - generate_report
+      - notify_completion
+    
+    on_degrading:
+      - log_warning
+      - generate_alert
+      - suggest_rollback
+
+# Reporting Configuration
+reporting:
+  enabled: true
+  
+  # Report Types
+  types:
+    - summary
+    - detailed
+    - convergence
+    - recommendations
+  
+  # Report Destinations
+  destinations:
+    - file: "ranking_report.md"
+      format: "markdown"
+    - file: "ranking_report.json"
+      format: "json"
+    - file: "ranking_report.html"
+      format: "html"
+
+# Logging Configuration
+logging:
+  enabled: true
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Log Destinations
+  destinations:
+    - type: "file"
+      path: "logs/ranking.log"
+      max_size: 10485760  # 10 MB
+      backup_count: 5
+    
+    - type: "console"
+      level: "WARNING"
+
+# Notification Configuration
+notifications:
+  enabled: false
+  
+  # Notification Channels
+  channels:
+    email:
+      enabled: false
+      recipients: []
+    
+    slack:
+      enabled: false
+      webhook_url: ""
+    
+    teams:
+      enabled: false
+      webhook_url: ""
+
+# Advanced Configuration
+advanced:
+  # Parallel Processing
+  parallel_processing:
+    enabled: false
+    max_workers: 4
+  
+  # Caching
+  caching:
+    enabled: true
+    cache_dir: ".cache/ranking"
+    ttl: 3600  # 1 hour
+  
+  # Performance
+  performance:
+    batch_size: 100
+    memory_limit: 1073741824  # 1 GB
+    timeout_per_file: 30  # 30 seconds
