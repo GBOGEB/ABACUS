@@ -1,0 +1,305 @@
+# COPY GLOBS - GITHUB ENTERPRISE FULL REPOSITORY
+# Version: 0.4.0 ENTERPRISE
+# Date: 2025-01-15
+# Target: GitHub Enterprise or GitHub.com
+# Organization: GBOGEB
+
+# ============================================================================
+# CORE PYTHON CODE (ERROR-FREE)
+# ============================================================================
+
+# Main DMAIC_V3 code
+DMAIC_V3/**/*.py
+DMAIC_V3/**/__init__.py
+DMAIC_V3/config.py
+DMAIC_V3/VERSION
+DMAIC_V3/README.md
+DMAIC_V3/requirements.txt
+
+# Agents
+DMAIC_V3/agents/*.py
+DMAIC_V3/agents/__init__.py
+
+# Convergence engines
+DMAIC_V3/convergence/*.py
+DMAIC_V3/convergence/__init__.py
+
+# Core engines
+DMAIC_V3/core/*.py
+DMAIC_V3/core/__init__.py
+
+# Phases
+DMAIC_V3/phases/*.py
+DMAIC_V3/phases/__init__.py
+
+# Integrations
+DMAIC_V3/integrations/*.py
+DMAIC_V3/integrations/__init__.py
+
+# Generators
+DMAIC_V3/generators/*.py
+DMAIC_V3/generators/__init__.py
+
+# ============================================================================
+# TEST SUITE (pytest)
+# ============================================================================
+
+# All test files
+DMAIC_V3/tests/*.py
+DMAIC_V3/tests/__init__.py
+DMAIC_V3/tests/conftest.py
+
+# Test configuration
+pytest.ini
+pyproject.toml
+.pytest_cache/**/*
+
+# Test data (if exists)
+DMAIC_V3/tests/data/**/*
+DMAIC_V3/tests/fixtures/**/*
+
+# ============================================================================
+# CI/CD PIPELINES
+# ============================================================================
+
+# GitHub Actions workflows
+.github/workflows/*.yml
+.github/workflows/*.yaml
+
+# GitHub configuration
+.github/CODEOWNERS
+.github/PULL_REQUEST_TEMPLATE.md
+.github/ISSUE_TEMPLATE/*.md
+.github/dependabot.yml
+
+# ============================================================================
+# VIRTUAL ENVIRONMENT ESSENTIALS
+# ============================================================================
+
+# Virtual environment configuration
+.venv/pyvenv.cfg
+
+# Frozen requirements (generated from pip freeze)
+requirements-frozen.txt
+
+# Site-packages metadata (optional)
+.venv/Lib/site-packages/*.dist-info/METADATA
+.venv/Lib/site-packages/*.dist-info/RECORD
+
+# ============================================================================
+# DEPENDENCIES & BUILD
+# ============================================================================
+
+# Python dependencies
+requirements.txt
+requirements-dev.txt
+requirements-frozen.txt
+
+# Build configuration
+pyproject.toml
+setup.py
+setup.cfg
+MANIFEST.in
+
+# Package metadata
+PKG-INFO
+*.egg-info/**/*
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+# Code twin documentation
+DMAIC_V3_DOCS/**/*.md
+DMAIC_V3_DOCS/**/*.yaml
+DMAIC_V3_DOCS/**/*.yml
+
+# General documentation
+docs/**/*.md
+docs/**/*.rst
+docs/**/*.yaml
+
+# Versioned documentation
+docs_versioned/**/*.md
+docs_versioned/**/*.yaml
+
+# Handover documentation
+handover/**/*.md
+handover/**/*.yaml
+handover/**/*.txt
+handover/**/*.sh
+
+# README files
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+LICENSE
+AUTHORS.md
+
+# ============================================================================
+# DOW ORCHESTRATION (Level 6)
+# ============================================================================
+
+# DOW files
+DOW/**/*.yaml
+DOW/**/*.yml
+DOW/**/*.json
+DOW/**/*.md
+
+# Actions and sprints
+DOW/actions.yaml
+DOW/sprints.yaml
+
+# ============================================================================
+# REFERENCE OUTPUT
+# ============================================================================
+
+# Canonical output
+DMAIC_CANONICAL_OUTPUT/**/*.yaml
+DMAIC_CANONICAL_OUTPUT/**/*.json
+DMAIC_CANONICAL_OUTPUT/**/*.md
+
+# ============================================================================
+# CONFIGURATION FILES
+# ============================================================================
+
+# GLOOB descriptors
+.GLOOB.yaml
+.GLOOB_CODE_EDITOR.yaml
+
+# Project manifest
+manifest.json
+ranking.yaml
+
+# Git configuration
+.gitignore
+.gitattributes
+.gitmodules
+
+# Editor configuration
+.editorconfig
+.vscode/**/*.json
+.idea/**/*.xml
+
+# Linter configuration
+.ruff.toml
+.flake8
+.pylintrc
+.mypy.ini
+
+# Formatter configuration
+.black
+.isort.cfg
+
+# Pre-commit hooks
+.pre-commit-config.yaml
+
+# ============================================================================
+# SCRIPTS & UTILITIES
+# ============================================================================
+
+# Shell scripts
+scripts/**/*.sh
+scripts/**/*.bash
+
+# Python scripts
+scripts/**/*.py
+
+# Batch scripts (Windows)
+scripts/**/*.bat
+scripts/**/*.ps1
+
+# ============================================================================
+# DATA & ASSETS (SELECTIVE)
+# ============================================================================
+
+# Configuration data
+config/**/*.yaml
+config/**/*.json
+
+# Templates
+templates/**/*.yaml
+templates/**/*.json
+templates/**/*.md
+
+# ============================================================================
+# EXCLUDE PATTERNS (DO NOT COPY)
+# ============================================================================
+
+# Exclude large binary files
+!**/*.exe
+!**/*.dll
+!**/*.so
+!**/*.dylib
+!**/*.pdf
+!**/*.png
+!**/*.jpg
+!**/*.jpeg
+!**/*.gif
+!**/*.svg
+!**/*.ico
+
+# Exclude compiled Python
+!**/__pycache__/**
+!**/*.pyc
+!**/*.pyo
+!**/*.pyd
+
+# Exclude virtual environment (except essentials)
+!.venv/Lib/site-packages/**/*.py
+!.venv/Scripts/**/*
+!.venv/bin/**/*
+
+# Exclude cache directories
+!**/.pytest_cache/**
+!**/.mypy_cache/**
+!**/.ruff_cache/**
+!**/.coverage
+!**/htmlcov/**
+
+# Exclude temporary files
+!**/*.tmp
+!**/*.temp
+!**/*.log
+!**/*.bak
+!**/*.swp
+!**/*.swo
+
+# Exclude OS files
+!**/.DS_Store
+!**/Thumbs.db
+!**/desktop.ini
+
+# Exclude IDE files (except configuration)
+!**/.vscode/**/*.log
+!**/.idea/**/workspace.xml
+!**/.idea/**/tasks.xml
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# This file defines patterns for creating a comprehensive GitHub Enterprise
+# handover bundle that includes:
+# 
+# 1. All Python code (error-free)
+# 2. Complete test suite (pytest)
+# 3. CI/CD pipelines (GitHub Actions)
+# 4. Virtual environment essentials
+# 5. Documentation (code twin, handover, general)
+# 6. DOW orchestration (Level 6)
+# 7. Configuration files
+# 8. Scripts and utilities
+#
+# The bundle excludes:
+# - Large binary files
+# - Compiled Python files
+# - Full virtual environment (only essentials)
+# - Cache directories
+# - Temporary files
+# - OS-specific files
+#
+# Total estimated size: ~50-100 MB (without full .venv)
+# With full .venv: ~500 MB - 1 GB
+#
+# Recommendation: Use requirements-frozen.txt to recreate .venv on target system

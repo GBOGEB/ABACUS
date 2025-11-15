@@ -1,0 +1,36 @@
+bundle:
+  name: "DMAIC_V3_3_HANDOVER_GLOOB_MANIFEST"
+  include:
+    - DMAIC_V3_CANONICAL_HANDOVER_BOOK.md
+    - handover/HANDOVER_CHAT_READY.md
+    - handover/HANDOVER_MANIFEST.yaml
+    - .github/workflows/cd.yml
+    - knowledge_packages/**/*.json
+    - knowledge_packages/**/*.yaml
+    - DMAIC_V3/dmaic_v3_engine.py
+    - DMAIC_V3/phases/phase6_knowledge.py
+    - scripts/initialize_knowledge_packages.py
+    - scripts/check_convergence.py
+    - scripts/markdown_exec_runner.py
+    - handover/pipelines/SAMPLE_MARKDOWN_PIPELINE.md
+    - DMAIC_V3_OUTPUT/reports/**/*.json
+    - handover/CANONICAL_HANDOVER.md
+    - DMAIC_V3_3_HANDOVER_COMPLETE.md
+    - handover/READY_CHECK.sh
+    - scripts/windows_run_all.ps1
+    - scripts/archive_handover.py
+    - scripts/create_pr.sh
+    - handover/COLD_START_TROUBLESHOOTING.md
+    - scripts/cold_start_doctor.py
+    - scripts/self_smoke.py
+    - scripts/dmaic_metrics_dump.py
+  exclude:
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - "node_modules/**"
+    - ".git/**"
+  labels:
+    knowledge: ["knowledge_packages/**/*.json", "knowledge_packages/**/*.yaml"]
+    reports: ["DMAIC_V3_OUTPUT/reports/**/*.json"]
+    engine: ["DMAIC_V3/**"]
+    docs: ["**/*.md", "handover/*.pdf"]

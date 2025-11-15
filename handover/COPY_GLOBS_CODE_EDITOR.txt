@@ -1,0 +1,65 @@
+=== BEGIN CODE_EDITOR_GLOBS (DMAIC_V3_DEPLOYED_CODE) ===
+# Code Editor Handover - Deployed Code Only
+# For GitHub roundtrip, clone, merge, post-integration workflows
+# Error-free, production-ready code structure
+
+# Root configuration and manifests
+./.GLOOB.yaml
+./manifest.json
+./ranking.yaml
+
+# Core handover documentation (minimal)
+./handover/CANONICAL_HANDOVER.md
+./handover/COPY_GLOBS_CODE_EDITOR.txt
+./handover/HANDOVER_MANIFEST.yaml
+./handover/MARKDOWN_DRIVEN_EXECUTION.md
+./handover/ROUNDTRIP_GUIDE.md
+
+# Code twin documentation (ADR, OCE, RTM, Global Structure)
+./DMAIC_V3_DOCS/GLOBAL_STRUCTURE_CODE_TWIN.md
+./DMAIC_V3_DOCS/global_structure.yaml
+./DMAIC_V3_DOCS/ADR_CODE_001_CANONICAL_RECURSIVE_CHECK.md
+./DMAIC_V3_DOCS/OCE_CODE_001_DIGITAL_TWIN_OPERATION.md
+./DMAIC_V3_DOCS/code_RTM.yaml
+./DMAIC_V3_DOCS/*.md
+
+# DMAIC_V3 deployed code (agents, convergence, core)
+./DMAIC_V3/agents/*.py
+./DMAIC_V3/convergence/*.py
+./DMAIC_V3/core/*.py
+./DMAIC_V3/*.py
+
+# DMAIC_V3 configuration and metadata
+./DMAIC_V3/requirements.txt
+./DMAIC_V3/README.md
+./DMAIC_V3/VERSION
+./DMAIC_V3/VERSION_HISTORY.md
+./DMAIC_V3/*.json
+./DMAIC_V3/*.yaml
+./DMAIC_V3/*.md
+
+# GitHub workflows (CI/CD)
+./DMAIC_V3/.github/workflows/*.yml
+./DMAIC_V3/.github/workflows/*.yaml
+
+# DOW orchestration (Level 6 - Global)
+./DOW/actions.yaml
+./DOW/sprints.yaml
+./DOW/*.yaml
+./DOW/*.md
+
+# Documentation structure (versioned)
+./docs/**/*.md
+./docs_versioned/**/*.md
+
+# Canonical reference output (single clean reference, not test archives)
+./DMAIC_CANONICAL_OUTPUT/**
+
+# Exclude test outputs, archives, and broken outputs
+# (These are NOT included in code editor handover)
+# ./DMAIC_TEST_*/**
+# ./DMAIC_V3_OUTPUT_ARCHIVE_BROKEN_*/**
+# ./DMAIC_V2*/**
+# ./dmaic_metrics/**
+
+=== END CODE_EDITOR_GLOBS (DMAIC_V3_DEPLOYED_CODE) ===
