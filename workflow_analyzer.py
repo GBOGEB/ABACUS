@@ -283,7 +283,7 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         pass
     
     token = os.environ.get('GITHUB_TOKEN')
