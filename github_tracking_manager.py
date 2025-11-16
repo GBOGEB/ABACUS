@@ -477,6 +477,7 @@ def main():
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
         except:
+            # Ignore errors: unable to determine repo from git remote
             pass
     
     if not repo_name:
