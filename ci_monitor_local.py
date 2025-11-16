@@ -12,6 +12,7 @@ import json
 import argparse
 import subprocess
 from datetime import datetime
+from typing import Dict, Optional
 
 try:
     from github import Github
