@@ -1,4 +1,4 @@
-name: CI Monitor & Auto Issue Creator
+name: CI/CD Monitor, Issue Creator & Tracker
 
 on:
   workflow_run:
@@ -7,12 +7,14 @@ on:
       - completed
   pull_request:
     types: [opened, synchronize, reopened]
+  deployment_status:
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
   checks: read
+  deployments: read
 
 jobs:
   monitor-and-create-issues:
@@ -32,7 +34,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests PyGithub pytest pytest-json-report
+          pip install requests PyGithub pytest pytest-json-report PyYAML
 
       - name: Download test artifacts
         if: github.event.workflow_run
@@ -54,6 +56,22 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
         run: |
           python .github/scripts/create_issues_from_failures.py
+
+      - name: Update GitHub tracking state
+        if: github.event.pull_request.number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📊 Updating tracking state for PR #${{ github.event.pull_request.number }}"
+          
+          # Sync PR data
+          python github_tracking_manager.py --sync-pr ${{ github.event.pull_request.number }} || true
+          
+          # Sync CI runs
+          python github_tracking_manager.py --sync-ci ${{ github.event.pull_request.number }} || true
+          
+          # Analyze for missed opportunities
+          python github_tracking_manager.py --analyze ${{ github.event.pull_request.number }} || true
 
       - name: Comment on PR with test summary
         if: github.event.pull_request
@@ -88,6 +106,11 @@ jobs:
                 summary += '### ✅ All Tests Passing!\n\n';
                 summary += 'Great work! All CI/CD checks are passing.\n';
               }
+              
+              // Add tracking info
+              summary += '\n---\n';
+              summary += '📊 **Tracking:** This PR is being tracked in `github_tracking_state.json`\n';
+              
             } catch (error) {
               summary += '⚠️ Could not parse test results. Check the workflow logs for details.\n';
             }
@@ -99,9 +122,124 @@ jobs:
               body: summary
             });
 
-      - name: Upload test report
-        if: always()
+      - name: Upload tracking state
+        if: github.event.pull_request.number
         uses: actions/upload-artifact@v4
         with:
-          name: test-report
-          path: test_report.json
+          name: tracking-state-pr-${{ github.event.pull_request.number }}
+          path: |
+            github_tracking_state.json
+            github_tracking_state.yaml
+          retention-days: 90
+
+  monitor-deployments:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'deployment_status'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install PyGithub PyYAML
+
+      - name: Monitor deployment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📦 Monitoring deployment to ${{ github.event.deployment.environment }}"
+          
+          # Generate CD report
+          python cd_monitor.py --environment ${{ github.event.deployment.environment }} --report --save-report cd_report.json || true
+          
+          # Check deployment health
+          python cd_monitor.py --health-check ${{ github.event.deployment.id }} || true
+
+      - name: Upload CD report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cd-report-${{ github.event.deployment.id }}
+          path: cd_report.json
+          retention-days: 90
+
+  weekly-analysis:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install PyGithub PyYAML
+
+      - name: Run workflow analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Running weekly workflow analysis"
+          
+          # Analyze last 7 days
+          python workflow_analyzer.py --days 7 --save-report weekly_analysis.json
+          
+          # Review feedback queue
+          python github_tracking_manager.py --review-feedback
+
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-analysis-${{ github.run_number }}
+          path: |
+            weekly_analysis.json
+            workflow_analysis_report.json
+          retention-days: 90
+
+      - name: Create issue for missed opportunities
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const report = JSON.parse(fs.readFileSync('weekly_analysis.json', 'utf8'));
+              
+              if (report.missed_opportunities && report.missed_opportunities.length > 0) {
+                let body = '## 🎯 Weekly CI/CD Analysis - Missed Opportunities\n\n';
+                body += `**Analysis Period:** Last 7 days\n`;
+                body += `**Total Opportunities:** ${report.missed_opportunities.length}\n\n`;
+                
+                for (const opp of report.missed_opportunities) {
+                  body += `### ${opp.type}\n`;
+                  body += `**Severity:** ${opp.severity}\n`;
+                  body += `**Description:** ${opp.description}\n`;
+                  body += `**Recommendation:** ${opp.recommendation}\n\n`;
+                  body += `**Action Items:**\n`;
+                  for (const action of opp.action_items) {
+                    body += `- [ ] ${action}\n`;
+                  }
+                  body += '\n';
+                }
+                
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `[Weekly Analysis] CI/CD Improvement Opportunities - Week ${new Date().toISOString().slice(0, 10)}`,
+                  body: body,
+                  labels: ['ci-cd', 'improvement', 'automated']
+                });
+              }
+            } catch (error) {
+              console.log('No opportunities found or error parsing report');
+            }
