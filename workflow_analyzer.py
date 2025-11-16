@@ -10,7 +10,7 @@ import sys
 import json
 import subprocess
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List
 from collections import defaultdict
 
 try:
@@ -283,7 +283,7 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         pass
     
     token = os.environ.get('GITHUB_TOKEN')
@@ -331,6 +331,7 @@ def main():
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
         except:
+            # Ignore errors if unable to determine repo name from git
             pass
     
     if not repo_name:

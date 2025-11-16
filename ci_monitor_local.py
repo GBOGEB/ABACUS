@@ -8,7 +8,6 @@ Uses GitHub CLI authentication (gh auth) for secure access
 import os
 import sys
 import time
-import json
 import argparse
 import subprocess
 from datetime import datetime
@@ -364,6 +363,7 @@ def main():
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
         except:
+            # Ignore all exceptions here: unable to get git remote URL, fallback to requiring --repo or GITHUB_REPOSITORY.
             pass
 
     if not repo_name:
