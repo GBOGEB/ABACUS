@@ -1,36 +1,53 @@
 #!/usr/bin/env python3
 """
-Local CI/CD Monitor and Issue Creator
-
-This script runs locally to:
-1. Monitor PR CI/CD status
-2. Fetch test results
-3. Create GitHub issues for failures
-4. Provide real-time feedback
-
-Usage:
-    python ci_monitor_local.py --pr 15
-    python ci_monitor_local.py --pr 15 --watch
-    python ci_monitor_local.py --pr 15 --create-issues
+Local CI Monitor for GitHub Pull Requests
+Monitors CI/CD status and creates issues for failures
+Uses GitHub CLI authentication (gh auth) for secure access
 """
 
-import argparse
-import json
 import os
 import sys
 import time
+import json
+import argparse
+import subprocess
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional
 
 try:
-    from github import Github, GithubException
-    import requests
+    from github import Github
 except ImportError:
     print("Installing required packages...")
-    os.system("pip install PyGithub requests")
-    from github import Github, GithubException
-    import requests
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "PyGithub"])
+    from github import Github
+
+
+def get_github_token():
+    """
+    Get GitHub token using multiple methods (in order of preference):
+    1. GitHub CLI (gh auth token)
+    2. GITHUB_TOKEN environment variable
+    3. Command line argument
+    """
+    # Try GitHub CLI first (most secure)
+    try:
+        result = subprocess.run(
+            ['gh', 'auth', 'token'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        token = result.stdout.strip()
+        if token:
+            return token, "GitHub CLI"
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+
+    # Try environment variable
+    token = os.environ.get('GITHUB_TOKEN')
+    if token:
+        return token, "Environment Variable"
+
+    return None, None
 
 
 class LocalCIMonitor:
@@ -303,27 +320,37 @@ def main():
     )
     parser.add_argument(
         '--token',
-        help='GitHub token (or set GITHUB_TOKEN env var)'
+        help='GitHub token (optional - will use gh CLI if not provided)'
     )
     parser.add_argument(
         '--repo',
         help='Repository name (owner/repo) (or set GITHUB_REPOSITORY env var)'
     )
-    
+
     args = parser.parse_args()
-    
-    # Get token
-    token = args.token or os.environ.get('GITHUB_TOKEN')
+
+    # Get token using multiple methods
+    token = args.token
+    auth_method = "Command Line"
+
     if not token:
-        print("❌ GitHub token required. Set GITHUB_TOKEN env var or use --token")
+        token, auth_method = get_github_token()
+
+    if not token:
+        print("❌ GitHub authentication required!")
+        print("\nPlease use one of these methods:")
+        print("  1. GitHub CLI (recommended): gh auth login")
+        print("  2. Environment variable: export GITHUB_TOKEN=<token>")
+        print("  3. Command line: --token <token>")
         sys.exit(1)
-    
+
+    print(f"✅ Authenticated via: {auth_method}")
+
     # Get repo name
     repo_name = args.repo or os.environ.get('GITHUB_REPOSITORY')
     if not repo_name:
         # Try to get from git remote
         try:
-            import subprocess
             result = subprocess.run(
                 ['git', 'remote', 'get-url', 'origin'],
                 capture_output=True,
@@ -337,22 +364,25 @@ def main():
                     repo_name = parts
         except:
             pass
-    
+
     if not repo_name:
         print("❌ Repository name required. Set GITHUB_REPOSITORY env var or use --repo")
         sys.exit(1)
-    
+
+    print(f"📦 Repository: {repo_name}")
+    print(f"🔍 PR Number: #{args.pr}\n")
+
     # Create monitor
     monitor = LocalCIMonitor(token, repo_name, args.pr)
-    
+
     # Get status
     status = monitor.get_ci_status()
     monitor.display_status(status)
-    
+
     # Create issues if requested
     if args.create_issues:
         monitor.create_issues_from_failures(status)
-    
+
     # Watch if requested
     if args.watch:
         monitor.watch_ci(args.interval)
