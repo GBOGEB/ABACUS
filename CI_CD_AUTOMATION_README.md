@@ -68,53 +68,43 @@ Complete automation script:
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 1. One-Time Setup
 
 ```bash
-# Install required packages
-pip install PyGithub requests pytest pytest-json-report
+# Install and authenticate GitHub CLI
+gh auth login
 
-# Set GitHub token
-export GITHUB_TOKEN="your_github_token"  # Linux/Mac
-$env:GITHUB_TOKEN="your_github_token"    # Windows PowerShell
-
-# Optional: Install GitHub CLI
-# https://cli.github.com/
+# Verify authentication
+gh auth status
 ```
 
-### Basic Usage
+### 2. Basic Usage
 
-#### 1. Monitor CI Status
+#### Monitor CI Status
 ```bash
-# Python (cross-platform)
+# Check current status
 python ci_monitor_local.py --pr 15
 
-# PowerShell (Windows)
-.\ci_automation.ps1 status -PRNumber 15
-```
-
-#### 2. Watch CI Continuously
-```bash
-# Python
+# Watch continuously (updates every 30 seconds)
 python ci_monitor_local.py --pr 15 --watch
-
-# PowerShell
-.\ci_automation.ps1 monitor -PRNumber 15 -Watch
 ```
 
-#### 3. Create Issues for Failures
+#### Create Issues for Failures
 ```bash
-# Python
+# Automatically create GitHub issues for failing tests
 python ci_monitor_local.py --pr 15 --create-issues
-
-# PowerShell
-.\ci_automation.ps1 create-issues -PRNumber 15
 ```
 
-#### 4. Complete Roundtrip
+#### PowerShell Automation (Windows)
 ```powershell
-# PowerShell - Full automation
-.\ci_automation.ps1 roundtrip -AutoMerge -CreateIssues
+# Check status
+.\ci_automation.ps1 status -PRNumber 15
+
+# Monitor with auto-issue creation
+.\ci_automation.ps1 monitor -PRNumber 15 -Watch -CreateIssues
+
+# Full roundtrip (monitor → create issues → auto-merge when green)
+.\ci_automation.ps1 roundtrip -PRNumber 15 -AutoMerge -CreateIssues
 ```
 
 ---
@@ -124,70 +114,112 @@ python ci_monitor_local.py --pr 15 --create-issues
 ### Workflow 1: Manual Control (Recommended)
 
 ```bash
-# 1. Create PR (done via GitHub web interface)
+# 1. Create PR (via GitHub web interface or gh CLI)
+gh pr create --title "feat: My Feature" --body "Description"
 
-# 2. Monitor CI locally
+# 2. Monitor CI locally (auto-authenticated via gh CLI)
 python ci_monitor_local.py --pr 15 --watch
 
-# 3. If failures, create issues
+# 3. If failures occur, create issues automatically
 python ci_monitor_local.py --pr 15 --create-issues
 
-# 4. Fix issues (work on fixes locally)
+# 4. Fix issues locally
+# ... make your fixes ...
 
 # 5. Push fixes
 git add .
 git commit -m "fix: resolve CI failures"
 git push
 
-# 6. Monitor again
+# 6. Monitor again until green
 python ci_monitor_local.py --pr 15 --watch
 
-# 7. Merge via GitHub web interface when ready
+# 7. Merge when ready
+gh pr merge 15 --squash
 
-# 8. Tag release locally
-.\github_roundtrip.ps1 tag
+# 8. Tag release
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
 ```
 
-### Workflow 2: Semi-Automated
+### Workflow 2: Semi-Automated (PowerShell)
 
 ```powershell
-# PowerShell - monitors, creates issues, waits for CI, then merges
-.\ci_automation.ps1 roundtrip -AutoMerge -CreateIssues -PRNumber 15
+# One command to rule them all:
+# - Monitors CI continuously
+# - Creates issues for failures
+# - Auto-merges when all checks pass
+.\ci_automation.ps1 roundtrip -PRNumber 15 -AutoMerge -CreateIssues
 ```
 
 ### Workflow 3: GitHub Actions (Fully Automated)
 
 The GitHub Actions workflow automatically:
-1. Runs on every PR update
-2. Executes tests
-3. Creates issues for failures
-4. Comments on PR with summary
+1. ✅ Runs on every PR update
+2. ✅ Executes all tests
+3. ✅ Creates issues for failures
+4. ✅ Comments on PR with summary
+5. ✅ Links issues to PR
 
-**No local action required!**
+**No local action required!** Just push your code and the automation handles the rest.
 
 ---
 
 ## 🔧 Configuration
 
+## Authentication
+
+The scripts use **GitHub CLI authentication** which is more secure than manual tokens:
+
+### ✅ Recommended: GitHub CLI (Automatic)
+```bash
+# One-time setup
+gh auth login
+
+# The scripts will automatically use gh CLI credentials
+python ci_monitor_local.py --pr 15
+```
+
+### 🔧 Alternative: Environment Variable (CI/CD)
+For GitHub Actions workflows, the token is automatically provided:
+```yaml
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+For local development with environment variables:
+```bash
+# Linux/macOS
+export GITHUB_TOKEN=$(gh auth token)
+
+# Windows PowerShell
+$env:GITHUB_TOKEN = gh auth token
+
+# Windows CMD
+set GITHUB_TOKEN=%gh auth token%
+```
+
+**Note:** The scripts will automatically try these methods in order:
+1. GitHub CLI authentication (`gh auth token`)
+2. `GITHUB_TOKEN` environment variable
+3. `--token` command line argument (for advanced users)
+
 ### Environment Variables
 
 ```bash
-# Required
-export GITHUB_TOKEN="ghp_xxxxxxxxxxxx"
+# Optional - usually auto-detected
 export GITHUB_REPOSITORY="GBOGEB/ABACUS"
-
-# Optional
 export PR_NUMBER="15"
 ```
 
-### GitHub Token Permissions
+### Required Permissions
 
-Your token needs:
+When using `gh auth login`, ensure you grant these scopes:
 - `repo` - Full repository access
 - `workflow` - Workflow access
 - `write:discussion` - Issue/PR comments
 
-Create token at: https://github.com/settings/tokens
+The GitHub CLI will request appropriate permissions during login.
 
 ---
 
@@ -428,35 +460,165 @@ git push
 
 ## 🔧 Troubleshooting
 
-### Issue: "GITHUB_TOKEN not found"
+### Authentication Authes
+
+#### IssuenticitHub authentication required"
 ```bash
-# Set token
-export GITHUB_TOKEN="your_token"  # Linux/Mac
-$env:GITHUB_TOKEN="your_token"    # Windows
+# Solution 1: Use GitHub CLa (recommended)
+gh auth login
+
+# Verify it worked
+gh auth status
+
+# test the script
+python ci_monitor local.py --pr 15
 ```
 
-### Issue: "Repository not found"
+#### Issue: "gh: commands
+
+# Install GitHub CLI#f# st
+# WindowI
+wingesuinseall --id"GitHub.cli
+
+# macOS
+brew install gh
+
+# uinuxh(Debien/Ubnntu)
+sudo apt install gi
+
+# Thca authention euired"
 ```bash
-# Specify explicitly
+```# Solution 1: Use GitHub CLI (recommended)
+
+g###hIssua: "Token invalid ou exptred"
+```bash
+#lRe-ogine wth GitHub CLI
+gh auth logout
+gh auth lgi
+
+# Verify
+
+# Verify it worked
+gh aaingnvirnmtvribe, refresh it
+
+# Test the script
+pyt
+
+### Repository Issueshon ci_monitor_local.py --pr 15
+```
+#
+#### Issue: "gh: command not found"
+```bashy repositor
+# Install GitHub CLI first
+
+# Or set environment variable
+export GITHUB_REPOSITORY=GBOGEB/ABACUS  # Linux/Mac
+$env:GITHUB_REPOSITORY = "GBOGEB/ABACUS"  # Windows PowerShell
+# Windows
+winget install --id GitHub.cli
+#
+# macOS
+brListsall taslto fild the correct n gh
+
+# Linux (Debian/Ubuntu)
+sudo athe pt instaPR ll gh
+
+# Then authenticate
+gh auth login
+```C/CD Is
+
+#### Issue
+✅  isues
+#### Issue: "Token invalid or expired"
+```#bash
+# Re-authenticate with GitHub CLI
+ghCheck C  status maaually
+gh pr uhecks 15
+
+# Incth logwaoch unterval
+python ci_tonitor_local.py --pr 15 --watch --intrval 60
+```
+
+#### Issue: "N test reslsfund"
+```bash
+# Ensure tests are running in CI
+gh pcheks 15
+
+# Ck worflow logs
+gh run view --log
+```
+
+### Permission Issues
+
+#### Issue:"Perission denied to create issues"
+```bsh
+# Esure your GitHb token hs the right scopes
+gh auth refresh -s reao -s write:discussion
+
+# Veuifytplrmissioni
+gh authnstatus
+
+# Verify
+gh auth status
+
+# If using environment variable, refresh it
+export GITHUB_TOKEN=$(gh auth token)  # Linux/Mac
+$env:GITHUB_TOKEN = gh auth token     # Windows PowerShell
+```
+
+### Repository Issues
+
+#### Issue: "Repository not found"
+```bash
+# Specify repository explicitly
 python ci_monitor_local.py --pr 15 --repo GBOGEB/ABACUS
+
+# Or set environment variable
+export GITHUB_REPOSITORY=GBOGEB/ABACUS  # Linux/Mac
+$env:GITHUB_REPOSITORY = "GBOGEB/ABACUS"  # Windows PowerShell
 ```
 
-### Issue: "PR not found"
+#### Issue: "PR not found"
 ```bash
-# Check PR number
+# List all PRs to find the correct number
 gh pr list
 
-# Use correct number
+# Use the correct PR number
 python ci_monitor_local.py --pr <correct_number>
 ```
 
-### Issue: "Cannot create issue - already exists"
-This is normal! The system prevents duplicates.
+### CI/CD Issues
 
-### Issue: "Timeout waiting for CI"
+#### Issue: "Cannot create issue - already exists"
+✅ This is normal! The system prevents duplicate issues.
+
+#### Issue: "Timeout waiting for CI"
 ```bash
-# Increase timeout or check manually
+# Check CI status manually
 gh pr checks 15
+
+# Increase watch interval
+python ci_monitor_local.py --pr 15 --watch --interval 60
+```
+
+#### Issue: "No test results found"
+```bash
+# Ensure tests are running in CI
+gh pr checks 15
+
+# Check workflow logs
+gh run view --log
+```
+
+### Permission Issues
+
+#### Issue: "Permission denied to create issues"
+```bash
+# Ensure your GitHub token has the right scopes
+gh auth refresh -s repo -s write:discussion
+
+# Verify permissions
+gh auth status
 ```
 
 ---
