@@ -1,8 +1,8 @@
 ================================================================================
 ARTIFACT RANKING REPORT
 ================================================================================
-Generated: 2025-11-16T13:05:18.958671
-Total Artifacts: 136
+Generated: 2025-11-16T13:23:23.696853
+Total Artifacts: 142
 
 TOP 10 ARTIFACTS (Global Ranking)
 --------------------------------------------------------------------------------
@@ -13,22 +13,22 @@ TOP 10 ARTIFACTS (Global Ranking)
 #  5 | code       | Score: 0.610 | dow_engine\core\ranking.py
 #  6 | code       | Score: 0.604 | run_standards_compliance.py
 #  7 | code       | Score: 0.578 | debug_statistics.py
-#  8 | code       | Score: 0.571 | agents\orchestrator.py
-#  9 | code       | Score: 0.570 | generate_files.py
-# 10 | code       | Score: 0.564 | canonical_diff_tool.py
+#  8 | code       | Score: 0.574 | run_direct_improvements.py
+#  9 | code       | Score: 0.571 | agents\orchestrator.py
+# 10 | code       | Score: 0.570 | generate_files.py
 
 BOTTOM 10 ARTIFACTS (Need Improvement)
 --------------------------------------------------------------------------------
-# 43 | text       | Score: 0.200 | .pre-commit-config.yaml
-# 44 | markdown   | Score: 0.200 | AGENT_IMPLEMENTATION_SUMMARY.md
-# 45 | markdown   | Score: 0.200 | AGENT_INTEGRATION_PLAN.md
-# 46 | markdown   | Score: 0.200 | ARCHITECTURE_DIAGRAM.md
-# 47 | markdown   | Score: 0.200 | ARCHITECTURE_UNIFIED.md
-# 48 | text       | Score: 0.200 | artifact_rankings.json
-# 49 | markdown   | Score: 0.200 | BOOTSTRAP_SUMMARY.md
-# 50 | text       | Score: 0.200 | canonical.index.json
-# 51 | text       | Score: 0.200 | canonical.index.yaml
-# 52 | markdown   | Score: 0.200 | CICD_INTEGRATION.md
+# 44 | text       | Score: 0.200 | .pre-commit-config.yaml
+# 45 | markdown   | Score: 0.200 | AGENT_IMPLEMENTATION_SUMMARY.md
+# 46 | markdown   | Score: 0.200 | AGENT_INTEGRATION_PLAN.md
+# 47 | markdown   | Score: 0.200 | ARCHITECTURE_DIAGRAM.md
+# 48 | markdown   | Score: 0.200 | ARCHITECTURE_UNIFIED.md
+# 49 | text       | Score: 0.200 | artifact_rankings.json
+# 50 | markdown   | Score: 0.200 | BOOTSTRAP_SUMMARY.md
+# 51 | text       | Score: 0.200 | canonical.index.json
+# 52 | text       | Score: 0.200 | canonical.index.yaml
+# 53 | markdown   | Score: 0.200 | CICD_INTEGRATION.md
 
 RANKINGS BY TYPE
 --------------------------------------------------------------------------------

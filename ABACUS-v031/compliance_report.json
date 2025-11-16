@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-11-16T13:23:23.698344",
+  "summary": {
+    "total_requirements": 0,
+    "compliance_counts": {
+      "full": 0,
+      "partial": 0,
+      "non_compliant": 0,
+      "not_applicable": 0,
+      "pending": 0
+    },
+    "compliance_rate": 0.0,
+    "sla_metrics": 0,
+    "sla_pass_rate": 0.0,
+    "functional_requirements": 0,
+    "functional_status": {
+      "PASSED": 0,
+      "FAILED": 0,
+      "PENDING": 0,
+      "NOT_TESTED": 0
+    },
+    "acceptance_tests": 0,
+    "test_status": {
+      "PASSED": 0,
+      "FAILED": 0,
+      "IN_PROGRESS": 0,
+      "NOT_STARTED": 0
+    }
+  },
+  "reliability": {
+    "mtbf_hours": null,
+    "mttr_hours": null,
+    "availability_percent": null,
+    "failure_count": 0,
+    "uptime_hours": 0.0
+  },
+  "standards_referenced": [
+    {
+      "id": "ISO 9001",
+      "title": "Quality Management Systems",
+      "version": "2015"
+    },
+    {
+      "id": "ISO 14001",
+      "title": "Environmental Management Systems",
+      "version": "2015"
+    },
+    {
+      "id": "API 520",
+      "title": "Sizing, Selection, and Installation of Pressure-Relieving Devices",
+      "version": "9th Edition"
+    },
+    {
+      "id": "PED 2014/68/EU",
+      "title": "Pressure Equipment Directive",
+      "version": "2014"
+    },
+    {
+      "id": "ASME BPVC Section VIII",
+      "title": "Boiler and Pressure Vessel Code",
+      "version": "2021"
+    },
+    {
+      "id": "VLAREM VLAREM II",
+      "title": "Flemish Regulations concerning Environmental Permits",
+      "version": "Current"
+    }
+  ],
+  "non_compliant_requirements": []
+}
