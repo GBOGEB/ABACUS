@@ -8,7 +8,6 @@ Uses GitHub CLI authentication (gh auth) for secure access
 import os
 import sys
 import time
-import json
 import argparse
 import subprocess
 from datetime import datetime
