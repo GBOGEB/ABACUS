@@ -1,0 +1,83 @@
+{
+  "name": "ABACUS CI/CD Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-pull-request-github",
+        "github.copilot",
+        "github.copilot-chat",
+        "github.vscode-github-actions",
+        "eamodio.gitlens",
+        "gitkraken.gitkraken-authentication",
+        "ms-vscode.vscode-github-issue-notebooks",
+        "github.remotehub",
+        "ms-vscode-remote.remote-repositories",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "python.testing.pytestEnabled": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "git.autofetch": true,
+        "git.enableSmartCommit": true,
+        "github.copilot.enable": {
+          "*": true,
+          "yaml": true,
+          "markdown": true,
+          "python": true
+        }
+      }
+    }
+  },
+  
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && gh auth status || echo 'Please run: gh auth login'",
+  
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+  
+  "remoteUser": "vscode",
+  
+  "forwardPorts": [8000, 8080, 5000],
+  
+  "portsAttributes": {
+    "8000": {
+      "label": "Application",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Preview",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  
+  "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+  ],
+  
+  "containerEnv": {
+    "GITHUB_REPOSITORY": "GBOGEB/ABACUS"
+  }
+}
