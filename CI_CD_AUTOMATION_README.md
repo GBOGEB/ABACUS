@@ -10,12 +10,14 @@ This system provides **semi-automated** CI/CD management with clear separation b
 
 ### Key Features
 
-✅ **Automated CI Monitoring** - Real-time status tracking  
-✅ **Auto Issue Creation** - GitHub issues for every test failure  
-✅ **Parallel Workflows** - MCP copilot (GitHub) + MCP local (Git)  
-✅ **Smart Merge** - Only merge when all checks pass  
-✅ **Release Automation** - Automatic tagging and release creation  
+✅ **Automated CI Monitoring** - Real-time status tracking for tests
+✅ **Automated CD Monitoring** - Deployment tracking and health checks
+✅ **Auto Issue Creation** - GitHub issues for every test failure
+✅ **Parallel Workflows** - MCP copilot (GitHub) + MCP local (Git)
+✅ **Smart Merge** - Only merge when all checks pass
+✅ **Release Automation** - Automatic tagging and release creation
 ✅ **User Control** - Manual approval points for critical operations
+✅ **Complete Tracking** - JSON/YAML state files for PR lifecycle
 
 ---
 
@@ -48,12 +50,41 @@ Python script that:
 **File:** `ci_monitor_local.py`
 
 Local Python script for:
-- Real-time CI status monitoring
-- Fetching test results
-- Creating issues from local machine
-- Watch mode for continuous monitoring
+- Real-time CI status monitoring (tests)
+- Watch mode for continuous updates
+- Issue creation from local environment
+- Integration with GitHub CLI
 
-### 4. PowerShell Automation
+### 4. Local CD Monitor
+**File:** `cd_monitor.py`
+
+Local Python script for:
+- Deployment status monitoring
+- Environment tracking (staging, production)
+- Health checks for deployments
+- Deployment history and reports
+
+### 5. GitHub Tracking Manager
+**File:** `github_tracking_manager.py`
+
+Comprehensive tracking system for:
+- PR lifecycle tracking
+- CI/CD run history
+- Copilot feedback capture
+- Missed opportunity detection
+- Sub-issue management
+- State persistence (JSON + YAML)
+
+### 6. Workflow Analyzer
+**File:** `workflow_analyzer.py`
+
+Analyzes past workflows for:
+- Failure pattern detection
+- Missed CI/CD opportunities
+- Actionable recommendations
+- Historical trend analysis
+
+### 7. PowerShell Automation
 **File:** `ci_automation.ps1`
 
 Complete automation script:
@@ -460,103 +491,41 @@ git push
 
 ## 🔧 Troubleshooting
 
-### Authentication Authes
+### Authentication Issues
 
-#### IssuenticitHub authentication required"
+#### Issue: "GitHub authentication required"
 ```bash
-# Solution 1: Use GitHub CLa (recommended)
+# Solution 1: Use GitHub CLI (recommended)
 gh auth login
 
 # Verify it worked
 gh auth status
 
-# test the script
-python ci_monitor local.py --pr 15
+# Test the script
+python ci_monitor_local.py --pr 15
 ```
 
-#### Issue: "gh: commands
-
-# Install GitHub CLI#f# st
-# WindowI
-wingesuinseall --id"GitHub.cli
+#### Issue: "gh: command not found"
+```bash
+# Install GitHub CLI first
+# Windows
+winget install --id GitHub.cli
 
 # macOS
 brew install gh
 
-# uinuxh(Debien/Ubnntu)
-sudo apt install gi
-
-# Thca authention euired"
-```bash
-```# Solution 1: Use GitHub CLI (recommended)
-
-g###hIssua: "Token invalid ou exptred"
-```bash
-#lRe-ogine wth GitHub CLI
-gh auth logout
-gh auth lgi
-
-# Verify
-
-# Verify it worked
-gh aaingnvirnmtvribe, refresh it
-
-# Test the script
-pyt
-
-### Repository Issueshon ci_monitor_local.py --pr 15
-```
-#
-#### Issue: "gh: command not found"
-```bashy repositor
-# Install GitHub CLI first
-
-# Or set environment variable
-export GITHUB_REPOSITORY=GBOGEB/ABACUS  # Linux/Mac
-$env:GITHUB_REPOSITORY = "GBOGEB/ABACUS"  # Windows PowerShell
-# Windows
-winget install --id GitHub.cli
-#
-# macOS
-brListsall taslto fild the correct n gh
-
 # Linux (Debian/Ubuntu)
-sudo athe pt instaPR ll gh
+sudo apt install gh
 
 # Then authenticate
 gh auth login
-```C/CD Is
+```
 
-#### Issue
-✅  isues
 #### Issue: "Token invalid or expired"
-```#bash
-# Re-authenticate with GitHub CLI
-ghCheck C  status maaually
-gh pr uhecks 15
-
-# Incth logwaoch unterval
-python ci_tonitor_local.py --pr 15 --watch --intrval 60
-```
-
-#### Issue: "N test reslsfund"
 ```bash
-# Ensure tests are running in CI
-gh pcheks 15
-
-# Ck worflow logs
-gh run view --log
-```
-
-### Permission Issues
-
-#### Issue:"Perission denied to create issues"
-```bsh
-# Esure your GitHb token hs the right scopes
-gh auth refresh -s reao -s write:discussion
-
-# Veuifytplrmissioni
-gh authnstatus
+# Re-authenticate with GitHub CLI
+gh auth logout
+gh auth login
 
 # Verify
 gh auth status

@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2024-12-16T00:00:00Z",
+    "repository": "GBOGEB/ABACUS",
+    "tracking_started": "2024-12-16T00:00:00Z"
+  },
+  "pull_requests": {
+    "15": {
+      "number": 15,
+      "title": "feat: Complete DMAIC + DOW Integration with Live Demonstration",
+      "branch": "feature/dow-integration",
+      "status": "merged",
+      "created_at": "2024-12-16T00:00:00Z",
+      "merged_at": "2024-12-16T00:00:00Z",
+      "closed_at": "2024-12-16T00:00:00Z",
+      "author": "gbonthuy",
+      "reviewers": [],
+      "ci_runs": [],
+      "cd_deployments": [],
+      "issues_created": [],
+      "copilot_feedback": [],
+      "post_merge_actions": [],
+      "lessons_learned": [],
+      "tags": ["dmaic", "dow-integration", "automation"]
+    }
+  },
+  "issues": {},
+  "ci_cd_history": {
+    "ci_runs": [],
+    "cd_deployments": [],
+    "missed_opportunities": []
+  },
+  "copilot_feedback_queue": [],
+  "action_items": []
+}
