@@ -1,0 +1,107 @@
+name: CI Monitor & Auto Issue Creator
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  monitor-and-create-issues:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event_name == 'pull_request' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests PyGithub pytest pytest-json-report
+
+      - name: Download test artifacts
+        if: github.event.workflow_run
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results
+        continue-on-error: true
+
+      - name: Run tests and capture results
+        id: run_tests
+        run: |
+          pytest --json-report --json-report-file=test_report.json || true
+        continue-on-error: true
+
+      - name: Parse test results and create issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          python .github/scripts/create_issues_from_failures.py
+
+      - name: Comment on PR with test summary
+        if: github.event.pull_request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let summary = '## 🧪 CI/CD Test Results\n\n';
+            
+            try {
+              const report = JSON.parse(fs.readFileSync('test_report.json', 'utf8'));
+              const passed = report.summary.passed || 0;
+              const failed = report.summary.failed || 0;
+              const total = report.summary.total || 0;
+              
+              summary += `**Total Tests:** ${total}\n`;
+              summary += `✅ **Passed:** ${passed}\n`;
+              summary += `❌ **Failed:** ${failed}\n\n`;
+              
+              if (failed > 0) {
+                summary += '### ⚠️ Failing Tests\n\n';
+                summary += 'Issues have been automatically created for each failing test:\n\n';
+                
+                for (const test of report.tests) {
+                  if (test.outcome === 'failed') {
+                    summary += `- ❌ \`${test.nodeid}\`\n`;
+                  }
+                }
+                
+                summary += '\n📋 Check the [Issues tab](https://github.com/${{ github.repository }}/issues?q=is%3Aissue+is%3Aopen+label%3Aci-failure) for details.\n';
+              } else {
+                summary += '### ✅ All Tests Passing!\n\n';
+                summary += 'Great work! All CI/CD checks are passing.\n';
+              }
+            } catch (error) {
+              summary += '⚠️ Could not parse test results. Check the workflow logs for details.\n';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test_report.json
