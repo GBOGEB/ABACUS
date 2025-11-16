@@ -12,7 +12,7 @@ import yaml
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional
 
 try:
     from github import Github
