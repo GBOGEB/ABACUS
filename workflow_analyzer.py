@@ -10,7 +10,7 @@ import sys
 import json
 import subprocess
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List
 from collections import defaultdict
 
 try:
