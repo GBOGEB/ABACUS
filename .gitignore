@@ -79,6 +79,7 @@ outputs/
 # Deployment test artifacts
 actions.json
 .mcp/
+deployment_output/
 
 # Excel temp files
 ~$*.xlsx
