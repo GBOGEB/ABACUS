@@ -27,10 +27,26 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config, state_manager, use_gbogeb: bool = True):
+    def __init__(self, config: 'DMAICConfig' = None, state_manager: 'StateManager' = None):
+        """
+        Initialize Phase 5: Control
+        
+        Args:
+            config: DMAICConfig instance
+            state_manager: StateManager instance
+        """
+        # Import here to avoid circular dependency
+        if config is None:
+            from ..config import DMAICConfig
+            config = DMAICConfig()
+        if state_manager is None:
+            from ..core.state import StateManager
+            state_manager = StateManager(config.paths.output_root / "state")
+            
         self.config = config
         self.state_manager = state_manager
-        self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
+        self.output_dir = Path(config.paths.output_root)
+        self.use_gbogeb = GBOGEB_AVAILABLE
         self.gbogeb = None
         
         if self.use_gbogeb:
