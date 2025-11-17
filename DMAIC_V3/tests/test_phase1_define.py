@@ -24,7 +24,8 @@ def config(temp_workspace):
 
 @pytest.fixture
 def state_manager(config):
-    return StateManager(config)
+    state_dir = config.paths.output_root / "state"
+    return StateManager(state_dir)
 
 
 @pytest.fixture
