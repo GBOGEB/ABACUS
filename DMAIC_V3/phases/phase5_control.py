@@ -123,7 +123,8 @@ class Phase5Control:
                 'checkpoints': quality_gates,  # Alias for tests
                 'controls': quality_gates,  # Another alias for tests
                 'all_gates_passed': all_passed,
-                'gbogeb_enabled': self.use_gbogeb
+                'gbogeb_enabled': self.use_gbogeb,
+                'success': all_passed
             }
             
             print(f"\n[5.3] Saving results...")
@@ -146,7 +147,12 @@ class Phase5Control:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'error': str(e), 'phase': 'CONTROL', 'iteration': iteration}
+            return {
+                'error': str(e), 
+                'phase': 'CONTROL', 
+                'iteration': iteration,
+                'success': False
+            }
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -195,7 +201,8 @@ class Phase5Control:
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'skipped': True,
-            'reason': 'Phase 4 results not found'
+            'reason': 'Phase 4 results not found',
+            'success': True  # Skipping is not a failure
         }
 
 
