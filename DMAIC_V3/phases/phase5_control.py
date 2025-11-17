@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from datetime import datetime
 
+from ..core.state import StateManager
+from ..config import DMAICConfig
+
 try:
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -53,10 +56,13 @@ class Phase5Control:
             iteration_dir = self.output_dir / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
+            input_source = None
+            
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
                 return self._create_skip_result(iteration)
             
+            input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
             
@@ -102,6 +108,17 @@ class Phase5Control:
                 audit_file = self.gbogeb.generate_audit_trail()
                 print(f"  ✅ Audit trail: {audit_file}")
             
+            # Create validation checkpoints based on quality gates
+            validation_checkpoints = [
+                {
+                    'name': gate_name,
+                    'passed': gate_result['passed'],
+                    'message': gate_result['message'],
+                    'value': gate_result.get('value')
+                }
+                for gate_name, gate_result in quality_gates.items()
+            ]
+            
             results = {
                 'phase': 'CONTROL',
                 'iteration': iteration,
@@ -111,7 +128,16 @@ class Phase5Control:
                 'controls': quality_gates,  # Alias for quality_gates to match test expectations
                 'checkpoints': quality_gates,  # Alias for validation checkpoints
                 'all_gates_passed': all_passed,
-                'gbogeb_enabled': self.use_gbogeb
+                'gbogeb_enabled': self.use_gbogeb,
+                'input_source': str(phase4_file),
+                # Aliases for test compatibility
+                'controls': quality_gates,  # Alias for quality_gates
+                'checkpoints': quality_gates,  # Validation checkpoints
+                'metrics': {
+                    'total_gates': len(quality_gates),
+                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
+                }
             }
             
             print(f"\n[5.3] Saving results...")
@@ -182,6 +208,8 @@ class Phase5Control:
             'phase': 'CONTROL',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
+            'input_source': None,
+            'validation_checkpoints': [],
             'skipped': True,
             'reason': 'Phase 4 results not found'
         }
@@ -190,6 +218,9 @@ class Phase5Control:
 def main():
     """Test Phase 5"""
     import sys
+    from ..config import DMAICConfig
+    from ..core.state import StateManager
+    from pathlib import Path
     
     if len(sys.argv) < 2:
         print("Usage: python phase5_control.py <iteration>")
