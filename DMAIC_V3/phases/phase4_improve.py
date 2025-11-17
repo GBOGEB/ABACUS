@@ -608,6 +608,7 @@ class Phase4Improve:
                 'files_actually_improved': implementation_results['total_files_improved'],
                 'total_modifications_made': implementation_results['total_modifications']
             },
+            'improvements': prioritized_tasks,  # Alias for refactoring_tasks for test compatibility
             'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
