@@ -343,7 +343,15 @@ class FullPipelineOrchestrator:
         start_time = datetime.now()
 
         try:
-            success, results = phase_obj.execute(iteration=iteration)
+            result = phase_obj.execute(iteration=iteration)
+            
+            # Handle both return types: Tuple[bool, Dict] or just Dict
+            if isinstance(result, tuple):
+                success, results = result
+            else:
+                # Dict only - infer success from presence of 'error' key
+                results = result
+                success = 'error' not in results
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
