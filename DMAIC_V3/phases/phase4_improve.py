@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve
 
@@ -537,11 +537,11 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement results
+            Tuple of (success: bool, results: dict)
         """
         return self.run(iteration)
 
-    def run(self, iteration: int) -> Dict[str, Any]:
+    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -549,7 +549,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement plan AND implementation results
+            Tuple of (success: bool, results: dict) with improvement plan AND implementation results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -558,7 +558,7 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
+            return True, {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -664,7 +664,7 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
+        return True, improvement_result
 
 
 if __name__ == "__main__":
@@ -679,8 +679,8 @@ if __name__ == "__main__":
     phase4 = Phase4Improve(config, state_manager)
 
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
-    result = phase4.run(iteration)
+    success, result = phase4.run(iteration)
 
-    if result.get('error'):
+    if not success or result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
