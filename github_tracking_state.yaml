@@ -1,0 +1,165 @@
+# GitHub CI/CD Tracking State
+# Tracks PR lifecycle, issues, CI/CD runs, and Copilot feedback
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2024-12-16T00:00:00Z"
+  repository: "GBOGEB/ABACUS"
+  tracking_started: "2024-12-16T00:00:00Z"
+
+# Pull Request Tracking
+pull_requests:
+  "15":
+    number: 15
+    title: "feat: Complete DMAIC + DOW Integration with Live Demonstration"
+    branch: "feature/dow-integration"
+    status: "merged"  # open, merged, closed, draft
+    created_at: "2024-12-16T00:00:00Z"
+    merged_at: "2024-12-16T00:00:00Z"
+    closed_at: "2024-12-16T00:00:00Z"
+    author: "gbonthuy"
+    reviewers: []
+    
+    # CI/CD Tracking
+    ci_runs:
+      - run_id: ""
+        status: ""  # success, failure, pending
+        conclusion: ""
+        started_at: ""
+        completed_at: ""
+        workflow: "ci_monitor_and_issue_creator.yml"
+        tests_passed: 0
+        tests_failed: 0
+        artifacts: []
+    
+    cd_deployments:
+      - deployment_id: ""
+        environment: ""  # staging, production
+        status: ""  # success, failure, pending
+        deployed_at: ""
+        version: ""
+        rollback_available: true
+    
+    # Issue Management
+    issues_created:
+      - issue_number: 0
+        title: ""
+        status: "open"  # open, closed, resolved
+        priority: "medium"  # low, medium, high, critical
+        created_at: ""
+        resolved_at: ""
+        sub_issues: []
+    
+    # Copilot & GitHub Feedback
+    copilot_feedback:
+      - timestamp: ""
+        type: "suggestion"  # suggestion, warning, error, improvement
+        source: "github_copilot"  # github_copilot, github_actions, code_review
+        message: ""
+        file: ""
+        line: 0
+        action_taken: false
+        action_details: ""
+    
+    # Post-Merge Actions
+    post_merge_actions:
+      - action: ""
+        status: "pending"  # pending, completed, skipped
+        reason: ""
+        created_at: ""
+        completed_at: ""
+    
+    # Lessons Learned
+    lessons_learned:
+      - category: ""  # ci, cd, code_quality, process
+        lesson: ""
+        action_item: ""
+        priority: "medium"
+    
+    tags:
+      - "dmaic"
+      - "dow-integration"
+      - "automation"
+
+# Issue Tracking
+issues:
+  example:
+    number: 0
+    title: ""
+    status: "open"
+    priority: "medium"
+    labels: []
+    created_at: ""
+    closed_at: ""
+    related_pr: 0
+    parent_issue: null
+    sub_issues: []
+    ci_failure: false
+    cd_failure: false
+    copilot_suggestion: false
+
+# CI/CD History
+ci_cd_history:
+  ci_runs:
+    - run_id: ""
+      pr_number: 0
+      workflow: ""
+      status: ""
+      conclusion: ""
+      started_at: ""
+      completed_at: ""
+      duration_seconds: 0
+      tests_total: 0
+      tests_passed: 0
+      tests_failed: 0
+      coverage_percent: 0.0
+      artifacts: []
+      logs_url: ""
+  
+  cd_deployments:
+    - deployment_id: ""
+      pr_number: 0
+      environment: ""
+      status: ""
+      deployed_at: ""
+      version: ""
+      commit_sha: ""
+      rollback_available: true
+      health_check_passed: true
+  
+  missed_opportunities:
+    - timestamp: ""
+      type: ""  # ci_optimization, cd_automation, test_coverage, code_quality
+      description: ""
+      potential_impact: ""
+      action_item: ""
+      priority: "medium"
+
+# Copilot Feedback Queue
+copilot_feedback_queue:
+  - id: ""
+    timestamp: ""
+    pr_number: 0
+    type: "suggestion"
+    source: "github_copilot"
+    message: ""
+    file: ""
+    line: 0
+    status: "pending"  # pending, reviewed, implemented, rejected
+    reviewed_by: ""
+    reviewed_at: ""
+    implementation_pr: null
+
+# Action Items
+action_items:
+  - id: ""
+    title: ""
+    description: ""
+    priority: "medium"
+    status: "pending"  # pending, in_progress, completed, cancelled
+    created_at: ""
+    due_date: ""
+    assigned_to: ""
+    related_pr: null
+    related_issue: null
+    category: ""  # ci, cd, code_quality, documentation, testing

@@ -1,0 +1,68 @@
+# File: dow_engine_config.yaml
+# Purpose: Configuration file
+
+version: "1.0.0"
+engine:
+  name: "DOW - Devour of Words"
+  version: "1.0.0"
+  mode: "recursive_dmaic"
+  idempotency: true
+  git_enabled: true
+  parallel_workers: 4
+  max_recursion_depth: 10
+
+processing:
+  encoding: "utf-8"
+  line_endings: "LF"
+  max_file_size: "100MB"
+  excluded_patterns:
+    - "*.bin"
+    - "*.exe"
+    - "*.dll"
+    - "*.so"
+    - "node_modules/**"
+    - ".git/**"
+    - "__pycache__/**"
+    - "*.pyc"
+    - ".venv/**"
+    - "venv/**"
+    - "canonical.index.run*.json"
+    - "canonical.index.run*.yaml"
+    - "execution_stats*.json"
+    - "idempotency_test.txt"
+  included_extensions:
+    - ".md"
+    - ".py"
+    - ".js"
+    - ".ts"
+    - ".json"
+    - ".yaml"
+    - ".yml"
+    - ".txt"
+    - ".rst"
+    - ".toml"
+
+quality:
+  min_test_coverage: 0.80
+  max_complexity: 10
+  max_line_length: 100
+  enforce_typing: true
+  enforce_docstrings: true
+  spell_check: false
+
+git:
+  auto_commit: true
+  commit_message_template: "[DOW] {phase}: {summary}"
+  branch_strategy: "feature/{phase}-{timestamp}"
+  require_clean_working_tree: true
+  sign_commits: false
+
+dmaic:
+  phases:
+    - define
+    - measure
+    - analyze
+    - improve
+    - control
+  session_trace_enabled: true
+  session_trace_path: "governance/session_trace.jsonl"

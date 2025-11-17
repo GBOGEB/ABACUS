@@ -1,0 +1,87 @@
+package_name: DMAIC_V3_Core_Knowledge
+version: "3.3.0"
+created: "2025-11-12T08:35:05.742765"
+description: Core DMAIC V3.3 process knowledge for AI agents
+process_overview:
+  methodology: DMAIC (Define, Measure, Analyze, Improve, Control)
+  version: 3.3.0
+  phases:
+    - id: phase0
+      name: Setup & Initialization
+      purpose: Validate environment and dependencies
+      outputs:
+        - system_checks
+        - environment_validation
+    - id: phase1
+      name: Define
+      purpose: Scan and categorize workspace files
+      outputs:
+        - file_inventory
+        - categorization
+        - relationships
+    - id: phase2
+      name: Measure
+      purpose: Analyze code metrics and quality
+      outputs:
+        - code_metrics
+        - complexity_analysis
+        - dependencies
+    - id: phase3
+      name: Analyze
+      purpose: Identify patterns and issues
+      outputs:
+        - quality_assessment
+        - pattern_detection
+        - issue_identification
+    - id: phase4
+      name: Improve
+      purpose: Generate improvement recommendations
+      outputs:
+        - refactoring_suggestions
+        - optimization_opportunities
+    - id: phase5
+      name: Control
+      purpose: Establish quality gates and monitoring
+      outputs:
+        - quality_gates
+        - monitoring_rules
+        - control_mechanisms
+    - id: phase6
+      name: Knowledge
+      purpose: Capture and distribute learnings
+      outputs:
+        - knowledge_packages
+        - best_practices
+        - lessons_learned
+key_concepts:
+  idempotency: All operations can be safely re-executed without side effects
+  ranking: Artifacts are classified and prioritized based on importance
+  metrics: Comprehensive KPIs track process health and progress
+  change_detection: Only modified components are re-processed
+file_structure:
+  DMAIC_V3/: Core engine and phase implementations
+  DMAIC_V3_OUTPUT/: Execution results and metrics
+  .github/workflows/: CI/CD pipeline definitions
+  artifacts/: Generated artifacts and reports
+  knowledge_packages/: AI agent knowledge bases
+quality_gates:
+  complexity: { threshold: 500, priority: HIGH }
+  file_size_loc: { threshold: 500, priority: MEDIUM }
+  imports: { threshold: 20, priority: MEDIUM }
+  test_coverage: { minimum: 0.80, priority: HIGH }
+best_practices:
+  - Always run Phase 0 before other phases
+  - Review metrics after each execution
+  - Update rankings regularly
+  - Maintain idempotency in all operations
+  - Document all changes and decisions
+common_commands:
+  run_full: python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1
+  run_phase: python -m DMAIC_V3.dmaic_v3_engine --mode single --phase <phase_name>
+  version: python -m DMAIC_V3.dmaic_v3_engine --version
+  check_metrics: python scripts/check_convergence.py
+troubleshooting:
+  version_error: Check python_min_version in DMAIC_V3/config.py
+  import_error: Verify all dependencies in requirements.txt
+  phase_failure: Review logs in DMAIC_V3_OUTPUT/iteration_*/phase*/
+  metrics_missing: Ensure ENABLE_METRICS=true in environment
