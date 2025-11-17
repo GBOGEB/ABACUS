@@ -31,7 +31,9 @@ def should_stop(history: List[Dict[str, Any]],
         # Simple convergence check: if all recent iterations have similar metrics
         if all('score' in item for item in recent):
             scores = [item['score'] for item in recent]
-            if max(scores) - min(scores) < 0.01:
+            # Extract convergence threshold from rules, default to 0.01 if not found
+            threshold = next((rule['value'] for rule in rules if rule.get('type') == 'convergence_threshold'), 0.01)
+            if max(scores) - min(scores) < threshold:
                 return True, "Convergence detected"
     
     return False, "Continue iteration"
