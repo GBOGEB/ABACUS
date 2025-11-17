@@ -39,7 +39,7 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict:
+    def execute(self, iteration: int) -> tuple:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -53,7 +53,8 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration)
+                skip_result = self._create_skip_result(iteration)
+                return (True, skip_result)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -153,13 +154,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return results
+            return (True, results)
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'error': str(e)}
+            return (False, {'error': str(e)})
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -200,6 +201,22 @@ class Phase5Control:
             'message': "Performance check passed (placeholder)",
             'value': 100
         }
+    
+    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+        """Create validation checkpoints from quality gates"""
+        checkpoints = []
+        
+        for gate_name, gate_result in quality_gates.items():
+            checkpoint = {
+                'name': gate_name,
+                'description': gate_result['message'],
+                'passed': gate_result['passed'],
+                'value': gate_result.get('value', 0),
+                'iteration': iteration
+            }
+            checkpoints.append(checkpoint)
+        
+        return checkpoints
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
