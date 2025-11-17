@@ -17,12 +17,17 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
+from ..config import DMAICConfig
+from ..core.state import StateManager
+
 
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, output_dir: Path = None, use_gbogeb: bool = True):
-        self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
+    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+        self.config = config
+        self.state_manager = state_manager
+        self.output_dir = config.paths.output_root
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -30,7 +35,7 @@ class Phase5Control:
             print("[GBOGEB] Initializing observability layer...")
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+    def execute(self, iteration: int) -> Dict:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -42,7 +47,7 @@ class Phase5Control:
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return True, self._create_skip_result(iteration)
+                return self._create_skip_result(iteration)
             
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
@@ -93,9 +98,18 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
-                'gbogeb_enabled': self.use_gbogeb
+                'gbogeb_enabled': self.use_gbogeb,
+                # Aliases for backward compatibility with tests
+                'controls': quality_gates,
+                'checkpoints': quality_gates,
+                'summary': {
+                    'all_gates_passed': all_passed,
+                    'total_gates': len(quality_gates),
+                    'passed_gates': sum(1 for g in quality_gates.values() if g['passed'])
+                }
             }
             
             print(f"\n[5.3] Saving results...")
@@ -112,13 +126,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return True, results
+            return results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {'error': str(e)}
+            return {'phase': 'CONTROL', 'iteration': iteration, 'error': str(e)}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -181,10 +195,18 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    phase5 = Phase5Control()
-    success, results = phase5.execute(iteration)
+    # For standalone execution, create minimal config
+    from ..config import DMAICConfig
+    from ..core.state import StateManager
     
-    return 0 if success else 1
+    config = DMAICConfig()
+    state_manager = StateManager(config.paths.output_root / "state")
+    
+    phase5 = Phase5Control(config, state_manager)
+    results = phase5.execute(iteration)
+    
+    # Return 0 if no error, 1 if error
+    return 0 if 'error' not in results else 1
 
 
 if __name__ == "__main__":
