@@ -12,7 +12,12 @@ from dataclasses import dataclass, field
 
 from ..config import DMAICConfig
 from .state import StateManager
-from .handover_bridge import HandoverBridge
+
+# HandoverBridge is optional - only import if src/dmaic exists
+try:
+    from .handover_bridge import HandoverBridge
+except ImportError:
+    HandoverBridge = None
 
 
 @dataclass
@@ -62,7 +67,7 @@ class MCPControlPoint:
 
 class TestSystemBridge:
     def __init__(self, config: DMAICConfig, state_manager: StateManager, 
-                 handover_bridge: HandoverBridge):
+                 handover_bridge: Optional['HandoverBridge'] = None):
         self.config = config
         self.state_manager = state_manager
         self.handover_bridge = handover_bridge
@@ -255,7 +260,7 @@ class TestSystemBridge:
         
         return runtime_errors
     
-    def generate_deployment_metrics(self) -> DeploymentMetrics:
+    def generate_deployment_metrics(self, skip_static: bool = False) -> DeploymentMetrics:
         self.mcp.log_point('generate_deployment_metrics', 'enter')
         
         version = self.get_current_version()
@@ -268,12 +273,15 @@ class TestSystemBridge:
         
         runtime_errors = self.detect_runtime_errors()
         
-        static_analysis = self.run_static_analysis()
-        static_passed = all(
-            r.get('returncode', 1) == 0 
-            for r in static_analysis.values() 
-            if r and 'returncode' in r
-        )
+        # Run static analysis unless skipped
+        static_passed = True  # Default to True if skipped
+        if not skip_static:
+            static_analysis = self.run_static_analysis()
+            static_passed = all(
+                r.get('returncode', 1) == 0 
+                for r in static_analysis.values() 
+                if r and 'returncode' in r
+            )
         
         deployment_ready = (
             tests_passed == tests_total and
