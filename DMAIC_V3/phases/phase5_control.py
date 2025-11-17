@@ -40,7 +40,14 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+        """Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -128,8 +135,7 @@ class Phase5Control:
                 'controls': quality_gates,  # Alias for quality gates
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                'checkpoints': quality_gates,  # Alias for validation_checkpoints test
-                'controls': quality_gates  # Alias for control_metrics test
+                'success': all_passed
             }
             
             print(f"\n[5.4] Saving results...")
@@ -203,8 +209,7 @@ class Phase5Control:
             'input_source': input_source,
             'skipped': True,
             'reason': 'Phase 4 results not found',
-            'quality_gates': {},
-            'validation_checkpoints': []
+            'success': True  # Skipping is not a failure
         }
 
 
