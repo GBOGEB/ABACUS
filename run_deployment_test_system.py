@@ -11,7 +11,7 @@ from pathlib import Path
 # Add DMAIC_V3 to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from DMAIC_V3.config import DMAICConfig, PathConfig
+from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
 from DMAIC_V3.core.handover_bridge import HandoverBridge
 from DMAIC_V3.core.test_system_bridge import TestSystemBridge
