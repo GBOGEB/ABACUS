@@ -71,9 +71,14 @@ DMAIC_TEST_OUTPUT/
 DMAIC_TEST_SAMPLE/
 DMAIC_V2_OUTPUT/
 DMAIC_V2.3_ITERATION_*/
+DMAIC_V3_OUTPUT/
 smoke_test_outputs_*/
 output/
 outputs/
+
+# Deployment test artifacts
+actions.json
+.mcp/
 
 # Excel temp files
 ~$*.xlsx
