@@ -47,7 +47,14 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+        """Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -129,13 +136,14 @@ class Phase5Control:
                 'controls': quality_gates,  # Alias for quality_gates to satisfy test expectations
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                # Aliases for backward compatibility with tests
-                'controls': quality_gates,
-                'checkpoints': quality_gates,
-                'summary': {
-                    'all_gates_passed': all_passed,
+                'input_source': str(phase4_file),
+                # Aliases for test compatibility
+                'controls': quality_gates,  # Alias for quality_gates
+                'checkpoints': quality_gates,  # Validation checkpoints
+                'metrics': {
                     'total_gates': len(quality_gates),
-                    'passed_gates': sum(1 for g in quality_gates.values() if g['passed'])
+                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
                 }
             }
             
