@@ -27,7 +27,7 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+    def __init__(self, config: 'DMAICConfig' = None, state_manager: 'StateManager' = None):
         """
         Initialize Phase 5: Control
         
@@ -36,15 +36,24 @@ class Phase5Control:
             state_manager: StateManager instance
             use_gbogeb: Enable GBOGEB observability layer (default: True)
         """
+        # Import here to avoid circular dependency
+        if config is None:
+            from ..config import DMAICConfig
+            config = DMAICConfig()
+        if state_manager is None:
+            from ..core.state import StateManager
+            state_manager = StateManager(config.paths.output_root / "state")
+            
         self.config = config
         self.state_manager = state_manager
         self.output_dir = Path(config.paths.output_root)
-        self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
+        self.use_gbogeb = GBOGEB_AVAILABLE
         self.gbogeb = None
         
         if self.use_gbogeb:
             print("[GBOGEB] Initializing observability layer...")
-            self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
+            gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
+            self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
         """Execute Phase 5: Control"""
@@ -53,7 +62,7 @@ class Phase5Control:
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
             print("="*80)
             
-            iteration_dir = self.output_dir / f"iteration_{iteration}"
+            iteration_dir = self.config.paths.output_root / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             input_source = None
@@ -129,15 +138,8 @@ class Phase5Control:
                 'checkpoints': quality_gates,  # Alias for validation checkpoints
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                'input_source': str(phase4_file),
-                # Aliases for test compatibility
-                'controls': quality_gates,  # Alias for quality_gates
-                'checkpoints': quality_gates,  # Validation checkpoints
-                'metrics': {
-                    'total_gates': len(quality_gates),
-                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
-                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
-                }
+                'checkpoints': quality_gates,  # Alias for validation_checkpoints test
+                'controls': quality_gates  # Alias for control_metrics test
             }
             
             print(f"\n[5.3] Saving results...")
@@ -218,9 +220,9 @@ class Phase5Control:
 def main():
     """Test Phase 5"""
     import sys
+    from pathlib import Path
     from ..config import DMAICConfig
     from ..core.state import StateManager
-    from pathlib import Path
     
     if len(sys.argv) < 2:
         print("Usage: python phase5_control.py <iteration>")
