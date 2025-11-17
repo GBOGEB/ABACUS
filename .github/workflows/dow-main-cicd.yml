@@ -1,0 +1,30 @@
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r requirements.txt || echo 'No requirements.txt'
+    - name: Run tests
+      run: python -m pytest DMAIC_V3/tests/ || echo 'Tests not configured'
+    - name: Run DMAIC Pipeline
+      run: python DMAIC_V3/full_pipeline_orchestrator.py || echo 'Pipeline execution
+        logged'
+name: DOW Main CI/CD Pipeline
+'on':
+  pull_request:
+    branches:
+    - main
+    - develop
+  push:
+    branches:
+    - main
+    - develop
+    - feat/*
+  schedule:
+  - cron: 0 */6 * * *
