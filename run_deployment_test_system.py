@@ -179,7 +179,6 @@ def main():
                 print(f"  Result: {'✓ PASSED' if result.success else '✗ FAILED'}")
                 print(f"  Duration: {result.duration_seconds:.2f}s")
     
-    # Phase 2: Static Analysis (optional)
     # Phase 2: Static Analysis (deferred to metrics generation)
     if not args.skip_static:
         with IdempotentPhase('static_analysis', bridge):
