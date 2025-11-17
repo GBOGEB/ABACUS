@@ -46,6 +46,6 @@ def get_metrics() -> Dict[str, Any]:
 
 
 def reset_metrics():
-    global _global_metrics
     """Reset global metrics collector"""
+    global _global_metrics
     _global_metrics = MetricsCollector()

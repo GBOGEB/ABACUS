@@ -49,6 +49,9 @@ htmlcov/
 actions.json
 .mcp/
 
+# Deployment reports
+DMAIC_V3_OUTPUT/deployment_report.json
+
 # Logs
 *.log
 logs/

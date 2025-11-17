@@ -38,8 +38,9 @@ def load_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
                 file_config = json.load(f)
             # Merge with defaults
             default_config.update(file_config)
-        except Exception:
+        except (json.JSONDecodeError, IOError, OSError) as e:
             # Return defaults on error
+            # Could add logging here if needed
             pass
     
     return default_config
