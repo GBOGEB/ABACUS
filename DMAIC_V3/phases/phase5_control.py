@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from datetime import datetime
 
+from ..core.state import StateManager
+from ..config import DMAICConfig
+
 try:
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -21,8 +24,18 @@ except ImportError:
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, output_dir: Path = None, use_gbogeb: bool = True):
-        self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
+    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+        """
+        Initialize Phase 5: Control
+        
+        Args:
+            config: DMAICConfig instance
+            state_manager: StateManager instance
+            use_gbogeb: Whether to use GBOGEB observability (default: True)
+        """
+        self.config = config
+        self.state_manager = state_manager
+        self.output_dir = Path(config.paths.output_root)
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -30,7 +43,7 @@ class Phase5Control:
             print("[GBOGEB] Initializing observability layer...")
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+    def execute(self, iteration: int) -> Dict:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -40,10 +53,13 @@ class Phase5Control:
             iteration_dir = self.output_dir / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
+            input_source = None
+            
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return True, self._create_skip_result(iteration)
+                return self._create_skip_result(iteration)
             
+            input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
             
@@ -89,11 +105,25 @@ class Phase5Control:
                 audit_file = self.gbogeb.generate_audit_trail()
                 print(f"  ✅ Audit trail: {audit_file}")
             
+            # Create validation checkpoints based on quality gates
+            validation_checkpoints = [
+                {
+                    'name': gate_name,
+                    'passed': gate_result['passed'],
+                    'message': gate_result['message'],
+                    'value': gate_result.get('value')
+                }
+                for gate_name, gate_result in quality_gates.items()
+            ]
+            
             results = {
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'input_source': input_source,
                 'quality_gates': quality_gates,
+                'validation_checkpoints': validation_checkpoints,
+                'controls': quality_gates,  # Alias for quality_gates to satisfy test expectations
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb
             }
@@ -112,13 +142,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return True, results
+            return results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {'error': str(e)}
+            return {'error': str(e), 'phase': 'CONTROL', 'iteration': iteration}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -166,6 +196,8 @@ class Phase5Control:
             'phase': 'CONTROL',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
+            'input_source': None,
+            'validation_checkpoints': [],
             'skipped': True,
             'reason': 'Phase 4 results not found'
         }
