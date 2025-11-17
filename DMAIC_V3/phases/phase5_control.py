@@ -17,6 +17,9 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
+from ..config import DMAICConfig
+from ..core.state import StateManager
+
 
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
@@ -124,6 +127,7 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
