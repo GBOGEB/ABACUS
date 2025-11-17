@@ -561,8 +561,17 @@ class Phase4Improve:
 
         if not phase3_output.exists():
             return {
+                'phase': 'IMPROVE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
                 'success': False,
-                'error': f"Phase 3 output not found: {phase3_output}"
+                'error': f"Phase 3 output not found: {phase3_output}",
+                'improvements': [],
+                'summary': {},
+                'refactoring_tasks': [],
+                'implementation_roadmap': {},
+                'metrics': {},
+                'implementation_results': {}
             }
 
         with open(phase3_output, 'r') as f:
@@ -591,9 +600,12 @@ class Phase4Improve:
         )
 
         improvement_result = {
+            'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
+            'input_source': str(phase3_output),
+            'improvements': prioritized_tasks,  # Alias for backward compatibility with tests
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -629,13 +641,11 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return {
-            'success': True,
-            'output_file': str(output_file),
-            'summary': improvement_result['summary'],
-            'roadmap': roadmap,
-            'implementation': implementation_results
-        }
+        # Add success flag to the result
+        improvement_result['success'] = True
+        improvement_result['output_file'] = str(output_file)
+        
+        return improvement_result
 
 
 if __name__ == "__main__":
