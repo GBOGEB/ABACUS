@@ -30,7 +30,7 @@ class Phase5Control:
             print("[GBOGEB] Initializing observability layer...")
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+    def execute(self, iteration: int) -> Dict:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -42,7 +42,7 @@ class Phase5Control:
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return True, self._create_skip_result(iteration)
+                return self._create_skip_result(iteration)
             
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
@@ -112,13 +112,21 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return True, results
+            return results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {'error': str(e)}
+            return {
+                'phase': 'CONTROL',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'error': str(e),
+                'quality_gates': {},
+                'all_gates_passed': False,
+                'gbogeb_enabled': self.use_gbogeb
+            }
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
