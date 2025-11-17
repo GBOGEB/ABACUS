@@ -81,6 +81,7 @@ class TestPhase4Improve:
     def test_execute_with_phase3_output(self, phase4, phase3_output):
         success, result = phase4.execute(iteration=1)
         
+        assert success is True
         assert result['phase'] == 'IMPROVE'
         assert result['iteration'] == 1
         assert 'timestamp' in result
