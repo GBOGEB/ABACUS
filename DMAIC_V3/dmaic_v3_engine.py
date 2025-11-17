@@ -54,7 +54,15 @@ def main():
             # Execute Phase 6 standalone
             cfg = DMAICConfig()
             state = StateManager(cfg.paths.state_dir)
-            ok, results = Phase6Knowledge(cfg, state).execute(iteration=1)
+            exec_result = Phase6Knowledge(cfg, state).execute(iteration=1)
+            
+            # Handle both tuple (old) and dict (new) return types
+            if isinstance(exec_result, tuple):
+                ok, results = exec_result
+            else:
+                results = exec_result
+                ok = not results.get('error') and not results.get('skipped', False)
+                
             # Persist minimal report to reports dir
             reports_dir = cfg.paths.reports_dir
             reports_dir.mkdir(parents=True, exist_ok=True)
