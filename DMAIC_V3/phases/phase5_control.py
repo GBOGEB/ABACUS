@@ -5,11 +5,11 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Any
 from datetime import datetime
 
-from ..core.state import StateManager
 from ..config import DMAICConfig
+from ..core.state import StateManager
 
 try:
     import sys
@@ -27,26 +27,10 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config=None, state_manager=None, output_dir: Path = None, use_gbogeb: bool = True):
-        """
-        Initialize Phase 5: Control
-        
-        Args:
-            config: DMAICConfig instance (preferred)
-            state_manager: StateManager instance
-            output_dir: Path to output directory (legacy, used if config not provided)
-            use_gbogeb: Whether to use GBOGEB for observability
-        """
-        # Support both new pattern (config, state_manager) and legacy pattern (output_dir)
-        if config is not None:
-            self.config = config
-            self.state_manager = state_manager
-            self.output_dir = config.paths.output_root
-        else:
-            self.config = None
-            self.state_manager = None
-            self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
-        
+    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+        self.config = config
+        self.state_manager = state_manager
+        self.output_dir = config.paths.output_root
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -56,14 +40,7 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Dictionary with control results
-        """
+        """Execute Phase 5: Control"""
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -147,8 +124,16 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'checkpoints': quality_gates,  # Alias for tests
-                'controls': quality_gates,  # Another alias for tests
+                'controls': quality_gates,  # Alias for backwards compatibility
+                'checkpoints': {
+                    'quality_gates_checked': True,
+                    'all_gates_passed': all_passed
+                },
+                'metrics': {
+                    'total_gates': len(quality_gates),
+                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
+                },
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
                 'success': all_passed
@@ -174,12 +159,7 @@ class Phase5Control:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {
-                'error': str(e), 
-                'phase': 'CONTROL', 
-                'iteration': iteration,
-                'success': False
-            }
+            return {'error': str(e)}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -246,14 +226,12 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # Create config and state manager
     config = DMAICConfig()
     state_manager = StateManager(config.paths.state_dir)
-    
     phase5 = Phase5Control(config, state_manager)
     results = phase5.execute(iteration)
     
-    return 0 if results and not results.get('error') else 1
+    return 0 if 'error' not in results else 1
 
 
 if __name__ == "__main__":
