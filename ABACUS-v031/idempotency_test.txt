@@ -1,0 +1,30 @@
+================================================================================
+CANONICAL INDEX COMPARISON REPORT
+================================================================================
+Generated: 2025-11-12T21:12:47.195460
+Run 1: canonical.index.run1.json
+Run 2: canonical.index.run2.json
+
+SUMMARY
+--------------------------------------------------------------------------------
+Identical: ❌ NO
+Total Artifacts (Run 1): 68
+Total Artifacts (Run 2): 68
+Common Artifacts: 62
+Only in Run 1: 6
+Only in Run 2: 6
+Checksum Differences: 0
+Metadata Differences: 0
+
+DIFFERENCES
+--------------------------------------------------------------------------------
+
+ARTIFACTS ONLY IN RUN1:
+  Count: 6
+  Sample IDs: artifact_969c2eac, artifact_9343dc8f, artifact_fa22ee8b, artifact_a20ad642, artifact_be07a12c
+
+ARTIFACTS ONLY IN RUN2:
+  Count: 6
+  Sample IDs: artifact_38b016c7, artifact_869adb07, artifact_f6ed8d55, artifact_36adaf4e, artifact_2bae80f3
+
+================================================================================

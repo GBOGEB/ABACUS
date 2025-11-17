@@ -1,0 +1,86 @@
+{
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": false,
+    "markdown": true,
+    "python": true,
+    "powershell": true
+  },
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "gpt-4",
+    "debug.testOverrideProxyUrl": "",
+    "debug.overrideProxyUrl": ""
+  },
+  "githubPullRequests.pullBranch": "never",
+  "githubPullRequests.createOnPublish": "ask",
+  "githubPullRequests.defaultMergeMethod": "squash",
+  "githubPullRequests.showPullRequestNumberInTree": true,
+  "githubIssues.queries": [
+    {
+      "label": "CI Failures",
+      "query": "is:open is:issue label:ci-failure"
+    },
+    {
+      "label": "CD Issues",
+      "query": "is:open is:issue label:cd-failure"
+    },
+    {
+      "label": "Automated Issues",
+      "query": "is:open is:issue label:automated"
+    },
+    {
+      "label": "My Issues",
+      "query": "is:open is:issue assignee:@me"
+    }
+  ],
+  "githubIssues.createIssueTriggers": [
+    "TODO",
+    "FIXME",
+    "BUG"
+  ],
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.postCommitCommand": "push",
+  "git.showPushSuccessNotification": true,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.codeLens.enabled": true,
+  "gitlens.statusBar.enabled": true,
+  "gitlens.views.repositories.branches.layout": "tree",
+  "gitlens.gitCommands.closeOnFocusOut": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ]
+  },
+  "yaml.customTags": [
+    "!reference sequence"
+  ],
+  "yaml.format.enable": true,
+  "yaml.validate": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "files.associations": {
+    "*.yml": "yaml",
+    "*.yaml": "yaml",
+    ".github/workflows/*": "yaml"
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#1e1e1e",
+    "statusBar.background": "#007acc",
+    "statusBar.foreground": "#ffffff"
+  },
+  "tasks.autoDetect": "on"
+}

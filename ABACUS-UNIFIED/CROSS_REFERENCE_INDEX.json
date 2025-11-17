@@ -1,0 +1,16 @@
+{
+  "v031_to_v032": {},
+  "v032_to_unified": {
+    "artifact_ranking_system.py": "unified",
+    "deploy_full_pipeline.py": "unified",
+    "execute_full_dmaic_phases_0_to_8.py": "unified",
+    "execute_pipeline_with_metrics.py": "unified",
+    "execute_real_dmaic_with_deployment.py": "unified",
+    "generate_canonical_books.py": "unified",
+    "recursive_dmaic_alignment.py": "unified",
+    "test_execution.py": "unified",
+    "update_documentation_versions.py": "unified",
+    "output\\temp_exec_1763030371207.py": "unified"
+  },
+  "timestamp": "2025-11-13T11:39:31.541284"
+}

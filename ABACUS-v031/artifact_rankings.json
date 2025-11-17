@@ -1,6 +1,6 @@
 {
-  "generated_at": "2025-11-12T19:14:19.174078",
-  "total_artifacts": 61,
+  "generated_at": "2025-11-16T13:23:23.669538",
+  "total_artifacts": 142,
   "artifact_types": [
     "text",
     "markdown",
@@ -8,7 +8,7 @@
   ],
   "rankings": [
     {
-      "artifact_id": "artifact_030b5fb2",
+      "artifact_id": "artifact_c85a3bac",
       "artifact_type": "text",
       "artifact_path": ".pre-commit-config.yaml",
       "metrics": {
@@ -22,8 +22,8 @@
       "rankings": {
         "self_rank": 5,
         "type_rank": 1,
-        "global_rank": 31,
-        "percentile": 0.5081967213114754
+        "global_rank": 44,
+        "percentile": 0.6971830985915493
       },
       "improvement_actions": [
         {
@@ -55,10 +55,210 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934351"
     },
     {
-      "artifact_id": "artifact_239826be",
+      "artifact_id": "md_21daa621",
+      "artifact_type": "markdown",
+      "artifact_path": "AGENT_IMPLEMENTATION_SUMMARY.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 1,
+        "global_rank": 45,
+        "percentile": 0.6901408450704225
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for AGENT_IMPLEMENTATION_SUMMARY.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for AGENT_IMPLEMENTATION_SUMMARY.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to AGENT_IMPLEMENTATION_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in AGENT_IMPLEMENTATION_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_e395da4b",
+      "artifact_type": "markdown",
+      "artifact_path": "AGENT_INTEGRATION_PLAN.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 2,
+        "global_rank": 46,
+        "percentile": 0.6830985915492958
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for AGENT_INTEGRATION_PLAN.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for AGENT_INTEGRATION_PLAN.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to AGENT_INTEGRATION_PLAN.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in AGENT_INTEGRATION_PLAN.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_cf8a67fb",
+      "artifact_type": "markdown",
+      "artifact_path": "ARCHITECTURE_DIAGRAM.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 3,
+        "global_rank": 47,
+        "percentile": 0.676056338028169
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for ARCHITECTURE_DIAGRAM.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ARCHITECTURE_DIAGRAM.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ARCHITECTURE_DIAGRAM.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in ARCHITECTURE_DIAGRAM.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_33eecdc1",
+      "artifact_type": "markdown",
+      "artifact_path": "ARCHITECTURE_UNIFIED.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 4,
+        "global_rank": 48,
+        "percentile": 0.6690140845070423
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for ARCHITECTURE_UNIFIED.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for ARCHITECTURE_UNIFIED.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to ARCHITECTURE_UNIFIED.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in ARCHITECTURE_UNIFIED.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_af0e2fa6",
       "artifact_type": "text",
       "artifact_path": "artifact_rankings.json",
       "metrics": {
@@ -72,8 +272,8 @@
       "rankings": {
         "self_rank": 5,
         "type_rank": 2,
-        "global_rank": 32,
-        "percentile": 0.4918032786885246
+        "global_rank": 49,
+        "percentile": 0.6619718309859155
       },
       "improvement_actions": [
         {
@@ -105,7 +305,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_78639b77",
@@ -121,9 +321,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 1,
-        "global_rank": 33,
-        "percentile": 0.47540983606557374
+        "type_rank": 5,
+        "global_rank": 50,
+        "percentile": 0.6549295774647887
       },
       "improvement_actions": [
         {
@@ -155,10 +355,10 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "artifact_b1f85d10",
+      "artifact_id": "artifact_dda59bca",
       "artifact_type": "text",
       "artifact_path": "canonical.index.json",
       "metrics": {
@@ -172,8 +372,8 @@
       "rankings": {
         "self_rank": 5,
         "type_rank": 3,
-        "global_rank": 34,
-        "percentile": 0.45901639344262296
+        "global_rank": 51,
+        "percentile": 0.647887323943662
       },
       "improvement_actions": [
         {
@@ -205,10 +405,10 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "artifact_2b604629",
+      "artifact_id": "artifact_8fff58eb",
       "artifact_type": "text",
       "artifact_path": "canonical.index.yaml",
       "metrics": {
@@ -222,8 +422,8 @@
       "rankings": {
         "self_rank": 5,
         "type_rank": 4,
-        "global_rank": 35,
-        "percentile": 0.4426229508196721
+        "global_rank": 52,
+        "percentile": 0.6408450704225352
       },
       "improvement_actions": [
         {
@@ -255,10 +455,53 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "md_be9f7988",
+      "artifact_id": "code_0cca9b69",
+      "artifact_type": "code",
+      "artifact_path": "canonical_diff_tool.py",
+      "metrics": {
+        "quality_score": 0.712,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5636
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 11,
+        "global_rank": 11,
+        "percentile": 0.9295774647887324
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for canonical_diff_tool.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for canonical_diff_tool.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to canonical_diff_tool.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_6c0fa613",
       "artifact_type": "markdown",
       "artifact_path": "CICD_INTEGRATION.md",
       "metrics": {
@@ -271,9 +514,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 2,
-        "global_rank": 36,
-        "percentile": 0.4262295081967213
+        "type_rank": 6,
+        "global_rank": 53,
+        "percentile": 0.6338028169014085
       },
       "improvement_actions": [
         {
@@ -305,7 +548,350 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_7493f783",
+      "artifact_type": "text",
+      "artifact_path": "compliance_report.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 5,
+        "global_rank": 54,
+        "percentile": 0.6267605633802817
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for compliance_report.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for compliance_report.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to compliance_report.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in compliance_report.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_fdb94ff5",
+      "artifact_type": "code",
+      "artifact_path": "debug_statistics.py",
+      "metrics": {
+        "quality_score": 0.759,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5777
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 7,
+        "global_rank": 7,
+        "percentile": 0.9577464788732394
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for debug_statistics.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for debug_statistics.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to debug_statistics.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_01ea0ba9",
+      "artifact_type": "markdown",
+      "artifact_path": "DELIVERY_COMPLETE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 7,
+        "global_rank": 55,
+        "percentile": 0.6197183098591549
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DELIVERY_COMPLETE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DELIVERY_COMPLETE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DELIVERY_COMPLETE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DELIVERY_COMPLETE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_63644777",
+      "artifact_type": "markdown",
+      "artifact_path": "DMAIC_EXECUTION_TODO_MATURITY_ROADMAP.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 56,
+        "percentile": 0.6126760563380281
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DMAIC_EXECUTION_TODO_MATURITY_ROADMAP.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DMAIC_EXECUTION_TODO_MATURITY_ROADMAP.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DMAIC_EXECUTION_TODO_MATURITY_ROADMAP.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DMAIC_EXECUTION_TODO_MATURITY_ROADMAP.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_379e7b98",
+      "artifact_type": "markdown",
+      "artifact_path": "DMAIC_METRICS_ANALYSIS.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 9,
+        "global_rank": 57,
+        "percentile": 0.6056338028169014
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DMAIC_METRICS_ANALYSIS.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DMAIC_METRICS_ANALYSIS.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DMAIC_METRICS_ANALYSIS.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DMAIC_METRICS_ANALYSIS.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_5e205e2b",
+      "artifact_type": "markdown",
+      "artifact_path": "DMAIC_V3_TASK_CLOSURE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 10,
+        "global_rank": 58,
+        "percentile": 0.5985915492957746
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DMAIC_V3_TASK_CLOSURE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DMAIC_V3_TASK_CLOSURE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DMAIC_V3_TASK_CLOSURE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DMAIC_V3_TASK_CLOSURE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_cc74a069",
+      "artifact_type": "markdown",
+      "artifact_path": "DOCUMENTATION_INDEX.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 11,
+        "global_rank": 59,
+        "percentile": 0.5915492957746479
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DOCUMENTATION_INDEX.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DOCUMENTATION_INDEX.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DOCUMENTATION_INDEX.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DOCUMENTATION_INDEX.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_ea2c882a",
@@ -321,9 +907,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 3,
-        "global_rank": 37,
-        "percentile": 0.4098360655737705
+        "type_rank": 12,
+        "global_rank": 60,
+        "percentile": 0.5845070422535211
       },
       "improvement_actions": [
         {
@@ -355,10 +941,60 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "artifact_4547d105",
+      "artifact_id": "md_ccfe411c",
+      "artifact_type": "markdown",
+      "artifact_path": "DOW_CORE_ENGINE_ENHANCED.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 13,
+        "global_rank": 61,
+        "percentile": 0.5774647887323944
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for DOW_CORE_ENGINE_ENHANCED.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for DOW_CORE_ENGINE_ENHANCED.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to DOW_CORE_ENGINE_ENHANCED.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in DOW_CORE_ENGINE_ENHANCED.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_41f07d10",
       "artifact_type": "text",
       "artifact_path": "dow_engine_config.yaml",
       "metrics": {
@@ -371,9 +1007,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 5,
-        "global_rank": 38,
-        "percentile": 0.39344262295081966
+        "type_rank": 6,
+        "global_rank": 62,
+        "percentile": 0.5704225352112676
       },
       "improvement_actions": [
         {
@@ -405,7 +1041,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_018a6181",
@@ -421,9 +1057,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 4,
-        "global_rank": 39,
-        "percentile": 0.3770491803278688
+        "type_rank": 14,
+        "global_rank": 63,
+        "percentile": 0.5633802816901409
       },
       "improvement_actions": [
         {
@@ -455,7 +1091,107 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_f278c9f1",
+      "artifact_type": "markdown",
+      "artifact_path": "EXECUTION_REPORT.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 15,
+        "global_rank": 64,
+        "percentile": 0.5563380281690141
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for EXECUTION_REPORT.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for EXECUTION_REPORT.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to EXECUTION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in EXECUTION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_2ee7e2ac",
+      "artifact_type": "markdown",
+      "artifact_path": "EXECUTION_VALIDATION_REPORT.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 16,
+        "global_rank": 65,
+        "percentile": 0.5492957746478874
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for EXECUTION_VALIDATION_REPORT.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for EXECUTION_VALIDATION_REPORT.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to EXECUTION_VALIDATION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in EXECUTION_VALIDATION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_beae4558",
@@ -471,9 +1207,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 3,
-        "global_rank": 3,
-        "percentile": 0.9672131147540983
+        "type_rank": 10,
+        "global_rank": 10,
+        "percentile": 0.9366197183098591
       },
       "improvement_actions": [
         {
@@ -498,10 +1234,10 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "artifact_903a0b99",
+      "artifact_id": "artifact_147d4303",
       "artifact_type": "text",
       "artifact_path": "improvement_plan.txt",
       "metrics": {
@@ -514,9 +1250,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 6,
-        "global_rank": 40,
-        "percentile": 0.36065573770491804
+        "type_rank": 7,
+        "global_rank": 66,
+        "percentile": 0.5422535211267606
       },
       "improvement_actions": [
         {
@@ -548,7 +1284,107 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_5aff9c4f",
+      "artifact_type": "markdown",
+      "artifact_path": "INTEGRATION_COMPLETE_SUMMARY.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 17,
+        "global_rank": 67,
+        "percentile": 0.5352112676056338
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for INTEGRATION_COMPLETE_SUMMARY.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for INTEGRATION_COMPLETE_SUMMARY.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to INTEGRATION_COMPLETE_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in INTEGRATION_COMPLETE_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_fc518707",
+      "artifact_type": "markdown",
+      "artifact_path": "PHASE4_PHASE5_AGENT_INTEGRATION_REPORT.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 18,
+        "global_rank": 68,
+        "percentile": 0.528169014084507
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for PHASE4_PHASE5_AGENT_INTEGRATION_REPORT.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for PHASE4_PHASE5_AGENT_INTEGRATION_REPORT.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to PHASE4_PHASE5_AGENT_INTEGRATION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in PHASE4_PHASE5_AGENT_INTEGRATION_REPORT.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_3027fb55",
@@ -564,9 +1400,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 5,
-        "global_rank": 41,
-        "percentile": 0.3442622950819672
+        "type_rank": 19,
+        "global_rank": 69,
+        "percentile": 0.5211267605633803
       },
       "improvement_actions": [
         {
@@ -598,7 +1434,57 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_4fa1c4ac",
+      "artifact_type": "text",
+      "artifact_path": "pipeline_summary.txt",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 70,
+        "percentile": 0.5140845070422535
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for pipeline_summary.txt",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for pipeline_summary.txt",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to pipeline_summary.txt",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in pipeline_summary.txt",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_be9373f1",
@@ -614,9 +1500,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 7,
-        "global_rank": 42,
-        "percentile": 0.32786885245901637
+        "type_rank": 9,
+        "global_rank": 71,
+        "percentile": 0.5070422535211268
       },
       "improvement_actions": [
         {
@@ -648,10 +1534,60 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
-      "artifact_id": "artifact_9e829c91",
+      "artifact_id": "md_e36c0d4a",
+      "artifact_type": "markdown",
+      "artifact_path": "QUICK_START_GUIDE.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 20,
+        "global_rank": 72,
+        "percentile": 0.5
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for QUICK_START_GUIDE.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for QUICK_START_GUIDE.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to QUICK_START_GUIDE.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in QUICK_START_GUIDE.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_394b0383",
       "artifact_type": "text",
       "artifact_path": "ranking_report.txt",
       "metrics": {
@@ -664,9 +1600,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 8,
-        "global_rank": 43,
-        "percentile": 0.3114754098360656
+        "type_rank": 10,
+        "global_rank": 73,
+        "percentile": 0.49295774647887325
       },
       "improvement_actions": [
         {
@@ -698,7 +1634,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_64acb909",
@@ -714,9 +1650,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 6,
-        "global_rank": 44,
-        "percentile": 0.29508196721311475
+        "type_rank": 21,
+        "global_rank": 74,
+        "percentile": 0.4859154929577465
       },
       "improvement_actions": [
         {
@@ -748,7 +1684,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_e3b0c442",
@@ -764,9 +1700,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 9,
-        "global_rank": 45,
-        "percentile": 0.2786885245901639
+        "type_rank": 11,
+        "global_rank": 75,
+        "percentile": 0.4788732394366197
       },
       "improvement_actions": [
         {
@@ -798,7 +1734,107 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_d34b149c",
+      "artifact_type": "text",
+      "artifact_path": "run1.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 12,
+        "global_rank": 76,
+        "percentile": 0.47183098591549294
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for run1.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run1.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run1.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in run1.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_2e6a1e3f",
+      "artifact_type": "text",
+      "artifact_path": "run2.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 13,
+        "global_rank": 77,
+        "percentile": 0.4647887323943662
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for run2.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run2.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run2.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in run2.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_552dcc43",
@@ -814,9 +1850,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 5,
-        "global_rank": 5,
-        "percentile": 0.9344262295081968
+        "type_rank": 15,
+        "global_rank": 15,
+        "percentile": 0.9014084507042254
       },
       "improvement_actions": [
         {
@@ -841,7 +1877,50 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_2fe811d1",
+      "artifact_type": "code",
+      "artifact_path": "run_direct_improvements.py",
+      "metrics": {
+        "quality_score": 0.747,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5741
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 8,
+        "global_rank": 8,
+        "percentile": 0.9507042253521126
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_direct_improvements.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_direct_improvements.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_direct_improvements.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_39ce29e4",
@@ -857,9 +1936,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 13,
-        "global_rank": 13,
-        "percentile": 0.8032786885245902
+        "type_rank": 25,
+        "global_rank": 25,
+        "percentile": 0.8309859154929577
       },
       "improvement_actions": [
         {
@@ -891,7 +1970,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_02735da7",
@@ -907,9 +1986,9 @@
       },
       "rankings": {
         "self_rank": 4,
-        "type_rank": 1,
-        "global_rank": 1,
-        "percentile": 1.0
+        "type_rank": 4,
+        "global_rank": 4,
+        "percentile": 0.9788732394366197
       },
       "improvement_actions": [
         {
@@ -934,7 +2013,93 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_a2a54469",
+      "artifact_type": "code",
+      "artifact_path": "run_full_dmaic_pipeline_v2.py",
+      "metrics": {
+        "quality_score": 0.902,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.6206
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 3,
+        "global_rank": 3,
+        "percentile": 0.9859154929577465
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_full_dmaic_pipeline_v2.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_full_dmaic_pipeline_v2.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_full_dmaic_pipeline_v2.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_8a7b69fb",
+      "artifact_type": "code",
+      "artifact_path": "run_full_dmaic_pipeline_v2_with_agents.py",
+      "metrics": {
+        "quality_score": 1.0,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.65
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 1,
+        "global_rank": 1,
+        "percentile": 1.0
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_full_dmaic_pipeline_v2_with_agents.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_full_dmaic_pipeline_v2_with_agents.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_full_dmaic_pipeline_v2_with_agents.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_e17454af",
@@ -950,9 +2115,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 4,
-        "global_rank": 4,
-        "percentile": 0.9508196721311475
+        "type_rank": 13,
+        "global_rank": 13,
+        "percentile": 0.9154929577464789
       },
       "improvement_actions": [
         {
@@ -977,7 +2142,150 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_5e4aa219",
+      "artifact_type": "code",
+      "artifact_path": "run_standards_compliance.py",
+      "metrics": {
+        "quality_score": 0.847,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.6041
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 6,
+        "global_rank": 6,
+        "percentile": 0.9647887323943662
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for run_standards_compliance.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for run_standards_compliance.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to run_standards_compliance.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_54443d45",
+      "artifact_type": "markdown",
+      "artifact_path": "STANDARDS_COMPLIANCE_SUMMARY.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 22,
+        "global_rank": 78,
+        "percentile": 0.45774647887323944
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for STANDARDS_COMPLIANCE_SUMMARY.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for STANDARDS_COMPLIANCE_SUMMARY.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to STANDARDS_COMPLIANCE_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in STANDARDS_COMPLIANCE_SUMMARY.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "md_2d03d983",
+      "artifact_type": "markdown",
+      "artifact_path": "TESTING_CHECKLIST.md",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 23,
+        "global_rank": 79,
+        "percentile": 0.4507042253521127
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for TESTING_CHECKLIST.md",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for TESTING_CHECKLIST.md",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to TESTING_CHECKLIST.md",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in TESTING_CHECKLIST.md",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_420e808d",
@@ -993,9 +2301,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 7,
-        "global_rank": 46,
-        "percentile": 0.26229508196721313
+        "type_rank": 24,
+        "global_rank": 80,
+        "percentile": 0.44366197183098594
       },
       "improvement_actions": [
         {
@@ -1027,7 +2335,279 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_819df38f",
+      "artifact_type": "code",
+      "artifact_path": "agents\\base_agent.py",
+      "metrics": {
+        "quality_score": 0.574,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5222
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 21,
+        "global_rank": 21,
+        "percentile": 0.8591549295774648
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for base_agent.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for base_agent.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for base_agent.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to base_agent.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_403a489b",
+      "artifact_type": "code",
+      "artifact_path": "agents\\documentation_agent.py",
+      "metrics": {
+        "quality_score": 0.636,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5408000000000001
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 16,
+        "global_rank": 16,
+        "percentile": 0.8943661971830986
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for documentation_agent.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for documentation_agent.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to documentation_agent.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_31de7e52",
+      "artifact_type": "code",
+      "artifact_path": "agents\\orchestrator.py",
+      "metrics": {
+        "quality_score": 0.736,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5708
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 9,
+        "global_rank": 9,
+        "percentile": 0.9436619718309859
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for orchestrator.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for orchestrator.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to orchestrator.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_4355c22c",
+      "artifact_type": "code",
+      "artifact_path": "agents\\refactoring_agent.py",
+      "metrics": {
+        "quality_score": 0.665,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5495
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 14,
+        "global_rank": 14,
+        "percentile": 0.9084507042253521
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for refactoring_agent.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for refactoring_agent.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to refactoring_agent.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_881df35e",
+      "artifact_type": "code",
+      "artifact_path": "agents\\test_generation_agent.py",
+      "metrics": {
+        "quality_score": 0.615,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5345
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 17,
+        "global_rank": 17,
+        "percentile": 0.8873239436619719
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for test_generation_agent.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for test_generation_agent.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to test_generation_agent.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "code_4814aa92",
+      "artifact_type": "code",
+      "artifact_path": "agents\\__init__.py",
+      "metrics": {
+        "quality_score": 0.515,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5045000000000001
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 30,
+        "global_rank": 30,
+        "percentile": 0.795774647887324
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for __init__.py",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for __init__.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for __init__.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to __init__.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_10a10425",
@@ -1043,9 +2623,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 10,
-        "global_rank": 47,
-        "percentile": 0.2459016393442623
+        "type_rank": 14,
+        "global_rank": 81,
+        "percentile": 0.43661971830985913
       },
       "improvement_actions": [
         {
@@ -1077,7 +2657,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_3245d069",
@@ -1093,9 +2673,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 11,
-        "global_rank": 48,
-        "percentile": 0.22950819672131148
+        "type_rank": 15,
+        "global_rank": 82,
+        "percentile": 0.4295774647887324
       },
       "improvement_actions": [
         {
@@ -1127,7 +2707,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_1a05d5f4",
@@ -1143,9 +2723,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 12,
-        "global_rank": 49,
-        "percentile": 0.21311475409836064
+        "type_rank": 16,
+        "global_rank": 83,
+        "percentile": 0.4225352112676056
       },
       "improvement_actions": [
         {
@@ -1177,7 +2757,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_0063251c",
@@ -1193,9 +2773,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 8,
-        "global_rank": 50,
-        "percentile": 0.19672131147540983
+        "type_rank": 25,
+        "global_rank": 84,
+        "percentile": 0.4154929577464789
       },
       "improvement_actions": [
         {
@@ -1227,7 +2807,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_4444cf78",
@@ -1243,9 +2823,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 9,
-        "global_rank": 51,
-        "percentile": 0.18032786885245902
+        "type_rank": 26,
+        "global_rank": 85,
+        "percentile": 0.4084507042253521
       },
       "improvement_actions": [
         {
@@ -1277,7 +2857,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "md_ae861e30",
@@ -1293,9 +2873,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 10,
-        "global_rank": 52,
-        "percentile": 0.16393442622950818
+        "type_rank": 27,
+        "global_rank": 86,
+        "percentile": 0.4014084507042254
       },
       "improvement_actions": [
         {
@@ -1327,7 +2907,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "code_f2c357d6",
@@ -1343,9 +2923,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 17,
-        "global_rank": 17,
-        "percentile": 0.7377049180327869
+        "type_rank": 29,
+        "global_rank": 29,
+        "percentile": 0.8028169014084507
       },
       "improvement_actions": [
         {
@@ -1377,7 +2957,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
     },
     {
       "artifact_id": "artifact_a6ce508e",
@@ -1393,9 +2973,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 13,
-        "global_rank": 53,
-        "percentile": 0.14754098360655737
+        "type_rank": 17,
+        "global_rank": 87,
+        "percentile": 0.39436619718309857
       },
       "improvement_actions": [
         {
@@ -1427,7 +3007,2357 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_28deefbb",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251112_223346.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 18,
+        "global_rank": 88,
+        "percentile": 0.3873239436619718
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251112_223346.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251112_223346.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251112_223346.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251112_223346.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_f9834385",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251112_223955.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 19,
+        "global_rank": 89,
+        "percentile": 0.38028169014084506
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251112_223955.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251112_223955.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251112_223955.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251112_223955.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_e7fb49a5",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251112_224207.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 20,
+        "global_rank": 90,
+        "percentile": 0.3732394366197183
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251112_224207.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251112_224207.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251112_224207.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251112_224207.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_cc30c6df",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251112_224303.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 21,
+        "global_rank": 91,
+        "percentile": 0.36619718309859156
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251112_224303.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251112_224303.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251112_224303.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251112_224303.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_c03b5fe8",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251113_094703.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 22,
+        "global_rank": 92,
+        "percentile": 0.3591549295774648
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251113_094703.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251113_094703.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251113_094703.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251113_094703.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_8d22a560",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_20251116_131906.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 23,
+        "global_rank": 93,
+        "percentile": 0.352112676056338
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_20251116_131906.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_20251116_131906.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_20251116_131906.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_20251116_131906.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_0329cceb",
+      "artifact_type": "text",
+      "artifact_path": "logs\\agent_execution_log.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 24,
+        "global_rank": 94,
+        "percentile": 0.34507042253521125
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for agent_execution_log.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for agent_execution_log.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to agent_execution_log.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in agent_execution_log.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_0c3d483d",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_213042_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 25,
+        "global_rank": 95,
+        "percentile": 0.3380281690140845
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_213042_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_213042_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_213042_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_213042_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_0c543af3",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_213529_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 26,
+        "global_rank": 96,
+        "percentile": 0.33098591549295775
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_213529_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_213529_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_213529_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_213529_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_e989f68f",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_213626_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 27,
+        "global_rank": 97,
+        "percentile": 0.323943661971831
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_213626_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_213626_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_213626_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_213626_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_a9c58cbe",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214033_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 28,
+        "global_rank": 98,
+        "percentile": 0.31690140845070425
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214033_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214033_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214033_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214033_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_e039c7d5",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214033_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 29,
+        "global_rank": 99,
+        "percentile": 0.30985915492957744
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214033_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214033_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214033_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214033_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_54e6c3e6",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214115_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 30,
+        "global_rank": 100,
+        "percentile": 0.3028169014084507
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214115_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214115_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214115_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214115_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_3f535035",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214115_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 31,
+        "global_rank": 101,
+        "percentile": 0.29577464788732394
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214115_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214115_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214115_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214115_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_6a85240f",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214116_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 32,
+        "global_rank": 102,
+        "percentile": 0.2887323943661972
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214116_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214116_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214116_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214116_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_a59d8cb3",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214116_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 33,
+        "global_rank": 103,
+        "percentile": 0.28169014084507044
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214116_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214116_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214116_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214116_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_15c572cd",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214139_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 34,
+        "global_rank": 104,
+        "percentile": 0.2746478873239437
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214139_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214139_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214139_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214139_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_26a51b31",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214139_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 35,
+        "global_rank": 105,
+        "percentile": 0.2676056338028169
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214139_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214139_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214139_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214139_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_47935dd6",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214143_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 36,
+        "global_rank": 106,
+        "percentile": 0.2605633802816901
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214143_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214143_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214143_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214143_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_ae4df59c",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214143_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 37,
+        "global_rank": 107,
+        "percentile": 0.2535211267605634
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214143_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214143_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214143_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214143_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_4cbd7b92",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214418_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 38,
+        "global_rank": 108,
+        "percentile": 0.24647887323943662
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214418_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214418_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214418_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214418_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_b495bb85",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214418_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 39,
+        "global_rank": 109,
+        "percentile": 0.23943661971830985
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214418_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214418_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214418_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214418_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_86c9e51b",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214447_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 40,
+        "global_rank": 110,
+        "percentile": 0.2323943661971831
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214447_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214447_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214447_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214447_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_1c95b5e8",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_214447_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 41,
+        "global_rank": 111,
+        "percentile": 0.22535211267605634
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_214447_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_214447_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_214447_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_214447_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_daed5ac2",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_222855_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 42,
+        "global_rank": 112,
+        "percentile": 0.21830985915492956
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_222855_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_222855_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_222855_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_222855_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_cddad5e0",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_222855_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 43,
+        "global_rank": 113,
+        "percentile": 0.2112676056338028
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_222855_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_222855_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_222855_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_222855_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_995d59ac",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_222905_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 44,
+        "global_rank": 114,
+        "percentile": 0.20422535211267606
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_222905_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_222905_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_222905_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_222905_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_43ab7c67",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_222905_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 45,
+        "global_rank": 115,
+        "percentile": 0.19718309859154928
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_222905_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_222905_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_222905_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_222905_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_6d486b62",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223305_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 46,
+        "global_rank": 116,
+        "percentile": 0.19014084507042253
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223305_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223305_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223305_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223305_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_0f2da6bd",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223305_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 47,
+        "global_rank": 117,
+        "percentile": 0.18309859154929578
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223305_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223305_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223305_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223305_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_ac702023",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223346_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 48,
+        "global_rank": 118,
+        "percentile": 0.176056338028169
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223346_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223346_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223346_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223346_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_17dea35c",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223346_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 49,
+        "global_rank": 119,
+        "percentile": 0.16901408450704225
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223346_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223346_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223346_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223346_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_1e5a3606",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223954_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 50,
+        "global_rank": 120,
+        "percentile": 0.1619718309859155
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223954_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223954_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223954_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223954_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_edaa74e5",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_223954_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 51,
+        "global_rank": 121,
+        "percentile": 0.15492957746478872
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_223954_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_223954_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_223954_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_223954_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_9cf2d83a",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_224207_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 52,
+        "global_rank": 122,
+        "percentile": 0.14788732394366197
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_224207_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_224207_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_224207_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_224207_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.934502"
+    },
+    {
+      "artifact_id": "artifact_2da340b9",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_224207_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 53,
+        "global_rank": 123,
+        "percentile": 0.14084507042253522
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_224207_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_224207_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_224207_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_224207_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_b74e8964",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_224303_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 54,
+        "global_rank": 124,
+        "percentile": 0.13380281690140844
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_224303_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_224303_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_224303_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_224303_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_467e8980",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251112_224303_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 55,
+        "global_rank": 125,
+        "percentile": 0.1267605633802817
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251112_224303_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251112_224303_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251112_224303_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251112_224303_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_220b4825",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251113_094702_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 56,
+        "global_rank": 126,
+        "percentile": 0.11971830985915492
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251113_094702_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251113_094702_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251113_094702_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251113_094702_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_27a2de07",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251113_094702_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 57,
+        "global_rank": 127,
+        "percentile": 0.11267605633802817
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251113_094702_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251113_094702_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251113_094702_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251113_094702_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_b23534db",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251116_131436_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 58,
+        "global_rank": 128,
+        "percentile": 0.1056338028169014
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251116_131436_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251116_131436_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251116_131436_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251116_131436_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_09810379",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251116_131436_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 59,
+        "global_rank": 129,
+        "percentile": 0.09859154929577464
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251116_131436_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251116_131436_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251116_131436_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251116_131436_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_cfad55b7",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251116_131906_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 60,
+        "global_rank": 130,
+        "percentile": 0.09154929577464789
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251116_131906_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251116_131906_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251116_131906_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251116_131906_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_3d9c9d52",
+      "artifact_type": "text",
+      "artifact_path": "logs\\dmaic_pipeline_v2_20251116_131906_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 61,
+        "global_rank": 131,
+        "percentile": 0.08450704225352113
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for dmaic_pipeline_v2_20251116_131906_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for dmaic_pipeline_v2_20251116_131906_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to dmaic_pipeline_v2_20251116_131906_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in dmaic_pipeline_v2_20251116_131906_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_3d9c9d52",
+      "artifact_type": "text",
+      "artifact_path": "logs\\latest_execution.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 62,
+        "global_rank": 132,
+        "percentile": 0.07746478873239436
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for latest_execution.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for latest_execution.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to latest_execution.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in latest_execution.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_c0af02eb",
+      "artifact_type": "text",
+      "artifact_path": "logs\\test_pipeline_20251112_211053_checkpoint.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 63,
+        "global_rank": 133,
+        "percentile": 0.07042253521126761
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for test_pipeline_20251112_211053_checkpoint.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for test_pipeline_20251112_211053_checkpoint.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to test_pipeline_20251112_211053_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in test_pipeline_20251112_211053_checkpoint.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
+    },
+    {
+      "artifact_id": "artifact_48396630",
+      "artifact_type": "text",
+      "artifact_path": "logs\\test_pipeline_20251112_211053_final.json",
+      "metrics": {
+        "quality_score": 0.0,
+        "complexity_score": 0.0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 0.0,
+        "overall_score": 0.2
+      },
+      "rankings": {
+        "self_rank": 5,
+        "type_rank": 64,
+        "global_rank": 134,
+        "percentile": 0.06338028169014084
+      },
+      "improvement_actions": [
+        {
+          "action_type": "IMPROVE_QUALITY",
+          "priority": "CRITICAL",
+          "description": "General quality improvements for test_pipeline_20251112_211053_final.json",
+          "estimated_impact": 0.3,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for test_pipeline_20251112_211053_final.json",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to test_pipeline_20251112_211053_final.json",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        },
+        {
+          "action_type": "OPTIMIZE_DEPENDENCIES",
+          "priority": "MEDIUM",
+          "description": "Reduce dependencies in test_pipeline_20251112_211053_final.json",
+          "estimated_impact": 0.15,
+          "effort": "MEDIUM"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935011"
     },
     {
       "artifact_id": "code_62ed649b",
@@ -1443,9 +5373,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 16,
-        "global_rank": 16,
-        "percentile": 0.7540983606557377
+        "type_rank": 28,
+        "global_rank": 28,
+        "percentile": 0.8098591549295775
       },
       "improvement_actions": [
         {
@@ -1477,7 +5407,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935011"
     },
     {
       "artifact_id": "code_e3b0c442",
@@ -1493,9 +5423,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 27,
-        "global_rank": 27,
-        "percentile": 0.5737704918032787
+        "type_rank": 40,
+        "global_rank": 40,
+        "percentile": 0.7253521126760564
       },
       "improvement_actions": [
         {
@@ -1527,7 +5457,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935011"
     },
     {
       "artifact_id": "code_e4448fed",
@@ -1543,9 +5473,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 26,
-        "global_rank": 26,
-        "percentile": 0.5901639344262295
+        "type_rank": 39,
+        "global_rank": 39,
+        "percentile": 0.7323943661971831
       },
       "improvement_actions": [
         {
@@ -1577,7 +5507,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_a5c3a1c6",
@@ -1593,9 +5523,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 14,
-        "global_rank": 54,
-        "percentile": 0.13114754098360656
+        "type_rank": 65,
+        "global_rank": 135,
+        "percentile": 0.056338028169014086
       },
       "improvement_actions": [
         {
@@ -1627,7 +5557,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_ec34b1ce",
@@ -1643,9 +5573,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 15,
-        "global_rank": 55,
-        "percentile": 0.11475409836065574
+        "type_rank": 66,
+        "global_rank": 136,
+        "percentile": 0.04929577464788732
       },
       "improvement_actions": [
         {
@@ -1677,7 +5607,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_c7c1b118",
@@ -1693,9 +5623,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 16,
-        "global_rank": 56,
-        "percentile": 0.09836065573770492
+        "type_rank": 67,
+        "global_rank": 137,
+        "percentile": 0.04225352112676056
       },
       "improvement_actions": [
         {
@@ -1727,7 +5657,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_e79498f0",
@@ -1743,9 +5673,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 17,
-        "global_rank": 57,
-        "percentile": 0.08196721311475409
+        "type_rank": 68,
+        "global_rank": 138,
+        "percentile": 0.035211267605633804
       },
       "improvement_actions": [
         {
@@ -1777,7 +5707,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_2e673589",
@@ -1793,9 +5723,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 18,
-        "global_rank": 58,
-        "percentile": 0.06557377049180328
+        "type_rank": 69,
+        "global_rank": 139,
+        "percentile": 0.028169014084507043
       },
       "improvement_actions": [
         {
@@ -1827,7 +5757,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_34941065",
@@ -1843,9 +5773,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 19,
-        "global_rank": 59,
-        "percentile": 0.04918032786885246
+        "type_rank": 70,
+        "global_rank": 140,
+        "percentile": 0.02112676056338028
       },
       "improvement_actions": [
         {
@@ -1877,7 +5807,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_34941065",
@@ -1893,9 +5823,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 20,
-        "global_rank": 60,
-        "percentile": 0.03278688524590164
+        "type_rank": 71,
+        "global_rank": 141,
+        "percentile": 0.014084507042253521
       },
       "improvement_actions": [
         {
@@ -1927,7 +5857,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_9acaeeb0",
@@ -1943,9 +5873,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 10,
-        "global_rank": 10,
-        "percentile": 0.8524590163934426
+        "type_rank": 22,
+        "global_rank": 22,
+        "percentile": 0.852112676056338
       },
       "improvement_actions": [
         {
@@ -1977,25 +5907,25 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
-      "artifact_id": "code_ef0a2957",
+      "artifact_id": "code_8e87986e",
       "artifact_type": "code",
       "artifact_path": "dow_engine\\core\\engine.py",
       "metrics": {
-        "quality_score": 0.632,
+        "quality_score": 0.688,
         "complexity_score": 0,
         "coverage_score": 0.0,
         "documentation_score": 0.0,
         "dependency_score": 1.0,
-        "overall_score": 0.5396
+        "overall_score": 0.5564
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 6,
-        "global_rank": 6,
-        "percentile": 0.9180327868852459
+        "type_rank": 12,
+        "global_rank": 12,
+        "percentile": 0.9225352112676056
       },
       "improvement_actions": [
         {
@@ -2020,7 +5950,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_152c73a6",
@@ -2036,9 +5966,9 @@
       },
       "rankings": {
         "self_rank": 4,
-        "type_rank": 2,
-        "global_rank": 2,
-        "percentile": 0.9836065573770492
+        "type_rank": 5,
+        "global_rank": 5,
+        "percentile": 0.971830985915493
       },
       "improvement_actions": [
         {
@@ -2063,25 +5993,68 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
-      "artifact_id": "code_025475f3",
+      "artifact_id": "code_a1c4d170",
       "artifact_type": "code",
-      "artifact_path": "dow_engine\\git\\repo_manager.py",
+      "artifact_path": "dow_engine\\core\\standards_compliance.py",
       "metrics": {
-        "quality_score": 0.585,
+        "quality_score": 0.984,
         "complexity_score": 0,
         "coverage_score": 0.0,
         "documentation_score": 0.0,
         "dependency_score": 1.0,
-        "overall_score": 0.5255
+        "overall_score": 0.6452
+      },
+      "rankings": {
+        "self_rank": 4,
+        "type_rank": 2,
+        "global_rank": 2,
+        "percentile": 0.9929577464788732
+      },
+      "improvement_actions": [
+        {
+          "action_type": "COMPREHENSIVE_REFACTOR",
+          "priority": "HIGH",
+          "description": "Comprehensive refactoring needed for standards_compliance.py",
+          "estimated_impact": 0.4,
+          "effort": "HIGH"
+        },
+        {
+          "action_type": "ADD_TESTS",
+          "priority": "HIGH",
+          "description": "Add unit tests for standards_compliance.py (current: 0%)",
+          "estimated_impact": 0.2,
+          "effort": "MEDIUM"
+        },
+        {
+          "action_type": "ADD_DOCUMENTATION",
+          "priority": "HIGH",
+          "description": "Add docstrings and comments to standards_compliance.py",
+          "estimated_impact": 0.15,
+          "effort": "LOW"
+        }
+      ],
+      "timestamp": "2025-11-16T13:23:18.935133"
+    },
+    {
+      "artifact_id": "code_288e3450",
+      "artifact_type": "code",
+      "artifact_path": "dow_engine\\git\\repo_manager.py",
+      "metrics": {
+        "quality_score": 0.595,
+        "complexity_score": 0,
+        "coverage_score": 0.0,
+        "documentation_score": 0.0,
+        "dependency_score": 1.0,
+        "overall_score": 0.5285
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 8,
-        "global_rank": 8,
-        "percentile": 0.8852459016393442
+        "type_rank": 18,
+        "global_rank": 18,
+        "percentile": 0.8802816901408451
       },
       "improvement_actions": [
         {
@@ -2113,7 +6086,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_71aa696c",
@@ -2129,9 +6102,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 9,
-        "global_rank": 9,
-        "percentile": 0.8688524590163934
+        "type_rank": 20,
+        "global_rank": 20,
+        "percentile": 0.8661971830985915
       },
       "improvement_actions": [
         {
@@ -2163,7 +6136,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_13f295dd",
@@ -2179,9 +6152,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 7,
-        "global_rank": 7,
-        "percentile": 0.9016393442622951
+        "type_rank": 19,
+        "global_rank": 19,
+        "percentile": 0.8732394366197183
       },
       "improvement_actions": [
         {
@@ -2213,7 +6186,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_54afbb09",
@@ -2229,9 +6202,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 12,
-        "global_rank": 12,
-        "percentile": 0.819672131147541
+        "type_rank": 24,
+        "global_rank": 24,
+        "percentile": 0.8380281690140845
       },
       "improvement_actions": [
         {
@@ -2263,7 +6236,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_17e1d9ed",
@@ -2279,9 +6252,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 18,
-        "global_rank": 18,
-        "percentile": 0.7213114754098361
+        "type_rank": 31,
+        "global_rank": 31,
+        "percentile": 0.7887323943661971
       },
       "improvement_actions": [
         {
@@ -2313,7 +6286,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "artifact_40612ef3",
@@ -2329,9 +6302,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 21,
-        "global_rank": 61,
-        "percentile": 0.01639344262295082
+        "type_rank": 72,
+        "global_rank": 142,
+        "percentile": 0.007042253521126761
       },
       "improvement_actions": [
         {
@@ -2363,7 +6336,7 @@
           "effort": "MEDIUM"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_49d2c5f1",
@@ -2379,9 +6352,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 15,
-        "global_rank": 15,
-        "percentile": 0.7704918032786885
+        "type_rank": 27,
+        "global_rank": 27,
+        "percentile": 0.8169014084507042
       },
       "improvement_actions": [
         {
@@ -2413,7 +6386,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_e3b0c442",
@@ -2429,9 +6402,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 28,
-        "global_rank": 28,
-        "percentile": 0.5573770491803278
+        "type_rank": 41,
+        "global_rank": 41,
+        "percentile": 0.7183098591549296
       },
       "improvement_actions": [
         {
@@ -2463,7 +6436,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_0f050300",
@@ -2479,9 +6452,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 14,
-        "global_rank": 14,
-        "percentile": 0.7868852459016393
+        "type_rank": 26,
+        "global_rank": 26,
+        "percentile": 0.823943661971831
       },
       "improvement_actions": [
         {
@@ -2513,7 +6486,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_e3b0c442",
@@ -2529,9 +6502,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 29,
-        "global_rank": 29,
-        "percentile": 0.5409836065573771
+        "type_rank": 42,
+        "global_rank": 42,
+        "percentile": 0.7112676056338029
       },
       "improvement_actions": [
         {
@@ -2563,7 +6536,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_dcc9d173",
@@ -2579,9 +6552,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 19,
-        "global_rank": 19,
-        "percentile": 0.7049180327868853
+        "type_rank": 32,
+        "global_rank": 32,
+        "percentile": 0.7816901408450704
       },
       "improvement_actions": [
         {
@@ -2613,7 +6586,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_fc34f2c2",
@@ -2629,9 +6602,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 20,
-        "global_rank": 20,
-        "percentile": 0.6885245901639344
+        "type_rank": 33,
+        "global_rank": 33,
+        "percentile": 0.7746478873239436
       },
       "improvement_actions": [
         {
@@ -2663,7 +6636,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_878f723e",
@@ -2679,9 +6652,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 21,
-        "global_rank": 21,
-        "percentile": 0.6721311475409836
+        "type_rank": 34,
+        "global_rank": 34,
+        "percentile": 0.7676056338028169
       },
       "improvement_actions": [
         {
@@ -2713,7 +6686,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_542dae8f",
@@ -2729,9 +6702,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 22,
-        "global_rank": 22,
-        "percentile": 0.6557377049180327
+        "type_rank": 35,
+        "global_rank": 35,
+        "percentile": 0.7605633802816901
       },
       "improvement_actions": [
         {
@@ -2763,7 +6736,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_36f5ea04",
@@ -2779,9 +6752,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 23,
-        "global_rank": 23,
-        "percentile": 0.639344262295082
+        "type_rank": 36,
+        "global_rank": 36,
+        "percentile": 0.7535211267605634
       },
       "improvement_actions": [
         {
@@ -2813,7 +6786,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_78a45da8",
@@ -2829,9 +6802,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 24,
-        "global_rank": 24,
-        "percentile": 0.6229508196721312
+        "type_rank": 37,
+        "global_rank": 37,
+        "percentile": 0.7464788732394366
       },
       "improvement_actions": [
         {
@@ -2863,7 +6836,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_a8627048",
@@ -2879,9 +6852,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 25,
-        "global_rank": 25,
-        "percentile": 0.6065573770491803
+        "type_rank": 38,
+        "global_rank": 38,
+        "percentile": 0.7394366197183099
       },
       "improvement_actions": [
         {
@@ -2913,7 +6886,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_a2995011",
@@ -2929,9 +6902,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 11,
-        "global_rank": 11,
-        "percentile": 0.8360655737704918
+        "type_rank": 23,
+        "global_rank": 23,
+        "percentile": 0.8450704225352113
       },
       "improvement_actions": [
         {
@@ -2963,7 +6936,7 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     },
     {
       "artifact_id": "code_e3b0c442",
@@ -2979,9 +6952,9 @@
       },
       "rankings": {
         "self_rank": 5,
-        "type_rank": 30,
-        "global_rank": 30,
-        "percentile": 0.5245901639344263
+        "type_rank": 43,
+        "global_rank": 43,
+        "percentile": 0.704225352112676
       },
       "improvement_actions": [
         {
@@ -3013,13 +6986,13 @@
           "effort": "LOW"
         }
       ],
-      "timestamp": "2025-11-12T19:13:58.733803"
+      "timestamp": "2025-11-16T13:23:18.935133"
     }
   ],
   "summary": {
-    "avg_quality": 0.24696721311475409,
+    "avg_quality": 0.17480985915492958,
     "avg_complexity": 0.0,
-    "avg_overall": 0.3478606557377049,
-    "high_priority_actions": 207
+    "avg_overall": 0.2978654929577465,
+    "high_priority_actions": 452
   }
 }

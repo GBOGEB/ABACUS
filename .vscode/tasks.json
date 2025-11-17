@@ -1,0 +1,166 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Push to GitHub",
+      "type": "shell",
+      "command": "git push origin ${input:branchName}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Create PR",
+      "type": "shell",
+      "command": "gh pr create --title \"${input:prTitle}\" --body \"${input:prBody}\"",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Check CI Status",
+      "type": "shell",
+      "command": "python ci_monitor_local.py --pr ${input:prNumber}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Watch CI",
+      "type": "shell",
+      "command": "python ci_monitor_local.py --pr ${input:prNumber} --watch",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Check CD Status",
+      "type": "shell",
+      "command": "python cd_monitor.py --environment ${input:environment}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Track PR",
+      "type": "shell",
+      "command": "python github_tracking_manager.py --sync-pr ${input:prNumber} && python github_tracking_manager.py --sync-ci ${input:prNumber}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Analyze Workflows",
+      "type": "shell",
+      "command": "python workflow_analyzer.py --days ${input:days}",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Generate Reports",
+      "type": "shell",
+      "command": "python github_tracking_manager.py --report && python cd_monitor.py --report && python workflow_analyzer.py",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Full CI/CD Check (PowerShell)",
+      "type": "shell",
+      "command": ".\\ci_cd_automation.ps1 -PR ${input:prNumber} -Track -Analyze -Report",
+      "problemMatcher": [],
+      "windows": {
+        "command": ".\\ci_cd_automation.ps1 -PR ${input:prNumber} -Track -Analyze -Report"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "pytest --json-report --json-report-file=test_report.json",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Validate YAML Workflows",
+      "type": "shell",
+      "command": "yamllint .github/workflows/*.yml",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "GitHub Auth Status",
+      "type": "shell",
+      "command": "gh auth status",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "branchName",
+      "type": "promptString",
+      "description": "Branch name to push",
+      "default": "feature/dow-integration"
+    },
+    {
+      "id": "prNumber",
+      "type": "promptString",
+      "description": "PR number",
+      "default": "15"
+    },
+    {
+      "id": "prTitle",
+      "type": "promptString",
+      "description": "PR title"
+    },
+    {
+      "id": "prBody",
+      "type": "promptString",
+      "description": "PR description"
+    },
+    {
+      "id": "environment",
+      "type": "pickString",
+      "description": "Deployment environment",
+      "options": ["all", "staging", "production"],
+      "default": "all"
+    },
+    {
+      "id": "days",
+      "type": "promptString",
+      "description": "Number of days to analyze",
+      "default": "30"
+    }
+  ]
+}
