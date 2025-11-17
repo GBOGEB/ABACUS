@@ -46,6 +46,8 @@ temp_venv/
 .coverage
 htmlcov/
 .tox/
+actions.json
+.mcp/
 
 # Logs
 *.log
