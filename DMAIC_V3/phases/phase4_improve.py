@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def execute(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve
 
@@ -537,11 +537,9 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Dictionary with improvement results
         """
-        results = self.run(iteration)
-        success = results.get('success', False)
-        return success, results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Dict[str, Any]:
         """
@@ -608,6 +606,7 @@ class Phase4Improve:
                 'files_actually_improved': implementation_results['total_files_improved'],
                 'total_modifications_made': implementation_results['total_modifications']
             },
+            'improvements': prioritized_tasks,
             'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
@@ -655,6 +654,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     result = phase4.run(iteration)
 
-    if not result['success']:
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
