@@ -5,11 +5,11 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Any
 from datetime import datetime
 
-from ..core.state import StateManager
 from ..config import DMAICConfig
+from ..core.state import StateManager
 
 try:
     import sys
@@ -40,14 +40,7 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Dictionary with control results
-        """
+        """Execute Phase 5: Control"""
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
