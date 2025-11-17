@@ -68,9 +68,11 @@ def test_fix_4_quality_gates():
     print("\n[TEST 4] Verifying quality gate enforcement...")
     import config
     from phases import phase5_control
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase5 = phase5_control.Phase5Control(cfg)
+    state_manager = StateManager(cfg.paths.output_root / "state")
+    phase5 = phase5_control.Phase5Control(cfg, state_manager)
     
     has_check_method = hasattr(phase5, '_check_quality_gates')
     
