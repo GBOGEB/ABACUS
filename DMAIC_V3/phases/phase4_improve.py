@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve
 
@@ -537,11 +537,11 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement results
+            Tuple of (success: bool, results: Dict)
         """
         return self.run(iteration)
 
-    def run(self, iteration: int) -> Dict[str, Any]:
+    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -549,7 +549,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement plan AND implementation results
+            Tuple of (success: bool, results: Dict)
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -614,7 +614,7 @@ class Phase4Improve:
             
             print(f"\n[*] Minimal improvement plan saved to: {output_file}")
             
-            return minimal_result
+            return True, minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
@@ -684,7 +684,7 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
+        return True, improvement_result
 
 
 if __name__ == "__main__":
