@@ -17,12 +17,39 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
+from ..config import DMAICConfig
+from ..core.state import StateManager
+
 
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, output_dir: Path = None, use_gbogeb: bool = True):
-        self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
+    def __init__(self, config=None, state_manager=None, use_gbogeb: bool = True):
+        """
+        Initialize Phase 5: Control
+        
+        Args:
+            config: DMAICConfig instance (or output_dir Path for backward compatibility)
+            state_manager: StateManager instance (optional)
+            use_gbogeb: Enable GBOGEB observability (default: True)
+        """
+        # Support both new signature (config, state_manager) and old signature (output_dir, use_gbogeb)
+        if config is None:
+            # Default case
+            self.output_dir = Path("DMAIC_V3_OUTPUT")
+            self.config = None
+            self.state_manager = None
+        elif isinstance(config, Path) or isinstance(config, str):
+            # Old signature: Phase5Control(output_dir, use_gbogeb)
+            self.output_dir = Path(config)
+            self.config = None
+            self.state_manager = state_manager
+        else:
+            # New signature: Phase5Control(config, state_manager)
+            self.config = config
+            self.state_manager = state_manager
+            self.output_dir = config.paths.output_root if hasattr(config, 'paths') else Path("DMAIC_V3_OUTPUT")
+        
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -30,8 +57,15 @@ class Phase5Control:
             print("[GBOGEB] Initializing observability layer...")
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
-        """Execute Phase 5: Control"""
+    def execute(self, iteration: int) -> Dict:
+        """Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -42,7 +76,7 @@ class Phase5Control:
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return True, self._create_skip_result(iteration)
+                return self._create_skip_result(iteration)
             
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
@@ -93,9 +127,19 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
-                'gbogeb_enabled': self.use_gbogeb
+                'gbogeb_enabled': self.use_gbogeb,
+                'input_source': str(phase4_file),
+                # Aliases for test compatibility
+                'controls': quality_gates,  # Alias for quality_gates
+                'checkpoints': quality_gates,  # Validation checkpoints
+                'metrics': {
+                    'total_gates': len(quality_gates),
+                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
+                }
             }
             
             print(f"\n[5.3] Saving results...")
@@ -112,13 +156,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return True, results
+            return results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {'error': str(e)}
+            return {'error': str(e), 'phase': 'CONTROL', 'iteration': iteration}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -182,9 +226,9 @@ def main():
     iteration = int(sys.argv[1])
     
     phase5 = Phase5Control()
-    success, results = phase5.execute(iteration)
+    results = phase5.execute(iteration)
     
-    return 0 if success else 1
+    return 0 if not results.get('error') else 1
 
 
 if __name__ == "__main__":
