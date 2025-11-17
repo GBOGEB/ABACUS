@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from datetime import datetime
 
+from ..core.state import StateManager
+from ..config import DMAICConfig
+
 try:
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -16,6 +19,9 @@ try:
 except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
+
+from ..config import DMAICConfig
+from ..core.state import StateManager
 
 
 class Phase5Control:
@@ -42,10 +48,13 @@ class Phase5Control:
             iteration_dir = self.config.paths.output_root / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
+            input_source = None
+            
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
                 return self._create_skip_result(iteration)
             
+            input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
                 phase4_data = json.load(f)
             
@@ -91,12 +100,25 @@ class Phase5Control:
                 audit_file = self.gbogeb.generate_audit_trail()
                 print(f"  ✅ Audit trail: {audit_file}")
             
+            # Create validation checkpoints based on quality gates
+            validation_checkpoints = [
+                {
+                    'name': gate_name,
+                    'passed': gate_result['passed'],
+                    'message': gate_result['message'],
+                    'value': gate_result.get('value')
+                }
+                for gate_name, gate_result in quality_gates.items()
+            ]
+            
             results = {
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
+                'validation_checkpoints': validation_checkpoints,
+                'controls': quality_gates,  # Alias for quality_gates to satisfy test expectations
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
                 'checkpoints': quality_gates,  # Alias for validation_checkpoints test
@@ -171,6 +193,8 @@ class Phase5Control:
             'phase': 'CONTROL',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
+            'input_source': None,
+            'validation_checkpoints': [],
             'skipped': True,
             'reason': 'Phase 4 results not found'
         }
