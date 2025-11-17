@@ -24,32 +24,18 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config=None, state_manager=None, use_gbogeb: bool = True):
+    def __init__(self, config, state_manager, use_gbogeb: bool = True):
         """
         Initialize Phase 5: Control
         
         Args:
-            config: DMAICConfig instance (or output_dir Path for backward compatibility)
-            state_manager: StateManager instance (optional)
-            use_gbogeb: Enable GBOGEB observability (default: True)
+            config: DMAICConfig instance
+            state_manager: StateManager instance
+            use_gbogeb: Whether to use GBOGEB observability (default: True)
         """
-        # Support both new signature (config, state_manager) and old signature (output_dir, use_gbogeb)
-        if config is None:
-            # Default case
-            self.output_dir = Path("DMAIC_V3_OUTPUT")
-            self.config = None
-            self.state_manager = None
-        elif isinstance(config, Path) or isinstance(config, str):
-            # Old signature: Phase5Control(output_dir, use_gbogeb)
-            self.output_dir = Path(config)
-            self.config = None
-            self.state_manager = state_manager
-        else:
-            # New signature: Phase5Control(config, state_manager)
-            self.config = config
-            self.state_manager = state_manager
-            self.output_dir = config.paths.output_root if hasattr(config, 'paths') else Path("DMAIC_V3_OUTPUT")
-        
+        self.config = config
+        self.state_manager = state_manager
+        self.output_dir = config.paths.output_root
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -127,7 +113,7 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
-                'input_source': str(phase4_file),
+                'input_source': str(phase4_file) if phase4_file.exists() else None,
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
@@ -218,6 +204,12 @@ class Phase5Control:
 def main():
     """Test Phase 5"""
     import sys
+    from pathlib import Path
+    
+    # Add parent directory to path for imports
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from config import DMAICConfig
+    from core.state import StateManager
     
     if len(sys.argv) < 2:
         print("Usage: python phase5_control.py <iteration>")
@@ -225,8 +217,12 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    phase5 = Phase5Control()
-    results = phase5.execute(iteration)
+    # Initialize config and state manager
+    config = DMAICConfig()
+    state_manager = StateManager(config.paths.state_dir)
+    
+    phase5 = Phase5Control(config, state_manager)
+    success, results = phase5.execute(iteration)
     
     return 0 if not results.get('error') else 1
 
