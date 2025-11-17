@@ -24,10 +24,32 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
-        self.config = config
-        self.state_manager = state_manager
-        self.output_dir = config.paths.output_root
+    def __init__(self, config=None, state_manager=None, use_gbogeb: bool = True):
+        """
+        Initialize Phase 5: Control
+        
+        Args:
+            config: DMAICConfig instance (or output_dir Path for backward compatibility)
+            state_manager: StateManager instance (optional)
+            use_gbogeb: Enable GBOGEB observability (default: True)
+        """
+        # Support both new signature (config, state_manager) and old signature (output_dir, use_gbogeb)
+        if config is None:
+            # Default case
+            self.output_dir = Path("DMAIC_V3_OUTPUT")
+            self.config = None
+            self.state_manager = None
+        elif isinstance(config, Path) or isinstance(config, str):
+            # Old signature: Phase5Control(output_dir, use_gbogeb)
+            self.output_dir = Path(config)
+            self.config = None
+            self.state_manager = state_manager
+        else:
+            # New signature: Phase5Control(config, state_manager)
+            self.config = config
+            self.state_manager = state_manager
+            self.output_dir = config.paths.output_root if hasattr(config, 'paths') else Path("DMAIC_V3_OUTPUT")
+        
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -36,7 +58,14 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+        """Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -102,13 +131,14 @@ class Phase5Control:
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                # Aliases for backward compatibility with tests
-                'controls': quality_gates,
-                'checkpoints': quality_gates,
-                'summary': {
-                    'all_gates_passed': all_passed,
+                'input_source': str(phase4_file),
+                # Aliases for test compatibility
+                'controls': quality_gates,  # Alias for quality_gates
+                'checkpoints': quality_gates,  # Validation checkpoints
+                'metrics': {
                     'total_gates': len(quality_gates),
-                    'passed_gates': sum(1 for g in quality_gates.values() if g['passed'])
+                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
                 }
             }
             
@@ -132,7 +162,7 @@ class Phase5Control:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'phase': 'CONTROL', 'iteration': iteration, 'error': str(e)}
+            return {'error': str(e), 'phase': 'CONTROL', 'iteration': iteration}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -195,18 +225,10 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # For standalone execution, create minimal config
-    from ..config import DMAICConfig
-    from ..core.state import StateManager
-    
-    config = DMAICConfig()
-    state_manager = StateManager(config.paths.output_root / "state")
-    
-    phase5 = Phase5Control(config, state_manager)
+    phase5 = Phase5Control()
     results = phase5.execute(iteration)
     
-    # Return 0 if no error, 1 if error
-    return 0 if 'error' not in results else 1
+    return 0 if not results.get('error') else 1
 
 
 if __name__ == "__main__":
