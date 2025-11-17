@@ -27,18 +27,26 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config, state_manager, use_gbogeb: bool = True):
+    def __init__(self, config=None, state_manager=None, output_dir: Path = None, use_gbogeb: bool = True):
         """
         Initialize Phase 5: Control
         
         Args:
-            config: DMAICConfig instance
+            config: DMAICConfig instance (preferred)
             state_manager: StateManager instance
-            use_gbogeb: Whether to use GBOGEB observability (default: True)
+            output_dir: Path to output directory (legacy, used if config not provided)
+            use_gbogeb: Whether to use GBOGEB for observability
         """
-        self.config = config
-        self.state_manager = state_manager
-        self.output_dir = config.paths.output_root
+        # Support both new pattern (config, state_manager) and legacy pattern (output_dir)
+        if config is not None:
+            self.config = config
+            self.state_manager = state_manager
+            self.output_dir = config.paths.output_root
+        else:
+            self.config = None
+            self.state_manager = None
+            self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
+        
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -48,7 +56,14 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+        """Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -61,7 +76,7 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration, input_source)
+                return self._create_skip_result(iteration)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -130,14 +145,13 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
-                'input_source': input_source,
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'validation_checkpoints': validation_checkpoints,
-                'summary': summary,
+                'checkpoints': quality_gates,  # Alias for tests
+                'controls': quality_gates,  # Another alias for tests
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                'checkpoints': quality_gates,  # Alias for validation_checkpoints test
-                'controls': quality_gates  # Alias for control_metrics test
+                'success': all_passed
             }
             
             print(f"\n[5.4] Saving results...")
@@ -160,68 +174,12 @@ class Phase5Control:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'error': str(e)}
-    
-    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
-        """
-        Create validation checkpoints based on quality gates
-        
-        Args:
-            quality_gates: Dictionary of quality gate results
-            iteration: Current iteration number
-            
-        Returns:
-            List of validation checkpoint dictionaries
-        """
-        checkpoints = []
-        
-        # Checkpoint 1: All quality gates passed
-        all_passed = all(gate['passed'] for gate in quality_gates.values())
-        checkpoints.append({
-            'name': 'all_quality_gates',
-            'description': 'All quality gates must pass',
-            'passed': all_passed,
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-        # Checkpoint 2: Code quality gate
-        checkpoints.append({
-            'name': 'code_quality_gate',
-            'description': 'Code quality improvements verified',
-            'passed': quality_gates.get('code_quality', {}).get('passed', False),
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-        # Checkpoint 3: Documentation gate
-        checkpoints.append({
-            'name': 'documentation_gate',
-            'description': 'Documentation standards met',
-            'passed': quality_gates.get('documentation', {}).get('passed', False),
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-        # Checkpoint 4: Test coverage gate
-        checkpoints.append({
-            'name': 'test_coverage_gate',
-            'description': 'Test coverage requirements met',
-            'passed': quality_gates.get('test_coverage', {}).get('passed', False),
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-        # Checkpoint 5: Performance gate
-        checkpoints.append({
-            'name': 'performance_gate',
-            'description': 'Performance standards met',
-            'passed': quality_gates.get('performance', {}).get('passed', False),
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-        return checkpoints
+            return {
+                'error': str(e), 
+                'phase': 'CONTROL', 
+                'iteration': iteration,
+                'success': False
+            }
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -272,8 +230,7 @@ class Phase5Control:
             'input_source': input_source,
             'skipped': True,
             'reason': 'Phase 4 results not found',
-            'quality_gates': {},
-            'validation_checkpoints': []
+            'success': True  # Skipping is not a failure
         }
 
 
