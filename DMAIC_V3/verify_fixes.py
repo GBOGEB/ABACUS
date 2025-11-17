@@ -71,7 +71,7 @@ def test_fix_4_quality_gates():
     from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    state_manager = StateManager(cfg.paths.output_root / "state")
+    state_manager = StateManager(cfg.paths.state_dir)
     phase5 = phase5_control.Phase5Control(cfg, state_manager)
     
     has_check_method = hasattr(phase5, '_check_quality_gates')
