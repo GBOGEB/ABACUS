@@ -562,9 +562,39 @@ class Phase4Improve:
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'version': __version__,
                 'input_source': str(phase3_output),
-                'error': f"Phase 3 output not found: {phase3_output}",
-                'improvements': []
+                'improvements': [],
+                'refactoring_tasks': [],
+                'summary': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'files_actually_improved': 0,
+                    'total_modifications_made': 0
+                },
+                'implementation_roadmap': {
+                    'phase_1_immediate': [],
+                    'phase_2_short_term': [],
+                    'phase_3_long_term': []
+                },
+                'metrics': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'estimated_total_effort': 0
+                },
+                'implementation_results': {
+                    'docstrings_added': [],
+                    'long_lines_fixed': [],
+                    'type_hints_added': [],
+                    'unused_imports_removed': [],
+                    'total_files_improved': 0,
+                    'total_modifications': 0
+                },
+                'error': f"Phase 3 output not found: {phase3_output}"
             }
 
         with open(phase3_output, 'r') as f:
@@ -598,8 +628,6 @@ class Phase4Improve:
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
             'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,
-            'total_improvements': metrics['total_improvements'],
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -608,7 +636,7 @@ class Phase4Improve:
                 'files_actually_improved': implementation_results['total_files_improved'],
                 'total_modifications_made': implementation_results['total_modifications']
             },
-            'improvements': prioritized_tasks,  # Alias for refactoring_tasks for test compatibility
+            'improvements': prioritized_tasks,
             'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
