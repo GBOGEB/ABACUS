@@ -27,40 +27,25 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
-        """
-        Initialize Phase 5: Control
-        
-        Args:
-            config: DMAICConfig instance
-            state_manager: StateManager instance
-            use_gbogeb: Whether to use GBOGEB observability (default: True)
-        """
+    def __init__(self, config, state_manager, use_gbogeb: bool = True):
         self.config = config
         self.state_manager = state_manager
-        self.output_dir = Path(config.paths.output_root)
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
         if self.use_gbogeb:
             print("[GBOGEB] Initializing observability layer...")
-            self.gbogeb = GBOGEB(workspace=str(self.output_dir / "gbogeb_workspace"))
+            gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
+            self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Dictionary with control results
-        """
+        """Execute Phase 5: Control"""
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
             print("="*80)
             
-            iteration_dir = self.output_dir / f"iteration_{iteration}"
+            iteration_dir = self.config.paths.output_root / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             input_source = None
@@ -130,21 +115,14 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
-                'input_source': input_source,
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
                 'validation_checkpoints': validation_checkpoints,
                 'controls': quality_gates,  # Alias for quality_gates to satisfy test expectations
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                'input_source': str(phase4_file),
-                # Aliases for test compatibility
-                'controls': quality_gates,  # Alias for quality_gates
-                'checkpoints': quality_gates,  # Validation checkpoints
-                'metrics': {
-                    'total_gates': len(quality_gates),
-                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
-                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
-                }
+                'checkpoints': quality_gates,  # Alias for validation_checkpoints test
+                'controls': quality_gates  # Alias for control_metrics test
             }
             
             print(f"\n[5.3] Saving results...")
@@ -225,9 +203,9 @@ class Phase5Control:
 def main():
     """Test Phase 5"""
     import sys
+    from pathlib import Path
     from ..config import DMAICConfig
     from ..core.state import StateManager
-    from pathlib import Path
     
     if len(sys.argv) < 2:
         print("Usage: python phase5_control.py <iteration>")
@@ -235,18 +213,13 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # Create config and state manager
     config = DMAICConfig()
     state_manager = StateManager(config.paths.state_dir)
     
     phase5 = Phase5Control(config, state_manager)
     results = phase5.execute(iteration)
     
-    # Check for errors in results
-    success = results.get('error') is None if isinstance(results, dict) else False
-    
-    # Return 0 if no error, 1 if error
-    return 0 if 'error' not in results else 1
+    return 0 if results and 'error' not in results else 1
 
 
 if __name__ == "__main__":
