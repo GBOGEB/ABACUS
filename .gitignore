@@ -46,6 +46,11 @@ temp_venv/
 .coverage
 htmlcov/
 .tox/
+actions.json
+.mcp/
+
+# Deployment reports
+DMAIC_V3_OUTPUT/deployment_report.json
 
 # Logs
 *.log
