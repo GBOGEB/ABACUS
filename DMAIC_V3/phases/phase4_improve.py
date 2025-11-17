@@ -681,6 +681,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     result = phase4.run(iteration)
 
-    if not result['success']:
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
