@@ -79,7 +79,7 @@ class TestPhase4Improve:
         assert phase4.config == config
     
     def test_execute_with_phase3_output(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         assert result['phase'] == 'IMPROVE'
         assert result['iteration'] == 1
@@ -87,13 +87,13 @@ class TestPhase4Improve:
         assert 'improvements' in result
     
     def test_generate_improvements(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         improvements = result.get('improvements', [])
         assert isinstance(improvements, list)
     
     def test_prioritize_improvements(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         improvements = result.get('improvements', [])
         if improvements:
@@ -101,7 +101,7 @@ class TestPhase4Improve:
                 assert 'priority' in improvement or 'severity' in improvement
     
     def test_output_structure(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         assert 'phase' in result
         assert 'iteration' in result
@@ -110,7 +110,7 @@ class TestPhase4Improve:
         assert 'improvements' in result
     
     def test_dual_output_locations(self, phase4, phase3_output, config):
-        phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         output_dir = config.paths.output_root / "iteration_1"
         phase4_improvements_file = output_dir / "phase4_improvements.json"
@@ -126,13 +126,13 @@ class TestPhase4Improve:
             assert data1['iteration'] == data2['iteration']
     
     def test_missing_phase3_output(self, phase4, config):
-        result = phase4.execute(iteration=99)
+        success, result = phase4.execute(iteration=99)
         
         assert result is not None
         assert result.get('phase') == 'IMPROVE'
     
     def test_improvement_categories(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         improvements = result.get('improvements', [])
         if improvements:
@@ -140,12 +140,12 @@ class TestPhase4Improve:
                 assert 'description' in improvement or 'action' in improvement
     
     def test_improvement_tracking(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         assert 'total_improvements' in result or len(result.get('improvements', [])) >= 0
     
     def test_file_saved_correctly(self, phase4, phase3_output, config):
-        phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         output_file = config.paths.output_root / "iteration_1" / "phase4_improvements.json"
         assert output_file.exists()
@@ -170,11 +170,11 @@ class TestPhase4Improve:
             phase3_file = output_dir / "phase3_analysis.json"
             phase3_file.write_text(json.dumps(phase3_data))
             
-            result = phase4.execute(iteration=iteration)
+            success, result = phase4.execute(iteration=iteration)
             assert result['iteration'] == iteration
     
     def test_improvement_actionability(self, phase4, phase3_output):
-        result = phase4.execute(iteration=1)
+        success, result = phase4.execute(iteration=1)
         
         improvements = result.get('improvements', [])
         if improvements:
