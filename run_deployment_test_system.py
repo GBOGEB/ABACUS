@@ -180,21 +180,14 @@ def main():
                 print(f"  Duration: {result.duration_seconds:.2f}s")
     
     # Phase 2: Static Analysis (optional)
-    static_analysis_results = None
+    # Phase 2: Static Analysis (deferred to metrics generation)
     if not args.skip_static:
         with IdempotentPhase('static_analysis', bridge):
             if args.verbose:
                 print(f"\n{'='*80}")
                 print("PHASE 2: Static Analysis")
                 print(f"{'='*80}")
-            
-            static_analysis_results = bridge.run_static_analysis()
-            
-            if args.verbose:
-                for tool, result in static_analysis_results.items():
-                    if result and 'returncode' in result:
-                        status = '✓ PASSED' if result['returncode'] == 0 else '✗ FAILED'
-                        print(f"  {tool}: {status}")
+                print("  Static analysis will be performed as part of deployment metrics generation (Phase 4).")
     else:
         if args.verbose:
             print(f"\n{'='*80}")
