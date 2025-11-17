@@ -5,6 +5,10 @@ Provides iteration control and convergence analysis
 
 from typing import Dict, List, Any, Tuple
 
+# Default configuration constants
+DEFAULT_MAX_ITERATIONS = 10
+DEFAULT_CONVERGENCE_THRESHOLD = 0.01
+
 
 def should_stop(history: List[Dict[str, Any]], 
                rules: List[Dict[str, Any]]) -> Tuple[bool, str]:
@@ -13,7 +17,7 @@ def should_stop(history: List[Dict[str, Any]],
     
     Args:
         history: List of iteration metrics
-        rules: List of stop rules
+        rules: List of stop rules (used to extract max_iterations and convergence_threshold)
         
     Returns:
         Tuple of (should_stop, reason)
@@ -21,8 +25,14 @@ def should_stop(history: List[Dict[str, Any]],
     if not history:
         return False, "No history"
     
-    # Simple stub: stop if we have more than 10 iterations
-    if len(history) >= 10:
+    # Extract max iterations from rules, or use default
+    max_iterations = next(
+        (rule['value'] for rule in rules if rule.get('type') == 'max_iterations'), 
+        DEFAULT_MAX_ITERATIONS
+    )
+    
+    # Check if max iterations reached
+    if len(history) >= max_iterations:
         return True, "Maximum iterations reached"
     
     # Check for convergence in metrics if available
@@ -31,8 +41,11 @@ def should_stop(history: List[Dict[str, Any]],
         # Simple convergence check: if all recent iterations have similar metrics
         if all('score' in item for item in recent):
             scores = [item['score'] for item in recent]
-            # Extract convergence threshold from rules, default to 0.01 if not found
-            threshold = next((rule['value'] for rule in rules if rule.get('type') == 'convergence_threshold'), 0.01)
+            # Extract convergence threshold from rules, or use default
+            threshold = next(
+                (rule['value'] for rule in rules if rule.get('type') == 'convergence_threshold'), 
+                DEFAULT_CONVERGENCE_THRESHOLD
+            )
             if max(scores) - min(scores) < threshold:
                 return True, "Convergence detected"
     
@@ -81,7 +94,7 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             trend = 'stable'
         
         return {
-            'converged': score_range < 0.01,
+            'converged': score_range < DEFAULT_CONVERGENCE_THRESHOLD,
             'iterations': iterations,
             'trend': trend,
             'score_range': score_range,
@@ -108,10 +121,10 @@ def generate_stop_rules(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [
         {
             'type': 'max_iterations',
-            'value': config.get('max_iterations', 10)
+            'value': config.get('max_iterations', DEFAULT_MAX_ITERATIONS)
         },
         {
             'type': 'convergence_threshold',
-            'value': config.get('convergence_threshold', 0.01)
+            'value': config.get('convergence_threshold', DEFAULT_CONVERGENCE_THRESHOLD)
         }
     ]
