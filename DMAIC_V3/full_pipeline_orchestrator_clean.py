@@ -442,7 +442,15 @@ class FullPipelineOrchestrator:
         start_time = datetime.now()
         
         try:
-            success, results = phase_obj.execute(iteration=iteration)
+            result = phase_obj.execute(iteration=iteration)
+            
+            # Handle both tuple (success, results) and dict returns
+            if isinstance(result, tuple):
+                success, results = result
+            else:
+                # Assume dict return - success determined by presence of 'phase' field
+                results = result
+                success = 'phase' in results
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
