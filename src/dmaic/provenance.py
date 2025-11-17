@@ -3,7 +3,6 @@ Provenance Tracking Module - Stub Implementation
 Provides tracking of execution runs, phases, and artifacts
 """
 
-import json
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional
