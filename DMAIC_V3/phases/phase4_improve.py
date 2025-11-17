@@ -605,7 +605,6 @@ class Phase4Improve:
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
             'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,  # Alias for backward compatibility with tests
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -614,6 +613,7 @@ class Phase4Improve:
                 'files_actually_improved': implementation_results['total_files_improved'],
                 'total_modifications_made': implementation_results['total_modifications']
             },
+            'improvements': prioritized_tasks,  # Alias for refactoring_tasks for test compatibility
             'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
@@ -641,10 +641,9 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        # Add success flag to the result
+        # Add success flag and return full improvement_result
         improvement_result['success'] = True
         improvement_result['output_file'] = str(output_file)
-        
         return improvement_result
 
 
