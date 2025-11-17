@@ -17,13 +17,25 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
+from ..config import DMAICConfig
+from ..core.state import StateManager
+
 
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, output_dir: Path = None, use_gbogeb: bool = True):
-        self.output_dir = output_dir or Path("DMAIC_V3_OUTPUT")
-        self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
+    def __init__(self, config: DMAICConfig, state_manager: StateManager):
+        """
+        Initialize Phase 5: Control
+        
+        Args:
+            config: DMAICConfig instance
+            state_manager: StateManager instance
+        """
+        self.config = config
+        self.state_manager = state_manager
+        self.output_dir = config.paths.output_root
+        self.use_gbogeb = GBOGEB_AVAILABLE
         self.gbogeb = None
         
         if self.use_gbogeb:
@@ -93,6 +105,7 @@ class Phase5Control:
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb
@@ -181,7 +194,12 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    phase5 = Phase5Control()
+    from ..config import DMAICConfig
+    from ..core.state import StateManager
+    
+    config = DMAICConfig()
+    state_manager = StateManager(config.paths.output_root / "state")
+    phase5 = Phase5Control(config, state_manager)
     success, results = phase5.execute(iteration)
     
     return 0 if success else 1
