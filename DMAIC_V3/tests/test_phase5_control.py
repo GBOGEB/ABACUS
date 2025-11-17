@@ -113,7 +113,7 @@ class TestPhase5Control:
         assert len(result) > 0
     
     def test_file_saved_correctly(self, phase5, phase4_output, config):
-        phase5.execute(iteration=1)
+        success, result = phase5.execute(iteration=1)
         
         output_file = config.paths.output_root / "iteration_1" / "phase5_control" / "phase5_control.json"
         assert output_file.exists()
