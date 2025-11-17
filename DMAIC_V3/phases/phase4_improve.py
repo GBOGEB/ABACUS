@@ -565,7 +565,13 @@ class Phase4Improve:
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
                 'success': False,
-                'error': f"Phase 3 output not found: {phase3_output}"
+                'error': f"Phase 3 output not found: {phase3_output}",
+                'improvements': [],
+                'summary': {},
+                'refactoring_tasks': [],
+                'implementation_roadmap': {},
+                'metrics': {},
+                'implementation_results': {}
             }
 
         with open(phase3_output, 'r') as f:
