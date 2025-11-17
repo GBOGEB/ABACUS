@@ -206,6 +206,9 @@ class Phase5Control:
 def main():
     """Test Phase 5"""
     import sys
+    from ..config import DMAICConfig
+    from ..core.state import StateManager
+    from pathlib import Path
     
     if len(sys.argv) < 2:
         print("Usage: python phase5_control.py <iteration>")
@@ -213,8 +216,15 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    phase5 = Phase5Control()
-    success, results = phase5.execute(iteration)
+    # Create config and state manager
+    config = DMAICConfig()
+    state_manager = StateManager(config.paths.state_dir)
+    
+    phase5 = Phase5Control(config, state_manager)
+    results = phase5.execute(iteration)
+    
+    # Check for errors in results
+    success = results.get('error') is None if isinstance(results, dict) else False
     
     return 0 if success else 1
 
