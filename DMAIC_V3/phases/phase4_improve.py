@@ -560,13 +560,16 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
-                'success': False,
-                'error': f"Phase 3 output not found: {phase3_output}"
+            # Gracefully handle missing phase3 output by using empty data
+            print(f"[WARNING] Phase 3 output not found: {phase3_output}")
+            print("[*] Proceeding with empty analysis data...")
+            phase3_data = {
+                'root_causes': [],
+                'high_complexity_files': []
             }
-
-        with open(phase3_output, 'r') as f:
-            phase3_data = json.load(f)
+        else:
+            with open(phase3_output, 'r') as f:
+                phase3_data = json.load(f)
 
         root_causes = phase3_data.get('root_causes', [])
         high_complexity_files = phase3_data.get('high_complexity_files', [])
@@ -591,9 +594,12 @@ class Phase4Improve:
         )
 
         improvement_result = {
+            'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
+            'input_source': str(phase3_output),
+            'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -629,13 +635,10 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return {
-            'success': True,
-            'output_file': str(output_file),
-            'summary': improvement_result['summary'],
-            'roadmap': roadmap,
-            'implementation': implementation_results
-        }
+        # Return the full improvement_result with success flag
+        improvement_result['success'] = True
+        improvement_result['output_file'] = str(output_file)
+        return improvement_result
 
 
 if __name__ == "__main__":
