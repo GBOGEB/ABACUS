@@ -5,7 +5,7 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Tuple
 from datetime import datetime
 
 from ..config import DMAICConfig
