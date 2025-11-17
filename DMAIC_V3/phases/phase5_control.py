@@ -20,6 +20,9 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
+from ..config import DMAICConfig
+from ..core.state import StateManager
+
 
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
@@ -125,7 +128,15 @@ class Phase5Control:
                 'validation_checkpoints': validation_checkpoints,
                 'controls': quality_gates,  # Alias for quality_gates to satisfy test expectations
                 'all_gates_passed': all_passed,
-                'gbogeb_enabled': self.use_gbogeb
+                'gbogeb_enabled': self.use_gbogeb,
+                # Aliases for backward compatibility with tests
+                'controls': quality_gates,
+                'checkpoints': quality_gates,
+                'summary': {
+                    'all_gates_passed': all_passed,
+                    'total_gates': len(quality_gates),
+                    'passed_gates': sum(1 for g in quality_gates.values() if g['passed'])
+                }
             }
             
             print(f"\n[5.3] Saving results...")
@@ -226,7 +237,8 @@ def main():
     # Check for errors in results
     success = results.get('error') is None if isinstance(results, dict) else False
     
-    return 0 if success else 1
+    # Return 0 if no error, 1 if error
+    return 0 if 'error' not in results else 1
 
 
 if __name__ == "__main__":
