@@ -1,0 +1,16 @@
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Generate Dashboard
+      run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
+    - name: Commit Dashboard
+      run: git add DOW_LOGS/* && git commit -m 'Update monitoring dashboard' || echo
+        'No changes'
+name: DOW Monitoring Dashboard
+'on':
+  schedule:
+  - cron: '*/15 * * * *'
+  workflow_dispatch: {}
