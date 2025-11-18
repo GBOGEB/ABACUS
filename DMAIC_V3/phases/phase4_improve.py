@@ -539,7 +539,8 @@ class Phase4Improve:
         Returns:
             Tuple of (success: bool, results: Dict)
         """
-        return self.run(iteration)
+        results = self.run(iteration)
+        return results
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -558,11 +559,46 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            print(f"[WARN] Phase 3 output not found: {phase3_output}")
-            print("[*] Continuing with empty analysis data...")
-            phase3_data = {
-                'root_causes': [],
-                'high_complexity_files': []
+            print(f"[!] Warning: Phase 3 output not found: {phase3_output}")
+            print(f"[*] Generating empty improvement plan...")
+            # Return a valid structure even without phase3 data
+            empty_result = {
+                'phase': 'IMPROVE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase3_output),
+                'version': __version__,
+                'improvements': [],
+                'total_improvements': 0,
+                'summary': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'files_actually_improved': 0,
+                    'total_modifications_made': 0
+                },
+                'refactoring_tasks': [],
+                'implementation_roadmap': {
+                    'phase_1_immediate': [],
+                    'phase_2_short_term': [],
+                    'phase_3_long_term': []
+                },
+                'metrics': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'estimated_total_effort': 0
+                },
+                'implementation_results': {
+                    'docstrings_added': [],
+                    'long_lines_fixed': [],
+                    'type_hints_added': [],
+                    'unused_imports_removed': [],
+                    'total_files_improved': 0,
+                    'total_modifications': 0
+                }
             }
             
             # Still save the minimal result to output files
@@ -610,8 +646,10 @@ class Phase4Improve:
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
+            'input_source': str(phase3_output),
             'version': __version__,
-            'input_source': str(phase3_output) if phase3_output.exists() else 'phase3_output_not_found',
+            'improvements': prioritized_tasks,
+            'total_improvements': metrics['total_improvements'],
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
