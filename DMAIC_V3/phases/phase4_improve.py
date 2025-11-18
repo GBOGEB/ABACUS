@@ -537,10 +537,10 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: dict)
+            Tuple of (success, results)
         """
         results = self.run(iteration)
-        success = not ('error' in results)
+        success = results.get('success', True)
         return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
@@ -561,6 +561,7 @@ class Phase4Improve:
 
         if not phase3_output.exists():
             return {
+                'success': False,
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -594,6 +595,7 @@ class Phase4Improve:
         )
 
         improvement_result = {
+            'success': True,
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
