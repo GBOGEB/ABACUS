@@ -605,7 +605,6 @@ class Phase4Improve:
                 'total_modifications_made': implementation_results['total_modifications']
             },
             'improvements': prioritized_tasks,
-            'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
             'implementation_results': implementation_results
