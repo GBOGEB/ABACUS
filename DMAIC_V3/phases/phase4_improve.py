@@ -537,9 +537,17 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement results
+            Tuple of (success, results)
         """
-        return self.run(iteration)
+        try:
+            results = self.run(iteration)
+            success = True
+            return success, results
+        except Exception as e:
+            print(f"\n[X] Phase 4 failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return False, {"error": str(e), "phase": "IMPROVE", "iteration": iteration}
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
