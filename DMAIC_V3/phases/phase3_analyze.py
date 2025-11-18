@@ -227,7 +227,7 @@ class Phase3Analyze:
 
         return root_causes
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 3: Analyze
 
@@ -235,9 +235,12 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with analysis results
+            Tuple of (success: bool, results: Dict) with analysis results
         """
-        return self.run(iteration)
+        result = self.run(iteration)
+        # Check if execution was successful (no error key means success)
+        success = 'error' not in result or result.get('error') is None
+        return success, result
 
     def run(self, iteration: int) -> Dict[str, Any]:
         """
