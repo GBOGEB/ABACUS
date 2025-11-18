@@ -32,9 +32,11 @@ def test_fix_2_chunking():
     print("\n[TEST 2] Verifying chunking implementation...")
     import config
     from phases import phase2_measure
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase2 = phase2_measure.Phase2Measure(cfg)
+    state_mgr = StateManager(cfg.paths.state_dir)
+    phase2 = phase2_measure.Phase2Measure(cfg, state_mgr)
     
     print(f"  Max files per chunk: {phase2.max_files_per_chunk}")
     
@@ -50,9 +52,11 @@ def test_fix_3_improvements():
     print("\n[TEST 3] Verifying improvement count...")
     import config
     from phases import phase4_improve
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase4 = phase4_improve.Phase4Improve(cfg)
+    state_mgr = StateManager(cfg.paths.state_dir)
+    phase4 = phase4_improve.Phase4Improve(cfg, state_mgr)
     
     print(f"  Max files per category: {phase4.max_files}")
     
@@ -71,8 +75,8 @@ def test_fix_4_quality_gates():
     from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    state_mgr = StateManager(cfg.paths.state_dir)
-    phase5 = phase5_control.Phase5Control(cfg, state_mgr)
+    state_manager = StateManager(cfg.paths.state_dir)
+    phase5 = phase5_control.Phase5Control(cfg, state_manager)
     
     has_check_method = hasattr(phase5, '_check_quality_gates')
     
@@ -90,9 +94,11 @@ def test_fix_5_knowledge_extraction():
     print("\n[TEST 5] Verifying knowledge extraction...")
     import config
     from phases import phase6_knowledge
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase6 = phase6_knowledge.Phase6Knowledge(cfg)
+    state_mgr = StateManager(cfg.paths.state_dir)
+    phase6 = phase6_knowledge.Phase6Knowledge(cfg, state_mgr)
     
     has_extract_method = hasattr(phase6, '_extract_improvement_knowledge')
     
@@ -110,9 +116,11 @@ def test_fix_6_action_collection():
     print("\n[TEST 6] Verifying action collection...")
     import config
     from phases import phase7_action_tracking
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase7 = phase7_action_tracking.Phase7ActionTracking(cfg)
+    state_mgr = StateManager(cfg.paths.state_dir)
+    phase7 = phase7_action_tracking.Phase7ActionTracking(cfg, state_mgr)
     
     has_collect_method = hasattr(phase7, '_collect_phase_actions')
     
@@ -130,9 +138,11 @@ def test_fix_7_todo_scanning():
     print("\n[TEST 7] Verifying TODO scanning...")
     import config
     from phases import phase8_todo_management
+    from core.state import StateManager
     
     cfg = config.DMAICConfig()
-    phase8 = phase8_todo_management.Phase8TODOManagement(cfg)
+    state_mgr = StateManager(cfg.paths.state_dir)
+    phase8 = phase8_todo_management.Phase8TODOManagement(cfg, state_mgr)
     
     has_collect_method = hasattr(phase8, '_collect_phase_todos')
     
