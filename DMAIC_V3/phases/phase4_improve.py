@@ -640,6 +640,11 @@ class Phase4Improve:
         return improvement_result
 
 
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        """
+        return (True, self.run(iteration))
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
