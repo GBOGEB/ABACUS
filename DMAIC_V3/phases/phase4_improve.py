@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def execute(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve
 
@@ -537,13 +537,11 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Dictionary with improvement results
         """
-        results = self.run(iteration)
-        success = results.get('success', False)
-        return success, results
+        return self.run(iteration)
 
-    def run(self, iteration: int) -> Dict[str, Any]:
+    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -551,7 +549,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement plan AND implementation results
+            Tuple of (success: bool, results: dict) with improvement plan AND implementation results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -561,12 +559,15 @@ class Phase4Improve:
 
         if not phase3_output.exists():
             return {
-                'success': False,
-                'error': f"Phase 3 output not found: {phase3_output}"
+                'phase': 'IMPROVE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'error': f"Phase 3 output not found: {phase3_output}",
+                'improvements': []
             }
-
-        with open(phase3_output, 'r') as f:
-            phase3_data = json.load(f)
+        else:
+            with open(phase3_output, 'r') as f:
+                phase3_data = json.load(f)
 
         root_causes = phase3_data.get('root_causes', [])
         high_complexity_files = phase3_data.get('high_complexity_files', [])
@@ -591,9 +592,12 @@ class Phase4Improve:
         )
 
         improvement_result = {
+            'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
+            'input_source': str(phase3_output),
+            'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -602,6 +606,7 @@ class Phase4Improve:
                 'files_actually_improved': implementation_results['total_files_improved'],
                 'total_modifications_made': implementation_results['total_modifications']
             },
+            'improvements': prioritized_tasks,
             'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
@@ -629,15 +634,14 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return {
-            'success': True,
-            'output_file': str(output_file),
-            'summary': improvement_result['summary'],
-            'roadmap': roadmap,
-            'implementation': implementation_results
-        }
+        return improvement_result
 
 
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        """
+        return (True, self.run(iteration))
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -650,8 +654,8 @@ if __name__ == "__main__":
     phase4 = Phase4Improve(config, state_manager)
 
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
-    result = phase4.run(iteration)
+    success, result = phase4.run(iteration)
 
-    if not result['success']:
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
