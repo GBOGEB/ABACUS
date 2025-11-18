@@ -134,6 +134,7 @@ class Phase5Control:
                 'quality_gates': quality_gates,
                 'checkpoints': validation_checkpoints,  # List of validation checkpoints (e.g., quality_gates_checked, all_gates_passed)
                 'controls': quality_gates,  # Alias for quality gates
+                'summary': summary,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
                 'success': all_passed
