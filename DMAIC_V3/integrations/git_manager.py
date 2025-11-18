@@ -17,6 +17,19 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
+from dataclasses import dataclass
+
+
+@dataclass
+class GitStatus:
+    """Git repository status"""
+    branch: Optional[str] = None
+    is_clean: bool = True
+    modified_files: List[str] = None
+    
+    def __post_init__(self):
+        if self.modified_files is None:
+            self.modified_files = []
 
 
 class GitManager:
@@ -74,6 +87,54 @@ class GitManager:
             return False, e.stderr
         except Exception as e:
             return False, str(e)
+    
+    def get_status(self) -> GitStatus:
+        """
+        Get current git repository status
+        
+        Returns:
+            GitStatus object with branch and status information
+        """
+        status = GitStatus()
+        
+        if not self.git_available:
+            return status
+        
+        # Get current branch
+        success, output = self._run_git(['branch', '--show-current'], check=False)
+        if success and output.strip():
+            status.branch = output.strip()
+        
+        # Check if working tree is clean
+        success, output = self._run_git(['status', '--porcelain'], check=False)
+        if success:
+            status.is_clean = len(output.strip()) == 0
+            if not status.is_clean:
+                status.modified_files = [line.strip() for line in output.split('\n') if line.strip()]
+        
+        return status
+    
+    def list_baselines(self) -> List[str]:
+        """
+        List all baseline tags in the repository
+        
+        Returns:
+            List of baseline tag names
+        """
+        if not self.git_available:
+            return []
+        
+        # Get all tags
+        success, output = self._run_git(['tag', '-l'], check=False)
+        
+        if not success:
+            return []
+        
+        # Filter for baseline tags
+        tags = [line.strip() for line in output.split('\n') if line.strip()]
+        baselines = [tag for tag in tags if 'baseline' in tag.lower() or 'iteration' in tag.lower()]
+        
+        return baselines
     
     def commit_iteration(self, 
                         iteration: int, 
