@@ -537,11 +537,9 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Dictionary with improvement results
         """
-        results = self.run(iteration)
-        success = results.get('success', False)
-        return success, results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -560,12 +558,11 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
-                'phase': 'IMPROVE',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'error': f"Phase 3 output not found: {phase3_output}",
-                'improvements': []
+            print(f"[WARN] Phase 3 output not found: {phase3_output}")
+            print("[*] Continuing with empty analysis data...")
+            phase3_data = {
+                'root_causes': [],
+                'high_complexity_files': []
             }
         else:
             with open(phase3_output, 'r') as f:
@@ -598,8 +595,7 @@ class Phase4Improve:
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,
+            'input_source': str(phase3_output) if phase3_output.exists() else 'phase3_output_not_found',
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -609,7 +605,6 @@ class Phase4Improve:
                 'total_modifications_made': implementation_results['total_modifications']
             },
             'improvements': prioritized_tasks,
-            'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
             'implementation_results': implementation_results
