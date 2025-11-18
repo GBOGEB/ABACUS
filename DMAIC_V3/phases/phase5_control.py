@@ -5,7 +5,7 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Tuple
 from datetime import datetime
 
 from ..core.state import StateManager
@@ -27,18 +27,18 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+    def __init__(self, config, state_manager, use_gbogeb: bool = True):
         """
         Initialize Phase 5: Control
         
         Args:
             config: DMAICConfig instance
             state_manager: StateManager instance
-            use_gbogeb: Whether to use GBOGEB for observability
+            use_gbogeb: Whether to use GBOGEB observability (default: True)
         """
         self.config = config
         self.state_manager = state_manager
-        self.output_dir = Path(config.paths.output_root)
+        self.output_dir = config.paths.output_root
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -47,16 +47,8 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict[str, Any]:
-        """
-        Execute Phase 5: Control
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Dictionary with control results
-        """
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+        """Execute Phase 5: Control"""
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -69,7 +61,8 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration)
+                result = self._create_skip_result(iteration)
+                return True, result
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -99,11 +92,10 @@ class Phase5Control:
                     )
             
             print(f"\n[5.2] Creating validation checkpoints...")
-            validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
-            if validation_checkpoints:
-                for checkpoint in validation_checkpoints:
-                    status = "✅" if checkpoint['passed'] else "❌"
-                    print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
+            validation_checkpoints = self._create_validation_checkpoints(quality_gates)
+            for checkpoint in validation_checkpoints:
+                status = "✅" if checkpoint['passed'] else "❌"
+                print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
             
             if self.use_gbogeb and self.gbogeb:
                 print(f"\n[5.3] Collecting GBOGEB metrics...")
@@ -141,8 +133,8 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'controls': quality_gates,  # Alias for tests
-                'checkpoints': quality_gates,  # Alias for tests
+                'validation_checkpoints': self._create_validation_checkpoints(quality_gates),
+                'controls': self._create_controls_summary(quality_gates),
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
                 'success': True
@@ -162,26 +154,28 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return results
+            return all_passed, results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {
-                'phase': 'CONTROL',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'success': False,
-                'error': str(e)
-            }
+            return False, {'error': str(e)}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
         stats = phase4_data.get('statistics', {})
         improvements = stats.get('total_modifications', 0)
         
-        passed = improvements > 0
+        # Also check for improvements array if statistics not available
+        if improvements == 0 and 'improvements' in phase4_data:
+            improvements = len(phase4_data['improvements'])
+        
+        # Also check total_improvements field
+        if improvements == 0 and 'total_improvements' in phase4_data:
+            improvements = phase4_data['total_improvements']
+        
+        passed = improvements > 0  # Require at least one improvement for gate to pass
         return {
             'passed': passed,
             'message': f"{improvements} improvements made",
@@ -217,37 +211,18 @@ class Phase5Control:
         }
     
     def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
-        """Create validation checkpoints from quality gates
-        
-        Args:
-            quality_gates: Dictionary of quality gate results
-            iteration: Current iteration number
-            
-        Returns:
-            List of validation checkpoint dictionaries
-        """
+        """Create validation checkpoints based on quality gates"""
         checkpoints = []
         
-        # Create a checkpoint for each quality gate
         for gate_name, gate_result in quality_gates.items():
             checkpoint = {
                 'name': f"{gate_name}_checkpoint",
                 'description': f"Validation checkpoint for {gate_name}",
                 'passed': gate_result['passed'],
-                'message': gate_result['message'],
+                'gate': gate_name,
                 'iteration': iteration
             }
             checkpoints.append(checkpoint)
-        
-        # Add overall checkpoint
-        all_gates_passed = all(gate['passed'] for gate in quality_gates.values())
-        checkpoints.append({
-            'name': 'overall_quality',
-            'description': 'All quality gates validation',
-            'passed': all_gates_passed,
-            'message': f"{'All quality gates passed' if all_gates_passed else 'Some quality gates failed'}",
-            'iteration': iteration
-        })
         
         return checkpoints
     
@@ -257,7 +232,7 @@ class Phase5Control:
             'phase': 'CONTROL',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
-            'input_source': 'Phase 4 results not found',
+            'input_source': input_source or 'N/A',
             'skipped': True,
             'reason': 'Phase 4 results not found',
             'success': True
@@ -265,7 +240,7 @@ class Phase5Control:
 
 
 def main():
-    """Test Phase 5"""
+    """Test Phase 5 - for manual testing only"""
     import sys
     from ..config import DMAICConfig
     from ..core.state import StateManager
@@ -276,17 +251,14 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # For standalone testing, create minimal config
-    from ..config import DMAICConfig
-    from ..core.state import StateManager
-    
+    # Create config and state manager
     config = DMAICConfig()
-    state_manager = StateManager(Path("DMAIC_V3_OUTPUT") / "state")
+    state_manager = StateManager(config.paths.output_root / "state")
     
     phase5 = Phase5Control(config, state_manager)
-    results = phase5.execute(iteration)
+    success, results = phase5.execute(iteration)
     
-    return 0 if results.get('success', False) else 1
+    return 0 if success else 1
 
 
 if __name__ == "__main__":
