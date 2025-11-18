@@ -175,7 +175,7 @@ class Phase5Control:
         if improvements == 0 and 'total_improvements' in phase4_data:
             improvements = phase4_data['total_improvements']
         
-        passed = improvements >= 0  # Changed from > 0 to >= 0 to be more lenient
+        passed = improvements > 0  # Require at least one improvement for gate to pass
         return {
             'passed': passed,
             'message': f"{improvements} improvements made",
