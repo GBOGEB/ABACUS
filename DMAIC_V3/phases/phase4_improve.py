@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve
 
@@ -537,9 +537,11 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement results
+            Tuple of (success: bool, results: dict)
         """
-        return self.run(iteration)
+        results = self.run(iteration)
+        success = not ('error' in results)
+        return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
         """
@@ -592,6 +594,7 @@ class Phase4Improve:
         )
 
         improvement_result = {
+            'success': True,
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
