@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def execute(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve
 
@@ -539,9 +539,7 @@ class Phase4Improve:
         Returns:
             Tuple of (success: bool, results: Dict)
         """
-        results = self.run(iteration)
-        success = results.get('success', True)
-        return success, results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -560,47 +558,11 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            print(f"[WARNING] Phase 3 output not found: {phase3_output}")
-            print("[*] Generating minimal improvement plan without Phase 3 data...")
-            
-            # Return a minimal valid result when Phase 3 output is missing
-            minimal_result = {
-                'success': True,
-                'phase': 'IMPROVE',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'version': __version__,
-                'input_source': 'none (Phase 3 output not found)',
-                'improvements': [],
-                'summary': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'files_actually_improved': 0,
-                    'total_modifications_made': 0
-                },
-                'refactoring_tasks': [],
-                'implementation_roadmap': {
-                    'phase_1_immediate': [],
-                    'phase_2_short_term': [],
-                    'phase_3_long_term': []
-                },
-                'metrics': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'estimated_total_effort': 0
-                },
-                'implementation_results': {
-                    'docstrings_added': [],
-                    'long_lines_fixed': [],
-                    'type_hints_added': [],
-                    'unused_imports_removed': [],
-                    'total_files_improved': 0,
-                    'total_modifications': 0
-                }
+            print(f"[WARN] Phase 3 output not found: {phase3_output}")
+            print("[*] Continuing with empty analysis data...")
+            phase3_data = {
+                'root_causes': [],
+                'high_complexity_files': []
             }
             
             # Still save the minimal result to output files
@@ -645,13 +607,11 @@ class Phase4Improve:
         )
 
         improvement_result = {
-            'success': True,
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,  # Map refactoring_tasks to improvements
+            'input_source': str(phase3_output) if phase3_output.exists() else 'phase3_output_not_found',
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -661,7 +621,6 @@ class Phase4Improve:
                 'total_modifications_made': implementation_results['total_modifications']
             },
             'improvements': prioritized_tasks,
-            'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
             'implementation_results': implementation_results
@@ -691,6 +650,11 @@ class Phase4Improve:
         return True, improvement_result
 
 
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        """
+        return (True, self.run(iteration))
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -703,7 +667,7 @@ if __name__ == "__main__":
     phase4 = Phase4Improve(config, state_manager)
 
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
-    result = phase4.run(iteration)
+    success, result = phase4.run(iteration)
 
     if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
