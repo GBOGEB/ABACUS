@@ -139,9 +139,9 @@ class Phase2Measure:
                         'total_lines': total_lines,
                         'lines_of_code': loc,
                         'comment_lines': comment_lines,
-                        'functions': len(functions),
-                        'classes': len(classes),
-                        'imports': len(imports),
+                        'function_count': len(functions),
+                        'class_count': len(classes),
+                        'import_count': len(imports),
                         'complexity_score': complexity,
                     },
                     'details': {
@@ -340,9 +340,9 @@ class Phase2Measure:
             print("[2.4] Calculating statistics...")
             total_loc = sum(m['analysis'].get('metrics', {}).get('lines_of_code', 0)
                           for m in measurements if m['analysis']['success'])
-            total_functions = sum(m['analysis'].get('metrics', {}).get('functions', 0)
+            total_functions = sum(m['analysis'].get('metrics', {}).get('function_count', 0)
                                 for m in measurements if m['analysis']['success'])
-            total_classes = sum(m['analysis'].get('metrics', {}).get('classes', 0)
+            total_classes = sum(m['analysis'].get('metrics', {}).get('class_count', 0)
                               for m in measurements if m['analysis']['success'])
 
             # Prepare results - Convert measurements to file_metrics format for Phase 3
