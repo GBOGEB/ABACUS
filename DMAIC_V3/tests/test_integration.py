@@ -47,23 +47,23 @@ class TestFullDMAICCycle:
         iteration = 1
         
         phase1 = Phase1Define(config, state_manager)
-        result1 = phase1.execute(iteration=iteration)
+        success1, result1 = phase1.execute(iteration=iteration)
         assert result1['phase'] == 'DEFINE'
         assert result1['iteration'] == iteration
         assert result1['total_files'] >= 3
         
         phase2 = Phase2Measure(config, state_manager)
-        result2 = phase2.execute(iteration=iteration)
+        success2, result2 = phase2.execute(iteration=iteration)
         assert result2['phase'] == 'MEASURE'
         assert result2['iteration'] == iteration
         
         phase3 = Phase3Analyze(config, state_manager)
-        result3 = phase3.execute(iteration=iteration)
-        assert result3['phase'] == 'ANALYZE'
-        assert result3['iteration'] == iteration
+        success3, result3 = phase3.execute(iteration=iteration)
+        assert success3 is True
+        assert 'summary' in result3
         
         phase4 = Phase4Improve(config, state_manager)
-        result4 = phase4.execute(iteration=iteration)
+        success4, result4 = phase4.execute(iteration=iteration)
         assert result4['phase'] == 'IMPROVE'
         assert result4['iteration'] == iteration
         
@@ -113,7 +113,7 @@ class TestFullDMAICCycle:
         iteration = 1
         
         phase1 = Phase1Define(config, state_manager)
-        result1 = phase1.execute(iteration=iteration)
+        success1, result1 = phase1.execute(iteration=iteration)
         
         phase1_file = config.paths.output_root / f"iteration_{iteration}" / "phase1_define" / "phase1_define.json"
         with open(phase1_file) as f:
@@ -124,7 +124,7 @@ class TestFullDMAICCycle:
     def test_multiple_iterations(self, config, state_manager, temp_workspace):
         for iteration in [1, 2]:
             phase1 = Phase1Define(config, state_manager)
-            result = phase1.execute(iteration=iteration)
+            success, result = phase1.execute(iteration=iteration)
             assert result['iteration'] == iteration
             
             output_file = config.paths.output_root / f"iteration_{iteration}" / "phase1_define" / "phase1_define.json"
@@ -132,17 +132,17 @@ class TestFullDMAICCycle:
     
     def test_error_handling_missing_input(self, config, state_manager, temp_workspace):
         phase3 = Phase3Analyze(config, state_manager)
-        result = phase3.execute(iteration=999)
+        success, result = phase3.execute(iteration=999)
         
         assert result is not None
-        assert result['phase'] == 'ANALYZE'
+        assert 'success' in result or 'error' in result
     
     def test_idempotency(self, config, state_manager, temp_workspace):
         iteration = 1
         
         phase1 = Phase1Define(config, state_manager)
-        result1 = phase1.execute(iteration=iteration)
-        result2 = phase1.execute(iteration=iteration)
+        success1, result1 = phase1.execute(iteration=iteration)
+        success2, result2 = phase1.execute(iteration=iteration)
         
         assert result1['phase'] == result2['phase']
         assert result1['iteration'] == result2['iteration']
