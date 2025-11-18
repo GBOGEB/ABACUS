@@ -560,67 +560,16 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
+            # Gracefully handle missing phase3 output by using empty data
             print(f"[WARNING] Phase 3 output not found: {phase3_output}")
-            print("[*] Generating minimal improvement plan without Phase 3 data...")
-            
-            # Return a minimal valid result when Phase 3 output is missing
-            minimal_result = {
-                'success': True,
-                'phase': 'IMPROVE',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'version': __version__,
-                'input_source': 'none (Phase 3 output not found)',
-                'improvements': [],
-                'summary': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'files_actually_improved': 0,
-                    'total_modifications_made': 0
-                },
-                'refactoring_tasks': [],
-                'implementation_roadmap': {
-                    'phase_1_immediate': [],
-                    'phase_2_short_term': [],
-                    'phase_3_long_term': []
-                },
-                'metrics': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'estimated_total_effort': 0
-                },
-                'implementation_results': {
-                    'docstrings_added': [],
-                    'long_lines_fixed': [],
-                    'type_hints_added': [],
-                    'unused_imports_removed': [],
-                    'total_files_improved': 0,
-                    'total_modifications': 0
-                }
+            print("[*] Proceeding with empty analysis data...")
+            phase3_data = {
+                'root_causes': [],
+                'high_complexity_files': []
             }
-            
-            # Still save the minimal result to output files
-            output_dir = self.config.paths.output_root / f"iteration_{iteration}"
-            ensure_directory(output_dir)
-            
-            output_file = output_dir / "phase4_improvements.json"
-            safe_write_json(minimal_result, output_file)
-            
-            phase4_dir = output_dir / "phase4_improve"
-            ensure_directory(phase4_dir)
-            phase4_file = phase4_dir / "phase4_improve.json"
-            safe_write_json(minimal_result, phase4_file)
-            
-            print(f"\n[*] Minimal improvement plan saved to: {output_file}")
-            
-            return minimal_result
-
-        with open(phase3_output, 'r') as f:
-            phase3_data = json.load(f)
+        else:
+            with open(phase3_output, 'r') as f:
+                phase3_data = json.load(f)
 
         root_causes = phase3_data.get('root_causes', [])
         high_complexity_files = phase3_data.get('high_complexity_files', [])
@@ -650,8 +599,8 @@ class Phase4Improve:
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,  # Map refactoring_tasks to improvements
+            'input_source': str(phase3_output) if phase3_output.exists() else 'none (Phase 3 output not found)',
+            'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -688,9 +637,17 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
+        # Return the full improvement_result with success flag
+        improvement_result['success'] = True
+        improvement_result['output_file'] = str(output_file)
         return improvement_result
 
 
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        """
+        return (True, self.run(iteration))
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
