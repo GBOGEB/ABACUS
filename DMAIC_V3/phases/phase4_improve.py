@@ -537,10 +537,10 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Tuple of (success: bool, results: dict)
         """
         results = self.run(iteration)
-        success = results.get('success', True)
+        success = not ('error' in results)
         return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
