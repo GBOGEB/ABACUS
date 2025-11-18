@@ -217,7 +217,7 @@ class Phase5Control:
             'value': 100
         }
     
-    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+    def _create_validation_checkpoints(self, quality_gates: Dict) -> List[Dict]:
         """Create validation checkpoints based on quality gates"""
         checkpoints = []
         
@@ -232,6 +232,15 @@ class Phase5Control:
             checkpoints.append(checkpoint)
         
         return checkpoints
+    
+    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
+        """Create a summary of controls based on quality gates"""
+        return {
+            'total_gates': len(quality_gates),
+            'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+            'gates_failed': sum(1 for g in quality_gates.values() if not g['passed']),
+            'all_passed': all(g['passed'] for g in quality_gates.values())
+        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
@@ -263,9 +272,9 @@ def main():
     state_manager = StateManager(config.paths.output_root / "state")
     
     phase5 = Phase5Control(config, state_manager)
-    success, results = phase5.execute(iteration)
+    results = phase5.execute(iteration)
     
-    return 0 if success and 'error' not in results else 1
+    return 0 if results.get('success', True) and 'error' not in results else 1
 
 
 if __name__ == "__main__":
