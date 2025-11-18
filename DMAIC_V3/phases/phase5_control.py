@@ -27,19 +27,18 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
+    def __init__(self, config: DMAICConfig, state_manager: StateManager):
         """
         Initialize Phase 5: Control
         
         Args:
             config: DMAICConfig instance
             state_manager: StateManager instance
-            use_gbogeb: Whether to use GBOGEB for observability
         """
         self.config = config
         self.state_manager = state_manager
-        self.output_dir = Path(config.paths.output_root)
-        self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
+        self.output_dir = config.paths.output_root
+        self.use_gbogeb = GBOGEB_AVAILABLE
         self.gbogeb = None
         
         if self.use_gbogeb:
@@ -276,15 +275,13 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # For standalone testing, create minimal config
     from ..config import DMAICConfig
     from ..core.state import StateManager
     
     config = DMAICConfig()
-    state_manager = StateManager(Path("DMAIC_V3_OUTPUT") / "state")
-    
+    state_manager = StateManager(config.paths.output_root / "state")
     phase5 = Phase5Control(config, state_manager)
-    results = phase5.execute(iteration)
+    success, results = phase5.execute(iteration)
     
     return 0 if results.get('success', False) else 1
 
