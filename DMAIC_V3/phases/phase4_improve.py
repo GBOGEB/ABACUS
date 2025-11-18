@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def execute(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve
 
@@ -537,11 +537,9 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: dict)
+            Dictionary with improvement results
         """
-        results = self.run(iteration)
-        success = results.get('success', True)
-        return success, results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -560,12 +558,12 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return True, {
+            return {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
-                'success': False,
-                'error': f"Phase 3 output not found: {phase3_output}"
+                'error': f"Phase 3 output not found: {phase3_output}",
+                'improvements': []
             }
         else:
             with open(phase3_output, 'r') as f:
@@ -594,13 +592,12 @@ class Phase4Improve:
         )
 
         improvement_result = {
-            'success': True,
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'success': True,
             'input_source': str(phase3_output),
+            'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -637,7 +634,7 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return True, improvement_result
+        return improvement_result
 
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
@@ -659,6 +656,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     success, result = phase4.run(iteration)
 
-    if not success or result.get('error'):
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
