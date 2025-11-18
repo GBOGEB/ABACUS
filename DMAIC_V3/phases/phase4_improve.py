@@ -537,17 +537,10 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Dictionary with improvement plan and implementation results
         """
-        try:
-            results = self.run(iteration)
-            success = True
-            return success, results
-        except Exception as e:
-            print(f"\n[X] Phase 4 failed: {e}")
-            import traceback
-            traceback.print_exc()
-            return False, {"error": str(e), "phase": "IMPROVE", "iteration": iteration}
+        results = self.run(iteration)
+        return results
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -566,15 +559,63 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            print(f"[WARN] Phase 3 output not found: {phase3_output}")
-            print("[*] Continuing with empty analysis data...")
-            phase3_data = {
-                'root_causes': [],
-                'high_complexity_files': []
+            print(f"[!] Warning: Phase 3 output not found: {phase3_output}")
+            print(f"[*] Generating empty improvement plan...")
+            # Return a valid structure even without phase3 data
+            empty_result = {
+                'phase': 'IMPROVE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'input_source': str(phase3_output),
+                'version': __version__,
+                'improvements': [],
+                'total_improvements': 0,
+                'summary': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'files_actually_improved': 0,
+                    'total_modifications_made': 0
+                },
+                'refactoring_tasks': [],
+                'implementation_roadmap': {
+                    'phase_1_immediate': [],
+                    'phase_2_short_term': [],
+                    'phase_3_long_term': []
+                },
+                'metrics': {
+                    'total_improvements': 0,
+                    'immediate_actions': 0,
+                    'short_term_actions': 0,
+                    'long_term_actions': 0,
+                    'estimated_total_effort': 0
+                },
+                'implementation_results': {
+                    'docstrings_added': [],
+                    'long_lines_fixed': [],
+                    'type_hints_added': [],
+                    'unused_imports_removed': [],
+                    'total_files_improved': 0,
+                    'total_modifications': 0
+                }
             }
-        else:
-            with open(phase3_output, 'r') as f:
-                phase3_data = json.load(f)
+            
+            # Still save the empty result
+            output_dir = self.config.paths.output_root / f"iteration_{iteration}"
+            ensure_directory(output_dir)
+            output_file = output_dir / "phase4_improvements.json"
+            safe_write_json(empty_result, output_file)
+            
+            phase4_dir = output_dir / "phase4_improve"
+            ensure_directory(phase4_dir)
+            phase4_file = phase4_dir / "phase4_improve.json"
+            safe_write_json(empty_result, phase4_file)
+            
+            return empty_result
+
+        with open(phase3_output, 'r') as f:
+            phase3_data = json.load(f)
 
         root_causes = phase3_data.get('root_causes', [])
         high_complexity_files = phase3_data.get('high_complexity_files', [])
@@ -602,8 +643,10 @@ class Phase4Improve:
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
+            'input_source': str(phase3_output),
             'version': __version__,
-            'input_source': str(phase3_output) if phase3_output.exists() else 'phase3_output_not_found',
+            'improvements': prioritized_tasks,
+            'total_improvements': metrics['total_improvements'],
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
