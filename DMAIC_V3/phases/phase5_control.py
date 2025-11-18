@@ -84,9 +84,10 @@ class Phase5Control:
             
             print(f"\n[5.2] Creating validation checkpoints...")
             validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
-            for checkpoint in validation_checkpoints:
-                status = "✅" if checkpoint['passed'] else "❌"
-                print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
+            if validation_checkpoints:
+                for checkpoint in validation_checkpoints:
+                    status = "✅" if checkpoint['passed'] else "❌"
+                    print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
             
             if self.use_gbogeb and self.gbogeb:
                 print(f"\n[5.3] Collecting GBOGEB metrics...")
