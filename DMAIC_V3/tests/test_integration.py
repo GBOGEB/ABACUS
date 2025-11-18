@@ -68,7 +68,7 @@ class TestFullDMAICCycle:
         assert result4['iteration'] == iteration
         
         phase5 = Phase5Control(config, state_manager)
-        result5 = phase5.execute(iteration=iteration)
+        success5, result5 = phase5.execute(iteration=iteration)
         assert result5['phase'] == 'CONTROL'
         assert result5['iteration'] == iteration
     

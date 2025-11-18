@@ -541,7 +541,7 @@ class Phase4Improve:
         """
         return self.run(iteration)
 
-    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def run(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -549,7 +549,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with improvement results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -558,7 +558,7 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
+            minimal_result = {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -587,7 +587,7 @@ class Phase4Improve:
             
             print(f"\n[*] Minimal improvement plan saved to: {output_file}")
             
-            return True, minimal_result
+            return minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
