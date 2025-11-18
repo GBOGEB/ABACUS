@@ -540,7 +540,7 @@ class Phase4Improve:
             Tuple of (success, results)
         """
         results = self.run(iteration)
-        success = results.get('phase') == 'IMPROVE'
+        success = results.get('success', False)
         return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
