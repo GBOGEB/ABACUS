@@ -540,7 +540,7 @@ class Phase4Improve:
             Tuple of (success: bool, results: dict)
         """
         results = self.run(iteration)
-        success = True  # Phase 4 always succeeds, even with missing Phase 3 data
+        success = not ('error' in results)
         return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
