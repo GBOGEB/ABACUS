@@ -5,7 +5,7 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Any, Tuple
 from datetime import datetime
 
 from ..core.state import StateManager
@@ -27,26 +27,17 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config: 'DMAICConfig' = None, state_manager: 'StateManager' = None):
+    def __init__(self, config: DMAICConfig, state_manager: StateManager):
         """
         Initialize Phase 5: Control
         
         Args:
             config: DMAICConfig instance
             state_manager: StateManager instance
-            use_gbogeb: Enable GBOGEB observability layer (default: True)
         """
-        # Import here to avoid circular dependency
-        if config is None:
-            from ..config import DMAICConfig
-            config = DMAICConfig()
-        if state_manager is None:
-            from ..core.state import StateManager
-            state_manager = StateManager(config.paths.output_root / "state")
-            
         self.config = config
         self.state_manager = state_manager
-        self.output_dir = Path(config.paths.output_root)
+        self.output_dir = config.paths.output_root
         self.use_gbogeb = GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -55,8 +46,16 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+    def execute(self, iteration: int) -> Dict[str, Any]:
+        """
+        Execute Phase 5: Control
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Dictionary with control results
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -65,7 +64,7 @@ class Phase5Control:
             iteration_dir = self.config.paths.output_root / f"iteration_{iteration}"
             
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
-            input_source = None
+            input_source = str(phase4_file) if phase4_file.exists() else None
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
@@ -98,8 +97,15 @@ class Phase5Control:
                         tags={"iteration": str(iteration)}
                     )
             
+            print(f"\n[5.2] Creating validation checkpoints...")
+            validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
+            if validation_checkpoints:
+                for checkpoint in validation_checkpoints:
+                    status = "✅" if checkpoint['passed'] else "❌"
+                    print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
+            
             if self.use_gbogeb and self.gbogeb:
-                print(f"\n[5.2] Collecting GBOGEB metrics...")
+                print(f"\n[5.3] Collecting GBOGEB metrics...")
                 
                 self.gbogeb.collect_metric(
                     agent="phase5_control",
@@ -117,16 +123,16 @@ class Phase5Control:
                 audit_file = self.gbogeb.generate_audit_trail()
                 print(f"  ✅ Audit trail: {audit_file}")
             
-            # Create validation checkpoints based on quality gates
-            validation_checkpoints = [
-                {
-                    'name': gate_name,
-                    'passed': gate_result['passed'],
-                    'message': gate_result['message'],
-                    'value': gate_result.get('value')
-                }
-                for gate_name, gate_result in quality_gates.items()
-            ]
+            # Create summary of control metrics
+            summary = {
+                'total_quality_gates': len(quality_gates),
+                'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+                'gates_failed': sum(1 for g in quality_gates.values() if not g['passed']),
+                'total_checkpoints': len(validation_checkpoints),
+                'checkpoints_passed': sum(1 for c in validation_checkpoints if c['passed']),
+                'checkpoints_failed': sum(1 for c in validation_checkpoints if not c['passed']),
+                'all_gates_passed': all_passed
+            }
             
             results = {
                 'phase': 'CONTROL',
@@ -134,15 +140,14 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'controls': quality_gates,  # Alias for quality_gates to match test expectations
-                'checkpoints': quality_gates,  # Alias for validation checkpoints
+                'controls': quality_gates,  # Alias for tests
+                'checkpoints': quality_gates,  # Alias for tests
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
-                'checkpoints': quality_gates,  # Alias for validation_checkpoints test
-                'controls': quality_gates  # Alias for control_metrics test
+                'success': True
             }
             
-            print(f"\n[5.3] Saving results...")
+            print(f"\n[5.4] Saving results...")
             output_dir = iteration_dir / "phase5_control"
             output_dir.mkdir(parents=True, exist_ok=True)
             
@@ -162,7 +167,13 @@ class Phase5Control:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'error': str(e)}
+            return {
+                'phase': 'CONTROL',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'success': False,
+                'error': str(e)
+            }
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -204,23 +215,57 @@ class Phase5Control:
             'value': 100
         }
     
-    def _create_skip_result(self, iteration: int) -> Dict:
+    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+        """Create validation checkpoints from quality gates
+        
+        Args:
+            quality_gates: Dictionary of quality gate results
+            iteration: Current iteration number
+            
+        Returns:
+            List of validation checkpoint dictionaries
+        """
+        checkpoints = []
+        
+        # Create a checkpoint for each quality gate
+        for gate_name, gate_result in quality_gates.items():
+            checkpoint = {
+                'name': f"{gate_name}_checkpoint",
+                'description': f"Validation checkpoint for {gate_name}",
+                'passed': gate_result['passed'],
+                'message': gate_result['message'],
+                'iteration': iteration
+            }
+            checkpoints.append(checkpoint)
+        
+        # Add overall checkpoint
+        all_gates_passed = all(gate['passed'] for gate in quality_gates.values())
+        checkpoints.append({
+            'name': 'overall_quality',
+            'description': 'All quality gates validation',
+            'passed': all_gates_passed,
+            'message': f"{'All quality gates passed' if all_gates_passed else 'Some quality gates failed'}",
+            'iteration': iteration
+        })
+        
+        return checkpoints
+    
+    def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
         return {
             'phase': 'CONTROL',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
-            'input_source': None,
-            'validation_checkpoints': [],
+            'input_source': 'Phase 4 results not found',
             'skipped': True,
-            'reason': 'Phase 4 results not found'
+            'reason': 'Phase 4 results not found',
+            'success': True
         }
 
 
 def main():
     """Test Phase 5"""
     import sys
-    from pathlib import Path
     from ..config import DMAICConfig
     from ..core.state import StateManager
     
@@ -230,16 +275,15 @@ def main():
     
     iteration = int(sys.argv[1])
     
-    # Create default config and state manager for standalone testing
+    from ..config import DMAICConfig
+    from ..core.state import StateManager
+    
     config = DMAICConfig()
-    state_manager = StateManager(config.paths.state_dir)
-    
+    state_manager = StateManager(config.paths.output_root / "state")
     phase5 = Phase5Control(config, state_manager)
-    results = phase5.execute(iteration)
+    success, results = phase5.execute(iteration)
     
-    # Check if execution was successful (no error key in results)
-    success = 'error' not in results
-    return 0 if success else 1
+    return 0 if results.get('success', False) else 1
 
 
 if __name__ == "__main__":

@@ -345,13 +345,13 @@ class FullPipelineOrchestrator:
         try:
             result = phase_obj.execute(iteration=iteration)
             
-            # Handle both tuple (bool, dict) and dict return types
+            # Handle both tuple (success, results) and dict returns for backward compatibility
             if isinstance(result, tuple):
                 success, results = result
             else:
-                # If dict is returned, extract success from result or default to True
+                # Dict return - extract success from 'error' field
                 results = result
-                success = results.get('error') is None if isinstance(results, dict) else True
+                success = not results.get('error')
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
