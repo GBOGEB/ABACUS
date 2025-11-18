@@ -537,10 +537,10 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Tuple of (success: bool, results: dict)
         """
         results = self.run(iteration)
-        success = results.get('success', False)
+        success = not ('error' in results)
         return success, results
 
     def run(self, iteration: int) -> Dict[str, Any]:
@@ -567,9 +567,9 @@ class Phase4Improve:
                 'success': False,
                 'error': f"Phase 3 output not found: {phase3_output}"
             }
-
-        with open(phase3_output, 'r') as f:
-            phase3_data = json.load(f)
+        else:
+            with open(phase3_output, 'r') as f:
+                phase3_data = json.load(f)
 
         root_causes = phase3_data.get('root_causes', [])
         high_complexity_files = phase3_data.get('high_complexity_files', [])
@@ -639,6 +639,11 @@ class Phase4Improve:
         return improvement_result
 
 
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        """
+        return (True, self.run(iteration))
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -653,6 +658,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     result = phase4.run(iteration)
 
-    if not result['success']:
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
