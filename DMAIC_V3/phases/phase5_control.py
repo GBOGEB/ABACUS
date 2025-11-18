@@ -30,7 +30,7 @@ class Phase5Control:
     def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
         self.config = config
         self.state_manager = state_manager
-        self.output_dir = config.paths.output_root
+        self.output_dir = Path(config.paths.output_root)
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.gbogeb = None
         
@@ -132,16 +132,9 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'controls': quality_gates,  # Alias for backwards compatibility
-                'checkpoints': {
-                    'quality_gates_checked': True,
-                    'all_gates_passed': all_passed
-                },
-                'metrics': {
-                    'total_gates': len(quality_gates),
-                    'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
-                    'gates_failed': sum(1 for g in quality_gates.values() if not g['passed'])
-                },
+                'checkpoints': validation_checkpoints,  # List of validation checkpoints (e.g., quality_gates_checked, all_gates_passed)
+                'controls': quality_gates,  # Alias for quality gates
+                'summary': summary,
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
                 'success': all_passed
@@ -274,7 +267,7 @@ def main():
     phase5 = Phase5Control(config, state_manager)
     success, results = phase5.execute(iteration)
     
-    return 0 if success else 1
+    return 0 if not results.get('error') else 1
 
 
 if __name__ == "__main__":
