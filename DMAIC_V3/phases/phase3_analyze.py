@@ -94,8 +94,9 @@ class Phase3Analyze:
             complexity = file_metrics.get('metrics', {}).get('complexity_score', 0)
             loc = file_metrics.get('metrics', {}).get('lines_of_code', 0)
 
-            functions_val = file_metrics.get('metrics', {}).get('functions', 0)
-            classes_val = file_metrics.get('metrics', {}).get('classes', 0)
+            # Get counts from metrics (function_count, class_count)
+            functions_val = file_metrics.get('metrics', {}).get('function_count', 0)
+            classes_val = file_metrics.get('metrics', {}).get('class_count', 0)
 
             complexity_files.append({
                 'file': file_path,
@@ -148,12 +149,15 @@ class Phase3Analyze:
                 continue
 
             m = file_metrics.get('metrics', {})
-            classes = m.get('classes', [])
-            functions = m.get('functions', [])
+            details = file_metrics.get('details', {})
+            
+            # Get lists from details dict (functions, classes)
+            classes = details.get('classes', [])
+            functions = details.get('functions', [])
             loc = m.get('lines_of_code', 0)
             comment_lines = m.get('comment_lines', 0)
 
-            # Handle both integer counts and list formats
+            # Handle both integer counts and list formats for backwards compatibility
             if isinstance(classes, int):
                 classes = []
             if isinstance(functions, int):
