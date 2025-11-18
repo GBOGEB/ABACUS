@@ -217,7 +217,7 @@ class Phase5Control:
             'value': 100
         }
     
-    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+    def _create_validation_checkpoints(self, quality_gates: Dict) -> List[Dict]:
         """Create validation checkpoints based on quality gates"""
         checkpoints = []
         
@@ -232,6 +232,21 @@ class Phase5Control:
             checkpoints.append(checkpoint)
         
         return checkpoints
+    
+    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
+        """Create a summary of control mechanisms"""
+        return {
+            'total_gates': len(quality_gates),
+            'passed_gates': sum(1 for g in quality_gates.values() if g['passed']),
+            'failed_gates': sum(1 for g in quality_gates.values() if not g['passed']),
+            'gate_details': {
+                name: {
+                    'passed': gate['passed'],
+                    'message': gate.get('message', '')
+                }
+                for name, gate in quality_gates.items()
+            }
+        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
