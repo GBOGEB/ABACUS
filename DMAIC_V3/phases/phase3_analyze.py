@@ -289,6 +289,7 @@ class Phase3Analyze:
         })
 
         analysis_result = {
+            'phase': 'ANALYZE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
