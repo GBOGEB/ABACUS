@@ -91,7 +91,7 @@ class Phase5Control:
                     )
             
             print(f"\n[5.2] Creating validation checkpoints...")
-            validation_checkpoints = self._create_validation_checkpoints(quality_gates)
+            validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
             for checkpoint in validation_checkpoints:
                 status = "✅" if checkpoint['passed'] else "❌"
                 print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
@@ -132,7 +132,7 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'validation_checkpoints': self._create_validation_checkpoints(quality_gates),
+                'validation_checkpoints': self._create_validation_checkpoints(quality_gates, iteration),
                 'controls': self._create_controls_summary(quality_gates),
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
@@ -232,6 +232,21 @@ class Phase5Control:
             checkpoints.append(checkpoint)
         
         return checkpoints
+    
+    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
+        """Create controls summary from quality gates"""
+        return {
+            'total_gates': len(quality_gates),
+            'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+            'gates_failed': sum(1 for g in quality_gates.values() if not g['passed']),
+            'gate_details': {
+                name: {
+                    'passed': gate['passed'],
+                    'message': gate['message']
+                }
+                for name, gate in quality_gates.items()
+            }
+        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
