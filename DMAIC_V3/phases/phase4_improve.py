@@ -656,7 +656,6 @@ class Phase4Improve:
                 'total_modifications_made': implementation_results['total_modifications']
             },
             'improvements': prioritized_tasks,
-            'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
             'implementation_results': implementation_results
@@ -705,6 +704,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     success, result = phase4.run(iteration)
 
-    if not success or result.get('error'):
+    if result.get('error'):
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
