@@ -219,8 +219,8 @@ class Phase5Control:
                 'name': f"{gate_name}_checkpoint",
                 'description': f"Validation checkpoint for {gate_name}",
                 'passed': gate_result['passed'],
-                'gate': gate_name,
-                'iteration': iteration
+                'value': gate_result.get('value', 0),
+                'message': gate_result.get('message', '')
             }
             checkpoints.append(checkpoint)
         
@@ -258,7 +258,7 @@ def main():
     phase5 = Phase5Control(config, state_manager)
     success, results = phase5.execute(iteration)
     
-    return 0 if success else 1
+    return 0 if success and 'error' not in results else 1
 
 
 if __name__ == "__main__":
