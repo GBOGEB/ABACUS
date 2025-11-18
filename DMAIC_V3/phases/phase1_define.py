@@ -52,9 +52,28 @@ class Phase1Define:
 
         self.file_type_map = {
             '.py': 'code',
+            '.js': 'code',
+            '.jsx': 'code',
+            '.ts': 'code',
+            '.tsx': 'code',
+            '.java': 'code',
+            '.c': 'code',
+            '.cpp': 'code',
+            '.h': 'code',
+            '.hpp': 'code',
+            '.cs': 'code',
+            '.go': 'code',
+            '.rs': 'code',
+            '.rb': 'code',
+            '.php': 'code',
+            '.swift': 'code',
+            '.kt': 'code',
+            '.scala': 'code',
+            '.r': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
+            '.rst': 'docs',
             '.json': 'data',
             '.yaml': 'data',
             '.yml': 'data',
@@ -352,10 +371,11 @@ class Phase1Define:
         Returns:
             Dictionary with phase execution results
         """
+        start_time = datetime.now()
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
         print("="*80)
-        print(f"Timestamp: {datetime.now().isoformat()}")
+        print(f"Timestamp: {start_time.isoformat()}")
         print()
 
         try:
@@ -433,13 +453,20 @@ class Phase1Define:
             print("\n[1.4] Calculating artifact rankings (if available)...")
             artifact_rankings = self.calculate_artifact_ranking(iteration)
 
+            # Calculate duration
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+
             # Prepare results
             results = {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'total_files': len(all_files),
                 'categorized': dict(categorized),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
                 'files': all_files,
                 'folder_structure': folder_structure,
                 'markdown_files': markdown_files,
@@ -501,13 +528,18 @@ class Phase1Define:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
             return {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
+                'code_files': 0,
+                'documentation_files': 0,
                 'files': [],
                 'folder_structure': [],
                 'markdown_files': [],
