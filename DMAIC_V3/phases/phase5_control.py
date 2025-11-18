@@ -47,7 +47,7 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict:
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -61,7 +61,7 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration)
+                return True, self._create_skip_result(iteration)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -91,7 +91,7 @@ class Phase5Control:
                     )
             
             print(f"\n[5.2] Creating validation checkpoints...")
-            validation_checkpoints = self._create_validation_checkpoints(quality_gates)
+            validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
             for checkpoint in validation_checkpoints:
                 status = "✅" if checkpoint['passed'] else "❌"
                 print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
@@ -132,7 +132,7 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'validation_checkpoints': self._create_validation_checkpoints(quality_gates),
+                'validation_checkpoints': self._create_validation_checkpoints(quality_gates, iteration),
                 'controls': self._create_controls_summary(quality_gates),
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
@@ -153,13 +153,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return results
+            return True, results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {
+            return False, {
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -232,6 +232,15 @@ class Phase5Control:
             checkpoints.append(checkpoint)
         
         return checkpoints
+    
+    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
+        """Create a summary of control mechanisms"""
+        return {
+            'total_gates': len(quality_gates),
+            'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
+            'gates_failed': sum(1 for g in quality_gates.values() if not g['passed']),
+            'gate_status': {name: gate['passed'] for name, gate in quality_gates.items()}
+        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
