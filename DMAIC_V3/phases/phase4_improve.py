@@ -537,9 +537,11 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with improvement results
+            Tuple of (success, results)
         """
-        return self.run(iteration)
+        results = self.run(iteration)
+        success = results.get('success', False)
+        return success, results
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
