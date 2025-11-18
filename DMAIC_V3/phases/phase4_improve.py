@@ -596,7 +596,7 @@ class Phase4Improve:
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'input_source': str(phase3_output),
+            'input_source': str(phase3_output) if phase3_output.exists() else 'none (Phase 3 output not found)',
             'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
