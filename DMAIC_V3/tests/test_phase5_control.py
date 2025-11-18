@@ -138,16 +138,16 @@ class TestPhase5Control:
             phase4_file = output_dir / "phase4_improve.json"
             phase4_file.write_text(json.dumps(phase4_data))
             
-            success, result = phase5.execute(iteration=iteration)
+            result = phase5.execute(iteration=iteration)
             assert result['iteration'] == iteration
     
     def test_control_metrics(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert 'metrics' in result or 'summary' in result or 'controls' in result or 'quality_gates' in result
     
     def test_continuous_monitoring(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert result is not None
         assert result['phase'] == 'CONTROL'
