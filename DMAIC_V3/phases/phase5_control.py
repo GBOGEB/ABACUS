@@ -47,8 +47,12 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict:
-        """Execute Phase 5: Control"""
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+        """Execute Phase 5: Control
+        
+        Returns:
+            Tuple[bool, Dict]: (success, results_dict)
+        """
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -61,7 +65,7 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration)
+                return True, self._create_skip_result(iteration)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -153,13 +157,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return results
+            return True, results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {
+            error_result = {
                 'phase': 'CONTROL',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -168,6 +172,7 @@ class Phase5Control:
                 'all_gates_passed': False,
                 'gbogeb_enabled': self.use_gbogeb
             }
+            return False, error_result
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -217,7 +222,7 @@ class Phase5Control:
             'value': 100
         }
     
-    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+    def _create_validation_checkpoints(self, quality_gates: Dict) -> List[Dict]:
         """Create validation checkpoints based on quality gates"""
         checkpoints = []
         
@@ -232,6 +237,22 @@ class Phase5Control:
             checkpoints.append(checkpoint)
         
         return checkpoints
+    
+    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
+        """Create a summary of control metrics"""
+        return {
+            'total_gates': len(quality_gates),
+            'passed_gates': sum(1 for g in quality_gates.values() if g['passed']),
+            'failed_gates': sum(1 for g in quality_gates.values() if not g['passed']),
+            'gate_details': {
+                name: {
+                    'passed': gate['passed'],
+                    'message': gate.get('message', ''),
+                    'value': gate.get('value', 0)
+                }
+                for name, gate in quality_gates.items()
+            }
+        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
