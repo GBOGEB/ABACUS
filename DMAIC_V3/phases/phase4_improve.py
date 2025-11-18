@@ -560,12 +560,12 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            # Gracefully handle missing phase3 output by using empty data
-            print(f"[WARNING] Phase 3 output not found: {phase3_output}")
-            print("[*] Proceeding with empty analysis data...")
-            phase3_data = {
-                'root_causes': [],
-                'high_complexity_files': []
+            return {
+                'phase': 'IMPROVE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'success': False,
+                'error': f"Phase 3 output not found: {phase3_output}"
             }
         else:
             with open(phase3_output, 'r') as f:
@@ -594,13 +594,12 @@ class Phase4Improve:
         )
 
         improvement_result = {
-            'success': True,
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
-            'input_source': str(phase3_output) if phase3_output.exists() else 'none (Phase 3 output not found)',
-            'improvements': prioritized_tasks,
+            'success': True,
+            'input_source': str(phase3_output),
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -637,9 +636,6 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        # Return the full improvement_result with success flag
-        improvement_result['success'] = True
-        improvement_result['output_file'] = str(output_file)
         return improvement_result
 
 
