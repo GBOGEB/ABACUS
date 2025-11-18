@@ -1,0 +1,162 @@
+name: Generate Reports
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'scripts/**'
+      - '*.py'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then
+            pip install -r DMAIC_V3/requirements.txt
+          fi
+          pip install pyyaml
+
+      - name: Generate iteration report
+        run: |
+          if [ -f "scripts/generate_iteration_report.py" ]; then
+            python scripts/generate_iteration_report.py || true
+            echo "✅ Iteration report generated"
+          else
+            echo "⚠️ Iteration report script not found"
+          fi
+
+      - name: Generate global index
+        run: |
+          if [ -f "scripts/generate_global_index.py" ]; then
+            python scripts/generate_global_index.py || true
+            echo "✅ Global index generated"
+          else
+            echo "⚠️ Global index script not found"
+          fi
+
+      - name: Export documentation
+        run: |
+          if [ -f "scripts/export_docs.py" ]; then
+            python scripts/export_docs.py || true
+            echo "✅ Documentation exported"
+          else
+            echo "⚠️ Export docs script not found"
+          fi
+
+      - name: Generate handover documentation
+        run: |
+          if [ -f "scripts/handover_generator.py" ]; then
+            python scripts/handover_generator.py || true
+            echo "✅ Handover documentation generated"
+          else
+            echo "⚠️ Handover generator script not found"
+          fi
+
+      - name: Check code health
+        run: |
+          if [ -f "scripts/code_health_check.py" ]; then
+            python scripts/code_health_check.py || true
+            echo "✅ Code health check completed"
+          else
+            echo "⚠️ Code health check script not found"
+          fi
+
+      - name: Generate convergence analysis
+        run: |
+          if [ -f "scripts/check_convergence.py" ]; then
+            python scripts/check_convergence.py || true
+            echo "✅ Convergence analysis completed"
+          else
+            echo "⚠️ Convergence check script not found"
+          fi
+
+      - name: Upload report artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ github.run_number }}
+          path: |
+            Report_*.md
+            DMAIC_V3_OUTPUT/**/*.json
+            DMAIC_V3_OUTPUT/**/*.md
+            *.json
+          if-no-files-found: warn
+
+      - name: Create summary
+        run: |
+          echo "## Reports Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Reports have been generated for commit ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Generated Files:" >> $GITHUB_STEP_SUMMARY
+          ls -lh Report_*.md 2>/dev/null | awk '{print "- " $9 " (" $5 ")"}' >> $GITHUB_STEP_SUMMARY || echo "- No report files found" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 View artifacts for detailed reports" >> $GITHUB_STEP_SUMMARY
+
+  # Weekly comprehensive report
+  weekly-comprehensive-report:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then
+            pip install -r DMAIC_V3/requirements.txt
+          fi
+          pip install gitpython
+
+      - name: Generate comprehensive metrics
+        run: |
+          echo "📊 Generating comprehensive weekly metrics..."
+          
+          # Count files by type
+          echo "## Weekly Repository Metrics" > weekly_report.md
+          echo "" >> weekly_report.md
+          echo "### File Statistics" >> weekly_report.md
+          echo "- Python files: $(find . -name '*.py' -not -path './.*' | wc -l)" >> weekly_report.md
+          echo "- Markdown files: $(find . -name '*.md' -not -path './.*' | wc -l)" >> weekly_report.md
+          echo "- YAML files: $(find . -name '*.yml' -o -name '*.yaml' -not -path './.*' | wc -l)" >> weekly_report.md
+          echo "" >> weekly_report.md
+          
+          # Recent activity
+          echo "### Recent Activity (Last 7 Days)" >> weekly_report.md
+          git log --since='7 days ago' --oneline | wc -l | xargs echo "- Commits:" >> weekly_report.md
+          git log --since='7 days ago' --pretty=format:'%an' | sort | uniq | wc -l | xargs echo "- Contributors:" >> weekly_report.md
+          
+          cat weekly_report.md
+
+      - name: Upload weekly report
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-report-${{ github.run_number }}
+          path: weekly_report.md
