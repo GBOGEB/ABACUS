@@ -75,25 +75,25 @@ class TestPhase5Control:
         assert phase5.config == config
     
     def test_execute_with_phase4_output(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
-        assert success is True
+        assert result is not None
         assert result['phase'] == 'CONTROL'
         assert result['iteration'] == 1
         assert 'timestamp' in result
     
     def test_establish_quality_gates(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert 'quality_gates' in result or 'controls' in result
     
     def test_validation_checkpoints(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert 'validation_checkpoints' in result or 'checkpoints' in result or 'quality_gates' in result
     
     def test_output_structure(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert 'phase' in result
         assert 'iteration' in result
@@ -101,19 +101,19 @@ class TestPhase5Control:
         assert 'input_source' in result or 'phase' in result  # input_source may not always be present
     
     def test_missing_phase4_output(self, phase5, config):
-        success, result = phase5.execute(iteration=99)
+        result = phase5.execute(iteration=99)
         
         assert result is not None
         assert result.get('phase') == 'CONTROL'
     
     def test_monitoring_mechanisms(self, phase5, phase4_output):
-        success, result = phase5.execute(iteration=1)
+        result = phase5.execute(iteration=1)
         
         assert isinstance(result, dict)
         assert len(result) > 0
     
     def test_file_saved_correctly(self, phase5, phase4_output, config):
-        success, result = phase5.execute(iteration=1)
+        phase5.execute(iteration=1)
         
         output_file = config.paths.output_root / "iteration_1" / "phase5_control" / "phase5_control.json"
         assert output_file.exists()
