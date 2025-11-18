@@ -537,10 +537,9 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with improvement results
         """
-        results = self.run(iteration)
-        return results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -559,17 +558,13 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            print(f"[!] Warning: Phase 3 output not found: {phase3_output}")
-            print(f"[*] Generating empty improvement plan...")
-            # Return a valid structure even without phase3 data
-            empty_result = {
+            return {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
-                'input_source': str(phase3_output),
                 'version': __version__,
+                'input_source': str(phase3_output),
                 'improvements': [],
-                'total_improvements': 0,
                 'summary': {
                     'total_improvements': 0,
                     'immediate_actions': 0,
@@ -648,8 +643,8 @@ class Phase4Improve:
             'timestamp': datetime.now().isoformat(),
             'input_source': str(phase3_output),
             'version': __version__,
+            'input_source': str(phase3_output),
             'improvements': prioritized_tasks,
-            'total_improvements': metrics['total_improvements'],
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -707,6 +702,6 @@ if __name__ == "__main__":
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
     success, result = phase4.run(iteration)
 
-    if result.get('error'):
-        print(f"[ERROR] Error: {result.get('error')}")
+    if 'phase' not in result or result.get('error'):
+        print(f"[ERROR] Phase 4 execution failed: {result.get('error', 'Unknown error')}")
         sys.exit(1)
