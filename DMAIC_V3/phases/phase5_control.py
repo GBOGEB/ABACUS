@@ -48,11 +48,7 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
-        """Execute Phase 5: Control
-        
-        Returns:
-            Tuple of (success: bool, results: Dict)
-        """
+        """Execute Phase 5: Control"""
         try:
             print("="*80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")
@@ -65,7 +61,8 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return True, self._create_skip_result(iteration)
+                result = self._create_skip_result(iteration)
+                return True, result
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -157,7 +154,7 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return True, results
+            return all_passed, results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
@@ -170,7 +167,15 @@ class Phase5Control:
         stats = phase4_data.get('statistics', {})
         improvements = stats.get('total_modifications', 0)
         
-        passed = improvements > 0
+        # Also check for improvements array if statistics not available
+        if improvements == 0 and 'improvements' in phase4_data:
+            improvements = len(phase4_data['improvements'])
+        
+        # Also check total_improvements field
+        if improvements == 0 and 'total_improvements' in phase4_data:
+            improvements = phase4_data['total_improvements']
+        
+        passed = improvements > 0  # Require at least one improvement for gate to pass
         return {
             'passed': passed,
             'message': f"{improvements} improvements made",
@@ -205,34 +210,19 @@ class Phase5Control:
             'value': 100
         }
     
-    def _create_validation_checkpoints(self, quality_gates: Dict) -> List[Dict]:
-        """Create validation checkpoints based on quality gates
-        
-        Args:
-            quality_gates: Dictionary of quality gate results
-            
-        Returns:
-            List of validation checkpoint dictionaries
-        """
+    def _create_validation_checkpoints(self, quality_gates: Dict, iteration: int) -> List[Dict]:
+        """Create validation checkpoints based on quality gates"""
         checkpoints = []
         
-        # Create a checkpoint for each quality gate
         for gate_name, gate_result in quality_gates.items():
-            checkpoints.append({
+            checkpoint = {
                 'name': f"{gate_name}_checkpoint",
-                'description': gate_result['message'],
+                'description': f"Validation checkpoint for {gate_name}",
                 'passed': gate_result['passed'],
-                'value': gate_result.get('value', 0)
-            })
-        
-        # Add an overall checkpoint
-        all_passed = all(gate['passed'] for gate in quality_gates.values())
-        checkpoints.append({
-            'name': 'overall_quality',
-            'description': 'All quality gates passed' if all_passed else 'Some quality gates failed',
-            'passed': all_passed,
-            'value': sum(1 for gate in quality_gates.values() if gate['passed'])
-        })
+                'gate': gate_name,
+                'iteration': iteration
+            }
+            checkpoints.append(checkpoint)
         
         return checkpoints
     
@@ -266,10 +256,8 @@ def main():
     state_manager = StateManager(config.paths.output_root / "state")
     
     phase5 = Phase5Control(config, state_manager)
-    results = phase5.execute(iteration)
+    success, results = phase5.execute(iteration)
     
-    # Check if execution was successful (no error key)
-    success = 'error' not in results
     return 0 if success else 1
 
 
