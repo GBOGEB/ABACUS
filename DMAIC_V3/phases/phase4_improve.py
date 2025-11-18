@@ -529,19 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
-        """
-        Execute Phase 4: Improve
-
-        Args:
-            iteration: Current iteration number
-
-        Returns:
-            Dictionary with improvement results
-        """
-        return self.run(iteration)
-
-    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def run(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -549,7 +537,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with improvement results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
