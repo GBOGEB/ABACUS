@@ -52,6 +52,7 @@ class Phase1Define:
 
         self.file_type_map = {
             '.py': 'code',
+            '.js': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
@@ -440,6 +441,8 @@ class Phase1Define:
                 'timestamp': datetime.now().isoformat(),
                 'total_files': len(all_files),
                 'categorized': dict(categorized),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
                 'files': all_files,
                 'folder_structure': folder_structure,
                 'markdown_files': markdown_files,
@@ -453,7 +456,8 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                }
+                },
+                'duration': 0.0  # Will be calculated if needed
             }
 
             print("\n[1.5] Saving results...")
@@ -508,6 +512,8 @@ class Phase1Define:
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
+                'code_files': 0,
+                'documentation_files': 0,
                 'files': [],
                 'folder_structure': [],
                 'markdown_files': [],
@@ -516,7 +522,8 @@ class Phase1Define:
                 'file_relationships': [],
                 'folders_scanned': 0,
                 'artifact_rankings': {},
-                'changes': {}
+                'changes': {},
+                'duration': 0.0
             }
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
