@@ -5,7 +5,7 @@ Quality gates and GBOGEB integration
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Tuple
 from datetime import datetime
 
 from ..core.state import StateManager
@@ -47,15 +47,11 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Dict:
-        """
-        Execute Phase 5: Control
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+        """Execute Phase 5: Control
         
-        Args:
-            iteration: Current iteration number
-            
         Returns:
-            Dictionary with phase results
+            Tuple of (success: bool, results: Dict)
         """
         try:
             print("="*80)
@@ -69,7 +65,7 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                return self._create_skip_result(iteration, str(phase4_file))
+                return True, self._create_skip_result(iteration)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -99,11 +95,10 @@ class Phase5Control:
                     )
             
             print(f"\n[5.2] Creating validation checkpoints...")
-            validation_checkpoints = self._create_validation_checkpoints(quality_gates, iteration)
-            if validation_checkpoints:
-                for checkpoint in validation_checkpoints:
-                    status = "✅" if checkpoint['passed'] else "❌"
-                    print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
+            validation_checkpoints = self._create_validation_checkpoints(quality_gates)
+            for checkpoint in validation_checkpoints:
+                status = "✅" if checkpoint['passed'] else "❌"
+                print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
             
             if self.use_gbogeb and self.gbogeb:
                 print(f"\n[5.3] Collecting GBOGEB metrics...")
@@ -162,13 +157,13 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return results
+            return True, results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {'phase': 'CONTROL', 'iteration': iteration, 'error': str(e)}
+            return False, {'error': str(e)}
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
@@ -211,8 +206,7 @@ class Phase5Control:
         }
     
     def _create_validation_checkpoints(self, quality_gates: Dict) -> List[Dict]:
-        """
-        Create validation checkpoints based on quality gates
+        """Create validation checkpoints based on quality gates
         
         Args:
             quality_gates: Dictionary of quality gate results
@@ -221,37 +215,26 @@ class Phase5Control:
             List of validation checkpoint dictionaries
         """
         checkpoints = []
+        
+        # Create a checkpoint for each quality gate
         for gate_name, gate_result in quality_gates.items():
-            checkpoint = {
-                'name': gate_name,
-                'status': 'passed' if gate_result['passed'] else 'failed',
-                'message': gate_result['message'],
-                'timestamp': datetime.now().isoformat()
-            }
-            checkpoints.append(checkpoint)
+            checkpoints.append({
+                'name': f"{gate_name}_checkpoint",
+                'description': gate_result['message'],
+                'passed': gate_result['passed'],
+                'value': gate_result.get('value', 0)
+            })
+        
+        # Add an overall checkpoint
+        all_passed = all(gate['passed'] for gate in quality_gates.values())
+        checkpoints.append({
+            'name': 'overall_quality',
+            'description': 'All quality gates passed' if all_passed else 'Some quality gates failed',
+            'passed': all_passed,
+            'value': sum(1 for gate in quality_gates.values() if gate['passed'])
+        })
+        
         return checkpoints
-    
-    def _create_controls_summary(self, quality_gates: Dict) -> Dict:
-        """
-        Create a summary of control mechanisms
-        
-        Args:
-            quality_gates: Dictionary of quality gate results
-            
-        Returns:
-            Dictionary with control summary
-        """
-        total = len(quality_gates)
-        passed = sum(1 for g in quality_gates.values() if g['passed'])
-        failed = total - passed
-        
-        return {
-            'total_gates': total,
-            'gates_passed': passed,
-            'gates_failed': failed,
-            'pass_rate': (passed / total * 100) if total > 0 else 0,
-            'status': 'all_passed' if failed == 0 else 'some_failed'
-        }
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
