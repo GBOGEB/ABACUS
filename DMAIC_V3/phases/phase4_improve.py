@@ -563,37 +563,14 @@ class Phase4Improve:
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
                 'version': __version__,
+                'error': f"Phase 3 output not found: {phase3_output}",
                 'input_source': str(phase3_output),
+                'summary': {},
                 'improvements': [],
-                'summary': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'files_actually_improved': 0,
-                    'total_modifications_made': 0
-                },
                 'refactoring_tasks': [],
-                'implementation_roadmap': {
-                    'phase_1_immediate': [],
-                    'phase_2_short_term': [],
-                    'phase_3_long_term': []
-                },
-                'metrics': {
-                    'total_improvements': 0,
-                    'immediate_actions': 0,
-                    'short_term_actions': 0,
-                    'long_term_actions': 0,
-                    'estimated_total_effort': 0
-                },
-                'implementation_results': {
-                    'docstrings_added': [],
-                    'long_lines_fixed': [],
-                    'type_hints_added': [],
-                    'unused_imports_removed': [],
-                    'total_files_improved': 0,
-                    'total_modifications': 0
-                }
+                'implementation_roadmap': {},
+                'metrics': {},
+                'implementation_results': {}
             }
             
             # Still save the minimal result to output files
@@ -644,7 +621,6 @@ class Phase4Improve:
             'input_source': str(phase3_output),
             'version': __version__,
             'input_source': str(phase3_output),
-            'improvements': prioritized_tasks,
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -654,6 +630,8 @@ class Phase4Improve:
                 'total_modifications_made': implementation_results['total_modifications']
             },
             'improvements': prioritized_tasks,
+            # 'refactoring_tasks' is included for backward compatibility with previous output formats.
+            'refactoring_tasks': prioritized_tasks,
             'implementation_roadmap': roadmap,
             'metrics': metrics,
             'implementation_results': implementation_results
@@ -680,7 +658,7 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return True, improvement_result
+        return improvement_result
 
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:

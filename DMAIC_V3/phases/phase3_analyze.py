@@ -227,7 +227,7 @@ class Phase3Analyze:
 
         return root_causes
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def execute(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 3: Analyze
 
@@ -235,11 +235,9 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, results)
+            Dictionary with analysis results
         """
-        results = self.run(iteration)
-        success = results.get('success', False)
-        return success, results
+        return self.run(iteration)
 
     def run(self, iteration: int) -> Dict[str, Any]:
         """
@@ -259,8 +257,19 @@ class Phase3Analyze:
 
         if not phase2_output.exists():
             return {
-                'success': False,
-                'error': f"Phase 2 output not found: {phase2_output}"
+                'phase': 'ANALYZE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'version': __version__,
+                'error': f"Phase 2 output not found: {phase2_output}",
+                'input_source': str(phase2_output),
+                'summary': {},
+                'analysis': {},
+                'complexity_distribution': {},
+                'high_complexity_files': [],
+                'size_distribution': {},
+                'patterns': {},
+                'root_causes': []
             }
 
         with open(phase2_output, 'r') as f:
@@ -293,11 +302,19 @@ class Phase3Analyze:
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
+            'input_source': str(phase2_output),
             'summary': {
                 'total_files_analyzed': len(metrics),
                 'critical_issues': len([rc for rc in root_causes if rc['severity'] == 'critical']),
                 'high_issues': len([rc for rc in root_causes if rc['severity'] == 'high']),
                 'medium_issues': len([rc for rc in root_causes if rc['severity'] == 'medium'])
+            },
+            'analysis': {
+                'complexity_distribution': complexity_dist,
+                'high_complexity_files': high_complexity_files,
+                'size_distribution': size_dist,
+                'patterns': patterns,
+                'root_causes': root_causes
             },
             'complexity_distribution': complexity_dist,
             'high_complexity_files': high_complexity_files,
@@ -319,12 +336,7 @@ class Phase3Analyze:
         print(f"   Medium issues: {analysis_result['summary']['medium_issues']}")
         print(f"\n[*] Output: {output_file}")
 
-        return {
-            'success': True,
-            'output_file': str(output_file),
-            'summary': analysis_result['summary'],
-            'root_causes': root_causes
-        }
+        return analysis_result
 
 
 if __name__ == "__main__":

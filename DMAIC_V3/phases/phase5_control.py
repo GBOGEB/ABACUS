@@ -47,7 +47,7 @@ class Phase5Control:
             gbogeb_workspace = config.paths.output_root / "gbogeb_workspace"
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
     
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+    def execute(self, iteration: int) -> Dict:
         """Execute Phase 5: Control"""
         try:
             print("="*80)
@@ -61,8 +61,7 @@ class Phase5Control:
             
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
-                result = self._create_skip_result(iteration)
-                return True, result
+                return self._create_skip_result(iteration)
             
             input_source = str(phase4_file)
             with open(phase4_file, 'r') as f:
@@ -154,13 +153,21 @@ class Phase5Control:
             print(f"PHASE 5 COMPLETE: {'✅ ALL GATES PASSED' if all_passed else '❌ SOME GATES FAILED'}")
             print("="*80)
             
-            return all_passed, results
+            return results
             
         except Exception as e:
             print(f"\n❌ Phase 5 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {'error': str(e)}
+            return {
+                'phase': 'CONTROL',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'error': str(e),
+                'quality_gates': {},
+                'all_gates_passed': False,
+                'gbogeb_enabled': self.use_gbogeb
+            }
     
     def _check_code_quality(self, phase4_data: Dict) -> Dict:
         """Check code quality gate"""
