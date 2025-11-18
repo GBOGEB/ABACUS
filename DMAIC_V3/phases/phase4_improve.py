@@ -529,18 +529,6 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
-        """
-        Execute Phase 4: Improve
-
-        Args:
-            iteration: Current iteration number
-
-        Returns:
-            Dictionary with improvement results
-        """
-        return self.run(iteration)
-
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
@@ -558,7 +546,7 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
+            minimal_result = {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -658,14 +646,14 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
+        return True, improvement_result
 
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
         """
-        return (True, self.run(iteration))
+        return self.run(iteration)
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
