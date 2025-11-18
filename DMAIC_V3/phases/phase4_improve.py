@@ -549,7 +549,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: dict) with improvement plan AND implementation results
+            Tuple of (success: bool, results: Dict)
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -596,18 +596,21 @@ class Phase4Improve:
                 }
             }
             
-            # Still save the empty result
+            # Still save the minimal result to output files
             output_dir = self.config.paths.output_root / f"iteration_{iteration}"
             ensure_directory(output_dir)
+            
             output_file = output_dir / "phase4_improvements.json"
-            safe_write_json(empty_result, output_file)
+            safe_write_json(minimal_result, output_file)
             
             phase4_dir = output_dir / "phase4_improve"
             ensure_directory(phase4_dir)
             phase4_file = phase4_dir / "phase4_improve.json"
-            safe_write_json(empty_result, phase4_file)
+            safe_write_json(minimal_result, phase4_file)
             
-            return empty_result
+            print(f"\n[*] Minimal improvement plan saved to: {output_file}")
+            
+            return True, minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
@@ -677,7 +680,7 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
+        return True, improvement_result
 
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
