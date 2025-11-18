@@ -52,6 +52,7 @@ class Phase1Define:
 
         self.file_type_map = {
             '.py': 'code',
+            '.js': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
@@ -440,6 +441,9 @@ class Phase1Define:
                 'timestamp': datetime.now().isoformat(),
                 'total_files': len(all_files),
                 'categorized': dict(categorized),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': 0,  # Will be calculated if needed
                 'files': all_files,
                 'folder_structure': folder_structure,
                 'markdown_files': markdown_files,
@@ -508,6 +512,9 @@ class Phase1Define:
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
+                'code_files': 0,
+                'documentation_files': 0,
+                'duration': 0,
                 'files': [],
                 'folder_structure': [],
                 'markdown_files': [],
