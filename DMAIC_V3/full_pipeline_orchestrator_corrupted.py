@@ -566,7 +566,7 @@ class FullPipelineOrchestrator:
             if isinstance(result, tuple):
                 success, results = result
             else:
-                # Newer phases return just dict
+                # Dict return - extract success from 'error' field
                 results = result
                 success = not results.get('error')
             
