@@ -560,22 +560,6 @@ class Phase4Improve:
                 'metrics': {},
                 'implementation_results': {}
             }
-            
-            # Still save the minimal result to output files
-            output_dir = self.config.paths.output_root / f"iteration_{iteration}"
-            ensure_directory(output_dir)
-            
-            output_file = output_dir / "phase4_improvements.json"
-            safe_write_json(minimal_result, output_file)
-            
-            phase4_dir = output_dir / "phase4_improve"
-            ensure_directory(phase4_dir)
-            phase4_file = phase4_dir / "phase4_improve.json"
-            safe_write_json(minimal_result, phase4_file)
-            
-            print(f"\n[*] Minimal improvement plan saved to: {output_file}")
-            
-            return True, minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
@@ -608,7 +592,6 @@ class Phase4Improve:
             'timestamp': datetime.now().isoformat(),
             'input_source': str(phase3_output),
             'version': __version__,
-            'input_source': str(phase3_output),
             'summary': {
                 'total_improvements': metrics['total_improvements'],
                 'immediate_actions': metrics['immediate_actions'],
@@ -666,7 +649,7 @@ if __name__ == "__main__":
     phase4 = Phase4Improve(config, state_manager)
 
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
-    success, result = phase4.run(iteration)
+    result = phase4.run(iteration)
 
     if 'phase' not in result or result.get('error'):
         print(f"[ERROR] Phase 4 execution failed: {result.get('error', 'Unknown error')}")
