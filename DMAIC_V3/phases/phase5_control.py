@@ -27,7 +27,7 @@ from ..core.state import StateManager
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
     
-    def __init__(self, config, state_manager, use_gbogeb: bool = True):
+    def __init__(self, config: DMAICConfig, state_manager: StateManager, use_gbogeb: bool = True):
         self.config = config
         self.state_manager = state_manager
         self.output_dir = Path(config.paths.output_root)
