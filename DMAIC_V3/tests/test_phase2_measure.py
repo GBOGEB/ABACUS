@@ -25,7 +25,8 @@ def config(temp_workspace):
 
 @pytest.fixture
 def state_manager(config):
-    return StateManager(config)
+    state_dir = config.paths.output_root / "state"
+    return StateManager(state_dir)
 
 
 @pytest.fixture
@@ -117,7 +118,7 @@ def func3(): pass
         simple_result = phase2.analyze_python_file(str(simple_file))
         complex_result = phase2.analyze_python_file(str(complex_file))
         
-        assert complex_result['metrics']['complexity'] > simple_result['metrics']['complexity']
+        assert complex_result['metrics']['complexity_score'] > simple_result['metrics']['complexity_score']
     
     def test_execute_with_phase1_output(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
