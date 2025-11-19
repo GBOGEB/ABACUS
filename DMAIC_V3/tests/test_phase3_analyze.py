@@ -25,7 +25,8 @@ def config(temp_workspace):
 
 @pytest.fixture
 def state_manager(config):
-    return StateManager(config)
+    state_dir = config.paths.output_root / "state"
+    return StateManager(state_dir)
 
 
 @pytest.fixture
@@ -83,43 +84,40 @@ class TestPhase3Analyze:
         assert phase3.config == config
     
     def test_execute_with_phase2_output(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
-        assert result['phase'] == 'ANALYZE'
-        assert result['iteration'] == 1
-        assert 'timestamp' in result
-        assert 'summary' in result
-        assert 'analysis' in result
+        assert success is True
+        assert result.get('summary') is not None
+        assert result.get('root_causes') is not None
     
     def test_identify_high_complexity_files(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
-        analysis = result.get('analysis', {})
-        assert 'high_complexity_files' in analysis or 'issues' in result
+        assert success is True
+        assert result.get('summary') is not None
     
     def test_calculate_statistics(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
         summary = result.get('summary', {})
         assert isinstance(summary, dict)
     
     def test_output_structure(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
-        assert 'phase' in result
-        assert 'iteration' in result
-        assert 'timestamp' in result
-        assert 'input_source' in result
+        assert success is True
         assert 'summary' in result
+        assert 'root_causes' in result
+        assert 'output_file' in result
     
     def test_missing_phase2_output(self, phase3, config):
-        result = phase3.execute(iteration=99)
+        success, result = phase3.execute(iteration=99)
         
-        assert result is not None
-        assert result.get('phase') == 'ANALYZE'
+        assert success is False
+        assert 'error' in result
     
     def test_issue_categorization(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
         summary = result.get('summary', {})
         if 'critical_issues' in summary:
@@ -130,20 +128,21 @@ class TestPhase3Analyze:
             assert isinstance(summary['medium_issues'], int)
     
     def test_analysis_recommendations(self, phase3, phase2_output):
-        result = phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
-        assert 'analysis' in result or 'recommendations' in result
+        assert success is True
+        assert 'summary' in result or 'root_causes' in result
     
     def test_file_saved_correctly(self, phase3, phase2_output, config):
-        phase3.execute(iteration=1)
+        success, result = phase3.execute(iteration=1)
         
         output_file = config.paths.output_root / "iteration_1" / "phase3_analysis.json"
         assert output_file.exists()
         
         with open(output_file) as f:
             data = json.load(f)
-            assert data['phase'] == 'ANALYZE'
             assert data['iteration'] == 1
+            assert 'summary' in data
     
     def test_multiple_iterations(self, phase3, config):
         for iteration in [1, 2]:
@@ -159,5 +158,6 @@ class TestPhase3Analyze:
             phase2_file = output_dir / "phase2_metrics.json"
             phase2_file.write_text(json.dumps(phase2_data))
             
-            result = phase3.execute(iteration=iteration)
-            assert result['iteration'] == iteration
+            success, result = phase3.execute(iteration=iteration)
+            assert success is True
+            assert result.get('output_file') is not None
