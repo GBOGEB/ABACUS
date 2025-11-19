@@ -342,7 +342,7 @@ class Phase1Define:
 
         return report_path
 
-    def execute(self, iteration: int) -> Tuple[bool, Dict]:
+    def execute(self, iteration: int) -> Dict:
         """
         Execute Phase 1: Define with change detection
 
@@ -350,7 +350,7 @@ class Phase1Define:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with phase execution results
         """
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
@@ -495,13 +495,29 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return True, results
+            return results
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {"error": str(e)}
+            return {
+                'phase': 'DEFINE',
+                'iteration': iteration,
+                'timestamp': datetime.now().isoformat(),
+                'error': str(e),
+                'total_files': 0,
+                'categorized': {},
+                'files': [],
+                'folder_structure': [],
+                'markdown_files': [],
+                'python_files': [],
+                'notebook_files': [],
+                'file_relationships': [],
+                'folders_scanned': 0,
+                'artifact_rankings': {},
+                'changes': {}
+            }
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
