@@ -167,20 +167,26 @@ EOF
     echo ""
     
     # Copy PR template to clipboard if possible
-    if command -v clip &> /dev/null; then
-        cat .github/PULL_REQUEST_TEMPLATE.md | clip
-        echo "✅ PR description copied to clipboard!"
-        echo ""
-    elif command -v pbcopy &> /dev/null; then
-        cat .github/PULL_REQUEST_TEMPLATE.md | pbcopy
-        echo "✅ PR description copied to clipboard!"
-        echo ""
-    elif command -v xclip &> /dev/null; then
-        cat .github/PULL_REQUEST_TEMPLATE.md | xclip -selection clipboard
-        echo "✅ PR description copied to clipboard!"
-        echo ""
+    if [ -f .github/PULL_REQUEST_TEMPLATE.md ]; then
+        if command -v clip &> /dev/null; then
+            cat .github/PULL_REQUEST_TEMPLATE.md | clip
+            echo "✅ PR description copied to clipboard!"
+            echo ""
+        elif command -v pbcopy &> /dev/null; then
+            cat .github/PULL_REQUEST_TEMPLATE.md | pbcopy
+            echo "✅ PR description copied to clipboard!"
+            echo ""
+        elif command -v xclip &> /dev/null; then
+            cat .github/PULL_REQUEST_TEMPLATE.md | xclip -selection clipboard
+            echo "✅ PR description copied to clipboard!"
+            echo ""
+        else
+            echo "💡 TIP: Copy PR description from .github/PULL_REQUEST_TEMPLATE.md"
+            echo ""
+        fi
     else
-        echo "💡 TIP: Copy PR description from .github/PULL_REQUEST_TEMPLATE.md"
+        echo "⚠️  WARNING: .github/PULL_REQUEST_TEMPLATE.md not found. Skipping clipboard copy."
+        echo "💡 TIP: Ensure the PR template exists or copy your PR description manually."
         echo ""
     fi
     
