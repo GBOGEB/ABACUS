@@ -106,7 +106,15 @@ class TemporalPhaseRunner:
 
             # Execute phase
             print(f"\n[EXECUTING] {phase_name}...")
-            success, result = phase_obj.execute(iteration=iteration)
+            exec_result = phase_obj.execute(iteration=iteration)
+            
+            # Handle both tuple (success, result) and dict returns
+            if isinstance(exec_result, tuple):
+                success, result = exec_result
+            else:
+                # Assume dict return - success determined by presence of 'phase' field
+                result = exec_result
+                success = 'phase' in result
             
             duration = time.time() - start_time
             
