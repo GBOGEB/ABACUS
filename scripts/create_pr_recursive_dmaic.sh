@@ -70,7 +70,7 @@ if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
     echo "=========================================="
     echo ""
     echo "Title:"
-    echo "🚀 Integrate Recursive DMAIC v0.4.0 CI/CD with DOW Pipeline"
+    echo "feat: Add automated PR creation script (browser-based)"
     echo ""
     echo "Description:"
     echo "Copy from: .github/PULL_REQUEST_TEMPLATE.md"
