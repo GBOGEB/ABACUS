@@ -44,7 +44,7 @@ from DMAIC_V3.phases.phase5_control import Phase5Control
 from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge
 from DMAIC_V3.phases.phase7_action_tracking import Phase7ActionTracking
 from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement
-from DMAIC_V3.phases.phase9_documentation_generation import Phase9DocumentationGeneration
+from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration as Phase9DocumentationGeneration
 
 # Duplicate Phase6Knowledge removed from this orchestrator file.
 # The Phase6Knowledge implementation is provided by:
@@ -343,8 +343,16 @@ class FullPipelineOrchestrator:
         start_time = datetime.now()
 
         try:
-            success, results = phase_obj.execute(iteration=iteration)
-
+            result = phase_obj.execute(iteration=iteration)
+            
+            # Handle both tuple (success, results) and dict returns
+            if isinstance(result, tuple):
+                success, results = result
+            else:
+                # Assume dict return - success determined by presence of 'phase' field
+                results = result
+                success = 'phase' in results
+            
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
 
