@@ -465,10 +465,7 @@ class Phase1Define:
                 'total_files': len(all_files),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
-                'duration': duration,
                 'categorized': dict(categorized),
-                'code_files': categorized.get('code', 0),
-                'documentation_files': categorized.get('docs', 0),
                 'files': all_files,
                 'folder_structure': folder_structure,
                 'markdown_files': markdown_files,
@@ -482,8 +479,7 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                },
-                'duration': 0.0  # Will be calculated if needed
+                }
             }
 
             print("\n[1.5] Saving results...")
@@ -533,7 +529,7 @@ class Phase1Define:
             traceback.print_exc()
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            return {
+            return False, {
                 'phase': 'DEFINE',
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
@@ -554,20 +550,6 @@ class Phase1Define:
                 'changes': {},
                 'duration': 0.0
             }
-
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
-        """
-        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Tuple of (success, result_dict)
-        """
-        result = self.run(iteration)
-        success = 'error' not in result
-        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
