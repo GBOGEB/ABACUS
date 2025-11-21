@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+  "alert_rules": [
+    {
+      "name": "High Error Rate",
+      "condition": "error_rate > 0.20",
+      "severity": "critical",
+      "action": "log_and_notify"
+    },
+    {
+      "name": "Low Success Rate",
+      "condition": "success_rate < 0.80",
+      "severity": "warning",
+      "action": "log"
+    },
+    {
+      "name": "Slow Execution",
+      "condition": "execution_time > 30.0",
+      "severity": "warning",
+      "action": "log"
+    },
+    {
+      "name": "Convergence Failure",
+      "condition": "convergence_rate < 0.70",
+      "severity": "warning",
+      "action": "log"
+    }
+  ],
+  "notification_channels": {
+    "log_file": "production/logs/alerts.log",
+    "metrics_file": "production/monitoring/alerts_history.json"
+  }
+}

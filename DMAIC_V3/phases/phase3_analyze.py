@@ -330,6 +330,9 @@ class Phase3Analyze:
         output_file = output_dir / "phase3_analysis.json"
 
         safe_write_json(analysis_result, output_file)
+        
+        # Add output_file to the result
+        analysis_result['output_file'] = str(output_file)
 
         print(f"\n[*] Analysis Summary:")
         print(f"   Total files: {len(metrics)}")
