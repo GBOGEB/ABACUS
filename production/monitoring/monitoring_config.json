@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "check_interval_seconds": 300,
+  "metrics_to_monitor": [
+    "execution_success_rate",
+    "convergence_rate",
+    "average_execution_time",
+    "error_rate",
+    "artifact_generation_rate"
+  ],
+  "thresholds": {
+    "min_success_rate": 0.8,
+    "max_execution_time": 30.0,
+    "max_error_rate": 0.2,
+    "min_convergence_rate": 0.7
+  },
+  "alert_channels": [
+    "log_file",
+    "metrics_file"
+  ]
+}

@@ -227,7 +227,7 @@ class Phase3Analyze:
 
         return root_causes
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 3: Analyze
 
@@ -235,11 +235,14 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with analysis results
+            Tuple of (success, result_dict) where success is True if analysis completed
+            successfully, and result_dict contains the analysis results
         """
-        return self.run(iteration)
+        result = self.run(iteration)
+        success = 'error' not in result
+        return (success, result)
 
-    def run(self, iteration: int) -> Dict[str, Any]:
+    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 3: Analyze
 
@@ -247,7 +250,7 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with analysis results
+            Tuple of (success: bool, result: Dict[str, Any])
         """
         print(f"\n{'='*60}")
         print(f"Phase 3: ANALYZE - Iteration {iteration}")
@@ -256,7 +259,7 @@ class Phase3Analyze:
         phase2_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase2_metrics.json"
 
         if not phase2_output.exists():
-            return {
+            return False, {
                 'phase': 'ANALYZE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -297,12 +300,17 @@ class Phase3Analyze:
             'patterns': patterns
         })
 
+        output_dir = self.config.paths.output_root / f"iteration_{iteration}"
+        ensure_directory(output_dir)
+        output_file = output_dir / "phase3_analysis.json"
+
         analysis_result = {
             'phase': 'ANALYZE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
             'input_source': str(phase2_output),
+            'output_file': str(output_file),
             'summary': {
                 'total_files_analyzed': len(metrics),
                 'critical_issues': len([rc for rc in root_causes if rc['severity'] == 'critical']),
@@ -323,11 +331,10 @@ class Phase3Analyze:
             'root_causes': root_causes
         }
 
-        output_dir = self.config.paths.output_root / f"iteration_{iteration}"
-        ensure_directory(output_dir)
-        output_file = output_dir / "phase3_analysis.json"
-
         safe_write_json(analysis_result, output_file)
+        
+        # Add output_file to the result
+        analysis_result['output_file'] = str(output_file)
 
         print(f"\n[*] Analysis Summary:")
         print(f"   Total files: {len(metrics)}")
@@ -336,7 +343,9 @@ class Phase3Analyze:
         print(f"   Medium issues: {analysis_result['summary']['medium_issues']}")
         print(f"\n[*] Output: {output_file}")
 
-        return analysis_result
+        analysis_result['output_file'] = str(output_file)
+
+        return True, analysis_result
 
 
 if __name__ == "__main__":

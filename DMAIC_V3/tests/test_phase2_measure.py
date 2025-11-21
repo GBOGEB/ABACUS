@@ -136,8 +136,9 @@ def func3(): pass
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
         
-        result = phase2.execute(iteration=1)
+        success, result = phase2.execute(iteration=1)
         
+        assert success is True
         assert result['phase'] == 'MEASURE'
         assert result['iteration'] == 1
         assert 'statistics' in result
@@ -157,8 +158,9 @@ def func3(): pass
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
         
-        result = phase2.execute(iteration=1)
+        success, result = phase2.execute(iteration=1)
         
+        assert success is True
         assert 'phase' in result
         assert 'iteration' in result
         assert 'timestamp' in result
@@ -180,7 +182,8 @@ def func3(): pass
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
         
-        phase2.execute(iteration=1)
+        success, result = phase2.execute(iteration=1)
+        assert success is True
         
         output_dir = config.paths.output_root / "iteration_1"
         phase2_dir_file = output_dir / "phase2_measure" / "phase2_measure.json"
