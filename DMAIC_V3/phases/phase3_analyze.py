@@ -235,11 +235,10 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, result: Dict[str, Any])
+            Tuple of (success: bool, result: Dict) with analysis results
         """
         result = self.run(iteration)
-        # Check if execution was successful (no error key means success)
-        success = 'error' not in result or result.get('error') is None
+        success = 'error' not in result
         return success, result
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
@@ -300,12 +299,17 @@ class Phase3Analyze:
             'patterns': patterns
         })
 
+        output_dir = self.config.paths.output_root / f"iteration_{iteration}"
+        ensure_directory(output_dir)
+        output_file = output_dir / "phase3_analysis.json"
+
         analysis_result = {
             'phase': 'ANALYZE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'version': __version__,
             'input_source': str(phase2_output),
+            'output_file': str(output_file),
             'summary': {
                 'total_files_analyzed': len(metrics),
                 'critical_issues': len([rc for rc in root_causes if rc['severity'] == 'critical']),
@@ -325,10 +329,6 @@ class Phase3Analyze:
             'patterns': patterns,
             'root_causes': root_causes
         }
-
-        output_dir = self.config.paths.output_root / f"iteration_{iteration}"
-        ensure_directory(output_dir)
-        output_file = output_dir / "phase3_analysis.json"
 
         safe_write_json(analysis_result, output_file)
         
