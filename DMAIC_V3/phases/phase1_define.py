@@ -465,10 +465,7 @@ class Phase1Define:
                 'total_files': len(all_files),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
-                'duration': duration,
                 'categorized': dict(categorized),
-                'code_files': categorized.get('code', 0),
-                'documentation_files': categorized.get('docs', 0),
                 'files': all_files,
                 'folder_structure': folder_structure,
                 'markdown_files': markdown_files,
@@ -482,8 +479,7 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                },
-                'duration': 0.0  # Will be calculated if needed
+                }
             }
 
             print("\n[1.5] Saving results...")
