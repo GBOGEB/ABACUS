@@ -413,17 +413,3 @@ class Phase2Measure:
                 'file_metrics': {},
                 'measurements': []
             }
-
-    def execute(self, iteration: int) -> Tuple[bool, dict]:
-        """
-        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Tuple of (success, result_dict)
-        """
-        result = self.run(iteration)
-        success = 'error' not in result
-        return (success, result)
