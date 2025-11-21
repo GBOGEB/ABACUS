@@ -361,7 +361,7 @@ class Phase1Define:
 
         return report_path
 
-    def execute(self, iteration: int) -> Dict:
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
         Execute Phase 1: Define with change detection
 
@@ -369,7 +369,7 @@ class Phase1Define:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with phase execution results
+            Tuple of (success: bool, results: Dict) with phase execution results
         """
         start_time = datetime.now()
         print("\n" + "="*80)
@@ -464,6 +464,9 @@ class Phase1Define:
                 'timestamp': end_time.isoformat(),
                 'duration': duration,
                 'total_files': len(all_files),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': duration,
                 'categorized': dict(categorized),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
@@ -480,7 +483,8 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                }
+                },
+                'duration': 0.0  # Will be calculated if needed
             }
 
             print("\n[1.5] Saving results...")
@@ -522,7 +526,7 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return results
+            return True, results
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
@@ -548,8 +552,23 @@ class Phase1Define:
                 'file_relationships': [],
                 'folders_scanned': 0,
                 'artifact_rankings': {},
-                'changes': {}
+                'changes': {},
+                'duration': 0.0
             }
+
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success, result_dict)
+        """
+        result = self.run(iteration)
+        success = 'error' not in result
+        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
