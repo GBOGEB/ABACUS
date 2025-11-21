@@ -132,7 +132,7 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'validation_checkpoints': self._create_validation_checkpoints(quality_gates, iteration),
+                'validation_checkpoints': validation_checkpoints,
                 'controls': self._create_controls_summary(quality_gates),
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
