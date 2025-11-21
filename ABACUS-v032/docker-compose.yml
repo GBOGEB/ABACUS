@@ -1,0 +1,87 @@
+# ABACUS v032/v033 - Docker Compose Configuration
+# =================================================
+# CANONICAL ALIGNED: v032 → v033
+# SPRINT TESTED | DOW TESTED | DEPLOYMENT READY
+
+version: '3.8'
+
+services:
+  # Main ABACUS Application (v033 Recursive Engine)
+  abacus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: abacus-v033-canonical
+    environment:
+      - ABACUS_ENV=production
+      - ABACUS_VERSION=v033
+      - ABACUS_CANONICAL_VERSION=v033.1
+      - PYTHONUNBUFFERED=1
+      - SPRINT_TESTED=true
+      - DOW_TESTED=true
+      - CANONICAL_ALIGNED=true
+    volumes:
+      - ./STATS:/app/STATS
+      - ./logs:/app/logs
+      - ./deployments:/app/deployments
+      - ./DMAIC_V3:/app/DMAIC_V3
+      - ./governance:/app/governance
+    ports:
+      - "8000:8000"  # Main API
+      - "8080:8080"  # Alternative API
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - abacus-network
+    command: ["python", "execute_full_dmaic_phases_0_to_9_v033.py"]
+
+  # Monitoring (Prometheus)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: abacus-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+    networks:
+      - abacus-network
+
+  # Visualization (Grafana)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: abacus-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - abacus-network
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  abacus-network:
+    driver: bridge
+    name: abacus-v033-network

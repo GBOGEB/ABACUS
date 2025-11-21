@@ -42,7 +42,8 @@ class TestPhase1Define:
         assert phase1.workspace_root == config.paths.workspace_root
     
     def test_scan_empty_directory(self, phase1, temp_workspace):
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
+        assert success is True
         assert result['phase'] == 'DEFINE'
         assert result['iteration'] == 1
         assert result['total_files'] >= 0
@@ -51,23 +52,26 @@ class TestPhase1Define:
         (temp_workspace / "test.py").write_text("print('hello')")
         (temp_workspace / "module.py").write_text("def func(): pass")
         
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
+        assert success is True
         assert result['total_files'] >= 2
-        assert result['code_files'] >= 2
+        assert result['categorized']['code'] >= 2
     
     def test_scan_with_documentation(self, phase1, temp_workspace):
         (temp_workspace / "README.md").write_text("# Documentation")
         (temp_workspace / "docs.txt").write_text("Documentation")
         
-        result = phase1.execute(iteration=1)
-        assert result['documentation_files'] >= 2
+        success, result = phase1.execute(iteration=1)
+        assert success is True
+        assert result['categorized']['docs'] >= 2
     
     def test_scan_excludes_venv(self, phase1, temp_workspace):
         venv_dir = temp_workspace / "venv"
         venv_dir.mkdir()
         (venv_dir / "test.py").write_text("# Should be excluded")
         
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
+        assert success is True
         files = result.get('files', [])
         assert not any('venv' in str(f) for f in files)
     
@@ -76,25 +80,29 @@ class TestPhase1Define:
         cache_dir.mkdir()
         (cache_dir / "test.pyc").write_text("# Should be excluded")
         
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
+        assert success is True
         files = result.get('files', [])
         assert not any('__pycache__' in str(f) for f in files)
     
     def test_output_structure(self, phase1):
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
         
+        assert success is True
         assert 'phase' in result
         assert 'iteration' in result
         assert 'timestamp' in result
         assert 'total_files' in result
-        assert 'code_files' in result
-        assert 'documentation_files' in result
-        assert 'duration' in result
+        assert 'categorized' in result
+        assert 'python_files' in result
+        assert 'markdown_files' in result
     
     def test_multiple_iterations(self, phase1):
-        result1 = phase1.execute(iteration=1)
-        result2 = phase1.execute(iteration=2)
+        success1, result1 = phase1.execute(iteration=1)
+        success2, result2 = phase1.execute(iteration=2)
         
+        assert success1 is True
+        assert success2 is True
         assert result1['iteration'] == 1
         assert result2['iteration'] == 2
         assert result1['timestamp'] != result2['timestamp']
@@ -105,7 +113,8 @@ class TestPhase1Define:
         (temp_workspace / "README.md").write_text("# Docs")
         (temp_workspace / "data.json").write_text("{}")
         
-        result = phase1.execute(iteration=1)
+        success, result = phase1.execute(iteration=1)
+        assert success is True
         assert result['total_files'] >= 4
-        assert result['code_files'] >= 2
-        assert result['documentation_files'] >= 1
+        assert result['categorized']['code'] >= 1
+        assert result['categorized']['docs'] >= 1
