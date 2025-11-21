@@ -52,6 +52,7 @@ class Phase1Define:
 
         self.file_type_map = {
             '.py': 'code',
+            '.js': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
@@ -355,7 +356,8 @@ class Phase1Define:
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
         print("="*80)
-        print(f"Timestamp: {datetime.now().isoformat()}")
+        start_time = datetime.now()
+        print(f"Timestamp: {start_time.isoformat()}")
         print()
 
         try:
@@ -433,12 +435,19 @@ class Phase1Define:
             print("\n[1.4] Calculating artifact rankings (if available)...")
             artifact_rankings = self.calculate_artifact_ranking(iteration)
 
+            # Calculate duration
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+
             # Prepare results
             results = {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': start_time.isoformat(),
                 'total_files': len(all_files),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': duration,
                 'categorized': dict(categorized),
                 'files': all_files,
                 'folder_structure': folder_structure,
