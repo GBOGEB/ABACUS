@@ -53,9 +53,27 @@ class Phase1Define:
         self.file_type_map = {
             '.py': 'code',
             '.js': 'code',
+            '.jsx': 'code',
+            '.ts': 'code',
+            '.tsx': 'code',
+            '.java': 'code',
+            '.c': 'code',
+            '.cpp': 'code',
+            '.h': 'code',
+            '.hpp': 'code',
+            '.cs': 'code',
+            '.go': 'code',
+            '.rs': 'code',
+            '.rb': 'code',
+            '.php': 'code',
+            '.swift': 'code',
+            '.kt': 'code',
+            '.scala': 'code',
+            '.r': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
+            '.rst': 'docs',
             '.json': 'data',
             '.yaml': 'data',
             '.yml': 'data',
@@ -444,6 +462,7 @@ class Phase1Define:
                 'phase': 'DEFINE',
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'total_files': len(all_files),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
@@ -513,10 +532,13 @@ class Phase1Define:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
-            return False, {
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            return {
                 'phase': 'DEFINE',
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
