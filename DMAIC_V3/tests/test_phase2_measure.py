@@ -76,9 +76,9 @@ class TestPhase2Measure:
         
         assert metrics['total_lines'] > 0
         assert metrics['lines_of_code'] > 0
-        assert metrics['function_count'] >= 2
-        assert metrics['class_count'] >= 1
-        assert metrics['import_count'] >= 3
+        assert metrics['functions'] >= 2
+        assert metrics['classes'] >= 1
+        assert metrics['imports'] >= 3
     
     def test_analyze_invalid_python_file(self, phase2, temp_workspace):
         invalid_file = temp_workspace / "invalid.py"
