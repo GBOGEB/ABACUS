@@ -353,10 +353,10 @@ class Phase1Define:
         Returns:
             Dictionary with phase execution results
         """
+        start_time = datetime.now()
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
         print("="*80)
-        start_time = datetime.now()
         print(f"Timestamp: {start_time.isoformat()}")
         print()
 
@@ -443,7 +443,7 @@ class Phase1Define:
             results = {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': start_time.isoformat(),
+                'timestamp': end_time.isoformat(),
                 'total_files': len(all_files),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
@@ -462,7 +462,11 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                }
+                },
+                'duration': duration,
+                # Add backward-compatible keys for tests
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0)
             }
 
             print("\n[1.5] Saving results...")
@@ -510,10 +514,12 @@ class Phase1Define:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
             return {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
@@ -525,7 +531,10 @@ class Phase1Define:
                 'file_relationships': [],
                 'folders_scanned': 0,
                 'artifact_rankings': {},
-                'changes': {}
+                'changes': {},
+                'duration': duration,
+                'code_files': 0,
+                'documentation_files': 0
             }
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
