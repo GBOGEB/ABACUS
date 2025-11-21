@@ -235,7 +235,7 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Tuple of (success, result_dict)
         """
         result = self.run(iteration)
         success = 'error' not in result
