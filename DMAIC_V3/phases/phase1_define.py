@@ -52,6 +52,7 @@ class Phase1Define:
 
         self.file_type_map = {
             '.py': 'code',
+            '.js': 'code',
             '.ipynb': 'notebooks',
             '.md': 'docs',
             '.txt': 'docs',
@@ -352,10 +353,11 @@ class Phase1Define:
         Returns:
             Tuple of (success: bool, results: Dict) with phase execution results
         """
+        start_time = datetime.now()
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
         print("="*80)
-        print(f"Timestamp: {datetime.now().isoformat()}")
+        print(f"Timestamp: {start_time.isoformat()}")
         print()
 
         try:
@@ -433,12 +435,19 @@ class Phase1Define:
             print("\n[1.4] Calculating artifact rankings (if available)...")
             artifact_rankings = self.calculate_artifact_ranking(iteration)
 
+            # Calculate duration
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+
             # Prepare results
             results = {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
                 'total_files': len(all_files),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': duration,
                 'categorized': dict(categorized),
                 'files': all_files,
                 'folder_structure': folder_structure,
@@ -453,7 +462,11 @@ class Phase1Define:
                     'modified': change_summary.get('modified', 0),
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
-                }
+                },
+                'duration': duration,
+                # Add backward-compatible keys for tests
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0)
             }
 
             print("\n[1.5] Saving results...")
@@ -504,7 +517,7 @@ class Phase1Define:
             return False, {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
@@ -516,8 +529,25 @@ class Phase1Define:
                 'file_relationships': [],
                 'folders_scanned': 0,
                 'artifact_rankings': {},
-                'changes': {}
+                'changes': {},
+                'duration': duration,
+                'code_files': 0,
+                'documentation_files': 0
             }
+
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success, result_dict)
+        """
+        result = self.run(iteration)
+        success = 'error' not in result
+        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
