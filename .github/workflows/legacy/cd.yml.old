@@ -1,0 +1,108 @@
+name: DMAIC V3.3 - CD Pipeline
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "0 2 * * *" # 2 AM UTC daily
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.12"
+  DMAIC_VERSION: "3.3.0"
+  ENABLE_METRICS: "true"
+
+jobs:
+  dmaic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pyyaml
+
+      - name: Install Pandoc + TeX (for PDF export)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
+      - name: Initialize knowledge packages (idempotent)
+        run: |
+          python scripts/initialize_knowledge_packages.py || true
+
+      - name: Run DMAIC full cycle (Phases 0-5)
+        env:
+          ENABLE_METRICS: ${{ env.ENABLE_METRICS }}
+        run: |
+          python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1
+
+      - name: Run Phase 6 Knowledge (optional)
+        run: |
+          python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase6_knowledge || echo "Phase 6 not available"
+
+      - name: Run convergence check
+        run: |
+          python scripts/check_convergence.py || true
+
+      - name: Aggregate metrics and rankings
+        run: |
+          mkdir -p artifacts/reports artifacts/rankings
+          if compgen -G "DMAIC_V3_OUTPUT/reports/*" > /dev/null; then
+            cp -r DMAIC_V3_OUTPUT/reports/* artifacts/reports/ || true
+          fi
+          if [ -d "artifacts_rankings" ]; then
+            cp -r artifacts_rankings/* artifacts/rankings/ || true
+          fi
+
+      - name: Build handover PDF
+        run: |
+          bash scripts/build_handover_book.sh
+
+      - name: Build GLOOB bundle
+        run: |
+          python scripts/build_handover_bundle.py
+
+      - name: Build handover ZIP from manifest (GLOOB.yaml)
+        run: |
+          python scripts/build_handover_from_glob_yaml.py
+
+      - name: Upload manifest bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmaic-handover-manifest-${{ github.run_id }}
+          path: |
+            handover/DMAIC_V3_3_HANDOVER_GLOOB_MANIFEST.zip
+            handover/DMAIC_V3_3_HANDOVER_GLOOB_MANIFEST.sha256.json
+          if-no-files-found: error
+
+      - name: Build universal handover archives (.zip and .tar.gz)
+        run: |
+          python scripts/archive_handover.py --spec handover/GLOOB.yaml --name DMAIC_V3_3_HANDOVER_ALL
+
+      - name: Upload universal archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmaic-handover-archives-${{ github.run_id }}
+          path: |
+            handover/DMAIC_V3_3_HANDOVER_ALL.zip
+            handover/DMAIC_V3_3_HANDOVER_ALL.tar.gz
+          if-no-files-found: error
