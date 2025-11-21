@@ -606,7 +606,6 @@ class Phase4Improve:
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
-            'input_source': str(phase3_output),
             'version': __version__,
             'input_source': str(phase3_output),
             'summary': {
@@ -646,12 +645,17 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
-
+        return True, improvement_result
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success: bool, results: Dict)
         """
         result = self.run(iteration)
         # Check if execution was successful (no error key means success)
