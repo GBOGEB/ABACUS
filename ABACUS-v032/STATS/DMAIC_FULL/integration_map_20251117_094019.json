@@ -1,0 +1,27 @@
+{
+  "phases": [
+    "Phase 0",
+    "Phase 1",
+    "Phase 2",
+    "Phase 3",
+    "Phase 4",
+    "Phase 5",
+    "Phase 6",
+    "Phase 7",
+    "Phase 8"
+  ],
+  "connections": [
+    {
+      "from": "Phase 0",
+      "to": "Phase 1"
+    },
+    {
+      "from": "Phase 1",
+      "to": "Phase 2"
+    },
+    {
+      "from": "Phase 2",
+      "to": "Phase 3"
+    }
+  ]
+}
