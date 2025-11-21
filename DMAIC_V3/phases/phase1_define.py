@@ -53,13 +53,12 @@ class Phase1Define:
         self.file_type_map = {
             '.py': 'code',
             '.js': 'code',
-            '.ts': 'code',
             '.jsx': 'code',
+            '.ts': 'code',
             '.tsx': 'code',
             '.java': 'code',
             '.c': 'code',
             '.cpp': 'code',
-            '.cc': 'code',
             '.h': 'code',
             '.hpp': 'code',
             '.cs': 'code',
@@ -484,7 +483,7 @@ class Phase1Define:
                     'deleted': change_summary.get('deleted', 0),
                     'total': change_summary.get('total', 0)
                 },
-                'duration': 0  # Added for compatibility with test expectations
+                'duration': 0.0  # Will be calculated if needed
             }
 
             print("\n[1.5] Saving results...")
@@ -553,7 +552,7 @@ class Phase1Define:
                 'folders_scanned': 0,
                 'artifact_rankings': {},
                 'changes': {},
-                'duration': 0
+                'duration': 0.0
             }
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
