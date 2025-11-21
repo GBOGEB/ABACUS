@@ -235,11 +235,12 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success, result_dict)
+            Tuple of (success: bool, results: Dict) with analysis results
         """
         result = self.run(iteration)
-        success = 'error' not in result
-        return (success, result)
+        # Check if execution was successful (no error key means success)
+        success = 'error' not in result or result.get('error') is None
+        return success, result
 
     def run(self, iteration: int) -> Dict[str, Any]:
         """

@@ -529,7 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def run(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -537,7 +537,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with improvement results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -575,7 +575,7 @@ class Phase4Improve:
             
             print(f"\n[*] Minimal improvement plan saved to: {output_file}")
             
-            return True, minimal_result
+            return minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
@@ -657,8 +657,11 @@ class Phase4Improve:
         Returns:
             Tuple of (success: bool, results: Dict)
         """
-        return self.run(iteration)
-
+        result = self.run(iteration)
+        # Check if execution was successful (no error key means success)
+        success = 'error' not in result or result.get('error') is None
+        return success, result
+        
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))

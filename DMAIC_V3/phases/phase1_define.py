@@ -343,7 +343,7 @@ class Phase1Define:
 
         return report_path
 
-    def run(self, iteration: int) -> Dict:
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
         Execute Phase 1: Define with change detection
 
@@ -351,7 +351,7 @@ class Phase1Define:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with phase execution results
+            Tuple of (success: bool, results: Dict) with phase execution results
         """
         start_time = datetime.now()
         print("\n" + "="*80)
@@ -508,15 +508,13 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return results
+            return True, results
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-            return {
+            return False, {
                 'phase': 'DEFINE',
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
