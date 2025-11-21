@@ -529,19 +529,7 @@ class Phase4Improve:
 
         return results
 
-    def execute(self, iteration: int) -> Dict[str, Any]:
-        """
-        Execute Phase 4: Improve
-
-        Args:
-            iteration: Current iteration number
-
-        Returns:
-            Dictionary with improvement results
-        """
-        return self.run(iteration)
-
-    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+    def run(self, iteration: int) -> Dict[str, Any]:
         """
         Execute Phase 4: Improve - WITH ACTUAL IMPLEMENTATION
 
@@ -549,7 +537,7 @@ class Phase4Improve:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict)
+            Dictionary with improvement results
         """
         print(f"\n{'='*60}")
         print(f"Phase 4: IMPROVE - Iteration {iteration}")
@@ -558,7 +546,7 @@ class Phase4Improve:
         phase3_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase3_analysis.json"
 
         if not phase3_output.exists():
-            return {
+            minimal_result = {
                 'phase': 'IMPROVE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -587,7 +575,7 @@ class Phase4Improve:
             
             print(f"\n[*] Minimal improvement plan saved to: {output_file}")
             
-            return True, minimal_result
+            return minimal_result
 
         with open(phase3_output, 'r') as f:
             phase3_data = json.load(f)
@@ -618,7 +606,6 @@ class Phase4Improve:
             'phase': 'IMPROVE',
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
-            'input_source': str(phase3_output),
             'version': __version__,
             'input_source': str(phase3_output),
             'summary': {
@@ -658,14 +645,23 @@ class Phase4Improve:
         print(f"   Estimated effort: {metrics['estimated_total_effort']} units")
         print(f"\n[*] Outputs: {output_file}, {phase4_file}")
 
-        return improvement_result
-
+        return True, improvement_result
 
     def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success: bool, results: Dict)
         """
-        return (True, self.run(iteration))
+        result = self.run(iteration)
+        # Check if execution was successful (no error key means success)
+        success = 'error' not in result or result.get('error') is None
+        return success, result
+        
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
