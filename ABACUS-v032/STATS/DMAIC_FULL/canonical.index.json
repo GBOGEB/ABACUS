@@ -1,0 +1,2126 @@
+{
+  "version": "v032",
+  "generated_at": "2025-11-17T10:51:26.166518",
+  "execution_id": "20251117_105124",
+  "total_artifacts": 353,
+  "artifacts": [
+    {
+      "path": "artifact_ranking_system.py",
+      "type": "py",
+      "size": 20488,
+      "modified": "2025-11-13T11:39:31.144305"
+    },
+    {
+      "path": "deploy.py",
+      "type": "py",
+      "size": 12316,
+      "modified": "2025-11-17T08:22:23.434654"
+    },
+    {
+      "path": "deploy_full_pipeline.py",
+      "type": "py",
+      "size": 5164,
+      "modified": "2025-11-13T11:39:31.151488"
+    },
+    {
+      "path": "dow_integration_module.py",
+      "type": "py",
+      "size": 11874,
+      "modified": "2025-11-17T06:52:25.444001"
+    },
+    {
+      "path": "execute_full_dmaic_phases_0_to_8.py",
+      "type": "py",
+      "size": 55614,
+      "modified": "2025-11-17T09:00:54.107422"
+    },
+    {
+      "path": "execute_full_dmaic_phases_0_to_8_fixed.py",
+      "type": "py",
+      "size": 55379,
+      "modified": "2025-11-13T16:12:27.434901"
+    },
+    {
+      "path": "execute_full_dmaic_phases_0_to_9_v033.py",
+      "type": "py",
+      "size": 82500,
+      "modified": "2025-11-17T09:32:03.435908"
+    },
+    {
+      "path": "execute_pipeline_with_metrics.py",
+      "type": "py",
+      "size": 14228,
+      "modified": "2025-11-13T11:39:31.171815"
+    },
+    {
+      "path": "execute_real_dmaic_with_deployment.py",
+      "type": "py",
+      "size": 31974,
+      "modified": "2025-11-13T11:39:31.115183"
+    },
+    {
+      "path": "execute_sprint.py",
+      "type": "py",
+      "size": 10818,
+      "modified": "2025-11-17T09:02:28.266555"
+    },
+    {
+      "path": "fix_indentation.py",
+      "type": "py",
+      "size": 1065,
+      "modified": "2025-11-13T15:58:54.786041"
+    },
+    {
+      "path": "fix_v033_alignment.py",
+      "type": "py",
+      "size": 5919,
+      "modified": "2025-11-17T09:33:43.303577"
+    },
+    {
+      "path": "generate_canonical_books.py",
+      "type": "py",
+      "size": 22888,
+      "modified": "2025-11-13T11:39:31.181648"
+    },
+    {
+      "path": "generate_deployment_status.py",
+      "type": "py",
+      "size": 7957,
+      "modified": "2025-11-17T09:03:28.648213"
+    },
+    {
+      "path": "master_pipeline_orchestrator.py",
+      "type": "py",
+      "size": 42276,
+      "modified": "2025-11-17T08:31:44.082822"
+    },
+    {
+      "path": "monitor_production_deployment.py",
+      "type": "py",
+      "size": 2644,
+      "modified": "2025-11-17T10:02:53.290480"
+    },
+    {
+      "path": "recursive_dmaic_alignment.py",
+      "type": "py",
+      "size": 32324,
+      "modified": "2025-11-13T11:39:31.188645"
+    },
+    {
+      "path": "test_dow_phases.py",
+      "type": "py",
+      "size": 24066,
+      "modified": "2025-11-17T07:25:21.955703"
+    },
+    {
+      "path": "test_execution.py",
+      "type": "py",
+      "size": 1661,
+      "modified": "2025-11-13T11:39:31.191648"
+    },
+    {
+      "path": "test_sprint_readiness.py",
+      "type": "py",
+      "size": 11003,
+      "modified": "2025-11-17T08:44:09.951259"
+    },
+    {
+      "path": "update_documentation_versions.py",
+      "type": "py",
+      "size": 6462,
+      "modified": "2025-11-13T11:39:31.195648"
+    },
+    {
+      "path": "validate_cicd_deployment.py",
+      "type": "py",
+      "size": 14215,
+      "modified": "2025-11-17T10:50:59.280213"
+    },
+    {
+      "path": "verify_alignment.py",
+      "type": "py",
+      "size": 7907,
+      "modified": "2025-11-17T09:36:56.263427"
+    },
+    {
+      "path": "ABACUS-v032\\execute_full_dmaic_phases_0_to_9_v033_clean.py",
+      "type": "py",
+      "size": 0,
+      "modified": "2025-11-17T09:08:03.948767"
+    },
+    {
+      "path": "tools\\rtm_report.py",
+      "type": "py",
+      "size": 3723,
+      "modified": "2025-11-17T08:43:15.831110"
+    },
+    {
+      "path": "deployments\\20251117_081319\\backup\\execute_full_dmaic_phases_0_to_8_fixed.py",
+      "type": "py",
+      "size": 55379,
+      "modified": "2025-11-13T16:12:27.434901"
+    },
+    {
+      "path": "deployments\\20251117_081349\\backup\\execute_full_dmaic_phases_0_to_8_fixed.py",
+      "type": "py",
+      "size": 55379,
+      "modified": "2025-11-13T16:12:27.434901"
+    },
+    {
+      "path": "scripts\\runners\\phase0_runner.py",
+      "type": "py",
+      "size": 6408,
+      "modified": "2025-11-17T08:49:31.154197"
+    },
+    {
+      "path": "ALIGNMENT_SUMMARY.md",
+      "type": "md",
+      "size": 7190,
+      "modified": "2025-11-17T09:36:10.457725"
+    },
+    {
+      "path": "CANONICAL_ALIGNMENT_v032_v033.md",
+      "type": "md",
+      "size": 6256,
+      "modified": "2025-11-17T09:33:21.526903"
+    },
+    {
+      "path": "CICD_DEPLOYMENT_COMPLETE.md",
+      "type": "md",
+      "size": 9590,
+      "modified": "2025-11-17T10:49:41.861698"
+    },
+    {
+      "path": "CICD_DEPLOYMENT_REPORT.md",
+      "type": "md",
+      "size": 13273,
+      "modified": "2025-11-17T08:22:44.894927"
+    },
+    {
+      "path": "CICD_IMPLEMENTATION_SUMMARY.md",
+      "type": "md",
+      "size": 12550,
+      "modified": "2025-11-17T08:21:10.685323"
+    },
+    {
+      "path": "CLOSING_SUMMARY.md",
+      "type": "md",
+      "size": 9717,
+      "modified": "2025-11-17T10:10:39.396858"
+    },
+    {
+      "path": "COMPLETION_REPORT.md",
+      "type": "md",
+      "size": 13496,
+      "modified": "2025-11-17T07:27:57.401265"
+    },
+    {
+      "path": "DEPLOYMENT_EXECUTION_SUMMARY.md",
+      "type": "md",
+      "size": 7804,
+      "modified": "2025-11-17T08:37:27.882665"
+    },
+    {
+      "path": "DEPLOYMENT_GUIDE.md",
+      "type": "md",
+      "size": 8395,
+      "modified": "2025-11-17T08:12:07.287787"
+    },
+    {
+      "path": "DOW_INTEGRATION_GUIDE.md",
+      "type": "md",
+      "size": 8437,
+      "modified": "2025-11-17T06:56:46.964797"
+    },
+    {
+      "path": "DOW_TEST_RESULTS_SUMMARY.md",
+      "type": "md",
+      "size": 5395,
+      "modified": "2025-11-17T07:25:08.040816"
+    },
+    {
+      "path": "EXECUTION_SUMMARY_v032.md",
+      "type": "md",
+      "size": 10900,
+      "modified": "2025-11-13T09:41:00.760177"
+    },
+    {
+      "path": "EXECUTIVE_SUMMARY.md",
+      "type": "md",
+      "size": 9743,
+      "modified": "2025-11-17T07:24:55.715734"
+    },
+    {
+      "path": "FINAL_COMPLETION_NOTICE.md",
+      "type": "md",
+      "size": 13660,
+      "modified": "2025-11-17T10:23:21.486512"
+    },
+    {
+      "path": "FINAL_EXECUTION_SUMMARY_v032.md",
+      "type": "md",
+      "size": 12871,
+      "modified": "2025-11-13T10:00:46.969488"
+    },
+    {
+      "path": "FINAL_SPRINT_EXECUTION_SUMMARY.md",
+      "type": "md",
+      "size": 7225,
+      "modified": "2025-11-17T08:54:56.594064"
+    },
+    {
+      "path": "IMPLEMENTATION_SUMMARY.md",
+      "type": "md",
+      "size": 6510,
+      "modified": "2025-11-13T11:02:51.330113"
+    },
+    {
+      "path": "KNOWLEDGE_TRANSFER_MASTER_v032.md",
+      "type": "md",
+      "size": 19624,
+      "modified": "2025-11-13T09:37:19.529022"
+    },
+    {
+      "path": "LIVE_DASHBOARD_v032.md",
+      "type": "md",
+      "size": 19628,
+      "modified": "2025-11-13T10:47:18.598280"
+    },
+    {
+      "path": "MAINTENANCE_CHECKLIST.md",
+      "type": "md",
+      "size": 11804,
+      "modified": "2025-11-17T10:09:51.034232"
+    },
+    {
+      "path": "PHASE_0_TO_8_COMPREHENSIVE_DOCUMENTATION.md",
+      "type": "md",
+      "size": 13949,
+      "modified": "2025-11-13T09:52:59.658469"
+    },
+    {
+      "path": "PROJECT_UPDATE_v032.md",
+      "type": "md",
+      "size": 8500,
+      "modified": "2025-11-17T10:07:39.418782"
+    },
+    {
+      "path": "PR_TEMPLATE.md",
+      "type": "md",
+      "size": 3506,
+      "modified": "2025-11-17T10:06:50.192030"
+    },
+    {
+      "path": "QUICK_REFERENCE.md",
+      "type": "md",
+      "size": 5150,
+      "modified": "2025-11-17T07:03:54.999493"
+    },
+    {
+      "path": "QUICK_REFERENCE_ALIGNMENT.md",
+      "type": "md",
+      "size": 1203,
+      "modified": "2025-11-17T09:37:49.803384"
+    },
+    {
+      "path": "QUICK_REFERENCE_v032.md",
+      "type": "md",
+      "size": 7700,
+      "modified": "2025-11-13T09:41:54.141389"
+    },
+    {
+      "path": "README.md",
+      "type": "md",
+      "size": 9714,
+      "modified": "2025-11-17T10:11:45.336457"
+    },
+    {
+      "path": "README_ALIGNMENT.md",
+      "type": "md",
+      "size": 5205,
+      "modified": "2025-11-17T09:37:36.255163"
+    },
+    {
+      "path": "ROUNDTRIP_RESULTS.md",
+      "type": "md",
+      "size": 7070,
+      "modified": "2025-11-17T09:49:25.138364"
+    },
+    {
+      "path": "SESSION_PROGRESS_REPORT_1311_1600.md",
+      "type": "md",
+      "size": 5089,
+      "modified": "2025-11-13T16:04:57.737146"
+    },
+    {
+      "path": "SESSION_SUMMARY_1311_1630.md",
+      "type": "md",
+      "size": 11313,
+      "modified": "2025-11-13T16:24:55.799355"
+    },
+    {
+      "path": "STAKEHOLDER_NOTIFICATION.md",
+      "type": "md",
+      "size": 10147,
+      "modified": "2025-11-17T10:08:37.512392"
+    },
+    {
+      "path": "V032_FINAL_COMPLETION_REPORT.md",
+      "type": "md",
+      "size": 14182,
+      "modified": "2025-11-17T07:50:54.420059"
+    },
+    {
+      "path": "VERSION_CLARIFICATION.md",
+      "type": "md",
+      "size": 1853,
+      "modified": "2025-11-17T08:40:03.765525"
+    },
+    {
+      "path": "output\\CHANGELOG_20251113_095116.md",
+      "type": "md",
+      "size": 358,
+      "modified": "2025-11-13T10:02:55.102565"
+    },
+    {
+      "path": "ABACUS-v032\\output\\CHANGELOG_20251117_085927.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T08:59:27.378773"
+    },
+    {
+      "path": "ABACUS-v032\\output\\CHANGELOG_20251117_090102.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T09:01:02.351993"
+    },
+    {
+      "path": "ABACUS-v032\\output\\CHANGELOG_20251117_090236.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T09:02:36.304650"
+    },
+    {
+      "path": "ABACUS-v032\\output\\CHANGELOG_20251117_090336.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T09:03:36.685245"
+    },
+    {
+      "path": "ABACUS-v032\\output\\GLOBAL_TASK_TRACKER.md",
+      "type": "md",
+      "size": 750,
+      "modified": "2025-11-17T09:03:36.691522"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\artifact_ranking_system_governance.md",
+      "type": "md",
+      "size": 294,
+      "modified": "2025-11-17T09:03:36.680680"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\CHANGELOG.md",
+      "type": "md",
+      "size": 2765,
+      "modified": "2025-11-17T09:03:36.690525"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\deploy_full_pipeline_governance.md",
+      "type": "md",
+      "size": 285,
+      "modified": "2025-11-17T09:03:36.681640"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\deploy_governance.md",
+      "type": "md",
+      "size": 243,
+      "modified": "2025-11-17T09:03:36.680680"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\dow_integration_module_governance.md",
+      "type": "md",
+      "size": 291,
+      "modified": "2025-11-17T09:03:36.682189"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_full_dmaic_phases_0_to_8_fixed_governance.md",
+      "type": "md",
+      "size": 339,
+      "modified": "2025-11-17T09:03:36.683241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_full_dmaic_phases_0_to_8_governance.md",
+      "type": "md",
+      "size": 321,
+      "modified": "2025-11-17T09:03:36.682189"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_full_dmaic_phases_0_to_9_v033_governance.md",
+      "type": "md",
+      "size": 336,
+      "modified": "2025-11-17T09:03:36.683241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_pipeline_with_metrics_governance.md",
+      "type": "md",
+      "size": 312,
+      "modified": "2025-11-17T09:03:36.684241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_real_dmaic_with_deployment_governance.md",
+      "type": "md",
+      "size": 327,
+      "modified": "2025-11-17T09:03:36.684241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\execute_sprint_governance.md",
+      "type": "md",
+      "size": 267,
+      "modified": "2025-11-17T09:03:36.684241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\rankings\\RANKING_SUMMARY.md",
+      "type": "md",
+      "size": 3170,
+      "modified": "2025-11-13T16:00:06.032364"
+    },
+    {
+      "path": "ABACUS-v032\\output\\rankings\\SELF_IMPROVEMENT_PLAN.md",
+      "type": "md",
+      "size": 2039,
+      "modified": "2025-11-13T16:00:06.034364"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\EXECUTION_REPORT_20251117_085927.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T08:59:27.381772"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\EXECUTION_REPORT_20251117_090102.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T09:01:02.353993"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\EXECUTION_REPORT_20251117_090236.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T09:02:36.307624"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\EXECUTION_REPORT_20251117_090336.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T09:03:36.688202"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_2_measure_20251117_085927.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T08:59:27.347344"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_2_measure_20251117_090102.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T09:01:02.331389"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_2_measure_20251117_090236.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T09:02:36.268281"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_2_measure_20251117_090336.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T09:03:36.651772"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_3_analyze_20251117_085927.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T08:59:27.348333"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_3_analyze_20251117_090102.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T09:01:02.332391"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_3_analyze_20251117_090236.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T09:02:36.269279"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_3_analyze_20251117_090336.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T09:03:36.653763"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_4_improve_20251117_085927.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T08:59:27.351294"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_4_improve_20251117_090102.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T09:01:02.332391"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_4_improve_20251117_090236.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T09:02:36.270243"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_4_improve_20251117_090336.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T09:03:36.654871"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_5_control_20251117_085927.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T08:59:27.352332"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_5_control_20251117_090102.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T09:01:02.333374"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_5_control_20251117_090236.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T09:02:36.270243"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_5_control_20251117_090336.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T09:03:36.656137"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_6_knowledge_devour_20251117_085927.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T08:59:27.355293"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_6_knowledge_devour_20251117_090102.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T09:01:02.336349"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_6_knowledge_devour_20251117_090236.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T09:02:36.276241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_6_knowledge_devour_20251117_090336.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T09:03:36.665148"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_7_integration_20251117_085927.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T08:59:27.356858"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_7_integration_20251117_090102.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T09:01:02.337349"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_7_integration_20251117_090236.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T09:02:36.279243"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\phase_7_integration_20251117_090336.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T09:03:36.667157"
+    },
+    {
+      "path": "deployments\\20251117_081319\\deployment_report.md",
+      "type": "md",
+      "size": 135,
+      "modified": "2025-11-17T08:13:45.529062"
+    },
+    {
+      "path": "deployments\\20251117_081349\\deployment_report.md",
+      "type": "md",
+      "size": 135,
+      "modified": "2025-11-17T08:14:19.385504"
+    },
+    {
+      "path": "deployments\\20251117_081319\\backup\\README.md",
+      "type": "md",
+      "size": 14520,
+      "modified": "2025-11-17T07:49:26.232746"
+    },
+    {
+      "path": "deployments\\20251117_081349\\backup\\README.md",
+      "type": "md",
+      "size": 14520,
+      "modified": "2025-11-17T07:49:26.232746"
+    },
+    {
+      "path": "output\\canonical_books\\analyze_executions_governance.md",
+      "type": "md",
+      "size": 279,
+      "modified": "2025-11-13T10:02:55.077226"
+    },
+    {
+      "path": "output\\canonical_books\\apply_utf8_fix_governance.md",
+      "type": "md",
+      "size": 267,
+      "modified": "2025-11-13T10:02:55.078180"
+    },
+    {
+      "path": "output\\canonical_books\\canonical_workspace_analyzer_FOR_Helium_Calculator_Engine_governance.md",
+      "type": "md",
+      "size": 396,
+      "modified": "2025-11-13T10:02:55.080250"
+    },
+    {
+      "path": "output\\canonical_books\\complete_cooldown_analysis_CORRECTED_governance.md",
+      "type": "md",
+      "size": 333,
+      "modified": "2025-11-13T10:02:55.082692"
+    },
+    {
+      "path": "output\\canonical_books\\complete_fix_governance.md",
+      "type": "md",
+      "size": 261,
+      "modified": "2025-11-13T10:02:55.083708"
+    },
+    {
+      "path": "output\\canonical_books\\conftest_governance.md",
+      "type": "md",
+      "size": 249,
+      "modified": "2025-11-13T10:02:55.085705"
+    },
+    {
+      "path": "output\\canonical_books\\corrected_analytical_engine_v4_governance.md",
+      "type": "md",
+      "size": 315,
+      "modified": "2025-11-13T10:02:55.087703"
+    },
+    {
+      "path": "output\\canonical_books\\create_analysis_dashboard_governance.md",
+      "type": "md",
+      "size": 300,
+      "modified": "2025-11-13T10:02:55.088702"
+    },
+    {
+      "path": "output\\canonical_books\\create_complete_handover_package_governance.md",
+      "type": "md",
+      "size": 321,
+      "modified": "2025-11-13T10:02:55.090705"
+    },
+    {
+      "path": "output\\canonical_books\\create_comprehensive_handover_governance.md",
+      "type": "md",
+      "size": 312,
+      "modified": "2025-11-13T10:02:55.091702"
+    },
+    {
+      "path": "output\\reports\\EXECUTION_REPORT_20251113_095116.md",
+      "type": "md",
+      "size": 603,
+      "modified": "2025-11-13T10:02:55.106525"
+    },
+    {
+      "path": "output\\reports\\phase_6_knowledge_devour_20251113_095116.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-13T10:00:53.324912"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_073332.md",
+      "type": "md",
+      "size": 757,
+      "modified": "2025-11-17T07:33:33.824747"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_074303.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T07:43:04.547188"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_074447.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T07:44:48.135362"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_074553.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T07:45:54.785569"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_074707.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T07:47:08.924841"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_094019.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T09:40:19.738357"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_100026.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T10:00:27.316740"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\CHANGELOG_20251117_105124.md",
+      "type": "md",
+      "size": 758,
+      "modified": "2025-11-17T10:51:25.943990"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\artifact_ranking_system_governance.md",
+      "type": "md",
+      "size": 294,
+      "modified": "2025-11-17T10:51:25.934203"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\deploy_full_pipeline_governance.md",
+      "type": "md",
+      "size": 285,
+      "modified": "2025-11-17T10:51:25.936199"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\deploy_governance.md",
+      "type": "md",
+      "size": 243,
+      "modified": "2025-11-17T10:51:25.935201"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\dow_integration_module_governance.md",
+      "type": "md",
+      "size": 291,
+      "modified": "2025-11-17T10:51:25.937201"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_full_dmaic_phases_0_to_8_fixed_governance.md",
+      "type": "md",
+      "size": 339,
+      "modified": "2025-11-17T10:51:25.938600"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_full_dmaic_phases_0_to_8_governance.md",
+      "type": "md",
+      "size": 321,
+      "modified": "2025-11-17T10:51:25.937201"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_full_dmaic_phases_0_to_9_v033_governance.md",
+      "type": "md",
+      "size": 336,
+      "modified": "2025-11-17T10:51:25.939988"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_pipeline_with_metrics_governance.md",
+      "type": "md",
+      "size": 312,
+      "modified": "2025-11-17T10:51:25.940993"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_real_dmaic_with_deployment_governance.md",
+      "type": "md",
+      "size": 327,
+      "modified": "2025-11-17T10:51:25.941990"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\execute_sprint_governance.md",
+      "type": "md",
+      "size": 267,
+      "modified": "2025-11-17T10:51:25.942991"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\fix_indentation_governance.md",
+      "type": "md",
+      "size": 270,
+      "modified": "2025-11-17T07:47:08.856255"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\generate_canonical_books_governance.md",
+      "type": "md",
+      "size": 297,
+      "modified": "2025-11-17T07:47:08.857252"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical_books\\master_pipeline_orchestrator_governance.md",
+      "type": "md",
+      "size": 309,
+      "modified": "2025-11-17T07:47:08.858254"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_073332.md",
+      "type": "md",
+      "size": 1144,
+      "modified": "2025-11-17T07:33:33.907164"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_074303.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T07:43:04.594958"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_074447.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T07:44:48.137306"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_074553.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T07:45:54.842614"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_074707.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T07:47:08.976187"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_094019.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T09:40:19.739319"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_100026.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T10:00:27.318748"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\EXECUTION_REPORT_20251117_105124.md",
+      "type": "md",
+      "size": 1145,
+      "modified": "2025-11-17T10:51:25.945990"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\FINAL_REPORT_20251117_074303.md",
+      "type": "md",
+      "size": 1068,
+      "modified": "2025-11-17T07:43:04.619052"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\FINAL_REPORT_20251117_074553.md",
+      "type": "md",
+      "size": 1068,
+      "modified": "2025-11-17T07:45:54.912007"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\FINAL_REPORT_20251117_074707.md",
+      "type": "md",
+      "size": 2742,
+      "modified": "2025-11-17T07:47:08.994321"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\FINAL_REPORT_20251117_100026.md",
+      "type": "md",
+      "size": 6312,
+      "modified": "2025-11-17T10:00:27.325851"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\iteration_comparison_20251117_094019.md",
+      "type": "md",
+      "size": 290,
+      "modified": "2025-11-17T09:40:19.741268"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\iteration_comparison_20251117_100026.md",
+      "type": "md",
+      "size": 544,
+      "modified": "2025-11-17T10:00:27.321741"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\iteration_comparison_20251117_105124.md",
+      "type": "md",
+      "size": 504,
+      "modified": "2025-11-17T10:51:25.949991"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_073332.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T07:33:32.410973"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_074303.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T07:43:03.661350"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_074447.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T07:44:48.046858"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_074553.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T07:45:53.935940"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_074707.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T07:47:08.115164"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_094019.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T09:40:19.889817"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_100026.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T10:00:27.277403"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_2_measure_20251117_105124.md",
+      "type": "md",
+      "size": 199,
+      "modified": "2025-11-17T10:51:25.892930"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_073332.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T07:33:32.462875"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_074303.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T07:43:03.684694"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_074447.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T07:44:48.054876"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_074553.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T07:45:54.221355"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_074707.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T07:47:08.358103"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_094019.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T09:40:19.889817"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_100026.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T10:00:27.278436"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_3_analyze_20251117_105124.md",
+      "type": "md",
+      "size": 215,
+      "modified": "2025-11-17T10:51:25.894022"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_073332.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T07:33:32.528031"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_074303.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T07:43:03.890628"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_074447.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T07:44:48.054876"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_074553.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T07:45:54.434911"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_074707.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T07:47:08.422784"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_094019.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T09:40:19.891328"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_100026.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T10:00:27.279439"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_4_improve_20251117_105124.md",
+      "type": "md",
+      "size": 217,
+      "modified": "2025-11-17T10:51:25.894929"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_073332.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T07:33:32.704414"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_074303.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T07:43:04.095765"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_074447.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T07:44:48.054876"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_074553.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T07:45:54.458678"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_074707.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T07:47:08.514519"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_094019.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T09:40:19.892339"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_100026.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T10:00:27.279439"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_5_control_20251117_105124.md",
+      "type": "md",
+      "size": 213,
+      "modified": "2025-11-17T10:51:25.895928"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_073332.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T07:33:33.068365"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_074303.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T07:43:04.411029"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_074447.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T07:44:48.070520"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_074553.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T07:45:54.645661"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_074707.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T07:47:08.641428"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_094019.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T09:40:19.895336"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_100026.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T10:00:27.282403"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_6_knowledge_devour_20251117_105124.md",
+      "type": "md",
+      "size": 257,
+      "modified": "2025-11-17T10:51:25.902929"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_073332.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T07:33:33.433056"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_074303.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T07:43:04.426044"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_074447.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T07:44:48.070520"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_074553.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T07:45:54.667556"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_074707.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T07:47:08.714638"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_094019.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T09:40:19.897336"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_100026.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T10:00:27.283404"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_7_integration_20251117_105124.md",
+      "type": "md",
+      "size": 259,
+      "modified": "2025-11-17T10:51:25.904928"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_9_recursive_loop_20251117_094019.md",
+      "type": "md",
+      "size": 1127,
+      "modified": "2025-11-17T09:40:19.743270"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_9_recursive_loop_20251117_100026.md",
+      "type": "md",
+      "size": 1028,
+      "modified": "2025-11-17T10:00:27.324747"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\phase_9_recursive_loop_20251117_105124.md",
+      "type": "md",
+      "size": 1027,
+      "modified": "2025-11-17T10:51:25.953001"
+    },
+    {
+      "path": "CICD_VALIDATION_REPORT.json",
+      "type": "json",
+      "size": 1356,
+      "modified": "2025-11-17T10:31:11.944458"
+    },
+    {
+      "path": "DEPLOYMENT_STATUS_REPORT_20251117_083547.json",
+      "type": "json",
+      "size": 3964,
+      "modified": "2025-11-17T08:35:47.509541"
+    },
+    {
+      "path": "DEPLOYMENT_STATUS_REPORT_20251117_090249.json",
+      "type": "json",
+      "size": 3964,
+      "modified": "2025-11-17T09:02:49.340456"
+    },
+    {
+      "path": "DEPLOYMENT_STATUS_REPORT_20251117_090336.json",
+      "type": "json",
+      "size": 3964,
+      "modified": "2025-11-17T09:03:36.933984"
+    },
+    {
+      "path": "DOW_PHASE_TEST_REPORT_20251117_070012.json",
+      "type": "json",
+      "size": 2871,
+      "modified": "2025-11-17T07:00:16.456283"
+    },
+    {
+      "path": "sprint_config.json",
+      "type": "json",
+      "size": 1740,
+      "modified": "2025-11-17T09:32:37.234218"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_084337.json",
+      "type": "json",
+      "size": 1354,
+      "modified": "2025-11-17T08:43:37.905511"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_084555.json",
+      "type": "json",
+      "size": 2664,
+      "modified": "2025-11-17T08:45:55.912236"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_084720.json",
+      "type": "json",
+      "size": 1870,
+      "modified": "2025-11-17T08:47:20.891455"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_084749.json",
+      "type": "json",
+      "size": 2699,
+      "modified": "2025-11-17T08:47:50.492374"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_084938.json",
+      "type": "json",
+      "size": 1892,
+      "modified": "2025-11-17T08:49:39.196557"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_085030.json",
+      "type": "json",
+      "size": 1919,
+      "modified": "2025-11-17T08:50:31.010862"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_085712.json",
+      "type": "json",
+      "size": 2168,
+      "modified": "2025-11-17T08:57:13.373148"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_085926.json",
+      "type": "json",
+      "size": 2667,
+      "modified": "2025-11-17T08:59:27.414494"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_090101.json",
+      "type": "json",
+      "size": 2278,
+      "modified": "2025-11-17T09:01:02.772999"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_090235.json",
+      "type": "json",
+      "size": 2620,
+      "modified": "2025-11-17T09:02:36.507785"
+    },
+    {
+      "path": "SPRINT_EXECUTION_20251117_090335.json",
+      "type": "json",
+      "size": 3147,
+      "modified": "2025-11-17T09:03:36.945145"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_083258.json",
+      "type": "json",
+      "size": 1071,
+      "modified": "2025-11-17T08:32:58.345107"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_083417.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:34:17.707135"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084337.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:43:37.890455"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084415.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:44:15.982415"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084555.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:45:55.495343"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084720.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:47:20.522778"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084750.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:47:50.045731"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_084938.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:49:38.580892"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_085030.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:50:30.405964"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_085712.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:57:12.706678"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_085926.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T08:59:26.513389"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_090101.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T09:01:01.481379"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_090235.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T09:02:35.408749"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_090335.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T09:03:35.891023"
+    },
+    {
+      "path": "SPRINT_READINESS_REPORT_20251117_093358.json",
+      "type": "json",
+      "size": 1056,
+      "modified": "2025-11-17T09:33:58.458999"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_084642.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T08:46:42.426753"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_084939.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T08:49:39.028214"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_085030.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T08:50:30.848855"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_085713.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T08:57:13.109288"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_085926.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T08:59:26.962681"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_090101.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T09:01:01.899796"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_090235.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T09:02:35.854067"
+    },
+    {
+      "path": "logs\\phase0_results_20251117_090336.json",
+      "type": "json",
+      "size": 716,
+      "modified": "2025-11-17T09:03:36.266250"
+    },
+    {
+      "path": "output\\artifact_maturity_20251113_095116.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-13T10:02:55.104527"
+    },
+    {
+      "path": "output\\canonical.index.json",
+      "type": "json",
+      "size": 9914347,
+      "modified": "2025-11-13T10:00:53.292226"
+    },
+    {
+      "path": "output\\temporal_metadata_phase1.json",
+      "type": "json",
+      "size": 138,
+      "modified": "2025-11-13T10:00:53.295233"
+    },
+    {
+      "path": "ABACUS-v032\\output\\artifact_maturity_20251117_085927.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T08:59:27.380773"
+    },
+    {
+      "path": "ABACUS-v032\\output\\artifact_maturity_20251117_090102.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T09:01:02.352993"
+    },
+    {
+      "path": "ABACUS-v032\\output\\artifact_maturity_20251117_090236.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T09:02:36.305646"
+    },
+    {
+      "path": "ABACUS-v032\\output\\artifact_maturity_20251117_090336.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T09:03:36.686239"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical.index.json",
+      "type": "json",
+      "size": 48124,
+      "modified": "2025-11-17T09:03:36.649727"
+    },
+    {
+      "path": "ABACUS-v032\\output\\integration_map_20251117_085927.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T08:59:27.356858"
+    },
+    {
+      "path": "ABACUS-v032\\output\\integration_map_20251117_090102.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T09:01:02.336349"
+    },
+    {
+      "path": "ABACUS-v032\\output\\integration_map_20251117_090236.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T09:02:36.277241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\integration_map_20251117_090336.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T09:03:36.666148"
+    },
+    {
+      "path": "ABACUS-v032\\output\\temporal_metadata_phase1.json",
+      "type": "json",
+      "size": 136,
+      "modified": "2025-11-17T09:03:36.650788"
+    },
+    {
+      "path": "ABACUS-v032\\output\\canonical_books\\canonical_input_v032_1.json",
+      "type": "json",
+      "size": 915,
+      "modified": "2025-11-17T09:03:36.689511"
+    },
+    {
+      "path": "ABACUS-v032\\output\\metrics\\execution_20251117_083452.json",
+      "type": "json",
+      "size": 3548,
+      "modified": "2025-11-17T08:34:52.139672"
+    },
+    {
+      "path": "ABACUS-v032\\output\\rankings\\markdown_rankings.json",
+      "type": "json",
+      "size": 9827,
+      "modified": "2025-11-13T16:00:06.021415"
+    },
+    {
+      "path": "ABACUS-v032\\output\\rankings\\python_rankings.json",
+      "type": "json",
+      "size": 5676,
+      "modified": "2025-11-13T16:00:06.017869"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\agent_involvement_20251117_085927.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T08:59:27.357870"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\agent_involvement_20251117_090102.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T09:01:02.337349"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\agent_involvement_20251117_090236.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T09:02:36.280252"
+    },
+    {
+      "path": "ABACUS-v032\\output\\reports\\agent_involvement_20251117_090336.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T09:03:36.670158"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_085927\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T08:59:27.354335"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_085927\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T08:59:27.353336"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090102\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T09:01:02.335351"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090102\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T09:01:02.334383"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090236\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T09:02:36.275241"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090236\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T09:02:36.273242"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090336\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T09:03:36.663146"
+    },
+    {
+      "path": "ABACUS-v032\\output\\knowledge\\iteration_20251117_090336\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T09:03:36.658146"
+    },
+    {
+      "path": "output\\deployment\\DEPLOYMENT_MANIFEST_20251113_113928.json",
+      "type": "json",
+      "size": 273,
+      "modified": "2025-11-13T11:39:31.738318"
+    },
+    {
+      "path": "output\\logs\\fixes_20251113_113928.json",
+      "type": "json",
+      "size": 1188,
+      "modified": "2025-11-13T11:39:31.761434"
+    },
+    {
+      "path": "output\\reports\\agent_involvement_20251113_095116.json",
+      "type": "json",
+      "size": 2955,
+      "modified": "2025-11-13T10:00:53.328995"
+    },
+    {
+      "path": "output\\reports\\EXECUTION_SUMMARY_20251113_113928.json",
+      "type": "json",
+      "size": 5670,
+      "modified": "2025-11-13T11:39:31.757432"
+    },
+    {
+      "path": "output\\reports\\FINAL_EXECUTION_REPORT_20251113_113928.json",
+      "type": "json",
+      "size": 282,
+      "modified": "2025-11-13T11:39:31.706400"
+    },
+    {
+      "path": "output\\reports\\phase1_problem_definition_20251113_113928.json",
+      "type": "json",
+      "size": 469,
+      "modified": "2025-11-13T11:39:29.599552"
+    },
+    {
+      "path": "output\\reports\\phase2_metrics_20251113_113928.json",
+      "type": "json",
+      "size": 125,
+      "modified": "2025-11-13T11:39:30.308864"
+    },
+    {
+      "path": "output\\reports\\phase3_analysis_20251113_113928.json",
+      "type": "json",
+      "size": 321,
+      "modified": "2025-11-13T11:39:31.084655"
+    },
+    {
+      "path": "output\\reports\\phase6_knowledge_20251113_113928.json",
+      "type": "json",
+      "size": 118,
+      "modified": "2025-11-13T11:39:31.691570"
+    },
+    {
+      "path": "output\\knowledge\\iteration_20251113_095116\\knowledge_index.json",
+      "type": "json",
+      "size": 519,
+      "modified": "2025-11-13T10:00:53.322901"
+    },
+    {
+      "path": "output\\knowledge\\iteration_20251113_095116\\knowledge_packs.json",
+      "type": "json",
+      "size": 398,
+      "modified": "2025-11-13T10:00:53.320901"
+    },
+    {
+      "path": "pipeline_output\\agents\\AGENT_REGISTRY_20251113_115333.json",
+      "type": "json",
+      "size": 4605,
+      "modified": "2025-11-13T11:53:34.414813"
+    },
+    {
+      "path": "pipeline_output\\agents\\AGENT_REGISTRY_20251117_062840.json",
+      "type": "json",
+      "size": 4605,
+      "modified": "2025-11-17T06:28:40.859569"
+    },
+    {
+      "path": "pipeline_output\\agents\\ORCHESTRATOR_REGISTRY_20251113_115333.json",
+      "type": "json",
+      "size": 1767,
+      "modified": "2025-11-13T11:53:34.511925"
+    },
+    {
+      "path": "pipeline_output\\agents\\ORCHESTRATOR_REGISTRY_20251117_062840.json",
+      "type": "json",
+      "size": 1767,
+      "modified": "2025-11-17T06:28:40.983924"
+    },
+    {
+      "path": "pipeline_output\\lint\\LINT_REPORT_20251113_115333.json",
+      "type": "json",
+      "size": 13157,
+      "modified": "2025-11-13T11:53:34.647459"
+    },
+    {
+      "path": "pipeline_output\\lint\\LINT_REPORT_20251117_062840.json",
+      "type": "json",
+      "size": 14001,
+      "modified": "2025-11-17T06:28:41.835695"
+    },
+    {
+      "path": "pipeline_output\\statistics\\MASTER_PIPELINE_SUMMARY_20251113_115333.json",
+      "type": "json",
+      "size": 32540,
+      "modified": "2025-11-13T11:53:43.726214"
+    },
+    {
+      "path": "pipeline_output\\statistics\\MASTER_PIPELINE_SUMMARY_20251117_062840.json",
+      "type": "json",
+      "size": 34921,
+      "modified": "2025-11-17T06:28:49.761325"
+    },
+    {
+      "path": "pipeline_output\\statistics\\SUT_MANIFEST_20251113_115333.json",
+      "type": "json",
+      "size": 9597,
+      "modified": "2025-11-13T11:53:34.133851"
+    },
+    {
+      "path": "pipeline_output\\statistics\\SUT_MANIFEST_20251117_062840.json",
+      "type": "json",
+      "size": 11014,
+      "modified": "2025-11-17T06:28:40.476695"
+    },
+    {
+      "path": "pipeline_output\\statistics\\SYSTEM_SNAPSHOT_20251113_115333.json",
+      "type": "json",
+      "size": 335,
+      "modified": "2025-11-13T11:53:43.722210"
+    },
+    {
+      "path": "pipeline_output\\statistics\\SYSTEM_SNAPSHOT_20251117_062840.json",
+      "type": "json",
+      "size": 335,
+      "modified": "2025-11-17T06:28:49.758325"
+    },
+    {
+      "path": "pipeline_output\\tests\\PYTEST_REPORT_20251113_115333.json",
+      "type": "json",
+      "size": 1470,
+      "modified": "2025-11-13T11:53:43.639868"
+    },
+    {
+      "path": "pipeline_output\\tests\\PYTEST_REPORT_20251117_062840.json",
+      "type": "json",
+      "size": 1470,
+      "modified": "2025-11-17T06:28:49.685671"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_073332.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T07:33:33.871286"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_074303.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T07:43:04.579361"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_074447.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T07:44:48.137306"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_074553.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T07:45:54.813734"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_074707.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T07:47:08.971930"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_094019.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T09:40:19.739319"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_100026.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T10:00:27.317746"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\artifact_maturity_20251117_105124.json",
+      "type": "json",
+      "size": 215,
+      "modified": "2025-11-17T10:51:25.944990"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\canonical.index.json",
+      "type": "json",
+      "size": 63177,
+      "modified": "2025-11-17T10:51:25.889917"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\convergence_tracking.json",
+      "type": "json",
+      "size": 6705,
+      "modified": "2025-11-17T10:51:25.952003"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_073332.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T07:33:33.393298"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_074303.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T07:43:04.420043"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_074447.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T07:44:48.070520"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_074553.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T07:45:54.659603"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_074707.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T07:47:08.706313"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_094019.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T09:40:19.896335"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_100026.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T10:00:27.283404"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\integration_map_20251117_105124.json",
+      "type": "json",
+      "size": 384,
+      "modified": "2025-11-17T10:51:25.903929"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\temporal_metadata_phase1.json",
+      "type": "json",
+      "size": 136,
+      "modified": "2025-11-17T10:51:25.890931"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_073332.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T07:33:33.634595"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_074303.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T07:43:04.464184"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_074447.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T07:44:48.086145"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_074553.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T07:45:54.695544"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_074707.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T07:47:08.781845"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_094019.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T09:40:19.714010"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_100026.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T10:00:27.284406"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\reports\\agent_involvement_20251117_105124.json",
+      "type": "json",
+      "size": 2,
+      "modified": "2025-11-17T10:51:25.905685"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_073332\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T07:33:33.026404"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_073332\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T07:33:33.025405"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074303\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T07:43:04.398403"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074303\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T07:43:04.395400"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074447\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T07:44:48.054876"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074447\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T07:44:48.054876"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074553\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T07:45:54.639661"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074553\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T07:45:54.637654"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074707\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T07:47:08.589338"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_074707\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T07:47:08.587337"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_094019\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T09:40:19.894337"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_094019\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T09:40:19.893340"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_100026\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T10:00:27.281442"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_100026\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T10:00:27.281442"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_105124\\knowledge_index.json",
+      "type": "json",
+      "size": 1690,
+      "modified": "2025-11-17T10:51:25.901928"
+    },
+    {
+      "path": "STATS\\DMAIC_FULL\\knowledge\\iteration_20251117_105124\\knowledge_packs.json",
+      "type": "json",
+      "size": 1475,
+      "modified": "2025-11-17T10:51:25.900929"
+    },
+    {
+      "path": "AGENT_ORCHESTRATOR_INTELLIGENCE_SUMMARY_v032.yaml",
+      "type": "yaml",
+      "size": 31399,
+      "modified": "2025-11-13T09:39:02.706020"
+    },
+    {
+      "path": "glob.yaml",
+      "type": "yaml",
+      "size": 2395,
+      "modified": "2025-11-17T08:42:27.155374"
+    },
+    {
+      "path": "governance\\rtm\\code_RTM.yaml",
+      "type": "yaml",
+      "size": 4863,
+      "modified": "2025-11-17T08:41:47.784034"
+    },
+    {
+      "path": "docker-compose.yml",
+      "type": "yml",
+      "size": 2255,
+      "modified": "2025-11-17T10:28:33.064107"
+    }
+  ]
+}
