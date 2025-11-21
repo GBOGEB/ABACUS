@@ -235,14 +235,14 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Tuple of (success: bool, results: Dict) with analysis results
+            Tuple of (success: bool, result: Dict[str, Any])
         """
         result = self.run(iteration)
         # Check if execution was successful (no error key means success)
         success = 'error' not in result or result.get('error') is None
         return success, result
 
-    def run(self, iteration: int) -> Dict[str, Any]:
+    def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 3: Analyze
 
@@ -250,7 +250,7 @@ class Phase3Analyze:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with analysis results
+            Tuple of (success: bool, result: Dict[str, Any])
         """
         print(f"\n{'='*60}")
         print(f"Phase 3: ANALYZE - Iteration {iteration}")
@@ -259,7 +259,7 @@ class Phase3Analyze:
         phase2_output = self.config.paths.output_root / f"iteration_{iteration}" / "phase2_metrics.json"
 
         if not phase2_output.exists():
-            return {
+            return False, {
                 'phase': 'ANALYZE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
@@ -342,7 +342,9 @@ class Phase3Analyze:
         print(f"   Medium issues: {analysis_result['summary']['medium_issues']}")
         print(f"\n[*] Output: {output_file}")
 
-        return analysis_result
+        analysis_result['output_file'] = str(output_file)
+
+        return True, analysis_result
 
 
 if __name__ == "__main__":
