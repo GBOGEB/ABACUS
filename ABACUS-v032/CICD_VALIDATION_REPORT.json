@@ -1,0 +1,52 @@
+{
+  "docker": {
+    "v033_version": true,
+    "canonical_aligned": true,
+    "sprint_tested": true,
+    "dow_tested": true,
+    "correct_entrypoint": true,
+    "ports_exposed": true,
+    "v033_container": true,
+    "canonical_env": true,
+    "correct_command": true,
+    "prometheus": true,
+    "grafana": true,
+    "networks": true,
+    "build_test": "DOCKER_NOT_FOUND",
+    "compose_test": "DOCKER_COMPOSE_NOT_FOUND"
+  },
+  "cicd": {
+    "ci_v033_version": true,
+    "ci_canonical_aligned": true,
+    "ci_sprint_tests": true,
+    "ci_dow_tests": true,
+    "ci_docker_build": true,
+    "ci_security_scan": true,
+    "cd_v033_version": true,
+    "cd_canonical_aligned": true,
+    "cd_staging_deploy": true,
+    "cd_production_deploy": true,
+    "cd_docker_push": true,
+    "cd_health_check": true
+  },
+  "config": {
+    "version_v033": true,
+    "sprint_tested": true,
+    "dow_tested": true,
+    "canonical_aligned": true,
+    "phase_9_present": true,
+    "v033_engine": true
+  },
+  "alignment": {
+    "CANONICAL_ALIGNMENT_v032_v033.md": "PRESENT",
+    "ALIGNMENT_SUMMARY.md": "PRESENT",
+    "DEPLOYMENT_EXECUTION_SUMMARY.md": "PRESENT"
+  },
+  "ports": {
+    "8000": "CONFIGURED",
+    "8080": "CONFIGURED",
+    "9090": "CONFIGURED",
+    "3000": "CONFIGURED"
+  },
+  "overall": "\u2705 ALL CHECKS PASSED"
+}

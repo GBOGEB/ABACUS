@@ -343,7 +343,7 @@ class Phase1Define:
 
         return report_path
 
-    def execute(self, iteration: int) -> Dict:
+    def run(self, iteration: int) -> Dict:
         """
         Execute Phase 1: Define with change detection
 
@@ -445,6 +445,9 @@ class Phase1Define:
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
                 'total_files': len(all_files),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': duration,
                 'categorized': dict(categorized),
                 'files': all_files,
                 'folder_structure': folder_structure,
@@ -533,6 +536,20 @@ class Phase1Define:
                 'code_files': 0,
                 'documentation_files': 0
             }
+
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success, result_dict)
+        """
+        result = self.run(iteration)
+        success = 'error' not in result
+        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """

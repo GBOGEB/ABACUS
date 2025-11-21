@@ -163,6 +163,11 @@ class MaturityTracker:
         self.maturity_file = workspace_root / "maturity_assessment.json"
         self.convergence_file = workspace_root / "convergence_report.json"
         self.planning_file = workspace_root / "planning_matrix.json"
+    
+    @property
+    def workspace_path(self) -> Path:
+        """Alias for workspace_root for backward compatibility"""
+        return self.workspace_root
         
     def assess_current_maturity(self) -> MaturityAssessment:
         """
