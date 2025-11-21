@@ -360,7 +360,7 @@ class Phase1Define:
 
         return report_path
 
-    def execute(self, iteration: int) -> Dict:
+    def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
         Execute Phase 1: Define with change detection
 
@@ -368,12 +368,13 @@ class Phase1Define:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with phase execution results
+            Tuple of (success: bool, results: Dict) with phase execution results
         """
+        start_time = datetime.now()
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
         print("="*80)
-        print(f"Timestamp: {datetime.now().isoformat()}")
+        print(f"Timestamp: {start_time.isoformat()}")
         print()
 
         try:
@@ -451,12 +452,20 @@ class Phase1Define:
             print("\n[1.4] Calculating artifact rankings (if available)...")
             artifact_rankings = self.calculate_artifact_ranking(iteration)
 
+            # Calculate duration
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+
             # Prepare results
             results = {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'total_files': len(all_files),
+                'code_files': categorized.get('code', 0),
+                'documentation_files': categorized.get('docs', 0),
+                'duration': duration,
                 'categorized': dict(categorized),
                 'code_files': categorized.get('code', 0),
                 'documentation_files': categorized.get('docs', 0),
@@ -516,16 +525,19 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return results
+            return True, results
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
             traceback.print_exc()
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
             return {
                 'phase': 'DEFINE',
                 'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': end_time.isoformat(),
+                'duration': duration,
                 'error': str(e),
                 'total_files': 0,
                 'categorized': {},
@@ -542,6 +554,20 @@ class Phase1Define:
                 'changes': {},
                 'duration': 0.0
             }
+
+    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
+        
+        Args:
+            iteration: Current iteration number
+            
+        Returns:
+            Tuple of (success, result_dict)
+        """
+        result = self.run(iteration)
+        success = 'error' not in result
+        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
