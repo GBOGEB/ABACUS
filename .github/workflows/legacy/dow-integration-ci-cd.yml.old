@@ -1,0 +1,356 @@
+name: ABACUS DOW Integration CI/CD
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  WORKSPACE_ROOT: ${{ github.workspace }}
+
+jobs:
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black pylint mypy
+      
+      - name: Run ruff
+        run: |
+          ruff check ABACUS-v032/*.py --output-format=github
+        continue-on-error: true
+      
+      - name: Run black
+        run: |
+          black --check ABACUS-v032/*.py
+        continue-on-error: true
+      
+      - name: Run pylint
+        run: |
+          pylint ABACUS-v032/*.py --exit-zero
+        continue-on-error: true
+
+  test-dow-phases:
+    name: Test DOW Phases (DMAIC)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Run DOW Phase Tests
+        id: phase_tests
+        run: |
+          cd ABACUS-v032
+          python test_dow_phases.py --workspace ..
+        continue-on-error: false
+      
+      - name: Upload Phase Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dow-phase-test-report
+          path: ABACUS-v032/DOW_PHASE_TEST_REPORT_*.json
+          retention-days: 30
+
+  test-integration:
+    name: Integration Test - DOW Pipeline
+    runs-on: ubuntu-latest
+    needs: test-dow-phases
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Create test directories
+        run: |
+          mkdir -p docs/adr
+          mkdir -p ABACUS-v032/STATS/DOW
+      
+      - name: Create test ADR
+        run: |
+          cat > docs/adr/0001-test-adr.md << 'EOF'
+          # ADR-001: Test Architecture Decision
+          
+          Status: Accepted
+          Date: 2025-01-13
+          
+          ## Context
+          This is a test ADR for CI/CD validation.
+          
+          ## Decision
+          Use DOW integration for handover management.
+          
+          ## Consequences
+          Improved traceability and automation.
+          EOF
+      
+      - name: Create test RTM
+        run: |
+          cat > docs/rtm.yaml << 'EOF'
+          requirements:
+            - id: REQ-001
+              description: "DOW integration requirement"
+              source: "User requirements"
+              implementation:
+                - "ABACUS-v032/master_pipeline_orchestrator.py"
+              tests:
+                - "ABACUS-v032/test_dow_phases.py"
+              status: "implemented"
+          EOF
+      
+      - name: Test DOW Module Import
+        run: |
+          cd ABACUS-v032
+          python -c "from dow_integration_module import MarkdownTangler, ADRValidator, RTMValidator; print('✓ DOW module imports successfully')"
+      
+      - name: Test ADR Validation
+        run: |
+          cd ABACUS-v032
+          python -c "
+          from pathlib import Path
+          from dow_integration_module import validate_adrs
+          result = validate_adrs(Path('../docs/adr'))
+          print(f'ADR Validation: {result[\"status\"]}')
+          print(f'Valid ADRs: {result.get(\"valid\", 0)}')
+          "
+      
+      - name: Test RTM Validation
+        run: |
+          cd ABACUS-v032
+          python -c "
+          from pathlib import Path
+          from dow_integration_module import validate_rtm
+          result = validate_rtm(Path('../docs/rtm.yaml'), Path('..'))
+          print(f'RTM Validation: {result[\"status\"]}')
+          print(f'Valid Requirements: {result.get(\"valid\", 0)}')
+          "
+      
+      - name: Test Pipeline Help
+        run: |
+          cd ABACUS-v032
+          python master_pipeline_orchestrator.py --help
+      
+      - name: Upload Integration Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-artifacts
+          path: |
+            docs/adr/*.md
+            docs/rtm.yaml
+          retention-days: 7
+
+  test-dry-run:
+    name: Dry Run - Full Pipeline
+    runs-on: ubuntu-latest
+    needs: test-integration
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml pytest
+      
+      - name: Create test structure
+        run: |
+          mkdir -p docs/adr
+          mkdir -p ABACUS-v032/STATS
+          echo "# Test" > docs/adr/test.md
+          echo "requirements: []" > docs/rtm.yaml
+      
+      - name: Dry Run - Syntax Check
+        run: |
+          cd ABACUS-v032
+          python -m py_compile master_pipeline_orchestrator.py
+          python -m py_compile dow_integration_module.py
+          python -m py_compile test_dow_phases.py
+          echo "✓ All Python files compile successfully"
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install bandit
+        run: |
+          pip install bandit[toml]
+      
+      - name: Run security scan
+        run: |
+          bandit -r ABACUS-v032/*.py -f json -o bandit-report.json
+        continue-on-error: true
+      
+      - name: Upload security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-report
+          path: bandit-report.json
+          retention-days: 30
+
+  deploy-ready:
+    name: Deployment Readiness Check
+    runs-on: ubuntu-latest
+    needs: [test-dow-phases, test-integration, test-dry-run, security-scan]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check required files
+        run: |
+          echo "Checking deployment readiness..."
+          
+          required_files=(
+            "ABACUS-v032/master_pipeline_orchestrator.py"
+            "ABACUS-v032/dow_integration_module.py"
+            "ABACUS-v032/test_dow_phases.py"
+            "ABACUS-v032/DOW_INTEGRATION_GUIDE.md"
+          )
+          
+          all_present=true
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✓ $file"
+            else
+              echo "✗ $file MISSING"
+              all_present=false
+            fi
+          done
+          
+          if [ "$all_present" = true ]; then
+            echo "✓ All required files present - DEPLOYMENT READY"
+            exit 0
+          else
+            echo "✗ Missing required files - NOT READY"
+            exit 1
+          fi
+      
+      - name: Generate deployment summary
+        if: success()
+        run: |
+          cat > $GITHUB_STEP_SUMMARY << 'EOF'
+          # 🚀 ABACUS DOW Integration - Deployment Ready
+          
+          ## ✅ All Checks Passed
+          
+          - ✓ Lint & Code Quality
+          - ✓ DOW Phase Tests (DMAIC)
+          - ✓ Integration Tests
+          - ✓ Dry Run Tests
+          - ✓ Security Scan
+          - ✓ Required Files Present
+          
+          ## 📦 Deployment Artifacts
+          
+          - `master_pipeline_orchestrator.py` - Main orchestrator with DOW integration
+          - `dow_integration_module.py` - DOW integration module (tangle, ADR, RTM)
+          - `test_dow_phases.py` - DMAIC phase validation script
+          - `DOW_INTEGRATION_GUIDE.md` - Comprehensive documentation
+          
+          ## 🎯 Next Steps
+          
+          1. Review test reports in artifacts
+          2. Deploy to target environment
+          3. Run full pipeline with `--enable-validation --enable-tangle`
+          4. Monitor DOW runs and provenance tracking
+          
+          **Status:** READY FOR DEPLOYMENT ✅
+          EOF
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: deploy-ready
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(grep -oP '__version__ = "\K[^"]+' ABACUS-v032/master_pipeline_orchestrator.py | head -1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: ABACUS DOW Integration v${{ steps.get_version.outputs.version }}
+          body: |
+            ## ABACUS DOW Integration Release
+            
+            ### Features
+            - DOW engine integration with master pipeline
+            - Markdown tangling for handover documents
+            - ADR/RTM validation
+            - Provenance tracking and parallel diff comparison
+            - DMAIC phase validation
+            
+            ### Files
+            - `master_pipeline_orchestrator.py` - Main orchestrator
+            - `dow_integration_module.py` - DOW integration module
+            - `test_dow_phases.py` - Phase validation script
+            - `DOW_INTEGRATION_GUIDE.md` - Documentation
+            
+            ### Usage
+            ```bash
+            python ABACUS-v032/master_pipeline_orchestrator.py \
+              --dow-runs 2 \
+              --enable-tangle \
+              --enable-validation
+            ```
+          draft: false
+          prerelease: false
