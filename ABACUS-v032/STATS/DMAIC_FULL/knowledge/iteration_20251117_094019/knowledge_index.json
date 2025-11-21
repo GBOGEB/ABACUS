@@ -1,0 +1,70 @@
+{
+  "total_packs": 6,
+  "packs": [
+    {
+      "pack_id": "pack_000",
+      "name": "Knowledge Pack 1",
+      "phase": "Initialization",
+      "metrics": {
+        "config_loaded": 4,
+        "orchestrators": 3
+      },
+      "created_at": "2025-11-17T09:40:19.892338"
+    },
+    {
+      "pack_id": "pack_001",
+      "name": "Knowledge Pack 2",
+      "phase": "Define",
+      "metrics": {},
+      "created_at": "2025-11-17T09:40:19.892338"
+    },
+    {
+      "pack_id": "pack_002",
+      "name": "Knowledge Pack 3",
+      "phase": "Measure",
+      "metrics": {
+        "complexity_score": 3.5,
+        "quality_score": 85.0,
+        "baselines": 3
+      },
+      "created_at": "2025-11-17T09:40:19.892338"
+    },
+    {
+      "pack_id": "pack_003",
+      "name": "Knowledge Pack 4",
+      "phase": "Analyze",
+      "metrics": {
+        "patterns_found": 3,
+        "dependencies": 2,
+        "bottlenecks": 2,
+        "root_causes": 2
+      },
+      "created_at": "2025-11-17T09:40:19.892338"
+    },
+    {
+      "pack_id": "pack_004",
+      "name": "Knowledge Pack 5",
+      "phase": "Improve",
+      "metrics": {
+        "proposals": 3,
+        "high_priority": 2,
+        "plans": 3,
+        "expected_improvement": 35.0
+      },
+      "created_at": "2025-11-17T09:40:19.892338"
+    },
+    {
+      "pack_id": "pack_005",
+      "name": "Knowledge Pack 6",
+      "phase": "Control",
+      "metrics": {
+        "controls": 3,
+        "monitors": 3,
+        "validation_rules": 3,
+        "feedback_loops": 2
+      },
+      "created_at": "2025-11-17T09:40:19.892338"
+    }
+  ],
+  "created_at": "2025-11-17T09:40:19.892338"
+}
