@@ -1,0 +1,9 @@
+{
+  "environment": "staging",
+  "deployment_time": "2025-11-19T10:21:57.118436",
+  "integration_mode": "unified",
+  "iterations": 3,
+  "enable_agents": true,
+  "enable_convergence": true,
+  "enable_monitoring": true
+}
