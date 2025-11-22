@@ -533,7 +533,7 @@ class Phase1Define:
             traceback.print_exc()
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            return {
+            return False, {
                 'phase': 'DEFINE',
                 'iteration': iteration,
                 'timestamp': end_time.isoformat(),
@@ -554,20 +554,6 @@ class Phase1Define:
                 'changes': {},
                 'duration': 0.0
             }
-
-    def execute(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
-        """
-        Execute the phase and return (success, result_dict) as expected by orchestrator/tests.
-        
-        Args:
-            iteration: Current iteration number
-            
-        Returns:
-            Tuple of (success, result_dict)
-        """
-        result = self.run(iteration)
-        success = 'error' not in result
-        return (success, result)
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
         """
