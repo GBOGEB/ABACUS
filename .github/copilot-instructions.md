@@ -65,12 +65,9 @@ ABACUS/
 │   └── requirements.txt    # Python dependencies
 ├── local_mcp/              # MCP agents and orchestrator
 │   ├── agent_orchestrator_v3.0.py  # Main orchestrator
-│   └── agents/             # V2.3 optimized agents (6 agents)
+│   └── agents/             # V2.3 optimized agents (2 agents)
 ├── scripts/                # Utility scripts
-├── docs_versioned/         # Versioned documentation
-│   ├── handover/           # Handover documentation
-│   ├── v2.2_archived/      # V2.2 archive
-│   └── v2.3_active/        # Current V2.3 docs
+├── handover/               # Handover documentation and deployment guides
 ├── pytest.ini              # pytest configuration
 └── README.md               # Main documentation
 ```
@@ -196,7 +193,7 @@ When creating new files, respect the `.gitignore`:
 - Maintain CHANGELOG.md for version tracking
 
 ### Handover Documentation
-- Located in `docs_versioned/handover/`
+- Located in `handover/`
 - Structured, comprehensive documentation for new contributors
 - Include setup guides, architecture diagrams, and examples
 
@@ -264,7 +261,9 @@ python -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"
 ## Additional Resources
 
 - Main documentation: `README.md`
-- Version status: `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`
+- Project status: `PROJECT_STATUS_SUMMARY.md`
+- Implementation status: `DMAIC_V3_IMPLEMENTATION_STATUS.md`
+- Handover documentation: `handover/README.md`
 - GitHub setup: `GITHUB_SETUP.md`
 - Troubleshooting: `TROUBLESHOOTING.md`
 - Quick reference: `QUICK_REFERENCE.md`
