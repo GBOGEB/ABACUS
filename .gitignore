@@ -88,6 +88,10 @@ outputs/
 ~$*.pptx
 ~$*.pptm
 
+# Generated PowerPoint files (always regenerate from templates using the generator scripts)
+# Example: python slides/qplant_sckcen_template.py
+*.pptx
+
 # Large data files
 *.csv
 *.parquet
