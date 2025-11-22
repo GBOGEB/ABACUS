@@ -216,7 +216,7 @@ The script requires Python 3.8 or later and the `python-pptx` library.
 **Problem**: Changes to colors or fonts don't appear in the generated slides
 
 **Solution**:
-- Make sure you're editing the constants at the top of the file (lines 15-24)
+- Make sure you're editing the constants at the top of the file (lines 35-38)
 - RGB values must be in the range 0-255
 - Regenerate the template after making changes
 
