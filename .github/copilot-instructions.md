@@ -56,7 +56,7 @@ bash scripts/verify_workflows.sh
 ```
 ABACUS/
 ├── .github/
-│   ├── workflows/          # CI/CD pipelines (30+ workflows)
+│   ├── workflows/          # CI/CD pipelines (multiple workflows)
 │   ├── ISSUE_TEMPLATE.md   # Issue templates
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── DMAIC_V3/               # Core DMAIC V3 implementation
@@ -65,7 +65,7 @@ ABACUS/
 │   └── requirements.txt    # Python dependencies
 ├── local_mcp/              # MCP agents and orchestrator
 │   ├── agent_orchestrator_v3.0.py  # Main orchestrator
-│   └── agents/             # V2.3 optimized agents (2 agents)
+│   └── agents/             # V2.3 optimized agents
 ├── scripts/                # Utility scripts
 ├── handover/               # Handover documentation and deployment guides
 ├── pytest.ini              # pytest configuration
