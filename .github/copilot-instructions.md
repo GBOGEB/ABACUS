@@ -53,6 +53,8 @@ bash scripts/verify_workflows.sh
 
 ## Project Structure
 
+**Note:** This is a simplified view showing key directories and files. See the actual repository for the complete structure.
+
 ```
 ABACUS/
 ├── .github/
@@ -110,7 +112,7 @@ All agents follow the DMAIC (Define, Measure, Analyze, Improve, Control) pattern
 
 ### Version Naming
 
-- Agent files: `{name}_v{major}.{minor}_OPTIMIZED.py` (e.g., `analysis_cryo_dm_v2.3_OPTIMIZED.py`)
+- Agent files: `{name}_v{major}.{minor}_OPTIMIZED.py` (e.g., `documentation_framework_v2.3_OPTIMIZED.py`)
 - Version tags in code: `v{major}.{minor}.{patch}` (e.g., `v3.0.0`)
 - Documentation: Include version numbers in file names for clarity
 
@@ -135,7 +137,7 @@ All agents follow the DMAIC (Define, Measure, Analyze, Improve, Control) pattern
 ## CI/CD & GitHub Actions
 
 ### Workflows
-- **ci.yml:** Main CI pipeline (runs on all branches)
+- **ci.yml:** DMAIC V3 CI - Test System Bridge (runs on all branches)
 - **ci-abacus.yml:** ABACUS-specific tests
 - **format-check.yml:** Code formatting validation
 - **dow-*.yml:** DOW integration workflows
@@ -242,7 +244,7 @@ When creating new files, respect the `.gitignore`:
 ### Common Issues
 - **Import errors:** Check Python path and virtual environment
 - **Test failures:** Run with `-v` flag for verbose output
-- **Workflow failures:** Check `.github/workflows/README.md` for workflow documentation
+- **Workflow failures:** Check workflow files and CI logs
 - **Permission errors:** Ensure GitHub token has correct scopes
 
 ### Debug Commands
