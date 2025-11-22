@@ -88,6 +88,10 @@ outputs/
 ~$*.pptx
 ~$*.pptm
 
+# Generated PowerPoint files (regenerate from templates)
+*.pptx
+!*_template.pptx
+
 # Large data files
 *.csv
 *.parquet
