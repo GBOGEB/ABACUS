@@ -1,0 +1,112 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  ABACUS v2.1 - QUICK START REFERENCE                         ║
+║                     GitHub Sync & Azure Deployment                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: SYNC WITH GITHUB (EASIEST METHOD)
+═══════════════════════════════════════════════════════════════════════════════
+
+Run in PowerShell:
+    .\sync_github_simple.ps1
+
+This will automatically:
+✓ Add deployment files
+✓ Commit changes
+✓ Push to GitHub
+✓ Handle conflicts
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: INSTALL AZURE CLI (One-time setup)
+═══════════════════════════════════════════════════════════════════════════════
+
+winget install -e --id Microsoft.AzureCLI
+
+Or download from: https://aka.ms/installazurecliwindows
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: DEPLOY TO AZURE
+═══════════════════════════════════════════════════════════════════════════════
+
+# Login to Azure
+az login
+
+# Set your subscription
+az account set --subscription "YOUR_SUBSCRIPTION_NAME"
+
+# Create resource group
+az group create --name abacus-rg --location westeurope
+
+# Create container registry
+az acr create --resource-group abacus-rg --name abacusregistry --sku Basic
+
+# Build and push Docker image
+cd ABACUS_V21_DEPLOYMENT_PACKAGE
+az acr build --registry abacusregistry --image abacus:v2.1 .
+
+# Create container app environment
+az containerapp env create `
+  --name abacus-env `
+  --resource-group abacus-rg `
+  --location westeurope
+
+# Deploy container app
+az containerapp create `
+  --name abacus-app `
+  --resource-group abacus-rg `
+  --environment abacus-env `
+  --image abacusregistry.azurecr.io/abacus:v2.1 `
+  --target-port 8000 `
+  --ingress external `
+  --registry-server abacusregistry.azurecr.io `
+  --cpu 1.0 --memory 2.0Gi
+
+# Get the app URL
+az containerapp show `
+  --name abacus-app `
+  --resource-group abacus-rg `
+  --query properties.configuration.ingress.fqdn
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 4: VERIFY DEPLOYMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+# Check app status
+az containerapp show --name abacus-app --resource-group abacus-rg
+
+# View logs
+az containerapp logs show --name abacus-app --resource-group abacus-rg --tail 50
+
+# Test the endpoint
+curl https://YOUR_APP_URL/health
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+GitHub Sync Issues:
+  - If merge conflicts occur, the script will guide you
+  - Manually resolve conflicts in files, then run script again
+
+Azure Deployment Issues:
+  - Check logs: az containerapp logs show --name abacus-app --resource-group abacus-rg
+  - Verify image: az acr repository list --name abacusregistry
+  - Check app status: az containerapp show --name abacus-app --resource-group abacus-rg
+
+═══════════════════════════════════════════════════════════════════════════════
+DOCUMENTATION FILES
+═══════════════════════════════════════════════════════════════════════════════
+
+sync_github_simple.ps1              - Automated GitHub sync script
+POWERSHELL_GITHUB_AZURE_GUIDE.md    - Complete step-by-step guide
+DEPLOYMENT_READY_SUMMARY.md         - Full deployment summary
+ABACUS_V21_DEPLOYMENT_PACKAGE/      - Complete deployment package
+
+═══════════════════════════════════════════════════════════════════════════════
+REPOSITORY INFO
+═══════════════════════════════════════════════════════════════════════════════
+
+GitHub: https://github.com/GBOGEB/ABACUS.git
+Branch: main
+
+═══════════════════════════════════════════════════════════════════════════════
