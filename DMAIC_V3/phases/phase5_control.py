@@ -132,7 +132,7 @@ class Phase5Control:
                 'timestamp': datetime.now().isoformat(),
                 'input_source': str(phase4_file),
                 'quality_gates': quality_gates,
-                'validation_checkpoints': self._create_validation_checkpoints(quality_gates, iteration),
+                'validation_checkpoints': validation_checkpoints,
                 'controls': self._create_controls_summary(quality_gates),
                 'all_gates_passed': all_passed,
                 'gbogeb_enabled': self.use_gbogeb,
@@ -234,19 +234,14 @@ class Phase5Control:
         return checkpoints
     
     def _create_controls_summary(self, quality_gates: Dict) -> Dict:
-        """Create controls summary from quality gates"""
-        return {
+        """Create summary of controls based on quality gates"""
+        controls = {
             'total_gates': len(quality_gates),
-            'gates_passed': sum(1 for g in quality_gates.values() if g['passed']),
-            'gates_failed': sum(1 for g in quality_gates.values() if not g['passed']),
-            'gate_details': {
-                name: {
-                    'passed': gate['passed'],
-                    'message': gate['message']
-                }
-                for name, gate in quality_gates.items()
-            }
+            'passed': sum(1 for gate in quality_gates.values() if gate['passed']),
+            'failed': sum(1 for gate in quality_gates.values() if not gate['passed']),
+            'gates_details': quality_gates
         }
+        return controls
     
     def _create_skip_result(self, iteration: int, input_source: str = None) -> Dict:
         """Create result for skipped execution"""
