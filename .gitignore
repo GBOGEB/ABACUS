@@ -20,17 +20,14 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Virtual Environment
 venv/
-venv_*/
 ENV/
 env/
 .venv
 
-# Virtual Environments
-venv_dmaic_v3/
-temp_venv/
-
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -38,97 +35,61 @@ temp_venv/
 *~
 .DS_Store
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
-actions.json
-.mcp/
-
-# Deployment reports
-DMAIC_V3_OUTPUT/deployment_report.json
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
 
 # Logs
 *.log
 logs/
-*.log.*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Output directories
+ABACUS_V21_*/
+ABACUS_SESSION_ANALYSIS/
+output/
+reports/
+*.pdf
+*.json
+!requirements.json
+!package.json
 
 # Temporary files
-temp/
-temp_*/
-tmp/
 *.tmp
-*.temp
-.cache/
+*.bak
+*.swp
+temp/
+tmp/
 
-# Output directories (keep structure, ignore content)
-DMAIC_CANONICAL_DEEP_OUTPUT/
-DMAIC_CANONICAL_OUTPUT/
-DMAIC_CANONICAL_TEST/
-DMAIC_PRODUCTION_FULL/
-DMAIC_PRODUCTION_OUTPUT/
-DMAIC_SAMPLE_TEST/
-DMAIC_TEST_OUTPUT/
-DMAIC_TEST_SAMPLE/
-DMAIC_V2_OUTPUT/
-DMAIC_V2.3_ITERATION_*/
-smoke_test_outputs_*/
-output/
-outputs/
+# OS
+Thumbs.db
+.DS_Store
 
-# Excel temp files
-~$*.xlsx
-~$*.xlsm
-~$*.xls
-~$*.docx
-~$*.pptx
-~$*.pptm
+# Docker
+.dockerignore
 
-# Large data files
-*.csv
-*.parquet
-*.h5
-*.hdf5
-
-# Sensitive data
+# Secrets
+secrets/
 *.key
 *.pem
-*.env
-.env.*
-secrets/
-credentials/
+*.crt
+*.p12
 
-# OS files
-Thumbs.db
-desktop.ini
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
 # Backup files
-*.bak
 *.backup
-*_backup.*
-
-# Archives
-*.zip
-*.tar.gz
-*.rar
-*.7z
-
-# Keep important config files
-!deployment/*.yaml
-!deployment/*.yml
-!deployment/*.json
-!DMAIC_V3/**/*.py
-!DMAIC_V3/**/*.yaml
-!DMAIC_V3/**/*.json
-!DMAIC_V3/**/*.md
-
-# Keep documentation
-!*.md
-!docs/
-!README.md
-!DEPLOY_NOW.md
-!GITHUB_SETUP_GUIDE.md
+backup/
