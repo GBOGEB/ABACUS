@@ -169,7 +169,7 @@ class Phase2Measure:
                 'error': str(e)[:200]
             }
 
-    def execute(self, iteration: int) -> dict:
+    def execute(self, iteration: int) -> Tuple[bool, dict]:
         """
         Execute Phase 2: Measure
 
@@ -177,7 +177,7 @@ class Phase2Measure:
             iteration: Current iteration number
 
         Returns:
-            Dictionary with phase execution results
+            Tuple of (success: bool, results: dict) with phase execution results
         """
         try:
             print("="*80)
@@ -397,13 +397,13 @@ class Phase2Measure:
             print("="*80)
             print()
 
-            return results
+            return True, results
 
         except Exception as e:
             print(f"\n[X] Phase 2 failed: {e}")
             import traceback
             traceback.print_exc()
-            return {
+            return False, {
                 'phase': 'MEASURE',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),

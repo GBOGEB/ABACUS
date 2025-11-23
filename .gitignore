@@ -78,8 +78,22 @@ Thumbs.db
 # Docker
 .dockerignore
 
+<<<<<<< HEAD
 # Secrets
 secrets/
+=======
+# Generated PowerPoint files (always regenerate from templates using the generator scripts)
+# Example: python slides/qplant_sckcen_template.py
+*.pptx
+
+# Large data files
+*.csv
+*.parquet
+*.h5
+*.hdf5
+
+# Sensitive data
+>>>>>>> 1246535379fec46b70cda35854d925ccc325c441
 *.key
 *.pem
 *.crt
@@ -92,4 +106,31 @@ secrets/
 
 # Backup files
 *.backup
+<<<<<<< HEAD
 backup/
+=======
+*_backup.*
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Keep important config files
+!deployment/*.yaml
+!deployment/*.yml
+!deployment/*.json
+!DMAIC_V3/**/*.py
+!DMAIC_V3/**/*.yaml
+!DMAIC_V3/**/*.json
+!DMAIC_V3/**/*.md
+
+# Keep documentation
+!*.md
+!docs/
+!README.md
+!DEPLOY_NOW.md
+!GITHUB_SETUP_GUIDE.md
+maturity_assessment.json
+>>>>>>> 1246535379fec46b70cda35854d925ccc325c441
