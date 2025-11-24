@@ -1,0 +1,12 @@
+site:
+  title: ABACUS Project Docs
+  version: 1.0
+articles:
+  - content/about-subject.md
+  - content/how-to-task.md
+  - content/reference.md
+smoke_tested_repos:
+  - GBOGEB/ABACUS
+  - GBOGEB/CODEX
+  - GBOGEB/morris.js
+grouped_forks: true
