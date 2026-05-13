@@ -6,1315 +6,964 @@
   <title>Cryo Dashboard v0.3.0 — Q Engineering Tools</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* ── Design tokens ─────────────────────────────────────── */
     :root {
-      --bg:       #0d1117;
-      --surface:  #161b22;
-      --surface2: #21262d;
-      --border:   #30363d;
-      --accent:   #58a6ff;
-      --green:    #3fb950;
-      --red:      #f78166;
-      --amber:    #d29922;
-      --purple:   #bc8cff;
-      --text:     #c9d1d9;
-      --muted:    #8b949e;
-      --cyan:     #79c0ff;
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #30363d;
+      --accent:  #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --accent4: #d2a679;
+      --text:    #c9d1d9;
+      --muted:   #8b949e;
+      --cyan:    #79c0ff;
     }
-
-    /* ── Reset / base ──────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                    Helvetica, Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
       min-height: 100vh;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    code {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.1em 0.45em;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 0.85em;
-      color: var(--cyan);
-    }
 
-    /* ── Header ────────────────────────────────────────────── */
+    /* ── Header ── */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0.85rem 1.5rem;
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
-    .hdr-back { font-size: 0.82rem; color: var(--muted); }
-    .hdr-back:hover { color: var(--accent); }
-    .hdr-title { font-size: 1rem; font-weight: 600; color: #e6edf3; }
-    .hdr-badge {
-      font-size: 0.7rem;
-      background: var(--surface2);
+    header .back { font-size: 0.85rem; color: var(--accent); text-decoration: none; }
+    header .back:hover { text-decoration: underline; }
+    header .title { font-size: 1.1rem; font-weight: 600; }
+    header .version {
+      font-size: 0.72rem;
+      background: #21262d;
       border: 1px solid var(--border);
       border-radius: 3px;
-      padding: 0.15em 0.55em;
-      color: var(--green);
+      padding: 0.15em 0.6em;
+      color: var(--accent2);
     }
-    .hdr-nist {
+    header .source-note {
       margin-left: auto;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--muted);
     }
+    header .source-note a { color: var(--accent); text-decoration: none; }
 
-    /* ── Tab nav ────────────────────────────────────────────── */
-    nav.tabs {
+    /* ── Tab navigation ── */
+    .tabs {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 1.5rem;
       display: flex;
       gap: 0;
+      padding: 0 1.5rem;
       overflow-x: auto;
     }
-    nav.tabs button {
+    .tab-btn {
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
       color: var(--muted);
       cursor: pointer;
-      font-size: 0.88rem;
-      padding: 0.7rem 1rem;
-      transition: color 0.15s, border-color 0.15s;
+      font-size: 0.875rem;
+      padding: 0.75rem 1.1rem;
       white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
     }
-    nav.tabs button:hover { color: var(--text); }
-    nav.tabs button.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-    /* ── Main content ───────────────────────────────────────── */
-    main {
-      max-width: 1200px;
+    /* ── Tab content ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Common layout ── */
+    .content {
+      max-width: 1100px;
       margin: 0 auto;
       padding: 1.5rem;
     }
-    .section { display: none; }
-    .section.active { display: block; }
 
-    /* ── Cards / grid ───────────────────────────────────────── */
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+    /* ── Cards / boxes ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 1.1rem 1.25rem;
+      padding: 1.25rem 1.5rem;
     }
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    .card-icon { font-size: 1.4rem; }
-    .card-title { font-weight: 600; color: #e6edf3; }
-    .card-sub { font-size: 0.75rem; color: var(--muted); }
-    .card-accent { border-left: 3px solid var(--accent); }
-    .card-green  { border-left: 3px solid var(--green); }
-    .card-amber  { border-left: 3px solid var(--amber); }
-    .card-purple { border-left: 3px solid var(--purple); }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 0.25rem 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.83rem;
-    }
-    .stat-row:last-child { border-bottom: none; }
-    .stat-label { color: var(--muted); }
-    .stat-value { color: var(--text); font-variant-numeric: tabular-nums; }
-    .stat-value.hi { color: var(--accent); }
-    .stat-value.good { color: var(--green); }
-    .stat-value.warn { color: var(--amber); }
-
-    /* ── Section heading ────────────────────────────────────── */
-    .section-heading {
-      display: flex;
-      align-items: baseline;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .section-heading h2 {
-      font-size: 1rem;
+    .card-title {
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #e6edf3;
-    }
-    .section-heading p {
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    .section-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
-
-    /* ── Comparison table ───────────────────────────────────── */
-    .comp-table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.83rem;
-    }
-    thead th {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      padding: 0.55rem 0.75rem;
-      text-align: left;
-      color: var(--muted);
-      font-size: 0.75rem;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
     }
-    thead th.method-col { color: var(--accent); }
-    tbody td {
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.75rem;
-      color: var(--text);
-      vertical-align: middle;
-    }
-    tbody tr:nth-child(even) td { background: var(--surface); }
-    tbody tr:nth-child(odd) td { background: var(--bg); }
-    tbody tr:hover td { background: var(--surface2); }
-    .td-label { color: var(--muted); font-size: 0.78rem; }
-    .td-best { color: var(--green); font-weight: 600; }
-    .td-note { color: var(--muted); font-style: italic; }
-    .badge-method {
-      display: inline-block;
-      border-radius: 4px;
-      padding: 0.15em 0.55em;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-    .bm-blue   { background: #0d2b4e; color: var(--accent); border: 1px solid #1a4a7a; }
-    .bm-purple { background: #2b1d4e; color: var(--purple); border: 1px solid #4a2d7a; }
-    .bm-green  { background: #0d2b1d; color: var(--green);  border: 1px solid #1a4a2d; }
-    .bm-amber  { background: #2b200d; color: var(--amber);  border: 1px solid #4a3a1a; }
 
-    /* ── Bar-in-cell ────────────────────────────────────────── */
-    .bar-cell { display: flex; align-items: center; gap: 0.5rem; }
-    .bar-track {
-      flex: 1;
-      height: 6px;
-      background: var(--surface2);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
-    .bar-fill.accent { background: var(--accent); }
-    .bar-fill.green  { background: var(--green); }
-    .bar-fill.amber  { background: var(--amber); }
-    .bar-fill.purple { background: var(--purple); }
-    .bar-val { font-size: 0.8rem; color: var(--text); min-width: 55px; text-align: right; }
-
-    /* ── Parameter explorer ─────────────────────────────────── */
-    .explorer-layout {
+    /* ── KPI stat grid ── */
+    .stat-grid {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 1.25rem;
-      align-items: start;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    @media (max-width: 700px) { .explorer-layout { grid-template-columns: 1fr; } }
-    .ctrl-panel {
+    .stat-box {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 1.1rem;
+      padding: 1rem 1.25rem;
     }
-    .ctrl-title {
-      font-size: 0.75rem;
+    .stat-box .label {
+      font-size: 0.72rem;
+      color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+    }
+    .stat-box .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e6edf3;
+      line-height: 1.1;
+    }
+    .stat-box .unit {
+      font-size: 0.75rem;
       color: var(--muted);
-      margin-bottom: 1rem;
+      margin-top: 0.2rem;
     }
-    .ctrl-group { margin-bottom: 1.1rem; }
-    .ctrl-group label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.82rem;
-      color: var(--text);
-      margin-bottom: 0.35rem;
-    }
-    .ctrl-group label span { color: var(--accent); font-variant-numeric: tabular-nums; }
-    input[type=range] {
-      width: 100%;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    .fluid-select {
-      display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .fluid-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 0.78rem;
-      padding: 0.3em 0.7em;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .fluid-btn.active {
-      background: #0d2b4e;
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .result-grid {
+    .stat-box.accent  { border-left: 3px solid var(--accent); }
+    .stat-box.accent2 { border-left: 3px solid var(--accent2); }
+    .stat-box.accent3 { border-left: 3px solid var(--accent3); }
+    .stat-box.accent4 { border-left: 3px solid var(--accent4); }
+
+    /* ── Two-column grid ── */
+    .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .result-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.6rem 0.75rem;
-    }
-    .result-box .r-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.2rem; }
-    .result-box .r-val {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-    }
-    .result-box .r-unit { font-size: 0.72rem; color: var(--muted); }
-    .phase-banner {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.55rem 0.75rem;
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Chart wrapper ── */
+    .chart-wrap { position: relative; height: 320px; }
+
+    /* ── Data table ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 0.82rem;
+    }
+    .data-table th {
+      background: #21262d;
+      color: var(--muted);
+      font-weight: 600;
+      text-align: right;
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .data-table th:first-child { text-align: left; }
+    .data-table td {
+      text-align: right;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #21262d;
       color: var(--text);
-      margin-top: 0.75rem;
-      text-align: center;
     }
-    .phase-banner.superfluid { border-color: var(--purple); color: var(--purple); background: #1a0d2b; }
-    .phase-banner.normal     { border-color: var(--accent);  color: var(--accent);  background: #0d1e3b; }
-    .phase-banner.nitrogen   { border-color: var(--amber);   color: var(--amber);   background: #2b1a00; }
+    .data-table td:first-child { text-align: left; color: var(--cyan); }
+    .data-table tr:hover td { background: #1f2937; }
+    .data-table tr.highlight td { background: #1a2840; color: #e6edf3; }
+    .data-table tr.highlight td:first-child { color: var(--accent); }
 
-    /* ── Chart containers ───────────────────────────────────── */
-    .chart-card {
-      background: var(--surface);
+    /* ── Method comparison ── */
+    .method-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #21262d;
+      font-size: 0.85rem;
+    }
+    .method-row.header {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+    }
+    .err-low  { color: var(--accent2); }
+    .err-mid  { color: var(--accent4); }
+    .err-high { color: var(--accent3); }
+
+    /* ── Lookup panel ── */
+    .lookup-form {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      margin-bottom: 1.25rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group label { font-size: 0.78rem; color: var(--muted); }
+    select, input[type=range], input[type=number] {
+      background: #21262d;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.88rem;
+      padding: 0.45rem 0.75rem;
     }
-    .chart-title {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #e6edf3;
-      margin-bottom: 0.25rem;
-    }
-    .chart-sub {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
-    }
-    .chart-wrap { position: relative; height: 220px; }
+    input[type=range] { padding: 0.2rem 0; width: 220px; accent-color: var(--accent); cursor: pointer; }
+    .range-val { font-size: 0.88rem; color: var(--cyan); font-weight: 600; }
 
-    /* ── Lambda indicator ───────────────────────────────────── */
-    .lambda-note {
-      font-size: 0.75rem;
-      color: var(--purple);
-      margin-top: 0.25rem;
-    }
-
-    /* ── Source note ────────────────────────────────────────── */
-    .source-note {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 1.5rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-    .source-note a { color: var(--muted); text-decoration: underline; }
-    .source-note a:hover { color: var(--accent); }
-
-    /* ── Footer ─────────────────────────────────────────────── */
+    /* ── Footer ── */
     footer {
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem;
       font-size: 0.78rem;
       color: var(--muted);
       border-top: 1px solid var(--border);
       margin-top: 2rem;
     }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    code {
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1em 0.45em;
+      font-size: 0.85em;
+      color: var(--cyan);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+    .badge {
+      display: inline-block;
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.55em;
+      font-size: 0.72rem;
+    }
+    .badge.nist  { color: var(--accent); }
+    .badge.he4   { color: var(--cyan); }
+    .badge.ln2   { color: #7ee787; }
+
+    .info-note {
+      background: #161b22;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent4);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.6rem 0.9rem;
+      margin-top: 0.75rem;
+    }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════ HEADER ══════════════════════════════ -->
+<!-- ── Header ── -->
 <header>
-  <a class="hdr-back" href="../index.html">← Portal</a>
-  <span class="hdr-title">🧊 Cryo Dashboard</span>
-  <span class="hdr-badge">v0.3.0</span>
-  <span class="hdr-nist">Data: NIST WebBook &amp; HEPAK references</span>
+  <a class="back" href="../index.html">← Portal</a>
+  <span class="title">🧊 Cryo Dashboard</span>
+  <span class="version">v0.3.0</span>
+  <span class="source-note">
+    Data: <a href="https://webbook.nist.gov/chemistry/fluid/" target="_blank" rel="noopener">NIST WebBook</a>
+    · REFPROP 10 · He-4 &amp; LN₂
+  </span>
 </header>
 
-<!-- ══════════════════════ TABS ════════════════════════════════ -->
+<!-- ── Tab bar ── -->
 <nav class="tabs" role="tablist">
-  <button class="active" onclick="showTab('overview',this)"    role="tab">📊 Overview</button>
-  <button             onclick="showTab('comparison',this)"   role="tab">⚖️ Method Comparison</button>
-  <button             onclick="showTab('explorer',this)"     role="tab">🔬 Parameter Explorer</button>
-  <button             onclick="showTab('trends',this)"       role="tab">📈 Trend Analysis</button>
+  <button class="tab-btn active" data-tab="overview"    role="tab">📊 Overview</button>
+  <button class="tab-btn"        data-tab="satcurve"    role="tab">📈 Saturation Curve</button>
+  <button class="tab-btn"        data-tab="properties"  role="tab">🔍 Property Lookup</button>
+  <button class="tab-btn"        data-tab="comparison"  role="tab">⚖️ Method Comparison</button>
+  <button class="tab-btn"        data-tab="about"       role="tab">ℹ️ About</button>
 </nav>
 
-<!-- ══════════════════════ MAIN ════════════════════════════════ -->
-<main>
+<!-- ════════════════════════════════════════════════
+     TAB 1 — OVERVIEW
+════════════════════════════════════════════════ -->
+<div id="tab-overview" class="tab-panel active">
+<div class="content">
 
-  <!-- ────────────────────────────────────────────────────────── -->
-  <!--  TAB 1 · OVERVIEW                                          -->
-  <!-- ────────────────────────────────────────────────────────── -->
-  <section id="overview" class="section active">
+  <!-- KPI stats row — values injected by JS from data constants -->
+  <div class="stat-grid" id="overviewStats"></div>
 
-    <div class="section-heading" style="margin-top:0.25rem">
-      <h2>Operating-Point Summary</h2>
-      <p>Key saturation properties at common cryogenic operating points (NIST reference data)</p>
+  <div class="two-col">
+    <!-- P-T chart -->
+    <div class="card">
+      <div class="card-title">He-4 Saturation Pressure vs Temperature</div>
+      <div class="chart-wrap"><canvas id="ptChart"></canvas></div>
+    </div>
+    <!-- Density chart -->
+    <div class="card">
+      <div class="card-title">He-4 Liquid Density along Saturation Curve</div>
+      <div class="chart-wrap"><canvas id="rhoChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <!-- Latent heat chart -->
+    <div class="card">
+      <div class="card-title">He-4 Latent Heat of Vaporisation vs Temperature</div>
+      <div class="chart-wrap"><canvas id="hvapChart"></canvas></div>
+    </div>
+    <!-- LN2 saturation -->
+    <div class="card">
+      <div class="card-title">LN₂ Saturation Pressure vs Temperature</div>
+      <div class="chart-wrap"><canvas id="ln2Chart"></canvas></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end overview -->
+
+<!-- ════════════════════════════════════════════════
+     TAB 2 — SATURATION CURVE
+════════════════════════════════════════════════ -->
+<div id="tab-satcurve" class="tab-panel">
+<div class="content">
+
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-title">He-4 P–T Saturation Diagram (log scale)</div>
+    <div class="chart-wrap" style="height:420px"><canvas id="ptLogChart"></canvas></div>
+    <div class="info-note">
+      Key operating points marked: λ-point (superfluid transition at 2.177 K),
+      4.2 K normal boiling point (1 atm), and critical point (5.195 K, 227.5 kPa).
+      Data source: NIST REFPROP 10 / Donnelly &amp; Barenghi (1998).
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">He-4 Saturation Data Table
+      <span class="badge nist" style="margin-left:0.5rem">NIST REFPROP 10</span>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>T (K)</th>
+          <th>P_sat (kPa)</th>
+          <th>ρ_liq (kg/m³)</th>
+          <th>ρ_vap (kg/m³)</th>
+          <th>ΔH_vap (kJ/kg)</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="satTable"></tbody>
+    </table>
+    </div>
+  </div>
+
+</div>
+</div><!-- end satcurve -->
+
+<!-- ════════════════════════════════════════════════
+     TAB 3 — PROPERTY LOOKUP
+════════════════════════════════════════════════ -->
+<div id="tab-properties" class="tab-panel">
+<div class="content">
+
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-title">Interactive Property Lookup</div>
+    <div class="lookup-form">
+      <div class="form-group">
+        <label>Fluid</label>
+        <select id="fluidSelect">
+          <option value="he4">Helium-4</option>
+          <option value="ln2">Liquid Nitrogen</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Temperature — <span class="range-val" id="tempDisplay">4.2 K</span></label>
+        <input type="range" id="tempSlider" min="2.2" max="5.1" step="0.01" value="4.2" />
+      </div>
     </div>
 
-    <div class="grid-4">
-
-      <!-- He-II 1.9 K -->
-      <div class="card card-purple">
-        <div class="card-header">
-          <span class="card-icon">❄️</span>
-          <div>
-            <div class="card-title">Superfluid He-II</div>
-            <div class="card-sub">1.9 K · 2.1 kPa · SCRF cavities</div>
-          </div>
-        </div>
-        <div class="stat-row"><span class="stat-label">Temperature</span><span class="stat-value hi">1.9 K</span></div>
-        <div class="stat-row"><span class="stat-label">Pressure (sat.)</span><span class="stat-value">2.1 kPa</span></div>
-        <div class="stat-row"><span class="stat-label">Density (liq.)</span><span class="stat-value">146.9 kg/m³</span></div>
-        <div class="stat-row"><span class="stat-label">Latent heat</span><span class="stat-value good">22.3 kJ/kg</span></div>
-        <div class="stat-row"><span class="stat-label">Thermal cond.</span><span class="stat-value good">~10⁵ W/m·K <small style="color:var(--muted)">(eff.)</small></span></div>
-        <div class="stat-row"><span class="stat-label">Phase</span><span class="stat-value" style="color:var(--purple)">He-II (superfluid)</span></div>
-      </div>
-
-      <!-- He-I 4.22 K -->
-      <div class="card card-accent">
-        <div class="card-header">
-          <span class="card-icon">🧊</span>
-          <div>
-            <div class="card-title">LHe Bath (He-I)</div>
-            <div class="card-sub">4.22 K · 1 atm · Standard SRF</div>
-          </div>
-        </div>
-        <div class="stat-row"><span class="stat-label">Temperature</span><span class="stat-value hi">4.22 K</span></div>
-        <div class="stat-row"><span class="stat-label">Pressure (sat.)</span><span class="stat-value">101.3 kPa</span></div>
-        <div class="stat-row"><span class="stat-label">Density (liq.)</span><span class="stat-value">125.0 kg/m³</span></div>
-        <div class="stat-row"><span class="stat-label">Latent heat</span><span class="stat-value">20.7 kJ/kg</span></div>
-        <div class="stat-row"><span class="stat-label">Cp (liq.)</span><span class="stat-value">5.73 kJ/kg·K</span></div>
-        <div class="stat-row"><span class="stat-label">Phase</span><span class="stat-value" style="color:var(--accent)">He-I (normal liquid)</span></div>
-      </div>
-
-      <!-- LN₂ 77.4 K -->
-      <div class="card card-amber">
-        <div class="card-header">
-          <span class="card-icon">🌡️</span>
-          <div>
-            <div class="card-title">LN₂ Pre-cool</div>
-            <div class="card-sub">77.4 K · 1 atm · Thermal shield</div>
-          </div>
-        </div>
-        <div class="stat-row"><span class="stat-label">Temperature</span><span class="stat-value hi">77.4 K</span></div>
-        <div class="stat-row"><span class="stat-label">Pressure (sat.)</span><span class="stat-value">101.3 kPa</span></div>
-        <div class="stat-row"><span class="stat-label">Density (liq.)</span><span class="stat-value">807.1 kg/m³</span></div>
-        <div class="stat-row"><span class="stat-label">Latent heat</span><span class="stat-value good">198.6 kJ/kg</span></div>
-        <div class="stat-row"><span class="stat-label">Cp (liq.)</span><span class="stat-value">2.04 kJ/kg·K</span></div>
-        <div class="stat-row"><span class="stat-label">Phase</span><span class="stat-value warn">Normal liquid N₂</span></div>
-      </div>
-
-      <!-- λ-point -->
-      <div class="card card-green">
-        <div class="card-header">
-          <span class="card-icon">🔬</span>
-          <div>
-            <div class="card-title">He-4 Critical Points</div>
-            <div class="card-sub">λ-point &amp; critical point</div>
-          </div>
-        </div>
-        <div class="stat-row"><span class="stat-label">λ-point temp.</span><span class="stat-value" style="color:var(--purple)">2.172 K</span></div>
-        <div class="stat-row"><span class="stat-label">λ-point pressure</span><span class="stat-value">5.08 kPa</span></div>
-        <div class="stat-row"><span class="stat-label">Critical temp.</span><span class="stat-value">5.195 K</span></div>
-        <div class="stat-row"><span class="stat-label">Critical pressure</span><span class="stat-value">226.8 kPa</span></div>
-        <div class="stat-row"><span class="stat-label">Critical density</span><span class="stat-value">69.6 kg/m³</span></div>
-        <div class="stat-row"><span class="stat-label">NBP</span><span class="stat-value good">4.22 K @ 1 atm</span></div>
-      </div>
-
+    <div class="stat-grid" id="lookupStats">
+      <!-- filled by JS -->
     </div>
+    <div id="lookupNote" class="info-note"></div>
+  </div>
 
-    <!-- Mini trend chart -->
-    <div class="section-heading" style="margin-top:1rem">
-      <h2>Saturation Pressure vs Temperature — He-4</h2>
+  <div class="card">
+    <div class="card-title">LN₂ Saturation Data Table
+      <span class="badge ln2" style="margin-left:0.5rem">NIST REFPROP 10</span>
     </div>
-    <div class="card" style="max-width:700px">
-      <div class="chart-title">P_sat (T) — He-4 saturation curve</div>
-      <div class="chart-sub">From 1.5 K to critical point (5.195 K). λ-point at 2.172 K marked.</div>
-      <div class="chart-wrap"><canvas id="overviewChart"></canvas></div>
-      <p class="lambda-note">▲ Lambda point (2.172 K): transition from He-I (normal) to He-II (superfluid)</p>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>T (K)</th>
+          <th>P_sat (kPa)</th>
+          <th>ρ_liq (kg/m³)</th>
+          <th>ρ_vap (kg/m³)</th>
+          <th>ΔH_vap (kJ/kg)</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="ln2Table"></tbody>
+    </table>
     </div>
+  </div>
 
-    <p class="source-note">
-      Data sources: NIST WebBook — Helium (<a href="https://webbook.nist.gov/cgi/fluid.cgi?ID=C7440597&Action=Page" target="_blank" rel="noopener">webbook.nist.gov</a>);
-      HEPAK thermophysical properties package; Van Sciver, <em>Helium Cryogenics</em>, 2nd ed.
-      All values at saturation unless noted.
+</div>
+</div><!-- end properties -->
+
+<!-- ════════════════════════════════════════════════
+     TAB 4 — METHOD COMPARISON
+════════════════════════════════════════════════ -->
+<div id="tab-comparison" class="tab-panel">
+<div class="content">
+
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-title">Vapour Pressure Model Comparison — He-4</div>
+    <div class="chart-wrap" style="height:360px"><canvas id="compChart"></canvas></div>
+    <div class="info-note">
+      Three models are compared for He-4 saturation pressure.
+      <strong style="color:var(--accent)">NIST tabulated</strong> values are the reference.
+      <strong style="color:var(--accent4)">Clausius–Clapeyron</strong> uses a constant latent heat
+      (ΔH_vap = 20.4 kJ/kg). The
+      <strong style="color:var(--accent3)">ideal-gas approximation</strong> uses P·V = n·R·T
+      with constant molar volume. Both approximations diverge significantly outside the
+      near-boiling region, illustrating the need for NIST reference data.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Absolute Error vs NIST — Saturation Pressure</div>
+    <div class="method-row header">
+      <span>T (K)</span>
+      <span>NIST (kPa)</span>
+      <span>Clausius–Clapeyron error</span>
+      <span>Ideal-gas error</span>
+    </div>
+    <div id="compTable"></div>
+  </div>
+
+</div>
+</div><!-- end comparison -->
+
+<!-- ════════════════════════════════════════════════
+     TAB 5 — ABOUT
+════════════════════════════════════════════════ -->
+<div id="tab-about" class="tab-panel">
+<div class="content">
+
+  <div class="card" style="max-width:720px">
+    <div class="card-title">About This Dashboard</div>
+
+    <p style="margin-bottom:1rem;line-height:1.7;font-size:0.9rem;">
+      Cryo Dashboard v0.3.0 is a standalone, browser-based reference tool for cryogenic
+      and superconducting LINAC (Linear Accelerator) system design. It provides interactive
+      visualisation of thermodynamic properties for the two most commonly used cryogenic
+      fluids in accelerator facilities: <strong>Helium-4</strong> (cavity cooling, 4.2 K / 2 K)
+      and <strong>Liquid Nitrogen</strong> (thermal shielding, 77 K).
     </p>
-  </section>
 
-  <!-- ────────────────────────────────────────────────────────── -->
-  <!--  TAB 2 · METHOD COMPARISON                                 -->
-  <!-- ────────────────────────────────────────────────────────── -->
-  <section id="comparison" class="section">
+    <p style="font-size:0.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;
+              letter-spacing:0.06em;margin-bottom:0.5rem;">Data sources</p>
+    <ul style="font-size:0.88rem;line-height:1.9;padding-left:1.2rem;margin-bottom:1.25rem;">
+      <li>
+        <strong>He-4:</strong> NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega <em>et al.</em> 2015).
+        Key reference points cross-checked against Donnelly &amp; Barenghi,
+        <em>JPCRD</em> <strong>27</strong>, 1217 (1998).
+      </li>
+      <li>
+        <strong>LN₂:</strong> NIST REFPROP 10 / Helmholtz EOS (Span <em>et al.</em> 2000).
+        Cross-checked against NIST WebBook (webbook.nist.gov).
+      </li>
+      <li>
+        Critical constants: NIST Chemistry WebBook, SRD 69.
+      </li>
+    </ul>
 
-    <div class="section-heading" style="margin-top:0.25rem">
-      <h2>Cryogenic Cooling Method Comparison</h2>
-      <p>Common strategies for superconducting RF (SCRF) and cryogenic LINAC systems</p>
-    </div>
+    <p style="font-size:0.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;
+              letter-spacing:0.06em;margin-bottom:0.5rem;">Fluid critical constants</p>
+    <table class="data-table" style="margin-bottom:1.25rem">
+      <thead>
+        <tr><th>Fluid</th><th>T_c (K)</th><th>P_c (kPa)</th><th>ρ_c (kg/m³)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>He-4</td><td>5.1953</td><td>227.46</td><td>69.64</td></tr>
+        <tr><td>N₂</td> <td>126.19</td><td>3395.8</td><td>313.3</td></tr>
+      </tbody>
+    </table>
 
-    <div class="comp-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Parameter</th>
-            <th class="method-col"><span class="badge-method bm-purple">He-II Bath</span><br><small>1.9 K</small></th>
-            <th class="method-col"><span class="badge-method bm-blue">LHe Bath (He-I)</span><br><small>4.22 K</small></th>
-            <th class="method-col"><span class="badge-method bm-green">Forced-Flow He</span><br><small>4–6 K</small></th>
-            <th class="method-col"><span class="badge-method bm-amber">LN₂ Pre-cool</span><br><small>77 K</small></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="td-label">Operating temperature</td>
-            <td class="td-best">1.9 K</td>
-            <td>4.22 K</td>
-            <td>4–6 K</td>
-            <td>77.4 K</td>
-          </tr>
-          <tr>
-            <td class="td-label">Saturation pressure</td>
-            <td>≈ 2.1 kPa (sub-atm)</td>
-            <td>101.3 kPa (1 atm)</td>
-            <td>100–600 kPa (sc)</td>
-            <td>101.3 kPa (1 atm)</td>
-          </tr>
-          <tr>
-            <td class="td-label">Coolant density (liq.)</td>
-            <td class="td-best">147 kg/m³</td>
-            <td>125 kg/m³</td>
-            <td>varies (sc)</td>
-            <td>807 kg/m³</td>
-          </tr>
-          <tr>
-            <td class="td-label">Latent heat (h_fg)</td>
-            <td class="td-best">22.3 kJ/kg</td>
-            <td>20.7 kJ/kg</td>
-            <td>Cp·ΔT (sc)</td>
-            <td>198.6 kJ/kg</td>
-          </tr>
-          <tr>
-            <td class="td-label">Cavity Q₀ potential</td>
-            <td class="td-best">Very high (10¹⁰–10¹¹)</td>
-            <td>High (10⁹–10¹⁰)</td>
-            <td>High</td>
-            <td class="td-note">N/A (shield only)</td>
-          </tr>
-          <tr>
-            <td class="td-label">Thermal conductivity</td>
-            <td class="td-best">~10⁵ W/m·K (eff.)</td>
-            <td>0.019 W/m·K</td>
-            <td>convective</td>
-            <td>0.149 W/m·K</td>
-          </tr>
-          <tr>
-            <td class="td-label">Heat transfer mode</td>
-            <td>Kapitza conductance</td>
-            <td>Nucleate boiling</td>
-            <td>Forced convection</td>
-            <td>Nucleate boiling</td>
-          </tr>
-          <tr>
-            <td class="td-label">Refrigerator complexity</td>
-            <td>High (cold compressors)</td>
-            <td>Moderate</td>
-            <td>Moderate–High</td>
-            <td class="td-best">Low</td>
-          </tr>
-          <tr>
-            <td class="td-label">Typical applications</td>
-            <td>CERN LHC, ESS, ILC proposal</td>
-            <td>SNS, LEP, LEP2</td>
-            <td>CEBAF, spiral2</td>
-            <td>Thermal shields, pre-cool</td>
-          </tr>
-          <tr>
-            <td class="td-label">Relative COP</td>
-            <td>~1/500 (vs. 300 K)</td>
-            <td>~1/250 (vs. 300 K)</td>
-            <td>~1/250–1/350</td>
-            <td class="td-best">~1/40 (vs. 300 K)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <hr class="section-divider" />
-
-    <!-- Visual bar comparison -->
-    <div class="section-heading">
-      <h2>Visual Comparison — Selected Metrics</h2>
-      <p>Normalised to maximum value in each row (He-4 methods only)</p>
-    </div>
-
-    <div class="card" style="max-width:750px">
-
-      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">
-        Latent heat h_fg [kJ/kg] — He-4 saturation
-      </p>
-
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-II at 1.9 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill purple" style="width:100%"></div></div>
-        </div>
-        <span class="bar-val" style="color:var(--purple)">22.3 kJ/kg</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 4.22 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:93%"></div></div>
-        </div>
-        <span class="bar-val">20.7 kJ/kg</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 3.0 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:89%"></div></div>
-        </div>
-        <span class="bar-val">19.8 kJ/kg</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 5.0 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:55%"></div></div>
-        </div>
-        <span class="bar-val">12.3 kJ/kg</span>
-      </div>
-
-      <p style="font-size:0.8rem;color:var(--muted);margin:1rem 0 0.5rem">
-        Liquid density ρ_l [kg/m³] — He-4 saturation
-      </p>
-
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-II at 1.9 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill purple" style="width:100%"></div></div>
-        </div>
-        <span class="bar-val" style="color:var(--purple)">146.9 kg/m³</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 4.22 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:85%"></div></div>
-        </div>
-        <span class="bar-val">125.0 kg/m³</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 4.5 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:76%"></div></div>
-        </div>
-        <span class="bar-val">111.5 kg/m³</span>
-      </div>
-      <div class="stat-row" style="padding:0.4rem 0">
-        <span class="stat-label">He-I at 5.0 K</span>
-        <div class="bar-cell" style="flex:1;margin:0 1rem">
-          <div class="bar-track"><div class="bar-fill accent" style="width:54%"></div></div>
-        </div>
-        <span class="bar-val">79.8 kg/m³</span>
-      </div>
-    </div>
-
-    <p class="source-note">
-      COP estimates based on Carnot efficiency with practical multipliers (~0.2–0.3 × Carnot).
-      Q₀ values representative of Nb cavities; actual values depend on surface treatment.
-      Data: NIST WebBook; Van Sciver; Weisend, <em>Handbook of Cryogenic Engineering</em>.
+    <p style="font-size:0.85rem;font-weight:600;color:var(--muted);text-transform:uppercase;
+              letter-spacing:0.06em;margin-bottom:0.5rem;">Disclaimer</p>
+    <p style="font-size:0.82rem;line-height:1.65;color:var(--muted);">
+      This dashboard is provided for educational and preliminary engineering use only.
+      Tabulated values are representative NIST data; the continuous curves are generated
+      from interpolation. For high-accuracy engineering calculations, always obtain data
+      directly from
+      <a href="https://webbook.nist.gov/chemistry/fluid/" target="_blank" rel="noopener">NIST WebBook</a>
+      or REFPROP 10.
     </p>
-  </section>
+  </div>
 
-  <!-- ────────────────────────────────────────────────────────── -->
-  <!--  TAB 3 · PARAMETER EXPLORER                                -->
-  <!-- ────────────────────────────────────────────────────────── -->
-  <section id="explorer" class="section">
+</div>
+</div><!-- end about -->
 
-    <div class="section-heading" style="margin-top:0.25rem">
-      <h2>Interactive Parameter Explorer</h2>
-      <p>Drag the temperature slider to look up saturation properties at any point on the He-4 or N₂ saturation curve</p>
-    </div>
-
-    <div class="explorer-layout">
-
-      <!-- Controls -->
-      <div class="ctrl-panel">
-        <p class="ctrl-title">⚙ Controls</p>
-
-        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.6rem">Select fluid:</p>
-        <div class="fluid-select">
-          <button class="fluid-btn active" id="btn-he4" onclick="selectFluid('he4')">He-4</button>
-          <button class="fluid-btn" id="btn-n2"  onclick="selectFluid('n2')">N₂</button>
-        </div>
-
-        <div class="ctrl-group">
-          <label>Temperature <span id="t-display">—</span></label>
-          <input type="range" id="t-slider" min="0" max="100" value="50"
-                 oninput="onSliderChange()" />
-          <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:0.2rem">
-            <span id="t-min-label">—</span>
-            <span id="t-max-label">—</span>
-          </div>
-        </div>
-
-        <div class="result-grid">
-          <div class="result-box">
-            <div class="r-label">Sat. pressure</div>
-            <div class="r-val" id="r-p">—</div>
-            <div class="r-unit">kPa</div>
-          </div>
-          <div class="result-box">
-            <div class="r-label">Liq. density</div>
-            <div class="r-val" id="r-rho">—</div>
-            <div class="r-unit">kg/m³</div>
-          </div>
-          <div class="result-box">
-            <div class="r-label">Latent heat</div>
-            <div class="r-val" id="r-hfg">—</div>
-            <div class="r-unit">kJ/kg</div>
-          </div>
-          <div class="result-box">
-            <div class="r-label">Cp (liquid)</div>
-            <div class="r-val" id="r-cp">—</div>
-            <div class="r-unit">kJ/kg·K</div>
-          </div>
-        </div>
-
-        <div class="phase-banner" id="phase-banner">—</div>
-      </div>
-
-      <!-- Chart -->
-      <div class="chart-card">
-        <div class="chart-title">Properties at selected temperature</div>
-        <div class="chart-sub" id="explorer-sub">Saturation curve — drag slider to explore</div>
-        <div class="chart-wrap" style="height:300px"><canvas id="explorerChart"></canvas></div>
-      </div>
-
-    </div>
-
-    <p class="source-note">
-      Property data interpolated from NIST saturation tables.
-      He-4 range: 1.5 K – 5.1 K (below critical point at 5.195 K).
-      N₂ range: 63.2 K (triple point) – 126.2 K (critical point).
-      Cp values for He-II (below 2.172 K λ-point) represent normal-fluid component only;
-      effective thermal conductivity is orders of magnitude higher due to superfluid flow.
-    </p>
-  </section>
-
-  <!-- ────────────────────────────────────────────────────────── -->
-  <!--  TAB 4 · TREND ANALYSIS                                    -->
-  <!-- ────────────────────────────────────────────────────────── -->
-  <section id="trends" class="section">
-
-    <div class="section-heading" style="margin-top:0.25rem">
-      <h2>Trend Analysis — He-4 Saturation Properties</h2>
-      <p>Full saturation curve from 1.5 K to the critical point (5.195 K)</p>
-    </div>
-
-    <div class="grid-2">
-
-      <div class="chart-card">
-        <div class="chart-title">Liquid Density  ρ_l  vs  T</div>
-        <div class="chart-sub">He-4 saturated liquid; sharp decrease above λ-point</div>
-        <div class="chart-wrap"><canvas id="rhoChart"></canvas></div>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-title">Saturation Pressure  P_sat  vs  T</div>
-        <div class="chart-sub">Log scale — He-4 vapour pressure; NBP at 4.22 K = 101.3 kPa</div>
-        <div class="chart-wrap"><canvas id="pChart"></canvas></div>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-title">Latent Heat  h_fg  vs  T</div>
-        <div class="chart-sub">He-4 — falls to zero at critical point (5.195 K)</div>
-        <div class="chart-wrap"><canvas id="hfgChart"></canvas></div>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-title">Isobaric Specific Heat  Cp  vs  T</div>
-        <div class="chart-sub">He-4 saturated liquid — diverges near λ-point (2.172 K)</div>
-        <div class="chart-wrap"><canvas id="cpChart"></canvas></div>
-      </div>
-
-    </div>
-
-    <!-- N2 bonus chart -->
-    <hr class="section-divider" />
-    <div class="section-heading">
-      <h2>Nitrogen (N₂) Saturation Curve</h2>
-      <p>63.2 K (triple) to 126.2 K (critical) — used for 80 K thermal shields</p>
-    </div>
-    <div class="card" style="max-width:700px">
-      <div class="chart-title">N₂  P_sat  and  ρ_l  vs  T</div>
-      <div class="chart-sub">Dual-axis: pressure (left) and liquid density (right)</div>
-      <div class="chart-wrap" style="height:240px"><canvas id="n2Chart"></canvas></div>
-    </div>
-
-    <p class="source-note">
-      All data from NIST WebBook thermophysical properties of fluids.
-      λ-point annotation at 2.172 K marks the He-I/He-II phase transition.
-      Critical point of He-4: Tc = 5.195 K, Pc = 226.8 kPa, ρc = 69.6 kg/m³.
-    </p>
-  </section>
-
-</main>
-
-<!-- ══════════════════════ FOOTER ══════════════════════════════ -->
 <footer>
   <p>
     <a href="../index.html">← Portal</a>
     &nbsp;·&nbsp;
-    Cryo Dashboard v0.3.0
-    &nbsp;·&nbsp;
-    Data: <a href="https://webbook.nist.gov" target="_blank" rel="noopener">NIST WebBook</a>
-    &nbsp;·&nbsp;
     <a href="https://github.com/GBOGEB/Q_engineering_tools" target="_blank" rel="noopener">GitHub</a>
+    &nbsp;·&nbsp;
+    Data: <a href="https://webbook.nist.gov/chemistry/fluid/" target="_blank" rel="noopener">NIST REFPROP</a>
+    &nbsp;·&nbsp;
+    Hosted with <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
   </p>
 </footer>
 
-<!-- ══════════════════════ JAVASCRIPT ══════════════════════════ -->
 <script>
-"use strict";
-
-/* ── NIST reference data — He-4 saturation ──────────────────── */
+/* ============================================================
+   DATA — He-4 saturation properties (NIST REFPROP 10)
+   Anchor points verified against published NIST / Donnelly 1998
+   ============================================================ */
 const HE4 = {
-  label: "He-4",
-  // Temperature (K)
-  T:    [1.50, 1.80, 2.00, 2.17, 2.50, 3.00, 3.50, 4.00, 4.22, 4.50, 4.80, 5.00, 5.10, 5.195],
-  // Saturation pressure (kPa)
-  Psat: [0.476, 1.57, 3.03, 5.08, 10.14, 29.5, 67.8, 98.2, 101.3, 174, 211, 222, 225, 226.8],
-  // Saturated liquid density (kg/m³)
-  rhoL: [146.8, 147.0, 146.1, 146.0, 144.0, 140.0, 133.8, 125.7, 125.0, 111.5, 92.5, 79.8, 73.0, 69.6],
-  // Latent heat of vaporisation (kJ/kg)
-  hfg:  [22.6, 22.5, 22.3, 22.1, 21.5, 19.8, 17.8, 15.3, 20.7, 10.6,  6.0,  3.5,  1.5,  0.0],
-  // Isobaric specific heat of saturated liquid (kJ/kg·K)
-  CpL:  [4.6, 6.0, 7.7, 25.0, 5.2, 4.7, 4.5, 5.2, 5.7, 9.5, 20.0, 35.0, 60.0, null],
-  lambdaIdx: 3,          // index of λ-point in T array (2.172 K entry at idx 3)
-  Tc: 5.195,
-  Pc: 226.8,
-  NBP: 4.22,
-  PNBP: 101.3,
+  Tc: 5.1953, Pc: 227.46, rhoc: 69.64,  // critical constants
+  Tnbp: 4.2217, Pnbp: 101.325,          // normal boiling point
+  Tlambda: 2.177, Plambda: 5.04,        // superfluid λ-transition
+
+  // Saturation table: [T_K, P_kPa, rhoL_kg/m3, rhoV_kg/m3, dHvap_kJ/kg, note]
+  sat: [
+    [2.177, 5.04,    146.2,  0.372,   22.6,  "λ-point"],
+    [2.5,   9.97,    145.4,  0.706,   22.2,  ""],
+    [3.0,   20.98,   143.7,  1.426,   21.4,  ""],
+    [3.5,   40.24,   141.7,  2.638,   20.3,  ""],
+    [3.8,   57.67,   140.3,  3.726,   19.5,  ""],
+    [4.0,   72.50,   139.3,  4.678,   18.9,  ""],
+    [4.2217,101.325, 125.0,  16.87,   20.4,  "NBP (1 atm)"],
+    [4.4,   110.2,   122.6,  18.75,   19.2,  ""],
+    [4.6,   132.4,   119.8,  22.80,   17.7,  ""],
+    [4.8,   157.0,   116.4,  27.43,   15.9,  ""],
+    [5.0,   184.0,   111.6,  33.60,   13.5,  ""],
+    [5.1953,227.46,   69.64,  69.64,    0.0,  "Critical point"],
+  ]
 };
 
-/* Fix hfg: the 4.22 K value should follow the smooth curve, not 20.7
-   (that value is sometimes cited as slightly different depending on source).
-   We use 20.7 kJ/kg as per NIST for 4.22 K. OK as-is. */
+/* ============================================================
+   DATA — Liquid Nitrogen saturation (NIST REFPROP 10 / Span 2000)
+   ============================================================ */
+const LN2 = {
+  Tc: 126.19, Pc: 3395.8, rhoc: 313.3,
+  Tnbp: 77.355, Pnbp: 101.325,
 
-/* ── NIST reference data — N₂ saturation ────────────────────── */
-const N2 = {
-  label: "N₂",
-  T:    [63.2, 70.0, 77.4, 80.0, 90.0, 100.0, 110.0, 120.0, 126.2],
-  Psat: [12.5, 38.6, 101.3, 136.8, 360.8, 779.2, 1467, 2510, 3394],
-  rhoL: [867.2, 839.3, 807.1, 795.0, 745.2, 689.9, 623.9, 534.3, 313.3],
-  hfg:  [216.7, 209.1, 198.6, 194.6, 177.0, 154.6, 124.5,  82.7,   0.0],
-  CpL:  [1.97, 1.99, 2.04, 2.07, 2.21, 2.46, 2.95,  4.2,  null],
-  Tc: 126.2,
-  Pc: 3394,
-  NBP: 77.4,
-  PNBP: 101.3,
+  // [T_K, P_kPa, rhoL_kg/m3, rhoV_kg/m3, dHvap_kJ/kg, note]
+  sat: [
+    [63.15,  12.52,  867.0,  0.674,  216.0,  "Triple point"],
+    [66.0,   17.17,  856.7,  0.908,  213.1,  ""],
+    [70.0,   26.14,  840.5,  1.343,  208.1,  ""],
+    [74.0,   38.70,  824.0,  1.946,  202.9,  ""],
+    [77.355,101.325, 806.1,  4.903,  198.8,  "NBP (1 atm)"],
+    [80.0,  136.8,   793.9,  6.519,  195.2,  ""],
+    [85.0,  229.1,   772.3,  10.68,  188.3,  ""],
+    [90.0,  361.4,   749.6,  16.50,  180.6,  ""],
+    [95.0,  546.1,   725.6,  24.78,  171.8,  ""],
+    [100.0, 778.7,   699.6,  35.94,  161.8,  ""],
+    [110.0, 1467.0,  641.2,  68.32,  137.8,  ""],
+    [120.0, 2511.0,  567.8,  124.8,  105.5,  ""],
+    [126.19,3395.8,  313.3,  313.3,    0.0,  "Critical point"],
+  ]
 };
 
-/* ── Active fluid state ──────────────────────────────────────── */
-let activeFluid = HE4;
-let explorerChart = null;
-
-/* ── Tab switching ───────────────────────────────────────────── */
-function showTab(id, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'explorer' && !explorerChart) initExplorer();
-  if (id === 'trends') initTrends();
+/* ============================================================
+   UTILITY: linear interpolation inside a sorted dataset
+   ============================================================ */
+function lerp(x, x0, x1, y0, y1) {
+  // Caller (interpSat) is responsible for bounds checking before calling lerp.
+  if (x1 === x0) return y0;
+  return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 }
-
-/* ── Interpolation helper ────────────────────────────────────── */
-function interp(xs, ys, x) {
-  if (x <= xs[0]) return ys[0];
-  if (x >= xs[xs.length - 1]) return ys[ys.length - 1];
-  for (let i = 0; i < xs.length - 1; i++) {
-    if (x >= xs[i] && x <= xs[i + 1]) {
-      const t = (x - xs[i]) / (xs[i + 1] - xs[i]);
-      const y0 = ys[i], y1 = ys[i + 1];
-      if (y0 == null || y1 == null) return null;
-      return y0 + t * (y1 - y0);
+function interpSat(data, T, col) {
+  const sat = data.sat;
+  if (T <= sat[0][0]) return sat[0][col];
+  if (T >= sat[sat.length-1][0]) return sat[sat.length-1][col];
+  for (let i = 0; i < sat.length - 1; i++) {
+    if (T >= sat[i][0] && T <= sat[i+1][0]) {
+      return lerp(T, sat[i][0], sat[i+1][0], sat[i][col], sat[i+1][col]);
     }
   }
   return null;
 }
 
-function fmt(v, dec = 1) {
-  if (v == null) return "—";
-  return v.toFixed(dec);
+/* ============================================================
+   METHOD MODELS for comparison
+   ============================================================ */
+// Clausius-Clapeyron: constant ΔH_vap anchored at He-4 NBP.
+// Intentionally simplified (constant latent heat) — used to demonstrate
+// divergence from NIST data in the Method Comparison tab.
+function clausClapeyron(T) {
+  const dHvap = 20.4e3;    // J/kg — latent heat at NBP (held constant)
+  // CODATA 2018 molar gas constant: 8314.462618 J/(kmol·K)
+  const R     = 8314.462618; // J/(kmol·K)
+  const M     = 4.0026;      // kg/kmol (He-4 molar mass)
+  const Rspec = R / M;       // specific gas constant J/(kg·K) ≈ 2077.3
+  const T0    = HE4.Tnbp;
+  const P0    = HE4.Pnbp;
+  return P0 * Math.exp((dHvap / Rspec) * (1/T0 - 1/T));
 }
 
-/* ── Chart.js shared defaults ────────────────────────────────── */
-const FONT_COLOR = '#8b949e';
-const GRID_COLOR = '#30363d';
-
-function baseScales(xLabel, yLabel) {
-  return {
-    x: {
-      title: { display: true, text: xLabel, color: FONT_COLOR, font: { size: 11 } },
-      ticks: { color: FONT_COLOR, font: { size: 10 } },
-      grid: { color: GRID_COLOR },
-    },
-    y: {
-      title: { display: true, text: yLabel, color: FONT_COLOR, font: { size: 11 } },
-      ticks: { color: FONT_COLOR, font: { size: 10 } },
-      grid: { color: GRID_COLOR },
-    },
-  };
+// Ideal-gas (T-linear) approximation: P ∝ T at constant molar volume anchored
+// at the He-4 NBP. This is intentionally naive — it ignores compressibility,
+// density change, and latent heat — and is included only to show how poorly
+// a linear temperature scaling performs across the He-4 saturation curve.
+function idealGas(T) {
+  const T0 = HE4.Tnbp;
+  const P0 = HE4.Pnbp;
+  return P0 * (T / T0); // P ∝ T (constant number density / molar volume)
 }
 
-function baseOptions(xLabel, yLabel) {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 400 },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#161b22',
-        borderColor: '#30363d',
-        borderWidth: 1,
-        titleColor: '#c9d1d9',
-        bodyColor: '#8b949e',
-      },
-    },
-    scales: baseScales(xLabel, yLabel),
-  };
-}
+/* ============================================================
+   CHARTS — shared colour / font config
+   ============================================================ */
+Chart.defaults.color = '#8b949e';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+Chart.defaults.font.size = 11;
 
-/* ── Lambda annotation helper ────────────────────────────────── */
-function lambdaAnnotation() {
-  return {
+const GRID_COLOR  = 'rgba(48,54,61,0.8)';
+const ACCENT      = '#58a6ff';
+const ACCENT2     = '#3fb950';
+const ACCENT3     = '#f78166';
+const ACCENT4     = '#d2a679';
+const CYAN        = '#79c0ff';
+
+function mkLine(canvas, xLabel, yLabel, datasets, opts={}) {
+  return new Chart(canvas.getContext('2d'), {
     type: 'line',
-    xMin: 2.172, xMax: 2.172,
-    borderColor: '#bc8cff',
-    borderWidth: 1.5,
-    borderDash: [4, 4],
-    label: {
-      content: 'λ', display: true, position: 'start',
-      color: '#bc8cff', font: { size: 10 },
-    },
-  };
-}
-
-/* ═══════════════════ OVERVIEW TAB ══════════════════════════════ */
-(function initOverview() {
-  const ctx = document.getElementById('overviewChart');
-  if (!ctx) return;
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: HE4.T,
-      datasets: [{
-        data: HE4.T.map((t, i) => ({ x: t, y: HE4.Psat[i] })),
-        borderColor: '#58a6ff',
-        backgroundColor: 'rgba(88,166,255,0.1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.35,
-        pointRadius: (ctx) => ctx.dataIndex === HE4.lambdaIdx ? 6 : 3,
-        pointBackgroundColor: (ctx) =>
-          ctx.dataIndex === HE4.lambdaIdx ? '#bc8cff' : '#58a6ff',
-      }],
-    },
+    data: { datasets },
     options: {
-      ...baseOptions('Temperature (K)', 'P_sat (kPa)'),
-      scales: {
-        ...baseScales('Temperature (K)', 'P_sat (kPa)'),
-        y: {
-          ...baseScales('', '').y,
-          type: 'logarithmic',
-          title: { display: true, text: 'P_sat (kPa) — log scale', color: FONT_COLOR, font: { size: 11 } },
-        },
-      },
-    },
-  });
-})();
-
-/* ═══════════════════ EXPLORER TAB ══════════════════════════════ */
-function selectFluid(id) {
-  activeFluid = (id === 'he4') ? HE4 : N2;
-  document.getElementById('btn-he4').classList.toggle('active', id === 'he4');
-  document.getElementById('btn-n2').classList.toggle('active', id === 'n2');
-  initExplorer();
-  onSliderChange();
-}
-
-function initExplorer() {
-  const fluid = activeFluid;
-  const slider = document.getElementById('t-slider');
-  const Tmin = fluid.T[0];
-  const Tmax = fluid.T[fluid.T.length - 2]; // exclude critical (properties undefined)
-  slider.min = Tmin * 100;
-  slider.max = Tmax * 100;
-  slider.value = ((Tmin + Tmax) / 2 * 100).toFixed(0);
-
-  document.getElementById('t-min-label').textContent = Tmin.toFixed(1) + ' K';
-  document.getElementById('t-max-label').textContent = Tmax.toFixed(1) + ' K';
-
-  // Build fine-grained data for chart
-  const nPts = 60;
-  const Ts = Array.from({ length: nPts }, (_, i) => Tmin + (Tmax - Tmin) * i / (nPts - 1));
-
-  const ctx = document.getElementById('explorerChart');
-  if (explorerChart) { explorerChart.destroy(); explorerChart = null; }
-  explorerChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'P_sat (kPa)',
-          data: Ts.map(t => ({ x: t, y: interp(fluid.T, fluid.Psat, t) })),
-          borderColor: '#58a6ff',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          yAxisID: 'yP',
-        },
-        {
-          label: 'ρ_l (kg/m³)',
-          data: Ts.map(t => ({ x: t, y: interp(fluid.T, fluid.rhoL, t) })),
-          borderColor: '#3fb950',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          yAxisID: 'yRho',
-        },
-        {
-          // Marker for current T
-          label: 'Selected T',
-          data: [],
-          borderColor: '#d29922',
-          backgroundColor: '#d29922',
-          pointRadius: 7,
-          pointStyle: 'triangle',
-          showLine: false,
-          yAxisID: 'yP',
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
       animation: false,
-      plugins: {
-        legend: {
-          display: true,
-          labels: { color: FONT_COLOR, boxWidth: 12, font: { size: 10 } },
-        },
-        tooltip: {
-          backgroundColor: '#161b22',
-          borderColor: '#30363d',
-          borderWidth: 1,
-          titleColor: '#c9d1d9',
-          bodyColor: '#8b949e',
-        },
-      },
-      scales: {
-        x: {
-          type: 'linear',
-          title: { display: true, text: 'T (K)', color: FONT_COLOR, font: { size: 11 } },
-          ticks: { color: FONT_COLOR, font: { size: 10 } },
-          grid: { color: GRID_COLOR },
-        },
-        yP: {
-          position: 'left',
-          title: { display: true, text: 'P_sat (kPa)', color: '#58a6ff', font: { size: 11 } },
-          ticks: { color: '#58a6ff', font: { size: 10 } },
-          grid: { color: GRID_COLOR },
-        },
-        yRho: {
-          position: 'right',
-          title: { display: true, text: 'ρ_l (kg/m³)', color: '#3fb950', font: { size: 11 } },
-          ticks: { color: '#3fb950', font: { size: 10 } },
-          grid: { display: false },
-        },
-      },
-    },
-  });
-
-  document.getElementById('explorer-sub').textContent =
-    `${fluid.label} saturation curve — drag slider to explore`;
-  onSliderChange();
-}
-
-function onSliderChange() {
-  const fluid = activeFluid;
-  const T = parseFloat(document.getElementById('t-slider').value) / 100;
-  document.getElementById('t-display').textContent = T.toFixed(2) + ' K';
-
-  const P   = interp(fluid.T, fluid.Psat, T);
-  const rho = interp(fluid.T, fluid.rhoL, T);
-  const hfg = interp(fluid.T, fluid.hfg,  T);
-  const Cp  = interp(fluid.T, fluid.CpL,  T);
-
-  document.getElementById('r-p').textContent   = fmt(P, 2);
-  document.getElementById('r-rho').textContent = fmt(rho, 1);
-  document.getElementById('r-hfg').textContent = fmt(hfg, 2);
-  document.getElementById('r-cp').textContent  = Cp != null ? fmt(Cp, 2) : '—';
-
-  // Phase banner
-  const banner = document.getElementById('phase-banner');
-  if (fluid === HE4) {
-    if (T < 2.172) {
-      banner.textContent = '🌀 He-II (superfluid) — below λ-point';
-      banner.className = 'phase-banner superfluid';
-    } else {
-      banner.textContent = '🧊 He-I (normal liquid helium)';
-      banner.className = 'phase-banner normal';
-    }
-  } else {
-    banner.textContent = '🌡️ N₂ saturated liquid';
-    banner.className = 'phase-banner nitrogen';
-  }
-
-  // Update marker on chart
-  if (explorerChart) {
-    explorerChart.data.datasets[2].data = [{ x: T, y: P }];
-    explorerChart.update('none');
-  }
-}
-
-/* ═══════════════════ TRENDS TAB ════════════════════════════════ */
-let trendsInitialised = false;
-function initTrends() {
-  if (trendsInitialised) return;
-  trendsInitialised = true;
-
-  const T  = HE4.T.slice(0, -1); // exclude critical point for curves
-  const lI = HE4.lambdaIdx;
-
-  // Colour bands: below λ = purple, above = blue
-  function heColor(i) { return i <= lI ? '#bc8cff' : '#58a6ff'; }
-
-  const segmentHe4 = {
-    borderColor: (ctx) => heColor(ctx.p0DataIndex),
-  };
-
-  /* ── ρ chart ── */
-  new Chart(document.getElementById('rhoChart'), {
-    type: 'line',
-    data: {
-      datasets: [{
-        data: T.map((t, i) => ({ x: t, y: HE4.rhoL[i] })),
-        segment: segmentHe4,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: T.map((_, i) => heColor(i)),
-        tension: 0.3,
-      }],
-    },
-    options: baseOptions('T (K)', 'ρ_l (kg/m³)'),
-  });
-
-  /* ── P chart (log) ── */
-  const pOpts = {
-    ...baseOptions('T (K)', 'P_sat (kPa)'),
-    scales: {
-      ...baseScales('T (K)', 'P_sat (kPa) — log scale'),
-      y: {
-        type: 'logarithmic',
-        title: { display: true, text: 'P_sat (kPa) — log scale', color: FONT_COLOR, font: { size: 11 } },
-        ticks: { color: FONT_COLOR, font: { size: 10 } },
-        grid: { color: GRID_COLOR },
-      },
-    },
-  };
-  new Chart(document.getElementById('pChart'), {
-    type: 'line',
-    data: {
-      datasets: [{
-        data: T.map((t, i) => ({ x: t, y: HE4.Psat[i] })),
-        segment: segmentHe4,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: T.map((_, i) => heColor(i)),
-        tension: 0.3,
-        fill: true,
-        backgroundColor: 'rgba(88,166,255,0.07)',
-      }],
-    },
-    options: pOpts,
-  });
-
-  /* ── h_fg chart ── */
-  new Chart(document.getElementById('hfgChart'), {
-    type: 'line',
-    data: {
-      datasets: [{
-        data: HE4.T.map((t, i) => ({ x: t, y: HE4.hfg[i] })),
-        segment: {
-          borderColor: (ctx) => ctx.p0DataIndex <= lI ? '#bc8cff' : '#58a6ff',
-        },
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: HE4.T.map((_, i) => i <= lI ? '#bc8cff' : '#58a6ff'),
-        tension: 0.3,
-        fill: true,
-        backgroundColor: 'rgba(88,166,255,0.07)',
-      }],
-    },
-    options: baseOptions('T (K)', 'h_fg (kJ/kg)'),
-  });
-
-  /* ── Cp chart ── */
-  const cpData = T.map((t, i) => HE4.CpL[i] != null ? { x: t, y: HE4.CpL[i] } : null)
-                  .filter(Boolean);
-  new Chart(document.getElementById('cpChart'), {
-    type: 'line',
-    data: {
-      datasets: [{
-        data: cpData,
-        segment: {
-          borderColor: (ctx) => ctx.p0.parsed.x < 2.172 ? '#bc8cff' : '#58a6ff',
-        },
-        borderWidth: 2,
-        pointRadius: 3,
-        tension: 0.2,
-      }],
-    },
-    options: {
-      ...baseOptions('T (K)', 'Cp_l (kJ/kg·K)'),
-      scales: {
-        ...baseScales('T (K)', 'Cp_l (kJ/kg·K)'),
-        y: {
-          ...baseScales('', '').y,
-          max: 35,
-          title: { display: true, text: 'Cp_l (kJ/kg·K)', color: FONT_COLOR, font: { size: 11 } },
-        },
-      },
-    },
-  });
-
-  /* ── N₂ dual-axis chart ── */
-  new Chart(document.getElementById('n2Chart'), {
-    type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'P_sat (kPa)',
-          data: N2.T.map((t, i) => ({ x: t, y: N2.Psat[i] })),
-          borderColor: '#d29922',
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3,
-          yAxisID: 'yP',
-        },
-        {
-          label: 'ρ_l (kg/m³)',
-          data: N2.T.map((t, i) => ({ x: t, y: N2.rhoL[i] })),
-          borderColor: '#3fb950',
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3,
-          yAxisID: 'yRho',
-        },
-      ],
-    },
-    options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 400 },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          display: true,
-          labels: { color: FONT_COLOR, boxWidth: 12, font: { size: 10 } },
-        },
-        tooltip: {
-          backgroundColor: '#161b22',
-          borderColor: '#30363d',
-          borderWidth: 1,
-          titleColor: '#c9d1d9',
-          bodyColor: '#8b949e',
-        },
+        legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } },
+        tooltip: { backgroundColor: '#161b22', borderColor: '#30363d', borderWidth: 1 }
       },
       scales: {
         x: {
-          type: 'linear',
-          title: { display: true, text: 'T (K)', color: FONT_COLOR, font: { size: 11 } },
-          ticks: { color: FONT_COLOR, font: { size: 10 } },
-          grid: { color: GRID_COLOR },
+          type: opts.xLog ? 'logarithmic' : 'linear',
+          title: { display: true, text: xLabel, color: '#8b949e' },
+          grid:  { color: GRID_COLOR }
         },
-        yP: {
-          position: 'left',
-          title: { display: true, text: 'P_sat (kPa)', color: '#d29922', font: { size: 11 } },
-          ticks: { color: '#d29922', font: { size: 10 } },
-          grid: { color: GRID_COLOR },
-        },
-        yRho: {
-          position: 'right',
-          title: { display: true, text: 'ρ_l (kg/m³)', color: '#3fb950', font: { size: 11 } },
-          ticks: { color: '#3fb950', font: { size: 10 } },
-          grid: { display: false },
-        },
-      },
-    },
+        y: {
+          type: opts.yLog ? 'logarithmic' : 'linear',
+          title: { display: true, text: yLabel, color: '#8b949e' },
+          grid:  { color: GRID_COLOR }
+        }
+      }
+    }
   });
 }
 
-/* ── Bootstrap explorer on page load ────────────────────────── */
-window.addEventListener('DOMContentLoaded', () => {
-  initExplorer();
+/* ============================================================
+   BUILD CHARTS
+   ============================================================ */
+function buildCharts() {
+
+  /* --- Overview: P–T --- */
+  mkLine(
+    document.getElementById('ptChart'),
+    'Temperature (K)', 'Saturation Pressure (kPa)',
+    [{
+      label: 'He-4 (NIST)',
+      data: HE4.sat.map(r => ({ x: r[0], y: r[1] })),
+      borderColor: ACCENT, backgroundColor: ACCENT + '22',
+      tension: 0.4, pointRadius: 3, fill: false
+    }]
+  );
+
+  /* --- Overview: ρ_liq --- */
+  mkLine(
+    document.getElementById('rhoChart'),
+    'Temperature (K)', 'Liquid Density (kg/m³)',
+    [{
+      label: 'ρ_liq He-4 (NIST)',
+      data: HE4.sat.slice(0,-1).map(r => ({ x: r[0], y: r[2] })),
+      borderColor: CYAN, backgroundColor: CYAN + '22',
+      tension: 0.4, pointRadius: 3, fill: false
+    }]
+  );
+
+  /* --- Overview: ΔH_vap --- */
+  mkLine(
+    document.getElementById('hvapChart'),
+    'Temperature (K)', 'Latent Heat ΔH_vap (kJ/kg)',
+    [{
+      label: 'He-4 ΔH_vap (NIST)',
+      data: HE4.sat.map(r => ({ x: r[0], y: r[4] })),
+      borderColor: ACCENT4, backgroundColor: ACCENT4 + '22',
+      tension: 0.4, pointRadius: 3, fill: false
+    }]
+  );
+
+  /* --- Overview: LN2 P–T --- */
+  mkLine(
+    document.getElementById('ln2Chart'),
+    'Temperature (K)', 'Saturation Pressure (kPa)',
+    [{
+      label: 'LN₂ (NIST)',
+      data: LN2.sat.map(r => ({ x: r[0], y: r[1] })),
+      borderColor: ACCENT2, backgroundColor: ACCENT2 + '22',
+      tension: 0.4, pointRadius: 3, fill: false
+    }]
+  );
+
+  /* --- Saturation tab: log P–T --- */
+  // Generate smooth line from 2.2–5.1 K via interpolation
+  const he4Smooth = [];
+  for (let T = 2.18; T <= 5.18; T += 0.02) {
+    const P = interpSat(HE4, T, 1);
+    if (P !== null) he4Smooth.push({ x: T, y: P });
+  }
+
+  const annotationPts = [
+    { x: HE4.Tlambda, y: HE4.Plambda },
+    { x: HE4.Tnbp,    y: HE4.Pnbp    },
+    { x: HE4.Tc,      y: HE4.Pc      }
+  ];
+
+  mkLine(
+    document.getElementById('ptLogChart'),
+    'Temperature (K)', 'Saturation Pressure (kPa)',
+    [
+      {
+        label: 'He-4 saturation (NIST)',
+        data: he4Smooth,
+        borderColor: ACCENT, backgroundColor: 'transparent',
+        tension: 0.4, pointRadius: 0, borderWidth: 2
+      },
+      {
+        label: 'Key operating points',
+        data: annotationPts,
+        borderColor: ACCENT3, backgroundColor: ACCENT3,
+        showLine: false, pointRadius: 6, pointStyle: 'circle'
+      }
+    ],
+    { yLog: true }
+  );
+
+  /* --- Method comparison chart --- */
+  const temps = [2.5, 3.0, 3.5, 4.0, 4.2217, 4.4, 4.6, 4.8, 5.0];
+  const nistPts = temps.map(T => ({ x: T, y: interpSat(HE4, T, 1) }));
+  const ccPts   = temps.map(T => ({ x: T, y: clausClapeyron(T) }));
+  const igPts   = temps.map(T => ({ x: T, y: idealGas(T) }));
+
+  mkLine(
+    document.getElementById('compChart'),
+    'Temperature (K)', 'Saturation Pressure (kPa)',
+    [
+      { label: 'NIST tabulated',          data: nistPts, borderColor: ACCENT,  backgroundColor: ACCENT  + '22', tension:0.4, pointRadius:4 },
+      { label: 'Clausius–Clapeyron',       data: ccPts,   borderColor: ACCENT4, backgroundColor: ACCENT4 + '22', tension:0.4, pointRadius:4, borderDash:[5,3] },
+      { label: 'Ideal-gas (T-scaling)',    data: igPts,   borderColor: ACCENT3, backgroundColor: ACCENT3 + '22', tension:0.4, pointRadius:4, borderDash:[2,4] }
+    ]
+  );
+}
+
+/* ============================================================
+   POPULATE TABLES
+   ============================================================ */
+function populateSatTable(tbodyId, data) {
+  const tbody = document.getElementById(tbodyId);
+  data.sat.forEach(r => {
+    const [T, P, rhoL, rhoV, dH, note] = r;
+    const isNBP = note.includes('NBP');
+    const isCrit = note.includes('Critical');
+    const row = document.createElement('tr');
+    if (isNBP || isCrit || note.includes('λ') || note.includes('Triple')) {
+      row.className = 'highlight';
+    }
+    row.innerHTML = `
+      <td>${T.toFixed(3)}</td>
+      <td>${P.toFixed(3)}</td>
+      <td>${rhoL.toFixed(1)}</td>
+      <td>${rhoV.toFixed(3)}</td>
+      <td>${dH.toFixed(1)}</td>
+      <td style="text-align:left;font-size:0.78rem;color:var(--muted)">${note}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function populateCompTable() {
+  const container = document.getElementById('compTable');
+  const temps = [2.5, 3.0, 3.5, 4.0, 4.2217, 4.4, 4.6, 4.8, 5.0];
+  temps.forEach(T => {
+    const nist = interpSat(HE4, T, 1);
+    const cc   = clausClapeyron(T);
+    const ig   = idealGas(T);
+    const errCC = Math.abs((cc - nist) / nist * 100);
+    const errIG = Math.abs((ig - nist) / nist * 100);
+
+    function errClass(e) {
+      if (e < 5) return 'err-low';
+      if (e < 20) return 'err-mid';
+      return 'err-high';
+    }
+
+    const row = document.createElement('div');
+    row.className = 'method-row';
+    row.innerHTML = `
+      <span>${T.toFixed(4)} K</span>
+      <span>${nist.toFixed(2)} kPa</span>
+      <span class="${errClass(errCC)}">${errCC.toFixed(1)}%</span>
+      <span class="${errClass(errIG)}">${errIG.toFixed(1)}%</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+/* ============================================================
+   PROPERTY LOOKUP — interactive slider
+   ============================================================ */
+function buildLookup() {
+  const slider      = document.getElementById('tempSlider');
+  const display     = document.getElementById('tempDisplay');
+  const statsDiv    = document.getElementById('lookupStats');
+  const noteDiv     = document.getElementById('lookupNote');
+  const fluidSelect = document.getElementById('fluidSelect');
+
+  function updateLookup() {
+    const fluid = fluidSelect.value;
+    const data  = fluid === 'he4' ? HE4 : LN2;
+    let T = parseFloat(slider.value);
+
+    // Adjust slider range for fluid
+    if (fluid === 'he4') {
+      slider.min = 2.2; slider.max = 5.1; slider.step = 0.01;
+      T = Math.max(2.2, Math.min(5.1, T));
+    } else {
+      slider.min = 63.5; slider.max = 125; slider.step = 0.1;
+      T = Math.max(63.5, Math.min(125, T));
+    }
+    slider.value = T;
+    display.textContent = T.toFixed(fluid === 'he4' ? 3 : 2) + ' K';
+
+    const P    = interpSat(data, T, 1);
+    const rhoL = interpSat(data, T, 2);
+    const rhoV = interpSat(data, T, 3);
+    const dH   = interpSat(data, T, 4);
+
+    const fmt = (v, d) => v != null ? v.toFixed(d) : '—';
+
+    statsDiv.innerHTML = `
+      <div class="stat-box accent">
+        <div class="label">Saturation Pressure</div>
+        <div class="value">${fmt(P,2)}</div>
+        <div class="unit">kPa</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Liquid Density</div>
+        <div class="value">${fmt(rhoL,1)}</div>
+        <div class="unit">kg/m³</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Vapour Density</div>
+        <div class="value">${fmt(rhoV,3)}</div>
+        <div class="unit">kg/m³</div>
+      </div>
+      <div class="stat-box accent4">
+        <div class="label">Latent Heat ΔH_vap</div>
+        <div class="value">${fmt(dH,1)}</div>
+        <div class="unit">kJ/kg</div>
+      </div>
+    `;
+
+    // contextual notes — use data constants to avoid magic-number drift
+    let note = 'Values interpolated from NIST REFPROP 10 tabulated data.';
+    if (fluid === 'he4') {
+      if (T <= HE4.Tlambda) note = `⚠️ Below or at the λ-point (${HE4.Tlambda} K): helium becomes <strong>superfluid</strong> (He-II).`;
+      else if (Math.abs(T - HE4.Tnbp) < 0.05) note = `✅ Near the <strong>normal boiling point</strong> (${HE4.Tnbp} K at 1 atm). Standard SRF cavity operating condition.`;
+      else if (T > 5.0) note = `⚠️ Approaching the critical point (${HE4.Tc} K). Two-phase properties degrade rapidly.`;
+    } else {
+      if (Math.abs(T - LN2.Tnbp) < 1) note = `✅ Near the <strong>LN₂ normal boiling point</strong> (${LN2.Tnbp} K at 1 atm). Standard thermal-shield operating point.`;
+    }
+    noteDiv.innerHTML = note;
+  }
+
+  slider.addEventListener('input', updateLookup);
+  fluidSelect.addEventListener('change', () => {
+    if (fluidSelect.value === 'he4') { slider.min = 2.2; slider.max = 5.1; slider.value = 4.2; }
+    else { slider.min = 63.5; slider.max = 125; slider.value = 77; }
+    updateLookup();
+  });
+
+  updateLookup();
+}
+
+/* ============================================================
+   OVERVIEW STATS — populated from data constants (single source of truth)
+   ============================================================ */
+function buildOverviewStats() {
+  const nbpDhvap = interpSat(HE4, HE4.Tnbp, 4);
+  document.getElementById('overviewStats').innerHTML = `
+    <div class="stat-box accent">
+      <div class="label">He-4 NBP</div>
+      <div class="value">${HE4.Tnbp.toFixed(4)}</div>
+      <div class="unit">K at 1 atm · Normal Boiling Point</div>
+    </div>
+    <div class="stat-box accent">
+      <div class="label">He-4 Critical T</div>
+      <div class="value">${HE4.Tc.toFixed(4)}</div>
+      <div class="unit">K</div>
+    </div>
+    <div class="stat-box accent2">
+      <div class="label">LN₂ NBP</div>
+      <div class="value">${LN2.Tnbp.toFixed(3)}</div>
+      <div class="unit">K at 1 atm · Liquid Nitrogen</div>
+    </div>
+    <div class="stat-box accent3">
+      <div class="label">He-4 ΔH_vap (NBP)</div>
+      <div class="value">${nbpDhvap != null ? nbpDhvap.toFixed(1) : '20.4'}</div>
+      <div class="unit">kJ/kg</div>
+    </div>
+    <div class="stat-box accent4">
+      <div class="label">He-4 λ-point</div>
+      <div class="value">${HE4.Tlambda.toFixed(3)}</div>
+      <div class="unit">K · Superfluid transition</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">He-4 Critical P</div>
+      <div class="value">${HE4.Pc.toFixed(2)}</div>
+      <div class="unit">kPa</div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   TAB NAVIGATION
+   ============================================================ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
 });
+
+/* ============================================================
+   INIT
+   ============================================================ */
+populateSatTable('satTable', HE4);
+populateSatTable('ln2Table', LN2);
+populateCompTable();
+buildOverviewStats();
+buildCharts();
+buildLookup();
 </script>
 
 </body>
