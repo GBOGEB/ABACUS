@@ -19,6 +19,8 @@ Further reading:
 - [About ABACUS and its role](content/about-subject.md)
 - [Performing the main tasks: workflows and smoke tests](content/how-to-task.md)
 - [Reference — configuration and terms](content/reference.md)
+- [HTML entry page](index.html)
+- [System dashboard](dashboard.html)
 
 ## Multi-repo site pattern
 
