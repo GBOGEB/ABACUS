@@ -130,9 +130,9 @@ jobs:
                 if $is_merged_into_base; then
                   should_delete=true
                   reason="fully merged into ${BASE}"
-                elif [[ "$last_ts" -lt "$STALE_CUTOFF" ]]; then
+                elif [[ "$last_ts" -lt "$STALE_CUTOFF" && "$pr_state" != OPEN* ]]; then
                   should_delete=true
-                  reason="stale (${age_days}d old), ${ahead} unique commits"
+                  reason="stale (${age_days}d old), ${ahead} unique commits, PR not open"
                 fi
                 ;;
               all-closed-prs)
