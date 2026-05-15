@@ -19,6 +19,8 @@ Further reading:
 - [About ABACUS and its role](content/about-subject.md)
 - [Performing the main tasks: workflows and smoke tests](content/how-to-task.md)
 - [Reference — configuration and terms](content/reference.md)
+- [HTML entry page](index.html)
+- [System dashboard](dashboard.html)
 
 ## Multi-repo site pattern
 
@@ -26,7 +28,7 @@ This documentation site presents a grouped structure, with content from forked o
 
 ## Manifest, README, and packaging
 
-- Site manifest: [manifest.yml](../manifest.yml)
+- Site manifest: [manifest.yml](manifest.yml)
 - Packaging: use the Makefile at repo root to produce a zip that contains docs/ and the patch file.
 
 ---

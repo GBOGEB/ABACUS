@@ -11,6 +11,11 @@ from typing import Dict, List, Any
 import sys
 import re
 
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR / "src"))
+from dmaic.contract import ensure_contract
+from dmaic import idempotency
+
 class DOWKnowledgeExtractor:
     """Agent to extract knowledge from JSON files"""
     
@@ -23,6 +28,15 @@ class DOWKnowledgeExtractor:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+
+            data = ensure_contract(
+                data,
+                iteration=int(data.get("metadata", {}).get("iteration", 0)),
+                phase=data.get("metadata", {}).get("phase", "unknown"),
+                version=data.get("metadata", {}).get("version", "3.3.0"),
+                generator=self.__class__.__name__,
+                input_hash=idempotency.hash_json(data),
+            )
             
             patterns = self._discover_patterns(data)
             insights = self._generate_insights(data)
@@ -38,6 +52,7 @@ class DOWKnowledgeExtractor:
             }
             
             data['knowledge_gain'] = knowledge_gain
+            data['idempotency']['output_hash'] = idempotency.hash_json(data)
             
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)

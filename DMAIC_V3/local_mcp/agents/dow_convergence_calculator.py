@@ -10,6 +10,11 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import sys
 
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR / "src"))
+from dmaic.contract import ensure_contract
+from dmaic import idempotency
+
 class DOWConvergenceCalculator:
     """Agent to calculate convergence metrics"""
     
@@ -28,6 +33,15 @@ class DOWConvergenceCalculator:
                 with open(previous_file, 'r', encoding='utf-8') as f:
                     previous_data = json.load(f)
             
+            current_data = ensure_contract(
+                current_data,
+                iteration=int(current_data.get("metadata", {}).get("iteration", 0)),
+                phase=current_data.get("metadata", {}).get("phase", "unknown"),
+                version=current_data.get("metadata", {}).get("version", "3.3.0"),
+                generator=self.__class__.__name__,
+                input_hash=idempotency.hash_json(current_data),
+            )
+
             quality_score = self._calculate_quality_score(current_data)
             completeness = self._calculate_completeness(current_data)
             improvement = self._calculate_improvement(current_data, previous_data)
@@ -42,6 +56,7 @@ class DOWConvergenceCalculator:
             }
             
             current_data['convergence_metrics'] = convergence_metrics
+            current_data['idempotency']['output_hash'] = idempotency.hash_json(current_data)
             
             with open(current_file, 'w', encoding='utf-8') as f:
                 json.dump(current_data, f, indent=2)
