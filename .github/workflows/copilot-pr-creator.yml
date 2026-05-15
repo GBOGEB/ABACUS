@@ -1,4 +1,11 @@
 name: Copilot Branch PR Creator
+# Reusable workflow — call via workflow_call or trigger manually via workflow_dispatch.
+# To call from another workflow:
+#   uses: GBOGEB/ABACUS/.github/workflows/copilot-pr-creator.yml@main
+#   with:
+#     branch_pattern: "feature/*"
+#     base_branch: "main"
+#     dry_run: "false"
 
 on:
   workflow_dispatch:
@@ -26,6 +33,43 @@ on:
         description: "Minimum number of unique commits a branch must have (default: 1)"
         required: false
         default: "1"
+      skip_no_base:
+        description: "Skip branches with no shared history with base (default: true)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+  # Reusable via workflow_call — same inputs usable from any calling workflow
+  workflow_call:
+    inputs:
+      branch_pattern:
+        description: "Glob pattern for branches (e.g. 'copilot/*' or 'feature/*')"
+        required: false
+        default: "copilot/*"
+        type: string
+      base_branch:
+        description: "Target base branch for PRs"
+        required: false
+        default: "main"
+        type: string
+      dry_run:
+        description: "Dry run mode ('true'/'false')"
+        required: false
+        default: "true"
+        type: string
+      min_ahead:
+        description: "Min unique commits ahead of base"
+        required: false
+        default: "1"
+        type: string
+      skip_no_base:
+        description: "Skip branches with no shared history ('true'/'false')"
+        required: false
+        default: "true"
+        type: string
 
 permissions:
   contents: read
@@ -47,6 +91,7 @@ jobs:
           PATTERN: ${{ inputs.branch_pattern }}
           DRY_RUN: ${{ inputs.dry_run }}
           MIN_AHEAD: ${{ inputs.min_ahead }}
+          SKIP_NO_BASE: ${{ inputs.skip_no_base }}
         run: |
           set -euo pipefail
 
@@ -57,6 +102,7 @@ jobs:
           echo "  Pattern      : ${PATTERN}"
           echo "  Dry run      : ${DRY_RUN}"
           echo "  Min ahead    : ${MIN_AHEAD}"
+          echo "  Skip no-base : ${SKIP_NO_BASE}"
           echo ""
 
           created=0
@@ -75,6 +121,16 @@ jobs:
               $PATTERN) ;;  # matches
               *) continue ;;
             esac
+
+            # Skip branches with no shared history if requested
+            if [[ "${SKIP_NO_BASE}" == "true" ]]; then
+              merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+              if [[ -z "$merge_base" ]]; then
+                echo "SKIP (no shared history with ${BASE}): ${branch}"
+                (( skipped++ )) || true
+                continue
+              fi
+            fi
 
             # Count unique commits ahead of base
             ahead=$(git rev-list --count "origin/${BASE}..${remote}" 2>/dev/null || echo 0)
