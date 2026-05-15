@@ -10,6 +10,11 @@ from pathlib import Path
 from typing import Dict, List, Any
 import sys
 
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR / "src"))
+from dmaic.contract import ensure_contract
+from dmaic import idempotency
+
 class DOWRecursiveHooksInjector:
     """Agent to inject recursive hooks into JSON files"""
     
@@ -63,12 +68,28 @@ class DOWRecursiveHooksInjector:
                 'feeds_into': []
             })
             
+            input_hash = idempotency.hash_json(data)
+            data = ensure_contract(
+                data,
+                iteration=iteration,
+                phase=data.get("metadata", {}).get("phase", "unknown"),
+                version=data.get("metadata", {}).get("version", "3.3.0"),
+                generator=self.__class__.__name__,
+                input_hash=input_hash,
+                version_history=self._get_version_history(data),
+            )
             data['recursive_hooks'] = {
                 'consumed_from': dependencies['consumed_from'],
                 'feeds_into': dependencies['feeds_into'],
                 'iteration_lineage': self._get_iteration_lineage(iteration),
-                'version_history': self._get_version_history(file_path)
+                'version_history': self._get_version_history(data)
             }
+            data['lineage']['parent_artifacts'] = dependencies['consumed_from']
+            data['lineage']['iteration_lineage'] = self._get_iteration_lineage(iteration)
+            data['lineage']['version_history'] = self._get_version_history(data)
+            data['lineage']['updated_at'] = datetime.now().isoformat()
+            data['idempotency']['input_hash'] = input_hash
+            data['idempotency']['output_hash'] = idempotency.hash_json(data)
             
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
@@ -98,9 +119,24 @@ class DOWRecursiveHooksInjector:
         """Get iteration lineage"""
         return list(range(0, current_iteration + 1))
     
-    def _get_version_history(self, file_path: Path) -> List[str]:
-        """Get version history"""
-        return ['3.2.0', '3.3.0']
+    def _get_version_history(self, data: Dict[str, Any]) -> List[str]:
+        """Get dynamic version history from current payload/repo."""
+        versions: List[str] = []
+        metadata = data.get("metadata", {})
+        if isinstance(metadata, dict):
+            version = metadata.get("version")
+            if version:
+                versions.append(str(version))
+
+        version_file = ROOT_DIR / "DMAIC_V3" / "VERSION"
+        if version_file.exists():
+            current = version_file.read_text(encoding="utf-8").strip()
+            if current:
+                versions.append(current)
+
+        if not versions:
+            versions = ["3.3.0"]
+        return sorted(set(versions))
 
 def main():
     """Main entry point"""

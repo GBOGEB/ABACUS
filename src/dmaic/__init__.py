@@ -10,5 +10,6 @@ from . import provenance
 from . import metrics
 from . import recursion
 from . import config
+from . import contract
 
-__all__ = ['idempotency', 'provenance', 'metrics', 'recursion', 'config']
+__all__ = ['idempotency', 'provenance', 'metrics', 'recursion', 'config', 'contract']
