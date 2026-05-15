@@ -61,23 +61,30 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
-          set -euo pipefail
+          set -uo pipefail
           python -m pytest DMAIC_V3/tests -q --tb=short 2>&1 | tee /tmp/test_output.txt
-          echo "test_exit=$?" >> "$GITHUB_OUTPUT"
+          pytest_exit=${PIPESTATUS[0]}
+          echo "test_exit=${pytest_exit}" >> "$GITHUB_OUTPUT"
 
       - name: Collect test result
         id: test_result
         run: |
-          if grep -q "passed" /tmp/test_output.txt 2>/dev/null; then
-            passed=$(grep -oP '\d+ passed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
-            failed=$(grep -oP '\d+ failed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
-            echo "status=✅ Tests: ${passed} passed, ${failed} failed" >> "$GITHUB_OUTPUT"
-            echo "passed=${passed}" >> "$GITHUB_OUTPUT"
-            echo "failed=${failed}" >> "$GITHUB_OUTPUT"
-          elif grep -q "error" /tmp/test_output.txt 2>/dev/null; then
+          test_exit="${{ steps.run_tests.outputs.test_exit }}"
+          passed=$(grep -oP '\d+ passed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
+          failed=$(grep -oP '\d+ failed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
+
+          if grep -q "error" /tmp/test_output.txt 2>/dev/null && [[ "$passed" -eq 0 && "$failed" -eq 0 ]]; then
             echo "status=⚠️ Tests: collection/import errors" >> "$GITHUB_OUTPUT"
             echo "passed=0" >> "$GITHUB_OUTPUT"
             echo "failed=0" >> "$GITHUB_OUTPUT"
+          elif [[ "$test_exit" == "0" && "$failed" -eq 0 ]]; then
+            echo "status=✅ Tests: ${passed} passed, 0 failed" >> "$GITHUB_OUTPUT"
+            echo "passed=${passed}" >> "$GITHUB_OUTPUT"
+            echo "failed=0" >> "$GITHUB_OUTPUT"
+          elif [[ "$failed" -gt 0 || "$test_exit" != "0" ]]; then
+            echo "status=❌ Tests: ${passed} passed, ${failed} failed" >> "$GITHUB_OUTPUT"
+            echo "passed=${passed}" >> "$GITHUB_OUTPUT"
+            echo "failed=${failed}" >> "$GITHUB_OUTPUT"
           else
             echo "status=❓ Tests: could not determine result" >> "$GITHUB_OUTPUT"
             echo "passed=0" >> "$GITHUB_OUTPUT"
@@ -156,14 +163,10 @@ jobs:
       - name: Build changed-files list
         id: file_list
         run: |
-          files=$(git diff --name-only \
-            "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
-            2>/dev/null | head -20 | sed 's/^/- `/' | sed 's/$/$/' | tr '\n' '\n')
-          # GitHub output: encode newlines
           echo "files<<EOF" >> "$GITHUB_OUTPUT"
           git diff --name-only \
             "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
-            2>/dev/null | head -20 | sed 's/^/- `/' | sed 's/$/**/' >> "$GITHUB_OUTPUT"
+            2>/dev/null | head -20 | sed 's|^|- `|; s|$|`|' >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Post analysis comment on PR
