@@ -12,7 +12,7 @@ import yaml
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional
 
 try:
     from github import Github
@@ -425,8 +425,8 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except:
-        pass
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"Warning: Failed to get GitHub token from CLI: {e}", file=sys.stderr)
     
     token = os.environ.get('GITHUB_TOKEN')
     if token:
@@ -476,8 +476,9 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except:
-            pass
+        except Exception as e:
+            # Ignore errors: unable to determine repo from git remote
+            pass  # noqa: F841
     
     if not repo_name:
         print("❌ Repository name required")
