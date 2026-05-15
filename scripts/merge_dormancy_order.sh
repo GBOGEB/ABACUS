@@ -58,7 +58,7 @@ ahead_count() {
   local branch="$1"
   local counts
   counts="$(git rev-list --left-right --count "${BASE_BRANCH}...${branch}")"
-  echo "${counts#* }"
+  echo "$counts" | awk '{print $2}'
 }
 
 is_merged_into_base() {
