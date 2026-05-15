@@ -5,10 +5,14 @@ Injects DOW structure into all JSON outputs
 
 import json
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any
 import sys
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR / "src"))
+from dmaic.contract import ensure_contract
+from dmaic import idempotency
 
 class DOWMetadataInjector:
     """Agent to inject DOW metadata into JSON files"""
@@ -22,15 +26,19 @@ class DOWMetadataInjector:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
-            data['metadata'] = {
-                'version': '3.3.0',
-                'timestamp': datetime.now().isoformat(),
-                'iteration': iteration,
-                'phase': phase,
-                'generator': f'phase{phase}_generator.py',
-                'dow_compliant': True
-            }
+
+            input_hash = idempotency.hash_json(data)
+            data = ensure_contract(
+                data,
+                iteration=iteration,
+                phase=phase,
+                version="3.3.0",
+                generator=f'phase{phase}_generator.py',
+                input_hash=input_hash,
+            )
+            data['lineage']['artifact_path'] = str(file_path)
+            data['idempotency']['input_hash'] = input_hash
+            data['idempotency']['output_hash'] = idempotency.hash_json(data)
             
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)

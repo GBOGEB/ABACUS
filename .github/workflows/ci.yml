@@ -26,11 +26,28 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r DMAIC_V3/requirements.txt
-          pip install pytest pytest-cov pytest-mock flake8 mypy pylint
-      
+          pip install pytest pytest-cov pytest-mock flake8 mypy pylint pyyaml
+
+      - name: Generate docs HTML entry and dashboard
+        run: |
+          python scripts/generate_docs_html.py
+
+      - name: Validate docs links
+        run: |
+          python scripts/validate_docs_links.py
+
+      - name: Validate DMAIC contract artifacts
+        run: |
+          python scripts/validate_dmaic_contract.py --target DMAIC_CANONICAL_OUTPUT --allow-empty
+
       - name: Run bridge integration tests
         run: |
-          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -v --cov=DMAIC_V3/core --cov-report=xml
+          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -v \
+            --cov=DMAIC_V3/core \
+            --cov=src/dmaic \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=20
       
       - name: Run smoke tests
         run: |
