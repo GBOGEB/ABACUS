@@ -5,7 +5,6 @@ Injects DOW structure into all JSON outputs
 
 import json
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any
 import sys
@@ -34,16 +33,9 @@ class DOWMetadataInjector:
                 iteration=iteration,
                 phase=phase,
                 version="3.3.0",
-                generator=f"{self.__class__.__name__}",
+                generator=f'phase{phase}_generator.py',
                 input_hash=input_hash,
             )
-            data['metadata'].update({
-                'timestamp': datetime.now().isoformat(),
-                'iteration': iteration,
-                'phase': phase,
-                'generator': f'phase{phase}_generator.py',
-                'dow_compliant': True,
-            })
             data['lineage']['artifact_path'] = str(file_path)
             data['idempotency']['input_hash'] = input_hash
             data['idempotency']['output_hash'] = idempotency.hash_json(data)

@@ -28,7 +28,7 @@ This documentation site presents a grouped structure, with content from forked o
 
 ## Manifest, README, and packaging
 
-- Site manifest: [manifest.yml](../manifest.yml)
+- Site manifest: [manifest.yml](manifest.yml)
 - Packaging: use the Makefile at repo root to produce a zip that contains docs/ and the patch file.
 
 ---

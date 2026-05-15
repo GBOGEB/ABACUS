@@ -5,11 +5,13 @@ Validate canonical DMAIC contract compliance for JSON artifacts.
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR / "src"))
+LOGGER = logging.getLogger(__name__)
 
 from dmaic.contract import validate_contract  # noqa: E402
 
@@ -30,12 +32,12 @@ def main() -> int:
 
     target = (ROOT_DIR / args.target).resolve() if not Path(args.target).is_absolute() else Path(args.target)
     if not target.exists():
-        print(f"[WARN] Target does not exist: {target}")
+        LOGGER.warning("Target does not exist: %s", target)
         return 0 if args.allow_empty else 1
 
     json_files = sorted(target.glob("*.json"))
     if not json_files:
-        print(f"[WARN] No JSON files found in {target}")
+        LOGGER.warning("No JSON files found in %s", target)
         return 0 if args.allow_empty else 1
 
     failures = []
@@ -51,16 +53,17 @@ def main() -> int:
             failures.append((str(file_path), errors))
 
     if failures:
-        print("[FAIL] Contract validation errors detected:")
+        LOGGER.error("Contract validation errors detected:")
         for file_name, errors in failures:
-            print(f"  - {file_name}")
+            LOGGER.error("  - %s", file_name)
             for err in errors:
-                print(f"      * {err}")
+                LOGGER.error("      * %s", err)
         return 1
 
-    print(f"[OK] Contract validation passed for {len(json_files)} artifact(s)")
+    LOGGER.info("Contract validation passed for %s artifact(s)", len(json_files))
     return 0
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     raise SystemExit(main())
