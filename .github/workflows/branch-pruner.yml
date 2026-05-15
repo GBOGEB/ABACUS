@@ -12,6 +12,8 @@ on:
           - merged-only        # branches whose tip is already in main
           - stale-and-merged   # merged + branches with closed/merged PRs older than stale_days
           - all-closed-prs     # any branch whose PR is merged or closed (no open PR)
+          - empty-diff         # branches ahead of base but with 0 file changes (safe merge-only commits)
+          - all-stale          # merged-only + empty-diff together (comprehensive cleanup)
       base_branch:
         description: "Base branch to check merges against"
         required: false
@@ -103,6 +105,17 @@ jobs:
               is_merged_into_base=true
             fi
 
+            # Check if branch has zero file-level diff vs base (empty merge commits)
+            merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+            files_changed=0
+            if [[ -n "$merge_base" ]]; then
+              files_changed=$(git diff --name-only "${merge_base}..${remote}" -- 2>/dev/null | wc -l | tr -d ' ')
+            fi
+            is_empty_diff=false
+            if [[ "$ahead" -gt 0 && "$files_changed" -eq 0 && -n "$merge_base" ]]; then
+              is_empty_diff=true
+            fi
+
             should_delete=false
             reason=""
 
@@ -129,6 +142,21 @@ jobs:
                 elif [[ "$pr_state" == MERGED* || "$pr_state" == CLOSED* ]]; then
                   should_delete=true
                   reason="PR ${pr_state} — branch content superseded"
+                fi
+                ;;
+              empty-diff)
+                if $is_empty_diff; then
+                  should_delete=true
+                  reason="${ahead} ahead but 0 files changed — merge-only commits, safe to prune"
+                fi
+                ;;
+              all-stale)
+                if $is_merged_into_base; then
+                  should_delete=true
+                  reason="fully merged into ${BASE}"
+                elif $is_empty_diff; then
+                  should_delete=true
+                  reason="${ahead} ahead but 0 files changed — merge-only commits"
                 fi
                 ;;
             esac
