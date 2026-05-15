@@ -103,9 +103,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f DMAIC_V3/requirements.txt ]; then
-            pip install -r DMAIC_V3/requirements.txt
-          fi
           pip install flake8 pylint
 
       - name: Validate local_mcp
@@ -147,9 +144,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f DMAIC_V3/requirements.txt ]; then
-            pip install -r DMAIC_V3/requirements.txt
-          fi
           pip install pytest
 
       - name: Test script utilities
@@ -211,9 +205,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f DMAIC_V3/requirements.txt ]; then
-            pip install -r DMAIC_V3/requirements.txt
-          fi
 
       - name: Check tooling integration
         run: |
