@@ -37,6 +37,7 @@ def ensure_contract(
     Ensure a dictionary contains the canonical contract sections.
     """
     payload = dict(data) if isinstance(data, dict) else {}
+    iteration_lineage = list(range(0, int(iteration) + 1))
     history = version_history or [version]
     history = [str(v) for v in history if v]
     if version not in history:
@@ -61,14 +62,14 @@ def ensure_contract(
     payload.setdefault("lineage", {})
     payload["lineage"].setdefault("artifact_path", "")
     payload["lineage"].setdefault("parent_artifacts", [])
-    payload["lineage"].setdefault("iteration_lineage", list(range(0, int(iteration) + 1)))
+    payload["lineage"].setdefault("iteration_lineage", iteration_lineage)
     payload["lineage"].setdefault("version_history", history)
     payload["lineage"].setdefault("updated_at", _now_iso())
 
     payload.setdefault("recursive_hooks", {})
     payload["recursive_hooks"].setdefault("consumed_from", [])
     payload["recursive_hooks"].setdefault("feeds_into", [])
-    payload["recursive_hooks"].setdefault("iteration_lineage", list(range(0, int(iteration) + 1)))
+    payload["recursive_hooks"].setdefault("iteration_lineage", iteration_lineage)
     payload["recursive_hooks"].setdefault("version_history", history)
 
     payload.setdefault("convergence_metrics", {})

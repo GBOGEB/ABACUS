@@ -4,9 +4,9 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT_DIR / "src"))
 
-from dmaic.contract import ensure_contract, validate_contract
-from dmaic.idempotency import hash_json, idempotent
-from dmaic import provenance
+from dmaic.contract import ensure_contract, validate_contract  # noqa: E402
+from dmaic.idempotency import hash_json, idempotent  # noqa: E402
+from dmaic import provenance  # noqa: E402
 
 
 def test_hash_json_is_deterministic():

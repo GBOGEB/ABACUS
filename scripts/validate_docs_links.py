@@ -4,19 +4,20 @@ Validate docs internal links (markdown + html) to prevent broken navigation.
 """
 
 import re
-import sys
+import logging
 from pathlib import Path
 from typing import Iterable, List, Tuple
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DOCS_DIR = ROOT_DIR / "docs"
+LOGGER = logging.getLogger(__name__)
 
 MD_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-HTML_HREF = re.compile(r"""(?:href|src)\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+HTML_HREF = re.compile(r"""(?:href|src)\s*=\s*(["'])(.*?)\1""", re.IGNORECASE)
 
 
 def _iter_docs_files() -> Iterable[Path]:
-    for pattern in ("*.md", "**/*.md", "*.html", "**/*.html"):
+    for pattern in ("**/*.md", "**/*.html"):
         yield from DOCS_DIR.glob(pattern)
 
 
@@ -42,12 +43,12 @@ def _collect_links(file_path: Path) -> List[str]:
     content = file_path.read_text(encoding="utf-8", errors="ignore")
     if file_path.suffix.lower() == ".md":
         return MD_LINK.findall(content)
-    return HTML_HREF.findall(content)
+    return [match[1] for match in HTML_HREF.findall(content)]
 
 
 def main() -> int:
     if not DOCS_DIR.exists():
-        print("[WARN] docs directory not found; skipping checks")
+        LOGGER.warning("docs directory not found; skipping checks")
         return 0
 
     errors: List[Tuple[str, str]] = []
@@ -62,14 +63,15 @@ def main() -> int:
                 errors.append((str(file_path.relative_to(ROOT_DIR)), link))
 
     if errors:
-        print("[FAIL] Broken docs links detected:")
+        LOGGER.error("Broken docs links detected:")
         for source, link in errors:
-            print(f"  - {source}: {link}")
+            LOGGER.error("  - %s: %s", source, link)
         return 1
 
-    print("[OK] Docs link validation passed")
+    LOGGER.info("Docs link validation passed")
     return 0
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     raise SystemExit(main())

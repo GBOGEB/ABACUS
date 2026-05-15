@@ -67,7 +67,10 @@ class DOWRecursiveHooksInjector:
                 'consumed_from': [],
                 'feeds_into': []
             })
+            iteration_lineage = self._get_iteration_lineage(iteration)
+            version_history = self._get_version_history(data)
             
+            # Hash is computed from original payload prior to enrichment to track input state.
             input_hash = idempotency.hash_json(data)
             data = ensure_contract(
                 data,
@@ -76,17 +79,15 @@ class DOWRecursiveHooksInjector:
                 version=data.get("metadata", {}).get("version", "3.3.0"),
                 generator=self.__class__.__name__,
                 input_hash=input_hash,
-                version_history=self._get_version_history(data),
+                version_history=version_history,
             )
             data['recursive_hooks'] = {
                 'consumed_from': dependencies['consumed_from'],
                 'feeds_into': dependencies['feeds_into'],
-                'iteration_lineage': self._get_iteration_lineage(iteration),
-                'version_history': self._get_version_history(data)
+                'iteration_lineage': iteration_lineage,
+                'version_history': version_history
             }
             data['lineage']['parent_artifacts'] = dependencies['consumed_from']
-            data['lineage']['iteration_lineage'] = self._get_iteration_lineage(iteration)
-            data['lineage']['version_history'] = self._get_version_history(data)
             data['lineage']['updated_at'] = datetime.now().isoformat()
             data['idempotency']['input_hash'] = input_hash
             data['idempotency']['output_hash'] = idempotency.hash_json(data)

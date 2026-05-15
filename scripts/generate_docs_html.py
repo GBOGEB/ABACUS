@@ -4,7 +4,6 @@ Generate docs HTML entry page and dashboard from docs/manifest.yml.
 """
 
 import json
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -19,30 +18,33 @@ def _parse_manifest() -> Dict[str, Any]:
         return {"site": {"title": "ABACUS Docs", "version": "unknown"}, "articles": [], "smoke_tested_repos": []}
 
     try:
-        import yaml  # type: ignore
-
+        import yaml
         return yaml.safe_load(MANIFEST_FILE.read_text(encoding="utf-8")) or {}
+    except ImportError:
+        pass
     except Exception:
-        # Minimal fallback parser for simple key/list YAML structure
-        data: Dict[str, Any] = {"site": {}, "articles": [], "smoke_tested_repos": []}
-        section = None
-        for raw in MANIFEST_FILE.read_text(encoding="utf-8").splitlines():
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            if line.endswith(":") and not line.startswith("-"):
-                section = line[:-1]
-                if section not in data:
-                    data[section] = {}
-                continue
-            if line.startswith("- "):
-                if section and isinstance(data.get(section), list):
-                    data[section].append(line[2:].strip())
-                continue
-            if ":" in line and section == "site":
-                k, v = [part.strip() for part in line.split(":", 1)]
-                data["site"][k] = v
-        return data
+        pass
+
+    # Minimal fallback parser for simple key/list YAML structure
+    data: Dict[str, Any] = {"site": {}, "articles": [], "smoke_tested_repos": []}
+    section = None
+    for raw in MANIFEST_FILE.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.endswith(":") and not line.startswith("-"):
+            section = line[:-1]
+            if section not in data:
+                data[section] = {}
+            continue
+        if line.startswith("- "):
+            if section and isinstance(data.get(section), list):
+                data[section].append(line[2:].strip())
+            continue
+        if ":" in line and section == "site":
+            k, v = [part.strip() for part in line.split(":", 1)]
+            data["site"][k] = v
+    return data
 
 
 def _safe_read_json(path: Path) -> Dict[str, Any]:

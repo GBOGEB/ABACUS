@@ -6,9 +6,12 @@ Provides deterministic hashing and persistent idempotent execution support.
 import functools
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
+
+LOGGER = logging.getLogger(__name__)
 
 
 def hash_json(data: Any) -> str:
@@ -50,6 +53,7 @@ def _load_cache(cache_file: Path) -> Optional[Any]:
     try:
         return json.loads(cache_file.read_text(encoding="utf-8")).get("result")
     except (json.JSONDecodeError, OSError, AttributeError):
+        LOGGER.warning("Unreadable cache file: %s", cache_file)
         return None
 
 
@@ -74,6 +78,7 @@ def idempotent(run_key_fn: Callable, cache_dir: Optional[Path] = None, enabled: 
     def decorator(func: Callable) -> Callable:
         mem_cache: Dict[str, Any] = {}
         resolved_cache_dir = cache_dir or _default_cache_dir()
+        resolved_cache_dir.mkdir(parents=True, exist_ok=True)
 
         @functools.wraps(func)
         def wrapper(**kwargs):
