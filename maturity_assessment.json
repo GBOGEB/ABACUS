@@ -60,5 +60,25 @@
     "Target Level 1 (Repeatable) - Convergence: 30+",
     "Focus on improving convergence metrics"
   ],
-  "timestamp": "2026-05-15T19:12:52.679124"
+  "timestamp": "2026-05-15T19:28:47.534365",
+  "score_history": [
+    {
+      "timestamp": "2026-05-15T19:12:52.679124",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-15T19:28:47.533019",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-15T19:28:47.534365",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    }
+  ]
 }
