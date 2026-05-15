@@ -476,9 +476,9 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except Exception:
+        except Exception as e:
             # Ignore errors: unable to determine repo from git remote
-            pass
+            pass  # noqa: F841
     
     if not repo_name:
         print("❌ Repository name required")
