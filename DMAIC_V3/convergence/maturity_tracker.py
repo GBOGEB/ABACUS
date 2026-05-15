@@ -51,7 +51,7 @@ class MaturityAssessment:
     next_level: Optional[int]
     next_milestone: str
     convergence_score: float
-    levels: List[Any]
+    levels: List["MaturityLevelStatus"]
     tasks_completed: List[str]
     tasks_pending: List[str]
     blockers: List[str]
