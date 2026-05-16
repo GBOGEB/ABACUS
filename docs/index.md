@@ -5,30 +5,30 @@ shortTitle: Docs index
 
 # ABACUS Documentation Hub
 
-Abstract:
-This site collects the ABACUS project documentation and provides a cross-repo bridge to related managed repositories such as CODEX and morris.js. It contains conceptual, procedural, and reference articles and is GitHub Pages-ready under the docs/ folder.
+This docs site now centers on a repository navigation view for **GBOGEB/ABACUS**.
 
-## Main Repositories and Bridges
+## HTML navigation
 
-Repositories covered and smoke-tested for integration:
-- [GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS) — this repository (doc home)
-- [GBOGEB/CODEX](https://github.com/GBOGEB/CODEX) — coding standards, conventions
-- [GBOGEB/morris.js](https://github.com/GBOGEB/morris.js) — charting examples referenced here
+- [Repository navigation hub](index.html)
+- [Repository metrics dashboard](dashboard.html)
 
-Further reading:
-- [About ABACUS and its role](content/about-subject.md)
-- [Performing the main tasks: workflows and smoke tests](content/how-to-task.md)
-- [Reference — configuration and terms](content/reference.md)
-- [HTML entry page](index.html)
-- [System dashboard](dashboard.html)
+## Navigation focus
 
-## Multi-repo site pattern
+- Main repo hierarchy: `DMAIC_V3/`, `src/dmaic/`, `local_mcp/`, `scripts/`, `handover/`, `.github/workflows/`
+- Functions and entry points: orchestrator, deployment runner, global index generator, metrics collectors, workflow analyzer
+- Links and indexes: master indexes, handover indexes, workflow docs, repository roots
+- Metrics and maturity: file inventory plus `maturity_assessment.json`
+- Change logs: root and DMAIC V3 changelog families
+- Bridge and self-smoke: bridge implementation, smoke workflow, bridge tests, maturity tracker
+- Canonical artefacts by type: canonical index code, JSON/YAML registries, markdown indexes, dashboards, notebook assets
 
-This documentation site presents a grouped structure, with content from forked or cloned main repositories collapsed for navigation, integration, and handoff. To assimilate new forks, follow the instructions in the procedural article.
+## Main repositories and bridges
 
-## Manifest, README, and packaging
+- [GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS) — main repository
+- [GBOGEB/CODEX](https://github.com/GBOGEB/CODEX) — linked standards repository
+- [GBOGEB/morris.js](https://github.com/GBOGEB/morris.js) — linked charting reference
 
-- Site manifest: [manifest.yml](manifest.yml)
-- Packaging: use the Makefile at repo root to produce a zip that contains docs/ and the patch file.
+## Manifest and packaging
 
----
+- [manifest.yml](manifest.yml)
+- Root packaging helper: `make docs-zip`
