@@ -13,9 +13,9 @@
 | `DMAIC_V3.core.twelve_cluster_orchestrator.TwelveClusterOrchestrator` | ✅ PASS | ⚠️ Warning: KEB not available, GBOGEB not available |
 | `DMAIC_V3.full_pipeline_orchestrator` | ✅ PASS | Main orchestrator imports |
 | `DMAIC_V3.full_pipeline_orchestrator_clean` | ✅ PASS | Clean variant imports |
-| `DMAIC_V3.dmaic_v3_engine` | ❌ FAIL | `change_detector.py` syntax error (line 295) |
+| `DMAIC_V3.dmaic_v3_engine` | ❌ FAIL | `ModuleNotFoundError`: `DMAIC_V3.phases.phase0_setup` not found |
 | `DMAIC_V3.full_pipeline_orchestrator_fixed` | ❌ FAIL | Missing module docstring prefix |
-| `local_mcp.agent_orchestrator_v3_0` | ❌ FAIL | No `__init__.py` in `local_mcp/` |
+| `local_mcp.agent_orchestrator_v3_0` | ❌ FAIL | Dotted filename is `agent_orchestrator_v3.0.py`, not importable as module name |
 
 ---
 
@@ -23,7 +23,7 @@
 
 | File | Lines | Valid? | Issue |
 |------|-------|--------|-------|
-| `DMAIC_V3/convergence/change_detector.py` | 312 | ❌ | Unterminated triple-quoted string at line 295 |
+| `DMAIC_V3/convergence/change_detector.py` | 295 | ✅ | Syntax fixed in this branch |
 | `DMAIC_V3/convergence/background_change_detector.py` | - | ✅ | Valid |
 | `DMAIC_V3/full_pipeline_orchestrator.py` | 552 | ✅ | Valid |
 | `DMAIC_V3/full_pipeline_orchestrator_clean.py` | 554 | ✅ | Valid |
@@ -38,7 +38,7 @@
 
 | Workflow | Python Version | Repo Check | Status |
 |----------|---------------|------------|--------|
-| `ci-codex.yml` | Matrix | ❌ `GBOBEB/CODEX` (typo!) | **P1 FIX** |
+| `ci-codex.yml` | Matrix | ✅ `GBOGEB/CODEX` | OK |
 | `ci-abacus.yml` | 3.10, 3.11, 3.12 | ✅ `GBOGEB/ABACUS` | OK |
 | `ci.yml` | 3.11, 3.12 | - | OK |
 | `dmaic-enterprise-ci.yml` | 3.9-3.12 | - | ⚠️ 3.9 should upgrade |
@@ -97,11 +97,11 @@
 - **CI/CD workflows:** ⚠️ 32 workflows exist but many untested
 - **Docker deployment:** ⚠️ docker-compose.yml exists in v032 only
 - **Production monitoring:** ⚠️ production/monitoring/ exists with alert_handler.py and monitor.py
-- **End-to-end pipeline:** ❌ Blocked by change_detector.py syntax error and KEB/GBOGEB availability
+- **End-to-end pipeline:** ❌ Blocked by missing phase module (`DMAIC_V3.phases.phase0_setup`) and KEB/GBOGEB availability
 
 ### Rebuild Capability
 - ✅ Can import core DMAIC_V3 modules
 - ✅ Can import TwelveClusterOrchestrator (with KEB/GBOGEB warnings)
 - ✅ Pipeline orchestrator (clean version) runs
-- ❌ Full engine (dmaic_v3_engine) blocked by convergence module error
+- ❌ Full engine (dmaic_v3_engine) blocked by missing phase module (`DMAIC_V3.phases.phase0_setup`)
 - ❌ No end-to-end test data available in repo

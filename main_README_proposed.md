@@ -30,7 +30,7 @@ python -c "from DMAIC_V3.config import DMAICConfig; print('OK')"
 python local_mcp/agent_orchestrator_v3.0.py
 
 # 3. Launch dashboard
-open cryo_dashboard_v0_3_0/index.html
+open docs/deep_analysis_dashboard.html
 ```
 
 ---

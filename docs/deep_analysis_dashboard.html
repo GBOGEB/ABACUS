@@ -12,9 +12,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .header h1 { color: var(--accent); font-size: 1.8em; }
 .header p { color: #8b949e; margin-top: 5px; }
 .tabs { display: flex; gap: 2px; background: var(--bg); padding: 10px 30px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-.tab { padding: 10px 18px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; color: #8b949e; font-size: 0.9em; transition: all 0.2s; }
+.tab { padding: 10px 18px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; color: #8b949e; font-size: 0.9em; transition: all 0.2s; background: transparent; font-family: inherit; }
 .tab:hover { color: var(--text); background: var(--card); }
 .tab.active { background: var(--card); color: var(--accent); border-color: var(--border); border-bottom-color: var(--card); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .content { padding: 20px 30px; max-width: 1400px; }
 .panel { display: none; }
 .panel.active { display: block; }
@@ -54,22 +55,22 @@ a:hover { text-decoration: underline; }
 <p>12-Cluster Architecture · DOW Governance · DMAIC V3 Engine · Generated 2026-05-16</p>
 </div>
 
-<div class="tabs">
-<div class="tab active" onclick="showTab('overview')">Overview</div>
-<div class="tab" onclick="showTab('clusters')">12 Clusters</div>
-<div class="tab" onclick="showTab('lineage')">Version Lineage</div>
-<div class="tab" onclick="showTab('dow')">DOW/KEB/GBOGEB</div>
-<div class="tab" onclick="showTab('ssot')">SSOT Artifacts</div>
-<div class="tab" onclick="showTab('tests')">Integration Tests</div>
-<div class="tab" onclick="showTab('recovery')">Recovery</div>
-<div class="tab" onclick="showTab('workflows')">Workflows (32)</div>
-<div class="tab" onclick="showTab('p1p2p3')">P1/P2/P3 Fixes</div>
+<div class="tabs" role="tablist" aria-label="Dashboard sections">
+<button class="tab active" id="tab-overview" role="tab" aria-selected="true" aria-controls="overview" onclick="showTab('overview', this)">Overview</button>
+<button class="tab" id="tab-clusters" role="tab" aria-selected="false" aria-controls="clusters" onclick="showTab('clusters', this)">12 Clusters</button>
+<button class="tab" id="tab-lineage" role="tab" aria-selected="false" aria-controls="lineage" onclick="showTab('lineage', this)">Version Lineage</button>
+<button class="tab" id="tab-dow" role="tab" aria-selected="false" aria-controls="dow" onclick="showTab('dow', this)">DOW/KEB/GBOGEB</button>
+<button class="tab" id="tab-ssot" role="tab" aria-selected="false" aria-controls="ssot" onclick="showTab('ssot', this)">SSOT Artifacts</button>
+<button class="tab" id="tab-tests" role="tab" aria-selected="false" aria-controls="tests" onclick="showTab('tests', this)">Integration Tests</button>
+<button class="tab" id="tab-recovery" role="tab" aria-selected="false" aria-controls="recovery" onclick="showTab('recovery', this)">Recovery</button>
+<button class="tab" id="tab-workflows" role="tab" aria-selected="false" aria-controls="workflows" onclick="showTab('workflows', this)">Workflows (32)</button>
+<button class="tab" id="tab-p1p2p3" role="tab" aria-selected="false" aria-controls="p1p2p3" onclick="showTab('p1p2p3', this)">P1/P2/P3 Fixes</button>
 </div>
 
 <div class="content">
 
 <!-- OVERVIEW -->
-<div id="overview" class="panel active">
+<div id="overview" class="panel active" role="tabpanel" aria-labelledby="tab-overview">
 <div class="grid">
 <div class="card stat"><div class="num">558</div><div class="label">Git Commits</div></div>
 <div class="card stat"><div class="num">12</div><div class="label">Functional Clusters</div></div>
@@ -97,20 +98,20 @@ a:hover { text-decoration: underline; }
 <h3>Deliverables Generated</h3>
 <table>
 <tr><th>Document</th><th>Purpose</th></tr>
-<tr><td><a href="../lineage_analysis.md">lineage_analysis.md</a></td><td>Complete version lineage with git heritage</td></tr>
-<tr><td><a href="../12_cluster_vision.md">12_cluster_vision.md</a></td><td>Elevated 12-CLUSTER documentation</td></tr>
-<tr><td><a href="../ssot_artifacts_catalog.md">ssot_artifacts_catalog.md</a></td><td>All user truth artifacts analyzed</td></tr>
-<tr><td><a href="../tool_ecosystem_map.md">tool_ecosystem_map.md</a></td><td>DOW, KEB, GBOGEB interconnections</td></tr>
-<tr><td><a href="../recovery_report.md">recovery_report.md</a></td><td>Corrupted file recovery attempts</td></tr>
-<tr><td><a href="../integration_test_results.md">integration_test_results.md</a></td><td>Smoke test outputs</td></tr>
-<tr><td><a href="../main_README_proposed.md">main_README_proposed.md</a></td><td>Short main README draft</td></tr>
-<tr><td><a href="../p1_p2_p3_implementation_log.md">p1_p2_p3_implementation_log.md</a></td><td>All changes documented</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/lineage_analysis.md">lineage_analysis.md</a></td><td>Complete version lineage with git heritage</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/12_cluster_vision.md">12_cluster_vision.md</a></td><td>Elevated 12-CLUSTER documentation</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/ssot_artifacts_catalog.md">ssot_artifacts_catalog.md</a></td><td>All user truth artifacts analyzed</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/tool_ecosystem_map.md">tool_ecosystem_map.md</a></td><td>DOW, KEB, GBOGEB interconnections</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/recovery_report.md">recovery_report.md</a></td><td>Corrupted file recovery attempts</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/integration_test_results.md">integration_test_results.md</a></td><td>Smoke test outputs</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/main_README_proposed.md">main_README_proposed.md</a></td><td>Short main README draft</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/p1_p2_p3_implementation_log.md">p1_p2_p3_implementation_log.md</a></td><td>All changes documented</td></tr>
 </table>
 </div>
 </div>
 
 <!-- 12 CLUSTERS -->
-<div id="clusters" class="panel">
+<div id="clusters" class="panel" role="tabpanel" aria-labelledby="tab-clusters">
 <div class="card">
 <h3>⭐ 12-CLUSTER Architecture — The Core Functioning Model</h3>
 <p>The 12-CLUSTER is NOT a rigid numbered system — it is a <strong>functional agent architecture organized by responsibility</strong>.</p>
@@ -178,7 +179,7 @@ a:hover { text-decoration: underline; }
 </div>
 
 <!-- LINEAGE -->
-<div id="lineage" class="panel">
+<div id="lineage" class="panel" role="tabpanel" aria-labelledby="tab-lineage">
 <div class="card">
 <h3>Version Lineage — Parallel Development Streams</h3>
 <div class="lineage">
@@ -231,7 +232,7 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <!-- DOW/KEB/GBOGEB -->
-<div id="dow" class="panel">
+<div id="dow" class="panel" role="tabpanel" aria-labelledby="tab-dow">
 <div class="card">
 <h3>DOW — Design of Work (GOVERNANCE Layer)</h3>
 <p><strong>DOW is NOT legacy.</strong> It is the omnipotent governance layer providing oversight across: Design, Code, HUMAN, MCP, GITHUB, and CRYO knowledge.</p>
@@ -275,7 +276,7 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <!-- SSOT -->
-<div id="ssot" class="panel">
+<div id="ssot" class="panel" role="tabpanel" aria-labelledby="tab-ssot">
 <div class="card">
 <h3>SSOT Artifacts Inventory</h3>
 <table>
@@ -303,7 +304,7 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <!-- TESTS -->
-<div id="tests" class="panel">
+<div id="tests" class="panel" role="tabpanel" aria-labelledby="tab-tests">
 <div class="card">
 <h3>Module Import Tests</h3>
 <table>
@@ -313,15 +314,15 @@ V1.0 (Legacy Foundation - referenced only)
 <tr><td>TwelveClusterOrchestrator</td><td><span class="badge badge-ok">PASS</span></td><td>⚠️ KEB/GBOGEB warnings</td></tr>
 <tr><td>full_pipeline_orchestrator</td><td><span class="badge badge-ok">PASS</span></td><td>Main orchestrator</td></tr>
 <tr><td>full_pipeline_orchestrator_clean</td><td><span class="badge badge-ok">PASS</span></td><td>Clean variant</td></tr>
-<tr><td>dmaic_v3_engine</td><td><span class="badge badge-ok">PASS (after fix)</span></td><td>Was blocked by change_detector.py</td></tr>
+<tr><td>dmaic_v3_engine</td><td><span class="badge badge-err">FAIL</span></td><td>`DMAIC_V3.phases.phase0_setup` module missing</td></tr>
 <tr><td>full_pipeline_orchestrator_fixed</td><td><span class="badge badge-err">FAIL</span></td><td>Missing docstring prefix</td></tr>
-<tr><td>local_mcp.agent_orchestrator</td><td><span class="badge badge-err">FAIL</span></td><td>No __init__.py</td></tr>
+<tr><td>local_mcp.agent_orchestrator</td><td><span class="badge badge-err">FAIL</span></td><td>Dotted filename is not importable as a Python module name</td></tr>
 </table>
 </div>
 </div>
 
 <!-- RECOVERY -->
-<div id="recovery" class="panel">
+<div id="recovery" class="panel" role="tabpanel" aria-labelledby="tab-recovery">
 <div class="card">
 <h3>Corrupted File Recovery</h3>
 <table>
@@ -334,7 +335,7 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <!-- WORKFLOWS -->
-<div id="workflows" class="panel">
+<div id="workflows" class="panel" role="tabpanel" aria-labelledby="tab-workflows">
 <div class="card">
 <h3>GitHub Actions Workflows (32 active + 2 legacy)</h3>
 <table>
@@ -353,7 +354,7 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <!-- P1/P2/P3 -->
-<div id="p1p2p3" class="panel">
+<div id="p1p2p3" class="panel" role="tabpanel" aria-labelledby="tab-p1p2p3">
 <div class="card">
 <h3>P1 Tasks (High Priority) — COMPLETED</h3>
 <table>
@@ -388,12 +389,39 @@ V1.0 (Legacy Foundation - referenced only)
 </div>
 
 <script>
-function showTab(id) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function showTab(id, tabButton) {
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.remove('active');
+    p.hidden = true;
+  });
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  document.getElementById(id).hidden = false;
+  tabButton.classList.add('active');
+  tabButton.setAttribute('aria-selected', 'true');
 }
+
+document.querySelectorAll('.tab').forEach((tab, index, tabs) => {
+  tab.addEventListener('keydown', (event) => {
+    let targetIndex = index;
+    if (event.key === 'ArrowRight') targetIndex = (index + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') targetIndex = (index - 1 + tabs.length) % tabs.length;
+    if (event.key === 'Home') targetIndex = 0;
+    if (event.key === 'End') targetIndex = tabs.length - 1;
+    if (targetIndex !== index) {
+      event.preventDefault();
+      tabs[targetIndex].focus();
+      showTab(tabs[targetIndex].getAttribute('aria-controls'), tabs[targetIndex]);
+    }
+  });
+});
+
+document.querySelectorAll('.panel').forEach(panel => {
+  panel.hidden = !panel.classList.contains('active');
+});
 </script>
 
 </body>

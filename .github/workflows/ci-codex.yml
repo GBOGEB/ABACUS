@@ -15,7 +15,7 @@ on:
 jobs:
   codex:
     name: CODEX - ${{ matrix.os }} - Python ${{ matrix.python-version }}
-    if: github.repository == 'GBOBEB/CODEX'
+    if: github.repository == 'GBOGEB/CODEX'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
