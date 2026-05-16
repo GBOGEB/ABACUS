@@ -24,5 +24,5 @@ IDE (VS Code/Cursor)
 ```
 
 ## ⚠️ Known Issues
-- Missing `local_mcp/__init__.py` — prevents direct package import
+- Dotted filenames in `local_mcp/` (for example `agent_orchestrator_v3.0.py`, `knowledge_integration_v2.3.py`) are not importable via standard Python module paths without shims or renames
 - Requires MCP protocol dependencies

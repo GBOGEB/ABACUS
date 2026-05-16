@@ -22,12 +22,12 @@
 
 ### ❌ Failed Imports
 - `dmaic_v3_engine` — Depended on broken `change_detector.py` (NOW FIXED)
-- `local_mcp.agent_orchestrator` — Missing `__init__.py` (known issue)
+- `local_mcp.agent_orchestrator` — Module path unavailable (`agent_orchestrator_v3.0.py` is not importable as a standard dotted module name)
 
 ## 11.3 Syntax Validation
 - `change_detector.py` — ✅ FIXED (unterminated string, missing method, duplicate)
 - `full_pipeline_orchestrator_corrupted.py` — 🔴 Merge conflict (use `_fixed.py`)
-- All other critical Python files — ✅ Valid syntax
+- Selected root scripts (11/11) — ✅ Valid syntax; note that `DMAIC_V3/core/temporal_metadata_engine.py` and `DMAIC_V3/core/ranking_engine.py` still report syntax errors in import checks
 
 ## 11.4 GitHub Actions Workflow Status
 - 32 workflows identified
@@ -45,6 +45,6 @@
 
 ## 11.6 Known Blockers
 1. KEB/GBOGEB timeout issues in execution
-2. Missing `local_mcp/__init__.py`
+2. Non-importable dotted module filenames in `local_mcp/` (e.g., `agent_orchestrator_v3.0.py`)
 3. Pipeline orchestrator needs consolidation (4 variants)
 4. 12 zero-byte placeholder files need content

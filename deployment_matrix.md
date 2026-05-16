@@ -9,7 +9,7 @@
 | index | docs/index.html | HTML Dashboard | Yes | No | Browser | docs/index.html | Working |
 | deep_analysis_dashboard | docs/deep_analysis_dashboard.html | HTML Dashboard | Yes | No | Browser | docs/deep_analysis_dashboard.html | Working |
 | handover_book | docs/handover_book.html | HTML Dashboard | Yes | No | Browser | docs/handover_book.html | Working |
-| index | cryo_dashboard_v0_3_0/index.html | HTML Dashboard | Yes | No | Browser | cryo_dashboard_v0_3_0/index.html | Working |
+| cryo_dashboard_index | cryo_dashboard_v0_3_0/index.html | HTML Dashboard | Yes | No | Browser | cryo_dashboard_v0_3_0/index.html | Working |
 | DMAIC V3 Engine | DMAIC_V3/ | Python Engine | No | Yes | Python 3.8+ | DMAIC_V3/full_pipeline_orchestrator.py | Working |
 | 12-Cluster Orchestrator | DMAIC_V3/core/twelve_cluster_orchestrator.py | Python | No | Yes | Python 3.8+, threading | Import TwelveClusterOrchestrator | Working |
 | RTM Integration | rtm_integration/ | Python + Excel | No | Yes | Python, openpyxl | rtm_integration/ | Working |

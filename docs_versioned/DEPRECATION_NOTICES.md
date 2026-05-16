@@ -33,4 +33,4 @@ All versions (v2.1, v0.31, v0.32, v2.3, v3.3) are **ACTIVE** and contain unique 
 | `DMAIC_V3_CANONICAL_HANDOVER_BOOK.md` | Zero-byte | Placeholder, needs content |
 | `handover_with_code_asMardown.md` | Zero-byte | Placeholder |
 | `DMAIC Implementation Manifest.md` | Zero-byte | Placeholder |
-| 12 scripts in `scripts/` | Zero-byte | Placeholders for future implementation |
+| 6 scripts in `scripts/` | Zero-byte | Placeholders for future implementation |

@@ -11,7 +11,7 @@
 | `DMAIC_V3_OUTPUT/reports/dmaic_v3_convergence_20251117_043214.json` | .json | 486B |
 | `scripts/check_convergence.py` | .py | 9,281B |
 
-## Cryo Analysis (1 files)
+## Cryo Analysis (1 file)
 | File | Type | Size |
 |------|------|------|
 | `DMAIC_V3/local_mcp/agents/analysis_cryo_dm_v2.3_OPTIMIZED.py` | .py | 585B |
@@ -22,7 +22,7 @@
 | `docs/dashboard.html` | .html | 1,371B |
 | `docs/deep_analysis_dashboard.html` | .html | 21,060B |
 
-## Dmaic (52 files)
+## DMAIC (52 files)
 | File | Type | Size |
 |------|------|------|
 | `ABACUS-v032/STATS/DMAIC_FULL/canonical_books/execute_full_dmaic_phases_0_to_8_fixed_governance.md` | .md | 322B |
@@ -106,7 +106,7 @@
 | `scripts/dmaic_metrics_dump.py` | .py | 840B |
 | `src/dmaic/metrics.py` | .py | 1,269B |
 
-## Rtm (7 files)
+## RTM (7 files)
 | File | Type | Size |
 |------|------|------|
 | `rtm_integration/automation/scripts/automation/generate_rtm.py` | .py | 893B |
