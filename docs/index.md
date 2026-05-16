@@ -12,6 +12,13 @@ This docs site now centers on a repository navigation view for **GBOGEB/ABACUS**
 - [Repository navigation hub](index.html)
 - [Repository metrics dashboard](dashboard.html)
 
+## Documentation articles
+
+- [Docs content index](content/)
+- Conceptual documentation is available in the `docs/content/` article set.
+- Procedural documentation is available in the `docs/content/` article set.
+- Reference documentation is available in the `docs/content/` article set.
+
 ## Navigation focus
 
 - Main repo hierarchy: `DMAIC_V3/`, `src/dmaic/`, `local_mcp/`, `scripts/`, `handover/`, `.github/workflows/`
