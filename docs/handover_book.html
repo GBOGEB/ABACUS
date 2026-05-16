@@ -42,22 +42,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <p>12-Chapter Comprehensive Technical Guide | Generated: 2026-05-16 22:34 | 558 commits · 201 Python files · 533 docs</p>
 </div>
 <div class="container">
-<nav class="sidebar">
-<button onclick="showChapter('ch01_introduction')" class="active" id="btn-ch01_introduction">Ch 1: Introduction</button>
-<button onclick="showChapter('ch02_architecture')" id="btn-ch02_architecture">Ch 2: 12-Cluster Architecture</button>
-<button onclick="showChapter('ch03_analysis_layer')" id="btn-ch03_analysis_layer">Ch 3: Analysis Layer (C1-C4)</button>
-<button onclick="showChapter('ch04_documentation_layer')" id="btn-ch04_documentation_layer">Ch 4: Documentation Layer (C5-C6)</button>
-<button onclick="showChapter('ch05_orchestration_layer')" id="btn-ch05_orchestration_layer">Ch 5: Orchestration Layer (C7-C8)</button>
-<button onclick="showChapter('ch06_knowledge_layer')" id="btn-ch06_knowledge_layer">Ch 6: Knowledge Layer (C9-C12)</button>
-<button onclick="showChapter('ch07_dow_governance')" id="btn-ch07_dow_governance">Ch 7: DOW Governance</button>
-<button onclick="showChapter('ch08_keb_tools')" id="btn-ch08_keb_tools">Ch 8: KEB & Tools</button>
-<button onclick="showChapter('ch09_version_lineage')" id="btn-ch09_version_lineage">Ch 9: Version Lineage</button>
-<button onclick="showChapter('ch10_deployment')" id="btn-ch10_deployment">Ch 10: Deployment</button>
-<button onclick="showChapter('ch11_testing')" id="btn-ch11_testing">Ch 11: Testing & QA</button>
-<button onclick="showChapter('ch12_roadmap')" id="btn-ch12_roadmap">Ch 12: Roadmap</button>
+<nav class="sidebar" role="tablist" aria-label="Handover chapters">
+<button onclick="showChapter('ch01_introduction')" class="active" id="btn-ch01_introduction" role="tab" aria-selected="true" aria-controls="ch01_introduction">Ch 1: Introduction</button>
+<button onclick="showChapter('ch02_architecture')" id="btn-ch02_architecture" role="tab" aria-selected="false" aria-controls="ch02_architecture">Ch 2: 12-Cluster Architecture</button>
+<button onclick="showChapter('ch03_analysis_layer')" id="btn-ch03_analysis_layer" role="tab" aria-selected="false" aria-controls="ch03_analysis_layer">Ch 3: Analysis Layer (C1-C4)</button>
+<button onclick="showChapter('ch04_documentation_layer')" id="btn-ch04_documentation_layer" role="tab" aria-selected="false" aria-controls="ch04_documentation_layer">Ch 4: Documentation Layer (C5-C6)</button>
+<button onclick="showChapter('ch05_orchestration_layer')" id="btn-ch05_orchestration_layer" role="tab" aria-selected="false" aria-controls="ch05_orchestration_layer">Ch 5: Orchestration Layer (C7-C8)</button>
+<button onclick="showChapter('ch06_knowledge_layer')" id="btn-ch06_knowledge_layer" role="tab" aria-selected="false" aria-controls="ch06_knowledge_layer">Ch 6: Knowledge Layer (C9-C12)</button>
+<button onclick="showChapter('ch07_dow_governance')" id="btn-ch07_dow_governance" role="tab" aria-selected="false" aria-controls="ch07_dow_governance">Ch 7: DOW Governance</button>
+<button onclick="showChapter('ch08_keb_tools')" id="btn-ch08_keb_tools" role="tab" aria-selected="false" aria-controls="ch08_keb_tools">Ch 8: KEB & Tools</button>
+<button onclick="showChapter('ch09_version_lineage')" id="btn-ch09_version_lineage" role="tab" aria-selected="false" aria-controls="ch09_version_lineage">Ch 9: Version Lineage</button>
+<button onclick="showChapter('ch10_deployment')" id="btn-ch10_deployment" role="tab" aria-selected="false" aria-controls="ch10_deployment">Ch 10: Deployment</button>
+<button onclick="showChapter('ch11_testing')" id="btn-ch11_testing" role="tab" aria-selected="false" aria-controls="ch11_testing">Ch 11: Testing & QA</button>
+<button onclick="showChapter('ch12_roadmap')" id="btn-ch12_roadmap" role="tab" aria-selected="false" aria-controls="ch12_roadmap">Ch 12: Roadmap</button>
 </nav>
 <main class="content" id="main-content">
-<div id="ch01_introduction" class="chapter" style="display:block"><h1>Chapter 1: Introduction & QPLANT Cryogenic System Overview</h1>
+<div id="ch01_introduction" class="chapter" role="tabpanel" aria-labelledby="btn-ch01_introduction" style="display:block"><h1>Chapter 1: Introduction & QPLANT Cryogenic System Overview</h1>
 <br>
 <h2>1.1 What is ABACUS?</h2>
 <br>
@@ -69,18 +69,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <br>
 <p>QPLANT is a cryogenic plant system requiring rigorous engineering analysis. ABACUS provides:</p>
 <ul>
-<li>**Automated requirement traceability** via RTM (Requirements Traceability Matrix)</li>
-<li>**Statistical process control** for cryo system parameters</li>
-<li>**Anomaly detection** for thermal and pressure data</li>
-<li>**Continuous improvement** through recursive DMAIC cycles</li>
+<li><strong>Automated requirement traceability</strong> via RTM (Requirements Traceability Matrix)</li>
+<li><strong>Statistical process control</strong> for cryo system parameters</li>
+<li><strong>Anomaly detection</strong> for thermal and pressure data</li>
+<li><strong>Continuous improvement</strong> through recursive DMAIC cycles</li>
 </ul>
 <br>
 <h3>QPLANT RTM</h3>
 <p>The <code>QPLANT_RTM.xlsx</code> contains 16 formal requirements tracked across the DMAIC lifecycle:</p>
 <ul>
-<li>Located at: `rtm_integration/automation/docs/rtm/QPLANT_RTM.xlsx`</li>
-<li>Engineering handover: `rtm_integration/docs/QPLANT_RTM_Engineering_Handover.md`</li>
-<li>Analysis summary: `rtm_integration/docs/QPLANT_RTM_Analysis_Summary.md`</li>
+<li>Located at: <code>rtm_integration/automation/docs/rtm/QPLANT_RTM.xlsx</code></li>
+<li>Engineering handover: <code>rtm_integration/docs/QPLANT_RTM_Engineering_Handover.md</code></li>
+<li>Analysis summary: <code>rtm_integration/docs/QPLANT_RTM_Analysis_Summary.md</code></li>
 </ul>
 <br>
 <h2>1.3 System Goals</h2>
@@ -112,7 +112,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <li>> *Reconstructed from code* = Content inferred from analysis</li>
 </ul>
 <br></div>
-<div id="ch02_architecture" class="chapter" style="display:none"><h1>Chapter 2: 12-Cluster Architecture Deep Dive</h1>
+<div id="ch02_architecture" class="chapter" role="tabpanel" aria-labelledby="btn-ch02_architecture" style="display:none"><h1>Chapter 2: 12-Cluster Architecture Deep Dive</h1>
 <br>
 <h2>2.1 Architecture Overview</h2>
 <br>
@@ -166,15 +166,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <tr><td>Phase 5: Control</td><td>C8, C10</td><td>C11, C12</td><td>Quality gates</td></tr>
 <tr><td>Phase 6: Knowledge</td><td>C5, C6, C9</td><td>C7</td><td>Knowledge extraction</td></tr>
 <tr><td>Phase 7-8: Action</td><td>C7, C8</td><td>C11</td><td>Action & TODO tracking</td></tr>
-<tr><td>Phase 9: Recursive</td><td>ALL</td><td>ALL</td><td>Full iteration cycle</td></tr>
+<tr><td>Phase 9: Documentation Generation</td><td>C5, C6, C8</td><td>C10, C12</td><td>Post-execution documentation and publication</td></tr>
 </table>
 <br>
 <h2>2.4 Implementation Location</h2>
 <br>
 <p>The primary implementation is in <code>DMAIC_V3/core/twelve_cluster_orchestrator.py</code>:</p>
 <ul>
-<li>`TwelveClusterOrchestrator` class with 12-worker thread pool</li>
-<li>`ClusterConfig` class for per-cluster configuration</li>
+<li><code>TwelveClusterOrchestrator</code> class with 12-worker thread pool</li>
+<li><code>ClusterConfig</code> class for per-cluster configuration</li>
 <li>KEB integration for task scheduling</li>
 <li>GBOGEB integration for observability</li>
 </ul>
@@ -196,7 +196,7 @@ IDLE → INITIALIZING → ACTIVE → PROCESSING → COMPLETED
 <li>Phase assignment</li>
 </ul>
 <br></div>
-<div id="ch03_analysis_layer" class="chapter" style="display:none"><h1>Chapter 3: Clusters 1-4 — Analysis Layer</h1>
+<div id="ch03_analysis_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch03_analysis_layer" style="display:none"><h1>Chapter 3: Clusters 1-4 — Analysis Layer</h1>
 <br>
 <h2>3.1 Overview</h2>
 <p>The Analysis Layer implements the core DMAIC methodology phases: Define, Measure, Analyze, Improve.</p>
@@ -278,7 +278,7 @@ C4 (Improve) → modifications & solutions
 → Control Layer (C7-C8)
 </code></pre>
 <br></div>
-<div id="ch04_documentation_layer" class="chapter" style="display:none"><h1>Chapter 4: Clusters 5-6 — Documentation Layer</h1>
+<div id="ch04_documentation_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch04_documentation_layer" style="display:none"><h1>Chapter 4: Clusters 5-6 — Documentation Layer</h1>
 <br>
 <h2>4.1 Overview</h2>
 <p>The Documentation Layer automates documentation generation and version tracking.</p>
@@ -289,11 +289,11 @@ C4 (Improve) → modifications & solutions
 <br>
 <p><strong>Implementations:</strong></p>
 <ul>
-<li>`DMAIC_V3/phases/phase9_documentation_generation.py` — Phase 9 doc generation</li>
-<li>`local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py` — V2.3 doc agent</li>
-<li>`scripts/build_book.py` — Book compilation</li>
-<li>`scripts/generate_docs_html.py` — HTML doc generation</li>
-<li>`scripts/export_docs.py` — Documentation export</li>
+<li><code>DMAIC_V3/phases/phase9_documentation_generation.py</code> — Phase 9 doc generation</li>
+<li><code>local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py</code> — V2.3 doc agent</li>
+<li><code>scripts/build_book.py</code> — Book compilation</li>
+<li><code>scripts/generate_docs_html.py</code> — HTML doc generation</li>
+<li><code>scripts/export_docs.py</code> — Documentation export</li>
 </ul>
 <br>
 <p><strong>Capabilities:</strong></p>
@@ -310,10 +310,10 @@ C4 (Improve) → modifications & solutions
 <br>
 <p><strong>Implementations:</strong></p>
 <ul>
-<li>`DMAIC_V3/integrations/version_manager.py` — Version management</li>
-<li>`DMAIC_V3/core/temporal_metadata_engine.py` — Temporal tracking</li>
-<li>`docs/deep_analysis_dashboard.html` — Interactive dashboard</li>
-<li>`cryo_dashboard_v0_3_0/index.html` — Cryo visualization dashboard</li>
+<li><code>DMAIC_V3/integrations/version_manager.py</code> — Version management</li>
+<li><code>DMAIC_V3/core/temporal_metadata_engine.py</code> — Temporal tracking</li>
+<li><code>docs/deep_analysis_dashboard.html</code> — Interactive dashboard</li>
+<li><code>cryo_dashboard_v0_3_0/index.html</code> — Cryo visualization dashboard</li>
 </ul>
 <br>
 <p><strong>Capabilities:</strong></p>
@@ -327,14 +327,14 @@ C4 (Improve) → modifications & solutions
 <h2>4.4 Dashboard Assets</h2>
 <table>
 <tr><th>Dashboard</th><th>Path</th><th>Type</th><th>Status</th></tr>
-<tr><td>Deep Analysis</td><td>`docs/deep_analysis_dashboard.html`</td><td>Static HTML/JS</td><td>🟢 Working</td></tr>
-<tr><td>Cryo Dashboard</td><td>`cryo_dashboard_v0_3_0/index.html`</td><td>Static HTML</td><td>🟡 Needs data</td></tr>
-<tr><td>Main Index</td><td>`docs/index.html`</td><td>Static HTML</td><td>🟢 Working</td></tr>
-<tr><td>FINAL Handover</td><td>`docs/FINAL_HANDOVER.html`</td><td>Static HTML</td><td>🟢 Working</td></tr>
-<tr><td>Dashboard</td><td>`docs/dashboard.html`</td><td>Static HTML</td><td>🟢 Working</td></tr>
+<tr><td>Deep Analysis</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>Static HTML/JS</td><td>🟢 Working</td></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>Static HTML</td><td>🟡 Needs data</td></tr>
+<tr><td>Main Index</td><td><code>docs/index.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
+<tr><td>FINAL Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
+<tr><td>Dashboard</td><td><code>docs/dashboard.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
 </table>
 <br></div>
-<div id="ch05_orchestration_layer" class="chapter" style="display:none"><h1>Chapter 5: Clusters 7-8 — Orchestration Layer</h1>
+<div id="ch05_orchestration_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch05_orchestration_layer" style="display:none"><h1>Chapter 5: Clusters 7-8 — Orchestration Layer</h1>
 <br>
 <h2>5.1 Overview</h2>
 <p>The Orchestration Layer provides recursive self-improvement and central coordination.</p>
@@ -345,17 +345,19 @@ C4 (Improve) → modifications & solutions
 <br>
 <p><strong>Implementations:</strong></p>
 <ul>
-<li>`local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py` — Recursive agent</li>
-<li>`DMAIC_V3/convergence/change_detector.py` — Change detection (FIXED)</li>
-<li>`scripts/check_convergence.py` — Convergence checking</li>
+<li><code>local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py</code> — Recursive agent</li>
+<li><code>DMAIC_V3/convergence/change_detector.py</code> — Change detection (FIXED)</li>
+<li><code>scripts/check_convergence.py</code> — Convergence checking</li>
 </ul>
 <br>
 <p><strong>Convergence Detection:</strong></p>
 <pre><code>
+from pathlib import Path
 from DMAIC_V3.convergence.change_detector import ChangeDetector
-detector = ChangeDetector(repo_path='.')
-changes = detector.detect_changes()
-if not detector.has_changes():
+detector = ChangeDetector(workspace_root=Path('.'), state_dir=Path('.dmaic_state'))
+current_files = [p for p in Path('.').rglob('*.py')]
+changes = detector.detect_changes(current_files)
+if not changes:
     print("Converged!")  # No more changes needed
 </code></pre>
 <br>
@@ -375,9 +377,8 @@ if not detector.has_changes():
 <br>
 <p><strong>Key Classes:</strong></p>
 <ul>
-<li>`TwelveClusterOrchestrator` — Main orchestrator with ThreadPoolExecutor</li>
-<li>`ClusterConfig` — Per-cluster configuration</li>
-<li>`OrchestratorV3` — V3 orchestrator variant</li>
+<li><code>TwelveClusterOrchestrator</code> — Main orchestrator with ThreadPoolExecutor</li>
+<li><code>ClusterConfig</code> — Per-cluster configuration</li>
 </ul>
 <br>
 <p><strong>Orchestrator Hierarchy (4 levels):</strong></p>
@@ -389,20 +390,20 @@ if not detector.has_changes():
 <p><strong>Pipeline Orchestrator Variants:</strong></p>
 <table>
 <tr><th>Variant</th><th>Path</th><th>Status</th></tr>
-<tr><td>Primary</td><td>`DMAIC_V3/full_pipeline_orchestrator.py`</td><td>🟢 Canonical</td></tr>
-<tr><td>Fixed</td><td>`DMAIC_V3/full_pipeline_orchestrator_fixed.py`</td><td>🟢 Clean</td></tr>
-<tr><td>Corrupted</td><td>`DMAIC_V3/full_pipeline_orchestrator_corrupted.py`</td><td>🔴 Merge conflict</td></tr>
-<tr><td>v032</td><td>`ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py`</td><td>🟢 v032 variant</td></tr>
+<tr><td>Primary</td><td><code>DMAIC_V3/full_pipeline_orchestrator.py</code></td><td>🟢 Canonical</td></tr>
+<tr><td>Fixed</td><td><code>DMAIC_V3/full_pipeline_orchestrator_fixed.py</code></td><td>🟢 Clean</td></tr>
+<tr><td>Corrupted</td><td><code>DMAIC_V3/full_pipeline_orchestrator_corrupted.py</code></td><td>🔴 Merge conflict</td></tr>
+<tr><td>v032</td><td><code>ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py</code></td><td>🟢 v032 variant</td></tr>
 </table>
 <br>
 <h2>5.4 Execution Modes</h2>
 <ul>
-<li>**Parallel** — All 12 clusters via ThreadPoolExecutor (default)</li>
-<li>**Sequential** — Phase-by-phase execution</li>
-<li>**Hybrid** — Parallel within phases, sequential across phases</li>
+<li><strong>Parallel</strong> — All 12 clusters via ThreadPoolExecutor (default)</li>
+<li><strong>Sequential</strong> — Phase-by-phase execution</li>
+<li><strong>Hybrid</strong> — Parallel within phases, sequential across phases</li>
 </ul>
 <br></div>
-<div id="ch06_knowledge_layer" class="chapter" style="display:none"><h1>Chapter 6: Clusters 9-12 — Knowledge Layer</h1>
+<div id="ch06_knowledge_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch06_knowledge_layer" style="display:none"><h1>Chapter 6: Clusters 9-12 — Knowledge Layer</h1>
 <br>
 <h2>6.1 Overview</h2>
 <p>The Knowledge Layer provides the foundation services: task scheduling, governance, </p>
@@ -479,7 +480,7 @@ C11 (Temporal) ←→ C12 (Metrics) — History ↔ Performance
     └──→ All Clusters (C1-C8) ←──┘
 </code></pre>
 <br></div>
-<div id="ch07_dow_governance" class="chapter" style="display:none"><h1>Chapter 7: DOW Governance Framework & Omnipotent Oversight</h1>
+<div id="ch07_dow_governance" class="chapter" role="tabpanel" aria-labelledby="btn-ch07_dow_governance" style="display:none"><h1>Chapter 7: DOW Governance Framework & Omnipotent Oversight</h1>
 <br>
 <h2>7.1 What is DOW?</h2>
 <br>
@@ -538,20 +539,20 @@ C11 (Temporal) ←→ C12 (Metrics) — History ↔ Performance
 <br>
 <p>The staging directory contains the DOW-ABACUS integration bridge:</p>
 <ul>
-<li>`staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py`</li>
+<li><code>staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py</code></li>
 <li>Supports 5 integration modes: DOW_ONLY, DMAIC_ONLY, UNIFIED, PARALLEL, SEQUENTIAL</li>
 </ul>
 <br>
 <h2>7.7 DOW Key Documents</h2>
 <table>
 <tr><th>Document</th><th>Purpose</th></tr>
-<tr><td>`DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md`</td><td>Master integration doc</td></tr>
-<tr><td>`DMAIC_V3/DOW_INTEGRATION_GAP_ANALYSIS.md`</td><td>Gap analysis</td></tr>
-<tr><td>`tool_ecosystem_map.md`</td><td>Tool ecosystem with DOW overlay</td></tr>
-<tr><td>`ABACUS-v031/dow_engine_config.yaml`</td><td>Canonical config</td></tr>
+<tr><td><code>DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md</code></td><td>Master integration doc</td></tr>
+<tr><td><code>DMAIC_V3/DOW_INTEGRATION_GAP_ANALYSIS.md</code></td><td>Gap analysis</td></tr>
+<tr><td><code>tool_ecosystem_map.md</code></td><td>Tool ecosystem with DOW overlay</td></tr>
+<tr><td><code>ABACUS-v031/dow_engine_config.yaml</code></td><td>Canonical config</td></tr>
 </table>
 <br></div>
-<div id="ch08_keb_tools" class="chapter" style="display:none"><h1>Chapter 8: KEB & Tool Ecosystem Integration</h1>
+<div id="ch08_keb_tools" class="chapter" role="tabpanel" aria-labelledby="btn-ch08_keb_tools" style="display:none"><h1>Chapter 8: KEB & Tool Ecosystem Integration</h1>
 <br>
 <h2>8.1 KEB Architecture</h2>
 <br>
@@ -581,30 +582,30 @@ KEB Execution Engine
 <h3>Engineering Tools</h3>
 <table>
 <tr><th>Tool</th><th>Path</th><th>Purpose</th><th>Type</th></tr>
-<tr><td>Cryo Dashboard</td><td>`cryo_dashboard_v0_3_0/`</td><td>Cryogenic data visualization</td><td>Static HTML</td></tr>
-<tr><td>RTM Integration</td><td>`rtm_integration/`</td><td>Requirements traceability</td><td>Python + Excel</td></tr>
-<tr><td>Metrics Collector</td><td>`fast_metrics_collector.py`</td><td>Performance metrics</td><td>Python</td></tr>
-<tr><td>Smoke Tests</td><td>`abacus_v21_smoke_tests.py`</td><td>System validation</td><td>Python</td></tr>
-<tr><td>Demo System</td><td>`demo_integrated_system.py`</td><td>Integration demo</td><td>Python</td></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/</code></td><td>Cryogenic data visualization</td><td>Static HTML</td></tr>
+<tr><td>RTM Integration</td><td><code>rtm_integration/</code></td><td>Requirements traceability</td><td>Python + Excel</td></tr>
+<tr><td>Metrics Collector</td><td><code>fast_metrics_collector.py</code></td><td>Performance metrics</td><td>Python</td></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>System validation</td><td>Python</td></tr>
+<tr><td>Demo System</td><td><code>demo_integrated_system.py</code></td><td>Integration demo</td><td>Python</td></tr>
 </table>
 <br>
 <h3>Dashboards</h3>
 <table>
 <tr><th>Dashboard</th><th>Path</th><th>Hosting</th><th>Status</th></tr>
-<tr><td>Deep Analysis</td><td>`docs/deep_analysis_dashboard.html`</td><td>GitHub Pages ✅</td><td>Working</td></tr>
-<tr><td>Cryo Dashboard</td><td>`cryo_dashboard_v0_3_0/index.html`</td><td>GitHub Pages ✅</td><td>Needs data</td></tr>
-<tr><td>Main Portal</td><td>`docs/index.html`</td><td>GitHub Pages ✅</td><td>Working</td></tr>
-<tr><td>FINAL Handover</td><td>`docs/FINAL_HANDOVER.html`</td><td>GitHub Pages ✅</td><td>Working</td></tr>
+<tr><td>Deep Analysis</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>GitHub Pages ✅</td><td>Needs data</td></tr>
+<tr><td>Main Portal</td><td><code>docs/index.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
+<tr><td>FINAL Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
 </table>
 <br>
 <h3>CI/CD Tools</h3>
 <table>
 <tr><th>Tool</th><th>Path</th><th>Purpose</th></tr>
-<tr><td>CI/CD Orchestrator</td><td>`cicd_github_orchestrator.py`</td><td>GitHub workflow management</td></tr>
-<tr><td>CD Monitor</td><td>`cd_monitor.py`</td><td>Deployment monitoring</td></tr>
-<tr><td>CI Monitor</td><td>`ci_monitor_local.py`</td><td>Local CI monitoring</td></tr>
-<tr><td>Workflow Analyzer</td><td>`workflow_analyzer.py`</td><td>GH Actions analysis</td></tr>
-<tr><td>Deploy Helper</td><td>`github_azure_deployment_helper.py`</td><td>Azure deployment</td></tr>
+<tr><td>CI/CD Orchestrator</td><td><code>cicd_github_orchestrator.py</code></td><td>GitHub workflow management</td></tr>
+<tr><td>CD Monitor</td><td><code>cd_monitor.py</code></td><td>Deployment monitoring</td></tr>
+<tr><td>CI Monitor</td><td><code>ci_monitor_local.py</code></td><td>Local CI monitoring</td></tr>
+<tr><td>Workflow Analyzer</td><td><code>workflow_analyzer.py</code></td><td>GH Actions analysis</td></tr>
+<tr><td>Deploy Helper</td><td><code>github_azure_deployment_helper.py</code></td><td>Azure deployment</td></tr>
 </table>
 <br>
 <h2>8.3 CRYO_LINAC Framework</h2>
@@ -625,7 +626,7 @@ KEB Execution Engine
 <p>5. <strong>Documentation Agent</strong> — Report creation</p>
 <p>6. <strong>Recursive Agent</strong> — Self-improvement</p>
 <br></div>
-<div id="ch09_version_lineage" class="chapter" style="display:none"><h1>Chapter 9: Version Lineage & Migration Paths</h1>
+<div id="ch09_version_lineage" class="chapter" role="tabpanel" aria-labelledby="btn-ch09_version_lineage" style="display:none"><h1>Chapter 9: Version Lineage & Migration Paths</h1>
 <br>
 <h2>9.1 Version Timeline</h2>
 <br>
@@ -652,46 +653,46 @@ KEB Execution Engine
 <br>
 <table>
 <tr><th>Version</th><th>Directory</th><th>Key Content</th></tr>
-<tr><td>v2.1</td><td>Root-level `ABACUS_V21_*` files</td><td>Deployment, migration, architecture</td></tr>
-<tr><td>v0.31</td><td>`ABACUS-v031/`</td><td>Canonical indexes, DOW config</td></tr>
-<tr><td>v0.32</td><td>`ABACUS-v032/`</td><td>Full pipeline, Docker deployment</td></tr>
-<tr><td>UNIFIED</td><td>`ABACUS-UNIFIED/`</td><td>Merged knowledge, agent registry</td></tr>
-<tr><td>v2.3</td><td>`local_mcp/`</td><td>Agent orchestrator, knowledge integration</td></tr>
-<tr><td>v3.3</td><td>`DMAIC_V3/`</td><td>V3 engine, 12-cluster, all phases</td></tr>
+<tr><td>v2.1</td><td>Root-level <code>ABACUS_V21_*</code> files</td><td>Deployment, migration, architecture</td></tr>
+<tr><td>v0.31</td><td><code>ABACUS-v031/</code></td><td>Canonical indexes, DOW config</td></tr>
+<tr><td>v0.32</td><td><code>ABACUS-v032/</code></td><td>Full pipeline, Docker deployment</td></tr>
+<tr><td>UNIFIED</td><td><code>ABACUS-UNIFIED/</code></td><td>Merged knowledge, agent registry</td></tr>
+<tr><td>v2.3</td><td><code>local_mcp/</code></td><td>Agent orchestrator, knowledge integration</td></tr>
+<tr><td>v3.3</td><td><code>DMAIC_V3/</code></td><td>V3 engine, 12-cluster, all phases</td></tr>
 </table>
 <br>
 <h2>9.3 Migration Paths</h2>
 <br>
 <h3>v2.1 → v0.31</h3>
 <ul>
-<li>**What:** Establish canonical foundation</li>
-<li>**Key Change:** `canonical.index.json` becomes SSOT</li>
-<li>**Risk:** Low (additive)</li>
-<li>**Guide:** `docs_versioned/v2.1/migration/to_v031.md`</li>
+<li><strong>What:</strong> Establish canonical foundation</li>
+<li><strong>Key Change:</strong> <code>canonical.index.json</code> becomes SSOT</li>
+<li><strong>Risk:</strong> Low (additive)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v2.1/migration/to_v031.md</code></li>
 </ul>
 <br>
 <h3>v0.31 → v0.32</h3>
 <ul>
-<li>**What:** Extend to 10-phase pipeline</li>
-<li>**Key Change:** Phases 6-9 added, Docker support</li>
-<li>**Risk:** Low (extension)</li>
-<li>**Guide:** `docs_versioned/v0.31/migration/to_v032.md`</li>
+<li><strong>What:</strong> Extend to 10-phase pipeline</li>
+<li><strong>Key Change:</strong> Phases 6-9 added, Docker support</li>
+<li><strong>Risk:</strong> Low (extension)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v0.31/migration/to_v032.md</code></li>
 </ul>
 <br>
 <h3>v0.32 → v2.3</h3>
 <ul>
-<li>**What:** Add MCP integration layer</li>
-<li>**Key Change:** Agent orchestrator, IDE connectivity</li>
-<li>**Risk:** Medium (new dependency: MCP protocol)</li>
-<li>**Guide:** `docs_versioned/v0.32/migration/to_v23.md`</li>
+<li><strong>What:</strong> Add MCP integration layer</li>
+<li><strong>Key Change:</strong> Agent orchestrator, IDE connectivity</li>
+<li><strong>Risk:</strong> Medium (new dependency: MCP protocol)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v0.32/migration/to_v23.md</code></li>
 </ul>
 <br>
 <h3>v2.3 → v3.3</h3>
 <ul>
-<li>**What:** DMAIC V3 engine with 12-cluster architecture</li>
-<li>**Key Change:** Complete engine rewrite, parallel execution</li>
-<li>**Risk:** Medium (structural changes)</li>
-<li>**Guide:** `docs_versioned/v2.3/migration/to_v33.md`</li>
+<li><strong>What:</strong> DMAIC V3 engine with 12-cluster architecture</li>
+<li><strong>Key Change:</strong> Complete engine rewrite, parallel execution</li>
+<li><strong>Risk:</strong> Medium (structural changes)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v2.3/migration/to_v33.md</code></li>
 </ul>
 <br>
 <h2>9.4 ⚠️ Critical: All Versions Are Active</h2>
@@ -706,12 +707,12 @@ KEB Execution Engine
 <br>
 <h2>9.5 Git Heritage</h2>
 <ul>
-<li>**Total Commits:** 558</li>
-<li>**Key Branches:** main, deep-analysis-phase2-deliverables</li>
-<li>**Parallel Development Streams:** 8+ identified</li>
+<li><strong>Total Commits:</strong> 558</li>
+<li><strong>Key Branches:</strong> main, deep-analysis-phase2-deliverables</li>
+<li><strong>Parallel Development Streams:</strong> 8+ identified</li>
 </ul>
 <br></div>
-<div id="ch10_deployment" class="chapter" style="display:none"><h1>Chapter 10: Entry Points, Deployment & Operations</h1>
+<div id="ch10_deployment" class="chapter" role="tabpanel" aria-labelledby="btn-ch10_deployment" style="display:none"><h1>Chapter 10: Entry Points, Deployment & Operations</h1>
 <br>
 <h2>10.1 Quick Start</h2>
 <br>
@@ -731,30 +732,30 @@ open docs/deep_analysis_dashboard.html
 <h3>Python Entry Points</h3>
 <table>
 <tr><th>Entry Point</th><th>Path</th><th>Purpose</th><th>Status</th></tr>
-<tr><td>Full Pipeline</td><td>`DMAIC_V3/full_pipeline_orchestrator.py`</td><td>Run all DMAIC phases</td><td>🟢</td></tr>
-<tr><td>12-Cluster</td><td>`DMAIC_V3/core/twelve_cluster_orchestrator.py`</td><td>Parallel execution</td><td>🟢</td></tr>
-<tr><td>v032 Pipeline</td><td>`ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py`</td><td>v032 pipeline</td><td>🟢</td></tr>
-<tr><td>Demo System</td><td>`demo_integrated_system.py`</td><td>Integration demo</td><td>🟡</td></tr>
-<tr><td>Deployment</td><td>`run_comprehensive_deployment.py`</td><td>Full deploy</td><td>🟡</td></tr>
-<tr><td>CI/CD</td><td>`cicd_github_orchestrator.py`</td><td>Workflow management</td><td>🟢</td></tr>
-<tr><td>Smoke Tests</td><td>`abacus_v21_smoke_tests.py`</td><td>Validation</td><td>🟢</td></tr>
+<tr><td>Full Pipeline</td><td><code>DMAIC_V3/full_pipeline_orchestrator.py</code></td><td>Run all DMAIC phases</td><td>🟢</td></tr>
+<tr><td>12-Cluster</td><td><code>DMAIC_V3/core/twelve_cluster_orchestrator.py</code></td><td>Parallel execution</td><td>🟢</td></tr>
+<tr><td>v032 Pipeline</td><td><code>ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py</code></td><td>v032 pipeline</td><td>🟢</td></tr>
+<tr><td>Demo System</td><td><code>demo_integrated_system.py</code></td><td>Integration demo</td><td>🟡</td></tr>
+<tr><td>Deployment</td><td><code>run_comprehensive_deployment.py</code></td><td>Full deploy</td><td>🟡</td></tr>
+<tr><td>CI/CD</td><td><code>cicd_github_orchestrator.py</code></td><td>Workflow management</td><td>🟢</td></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>Validation</td><td>🟢</td></tr>
 </table>
 <br>
 <h3>HTML Entry Points</h3>
 <table>
 <tr><th>Entry Point</th><th>Path</th><th>Purpose</th><th>GH Pages?</th></tr>
-<tr><td>Docs Portal</td><td>`docs/index.html`</td><td>Main documentation</td><td>✅ Yes</td></tr>
-<tr><td>Dashboard</td><td>`docs/deep_analysis_dashboard.html`</td><td>Analysis dashboard</td><td>✅ Yes</td></tr>
-<tr><td>Cryo Dash</td><td>`cryo_dashboard_v0_3_0/index.html`</td><td>Cryo visualization</td><td>✅ Yes</td></tr>
-<tr><td>Handover</td><td>`docs/FINAL_HANDOVER.html`</td><td>Handover document</td><td>✅ Yes</td></tr>
+<tr><td>Docs Portal</td><td><code>docs/index.html</code></td><td>Main documentation</td><td>✅ Yes</td></tr>
+<tr><td>Dashboard</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>Analysis dashboard</td><td>✅ Yes</td></tr>
+<tr><td>Cryo Dash</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>Cryo visualization</td><td>✅ Yes</td></tr>
+<tr><td>Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>Handover document</td><td>✅ Yes</td></tr>
 </table>
 <br>
 <h3>Shell Entry Points</h3>
 <table>
 <tr><th>Entry Point</th><th>Path</th><th>Purpose</th></tr>
-<tr><td>Deploy</td><td>`scripts/deploy_to_github.sh`</td><td>GitHub deployment</td></tr>
-<tr><td>Setup</td><td>`setup_github.sh`</td><td>Git configuration</td></tr>
-<tr><td>Permissions</td><td>`test_permissions.sh`</td><td>Permission validation</td></tr>
+<tr><td>Deploy</td><td><code>scripts/deploy_to_github.sh</code></td><td>GitHub deployment</td></tr>
+<tr><td>Setup</td><td><code>setup_github.sh</code></td><td>Git configuration</td></tr>
+<tr><td>Permissions</td><td><code>test_permissions.sh</code></td><td>Permission validation</td></tr>
 </table>
 <br>
 <h2>10.3 Docker Deployment</h2>
@@ -786,53 +787,53 @@ cp .env.example .env
 <br>
 <p>The <code>docs/</code> directory is GitHub Pages-ready:</p>
 <ul>
-<li>`docs/_config.yml` — Jekyll configuration</li>
-<li>`docs/index.html` — Landing page</li>
+<li><code>docs/_config.yml</code> — Jekyll configuration</li>
+<li><code>docs/index.html</code> — Landing page</li>
 <li>All HTML dashboards are static (no backend required)</li>
 </ul>
 <br></div>
-<div id="ch11_testing" class="chapter" style="display:none"><h1>Chapter 11: Integration Testing & Quality Assurance</h1>
+<div id="ch11_testing" class="chapter" role="tabpanel" aria-labelledby="btn-ch11_testing" style="display:none"><h1>Chapter 11: Integration Testing & Quality Assurance</h1>
 <br>
 <h2>11.1 Test Infrastructure</h2>
 <br>
 <h3>Test Files</h3>
 <table>
 <tr><th>Test</th><th>Path</th><th>Purpose</th><th>Status</th></tr>
-<tr><td>Smoke Tests</td><td>`abacus_v21_smoke_tests.py`</td><td>Core validation</td><td>🟢</td></tr>
-<tr><td>Integration Bridge</td><td>`staging/test_integration_bridge.py`</td><td>DOW-ABACUS bridge</td><td>🟡</td></tr>
-<tr><td>CI/CD Roundtrip</td><td>`run_cicd_roundtrip_test.py`</td><td>End-to-end CI/CD</td><td>🟡</td></tr>
-<tr><td>Permissions</td><td>`test_permissions.sh`</td><td>Access validation</td><td>🟢</td></tr>
-<tr><td>pytest config</td><td>`pytest.ini`</td><td>Test configuration</td><td>🟢</td></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>Core validation</td><td>🟢</td></tr>
+<tr><td>Integration Bridge</td><td><code>staging/test_integration_bridge.py</code></td><td>DOW-ABACUS bridge</td><td>🟡</td></tr>
+<tr><td>CI/CD Roundtrip</td><td><code>run_cicd_roundtrip_test.py</code></td><td>End-to-end CI/CD</td><td>🟡</td></tr>
+<tr><td>Permissions</td><td><code>test_permissions.sh</code></td><td>Access validation</td><td>🟢</td></tr>
+<tr><td>pytest config</td><td><code>pytest.ini</code></td><td>Test configuration</td><td>🟢</td></tr>
 </table>
 <br>
 <h2>11.2 Import Validation Results</h2>
 <br>
 <h3>✅ Successful Imports</h3>
 <ul>
-<li>`DMAIC_V3.config.DMAICConfig` — Core configuration</li>
-<li>`DMAIC_V3.core.state.StateManager` — State management</li>
-<li>`DMAIC_V3.core.twelve_cluster_orchestrator.TwelveClusterOrchestrator` — 12-cluster (with warnings)</li>
-<li>`DMAIC_V3.core.metrics` — Metrics system</li>
-<li>`DMAIC_V3.convergence.change_detector.ChangeDetector` — Change detection (after fix)</li>
+<li><code>DMAIC_V3.config.DMAICConfig</code> — Core configuration</li>
+<li><code>DMAIC_V3.core.state.StateManager</code> — State management</li>
+<li><code>DMAIC_V3.core.twelve_cluster_orchestrator.TwelveClusterOrchestrator</code> — 12-cluster (with warnings)</li>
+<li><code>DMAIC_V3.core.metrics</code> — Metrics system</li>
+<li><code>DMAIC_V3.convergence.change_detector.ChangeDetector</code> — Change detection (after fix)</li>
 </ul>
 <br>
 <h3>❌ Failed Imports</h3>
 <ul>
-<li>`dmaic_v3_engine` — Depended on broken `change_detector.py` (NOW FIXED)</li>
-<li>`local_mcp.agent_orchestrator` — Missing `__init__.py` (known issue)</li>
+<li><code>dmaic_v3_engine</code> — Depended on broken <code>change_detector.py</code> (NOW FIXED)</li>
+<li><code>local_mcp.agent_orchestrator</code> — Module path unavailable (<code>agent_orchestrator_v3.0.py</code> is not importable as a standard dotted module name)</li>
 </ul>
 <br>
 <h2>11.3 Syntax Validation</h2>
 <ul>
-<li>`change_detector.py` — ✅ FIXED (unterminated string, missing method, duplicate)</li>
-<li>`full_pipeline_orchestrator_corrupted.py` — 🔴 Merge conflict (use `_fixed.py`)</li>
-<li>All other critical Python files — ✅ Valid syntax</li>
+<li><code>change_detector.py</code> — ✅ FIXED (unterminated string, missing method, duplicate)</li>
+<li><code>full_pipeline_orchestrator_corrupted.py</code> — 🔴 Merge conflict (use <code>_fixed.py</code>)</li>
+<li>Selected root scripts (11/11) — ✅ Valid syntax; note that <code>DMAIC_V3/core/temporal_metadata_engine.py</code> and <code>DMAIC_V3/core/ranking_engine.py</code> still report syntax errors in import checks</li>
 </ul>
 <br>
 <h2>11.4 GitHub Actions Workflow Status</h2>
 <ul>
 <li>32 workflows identified</li>
-<li>Key issues: `ci-codex.yml` typo (FIXED), outdated Python versions</li>
+<li>Key issues: <code>ci-codex.yml</code> typo (FIXED), outdated Python versions</li>
 <li>Recommendation: Consolidate from 32 to ~8 canonical workflows</li>
 </ul>
 <br>
@@ -841,18 +842,18 @@ cp .env.example .env
 <tr><th>Metric</th><th>Value</th><th>Target</th></tr>
 <tr><td>ABACUS-UNIFIED Quality</td><td>92.5/100</td><td>90/100 ✅</td></tr>
 <tr><td>Import Success Rate</td><td>~85%</td><td>95%</td></tr>
-<tr><td>Syntax Error Rate</td><td><1%</td><td>0%</td></tr>
+<tr><td>Syntax Error Rate</td><td>&lt;1%</td><td>0%</td></tr>
 <tr><td>Documentation Coverage</td><td>High</td><td>Complete</td></tr>
 <tr><td>Test Coverage</td><td>Partial</td><td>Full</td></tr>
 </table>
 <br>
 <h2>11.6 Known Blockers</h2>
 <p>1. KEB/GBOGEB timeout issues in execution</p>
-<p>2. Missing <code>local_mcp/__init__.py</code></p>
+<p>2. Non-importable dotted module filenames in <code>local_mcp/</code> (for example <code>agent_orchestrator_v3.0.py</code>)</p>
 <p>3. Pipeline orchestrator needs consolidation (4 variants)</p>
-<p>4. 12 zero-byte placeholder files need content</p>
+<p>4. Multiple zero-byte placeholder files need content</p>
 <br></div>
-<div id="ch12_roadmap" class="chapter" style="display:none"><h1>Chapter 12: Future Roadmap & Open Issues</h1>
+<div id="ch12_roadmap" class="chapter" role="tabpanel" aria-labelledby="btn-ch12_roadmap" style="display:none"><h1>Chapter 12: Future Roadmap & Open Issues</h1>
 <br>
 <h2>12.1 Open Issues (Priority Ordered)</h2>
 <br>
@@ -861,7 +862,7 @@ cp .env.example .env
 <tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
 <tr><td>Orchestrator Consolidation</td><td>4 variants → 1 canonical</td><td>Confusion, maintenance</td></tr>
 <tr><td>KEB/GBOGEB Timeouts</td><td>Execution hangs in full pipeline</td><td>Blocks end-to-end runs</td></tr>
-<tr><td>Missing `__init__.py`</td><td>`local_mcp/` not importable</td><td>Import failures</td></tr>
+<tr><td>Non-importable module naming in <code>local_mcp/</code></td><td>Dotted filenames like <code>agent_orchestrator_v3.0.py</code> break standard imports</td><td>Import failures</td></tr>
 </table>
 <br>
 <h3>P1 — High</h3>
@@ -869,7 +870,7 @@ cp .env.example .env
 <tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
 <tr><td>Zero-byte Placeholders</td><td>12 files committed empty</td><td>Missing functionality</td></tr>
 <tr><td>Workflow Consolidation</td><td>32 → ~8 workflows</td><td>CI/CD complexity</td></tr>
-<tr><td>`docs_versioned/`</td><td>Now created (this deliverable)</td><td>Documentation gaps</td></tr>
+<tr><td><code>docs_versioned/</code></td><td>Now created (this deliverable)</td><td>Documentation gaps</td></tr>
 </table>
 <br>
 <h3>P2 — Medium</h3>
@@ -892,11 +893,11 @@ cp .env.example .env
 <br>
 <h3>Phase 1: Stabilization (Immediate)</h3>
 <ul>
-<li>✅ Fix `change_detector.py` syntax error</li>
-<li>✅ Fix `ci-codex.yml` typo</li>
-<li>✅ Create `docs_versioned/` structure</li>
+<li>✅ Fix <code>change_detector.py</code> syntax error</li>
+<li>✅ Fix <code>ci-codex.yml</code> typo</li>
+<li>✅ Create <code>docs_versioned/</code> structure</li>
 <li>✅ Create handover book</li>
-<li>🔲 Add `local_mcp/__init__.py`</li>
+<li>🔲 Add <code>local_mcp/__init__.py</code></li>
 <li>🔲 Consolidate pipeline orchestrators</li>
 <li>🔲 Resolve KEB/GBOGEB timeouts</li>
 </ul>
@@ -945,9 +946,14 @@ cp .env.example .env
 <script>
 function showChapter(id) {
     document.querySelectorAll('.chapter').forEach(c => c.style.display = 'none');
-    document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sidebar button').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+    });
     document.getElementById(id).style.display = 'block';
-    document.getElementById('btn-' + id).classList.add('active');
+    const activeButton = document.getElementById('btn-' + id);
+    activeButton.classList.add('active');
+    activeButton.setAttribute('aria-selected', 'true');
 }
 </script>
 </body>

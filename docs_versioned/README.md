@@ -26,7 +26,7 @@ v2.1 (Production Baseline)
 ## Cross-Cutting Documentation
 - [Handover Book](handover_book/) — 12-Chapter comprehensive handover
 - [Migration Guides](#migration-paths) — Version-to-version migration paths
-- [Deprecation Notices](#deprecations) — What changed between versions
+- [Deprecation Notices](DEPRECATION_NOTICES.md) — What changed between versions
 
 ## Migration Paths
 - [v2.1 → v0.31](v2.1/migration/to_v031.md)

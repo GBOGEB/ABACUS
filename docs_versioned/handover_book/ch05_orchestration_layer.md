@@ -14,10 +14,12 @@ The Orchestration Layer provides recursive self-improvement and central coordina
 
 **Convergence Detection:**
 ```python
+from pathlib import Path
 from DMAIC_V3.convergence.change_detector import ChangeDetector
-detector = ChangeDetector(repo_path='.')
-changes = detector.detect_changes()
-if not detector.has_changes():
+detector = ChangeDetector(workspace_root=Path("."), state_dir=Path(".dmaic_state"))
+current_files = [p for p in Path(".").rglob("*.py")]
+changes = detector.detect_changes(current_files)
+if not changes:
     print("Converged!")  # No more changes needed
 ```
 
@@ -36,7 +38,6 @@ if not detector.has_changes():
 **Key Classes:**
 - `TwelveClusterOrchestrator` — Main orchestrator with ThreadPoolExecutor
 - `ClusterConfig` — Per-cluster configuration
-- `OrchestratorV3` — V3 orchestrator variant
 
 **Orchestrator Hierarchy (4 levels):**
 1. `TwelveClusterOrchestrator` — Top-level parallel coordinator

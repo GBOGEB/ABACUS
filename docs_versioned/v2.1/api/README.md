@@ -4,16 +4,16 @@
 ## Core Modules
 
 ### Smoke Test Suite (`abacus_v21_smoke_tests.py`)
-- `run_smoke_tests()` — Execute full smoke test battery
-- `validate_deployment()` — Verify deployment readiness
+- `ABACUSv21SmokeTests` — Smoke test runner class
+- `run_all_tests()` — Execute full smoke test battery
 
 ### Session Analyzer (`abacus_v21_session_tuple_analyzer.py`)  
 - `SessionTupleAnalyzer` — Analyze session data tuples
-- `analyze_session(session_data)` — Process individual session
+- `analyze_session()` — Process session artifacts from workspace
 
 ### System Feedback (`abacus_v21_system_feedback.py`)
-- `SystemFeedback` — Collect and route system feedback
-- `generate_report()` — Create feedback report
+- `SystemFeedbackGenerator` — Collect and route system feedback
+- `generate_feedback_report()` — Create system feedback report
 
 ### Deployment Package
 - `ABACUS_V21_DEPLOYMENT_PACKAGE/` — Contains deployment scripts

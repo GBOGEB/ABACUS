@@ -23,17 +23,20 @@ from DMAIC_V3.phases.phase1_define import Phase1Define
 
 ## Agent Framework
 ```python
-from DMAIC_V3.agents.framework import BaseAgent
+from DMAIC_V3.agents.framework import FrameworkAgent
 from DMAIC_V3.agents.self_ranking import SelfRankingAgent
-from DMAIC_V3.agents.health_checker import HealthChecker
+from DMAIC_V3.agents.health_checker import HealthCheckerAgent
 ```
 
 ## State Management
 ```python
-from DMAIC_V3.core.state import StateManager
-state = StateManager()
-state.save_phase_result(phase_id, result)
-state.get_phase_result(phase_id)
+from pathlib import Path
+from DMAIC_V3.core.state import PhaseStatus, StateManager
+state = StateManager(state_dir=Path(".dmaic_state"))
+state.start_iteration(1)
+state.start_phase("phase1_define", 1, input_data={"scope": "workspace"})
+state.end_phase("phase1_define", status=PhaseStatus.COMPLETED, output_data={"ok": True})
+state.get_phase_result("phase1_define")
 ```
 
 ## Configuration
@@ -45,9 +48,10 @@ config = DMAICConfig()
 
 ## Convergence Detection
 ```python
+from pathlib import Path
 from DMAIC_V3.convergence.change_detector import ChangeDetector
-detector = ChangeDetector(repo_path='.')
-changes = detector.detect_changes()
+detector = ChangeDetector(workspace_root=Path("."), state_dir=Path(".dmaic_state"))
+changes = detector.detect_changes([p for p in Path(".").rglob("*.py")])
 detector.has_changes()  # bool
 detector.get_change_summary()  # dict with stats
 ```

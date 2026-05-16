@@ -29,6 +29,7 @@ on:
     branches: [main]
     paths: ['docs/**']
 permissions:
+  contents: read
   pages: write
   id-token: write
 jobs:

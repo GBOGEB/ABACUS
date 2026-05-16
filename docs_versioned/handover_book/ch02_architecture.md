@@ -52,7 +52,7 @@ system components into 12 functional clusters across 4 tiers:
 | Phase 5: Control | C8, C10 | C11, C12 | Quality gates |
 | Phase 6: Knowledge | C5, C6, C9 | C7 | Knowledge extraction |
 | Phase 7-8: Action | C7, C8 | C11 | Action & TODO tracking |
-| Phase 9: Recursive | ALL | ALL | Full iteration cycle |
+| Phase 9: Documentation Generation | C5, C6, C8 | C10, C12 | Post-execution documentation and publication |
 
 ## 2.4 Implementation Location
 

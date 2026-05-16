@@ -4,7 +4,7 @@
 
 ## Summary
 - **Import Tests:** 15/17 passed
-- **Syntax Checks:** 11/11 passed
+- **Syntax Checks (selected root scripts):** 11/11 passed
 - **HTML Dashboards:** 6 found
 - **Engineering Tools:** 91 files cataloged
 
@@ -75,6 +75,6 @@
 
 ## Blockers for End-to-End Execution
 1. **KEB/GBOGEB not installed** — Import fallback works but limits functionality
-2. **Missing `local_mcp/__init__.py`** — Prevents package imports
+2. **Non-importable dotted filenames in `local_mcp/`** — `agent_orchestrator_v3.0.py` and similar files cannot be imported via standard module paths without a shim/rename
 3. **Pipeline orchestrator variants** — Need consolidation to single canonical
 4. **12 zero-byte files** — Placeholder functionality missing

@@ -7,7 +7,7 @@
 |-------|-------------|--------|
 | Orchestrator Consolidation | 4 variants → 1 canonical | Confusion, maintenance |
 | KEB/GBOGEB Timeouts | Execution hangs in full pipeline | Blocks end-to-end runs |
-| Missing `__init__.py` | `local_mcp/` not importable | Import failures |
+| Non-importable module naming in `local_mcp/` | Dotted filenames like `agent_orchestrator_v3.0.py` break standard imports | Import failures |
 
 ### P1 — High
 | Issue | Description | Impact |
@@ -37,7 +37,7 @@
 - ✅ Fix `ci-codex.yml` typo
 - ✅ Create `docs_versioned/` structure
 - ✅ Create handover book
-- 🔲 Add `local_mcp/__init__.py`
+- 🔲 Add import shims/aliases for dotted `local_mcp` module filenames
 - 🔲 Consolidate pipeline orchestrators
 - 🔲 Resolve KEB/GBOGEB timeouts
 

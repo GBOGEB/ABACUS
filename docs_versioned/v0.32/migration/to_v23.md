@@ -16,11 +16,11 @@ v2.3 introduces the MCP (Model Context Protocol) integration layer and upgraded 
 - `local_mcp/agents/` — Upgraded agent implementations
 
 ## Migration Steps
-1. Install MCP dependencies (see `local_mcp/` requirements)
+1. Install MCP dependencies from project requirements (`DMAIC_V3/requirements.txt`) and local MCP module imports
 2. Configure agent orchestrator
 3. Set up IDE integration if using VS Code/Cursor
 4. Validate with agent import tests
 
 ## ⚠️ Known Issue
-`local_mcp/` lacks `__init__.py` — direct Python package import fails. 
-Use `sys.path.insert()` workaround or add `__init__.py`.
+`local_mcp` contains dotted version filenames (for example `agent_orchestrator_v3.0.py`) that are not importable via standard dotted module paths.
+Use import shims/aliases or rename modules for stable package imports.
