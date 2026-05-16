@@ -14,4 +14,4 @@ Contains the V2.3 agent orchestrator and upgraded agents for the Model Context P
 | `agents/recursive_framework_v2.3_OPTIMIZED.py` | Recursive improvement agent |
 
 ## Note
-This directory lacks an `__init__.py` file, so it cannot be imported as a Python package directly. Use `sys.path.insert()` or add `__init__.py`.
+Import failures here are primarily due to dotted filenames (for example `agent_orchestrator_v3.0.py` and `knowledge_integration_v2.3.py`), which are not valid Python module names. Run these as scripts, rename to importable module names, or load by file path via `importlib`.
