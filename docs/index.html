@@ -1,43 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ABACUS Project Docs - Entry</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ABACUS – Recursive Multi-Agent Cryogenic Analysis System</title>
+  <meta name="description" content="ABACUS: A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis. 12-Cluster Architecture with DOW governance."/>
+  <meta name="keywords" content="ABACUS, DMAIC, cryogenic engineering, multi-agent, 12-cluster, DOW governance"/>
+  <link rel="stylesheet" href="assets/style.css"/>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; max-width: 960px; }
-    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-    code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+    .stats-bar{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
+    .stat{background:rgba(255,255,255,.15);padding:.6rem 1.2rem;border-radius:var(--radius);text-align:center;min-width:130px}
+    .stat .num{font-size:1.6rem;font-weight:700;display:block}
+    .stat .lbl{font-size:.78rem;opacity:.85}
+    .search-box{margin:1.5rem auto;max-width:500px;position:relative}
+    .search-box input{width:100%;padding:.7rem 1rem .7rem 2.5rem;border:1px solid var(--border);border-radius:var(--radius);font-size:1rem;background:var(--surface)}
+    .search-box::before{content:'🔍';position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:1rem}
+    .quick-links{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin:1rem 0}
+    .quick-links a{background:var(--primary);color:#fff;padding:.4rem .9rem;border-radius:4px;font-size:.85rem}
+    .quick-links a:hover{background:var(--primary-dark);text-decoration:none}
+    .updates{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-top:1.5rem}
+    .updates h3{margin:0 0 .5rem}
+    .updates li{font-size:.9rem;margin-bottom:.35rem;color:var(--text-secondary)}
   </style>
 </head>
 <body>
-  <h1>ABACUS Project Docs</h1>
-  <p><strong>Version:</strong> 1.0</p>
-  <p>This is the HTML entrypoint for ABACUS docs navigation.</p>
-  <div class="card">
-    <h2>Documentation</h2>
+
+<nav class="topnav">
+  <span class="brand">⚛️ ABACUS</span>
+  <a href="cryo/">Cryo Dashboard</a>
+  <a href="12-cluster/">12-Cluster</a>
+  <a href="dow/">DOW Governance</a>
+  <a href="testing/">Testing</a>
+  <a href="tools/">Engineering Tools</a>
+  <a href="versions/">Version Lineage</a>
+  <a href="handover_book.html">Handover Book</a>
+  <a href="deep_analysis_dashboard.html">Deep Analysis</a>
+</nav>
+
+<section class="hero">
+  <h1>ABACUS</h1>
+  <p>Recursive Self-Improving Multi-Agent System for Cryogenic Engineering Analysis</p>
+  <div class="stats-bar">
+    <div class="stat"><span class="num">558</span><span class="lbl">Commits Analyzed</span></div>
+    <div class="stat"><span class="num">12</span><span class="lbl">Agent Clusters</span></div>
+    <div class="stat"><span class="num">92.5</span><span class="lbl">Quality Score</span></div>
+    <div class="stat"><span class="num">1,327</span><span class="lbl">DOW References</span></div>
+    <div class="stat"><span class="num">41</span><span class="lbl">Doc Artifacts</span></div>
+  </div>
+  <div class="search-box">
+    <input type="text" id="globalSearch" placeholder="Search documentation…" onkeyup="filterCards(this.value)"/>
+  </div>
+  <div class="quick-links">
+    <a href="cryo/">🧊 Cryo Dashboard</a>
+    <a href="handover_book.html">📖 Handover Book</a>
+    <a href="deep_analysis_dashboard.html">📊 Deep Analysis</a>
+    <a href="dashboard.html">🎯 Project Dashboard</a>
+  </div>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>📂 Topic Dashboards</h2>
+    <div class="card-grid" id="cardContainer">
+
+      <div class="card" data-tags="cryo cryogenic dashboard helium analysis">
+        <h3>🧊 Cryogenic Analysis</h3>
+        <p>Interactive cryo dashboard with helium system analysis, heat load calculations, and cooldown simulations.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="cryo/">Open Dashboard →</a>
+      </div>
+
+      <div class="card" data-tags="12-cluster architecture agents orchestration">
+        <h3>🏗️ 12-Cluster Architecture</h3>
+        <p>Visual navigator for the 12 functional agent clusters spanning Analysis, Documentation, Recursive, and Knowledge tiers.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="12-cluster/">Explore Clusters →</a>
+      </div>
+
+      <div class="card" data-tags="dow governance framework compliance workflows">
+        <h3>🔒 DOW Governance</h3>
+        <p>Design-of-Work governance framework: compliance workflows, tool interconnections, and best practices.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="dow/">View Governance →</a>
+      </div>
+
+      <div class="card" data-tags="testing integration tests coverage CI">
+        <h3>🧪 Integration Testing</h3>
+        <p>Deep integration test results, coverage reports, and continuous testing status for the ABACUS pipeline.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="testing/">Test Results →</a>
+      </div>
+
+      <div class="card" data-tags="tools engineering catalog utilities scripts">
+        <h3>🛠️ Engineering Tools</h3>
+        <p>Full catalog of engineering tools with quick-launch buttons, dependency maps, and usage examples.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="tools/">Browse Tools →</a>
+      </div>
+
+      <div class="card" data-tags="versions lineage timeline migration upgrade">
+        <h3>📐 Version Lineage</h3>
+        <p>Interactive version timeline from v0.31 through v3.3 with migration guides and feature comparisons.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="versions/">View Lineage →</a>
+      </div>
+
+      <div class="card" data-tags="handover book documentation chapters">
+        <h3>📖 Handover Book</h3>
+        <p>Complete 12-chapter handover documentation covering architecture, execution, quality, and deployment.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="handover_book.html">Read Book →</a>
+      </div>
+
+      <div class="card" data-tags="deep analysis dashboard metrics">
+        <h3>📊 Deep Analysis Dashboard</h3>
+        <p>Comprehensive analysis dashboard with metrics, workflow status, SSOT artifacts, and recovery reports.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="deep_analysis_dashboard.html">Open Dashboard →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>⚡ System Status</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Status</th><th>Version</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>DMAIC V3 Engine</td><td><span class="badge badge-ok">Active</span></td><td>v3.3</td><td>9-phase pipeline with convergence detection</td></tr>
+        <tr><td>12-Cluster Orchestrator</td><td><span class="badge badge-ok">Active</span></td><td>v3.0</td><td>All 12 clusters mapped and documented</td></tr>
+        <tr><td>DOW Governance</td><td><span class="badge badge-ok">Active</span></td><td>v2.3</td><td>1,327 governance references</td></tr>
+        <tr><td>KEB Execution</td><td><span class="badge badge-warn">Timeout Fix</span></td><td>v2.3</td><td>Timeout handling improved</td></tr>
+        <tr><td>GBOGEB Observability</td><td><span class="badge badge-warn">Timeout Fix</span></td><td>v2.3</td><td>Graceful timeout handling added</td></tr>
+        <tr><td>Cryo Dashboard</td><td><span class="badge badge-ok">Active</span></td><td>v0.3.0</td><td>GitHub Pages ready</td></tr>
+        <tr><td>GitHub Pages</td><td><span class="badge badge-ok">Deployed</span></td><td>—</td><td>Serving from /docs on main</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="updates">
+    <h3>📢 Recent Updates</h3>
     <ul>
-      <li><a href="index.md">Markdown hub</a></li>
-      <li><a href="content/about-subject.md">content/about-subject.md</a></li>
-<li><a href="content/how-to-task.md">content/how-to-task.md</a></li>
-<li><a href="content/reference.md">content/reference.md</a></li>
+      <li><strong>May 2026</strong> – Phase 4: GitHub Pages deployment, 7 topic landing pages, timeout fixes, CI/CD workflows</li>
+      <li><strong>May 2026</strong> – Phase 3: 12-chapter handover book, deep integration tests, docs_versioned/ structure</li>
+      <li><strong>May 2026</strong> – Phase 2: Deep analysis dashboard, SSOT catalog, tool ecosystem map, 41 documentation artifacts</li>
+      <li><strong>May 2026</strong> – Phase 1: Comprehensive audit, 558 commits analyzed, recovery report, workflow inventory</li>
     </ul>
   </div>
-  <div class="card">
-    <h2>Repository Navigation</h2>
-    <ul>
-      <li><a href="../DMAIC_V3/">DMAIC_V3/</a></li>
-      <li><a href="../.github/workflows/">.github/workflows/</a></li>
-      <li><a href="../handover/">handover/</a></li>
-      <li><a href="dashboard.html">System dashboard</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2>Smoke-tested Repositories</h2>
-    <ul><li><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">GBOGEB/ABACUS</a></li>
-<li><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener">GBOGEB/CODEX</a></li>
-<li><a href="https://github.com/GBOGEB/morris.js" target="_blank" rel="noopener">GBOGEB/morris.js</a></li></ul>
-  </div>
-  <p><small>Generated: 2026-05-15T10:56:33.609668</small></p>
+
+</main>
+
+<footer class="footer">
+  ABACUS – Recursive Multi-Agent Cryogenic Analysis System &copy; 2026 |
+  <a href="https://github.com/GBOGEB/ABACUS">GitHub Repository</a>
+</footer>
+
+<script>
+function filterCards(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('.card').forEach(c=>{
+    const text=(c.textContent+' '+(c.dataset.tags||'')).toLowerCase();
+    c.style.display=text.includes(q)?'':'none';
+  });
+}
+</script>
 </body>
 </html>
