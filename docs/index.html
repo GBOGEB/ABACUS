@@ -3,41 +3,310 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ABACUS Project Docs - Entry</title>
+  <title>ABACUS Repository Navigation</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; max-width: 960px; }
-    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-    code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+    :root {
+      color-scheme: light;
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --ink: #162033;
+      --muted: #556070;
+      --line: #d9e1ec;
+      --accent: #1f5fbf;
+      --accent-soft: #e8f0ff;
+      --ok: #157347;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    header, main, footer {
+      width: min(1200px, calc(100% - 2rem));
+      margin: 0 auto;
+    }
+    header { padding: 2rem 0 1rem; }
+    h1, h2, h3 { margin: 0 0 0.75rem; }
+    p { margin: 0 0 1rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 1.5rem;
+    }
+    nav a, .chip {
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+    .hero, section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 24px rgba(22, 32, 51, 0.05);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .metric {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfcff;
+    }
+    .metric .value {
+      display: block;
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem;
+      background: #fff;
+    }
+    ul { margin: 0.25rem 0 0; padding-left: 1.1rem; }
+    li + li { margin-top: 0.35rem; }
+    code {
+      background: #eef2f7;
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+    }
+    .small { color: var(--muted); font-size: 0.94rem; }
+    .status { color: var(--ok); font-weight: 700; }
   </style>
 </head>
 <body>
-  <h1>ABACUS Project Docs</h1>
-  <p><strong>Version:</strong> 1.0</p>
-  <p>This is the HTML entrypoint for ABACUS docs navigation.</p>
-  <div class="card">
-    <h2>Documentation</h2>
-    <ul>
-      <li><a href="index.md">Markdown hub</a></li>
-      <li><a href="content/about-subject.md">content/about-subject.md</a></li>
-<li><a href="content/how-to-task.md">content/how-to-task.md</a></li>
-<li><a href="content/reference.md">content/reference.md</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2>Repository Navigation</h2>
-    <ul>
-      <li><a href="../DMAIC_V3/">DMAIC_V3/</a></li>
-      <li><a href="../.github/workflows/">.github/workflows/</a></li>
-      <li><a href="../handover/">handover/</a></li>
-      <li><a href="dashboard.html">System dashboard</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2>Smoke-tested Repositories</h2>
-    <ul><li><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">GBOGEB/ABACUS</a></li>
-<li><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener">GBOGEB/CODEX</a></li>
-<li><a href="https://github.com/GBOGEB/morris.js" target="_blank" rel="noopener">GBOGEB/morris.js</a></li></ul>
-  </div>
-  <p><small>Generated: 2026-05-15T10:56:33.609668</small></p>
+  <header>
+    <div class="hero">
+      <h1>ABACUS Repository Navigation</h1>
+      <p>House-cleaning hub for <strong>GBOGEB/ABACUS</strong>: repo hierarchy, function entry points, links, metrics, change logs, bridge/self-smoke/self-evaluation references, and canonical artefacts by type.</p>
+      <nav>
+        <a href="#hierarchy">Hierarchy</a>
+        <a href="#functions">Functions</a>
+        <a href="#links">Links</a>
+        <a href="#metrics">Metrics</a>
+        <a href="#change-log">Change log</a>
+        <a href="#bridge">Bridge + self-smoke</a>
+        <a href="#canonical">Canonical artefacts</a>
+        <a href="dashboard.html">Dashboard</a>
+      </nav>
+      <p class="small">
+        Primary repo:
+        <a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">github.com/GBOGEB/ABACUS</a>
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section id="metrics">
+      <h2>Repository metrics</h2>
+      <div class="grid">
+        <div class="metric"><span class="value">203</span>Python source files</div>
+        <div class="metric"><span class="value">524</span>Markdown artefacts</div>
+        <div class="metric"><span class="value">32</span>GitHub workflow files</div>
+        <div class="metric"><span class="value">13</span>DMAIC V3 test files</div>
+        <div class="metric"><span class="value">14</span>Changelog files</div>
+        <div class="metric"><span class="value">7</span>Canonical index files</div>
+        <div class="metric"><span class="value">20.83%</span>Maturity overall completion</div>
+        <div class="metric"><span class="value">Level 0</span>Current maturity level</div>
+      </div>
+      <p class="small">Snapshot sources: repository file inventory plus <code>maturity_assessment.json</code>.</p>
+    </section>
+
+    <section id="hierarchy">
+      <h2>Main repo inside: hierarchy</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Execution and core logic</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3" target="_blank" rel="noopener">DMAIC_V3/</a> — core DMAIC implementation, bridge, tests, convergence</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/src/dmaic" target="_blank" rel="noopener">src/dmaic/</a> — handover/idempotency/provenance/metrics modules</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/local_mcp" target="_blank" rel="noopener">local_mcp/</a> — orchestrator and optimized agents</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/scripts" target="_blank" rel="noopener">scripts/</a> — indexing, metrics, workflow verification, smoke helpers</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Documentation and handover</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs" target="_blank" rel="noopener">docs/</a> — GitHub Pages-ready HTML and markdown hub</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/handover" target="_blank" rel="noopener">handover/</a> — structured handover material</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/README.md" target="_blank" rel="noopener">README.md</a> — primary entry document</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/HANDOVER_PACKAGE_INDEX.md" target="_blank" rel="noopener">HANDOVER_PACKAGE_INDEX.md</a> — top-level package index</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Automation and versions</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">.github/workflows/</a> — CI/CD, bridge, smoke, and release automation</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-UNIFIED" target="_blank" rel="noopener">ABACUS-UNIFIED/</a> — unified package indexes and reference docs</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-v031" target="_blank" rel="noopener">ABACUS-v031/</a> and <a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-v032" target="_blank" rel="noopener">ABACUS-v032/</a> — versioned artefact sets</li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/production" target="_blank" rel="noopener">production/</a>, <a href="https://github.com/GBOGEB/ABACUS/tree/main/staging" target="_blank" rel="noopener">staging/</a> — deployment and integration staging areas</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="functions">
+      <h2>Functions and primary entry points</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Orchestration</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/local_mcp/agent_orchestrator_v3.0.py" target="_blank" rel="noopener">local_mcp/agent_orchestrator_v3.0.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/run_deployment_test_system.py" target="_blank" rel="noopener">run_deployment_test_system.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/demo_integrated_system.py" target="_blank" rel="noopener">demo_integrated_system.py</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Indexing and artefacts</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/scripts/generate_global_index.py" target="_blank" rel="noopener">scripts/generate_global_index.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/core/canonical_index.py" target="_blank" rel="noopener">DMAIC_V3/core/canonical_index.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/Artifact_Builder.ipynb" target="_blank" rel="noopener">Artifact_Builder.ipynb</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Metrics and analysis</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/src/dmaic/metrics.py" target="_blank" rel="noopener">src/dmaic/metrics.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/fast_metrics_collector.py" target="_blank" rel="noopener">fast_metrics_collector.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/scripts/dmaic_metrics_dump.py" target="_blank" rel="noopener">scripts/dmaic_metrics_dump.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/workflow_analyzer.py" target="_blank" rel="noopener">workflow_analyzer.py</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="links">
+      <h2>Links</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Repository hubs</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">GBOGEB/ABACUS</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs" target="_blank" rel="noopener">Docs folder</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">Workflow directory</a></li>
+            <li><a href="dashboard.html">HTML dashboard</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Indices and navigation</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS_V21_MASTER_INDEX.md" target="_blank" rel="noopener">ABACUS_V21_MASTER_INDEX.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_MASTER_INDEX.md" target="_blank" rel="noopener">DMAIC_MASTER_INDEX.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3_DOCUMENTATION_INDEX.md" target="_blank" rel="noopener">DMAIC_V3_DOCUMENTATION_INDEX.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/HANDOVER_PACKAGE_INDEX.md" target="_blank" rel="noopener">HANDOVER_PACKAGE_INDEX.md</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="change-log">
+      <h2>Change log</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Primary change logs</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/CHANGELOG.md" target="_blank" rel="noopener">DMAIC_V3/CHANGELOG.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/CHANGELOG_V2.2.md" target="_blank" rel="noopener">CHANGELOG_V2.2.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/CHANGELOG_V3.3_20251110.md" target="_blank" rel="noopener">CHANGELOG_V3.3_20251110.md</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Status and progression</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/PROJECT_STATUS_SUMMARY.md" target="_blank" rel="noopener">PROJECT_STATUS_SUMMARY.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3_IMPLEMENTATION_STATUS.md" target="_blank" rel="noopener">DMAIC_V3_IMPLEMENTATION_STATUS.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/MASTER_EXECUTION_TRACKER.md" target="_blank" rel="noopener">MASTER_EXECUTION_TRACKER.md</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="bridge">
+      <h2>Bridge, self-smoke, and self-evaluation</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Bridge implementation</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/core/handover_bridge.py" target="_blank" rel="noopener">DMAIC_V3/core/handover_bridge.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/core/test_system_bridge.py" target="_blank" rel="noopener">DMAIC_V3/core/test_system_bridge.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/abacus_v21_bridge_validation_tests.py" target="_blank" rel="noopener">abacus_v21_bridge_validation_tests.py</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Self-smoke references</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/.github/workflows/smoke-test.yml" target="_blank" rel="noopener">.github/workflows/smoke-test.yml</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/abacus_v21_smoke_tests.py" target="_blank" rel="noopener">abacus_v21_smoke_tests.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/tests/test_bridge_integration.py" target="_blank" rel="noopener">DMAIC_V3/tests/test_bridge_integration.py</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Self-evaluation and maturity</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/maturity_assessment.json" target="_blank" rel="noopener">maturity_assessment.json</a> — <span class="status">Level 0 / 20.83%</span></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/convergence/maturity_tracker.py" target="_blank" rel="noopener">DMAIC_V3/convergence/maturity_tracker.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/.github/workflows/bridge-ci.yml" target="_blank" rel="noopener">.github/workflows/bridge-ci.yml</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="canonical">
+      <h2>Canonical artefacts by type</h2>
+      <div class="columns">
+        <div class="panel">
+          <h3>Code registries</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_V3/core/canonical_index.py" target="_blank" rel="noopener">DMAIC_V3/core/canonical_index.py</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/scripts/generate_global_index.py" target="_blank" rel="noopener">scripts/generate_global_index.py</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>JSON and YAML indexes</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS-UNIFIED/canonical_index.json" target="_blank" rel="noopener">ABACUS-UNIFIED/canonical_index.json</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS-v031/canonical.index.json" target="_blank" rel="noopener">ABACUS-v031/canonical.index.json</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS-v031/canonical.index.yaml" target="_blank" rel="noopener">ABACUS-v031/canonical.index.yaml</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS-v032/STATS/DMAIC_FULL/canonical.index.json" target="_blank" rel="noopener">ABACUS-v032/STATS/DMAIC_FULL/canonical.index.json</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Markdown and dashboard artefacts</h3>
+          <ul>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/ABACUS_V21_FILE_INDEX.md" target="_blank" rel="noopener">ABACUS_V21_FILE_INDEX.md</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/dmaic-sprint-system/ARTIFACTS_INDEX.md" target="_blank" rel="noopener">dmaic-sprint-system/ARTIFACTS_INDEX.md</a></li>
+            <li><a href="dashboard.html">docs/dashboard.html</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/cryo_dashboard_v0_3_0/index.html" target="_blank" rel="noopener">cryo_dashboard_v0_3_0/index.html</a></li>
+            <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/Artifact_Builder.ipynb" target="_blank" rel="noopener">Artifact_Builder.ipynb</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="small">Generated manually for repo navigation refresh. For a quick metric summary, open <a href="dashboard.html">dashboard.html</a>.</p>
+  </footer>
 </body>
 </html>

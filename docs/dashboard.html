@@ -3,26 +3,103 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ABACUS System Dashboard</title>
+  <title>ABACUS Repository Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; max-width: 960px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-    .tile { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; }
-    .label { color: #555; font-size: 0.9rem; }
-    .value { font-size: 1.4rem; font-weight: 700; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f7f9fc;
+      color: #162033;
+    }
+    main {
+      width: min(1100px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+    .toolbar, .grid, .links {
+      display: grid;
+      gap: 1rem;
+    }
+    .toolbar {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-bottom: 1rem;
+    }
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #d9e1ec;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 8px 24px rgba(22, 32, 51, 0.05);
+    }
+    .label {
+      color: #556070;
+      font-size: 0.92rem;
+      margin-bottom: 0.35rem;
+    }
+    .value {
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+    a { color: #1f5fbf; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1, h2 { margin-top: 0; }
+    .links {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-top: 1rem;
+    }
+    ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+    }
+    li + li { margin-top: 0.35rem; }
   </style>
 </head>
 <body>
-  <h1>ABACUS State of System</h1>
-  <p><a href="index.html">Back to HTML entry</a></p>
-  <div class="grid">
-    <div class="tile"><div class="label">Idempotency Contract</div><div class="value">Enabled</div></div>
-    <div class="tile"><div class="label">Lineage Source</div><div class="value">Persistent Provenance</div></div>
-    <div class="tile"><div class="label">Convergence Status</div><div class="value">unknown</div></div>
-    <div class="tile"><div class="label">Maturity Score</div><div class="value">n/a</div></div>
-    <div class="tile"><div class="label">Docs Articles</div><div class="value">3</div></div>
-    <div class="tile"><div class="label">Integrated Repos</div><div class="value">3</div></div>
-  </div>
-  <p><small>Generated: 2026-05-15T10:56:33.609923</small></p>
+  <main>
+    <h1>ABACUS Repository Dashboard</h1>
+    <p><a href="index.html">← Back to repository navigation</a></p>
+
+    <div class="toolbar">
+      <div class="card"><div class="label">Primary repo</div><div class="value" style="font-size:1.1rem;">GBOGEB/ABACUS</div></div>
+      <div class="card"><div class="label">Maturity</div><div class="value">Level 0</div></div>
+      <div class="card"><div class="label">Overall completion</div><div class="value">20.83%</div></div>
+      <div class="card"><div class="label">Convergence score</div><div class="value">0.0</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="label">Python files</div><div class="value">203</div></div>
+      <div class="card"><div class="label">Markdown files</div><div class="value">524</div></div>
+      <div class="card"><div class="label">Workflow files</div><div class="value">32</div></div>
+      <div class="card"><div class="label">DMAIC V3 tests</div><div class="value">13</div></div>
+      <div class="card"><div class="label">Changelog files</div><div class="value">14</div></div>
+      <div class="card"><div class="label">Canonical index files</div><div class="value">7</div></div>
+      <div class="card"><div class="label">HTML pages in repo</div><div class="value">3</div></div>
+      <div class="card"><div class="label">JSON files</div><div class="value">100</div></div>
+    </div>
+
+    <div class="links">
+      <div class="card">
+        <h2>Key routes</h2>
+        <ul>
+          <li><a href="index.html#hierarchy">Repository hierarchy</a></li>
+          <li><a href="index.html#functions">Function entry points</a></li>
+          <li><a href="index.html#bridge">Bridge, smoke, evaluation</a></li>
+          <li><a href="index.html#canonical">Canonical artefacts</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Quick repo links</h2>
+        <ul>
+          <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3" target="_blank" rel="noopener">DMAIC_V3/</a></li>
+          <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">.github/workflows/</a></li>
+          <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/maturity_assessment.json" target="_blank" rel="noopener">maturity_assessment.json</a></li>
+          <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
