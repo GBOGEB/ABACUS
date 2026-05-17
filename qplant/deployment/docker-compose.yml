@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# QPLANT Cryogenic Dashboard — Docker Compose (Development)
+# ─────────────────────────────────────────────────────────────────────────────
+# Usage:  docker-compose up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  # ── Dashboard API ────────────────────────────────────────────────────────
+  dashboard-api:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: qplant-dashboard-api
+    ports:
+      - "8100:8100"
+    environment:
+      - QPLANT_ENV=dev
+      - QPLANT_CONFIG_PATH=/app/handover_dashboard/data/config.yaml
+      - PYTHONPATH=/app
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ../handover_dashboard/data:/app/handover_dashboard/data
+      - ../handover_dashboard/docs:/app/handover_dashboard/docs
+    command: uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port 8100 --reload
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/api/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - qplant-net
+
+  # ── Config Service ──────────────────────────────────────────────────────
+  config-service:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: qplant-config-service
+    ports:
+      - "8200:8200"
+    environment:
+      - QPLANT_ENV=dev
+      - QPLANT_CONFIG_PATH=/app/handover_dashboard/data/config.yaml
+      - PYTHONPATH=/app
+    volumes:
+      - ../handover_dashboard/data:/app/handover_dashboard/data
+    command: uvicorn config_service.api:app --host 0.0.0.0 --port 8200 --reload
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8200/api/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - qplant-net
+
+  # ── Monitoring Dashboard (static file server) ──────────────────────────
+  monitoring:
+    image: python:3.11-slim
+    container_name: qplant-monitoring
+    ports:
+      - "8300:8300"
+    volumes:
+      - ../monitoring_dashboard:/app/monitoring_dashboard
+    working_dir: /app/monitoring_dashboard
+    command: python -m http.server 8300
+    restart: unless-stopped
+    networks:
+      - qplant-net
+
+networks:
+  qplant-net:
+    driver: bridge
