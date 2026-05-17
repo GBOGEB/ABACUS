@@ -110,11 +110,12 @@ See [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) for detailed architecture
 
 ## 🔐 API Authentication
 
-All API endpoints require authentication:
+All API endpoints in the production profile require authentication.  
+If upgrading from earlier unauthenticated/internal deployments, this is a breaking client behavior change and existing callers must add an API key header.
 
 ```bash
 curl -H "X-API-Key: qplant_YOUR_KEY_HERE" \
-  https://api.qplant.myrrha.example.com/api/config/version
+  https://api.qplant.myrrha.example.com/api/v1/config
 ```
 
 ## 🧪 Testing
