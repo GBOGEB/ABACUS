@@ -32,13 +32,14 @@ jobs:
           echo "=== Extracting docstrings from Python modules ==="
           mkdir -p docs/api
           python3 << 'PYEOF'
-          import ast, json, pathlib, datetime
+          import ast, json, pathlib, datetime, traceback
 
           modules = {}
           for pattern in ["DMAIC_V3/**/*.py", "local_mcp/**/*.py", "staging/**/*.py"]:
               for p in pathlib.Path(".").glob(pattern):
                   try:
-                      tree = ast.parse(p.read_text())
+                      source = p.read_text(encoding="utf-8", errors="replace")
+                      tree = ast.parse(source)
                       doc = ast.get_docstring(tree) or ""
                       classes = []
                       for node in ast.walk(tree):
@@ -46,15 +47,16 @@ jobs:
                               cdoc = ast.get_docstring(node) or ""
                               classes.append({"name": node.name, "doc": cdoc[:200]})
                       modules[str(p)] = {"docstring": doc[:300], "members": classes}
-                  except Exception:
-                      modules[str(p)] = {"docstring": "Parse error", "members": []}
+                  except Exception as exc:
+                      print(f"Warning: failed to parse {p}: {type(exc).__name__}: {exc}")
+                      modules[str(p)] = {"docstring": f"Parse error: {type(exc).__name__}: {exc}", "members": []}
 
           out = {
               "generated_at": datetime.datetime.now().isoformat(),
               "module_count": len(modules),
               "modules": modules,
           }
-          pathlib.Path("docs/api/modules.json").write_text(json.dumps(out, indent=2))
+          pathlib.Path("docs/api/modules.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
           print(f"Extracted {len(modules)} modules")
           PYEOF
 
@@ -91,15 +93,15 @@ jobs:
 
       - name: Create PR with updated docs
         run: |
-          BRANCH="auto/update-docs-$(date +%Y%m%d-%H%M%S)"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
           git add docs/api/ docs_versioned/latest/
           if git diff --cached --quiet; then
-            echo "No documentation changes detected."
+            echo "No documentation changes detected — skipping PR creation."
             exit 0
           fi
+          BRANCH="auto/update-docs-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
           git commit -m "docs: auto-update API docs and deployment matrix"
           git push origin "$BRANCH"
           gh pr create \

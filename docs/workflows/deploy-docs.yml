@@ -51,8 +51,8 @@ jobs:
         run: |
           echo "=== Checking internal link targets ==="
           ERRORS=0
-          for f in $(find docs -name '*.html' -type f); do
-            for href in $(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto'); do
+          while IFS= read -r f; do
+            while IFS= read -r href; do
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"
@@ -61,8 +61,8 @@ jobs:
                 echo "⚠️  Broken link in $f → $href"
                 ERRORS=$((ERRORS+1))
               fi
-            done
-          done
+            done < <(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto')
+          done < <(find docs -name '*.html' -type f)
           echo "Link check complete. Warnings: $ERRORS"
 
   deploy:
@@ -94,7 +94,12 @@ jobs:
     steps:
       - name: Verify pages URL
         run: |
-          PAGES_URL="https://gbogeb.github.io/ABACUS/"
+          # Derive the Pages URL dynamically from repo context
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.event.repository.name }}"
+          # Use the URL produced by deploy-pages when available, fall back to computed URL
+          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
+          PAGES_URL="${PAGES_URL:-https://${OWNER}.github.io/${REPO}/}"
           echo "Waiting 30s for deployment propagation..."
           sleep 30
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_URL" || echo "000")

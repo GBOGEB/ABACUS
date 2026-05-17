@@ -78,8 +78,8 @@ jobs:
         run: |
           echo "=== Internal link report ==="
           BROKEN=0
-          for f in $(find docs -name '*.html' -type f); do
-            for href in $(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto'); do
+          while IFS= read -r f; do
+            while IFS= read -r href; do
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"
@@ -88,9 +88,11 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done
-          done
+            done < <(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto')
+          done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
+          echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
+        id: link_check
 
       - name: Summary
         if: always()
@@ -102,4 +104,41 @@ jobs:
           TOTAL=$(find docs -name '*.html' -type f | wc -l)
           echo "| HTML files | $TOTAL |" >> $GITHUB_STEP_SUMMARY
           echo "| Missing dashboards | ${{ steps.check_files.outputs.missing_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Broken links | ${{ steps.link_check.outputs.broken_links }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Run date | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Open escalation issue on failure
+        if: >
+          steps.check_files.outputs.missing_count != '0' ||
+          steps.link_check.outputs.broken_links != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const missing = '${{ steps.check_files.outputs.missing_count }}';
+            const broken  = '${{ steps.link_check.outputs.broken_links }}';
+            const runUrl  = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              '## 🚨 Dashboard Health Check Failed',
+              '',
+              `| Issue | Count |`,
+              `|-------|-------|`,
+              `| Missing dashboards | ${missing} |`,
+              `| Broken internal links | ${broken} |`,
+              '',
+              `**Workflow run:** ${runUrl}`,
+              '',
+              '_Auto-opened by the daily dashboard health check. Please investigate and close when resolved._',
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `🚨 Dashboard health check failure — ${new Date().toISOString().slice(0,10)}`,
+              body,
+              labels: ['bug', 'dashboard'],
+            });
+
+      - name: Fail job when dashboards are missing
+        if: steps.check_files.outputs.missing_count != '0'
+        run: |
+          echo "❌ ${{ steps.check_files.outputs.missing_count }} dashboard(s) missing — failing job."
+          exit 1

@@ -6,8 +6,6 @@ Connects V2.3 agents with KEB (Kernel Execution Backbone) and GBOGEB knowledge b
 
 import sys
 import json
-import signal
-import functools
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
@@ -40,22 +38,29 @@ class OperationTimeoutError(Exception):
     pass
 
 
+# Module-level executor – shared across all calls so no per-invocation
+# thread-pool overhead and no blocking shutdown on timeout.
+_TIMEOUT_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="abacus_timeout")
+
+
 def _run_with_timeout(func, timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
                       description: str = "operation"):
     """Execute *func* (no-arg callable) with a wall-clock timeout.
 
-    Uses a single-thread pool so it works on all platforms (signal.alarm
-    is UNIX-only and can't be used inside threads).
+    Uses a persistent module-level pool so it works on all platforms
+    (signal.alarm is UNIX-only and cannot be used inside threads).
+    On timeout the future is cancelled (prevents queued-but-not-yet-started
+    tasks from running) and OperationTimeoutError is raised immediately
+    without waiting for already-running work to finish.
     """
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        future = pool.submit(func)
-        try:
-            return future.result(timeout=timeout_seconds)
-        except FuturesTimeoutError:
-            future.cancel()
-            raise OperationTimeoutError(
-                f"[TIMEOUT] {description} exceeded {timeout_seconds}s limit"
-            )
+    future = _TIMEOUT_EXECUTOR.submit(func)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except FuturesTimeoutError:
+        future.cancel()
+        raise OperationTimeoutError(
+            f"[TIMEOUT] {description} exceeded {timeout_seconds}s limit"
+        )
 
 
 @dataclass
@@ -198,16 +203,24 @@ class KnowledgeIntegrationV23:
         
         return results
     
-    def collect_agent_metric(self, agent_name: str, metric_name: str, 
+    def collect_agent_metric(self, agent_name: str, metric_name: str,
                             metric_value: Any, tags: Dict[str, str] = None):
-        """Collect metric from agent"""
+        """Collect metric from agent with GBOGEB_METRIC_TIMEOUT protection."""
         if self.gbogeb_enabled:
-            self.gbogeb.collect_metric(
-                agent=agent_name,
-                metric_name=metric_name,
-                metric_value=metric_value,
-                tags=tags or {}
-            )
+            desc = f"GBOGEB metric {agent_name}.{metric_name}"
+            try:
+                _run_with_timeout(
+                    lambda: self.gbogeb.collect_metric(
+                        agent=agent_name,
+                        metric_name=metric_name,
+                        metric_value=metric_value,
+                        tags=tags or {}
+                    ),
+                    timeout_seconds=GBOGEB_METRIC_TIMEOUT,
+                    description=desc,
+                )
+            except OperationTimeoutError as exc:
+                print(f"[TIMEOUT] {desc}: {exc}")
         else:
             metric = {
                 "agent": agent_name,
