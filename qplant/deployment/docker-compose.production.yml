@@ -1,0 +1,40 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# QPLANT Cryogenic Dashboard — Docker Compose (Production)
+# ─────────────────────────────────────────────────────────────────────────────
+# Usage:  docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  dashboard-api:
+    environment:
+      - QPLANT_ENV=prod
+      - LOG_LEVEL=WARNING
+    command: uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port 8100 --workers 4
+    cpus: "2.0"
+    mem_limit: 1g
+    restart: on-failure:3
+
+  config-service:
+    environment:
+      - QPLANT_ENV=prod
+    command: uvicorn config_service.api:app --host 0.0.0.0 --port 8200 --workers 2
+    cpus: "1.0"
+    mem_limit: 512m
+    restart: on-failure:3
+
+  # ── Reverse Proxy ──────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: qplant-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - dashboard-api
+      - config-service
+    restart: always
+    networks:
+      - qplant-net
