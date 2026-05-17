@@ -1,0 +1,11 @@
+# QPLANT Production Namespace
+# Isolates all QPLANT resources in a dedicated namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qplant-production
+  labels:
+    environment: production
+    project: myrrha-qplant
+    managed-by: abacus-ai-agent
+    version: "v4.4.0"
