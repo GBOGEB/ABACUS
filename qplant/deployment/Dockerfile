@@ -58,13 +58,15 @@ USER qplant
 ENV PYTHONPATH=/app
 ENV QPLANT_ENV=prod
 ENV QPLANT_CONFIG_PATH=/app/handover_dashboard/data/config.yaml
+ENV QPLANT_API_PORT=8100
+ENV QPLANT_CONFIG_PORT=8200
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8100/api/v1/health')" || exit 1
+    CMD python -c "import os, urllib.request; urllib.request.urlopen(f\"http://localhost:{os.getenv('QPLANT_API_PORT', '8100')}/api/v1/health\")" || exit 1
 
 # Expose ports
 EXPOSE 8100 8200
 
 # Default command: start both API and config service
-CMD ["sh", "-c", "uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port 8100 & uvicorn config_service.api:app --host 0.0.0.0 --port 8200 & wait"]
+CMD ["sh", "-c", "uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port ${QPLANT_API_PORT:-8100} & uvicorn config_service.api:app --host 0.0.0.0 --port ${QPLANT_CONFIG_PORT:-8200} & wait"]
