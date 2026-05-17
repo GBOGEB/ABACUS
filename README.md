@@ -1,9 +1,40 @@
-# MASTER_INPUT - 12-Cluster Analysis Framework
+# ABACUS — 12-Cluster Analysis Framework
+
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://gbogeb.github.io/ABACUS/)
+[![Documentation](https://img.shields.io/badge/documentation-complete-brightgreen)](docs/)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-configured-purple)](docs/workflows/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** V2.3.0 (Active Development - 100% complete) ✅
-**Workspace:** Master_Input
-**Last Updated:** 2025-11-17
+**Current Version:** V2.3.0 (Active Development - 100% complete) ✅  
+**Workspace:** Master_Input  
+**Last Updated:** 2026-05-17
+
+> A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
+
+---
+
+## 📖 Documentation
+
+| Resource | Description |
+|----------|-------------|
+| 🌐 **[Documentation Site](https://gbogeb.github.io/ABACUS/)** | Full documentation with landing pages, dashboards, and guides |
+| 🏗️ **[12-Cluster Architecture](12_cluster_vision.md)** | Core architecture: 12 functional clusters across 4 tiers |
+| 🔧 **[Tool Ecosystem](tool_ecosystem_map.md)** | DOW/KEB/GBOGEB interconnections and tool catalog |
+| 📊 **[Analysis Dashboard](docs/deep_analysis_dashboard.html)** | Interactive repository audit dashboard |
+| 📖 **[Handover Book](docs/handover_book.html)** | 12-chapter comprehensive handover documentation |
+| ⏱️ **[Timeout Guide](docs/TIMEOUT_HANDLING.md)** | KEB/GBOGEB timeout configuration |
+| 🤝 **[Contributing](.github/CONTRIBUTING.md)** | How to contribute to ABACUS |
+
+### 12-Cluster Architecture Overview
+
+| Tier | Clusters | Purpose |
+|------|----------|---------|
+| **Analysis** | C1–C4 | Data ingestion, DMAIC phases, quality scoring |
+| **Documentation** | C5–C6 | Handover generation, knowledge management |
+| **Recursive** | C7–C8 | Self-improvement loops, orchestration |
+| **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
 
 ---
 
