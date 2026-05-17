@@ -19,6 +19,8 @@ jobs:
   build:
     name: Build Release Artifacts
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,16 +57,34 @@ jobs:
       - name: Python syntax check
         run: |
           echo "=== Syntax validation ==="
-          find DMAIC_V3 local_mcp staging -name '*.py' -type f | while read f; do
-            python3 -m py_compile "$f" 2>/dev/null && echo "✅ $f" || echo "⚠️  $f"
-          done
+          ERRORS=0
+          while IFS= read -r f; do
+            if python3 -m py_compile "$f" 2>/dev/null; then
+              echo "✅ $f"
+            else
+              echo "❌ Syntax error: $f"
+              ERRORS=$((ERRORS+1))
+            fi
+          done < <(find DMAIC_V3 local_mcp staging -name '*.py' -type f 2>/dev/null)
+          if [ $ERRORS -gt 0 ]; then
+            echo "Release blocked: $ERRORS files with syntax errors"
+            exit 1
+          fi
 
       - name: Package dashboards
         run: |
           echo "=== Packaging dashboards ==="
           mkdir -p release-artifacts
+          MISSING_DIRS=()
+          for d in docs/ cryo_dashboard_v0_3_0/ docs_versioned/; do
+            [ -d "$d" ] || MISSING_DIRS+=("$d")
+          done
+          if [ ${#MISSING_DIRS[@]} -gt 0 ]; then
+            echo "❌ Missing directories: ${MISSING_DIRS[*]}"
+            exit 1
+          fi
           tar czf release-artifacts/abacus-docs-${{ steps.version.outputs.tag }}.tar.gz \
-            docs/ cryo_dashboard_v0_3_0/ docs_versioned/ || true
+            docs/ cryo_dashboard_v0_3_0/ docs_versioned/
           echo "Package size: $(du -h release-artifacts/*.tar.gz | cut -f1)"
 
       - name: Generate release notes
@@ -118,19 +138,17 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-${{ needs.build.outputs.tag || github.ref_name }}
+          name: release-${{ needs.build.outputs.tag }}
           path: release-artifacts/
-        continue-on-error: true
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          name: "ABACUS ${{ github.event.inputs.tag || github.ref_name }}"
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: "ABACUS ${{ needs.build.outputs.tag }}"
           body_path: release-artifacts/RELEASE_NOTES.md
           files: release-artifacts/*.tar.gz
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
