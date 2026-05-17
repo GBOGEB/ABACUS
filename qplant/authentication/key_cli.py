@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from api_key_manager import APIKeyManager
@@ -40,8 +40,10 @@ def cmd_generate(args: argparse.Namespace, mgr: APIKeyManager) -> None:
     print("⚠️  Store the API Key securely — it cannot be retrieved later.")
 
     if args.output:
-        # Write key to env-style output file
-        with open(args.output, "a") as f:
+        # Write key to env-style output file with owner-only permissions (0o600).
+        flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+        fd = os.open(args.output, flags, 0o600)
+        with os.fdopen(fd, "a") as f:
             f.write(f"QPLANT_API_KEY={api_key}\n")
             f.write(f"QPLANT_KEY_ID={key_id}\n")
         print(f"   Written to {args.output}")

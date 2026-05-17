@@ -4,7 +4,7 @@ Production-ready security without OAuth2 complexity
 
 Features:
 - Secure key generation (cryptographically random)
-- Key hashing (SHA-256, never store plaintext)
+- Key hashing (PBKDF2-HMAC-SHA256, never store plaintext)
 - Expiration support
 - Rate limiting metadata
 - Audit logging
@@ -21,12 +21,23 @@ from typing import Optional, Tuple, Dict, Any
 
 logger = logging.getLogger(__name__)
 
+# PBKDF2-HMAC-SHA256 iteration count (OWASP 2023 recommendation)
+_PBKDF2_ITERATIONS = 260_000
+# First N chars of a key stored for O(1) lookup; the remaining chars stay secret.
+_KEY_PREFIX_LEN = 15
+# Fields stored for internal use only — excluded from all public listings.
+_INTERNAL_FIELDS: frozenset = frozenset({"key_hash", "key_salt", "key_prefix"})
+
 
 class APIKeyManager:
     """
     Manages API keys for secure service access.
 
-    Keys are stored as SHA-256 hashes — plaintext keys are never persisted.
+    Keys are stored as PBKDF2-HMAC-SHA256 hashes — plaintext keys are never
+    persisted.  A random per-key salt is generated at creation time.  A
+    non-secret prefix of the key is stored to enable O(1) candidate lookup
+    before the expensive hash verification.
+
     Each key carries metadata: name, expiry, rate-limit, status, usage count.
     """
 
@@ -51,12 +62,16 @@ class APIKeyManager:
         """
         api_key = f"qplant_{secrets.token_urlsafe(32)}"
         key_id = f"key_{secrets.token_hex(8)}"
-        key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+        salt = secrets.token_bytes(32)
+        key_hash = self._hash_key(api_key, salt)
+        key_prefix = api_key[:_KEY_PREFIX_LEN]
 
         metadata: Dict[str, Any] = {
             "key_id": key_id,
             "name": name,
             "key_hash": key_hash,
+            "key_salt": salt.hex(),
+            "key_prefix": key_prefix,
             "created_at": datetime.now().isoformat(),
             "expires_at": (datetime.now() + timedelta(days=expiry_days)).isoformat(),
             "rate_limit_per_hour": rate_limit,
@@ -82,33 +97,41 @@ class APIKeyManager:
         if not api_key or not api_key.startswith("qplant_"):
             return {"valid": False, "reason": "invalid_format"}
 
-        key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+        key_prefix = api_key[:_KEY_PREFIX_LEN]
         db = self._load_db()
 
         for key_id, meta in db.items():
-            if meta["key_hash"] == key_hash:
-                # Check expiration
-                if datetime.fromisoformat(meta["expires_at"]) < datetime.now():
-                    logger.warning("Expired API key used: %s", key_id)
-                    return {"valid": False, "reason": "expired"}
+            # Fast prefix filter — only compute PBKDF2 for matching candidates.
+            if meta.get("key_prefix") != key_prefix:
+                continue
+            if "key_salt" not in meta:
+                continue  # Skip legacy or malformed entries
+            salt = bytes.fromhex(meta["key_salt"])
+            if meta["key_hash"] != self._hash_key(api_key, salt):
+                continue
 
-                # Check status
-                if meta["status"] != "active":
-                    logger.warning("Revoked API key used: %s", key_id)
-                    return {"valid": False, "reason": "revoked"}
+            # Hash matches — check expiration
+            if datetime.fromisoformat(meta["expires_at"]) < datetime.now():
+                logger.warning("Expired API key used: %s", key_id)
+                return {"valid": False, "reason": "expired"}
 
-                # Update usage stats
-                meta["last_used"] = datetime.now().isoformat()
-                meta["usage_count"] += 1
-                db[key_id] = meta
-                self._save_db(db)
+            # Check status
+            if meta["status"] != "active":
+                logger.warning("Revoked API key used: %s", key_id)
+                return {"valid": False, "reason": "revoked"}
 
-                return {
-                    "valid": True,
-                    "key_id": key_id,
-                    "name": meta["name"],
-                    "rate_limit": meta["rate_limit_per_hour"],
-                }
+            # Update usage stats
+            meta["last_used"] = datetime.now().isoformat()
+            meta["usage_count"] += 1
+            db[key_id] = meta
+            self._save_db(db)
+
+            return {
+                "valid": True,
+                "key_id": key_id,
+                "name": meta["name"],
+                "rate_limit": meta["rate_limit_per_hour"],
+            }
 
         return {"valid": False, "reason": "invalid_key"}
 
@@ -141,25 +164,31 @@ class APIKeyManager:
             rate_limit=old_meta["rate_limit_per_hour"],
         )
         self.revoke_key(old_key_id)
-        logger.info("Rotated API key %s → %s", old_key_id, new_key_id)
+        logger.info("API key rotated: %s (replaced by new key)", old_key_id)
         return new_key_id, new_api_key
 
     def list_keys(self) -> Dict[str, Dict[str, Any]]:
-        """List all API keys with metadata (excluding hashes)."""
+        """List all API keys with metadata (excluding internal fields)."""
         db = self._load_db()
         return {
-            k: {key: val for key, val in v.items() if key != "key_hash"}
+            k: {key: val for key, val in v.items() if key not in _INTERNAL_FIELDS}
             for k, v in db.items()
         }
 
     def get_key_info(self, key_id: str) -> Optional[Dict[str, Any]]:
-        """Get metadata for a specific key (excluding hash)."""
+        """Get metadata for a specific key (excluding internal fields)."""
         db = self._load_db()
         if key_id in db:
-            return {k: v for k, v in db[key_id].items() if k != "key_hash"}
+            return {k: v for k, v in db[key_id].items() if k not in _INTERNAL_FIELDS}
         return None
 
     # ── Internal helpers ─────────────────────────────────────────────────
+
+    def _hash_key(self, api_key: str, salt: bytes) -> str:
+        """Hash an API key with PBKDF2-HMAC-SHA256 (computationally expensive)."""
+        return hashlib.pbkdf2_hmac(
+            "sha256", api_key.encode(), salt, _PBKDF2_ITERATIONS
+        ).hex()
 
     def _ensure_db(self) -> None:
         """Create the key database file if it does not exist."""
