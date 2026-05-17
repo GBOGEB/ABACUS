@@ -44,12 +44,12 @@ python3 authentication/key_cli.py generate --name "My App" --days 365
 # Validate a key
 python3 authentication/key_cli.py validate --key "qplant_abc123..."
 
-# Use with API
-curl -H "X-API-Key: qplant_abc123..." http://localhost:8000/api/v1/config
+# Use with API (local Docker/Compose defaults to 8100; Kubernetes service uses 8000)
+curl -H "X-API-Key: qplant_abc123..." http://localhost:8100/api/v1/config
 ```
 
 ### Security Model
-- Keys are SHA-256 hashed — plaintext never stored
+- Keys use PBKDF2-HMAC-SHA256 with per-key salt — plaintext never stored
 - Cryptographically random generation (`secrets.token_urlsafe`)
 - Expiration enforcement
 - Rate limiting (token-bucket algorithm)

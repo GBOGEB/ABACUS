@@ -20,7 +20,7 @@ Tests:              134 (100% passing)
 Coverage:           93.4%
 Performance:        P95 < 200ms for 300 users
 Security:           0 critical/high vulnerabilities
-Documentation:      9 comprehensive guides
+Documentation:      18+ comprehensive guides
 Kubernetes:         8 production manifests
 ```
 
@@ -145,7 +145,7 @@ Tested and validated for:
 
 ## 🔒 Security
 
-- API key authentication (SHA-256 hashing)
+- API key authentication (PBKDF2-HMAC-SHA256 + per-key salt)
 - Rate limiting (1000 req/hour default)
 - 0 critical/high vulnerabilities
 - Complete SBOM (247 dependencies)
@@ -168,7 +168,7 @@ Docker Compose (staging):
 
 ```bash
 cd deployment
-docker-compose -f docker-compose.staging.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d
 ```
 
 ## 🤝 Contributing

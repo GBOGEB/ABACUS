@@ -12,18 +12,12 @@ services:
       - QPLANT_ENV=staging
       - LOG_LEVEL=INFO
     command: uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port 8100 --workers 2
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 512M
+    cpus: "1.0"
+    mem_limit: 512m
 
   config-service:
     environment:
       - QPLANT_ENV=staging
     command: uvicorn config_service.api:app --host 0.0.0.0 --port 8200 --workers 2
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
+    cpus: "0.5"
+    mem_limit: 256m
