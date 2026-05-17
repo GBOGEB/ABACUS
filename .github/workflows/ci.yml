@@ -31,6 +31,18 @@ jobs:
         run: |
           python scripts/generate_docs_html.py
 
+      - name: Generate dynamic handover tracker metadata
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+        run: |
+          python scripts/build_final_handover_tracker.py --output docs/api/final_handover_tracker.json
+
+      - name: Validate tuple metadata tracker payload
+        run: |
+          python scripts/validate_tuple_metadata.py \
+            --input docs/api/final_handover_tracker.json \
+            --output DMAIC_V3_OUTPUT/tuple_metadata.validated.json
+
       - name: Validate docs links
         run: |
           python scripts/validate_docs_links.py
@@ -59,6 +71,8 @@ jobs:
           name: test-results-${{ matrix.python-version }}
           path: |
             DMAIC_V3_OUTPUT/deployment_report.json
+            DMAIC_V3_OUTPUT/tuple_metadata.validated.json
+            docs/api/final_handover_tracker.json
             actions.json
             .mcp/monitor.log
       
