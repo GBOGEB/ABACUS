@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Engineering Tools – ABACUS</title>
+  <meta name="description" content="Catalog of ABACUS engineering tools: scripts, pipelines, validators, and utilities."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .tool-filter{margin:1rem 0;display:flex;gap:.5rem;flex-wrap:wrap}
+    .tool-filter button{background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:.35rem .8rem;cursor:pointer;font-size:.85rem}
+    .tool-filter button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> Engineering Tools</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#f9ab00)">
+  <h1>🛠️ Engineering Tools</h1>
+  <p>Complete catalog of build, deploy, validation, and analysis tools powering the ABACUS system.</p>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>Tool Catalog</h2>
+    <div class="tool-filter">
+      <button class="active" onclick="filterTools('all',this)">All</button>
+      <button onclick="filterTools('pipeline',this)">Pipeline</button>
+      <button onclick="filterTools('validation',this)">Validation</button>
+      <button onclick="filterTools('deploy',this)">Deploy</button>
+      <button onclick="filterTools('utility',this)">Utility</button>
+    </div>
+    <table id="toolTable">
+      <thead><tr><th>Tool</th><th>Category</th><th>Location</th><th>Description</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr data-cat="pipeline"><td>DMAIC V3 Engine</td><td>Pipeline</td><td><code>DMAIC_V3/</code></td><td>9-phase DMAIC pipeline with convergence detection</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="pipeline"><td>Agent Orchestrator v3.0</td><td>Pipeline</td><td><code>local_mcp/agent_orchestrator_v3.0.py</code></td><td>Memory-optimized multi-agent coordinator</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="pipeline"><td>Knowledge Integration v2.3</td><td>Pipeline</td><td><code>local_mcp/knowledge_integration_v2.3.py</code></td><td>Unified KEB/GBOGEB knowledge layer</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="pipeline"><td>Integration Bridge</td><td>Pipeline</td><td><code>staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py</code></td><td>GBOGEB-ABACUS-DOW bridge (5 modes)</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="pipeline"><td>Full Pipeline Orchestrator</td><td>Pipeline</td><td><code>ABACUS-v032/</code></td><td>10-phase pipeline (phases 0-9)</td><td><span class="badge badge-warn">4 variants</span></td></tr>
+        <tr data-cat="validation"><td>Change Detector</td><td>Validation</td><td><code>DMAIC_V3/convergence/change_detector.py</code></td><td>File change detection and tracking</td><td><span class="badge badge-ok">Fixed</span></td></tr>
+        <tr data-cat="validation"><td>DMAIC Contract Validator</td><td>Validation</td><td><code>scripts/validate_dmaic_contract.py</code></td><td>Validates DMAIC phase contracts</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="validation"><td>Convergence Checker</td><td>Validation</td><td><code>scripts/check_convergence.py</code></td><td>Checks recursive convergence criteria</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="deploy"><td>GitHub Deploy Script</td><td>Deploy</td><td><code>scripts/deploy_to_github.sh</code></td><td>Automated GitHub deployment</td><td><span class="badge badge-info">Script</span></td></tr>
+        <tr data-cat="deploy"><td>PR Creator</td><td>Deploy</td><td><code>scripts/create_pr.sh</code></td><td>Automated PR creation</td><td><span class="badge badge-info">Script</span></td></tr>
+        <tr data-cat="deploy"><td>Docker Compose</td><td>Deploy</td><td><code>ABACUS-v032/docker-compose.yml</code></td><td>Container deployment configuration</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="utility"><td>Build Book</td><td>Utility</td><td><code>scripts/build_book.py</code></td><td>Handover book builder</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="utility"><td>Generate Docs HTML</td><td>Utility</td><td><code>scripts/generate_docs_html.py</code></td><td>HTML documentation generator</td><td><span class="badge badge-ok">Active</span></td></tr>
+        <tr data-cat="utility"><td>Archive Handover</td><td>Utility</td><td><code>scripts/archive_handover.py</code></td><td>Handover archival utility</td><td><span class="badge badge-info">Utility</span></td></tr>
+        <tr data-cat="utility"><td>Recursive Build</td><td>Utility</td><td><code>scripts/recursive_build.py</code></td><td>Recursive documentation builder</td><td><span class="badge badge-info">Utility</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>⚙️ Dependencies &amp; Requirements</h2>
+    <table>
+      <thead><tr><th>Dependency</th><th>Version</th><th>Purpose</th><th>Required</th></tr></thead>
+      <tbody>
+        <tr><td>Python</td><td>≥3.8</td><td>Core runtime</td><td>Yes</td></tr>
+        <tr><td>pathlib</td><td>stdlib</td><td>File system operations</td><td>Yes</td></tr>
+        <tr><td>json / yaml</td><td>stdlib + PyYAML</td><td>Configuration parsing</td><td>Yes</td></tr>
+        <tr><td>CoolProp</td><td>≥6.4</td><td>Helium thermophysical properties</td><td>Optional</td></tr>
+        <tr><td>Docker</td><td>≥20.10</td><td>Container deployment</td><td>Optional</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>📖 Usage Examples</h2>
+    <h4>Run the DMAIC pipeline</h4>
+    <pre><code>cd ABACUS
+python -m DMAIC_V3.generators --phase all --output results/</code></pre>
+    <h4>Launch the Agent Orchestrator</h4>
+    <pre><code>python local_mcp/agent_orchestrator_v3.0.py</code></pre>
+    <h4>Run integration bridge</h4>
+    <pre><code>cd staging
+python GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py --mode UNIFIED</code></pre>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/tool_ecosystem_map.md">Tool Ecosystem Map</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/section_readmes">Section READMEs</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 7: Tools</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS Engineering Tools &copy; 2026 | <a href="../">← Back to Home</a></footer>
+
+<script>
+function filterTools(cat, btn) {
+  document.querySelectorAll('.tool-filter button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#toolTable tbody tr').forEach(r => {
+    r.style.display = (cat === 'all' || r.dataset.cat === cat) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
