@@ -157,8 +157,11 @@ async def set_value(request: SetValueRequest):
             reason=request.reason,
         )
         return {"status": "updated", "change": change.model_dump()}
-    except Exception as e:
+    except (KeyError, ValueError, TypeError) as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        logger.exception("Unexpected error in set_value for path=%s", request.path)
+        raise HTTPException(status_code=500, detail="Failed to update configuration")
 
 
 @app.get("/api/v1/config/validate")
@@ -166,7 +169,11 @@ async def validate_config():
     """Validate current configuration against schema."""
     if not config_service:
         raise HTTPException(status_code=503, detail="Config service not initialized")
-    return config_service.validate()
+    try:
+        return config_service.validate()
+    except Exception:
+        logger.exception("Unexpected error during config validation")
+        raise HTTPException(status_code=500, detail="Config validation failed")
 
 
 @app.get("/api/v1/config/schema")

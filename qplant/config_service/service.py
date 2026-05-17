@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+from pydantic import ValidationError
 
 from .schemas import (
     ConfigChange,
@@ -28,6 +29,16 @@ from .schemas import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Hardcoded overlay filenames keyed by Environment member.
+# Using a lookup table (not string interpolation) ensures the file path
+# is never derived from user-controlled data.
+_ENV_OVERLAY_FILES: Dict[str, str] = {
+    "dev": "config.dev.yaml",
+    "staging": "config.staging.yaml",
+    "prod": "config.prod.yaml",
+    "dr": "config.dr.yaml",
+}
 
 
 class ConfigService:
@@ -147,11 +158,16 @@ class ConfigService:
                     "sections": list(self._config.keys()),
                     "errors": [],
                 }
-            except Exception as e:
-                return {
-                    "valid": False,
-                    "errors": [str(e)],
-                }
+            except ValidationError as ve:
+                # Return field-level validation details — safe, no stack traces.
+                errors = [
+                    f"{'.'.join(str(loc) for loc in err['loc'])}: {err['msg']}"
+                    for err in ve.errors()
+                ]
+                return {"valid": False, "errors": errors}
+            except Exception:
+                logger.exception("Unexpected error during config validation")
+                return {"valid": False, "errors": ["Configuration validation failed"]}
 
     def get_history(self) -> List[Dict[str, Any]]:
         """Return version history."""
@@ -295,7 +311,16 @@ class ConfigService:
 
     def _get_env_overrides(self, env: Environment) -> Dict[str, Any]:
         """Get environment-specific overrides from overlay files."""
-        overlay_path = self._config_path.parent / f"config.{env.value}.yaml"
+        # Resolve filename from the hardcoded lookup to avoid path injection.
+        filename = _ENV_OVERLAY_FILES.get(env.value)
+        if filename is None:
+            return {}
+        config_dir = self._config_path.parent.resolve()
+        overlay_path = (config_dir / filename).resolve()
+        # Defense-in-depth: verify the resolved path is within config_dir.
+        if not str(overlay_path).startswith(str(config_dir) + os.sep):
+            logger.warning("Unexpected overlay path detected, ignoring")
+            return {}
         if overlay_path.exists():
             with open(overlay_path, "r") as f:
                 return yaml.safe_load(f) or {}
