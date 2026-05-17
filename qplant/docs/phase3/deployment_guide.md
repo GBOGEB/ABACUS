@@ -1,6 +1,6 @@
 # QPLANT Cryogenic Dashboard — Deployment Guide
 
-> **Version:** 4.2.0  
+> **Version:** 4.4.0  
 > **Date:** 2026-05-12  
 > **Environments:** Development, Staging, Production, Disaster Recovery  
 
@@ -134,7 +134,7 @@ handover_dashboard/data/
 python -m config_service.migrate --check --config handover_dashboard/data/config.yaml
 
 # Execute migration
-python -m config_service.migrate --execute --version 4.2.0 --config handover_dashboard/data/config.yaml
+python -m config_service.migrate --execute --version 4.4.0 --config handover_dashboard/data/config.yaml
 
 # Rollback
 python -m config_service.migrate --rollback --config handover_dashboard/data/config.yaml
@@ -261,4 +261,4 @@ deploy:
 
 ---
 
-*Deployment Guide — QPLANT Cryogenic Dashboard v4.2.0*
+*Deployment Guide — QPLANT Cryogenic Dashboard v4.4.0*
