@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Version Lineage – ABACUS</title>
+  <meta name="description" content="ABACUS version lineage: interactive timeline from v0.31 to v3.3 with migration guides."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .timeline{position:relative;padding:1rem 0;margin:1.5rem 0}
+    .timeline::before{content:'';position:absolute;left:20px;top:0;bottom:0;width:3px;background:var(--primary)}
+    .tl-item{position:relative;padding-left:50px;margin-bottom:1.5rem}
+    .tl-item::before{content:'';position:absolute;left:12px;top:6px;width:20px;height:20px;border-radius:50%;background:var(--primary);border:3px solid var(--surface);box-shadow:var(--shadow)}
+    .tl-item.active::before{background:var(--accent)}
+    .tl-item.legacy::before{background:var(--text-secondary)}
+    .tl-item h4{margin:0 0 .2rem}
+    .tl-item p{margin:0;font-size:.9rem;color:var(--text-secondary)}
+    .tl-item .meta{font-size:.8rem;color:var(--text-secondary);margin-top:.25rem}
+    .compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin:1rem 0}
+    .compare-cell{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem;text-align:center}
+    .compare-cell h5{margin:0 0 .3rem}
+    .compare-cell .ver{font-size:1.3rem;font-weight:700;color:var(--primary)}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> Version Lineage</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#9c27b0)">
+  <h1>📐 Version Lineage</h1>
+  <p>All versions are active and contain unique, irreplaceable content — this is the full development timeline.</p>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>Interactive Timeline</h2>
+    <div class="timeline">
+      <div class="tl-item legacy">
+        <h4>v1.0 – Legacy Foundation</h4>
+        <p>Initial repository structure, basic DMAIC concepts, early cryogenic data models.</p>
+        <div class="meta">Status: <span class="badge badge-info">Legacy</span> · Preserved for reference</div>
+      </div>
+      <div class="tl-item active">
+        <h4>v0.31 – Canonical Foundation</h4>
+        <p>Canonical indexes, DOW engine config, artifact ranking system. Foundation for all later versions.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span> · <a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-v031">Browse →</a></div>
+      </div>
+      <div class="tl-item active">
+        <h4>v0.32 – Production Pipeline</h4>
+        <p>Extended to 10-phase DMAIC pipeline (0-9), Docker deployment, DOW integration.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span> · <a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-v032">Browse →</a></div>
+      </div>
+      <div class="tl-item active">
+        <h4>v2.1 – Production Baseline</h4>
+        <p>Stabilized production baseline with validated pipelines and deployment configs.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span></div>
+      </div>
+      <div class="tl-item active">
+        <h4>UNIFIED – Merged Knowledge Base</h4>
+        <p>Comprehensive merger of v031+v032. Quality score: 92.5/100. Agent registry, orchestrator hierarchy.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span> · <a href="https://github.com/GBOGEB/ABACUS/tree/main/ABACUS-UNIFIED">Browse →</a></div>
+      </div>
+      <div class="tl-item active">
+        <h4>v2.3 – Agent Framework &amp; MCP</h4>
+        <p>V2.3 agents with MCP integration, memory-optimized orchestrator, KEB/GBOGEB knowledge layer.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span> · <a href="https://github.com/GBOGEB/ABACUS/tree/main/local_mcp">Browse →</a></div>
+      </div>
+      <div class="tl-item active">
+        <h4>v3.0–v3.3 – Core Engine &amp; Documentation</h4>
+        <p>DMAIC V3 core engine, 12-cluster orchestration, convergence detection, comprehensive documentation.</p>
+        <div class="meta">Status: <span class="badge badge-ok">Active</span> · <a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3">Browse →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Version Comparison</h2>
+    <div class="compare-grid">
+      <div class="compare-cell"><div class="ver">v0.31</div><h5>Foundation</h5><p>Canonical indexes, DOW config</p></div>
+      <div class="compare-cell"><div class="ver">v0.32</div><h5>Pipeline</h5><p>10-phase DMAIC, Docker</p></div>
+      <div class="compare-cell"><div class="ver">v2.1</div><h5>Baseline</h5><p>Production stability</p></div>
+      <div class="compare-cell"><div class="ver">UNIFIED</div><h5>Merged</h5><p>92.5 quality, 6 agents</p></div>
+      <div class="compare-cell"><div class="ver">v2.3</div><h5>MCP</h5><p>IDE integration, agents</p></div>
+      <div class="compare-cell"><div class="ver">v3.3</div><h5>Engine</h5><p>V3 engine, docs, 12-cluster</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>⚠️ Deprecation Notices</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Status</th><th>Replacement</th><th>Action Required</th></tr></thead>
+      <tbody>
+        <tr><td>v1.0 Legacy scripts</td><td><span class="badge badge-warn">Deprecated</span></td><td>DMAIC V3 engine</td><td>Migrate to V3 pipeline</td></tr>
+        <tr><td>4 pipeline orchestrator variants</td><td><span class="badge badge-warn">Consolidate</span></td><td>Single canonical orchestrator</td><td>Select and promote one variant</td></tr>
+        <tr><td>Root-level utility scripts</td><td><span class="badge badge-info">Relocate</span></td><td><code>scripts/</code> directory</td><td>Move to proper locations</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>🔄 Upgrade Paths</h2>
+    <ol>
+      <li><strong>v0.31 → v0.32</strong>: Extend 5-phase DMAIC to 10-phase pipeline. Add Docker support.</li>
+      <li><strong>v0.32 → UNIFIED</strong>: Merge knowledge bases. Run recursive DMAIC alignment.</li>
+      <li><strong>UNIFIED → v2.3</strong>: Add MCP integration layer. Deploy memory-optimized agents.</li>
+      <li><strong>v2.3 → v3.3</strong>: Upgrade to V3 engine with 12-cluster orchestration and convergence detection.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned">Version-Specific Documentation</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/lineage_analysis.md">Full Lineage Analysis</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 4: Version Lineage</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS Version Lineage &copy; 2026 | <a href="../">← Back to Home</a></footer>
+</body>
+</html>
