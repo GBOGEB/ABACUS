@@ -10,7 +10,7 @@
 
 ### Current: API Key Authentication (v4.4.0)
 - **Key Format:** `qplant_` + 32-byte URL-safe random token
-- **Storage:** SHA-256 hash only — plaintext never persisted
+- **Storage:** PBKDF2-HMAC-SHA256 hash with per-key salt — plaintext never persisted
 - **Transport:** `X-API-Key` header (HTTPS required in production)
 - **Expiration:** Configurable (default 365 days)
 - **Rate Limiting:** Token-bucket algorithm per key
@@ -29,9 +29,10 @@
 - Read-only volume mounts in all containers
 
 ### API Keys Database
-- Stored at `/home/ubuntu/authentication/api_keys.json`
+- Default path: `/home/ubuntu/authentication/api_keys.json`
+- Override path with `QPLANT_API_KEYS_DB` environment variable
 - Should be mounted as a Kubernetes Secret in production
-- Keys hashed with SHA-256 before storage
+- Keys stored as PBKDF2-HMAC-SHA256 hashes with per-key salts
 - Audit trail: creation, last use, usage count, revocation timestamps
 
 ### Secrets Management

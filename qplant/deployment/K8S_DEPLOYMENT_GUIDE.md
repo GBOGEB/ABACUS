@@ -69,7 +69,10 @@ kubectl apply -f deployment/k8s/namespace.yaml
 ```bash
 python3 authentication/key_cli.py generate --name "Production Admin" --days 365
 # Save the printed API key securely
-# Update deployment/k8s/secrets.yaml with the generated key
+# Create the secret out-of-band (do not commit generated keys into git)
+kubectl create secret generic qplant-api-keys \
+  -n qplant-production \
+  --from-literal=api_keys.json='{"keys":{}}'
 ```
 
 ### 3. Deploy SSOT ConfigMap
@@ -82,6 +85,8 @@ kubectl apply -f deployment/k8s/configmap-ssot-production.yaml
 ### 4. Deploy Secrets
 
 ```bash
+# Keep deployment/k8s/secrets.yaml as placeholders only.
+# Prefer creating/updating real values via `kubectl create secret ...` or your secret manager.
 kubectl apply -f deployment/k8s/secrets.yaml
 ```
 
