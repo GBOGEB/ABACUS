@@ -68,5 +68,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose ports
 EXPOSE 8100 8200
 
-# Default command: start both API and config service
-CMD ["sh", "-c", "uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port ${QPLANT_API_PORT:-8100} & uvicorn config_service.api:app --host 0.0.0.0 --port ${QPLANT_CONFIG_PORT:-8200} & wait"]
+# Default command: start dashboard API (run config service in a separate container/process)
+CMD ["sh", "-c", "uvicorn handover_dashboard.api.main:app --host 0.0.0.0 --port ${QPLANT_API_PORT:-8100}"]
