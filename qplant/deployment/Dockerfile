@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first (cache layer)
-COPY handover_dashboard/requirements.txt ./requirements.txt
+COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # Copy application code
@@ -28,13 +28,13 @@ COPY ai_validation/ ./ai_validation/
 # Run tests
 WORKDIR /app/handover_dashboard
 RUN PYTHONPATH=/install/lib/python3.11/site-packages:$PYTHONPATH \
-    python -m pytest tests/ -q --tb=short || true
+    python -m pytest tests/ -q --tb=short
 
 # ── Stage 2: Production ─────────────────────────────────────────────────────
 FROM python:3.11-slim AS production
 
 LABEL maintainer="QPLANT Engineering Team"
-LABEL version="4.2.0"
+LABEL version="4.4.0"
 LABEL description="QPLANT Cryogenic Dashboard with Config Service and Monitoring"
 
 WORKDIR /app
