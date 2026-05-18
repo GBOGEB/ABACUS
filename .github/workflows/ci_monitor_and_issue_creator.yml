@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload tracking state
         if: github.event.pull_request.number
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tracking-state-pr-${{ github.event.pull_request.number }}
           path: |
@@ -162,7 +162,7 @@ jobs:
           python cd_monitor.py --health-check ${{ github.event.deployment.id }} || true
 
       - name: Upload CD report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cd-report-${{ github.event.deployment.id }}
           path: cd_report.json
@@ -198,7 +198,7 @@ jobs:
           python github_tracking_manager.py --review-feedback
 
       - name: Upload analysis report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: weekly-analysis-${{ github.run_number }}
           path: |
