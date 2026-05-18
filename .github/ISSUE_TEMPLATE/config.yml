@@ -1,0 +1,13 @@
+# Issue template chooser configuration
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation
+    url: https://gbogeb.github.io/ABACUS/
+    about: Check the documentation site before opening an issue
+  - name: 🏗️ Architecture Guide
+    url: https://github.com/GBOGEB/ABACUS/blob/main/12_cluster_vision.md
+    about: Read the 12-Cluster Architecture for project context
+  - name: 📊 DMAIC Dashboard
+    url: https://gbogeb.github.io/ABACUS/api/dmaic_metrics_chart.html
+    about: View the live DMAIC quality metrics dashboard
