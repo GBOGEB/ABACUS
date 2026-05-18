@@ -16,9 +16,9 @@ updates:
       include: "scope"
     open-pull-requests-limit: 10
 
-  # Keep Python dependencies up to date (if requirements.txt exists)
+  # Keep Python dependencies in DMAIC_V3/requirements.txt up to date
   - package-ecosystem: "pip"
-    directory: "/"
+    directory: "/DMAIC_V3"
     schedule:
       interval: "monthly"
     labels:
