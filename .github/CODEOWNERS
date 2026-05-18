@@ -1,0 +1,34 @@
+# ABACUS — Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# These owners will be automatically requested for review on PRs
+# that modify files matching the patterns below.
+
+# ──────────────────────────────────────────────
+# Default owner — all files
+# ──────────────────────────────────────────────
+*                                   @GBOGEB
+
+# ──────────────────────────────────────────────
+# CI/CD Workflows
+# ──────────────────────────────────────────────
+.github/workflows/                  @GBOGEB
+.github/                            @GBOGEB
+
+# ──────────────────────────────────────────────
+# DMAIC Core
+# ──────────────────────────────────────────────
+DMAIC_V3/                           @GBOGEB
+
+# ──────────────────────────────────────────────
+# Documentation & Dashboards
+# ──────────────────────────────────────────────
+docs/                               @GBOGEB
+README.md                           @GBOGEB
+
+# ──────────────────────────────────────────────
+# Infrastructure & Tooling
+# ──────────────────────────────────────────────
+local_mcp/                          @GBOGEB
+scripts/                            @GBOGEB
+repo_analysis_toolkit/              @GBOGEB
