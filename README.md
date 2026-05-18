@@ -3,19 +3,19 @@
 [![Version](https://img.shields.io/badge/version-v4.4.0-blue?style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)
 [![Completion](https://img.shields.io/badge/completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
 [![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://gbogeb.github.io/ABACUS/)
-[![Workflows](https://img.shields.io/badge/workflows-39%20active-purple?style=flat-square)](https://github.com/GBOGEB/ABACUS/actions)
+[![Workflows](https://img.shields.io/badge/workflows-32%20active%20%2B%205%20staged-purple?style=flat-square)](https://github.com/GBOGEB/ABACUS/actions)
 [![Dashboards](https://img.shields.io/badge/dashboards-6%20live-orange?style=flat-square)](https://gbogeb.github.io/ABACUS/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** v4.4.0 — Production Ready with Full CI/CD ✅  
-**Quality Score:** 92.5/100  
+**Current Version:** v4.4.0 — Release Published; Workflow Activation Pending  
+**Quality Score:** 92.1/100  
 **Last Updated:** 2026-05-18
 
 > A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
 
-### 🎉 v4.4.0 Released — [Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0) | [Announcement](ANNOUNCEMENT_v4.4.0.md) | [Handover Book](https://gbogeb.github.io/ABACUS/handover_book.html)
+### 🎉 v4.4.0 Released — [Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0) | [Announcement](ANNOUNCEMENT_v4.4.0.md) | [Final Status Dashboard](docs/final_status_v4.4.0.html)
 
 ---
 
@@ -29,6 +29,7 @@
 | 🔧 **[Tool Ecosystem](tool_ecosystem_map.md)** | DOW/KEB/GBOGEB interconnections and tool catalog |
 | 📊 **[Analysis Dashboard](https://gbogeb.github.io/ABACUS/deep_analysis_dashboard.html)** | Interactive repository audit dashboard |
 | 📖 **[Handover Book](https://gbogeb.github.io/ABACUS/handover_book.html)** | 12-chapter comprehensive handover documentation |
+| 🖥️ **[Final Status Dashboard](docs/final_status_v4.4.0.html)** | v4.4.0 release dashboard with workflow staging status |
 | ⏱️ **[Timeout Guide](docs/TIMEOUT_HANDLING.md)** | KEB/GBOGEB timeout configuration |
 | 🏆 **[Completion Report](FINAL_COMPLETION_REPORT_v4.4.0.md)** | Final v4.4.0 completion report |
 | 🤝 **[Contributing](.github/CONTRIBUTING.md)** | How to contribute to ABACUS |
@@ -53,13 +54,17 @@ A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering
 - **v4.4.0:** ✅ Production release live (95% complete, quality score 92.5/100)
 - **V2.2:** ✅ Archived historical baseline
 - **V2.3:** ✅ Historical implementation milestone (superseded by v4.4.0)
+- **Workflows:** ✅ 32 active in `.github/workflows/` + ⏳ 5 staged in `workflows-to-install/`
+- **Next Milestones:** Manual workflow activation, branch protection, and optional documentation polish
 
 ### Get Started Now
 1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
 2. **DMAIC V3 Handover:** [ABACUS_Handover_Book.md](DMAIC_V3/docs/handover/ABACUS_Handover_Book.md) (Complete reference) 📚
-3. **Status:** [TOTAL_PROGRESS_SUMMARY.md](TOTAL_PROGRESS_SUMMARY.md) (5 min)
+3. **Status:** [Final Status Dashboard](docs/final_status_v4.4.0.html) + [TOTAL_PROGRESS_SUMMARY.md](TOTAL_PROGRESS_SUMMARY.md) (5 min)
 4. **Test:** `python local_mcp/agent_orchestrator_v3.0.py`
-5. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (10 min)
+5. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (Historical lineage) 📘
+
+> **Note:** The remaining V2.2/V2.3 sections below are preserved as historical lineage and handover context. Use the v4.4.0 links above for the current release state.
 
 ---
 
@@ -141,14 +146,16 @@ Master_Input/
 ├── code_index.json
 │
 ├── .github/workflows/
-│   └── cd.yml                         ← CI/CD pipeline (to be activated)
+│   └── ...                            ← 32 active workflows
+├── workflows-to-install/
+│   └── *.yml                          ← 5 staged workflows awaiting manual activation
 │
 └── [Legacy files in root - to be refactored]
 ```
 
 ---
 
-## 🎯 VERSION OVERVIEW
+## 🎯 VERSION OVERVIEW (Historical Lineage Snapshot)
 
 ### V2.2 (COMPLETE - ARCHIVED) ✅
 **Status:** 21/21 tasks (100%)  
@@ -207,7 +214,7 @@ Master_Input/
 
 ### 3. V2.3_CANONICAL_STATUS.md
 **Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`  
-**Purpose:** Current development status (single source of truth)  
+**Purpose:** Historical development status before the v4.4.0 release  
 **Time:** 5 minutes  
 **Who:** Developers, active contributors
 
@@ -219,7 +226,7 @@ Master_Input/
 
 ### 5. V2.3_EVOLUTION_PLAN_20251111.md
 **Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`  
-**Purpose:** Full roadmap with 15 tasks, 3 phases  
+**Purpose:** Historical roadmap used to reach the v4.4.0 release  
 **Time:** 15 minutes  
 **Who:** Project planning, long-term contributors
 
@@ -391,8 +398,8 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 **Current Version:** v4.4.0  
 **Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** main branch (OneDrive sync)  
-**Last Major Update:** 2026-05-18 (v4.4.0 production release)
+**Git Status:** Release published; 5 workflows staged for manual activation  
+**Last Major Update:** 2026-05-18 (v4.4.0 production release + release documentation)
 
 ---
 
@@ -449,11 +456,11 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** ✅ PRODUCTION READY  
-**Current Focus:** Control-phase governance, documentation quality, and sister-repo rollout of the cleanup toolkit  
-**Next Milestone:** Sustain 95%+ quality and apply the methodology to sister repositories  
+**Project Status:** ✅ v4.4.0 released / ⏳ workflow activation pending  
+**Current Focus:** Activate staged workflows, apply branch protection, and roll out the cleanup toolkit to sister repos  
+**Next Milestone:** Move the 5 staged workflows into `.github/workflows/` and sustain 95%+ quality
 **Last Updated:** 2026-05-18
 
 ---
 
-*Welcome to ABACUS! This is a production-ready project with ongoing DMAIC improvements. Start with the Quick Start section above and explore the documentation structure. Happy coding!*
+*Welcome to ABACUS. Start with the Quick Start section above for the current v4.4.0 release state, then use the historical sections below for lineage and handover context.*

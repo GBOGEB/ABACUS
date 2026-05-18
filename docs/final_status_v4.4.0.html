@@ -54,7 +54,7 @@
         .timeline-item::before { content: '✅'; position: absolute; left: -28px; top: 0; font-size: 14px; }
         .timeline-date { color: var(--accent); font-size: 0.85em; font-weight: 600; }
         .timeline-text { color: var(--text); }
-        .header-badge { display: inline-block; background: var(--green); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700; margin-left: 10px; }
+        .header-badge { display: inline-block; background: var(--yellow); color: #111; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700; margin-left: 10px; }
         .celebration { text-align: center; padding: 40px; background: linear-gradient(135deg, #1a1e2e, #162230); border-radius: 12px; border: 1px solid var(--border); margin-top: 30px; }
         .celebration h2 { font-size: 2em; color: #fff; margin-bottom: 10px; }
         .celebration p { color: var(--accent); font-size: 1.2em; }
@@ -63,8 +63,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🏆 ABACUS v4.4.0 <span class="header-badge">PRODUCTION READY</span></h1>
-        <p class="subtitle">Final Status Dashboard — May 18, 2026</p>
+        <h1>🏆 ABACUS v4.4.0 <span class="header-badge">95% COMPLETE</span></h1>
+        <p class="subtitle">Final Status Dashboard — Release published, workflow activation pending</p>
 
         <!-- Key Metrics -->
         <div class="grid">
@@ -74,14 +74,15 @@
                 <div class="progress-bar"><div class="progress-fill" style="width:95%; background: linear-gradient(90deg, var(--green), #2ea043);">95%</div></div>
             </div>
             <div class="card" style="text-align:center;">
-                <div class="big-number blue">39</div>
+                <div class="big-number blue">32</div>
                 <div class="big-label">Active Workflows</div>
-                <div class="progress-bar"><div class="progress-fill" style="width:100%; background: linear-gradient(90deg, var(--accent), #1f6feb);">39/39</div></div>
+                <div class="big-label">+5 staged in <code>workflows-to-install/</code></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%; background: linear-gradient(90deg, var(--accent), #1f6feb);">32 active</div></div>
             </div>
             <div class="card" style="text-align:center;">
-                <div class="big-number purple">92.5</div>
+                <div class="big-number purple">92.1</div>
                 <div class="big-label">Quality Score / 100</div>
-                <div class="progress-bar"><div class="progress-fill" style="width:92.5%; background: linear-gradient(90deg, var(--purple), #8957e5);">92.5/100</div></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:92.1%; background: linear-gradient(90deg, var(--purple), #8957e5);">92.1/100</div></div>
             </div>
             <div class="card" style="text-align:center;">
                 <div class="big-number" style="color:var(--orange);">6</div>
@@ -96,11 +97,11 @@
                 <h3>✅ Infrastructure & CI/CD</h3>
                 <ul class="checklist">
                     <li><span class="check">✅</span> GitHub Pages enabled & live</li>
-                    <li><span class="check">✅</span> dashboard-health.yml</li>
-                    <li><span class="check">✅</span> deploy-docs.yml</li>
-                    <li><span class="check">✅</span> dmaic-commit-metrics.yml</li>
-                    <li><span class="check">✅</span> release.yml</li>
-                    <li><span class="check">✅</span> update-docs.yml</li>
+                    <li><span class="pending">⏳</span> dashboard-health.yml staged in workflows-to-install/</li>
+                    <li><span class="pending">⏳</span> deploy-docs.yml staged in workflows-to-install/</li>
+                    <li><span class="pending">⏳</span> dmaic-commit-metrics.yml staged in workflows-to-install/</li>
+                    <li><span class="pending">⏳</span> release.yml staged in workflows-to-install/</li>
+                    <li><span class="pending">⏳</span> update-docs.yml staged in workflows-to-install/</li>
                     <li><span class="check">✅</span> CI pipeline consolidated</li>
                     <li><span class="check">✅</span> Format checking</li>
                     <li><span class="check">✅</span> Docs validation</li>
@@ -131,8 +132,9 @@
                     <li><span class="check">✅</span> Completion certificate</li>
                     <li><span class="check">✅</span> v4.4.0 release published</li>
                 </ul>
-                <h3 style="margin-top:20px;">⏳ Remaining (2)</h3>
+                <h3 style="margin-top:20px;">⏳ Remaining (3)</h3>
                 <ul class="checklist">
+                    <li><span class="pending">⏳</span> Activate 5 staged workflows</li>
                     <li><span class="pending">⏳</span> Branch protection rules (admin)</li>
                     <li><span class="pending">⏳</span> Doc enhancements (optional)</li>
                 </ul>
@@ -144,24 +146,24 @@
             <h3>🔄 New Workflow Status</h3>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
                 <div>
-                    <div class="workflow-status"><span class="status-dot dot-green"></span> dashboard-health.yml</div>
-                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Daily at 06:00 UTC</div>
+                    <div class="workflow-status"><span class="status-dot dot-yellow"></span> dashboard-health.yml</div>
+                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Staged — manual copy to .github/workflows required</div>
                 </div>
                 <div>
-                    <div class="workflow-status"><span class="status-dot dot-green"></span> deploy-docs.yml</div>
-                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">On push to docs/</div>
+                    <div class="workflow-status"><span class="status-dot dot-yellow"></span> deploy-docs.yml</div>
+                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Staged — manual copy to .github/workflows required</div>
                 </div>
                 <div>
-                    <div class="workflow-status"><span class="status-dot dot-green"></span> dmaic-commit-metrics.yml</div>
-                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">On push to main</div>
+                    <div class="workflow-status"><span class="status-dot dot-yellow"></span> dmaic-commit-metrics.yml</div>
+                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Staged — manual copy to .github/workflows required</div>
                 </div>
                 <div>
-                    <div class="workflow-status"><span class="status-dot dot-green"></span> release.yml</div>
-                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">On tag push (v*)</div>
+                    <div class="workflow-status"><span class="status-dot dot-yellow"></span> release.yml</div>
+                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Staged — manual copy to .github/workflows required</div>
                 </div>
                 <div>
-                    <div class="workflow-status"><span class="status-dot dot-green"></span> update-docs.yml</div>
-                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">On Python changes</div>
+                    <div class="workflow-status"><span class="status-dot dot-yellow"></span> update-docs.yml</div>
+                    <div style="color:#8b949e;font-size:0.85em;margin-left:18px;">Staged — manual copy to .github/workflows required</div>
                 </div>
             </div>
         </div>
@@ -201,7 +203,7 @@
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-date">May 18, 2026</div>
-                    <div class="timeline-text">Workflows activated — 39 total active workflows</div>
+                    <div class="timeline-text">Workflow activation bundle prepared — 5 staged files await manual move into .github/workflows/</div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-date">May 18, 2026</div>
@@ -214,7 +216,8 @@
         <div class="card" style="margin-bottom:30px;">
             <h3>📊 Before / After Comparison</h3>
             <div class="metric"><span class="metric-label">Overall Progress</span><span class="metric-value"><span style="color:#8b949e;">87%</span> → <span class="green">95%</span></span></div>
-            <div class="metric"><span class="metric-label">Active Workflows</span><span class="metric-value"><span style="color:#8b949e;">34</span> → <span class="blue">39</span></span></div>
+            <div class="metric"><span class="metric-label">Active Workflows</span><span class="metric-value"><span style="color:#8b949e;">32</span> → <span class="blue">32</span></span></div>
+            <div class="metric"><span class="metric-label">Staged Workflow Templates</span><span class="metric-value"><span style="color:#8b949e;">0</span> → <span class="yellow">5</span></span></div>
             <div class="metric"><span class="metric-label">Live Dashboards</span><span class="metric-value"><span style="color:#8b949e;">3</span> → <span style="color:var(--orange);">6</span></span></div>
             <div class="metric"><span class="metric-label">DMAIC Metrics</span><span class="metric-value"><span style="color:#8b949e;">0/100</span> → <span class="green">Calculated</span></span></div>
             <div class="metric"><span class="metric-label">GitHub Pages</span><span class="metric-value"><span style="color:#8b949e;">Not enabled</span> → <span class="green">Live</span></span></div>
@@ -226,8 +229,8 @@
         <!-- Celebration -->
         <div class="celebration">
             <h2>🎉 Phase 4 Complete!</h2>
-            <p>ABACUS v4.4.0 is production-ready with 95% completion</p>
-            <p style="margin-top:10px;color:var(--text);font-size:0.95em;">39 workflows • 6 dashboards • 25+ docs • Quality 92.5/100</p>
+            <p>ABACUS v4.4.0 final deliverables are published with 95% completion</p>
+            <p style="margin-top:10px;color:var(--text);font-size:0.95em;">32 active workflows • 5 staged templates • 6 dashboards • Quality 92.1/100</p>
         </div>
 
         <p style="text-align:center;margin-top:30px;color:#8b949e;font-size:0.85em;">
