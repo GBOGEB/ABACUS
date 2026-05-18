@@ -75,6 +75,7 @@ jobs:
           done
 
       - name: Report broken links
+        id: link_check
         run: |
           echo "=== Internal link report ==="
           BROKEN=0
@@ -92,7 +93,6 @@ jobs:
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
-        id: link_check
 
       - name: Summary
         if: always()
@@ -117,6 +117,19 @@ jobs:
             const missing = '${{ steps.check_files.outputs.missing_count }}';
             const broken  = '${{ steps.link_check.outputs.broken_links }}';
             const runUrl  = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            // Avoid opening a new issue if one is already open for dashboard failures
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              state: 'open',
+              labels: 'bug,dashboard',
+            });
+            if (existing.data.length > 0) {
+              console.log(`Issue #${existing.data[0].number} already open for dashboard failures — skipping duplicate.`);
+              return;
+            }
+
             const body = [
               '## 🚨 Dashboard Health Check Failed',
               '',
