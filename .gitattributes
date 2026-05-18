@@ -1,0 +1,43 @@
+# Git attributes — line endings, binary detection, linguist overrides
+# https://git-scm.com/docs/gitattributes
+
+# ──────────────────────────────────────────────
+# Auto-detect text files and normalise line endings
+# ──────────────────────────────────────────────
+* text=auto eol=lf
+
+# ──────────────────────────────────────────────
+# Explicit text files
+# ──────────────────────────────────────────────
+*.py    text diff=python
+*.md    text diff=markdown
+*.yml   text
+*.yaml  text
+*.json  text
+*.html  text diff=html
+*.css   text diff=css
+*.js    text
+*.sh    text eol=lf
+*.txt   text
+
+# ──────────────────────────────────────────────
+# Binary files — do not diff
+# ──────────────────────────────────────────────
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+
+# ──────────────────────────────────────────────
+# GitHub Linguist overrides
+# ──────────────────────────────────────────────
+# Exclude generated/vendored files from language stats
+docs/**/*.html      linguist-documentation
+docs/api/*.json     linguist-generated
+*.min.js            linguist-generated
+*.min.css           linguist-generated
