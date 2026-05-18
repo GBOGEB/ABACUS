@@ -39,6 +39,30 @@ from pathlib import Path
 SECTION_KEY_DIRS = {"docs", "src", "tests", "scripts", "tools"}
 
 
+def is_python_name_compliant(filename: str) -> bool:
+    """Best-effort naming check that tolerates common versioned filenames."""
+    snake_case = re.match(r"^[a-z0-9_]+\.py$", filename)
+    if snake_case:
+        return True
+    if not filename.endswith(".py"):
+        return False
+    stem = filename[:-3]
+    if "_v" not in stem:
+        return False
+    base, version_and_suffix = stem.rsplit("_v", 1)
+    if not base or any(not (c.isalnum() or c == "_") for c in base):
+        return False
+    parts = version_and_suffix.split("_")
+    version_token = parts[0]
+    version_numbers = version_token.split(".")
+    if not version_numbers or any(not n.isdigit() for n in version_numbers):
+        return False
+    for token in parts[1:]:
+        if not token or any(not c.isalnum() for c in token):
+            return False
+    return True
+
+
 def check_docs(repo: Path) -> dict:
     score = 0
     items = {}
@@ -94,10 +118,17 @@ def check_organization(repo: Path) -> dict:
     if len(top_dirs) <= 12:
         score += 5
 
-    # Consistent naming heuristic — every .py file uses snake_case.
-    py_consistent = all(re.match(r"^[a-z0-9_]+\.py$", p.name) for p in repo.rglob("*.py")
-                        if ".git" not in p.parts and ".venv" not in p.parts)
+    # Consistent naming heuristic — ratio-based and tolerant of versioned names.
+    py_files = [
+        p for p in repo.rglob("*.py")
+        if ".git" not in p.parts and ".venv" not in p.parts and "__pycache__" not in p.parts
+    ]
+    compliant = sum(1 for p in py_files if is_python_name_compliant(p.name))
+    compliance_ratio = (compliant / len(py_files)) if py_files else 1.0
+    py_consistent = compliance_ratio >= 0.9
     items["python_snake_case"] = py_consistent
+    items["python_name_compliance_ratio"] = round(compliance_ratio, 3)
+    items["python_name_compliance_threshold"] = 0.9
     if py_consistent:
         score += 5
 

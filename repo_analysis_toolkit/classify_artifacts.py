@@ -79,10 +79,12 @@ def days_since(iso_date: str) -> int:
     if not iso_date:
         return -1
     try:
-        # Strip "+0000" style offset; Python <3.11 doesn't parse trailing offset reliably.
-        dt = datetime.fromisoformat(iso_date.split(" +")[0].replace(" ", "T"))
+        dt = datetime.strptime(iso_date, "%Y-%m-%d %H:%M:%S %z")
     except ValueError:
-        return -1
+        try:
+            dt = datetime.fromisoformat(iso_date.replace(" ", "T", 1))
+        except ValueError:
+            return -1
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return (datetime.now(timezone.utc) - dt).days
