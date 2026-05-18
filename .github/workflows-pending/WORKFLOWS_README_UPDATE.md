@@ -32,7 +32,7 @@ Workflows are organized by function: core CI/CD, documentation, monitoring, DMAI
 | DMAIC Enterprise CI | `dmaic-enterprise-ci.yml` | push, PR, manual | Enterprise-grade DMAIC CI |
 | DMAIC Phase Execution | `dmaic-phase-execution.yml` | manual | Execute specific DMAIC phases |
 | DMAIC Commit Metrics | `dmaic-commit-metrics.yml` | push, workflow_run, manual | Per-commit quality tracking with Plotly charts |
-| Bridge CI | `bridge-ci.yml` | push, PR, manual | DMAIC V3 bridge integration tests |
+| Bridge CI | `bridge-ci.yml` | push, PR, manual | DMAIC V3 bridge integration tests with manual dispatch support |
 
 ### DOW Integration
 
