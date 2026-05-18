@@ -74,13 +74,17 @@ def collect_branches(repo: Path, abandoned_after_days: int) -> list[dict]:
         name, date, author = parts[0], parts[1], parts[2]
         abandoned = False
         try:
-            dt = datetime.fromisoformat(date.replace(" ", "T")) if date else None
+            dt = datetime.strptime(date, "%Y-%m-%d %H:%M:%S %z") if date else None
+        except ValueError:
+            try:
+                dt = datetime.fromisoformat(date.replace(" ", "T", 1)) if date else None
+            except ValueError:
+                dt = None
+        if dt:
             if dt and dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
             if dt and (now - dt).days > abandoned_after_days:
                 abandoned = True
-        except ValueError:
-            dt = None
         branches.append({
             "name": name,
             "date": date,
