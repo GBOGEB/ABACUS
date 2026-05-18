@@ -72,7 +72,7 @@ E6 Knowledge Layer
 ├── temporal_metadata_engine.py  → Temporal tracking of metadata state changes
 ├── handover_bridge.py           → Document-to-execution handover pipeline
 ├── tuple_metadata.py            → Tuple validation (status, source, downstream)
-└── knowledge_integration_v2.3   → KEB ↔ GBOGEB bidirectional integration
+└── knowledge_integration_v2.3.py → KEB ↔ GBOGEB bidirectional integration
 ```
 
 > **Cross-links:** E6 modules feed into [CI/CD workflows](.github/workflows/), [tuple validation](scripts/validate_tuple_metadata.py), and the [interactive progress tracker](docs/progress_tracker.html).
