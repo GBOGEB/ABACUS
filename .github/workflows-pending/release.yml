@@ -75,17 +75,26 @@ jobs:
         run: |
           echo "=== Packaging dashboards ==="
           mkdir -p release-artifacts
-          MISSING_DIRS=()
+          PACKAGE_SOURCES=()
+          SKIPPED_DIRS=()
           for d in docs/ cryo_dashboard_v0_3_0/ docs_versioned/; do
-            [ -d "$d" ] || MISSING_DIRS+=("$d")
+            if [ -d "$d" ]; then
+              PACKAGE_SOURCES+=("$d")
+            else
+              SKIPPED_DIRS+=("$d")
+            fi
           done
-          if [ ${#MISSING_DIRS[@]} -gt 0 ]; then
-            echo "❌ Missing directories: ${MISSING_DIRS[*]}"
-            exit 1
+          if [ ${#SKIPPED_DIRS[@]} -gt 0 ]; then
+            echo "⚠️ Skipping missing optional directories: ${SKIPPED_DIRS[*]}"
           fi
-          tar czf release-artifacts/abacus-docs-${{ steps.version.outputs.tag }}.tar.gz \
-            docs/ cryo_dashboard_v0_3_0/ docs_versioned/
-          echo "Package size: $(du -h release-artifacts/*.tar.gz | cut -f1)"
+          if [ ${#PACKAGE_SOURCES[@]} -eq 0 ]; then
+            echo "⚠️ No dashboard/documentation directories found to package; skipping archive creation."
+          else
+            ARCHIVE_PATH="release-artifacts/abacus-docs-${{ steps.version.outputs.tag }}.tar.gz"
+            tar czf "$ARCHIVE_PATH" "${PACKAGE_SOURCES[@]}"
+            echo "Packaged directories: ${PACKAGE_SOURCES[*]}"
+            echo "Package size: $(du -h "$ARCHIVE_PATH" | cut -f1)"
+          fi
 
       - name: Generate release notes
         run: |
