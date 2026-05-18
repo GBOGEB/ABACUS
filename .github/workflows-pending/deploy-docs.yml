@@ -69,6 +69,8 @@ jobs:
     name: Deploy to GitHub Pages
     needs: validate
     runs-on: ubuntu-latest
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -98,7 +100,7 @@ jobs:
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           REPO="${{ github.event.repository.name }}"
           # Use the URL produced by deploy-pages when available, fall back to computed URL
-          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
+          PAGES_URL="${{ needs.deploy.outputs.page_url }}"
           PAGES_URL="${PAGES_URL:-https://${OWNER}.github.io/${REPO}/}"
           echo "Waiting 30s for deployment propagation..."
           sleep 30

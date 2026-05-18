@@ -45,7 +45,7 @@ jobs:
         id: metrics
         run: |
           python3 << 'PYEOF'
-          import json, pathlib, subprocess, datetime, sys, math
+          import json, os, pathlib, subprocess, datetime, sys, math
 
           repo_root = pathlib.Path(".")
           out_dir   = repo_root / "docs" / "api"
@@ -128,7 +128,7 @@ jobs:
           print(json.dumps(metrics, indent=2))
 
           # ── GitHub Actions outputs ────────────────────────────────────────
-          with open("$GITHUB_OUTPUT", "a") as fh:
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
               fh.write(f"quality_score={quality_score}\n")
               fh.write(f"phase_health={json.dumps(phase_scores)}\n")
               fh.write(f"escalate={'true' if escalate else 'false'}\n")

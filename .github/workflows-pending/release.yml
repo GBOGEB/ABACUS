@@ -99,6 +99,18 @@ jobs:
       - name: Generate release notes
         run: |
           TAG="${{ steps.version.outputs.tag }}"
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          PYTHON_FILES=$(find DMAIC_V3 local_mcp staging -name '*.py' 2>/dev/null | wc -l | tr -d ' ')
+          WF_COUNT=$(find .github/workflows -name '*.yml' 2>/dev/null | wc -l | tr -d ' ')
+          DOC_COUNT=$(find docs -name '*.html' 2>/dev/null | wc -l | tr -d ' ')
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            CHANGES_SINCE="Changes since ${PREV_TAG}:"
+            COMMIT_LOG=$(git log --oneline "${PREV_TAG}..HEAD" --no-merges 2>/dev/null | head -20 || echo "")
+          else
+            CHANGES_SINCE="Initial release."
+            COMMIT_LOG=""
+          fi
           cat > release-artifacts/RELEASE_NOTES.md << EOF
           # ABACUS $TAG Release Notes
 
@@ -114,21 +126,18 @@ jobs:
           - 7 topic-specific landing pages
 
           ## Key Metrics
-          - 558 commits analyzed
-          - 12 agent clusters mapped
-          - 92.5/100 quality score
-          - 1,327 DOW governance references
-          - 41 documentation artifacts
+          - ${COMMIT_COUNT} total commits
+          - ${PYTHON_FILES} Python source files
+          - ${WF_COUNT} CI/CD workflows
+          - ${DOC_COUNT} documentation artifacts
 
-          ## Fixes
-          - KEB/GBOGEB timeout handling improved
-          - Missing local_mcp/__init__.py added
-          - change_detector.py syntax error resolved
+          ## $CHANGES_SINCE
+          ${COMMIT_LOG}
 
           ## CI/CD
-          - 4 new GitHub Actions workflows
           - Daily dashboard health checks
           - Automated docs deployment pipeline
+          - Per-commit DMAIC quality tracking
           EOF
 
       - name: Upload release artifacts
