@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This report documents the installation of 5 CI/CD workflow files from `docs/workflows/` to `.github/workflows/`, completing one of the final remaining action items for Phase 4 of the ABACUS project.
+This report documents the staging of 5 CI/CD workflow files from `docs/workflows/` into `workflows-to-install/`, preparing them for the final manual activation step in Phase 4 of the ABACUS project.
 
 ---
 
@@ -16,8 +16,8 @@ This report documents the installation of 5 CI/CD workflow files from `docs/work
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Active workflows in `.github/workflows/` | 34 | **39** | +5 |
-| Pending workflows in `docs/workflows/` | 5 | **0** | -5 |
+| Active workflows in `.github/workflows/` | 32 | **32** | 0 |
+| Staged workflows in `workflows-to-install/` | 0 | **5** | +5 |
 | DMAIC Quality Metrics | 0/100 (inactive) | **Calculated** | 🔧 Fixed |
 | Dashboard monitoring | Manual | **Automated (daily)** | ✅ |
 | Docs deployment | Manual | **Automated (on push)** | ✅ |
@@ -50,8 +50,8 @@ After this PR:   ████████████████████░
 11. ✅ QPLANT v4.4.0 components
 12. ✅ GitHub Pages verified live
 13. ✅ Post-merge verification complete
-14. ✅ **CI/CD workflows installed** ← NEW
-15. ✅ **DMAIC metrics activated** ← NEW
+14. ✅ **CI/CD workflow activation bundle staged** ← NEW
+15. ⏳ **DMAIC metrics activation pending workflow move** ← NEW
 
 ### Remaining Items (~5%)
 
@@ -60,7 +60,7 @@ After this PR:   ████████████████████░
 
 ---
 
-## Workflows Installed
+## Workflows Staged
 
 ### 1. 🏥 Dashboard Health Check (`dashboard-health.yml`)
 - **Trigger:** Daily at 06:00 UTC + manual dispatch
@@ -93,10 +93,18 @@ After this PR:   ████████████████████░
 
 ## Post-Merge Expectations
 
+Before any of the workflows below can run, a maintainer must move the staged files:
+
+```bash
+cp workflows-to-install/*.yml .github/workflows/
+rm -rf workflows-to-install/
+git add -A && git commit -m "ci: activate workflows"
+```
+
 | Workflow | First Run After Merge |
 |----------|----------------------|
-| `dmaic-commit-metrics.yml` | **Immediately** (triggered by push to main) |
-| `deploy-docs.yml` | **Immediately** (docs/ files modified) |
+| `dmaic-commit-metrics.yml` | **Immediately after activation** (triggered by push to main) |
+| `deploy-docs.yml` | **Immediately after activation** (docs/ files modified) |
 | `update-docs.yml` | On next Python file change |
 | `dashboard-health.yml` | Next 06:00 UTC or manual dispatch |
 | `release.yml` | On next `git tag v*` or manual dispatch |
@@ -104,7 +112,7 @@ After this PR:   ████████████████████░
 ### How to Monitor
 
 1. Go to [Actions tab](https://github.com/GBOGEB/ABACUS/actions)
-2. Look for the new workflow runs
+2. Activate the staged workflows, then look for the new workflow runs
 3. Check `docs/api/dmaic_metrics.json` for calculated metrics
 4. Visit `docs/api/dmaic_metrics_chart.html` for visual dashboard
 
@@ -114,17 +122,17 @@ After this PR:   ████████████████████░
 
 | Issue | Action | Status |
 |-------|--------|--------|
-| [#387](https://github.com/GBOGEB/ABACUS/issues/387) | Closed — GitHub Pages confirmed live | ✅ Closed |
+| [#387](https://github.com/GBOGEB/ABACUS/issues/387) | Manual close recommended after merge | ⏳ Manual |
 | [#388](https://github.com/GBOGEB/ABACUS/issues/388) | PR created to install workflows | 🔗 Linked |
-| [#391](https://github.com/GBOGEB/ABACUS/issues/391) | Closed — Post-merge verification complete | ✅ Closed |
-| [#394](https://github.com/GBOGEB/ABACUS/issues/394) | Updated with progress (87% → ~95%) | 📊 Updated |
+| [#391](https://github.com/GBOGEB/ABACUS/issues/391) | Manual close recommended after merge | ⏳ Manual |
+| [#394](https://github.com/GBOGEB/ABACUS/issues/394) | Add follow-up progress comment after merge | 📊 Pending |
 
 ---
 
 ## 🎉 Achievements
 
-- **39 active GitHub Actions workflows** — comprehensive CI/CD coverage
-- **Zero pending workflow installations** — all templates now active
+- **32 active GitHub Actions workflows** — current production workflow set
+- **5 staged workflow templates** — ready for manual activation
 - **Automated quality monitoring** — DMAIC metrics with escalation
 - **Self-healing documentation** — auto-deploy, auto-update, auto-health-check
 - **Professional release pipeline** — tag-based releases with packaging
