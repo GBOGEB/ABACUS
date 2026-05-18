@@ -9,5 +9,5 @@ contact_links:
     url: https://github.com/GBOGEB/ABACUS/blob/main/12_cluster_vision.md
     about: Read the 12-Cluster Architecture for project context
   - name: 📊 DMAIC Dashboard
-    url: https://gbogeb.github.io/ABACUS/dmaic_metrics_chart.html
+    url: https://gbogeb.github.io/ABACUS/api/dmaic_metrics_chart.html
     about: View the live DMAIC quality metrics dashboard
