@@ -28,7 +28,7 @@ jobs:
         run: |
           python scoring/iterative_scoring.py --iteration ${{ github.event.inputs.sprint_number }}
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: sprint-results
           path: DMAIC_V3_OUTPUT/sprints/
