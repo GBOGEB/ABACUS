@@ -18,44 +18,44 @@ Phase 4 - Production:      █████████████████�
 
 ---
 
-## ✅ Completed Items (25)
+## 📦 Deliverable Status
 
-### Infrastructure & CI/CD (10)
-| # | Item | Completed |
-|---|------|-----------|
-| 1 | ✅ GitHub Pages enabled and live | May 17, 2026 |
-| 2 | ✅ `dashboard-health.yml` installed | May 18, 2026 |
-| 3 | ✅ `deploy-docs.yml` installed | May 18, 2026 |
-| 4 | ✅ `dmaic-commit-metrics.yml` installed | May 18, 2026 |
-| 5 | ✅ `release.yml` installed | May 18, 2026 |
-| 6 | ✅ `update-docs.yml` installed | May 18, 2026 |
-| 7 | ✅ CI pipeline consolidated | May 17, 2026 |
-| 8 | ✅ Format checking workflow | May 17, 2026 |
-| 9 | ✅ Documentation validation | May 17, 2026 |
-| 10 | ✅ Branch protection recommendations | May 17, 2026 |
+### Infrastructure & CI/CD
+| # | Item | Status |
+|---|------|--------|
+| 1 | GitHub Pages enabled and live | ✅ Complete — May 17, 2026 |
+| 2 | `dashboard-health.yml` | ⏳ Staged in `workflows-to-install/` — May 18, 2026 |
+| 3 | `deploy-docs.yml` | ⏳ Staged in `workflows-to-install/` — May 18, 2026 |
+| 4 | `dmaic-commit-metrics.yml` | ⏳ Staged in `workflows-to-install/` — May 18, 2026 |
+| 5 | `release.yml` | ⏳ Staged in `workflows-to-install/` — May 18, 2026 |
+| 6 | `update-docs.yml` | ⏳ Staged in `workflows-to-install/` — May 18, 2026 |
+| 7 | CI pipeline consolidated | ✅ Complete — May 17, 2026 |
+| 8 | Format checking workflow | ✅ Complete — May 17, 2026 |
+| 9 | Documentation validation | ✅ Complete — May 17, 2026 |
+| 10 | Branch protection recommendations | ✅ Complete — May 17, 2026 |
 
-### Documentation (10)
-| # | Item | Completed |
-|---|------|-----------|
-| 11 | ✅ Landing page (docs/index.html) | May 17, 2026 |
-| 12 | ✅ Handover book (12 chapters) | May 17, 2026 |
-| 13 | ✅ Deep analysis dashboard | May 17, 2026 |
-| 14 | ✅ Contributing guidelines | May 17, 2026 |
-| 15 | ✅ PR template | May 17, 2026 |
-| 16 | ✅ Release template | May 17, 2026 |
-| 17 | ✅ Issue templates (4 types) | May 17, 2026 |
-| 18 | ✅ Timeout handling guide | May 17, 2026 |
-| 19 | ✅ Workflow documentation | May 18, 2026 |
-| 20 | ✅ Installation guide | May 18, 2026 |
+### Documentation
+| # | Item | Status |
+|---|------|--------|
+| 11 | Landing page (docs/index.html) | ✅ Complete — May 17, 2026 |
+| 12 | Handover book (12 chapters) | ✅ Complete — May 17, 2026 |
+| 13 | Deep analysis dashboard | ✅ Complete — May 17, 2026 |
+| 14 | Contributing guidelines | ✅ Complete — May 17, 2026 |
+| 15 | PR template | ✅ Complete — May 17, 2026 |
+| 16 | Release template | ✅ Complete — May 17, 2026 |
+| 17 | Issue templates (4 types) | ✅ Complete — May 17, 2026 |
+| 18 | Timeout handling guide | ✅ Complete — May 17, 2026 |
+| 19 | Workflow documentation | ✅ Complete — May 18, 2026 |
+| 20 | Installation guide | ✅ Complete — May 18, 2026 |
 
-### Reports & Deliverables (5)
-| # | Item | Completed |
-|---|------|-----------|
-| 21 | ✅ Phase 4 completion report | May 18, 2026 |
-| 22 | ✅ Workflow installation status report | May 18, 2026 |
-| 23 | ✅ Final completion report v4.4.0 | May 18, 2026 |
-| 24 | ✅ Completion certificate | May 18, 2026 |
-| 25 | ✅ v4.4.0 release published | May 18, 2026 |
+### Reports & Deliverables
+| # | Item | Status |
+|---|------|--------|
+| 21 | Phase 4 completion report | ✅ Complete — May 18, 2026 |
+| 22 | Workflow installation status report | ✅ Updated for staged activation — May 18, 2026 |
+| 23 | Final completion report v4.4.0 | ✅ Complete — May 18, 2026 |
+| 24 | Completion certificate | ✅ Complete — May 18, 2026 |
+| 25 | v4.4.0 release published | ✅ Complete — May 18, 2026 |
 
 ---
 
@@ -65,9 +65,24 @@ Phase 4 - Production:      █████████████████�
 
 ---
 
-## ⏳ Remaining Items (2)
+## ⏳ Remaining Items (3)
 
-### 1. Branch Protection Rules
+### 1. Activate Staged Workflows
+| Field | Detail |
+|-------|--------|
+| **Priority** | 🔴 High |
+| **Effort** | ~10 minutes |
+| **Owner** | Repository Maintainer |
+| **Blocker** | GitHub App lacks `workflows` permission |
+| **Location** | `workflows-to-install/*.yml` |
+
+**What to do:**
+1. Copy the workflow files into `.github/workflows/`
+2. Remove `workflows-to-install/` after activation
+3. Commit the move on `main`
+4. Verify the new workflows appear in the Actions tab
+
+### 2. Branch Protection Rules
 | Field | Detail |
 |-------|--------|
 | **Priority** | 🟡 Medium |
@@ -87,7 +102,7 @@ Phase 4 - Production:      █████████████████�
    - ✅ Include administrators
 4. Save changes
 
-### 2. Documentation Enhancements (Optional)
+### 3. Documentation Enhancements (Optional)
 | Field | Detail |
 |-------|--------|
 | **Priority** | 🟢 Low |
@@ -116,12 +131,12 @@ May 17  ──── Documentation Sprint ────────────�
    │    ✅ Dashboards live
    │    ✅ CI/CD consolidated
    │    ✅ Templates created
-May 18  ──── Workflow Installation ──────────────────
-   │    ✅ 5 workflows activated
+May 18  ──── Workflow Activation Bundle ─────────────
+   │    ⏳ 5 workflows staged in workflows-to-install/
    │    ✅ PR #397 merged
    │    ✅ v4.4.0 released
    │    ✅ Final reports generated
-   │    ✅ Issues closed
+   │    ⏳ Manual activation pending
 Future  ──── Optional Items ─────────────────────────
    │    ⏳ Branch protection (admin)
    │    ⏳ Doc enhancements (optional)
@@ -134,11 +149,12 @@ Future  ──── Optional Items ──────────────�
 
 | Item | Effort | Complexity | Dependencies |
 |------|--------|------------|--------------|
+| Activate staged workflows | 10 min | Low | Maintainer access |
 | Branch protection | 15 min | Low | Admin access |
 | Doc enhancements | 2-8 hours | Low-Medium | None |
 
-**Total remaining effort:** < 1 day (mostly optional)
+**Total remaining effort:** < 1 day (mostly manual/admin)
 
 ---
 
-> 🎉 **The project is production-ready.** The remaining 5% consists of administrative configuration and optional polish — no functional gaps remain.
+> 🎉 **The project is at 95% completion.** The remaining work is manual workflow activation, admin configuration, and optional polish.
