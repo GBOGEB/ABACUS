@@ -2,9 +2,14 @@
 
 [![Version](https://img.shields.io/badge/version-v4.4.0-blue?style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)
 [![Completion](https://img.shields.io/badge/completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
+[![Build](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci.yml?branch=main&style=flat-square&label=build)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/smoke-test.yml?branch=main&style=flat-square&label=tests)](https://github.com/GBOGEB/ABACUS/actions/workflows/smoke-test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen?style=flat-square)](docs/testing/index.html)
 [![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://gbogeb.github.io/ABACUS/)
 [![Workflows](https://img.shields.io/badge/workflows-32%20active%20%2B%205%20staged-purple?style=flat-square)](https://github.com/GBOGEB/ABACUS/actions)
 [![Dashboards](https://img.shields.io/badge/dashboards-6%20live-orange?style=flat-square)](https://gbogeb.github.io/ABACUS/)
+[![Tuple Validation](https://img.shields.io/badge/tuple--validation-passing-brightgreen?style=flat-square)](scripts/validate_tuple_metadata.py)
+[![Progress Tracker](https://img.shields.io/badge/progress--tracker-interactive-blueviolet?style=flat-square)](docs/progress_tracker.html)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
@@ -42,6 +47,105 @@
 | **Documentation** | C5–C6 | Handover generation, knowledge management |
 | **Recursive** | C7–C8 | Self-improvement loops, orchestration |
 | **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
+
+---
+
+## 🧩 E6 Modules — Modular Enhancements
+
+The **E6 (Phase 6 — Knowledge)** module layer provides modular enhancements for knowledge management, recursive processing, and metadata-driven pipelines across the ABACUS system.
+
+| Module | Location | Status | Description |
+|--------|----------|--------|-------------|
+| **Phase 6 Knowledge Engine** | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Active | Temporal knowledge references, cross-phase learning integration |
+| **Temporal Metadata Engine** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | ✅ Active | Metadata timeline tracking, versioned state management |
+| **Handover Bridge** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | ✅ Active | Bridge between handover documents and execution state |
+| **Tuple Metadata Validator** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | ✅ Active | Validates tuple entries with required bridge keys and status |
+| **Session Tuple Analyzer** | [`abacus_v21_session_tuple_analyzer.py`](abacus_v21_session_tuple_analyzer.py) | ✅ Active | Analyzes session tuples for coverage and completeness |
+| **Knowledge Preservation** | [`abacus_v21_knowledge_preservation.py`](abacus_v21_knowledge_preservation.py) | ✅ Active | Ensures knowledge continuity across versions |
+| **Knowledge Integration** | [`local_mcp/knowledge_integration_v2.3.py`](local_mcp/knowledge_integration_v2.3.py) | ✅ Active | KEB/GBOGEB integration layer for v2.3+ |
+
+#### E6 Module Architecture
+
+```
+E6 Knowledge Layer
+├── phase6_knowledge.py          → Knowledge reference extraction & cross-phase linkage
+├── temporal_metadata_engine.py  → Temporal tracking of metadata state changes
+├── handover_bridge.py           → Document-to-execution handover pipeline
+├── tuple_metadata.py            → Tuple validation (status, source, downstream)
+└── knowledge_integration_v2.3   → KEB ↔ GBOGEB bidirectional integration
+```
+
+> **Cross-links:** E6 modules feed into [CI/CD workflows](.github/workflows/), [tuple validation](scripts/validate_tuple_metadata.py), and the [interactive progress tracker](docs/progress_tracker.html).
+
+---
+
+## 🔧 HTML Export Tools
+
+HTML export tools generate interactive dashboards, handover visualizations, and status reports from repository data.
+
+| Tool | Location | Output | Description |
+|------|----------|--------|-------------|
+| **Docs HTML Generator** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py) | `docs/*.html` | Converts markdown documentation to styled HTML pages |
+| **Export Docs** | [`scripts/export_docs.py`](scripts/export_docs.py) | Various HTML | Exports documentation summaries for GitHub Pages deployment |
+| **Final Status Dashboard** | [`docs/final_status_v4.4.0.html`](docs/final_status_v4.4.0.html) | Static HTML | v4.4.0 release status with workflow staging indicators |
+| **Deep Analysis Dashboard** | [`docs/deep_analysis_dashboard.html`](docs/deep_analysis_dashboard.html) | Interactive HTML | Repository audit with metrics and health scores |
+| **Handover Book** | [`docs/handover_book.html`](docs/handover_book.html) | Interactive HTML | 12-chapter handover documentation viewer |
+| **Progress Tracker** | [`docs/progress_tracker.html`](docs/progress_tracker.html) | Interactive HTML | **NEW** — Development stages, branch status, and milestones |
+| **DMAIC Metrics** | [`docs/dmaic-metrics.html`](docs/dmaic-metrics.html) | Interactive HTML | DMAIC phase metrics visualization |
+| **Repository Structure** | [`docs/repository_structure.html`](docs/repository_structure.html) | Static HTML | Visual repo structure overview |
+
+> **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](workflows-to-install/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
+
+---
+
+## 🐍 Python Tools & Scripts
+
+Core Python tooling for CI/CD, validation, analysis, and automation.
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Validation** | [`validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py), [`validate_docs_links.py`](scripts/validate_docs_links.py), [`validate_dmaic_contract.py`](scripts/validate_dmaic_contract.py) | Schema validation, link checking, contract verification |
+| **CI/CD** | [`cicd_github_orchestrator.py`](cicd_github_orchestrator.py), [`run_cicd_roundtrip_test.py`](run_cicd_roundtrip_test.py), [`ci_monitor_local.py`](ci_monitor_local.py) | Pipeline orchestration, roundtrip testing, local monitoring |
+| **Deployment** | [`deploy_full_integration.py`](deploy_full_integration.py), [`run_comprehensive_deployment.py`](run_comprehensive_deployment.py), [`run_streamlined_deployment.py`](run_streamlined_deployment.py) | Full deployment, comprehensive checks, streamlined deploy |
+| **Analysis** | [`workflow_analyzer.py`](workflow_analyzer.py), [`refactoring_executor.py`](refactoring_executor.py), [`fast_metrics_collector.py`](fast_metrics_collector.py) | Workflow analysis, code refactoring, metrics collection |
+| **Handover** | [`scripts/handover_generator.py`](scripts/handover_generator.py), [`scripts/archive_handover.py`](scripts/archive_handover.py), [`scripts/build_handover_from_glob_yaml.py`](scripts/build_handover_from_glob_yaml.py) | Generate, archive, and build handover packages |
+| **Code Health** | [`scripts/code_health_check.py`](scripts/code_health_check.py), [`scripts/cold_start_doctor.py`](scripts/cold_start_doctor.py), [`scripts/env_doctor.py`](scripts/env_doctor.py) | Code health audit, environment diagnostics |
+| **Documentation** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py), [`scripts/export_docs.py`](scripts/export_docs.py), [`scripts/normalize_markdown.py`](scripts/normalize_markdown.py) | HTML generation, doc export, markdown normalization |
+
+> **Cross-links:** Python tools are invoked by [GitHub Actions workflows](.github/workflows/), validated via [CI pipelines](.github/workflows/ci.yml), and their outputs feed into the [progress tracker](docs/progress_tracker.html) and [bridges document](docs/BRIDGES_AND_CONNECTIONS.md).
+
+---
+
+## 🌉 Bridges & Connections
+
+Explicit links between validated tuples, handoff logs, and metadata workflows. See the full [Bridges & Connections](docs/BRIDGES_AND_CONNECTIONS.md) document for details.
+
+| Bridge | Source | Target | Status |
+|--------|--------|--------|--------|
+| **Tuple → Handoff** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | [`deepagent-handover-package/`](deepagent-handover-package/) | ✅ Connected |
+| **Handoff → CI** | [`scripts/validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py) | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | ✅ Connected |
+| **Metadata → Knowledge** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Connected |
+| **Handover → Execution** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | [`local_mcp/agent_orchestrator_v3.0.py`](local_mcp/agent_orchestrator_v3.0.py) | ✅ Connected |
+| **CI → Dashboard** | [`.github/workflows/`](.github/workflows/) | [`docs/progress_tracker.html`](docs/progress_tracker.html) | ✅ Connected |
+| **Tuple Tests → CI** | [`DMAIC_V3/tests/test_tuple_metadata_validation.py`](DMAIC_V3/tests/test_tuple_metadata_validation.py) | [`.github/workflows/smoke-test.yml`](.github/workflows/smoke-test.yml) | ✅ Connected |
+
+---
+
+## 📊 Development Status Snapshot
+
+| Module | Status | Last Updated | Notes |
+|--------|--------|-------------|-------|
+| E6 Knowledge Engine | ✅ Completed | 2026-05-18 | Temporal references, cross-phase learning |
+| HTML Export Pipeline | ✅ Completed | 2026-05-18 | 8 dashboards live on GitHub Pages |
+| Python Tool Suite | ✅ Completed | 2026-05-18 | 30+ scripts for CI/CD, validation, analysis |
+| Tuple Validation | ✅ Completed | 2026-05-18 | Schema checks, bridge key enforcement |
+| CI/CD Workflows | 🚧 In Progress | 2026-05-18 | 32 active + 5 staged for activation |
+| Progress Tracker | ✅ Completed | 2026-05-18 | Interactive HTML visualization |
+| Bridges & Connections | ✅ Completed | 2026-05-18 | 6 documented bridges with validation |
+| Recursive Tuples | 🚧 In Progress | 2026-05-18 | Self-referencing tuple chains in progress |
+| Branch Protection | ⏳ Pending | — | Awaiting manual activation |
+
+> **Interactive view:** See the full [Progress Tracker](docs/progress_tracker.html) for a visual timeline with milestones and branch details.
 
 ---
 
