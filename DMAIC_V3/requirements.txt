@@ -104,7 +104,7 @@ flake8>=7.0.0
 pylint>=2.12.0,<3.0.0
 
 # Type checking
-mypy>=0.950,<1.0.0
+mypy>=2.1.0,<3.0.0
 
 # Documentation
 sphinx>=9.1.0,<10.0.0
