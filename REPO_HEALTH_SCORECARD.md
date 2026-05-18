@@ -107,7 +107,7 @@
 | Organization   |        24/25  | 95+ artifacts classified; one duplicate cleanup script flagged Stale. |
 | Automation     |        25/25  | 39 active workflows; DMAIC metrics live; daily health checks green.  |
 | Governance     |        19/25  | All templates + contributing + maintenance live; **branch protection pending** (admin action). |
-| **Total**      |     **92/25** | Wait — let's redo that.                                              |
+| **Total**      |    **92/100** |                                                                      |
 
 **ABACUS total: 92 / 100 → Excellent.** Branch-protection is the single 5-point ceiling lift remaining.
 
