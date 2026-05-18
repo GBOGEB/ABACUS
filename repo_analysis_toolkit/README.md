@@ -14,7 +14,7 @@ Five command-line tools that move a repo from "scattered legacy" to "documented,
 | `classify_artifacts.py` | Classify every file as Active / Archived / Stale / Redundant / Corrupted. | 2     |
 | `generate_lineage.py`   | Walk `git log`, build version timeline + Mermaid/SVG diagram.      | 2     |
 | `create_dashboard.py`   | Render a single-page HTML dashboard from the JSON / CSV outputs.   | 2 / 3 |
-| `validate_cleanup.py`   | Post-cleanup compliance + link checker; emits a final report.      | 4 / 5 |
+| `validate_cleanup.py`   | Post-cleanup compliance scoring; emits a final report.              | 4 / 5 |
 
 ---
 

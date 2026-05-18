@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import json
 import os
 import subprocess
 import sys
@@ -100,8 +101,8 @@ def is_corrupted(path: Path, size: int) -> bool:
     if suffix == ".json":
         try:
             with open(path, "r", encoding="utf-8") as f:
-                f.read()
-        except (OSError, UnicodeDecodeError):
+                json.load(f)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
             return True
     if suffix in {".png", ".jpg", ".jpeg", ".gif", ".pdf"} and not head:
         return True
