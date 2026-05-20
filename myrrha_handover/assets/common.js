@@ -1,9 +1,8 @@
 /* Shared chrome: theme + font selectors, nav highlight */
 (function(){
-  function safeGet(key, fallback) {
-    try { return localStorage.getItem(key) || fallback; } catch(err) { return fallback; }
-  }
-  let T = safeGet('myrrha-theme', 'light'), F = safeGet('myrrha-font', 'aptos');
+  let T='light',F='aptos';
+  try{T=localStorage.getItem('myrrha-theme')||'light';}catch(e){}
+  try{F=localStorage.getItem('myrrha-font')||'aptos';}catch(e){}
   document.documentElement.setAttribute('data-theme',T);
   document.body && document.body.setAttribute('data-font',F);
   window.MYRRHA={
@@ -42,7 +41,7 @@
       const here=location.pathname.split('/').pop()||'index.html';
       bar.innerHTML=`
         <div class="brand">⚙ MYRRHA · WCS Handover</div>
-        <span class="ver">v0.4.5</span>
+        <span class="ver">v0.4.7</span>
         <nav>${this.nav.map(([h,n])=>`<a href="${h}" class="${h===here?'active':''}">${n}</a>`).join('')}</nav>
         <div class="controls">
           <select id="themeSel" title="Theme">
