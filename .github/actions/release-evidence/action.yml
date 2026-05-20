@@ -1,0 +1,27 @@
+name: DELTA_1 Release Evidence
+
+description: Generate recursive release evidence metadata.
+
+runs:
+  using: composite
+
+  steps:
+    - name: Generate PR lineage evidence
+      shell: bash
+      run: |
+        echo "DELTA_1 PR-lineage evidence"
+
+    - name: Generate deployment evidence
+      shell: bash
+      run: |
+        echo "DELTA_1 deployment evidence"
+
+    - name: Generate runtime evidence
+      shell: bash
+      run: |
+        echo "DELTA_1 runtime evidence"
+
+    - name: Generate certification evidence
+      shell: bash
+      run: |
+        echo "DELTA_1 certification evidence"
