@@ -1,7 +1,8 @@
 /* Shared chrome: theme + font selectors, nav highlight */
 (function(){
-  const T=localStorage.getItem('myrrha-theme')||'light';
-  const F=localStorage.getItem('myrrha-font')||'aptos';
+  let T, F;
+  try { T = localStorage.getItem('myrrha-theme') || 'light'; } catch(e) { T = 'light'; }
+  try { F = localStorage.getItem('myrrha-font') || 'aptos'; } catch(e) { F = 'aptos'; }
   document.documentElement.setAttribute('data-theme',T);
   document.body && document.body.setAttribute('data-font',F);
   window.MYRRHA={
@@ -54,9 +55,9 @@
         </div>`;
       document.body.insertBefore(bar,document.body.firstChild);
       const ts=document.getElementById('themeSel');ts.value=T;
-      ts.onchange=e=>{localStorage.setItem('myrrha-theme',e.target.value);document.documentElement.setAttribute('data-theme',e.target.value)};
+      ts.onchange=e=>{try{localStorage.setItem('myrrha-theme',e.target.value);}catch(e){}document.documentElement.setAttribute('data-theme',e.target.value)};
       const fs=document.getElementById('fontSel');fs.value=F;
-      fs.onchange=e=>{localStorage.setItem('myrrha-font',e.target.value);document.body.setAttribute('data-font',e.target.value)};
+      fs.onchange=e=>{try{localStorage.setItem('myrrha-font',e.target.value);}catch(e){}document.body.setAttribute('data-font',e.target.value)};
     }
   };
   document.addEventListener('DOMContentLoaded',()=>{
