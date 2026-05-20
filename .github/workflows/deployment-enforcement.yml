@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  deployments: write
 
 concurrency:
   group: deployment-enforcement-${{ inputs.target_environment }}
