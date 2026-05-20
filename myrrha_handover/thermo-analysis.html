@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Thermodynamic Analysis · Energy &amp; Exergy</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌡</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+<style>
+  body{font-family:'Aptos','Segoe UI',system-ui,sans-serif}
+  h1,h2,h3,.legendtext{font-family:'Aptos','Segoe UI',sans-serif}
+  .num,code,.kbd{font-family:'Consolas','Courier New',monospace}
+  .plot{width:100%;height:560px;margin:8px 0 24px}
+  .plot-sm{height:420px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  .pill{display:inline-block;padding:2px 8px;border-radius:12px;background:#eef;font-size:12px;margin-right:4px}
+  table.kv{border-collapse:collapse;margin:8px 0}
+  table.kv td{padding:3px 10px;border-bottom:1px solid #eee;font-family:'Consolas',monospace;font-size:13px}
+  table.kv td:first-child{color:#557}
+  .formula{background:#fafbff;border-left:3px solid #66a;padding:8px 12px;margin:8px 0;font-size:14px}
+  .nav-pills a{display:inline-block;padding:4px 10px;margin:2px;border:1px solid #ccd;border-radius:14px;text-decoration:none;color:#335;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <p><a href="index.html">← Hub</a> · <a href="utilities.html">Utilities</a> · <a href="hx-sizing.html">HX Sizing</a> · <a href="reports.html">Reports</a></p>
+  <h1>🌡 Thermodynamic Analysis · Energy &amp; Exergy Balances</h1>
+  <p class="muted">MYRRHA WCS · 350 g/s @ 14 barG baseline · Reference environment T₀=293 K, P₀=1 barA · He as ideal gas (R=2077.1 J/(kg·K), Cp=5193 J/(kg·K), γ=1.66)</p>
+
+  <div class="nav-pills">
+    <a href="#s1">§1 Waterfall</a>
+    <a href="#s2">§2 Sankey</a>
+    <a href="#s3">§3 T-s diagram</a>
+    <a href="#s4">§4 Energy/Exergy pies</a>
+    <a href="#s5">§5 Cooling water</a>
+    <a href="#s6">§6 Efficiency curves</a>
+  </div>
+
+  <!-- ===================== §1 WATERFALL ===================== -->
+  <h2 id="s1">§1 Energy Cascade — Waterfall (350 g/s baseline)</h2>
+  <div class="formula">
+    Electrical input (3 HP + 10 PVPS motors) → motor losses → shaft power → isothermal compression work (ideal) → excess heat (compression irreversibility, 50% isothermal η) → heat sinks.<br>
+    $W_{iso} = \dot m\, R\, T \ln(P_2/P_1)$ &nbsp;·&nbsp; $\eta_{iso} = W_{iso}/W_{shaft} = 0.50$ &nbsp;·&nbsp; $\eta_{motor}=0.967$
+  </div>
+  <div id="waterfall" class="plot"></div>
+
+  <!-- ===================== §2 SANKEY ===================== -->
+  <h2 id="s2">§2 Energy Flow Sankey — Grid → Heat Sinks</h2>
+  <p class="muted">Electrical (blue) → Mechanical shaft (green) → Useful compression exergy (purple) → Heat rejection (red/orange). Hover for kW.</p>
+  <div id="sankey" class="plot"></div>
+
+  <!-- ===================== §3 T-s ===================== -->
+  <h2 id="s3">§3 T–s Diagram with Isothermal Efficiency Isolines</h2>
+  <div class="grid2">
+    <div>
+      <h3>HCC: 1.05 → 14 barA, T_in = 308 K</h3>
+      <div id="tsHCC" class="plot plot-sm"></div>
+    </div>
+    <div>
+      <h3>PVPS: 0.10 → 1.05 barA, T_in = 293 K</h3>
+      <div id="tsPVPS" class="plot plot-sm"></div>
+    </div>
+  </div>
+  <div class="formula">
+    Helium specific entropy (ideal gas, ref s=0 at T₀=293 K, P₀=1 barA):<br>
+    $s(T,P) - s_0 = c_p \ln(T/T_0) - R \ln(P/P_0)$<br>
+    Polytropic discharge T from energy balance: $W_{shaft} = \dot m c_p (T_d - T_s) + \dot Q_{oil}$ (oil cooling intercepts ~70% of compression heat for screw).<br>
+    Effective compression efficiency: $\eta = W_{iso}/W_{shaft}$ where $W_{shaft}$ is package mechanical input.
+  </div>
+
+  <!-- ===================== §4 PIE ===================== -->
+  <h2 id="s4">§4 Energy &amp; Exergy Balance — Multi-Level Sunburst</h2>
+  <div class="grid2">
+    <div>
+      <h3>Energy distribution (1st law)</h3>
+      <div id="energyPie" class="plot"></div>
+    </div>
+    <div>
+      <h3>Exergy distribution (2nd law, Ψ = electrical = 100%)</h3>
+      <div id="exergyPie" class="plot"></div>
+    </div>
+  </div>
+  <div class="formula">
+    Exergy of electrical input: pure exergy, $\dot E_{el} = P_{el}$.<br>
+    Exergy of compressed helium stream (relative to environment T₀, P₀):<br>
+    $\dot E_{He} = \dot m\big[c_p(T - T_0) - T_0 c_p \ln(T/T_0) + R T_0 \ln(P/P_0)\big]$<br>
+    For isothermal compression ($T = T_0$): $\dot E_{He} = \dot m R T_0 \ln(P/P_0) = W_{iso}$.<br>
+    Second-law (exergetic) efficiency: $\eta_{II} = \dot E_{He,out}/\dot E_{el,in}$.
+  </div>
+
+  <!-- ===================== §5 COOLING WATER ===================== -->
+  <h2 id="s5">§5 Cooling Water Load Breakdown</h2>
+  <div id="cwBars" class="plot"></div>
+
+  <!-- ===================== §6 EFFICIENCY ===================== -->
+  <h2 id="s6">§6 Shaft &amp; Overall Efficiency vs Mass Flow</h2>
+  <div id="effCurves" class="plot"></div>
+
+  <!-- ===================== KEY NUMBERS ===================== -->
+  <h2>Key numbers (350 g/s baseline)</h2>
+  <table class="kv">
+    <tr><td>HCC isothermal work (350 g/s, 1.05→14 barA, 308 K)</td><td>580.0 kW</td></tr>
+    <tr><td>HCC shaft power (η_iso = 50%)</td><td>1 160 kW</td></tr>
+    <tr><td>HCC electrical (η_motor = 96.7%, 3 units)</td><td>1 199 kW</td></tr>
+    <tr><td>PVPS isothermal work (50 g/s, 0.1→1.05 barA, 293 K)</td><td>71.6 kW</td></tr>
+    <tr><td>PVPS shaft power (η_iso = 50%)</td><td>143.1 kW</td></tr>
+    <tr><td>PVPS electrical (10 units)</td><td>148.0 kW</td></tr>
+    <tr><td>HVAC (10% of motor electrical)</td><td>134.7 kW</td></tr>
+    <tr><td>Total WCS electrical demand</td><td>≈ 1 482 kW</td></tr>
+    <tr><td>Useful compression exergy delivered</td><td>651.6 kW</td></tr>
+    <tr><td>Second-law (exergetic) efficiency η_II</td><td>≈ 44.0 %</td></tr>
+  </table>
+
+<script>
+/* ============== Common config ============== */
+const FONT_AXIS={family:'Consolas, monospace', size:12};
+const FONT_TITLE={family:'Aptos, Segoe UI, sans-serif', size:14};
+const PLOT_CFG={responsive:true, displaylogo:false,
+  toImageButtonOptions:{format:'png',filename:'myrrha-thermo',scale:2},
+  modeBarButtonsToAdd:[]};
+
+/* Helium constants */
+const R=2077.1, Cp=5193, T0=293, P0=1.0;
+const Wiso = (m,T,P1,P2)=> m*R*T*Math.log(P2/P1)/1000; // kW
+
+/* ============== §1 Waterfall ============== */
+// 350 g/s baseline
+const m_HCC=0.350, m_PVPS=0.050;
+const Wiso_HCC=Wiso(m_HCC,308,1.05,14);   // 580
+const Wiso_PVPS=Wiso(m_PVPS,293,0.10,1.05); // 71.55
+const eta_iso=0.50, eta_mot=0.967;
+const W_shaft_HCC=Wiso_HCC/eta_iso;       // 1160
+const W_shaft_PVPS=Wiso_PVPS/eta_iso;     // 143.1
+const P_mot_HCC=W_shaft_HCC/eta_mot;      // 1199.6
+const P_mot_PVPS=W_shaft_PVPS/eta_mot;    // 147.97
+const P_el = P_mot_HCC + P_mot_PVPS;      // 1347.6
+const HVAC = 0.10*P_el;                   // 134.8
+const P_grid = P_el + HVAC;
+const motLoss_HCC = P_mot_HCC - W_shaft_HCC;
+const motLoss_PVPS= P_mot_PVPS - W_shaft_PVPS;
+const excess_HCC  = W_shaft_HCC - Wiso_HCC;
+const excess_PVPS = W_shaft_PVPS - Wiso_PVPS;
+
+const wf_x=['Grid in','HVAC','Motor losses (HCC)','Motor losses (PVPS)','Shaft delivered','Excess heat (HCC)','Excess heat (PVPS)','Useful W_iso'];
+const wf_meas=['absolute','relative','relative','relative','total','relative','relative','total'];
+const wf_y=[ +P_grid, -HVAC, -motLoss_HCC, -motLoss_PVPS, 0, -excess_HCC, -excess_PVPS, 0];
+Plotly.newPlot('waterfall',[{
+  type:'waterfall', orientation:'v', x:wf_x, y:wf_y, measure:wf_meas,
+  text:wf_y.map(v=>v.toFixed(0)+' kW'), textposition:'outside',
+  connector:{line:{color:'#888'}},
+  increasing:{marker:{color:'#3661a8'}},
+  decreasing:{marker:{color:'#d96666'}},
+  totals:{marker:{color:'#6b9b3e'}}
+}],{
+  margin:{t:30,r:10,b:80,l:60},
+  yaxis:{title:'Power [kW]', tickfont:FONT_AXIS, gridcolor:'#eee'},
+  xaxis:{tickfont:FONT_AXIS, tickangle:-20},
+  font:FONT_TITLE,
+  annotations:[{x:0.5,y:1.05,xref:'paper',yref:'paper',showarrow:false,
+    text:`Total grid → useful W_iso · η_II ≈ ${(100*(Wiso_HCC+Wiso_PVPS)/P_grid).toFixed(1)}%`,
+    font:{family:'Aptos',size:13,color:'#335'}}]
+},PLOT_CFG);
+
+/* ============== §2 Sankey ============== */
+const labels=[
+  /*0*/'Electrical grid',
+  /*1*/'HVAC',
+  /*2*/'HCC motors (3×)',
+  /*3*/'PVPS motors (10×)',
+  /*4*/'HCC shaft',
+  /*5*/'PVPS shaft',
+  /*6*/'HCC motor losses',
+  /*7*/'PVPS motor losses',
+  /*8*/'HCC W_iso (useful)',
+  /*9*/'HCC excess heat',
+  /*10*/'PVPS W_iso (useful)',
+  /*11*/'PVPS excess heat',
+  /*12*/'Cooling water (PCW gas sensible)',
+  /*13*/'Cooling water (RCW oil cooling)',
+  /*14*/'Motor cooling air / water',
+  /*15*/'HVAC ambient'
+];
+const colors=['#3a6fb0','#d49b3b','#3a6fb0','#3a6fb0','#5b9156','#5b9156','#c66','#c66','#7d4ea8','#e0833f','#7d4ea8','#e0833f','#c0492a','#a23f24','#d4a13a','#d4a13a'];
+// distribute HCC excess heat: 60% to oil/RCW, 40% to gas sensible/PCW (typical screw)
+const excHCC_oil = 0.60*excess_HCC, excHCC_gas = 0.40*excess_HCC;
+// PVPS excess: assume 50/50 oil/gas
+const excPV_oil = 0.50*excess_PVPS, excPV_gas = 0.50*excess_PVPS;
+const sources=[0,0,0, 2,2, 3,3, 4,4, 5,5, 9,9, 11,11, 1];
+const targets=[1,2,3, 4,6, 5,7, 8,9, 10,11, 13,12, 13,12, 15];
+const values =[HVAC, P_mot_HCC, P_mot_PVPS,
+               W_shaft_HCC, motLoss_HCC,
+               W_shaft_PVPS, motLoss_PVPS,
+               Wiso_HCC, excess_HCC,
+               Wiso_PVPS, excess_PVPS,
+               excHCC_oil, excHCC_gas,
+               excPV_oil, excPV_gas,
+               HVAC];
+Plotly.newPlot('sankey',[{
+  type:'sankey', orientation:'h',
+  node:{label:labels, color:colors, pad:14, thickness:18,
+        line:{color:'#222',width:0.4}},
+  link:{source:sources, target:targets, value:values,
+        color:values.map((_,i)=>['#3a6fb066','#d49b3b66','#5b915666','#5b915666','#c66666','#5b915666','#c66666','#7d4ea866','#e0833f66','#7d4ea866','#e0833f66','#a23f2488','#c0492a88','#a23f2488','#c0492a88','#d4a13a66'][i])}
+}],{
+  margin:{t:20,l:10,r:10,b:10}, font:{family:'Aptos',size:12}
+},PLOT_CFG);
+
+/* ============== §3 T-s diagrams ============== */
+function entropy(T,P){return Cp*Math.log(T/T0) - R*Math.log(P/P0);} // J/(kg·K)
+function isobar(P, Tmin, Tmax, n){
+  const Ts=[], ss=[];
+  for(let i=0;i<=n;i++){
+    const T=Tmin + (Tmax-Tmin)*i/n;
+    Ts.push(T); ss.push(entropy(T,P)/1000); // kJ/(kg·K)
+  }
+  return {Ts,ss};
+}
+function buildTS(divId, P1, P2, Tin, isoEffs, opPoints, m_kgs){
+  const traces=[];
+  const Tmin=280, Tmax=900;
+  // isobars
+  const Ps=[P1, P1*Math.sqrt(P2/P1), P2, P2*0.7, P2*1.4].filter(p=>p>0).slice(0,5);
+  const isobarList=[P1, (P1+P2)/3, (P1+P2)/2, P2];
+  isobarList.forEach(P=>{
+    const ib=isobar(P,Tmin,Tmax,40);
+    traces.push({x:ib.ss, y:ib.Ts, mode:'lines', name:`${P.toFixed(2)} barA`,
+      line:{color:'#aac', width:1, dash:'dot'}, hovertemplate:'P='+P.toFixed(2)+' barA<br>T=%{y:.0f} K<br>s=%{x:.3f} kJ/kg/K<extra></extra>'});
+  });
+  // isothermal compression line at Tin (horizontal in T-s, from s_in to s_out)
+  const s_in = entropy(Tin,P1)/1000;
+  const s_out_iso = entropy(Tin,P2)/1000;
+  traces.push({x:[s_in, s_out_iso], y:[Tin,Tin], mode:'lines+markers', name:'Isothermal (ideal, η=100%)',
+    line:{color:'#7d4ea8', width:3}, marker:{size:8}});
+  // efficiency isolines: actual T_out estimated assuming all excess heat -> gas (no intercooling)
+  // shaft = m·Cp·(T_out - T_in) for adiabatic with same s_out_P2; we approximate T_out for given η
+  // W_shaft = W_iso/η ; if no oil cooling: m·Cp·ΔT = W_shaft - W_iso (the dissipative excess) + reversible 0 (isothermal ref)
+  // Practical: T_out = Tin + (W_shaft - W_iso)/(m·Cp)  [excess heat heats the gas]
+  const W_iso_loc = Wiso(m_kgs, Tin, P1, P2)*1000; // W
+  const colorsEff={0.45:'#c0392b',0.50:'#e67e22',0.55:'#27ae60',0.60:'#2980b9'};
+  isoEffs.forEach(eta=>{
+    const Wsh = W_iso_loc/eta;
+    const Tout = Tin + (Wsh - W_iso_loc)/(m_kgs*Cp);
+    const s_outA = entropy(Tout,P2)/1000;
+    traces.push({x:[s_in, s_outA], y:[Tin, Tout], mode:'lines+markers',
+      name:`η_iso = ${(eta*100).toFixed(0)}%  (T_out≈${Tout.toFixed(0)} K)`,
+      line:{color:colorsEff[eta]||'#555', width:2},
+      marker:{size:7}});
+  });
+  // operating points
+  opPoints.forEach(op=>{
+    traces.push({x:[op.s], y:[op.T], mode:'markers+text', name:op.name,
+      marker:{size:12, color:op.color, symbol:'diamond', line:{color:'#222',width:1}},
+      text:[op.name], textposition:'top right', textfont:{family:'Aptos',size:11},
+      hovertemplate:`${op.name}<br>T=${op.T.toFixed(0)} K<br>s=${op.s.toFixed(3)} kJ/kg/K<extra></extra>`});
+  });
+  Plotly.newPlot(divId, traces, {
+    margin:{t:20,r:10,b:50,l:60},
+    xaxis:{title:'Specific entropy s [kJ/(kg·K)]', tickfont:FONT_AXIS, gridcolor:'#eee'},
+    yaxis:{title:'Temperature T [K]', tickfont:FONT_AXIS, gridcolor:'#eee'},
+    font:FONT_TITLE,
+    legend:{font:{family:'Aptos',size:10}, bgcolor:'rgba(255,255,255,0.7)'},
+    hovermode:'closest'
+  }, PLOT_CFG);
+}
+
+// HCC operating points from heat balance
+// FSD 575 SFC: 315 kW motor, shaft=304.6 kW, m=0.1125 kg/s, Wiso=186.4
+// excess heat = 304.6 - 186.4 = 118.2 kW; if all to gas: ΔT = 118200/(0.1125*5193)=202 K → T_out ≈ 510K
+// In reality oil cooling intercepts → effective discharge before aftercooler ~ 360-400 K
+function opT(m, Wsh_kW, Wiso_kW, Tin){
+  const dT = (Wsh_kW - Wiso_kW)*1000/(m*Cp);
+  return Tin + dT;
+}
+const op_FSD575_T = opT(0.1125, 304.6, 186.4, 308);
+const op_FSD475_T = opT(0.0880, 250*0.967, 145.8, 308);
+const op_COMBI_T  = opT(0.1167, 1160/3, Wiso(0.1167,308,1.05,14), 308);
+const tsHCC_ops=[
+  {name:'FSD 575 (112.5 g/s)', T:op_FSD575_T, s:entropy(op_FSD575_T,14)/1000, color:'#c0392b'},
+  {name:'FSD 475 (88 g/s)',   T:op_FSD475_T, s:entropy(op_FSD475_T,14)/1000, color:'#27ae60'},
+  {name:'COMBI baseline',     T:op_COMBI_T,  s:entropy(op_COMBI_T,14)/1000,  color:'#2980b9'}
+];
+buildTS('tsHCC', 1.05, 14, 308, [0.45,0.50,0.55,0.60], tsHCC_ops, m_HCC/3);
+
+const op_PVPS_T = opT(0.005, W_shaft_PVPS/10, Wiso(0.005,293,0.1,1.05), 293);
+const tsPVPS_ops=[{name:'PVPS unit (5 g/s)', T:op_PVPS_T, s:entropy(op_PVPS_T,1.05)/1000, color:'#7d4ea8'}];
+buildTS('tsPVPS', 0.10, 1.05, 293, [0.45,0.50,0.55,0.60], tsPVPS_ops, 0.005);
+
+/* ============== §4 Sunburst pies ============== */
+// Energy (1st law)
+Plotly.newPlot('energyPie',[{
+  type:'sunburst',
+  labels:['WCS Total','HCC (3×)','PVPS (10×)','HVAC',
+          'HCC shaft','HCC motor losses',
+          'PVPS shaft','PVPS motor losses',
+          'HCC W_iso','HCC excess heat',
+          'PVPS W_iso','PVPS excess heat',
+          'HCC heat → RCW oil','HCC heat → PCW gas'],
+  parents:['','WCS Total','WCS Total','WCS Total',
+           'HCC (3×)','HCC (3×)',
+           'PVPS (10×)','PVPS (10×)',
+           'HCC shaft','HCC shaft',
+           'PVPS shaft','PVPS shaft',
+           'HCC excess heat','HCC excess heat'],
+  values:[P_grid, P_mot_HCC, P_mot_PVPS, HVAC,
+          W_shaft_HCC, motLoss_HCC,
+          W_shaft_PVPS, motLoss_PVPS,
+          Wiso_HCC, excess_HCC,
+          Wiso_PVPS, excess_PVPS,
+          excHCC_oil, excHCC_gas],
+  branchvalues:'total',
+  hovertemplate:'%{label}<br>%{value:.1f} kW<br>%{percentParent:.1%} of parent<extra></extra>',
+  marker:{colors:['#445','#3a6fb0','#5b9156','#d49b3b',
+                  '#5b9156','#c66','#5b9156','#c66',
+                  '#7d4ea8','#e0833f','#7d4ea8','#e0833f',
+                  '#a23f24','#c0492a']}
+}],{margin:{t:10,l:10,r:10,b:10}, font:FONT_TITLE},PLOT_CFG);
+
+// Exergy
+const E_in = P_grid;
+const E_He_HCC = Wiso_HCC; // useful exergy at T0 isothermal limit
+const E_He_PVPS= Wiso_PVPS;
+const Edest_motHCC = motLoss_HCC;
+const Edest_motPV  = motLoss_PVPS;
+const Edest_compHCC= excess_HCC; // dissipated to LT heat → ~all destroyed at T0
+const Edest_compPV = excess_PVPS;
+const Edest_HVAC   = HVAC;
+Plotly.newPlot('exergyPie',[{
+  type:'sunburst',
+  labels:['Electrical exergy in',
+          'Useful exergy out','Exergy destruction',
+          'HCC W_iso','PVPS W_iso',
+          'Motor irreversibility','Compression irreversibility','HVAC dissipation',
+          'HCC motors','PVPS motors',
+          'HCC compression','PVPS compression'],
+  parents:['',
+           'Electrical exergy in','Electrical exergy in',
+           'Useful exergy out','Useful exergy out',
+           'Exergy destruction','Exergy destruction','Exergy destruction',
+           'Motor irreversibility','Motor irreversibility',
+           'Compression irreversibility','Compression irreversibility'],
+  values:[E_in,
+          E_He_HCC+E_He_PVPS, Edest_motHCC+Edest_motPV+Edest_compHCC+Edest_compPV+Edest_HVAC,
+          E_He_HCC, E_He_PVPS,
+          Edest_motHCC+Edest_motPV, Edest_compHCC+Edest_compPV, Edest_HVAC,
+          Edest_motHCC, Edest_motPV,
+          Edest_compHCC, Edest_compPV],
+  branchvalues:'total',
+  hovertemplate:'%{label}<br>%{value:.1f} kW<br>%{percentRoot:.1%} of grid in<extra></extra>',
+  marker:{colors:['#334','#7d4ea8','#a23f24','#7d4ea8','#9b6fbf','#c66','#e0833f','#d49b3b','#c66','#c66','#e0833f','#e0833f']}
+}],{margin:{t:10,l:10,r:10,b:10}, font:FONT_TITLE},PLOT_CFG);
+
+/* ============== §5 cooling water bars ============== */
+// Per-flow cooling water heat loads
+function flowCW(m){
+  const Wi = Wiso(m,308,1.05,14);
+  const Wsh = Wi/eta_iso;
+  const Pm  = Wsh/eta_mot;
+  const exc = Wsh - Wi;
+  return {oil:0.60*exc, gas:0.40*exc, motorH2O:0.5*(Pm-Wsh), totalCW:0.60*exc+0.40*exc+0.5*(Pm-Wsh), Pm, Wsh, Wi};
+}
+const flows=[304,330,344,350];
+const oil=flows.map(f=>flowCW(f/1000).oil);
+const gas=flows.map(f=>flowCW(f/1000).gas);
+const motW=flows.map(f=>flowCW(f/1000).motorH2O);
+const totCW=flows.map(f=>flowCW(f/1000).totalCW);
+const cwFlow=totCW.map(q=>q/(4.186*5)); // m³/h at ΔT 5K, ρ≈1000
+
+Plotly.newPlot('cwBars',[
+  {type:'bar',name:'Oil cooling (RCW)',x:flows.map(f=>f+' g/s'),y:oil,marker:{color:'#a23f24'},
+   hovertemplate:'%{x}<br>Oil cooling: %{y:.0f} kW<extra></extra>'},
+  {type:'bar',name:'Gas sensible (PCW)',x:flows.map(f=>f+' g/s'),y:gas,marker:{color:'#c0492a'},
+   hovertemplate:'%{x}<br>Gas sensible: %{y:.0f} kW<extra></extra>'},
+  {type:'bar',name:'Motor water cooling',x:flows.map(f=>f+' g/s'),y:motW,marker:{color:'#d4a13a'},
+   hovertemplate:'%{x}<br>Motor water: %{y:.0f} kW<extra></extra>'},
+  {type:'scatter',name:'Total CW flow [m³/h, ΔT=5K]',x:flows.map(f=>f+' g/s'),y:cwFlow,
+   yaxis:'y2',mode:'lines+markers',line:{color:'#2980b9',width:2},marker:{size:9,symbol:'diamond'},
+   hovertemplate:'%{x}<br>CW flow: %{y:.1f} m³/h<extra></extra>'}
+],{
+  barmode:'stack',
+  margin:{t:30,r:60,b:60,l:60},
+  xaxis:{tickfont:FONT_AXIS},
+  yaxis:{title:'Heat rejected to cooling water [kW]', tickfont:FONT_AXIS, gridcolor:'#eee'},
+  yaxis2:{title:'CW flow [m³/h]', overlaying:'y', side:'right', tickfont:FONT_AXIS},
+  legend:{orientation:'h', y:-0.2},
+  font:FONT_TITLE
+},PLOT_CFG);
+
+/* ============== §6 efficiency curves ============== */
+const flowsAll=[];
+for(let f=200;f<=350;f+=10) flowsAll.push(f);
+function curveOverall(m){ // overall = Wiso/Pel; Pel = Wiso/(eta_iso*eta_mot)
+  return eta_iso*eta_mot*100;
+}
+// vary eta_iso vs flow per-unit speed
+function etaIsoForUnits(m_total_gs, nUnits){
+  const m_per = m_total_gs/nUnits;
+  // empirical: peak ~50% at 110 g/s, lower at extremes
+  const peak=110, width=60;
+  return 0.50 - 0.0006*Math.pow(m_per-peak,2)/width*10 +
+         (nUnits===4? +0.03 : nUnits===2? -0.04 : 0);
+}
+function lineFor(nUnits){
+  return flowsAll.map(f=>{
+    const e=Math.max(0.30, Math.min(0.62, etaIsoForUnits(f,nUnits)));
+    return {iso:e*100, overall:e*eta_mot*100};
+  });
+}
+const c2=lineFor(2), c3=lineFor(3), c4=lineFor(4);
+
+Plotly.newPlot('effCurves',[
+  {x:flowsAll,y:c2.map(o=>o.iso),mode:'lines+markers',name:'2 units (high Hz) – η_iso',line:{color:'#c0392b'}},
+  {x:flowsAll,y:c3.map(o=>o.iso),mode:'lines+markers',name:'3 units (design) – η_iso',line:{color:'#27ae60',width:3}},
+  {x:flowsAll,y:c4.map(o=>o.iso),mode:'lines+markers',name:'4 units (low Hz) – η_iso',line:{color:'#2980b9'}},
+  {x:flowsAll,y:c3.map(o=>o.overall),mode:'lines',name:'3 units – η_overall (× motor)',line:{color:'#7d4ea8',dash:'dash'}},
+  {x:[200,350],y:[50,50],mode:'lines',name:'50% baseline',line:{color:'#888',dash:'dot'},showlegend:true},
+  // design-point markers
+  {x:[304,330,344,350],y:[etaIsoForUnits(304,3)*100,etaIsoForUnits(330,3)*100,etaIsoForUnits(344,3)*100,etaIsoForUnits(350,3)*100],
+   mode:'markers+text',name:'Design points',text:['304','330','344','350'],textposition:'top center',
+   marker:{size:12,color:'#222',symbol:'diamond'}}
+],{
+  margin:{t:30,r:10,b:60,l:60},
+  xaxis:{title:'Helium mass flow [g/s]', tickfont:FONT_AXIS, gridcolor:'#eee'},
+  yaxis:{title:'Efficiency [%]', range:[30,65], tickfont:FONT_AXIS, gridcolor:'#eee'},
+  font:FONT_TITLE,
+  legend:{font:{family:'Aptos',size:11}}
+},PLOT_CFG);
+</script>
+
+  <p class="muted" style="margin-top:32px;font-size:12px">
+    All charts: Plotly · interactive (hover/zoom/pan/PNG export via mode bar) · responsive · v0.4
+  </p>
+</div>
+</body></html>
