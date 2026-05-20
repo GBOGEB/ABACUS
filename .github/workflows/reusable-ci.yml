@@ -1,0 +1,41 @@
+name: DELTA_1 Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      run_package:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bootstrap
+        run: |
+          if [ -f Makefile ]; then make bootstrap; else echo "DELTA_1 bootstrap fallback"; fi
+
+      - name: Lint
+        run: |
+          if [ -f Makefile ]; then make lint; else echo "DELTA_1 lint fallback"; fi
+
+      - name: Test
+        run: |
+          if [ -f Makefile ]; then make test; else echo "DELTA_1 test fallback"; fi
+
+      - name: Build
+        run: |
+          if [ -f Makefile ]; then make build; else echo "DELTA_1 build fallback"; fi
+
+      - name: Package
+        if: inputs.run_package
+        run: |
+          if [ -f Makefile ]; then make package; else echo "DELTA_1 package fallback"; fi
