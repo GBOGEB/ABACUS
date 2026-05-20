@@ -1,6 +1,6 @@
 # Status Report: Workflow Installation
 
-**Date:** 2026-05-18  
+**Date:** 2026-05-20  
 **Repository:** [GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS)  
 **Branch:** `phase4-workflow-installation`
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This report documents the staging of 5 CI/CD workflow files from `docs/workflows/` into `workflows-to-install/`, preparing them for the final manual activation step in Phase 4 of the ABACUS project.
+This report documents the completed activation of 5 CI/CD workflow files from `docs/workflows/` into `.github/workflows/`, closing the final workflow-installation step in Phase 4 of the ABACUS project.
 
 ---
 
@@ -16,8 +16,8 @@ This report documents the staging of 5 CI/CD workflow files from `docs/workflows
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Active workflows in `.github/workflows/` | 32 | **32** | 0 |
-| Staged workflows in `workflows-to-install/` | 0 | **5** | +5 |
+| Active workflows in `.github/workflows/` | 32 | **37** | +5 |
+| Activation copies in `workflows-to-install/` | 5 | **5** | 0 |
 | DMAIC Quality Metrics | 0/100 (inactive) | **Calculated** | 🔧 Fixed |
 | Dashboard monitoring | Manual | **Automated (daily)** | ✅ |
 | Docs deployment | Manual | **Automated (on push)** | ✅ |
@@ -50,8 +50,8 @@ After this PR:   ████████████████████░
 11. ✅ QPLANT v4.4.0 components
 12. ✅ GitHub Pages verified live
 13. ✅ Post-merge verification complete
-14. ✅ **CI/CD workflow activation bundle staged** ← NEW
-15. ⏳ **DMAIC metrics activation pending workflow move** ← NEW
+14. ✅ **CI/CD workflows activated in `.github/workflows/`** ← NEW
+15. ✅ **DMAIC metrics workflow available for GitHub Actions runs** ← NEW
 
 ### Remaining Items (~5%)
 
@@ -60,7 +60,7 @@ After this PR:   ████████████████████░
 
 ---
 
-## Workflows Staged
+## Workflows Activated
 
 ### 1. 🏥 Dashboard Health Check (`dashboard-health.yml`)
 - **Trigger:** Daily at 06:00 UTC + manual dispatch
@@ -91,15 +91,9 @@ After this PR:   ████████████████████░
 
 ---
 
-## Post-Merge Expectations
+## Post-Merge State
 
-Before any of the workflows below can run, a maintainer must move the staged files:
-
-```bash
-cp workflows-to-install/*.yml .github/workflows/
-rm -rf workflows-to-install/
-git add -A && git commit -m "ci: activate workflows"
-```
+All five workflows now exist in `.github/workflows/` and are discoverable by GitHub Actions. The copies in `workflows-to-install/` remain only as a historical activation bundle.
 
 | Workflow | First Run After Merge |
 |----------|----------------------|
@@ -112,7 +106,7 @@ git add -A && git commit -m "ci: activate workflows"
 ### How to Monitor
 
 1. Go to [Actions tab](https://github.com/GBOGEB/ABACUS/actions)
-2. Activate the staged workflows, then look for the new workflow runs
+2. Look for the new workflow runs after a matching trigger or manual dispatch
 3. Check `docs/api/dmaic_metrics.json` for calculated metrics
 4. Visit `docs/api/dmaic_metrics_chart.html` for visual dashboard
 
@@ -122,17 +116,17 @@ git add -A && git commit -m "ci: activate workflows"
 
 | Issue | Action | Status |
 |-------|--------|--------|
-| [#387](https://github.com/GBOGEB/ABACUS/issues/387) | Manual close recommended after merge | ⏳ Manual |
-| [#388](https://github.com/GBOGEB/ABACUS/issues/388) | PR created to install workflows | 🔗 Linked |
-| [#391](https://github.com/GBOGEB/ABACUS/issues/391) | Manual close recommended after merge | ⏳ Manual |
+| [#387](https://github.com/GBOGEB/ABACUS/issues/387) | GitHub Pages enabled and verified live | ✅ Complete |
+| [#388](https://github.com/GBOGEB/ABACUS/issues/388) | 5 workflows activated in `.github/workflows/` | ✅ Complete |
+| [#391](https://github.com/GBOGEB/ABACUS/issues/391) | Post-merge docs assets verified present | ✅ Complete |
 | [#394](https://github.com/GBOGEB/ABACUS/issues/394) | Add follow-up progress comment after merge | 📊 Pending |
 
 ---
 
 ## 🎉 Achievements
 
-- **32 active GitHub Actions workflows** — current production workflow set
-- **5 staged workflow templates** — ready for manual activation
+- **37 active GitHub Actions workflows** — current production workflow set
+- **5 workflow templates activated** — available in `.github/workflows/`
 - **Automated quality monitoring** — DMAIC metrics with escalation
 - **Self-healing documentation** — auto-deploy, auto-update, auto-health-check
 - **Professional release pipeline** — tag-based releases with packaging
@@ -140,4 +134,4 @@ git add -A && git commit -m "ci: activate workflows"
 
 ---
 
-*Generated: 2026-05-18*
+*Generated: 2026-05-20*
