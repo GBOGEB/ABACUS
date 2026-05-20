@@ -2,6 +2,7 @@
 :root{
   --bg:#f7f8fa; --bg2:#ffffff; --fg:#1a1d23; --fg2:#5b6270;
   --border:#e3e6ec; --accent:#1D9E75; --accent2:#378ADD; --warn:#D85A30; --violet:#7F77DD;
+  --warn-bg:#fff3cd; --warn-border:#e6a800;
   --radius:10px; --mono:'Consolas','SF Mono','Menlo',monospace;
   --sans:'Aptos','Segoe UI','Inter',system-ui,sans-serif;
   --shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);
@@ -9,6 +10,7 @@
 [data-theme=dark]{
   --bg:#0f1115; --bg2:#171a21; --fg:#e7eaf0; --fg2:#9aa3b2;
   --border:#262a33; --shadow:0 1px 3px rgba(0,0,0,.5);
+  --warn-bg:#2d2a1e; --warn-border:#8a6d00;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -363,5 +365,4 @@ table caption {
 /* ========== END MOBILE & ACCESSIBILITY FIXES ========== */
 
 /* Offline / CDN warning banner */
-.offline-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em}
-[data-theme=dark] .offline-warning{background:#2d2a1e;border-color:#8a6d00;color:var(--fg)}
+.offline-warning{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em}
