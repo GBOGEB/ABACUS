@@ -1,0 +1,44 @@
+project:
+  name: MYRRHA QPLANT Handover
+  version: v0.4
+  authors: [SCK CEN, Kaeser]
+
+theme:
+  primary: "#0b3d91"     # deep blue
+  accent:  "#ff8a00"     # warm orange
+  bg:      "#f7f8fa"
+  fg:      "#1b1f24"
+  muted:   "#5b6470"
+  rule:    "#d8dde3"
+
+fonts:
+  body: "Aptos, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif"
+  mono: "Consolas, 'JetBrains Mono', 'Courier New', monospace"
+
+layouts:
+  text-only:
+    grid: "1fr"
+  text-table:
+    grid: "1fr 1fr"          # 1:1 for now; switch to 1.618fr 1fr for golden
+  text-graph:
+    grid: "1.618fr 1fr"      # golden ratio
+  4-quadrants:
+    grid: "1fr 1fr / 1fr 1fr"
+
+labels:
+  arguments:  "B"   # B1, B2, B3 ...
+  graphs:     "G"
+  tables:     "T"
+  equations:  "E"
+  figures:    "F"
+
+slides_order:
+  - cover
+  - exec-summary
+  - hierarchy           # Slide #3 — ASCII hierarchy (canonical example)
+  - baseline
+  - alat
+  - lkt
+  - rcw
+  - lcc-pvps
+  - roadmap
