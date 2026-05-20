@@ -481,6 +481,8 @@ class Phase1Define:
                     'total': change_summary.get('total', 0)
                 }
             }
+            results['code_files'] = results.get('code_files', results['categorized'].get('code', 0))
+            results['documentation_files'] = results.get('documentation_files', results['categorized'].get('docs', 0))
 
             print("\n[1.5] Saving results...")
 
