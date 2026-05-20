@@ -33,9 +33,10 @@ document.addEventListener('DOMContentLoaded',function(){
 .gcard{position:relative}
 .gtools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .canvas-wrap{position:relative;height:340px}
+.offline-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em}
 </style>
 </head><body>
-<div id="offline-warning" hidden style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em">
+<div id="offline-warning" class="offline-warning" hidden>
   ⚠️ <strong>Internet connection required.</strong> This page loads Chart.js, chartjs-plugin-zoom, and jsPDF from <code>cdn.jsdelivr.net</code>. One or more libraries could not be fetched — charts and PDF export will not function offline.
 </div>
 <div class="container">
