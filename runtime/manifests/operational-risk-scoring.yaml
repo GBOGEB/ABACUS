@@ -14,10 +14,10 @@ operational_risk_scoring:
       weight: critical
 
   scoring_states:
-    low
-    medium
-    high
-    critical
+    - low
+    - medium
+    - high
+    - critical
 
   evaluation_requirements:
     governance_validation: required
