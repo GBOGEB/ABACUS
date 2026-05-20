@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Graphs</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+.gcard{position:relative}
+.gtools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.canvas-wrap{position:relative;height:340px}
+</style>
+</head><body>
+<div class="container">
+<h1>Interactive Graphs</h1>
+<p class="muted">Chart.js · hover for tooltips · scroll/drag to zoom · double-click to reset · export as PNG / SVG / PDF.</p>
+
+<div class="card gcard">
+  <h3 style="margin-top:0">Graph 1 — Target total mass flow vs 3-skid capacity</h3>
+  <div class="canvas-wrap"><canvas id="c1"></canvas></div>
+  <div class="gtools">
+    <button class="btn alt" onclick="exportPNG('c1','graph1')">PNG</button>
+    <button class="btn alt" onclick="exportSVG('c1','graph1',renderSVG1)">SVG</button>
+    <button class="btn alt" onclick="exportPDF('c1','graph1')">PDF</button>
+    <button class="btn alt" onclick="charts.c1.resetZoom()">reset zoom</button>
+  </div>
+  <p class="fig-cap">Graph 1 — Each requested total checked against ALaT 337.62 g/s and LKT 264 / 288.3 g/s capacity lines.</p>
+</div>
+
+<div class="card gcard">
+  <h3 style="margin-top:0">Graph 2 — Per-skid flow vs estimated equal-load frequency</h3>
+  <div class="canvas-wrap"><canvas id="c2"></canvas></div>
+  <div class="gtools">
+    <button class="btn alt" onclick="exportPNG('c2','graph2')">PNG</button>
+    <button class="btn alt" onclick="exportPDF('c2','graph2')">PDF</button>
+    <button class="btn alt" onclick="charts.c2.resetZoom()">reset zoom</button>
+  </div>
+  <p class="fig-cap">Graph 2 — Linear flow-vs-speed scaling from documented basis points.</p>
+</div>
+
+<div class="card gcard">
+  <h3 style="margin-top:0">Graph 3 — Utility breakdown per skid</h3>
+  <div class="canvas-wrap"><canvas id="c3"></canvas></div>
+  <div class="gtools">
+    <button class="btn alt" onclick="exportPNG('c3','graph3')">PNG</button>
+    <button class="btn alt" onclick="exportPDF('c3','graph3')">PDF</button>
+  </div>
+  <p class="fig-cap">Graph 3 — Electricity, PCW heat, and waste heat by vendor (per skid).</p>
+</div>
+
+</div>
+<script>
+const targets=[200,250,275,304,336,344,350];
+const charts={};
+const colorOk='#1D9E75',colorOver='#D85A30',cAla='#378ADD',cLkt='#7F77DD',cMax='#BA7517';
+
+Chart.defaults.color=getComputedStyle(document.body).getPropertyValue('--fg').trim()||'#333';
+Chart.defaults.borderColor=getComputedStyle(document.body).getPropertyValue('--border').trim()||'#ccc';
+
+charts.c1=new Chart(document.getElementById('c1'),{
+  type:'bar',
+  data:{labels:targets.map(t=>t+' g/s'),datasets:[{
+    label:'Requested total flow',
+    data:targets,
+    backgroundColor:targets.map(t=>t<=337.62?colorOk:colorOver),
+  }]},
+  options:{maintainAspectRatio:false,
+    plugins:{
+      tooltip:{callbacks:{afterLabel:(ctx)=>{
+        const t=targets[ctx.dataIndex];const list=[];
+        list.push('ALaT cap 337.62 → '+(t<=337.62?'OK':'over'));
+        list.push('LKT max 288.3 → '+(t<=288.3?'OK':'over'));
+        list.push('LKT nom 264 → '+(t<=264?'OK':'over'));
+        return list;
+      }}},
+      legend:{display:false},
+      zoom:{zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'y'},pan:{enabled:true,mode:'y'}},
+      annotation:false
+    },
+    scales:{y:{title:{display:true,text:'mass flow (g/s)'}}}
+  },
+  plugins:[{id:'caps',afterDraw(ch){
+    const {ctx,chartArea:{left,right},scales:{y}}=ch;
+    [['ALaT 337.62',337.62,cAla],['LKT max 288.3',288.3,cMax],['LKT nom 264',264,cLkt]].forEach(([l,v,c])=>{
+      const yp=y.getPixelForValue(v);ctx.save();ctx.strokeStyle=c;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+      ctx.fillStyle=c;ctx.font='11px sans-serif';ctx.fillText(l,left+6,yp-3);ctx.restore();
+    });
+  }}]
+});
+
+charts.c2=new Chart(document.getElementById('c2'),{
+  type:'scatter',
+  data:{datasets:[
+    {label:'ALaT 575 (basis 112.54@72)',data:targets.map(t=>({x:t/3,y:72*(t/3)/112.54})),backgroundColor:cAla,showLine:true,borderColor:cAla},
+    {label:'LKT 475 nom (88@57)',data:targets.map(t=>({x:t/3,y:57*(t/3)/88})),backgroundColor:cLkt,showLine:true,borderColor:cLkt},
+    {label:'LKT 475 max (96.1@62)',data:targets.map(t=>({x:t/3,y:62*(t/3)/96.1})),backgroundColor:cMax,showLine:true,borderColor:cMax},
+  ]},
+  options:{maintainAspectRatio:false,
+    plugins:{zoom:{zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'xy'},pan:{enabled:true,mode:'xy'}}},
+    scales:{x:{title:{display:true,text:'per-skid flow (g/s)'}},y:{title:{display:true,text:'estimated frequency (Hz)'}}}
+  }
+});
+
+charts.c3=new Chart(document.getElementById('c3'),{
+  type:'bar',
+  data:{labels:['Motor (kW)','Package (kW)','PCW heat (kW)','Waste heat (kW)','PCW flow (m³/h)'],
+    datasets:[
+      {label:'ALaT 575',data:[315,348.54,323.9,14.2,18.2],backgroundColor:cAla},
+      {label:'LKT 475 nom',data:[250,266,230.9,5.1,15.5],backgroundColor:cLkt},
+      {label:'LKT 475 max',data:[250,289,230.9,5.1,15.5],backgroundColor:cMax},
+    ]},
+  options:{maintainAspectRatio:false,plugins:{zoom:{zoom:{wheel:{enabled:true},mode:'y'},pan:{enabled:true,mode:'y'}}}}
+});
+
+function exportPNG(id,name){const a=document.createElement('a');a.href=document.getElementById(id).toDataURL('image/png');a.download=name+'.png';a.click()}
+function exportPDF(id,name){const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'l'});const img=document.getElementById(id).toDataURL('image/png');pdf.addImage(img,'PNG',10,10,275,150);pdf.save(name+'.pdf')}
+function exportSVG(id,name,renderer){const svg=renderer();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));a.download=name+'.svg';a.click()}
+function renderSVG1(){
+  const cap=337.62,max=360;
+  const bars=targets.map((t,i)=>{const y=30+i*40;const w=600*t/max;const ok=t<=cap;
+    return `<rect x="100" y="${y}" width="${w}" height="22" fill="${ok?colorOk:colorOver}"/><text x="10" y="${y+16}" font-size="13">${t} g/s</text><text x="${110+w}" y="${y+16}" font-size="11">${ok?'OK':'OVER'}</text>`;
+  }).join('');
+  const capX=100+600*cap/max;
+  return `<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320"><text x="10" y="18" font-size="13" font-family="sans-serif">Graph 1 — Target vs 3-skid capacity</text>${bars}<line x1="${capX}" y1="22" x2="${capX}" y2="310" stroke="${cAla}" stroke-dasharray="4 4"/><text x="${capX+4}" y="20" font-size="11" fill="${cAla}">ALaT cap 337.62</text></svg>`;
+}
+</script>
+</body></html>
