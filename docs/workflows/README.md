@@ -1,8 +1,8 @@
 # GitHub Actions Workflow Templates
 
-> **Status:** ⏳ 5 workflow templates documented here; matching activation copies are staged in `workflows-to-install/` pending manual move to `.github/workflows/`.
+> **Status:** ✅ 5 workflow templates documented here; matching active copies are installed in `.github/workflows/`.
 
-These workflow files are CI/CD automation templates for the ABACUS project. The documentation copies live in `docs/workflows/`, and the activation bundle lives in `workflows-to-install/`. GitHub Actions will only execute them after they are manually moved into `.github/workflows/`.
+These workflow files are CI/CD automation templates for the ABACUS project. The documentation copies live in `docs/workflows/`, and the active workflow copies live in `.github/workflows/`. The historical activation bundle remains in `workflows-to-install/` for traceability.
 
 ---
 
@@ -22,19 +22,20 @@ These workflow files are CI/CD automation templates for the ABACUS project. The 
 
 ```
 .github/workflows/        ← Active location (executed by GitHub Actions)
-workflows-to-install/     ← Staged activation bundle
 docs/workflows/           ← Reference templates (this directory)
+workflows-to-install/     ← Historical activation bundle
 ```
 
 ---
 
-## How to Activate
+## Activation Status
 
 ```bash
 cp workflows-to-install/*.yml .github/workflows/
-rm -rf workflows-to-install/
 git add -A && git commit -m "ci: activate workflows"
 ```
+
+Activation completed on 2026-05-20. Use the copies in `.github/workflows/` for active automation.
 
 ## How to Monitor
 
@@ -46,7 +47,7 @@ git add -A && git commit -m "ci: activate workflows"
 
 ## Installation Log
 
-See [INSTALLATION.md](./INSTALLATION.md) for the staged activation status and verification results.
+See [INSTALLATION.md](./INSTALLATION.md) for the installed workflow status and verification results.
 
 ---
 
@@ -56,4 +57,4 @@ See [INSTALLATION.md](./INSTALLATION.md) for the staged activation status and ve
 cp docs/workflows/*.yml workflows-to-install/
 ```
 
-> **Note:** Workflows in `docs/workflows/` are templates only. Files in `workflows-to-install/` are the staged copies to move into `.github/workflows/`.
+> **Note:** Workflows in `docs/workflows/` are templates only. GitHub Actions executes the installed copies in `.github/workflows/`.
