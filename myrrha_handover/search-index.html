@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Search Index</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔎</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.search-box{position:sticky;top:60px;z-index:40;background:var(--bg);padding:12px 0;margin-bottom:12px}
+.search-box input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:var(--bg2);color:var(--fg);outline:none}
+.search-box input:focus{border-color:var(--accent2)}
+.search-box .hint{font-size:11px;color:var(--fg2);margin-top:4px}
+.idx-table{font-size:12.5px}
+.idx-table td:first-child{font-weight:600;white-space:nowrap;width:180px}
+.idx-table td:nth-child(2){font-family:var(--mono);font-size:11.5px;color:var(--fg2)}
+.idx-table td:nth-child(3) a{margin-right:6px}
+.idx-table tr.hidden{display:none}
+.cat-tab{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;color:#fff;margin:0 2px;cursor:pointer}
+.ct-eq{background:#7F77DD}.ct-term{background:#378ADD}.ct-param{background:#1D9E75}.ct-unit{background:#D85A30}.ct-comp{background:#E5A100;color:#333}
+.result-count{font-size:13px;color:var(--fg2);margin:8px 0}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Search Index</p>
+<h1>🔎 Searchable Term & Equation Index</h1>
+<p class="muted">Full-text search across all engineering terms, equations, parameters, and components · v0.4.1</p>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search terms, equations, parameters... (e.g. 'LMTD', 'polytropic', '350 g/s')" oninput="doSearch()">
+<div class="hint">Filter: <span class="cat-tab ct-eq" onclick="filterCat('eq')">Equations</span> <span class="cat-tab ct-term" onclick="filterCat('term')">Terms</span> <span class="cat-tab ct-param" onclick="filterCat('param')">Parameters</span> <span class="cat-tab ct-unit" onclick="filterCat('unit')">Units</span> <span class="cat-tab ct-comp" onclick="filterCat('comp')">Components</span> <span class="cat-tab" style="background:var(--fg2)" onclick="filterCat('all')">All</span></div>
+</div>
+<div class="result-count" id="resultCount"></div>
+
+<div class="card" style="overflow-x:auto">
+<table class="idx-table">
+<thead><tr><th>Term</th><th>Symbol / Formula</th><th>Found In</th><th>Category</th></tr></thead>
+<tbody id="idxBody"></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const entries=[
+// Equations
+{term:'Ideal gas compression work',sym:'W = ṁ·R·T·ln(P₂/P₁)',views:['utilities.html','thermo-analysis.html'],cat:'eq',label:'E1'},
+{term:'Exergy (availability)',sym:'Ψ = H - T₀·S',views:['thermo-analysis.html'],cat:'eq',label:'E2'},
+{term:'LMTD heat exchanger sizing',sym:'Q = U·A·LMTD',views:['hx-sizing.html','utilities.html'],cat:'eq',label:'E3'},
+{term:'Isothermal compression ratio',sym:'CR = P₂/P₁',views:['pvps.html','utilities.html'],cat:'eq',label:'E4'},
+{term:'System efficiency',sym:'η_sys = Π(η_comp × η_HX)',views:['thermo-analysis.html','operations.html'],cat:'eq',label:'E5'},
+{term:'Polytropic head',sym:'H_p = Z·R·T₁/(M·(n-1)/n)·[(P₂/P₁)^((n-1)/n)-1]',views:['utilities.html'],cat:'eq'},
+{term:'Shaft power',sym:'P_shaft = ṁ·H_p/η_p',views:['utilities.html','reports.html'],cat:'eq'},
+{term:'Motor efficiency',sym:'η_motor = P_shaft/P_elec',views:['tables.html'],cat:'eq'},
+{term:'Heat rejection rate',sym:'Q̇ = ṁ_cw·c_p·ΔT',views:['hx-sizing.html'],cat:'eq'},
+{term:'Carnot COP',sym:'COP_Carnot = T_cold/(T_hot-T_cold)',views:['utilities.html'],cat:'eq'},
+// Terms
+{term:'VFD (Variable Frequency Drive)',sym:'—',views:['reports.html','operations.html','pvps.html'],cat:'term'},
+{term:'N+1 redundancy',sym:'—',views:['pvps.html','reports.html'],cat:'term'},
+{term:'Turndown ratio',sym:'α',views:['operations.html'],cat:'term'},
+{term:'DMAIC (Define-Measure-Analyze-Improve-Control)',sym:'—',views:['review-dmaic.html'],cat:'term'},
+{term:'SSoT (Single Source of Truth)',sym:'—',views:['truth.html','handover.html'],cat:'term'},
+{term:'Sankey diagram',sym:'—',views:['thermo-analysis.html'],cat:'term'},
+{term:'Waterfall chart',sym:'—',views:['thermo-analysis.html'],cat:'term'},
+{term:'Exergy destruction',sym:'Ψ_dest',views:['thermo-analysis.html'],cat:'term'},
+{term:'Smart labels',sym:'B/G/T/E/F',views:['xref-matrix.html','docs/design-guide.md'],cat:'term'},
+{term:'Operating window',sym:'β-γ space',views:['operations.html'],cat:'term'},
+// Parameters
+{term:'Baseline mass flow',sym:'350 g/s',views:['truth.html','index.html','reports.html'],cat:'param',label:'B1'},
+{term:'Baseline pressure',sym:'14 barG',views:['truth.html','index.html'],cat:'param',label:'B1'},
+{term:'ALaT deployed flow',sym:'220 g/s (2×FSD575@72Hz)',views:['reports.html','tables.html','graphs.html'],cat:'param',label:'B2'},
+{term:'LKT nominal flow',sym:'264 g/s (3×FSD475@57Hz)',views:['reports.html','tables.html','graphs.html'],cat:'param',label:'B3'},
+{term:'LKT max flow',sym:'288.3 g/s (3×FSD475@62Hz)',views:['reports.html','tables.html'],cat:'param'},
+{term:'RCW ΔT',sym:'25 °C (30→55)',views:['hx-sizing.html','truth.html'],cat:'param',label:'B4'},
+{term:'RCW max oil temp',sym:'85 °C',views:['hx-sizing.html'],cat:'param'},
+{term:'PVPS target flow (γ)',sym:'50 g/s',views:['pvps.html','operations.html'],cat:'param',label:'B5'},
+{term:'Isothermal efficiency',sym:'η_iso = 0.50 (placeholder)',views:['pvps.html'],cat:'param'},
+{term:'ALaT motor power',sym:'315 kW',views:['tables.html','reports.html'],cat:'param'},
+{term:'LKT motor power',sym:'250 kW',views:['tables.html','reports.html'],cat:'param'},
+{term:'ALaT CW heat rejection',sym:'323.9 kW',views:['tables.html','hx-sizing.html'],cat:'param'},
+{term:'ALaT noise level',sym:'75 dB(A)',views:['tables.html'],cat:'param'},
+{term:'LKT noise level',sym:'74 dB(A)',views:['tables.html'],cat:'param'},
+{term:'ALaT oil charge',sym:'173 L',views:['tables.html'],cat:'param'},
+{term:'ALaT weight',sym:'6770 kg',views:['tables.html'],cat:'param'},
+// Units
+{term:'Mass flow rate',sym:'g/s (grams per second)',views:['all'],cat:'unit'},
+{term:'Pressure',sym:'barG (gauge)',views:['all'],cat:'unit'},
+{term:'Power',sym:'kW (kilowatt)',views:['tables.html','reports.html'],cat:'unit'},
+{term:'Temperature',sym:'°C (Celsius)',views:['hx-sizing.html','thermo-analysis.html'],cat:'unit'},
+{term:'Frequency',sym:'Hz (Hertz)',views:['reports.html','operations.html'],cat:'unit'},
+{term:'Heat transfer coeff.',sym:'W/(m²·K)',views:['hx-sizing.html'],cat:'unit'},
+// Components
+{term:'FSD 575 SFC (ALaT)',sym:'Kaeser screw compressor',views:['reports.html','tables.html','index.html'],cat:'comp'},
+{term:'FSD 475 SFC (LKT)',sym:'Kaeser screw compressor',views:['reports.html','tables.html','index.html'],cat:'comp'},
+{term:'PVPS (LP compressors)',sym:'WCS.LCC vacuum pumps',views:['pvps.html'],cat:'comp'},
+{term:'COMBI unit',sym:'Combined HP+cooling',views:['hx-sizing.html'],cat:'comp'},
+{term:'RCW Heat Exchanger',sym:'Oil cooler (shell & tube)',views:['hx-sizing.html'],cat:'comp'},
+{term:'Coldbox (QRB)',sym:'Cryogenic separation unit',views:['operations.html'],cat:'comp'},
+{term:'WCS (Warm Compressor Station)',sym:'MYRRHA QPLANT subsystem',views:['index.html','handover.html'],cat:'comp'},
+];
+
+const catColors={eq:'#7F77DD',term:'#378ADD',param:'#1D9E75',unit:'#D85A30',comp:'#E5A100'};
+const catNames={eq:'Equation',term:'Term',param:'Parameter',unit:'Unit',comp:'Component'};
+let currentFilter='all';
+
+function render(items){
+  const tb=document.getElementById('idxBody');
+  tb.innerHTML='';
+  items.forEach(e=>{
+    const links=e.views.map(v=>v==='all'?'<span class="muted">all views</span>':`<a href="${v}">${v.replace('.html','')}</a>`).join(' ');
+    const labelTag=e.label?` <span style="font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-family:var(--mono)">${e.label}</span>`:'';
+    tb.innerHTML+=`<tr data-cat="${e.cat}" data-search="${(e.term+' '+e.sym+' '+(e.label||'')).toLowerCase()}">
+      <td>${e.term}${labelTag}</td><td>${e.sym}</td><td>${links}</td>
+      <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;color:#fff;background:${catColors[e.cat]}">${catNames[e.cat]}</span></td></tr>`;
+  });
+  document.getElementById('resultCount').textContent=`Showing ${items.length} of ${entries.length} entries`;
+}
+
+function doSearch(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const rows=document.querySelectorAll('#idxBody tr');
+  let count=0;
+  rows.forEach(r=>{
+    const match=!q||r.dataset.search.includes(q);
+    const catMatch=currentFilter==='all'||r.dataset.cat===currentFilter;
+    r.style.display=(match&&catMatch)?'':'none';
+    if(match&&catMatch)count++;
+  });
+  document.getElementById('resultCount').textContent=`Showing ${count} of ${entries.length} entries`;
+}
+
+function filterCat(cat){
+  currentFilter=cat;
+  doSearch();
+}
+
+render(entries);
+</script>
+</body></html>
