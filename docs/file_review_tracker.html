@@ -328,8 +328,7 @@ function toggleConfirm(id) {
     showToast('✅ Review confirmed and date-stamped!');
   } else {
     item.confirmed = false;
-    item.reviewCount = (item.reviewCount || 0) + 1;
-    history.push({ id: item.id, path: item.path, tag: item.tag, timestamp: ts, eventType: 're-opened', reviewNum: item.reviewCount });
+    history.push({ id: item.id, path: item.path, tag: item.tag, timestamp: ts, eventType: 're-opened', reviewNum: item.reviewCount || 0 });
     item.confirmedAt = null;
     showToast('🔄 Review re-opened.');
   }
