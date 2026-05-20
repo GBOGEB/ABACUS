@@ -111,7 +111,7 @@ jobs:
       - name: Run smoke tests
         run: |
           if [ -f "run_deployment_test_system.py" ]; then
-            python run_deployment_test_system.py --test-suite smoke --skip-static --version ci-${{ github.sha }} || true
+            python run_deployment_test_system.py --test-suite smoke --skip-static --version ci-${{ github.sha }}
           else
             echo "⚠️ Smoke test script not found, skipping"
           fi
