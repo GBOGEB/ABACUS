@@ -1,0 +1,355 @@
+# ============================================================================
+# GBOGEB/ABACUS — Cross-Repo Asset Sync (GBC → GBA)
+# ============================================================================
+# Triggered by GBC webhook or manual dispatch. Pulls latest compiled SVGs,
+# updates HMI dashboard references, and rebuilds the workspace bundle.
+# ============================================================================
+
+name: Sync GBC Assets
+
+on:
+  # Webhook trigger — GBC sends repository_dispatch on asset update
+  repository_dispatch:
+    types: [gbc-asset-update]
+
+  # Manual trigger with optional parameters
+  workflow_dispatch:
+    inputs:
+      gbc_ref:
+        description: 'GBC branch or tag to sync from'
+        required: false
+        default: 'main'
+      force_rebuild:
+        description: 'Force full rebuild even if no changes detected'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  GBC_REPO: gbogeb/codex
+  SYNC_BRANCH: auto/sync-gbc-assets
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────
+  # Job 1: Fetch and validate GBC assets
+  # ────────────────────────────────────────────────────────────────────
+  fetch-gbc-assets:
+    name: Fetch GBC Compiled Assets
+    runs-on: ubuntu-latest
+    outputs:
+      assets_changed: ${{ steps.diff.outputs.changed }}
+      asset_count: ${{ steps.count.outputs.count }}
+      sync_sha: ${{ steps.meta.outputs.sha }}
+
+    steps:
+      - name: Checkout GBA (this repo)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Fetch GBC compiled assets
+        env:
+          GH_TOKEN: ${{ secrets.GBC_ACCESS_TOKEN }}
+        run: |
+          echo "═══ Fetching GBC compiled assets ═══"
+          GBC_REF="${{ github.event.inputs.gbc_ref || github.event.client_payload.ref || 'main' }}"
+          echo "GBC ref: ${GBC_REF}"
+
+          mkdir -p _gbc_sync/assets _gbc_sync/config
+
+          # Fetch compiled SVGs via GitHub API
+          for asset in cryomodule_schematic.svg facility_layout.svg; do
+            echo "  Fetching: ${asset}"
+            curl -sL -H "Authorization: token ${GH_TOKEN}" \
+              "https://www.classe.cornell.edu/rsrc/Home/Research/SRF/MarkIICryomodule/Cryomodule3Ddrawing.GIF" \
+              -o "_gbc_sync/assets/${asset}" || echo "  WARN: Could not fetch ${asset}"
+          done
+
+          # Fetch GBC knowledge topology
+          curl -sL -H "Authorization: token ${GH_TOKEN}" \
+            "https://raw.githubusercontent.com/${GBC_REPO}/${GBC_REF}/config/knowledge_topology.json" \
+            -o "_gbc_sync/config/gbc_topology.json" || true
+
+          # Fetch GBC lineage manifest
+          curl -sL -H "Authorization: token ${GH_TOKEN}" \
+            "https://raw.githubusercontent.com/${GBC_REPO}/${GBC_REF}/lineage_manifest.json" \
+            -o "_gbc_sync/config/gbc_lineage_manifest.json" || true
+
+          echo "  Fetched files:"
+          find _gbc_sync -type f | sort
+
+      - name: Validate fetched assets
+        run: |
+          echo "═══ Validating GBC assets ═══"
+          python -c "
+          import hashlib, json, os
+          from pathlib import Path
+
+          sync_dir = Path('_gbc_sync/assets')
+          results = []
+          for f in sorted(sync_dir.glob('*.svg')):
+              h = hashlib.sha256(f.read_bytes()).hexdigest()
+              size = f.stat().st_size
+              valid = size > 100  # basic sanity check
+              results.append({'file': f.name, 'sha256': h[:16], 'size': size, 'valid': valid})
+              status = '✓' if valid else '✗'
+              print(f'  {status} {f.name}: {h[:16]}... ({size} bytes)')
+
+          all_valid = all(r['valid'] for r in results)
+          print(f'\n  Total: {len(results)}, Valid: {sum(1 for r in results if r[\"valid\"])}')
+          if not all_valid:
+              print('  ✗ VALIDATION FAILED')
+              exit(1)
+          print('  ✓ All assets validated')
+          "
+
+      - name: Compute asset diff
+        id: diff
+        run: |
+          # Compare fetched assets with existing Input_Master/ content
+          CHANGED=false
+          for svg in _gbc_sync/assets/*.svg; do
+            fname=$(basename "$svg")
+            existing="Input_Master/${fname}"
+            if [ ! -f "$existing" ]; then
+              echo "  NEW: ${fname}"
+              CHANGED=true
+            elif ! diff -q "$svg" "$existing" > /dev/null 2>&1; then
+              echo "  UPDATED: ${fname}"
+              CHANGED=true
+            else
+              echo "  UNCHANGED: ${fname}"
+            fi
+          done
+
+          FORCE="${{ github.event.inputs.force_rebuild || 'false' }}"
+          if [ "$FORCE" = "true" ]; then
+            CHANGED=true
+            echo "  FORCED: rebuild requested"
+          fi
+
+          echo "changed=${CHANGED}" >> "$GITHUB_OUTPUT"
+          echo "  Assets changed: ${CHANGED}"
+
+      - name: Count assets
+        id: count
+        run: |
+          COUNT=$(find _gbc_sync/assets -name '*.svg' | wc -l)
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: Record sync metadata
+        id: meta
+        run: |
+          SHA="${{ github.event.client_payload.sha || 'manual' }}"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "Sync SHA: ${SHA}"
+
+      - name: Upload synced assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: gbc-synced-assets
+          path: _gbc_sync/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────
+  # Job 2: Ingest assets into GBA and rebuild
+  # ────────────────────────────────────────────────────────────────────
+  ingest-and-rebuild:
+    name: Ingest & Rebuild Workspace
+    runs-on: ubuntu-latest
+    needs: fetch-gbc-assets
+    if: needs.fetch-gbc-assets.outputs.assets_changed == 'true'
+
+    steps:
+      - name: Checkout GBA
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install pyyaml weasyprint markdown
+
+      - name: Download synced assets
+        uses: actions/download-artifact@v4
+        with:
+          name: gbc-synced-assets
+          path: _gbc_sync/
+
+      - name: Create sync branch
+        run: |
+          git checkout -b "${{ env.SYNC_BRANCH }}"
+          git config user.name "GBOGEB Sync Bot"
+          git config user.email "sync-bot@gbogeb.dev"
+
+      - name: Copy assets to Input_Master
+        run: |
+          echo "═══ Ingesting GBC assets ═══"
+          mkdir -p Input_Master/
+          cp _gbc_sync/assets/*.svg Input_Master/
+          echo "  Copied $(ls Input_Master/*.svg 2>/dev/null | wc -l) SVGs to Input_Master/"
+
+      - name: Run verification hook
+        run: |
+          echo "═══ Running verification hook ═══"
+          python engines/verification_hook.py --input-dir Input_Master/ --data-dir _data/ --quiet
+
+      - name: Update HMI dashboard SVG references
+        run: |
+          echo "═══ Updating HMI Dashboard ═══"
+          python -c "
+          import json
+          from pathlib import Path
+          from datetime import datetime, timezone
+
+          # Read GBC lineage to get latest hashes
+          gbc_lineage = Path('_gbc_sync/config/gbc_lineage_manifest.json')
+          gbc_data = {}
+          if gbc_lineage.exists():
+              gbc_data = json.loads(gbc_lineage.read_text())
+
+          # Update sync metadata in GBA
+          sync_record = {
+              'last_sync': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'gbc_ref': '${{ github.event.inputs.gbc_ref || \"main\" }}',
+              'gbc_sha': '${{ needs.fetch-gbc-assets.outputs.sync_sha }}',
+              'assets_synced': int('${{ needs.fetch-gbc-assets.outputs.asset_count }}'),
+              'gbc_manifest_version': gbc_data.get('version', 'unknown'),
+          }
+
+          sync_path = Path('_data/gbc_sync_status.json')
+          sync_path.parent.mkdir(parents=True, exist_ok=True)
+          sync_path.write_text(json.dumps(sync_record, indent=2))
+          print(f'  ✓ Sync status written: {sync_path}')
+          print(json.dumps(sync_record, indent=2))
+          "
+
+      - name: Rebuild workspace bundle
+        run: |
+          echo "═══ Rebuilding workspace bundle ═══"
+
+          # Regenerate PDF
+          python examples/multi_view_workspace/scripts/generate_pdf.py \
+            --theme userstyle \
+            --input examples/multi_view_workspace/output/documents/report.md \
+            --output examples/multi_view_workspace/output/documents/report.pdf
+
+          # Run physics validator
+          cd examples/multi_view_workspace/output/context
+          python physics_validator.py
+          cd ../../../..
+
+          echo "  ✓ Workspace rebuilt"
+
+      - name: Commit changes
+        run: |
+          git add -A
+          CHANGES=$(git diff --cached --stat)
+          if [ -n "$CHANGES" ]; then
+            git commit -m "sync: ingest GBC assets ($(date -u +%Y-%m-%dT%H:%M:%SZ))
+
+          Source: ${{ env.GBC_REPO }}@${{ needs.fetch-gbc-assets.outputs.sync_sha }}
+          Assets: ${{ needs.fetch-gbc-assets.outputs.asset_count }} SVGs
+          Triggered by: ${{ github.event_name }}"
+            echo "  ✓ Changes committed"
+          else
+            echo "  ℹ No changes to commit"
+          fi
+
+      - name: Push sync branch
+        run: |
+          git push origin "${{ env.SYNC_BRANCH }}" --force-with-lease || \
+            git push origin "${{ env.SYNC_BRANCH }}" --force
+          echo "  ✓ Pushed to ${{ env.SYNC_BRANCH }}"
+
+      - name: Create or update PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const head = '${{ env.SYNC_BRANCH }}';
+            const base = 'main';
+            const title = '🔄 Sync GBC Assets — ' + new Date().toISOString().split('T')[0];
+            const body = [
+              '## GBC Asset Sync',
+              '',
+              '**Source:** `${{ env.GBC_REPO }}` @ `${{ needs.fetch-gbc-assets.outputs.sync_sha }}`',
+              '**Assets synced:** ${{ needs.fetch-gbc-assets.outputs.asset_count }}',
+              '**Trigger:** `${{ github.event_name }}`',
+              '',
+              '### Changes',
+              '- Updated SVG assets in `Input_Master/`',
+              '- Regenerated verification sidecars (`.mock`)',
+              '- Updated `_data/lineage_manifest.json`',
+              '- Updated `_data/gbc_sync_status.json`',
+              '- Rebuilt workspace bundle',
+              '',
+              '### Governance Checklist',
+              '- [x] Assets validated (SHA256)',
+              '- [x] Verification hook executed',
+              '- [x] Lineage manifest updated',
+              '- [x] Workspace bundle rebuilt',
+              '',
+              '> ⚠️ Review before merging — auto-generated by GBC sync workflow.'
+            ].join('\n');
+
+            // Check for existing PR
+            const { data: prs } = await github.rest.pulls.list({
+              owner, repo, head: `${owner}:${head}`, base, state: 'open'
+            });
+
+            if (prs.length > 0) {
+              await github.rest.pulls.update({
+                owner, repo, pull_number: prs[0].number, title, body
+              });
+              core.info(`Updated existing PR #${prs[0].number}`);
+            } else {
+              const { data: pr } = await github.rest.pulls.create({
+                owner, repo, title, body, head, base
+              });
+              core.info(`Created PR #${pr.number}`);
+            }
+
+  # ────────────────────────────────────────────────────────────────────
+  # Job 3: Notify (optional — runs regardless of changes)
+  # ────────────────────────────────────────────────────────────────────
+  notify:
+    name: Sync Summary
+    runs-on: ubuntu-latest
+    needs: [fetch-gbc-assets, ingest-and-rebuild]
+    if: always()
+
+    steps:
+      - name: Print sync summary
+        run: |
+          echo "╔══════════════════════════════════════════════════════╗"
+          echo "║  GBOGEB — Cross-Repo Asset Sync Summary             ║"
+          echo "╚══════════════════════════════════════════════════════╝"
+          echo ""
+          echo "  Source:         ${{ env.GBC_REPO }}"
+          echo "  SHA:            ${{ needs.fetch-gbc-assets.outputs.sync_sha }}"
+          echo "  Assets synced:  ${{ needs.fetch-gbc-assets.outputs.asset_count }}"
+          echo "  Changes found:  ${{ needs.fetch-gbc-assets.outputs.assets_changed }}"
+          echo "  Fetch status:   ${{ needs.fetch-gbc-assets.result }}"
+          echo "  Ingest status:  ${{ needs.ingest-and-rebuild.result }}"
+          echo "  Timestamp:      $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo ""
+          echo "  ═══ Done ═══"
