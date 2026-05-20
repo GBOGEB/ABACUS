@@ -1,7 +1,6 @@
 name: DELTA_1 Runtime Governance
 
 on:
-  pull_request:
   workflow_dispatch:
 
 permissions:
