@@ -1,0 +1,23 @@
+codex_policy_ingestion:
+  moniker: DELTA_1
+
+  source_repository:
+    repository: GBOGEB/CODEX
+    branch: delta-1-codex-governance-baseline
+
+  ingestion_domains:
+    - governance_policy
+    - release_certification
+    - operational_audit
+    - deployment_policy
+
+  synchronization_requirements:
+    policy_alignment: required
+    runtime_alignment: required
+    provenance_alignment: required
+
+  objectives:
+    - live governance synchronization
+    - recursive policy convergence
+    - federated operational governance
+    - governance-runtime continuity
