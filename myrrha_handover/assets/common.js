@@ -1,4 +1,5 @@
 /* Shared chrome: theme + font selectors, nav highlight */
+const MYRRHA_VERSION = 'v0.4.7';
 (function(){
   let T='light',F='aptos';
   try{T=localStorage.getItem('myrrha-theme')||'light';}catch(e){}
@@ -41,7 +42,7 @@
       const here=location.pathname.split('/').pop()||'index.html';
       bar.innerHTML=`
         <div class="brand">⚙ MYRRHA · WCS Handover</div>
-        <span class="ver">v0.4.7</span>
+        <span class="ver">${MYRRHA_VERSION}</span>
         <nav>${this.nav.map(([h,n])=>`<a href="${h}" class="${h===here?'active':''}">${n}</a>`).join('')}</nav>
         <div class="controls">
           <select id="themeSel" title="Theme">
