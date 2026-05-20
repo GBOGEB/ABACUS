@@ -11,6 +11,25 @@
       background: #f7f9fc;
       color: #162033;
     }
+    .topnav {
+      display: flex;
+      gap: .8rem;
+      flex-wrap: wrap;
+      padding: .75rem 1rem;
+      background: #162033;
+      border-bottom: 1px solid #2e3d55;
+    }
+    .topnav a {
+      color: #b8cef7;
+      font-size: .92rem;
+      text-decoration: none;
+    }
+    .topnav a.brand {
+      color: #fff;
+      font-weight: 700;
+      margin-right: .4rem;
+    }
+    .topnav a:hover { text-decoration: underline; }
     main {
       width: min(1100px, calc(100% - 2rem));
       margin: 0 auto;
@@ -58,6 +77,16 @@
   </style>
 </head>
 <body>
+  <nav class="topnav">
+    <a class="brand" href="./">⚛️ ABACUS</a>
+    <a href="cryo/">Cryo</a>
+    <a href="12-cluster/">12-Cluster</a>
+    <a href="dow/">DOW</a>
+    <a href="testing/">Testing</a>
+    <a href="tools/">Tools</a>
+    <a href="versions/">Versions</a>
+    <a href="deep_analysis_dashboard.html">Deep Analysis</a>
+  </nav>
   <main>
     <h1>ABACUS Repository Dashboard</h1>
     <p><a href="index.html">← Back to repository navigation</a></p>
