@@ -10,11 +10,28 @@
 
   <!-- Plotly.js — interactive charts; falls back to static SVGs when offline -->
   <script>
+    /* Define stub first so onload can call it even before the bottom script runs */
+    window.__plotlyReady = false;
+    function renderPlotly() {
+      /* body of this function is defined at bottom of page; stub prevents ReferenceError
+         if Plotly CDN loads before DOMContentLoaded fires. */
+      if (window.__renderPlotlyImpl) window.__renderPlotlyImpl();
+    }
     (function(){
       var s=document.createElement('script');
       s.src='https://cdn.plot.ly/plotly-2.32.0.min.js';
-      s.onload=function(){ window.__plotlyReady=true; renderPlotly(); };
-      s.onerror=function(){ document.querySelectorAll('.chart-offline').forEach(function(el){el.hidden=false;}); };
+      s.onload=function(){
+        window.__plotlyReady=true;
+        renderPlotly();
+      };
+      s.onerror=function(){
+        /* Show offline banner */
+        var banner=document.getElementById('offline-banner');
+        if(banner) banner.style.display='block';
+        /* Reveal static SVG fallbacks and hide empty Plotly containers */
+        document.querySelectorAll('.chart-offline').forEach(function(el){el.hidden=false;});
+        document.querySelectorAll('.plotly-wrap').forEach(function(el){el.style.display='none';});
+      };
       document.head.appendChild(s);
     })();
   </script>
@@ -98,6 +115,8 @@
     /* ── offline banner ── */
     .offline-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);
                     padding:.75rem 1rem;margin-bottom:1.2rem;font-size:.88rem;display:none}
+    /* show static fallbacks when JS is disabled */
+    noscript ~ * .chart-offline, noscript .chart-offline { display:block !important }
   </style>
 </head>
 <body>
@@ -113,6 +132,13 @@
   <a href="metrics.html" style="color:#fff;font-weight:600">📊 Metrics</a>
 </nav>
 <div class="breadcrumbs"><a href="./">Home</a> <span>›</span> Metrics &amp; Version Lineage</div>
+
+<noscript>
+  <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:.75rem 1rem;margin:1rem auto;max-width:1100px;font-size:.9rem">
+    ⚠️ <strong>JavaScript is disabled.</strong> Interactive Plotly charts are unavailable.
+    Static matplotlib charts are shown below each chart area.
+  </div>
+</noscript>
 
 <section class="hero" style="background:linear-gradient(135deg,#1a2233,#1a73e8 60%,#9c27b0)">
   <h1>📊 DMAIC Metrics &amp; Version Lineage</h1>
@@ -162,7 +188,7 @@
       <div class="kpi-icon">📦</div>
       <div class="kpi-val">6</div>
       <div class="kpi-lbl">Versions in Lineage</div>
-      <div class="kpi-delta up">v0.31 → v0.32 → v2.1 → UNIFIED → v2.3 → v3.3</div>
+      <div class="kpi-delta up">v0.31 → v0.32 → v2.1 → UNIFIED → v2.3 → v3.3.1</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">⚙️</div>
@@ -543,10 +569,10 @@ function plotLineage() {
   var versions = ['v2.3.0','v3.0.0','v3.3.0','v3.3.1'];
   Plotly.newPlot('plotly-lineage', [
     { name: 'New',     x: versions, y: [6,12,8,5],  type: 'bar',
-      marker: { color: PALETTE.measure },
+      marker: { color: PALETTE.define },
       hovertemplate: 'New: <b>%{y}</b><extra></extra>' },
     { name: 'Changed', x: versions, y: [2,7,11,9],  type: 'bar',
-      marker: { color: PALETTE.define },
+      marker: { color: PALETTE.analyze },
       hovertemplate: 'Changed: <b>%{y}</b><extra></extra>' },
     { name: 'Removed', x: versions, y: [0,3,2,1],   type: 'bar',
       marker: { color: PALETTE.improve },
@@ -579,7 +605,7 @@ function plotRadar() {
 }
 
 /* ── render all charts once Plotly is ready ── */
-function renderPlotly() {
+window.__renderPlotlyImpl = function() {
   if(typeof Plotly === 'undefined') return;
   try { plotTestGrowth(); }  catch(e){}
   try { plotPhaseTests(); }  catch(e){}
@@ -589,8 +615,8 @@ function renderPlotly() {
   try { plotRadar(); }       catch(e){}
 }
 
-/* If Plotly loaded synchronously (cached) */
-if(typeof Plotly !== 'undefined') renderPlotly();
+/* If Plotly loaded synchronously (cached) before onload could fire */
+if(typeof Plotly !== 'undefined' && window.__plotlyReady) renderPlotly();
 </script>
 </body>
 </html>

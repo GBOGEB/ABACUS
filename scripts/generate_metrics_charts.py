@@ -7,16 +7,13 @@ Run:    python scripts/generate_metrics_charts.py
 """
 
 import os
-import sys
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import numpy as np
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "assets", "charts")
-os.makedirs(OUT_DIR, exist_ok=True)
 
 # ── shared style ──────────────────────────────────────────────────────────────
 PALETTE = {
@@ -196,6 +193,7 @@ def chart_dmaic_radar():
 
 
 if __name__ == "__main__":
+    os.makedirs(OUT_DIR, exist_ok=True)
     print("Generating static chart SVGs …")
     chart_test_growth()
     chart_tests_per_phase()
