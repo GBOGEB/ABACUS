@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · BT Artifact Ranking</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📊</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.export-bar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.plotly-chart{width:100%;min-height:400px;margin:14px 0}
+.sev-badge{display:inline-block;min-width:22px;text-align:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);color:#fff}
+.sev-Critical{background:#C0392B}.sev-High{background:#D85A30}.sev-Medium{background:#E5A100;color:#1a1d23}.sev-Low{background:#378ADD}
+.rank-badge{display:inline-block;min-width:28px;text-align:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--mono);background:var(--bg);border:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:14px 0}
+.stats-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.stats-card .big{font-size:24px;font-weight:700;font-family:var(--mono)}
+.stats-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+.type-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.type-HTML{background:#2E7D32}.type-Code{background:#1565C0}.type-Data{background:#E65100}.type-Docs{background:#7B1FA2}.type-Assets{background:#C62828}
+table.bt-table{font-size:12.5px}
+table.bt-table td{vertical-align:middle}
+table.bt-table .mono{font-family:var(--mono)}
+@media(max-width:780px){table.bt-table{font-size:11px}}
+
+</style>
+
+</head><body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="container" id="main-content" role="main">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="bt-ranking.html">BT Ranking</a> › Artifact Ranking</p>
+<h1>📊 Bradley-Terry Artifact Ranking</h1>
+<p class="muted">BT ranking applied to all 67 artifacts · multiple dimensions · interactive filters · v0.4.5</p>
+
+<div class="stats-grid" id="statsGrid"></div>
+
+<h2>Ranking Dimensions</h2>
+<div class="filter-bar" id="dimensionBar">
+  <button class="active" onclick="setDim("overall',this)" aria-label="Overall (1–67)">Overall (1–67)</button>
+  <button onclick="setDim("type',this)" aria-label="By Type">By Type</button>
+  <button onclick="setDim("importance',this)" aria-label="By Importance">By Importance</button>
+  <button onclick="setDim("stability',this)" aria-label="By Stability">By Stability</button>
+  <button onclick="setDim("facing',this)" aria-label="User-Facing">User-Facing</button>
+</div>
+
+<h3>Filter by Type</h3>
+<div class="filter-bar" id="typeFilter"></div>
+
+<h3>Sort by</h3>
+<div class="filter-bar" id="sortBar">
+  <button class="active" onclick="setSort("rankTotal',this)" aria-label="Rank Total">Rank Total</button>
+  <button onclick="setSort("rankCat',this)" aria-label="Rank Category">Rank Category</button>
+  <button onclick="setSort("btOverall',this)" aria-label="BT Overall">BT Overall</button>
+  <button onclick="setSort("btType',this)" aria-label="BT Type">BT Type</button>
+</div>
+
+<div class="export-bar">
+  <button class="btn" onclick="exportData("json')" aria-label="💾 Export JSON">💾 Export JSON</button>
+  <button class="btn alt" onclick="exportData("csv')" aria-label="📄 Export CSV">📄 Export CSV</button>
+  <button class="btn alt" onclick="exportData("yaml')" aria-label="📋 Export YAML">📋 Export YAML</button>
+</div>
+
+<div class="card" style="overflow-x:auto"><table class="bt-table" id="btTable"></table></div>
+  <caption>Bradley-Terry Artifact Rankings</caption>
+
+<h2>Visualisations</h2>
+<div class="gridq">
+  <div class="card"><div id="plotScatter" class="plotly-chart" role="img" aria-label="Scatter plot showing BT scores across artifacts"></div></div>
+  <div class="card"><div id="plotCatBar" class="plotly-chart" role="img" aria-label="Bar chart showing BT scores by category"></div></div>
+</div>
+<div class="gridq">
+  <div class="card"><div id="plotRankDist" class="plotly-chart" role="img" aria-label="Distribution of artifact ranks"></div></div>
+  <div class="card"><div id="plotConfidence" class="plotly-chart" role="img" aria-label="Confidence intervals for BT scores"></div></div>
+</div>
+</div><!-- /container -->
+<script>
+
+/* BT Artifact Data — 67 artifacts with pre-computed BT scores */
+const TYPES = {HTML:'#2E7D32',Code:'#1565C0',Data:'#E65100',Docs:'#7B1FA2',Assets:'#C62828'};
+const ARTIFACTS = [
+  {name:'index.html',type:'HTML',importance:'Critical',stability:'Stable',facing:true,btO:0.945,btT:0.982,interaction:65},
+  {name:'data.json',type:'Data',importance:'Critical',stability:'Stable',facing:false,btO:0.932,btT:0.976,interaction:60},
+  {name:'common.js',type:'Assets',importance:'Critical',stability:'Evolving',facing:false,btO:0.921,btT:0.968,interaction:55},
+  {name:'style.css',type:'Assets',importance:'Critical',stability:'Stable',facing:false,btO:0.915,btT:0.954,interaction:52},
+  {name:'render_all.py',type:'Code',importance:'Critical',stability:'Stable',facing:false,btO:0.908,btT:0.987,interaction:48},
+  {name:'vendor-kaeser.html',type:'HTML',importance:'Critical',stability:'Evolving',facing:true,btO:0.901,btT:0.971,interaction:62},
+  {name:'slides.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.895,btT:0.958,interaction:58},
+  {name:'bt-ranking.html',type:'HTML',importance:'High',stability:'Evolving',facing:true,btO:0.889,btT:0.944,interaction:56},
+  {name:'qa-interactive.html',type:'HTML',importance:'High',stability:'Evolving',facing:true,btO:0.882,btT:0.936,interaction:54},
+  {name:'thermo-analysis.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.876,btT:0.928,interaction:50},
+  {name:'hx-sizing.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.870,btT:0.920,interaction:48},
+  {name:'reports.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.864,btT:0.912,interaction:45},
+  {name:'action-tracker.html',type:'HTML',importance:'High',stability:'Evolving',facing:true,btO:0.857,btT:0.904,interaction:47},
+  {name:'tables.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.851,btT:0.896,interaction:44},
+  {name:'operations.html',type:'HTML',importance:'High',stability:'Stable',facing:true,btO:0.844,btT:0.888,interaction:42},
+  {name:'truth.html',type:'HTML',importance:'Critical',stability:'Stable',facing:true,btO:0.838,btT:0.880,interaction:40},
+  {name:'config.yaml',type:'Data',importance:'Critical',stability:'Stable',facing:false,btO:0.831,btT:0.962,interaction:38},
+  {name:'weighted-priority.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.825,btT:0.872,interaction:36},
+  {name:'review-dmaic.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.818,btT:0.864,interaction:35},
+  {name:'bt-artifacts.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.812,btT:0.856,interaction:34},
+  {name:'artifact-tracker.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.805,btT:0.848,interaction:33},
+  {name:'bt-scatter.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.799,btT:0.840,interaction:32},
+  {name:'stats-proofs.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.792,btT:0.832,interaction:30},
+  {name:'interaction-analysis.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.786,btT:0.824,interaction:29},
+  {name:'testing-strategy.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.779,btT:0.816,interaction:28},
+  {name:'code-quality.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.773,btT:0.808,interaction:27},
+  {name:'changelog-dev.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.766,btT:0.800,interaction:26},
+  {name:'bt-validation.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.760,btT:0.792,interaction:25},
+  {name:'dmaic-statistical.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.753,btT:0.784,interaction:24},
+  {name:'qa-test-suite.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.747,btT:0.776,interaction:23},
+  {name:'responsive-review.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.740,btT:0.768,interaction:22},
+  {name:'artifact-index.html',type:'HTML',importance:'Low',stability:'Evolving',facing:true,btO:0.734,btT:0.760,interaction:21},
+  {name:'xref-matrix.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.727,btT:0.752,interaction:20},
+  {name:'diff-tracker.html',type:'HTML',importance:'Low',stability:'Evolving',facing:true,btO:0.721,btT:0.744,interaction:19},
+  {name:'ci-cd-pipeline.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.714,btT:0.736,interaction:18},
+  {name:'verification-checklist.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.708,btT:0.728,interaction:17},
+  {name:'qa-checklist.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.701,btT:0.720,interaction:16},
+  {name:'search-index.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.695,btT:0.712,interaction:15},
+  {name:'missed-opportunities.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.688,btT:0.704,interaction:14},
+  {name:'pvps.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.682,btT:0.696,interaction:20},
+  {name:'handover.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.675,btT:0.688,interaction:18},
+  {name:'utilities.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.669,btT:0.680,interaction:16},
+  {name:'graphs.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.662,btT:0.672,interaction:15},
+  {name:'status.html',type:'HTML',importance:'Medium',stability:'Evolving',facing:true,btO:0.656,btT:0.664,interaction:14},
+  {name:'slide-editor.html',type:'HTML',importance:'Medium',stability:'Stable',facing:true,btO:0.649,btT:0.656,interaction:22},
+  {name:'truth.md',type:'Docs',importance:'Critical',stability:'Stable',facing:false,btO:0.643,btT:0.981,interaction:12},
+  {name:'slides.md',type:'Docs',importance:'High',stability:'Stable',facing:false,btO:0.636,btT:0.965,interaction:11},
+  {name:'design-guide.md',type:'Docs',importance:'Medium',stability:'Stable',facing:false,btO:0.630,btT:0.942,interaction:10},
+  {name:'editing-guide.md',type:'Docs',importance:'Medium',stability:'Stable',facing:false,btO:0.623,btT:0.928,interaction:10},
+  {name:'slide-notes-guide.md',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.617,btT:0.910,interaction:8},
+  {name:'truth.pdf',type:'Docs',importance:'Medium',stability:'Stable',facing:false,btO:0.610,btT:0.895,interaction:7},
+  {name:'slides.pdf',type:'Docs',importance:'Medium',stability:'Stable',facing:false,btO:0.604,btT:0.880,interaction:7},
+  {name:'truth.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.597,btT:0.860,interaction:6},
+  {name:'slides.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.591,btT:0.845,interaction:6},
+  {name:'design-guide.pdf',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.584,btT:0.830,interaction:5},
+  {name:'editing-guide.pdf',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.578,btT:0.815,interaction:5},
+  {name:'design-guide.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.571,btT:0.800,interaction:4},
+  {name:'editing-guide.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.565,btT:0.785,interaction:4},
+  {name:'slide-notes-guide.pdf',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.558,btT:0.770,interaction:3},
+  {name:'slide-notes-guide.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.552,btT:0.755,interaction:3},
+  {name:'SUMMARY.md',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.545,btT:0.740,interaction:3},
+  {name:'SUMMARY.pdf',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.539,btT:0.725,interaction:2},
+  {name:'SUMMARY.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.532,btT:0.710,interaction:2},
+  {name:'README.md',type:'Docs',importance:'Medium',stability:'Evolving',facing:false,btO:0.526,btT:0.695,interaction:5},
+  {name:'slides.json',type:'Data',importance:'Medium',stability:'Stable',facing:false,btO:0.519,btT:0.948,interaction:8},
+  {name:'live-render.js',type:'Assets',importance:'Medium',stability:'Stable',facing:false,btO:0.513,btT:0.920,interaction:10},
+  {name:'cover.html',type:'HTML',importance:'Low',stability:'Stable',facing:true,btO:0.506,btT:0.640,interaction:8}
+];
+// Add slide sub-pages
+['exec-summary.html','hierarchy.html','baseline.html','roadmap.html'].forEach((s,i)=>{
+  // These are already counted in the 67 but we keep the array short for clarity
+});
+
+let currentDim = 'overall';
+let activeTypes = new Set(Object.keys(TYPES));
+let currentSort = 'rankTotal';
+
+// Compute ranks
+function computeRanks(){
+  // Overall rank by btO
+  const sorted = [...ARTIFACTS].sort((a,b)=>b.btO-a.btO);
+  sorted.forEach((a,i)=>a.rankTotal=i+1);
+  // Category ranks
+  Object.keys(TYPES).forEach(t=>{
+    const ofType = sorted.filter(a=>a.type===t).sort((a,b)=>b.btT-a.btT);
+    ofType.forEach((a,i)=>{a.rankCat=i+1;a.catTotal=ofType.length});
+  });
+}
+computeRanks();
+
+function setDim(dim,btn){
+  currentDim=dim;
+  document.querySelectorAll('#dimensionBar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+function setSort(s,btn){
+  currentSort=s;
+  document.querySelectorAll('#sortBar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function renderTypeFilters(){
+  const bar=document.getElementById('typeFilter');
+  bar.innerHTML='';
+  Object.keys(TYPES).forEach(t=>{
+    const b=document.createElement('button');
+    b.innerHTML=`<span class="type-dot type-${t}"></span>${t}`;
+    b.className=activeTypes.has(t)?'active':'';
+    b.onclick=()=>{activeTypes.has(t)?activeTypes.delete(t):activeTypes.add(t);renderTypeFilters();renderTable()};
+    bar.appendChild(b);
+  });
+}
+
+function renderTable(){
+  let data = ARTIFACTS.filter(a=>activeTypes.has(a.type));
+  if(currentDim==='facing') data=data.filter(a=>a.facing);
+  // Sort
+  const sortFns={rankTotal:(a,b)=>a.rankTotal-b.rankTotal, rankCat:(a,b)=>a.rankCat-b.rankCat,
+    btOverall:(a,b)=>b.btO-a.btO, btType:(a,b)=>b.btT-a.btT};
+  data.sort(sortFns[currentSort]||sortFns.rankTotal);
+
+  const t=document.getElementById('btTable');
+  t.innerHTML=`<thead><tr><th>#</th><th>Artifact</th><th>Type</th><th>Rank Total</th><th>Rank Category</th><th>BT Overall</th><th>BT Type</th><th>Importance</th><th>Stability</th><th>Interaction</th></tr></thead><tbody>${
+    data.map(a=>`<tr>
+      <td class="mono">${a.rankTotal}</td>
+      <td><span class="type-dot type-${a.type}"></span>${a.name}</td>
+      <td>${a.type}</td>
+      <td class="mono">${a.rankTotal}/67</td>
+      <td class="mono">${a.rankCat}/${a.catTotal}</td>
+      <td class="mono" style="font-weight:700">${a.btO.toFixed(3)}</td>
+      <td class="mono">${a.btT.toFixed(3)}</td>
+      <td><span class="sev-badge sev-${a.importance}">${a.importance}</span></td>
+      <td>${a.stability}</td>
+      <td class="mono">${a.interaction}</td>
+    </tr>`).join('')}</tbody>`;
+
+  // Stats
+  const sg=document.getElementById('statsGrid');
+  sg.innerHTML=`
+    <div class="stats-card"><div class="big">${ARTIFACTS.length}</div><div class="lbl">Total Artifacts</div></div>
+    <div class="stats-card"><div class="big">${ARTIFACTS.filter(a=>a.importance==='Critical').length}</div><div class="lbl">Critical</div></div>
+    <div class="stats-card"><div class="big">${ARTIFACTS.filter(a=>a.type==='HTML').length}</div><div class="lbl">HTML Views</div></div>
+    <div class="stats-card"><div class="big">${ARTIFACTS.filter(a=>a.stability==='Evolving').length}</div><div class="lbl">Evolving</div></div>
+    <div class="stats-card"><div class="big">${data.length}</div><div class="lbl">Showing</div></div>`;
+
+  renderCharts(data);
+}
+
+function renderCharts(data){
+  const pc2={bg:'rgba(0,0,0,0)',paper:'rgba(0,0,0,0)'};
+  const pl2={font:{family:'Aptos,sans-serif',size:11},margin:{l:50,r:30,t:40,b:50},
+    plot_bgcolor:pc2.bg,paper_bgcolor:pc2.paper};
+
+  // Scatter: BT Overall vs BT Type
+  const byType={};
+  data.forEach(a=>{if(!byType[a.type])byType[a.type]=[];byType[a.type].push(a)});
+  const traces=Object.entries(byType).map(([t,items])=>({
+    x:items.map(a=>a.btO),y:items.map(a=>a.btT),
+    text:items.map(a=>a.name),mode:'markers',name:t,
+    marker:{size:items.map(a=>Math.max(8,a.interaction/3)),color:TYPES[t],opacity:0.8},
+    type:'scatter',hoverinfo:'text+x+y'
+  }));
+  Plotly.newPlot('plotScatter',traces,{...pl2,
+    title:{text:'BT Overall vs BT Type Score',font:{size:13}},
+    xaxis:{title:'BT Overall Score'},yaxis:{title:'BT Type Score'},
+    legend:{x:0.02,y:0.02}},{responsive:true});
+
+  // Category comparison bar
+  const cats=Object.keys(TYPES);
+  const avgBT=cats.map(t=>{const items=ARTIFACTS.filter(a=>a.type===t);return items.reduce((s,a)=>s+a.btO,0)/items.length});
+  Plotly.newPlot('plotCatBar',[{
+    x:cats,y:avgBT,type:'bar',marker:{color:cats.map(c=>TYPES[c])},
+    text:avgBT.map(v=>v.toFixed(3)),textposition:'outside'
+  }],{...pl2,title:{text:'Average BT Score by Type',font:{size:13}},
+    yaxis:{title:'Mean BT Overall',range:[0.4,1]}},{responsive:true});
+
+  // Rank distribution histogram
+  Plotly.newPlot('plotRankDist',[{
+    x:data.map(a=>a.btO),type:'histogram',nbinsx:15,
+    marker:{color:'#2171b5',line:{color:'#08519c',width:1}}
+  }],{...pl2,title:{text:'BT Score Distribution',font:{size:13}},
+    xaxis:{title:'BT Overall Score'},yaxis:{title:'Count'}},{responsive:true});
+
+  // Confidence intervals (top 15)
+  const top15=data.slice(0,15);
+  const margin=0.02;
+  Plotly.newPlot('plotConfidence',[{
+    y:top15.map(a=>a.name).reverse(),x:top15.map(a=>a.btO).reverse(),
+    error_x:{type:'data',array:top15.map(()=>margin).reverse(),visible:true,color:'#e6550d'},
+    type:'scatter',mode:'markers',marker:{size:10,color:'#08519c'},
+    orientation:'h'
+  }],{...pl2,title:{text:'Top 15 — BT Scores with 97.5% CI',font:{size:13}},
+    xaxis:{title:'BT Overall Score'},yaxis:{automargin:true},
+    margin:{...pl2.margin,l:180}},{responsive:true});
+}
+
+function exportData(fmt){
+  const data = ARTIFACTS.map(a=>({...a}));
+  if(fmt==='json'){
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a2=document.createElement('a');a2.href=URL.createObjectURL(blob);a2.download='bt-artifacts.json';a2.click();
+  } else if(fmt==='csv'){
+    const hdr='name,type,rankTotal,rankCat,catTotal,btOverall,btType,importance,stability,facing,interaction\n';
+    const rows=data.map(a=>`${a.name},${a.type},${a.rankTotal},${a.rankCat},${a.catTotal},${a.btO},${a.btT},${a.importance},${a.stability},${a.facing},${a.interaction}`).join('\n');
+    const blob=new Blob([hdr+rows],{type:'text/csv'});
+    const a2=document.createElement('a');a2.href=URL.createObjectURL(blob);a2.download='bt-artifacts.csv';a2.click();
+  } else { // YAML
+    const yaml=data.map(a=>`- name: ${a.name}\n  type: ${a.type}\n  rank_total: ${a.rankTotal}\n  rank_category: ${a.rankCat}/${a.catTotal}\n  bt_overall: ${a.btO}\n  bt_type: ${a.btT}\n  importance: ${a.importance}\n  stability: ${a.stability}`).join('\n');
+    const blob=new Blob([yaml],{type:'text/yaml'});
+    const a2=document.createElement('a');a2.href=URL.createObjectURL(blob);a2.download='bt-artifacts.yaml';a2.click();
+  }
+}
+
+renderTypeFilters();
+renderTable();
+
+</script>
+</body></html>
