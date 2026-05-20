@@ -1,8 +1,9 @@
 /* Shared chrome: theme + font selectors, nav highlight */
 (function(){
-  let T, F;
-  try { T = localStorage.getItem('myrrha-theme') || 'light'; } catch(e) { T = 'light'; }
-  try { F = localStorage.getItem('myrrha-font') || 'aptos'; } catch(e) { F = 'aptos'; }
+  function safeGet(key, fallback) {
+    try { return localStorage.getItem(key) || fallback; } catch(err) { return fallback; }
+  }
+  let T = safeGet('myrrha-theme', 'light'), F = safeGet('myrrha-font', 'aptos');
   document.documentElement.setAttribute('data-theme',T);
   document.body && document.body.setAttribute('data-font',F);
   window.MYRRHA={
