@@ -103,6 +103,21 @@ class Phase1Define:
         suffix = file_path.suffix.lower()
         return self.file_type_map.get(suffix, 'unknown')
 
+    def _normalize_execute_results(self, results: Any) -> Dict:
+        """Normalize execute() payload to a dictionary."""
+        if isinstance(results, dict):
+            return results
+
+        if (
+            isinstance(results, tuple)
+            and len(results) == 2
+            and isinstance(results[0], bool)
+            and isinstance(results[1], dict)
+        ):
+            return results[1]
+
+        raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
+
     def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
         """Save scan progress for resumption"""
         progress = {
@@ -533,7 +548,7 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return True, results
+            return True, self._normalize_execute_results(results)
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
