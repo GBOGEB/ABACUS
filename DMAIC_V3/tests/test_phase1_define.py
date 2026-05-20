@@ -94,6 +94,8 @@ class TestPhase1Define:
         assert 'timestamp' in result
         assert 'total_files' in result
         assert 'categorized' in result
+        assert 'code_files' in result
+        assert 'documentation_files' in result
         assert 'python_files' in result
         assert 'markdown_files' in result
     
