@@ -87,14 +87,14 @@ HTML export tools generate interactive dashboards, handover visualizations, and 
 |------|----------|--------|-------------|
 | **Docs HTML Generator** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py) | `docs/*.html` | Converts markdown documentation to styled HTML pages |
 | **Export Docs** | [`scripts/export_docs.py`](scripts/export_docs.py) | Various HTML | Exports documentation summaries for GitHub Pages deployment |
-| **Final Status Dashboard** | [`docs/final_status_v4.4.0.html`](docs/final_status_v4.4.0.html) | Static HTML | v4.4.0 release status with workflow staging indicators |
+| **Final Status Dashboard** | [`docs/final_status_v4.4.0.html`](docs/final_status_v4.4.0.html) | Static HTML | v4.4.0 release status with active workflow indicators |
 | **Deep Analysis Dashboard** | [`docs/deep_analysis_dashboard.html`](docs/deep_analysis_dashboard.html) | Interactive HTML | Repository audit with metrics and health scores |
 | **Handover Book** | [`docs/handover_book.html`](docs/handover_book.html) | Interactive HTML | 12-chapter handover documentation viewer |
 | **Progress Tracker** | [`docs/progress_tracker.html`](docs/progress_tracker.html) | Interactive HTML | **NEW** — Development stages, branch status, and milestones |
 | **DMAIC Metrics** | [`docs/dmaic-metrics.html`](docs/dmaic-metrics.html) | Interactive HTML | DMAIC phase metrics visualization |
 | **Repository Structure** | [`docs/repository_structure.html`](docs/repository_structure.html) | Static HTML | Visual repo structure overview |
 
-> **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](workflows-to-install/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
+> **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](.github/workflows/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
 
 ---
 
@@ -139,11 +139,11 @@ Explicit links between validated tuples, handoff logs, and metadata workflows. S
 | HTML Export Pipeline | ✅ Completed | 2026-05-18 | 8 dashboards live on GitHub Pages |
 | Python Tool Suite | ✅ Completed | 2026-05-18 | 30+ scripts for CI/CD, validation, analysis |
 | Tuple Validation | ✅ Completed | 2026-05-18 | Schema checks, bridge key enforcement |
-| CI/CD Workflows | 🚧 In Progress | 2026-05-18 | 32 active + 5 staged for activation |
+| CI/CD Workflows | ✅ Completed | 2026-05-20 | 37 active in `.github/workflows/` |
 | Progress Tracker | ✅ Completed | 2026-05-18 | Interactive HTML visualization |
 | Bridges & Connections | ✅ Completed | 2026-05-18 | 6 documented bridges with validation |
 | Recursive Tuples | 🚧 In Progress | 2026-05-18 | Self-referencing tuple chains in progress |
-| Branch Protection | ⏳ Pending | — | Awaiting manual activation |
+| Branch Protection | ⏳ Pending | — | Awaiting repository admin action |
 
 > **Interactive view:** See the full [Progress Tracker](docs/progress_tracker.html) for a visual timeline with milestones and branch details.
 
@@ -158,8 +158,8 @@ A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering
 - **v4.4.0:** ✅ Production release live (95% complete, quality score 92.5/100)
 - **V2.2:** ✅ Archived historical baseline
 - **V2.3:** ✅ Historical implementation milestone (superseded by v4.4.0)
-- **Workflows:** ✅ 32 active in `.github/workflows/` + ⏳ 5 staged in `workflows-to-install/`
-- **Next Milestones:** Manual workflow activation, branch protection, and optional documentation polish
+- **Workflows:** ✅ 37 active in `.github/workflows/`
+- **Next Milestones:** Branch protection and optional documentation polish
 
 ### Get Started Now
 1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
@@ -250,9 +250,9 @@ Master_Input/
 ├── code_index.json
 │
 ├── .github/workflows/
-│   └── ...                            ← 32 active workflows
+│   └── ...                            ← 37 active workflows
 ├── workflows-to-install/
-│   └── *.yml                          ← 5 staged workflows awaiting manual activation
+│   └── *.yml                          ← Archived activation bundle retained for traceability
 │
 └── [Legacy files in root - to be refactored]
 ```
@@ -502,8 +502,8 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 **Current Version:** v4.4.0  
 **Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** Release published; 5 workflows staged for manual activation  
-**Last Major Update:** 2026-05-18 (v4.4.0 production release + release documentation)
+**Git Status:** Release published; 37 workflows active, branch protection pending  
+**Last Major Update:** 2026-05-20 (workflow activation + post-merge status sync)
 
 ---
 
@@ -560,10 +560,10 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** ✅ v4.4.0 released / ⏳ workflow activation pending  
-**Current Focus:** Activate staged workflows, apply branch protection, and roll out the cleanup toolkit to sister repos  
-**Next Milestone:** Move the 5 staged workflows into `.github/workflows/` and sustain 95%+ quality
-**Last Updated:** 2026-05-18
+**Project Status:** ✅ v4.4.0 released / ✅ workflow activation complete  
+**Current Focus:** Apply branch protection and roll out the cleanup toolkit to sister repos  
+**Next Milestone:** Sustain 95%+ quality with the active workflow set and complete branch protection
+**Last Updated:** 2026-05-20
 
 ---
 
