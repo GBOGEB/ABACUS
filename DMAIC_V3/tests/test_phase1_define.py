@@ -106,6 +106,13 @@ class TestPhase1Define:
         assert result1['iteration'] == 1
         assert result2['iteration'] == 2
         assert result1['timestamp'] != result2['timestamp']
+
+    def test_run_method_compatibility(self, phase1):
+        success, result = phase1.run(iteration=1)
+
+        assert success is True
+        assert result['phase'] == 'DEFINE'
+        assert result['iteration'] == 1
     
     def test_file_categorization(self, phase1, temp_workspace):
         (temp_workspace / "code.py").write_text("# Python")
