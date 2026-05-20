@@ -1,0 +1,54 @@
+# ── Binary assets (never track raw binaries) ──
+Input_Master/*.pptx
+Input_Master/*.pdf
+Input_Master/*.docx
+Input_Master/*.xlsx
+Input_Master/*.png
+Input_Master/*.jpg
+Input_Master/*.jpeg
+Input_Master/*.gif
+Input_Master/*.svg
+Input_Master/*.mp4
+Input_Master/*.zip
+
+# ── DO track .mock sidecar files ──
+!Input_Master/*.mock
+
+# ── Jekyll build output ──
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Test artifacts ──
+tests/output/
+*.coverage
+htmlcov/
+.pytest_cache/
+
+# ── Logs ──
+*.log

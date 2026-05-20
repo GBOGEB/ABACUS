@@ -1,0 +1,39 @@
+# GBOGEB/ABACUS Code Ownership
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ── Governance Engines ──
+/engines/                       @governance-team
+/engines/RENDER_RULES.md        @architecture-team @governance-team
+/engines/RENDER_LINTER.py       @governance-team
+/engines/WCAG_CONTRAST_CHECKER.py @governance-team @accessibility-team
+/engines/SLIDE_ID_ENFORCER.py   @governance-team
+/engines/verification_hook.py   @governance-team @platform-team
+
+# ── Configuration ──
+/_config.yml                    @platform-team
+/config/                        @platform-team @governance-team
+
+# ── Themes & Layouts ──
+/engines/SEMANTIC_THEME.yaml    @design-team @accessibility-team
+/engines/LAYOUT_CONTRACTS.yaml  @design-team @governance-team
+/_layouts/                      @design-team @platform-team
+/assets/                        @design-team
+
+# ── Data & Lineage ──
+/_data/                         @governance-team
+/engines/LINEAGE_SCHEMA.yaml    @governance-team @architecture-team
+
+# ── Input Assets ──
+/Input_Master/                  @content-team
+
+# ── CI/CD ──
+/.github/                       @platform-team
+/.github/workflows/             @platform-team @governance-team
+
+# ── Documentation ──
+/docs/                          @architecture-team
+/README.md                      @architecture-team
+/CONTRIBUTING.md                @architecture-team @governance-team
+
+# ── Tests ──
+/tests/                         @governance-team @platform-team

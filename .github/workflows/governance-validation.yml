@@ -1,0 +1,124 @@
+name: Governance Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - 'engines/**'
+      - 'config/**'
+      - '_layouts/**'
+      - '_data/**'
+      - 'assets/**'
+
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Render Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Run Render Linter
+        run: |
+          python engines/RENDER_LINTER.py docs/ engines/ --format text
+          echo "Linter exit code: $?"
+
+      - name: Run Render Linter (JSON report)
+        if: always()
+        run: |
+          python engines/RENDER_LINTER.py docs/ engines/ --format json > lint-report.json || true
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-report.json
+
+  contrast:
+    name: WCAG Contrast Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Run WCAG Contrast Checker
+        run: |
+          python engines/WCAG_CONTRAST_CHECKER.py --theme engines/SEMANTIC_THEME.yaml --format text
+
+      - name: Generate contrast report
+        if: always()
+        run: |
+          python engines/WCAG_CONTRAST_CHECKER.py --theme engines/SEMANTIC_THEME.yaml --format json > contrast-report.json || true
+
+      - name: Upload contrast report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contrast-report
+          path: contrast-report.json
+
+  slide-ids:
+    name: Slide ID Enforcement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Run Slide ID Enforcer
+        run: |
+          python engines/SLIDE_ID_ENFORCER.py docs/ --format text
+
+  tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v --cov=engines --cov-report=xml
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml

@@ -1,0 +1,40 @@
+---
+layout: default
+---
+<article class="slide" id="{{ page.slide_id }}" data-slide-id="{{ page.slide_id }}">
+  <header class="slide-header">
+    <h1>{{ page.title }}</h1>
+    {% if page.subtitle %}
+    <p class="slide-subtitle">{{ page.subtitle }}</p>
+    {% endif %}
+  </header>
+
+  <section class="slide-content" role="region" aria-label="Slide content">
+    {{ content }}
+  </section>
+
+  {% if page.speaker_notes %}
+  <aside class="speaker-notes" role="note" aria-label="Speaker notes" hidden>
+    {{ page.speaker_notes | markdownify }}
+  </aside>
+  {% endif %}
+
+  <footer class="slide-meta">
+    <dl class="semantic-card">
+      <dt>Slide ID</dt>
+      <dd><code>{{ page.slide_id }}</code></dd>
+      {% if page.purpose %}
+      <dt>Purpose</dt>
+      <dd>{{ page.purpose }}</dd>
+      {% endif %}
+      {% if page.audience %}
+      <dt>Audience</dt>
+      <dd>{{ page.audience }}</dd>
+      {% endif %}
+      {% if page.routing %}
+      <dt>Routing</dt>
+      <dd>{{ page.routing | join: ", " }}</dd>
+      {% endif %}
+    </dl>
+  </footer>
+</article>

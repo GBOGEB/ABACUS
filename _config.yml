@@ -1,0 +1,82 @@
+# ============================================================================
+# GBOGEB/ABACUS – Jekyll Configuration
+# YAML 1.2 Strict Mode | HTML-First Semantic Rendering
+# ============================================================================
+
+title: "GBOGEB/ABACUS Governance Engine"
+description: >-
+  Deterministic engineering publication compiler with governed rendering,
+  immutable lineage tracking, and WCAG-compliant output generation.
+url: ""
+baseurl: ""
+
+# ── Build Settings ──
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  toc_levels: "1..3"
+
+# ── YAML 1.2 Strict Compliance ──
+strict_front_matter: true
+
+# ── Collections ──
+collections:
+  engines:
+    output: false
+  docs:
+    output: true
+    permalink: /docs/:name/
+
+# ── Data Directory ──
+data_dir: _data
+
+# ── Include/Exclude ──
+include:
+  - _data
+  - _layouts
+  - _includes
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - CONTRIBUTING.md
+  - CHANGELOG.md
+  - LICENSE
+  - tests/
+  - engines/
+  - scripts/
+  - Input_Master/
+  - config/
+  - "*.py"
+  - node_modules/
+  - vendor/
+
+# ── Defaults ──
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+
+# ── Plugins ──
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# ── GBOGEB Custom Settings ──
+gbogeb:
+  version: "1.0.0"
+  governance_mode: strict
+  lineage_tracking: enabled
+  wcag_level: AA
+  contrast_minimum: 4.5
+  yaml_version: "1.2"
+  canonical_source: "GBOGEB/CODEX"
+  processing_engine: "GBOGEB/ABACUS"
