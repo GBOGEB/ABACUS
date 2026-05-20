@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Missed Opportunities</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔍</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.opp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:14px 0}
+.opp{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:border-color .2s}
+.opp:hover{border-color:var(--accent2)}
+.opp h4{margin:0 0 6px;font-size:14px;text-transform:none;letter-spacing:0}
+.opp .ico{font-size:24px;margin-bottom:8px}
+.opp .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.opp .tags span{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--border)}
+.section-icon{font-size:28px;margin-right:8px;vertical-align:middle}
+.impact-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;color:#fff;margin-left:6px}
+.imp-h{background:#C0392B}.imp-m{background:#D85A30}.imp-l{background:#E5A100;color:#333}
+.summary-bar{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0}
+.summary-bar .sb{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 20px;text-align:center;flex:1;min-width:120px}
+.summary-bar .sb .n{font-size:28px;font-weight:700}.summary-bar .sb .l{font-size:11px;color:var(--fg2);text-transform:uppercase}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Missed Opportunities</p>
+<h1>🔍 Missed Opportunities Assessment</h1>
+<p class="muted">What could be included but wasn't — categorized by domain · v0.4.1</p>
+
+<div class="summary-bar">
+  <div class="sb"><div class="n">10</div><div class="l">Technical</div></div>
+  <div class="sb"><div class="n">10</div><div class="l">Usability</div></div>
+  <div class="sb"><div class="n">10</div><div class="l">Integration</div></div>
+  <div class="sb"><div class="n">30</div><div class="l">Total Gaps</div></div>
+</div>
+
+<!-- TECHNICAL -->
+<h2><span class="section-icon">⚙</span>Technical Opportunities</h2>
+<div class="opp-grid">
+  <div class="opp"><div class="ico">🎛</div><h4>1. Dynamic Simulation <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Real-time VFD frequency adjustment simulation with interactive sliders showing mass flow, power, and efficiency response curves</p>
+    <div class="tags"><span>v0.5+</span><span>16-24 hrs</span><span>Plotly</span></div></div>
+  <div class="opp"><div class="ico">📊</div><h4>2. Uncertainty Quantification <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Confidence intervals on all calculations — propagate measurement uncertainty through thermodynamic chain</p>
+    <div class="tags"><span>v0.7</span><span>8-12 hrs</span><span>Monte Carlo</span></div></div>
+  <div class="opp"><div class="ico">🌪</div><h4>3. Sensitivity Analysis <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Tornado charts for key parameters: suction T, discharge P, cooling water T, ambient conditions</p>
+    <div class="tags"><span>v0.5</span><span>4-6 hrs</span><span>Plotly</span></div></div>
+  <div class="opp"><div class="ico">🎯</div><h4>4. Optimization Solver <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Automated minimum utility cost solver — find optimal frequency/config for given mass flow target</p>
+    <div class="tags"><span>v0.9</span><span>16-24 hrs</span><span>SciPy</span></div></div>
+  <div class="opp"><div class="ico">⏱</div><h4>5. Transient Analysis <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Startup, shutdown, trip scenarios — thermal inertia, pressure surge, timeline modeling</p>
+    <div class="tags"><span>v0.6</span><span>12-16 hrs</span><span>Dynamic</span></div></div>
+  <div class="opp"><div class="ico">🔧</div><h4>6. Reliability Analysis <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">MTBF/MTTR calculations, availability analysis, spare parts strategy, N+1 impact quantification</p>
+    <div class="tags"><span>v0.8</span><span>8-12 hrs</span><span>Statistics</span></div></div>
+  <div class="opp"><div class="ico">💰</div><h4>7. TCO Economics <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Total Cost of Ownership comparison: CAPEX, OPEX (energy, maintenance, spares) over 25-year lifecycle</p>
+    <div class="tags"><span>v1.2</span><span>12-20 hrs</span><span>Finance</span></div></div>
+  <div class="opp"><div class="ico">🌍</div><h4>8. Environmental Impact <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">CO₂ footprint per config, efficiency vs emissions trade-off, Belgian grid emission factor</p>
+    <div class="tags"><span>v1.3</span><span>4-8 hrs</span><span>ESG</span></div></div>
+  <div class="opp"><div class="ico">🛡</div><h4>9. Safety Integration <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">HAZOP integration, pressure relief sizing, SIL classification, trip matrix</p>
+    <div class="tags"><span>v1.0</span><span>16-24 hrs</span><span>Safety</span></div></div>
+  <div class="opp"><div class="ico">📜</div><h4>10. Standards Compliance <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Cross-check against ASME, ISO 1217, PED 2014/68/EU, EN 13445, ATEX (if applicable)</p>
+    <div class="tags"><span>v0.8</span><span>8-12 hrs</span><span>Compliance</span></div></div>
+</div>
+
+<!-- USABILITY -->
+<h2><span class="section-icon">🖥</span>Usability Opportunities</h2>
+<div class="opp-grid">
+  <div class="opp"><div class="ico">🌓</div><h4>1. Dark/Light Theme Auto <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Auto-detect OS preference via prefers-color-scheme media query — already have manual toggle</p>
+    <div class="tags"><span>v0.4.2</span><span>15 min</span><span>CSS</span></div></div>
+  <div class="opp"><div class="ico">🖨</div><h4>2. Print Stylesheet <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">@media print rules for clean PDF generation — hide nav, reflow charts, page breaks</p>
+    <div class="tags"><span>v0.4.3</span><span>1 hr</span><span>CSS</span></div></div>
+  <div class="opp"><div class="ico">⌨</div><h4>3. Keyboard Shortcuts <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Power-user navigation: Ctrl+1-9 for views, / for search, ? for help overlay</p>
+    <div class="tags"><span>v0.5</span><span>2 hrs</span><span>JS</span></div></div>
+  <div class="opp"><div class="ico">↩</div><h4>4. Undo/Redo in Editor <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Command pattern for slide-editor.html — Ctrl+Z/Y with state history stack</p>
+    <div class="tags"><span>v0.5</span><span>3 hrs</span><span>JS</span></div></div>
+  <div class="opp"><div class="ico">💾</div><h4>5. Auto-save <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Periodic localStorage save in editor with "unsaved changes" indicator and recovery</p>
+    <div class="tags"><span>v0.4.3</span><span>1 hr</span><span>JS</span></div></div>
+  <div class="opp"><div class="ico">💬</div><h4>6. Inline Comments <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Annotation system for slides/reports — select text → add comment → resolve workflow</p>
+    <div class="tags"><span>v0.6</span><span>8-12 hrs</span><span>Collaboration</span></div></div>
+  <div class="opp"><div class="ico">📝</div><h4>7. Change Tracking <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Visual diff between versions — highlight additions/deletions/modifications</p>
+    <div class="tags"><span>v0.6</span><span>6-10 hrs</span><span>Diff</span></div></div>
+  <div class="opp"><div class="ico">📤</div><h4>8. Export Templates <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Custom report formats — select sections, add cover page, choose branding</p>
+    <div class="tags"><span>v0.8</span><span>4-8 hrs</span><span>Template</span></div></div>
+  <div class="opp"><div class="ico">🔌</div><h4>9. RESTful API <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Programmatic access to data.json — GET/PUT endpoints for external tool integration</p>
+    <div class="tags"><span>v1.0</span><span>8-16 hrs</span><span>Backend</span></div></div>
+  <div class="opp"><div class="ico">🔔</div><h4>10. Webhooks <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Notify external services on data.json updates — trigger recalc, send alerts</p>
+    <div class="tags"><span>v1.0</span><span>4-8 hrs</span><span>Backend</span></div></div>
+</div>
+
+<!-- INTEGRATION -->
+<h2><span class="section-icon">🔗</span>Integration Opportunities</h2>
+<div class="opp-grid">
+  <div class="opp"><div class="ico">📦</div><h4>1. Vendor API Feeds <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Auto-fetch latest datasheets from Kaeser portal, Atlas Copco selector tools</p>
+    <div class="tags"><span>v0.8</span><span>8-16 hrs</span><span>API</span></div></div>
+  <div class="opp"><div class="ico">🏭</div><h4>2. ERP Integration <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Link to procurement (SAP), maintenance scheduling (Maximo), spare parts inventory</p>
+    <div class="tags"><span>v1.2</span><span>20-40 hrs</span><span>SAP</span></div></div>
+  <div class="opp"><div class="ico">🏗</div><h4>3. BIM/CAD Integration <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">3D model embedding (IFC viewer), equipment layout visualization, clash detection</p>
+    <div class="tags"><span>v1.1</span><span>24-40 hrs</span><span>3D</span></div></div>
+  <div class="opp"><div class="ico">💨</div><h4>4. CFD Results Viewer <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Embed flow visualization from OpenFOAM/ANSYS — temperature fields, velocity profiles</p>
+    <div class="tags"><span>v1.3</span><span>16-24 hrs</span><span>CFD</span></div></div>
+  <div class="opp"><div class="ico">📡</div><h4>5. SCADA Live Data <span class="impact-badge imp-h">HIGH</span></h4>
+    <p class="muted">Real-time operational data feed — compare design vs actual performance live</p>
+    <div class="tags"><span>v2.0</span><span>40-80 hrs</span><span>OPC-UA</span></div></div>
+  <div class="opp"><div class="ico">📂</div><h4>6. Document Management <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Link to full specs in SharePoint/EDMS — drawing register, P&ID references</p>
+    <div class="tags"><span>v0.8</span><span>4-8 hrs</span><span>DMS</span></div></div>
+  <div class="opp"><div class="ico">📧</div><h4>7. Email Alerts <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Critical threshold notifications — data staleness, vendor response overdue, review due</p>
+    <div class="tags"><span>v1.0</span><span>4-8 hrs</span><span>SMTP</span></div></div>
+  <div class="opp"><div class="ico">💬</div><h4>8. Slack/Teams Bot <span class="impact-badge imp-l">LOW</span></h4>
+    <p class="muted">Collaboration bot — query data, get status updates, approve changes from chat</p>
+    <div class="tags"><span>v1.2</span><span>8-16 hrs</span><span>Bot</span></div></div>
+  <div class="opp"><div class="ico">📓</div><h4>9. Jupyter Notebooks <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">Interactive calculation notebooks — live Python calcs with data.json, peer review</p>
+    <div class="tags"><span>v0.6</span><span>4-8 hrs</span><span>Python</span></div></div>
+  <div class="opp"><div class="ico">🐛</div><h4>10. Issue Tracker <span class="impact-badge imp-m">MED</span></h4>
+    <p class="muted">GitHub/GitLab Issues integration — link TODOs to tickets, auto-close on merge</p>
+    <div class="tags"><span>v0.7</span><span>4-8 hrs</span><span>DevOps</span></div></div>
+</div>
+
+<div class="card" style="margin-top:24px">
+<h3 style="margin-top:0">Priority Matrix Summary</h3>
+<table>
+<thead><tr><th>Category</th><th>High Impact</th><th>Medium Impact</th><th>Low Impact</th><th>Total Effort (hrs)</th></tr></thead>
+<tbody>
+<tr><td><b>Technical</b></td><td>4 items</td><td>4 items</td><td>2 items</td><td>110–170</td></tr>
+<tr><td><b>Usability</b></td><td>1 item</td><td>5 items</td><td>4 items</td><td>38–72</td></tr>
+<tr><td><b>Integration</b></td><td>3 items</td><td>5 items</td><td>2 items</td><td>133–228</td></tr>
+<tr style="font-weight:600"><td>Total</td><td>8</td><td>14</td><td>8</td><td>281–470</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">Navigation</h3>
+<div class="gridq">
+<a class="card" href="review-dmaic.html"><h4 style="margin-top:0">📋 DMAIC Dashboard</h4></a>
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4></a>
+</div>
+</div>
+</div>
+</body></html>
