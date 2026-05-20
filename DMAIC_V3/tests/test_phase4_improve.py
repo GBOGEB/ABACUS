@@ -82,10 +82,17 @@ class TestPhase4Improve:
         success, result = phase4.execute(iteration=1)
         
         assert success is True
+        assert isinstance(result, dict)
         assert result['phase'] == 'IMPROVE'
         assert result['iteration'] == 1
         assert 'timestamp' in result
         assert 'improvements' in result
+
+    def test_execute_returns_result_dict(self, phase4, phase3_output):
+        success, result = phase4.execute(iteration=1)
+
+        assert isinstance(success, bool)
+        assert isinstance(result, dict)
     
     def test_generate_improvements(self, phase4, phase3_output):
         success, result = phase4.execute(iteration=1)
