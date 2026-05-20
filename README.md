@@ -207,3 +207,33 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 ## License
 
 Proprietary — GBOGEB Governance Board
+
+
+
+---
+
+## 🔌 MCP Server Integration
+
+This repository is connected to the **GBOGEB MCP Server** — a [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI assistants unified access to the full GBOGEB knowledge topology, engineering data, and governance engines across GBA and GBC.
+
+### Quick Setup
+
+```bash
+cd /home/ubuntu/gbogeb_mcp_server
+pip install -e ".[dev]"
+gbogeb-mcp  # starts the MCP server (stdio transport)
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|---|---|
+| `get_topology()` | Full merged knowledge graph (20 GBA + 7 GBC nodes) |
+| `query_node(id)` | Node details with edges and file preview |
+| `search_engineering_data(q)` | Full-text search across YAML/JSON data |
+| `get_asset_lineage(id)` | SHA256 provenance for tracked assets |
+| `validate_physics(data)` | He-4 thermodynamic validation via HeliumPropertyEngine |
+| `list_assets()` | All tracked SVG/binary assets |
+| `get_test_status()` | Live pytest results for both repos |
+
+See [`gbogeb_mcp_server/README.md`](/home/ubuntu/gbogeb_mcp_server/README.md) for full documentation.
