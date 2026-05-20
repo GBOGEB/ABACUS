@@ -41,7 +41,7 @@
       const here=location.pathname.split('/').pop()||'index.html';
       bar.innerHTML=`
         <div class="brand">⚙ MYRRHA · WCS Handover</div>
-        <span class="ver">v0.4.5</span>
+        <span class="ver">v0.4.7</span>
         <nav>${this.nav.map(([h,n])=>`<a href="${h}" class="${h===here?'active':''}">${n}</a>`).join('')}</nav>
         <div class="controls">
           <select id="themeSel" title="Theme">
