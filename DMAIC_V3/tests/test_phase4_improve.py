@@ -89,7 +89,12 @@ class TestPhase4Improve:
         assert 'improvements' in result
 
     def test_execute_returns_bool_and_dict(self, phase4, phase3_output):
-        success, result = phase4.execute(iteration=1)
+        execution_result = phase4.execute(iteration=1)
+
+        assert isinstance(execution_result, tuple)
+        assert len(execution_result) == 2
+
+        success, result = execution_result
 
         assert isinstance(success, bool)
         assert isinstance(result, dict)
