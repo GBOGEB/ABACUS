@@ -1,7 +1,7 @@
 # Workflow Installation Status
 
-**Last Updated:** 2026-05-18  
-**Installed By:** PR #397 (staged for manual activation)
+**Last Updated:** 2026-05-20  
+**Installed By:** Post-merge activation sync
 
 ---
 
@@ -9,31 +9,31 @@
 
 | # | Workflow | File | Status | Updated |
 |---|---------|------|--------|-----------|
-| 1 | Dashboard Health Check | `dashboard-health.yml` | ⏳ STAGED | 2026-05-18 |
-| 2 | Deploy Documentation | `deploy-docs.yml` | ⏳ STAGED | 2026-05-18 |
-| 3 | DMAIC Commit Metrics | `dmaic-commit-metrics.yml` | ⏳ STAGED | 2026-05-18 |
-| 4 | Release & Package | `release.yml` | ⏳ STAGED | 2026-05-18 |
-| 5 | Update Documentation | `update-docs.yml` | ⏳ STAGED | 2026-05-18 |
+| 1 | Dashboard Health Check | `dashboard-health.yml` | ✅ ACTIVE | 2026-05-20 |
+| 2 | Deploy Documentation | `deploy-docs.yml` | ✅ ACTIVE | 2026-05-20 |
+| 3 | DMAIC Commit Metrics | `dmaic-commit-metrics.yml` | ✅ ACTIVE | 2026-05-20 |
+| 4 | Release & Package | `release.yml` | ✅ ACTIVE | 2026-05-20 |
+| 5 | Update Documentation | `update-docs.yml` | ✅ ACTIVE | 2026-05-20 |
 
 ---
 
 ## Installation Details
 
-All 5 workflow files have been copied from `docs/workflows/` to `workflows-to-install/`. They still need a manual move into `.github/workflows/` before GitHub Actions can discover and execute them.
+All 5 workflow files are now present in `.github/workflows/`, so GitHub Actions can discover and execute them. The `docs/workflows/` copies remain the reference templates, and `workflows-to-install/` is retained only as a historical activation bundle.
 
-### Source → Staging
+### Source → Active
 
 ```
-docs/workflows/dashboard-health.yml      → workflows-to-install/dashboard-health.yml
-docs/workflows/deploy-docs.yml           → workflows-to-install/deploy-docs.yml
-docs/workflows/dmaic-commit-metrics.yml  → workflows-to-install/dmaic-commit-metrics.yml
-docs/workflows/release.yml               → workflows-to-install/release.yml
-docs/workflows/update-docs.yml           → workflows-to-install/update-docs.yml
+docs/workflows/dashboard-health.yml      → .github/workflows/dashboard-health.yml
+docs/workflows/deploy-docs.yml           → .github/workflows/deploy-docs.yml
+docs/workflows/dmaic-commit-metrics.yml  → .github/workflows/dmaic-commit-metrics.yml
+docs/workflows/release.yml               → .github/workflows/release.yml
+docs/workflows/update-docs.yml           → .github/workflows/update-docs.yml
 ```
 
-### Originals Preserved
+### Reference Copies Preserved
 
-The original files in `docs/workflows/` are kept as reference templates. The staged copies in `workflows-to-install/` are ready for a maintainer to move into `.github/workflows/`.
+The original files in `docs/workflows/` are kept as reference templates. The historical copies in `workflows-to-install/` are preserved for traceability, while `.github/workflows/` is the live execution location.
 
 ---
 
@@ -47,15 +47,14 @@ The original files in `docs/workflows/` are kept as reference templates. The sta
 
 ---
 
-## Manual Activation
+## Activation Command Used
 
 ```bash
 cp workflows-to-install/*.yml .github/workflows/
-rm -rf workflows-to-install/
 git add -A && git commit -m "ci: activate workflows"
 ```
 
-| Workflow | Activation After Move | First Run |
+| Workflow | Active Trigger | First Run |
 |----------|-----------------------|-----------|
 | `dashboard-health.yml` | Automatic (cron: daily 06:00 UTC) + manual | Next 06:00 UTC or manual dispatch |
 | `deploy-docs.yml` | Automatic on push to `main` (docs/**) | Next push modifying docs/ |
