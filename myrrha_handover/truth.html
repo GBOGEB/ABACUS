@@ -142,8 +142,22 @@ function paint() {
     else el.textContent = VALUES[k];
   });
   const tbody = document.querySelector("#log tbody");
-  tbody.innerHTML = '<tr><td>v0.4</td><td>2026-05-10</td><td>system</td><td>(init)</td><td>— initial SSoT —</td></tr>'
-    + LOG.map(e => `<tr><td>${e.ver}</td><td>${e.ts}</td><td>${e.user}</td><td>${e.field}</td><td><code>${e.old} → ${e.neu}</code></td></tr>`).join("");
+  tbody.textContent = "";
+  const initRow = tbody.insertRow();
+  ["v0.4","2026-05-10","system","(init)","— initial SSoT —"].forEach((text, i) => {
+    const td = initRow.insertCell(i);
+    td.textContent = text;
+  });
+  LOG.forEach(e => {
+    const row = tbody.insertRow();
+    [e.ver, e.ts, e.user, e.field].forEach((text, i) => {
+      row.insertCell(i).textContent = text;
+    });
+    const td = row.insertCell(4);
+    const code = document.createElement("code");
+    code.textContent = e.old + " \u2192 " + e.neu;
+    td.appendChild(code);
+  });
 }
 
 document.getElementById("toggle").onclick = () => {
