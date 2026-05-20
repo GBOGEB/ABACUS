@@ -54,6 +54,29 @@
 
 <!-- If applicable, add screenshots or command output to demonstrate changes -->
 
+## 👁 Human File Review
+
+<!-- Use the interactive tracker: https://gbogeb.github.io/ABACUS/file_review_tracker.html -->
+<!-- Add files reviewed for this PR, tick each checkbox, then paste the exported table here. -->
+
+### Files Reviewed
+
+| File | Type | Confirmed by Human | Review Date (UTC) |
+|------|----- |--------------------|-------------------|
+| <!-- e.g. `.github/workflows/ci.yml` --> | <!-- Workflow/Script/Python/Docs/Config --> | - [ ] Confirmed | <!-- YYYY-MM-DD HH:MM --> |
+
+> 💡 Open the [Human File Review Tracker](https://gbogeb.github.io/ABACUS/file_review_tracker.html),
+> add the files changed in this PR, tick ✅ each one after reviewing, then click **Export for PR**
+> and paste the generated table above.
+
+### Review Confirmation
+
+- [ ] I have opened and reviewed each file listed above
+- [ ] Each review has been date-stamped in the tracker
+- [ ] No unintended changes were included
+
+---
+
 ## Additional Notes
 
 <!-- Any additional context, deployment considerations, or follow-up items -->
