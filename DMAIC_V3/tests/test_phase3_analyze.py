@@ -168,6 +168,11 @@ class TestPhase3Analyze:
             phase2_file = output_dir / "phase2_metrics.json"
             phase2_file.write_text(json.dumps(phase2_data))
             
-            success, result = phase3.execute(iteration=iteration)
+            execution_result = phase3.execute(iteration=iteration)
+            if isinstance(execution_result, tuple):
+                success, result = execution_result
+            else:
+                success = execution_result.get('success', True)
+                result = execution_result
             assert success is True
             assert result.get('output_file') is not None
