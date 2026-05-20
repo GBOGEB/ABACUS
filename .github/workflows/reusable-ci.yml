@@ -19,23 +19,50 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Bootstrap
         run: |
-          if [ -f Makefile ]; then make bootstrap; else echo "DELTA_1 bootstrap fallback"; fi
+          if make -n bootstrap &>/dev/null 2>&1; then
+            make bootstrap
+          else
+            pip install -r DMAIC_V3/requirements.txt
+          fi
 
       - name: Lint
         run: |
-          if [ -f Makefile ]; then make lint; else echo "DELTA_1 lint fallback"; fi
+          if make -n lint &>/dev/null 2>&1; then
+            make lint
+          else
+            pip install flake8
+            flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120
+          fi
 
       - name: Test
         run: |
-          if [ -f Makefile ]; then make test; else echo "DELTA_1 test fallback"; fi
+          if make -n test &>/dev/null 2>&1; then
+            make test
+          else
+            pip install pytest
+            python -m pytest DMAIC_V3/tests -q
+          fi
 
       - name: Build
         run: |
-          if [ -f Makefile ]; then make build; else echo "DELTA_1 build fallback"; fi
+          if make -n build &>/dev/null 2>&1; then
+            make build
+          else
+            echo "DELTA_1 build: no build target defined, skipping"
+          fi
 
       - name: Package
         if: inputs.run_package
         run: |
-          if [ -f Makefile ]; then make package; else echo "DELTA_1 package fallback"; fi
+          if make -n package &>/dev/null 2>&1; then
+            make package
+          else
+            make docs-zip
+          fi

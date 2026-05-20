@@ -10,11 +10,11 @@ autonomous_remediation_contract:
     - security_validation_failure
 
   remediation_actions:
-    detect
-    validate
-    reconcile
-    remediate
-    certify
+    - detect
+    - validate
+    - reconcile
+    - remediate
+    - certify
 
   remediation_requirements:
     governance_alignment_required: true
