@@ -1,0 +1,241 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   GBOGEB/ABACUS — Hub Landing Page Theme
+   Dark theme matching the Multi-View Engineering Tool focus mode
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --hub-bg: #0f172a;
+  --hub-surface: #1e293b;
+  --hub-surface-raised: #263347;
+  --hub-border: #334155;
+  --hub-text: #f1f5f9;
+  --hub-text-muted: #94a3b8;
+  --hub-primary: #60a5fa;
+  --hub-accent: #34d399;
+  --hub-purple: #a78bfa;
+  --hub-warning: #fbbf24;
+  --hub-error: #f87171;
+  --hub-cyan: #22d3ee;
+  --hub-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --hub-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  --hub-radius: 10px;
+  --hub-radius-sm: 6px;
+  --hub-shadow: 0 4px 16px rgba(0,0,0,.35);
+  --hub-shadow-hover: 0 8px 32px rgba(0,0,0,.45);
+  --hub-transition: 200ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--hub-font);
+  background: var(--hub-bg);
+  color: var(--hub-text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a { color: var(--hub-primary); text-decoration: none; transition: color var(--hub-transition); }
+a:hover { color: var(--hub-accent); }
+
+/* ─── Header ──────────────────────────────────────────────────────────── */
+.hub-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--hub-surface);
+  border-bottom: 1px solid var(--hub-border);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.hub-header h1 {
+  font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; gap: 10px;
+}
+.hub-header h1 .logo-icon { color: var(--hub-primary); font-size: 22px; }
+.hub-header h1 .repo-tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  background: var(--hub-primary); color: var(--hub-bg); font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.hub-nav { display: flex; gap: 6px; }
+.hub-nav a {
+  padding: 6px 14px; font-size: 13px; font-weight: 600;
+  border-radius: var(--hub-radius-sm);
+  color: var(--hub-text-muted);
+  transition: all var(--hub-transition);
+}
+.hub-nav a:hover { background: var(--hub-surface-raised); color: var(--hub-text); }
+
+/* ─── Hero / Download Banner ─────────────────────────────────────────── */
+.hero {
+  text-align: center; padding: 56px 32px 40px;
+  background: linear-gradient(135deg, var(--hub-surface) 0%, var(--hub-bg) 100%);
+  border-bottom: 1px solid var(--hub-border);
+}
+.hero h2 {
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, var(--hub-primary), var(--hub-purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 12px;
+}
+.hero p { font-size: 16px; color: var(--hub-text-muted); max-width: 640px; margin: 0 auto 24px; }
+.hero .download-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; font-size: 15px; font-weight: 700;
+  background: var(--hub-primary); color: var(--hub-bg);
+  border: none; border-radius: var(--hub-radius); cursor: pointer;
+  transition: all var(--hub-transition);
+  text-decoration: none;
+}
+.hero .download-btn:hover {
+  background: var(--hub-accent); color: var(--hub-bg);
+  transform: translateY(-2px); box-shadow: var(--hub-shadow-hover);
+}
+.hero .download-btn i { font-size: 18px; }
+.hero .download-meta {
+  font-size: 12px; color: var(--hub-text-muted); margin-top: 8px;
+}
+
+/* ─── Section Layout ──────────────────────────────────────────────────── */
+.section {
+  max-width: 1100px; margin: 0 auto;
+  padding: 40px 32px;
+}
+.section-title {
+  font-size: 22px; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title i { color: var(--hub-primary); }
+.section-subtitle {
+  font-size: 14px; color: var(--hub-text-muted); margin-bottom: 24px;
+}
+
+/* ─── Node Cards Grid (Topology) ──────────────────────────────────────── */
+.node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.node-card {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  padding: 20px;
+  transition: all var(--hub-transition);
+  position: relative;
+  overflow: hidden;
+}
+.node-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--node-color, var(--hub-primary));
+  border-radius: 4px 0 0 4px;
+}
+.node-card:hover {
+  border-color: var(--node-color, var(--hub-primary));
+  box-shadow: var(--hub-shadow);
+  transform: translateY(-2px);
+}
+.node-card .card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.node-card .card-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--hub-radius-sm);
+  background: color-mix(in srgb, var(--node-color, var(--hub-primary)) 15%, transparent);
+  color: var(--node-color, var(--hub-primary));
+  font-size: 16px;
+}
+.node-card .card-id {
+  font-family: var(--hub-mono); font-size: 11px;
+  color: var(--hub-text-muted); font-weight: 600;
+}
+.node-card .card-title {
+  font-size: 15px; font-weight: 700; color: var(--hub-text);
+}
+.node-card .card-desc {
+  font-size: 13px; color: var(--hub-text-muted); line-height: 1.5;
+  margin-bottom: 10px;
+}
+.node-card .card-path {
+  font-family: var(--hub-mono); font-size: 11px;
+  color: var(--hub-cyan); background: var(--hub-surface-raised);
+  padding: 3px 8px; border-radius: 3px; display: inline-block;
+}
+.node-card .card-tags {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;
+}
+.node-card .card-tag {
+  font-size: 10px; padding: 2px 7px; border-radius: 3px;
+  background: var(--hub-surface-raised); color: var(--hub-text-muted);
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.node-card .card-tag.repo-gba { background: #1e3a5f; color: var(--hub-primary); }
+.node-card .card-tag.repo-gbc { background: #3b1f5e; color: var(--hub-purple); }
+
+/* ─── Quick Links Grid ────────────────────────────────────────────────── */
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.link-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius-sm);
+  padding: 14px 18px;
+  transition: all var(--hub-transition);
+  text-decoration: none; color: var(--hub-text);
+}
+.link-card:hover {
+  border-color: var(--hub-primary);
+  background: var(--hub-surface-raised);
+  transform: translateY(-1px);
+}
+.link-card i {
+  font-size: 20px; color: var(--hub-primary);
+  flex-shrink: 0; width: 24px; text-align: center;
+}
+.link-card .link-label { font-size: 14px; font-weight: 600; }
+.link-card .link-sub { font-size: 11px; color: var(--hub-text-muted); }
+
+/* ─── Repo Architecture Diagram ───────────────────────────────────────── */
+.arch-diagram {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  padding: 24px;
+  overflow-x: auto;
+}
+.arch-diagram pre {
+  font-family: var(--hub-mono); font-size: 12px;
+  line-height: 1.5; color: var(--hub-text-muted);
+  white-space: pre; margin: 0;
+}
+
+/* ─── Footer ──────────────────────────────────────────────────────────── */
+.hub-footer {
+  text-align: center;
+  padding: 24px 32px;
+  border-top: 1px solid var(--hub-border);
+  font-size: 12px; color: var(--hub-text-muted);
+}
+.hub-footer .footer-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 8px; }
+.hub-footer .footer-links a { color: var(--hub-text-muted); font-weight: 600; }
+.hub-footer .footer-links a:hover { color: var(--hub-primary); }
+
+/* ─── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hub-header { flex-direction: column; gap: 12px; padding: 12px 16px; }
+  .hub-nav { flex-wrap: wrap; justify-content: center; }
+  .hero { padding: 32px 16px 28px; }
+  .hero h2 { font-size: 24px; }
+  .section { padding: 28px 16px; }
+  .node-grid { grid-template-columns: 1fr; }
+  .link-grid { grid-template-columns: 1fr; }
+}

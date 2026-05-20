@@ -1,0 +1,249 @@
+# ============================================================================
+# STAKEHOLDER REGISTRY — Communication Routes
+# GBOGEB/ABACUS Governance Configuration
+# ============================================================================
+# Defines stakeholder groups, their preferred output formats, delivery
+# channels, and content routing rules.  Used by the RENDER_RULES engine
+# and CI/CD pipeline to generate audience-appropriate deliverables.
+# ============================================================================
+
+schema_version: "1.0.0"
+last_updated: "2026-05-20T10:00:00Z"
+
+# ---------------------------------------------------------------------------
+# Stakeholder Groups
+# ---------------------------------------------------------------------------
+stakeholders:
+
+  # ── Engineering Teams ────────────────────────────────────────────────
+  - group_id: "engineering"
+    label: "Engineering Teams"
+    routing_tag: "[DOW]"
+    description: >-
+      Technical staff (cryogenics, RF, controls, mechanical) who need
+      detailed specifications, raw data, and executable code artefacts.
+    members:
+      - role: "Cryogenic Engineer"
+        contact: "cryo-team@facility.org"
+      - role: "RF Engineer"
+        contact: "rf-team@facility.org"
+      - role: "Controls Engineer"
+        contact: "controls-team@facility.org"
+      - role: "Mechanical Engineer"
+        contact: "mech-team@facility.org"
+
+    preferred_formats:
+      primary: "plaintext"
+      secondary: "code"
+      all:
+        - format: "yaml"
+          description: "SSOT configuration data"
+          file_pattern: "*.yaml"
+          priority: 1
+        - format: "python"
+          description: "Executable validation scripts"
+          file_pattern: "*.py"
+          priority: 2
+        - format: "markdown"
+          description: "Technical reports with equations"
+          file_pattern: "*.md"
+          priority: 3
+        - format: "html_interactive"
+          description: "HMI dashboards with Plotly graphs"
+          file_pattern: "index.html"
+          priority: 4
+
+    delivery_channels:
+      - channel: "git_repository"
+        description: "Direct access to source files in GBA repo"
+        auto_notify: false
+      - channel: "workspace_bundle"
+        description: "workspace_bundle.tar.gz via CI/CD artifacts"
+        auto_notify: true
+        trigger: "on_release"
+      - channel: "email"
+        description: "Notification with links to latest bundle"
+        auto_notify: true
+        trigger: "on_release"
+
+    content_rules:
+      detail_level: "full"
+      include_raw_data: true
+      include_equations: true
+      include_code_blocks: true
+      include_svg_diagrams: true
+      max_pages: null  # no limit
+
+  # ── Project Leadership ──────────────────────────────────────────────
+  - group_id: "leadership"
+    label: "Project Leadership"
+    routing_tag: "[KEB]"
+    description: >-
+      Project managers, division heads, and programme directors who need
+      high-level status summaries, trend dashboards, and presentation decks.
+    members:
+      - role: "Project Manager"
+        contact: "pm@facility.org"
+      - role: "Division Head – Accelerator"
+        contact: "div-accel@facility.org"
+      - role: "Programme Director"
+        contact: "director@facility.org"
+
+    preferred_formats:
+      primary: "slides"
+      secondary: "dashboard"
+      all:
+        - format: "marp_presentation"
+          description: "6-slide design review deck"
+          file_pattern: "*.marp.md"
+          priority: 1
+        - format: "html_dashboard"
+          description: "HMI dashboard with KPI cards"
+          file_pattern: "index.html"
+          priority: 2
+        - format: "pdf_summary"
+          description: "Executive summary PDF (≤4 pages)"
+          file_pattern: "*_summary.pdf"
+          priority: 3
+        - format: "email_digest"
+          description: "Weekly status digest with key metrics"
+          priority: 4
+
+    delivery_channels:
+      - channel: "email"
+        description: "Formatted summary with embedded charts"
+        auto_notify: true
+        trigger: "weekly"
+      - channel: "web_hub"
+        description: "Hub landing page with live dashboard links"
+        auto_notify: false
+      - channel: "teams_channel"
+        description: "Microsoft Teams notification"
+        auto_notify: true
+        trigger: "on_milestone"
+
+    content_rules:
+      detail_level: "summary"
+      include_raw_data: false
+      include_equations: false
+      include_code_blocks: false
+      include_svg_diagrams: true
+      include_trend_charts: true
+      max_pages: 6
+
+  # ── Review Boards ───────────────────────────────────────────────────
+  - group_id: "review_board"
+    label: "Review Boards"
+    routing_tag: "[ALL]"
+    description: >-
+      Technical review committees, safety boards, and external auditors
+      who require formal, versioned, traceable PDF documents with full
+      lineage records and governance compliance evidence.
+    members:
+      - role: "Technical Review Chair"
+        contact: "trc@facility.org"
+      - role: "Safety Advisory Board"
+        contact: "safety@facility.org"
+      - role: "External Auditor"
+        contact: "audit@external.org"
+      - role: "Quality Assurance"
+        contact: "qa@facility.org"
+
+    preferred_formats:
+      primary: "pdf"
+      secondary: "markdown"
+      all:
+        - format: "pdf_formal"
+          description: "Full technical design report with cover page, TOC, signatures"
+          file_pattern: "*.pdf"
+          priority: 1
+        - format: "markdown_traceable"
+          description: "Markdown with embedded lineage hashes"
+          file_pattern: "*.md"
+          priority: 2
+        - format: "yaml_evidence"
+          description: "Governance validation results (JSON/YAML)"
+          file_pattern: "*_validation.json"
+          priority: 3
+
+    delivery_channels:
+      - channel: "document_management"
+        description: "Formal DMS submission with revision control"
+        auto_notify: false
+      - channel: "email_encrypted"
+        description: "Encrypted email with PDF attachment"
+        auto_notify: true
+        trigger: "on_review_request"
+      - channel: "sharepoint"
+        description: "SharePoint document library"
+        auto_notify: false
+
+    content_rules:
+      detail_level: "full"
+      include_raw_data: true
+      include_equations: true
+      include_code_blocks: false
+      include_svg_diagrams: true
+      include_lineage_records: true
+      include_governance_evidence: true
+      require_signatures: true
+      require_revision_history: true
+      max_pages: null  # no limit
+
+# ---------------------------------------------------------------------------
+# Format Mapping — Maps routing tags to output generators
+# ---------------------------------------------------------------------------
+format_routing:
+  "[DOW]":
+    generator: "workspace_bundle"
+    includes:
+      - "engineering_data.yaml"
+      - "physics_validator.py"
+      - "index.html"
+      - "report.md"
+    theme: "userstyle"
+
+  "[KEB]":
+    generator: "presentation_builder"
+    includes:
+      - "marp_presentation"
+      - "hmi_dashboard"
+      - "summary_pdf"
+    theme: "corporate"
+
+  "[ALL]":
+    generator: "formal_report"
+    includes:
+      - "report.pdf"
+      - "report.md"
+      - "validation_results.json"
+      - "lineage_manifest.json"
+    theme: "userstyle"
+
+# ---------------------------------------------------------------------------
+# Notification Templates
+# ---------------------------------------------------------------------------
+notifications:
+  on_release:
+    subject: "GBOGEB/ABACUS — New Release Available"
+    body_template: |
+      New workspace bundle generated for {{ facility_name }}.
+      Version: {{ schema_version }}
+      Download: {{ bundle_url }}
+      Hub: {{ hub_url }}
+
+  on_review_request:
+    subject: "GBOGEB/ABACUS — Review Requested: {{ document_number }}"
+    body_template: |
+      Document {{ document_number }} Rev {{ revision }} is ready for review.
+      Report: {{ report_url }}
+      Governance status: {{ governance_status }}
+      Lineage verified: {{ lineage_status }}
+
+  weekly:
+    subject: "GBOGEB/ABACUS — Weekly Status Digest"
+    body_template: |
+      Project status for week {{ week_number }}:
+      - Heat load budget: {{ heat_load_status }}
+      - Mass balance: {{ mass_balance_status }}
+      - Open actions: {{ open_actions_count }}
