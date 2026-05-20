@@ -11,6 +11,7 @@ function showOfflineWarning(){
   const warning=document.getElementById('offline-warning');
   if(warning){
     warning.hidden=false;
+    warning.focus();
     return;
   }
   offlineWarningPending=true;
@@ -18,11 +19,11 @@ function showOfflineWarning(){
 document.addEventListener('DOMContentLoaded',function(){
   if(offlineWarningPending){
     const warning=document.getElementById('offline-warning');
-    if(warning) warning.hidden=false;
+    if(warning){warning.hidden=false;warning.focus();}
   }
 });
 </script>
-<!-- CDN dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — require internet access; charts will not render offline -->
+<!-- CDN dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — require internet access; charts and PDF export will not function offline -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
   onerror="showOfflineWarning()"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"
@@ -33,10 +34,9 @@ document.addEventListener('DOMContentLoaded',function(){
 .gcard{position:relative}
 .gtools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .canvas-wrap{position:relative;height:340px}
-.offline-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em}
 </style>
 </head><body>
-<div id="offline-warning" class="offline-warning" hidden>
+<div id="offline-warning" class="offline-warning" hidden role="alert" aria-live="polite" tabindex="-1">
   ⚠️ <strong>Internet connection required.</strong> This page loads Chart.js, chartjs-plugin-zoom, and jsPDF from <code>cdn.jsdelivr.net</code>. One or more libraries could not be fetched — charts and PDF export will not function offline.
 </div>
 <div class="container">
@@ -81,6 +81,10 @@ document.addEventListener('DOMContentLoaded',function(){
 const targets=[200,250,275,304,336,344,350];
 const charts={};
 const colorOk='#1D9E75',colorOver='#D85A30',cAla='#378ADD',cLkt='#7F77DD',cMax='#BA7517';
+
+if(typeof Chart==='undefined'){
+  showOfflineWarning();
+} else {
 
 Chart.defaults.color=getComputedStyle(document.body).getPropertyValue('--fg').trim()||'#333';
 Chart.defaults.borderColor=getComputedStyle(document.body).getPropertyValue('--border').trim()||'#ccc';
@@ -140,8 +144,10 @@ charts.c3=new Chart(document.getElementById('c3'),{
   options:{maintainAspectRatio:false,plugins:{zoom:{zoom:{wheel:{enabled:true},mode:'y'},pan:{enabled:true,mode:'y'}}}}
 });
 
+} // end Chart guard
+
 function exportPNG(id,name){const a=document.createElement('a');a.href=document.getElementById(id).toDataURL('image/png');a.download=name+'.png';a.click()}
-function exportPDF(id,name){const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'l'});const img=document.getElementById(id).toDataURL('image/png');pdf.addImage(img,'PNG',10,10,275,150);pdf.save(name+'.pdf')}
+function exportPDF(id,name){if(!window.jspdf){showOfflineWarning();return;}const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'l'});const img=document.getElementById(id).toDataURL('image/png');pdf.addImage(img,'PNG',10,10,275,150);pdf.save(name+'.pdf')}
 function exportSVG(id,name,renderer){const svg=renderer();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));a.download=name+'.svg';a.click()}
 function renderSVG1(){
   const cap=337.62,max=360;
