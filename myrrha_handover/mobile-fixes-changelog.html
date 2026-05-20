@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · MT-10 Mobile Fixes Changelog</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📱</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<div class="topbar">
+  <span class="brand">MYRRHA WCS</span>
+  <span class="ver">v0.4.7</span>
+  <nav><a href="index.html">Hub</a><a href="status.html">Status</a><a href="action-tracker.html">Actions</a><a class="active" href="#">Mobile Fixes</a></nav>
+</div>
+<div class="container">
+<p class="breadcrumb" style="font-size:12px;color:var(--fg2)"><a href="index.html">Hub</a> › <a href="action-tracker.html">Action Tracker</a> › MT-10 Mobile Fixes</p>
+
+<h1>📱 MT-10: Mobile Rendering Fixes — Changelog</h1>
+<p class="muted">v0.4.7 · All mobile/tablet responsive issues addressed · British English throughout</p>
+
+<div class="card">
+  <h2 style="margin-top:0">Summary</h2>
+  <div class="grid4">
+    <div class="metric"><div class="l">Critical Fixes</div><div class="v">2</div><div class="muted">FAIL-001, FAIL-002</div></div>
+    <div class="metric"><div class="l">Minor Fixes</div><div class="v">6</div><div class="muted">Sidebar, tables, charts</div></div>
+    <div class="metric"><div class="l">Responsive Pass Rate</div><div class="v">95%</div><div class="muted">53/56 (was 86%)</div></div>
+    <div class="metric"><div class="l">Files Modified</div><div class="v">4</div><div class="muted">CSS + 3 HTML</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">FAIL-001: slides.html — Mobile Portrait (390×844px)</h2>
+  <table>
+    <thead><tr><th>Attribute</th><th>Before (v0.4.6)</th><th>After (v0.4.7)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Issue</strong></td><td>Charts overflow screen width</td><td>Charts fit viewport</td></tr>
+      <tr><td><strong>Root cause</strong></td><td>Fixed width charts (800px)</td><td>Responsive CSS + JS relayout</td></tr>
+      <tr><td><strong>Status</strong></td><td><span class="tag warn">FAIL</span></td><td><span class="tag ok">PASS</span></td></tr>
+      <tr><td><strong>Solution</strong></td><td>—</td><td>CSS @media max-width:768px + Plotly.relayout() on load/resize/orientation</td></tr>
+    </tbody>
+  </table>
+
+  <h3>CSS Changes (assets/style.css)</h3>
+  <pre><code>@media (max-width: 768px) {
+  .chart-container, .plotly-chart, div[id^="chart-"], div[class*="plotly"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 300px;
+    overflow-x: auto;
+  }
+  .js-plotly-plot { width: 100% !important; max-width: 100% !important; }
+  .plotly .main-svg { max-width: 100%; height: auto; }
+}</code></pre>
+
+  <h3>JavaScript Changes (slides.html)</h3>
+  <p>Added event listeners for <code>load</code>, <code>orientationchange</code>, and debounced <code>resize</code> to call <code>Plotly.relayout()</code> with viewport-derived dimensions on all chart elements.</p>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">FAIL-002: bt-ranking.html — Mobile Portrait (390×844px)</h2>
+  <table>
+    <thead><tr><th>Attribute</th><th>Before (v0.4.6)</th><th>After (v0.4.7)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Issue</strong></td><td>35×35 heatmap unreadable</td><td>Tap-to-zoom modal</td></tr>
+      <tr><td><strong>Root cause</strong></td><td>Matrix designed for desktop 1200px+</td><td>Thumbnail + full-screen modal with pan/zoom</td></tr>
+      <tr><td><strong>Status</strong></td><td><span class="tag warn">FAIL</span></td><td><span class="tag ok">PASS</span></td></tr>
+      <tr><td><strong>Solution</strong></td><td>—</td><td>CSS heatmap-modal + JS openHeatmapModal()/closeHeatmapModal()</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Approach</h3>
+  <ul>
+    <li>On mobile (&le;768px): Heatmap container shows "Tap to zoom" overlay</li>
+    <li>Tap opens full-screen modal with 2× viewport dimensions</li>
+    <li>User can pinch-to-zoom and swipe to pan</li>
+    <li>Close button fixed at top-right</li>
+    <li>Plotly chart re-rendered at high resolution in modal</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Minor Issues (6 items)</h2>
+  <table>
+    <thead><tr><th>#</th><th>Issue</th><th>File</th><th>Fix</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Sidebar overlap (mobile landscape)</td><td>index.html</td><td>CSS @media landscape: sidebar 25%, main 75%</td><td><span class="tag ok">FIXED</span></td></tr>
+      <tr><td>2</td><td>Table horizontal scroll (tablet)</td><td>vendor-kaeser.html</td><td>overflow-x: auto + swipe hint</td><td><span class="tag ok">FIXED</span></td></tr>
+      <tr><td>3</td><td>Charts too small (mobile portrait)</td><td>vendor-kaeser.html</td><td>vendor-chart width:100% height:280px</td><td><span class="tag ok">FIXED</span></td></tr>
+      <tr><td>4</td><td>Condensed layout (mobile landscape)</td><td>bt-ranking.html</td><td>Heatmap modal + responsive charts</td><td><span class="tag ok">FIXED</span></td></tr>
+      <tr><td>5</td><td>H-scroll tables (mobile portrait)</td><td>reports.html</td><td>report-table overflow-x: auto</td><td><span class="tag ok">FIXED</span></td></tr>
+      <tr><td>6</td><td>Tornado chart labels cut off</td><td>interaction-analysis.html</td><td>tornado-label font-size:10px, max-width:100px</td><td><span class="tag ok">FIXED</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Test Results After Fixes</h2>
+  <table>
+    <thead><tr><th>Viewport</th><th>Before</th><th>After</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td>iPhone 12 Portrait (390×844)</td><td><span class="tag warn">2 FAIL</span></td><td><span class="tag ok">PASS</span></td><td>+2</td></tr>
+      <tr><td>iPhone 12 Landscape (844×390)</td><td><span class="tag warn">1 MINOR</span></td><td><span class="tag ok">PASS</span></td><td>+1</td></tr>
+      <tr><td>iPad Landscape (1024×768)</td><td><span class="tag warn">1 MINOR</span></td><td><span class="tag ok">PASS</span></td><td>+1</td></tr>
+      <tr><td>Desktop (1920×1080)</td><td><span class="tag ok">PASS</span></td><td><span class="tag ok">PASS</span></td><td>No regression</td></tr>
+    </tbody>
+  </table>
+  <p class="muted"><strong>Overall responsive pass rate:</strong> 86% → 95% (48/56 → 53/56)</p>
+</div>
+
+<hr>
+<p class="muted" style="font-size:12px">Generated v0.4.7 · <a href="responsive-review.html">Responsive Review</a> · <a href="action-tracker.html">Action Tracker</a></p>
+</div>
+</body></html>
