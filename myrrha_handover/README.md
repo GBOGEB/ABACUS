@@ -10,7 +10,9 @@ A self-contained HTML ecosystem for the **MYRRHA QPLANT Warm Compressor Station 
 
 ## Quick Start
 
-Open **`index.html`** in any modern browser. No build step, no server, no dependencies.
+Open **`index.html`** in any modern browser. No build step, no server required.
+
+> **Note:** An internet connection is required for views that load libraries from CDNs (Chart.js, Plotly, MathJax, etc. via `cdn.jsdelivr.net` and similar). Opening the package offline will work for most static views, but charts and equations may not render without network access.
 
 ```bash
 cd myrrha_handover
@@ -102,7 +104,7 @@ See `truth.html` → "Source documents" for exact section references.
 - ✅ CSV/JSON data export
 - ✅ Interactive charts with zoom/pan
 - ✅ Cross-referenced source documents
-- ✅ Self-contained — no external dependencies
+- ⚠️ Internet connection required for CDN-served libraries (Chart.js, Plotly, MathJax)
 
 ## Version History
 
