@@ -96,6 +96,8 @@ class TestPhase4Improve:
     
     def test_generate_improvements(self, phase4, phase3_output):
         success, result = phase4.execute(iteration=1)
+
+        assert isinstance(result, dict)
         
         improvements = result.get('improvements', [])
         assert isinstance(improvements, list)
