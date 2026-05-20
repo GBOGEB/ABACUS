@@ -261,7 +261,21 @@ class Phase3Analyze:
         Returns:
             Tuple of (success: bool, result: Dict[str, Any])
         """
-        return self.run(iteration)
+        run_result = self.run(iteration)
+
+        # Backward compatibility: normalize accidental nested tuple shape
+        # e.g. (True, (True, {...})) -> (True, {...})
+        if (
+            isinstance(run_result, tuple)
+            and len(run_result) == 2
+            and isinstance(run_result[1], tuple)
+            and len(run_result[1]) == 2
+            and isinstance(run_result[1][0], bool)
+            and isinstance(run_result[1][1], dict)
+        ):
+            return run_result[1]
+
+        return run_result
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
