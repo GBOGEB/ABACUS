@@ -6,7 +6,7 @@ Engineering handover bundle for the **Warm Compressor Station (WCS)** of the MYR
 **Location:** `/home/ubuntu/myrrha_handover/` · **Entry point:** `index.html`
 
 ## Deliverables
-### HTML views (13)
+### HTML views (14)
 | # | File | Purpose |
 |---|------|---------|
 | 1 | `index.html` | Hub / navigation |
