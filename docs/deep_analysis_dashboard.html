@@ -46,9 +46,24 @@ pre { background: #0d1117; padding: 12px; border-radius: 6px; overflow-x: auto; 
 code { color: var(--green); }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+.topnav { display:flex; gap:.8rem; flex-wrap:wrap; padding:.75rem 1rem; background:#111927; border-bottom:1px solid var(--border); }
+.topnav a { color:#b6d4ff; text-decoration:none; font-size:.9em; }
+.topnav a.brand { color:#fff; font-weight:700; margin-right:.4rem; }
+.topnav a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
+
+<nav class="topnav">
+<a class="brand" href="./">⚛️ ABACUS</a>
+<a href="cryo/">Cryo</a>
+<a href="12-cluster/">12-Cluster</a>
+<a href="dow/">DOW</a>
+<a href="testing/">Testing</a>
+<a href="tools/">Tools</a>
+<a href="versions/">Versions</a>
+<a href="dashboard.html">Project Dashboard</a>
+</nav>
 
 <div class="header">
 <h1>🔬 ABACUS Deep Analysis Dashboard</h1>
