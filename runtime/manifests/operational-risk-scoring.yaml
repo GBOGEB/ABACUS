@@ -1,0 +1,31 @@
+operational_risk_scoring:
+  moniker: DELTA_1
+
+  scoring_domains:
+    governance:
+      weight: high
+    deployment:
+      weight: high
+    runtime:
+      weight: medium
+    provenance:
+      weight: medium
+    security:
+      weight: critical
+
+  scoring_states:
+    low
+    medium
+    high
+    critical
+
+  evaluation_requirements:
+    governance_validation: required
+    runtime_validation: required
+    security_validation: required
+    provenance_validation: required
+
+  objectives:
+    - autonomous operational risk awareness
+    - recursive governance scoring
+    - runtime risk federation
