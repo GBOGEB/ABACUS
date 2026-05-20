@@ -143,7 +143,7 @@ Explicit links between validated tuples, handoff logs, and metadata workflows. S
 | Progress Tracker | ✅ Completed | 2026-05-18 | Interactive HTML visualization |
 | Bridges & Connections | ✅ Completed | 2026-05-18 | 6 documented bridges with validation |
 | Recursive Tuples | 🚧 In Progress | 2026-05-18 | Self-referencing tuple chains in progress |
-| Branch Protection | ⏳ Pending | — | Awaiting manual activation |
+| Branch Protection | ⏳ Pending | — | Awaiting repository admin action |
 
 > **Interactive view:** See the full [Progress Tracker](docs/progress_tracker.html) for a visual timeline with milestones and branch details.
 
@@ -560,10 +560,10 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** ✅ v4.4.0 released / ⏳ workflow activation pending  
-**Current Focus:** Activate staged workflows, apply branch protection, and roll out the cleanup toolkit to sister repos  
-**Next Milestone:** Move the 5 staged workflows into `.github/workflows/` and sustain 95%+ quality
-**Last Updated:** 2026-05-18
+**Project Status:** ✅ v4.4.0 released / ✅ workflow activation complete  
+**Current Focus:** Apply branch protection and roll out the cleanup toolkit to sister repos  
+**Next Milestone:** Sustain 95%+ quality with the active workflow set and complete branch protection
+**Last Updated:** 2026-05-20
 
 ---
 

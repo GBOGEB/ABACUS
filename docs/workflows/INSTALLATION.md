@@ -58,7 +58,7 @@ git add -A && git commit -m "ci: activate workflows"
 |----------|-----------------------|-----------|
 | `dashboard-health.yml` | Automatic (cron: daily 06:00 UTC) + manual | Next 06:00 UTC or manual dispatch |
 | `deploy-docs.yml` | Automatic on push to `main` (docs/**) | Next push modifying docs/ |
-| `dmaic-commit-metrics.yml` | Automatic on push to `main` | Immediately after activation push |
+| `dmaic-commit-metrics.yml` | Automatic on push to `main` | Next push to `main` or manual dispatch |
 | `release.yml` | Manual or on tag push (`v*`) | Manual dispatch or `git tag v*` |
 | `update-docs.yml` | Automatic on push to `main` (Python files) | Next push modifying Python code |
 
