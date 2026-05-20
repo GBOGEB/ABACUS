@@ -1,0 +1,190 @@
+# ============================================================================
+# ENGINEERING DATA — Single Source of Truth (SSOT)
+# Multi-View Engineering Tool Generator
+# GBOGEB/ABACUS Governance Integration
+# ============================================================================
+# This YAML drives every render target: HMI Dashboard, Marp Presentation,
+# Technical Report, SVG diagrams, and Plotly graphs.  Edit here; views update.
+# ============================================================================
+
+version_control:
+  schema_version: "2.1.0"
+  last_modified: "2026-05-20T10:00:00Z"
+  author: "GBOGEB Engineering Team"
+  review_status: "approved"
+  commit_hash: "a1b2c3d4"
+  changelog:
+    - date: "2026-05-20"
+      description: "Initial SSOT for cryogenic facility model"
+    - date: "2026-05-18"
+      description: "Added mass-balance validation rules"
+
+# ---------------------------------------------------------------------------
+# GBOGEB/ABACUS Governance Hooks
+# ---------------------------------------------------------------------------
+governance:
+  verification_hook: "engines.verification_hook"
+  semantic_theme_tokens:
+    primary: "var(--color-primary)"
+    accent: "var(--color-accent)"
+    surface: "var(--color-surface)"
+    on_surface: "var(--color-on-surface)"
+    warning: "var(--color-warning)"
+    success: "var(--color-success)"
+  render_rules:
+    figure_prefix: "fig"
+    equation_numbering: true
+    cross_ref_validation: true
+    max_figure_width_px: 960
+
+# ---------------------------------------------------------------------------
+# Facility Overview
+# ---------------------------------------------------------------------------
+facility:
+  name: "European Spallation Source – Cryogenic Distribution System"
+  location: "Lund, Sweden"
+  accelerator_type: "Linear proton accelerator"
+  beam_energy_MeV: 2000
+  beam_current_mA: 62.5
+  duty_cycle_percent: 4.0
+  rf_frequency_MHz: 704.42
+  cryomodule_count: 23
+  operating_temperature_K: 2.0
+
+# ---------------------------------------------------------------------------
+# Cryogenic Parameters — Helium-4 Circuit
+# ---------------------------------------------------------------------------
+cryogenic:
+  coolant: "Helium-4"
+  supply_pressure_bar: 1.2
+  return_pressure_bar: 1.05
+  supply_temperature_K: 2.0
+  return_temperature_K: 4.5
+  mass_flow_rate_g_s: 18.4
+  lambda_point_K: 2.1768
+  critical_point:
+    temperature_K: 5.1953
+    pressure_bar: 2.2746
+  nist_polynomial_order: 6
+
+  # Helium enthalpy anchors (NIST Cryogenics DB, REFPROP v10)
+  enthalpy_supply_J_g: 2.56      # h @ 2.0 K, 1.2 bar (He-II)
+  enthalpy_return_J_g: 26.14     # h @ 4.5 K, 1.05 bar (He-I)
+
+# ---------------------------------------------------------------------------
+# Engineering Metrics — Heat Loads
+# ---------------------------------------------------------------------------
+engineering_metrics:
+  heat_loads:
+    units: "W"
+    categories:
+      - id: "static_radiation"
+        label: "Static – Radiation"
+        value: 12.5
+        tolerance_percent: 5
+      - id: "static_conduction"
+        label: "Static – Conduction"
+        value: 8.3
+        tolerance_percent: 8
+      - id: "static_supports"
+        label: "Static – Support structures"
+        value: 3.7
+        tolerance_percent: 10
+      - id: "dynamic_rf"
+        label: "Dynamic – RF losses"
+        value: 28.0
+        tolerance_percent: 3
+      - id: "dynamic_beam"
+        label: "Dynamic – Beam-induced"
+        value: 15.6
+        tolerance_percent: 6
+      - id: "dynamic_hom"
+        label: "Dynamic – HOM power"
+        value: 4.2
+        tolerance_percent: 12
+    summary:
+      Q_static_W: 24.5          # sum of static categories
+      Q_dynamic_W: 47.8         # sum of dynamic categories
+      Q_total_W: 72.3
+      safety_factor: 1.5
+      Q_design_W: 108.45        # Q_total × safety_factor
+
+  # ---------------------------------------------------------------------------
+  # Mass Balance:  ṁ = (Q_static + Q_dynamic) / Δh
+  # ---------------------------------------------------------------------------
+  mass_balance:
+    formula: "m_dot = (Q_static + Q_dynamic) / delta_h"
+    delta_h_J_g: 23.58          # enthalpy_return − enthalpy_supply
+    m_dot_calculated_g_s: 3.066  # 72.3 / 23.58
+    m_dot_design_g_s: 4.6       # with safety factor
+    balance_check: "PASS"
+
+# ---------------------------------------------------------------------------
+# Component Topology — SVG Diagram Binding
+# ---------------------------------------------------------------------------
+topology:
+  flow_direction: "left_to_right"
+  components:
+    - id: "cryomodule_CM01"
+      type: "cryomodule"
+      label: "CM-01"
+      x: 80
+      y: 120
+      width: 180
+      height: 100
+      status: "nominal"
+      temperature_K: 2.01
+      heat_load_W: 72.3
+
+    - id: "valve_CV01"
+      type: "valve"
+      label: "CV-01"
+      x: 320
+      y: 140
+      width: 60
+      height: 60
+      status: "nominal"
+      position_percent: 45
+      flow_coefficient_Cv: 12.8
+
+    - id: "hx_HX01"
+      type: "heat_exchanger"
+      label: "HX-01"
+      x: 440
+      y: 110
+      width: 160
+      height: 120
+      status: "nominal"
+      effectiveness_percent: 94.2
+      duty_W: 108.45
+
+  connections:
+    - from: "cryomodule_CM01"
+      to: "valve_CV01"
+      line_type: "supply"
+      label: "LHe supply"
+    - from: "valve_CV01"
+      to: "hx_HX01"
+      line_type: "return"
+      label: "GHe return"
+
+# ---------------------------------------------------------------------------
+# Presentation Metadata (Marp)
+# ---------------------------------------------------------------------------
+presentation:
+  title: "Cryogenic Distribution System — Design Review"
+  subtitle: "Multi-View Engineering Tool Generator"
+  author: "GBOGEB Engineering Team"
+  date: "2026-05-20"
+  slide_count: 6
+  theme: "corporate"
+
+# ---------------------------------------------------------------------------
+# Report Metadata
+# ---------------------------------------------------------------------------
+report:
+  title: "Technical Design Report — Cryogenic Heat Load Analysis"
+  document_number: "ESS-CRYO-TDR-2026-001"
+  revision: "A"
+  classification: "Internal"
+  pages_estimate: 12
