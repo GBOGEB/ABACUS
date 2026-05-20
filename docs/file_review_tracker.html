@@ -428,7 +428,7 @@ function render() {
           <input type="checkbox" class="review-checkbox" ${item.confirmed ? 'checked' : ''}
             onchange="toggleConfirm('${item.id}')" title="Click to confirm review" />
           <div class="item-body">
-            <div class="${pathCls}" title="${item.path}">${escHtml(item.path)}</div>
+            <div class="${pathCls}" title="${escAttr(item.path)}">${escHtml(item.path)}</div>
             <div class="item-meta">
               <span class="tag ${tagClass(item.tag)}">${tagLabel(item.tag)}</span>
               ${statusBadge}
@@ -467,6 +467,10 @@ function render() {
 
 function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escAttr(str) {
+  return escHtml(str).replace(/'/g,'&#39;');
 }
 
 /* ── Toast ── */
