@@ -5,15 +5,22 @@
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/common.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<!-- CDN dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — require internet access; charts will not render offline -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+  onerror="document.getElementById('offline-warning').hidden=false"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"
+  onerror="document.getElementById('offline-warning').hidden=false"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+  onerror="document.getElementById('offline-warning').hidden=false"></script>
 <style>
 .gcard{position:relative}
 .gtools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .canvas-wrap{position:relative;height:340px}
 </style>
 </head><body>
+<div id="offline-warning" hidden style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em">
+  ⚠️ <strong>Internet connection required.</strong> This page loads Chart.js, chartjs-plugin-zoom, and jsPDF from <code>cdn.jsdelivr.net</code>. One or more libraries could not be fetched — charts and PDF export will not function offline.
+</div>
 <div class="container">
 <h1>Interactive Graphs</h1>
 <p class="muted">Chart.js · hover for tooltips · scroll/drag to zoom · double-click to reset · export as PNG / SVG / PDF.</p>
