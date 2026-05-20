@@ -94,16 +94,16 @@ Over four phases, the ABACUS repository has been transformed from a complex mult
 
 ## GitHub Pages Setup Status
 
-**Current**: Ready to enable  
-**Action Required**: Enable GitHub Pages in repository settings
+**Current**: Enabled and live  
+**Configured Source**: `main` branch, `/docs` folder
 
-1. Navigate to: Settings → Pages
-2. Source: `main` branch, `/docs` folder
-3. Save
+1. Pages site verified at `https://gbogeb.github.io/ABACUS/`
+2. `docs/.nojekyll` present
+3. `docs/index.html` and `docs/assets/style.css` present
 
-**Expected URL**: `https://gbogeb.github.io/ABACUS/`
+**Live URL**: `https://gbogeb.github.io/ABACUS/`
 
-See [Issue #387](https://github.com/GBOGEB/ABACUS/issues/387) for detailed instructions.
+Issue [#387](https://github.com/GBOGEB/ABACUS/issues/387) can be treated as complete.
 
 ---
 
@@ -111,11 +111,10 @@ See [Issue #387](https://github.com/GBOGEB/ABACUS/issues/387) for detailed instr
 
 | Priority | Action | Issue |
 |----------|--------|-------|
-| 🔴 High | Enable GitHub Pages | [#387](https://github.com/GBOGEB/ABACUS/issues/387) |
-| 🟡 Medium | Install CI/CD workflows | [#388](https://github.com/GBOGEB/ABACUS/issues/388) |
+| 🔴 High | Configure branch protection rules | Admin follow-up |
 | 🟡 Medium | Verify manual fixes | [#389](https://github.com/GBOGEB/ABACUS/issues/389) |
-| 🟢 Low | Post-merge verification | [#391](https://github.com/GBOGEB/ABACUS/issues/391) |
-| 🔵 Future | Enhancement roadmap | [#390](https://github.com/GBOGEB/ABACUS/issues/390) |
+| 🟡 Medium | Review active workflow runs | [#388](https://github.com/GBOGEB/ABACUS/issues/388) |
+| 🟢 Low | Optional documentation polish | [#390](https://github.com/GBOGEB/ABACUS/issues/390) |
 
 ---
 
