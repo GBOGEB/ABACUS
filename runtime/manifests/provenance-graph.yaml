@@ -1,0 +1,29 @@
+provenance_graph:
+  moniker: DELTA_1
+
+  lineage:
+    - issue
+    - branch
+    - commit
+    - pull_request
+    - ci_validation
+    - security_validation
+    - release
+    - deployment
+    - runtime_verification
+    - operational_certification
+
+  repositories:
+    governance:
+      repository: GBOGEB/CODEX
+      branch: delta-1-codex-governance-baseline
+
+    runtime:
+      repository: GBOGEB/ABACUS
+      branch: delta-1-abacus-delivery-baseline
+
+  objectives:
+    - deterministic lineage
+    - recursive auditability
+    - provenance-aware deployment
+    - enterprise operational traceability

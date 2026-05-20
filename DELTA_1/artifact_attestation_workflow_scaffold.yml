@@ -1,0 +1,29 @@
+name: DELTA_1 Artifact Attestation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  attestations: write
+  id-token: write
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate provenance metadata
+        run: |
+          echo "DELTA_1 provenance placeholder"
+
+      - name: Validate release lineage
+        run: |
+          echo "DELTA_1 lineage-validation placeholder"
+
+      - name: Artifact attestation placeholder
+        run: |
+          echo "DELTA_1 attestation placeholder"
