@@ -377,6 +377,18 @@ class Phase1Define:
 
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
+        Execute Phase 1: Define.
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: Dict) with phase execution results
+        """
+        return self.run(iteration)
+
+    def run(self, iteration: int) -> Tuple[bool, Dict]:
+        """
         Execute Phase 1: Define with change detection
 
         Args:
