@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABACUS — Human File Review Tracker</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #c9d1d9; --text-muted: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --yellow: #d29922; --red: #f85149;
+    --purple: #bc8cff; --orange: #d18616;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  header { text-align: center; padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  header h1 { font-size: 2rem; color: #fff; margin-bottom: 6px; }
+  header p { color: var(--text-muted); font-size: 1rem; }
+  .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .badge { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+  .badge-blue  { background: rgba(88,166,255,.15); color: var(--accent); border: 1px solid rgba(88,166,255,.3); }
+  .badge-yellow{ background: rgba(210,153,34,.15);  color: var(--yellow); border: 1px solid rgba(210,153,34,.3); }
+
+  /* Stats row */
+  .stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat-card { flex: 1 1 140px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+  .stat-value { font-size: 2rem; font-weight: 700; color: #fff; }
+  .stat-value.green  { color: var(--green); }
+  .stat-value.yellow { color: var(--yellow); }
+  .stat-value.blue   { color: var(--accent); }
+  .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+  /* Add-file panel */
+  .add-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+  .add-panel h2 { color: #fff; font-size: 1.1rem; margin-bottom: 14px; }
+  .add-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .add-row input[type="text"] {
+    flex: 1 1 280px; background: #21262d; border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; outline: none;
+  }
+  .add-row input[type="text"]:focus { border-color: var(--accent); }
+  .add-row input[type="text"]::placeholder { color: var(--text-muted); }
+  .add-row select {
+    background: #21262d; border: 1px solid var(--border); color: var(--text);
+    padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; outline: none; cursor: pointer;
+  }
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: opacity .15s; }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #0d1117; }
+  .btn-danger  { background: var(--red);   color: #fff; }
+  .btn-export  { background: #21262d; color: var(--text); border: 1px solid var(--border); }
+  .btn-export:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+
+  /* Section title */
+  .section-title { font-size: 1.2rem; color: #fff; margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 0.82rem; transition: all .15s; }
+  .filter-btn:hover, .filter-btn.active { background: rgba(88,166,255,.12); color: var(--accent); border-color: var(--accent); }
+
+  /* Review list */
+  #review-list { display: flex; flex-direction: column; gap: 8px; }
+  .review-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; display: flex; align-items: flex-start; gap: 14px;
+    transition: border-color .2s;
+  }
+  .review-item:hover { border-color: var(--accent); }
+  .review-item.confirmed { border-left: 3px solid var(--green); }
+  .review-item.pending   { border-left: 3px solid var(--border); }
+
+  /* Checkbox */
+  .review-checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: var(--green); flex-shrink: 0; margin-top: 2px; }
+
+  .item-body { flex: 1; min-width: 0; }
+  .item-path { font-size: 0.9rem; color: #fff; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; word-break: break-all; }
+  .item-path.reviewed { text-decoration: line-through; color: var(--text-muted); }
+  .item-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .item-meta span.tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
+  .tag-workflow  { background: rgba(88,166,255,.15);  color: var(--accent); }
+  .tag-script    { background: rgba(210,153,34,.15);  color: var(--yellow); }
+  .tag-docs      { background: rgba(63,185,80,.15);   color: var(--green); }
+  .tag-python    { background: rgba(188,140,255,.15); color: var(--purple); }
+  .tag-config    { background: rgba(209,134,22,.15);  color: var(--orange); }
+  .tag-other     { background: rgba(139,148,158,.15); color: var(--text-muted); }
+  .tag-pr        { background: rgba(248,81,73,.15);   color: var(--red); }
+
+  .confirm-badge { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+  .badge-confirmed { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+  .badge-pending   { background: rgba(139,148,158,.12); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .review-count-badge { font-size: 0.72rem; background: #21262d; border: 1px solid var(--border); border-radius: 10px; padding: 1px 7px; color: var(--text-muted); }
+
+  .item-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+
+  /* History panel */
+  .history-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 24px; }
+  .history-panel h3 { color: #fff; font-size: 1rem; margin-bottom: 12px; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .history-table th, .history-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  .history-table th { color: var(--text-muted); font-weight: 600; background: #21262d; }
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table td { color: var(--text); }
+  .history-table td.mono { font-family: 'SFMono-Regular', Consolas, monospace; color: var(--accent); word-break: break-all; }
+  .history-table td.date-col { white-space: nowrap; color: var(--text-muted); }
+  .freq-bar { display: inline-block; background: rgba(88,166,255,.25); border-radius: 3px; height: 8px; vertical-align: middle; }
+
+  /* Export area */
+  .export-area { background: #21262d; border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.8rem; color: var(--text-muted); white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; margin-top: 12px; display: none; }
+  .export-area.visible { display: block; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+  footer { text-align: center; padding: 28px 0; border-top: 1px solid var(--border); margin-top: 32px; color: var(--text-muted); font-size: 0.85rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: 8px; font-size: 0.875rem; opacity: 0; transform: translateY(10px); transition: opacity .3s, transform .3s; pointer-events: none; z-index: 9999; }
+  #toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>📋 Human File Review Tracker</h1>
+  <p>Add any file for review · Confirm with a checkbox · Datestamp &amp; frequency tracked automatically</p>
+  <div class="badges">
+    <span class="badge badge-blue" id="badge-total">0 files queued</span>
+    <span class="badge badge-green" id="badge-reviewed">0 confirmed</span>
+    <span class="badge badge-yellow" id="badge-pending">0 pending</span>
+  </div>
+</header>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-value green" id="stat-confirmed">0</div>
+    <div class="stat-label">Confirmed Reviews</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value yellow" id="stat-pending">0</div>
+    <div class="stat-label">Pending Review</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value blue" id="stat-total-reviews">0</div>
+    <div class="stat-label">Total Review Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="stat-last-review">—</div>
+    <div class="stat-label">Last Review</div>
+  </div>
+</div>
+
+<!-- Add file panel -->
+<div class="add-panel">
+  <h2>➕ Add File for Review</h2>
+  <div class="add-row">
+    <input type="text" id="file-input" placeholder="Enter file path, e.g. .github/workflows/ci.yml or scripts/check_convergence.py" />
+    <select id="tag-select">
+      <option value="other">📄 Other</option>
+      <option value="workflow">⚙️ Workflow</option>
+      <option value="script">🔧 Script</option>
+      <option value="python">🐍 Python</option>
+      <option value="docs">📚 Docs</option>
+      <option value="config">🗂 Config</option>
+      <option value="pr">🔀 PR/Issue</option>
+    </select>
+    <button class="btn btn-primary" onclick="addFile()">Add to Review Queue</button>
+  </div>
+  <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;">
+    Tip: Paste a file path from the repository. The reviewer confirms by ticking the checkbox. Each confirmation is date-stamped and counted.
+  </p>
+</div>
+
+<!-- Filter & list -->
+<div class="section-title">
+  <span>📁 Review Queue</span>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-export btn-sm" onclick="toggleExport()">📤 Export for PR</button>
+    <button class="btn btn-danger btn-sm" onclick="clearConfirmed()">🗑 Clear Confirmed</button>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setFilter(event, 'all')">All</button>
+  <button class="filter-btn" onclick="setFilter(event, 'pending')">⏳ Pending</button>
+  <button class="filter-btn" onclick="setFilter(event, 'confirmed')">✅ Confirmed</button>
+  <button class="filter-btn" onclick="setFilter(event, 'workflow')">⚙️ Workflow</button>
+  <button class="filter-btn" onclick="setFilter(event, 'script')">🔧 Script</button>
+  <button class="filter-btn" onclick="setFilter(event, 'python')">🐍 Python</button>
+  <button class="filter-btn" onclick="setFilter(event, 'docs')">📚 Docs</button>
+</div>
+
+<div id="review-list"></div>
+
+<!-- Export area -->
+<div class="export-area" id="export-area"></div>
+
+<!-- Review history -->
+<div class="history-panel">
+  <h3>🕐 Review History (all confirmation events)</h3>
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>File Path</th>
+        <th>Type</th>
+        <th>Reviewer Action</th>
+        <th>Date / Time (UTC)</th>
+        <th>Review #</th>
+      </tr>
+    </thead>
+    <tbody id="history-body">
+      <tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px;">No review events yet.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /.container -->
+
+<footer>
+  <p>
+    ABACUS Human File Review Tracker — data stored in browser <code>localStorage</code> ·
+    <a href="progress_tracker.html">Progress Tracker</a> ·
+    <a href="index.html">Docs Home</a> ·
+    <a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">Repository</a>
+  </p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/*
+ * ABACUS Human File Review Tracker
+ * Stores review queue and history in localStorage.
+ * Data shape:
+ *   reviewItems: [{ id, path, tag, addedAt, confirmed, confirmedAt, reviewCount }]
+ *   reviewHistory: [{ id, path, tag, timestamp, eventType }]
+ */
+
+const STORAGE_KEY   = 'abacus_file_review_items';
+const HISTORY_KEY   = 'abacus_file_review_history';
+
+let currentFilter = 'all';
+
+/* ── Persistence ── */
+function loadItems() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+function saveItems(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
+}
+function saveHistory(history) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+/* ── Helpers ── */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function nowISO() { return new Date().toISOString(); }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toUTCString().replace(' GMT', ' UTC');
+}
+function shortDate(iso) {
+  if (!iso) return '—';
+  return iso.slice(0, 16).replace('T', ' ') + ' UTC';
+}
+function tagLabel(tag) {
+  const map = { workflow:'⚙️ Workflow', script:'🔧 Script', python:'🐍 Python',
+                docs:'📚 Docs', config:'🗂 Config', pr:'🔀 PR/Issue', other:'📄 Other' };
+  return map[tag] || '📄 Other';
+}
+function tagClass(tag) { return 'tag-' + (tag || 'other'); }
+
+/* ── Add file ── */
+function addFile() {
+  const input = document.getElementById('file-input');
+  const tagSel = document.getElementById('tag-select');
+  const path = input.value.trim();
+  if (!path) { showToast('⚠️ Please enter a file path.'); return; }
+
+  const items = loadItems();
+  if (items.some(i => i.path === path)) {
+    showToast('ℹ️ This file is already in the queue.');
+    return;
+  }
+
+  items.push({
+    id: uid(),
+    path: path,
+    tag: tagSel.value,
+    addedAt: nowISO(),
+    confirmed: false,
+    confirmedAt: null,
+    reviewCount: 0
+  });
+  saveItems(items);
+  input.value = '';
+  tagSel.value = 'other';
+  render();
+  showToast('✅ File added to review queue.');
+}
+
+/* ── Confirm / unconfirm ── */
+function toggleConfirm(id) {
+  const items = loadItems();
+  const history = loadHistory();
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+
+  const ts = nowISO();
+  if (!item.confirmed) {
+    item.confirmed = true;
+    item.confirmedAt = ts;
+    item.reviewCount = (item.reviewCount || 0) + 1;
+    history.push({ id: item.id, path: item.path, tag: item.tag, timestamp: ts, eventType: 'confirmed', reviewNum: item.reviewCount });
+    showToast('✅ Review confirmed and date-stamped!');
+  } else {
+    item.confirmed = false;
+    item.reviewCount = (item.reviewCount || 0) + 1;
+    history.push({ id: item.id, path: item.path, tag: item.tag, timestamp: ts, eventType: 're-opened', reviewNum: item.reviewCount });
+    item.confirmedAt = null;
+    showToast('🔄 Review re-opened.');
+  }
+
+  saveItems(items);
+  saveHistory(history);
+  render();
+}
+
+/* ── Remove item ── */
+function removeItem(id) {
+  const items = loadItems().filter(i => i.id !== id);
+  saveItems(items);
+  render();
+  showToast('🗑 File removed from queue.');
+}
+
+/* ── Clear confirmed ── */
+function clearConfirmed() {
+  const items = loadItems().filter(i => !i.confirmed);
+  saveItems(items);
+  render();
+  showToast('🗑 Confirmed items cleared.');
+}
+
+/* ── Filter ── */
+function setFilter(event, filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+/* ── Export ── */
+function toggleExport() {
+  const area = document.getElementById('export-area');
+  if (area.classList.contains('visible')) {
+    area.classList.remove('visible');
+    return;
+  }
+  const items = loadItems();
+  const ts = nowISO();
+  let md = `## 📋 Human File Review Report\n\n`;
+  md += `**Exported:** ${shortDate(ts)}\n\n`;
+  md += `| File | Type | Status | Confirmed At | Review Count |\n`;
+  md += `|------|------|--------|-------------|-------------|\n`;
+  items.forEach(i => {
+    const status = i.confirmed ? '✅ Confirmed' : '⏳ Pending';
+    md += `| \`${i.path}\` | ${tagLabel(i.tag)} | ${status} | ${shortDate(i.confirmedAt)} | ${i.reviewCount} |\n`;
+  });
+  md += `\n---\n*Generated by [ABACUS Human File Review Tracker](file_review_tracker.html)*\n`;
+  area.textContent = md;
+  area.classList.add('visible');
+  showToast('📋 Markdown copied — paste into your PR description!');
+}
+
+/* ── Render ── */
+function render() {
+  const items = loadItems();
+  const history = loadHistory();
+
+  /* stats */
+  const confirmed = items.filter(i => i.confirmed).length;
+  const pending   = items.filter(i => !i.confirmed).length;
+  document.getElementById('stat-confirmed').textContent   = confirmed;
+  document.getElementById('stat-pending').textContent     = pending;
+  document.getElementById('stat-total-reviews').textContent = history.filter(h => h.eventType === 'confirmed').length;
+  const lastEv = [...history].reverse().find(h => h.eventType === 'confirmed');
+  document.getElementById('stat-last-review').textContent = lastEv ? shortDate(lastEv.timestamp).slice(0,10) : '—';
+
+  /* badges */
+  document.getElementById('badge-total').textContent    = `${items.length} file${items.length !== 1 ? 's' : ''} queued`;
+  document.getElementById('badge-reviewed').textContent = `${confirmed} confirmed`;
+  document.getElementById('badge-pending').textContent  = `${pending} pending`;
+
+  /* list */
+  const list = document.getElementById('review-list');
+  let filtered = items;
+  if (currentFilter === 'confirmed') filtered = items.filter(i => i.confirmed);
+  else if (currentFilter === 'pending') filtered = items.filter(i => !i.confirmed);
+  else if (['workflow','script','python','docs','config','pr'].includes(currentFilter))
+    filtered = items.filter(i => i.tag === currentFilter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📂</div><p>No items match this filter.</p></div>`;
+  } else {
+    list.innerHTML = filtered.map(item => {
+      const cls = item.confirmed ? 'confirmed' : 'pending';
+      const pathCls = item.confirmed ? 'item-path reviewed' : 'item-path';
+      const statusBadge = item.confirmed
+        ? `<span class="confirm-badge badge-confirmed">✅ Confirmed</span>`
+        : `<span class="confirm-badge badge-pending">⏳ Pending</span>`;
+      const countBadge = item.reviewCount > 0
+        ? `<span class="review-count-badge">Reviewed ${item.reviewCount}×</span>` : '';
+      return `
+        <div class="review-item ${cls}" data-id="${item.id}">
+          <input type="checkbox" class="review-checkbox" ${item.confirmed ? 'checked' : ''}
+            onchange="toggleConfirm('${item.id}')" title="Click to confirm review" />
+          <div class="item-body">
+            <div class="${pathCls}" title="${item.path}">${escHtml(item.path)}</div>
+            <div class="item-meta">
+              <span class="tag ${tagClass(item.tag)}">${tagLabel(item.tag)}</span>
+              ${statusBadge}
+              ${countBadge}
+              <span>Added: ${shortDate(item.addedAt)}</span>
+              ${item.confirmedAt ? `<span>Last confirmed: ${shortDate(item.confirmedAt)}</span>` : ''}
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-danger btn-sm" onclick="removeItem('${item.id}')">Remove</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* history */
+  const tbody = document.getElementById('history-body');
+  if (history.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:16px;">No review events yet.</td></tr>`;
+  } else {
+    const sorted = [...history].reverse();
+    tbody.innerHTML = sorted.map(h => {
+      const actionIcon = h.eventType === 'confirmed' ? '✅ Confirmed' : '🔄 Re-opened';
+      const maxCount = Math.max(...history.filter(x => x.id === h.id).map(x => x.reviewNum || 1));
+      const pct = Math.min(100, Math.round(((h.reviewNum || 1) / Math.max(maxCount, 1)) * 100));
+      return `<tr>
+        <td class="mono">${escHtml(h.path)}</td>
+        <td><span class="tag ${tagClass(h.tag)}">${tagLabel(h.tag)}</span></td>
+        <td>${actionIcon}</td>
+        <td class="date-col">${shortDate(h.timestamp)}</td>
+        <td><span class="freq-bar" style="width:${pct}px;" title="${h.reviewNum} review(s)"></span> #${h.reviewNum || 1}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ── Enter key to add ── */
+document.getElementById('file-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') addFile();
+});
+
+/* ── Init ── */
+render();
+</script>
+</body>
+</html>
