@@ -385,6 +385,18 @@ class Phase1Define:
         Returns:
             Tuple of (success: bool, results: Dict) with phase execution results
         """
+        return self.run(iteration)
+
+    def run(self, iteration: int) -> Tuple[bool, Dict]:
+        """
+        Execute Phase 1: Define with change detection
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: Dict) with phase execution results
+        """
         start_time = datetime.now()
         print("\n" + "="*80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
