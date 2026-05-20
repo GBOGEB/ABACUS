@@ -88,7 +88,7 @@ class TestPhase4Improve:
         assert 'timestamp' in result
         assert 'improvements' in result
 
-    def test_execute_returns_result_dict(self, phase4, phase3_output):
+    def test_execute_returns_bool_and_dict(self, phase4, phase3_output):
         success, result = phase4.execute(iteration=1)
 
         assert isinstance(success, bool)
