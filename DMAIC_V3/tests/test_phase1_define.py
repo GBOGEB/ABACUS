@@ -118,3 +118,8 @@ class TestPhase1Define:
         assert result['total_files'] >= 4
         assert result['categorized']['code'] >= 1
         assert result['categorized']['docs'] >= 1
+
+    def test_normalize_execute_results_unwraps_legacy_tuple(self, phase1):
+        normalized = phase1._normalize_execute_results((True, {'files': ['a.py']}))
+        assert isinstance(normalized, dict)
+        assert normalized['files'] == ['a.py']
