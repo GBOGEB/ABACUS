@@ -717,7 +717,7 @@ class Phase4Improve:
             and isinstance(execution_result[1][0], bool)
             and isinstance(execution_result[1][1], dict)
         ):
-            return execution_result[1]
+            return execution_result[0] and execution_result[1][0], execution_result[1][1]
 
         return False, {
             "phase": "IMPROVE",
