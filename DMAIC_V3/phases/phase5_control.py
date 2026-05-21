@@ -50,7 +50,43 @@ class Phase5Control:
             self.gbogeb = GBOGEB(workspace=str(gbogeb_workspace))
 
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
-        """Execute Phase 5: Control."""
+        """Execute Phase 5: Control with stable 2-tuple compatibility."""
+        result = self.run(iteration)
+
+        if isinstance(result, tuple):
+            if len(result) >= 2:
+                success = bool(result[0])
+                payload = result[1]
+                if isinstance(payload, dict):
+                    return success, payload
+                return success, {
+                    "phase": "CONTROL",
+                    "iteration": iteration,
+                    "timestamp": datetime.now().isoformat(),
+                    "error": "Unexpected non-dict payload from run()",
+                    "raw_payload_type": type(payload).__name__,
+                }
+
+            return False, {
+                "phase": "CONTROL",
+                "iteration": iteration,
+                "timestamp": datetime.now().isoformat(),
+                "error": "Unexpected empty tuple returned from run()",
+            }
+
+        if isinstance(result, dict):
+            return bool(result.get("success", "error" not in result)), result
+
+        return False, {
+            "phase": "CONTROL",
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "error": "Unexpected return type from run()",
+            "raw_result_type": type(result).__name__,
+        }
+
+    def run(self, iteration: int) -> Tuple[bool, Dict]:
+        """Run Phase 5: Control core logic."""
         try:
             print("=" * 80)
             print(f"PHASE 5: CONTROL (Iteration {iteration})")

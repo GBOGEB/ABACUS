@@ -377,6 +377,18 @@ class Phase1Define:
 
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
+        Execute Phase 1: Define.
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: Dict) with phase execution results
+        """
+        return self.run(iteration)
+
+    def run(self, iteration: int) -> Tuple[bool, Dict]:
+        """
         Execute Phase 1: Define with change detection
 
         Args:
@@ -508,6 +520,8 @@ class Phase1Define:
                     'total': change_summary.get('total', 0)
                 }
             }
+            results['code_files'] = results.get('code_files', results['categorized'].get('code', 0))
+            results['documentation_files'] = results.get('documentation_files', results['categorized'].get('docs', 0))
 
             print("\n[1.5] Saving results...")
 

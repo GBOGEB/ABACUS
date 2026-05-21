@@ -47,6 +47,12 @@ class TestPhase1Define:
         assert result['phase'] == 'DEFINE'
         assert result['iteration'] == 1
         assert result['total_files'] >= 0
+
+    def test_run_method_compatibility(self, phase1):
+        success, result = phase1.run(iteration=1)
+        assert success is True
+        assert result['phase'] == 'DEFINE'
+        assert result['iteration'] == 1
     
     def test_scan_with_python_files(self, phase1, temp_workspace):
         (temp_workspace / "test.py").write_text("print('hello')")
@@ -94,6 +100,8 @@ class TestPhase1Define:
         assert 'timestamp' in result
         assert 'total_files' in result
         assert 'categorized' in result
+        assert 'code_files' in result
+        assert 'documentation_files' in result
         assert 'python_files' in result
         assert 'markdown_files' in result
     

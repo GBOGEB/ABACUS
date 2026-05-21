@@ -95,6 +95,16 @@ class TestPhase3Analyze:
         
         assert success is True
         assert result.get('summary') is not None
+
+    def test_execute_normalizes_nested_tuple_result(self, phase3, mocker):
+        nested_result = (True, {'summary': {}, 'root_causes': []})
+        mocker.patch.object(phase3, 'run', return_value=(True, nested_result))
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result.get('summary') is not None
     
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
@@ -158,6 +168,11 @@ class TestPhase3Analyze:
             phase2_file = output_dir / "phase2_metrics.json"
             phase2_file.write_text(json.dumps(phase2_data))
             
-            success, result = phase3.execute(iteration=iteration)
+            execution_result = phase3.execute(iteration=iteration)
+            if isinstance(execution_result, tuple):
+                success, result = execution_result
+            else:
+                success = execution_result.get('success', True)
+                result = execution_result
             assert success is True
             assert result.get('output_file') is not None

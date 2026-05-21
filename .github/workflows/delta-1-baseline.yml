@@ -1,0 +1,35 @@
+name: DELTA_1 Workflow Baseline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: delta-1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bootstrap
+        run: |
+          echo "DELTA_1 bootstrap placeholder"
+
+      - name: Validate
+        run: |
+          echo "DELTA_1 validation placeholder"
+
+      - name: Build
+        run: |
+          echo "DELTA_1 build placeholder"
+
+      - name: Release lineage
+        run: |
+          echo "DELTA_1 release-lineage placeholder"
