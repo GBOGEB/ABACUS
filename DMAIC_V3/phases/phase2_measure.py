@@ -171,7 +171,49 @@ class Phase2Measure:
 
     def execute(self, iteration: int) -> Tuple[bool, dict]:
         """
-        Execute Phase 2: Measure
+        Execute Phase 2: Measure with stable compatibility wrapper.
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: dict) with phase execution results
+        """
+        run_result = self.run(iteration)
+
+        if (
+            isinstance(run_result, tuple)
+            and len(run_result) == 2
+            and isinstance(run_result[0], bool)
+            and isinstance(run_result[1], dict)
+        ):
+            return run_result
+
+        if (
+            isinstance(run_result, tuple)
+            and len(run_result) == 2
+            and isinstance(run_result[0], bool)
+            and isinstance(run_result[1], tuple)
+            and len(run_result[1]) == 2
+            and isinstance(run_result[1][0], bool)
+            and isinstance(run_result[1][1], dict)
+        ):
+            return run_result[1]
+
+        return False, {
+            'phase': 'MEASURE',
+            'iteration': iteration,
+            'timestamp': datetime.now().isoformat(),
+            'error': 'Unexpected Phase 2 execution result structure',
+            'input_source': '',
+            'statistics': {},
+            'file_metrics': {},
+            'measurements': []
+        }
+
+    def run(self, iteration: int) -> Tuple[bool, dict]:
+        """
+        Run Phase 2: Measure core logic.
 
         Args:
             iteration: Current iteration number
