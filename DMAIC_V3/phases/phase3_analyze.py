@@ -270,10 +270,13 @@ class Phase3Analyze:
             and len(run_result) == 2
             and isinstance(run_result[1], tuple)
             and len(run_result[1]) == 2
-            and isinstance(run_result[1][0], bool)
             and isinstance(run_result[1][1], dict)
         ):
-            return run_result[1]
+            nested_success = run_result[1][0]
+            if isinstance(nested_success, bool):
+                return nested_success, run_result[1][1]
+            if isinstance(run_result[0], bool):
+                return run_result[0], run_result[1][1]
 
         return run_result
 
