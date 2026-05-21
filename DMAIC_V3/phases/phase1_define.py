@@ -105,18 +105,28 @@ class Phase1Define:
 
     def _normalize_execute_results(self, results: Any) -> Dict:
         """Normalize execute() payload to a dictionary."""
+        normalized: Dict[str, Any]
         if isinstance(results, dict):
-            return results
-
-        if (
+            normalized = results
+        elif (
             isinstance(results, tuple)
             and len(results) == 2
             and isinstance(results[0], bool)
             and isinstance(results[1], dict)
         ):
-            return results[1]
+            normalized = results[1]
+        else:
+            raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
 
-        raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
+        categorized = normalized.get('categorized', {})
+        if isinstance(categorized, dict):
+            normalized.setdefault('code_files', categorized.get('code', 0))
+            normalized.setdefault('documentation_files', categorized.get('docs', 0))
+        else:
+            normalized.setdefault('code_files', 0)
+            normalized.setdefault('documentation_files', 0)
+
+        return normalized
 
     def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
         """Save scan progress for resumption"""
