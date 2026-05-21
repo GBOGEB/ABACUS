@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 });
 </script>
-<!-- CDN dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — require internet access; charts and PDF export will not function offline -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+<!-- Bundled dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — served from assets/js/; charts and PDF export will not function if these files are missing -->
+<script src="assets/js/chart.umd.min.js"
   onerror="showOfflineWarning()"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"
+<script src="assets/js/chartjs-plugin-zoom.min.js"
   onerror="showOfflineWarning()"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+<script src="assets/js/jspdf.umd.min.js"
   onerror="showOfflineWarning()"></script>
 <style>
 .gcard{position:relative}
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </style>
 </head><body>
 <div id="offline-warning" class="offline-warning" hidden role="alert" aria-live="polite" tabindex="-1">
-  ⚠️ <strong>Internet connection required.</strong> This page loads Chart.js, chartjs-plugin-zoom, and jsPDF from <code>cdn.jsdelivr.net</code>. One or more libraries could not be fetched — charts and PDF export will not function offline.
+  ⚠️ <strong>Required library files could not be loaded.</strong> Chart.js, chartjs-plugin-zoom, or jsPDF failed to load from <code>assets/js/</code> — charts and PDF export will not function.
 </div>
 <div class="container">
 <h1>Interactive Graphs</h1>

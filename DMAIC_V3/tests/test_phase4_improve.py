@@ -82,13 +82,22 @@ class TestPhase4Improve:
         success, result = phase4.execute(iteration=1)
         
         assert success is True
+        assert isinstance(result, dict)
         assert result['phase'] == 'IMPROVE'
         assert result['iteration'] == 1
         assert 'timestamp' in result
         assert 'improvements' in result
+
+    def test_execute_returns_bool_and_dict(self, phase4, phase3_output):
+        success, result = phase4.execute(iteration=1)
+
+        assert isinstance(success, bool)
+        assert isinstance(result, dict)
     
     def test_generate_improvements(self, phase4, phase3_output):
         success, result = phase4.execute(iteration=1)
+
+        assert isinstance(result, dict)
         
         improvements = result.get('improvements', [])
         assert isinstance(improvements, list)
@@ -109,6 +118,28 @@ class TestPhase4Improve:
         assert 'timestamp' in result
         assert 'input_source' in result
         assert 'improvements' in result
+
+    def test_execute_flattens_nested_tuple_result(self, phase4, mocker):
+        nested_result = (
+            True,
+            (
+                True,
+                {
+                    'phase': 'IMPROVE',
+                    'iteration': 1,
+                    'timestamp': '2025-01-10T10:00:00',
+                    'input_source': 'phase3_analysis.json',
+                    'improvements': []
+                }
+            )
+        )
+        mocker.patch.object(phase4, 'run', return_value=nested_result)
+
+        success, result = phase4.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result['phase'] == 'IMPROVE'
     
     def test_dual_output_locations(self, phase4, phase3_output, config):
         success, result = phase4.execute(iteration=1)
