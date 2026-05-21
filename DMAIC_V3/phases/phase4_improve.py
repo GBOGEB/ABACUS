@@ -698,7 +698,41 @@ class Phase4Improve:
         Returns:
             Tuple of (success: bool, results: Dict)
         """
-        return self.run(iteration)
+        execution_result = self.run(iteration)
+
+        if (
+            isinstance(execution_result, tuple)
+            and len(execution_result) == 2
+            and isinstance(execution_result[0], bool)
+            and isinstance(execution_result[1], dict)
+        ):
+            return execution_result
+
+        if (
+            isinstance(execution_result, tuple)
+            and len(execution_result) == 2
+            and isinstance(execution_result[0], bool)
+            and isinstance(execution_result[1], tuple)
+            and len(execution_result[1]) == 2
+            and isinstance(execution_result[1][0], bool)
+            and isinstance(execution_result[1][1], dict)
+        ):
+            return execution_result[1]
+
+        return False, {
+            "phase": "IMPROVE",
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "version": __version__,
+            "error": "Unexpected Phase 4 execution result structure",
+            "input_source": "",
+            "summary": {},
+            "improvements": [],
+            "refactoring_tasks": [],
+            "implementation_roadmap": {},
+            "metrics": {},
+            "implementation_results": {},
+        }
 
 
 if __name__ == "__main__":
