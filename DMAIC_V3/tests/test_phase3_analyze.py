@@ -105,6 +105,24 @@ class TestPhase3Analyze:
         assert success is True
         assert isinstance(result, dict)
         assert result.get('summary') is not None
+
+    def test_execute_normalizes_dict_result(self, phase3, mocker):
+        mocker.patch.object(phase3, 'run', return_value={'summary': {}, 'root_causes': []})
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result.get('summary') is not None
+
+    def test_execute_handles_invalid_tuple_payload(self, phase3, mocker):
+        mocker.patch.object(phase3, 'run', return_value=(False, "bad payload"))
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is False
+        assert isinstance(result, dict)
+        assert 'error' in result
     
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
