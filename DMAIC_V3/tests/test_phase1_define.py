@@ -135,6 +135,13 @@ class TestPhase1Define:
         assert result['categorized']['docs'] >= 1
 
     def test_normalize_execute_results_unwraps_legacy_tuple(self, phase1):
-        normalized = phase1._normalize_execute_results((True, {'files': ['a.py']}))
+        normalized = phase1._normalize_execute_results((True, {'files': ['a.py'], 'categorized': {'code': 1, 'docs': 0}}))
         assert isinstance(normalized, dict)
         assert normalized['files'] == ['a.py']
+        assert normalized['code_files'] == 1
+        assert normalized['documentation_files'] == 0
+
+    def test_normalize_execute_results_backfills_legacy_keys(self, phase1):
+        normalized = phase1._normalize_execute_results({'categorized': {'code': 2, 'docs': 3}})
+        assert normalized['code_files'] == 2
+        assert normalized['documentation_files'] == 3
