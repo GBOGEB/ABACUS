@@ -5,15 +5,40 @@
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/common.js" defer></script>
-<script src="assets/js/chart.umd.min.js"></script>
-<script src="assets/js/chartjs-plugin-zoom.min.js"></script>
-<script src="assets/js/jspdf.umd.min.js"></script>
+<script>
+let offlineWarningPending=false;
+function showOfflineWarning(){
+  const warning=document.getElementById('offline-warning');
+  if(warning){
+    warning.hidden=false;
+    warning.focus();
+    return;
+  }
+  offlineWarningPending=true;
+}
+document.addEventListener('DOMContentLoaded',function(){
+  if(offlineWarningPending){
+    const warning=document.getElementById('offline-warning');
+    if(warning){warning.hidden=false;warning.focus();}
+  }
+});
+</script>
+<!-- Bundled dependencies: Chart.js, chartjs-plugin-zoom, jsPDF — served from assets/js/; charts and PDF export will not function if these files are missing -->
+<script src="assets/js/chart.umd.min.js"
+  onerror="showOfflineWarning()"></script>
+<script src="assets/js/chartjs-plugin-zoom.min.js"
+  onerror="showOfflineWarning()"></script>
+<script src="assets/js/jspdf.umd.min.js"
+  onerror="showOfflineWarning()"></script>
 <style>
 .gcard{position:relative}
 .gtools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .canvas-wrap{position:relative;height:340px}
 </style>
 </head><body>
+<div id="offline-warning" class="offline-warning" hidden role="alert" aria-live="polite" tabindex="-1">
+  ⚠️ <strong>Required library files could not be loaded.</strong> Chart.js, chartjs-plugin-zoom, or jsPDF failed to load from <code>assets/js/</code> — charts and PDF export will not function.
+</div>
 <div class="container">
 <h1>Interactive Graphs</h1>
 <p class="muted">Chart.js · hover for tooltips · scroll/drag to zoom · double-click to reset · export as PNG / SVG / PDF.</p>
@@ -56,6 +81,10 @@
 const targets=[200,250,275,304,336,344,350];
 const charts={};
 const colorOk='#1D9E75',colorOver='#D85A30',cAla='#378ADD',cLkt='#7F77DD',cMax='#BA7517';
+
+if(typeof Chart==='undefined'){
+  showOfflineWarning();
+} else {
 
 Chart.defaults.color=getComputedStyle(document.body).getPropertyValue('--fg').trim()||'#333';
 Chart.defaults.borderColor=getComputedStyle(document.body).getPropertyValue('--border').trim()||'#ccc';
@@ -115,8 +144,10 @@ charts.c3=new Chart(document.getElementById('c3'),{
   options:{maintainAspectRatio:false,plugins:{zoom:{zoom:{wheel:{enabled:true},mode:'y'},pan:{enabled:true,mode:'y'}}}}
 });
 
+} // end Chart guard
+
 function exportPNG(id,name){const a=document.createElement('a');a.href=document.getElementById(id).toDataURL('image/png');a.download=name+'.png';a.click()}
-function exportPDF(id,name){const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'l'});const img=document.getElementById(id).toDataURL('image/png');pdf.addImage(img,'PNG',10,10,275,150);pdf.save(name+'.pdf')}
+function exportPDF(id,name){if(!window.jspdf){showOfflineWarning();return;}const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'l'});const img=document.getElementById(id).toDataURL('image/png');pdf.addImage(img,'PNG',10,10,275,150);pdf.save(name+'.pdf')}
 function exportSVG(id,name,renderer){const svg=renderer();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));a.download=name+'.svg';a.click()}
 function renderSVG1(){
   const cap=337.62,max=360;
