@@ -293,7 +293,8 @@ class Phase3Analyze:
                 "phase": "ANALYZE",
                 "iteration": iteration,
                 "timestamp": datetime.now().isoformat(),
-                "error": "Unexpected empty tuple returned from run()",
+                "error": "Unexpected malformed tuple returned from run(); expected at least 2 elements",
+                "raw_tuple_length": len(run_result),
             }
 
         if isinstance(run_result, dict):
