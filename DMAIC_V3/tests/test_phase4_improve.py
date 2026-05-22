@@ -140,6 +140,28 @@ class TestPhase4Improve:
         assert success is True
         assert isinstance(result, dict)
         assert result['phase'] == 'IMPROVE'
+
+    def test_execute_flattens_nested_tuple_result_preserves_failure(self, phase4, mocker):
+        nested_result = (
+            False,
+            (
+                True,
+                {
+                    'phase': 'IMPROVE',
+                    'iteration': 1,
+                    'timestamp': '2025-01-10T10:00:00',
+                    'input_source': 'phase3_analysis.json',
+                    'improvements': []
+                }
+            )
+        )
+        mocker.patch.object(phase4, 'run', return_value=nested_result)
+
+        success, result = phase4.execute(iteration=1)
+
+        assert success is False
+        assert isinstance(result, dict)
+        assert result['phase'] == 'IMPROVE'
     
     def test_dual_output_locations(self, phase4, phase3_output, config):
         success, result = phase4.execute(iteration=1)
