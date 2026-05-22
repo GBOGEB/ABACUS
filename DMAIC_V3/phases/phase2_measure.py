@@ -171,6 +171,32 @@ class Phase2Measure:
 
     def execute(self, iteration: int) -> Tuple[bool, dict]:
         """
+        Execute Phase 2: Measure with stable 2-tuple compatibility.
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: dict) with phase execution results
+        """
+        run_result = self.run(iteration)
+
+        # Backward compatibility: normalize accidental nested tuple shape
+        # e.g. (True, (True, {...})) -> (True, {...})
+        if (
+            isinstance(run_result, tuple)
+            and len(run_result) == 2
+            and isinstance(run_result[1], tuple)
+            and len(run_result[1]) == 2
+            and isinstance(run_result[1][0], bool)
+            and isinstance(run_result[1][1], dict)
+        ):
+            return run_result[1]
+
+        return run_result
+
+    def run(self, iteration: int) -> Tuple[bool, dict]:
+        """
         Execute Phase 2: Measure
 
         Args:
