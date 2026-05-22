@@ -278,7 +278,7 @@ class Phase3Analyze:
                 payload = run_result[1]
                 if isinstance(payload, dict):
                     return success, payload
-                return success, {
+                return False, {
                     "phase": "ANALYZE",
                     "iteration": iteration,
                     "timestamp": datetime.now().isoformat(),
@@ -439,8 +439,8 @@ if __name__ == "__main__":
         if "--iteration" in sys.argv
         else 1
     )
-    result = phase3.run(iteration)
+    success, result = phase3.run(iteration)
 
-    if not result["success"]:
+    if not success:
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
