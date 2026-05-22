@@ -281,12 +281,13 @@ class Phase3Analyze:
                 payload = run_result[1]
                 if isinstance(payload, dict):
                     return success, payload
-                return success, {
+                return False, {
                     "phase": "ANALYZE",
                     "iteration": iteration,
                     "timestamp": datetime.now().isoformat(),
                     "error": "Unexpected non-dict payload from run()",
                     "raw_payload_type": type(payload).__name__,
+                    "original_success": success,
                 }
             return False, {
                 "phase": "ANALYZE",
