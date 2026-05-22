@@ -277,6 +277,7 @@ class Phase3Analyze:
                 return nested_success, run_result[1][1]
             if isinstance(run_result[0], bool):
                 return run_result[0], run_result[1][1]
+            return bool(run_result[0]), run_result[1][1]
 
         return run_result
 
