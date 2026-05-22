@@ -105,18 +105,25 @@ class Phase1Define:
 
     def _normalize_execute_results(self, results: Any) -> Dict:
         """Normalize execute() payload to a dictionary."""
+        normalized: Dict[str, Any]
         if isinstance(results, dict):
-            return results
-
-        if (
+            normalized = dict(results)
+        elif (
             isinstance(results, tuple)
             and len(results) == 2
             and isinstance(results[0], bool)
             and isinstance(results[1], dict)
         ):
-            return results[1]
+            normalized = dict(results[1])
+        else:
+            raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
 
-        raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
+        categorized = normalized.get('categorized')
+        if not isinstance(categorized, dict):
+            categorized = {}
+        normalized['code_files'] = normalized.get('code_files', categorized.get('code', 0))
+        normalized['documentation_files'] = normalized.get('documentation_files', categorized.get('docs', 0))
+        return normalized
 
     def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
         """Save scan progress for resumption"""
@@ -378,18 +385,6 @@ class Phase1Define:
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
         Execute Phase 1: Define.
-
-        Args:
-            iteration: Current iteration number
-
-        Returns:
-            Tuple of (success: bool, results: Dict) with phase execution results
-        """
-        return self.run(iteration)
-
-    def run(self, iteration: int) -> Tuple[bool, Dict]:
-        """
-        Execute Phase 1: Define with change detection
 
         Args:
             iteration: Current iteration number

@@ -143,6 +143,16 @@ def func3(): pass
         assert result['iteration'] == 1
         assert 'statistics' in result
         assert 'measurements' in result
+
+    def test_execute_normalizes_nested_tuple_result(self, phase2, mocker):
+        nested_result = (True, {'phase': 'MEASURE', 'iteration': 1})
+        mocker.patch.object(phase2, 'run', return_value=(True, nested_result))
+
+        success, result = phase2.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result['phase'] == 'MEASURE'
     
     def test_output_structure(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
