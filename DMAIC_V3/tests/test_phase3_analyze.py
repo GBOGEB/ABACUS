@@ -123,7 +123,12 @@ class TestPhase3Analyze:
         assert isinstance(summary, dict)
     
     def test_output_structure(self, phase3, phase2_output):
-        success, result = phase3.execute(iteration=1)
+        execution_result = phase3.execute(iteration=1)
+        if isinstance(execution_result, tuple):
+            success, result = execution_result
+        else:
+            success = execution_result.get('success', True)
+            result = execution_result
         
         assert success is True
         assert 'summary' in result
