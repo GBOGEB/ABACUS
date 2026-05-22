@@ -264,23 +264,20 @@ class Phase3Analyze:
         run_result = self.run(iteration)
 
         if isinstance(run_result, tuple):
+            if (
+                len(run_result) == 2
+                and isinstance(run_result[1], tuple)
+                and len(run_result[1]) == 2
+                and isinstance(run_result[1][0], bool)
+                and isinstance(run_result[1][1], dict)
+            ):
+                return run_result[1]
+
             if len(run_result) >= 2:
                 success = bool(run_result[0])
                 payload = run_result[1]
-
-                # Backward compatibility: normalize accidental nested tuple
-                # shape such as (True, (True, {...})) -> (True, {...})
-                if (
-                    isinstance(payload, tuple)
-                    and len(payload) >= 2
-                    and isinstance(payload[0], bool)
-                    and isinstance(payload[1], dict)
-                ):
-                    return payload[0], payload[1]
-
                 if isinstance(payload, dict):
                     return success, payload
-
                 return success, {
                     "phase": "ANALYZE",
                     "iteration": iteration,
@@ -293,8 +290,7 @@ class Phase3Analyze:
                 "phase": "ANALYZE",
                 "iteration": iteration,
                 "timestamp": datetime.now().isoformat(),
-                "error": "Unexpected malformed tuple returned from run(); expected at least 2 elements",
-                "raw_tuple_length": len(run_result),
+                "error": "Unexpected empty tuple returned from run()",
             }
 
         if isinstance(run_result, dict):
@@ -443,7 +439,7 @@ if __name__ == "__main__":
         if "--iteration" in sys.argv
         else 1
     )
-    success, result = phase3.execute(iteration)
+    success, result = phase3.run(iteration)
 
     if not success:
         print(f"[ERROR] Error: {result.get('error')}")
