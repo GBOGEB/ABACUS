@@ -159,7 +159,12 @@ class TestPhase3Analyze:
         assert 'summary' in result or 'root_causes' in result
     
     def test_file_saved_correctly(self, phase3, phase2_output, config):
-        success, result = phase3.execute(iteration=1)
+        execution_result = phase3.execute(iteration=1)
+        if isinstance(execution_result, tuple):
+            success = execution_result[0]
+        else:
+            success = execution_result.get('success', 'error' not in execution_result)
+        assert success is True
         
         output_file = config.paths.output_root / "iteration_1" / "phase3_analysis.json"
         assert output_file.exists()
