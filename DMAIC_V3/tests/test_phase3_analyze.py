@@ -106,9 +106,9 @@ class TestPhase3Analyze:
         assert isinstance(result, dict)
         assert result.get('summary') is not None
 
-    def test_execute_normalizes_nested_tuple_with_non_bool_inner_status(self, phase3, mocker):
-        nested_result = ("ok", {'summary': {}, 'root_causes': []})
-        mocker.patch.object(phase3, 'run', return_value=(True, nested_result))
+    def test_execute_normalizes_dict_result(self, phase3, mocker):
+        legacy_result = {'success': True, 'summary': {}, 'root_causes': []}
+        mocker.patch.object(phase3, 'run', return_value=legacy_result)
 
         success, result = phase3.execute(iteration=1)
 
