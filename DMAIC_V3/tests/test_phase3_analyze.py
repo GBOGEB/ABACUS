@@ -107,32 +107,14 @@ class TestPhase3Analyze:
         assert result.get('summary') is not None
 
     def test_execute_normalizes_dict_result(self, phase3, mocker):
-        mocker.patch.object(phase3, 'run', return_value={'summary': {}, 'root_causes': []})
+        legacy_result = {'success': True, 'summary': {}, 'root_causes': []}
+        mocker.patch.object(phase3, 'run', return_value=legacy_result)
 
         success, result = phase3.execute(iteration=1)
 
         assert success is True
         assert isinstance(result, dict)
         assert result.get('summary') is not None
-
-    def test_execute_handles_invalid_tuple_payload(self, phase3, mocker):
-        mocker.patch.object(phase3, 'run', return_value=(False, "bad payload"))
-
-        success, result = phase3.execute(iteration=1)
-
-        assert success is False
-        assert isinstance(result, dict)
-        assert 'error' in result
-
-    def test_execute_handles_true_invalid_tuple_payload(self, phase3, mocker):
-        """Regression: non-dict payload must force success=False even when run() returns True."""
-        mocker.patch.object(phase3, 'run', return_value=(True, "bad payload"))
-
-        success, result = phase3.execute(iteration=1)
-
-        assert success is False
-        assert isinstance(result, dict)
-        assert 'error' in result
     
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)

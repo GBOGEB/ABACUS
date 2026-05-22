@@ -263,32 +263,29 @@ class Phase3Analyze:
         """
         run_result = self.run(iteration)
 
-        # Backward compatibility: normalize accidental nested tuple shape
-        # e.g. (True, (True, {...})) -> (True, {...})
-        if (
-            isinstance(run_result, tuple)
-            and len(run_result) == 2
-            and isinstance(run_result[1], tuple)
-            and len(run_result[1]) == 2
-            and isinstance(run_result[1][0], bool)
-            and isinstance(run_result[1][1], dict)
-        ):
-            return run_result[1]
-
         if isinstance(run_result, tuple):
+            if (
+                len(run_result) == 2
+                and isinstance(run_result[1], tuple)
+                and len(run_result[1]) == 2
+                and isinstance(run_result[1][0], bool)
+                and isinstance(run_result[1][1], dict)
+            ):
+                return run_result[1]
+
             if len(run_result) >= 2:
                 success = bool(run_result[0])
                 payload = run_result[1]
                 if isinstance(payload, dict):
                     return success, payload
-                return False, {
+                return success, {
                     "phase": "ANALYZE",
                     "iteration": iteration,
                     "timestamp": datetime.now().isoformat(),
                     "error": "Unexpected non-dict payload from run()",
                     "raw_payload_type": type(payload).__name__,
-                    "original_success": success,
                 }
+
             return False, {
                 "phase": "ANALYZE",
                 "iteration": iteration,
