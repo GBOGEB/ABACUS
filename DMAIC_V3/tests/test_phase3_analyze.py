@@ -120,7 +120,7 @@ class TestPhase3Analyze:
 
         success, result = phase3.execute(iteration=1)
 
-        assert success is True
+        assert success is False
         assert result['error'] == 'Unexpected non-dict payload from run()'
         assert result['raw_payload_type'] == 'str'
     
