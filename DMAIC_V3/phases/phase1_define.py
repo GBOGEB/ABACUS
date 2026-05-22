@@ -107,25 +107,22 @@ class Phase1Define:
         """Normalize execute() payload to a dictionary."""
         normalized: Dict[str, Any]
         if isinstance(results, dict):
-            normalized = results
+            normalized = dict(results)
         elif (
             isinstance(results, tuple)
             and len(results) == 2
             and isinstance(results[0], bool)
             and isinstance(results[1], dict)
         ):
-            normalized = results[1]
+            normalized = dict(results[1])
         else:
             raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
 
-        categorized = normalized.get('categorized', {})
-        if isinstance(categorized, dict):
-            normalized.setdefault('code_files', categorized.get('code', 0))
-            normalized.setdefault('documentation_files', categorized.get('docs', 0))
-        else:
-            normalized.setdefault('code_files', 0)
-            normalized.setdefault('documentation_files', 0)
-
+        categorized = normalized.get('categorized')
+        if not isinstance(categorized, dict):
+            categorized = {}
+        normalized['code_files'] = normalized.get('code_files', categorized.get('code', 0))
+        normalized['documentation_files'] = normalized.get('documentation_files', categorized.get('docs', 0))
         return normalized
 
     def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
@@ -388,18 +385,6 @@ class Phase1Define:
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
         Execute Phase 1: Define.
-
-        Args:
-            iteration: Current iteration number
-
-        Returns:
-            Tuple of (success: bool, results: Dict) with phase execution results
-        """
-        return self.run(iteration)
-
-    def run(self, iteration: int) -> Tuple[bool, Dict]:
-        """
-        Execute Phase 1: Define with change detection
 
         Args:
             iteration: Current iteration number
