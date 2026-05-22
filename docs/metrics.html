@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ABACUS Metrics &amp; Version Lineage Dashboard</title>
+  <meta name="description" content="DMAIC metrics, test-suite growth, version artifact lineage and statistical analysis for ABACUS."/>
+  <link rel="stylesheet" href="assets/style.css"/>
+
+  <!-- Plotly.js — interactive charts; falls back to static SVGs when offline -->
+  <script>
+    /* Define stub first so onload can call it even before the bottom script runs */
+    window.__plotlyReady = false;
+    function renderPlotly() {
+      /* body of this function is defined at bottom of page; stub prevents ReferenceError
+         if Plotly CDN loads before DOMContentLoaded fires. */
+      if (window.__renderPlotlyImpl) window.__renderPlotlyImpl();
+    }
+    (function(){
+      var s=document.createElement('script');
+      s.src='https://cdn.plot.ly/plotly-2.32.0.min.js';
+      s.onload=function(){
+        window.__plotlyReady=true;
+        renderPlotly();
+      };
+      s.onerror=function(){
+        /* Show offline banner */
+        var banner=document.getElementById('offline-banner');
+        if(banner) banner.style.display='block';
+        /* Reveal static SVG fallbacks and hide empty Plotly containers */
+        document.querySelectorAll('.chart-offline').forEach(function(el){el.hidden=false;});
+        document.querySelectorAll('.plotly-wrap').forEach(function(el){el.style.display='none';});
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <style>
+    /* ── layout ── */
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1rem 0}
+    .chart-grid   {display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:1.5rem;margin:1rem 0}
+    .chart-full   {grid-column:1/-1}
+
+    /* ── KPI cards ── */
+    .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+              padding:1.2rem 1.5rem;box-shadow:var(--shadow);text-align:center}
+    .kpi-card .kpi-icon{font-size:2rem;line-height:1;margin-bottom:.35rem}
+    .kpi-card .kpi-val {font-size:2.1rem;font-weight:700;color:var(--primary);line-height:1.1}
+    .kpi-card .kpi-lbl {font-size:.85rem;color:var(--text-secondary);margin-top:.3rem}
+    .kpi-card .kpi-delta{font-size:.8rem;margin-top:.25rem}
+    .kpi-card .kpi-delta.up  {color:#34a853}
+    .kpi-card .kpi-delta.warn{color:#fbbc04}
+
+    /* ── section header with topic badge ── */
+    .section-head{display:flex;align-items:center;gap:.7rem;margin:2rem 0 .75rem}
+    .section-head h2{margin:0}
+    .topic-badge{font-size:.75rem;padding:.25rem .6rem;border-radius:999px;font-weight:600;white-space:nowrap}
+    .badge-dmaic  {background:#e8f0fe;color:#1a73e8}
+    .badge-version{background:#e6f4ea;color:#1e8e3e}
+    .badge-testing{background:#fce8e6;color:#c5221f}
+    .badge-infra  {background:#fef7e0;color:#b06000}
+
+    /* ── chart wrapper ── */
+    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+                padding:1.25rem;box-shadow:var(--shadow)}
+    .chart-card h3{margin:0 0 .75rem;font-size:1rem;color:var(--text)}
+    .chart-card .chart-meta{font-size:.8rem;color:var(--text-secondary);margin-top:.5rem}
+    .plotly-wrap{width:100%;min-height:320px}
+    /* static SVG fallback */
+    .chart-offline img{max-width:100%;height:auto;border-radius:4px}
+
+    /* ── version lineage cards ── */
+    .lineage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1rem 0}
+    .ver-card{background:var(--surface);border-left:4px solid var(--primary);
+              border:1px solid var(--border);border-radius:var(--radius);padding:1rem;
+              box-shadow:var(--shadow);position:relative}
+    .ver-card .ver-tag{display:inline-block;background:var(--primary);color:#fff;
+                       border-radius:4px;padding:.15rem .5rem;font-size:.8rem;
+                       font-weight:700;margin-bottom:.5rem}
+    .ver-card .ver-tag.current{background:#34a853}
+    .ver-card .ver-tag.legacy {background:#9e9e9e}
+    .ver-card h4{margin:.35rem 0 .3rem;font-size:.98rem}
+    .ver-card p {margin:0 0 .4rem;font-size:.85rem;color:var(--text-secondary)}
+    .ver-card .artifact-list{margin:.3rem 0 0;padding:0;list-style:none}
+    .ver-card .artifact-list li{font-size:.82rem;padding:.1rem 0;border-top:1px solid var(--border)}
+    .ver-card .artifact-list li::before{content:'📄 ';font-size:.75rem}
+    .change-pills{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
+    .pill{font-size:.73rem;padding:.15rem .45rem;border-radius:999px;font-weight:600}
+    .pill-new    {background:#e6f4ea;color:#1e8e3e}
+    .pill-changed{background:#e8f0fe;color:#1a73e8}
+    .pill-removed{background:#fce8e6;color:#c5221f}
+
+    /* ── phase cards ── */
+    .phase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin:1rem 0}
+    .phase-card{background:var(--surface);border-radius:var(--radius);padding:1rem;
+                box-shadow:var(--shadow);border-top:3px solid var(--primary)}
+    .phase-card.p1{border-color:#1a73e8}
+    .phase-card.p2{border-color:#34a853}
+    .phase-card.p3{border-color:#fbbc04}
+    .phase-card.p4{border-color:#ea4335}
+    .phase-card.p5{border-color:#9c27b0}
+    .phase-card h4{margin:0 0 .5rem;font-size:.95rem}
+    .phase-stat{display:flex;justify-content:space-between;font-size:.82rem;
+                padding:.2rem 0;border-top:1px solid var(--border)}
+    .phase-stat .sv{font-weight:700}
+
+    /* ── stat table ── */
+    .stat-table{width:100%;border-collapse:collapse;font-size:.88rem}
+    .stat-table th{background:#f1f3f4;text-align:left;padding:.45rem .6rem;
+                   border-bottom:2px solid var(--border)}
+    .stat-table td{padding:.4rem .6rem;border-bottom:1px solid var(--border)}
+    .stat-table tr:last-child td{border-bottom:none}
+
+    /* ── offline banner ── */
+    .offline-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius);
+                    padding:.75rem 1rem;margin-bottom:1.2rem;font-size:.88rem;display:none}
+    /* show static fallbacks when JS is disabled */
+    noscript ~ * .chart-offline, noscript .chart-offline { display:block !important }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="./">⚛️ ABACUS</a>
+  <a href="cryo/">Cryo</a>
+  <a href="12-cluster/">12-Cluster</a>
+  <a href="dow/">DOW</a>
+  <a href="testing/">Testing</a>
+  <a href="tools/">Tools</a>
+  <a href="versions/">Versions</a>
+  <a href="metrics.html" style="color:#fff;font-weight:600">📊 Metrics</a>
+</nav>
+<div class="breadcrumbs"><a href="./">Home</a> <span>›</span> Metrics &amp; Version Lineage</div>
+
+<noscript>
+  <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:.75rem 1rem;margin:1rem auto;max-width:1100px;font-size:.9rem">
+    ⚠️ <strong>JavaScript is disabled.</strong> Interactive Plotly charts are unavailable.
+    Static matplotlib charts are shown below each chart area.
+  </div>
+</noscript>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#1a73e8 60%,#9c27b0)">
+  <h1>📊 DMAIC Metrics &amp; Version Lineage</h1>
+  <p>Interactive Plotly charts (Plotly.js CDN) with static matplotlib fallback · Grouped by DMAIC phase, version and topic · 93 tests · v3.3.1</p>
+</section>
+
+<main class="container">
+
+  <div id="offline-banner" class="offline-banner">
+    ⚠️ <strong>Offline / CDN unavailable.</strong> Interactive Plotly charts could not load.
+    Static matplotlib SVG charts are displayed instead.
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ KPIs ══ -->
+  <div class="section-head">
+    <h2>Key Performance Indicators</h2>
+    <span class="topic-badge badge-dmaic">DMAIC</span>
+    <span class="topic-badge badge-testing">Testing</span>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon">🧪</div>
+      <div class="kpi-val">93</div>
+      <div class="kpi-lbl">Total Tests Passing</div>
+      <div class="kpi-delta up">▲ +3 since v3.3.0 &nbsp;|&nbsp; +31 since v2.3.0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📐</div>
+      <div class="kpi-val">5</div>
+      <div class="kpi-lbl">DMAIC Phases Implemented</div>
+      <div class="kpi-delta up">✔ Define · Measure · Analyze · Improve · Control</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🏷️</div>
+      <div class="kpi-val">v3.3.1</div>
+      <div class="kpi-lbl">Current Version</div>
+      <div class="kpi-delta up">Active development · Next: v3.4.0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-val">92.5</div>
+      <div class="kpi-lbl">Quality Score (UNIFIED)</div>
+      <div class="kpi-delta warn">⬤ Stable · tracked per version</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-val">6</div>
+      <div class="kpi-lbl">Versions in Lineage</div>
+      <div class="kpi-delta up">v0.31 → v0.32 → v2.1 → UNIFIED → v2.3 → v3.3.1</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">⚙️</div>
+      <div class="kpi-val">15</div>
+      <div class="kpi-lbl">Test Modules</div>
+      <div class="kpi-delta up">DMAIC phases + infra + integration</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ Test Growth (line chart) ══ -->
+  <div class="section-head">
+    <h2>Test Suite Growth</h2>
+    <span class="topic-badge badge-testing">Testing</span>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card chart-full">
+      <h3>📈 Test Count Growth by Version</h3>
+      <div id="plotly-test-growth" class="plotly-wrap"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/test_growth.svg" alt="Test growth chart (static)"/>
+      </div>
+      <p class="chart-meta">Static fallback: <code>docs/assets/charts/test_growth.svg</code>
+        generated by <code>scripts/generate_metrics_charts.py</code></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ Tests per Phase & Module ══ -->
+  <div class="section-head">
+    <h2>Tests per DMAIC Phase &amp; Module</h2>
+    <span class="topic-badge badge-dmaic">DMAIC</span>
+    <span class="topic-badge badge-testing">Testing</span>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>🧪 Tests per DMAIC Phase</h3>
+      <div id="plotly-phase-tests" class="plotly-wrap"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/tests_per_phase.svg" alt="Tests per phase (static)"/>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>📋 All Test Modules</h3>
+      <div id="plotly-modules" class="plotly-wrap"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/module_breakdown.svg" alt="Module breakdown (static)"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ DMAIC Phase Metrics ══ -->
+  <div class="section-head">
+    <h2>DMAIC Phase Details</h2>
+    <span class="topic-badge badge-dmaic">DMAIC</span>
+  </div>
+
+  <div class="phase-grid">
+    <div class="phase-card p1">
+      <h4>📌 P1 · Define</h4>
+      <div class="phase-stat"><span>Tests</span><span class="sv">11</span></div>
+      <div class="phase-stat"><span>Lines (est.)</span><span class="sv">800+</span></div>
+      <div class="phase-stat"><span>Status</span><span class="sv" style="color:#34a853">✔ Active</span></div>
+      <div class="phase-stat"><span>Maturity</span><span class="sv">92 %</span></div>
+    </div>
+    <div class="phase-card p2">
+      <h4>📏 P2 · Measure</h4>
+      <div class="phase-stat"><span>Tests</span><span class="sv">8</span></div>
+      <div class="phase-stat"><span>Lines (est.)</span><span class="sv">1 000+</span></div>
+      <div class="phase-stat"><span>Status</span><span class="sv" style="color:#34a853">✔ Active</span></div>
+      <div class="phase-stat"><span>Maturity</span><span class="sv">88 %</span></div>
+    </div>
+    <div class="phase-card p3">
+      <h4>🔬 P3 · Analyze</h4>
+      <div class="phase-stat"><span>Tests</span><span class="sv">10</span></div>
+      <div class="phase-stat"><span>Lines (est.)</span><span class="sv">900+</span></div>
+      <div class="phase-stat"><span>Status</span><span class="sv" style="color:#34a853">✔ Active</span></div>
+      <div class="phase-stat"><span>Maturity</span><span class="sv">90 %</span></div>
+    </div>
+    <div class="phase-card p4">
+      <h4>🛠️ P4 · Improve</h4>
+      <div class="phase-stat"><span>Tests</span><span class="sv">12</span></div>
+      <div class="phase-stat"><span>Lines (est.)</span><span class="sv">1 200+</span></div>
+      <div class="phase-stat"><span>Status</span><span class="sv" style="color:#34a853">✔ Active</span></div>
+      <div class="phase-stat"><span>Maturity</span><span class="sv">95 %</span></div>
+    </div>
+    <div class="phase-card p5">
+      <h4>🎛️ P5 · Control</h4>
+      <div class="phase-stat"><span>Tests</span><span class="sv">11</span></div>
+      <div class="phase-stat"><span>Lines (est.)</span><span class="sv">800+</span></div>
+      <div class="phase-stat"><span>Status</span><span class="sv" style="color:#34a853">✔ Active</span></div>
+      <div class="phase-stat"><span>Maturity</span><span class="sv">90 %</span></div>
+    </div>
+  </div>
+
+  <div class="chart-grid" style="margin-top:1.5rem">
+    <div class="chart-card">
+      <h3>🕸️ Phase Maturity Radar</h3>
+      <div id="plotly-radar" class="plotly-wrap" style="min-height:380px"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/dmaic_radar.svg" alt="DMAIC radar (static)"/>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>📐 Phase Implementation Scale (LOC)</h3>
+      <div id="plotly-loc" class="plotly-wrap"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/phase_loc.svg" alt="Phase LOC (static)"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ Version Lineage ══ -->
+  <div class="section-head">
+    <h2>Version Artifact &amp; Configuration Lineage</h2>
+    <span class="topic-badge badge-version">Versioning</span>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card chart-full">
+      <h3>📦 Artifact Changes per Version</h3>
+      <div id="plotly-lineage" class="plotly-wrap"></div>
+      <div class="chart-offline" hidden>
+        <img src="assets/charts/version_lineage.svg" alt="Version lineage (static)"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- version cards -->
+  <div class="lineage-grid">
+
+    <div class="ver-card">
+      <span class="ver-tag legacy">v0.31</span>
+      <h4>Canonical Foundation</h4>
+      <p>Initial canonical indexes, DOW engine config, artifact ranking.</p>
+      <ul class="artifact-list">
+        <li>ranking.yaml (new)</li>
+        <li>orchestrator_config.yaml (new)</li>
+        <li>ABACUS-v031/ hierarchy</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+6 new</span>
+      </div>
+    </div>
+
+    <div class="ver-card">
+      <span class="ver-tag legacy">v0.32</span>
+      <h4>Production Pipeline</h4>
+      <p>10-phase DMAIC (phases 0–9), Docker deployment, DOW integration layer.</p>
+      <ul class="artifact-list">
+        <li>Dockerfile (new)</li>
+        <li>docker-compose.yml (new)</li>
+        <li>dow_integration_executor.py (new)</li>
+        <li>phases/ directory (new)</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+12 new</span>
+        <span class="pill pill-changed">7 changed</span>
+        <span class="pill pill-removed">3 removed</span>
+      </div>
+    </div>
+
+    <div class="ver-card">
+      <span class="ver-tag">v2.1</span>
+      <h4>Production Baseline</h4>
+      <p>Stabilised pipelines, validated deployment configs, CI/CD integration.</p>
+      <ul class="artifact-list">
+        <li>.github/workflows/ci.yml (updated)</li>
+        <li>DMAIC_V3/requirements.txt (pinned)</li>
+        <li>pytest.ini (new)</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+5 new</span>
+        <span class="pill pill-changed">8 changed</span>
+      </div>
+    </div>
+
+    <div class="ver-card">
+      <span class="ver-tag">UNIFIED</span>
+      <h4>Merged Knowledge Base</h4>
+      <p>v031+v032 merged. Quality score 92.5. Agent registry, orchestrator hierarchy.</p>
+      <ul class="artifact-list">
+        <li>ABACUS-UNIFIED/ (merged)</li>
+        <li>local_mcp/agent_orchestrator_v3.0.py</li>
+        <li>DMAIC_V3/agents/ (6 agents)</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+9 new</span>
+        <span class="pill pill-changed">11 changed</span>
+        <span class="pill pill-removed">2 removed</span>
+      </div>
+    </div>
+
+    <div class="ver-card">
+      <span class="ver-tag">v2.3</span>
+      <h4>Agent Framework &amp; MCP</h4>
+      <p>MCP integration, memory-optimised orchestrator, KEB/GBOGEB knowledge layer.</p>
+      <ul class="artifact-list">
+        <li>local_mcp/agents/ V2.3 files</li>
+        <li>orchestrator_config.yaml (v2.3 schema)</li>
+        <li>DMAIC_V3/phases/ (P1–P5)</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+8 new</span>
+        <span class="pill pill-changed">9 changed</span>
+        <span class="pill pill-removed">1 removed</span>
+      </div>
+    </div>
+
+    <div class="ver-card">
+      <span class="ver-tag current">v3.3.1</span>
+      <h4>Core Engine &amp; Docs</h4>
+      <p>DMAIC V3 engine, 12-cluster orchestration, convergence detection, full docs, 93 tests.</p>
+      <ul class="artifact-list">
+        <li>DMAIC_V3/core/ (bridge, system)</li>
+        <li>docs/ GitHub Pages site</li>
+        <li>DMAIC_V3/VERSION → 1.2.3</li>
+        <li>.github/workflows/ (CI/CD)</li>
+      </ul>
+      <div class="change-pills">
+        <span class="pill pill-new">+5 new</span>
+        <span class="pill pill-changed">9 changed</span>
+        <span class="pill pill-removed">1 removed</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════ Statistical Abstraction Table ══ -->
+  <div class="section-head">
+    <h2>Statistical Abstraction — Test Category Breakdown</h2>
+    <span class="topic-badge badge-testing">Testing</span>
+    <span class="topic-badge badge-dmaic">DMAIC</span>
+  </div>
+
+  <table class="stat-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Module(s)</th>
+        <th>Tests</th>
+        <th>% of Suite</th>
+        <th>Phase</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>DMAIC Core — Define</td>  <td>test_phase1_define.py</td>  <td>11</td><td>11.8 %</td><td>P1</td><td>Unit</td></tr>
+      <tr><td>DMAIC Core — Measure</td> <td>test_phase2_measure.py</td> <td>8</td> <td>8.6 %</td> <td>P2</td><td>Unit</td></tr>
+      <tr><td>DMAIC Core — Analyze</td> <td>test_phase3_analyze.py</td> <td>10</td><td>10.8 %</td><td>P3</td><td>Unit</td></tr>
+      <tr><td>DMAIC Core — Improve</td> <td>test_phase4_improve.py</td> <td>12</td><td>12.9 %</td><td>P4</td><td>Unit</td></tr>
+      <tr><td>DMAIC Core — Control</td> <td>test_phase5_control.py</td> <td>11</td><td>11.8 %</td><td>P5</td><td>Unit</td></tr>
+      <tr><td>Bridge / MCP</td>         <td>test_bridge_integration.py</td><td>10</td><td>10.8 %</td><td>Infra</td><td>Integration</td></tr>
+      <tr><td>Full DMAIC Cycle</td>     <td>test_integration.py</td>    <td>7</td> <td>7.5 %</td> <td>All</td><td>Integration</td></tr>
+      <tr><td>Stability Monitor</td>    <td>test_stability_monitor.py</td><td>5</td><td>5.4 %</td><td>Infra</td><td>Unit</td></tr>
+      <tr><td>Version Manager</td>      <td>test_version_manager.py</td><td>4</td> <td>4.3 %</td> <td>Infra</td><td>Unit</td></tr>
+      <tr><td>DMAIC Contract</td>       <td>test_dmaic_contract_core.py</td><td>4</td><td>4.3 %</td><td>Core</td><td>Unit</td></tr>
+      <tr><td>Tuple Metadata</td>       <td>test_tuple_metadata_validation.py</td><td>3</td><td>3.2 %</td><td>Infra</td><td>Unit</td></tr>
+      <tr><td>Maturity Tracker</td>     <td>test_maturity_tracker.py</td><td>3</td><td>3.2 %</td><td>Infra</td><td>Unit</td></tr>
+      <tr><td>Git Manager</td>          <td>test_git_manager.py</td>    <td>3</td> <td>3.2 %</td> <td>Infra</td><td>Unit</td></tr>
+      <tr><td>DOW Contract</td>         <td>test_dow_contract_emission.py</td><td>1</td><td>1.1 %</td><td>DOW</td><td>Integration</td></tr>
+      <tr><td>Docs Navigation</td>      <td>test_docs_navigation.py</td><td>1</td> <td>1.1 %</td> <td>Docs</td><td>Smoke</td></tr>
+      <tr style="font-weight:700;background:#f1f3f4">
+        <td colspan="2">Total</td><td>93</td><td>100 %</td><td>—</td><td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+</main>
+
+<footer class="footer" style="text-align:center;padding:1.5rem;font-size:.85rem;color:#5f6368;border-top:1px solid var(--border)">
+  ABACUS Metrics Dashboard · v3.3.1 ·
+  Charts: <a href="https://plotly.com/javascript/" rel="noopener" target="_blank">Plotly.js</a> (interactive)
+  / <a href="https://matplotlib.org/" rel="noopener" target="_blank">matplotlib</a> (static fallback) ·
+  Generated by <code>scripts/generate_metrics_charts.py</code> ·
+  <a href="./">← Back to Home</a>
+</footer>
+
+<!-- ═══════════════════════════════════════════ Plotly chart definitions ══ -->
+<script>
+/* Chart data — all inline so the page works without a back-end */
+
+var PALETTE = {
+  define:  '#1a73e8',
+  measure: '#34a853',
+  analyze: '#fbbc04',
+  improve: '#ea4335',
+  control: '#9c27b0',
+  infra:   '#00bcd4',
+  accent:  '#ff5722',
+};
+
+var LAYOUT_BASE = {
+  paper_bgcolor: '#f8f9fa',
+  plot_bgcolor:  '#f8f9fa',
+  font: { family: "'Segoe UI', system-ui, sans-serif", size: 12 },
+  margin: { t: 20, b: 40, l: 50, r: 20 },
+};
+
+function merge(a, b){ return Object.assign({}, a, b); }
+
+/* ── Test Growth ── */
+function plotTestGrowth() {
+  var versions = ['v2.3.0','v3.0.0','v3.3.0','v3.3.1 (current)'];
+  var counts   = [62, 78, 90, 93];
+  Plotly.newPlot('plotly-test-growth', [{
+    x: versions, y: counts, mode: 'lines+markers+text',
+    text: counts, textposition: 'top center',
+    line: { width: 3, color: PALETTE.define },
+    marker: { size: 10, color: PALETTE.define },
+    fill: 'tozeroy', fillcolor: 'rgba(26,115,232,.10)',
+    hovertemplate: '%{x}<br>Tests: <b>%{y}</b><extra></extra>'
+  }], merge(LAYOUT_BASE, {
+    yaxis: { range: [50, 105], title: 'Test count' },
+    xaxis: { title: 'Version' }
+  }), {responsive: true});
+}
+
+/* ── Tests per DMAIC Phase ── */
+function plotPhaseTests() {
+  Plotly.newPlot('plotly-phase-tests', [{
+    x: ['Define (P1)','Measure (P2)','Analyze (P3)','Improve (P4)','Control (P5)'],
+    y: [11, 8, 10, 12, 11],
+    type: 'bar',
+    text: [11,8,10,12,11], textposition: 'outside',
+    marker: { color: [PALETTE.define, PALETTE.measure, PALETTE.analyze,
+                      PALETTE.improve, PALETTE.control] },
+    hovertemplate: '%{x}<br>Tests: <b>%{y}</b><extra></extra>'
+  }], merge(LAYOUT_BASE, {
+    yaxis: { range: [0, 16], title: 'Tests' },
+  }), {responsive: true});
+}
+
+/* ── Module Breakdown (horizontal bar) ── */
+function plotModules() {
+  var modules = [
+    'Phase 4 – Improve','Phase 5 – Control','Phase 1 – Define','Phase 3 – Analyze',
+    'Bridge Integration','Phase 2 – Measure','Full Cycle Integration',
+    'Stability Monitor','Version Manager','DMAIC Contract',
+    'Tuple Metadata','Maturity Tracker','Git Manager','DOW Contract','Docs Navigation'
+  ];
+  var counts = [12,11,11,10,10,8,7,5,4,4,3,3,3,1,1];
+  var colors = [
+    PALETTE.improve, PALETTE.control, PALETTE.define, PALETTE.analyze,
+    PALETTE.infra, PALETTE.measure, PALETTE.accent,
+    PALETTE.infra, PALETTE.infra, PALETTE.define,
+    PALETTE.infra, PALETTE.infra, PALETTE.infra, PALETTE.measure, PALETTE.infra
+  ];
+  Plotly.newPlot('plotly-modules', [{
+    y: modules, x: counts, type: 'bar', orientation: 'h',
+    text: counts, textposition: 'outside',
+    marker: { color: colors },
+    hovertemplate: '%{y}<br>Tests: <b>%{x}</b><extra></extra>'
+  }], merge(LAYOUT_BASE, {
+    xaxis: { range: [0, 15], title: 'Tests' },
+    yaxis: { autorange: 'reversed' },
+    margin: { l: 180, t: 10, b: 40, r: 30 }
+  }), {responsive: true});
+}
+
+/* ── Phase LOC ── */
+function plotLoc() {
+  Plotly.newPlot('plotly-loc', [{
+    x: ['P1 Define','P2 Measure','P3 Analyze','P4 Improve','P5 Control'],
+    y: [800, 1000, 900, 1200, 800],
+    type: 'bar',
+    text: ['800+','1000+','900+','1200+','800+'], textposition: 'outside',
+    marker: { color: [PALETTE.define, PALETTE.measure, PALETTE.analyze,
+                      PALETTE.improve, PALETTE.control] },
+    hovertemplate: '%{x}<br>LOC: <b>%{y}</b><extra></extra>'
+  }], merge(LAYOUT_BASE, {
+    yaxis: { range: [0, 1500], title: 'Lines of code (est.)' }
+  }), {responsive: true});
+}
+
+/* ── Version Lineage (stacked bar) ── */
+function plotLineage() {
+  var versions = ['v2.3.0','v3.0.0','v3.3.0','v3.3.1'];
+  Plotly.newPlot('plotly-lineage', [
+    { name: 'New',     x: versions, y: [6,12,8,5],  type: 'bar',
+      marker: { color: PALETTE.define },
+      hovertemplate: 'New: <b>%{y}</b><extra></extra>' },
+    { name: 'Changed', x: versions, y: [2,7,11,9],  type: 'bar',
+      marker: { color: PALETTE.analyze },
+      hovertemplate: 'Changed: <b>%{y}</b><extra></extra>' },
+    { name: 'Removed', x: versions, y: [0,3,2,1],   type: 'bar',
+      marker: { color: PALETTE.improve },
+      hovertemplate: 'Removed: <b>%{y}</b><extra></extra>' },
+  ], merge(LAYOUT_BASE, {
+    barmode: 'stack',
+    yaxis: { title: 'Artifact / config file count' },
+    legend: { orientation: 'h', y: 1.08, x: 0.5, xanchor: 'center' }
+  }), {responsive: true});
+}
+
+/* ── Radar ── */
+function plotRadar() {
+  var categories = ['Define','Measure','Analyze','Improve','Control','Define'];
+  var values     = [92,88,90,95,90,92];
+  Plotly.newPlot('plotly-radar', [{
+    type: 'scatterpolar', r: values, theta: categories,
+    fill: 'toself', fillcolor: 'rgba(26,115,232,.18)',
+    line: { color: PALETTE.define, width: 2.5 },
+    marker: { size: 8, color: PALETTE.define },
+    hovertemplate: '%{theta}<br>Maturity: <b>%{r}%</b><extra></extra>'
+  }], merge(LAYOUT_BASE, {
+    polar: {
+      radialaxis: { visible: true, range: [0,100],
+                    ticksuffix: '%', gridcolor: '#dadce0' },
+      bgcolor: '#f8f9fa'
+    },
+    margin: { t: 20, b: 20, l: 50, r: 50 }
+  }), {responsive: true});
+}
+
+/* ── render all charts once Plotly is ready ── */
+window.__renderPlotlyImpl = function() {
+  if(typeof Plotly === 'undefined') return;
+  try { plotTestGrowth(); }  catch(e){}
+  try { plotPhaseTests(); }  catch(e){}
+  try { plotModules(); }     catch(e){}
+  try { plotLoc(); }         catch(e){}
+  try { plotLineage(); }     catch(e){}
+  try { plotRadar(); }       catch(e){}
+}
+
+/* If Plotly loaded synchronously (cached) before onload could fire */
+if(typeof Plotly !== 'undefined' && window.__plotlyReady) renderPlotly();
+</script>
+</body>
+</html>
