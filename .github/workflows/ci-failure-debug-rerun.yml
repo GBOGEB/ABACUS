@@ -8,7 +8,6 @@ on:
 permissions:
   contents: read
   actions: read
-  pull-requests: write
 
 jobs:
   rerun-with-debug:
@@ -78,7 +77,6 @@ jobs:
             const repo = context.repo.repo;
             const runId = context.payload.workflow_run.id;
             const workflowId = context.payload.workflow_run.workflow_id;
-            const prs = context.payload.workflow_run.pull_requests || [];
 
             const failure = JSON.parse(fs.readFileSync('debug_failure_summary.json', 'utf8'));
             const jobsResp = await github.rest.actions.listJobsForWorkflowRun({
@@ -188,15 +186,6 @@ jobs:
               .addHeading('Automatic Debug Rerun')
               .addRaw(body)
               .write();
-
-            for (const pr of prs) {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pr.number,
-                body
-              });
-            }
 
       - name: Upload debug artifacts
         if: always()
