@@ -44,10 +44,10 @@ def hello_world():
 
 class Calculator:
     """Simple calculator"""
-    
+
     def add(self, a, b):
         return a + b
-    
+
     def subtract(self, a, b):
         return a - b
 
@@ -62,40 +62,40 @@ from pathlib import Path
 @pytest.mark.phase2
 @pytest.mark.unit
 class TestPhase2Measure:
-    
+
     def test_initialization(self, phase2, config):
         assert phase2.config == config
         assert phase2.workspace_root == config.paths.workspace_root
-    
+
     def test_analyze_python_file(self, phase2, sample_python_file):
         result = phase2.analyze_python_file(str(sample_python_file))
-        
+
         assert result['success'] is True
         assert 'metrics' in result
         metrics = result['metrics']
-        
+
         assert metrics['total_lines'] > 0
         assert metrics['lines_of_code'] > 0
         assert metrics['functions'] >= 2
         assert metrics['classes'] >= 1
         assert metrics['imports'] >= 3
-    
+
     def test_analyze_invalid_python_file(self, phase2, temp_workspace):
         invalid_file = temp_workspace / "invalid.py"
         invalid_file.write_text("def broken(:\n    pass")
-        
+
         result = phase2.analyze_python_file(str(invalid_file))
         assert result['success'] is False
         assert 'error' in result
-    
+
     def test_analyze_nonexistent_file(self, phase2, temp_workspace):
         result = phase2.analyze_python_file(str(temp_workspace / "nonexistent.py"))
         assert result['success'] is False
-    
+
     def test_complexity_calculation(self, phase2, temp_workspace):
         simple_file = temp_workspace / "simple.py"
         simple_file.write_text("x = 1")
-        
+
         complex_file = temp_workspace / "complex.py"
         complex_content = '''
 import os
@@ -114,52 +114,62 @@ def func2(): pass
 def func3(): pass
 '''
         complex_file.write_text(complex_content)
-        
+
         simple_result = phase2.analyze_python_file(str(simple_file))
         complex_result = phase2.analyze_python_file(str(complex_file))
-        
+
         assert complex_result['metrics']['complexity_score'] > simple_result['metrics']['complexity_score']
-    
+
     def test_execute_with_phase1_output(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         phase1_dir.mkdir(parents=True, exist_ok=True)
-        
+
         (temp_workspace / "test.py").write_text("print('test')")
-        
+
         phase1_output = {
             'phase': 'DEFINE',
             'iteration': 1,
             'files': [str(temp_workspace / "test.py")],
             'total_files': 1
         }
-        
+
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
-        
+
         success, result = phase2.execute(iteration=1)
-        
+
         assert success is True
         assert result['phase'] == 'MEASURE'
         assert result['iteration'] == 1
         assert 'statistics' in result
         assert 'measurements' in result
+
+    def test_execute_normalizes_nested_tuple_result(self, phase2, mocker):
+        nested_result = (True, {'phase': 'MEASURE', 'iteration': 1})
+        mocker.patch.object(phase2, 'run', return_value=(True, nested_result))
+
+        success, result = phase2.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result['phase'] == 'MEASURE'
     
     def test_output_structure(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         phase1_dir.mkdir(parents=True, exist_ok=True)
-        
+
         phase1_output = {
             'phase': 'DEFINE',
             'iteration': 1,
             'files': [],
             'total_files': 0
         }
-        
+
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
-        
+
         success, result = phase2.execute(iteration=1)
-        
+
         assert success is True
         assert 'phase' in result
         assert 'iteration' in result
@@ -167,33 +177,70 @@ def func3(): pass
         assert 'statistics' in result
         assert 'file_metrics' in result
         assert 'measurements' in result
-    
+
     def test_dual_output_locations(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         phase1_dir.mkdir(parents=True, exist_ok=True)
-        
+
         phase1_output = {
             'phase': 'DEFINE',
             'iteration': 1,
             'files': [],
             'total_files': 0
         }
-        
+
         phase1_file = phase1_dir / "phase1_define.json"
         phase1_file.write_text(json.dumps(phase1_output))
-        
+
         success, result = phase2.execute(iteration=1)
         assert success is True
-        
+
         output_dir = config.paths.output_root / "iteration_1"
         phase2_dir_file = output_dir / "phase2_measure" / "phase2_measure.json"
         phase2_metrics_file = output_dir / "phase2_metrics.json"
-        
+
         assert phase2_dir_file.exists()
         assert phase2_metrics_file.exists()
-        
+
         with open(phase2_dir_file) as f1, open(phase2_metrics_file) as f2:
             data1 = json.load(f1)
             data2 = json.load(f2)
             assert data1['phase'] == data2['phase']
             assert data1['iteration'] == data2['iteration']
+
+    def test_execute_delegates_to_run(self, phase2, mocker):
+        expected = {
+            'phase': 'MEASURE',
+            'iteration': 1,
+            'timestamp': '2025-01-10T10:00:00',
+            'statistics': {},
+            'file_metrics': {},
+            'measurements': []
+        }
+        mocker.patch.object(phase2, 'run', return_value=(True, expected))
+
+        success, result = phase2.execute(iteration=1)
+
+        assert success is True
+        assert result == expected
+
+    def test_execute_normalizes_nested_tuple_result(self, phase2, mocker):
+        nested_result = (
+            True,
+            {
+                'phase': 'MEASURE',
+                'iteration': 1,
+                'timestamp': '2025-01-10T10:00:00',
+                'statistics': {},
+                'file_metrics': {},
+                'measurements': []
+            }
+        )
+        mocker.patch.object(phase2, 'run', return_value=(True, nested_result))
+
+        success, result = phase2.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result['phase'] == 'MEASURE'
+        assert result['iteration'] == 1
