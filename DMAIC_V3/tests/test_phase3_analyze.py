@@ -161,7 +161,7 @@ class TestPhase3Analyze:
     def test_file_saved_correctly(self, phase3, phase2_output, config):
         execution_result = phase3.execute(iteration=1)
         if isinstance(execution_result, tuple):
-            success, _ = execution_result
+            success = execution_result[0]
         else:
             success = execution_result.get('success', 'error' not in execution_result)
         assert success is True
