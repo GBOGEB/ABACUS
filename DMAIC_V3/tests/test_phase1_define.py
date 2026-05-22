@@ -53,6 +53,17 @@ class TestPhase1Define:
         assert success is True
         assert result['phase'] == 'DEFINE'
         assert result['iteration'] == 1
+
+    def test_execute_delegates_to_run(self, phase1, monkeypatch):
+        expected = (True, {'phase': 'DEFINE', 'iteration': 7})
+
+        def fake_run(iteration):
+            assert iteration == 7
+            return expected
+
+        monkeypatch.setattr(phase1, 'run', fake_run)
+
+        assert phase1.execute(iteration=7) == expected
     
     def test_scan_with_python_files(self, phase1, temp_workspace):
         (temp_workspace / "test.py").write_text("print('hello')")
@@ -115,13 +126,6 @@ class TestPhase1Define:
         assert result2['iteration'] == 2
         assert result1['timestamp'] != result2['timestamp']
 
-    def test_run_method_compatibility(self, phase1):
-        success, result = phase1.run(iteration=1)
-
-        assert success is True
-        assert result['phase'] == 'DEFINE'
-        assert result['iteration'] == 1
-    
     def test_file_categorization(self, phase1, temp_workspace):
         (temp_workspace / "code.py").write_text("# Python")
         (temp_workspace / "script.js").write_text("// JavaScript")
@@ -135,6 +139,8 @@ class TestPhase1Define:
         assert result['categorized']['docs'] >= 1
 
     def test_normalize_execute_results_unwraps_legacy_tuple(self, phase1):
-        normalized = phase1._normalize_execute_results((True, {'files': ['a.py']}))
+        normalized = phase1._normalize_execute_results((True, {'files': ['a.py'], 'categorized': {'docs': 1, 'code': 1}}))
         assert isinstance(normalized, dict)
         assert normalized['files'] == ['a.py']
+        assert normalized['documentation_files'] == 1
+        assert normalized['code_files'] == 1
