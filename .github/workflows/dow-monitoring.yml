@@ -1,16 +1,26 @@
+name: DOW Monitoring Dashboard
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
 jobs:
   update-dashboard:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-    - name: Generate Dashboard
-      run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
-    - name: Commit Dashboard
-      run: git add DOW_LOGS/* && git commit -m 'Update monitoring dashboard' || echo
-        'No changes'
-name: DOW Monitoring Dashboard
-'on':
-  schedule:
-  - cron: '*/15 * * * *'
-  workflow_dispatch: {}
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Generate Dashboard
+        run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
+
+      - name: Commit Dashboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add DOW_LOGS/ && git commit -m 'chore: update monitoring dashboard [skip ci]' || echo 'No changes to commit'
+          git push || echo 'Nothing to push'
