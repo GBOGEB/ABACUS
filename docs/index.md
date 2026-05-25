@@ -18,6 +18,7 @@ This docs site now centers on a repository navigation view for **GBOGEB/ABACUS**
 - Conceptual documentation is available in the `docs/content/` article set.
 - Procedural documentation is available in the `docs/content/` article set.
 - Reference documentation is available in the `docs/content/` article set.
+- [Runtime reconstruction and continuity flow](content/runtime-reconstruction-continuity.md)
 
 ## Navigation focus
 
@@ -41,6 +42,7 @@ This docs site now centers on a repository navigation view for **GBOGEB/ABACUS**
 |---|---|---|---|
 | Tuple metadata validation | `.github/workflows/ci.yml` | `DMAIC_V3_OUTPUT/tuple_metadata.validated.json` | `scripts/validate_tuple_metadata.py` |
 | Interactive handover tracker | `docs/api/final_handover_tracker.json` | `docs/FINAL_HANDOVER.html` | `scripts/build_final_handover_tracker.py` |
+| Phase-2 reconstruction manifest | `docs/api/phase2_reconstruction_manifest.json` | `DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json` | `scripts/validate_reconstruction_manifest.py` |
 | CODEX bridge | `GBOGEB/CODEX` policy/workflow patterns | ABACUS workflow checks + docs/workflows | `.github/workflows/ci-codex.yml` |
 | Visualization bridge | `GBOGEB/morris.js` charting patterns | ABACUS HTML dashboards in `docs/` | `docs/assets` + dashboard pages |
 
