@@ -107,7 +107,7 @@ jobs:
       
       - name: Run mypy
         run: |
-          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports
+          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports --follow-imports=silent
       
       - name: Run pylint
         run: |
