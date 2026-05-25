@@ -10,18 +10,18 @@ Usage:
 
 import argparse
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 
-LOG_DIR = Path("DOW_LOGS")
+# Anchor LOG_DIR to repo root for robustness across different CWDs
+LOG_DIR = Path(__file__).parent / "DOW_LOGS"
 
 
 def generate_dashboard() -> int:
     """Generate a monitoring dashboard report in DOW_LOGS/."""
-    LOG_DIR.mkdir(exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now(timezone.utc)
     ts_str = timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
