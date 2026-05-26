@@ -1,0 +1,25 @@
+runtime_trust_scoring:
+  moniker: DELTA_1
+
+  trust_domains:
+    governance:
+      trust_required: high
+    deployment:
+      trust_required: high
+    runtime:
+      trust_required: medium
+    provenance:
+      trust_required: high
+    security:
+      trust_required: critical
+
+  trust_evaluation:
+    governance_validation: required
+    runtime_validation: required
+    provenance_validation: required
+    reconciliation_validation: required
+
+  objectives:
+    - autonomous operational trust evaluation
+    - recursive runtime trust awareness
+    - governance-runtime trust federation

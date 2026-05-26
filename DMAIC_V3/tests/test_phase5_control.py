@@ -154,6 +154,17 @@ class TestPhase5Control:
             success, result = phase5.execute(iteration=iteration)
             assert result["iteration"] == iteration
 
+    def test_execute_normalizes_extra_return_values(self, phase5, monkeypatch):
+        def mock_run(iteration):
+            return True, {"phase": "CONTROL", "iteration": iteration}, "extra-value"
+
+        monkeypatch.setattr(phase5, "run", mock_run)
+        success, result = phase5.execute(iteration=2)
+
+        assert success is True
+        assert result["phase"] == "CONTROL"
+        assert result["iteration"] == 2
+
     def test_control_metrics(self, phase5, phase4_output):
         success, result = phase5.execute(iteration=1)
 
