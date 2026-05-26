@@ -32,11 +32,22 @@ def _validate_path_refs(refs: Any, key: str, repo_root: Path) -> List[str]:
     errors: List[str] = []
     if not isinstance(refs, list) or not refs:
         return [f"{key} must be a non-empty list"]
+    repo_root_resolved = repo_root.resolve()
     for idx, ref in enumerate(refs):
         if not isinstance(ref, str) or not ref.strip():
             errors.append(f"{key}[{idx}] must be a non-empty string path")
             continue
-        if not (repo_root / ref).exists():
+        ref_path = Path(ref)
+        if ref_path.is_absolute():
+            errors.append(f"{key}[{idx}] must be a relative path: {ref}")
+            continue
+        resolved = (repo_root / ref_path).resolve()
+        try:
+            resolved.relative_to(repo_root_resolved)
+        except ValueError:
+            errors.append(f"{key}[{idx}] path traverses outside repository root: {ref}")
+            continue
+        if not resolved.exists():
             errors.append(f"{key}[{idx}] path does not exist: {ref}")
     return errors
 
@@ -51,21 +62,37 @@ def validate_reconstruction_manifest(payload: Dict[str, Any], repo_root: Path) -
         errors.append("manifest_version is required")
 
     artifacts = payload.get("artifacts")
+    declared_artifact_names: List[str] = []
     if not isinstance(artifacts, list) or not artifacts:
         errors.append("artifacts must be a non-empty list")
     else:
+        repo_root_resolved = repo_root.resolve()
         for idx, artifact in enumerate(artifacts):
-            path = f"artifacts[{idx}]"
+            apath = f"artifacts[{idx}]"
             if not isinstance(artifact, dict):
-                errors.append(f"{path} must be an object")
+                errors.append(f"{apath} must be an object")
                 continue
-            if not artifact.get("name"):
-                errors.append(f"{path} missing required field: name")
+            artifact_name = artifact.get("name")
+            if not isinstance(artifact_name, str) or not artifact_name.strip():
+                errors.append(f"{apath} missing required non-empty field: name")
+            else:
+                declared_artifact_names.append(artifact_name)
             artifact_path = artifact.get("path")
-            if not artifact_path:
-                errors.append(f"{path} missing required field: path")
-            elif not (repo_root / str(artifact_path)).exists():
-                errors.append(f"{path}.path does not exist: {artifact_path}")
+            if not isinstance(artifact_path, str) or not artifact_path.strip():
+                errors.append(f"{apath} missing required non-empty field: path")
+            else:
+                ref_p = Path(artifact_path)
+                if ref_p.is_absolute():
+                    errors.append(f"{apath}.path must be a relative path: {artifact_path}")
+                else:
+                    resolved = (repo_root / ref_p).resolve()
+                    try:
+                        resolved.relative_to(repo_root_resolved)
+                    except ValueError:
+                        errors.append(f"{apath}.path traverses outside repository root: {artifact_path}")
+                    else:
+                        if not resolved.exists():
+                            errors.append(f"{apath}.path does not exist: {artifact_path}")
 
     component_map = payload.get("component_map")
     if not isinstance(component_map, list) or not component_map:
@@ -82,8 +109,17 @@ def validate_reconstruction_manifest(payload: Dict[str, Any], repo_root: Path) -
             if field not in component:
                 errors.append(f"{path} missing required field: {field}")
         component_name = component.get("name")
-        if isinstance(component_name, str):
+        if not isinstance(component_name, str) or not component_name.strip():
+            errors.append(f"{path} field 'name' must be a non-empty string")
+        else:
             present_components.add(component_name)
+        artifact_ref = component.get("artifact")
+        if not isinstance(artifact_ref, str) or not artifact_ref.strip():
+            errors.append(f"{path} field 'artifact' must be a non-empty string")
+        elif declared_artifact_names and artifact_ref not in declared_artifact_names:
+            errors.append(
+                f"{path} artifact '{artifact_ref}' is not declared in the artifacts list"
+            )
         errors.extend(_validate_path_refs(component.get("file_refs"), f"{path}.file_refs", repo_root))
         errors.extend(_validate_path_refs(component.get("workflow_refs"), f"{path}.workflow_refs", repo_root))
         errors.extend(_validate_path_refs(component.get("test_refs"), f"{path}.test_refs", repo_root))
