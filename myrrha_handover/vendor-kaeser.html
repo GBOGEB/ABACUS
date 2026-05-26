@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Kaeser Deep-Dive</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🏭</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:14px 0}
+.config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;transition:box-shadow .2s}
+.config-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.config-card.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.config-card h4{margin:0 0 8px;color:var(--fg);text-transform:none;letter-spacing:0;font-size:15px}
+.config-card .flow-val{font-size:28px;font-weight:700;color:var(--accent)}
+.config-card .cost-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.util-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.util-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px}
+.util-card .icon{font-size:24px;margin-bottom:6px}
+.util-card .label{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em}
+.util-card .value{font-size:22px;font-weight:700;margin:4px 0}
+.util-card .unit{font-size:12px;color:var(--fg2)}
+.slider-group{margin:14px 0}
+.slider-group label{display:block;font-size:12px;color:var(--fg2);margin-bottom:4px}
+.slider-group input[type=range]{width:100%;accent-color:var(--accent)}
+.slider-val{font-family:var(--mono);font-size:13px;font-weight:600}
+.room-layout{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.room-svg{width:100%;max-width:600px;margin:0 auto;display:block}
+table.cost-table{font-size:12.5px}
+table.cost-table td:nth-child(2),table.cost-table td:nth-child(3),table.cost-table td:nth-child(4){font-family:var(--mono);text-align:right}
+.assumption-box{background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius);padding:14px 18px;margin:14px 0;font-size:13px}
+[data-theme=dark] .assumption-box{background:#2a2510;border-color:#665a20}
+.correction-box{background:#FFEBEE;border:1px solid #EF9A9A;border-radius:var(--radius);padding:14px 18px;margin:14px 0;font-size:13px}
+[data-theme=dark] .correction-box{background:#3a1515;border-color:#5a2020}
+.plotly-chart{width:100%;min-height:420px;margin:14px 0}
+details>summary{cursor:pointer;font-weight:600;padding:8px 0;font-size:14px}
+details[open]>summary{margin-bottom:10px}
+.flow-table td,.flow-table th{font-size:12.5px;padding:6px 8px}
+.flow-table .mono{font-family:var(--mono)}
+
+</style>
+
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="action-tracker.html">Actions</a> › Kaeser Deep-Dive</p>
+<h1>🏭 Kaeser Vendor Deep-Dive</h1>
+<p class="muted">90% Kaeser assumption · FSD 475 SFC / FSD 575 SFC · Corrected technical data · v0.4.5</p>
+
+<div class="assumption-box">
+  <strong>⚠ 90% Kaeser Assumption:</strong> This analysis assumes Kaeser oil-free screw compressors (FSD series) for the LP→HP HCC skids. All cost figures are rough engineering estimates (±25%) pending formal quotation. Utility calculations are based on Kaeser published data sheets and standard engineering practice.
+</div>
+
+<div class="correction-box">
+  <strong>🔴 v0.4.5 Corrections (Critical):</strong>
+  <ul style="margin:8px 0 0;padding-left:20px;font-size:13px">
+    <li><strong>PVPS flow accounting:</strong> Total flow = Kaeser HP + PVPS (PVPS is <em>included</em> in total, not additive). If total = 350 g/s and PVPS = 50 g/s, then Kaeser HP = 300 g/s.</li>
+    <li><strong>FSD 575 @ 72 Hz = 112 g/s per unit</strong> (maximum frequency for 400V 3-phase).</li>
+    <li><strong>FSD 575 @ 60 Hz ≈ 93 g/s per unit</strong> (interpolated from datasheet). Rated power @ 60 Hz = 315 kW.</li>
+    <li><strong>Recommended: 3× FSD 575 @ ~63 Hz</strong> for 316 g/s actual need (minimal overcapacity).</li>
+    <li><strong>Isothermal efficiency = 50%</strong> → Actual electrical = Isothermal / 0.5.</li>
+    <li><strong>Oil-free primary recommendation</strong> (alternatives: oil-flooded direct, dry with interstage cooling).</li>
+    <li><strong>VFD range: 50–72 Hz</strong> (400V 3-phase AC available).</li>
+  </ul>
+</div>
+
+<!-- ========== KEY PERFORMANCE DATA ========== -->
+<h2>FSD 575 Performance Data</h2>
+<div class="card">
+<table><thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Max frequency</td><td class="mono">72 Hz</td><td>400V 3-phase AC available (NOT higher)</td></tr>
+  <tr><td>Flow @ 72 Hz</td><td class="mono">112 g/s per unit</td><td>Maximum output</td></tr>
+  <tr><td>Flow @ 60 Hz</td><td class="mono">~93 g/s per unit</td><td>Interpolated from datasheet</td></tr>
+  <tr><td>Rated power @ 60 Hz</td><td class="mono">315 kW</td><td>Motor nameplate</td></tr>
+  <tr><td>VFD range</td><td class="mono">50–72 Hz</td><td>Linear flow scaling</td></tr>
+  <tr><td>Suction pressure</td><td class="mono">1.05 barA</td><td>Recovery compressor suction</td></tr>
+  <tr><td>Discharge pressure</td><td class="mono">14 barG</td><td>HP range: 10–17 barG</td></tr>
+  <tr><td>Isothermal efficiency</td><td class="mono">50%</td><td>Actual power = isothermal / 0.5</td></tr>
+  <tr><td>Compressor type</td><td>Oil-free (primary)</td><td>Alternatives: oil-flooded, dry + interstage</td></tr>
+  <tr><td>MTBF</td><td>TBD</td><td>To be documented from vendor</td></tr>
+  <tr><td>Recovery from trip</td><td>15 min (short) / 1 hr (full)</td><td>Operational parameter</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== CRITICAL FLOW ACCOUNTING ========== -->
+<h2>🔴 Critical: PVPS Flow Accounting</h2>
+<div class="card">
+<div class="correction-box" style="margin-top:0">
+  <strong>Corrected model (v0.4.5):</strong>
+  <pre style="background:var(--bg);padding:12px;border-radius:6px;margin:8px 0;font-size:13px">Total_Flow = Kaeser_HP_Flow + PVPS_Flow
+  where both come from total helium inventory
+  PVPS ≤ 50 g/s (maximum)
+  If PVPS reduces → Total reduces proportionally
+
+Example: Total = 350 g/s, PVPS = 50 g/s
+  → Kaeser HP = 350 - 50 = 300 g/s
+  → 3× FSD 575 @ ~60 Hz each (300/3 = 100 g/s per unit)
+
+OLD (WRONG): Total = Kaeser_nominal + PVPS (additive)
+NEW (CORRECT): Total = Kaeser_nominal (PVPS included in total)</pre>
+</div>
+<table><thead><tr><th>Scenario</th><th>Total Flow</th><th>PVPS</th><th>Kaeser HP</th><th>Config</th></tr></thead><tbody>
+  <tr><td>Baseline</td><td>350 g/s</td><td>50 g/s</td><td>300 g/s</td><td>3× FSD 575 @ ~60 Hz</td></tr>
+  <tr><td>Actual need</td><td>316 g/s</td><td>50 g/s</td><td>266 g/s</td><td>3× FSD 575 @ ~53 Hz</td></tr>
+  <tr><td>Reduced PVPS</td><td>300 g/s</td><td>30 g/s</td><td>270 g/s</td><td>3× FSD 575 @ ~54 Hz</td></tr>
+  <tr><td>Max output</td><td>386 g/s</td><td>50 g/s</td><td>336 g/s</td><td>3× FSD 575 @ 72 Hz</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== RECOMMENDED CONFIGURATION ========== -->
+<h2>Recommended Configuration: 3× FSD 575 @ ~60 Hz</h2>
+<div class="card">
+<p>For <strong>316 g/s actual need</strong> with minimal overcapacity:</p>
+<table><thead><tr><th>Parameter</th><th>Value</th><th>Calculation</th></tr></thead><tbody>
+  <tr><td>Total flow required</td><td class="mono">316 g/s</td><td>Actual process requirement</td></tr>
+  <tr><td>PVPS contribution</td><td class="mono">50 g/s</td><td>Maximum LP recovery</td></tr>
+  <tr><td>Kaeser HP required</td><td class="mono">266 g/s</td><td>316 − 50 = 266</td></tr>
+  <tr><td>Per unit flow</td><td class="mono">~89 g/s</td><td>266 / 3 = 88.7</td></tr>
+  <tr><td>Frequency required</td><td class="mono">~57 Hz</td><td>Interpolated from datasheet</td></tr>
+  <tr><td>Power per unit</td><td class="mono">~298 kW</td><td>Interpolated (linear with flow)</td></tr>
+  <tr><td>Total power</td><td class="mono">~894 kW</td><td>3 × 298</td></tr>
+  <tr style="font-weight:700;border-top:2px solid var(--border)">
+    <td>Overcapacity margin</td><td class="mono">+6.3%</td><td>(3×112 − 266) / 266 × 100 at max Hz</td></tr>
+</tbody></table>
+
+<h4>Alternative: 4× FSD 475 (Maximum 4 Units)</h4>
+<table><thead><tr><th>Parameter</th><th>Value</th><th>Calculation</th></tr></thead><tbody>
+  <tr><td>Per unit flow</td><td class="mono">~67 g/s</td><td>266 / 4 = 66.5</td></tr>
+  <tr><td>Frequency</td><td class="mono">~55–60 Hz</td><td>Interpolated from datasheet</td></tr>
+  <tr><td>Note</td><td colspan="2">4 units is MAXIMUM for FSD 475 configuration</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== FLOW SCALING TABLE ========== -->
+<h2>Flow Scaling — All Operating Points</h2>
+<div class="card">
+<p class="muted">Power scales linearly with flow via VFD control. Isothermal efficiency = 50%.</p>
+<table class="flow-table"><thead><tr>
+  <th>Total Flow (g/s)</th><th>Configuration</th><th>Units Active</th><th>Hz per Unit</th>
+  <th>Power per Unit (kW)</th><th>Total Power (kW)</th>
+</tr></thead><tbody>
+  <tr><td class="mono">25</td><td>1× FSD 475</td><td>1</td><td class="mono">~30 Hz</td><td class="mono">~80</td><td class="mono">80</td></tr>
+  <tr><td class="mono">50</td><td>1× FSD 475 or 575</td><td>1</td><td class="mono">~48 Hz</td><td class="mono">~160</td><td class="mono">160</td></tr>
+  <tr><td class="mono">100</td><td>2× FSD 475 @ 50%</td><td>2</td><td class="mono">~48 Hz</td><td class="mono">~160</td><td class="mono">320</td></tr>
+  <tr><td class="mono">150</td><td>3× FSD 475 @ 50%</td><td>3</td><td class="mono">~48 Hz</td><td class="mono">~160</td><td class="mono">480</td></tr>
+  <tr><td class="mono">200</td><td>2× FSD 575</td><td>2</td><td class="mono">~60 Hz</td><td class="mono">~315</td><td class="mono">630</td></tr>
+  <tr><td class="mono">250</td><td>3× FSD 575</td><td>3</td><td class="mono">~52 Hz</td><td class="mono">~270</td><td class="mono">810</td></tr>
+  <tr><td class="mono">300</td><td>3× FSD 575</td><td>3</td><td class="mono">~60 Hz</td><td class="mono">~315</td><td class="mono">945</td></tr>
+  <tr style="background:rgba(29,158,117,.08)"><td class="mono"><strong>316</strong></td><td><strong>3× FSD 575</strong></td><td><strong>3</strong></td><td class="mono"><strong>~63 Hz</strong></td><td class="mono"><strong>~330</strong></td><td class="mono"><strong>990</strong></td></tr>
+  <tr><td class="mono">350</td><td>3× FSD 575</td><td>3</td><td class="mono">~68 Hz</td><td class="mono">~360</td><td class="mono">1,080</td></tr>
+</tbody></table>
+<p class="fig-cap">Highlighted row: actual design point (316 g/s). Power verification: 350 g/s @ 300K, 1.05→14 barG — Isothermal ≈ 540 kW, Actual = 540/0.5 = 1,080 kW ✓</p>
+</div>
+
+<!-- ========== COOLING WATER DISTRIBUTION ========== -->
+<h2>Cooling Water Distribution</h2>
+<div class="card">
+<table><thead><tr><th>Heat Exchanger</th><th>Service</th><th>Duty</th><th>Flow</th><th>Temperatures</th></tr></thead><tbody>
+  <tr><td><strong>HX3</strong> (Post-cooling)</td><td>Sensible helium cooling after compression</td><td class="mono">850 kW to PCW</td><td class="mono">25 m³/h (max)</td><td>85°C → 40°C</td></tr>
+  <tr><td><strong>HX1</strong> (Oil cooling)</td><td>Oil cooling + remaining sensible heat</td><td class="mono">~173 kW</td><td class="mono">—</td><td>Total 323 kW less HX3 sensible (~150 kW)</td></tr>
+  <tr style="font-weight:600;border-top:2px solid var(--border)"><td colspan="2">Total per skid</td><td class="mono">323 kW</td><td class="mono">15.5 m³/h</td><td>Kaeser data sheet</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== PRESSURE RANGES ========== -->
+<h2>Pressure Ranges</h2>
+<div class="card">
+<table><thead><tr><th>Location</th><th>Pressure</th><th>Range</th></tr></thead><tbody>
+  <tr><td>HP Kaeser discharge</td><td class="mono">14 barG</td><td>10–17 barG</td></tr>
+  <tr><td>Recovery compressor suction</td><td class="mono">1.05 barA</td><td>—</td></tr>
+  <tr><td>Recovery compressor discharge (options)</td><td class="mono">10, 15, 50, 220 bar</td><td>Application-dependent</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== CONFIGURATION CARDS ========== -->
+<h2>Configuration Analysis — Flow Scenarios</h2>
+<p class="muted">Select a target flow to see recommended configuration, cost estimate, and utility requirements.</p>
+
+<div class="config-grid" id="configGrid">
+  <div class="config-card" data-flow="25" onclick="selectConfig(25)">
+    <span class="cost-tag">€180k</span>
+    <h4>25 g/s Total</h4>
+    <div class="flow-val">25 g/s</div>
+    <table style="margin-top:10px;font-size:12px"><tbody>
+      <tr><td class="muted">Config</td><td>1× FSD 475 SFC</td></tr>
+      <tr><td class="muted">Units</td><td>1</td></tr>
+      <tr><td class="muted">Per-unit flow</td><td>25 g/s</td></tr>
+      <tr><td class="muted">VFD Freq</td><td>~30 Hz</td></tr>
+      <tr><td class="muted">Power</td><td>~80 kW</td></tr>
+    </tbody></table>
+  </div>
+  <div class="config-card" data-flow="100" onclick="selectConfig(100)">
+    <span class="cost-tag">€360k</span>
+    <h4>100 g/s Total</h4>
+    <div class="flow-val">100 g/s</div>
+    <table style="margin-top:10px;font-size:12px"><tbody>
+      <tr><td class="muted">Config</td><td>2× FSD 475 @ 50%</td></tr>
+      <tr><td class="muted">Units</td><td>2</td></tr>
+      <tr><td class="muted">Per-unit flow</td><td>50 g/s</td></tr>
+      <tr><td class="muted">VFD Freq</td><td>~48 Hz</td></tr>
+      <tr><td class="muted">Power</td><td>320 kW total</td></tr>
+    </tbody></table>
+  </div>
+  <div class="config-card selected" data-flow="316" onclick="selectConfig(316)">
+    <span class="cost-tag">€720k</span>
+    <h4>316 g/s Total (Design Point)</h4>
+    <div class="flow-val">316 g/s</div>
+    <table style="margin-top:10px;font-size:12px"><tbody>
+      <tr><td class="muted">Config</td><td>3× FSD 575 SFC</td></tr>
+      <tr><td class="muted">Kaeser HP</td><td>266 g/s (316−50 PVPS)</td></tr>
+      <tr><td class="muted">Per-unit flow</td><td>~89 g/s</td></tr>
+      <tr><td class="muted">VFD Freq</td><td>~57 Hz</td></tr>
+      <tr><td class="muted">Power</td><td>~894 kW total</td></tr>
+    </tbody></table>
+  </div>
+  <div class="config-card" data-flow="350" onclick="selectConfig(350)">
+    <span class="cost-tag">€720–900k</span>
+    <h4>350 g/s Total (Baseline)</h4>
+    <div class="flow-val">350 g/s</div>
+    <table style="margin-top:10px;font-size:12px"><tbody>
+      <tr><td class="muted">Config</td><td>3× FSD 575 SFC</td></tr>
+      <tr><td class="muted">Kaeser HP</td><td>300 g/s (350−50 PVPS)</td></tr>
+      <tr><td class="muted">Per-unit flow</td><td>~100 g/s</td></tr>
+      <tr><td class="muted">VFD Freq</td><td>~60 Hz</td></tr>
+      <tr><td class="muted">Power</td><td>~1,080 kW total</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ========== ISOTHERMAL VERIFICATION ========== -->
+<h2>Isothermal Efficiency Verification</h2>
+<div class="card">
+<details open>
+<summary>Show Calculation Method</summary>
+<table><thead><tr><th>Step</th><th>Value</th><th>Formula / Source</th></tr></thead><tbody>
+  <tr><td>Total flow</td><td class="mono">350 g/s @ 300K</td><td>Baseline design point</td></tr>
+  <tr><td>Suction → Discharge</td><td class="mono">1.05 → 14 barG</td><td>Process requirement</td></tr>
+  <tr><td>Isothermal work</td><td class="mono">≈ 540 kW</td><td>ṁ × R_He × T × ln(P₂/P₁)</td></tr>
+  <tr><td>Isothermal efficiency</td><td class="mono">50%</td><td>Vendor specification</td></tr>
+  <tr><td>Actual electrical power</td><td class="mono">≈ 1,080 kW</td><td>540 / 0.5 = 1,080 kW ✓</td></tr>
+  <tr><td>Cross-check vs table</td><td class="mono">3 × 360 = 1,080 kW</td><td>Matches flow scaling table ✓</td></tr>
+</tbody></table>
+</details>
+</div>
+
+<!-- ========== OIL-FREE vs OIL-FLOODED ========== -->
+<h2>Compressor Type Selection</h2>
+<div class="card">
+<table><thead><tr><th>Option</th><th>Type</th><th>Pros</th><th>Cons</th><th>Recommendation</th></tr></thead><tbody>
+  <tr><td><strong>Primary</strong></td><td>Oil-free (Kaeser FSD)</td><td>No contamination risk, simpler downstream</td><td>Higher cost, lower efficiency</td><td><span class="tag ok">Recommended</span></td></tr>
+  <tr><td>Alt. 1</td><td>Oil-flooded direct</td><td>Higher efficiency, proven</td><td>Oil removal required, risk</td><td><span class="tag">Consider</span></td></tr>
+  <tr><td>Alt. 2</td><td>Dry + interstage cooling</td><td>No oil, flexible staging</td><td>Complex, more equipment</td><td><span class="tag">Backup</span></td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== OPERATIONAL PARAMETERS ========== -->
+<h2>Operational Parameters</h2>
+<div class="util-grid">
+  <div class="util-card">
+    <div class="icon">⏱</div><div class="label">MTBF</div>
+    <div class="value">TBD</div><div class="unit">Document from vendor</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">🔄</div><div class="label">Recovery (Short)</div>
+    <div class="value">15 min</div><div class="unit">Quick restart after trip</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">🔄</div><div class="label">Recovery (Full)</div>
+    <div class="value">1 hour</div><div class="unit">Complete restart sequence</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">⚡</div><div class="label">VFD Range</div>
+    <div class="value">50–72 Hz</div><div class="unit">400V 3-phase AC</div>
+  </div>
+</div>
+
+<!-- ========== COST MODEL ========== -->
+<h2>Cost Estimation Model</h2>
+<div class="card">
+<h3 style="margin-top:0">Base Equipment + Installation (350 g/s baseline — 3× FSD 575)</h3>
+<table class="cost-table"><thead><tr><th>Item</th><th>Unit Cost</th><th>Qty</th><th>Total</th><th>%</th></tr></thead><tbody>
+  <tr><td>FSD 575 SFC compressor skid</td><td>€240,000</td><td>3</td><td>€720,000</td><td>67%</td></tr>
+  <tr><td>Installation (piping, civil, elec)</td><td>—</td><td>—</td><td>€126,000</td><td>12%</td></tr>
+  <tr><td>Commissioning &amp; start-up</td><td>—</td><td>—</td><td>€54,000</td><td>5%</td></tr>
+  <tr><td>Spare parts package (10% uptime)</td><td>—</td><td>—</td><td>€72,000</td><td>7%</td></tr>
+  <tr><td>VFD panels (3× 315 kW)</td><td>€18,000</td><td>3</td><td>€54,000</td><td>5%</td></tr>
+  <tr><td>Control system integration</td><td>—</td><td>—</td><td>€25,000</td><td>2%</td></tr>
+  <tr><td>Oil separator vessels</td><td>€8,000</td><td>3</td><td>€24,000</td><td>2%</td></tr>
+  <tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL CAPEX (est.)</td><td></td><td></td><td>€1,075,000</td><td>100%</td></tr>
+</tbody></table>
+<p class="muted" style="font-size:11px;margin-top:8px">Accuracy: ±25% · Class 4 estimate · Excludes building, cooling towers, transformers · FSD 475 alternative: 4 units × €180k = €720k equip + similar install ≈ €1,050k total</p>
+</div>
+
+<!-- SENSITIVITY SLIDERS -->
+<h3>Interactive Sensitivity</h3>
+<div class="card">
+<div class="gridq">
+  <div class="slider-group">
+    <label>Number of Skids: <span class="slider-val" id="skidVal">3</span></label>
+    <input type="range" id="skidSlider" min="1" max="5" value="3" step="1" oninput="updateSensitivity()">
+  </div>
+  <div class="slider-group">
+    <label>Unit Cost Multiplier: <span class="slider-val" id="costMultVal">1.00×</span></label>
+    <input type="range" id="costMultSlider" min="0.7" max="1.5" value="1.0" step="0.05" oninput="updateSensitivity()">
+  </div>
+  <div class="slider-group">
+    <label>Installation %: <span class="slider-val" id="installVal">17.5%</span></label>
+    <input type="range" id="installSlider" min="10" max="30" value="17.5" step="0.5" oninput="updateSensitivity()">
+  </div>
+  <div class="slider-group">
+    <label>Electricity Cost (€/kWh): <span class="slider-val" id="elecVal">0.12</span></label>
+    <input type="range" id="elecSlider" min="0.06" max="0.25" value="0.12" step="0.01" oninput="updateSensitivity()">
+  </div>
+</div>
+<div class="util-grid" id="sensResults">
+  <div class="util-card"><div class="label">Total CAPEX</div><div class="value" id="sensCapex">€1,075k</div></div>
+  <div class="util-card"><div class="label">Annual OPEX (elec)</div><div class="value" id="sensOpex">€876k</div></div>
+  <div class="util-card"><div class="label">5-yr TCO</div><div class="value" id="sensTCO">€5,455k</div></div>
+  <div class="util-card"><div class="label">Cost per g/s</div><div class="value" id="sensCostPerGs">€3.07k</div></div>
+</div>
+</div>
+
+<!-- ========== UTILITY REQUIREMENTS ========== -->
+<h2>Utility Requirements — 350 g/s Baseline (3× FSD 575 @ ~68 Hz)</h2>
+<div class="util-grid">
+  <div class="util-card">
+    <div class="icon">⚡</div><div class="label">Electrical</div>
+    <div class="value">~1,080 kW</div><div class="unit">3× ~360 kW (matched to isothermal calc)</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">💧</div><div class="label">HX3 (Post-cooling)</div>
+    <div class="value">25 m³/h</div><div class="unit">850 kW · 85→40°C</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">🛢</div><div class="label">HX1 (Oil + sensible)</div>
+    <div class="value">~173 kW</div><div class="unit">323 kW total − 150 kW HX3 sensible</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">🌬</div><div class="label">Instrument Air</div>
+    <div class="value">0.75 m³/min</div><div class="unit">750 Nl/min @ 6–8 bar</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">❄</div><div class="label">HVAC Load</div>
+    <div class="value">100 kW</div><div class="unit">960 m³/h ventilation · 10–15 ACH</div>
+  </div>
+  <div class="util-card">
+    <div class="icon">🏗</div><div class="label">Room Volume</div>
+    <div class="value">240 m³</div><div class="unit">10m × 8m × 3m minimum</div>
+  </div>
+</div>
+
+<!-- DETAILED BREAKDOWN -->
+<div class="card">
+<h3 style="margin-top:0">Per-Skid Utility Breakdown</h3>
+<table><thead><tr><th>Utility</th><th>Per Skid</th><th>Formula</th><th>3× Total</th></tr></thead><tbody>
+  <tr><td>Motor power @ 68 Hz</td><td>~360 kW</td><td>Interpolated (linear w/ flow)</td><td>~1,080 kW</td></tr>
+  <tr><td>VFD losses (~3%)</td><td>~11 kW</td><td>0.03 × 360</td><td>~33 kW</td></tr>
+  <tr><td>Auxiliaries (fans, pumps)</td><td>~8 kW</td><td>Estimated</td><td>~25 kW</td></tr>
+  <tr style="font-weight:600"><td>Total electrical</td><td>~379 kW</td><td></td><td>~1,138 kW</td></tr>
+  <tr><td colspan="4" style="border-top:2px solid var(--border)"></td></tr>
+  <tr><td>HX3 duty (post-cooling)</td><td>~283 kW</td><td>850 kW / 3</td><td>850 kW</td></tr>
+  <tr><td>HX3 flow</td><td>~8.3 m³/h</td><td>25 m³/h / 3</td><td>25 m³/h</td></tr>
+  <tr><td colspan="4" style="border-top:2px solid var(--border)"></td></tr>
+  <tr><td>HX1 duty (oil + sensible)</td><td>~58 kW</td><td>173 kW / 3</td><td>~173 kW</td></tr>
+  <tr><td>Total cooling per skid</td><td>323 kW</td><td>Kaeser data sheet</td><td>969 kW</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== ELECTRICAL REQUIREMENTS (MT-13) ========== -->
+<h2>⚡ Electrical Requirements (MT-13: 400V Power Analysis)</h2>
+<div class="card">
+  <h3 style="margin-top:0">Critical Constraint: 400V 3-Phase AC Supply</h3>
+  <p style="color:#d62828;font-weight:600">
+    <strong>Kaeser FSD motors MUST be specified as 400V 3-phase 50–72 Hz variable frequency drives (VFDs).</strong>
+    No 690V or 11 kV alternatives without step-up transformers (not recommended for this application).
+  </p>
+  
+  <table style="width:100%;margin:1rem 0;border-collapse:collapse;font-size:13px">
+    <thead>
+      <tr style="background:#f5f5f5">
+        <th style="padding:10px;text-align:left;border-bottom:2px solid #ccc">Electrical Parameter</th>
+        <th style="padding:10px;text-align:right;border-bottom:2px solid #ccc;font-family:monospace">Value</th>
+        <th style="padding:10px;text-align:left;border-bottom:2px solid #ccc">Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Grid voltage</td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>400V ±10%</strong></td>
+        <td style="padding:10px">✅ Confirmed European standard</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Grid frequency</td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>50 Hz</strong></td>
+        <td style="padding:10px">✅ Standard (VFD ramped to 50–72 Hz)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Motor nameplate power (per FSD 575)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>360 kW @ 68 Hz</strong></td>
+        <td style="padding:10px">Design point for 316 g/s flow</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Total HCC power (3× units)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>~1,080 kW</strong></td>
+        <td style="padding:10px">Plus VFD losses (32 kW) + auxiliaries (25 kW)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">VFD frequency range</td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>50–72 Hz</strong></td>
+        <td style="padding:10px"><strong style="color:#d62828">⚠ 72 Hz MAX (400V constraint)</strong></td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Power factor (uncorrected)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">~0.90 lagging</td>
+        <td style="padding:10px">Active harmonic filter + PFC capacitors required</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Harmonic distortion (unfil.)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">35–40% THD</td>
+        <td style="padding:10px"><strong style="color:#d62828">❌ Exceeds IEEE 519</strong> (requires filter)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Inrush current (soft-start)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">~2–3× rated</td>
+        <td style="padding:10px">Soft-starter minimises grid disturbance</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background:#e8f4f8;border-left:4px solid #3498db;padding:12px;border-radius:4px;margin:1rem 0;font-size:13px">
+    <strong>MT-13 Outcome:</strong> Comprehensive 400V electrical infrastructure analysis completed. 
+    See <a href="mt-13-report.html" style="color:#3498db;text-decoration:underline"><strong>MT-13 Full Report</strong></a> for:
+    <ul style="margin:8px 0 0;padding-left:20px">
+      <li>Detailed load calculations (HCC + PVPS + HVAC + controls)</li>
+      <li>Transformer sizing (2,000 kVA selected)</li>
+      <li>Harmonic filter options (IEEE 519 compliance)</li>
+      <li>Power factor correction system (200 kVAR)</li>
+      <li>Emergency UPS backup (40 kW, 30 min)</li>
+      <li>Total CAPEX estimate: <strong>€736k</strong></li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Vendor Engagement Checklist (MT-11)</h3>
+  <p style="font-size:13px;color:#666;margin-bottom:1rem">
+    Before releasing RFQ to Kaeser, confirm the following electrical requirements:
+  </p>
+  <ul style="font-size:13px;line-height:1.8">
+    <li style="margin-bottom:8px">
+      <strong>✓ Confirm FSD 575 availability in 400V 3-phase 50–72 Hz:</strong> 
+      Is the motor winding rated for 400V AC with VFD duty? Confirm nameplate label.
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ Motor power vs. frequency curve:</strong> 
+      Provide motor power (kW) and compressor flow (g/s) at key frequencies: 50 Hz, 55 Hz, 60 Hz, 65 Hz, 68 Hz (design), 72 Hz (max).
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ VFD coupling (Kaeser-supplied vs. external):</strong> 
+      Will Kaeser provide integrated VFD cabinets, or should we source separate drives? (Preferred: integrated for warranty/support.)
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ Motor cooling requirements:</strong> 
+      Are motor cooling fans powered separately, or included in main motor current? 
+      (Impacts total electrical load estimate.)
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ Harmonic filter compatibility:</strong> 
+      Will Kaeser VFDs work with external active harmonic filter? 
+      (Some VFDs need special input filtering.)
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ Power factor target:</strong> 
+      Kaeser to confirm: Does their system achieve PF &gt;0.95 with PFC capacitor bank installed?
+    </li>
+    <li style="margin-bottom:8px">
+      <strong>✓ Soft-starter requirement:</strong> 
+      Recommend: Soft-starter contactor on HCC main supply to limit inrush current (reduces grid stress).
+    </li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Electrical Cost Impact on CAPEX</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="background:#f5f5f5">
+        <th style="padding:10px;text-align:left;border-bottom:2px solid #ccc">Item</th>
+        <th style="padding:10px;text-align:right;border-bottom:2px solid #ccc;font-family:monospace">Cost (€)</th>
+        <th style="padding:10px;text-align:left;border-bottom:2px solid #ccc">Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Kaeser HCC (3× FSD 575 SFC, 400V VFDs)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">~280k</td>
+        <td style="padding:10px">Includes integrated VFD drives</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0;background:#f9f9f9">
+        <td colspan="3" style="padding:10px;font-size:11px;color:#666">
+          <strong>Electrical Infrastructure (MT-13):</strong> Required to support HCC + PVPS + auxiliary loads
+        </td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">2,000 kVA transformer</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">80k</td>
+        <td style="padding:10px">Main power distribution</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Main switchboard (2,500A)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">60k</td>
+        <td style="padding:10px">Circuit breakers, distribution</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Active harmonic filter (486 kVAR)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">65k</td>
+        <td style="padding:10px">IEEE 519 compliance (VFD mitigation)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Power factor correction (200 kVAR)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">25k</td>
+        <td style="padding:10px">Automatic capacitor bank</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">UPS (40 kW, 30 min)</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">30k</td>
+        <td style="padding:10px">Emergency backup for critical systems</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e0e0e0">
+        <td style="padding:10px">Cabling, installation, testing</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">115k</td>
+        <td style="padding:10px">Labour + materials (22% of equipment)</td>
+      </tr>
+      <tr style="background:#f0f0f0;font-weight:600">
+        <td style="padding:10px">Electrical infrastructure subtotal</td>
+        <td style="padding:10px;text-align:right;font-family:monospace">375k</td>
+        <td style="padding:10px">+15% contingency = ~432k total</td>
+      </tr>
+      <tr style="background:#fff">
+        <td style="padding:10px"><strong>Combined Kaeser + Electrical</strong></td>
+        <td style="padding:10px;text-align:right;font-family:monospace"><strong>~712k</strong></td>
+        <td style="padding:10px"><strong>Major cost driver: HCC + grid infrastructure</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:1rem;font-size:12px;color:#666">
+    <strong>Note:</strong> CAPEX breakdown shows electrical infrastructure is a <em>site-level requirement</em>, not just Kaeser cost. 
+    Electrical contractor selection (EPC = Engineering, Procurement, Construction) is critical path for project schedule.
+  </p>
+</div>
+
+<!-- ========== ROOM LAYOUT ========== -->
+<h2>Room Layout — Compressor Hall</h2>
+<div class="card room-layout">
+<svg class="room-svg" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="460" height="360" fill="none" stroke="var(--fg)" stroke-width="2" rx="4"/>
+  <text x="250" y="14" text-anchor="middle" font-size="11" fill="var(--fg2)">10.0 m</text>
+  <text x="12" y="200" text-anchor="middle" font-size="11" fill="var(--fg2)" transform="rotate(-90,12,200)">8.0 m</text>
+  <rect x="200" y="370" width="100" height="12" fill="var(--accent2)" rx="2"/>
+  <text x="250" y="395" text-anchor="middle" font-size="9" fill="var(--fg2)">Main Access Door (2.4m)</text>
+  <rect x="50" y="60" width="120" height="80" fill="#E3F2FD" stroke="#1565C0" stroke-width="1.5" rx="4"/>
+  <text x="110" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="#1565C0">FSD 575 #1</text>
+  <text x="110" y="105" text-anchor="middle" font-size="8" fill="#1565C0">3.2m × 2.1m</text>
+  <text x="110" y="120" text-anchor="middle" font-size="8" fill="#1565C0">Oil-free · VFD</text>
+  <rect x="190" y="60" width="120" height="80" fill="#E3F2FD" stroke="#1565C0" stroke-width="1.5" rx="4"/>
+  <text x="250" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="#1565C0">FSD 575 #2</text>
+  <text x="250" y="105" text-anchor="middle" font-size="8" fill="#1565C0">3.2m × 2.1m</text>
+  <text x="250" y="120" text-anchor="middle" font-size="8" fill="#1565C0">Oil-free · VFD</text>
+  <rect x="330" y="60" width="120" height="80" fill="#E3F2FD" stroke="#1565C0" stroke-width="1.5" rx="4"/>
+  <text x="390" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="#1565C0">FSD 575 #3</text>
+  <text x="390" y="105" text-anchor="middle" font-size="8" fill="#1565C0">3.2m × 2.1m</text>
+  <text x="390" y="120" text-anchor="middle" font-size="8" fill="#1565C0">Oil-free · VFD</text>
+  <line x1="50" y1="155" x2="450" y2="155" stroke="var(--fg2)" stroke-dasharray="4,4" stroke-width="0.5"/>
+  <text x="250" y="168" text-anchor="middle" font-size="8" fill="var(--fg2)">Maintenance Aisle (1.5m)</text>
+  <rect x="50" y="185" width="60" height="50" fill="#FFF3E0" stroke="#E65100" stroke-width="1" rx="4"/>
+  <text x="80" y="207" text-anchor="middle" font-size="8" fill="#E65100">Oil Sep</text>
+  <text x="80" y="218" text-anchor="middle" font-size="7" fill="#E65100">#1 #2 #3</text>
+  <rect x="130" y="185" width="80" height="50" fill="#E8F5E9" stroke="#2E7D32" stroke-width="1" rx="4"/>
+  <text x="170" y="207" text-anchor="middle" font-size="8" fill="#2E7D32">CW Manifolds</text>
+  <text x="170" y="218" text-anchor="middle" font-size="7" fill="#2E7D32">HX1 + HX3</text>
+  <rect x="350" y="185" width="100" height="50" fill="#F3E5F5" stroke="#7B1FA2" stroke-width="1" rx="4"/>
+  <text x="400" y="207" text-anchor="middle" font-size="8" fill="#7B1FA2">Control Panel</text>
+  <text x="400" y="218" text-anchor="middle" font-size="7" fill="#7B1FA2">PLC + HMI</text>
+  <rect x="50" y="270" width="100" height="60" fill="#FFEBEE" stroke="#C62828" stroke-width="1" rx="4"/>
+  <text x="100" y="297" text-anchor="middle" font-size="8" fill="#C62828">Electrical</text>
+  <text x="100" y="308" text-anchor="middle" font-size="7" fill="#C62828">MCC + VFD panels</text>
+  <rect x="350" y="270" width="100" height="60" fill="#ECEFF1" stroke="#546E7A" stroke-width="1" rx="4"/>
+  <text x="400" y="297" text-anchor="middle" font-size="8" fill="#546E7A">Spares</text>
+  <text x="400" y="308" text-anchor="middle" font-size="7" fill="#546E7A">Storage</text>
+</svg>
+<p class="fig-cap">Figure: Compressor hall floor plan (not to scale) · 3× FSD 575 SFC Oil-Free · Minimum 10m×8m×3m · 240 m³</p>
+</div>
+
+<!-- ========== PLOTLY CHARTS ========== -->
+<h2>Visualisations</h2>
+<div class="gridq">
+  <div class="card"><div id="plotCostBreakdown" class="plotly-chart"></div></div>
+  <div class="card"><div id="plotFlowPower" class="plotly-chart"></div></div>
+</div>
+<div class="gridq">
+  <div class="card"><div id="plotUtilityStack" class="plotly-chart"></div></div>
+  <div class="card"><div id="plotCapexOpex" class="plotly-chart"></div></div>
+</div>
+
+<!-- ========== REDUNDANCY ========== -->
+<h2>Redundancy Analysis</h2>
+<div class="card">
+<table><thead><tr><th>Strategy</th><th>Units</th><th>CAPEX</th><th>Avail.</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>N (no spare)</td><td>3× FSD 575</td><td>€720k</td><td>~97%</td><td>Single failure = capacity loss</td></tr>
+  <tr style="background:var(--bg)"><td><strong>N+1 (recommended)</strong></td><td>4× FSD 575</td><td>€960k</td><td>~99.5%</td><td>Any 1 off, 3 remain at full flow</td></tr>
+  <tr><td>N+2</td><td>5× FSD 575</td><td>€1,200k</td><td>~99.9%</td><td>Overkill for this application</td></tr>
+  <tr><td>N+1 (FSD 475 alt)</td><td>5× FSD 475</td><td>€900k</td><td>~99.5%</td><td>4 running + 1 standby</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== COMPARISON ========== -->
+<h2>FSD 475 vs FSD 575 — Head-to-Head</h2>
+<div class="card">
+<table><thead><tr><th>Parameter</th><th>FSD 475 SFC</th><th>FSD 575 SFC</th><th>Winner</th></tr></thead><tbody>
+  <tr><td>Motor power</td><td>200 kW</td><td>315 kW</td><td>—</td></tr>
+  <tr><td>Max flow @ 72 Hz (He, 300K)</td><td>~90 g/s</td><td>112 g/s</td><td>FSD 575</td></tr>
+  <tr><td>Flow @ 60 Hz</td><td>~75 g/s</td><td>~93 g/s</td><td>FSD 575</td></tr>
+  <tr><td>Unit cost (est.)</td><td>€180,000</td><td>€240,000</td><td>FSD 475</td></tr>
+  <tr><td>Units for 316 g/s (HP=266)</td><td>4 (max)</td><td>3</td><td>FSD 575</td></tr>
+  <tr><td>Total equip cost</td><td>€720,000</td><td>€720,000</td><td>Tie</td></tr>
+  <tr><td>Floor space</td><td>4 × 6.7 = 26.8 m²</td><td>3 × 6.7 = 20.1 m²</td><td>FSD 575</td></tr>
+  <tr><td>N+1 cost</td><td>5 × €180k = €900k</td><td>4 × €240k = €960k</td><td>FSD 475</td></tr>
+  <tr><td>Turndown flexibility</td><td>4 VFDs</td><td>3 VFDs</td><td>FSD 475</td></tr>
+  <tr><td>Efficiency at part-load</td><td>Lower Hz → better</td><td>Higher Hz needed</td><td>FSD 475</td></tr>
+  <tr><td>Maintenance (more units)</td><td>4 sets filters/oil</td><td>3 sets filters/oil</td><td>FSD 575</td></tr>
+</tbody></table>
+</div>
+</div><!-- /container -->
+<script>
+
+/* ===== Sensitivity Calculator ===== */
+function updateSensitivity(){
+  const n = +document.getElementById('skidSlider').value;
+  const mult = +document.getElementById('costMultSlider').value;
+  const inst = +document.getElementById('installSlider').value;
+  const elec = +document.getElementById('elecSlider').value;
+  document.getElementById('skidVal').textContent = n;
+  document.getElementById('costMultVal').textContent = mult.toFixed(2)+'×';
+  document.getElementById('installVal').textContent = inst.toFixed(1)+'%';
+  document.getElementById('elecVal').textContent = elec.toFixed(2);
+  const unitCost = 240000 * mult;
+  const equipTotal = unitCost * n;
+  const installCost = equipTotal * inst/100;
+  const commCost = equipTotal * 0.075;
+  const spareCost = equipTotal * 0.10;
+  const vfdCost = n * 18000;
+  const controlCost = 25000;
+  const oilSep = n * 8000;
+  const capex = equipTotal + installCost + commCost + spareCost + vfdCost + controlCost + oilSep;
+  const powerKW = n * 360; // corrected to ~360kW per unit at 68Hz
+  const annualHrs = 8000;
+  const opex = powerKW * elec * annualHrs;
+  const tco5 = capex + opex * 5;
+  const flow = n <= 2 ? n * 100 : n * 112;
+  const costPerGs = capex / flow;
+  document.getElementById('sensCapex').textContent = '€' + (capex/1000).toFixed(0) + 'k';
+  document.getElementById('sensOpex').textContent = '€' + (opex/1000).toFixed(0) + 'k/yr';
+  document.getElementById('sensTCO').textContent = '€' + (tco5/1000).toFixed(0) + 'k';
+  document.getElementById('sensCostPerGs').textContent = '€' + (costPerGs/1000).toFixed(1) + 'k';
+}
+
+function selectConfig(flow){
+  document.querySelectorAll('.config-card').forEach(c=>c.classList.remove('selected'));
+  const el = document.querySelector(`.config-card[data-flow="${flow}"]`);
+  if(el) el.classList.add('selected');
+}
+
+/* ===== Plotly Charts ===== */
+const pc = {bg:'rgba(0,0,0,0)', paper:'rgba(0,0,0,0)',
+  blues:['#08519c','#2171b5','#4292c6','#6baed6','#9ecae1','#c6dbef','#deebf7'],
+  oranges:['#e6550d','#fd8d3c','#fdae6b']};
+const pl = {font:{family:'Aptos,Segoe UI,sans-serif',size:12}, margin:{l:50,r:30,t:40,b:40},
+  plot_bgcolor:pc.bg, paper_bgcolor:pc.paper};
+
+// 1. Cost Breakdown Pie
+Plotly.newPlot('plotCostBreakdown',[{
+  values:[720000,126000,54000,72000,54000,25000,24000],
+  labels:['Compressor Skids','Installation','Commissioning','Spare Parts','VFD Panels','Controls','Oil Separators'],
+  type:'pie', hole:0.45,
+  marker:{colors:pc.blues},
+  textinfo:'label+percent', textfont:{size:10}
+}],{...pl, title:{text:'CAPEX Breakdown (3× FSD 575)',font:{size:14}}});
+
+// 2. Flow vs Power (corrected)
+const flows = [25,50,100,150,200,250,300,316,350];
+const powers = [80,160,320,480,630,810,945,990,1080];
+Plotly.newPlot('plotFlowPower',[{
+  x:flows, y:powers, type:'scatter', mode:'lines+markers',
+  line:{color:pc.blues[0],width:3}, marker:{size:8,color:flows.map(f=>f===316?pc.oranges[0]:pc.blues[1])},
+  text:flows.map((f,i)=>f+'g/s: '+powers[i]+'kW'), textposition:'top center',
+  hoverinfo:'text'
+}],{...pl, title:{text:'Total Electrical Power vs Flow (Corrected)',font:{size:14}},
+  xaxis:{title:'Total Mass Flow (g/s)'}, yaxis:{title:'Total Electrical Power (kW)'},
+  shapes:[{type:'line',x0:316,x1:316,y0:0,y1:1100,line:{color:pc.oranges[0],width:2,dash:'dot'}},
+          {type:'line',x0:0,x1:360,y0:990,y1:990,line:{color:pc.oranges[1],width:1,dash:'dot'}}],
+  annotations:[{x:316,y:990,text:'Design: 316 g/s → 990 kW',showarrow:true,arrowhead:2,ax:60,ay:-30}]
+});
+
+// 3. Utility stacked bar vs flow
+const elecData=[80,160,320,480,630,810,945,990,1080];
+const hx3Data =[60,120,240,360,500,600,720,760,850];
+const hx1Data =[20,40,80,120,130,150,160,165,173];
+Plotly.newPlot('plotUtilityStack',[
+  {x:flows,y:elecData,name:'Electrical (kW)',type:'bar',marker:{color:pc.blues[0]}},
+  {x:flows,y:hx3Data,name:'HX3 Post-cooling (kW)',type:'bar',marker:{color:pc.blues[2]}},
+  {x:flows,y:hx1Data,name:'HX1 Oil cooling (kW)',type:'bar',marker:{color:pc.oranges[1]}}
+],{...pl, barmode:'group', title:{text:'Utility Load vs Flow (Corrected)',font:{size:14}},
+  xaxis:{title:'Mass Flow (g/s)',tickvals:flows}, yaxis:{title:'Load (kW)'}});
+
+// 4. CAPEX vs OPEX
+const years=Array.from({length:11},(_,i)=>i);
+const capexLine=years.map(()=>1075);
+const opexCum=years.map(y=>y*1036); // corrected OPEX
+const tcoLine=years.map(y=>1075+y*1036);
+Plotly.newPlot('plotCapexOpex',[
+  {x:years,y:capexLine,name:'CAPEX',type:'scatter',mode:'lines',line:{color:pc.blues[0],width:2,dash:'dot'}},
+  {x:years,y:opexCum,name:'Cumulative OPEX',type:'scatter',mode:'lines',fill:'tozeroy',fillcolor:'rgba(8,81,156,0.1)',line:{color:pc.blues[2],width:2}},
+  {x:years,y:tcoLine,name:'TCO',type:'scatter',mode:'lines+markers',line:{color:pc.oranges[0],width:3},marker:{size:6}}
+],{...pl, title:{text:'CAPEX vs OPEX over Time (€k)',font:{size:14}},
+  xaxis:{title:'Years',dtick:1}, yaxis:{title:'Cost (k€)'}, legend:{x:0.05,y:0.95}});
+
+updateSensitivity();
+
+</script>
+</body></html>
