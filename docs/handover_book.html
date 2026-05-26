@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABACUS Handover Book — 12-Chapter Technical Guide</title>
+<title>ABACUS Handover Book — 13-Chapter Technical Guide</title>
+<script src="assets/chart.umd.min.js" defer></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; }
@@ -39,7 +40,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <body>
 <div class="header">
 <h1>📘 ABACUS System Handover Book</h1>
-<p>12-Chapter Comprehensive Technical Guide | Generated: 2026-05-16 22:34 | 558 commits · 201 Python files · 533 docs</p>
+<p>13-Chapter Comprehensive Technical Guide | Generated: 2026-05-25 00:00 | 558 commits · 201 Python files · 533 docs</p>
 </div>
 <div class="container">
 <nav class="sidebar" role="tablist" aria-label="Handover chapters">
@@ -55,6 +56,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <button onclick="showChapter('ch10_deployment')" id="btn-ch10_deployment" role="tab" aria-selected="false" aria-controls="ch10_deployment">Ch 10: Deployment</button>
 <button onclick="showChapter('ch11_testing')" id="btn-ch11_testing" role="tab" aria-selected="false" aria-controls="ch11_testing">Ch 11: Testing & QA</button>
 <button onclick="showChapter('ch12_roadmap')" id="btn-ch12_roadmap" role="tab" aria-selected="false" aria-controls="ch12_roadmap">Ch 12: Roadmap</button>
+<button onclick="showChapter('ch15_eng_tools')" id="btn-ch15_eng_tools" role="tab" aria-selected="false" aria-controls="ch15_eng_tools">Ch 15: Engineering Tools</button>
 </nav>
 <main class="content" id="main-content">
 <div id="ch01_introduction" class="chapter" role="tabpanel" aria-labelledby="btn-ch01_introduction" style="display:block"><h1>Chapter 1: Introduction & QPLANT Cryogenic System Overview</h1>
@@ -941,6 +943,282 @@ cp .env.example .env
 <li>Zero critical bugs in production</li>
 </ul>
 <br></div>
+<div id="ch15_eng_tools" class="chapter" role="tabpanel" aria-labelledby="btn-ch15_eng_tools" style="display:none">
+<h1>Chapter 15: Engineering Tools — Helium Calculator &amp; Properties</h1>
+<br>
+<p>This chapter elaborates the engineering tools and cryogenic fluid data relevant to the
+QPLANT helium system at MYRRHA/SCK&bull;CEN. Content is derived from:</p>
+<ul>
+<li><strong>Gistau Baguer, G.</strong> — <em>Cryogenic Engineering for Scientists and Engineers</em>, Chapter&nbsp;15:
+Engineering Tools (thermodynamic tables, calculator methods, design charts)</li>
+<li>NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega <em>et al.</em> 2015; Donnelly &amp; Barenghi 1998)</li>
+<li>CODEX repository: <code>engineering_tools/hbhs_ep/</code> — HBHS-EP v8.3 SSoT parameters</li>
+<li>ABACUS: <code>cryo_dashboard_v0_3_0/</code> — interactive cryogenic properties reference</li>
+</ul>
+<br>
+<h2>15.1 QPLANT Operating Envelope</h2>
+<br>
+<p>The following parameters define the canonical HBHS-EP (Helium Buffer and Handling System — Engineering Package)
+operating window. Source: <code>CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wcs_ssot.json</code> (version HBHS-EP-v8.3).</p>
+<br>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Notes</th></tr>
+<tr><td>Design flow (GPS)</td><td>350</td><td>g/s</td><td>Helium mass-flow design point</td></tr>
+<tr><td>Minimum supply pressure</td><td>10</td><td>barg</td><td>Interlock lower limit</td></tr>
+<tr><td>Baseline supply pressure</td><td>14</td><td>barg</td><td>Nominal operating point (HCC/WCS)</td></tr>
+<tr><td>Inventory pressure</td><td>15</td><td>bar</td><td>Buffer storage</td></tr>
+<tr><td>VLP nominal</td><td>400</td><td>mbar abs</td><td>Very Low Pressure header</td></tr>
+<tr><td>VLP range</td><td>250 – 550</td><td>mbar abs</td><td>Acceptable operating band</td></tr>
+<tr><td>PVPS outlet nominal</td><td>1050</td><td>mbar abs</td><td>Primary Vacuum Pumping Station</td></tr>
+<tr><td>PVPS outlet range</td><td>800 – 1200</td><td>mbar abs</td><td>Acceptable operating band</td></tr>
+<tr><td>PVPS units total</td><td>10</td><td>—</td><td>N+1 redundancy</td></tr>
+<tr><td>PVPS nominal operating</td><td>9</td><td>—</td><td>1 unit in standby</td></tr>
+</table>
+<br>
+<h3>Figure 15.1 — QPLANT Pressure Ladder</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:300px">
+<canvas id="ch15PvpsChart"></canvas>
+</div>
+<p style="font-size:0.8em;color:#8b949e">VLP and PVPS values in mbar abs; supply and inventory values in barg × 1000 for scale.</p>
+<br>
+<h2>15.2 He-4 Thermodynamic Properties (NIST REFPROP 10)</h2>
+<br>
+<p>Helium-4 is the working fluid at 4.2 K (normal boiling point) and 2 K (superfluid bath) throughout the QPLANT
+cryogenic system. The following table and charts are the primary reference for thermal design and safety margin calculations.</p>
+<br>
+<h3>Key Constants — He-4</h3>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Unit</th></tr>
+<tr><td>Molar mass</td><td>4.0026</td><td>g/mol</td></tr>
+<tr><td>Specific gas constant R</td><td>2 077.3</td><td>J/(kg·K)</td></tr>
+<tr><td>Critical temperature T<sub>c</sub></td><td>5.1953</td><td>K</td></tr>
+<tr><td>Critical pressure P<sub>c</sub></td><td>227.46</td><td>kPa</td></tr>
+<tr><td>Critical density ρ<sub>c</sub></td><td>69.64</td><td>kg/m³</td></tr>
+<tr><td>Normal boiling point T<sub>NBP</sub></td><td>4.2217</td><td>K (at 1 atm)</td></tr>
+<tr><td>λ-point T<sub>λ</sub></td><td>2.177</td><td>K (superfluid onset)</td></tr>
+<tr><td>λ-point P<sub>λ</sub></td><td>5.04</td><td>kPa</td></tr>
+<tr><td>Latent heat at NBP ΔH<sub>vap</sub></td><td>20.4</td><td>kJ/kg</td></tr>
+</table>
+<br>
+<h3>Table 15.1 — He-4 Saturation Properties (NIST REFPROP 10)</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>T (K)</th><th>P<sub>sat</sub> (kPa)</th><th>ρ<sub>liq</sub> (kg/m³)</th><th>ρ<sub>vap</sub> (kg/m³)</th><th>ΔH<sub>vap</sub> (kJ/kg)</th><th>Note</th></tr>
+<tr style="background:#1a2332"><td>2.177</td><td>5.04</td><td>146.2</td><td>0.372</td><td>22.6</td><td>λ-point</td></tr>
+<tr><td>2.5</td><td>9.97</td><td>145.4</td><td>0.706</td><td>22.2</td><td></td></tr>
+<tr><td>3.0</td><td>20.98</td><td>143.7</td><td>1.426</td><td>21.4</td><td></td></tr>
+<tr><td>3.5</td><td>40.24</td><td>141.7</td><td>2.638</td><td>20.3</td><td></td></tr>
+<tr><td>3.8</td><td>57.67</td><td>140.3</td><td>3.726</td><td>19.5</td><td></td></tr>
+<tr><td>4.0</td><td>72.50</td><td>139.3</td><td>4.678</td><td>18.9</td><td></td></tr>
+<tr style="background:#1a2332"><td>4.2217</td><td>101.325</td><td>125.0</td><td>16.87</td><td>20.4</td><td>NBP (1 atm)</td></tr>
+<tr><td>4.4</td><td>110.2</td><td>122.6</td><td>18.75</td><td>19.2</td><td></td></tr>
+<tr><td>4.6</td><td>132.4</td><td>119.8</td><td>22.80</td><td>17.7</td><td></td></tr>
+<tr><td>4.8</td><td>157.0</td><td>116.4</td><td>27.43</td><td>15.9</td><td></td></tr>
+<tr><td>5.0</td><td>184.0</td><td>111.6</td><td>33.60</td><td>13.5</td><td></td></tr>
+<tr style="background:#1a2332"><td>5.1953</td><td>227.46</td><td>69.64</td><td>69.64</td><td>0.0</td><td>Critical point</td></tr>
+</table>
+</div>
+<br>
+<h2>15.3 He-4 Property Charts</h2>
+<br>
+<h3>Figure 15.2 — He-4 Saturation Pressure vs Temperature</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:280px">
+<canvas id="ch15PtChart"></canvas>
+</div>
+<br>
+<h3>Figure 15.3 — He-4 Saturation Pressure vs Temperature (log scale) with Key Operating Points</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:300px">
+<canvas id="ch15LogChart"></canvas>
+</div>
+<p style="font-size:0.8em;color:#8b949e">Marked points: λ-transition (2.177 K, 5.04 kPa), NBP (4.2217 K, 101.3 kPa), critical point (5.1953 K, 227.5 kPa).</p>
+<br>
+<h3>Figure 15.4 — He-4 Liquid Density along Saturation Curve</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:260px">
+<canvas id="ch15RhoChart"></canvas>
+</div>
+<br>
+<h3>Figure 15.5 — He-4 Latent Heat of Vaporisation vs Temperature</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:260px">
+<canvas id="ch15HvapChart"></canvas>
+</div>
+<br>
+<h2>15.4 Thermodynamic Analysis — Expansion Methods</h2>
+<br>
+<p>Source: CODEX <code>engineering_tools/hbhs_ep/source/json/thermo_exergy_wave4.json</code> (HBHS-EP-v8.4-wave4)</p>
+<br>
+<h3>Figure 15.6 — JT Valve vs Wet Expansion Turbine: Relative Liquid Yield</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:240px">
+<canvas id="ch15JtChart"></canvas>
+</div>
+<br>
+<table>
+<tr><th>Case</th><th>ID</th><th>Basis</th><th>Key Result</th></tr>
+<tr><td>JT vs wet turbine expansion</td><td>THERMO-001</td><td>3 bar, 4.5 K SHE → 2 K</td><td>Wet turbine yields <strong>~37.5 % more liquid</strong> than JT valve (relative yield 1.375 vs 1.0)</td></tr>
+<tr><td>2 K return vapour subcooling</td><td>THERMO-002</td><td>Subcool 4.5 K supply with 2 K return vapour</td><td><strong>77 % reduction</strong> in flash gas at the phase separator</td></tr>
+<tr><td>QLH buffer ride-through</td><td>THERMO-003</td><td>5 000 L external liquid He buffer</td><td><strong>8 hours</strong> of thermal and operational smoothing during disturbances</td></tr>
+<tr><td>2 K equivalent heat leak</td><td>THERMO-004</td><td>Non-isothermal transport losses</td><td>Effective interface load of <strong>80 W</strong> at 2 K; consumes exergy margin</td></tr>
+</table>
+<br>
+<h3>Diagram 15.7 — Cryogenic Expansion Process Comparison (ASCII)</h3>
+<pre><code>
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │         JT VALVE                         WET EXPANSION TURBINE              │
+  │  HP He (3 bar, 4.5 K)                 HP He (3 bar, 4.5 K)                 │
+  │         │                                       │                           │
+  │   ┌─────▼─────┐                         ┌───────▼──────┐                   │
+  │   │  JT valve  │  Isenthalpic expansion  │  Wet turbine │  Isentropic exp. │
+  │   └─────┬─────┘  ΔH = 0                 └───────┬──────┘  work extracted   │
+  │         │                                       │                           │
+  │  Phase separator                        Phase separator                     │
+  │   Liquid yield: 1.0 (reference)         Liquid yield: 1.375 (+37.5%)       │
+  │   ρ_liq = 125 kg/m³ @ 4.2 K            ρ_liq = 125 kg/m³ @ 4.2 K          │
+  │                                                                             │
+  │  KEY INSIGHT: The turbine recovers expansion work → more liquid at 4.2 K   │
+  │  Subcooling the 4.5 K supply with 2 K return vapour reduces flash gas 77%  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌───────────────────────────────────────────────────────────┐
+  │            SUPERFLUID He-4 PHASE DIAGRAM                  │
+  │                                                           │
+  │  P(kPa) │                                                 │
+  │  227.5  │             ● Critical point (5.195 K)          │
+  │         │           ╱                                     │
+  │  101.3  │         ╱       NORMAL LIQUID (He-I)            │
+  │         │       ╱                                         │
+  │   5.04  │─────●─────────────────────────────── T(K)       │
+  │  (λ-pt) │  He-II              He-I                        │
+  │         │  SUPER-             NORMAL                      │
+  │         │  FLUID              LIQUID                      │
+  │       0 │─────────────────────────────────────            │
+  │         2.177    4.217   5.195                            │
+  │                                                           │
+  │  λ-line at 2.177 K: superfluid transition                 │
+  │  Below λ: He-II (zero viscosity, high thermal cond.)      │
+  │  2 K operation: superfluid bath for SRF cavities          │
+  └───────────────────────────────────────────────────────────┘
+</code></pre>
+<br>
+<h2>15.5 Helium Engineering Calculator</h2>
+<br>
+<p>Interactive unit and property conversions for cryogenic helium engineering. All formulas use
+CODATA 2018 constants (R = 8 314.46 J/(kmol·K), M<sub>He</sub> = 4.0026 g/mol) and NIST saturation data.</p>
+<br>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:16px;max-width:600px">
+<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <label for="ch15CalcMode" style="font-size:0.78em;color:#8b949e">Conversion type</label>
+    <select id="ch15CalcMode" style="background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;font-size:0.88em;padding:6px 10px">
+      <option value="leak_g_yr">Leak rate: mbar·L/s → g/year (He-4)</option>
+      <option value="leak_std_cc_s">Leak rate: mbar·L/s → std cm³/s</option>
+      <option value="pres_kpa_barg">Pressure: kPa (abs) → barg</option>
+      <option value="pres_barg_kpa">Pressure: barg → kPa (abs)</option>
+      <option value="he_lookup">He-4 saturation lookup at T (K)</option>
+    </select>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <label for="ch15CalcInput" style="font-size:0.78em;color:#8b949e">Input value</label>
+    <input id="ch15CalcInput" type="number" step="any" value="1e-6"
+           style="background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;font-size:0.88em;padding:6px 10px;width:160px">
+  </div>
+  <button onclick="ch15Calc()" style="background:#1f6feb;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:0.88em;padding:8px 16px">Calculate</button>
+</div>
+<div style="background:#0d1117;border:1px solid #30363d;border-radius:4px;padding:10px 14px;font-family:monospace;font-size:0.9em;color:#79c0ff;min-height:2em" id="ch15CalcResult" aria-live="polite">→ press Calculate</div>
+</div>
+<br>
+<h3>Calculator Reference Formulas</h3>
+<table>
+<tr><th>Conversion</th><th>Formula</th><th>Constants</th></tr>
+<tr><td>Leak rate mbar·L/s → g/year</td><td>ṁ [g/s] = Q × M / (R × T); ×3.156×10⁷ s/yr</td><td>M=4.0026 g/mol, R=83.145 mbar·L/(mol·K), T=293.15 K</td></tr>
+<tr><td>Leak rate mbar·L/s → std cm³/s</td><td>× 0.9869</td><td>At 0 °C, 101.325 kPa (STP)</td></tr>
+<tr><td>kPa (abs) → barg</td><td>(P_kPa − 101.325) / 100</td><td>P_atm = 101.325 kPa</td></tr>
+<tr><td>barg → kPa (abs)</td><td>P_barg × 100 + 101.325</td><td>—</td></tr>
+<tr><td>He-4 sat. lookup</td><td>Linear interpolation of NIST REFPROP 10 table</td><td>Valid 2.18–5.19 K</td></tr>
+</table>
+<br>
+<h2>15.6 QPLANT System Block Diagram</h2>
+<br>
+<pre><code>
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                  QPLANT HELIUM CRYOGENIC SYSTEM — BLOCK DIAGRAM                 │
+  │                 (HBHS-EP v8.3 | Design flow: 350 g/s | SCK•CEN / MYRRHA)       │
+  ├─────────────────────────────────────────────────────────────────────────────────┤
+  │                                                                                 │
+  │  ┌──────────┐     ┌───────────────┐      ┌─────────────────────────────────┐   │
+  │  │He storage│─14b─│  HCC / WCS    │─14b──│  Heat Exchangers / Liquefier    │   │
+  │  │ 15 bar   │     │  Supply line  │      │  (Cold box, turbines, JT valve) │   │
+  │  └──────────┘     └───────────────┘      └─────────────┬───────────────────┘   │
+  │                                                         │ 4.2 K / 2 K LHe      │
+  │  ┌──────────────────────────────────────────────────────▼─────────────────┐    │
+  │  │                 SRF CAVITY CRYOMODULE STRING                            │    │
+  │  │   ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐          │    │
+  │  │   │Cryo-   │  │Cryo-   │  │Cryo-   │  │Cryo-   │  │Cryo-   │   ...    │    │
+  │  │   │module 1│  │module 2│  │module 3│  │module 4│  │module N│          │    │
+  │  │   │2 K bath│  │2 K bath│  │2 K bath│  │2 K bath│  │2 K bath│          │    │
+  │  │   └───┬────┘  └───┬────┘  └───┬────┘  └───┬────┘  └───┬────┘          │    │
+  │  └───────┼───────────┼───────────┼───────────┼───────────┼────────────────┘   │
+  │          │           │           │           │           │                     │
+  │          └───────────┴───────────▼───────────┴───────────┘                    │
+  │                              VLP header (400 mbar abs)                         │
+  │                                      │                                         │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  PVPS (10 units, N+1)    │                           │
+  │                         │  Outlet: 1050 mbar abs   │                           │
+  │                         └────────────┬────────────┘                           │
+  │                                      │ LP He gas                               │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  Compressor train (HCC)  │                           │
+  │                         │  Outlet: 14 barg         │                           │
+  │                         └────────────┬────────────┘                           │
+  │                                      │ HP He gas                               │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  QLH buffer (5 000 L)    │                           │
+  │                         │  8 h ride-through        │                           │
+  │                         └─────────────────────────┘                           │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+
+  Legend:  HCC = Helium Compressor Circuit  |  WCS = Warm Compression System
+           VLP = Very Low Pressure          |  PVPS = Primary Vacuum Pumping Station
+           QLH = Quasi-Liquid He buffer     |  SRF = Superconducting Radio-Frequency
+           NBP = Normal Boiling Point       |  JT  = Joule-Thomson
+</code></pre>
+<br>
+<h2>15.7 LN₂ Reference Data (Thermal Shielding)</h2>
+<br>
+<p>Liquid Nitrogen at 77 K is used for thermal shielding (80 K shields) around the helium cryostat string.
+Data source: NIST REFPROP 10 / Span et al. 2000.</p>
+<br>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Unit</th></tr>
+<tr><td>Molar mass</td><td>28.014</td><td>g/mol</td></tr>
+<tr><td>Critical temperature T<sub>c</sub></td><td>126.19</td><td>K</td></tr>
+<tr><td>Critical pressure P<sub>c</sub></td><td>3 395.8</td><td>kPa</td></tr>
+<tr><td>Normal boiling point T<sub>NBP</sub></td><td>77.355</td><td>K (at 1 atm)</td></tr>
+<tr><td>Liquid density at NBP ρ<sub>liq</sub></td><td>806.1</td><td>kg/m³</td></tr>
+<tr><td>Latent heat at NBP ΔH<sub>vap</sub></td><td>198.8</td><td>kJ/kg</td></tr>
+<tr><td>Triple point T<sub>tr</sub></td><td>63.15</td><td>K</td></tr>
+</table>
+<br>
+<h2>15.8 References &amp; Data Sources</h2>
+<br>
+<ul>
+<li><strong>Gistau Baguer, G.</strong> (2013). <em>Cryogenic Engineering for Scientists and Engineers</em>. CERN Yellow Report.
+Chapter 15: Engineering Tools — thermodynamic tables, calculator methods, design charts.
+Source archived at: <code>CODEX/GISTAU/sources/master/Chapter15_Gistau_tools.pdf</code></li>
+<li><strong>NIST REFPROP 10</strong> — NIST Standard Reference Database 23.
+Helmholtz EOS for He-4: Ortiz-Vega <em>et al.</em> (2015).
+<a href="https://webbook.nist.gov/chemistry/fluid/" target="_blank" rel="noopener">webbook.nist.gov</a></li>
+<li><strong>Donnelly, R.J. &amp; Barenghi, C.F.</strong> (1998). The observed properties of liquid helium at the saturated vapour pressure.
+<em>J. Phys. Chem. Ref. Data</em> <strong>27</strong>, 1217–1274.</li>
+<li><strong>CODEX repo</strong> <code>engineering_tools/hbhs_ep/</code> — HBHS-EP v8.3 SSoT parameters
+(<code>hcc_wcs_ssot.json</code>, <code>thermo_exergy_wave4.json</code>, <code>wave_plot_roadmap.json</code>)</li>
+<li><strong>ABACUS repo</strong> <code>cryo_dashboard_v0_3_0/</code> — interactive cryogenic properties dashboard</li>
+<li>CODATA 2018 fundamental constants (molar gas constant R = 8 314.462618 J/(kmol·K))</li>
+</ul>
+<br>
+<blockquote>⚠️ This chapter provides representative NIST data and engineering estimates for preliminary design and DMAIC analysis.
+For high-accuracy calculations, obtain data directly from NIST REFPROP 10 or the original Gistau source PDF.</blockquote>
+<br>
+</div>
 </main>
 </div>
 <script>
@@ -955,6 +1233,235 @@ function showChapter(id) {
     activeButton.classList.add('active');
     activeButton.setAttribute('aria-selected', 'true');
 }
+
+/* ================================================================
+   CHAPTER 15 — Helium engineering data & calculator
+   Data: NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega et al. 2015)
+   Reference: Gistau Baguer, "Cryogenic Engineering for Scientists
+   and Engineers", Chapter 15 — Engineering Tools.
+   QPLANT parameters: CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wcs_ssot.json
+   ================================================================ */
+
+/* ---- He-4 saturation data [T_K, P_kPa, rhoL, rhoV, dHvap, note] ---- */
+const CH15_HE4 = {
+  Tc: 5.1953, Pc: 227.46, rhoc: 69.64,
+  Tnbp: 4.2217, Pnbp: 101.325,
+  Tlambda: 2.177, Plambda: 5.04,
+  M: 4.0026,         // g/mol
+  Rspec: 2077.3,     // J/(kg·K)  specific gas constant
+  sat: [
+    [2.177, 5.04,   146.2,  0.372,  22.6, "λ-point (superfluid transition)"],
+    [2.5,   9.97,   145.4,  0.706,  22.2, ""],
+    [3.0,   20.98,  143.7,  1.426,  21.4, ""],
+    [3.5,   40.24,  141.7,  2.638,  20.3, ""],
+    [3.8,   57.67,  140.3,  3.726,  19.5, ""],
+    [4.0,   72.50,  139.3,  4.678,  18.9, ""],
+    [4.2217,101.325,125.0,  16.87,  20.4, "NBP — Normal Boiling Point (1 atm)"],
+    [4.4,   110.2,  122.6,  18.75,  19.2, ""],
+    [4.6,   132.4,  119.8,  22.80,  17.7, ""],
+    [4.8,   157.0,  116.4,  27.43,  15.9, ""],
+    [5.0,   184.0,  111.6,  33.60,  13.5, ""],
+    [5.1953,227.46,  69.64,  69.64,   0.0, "Critical point"]
+  ]
+};
+
+/* ---- utility interpolation ---- */
+function ch15Lerp(T, x0, x1, y0, y1) { return x1===x0 ? y0 : y0+(y1-y0)*(T-x0)/(x1-x0); }
+function ch15Interp(sat, T, col) {
+  if (T < sat[0][0] || T > sat[sat.length-1][0]) return null;
+  for (let i = 0; i < sat.length-1; i++) {
+    if (T >= sat[i][0] && T <= sat[i+1][0])
+      return ch15Lerp(T, sat[i][0], sat[i+1][0], sat[i][col], sat[i+1][col]);
+  }
+  return null;
+}
+
+/* ---- chart colour palette (matches GitHub dark theme) ---- */
+const C15 = {
+  blue:   '#58a6ff', green:  '#3fb950', orange: '#f78166',
+  amber:  '#d2a679', cyan:   '#79c0ff', grid:   'rgba(48,54,61,0.8)'
+};
+const C15_FONT = { color:'#8b949e', family:'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', size:11 };
+
+function ch15MkLine(canvasId, xLbl, yLbl, datasets, opts) {
+  opts = opts || {};
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  return new Chart(canvas.getContext('2d'), {
+    type:'line', data:{ datasets },
+    options:{
+      animation:false, responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ position:'top', labels:{ boxWidth:12, padding:10, color:'#8b949e' }},
+        tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1 }
+      },
+      scales:{
+        x:{ type: opts.xLog?'logarithmic':'linear',
+            title:{ display:true, text:xLbl, color:'#8b949e', font:C15_FONT },
+            grid:{ color:C15.grid } },
+        y:{ type: opts.yLog?'logarithmic':'linear',
+            title:{ display:true, text:yLbl, color:'#8b949e', font:C15_FONT },
+            grid:{ color:C15.grid } }
+      }
+    }
+  });
+}
+
+function ch15BuildCharts() {
+  if (typeof Chart === 'undefined') return;
+  Chart.defaults.color = '#8b949e';
+  Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+  Chart.defaults.font.size = 11;
+
+  /* P–T saturation (He-4) */
+  ch15MkLine('ch15PtChart', 'Temperature (K)', 'Saturation Pressure (kPa)',
+    [{  label:'He-4 (NIST REFPROP 10)',
+        data: CH15_HE4.sat.map(r=>({x:r[0],y:r[1]})),
+        borderColor:C15.blue, backgroundColor:C15.blue+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Liquid density (He-4) */
+  ch15MkLine('ch15RhoChart', 'Temperature (K)', 'Liquid Density (kg/m³)',
+    [{  label:'ρ_liq He-4 (NIST)',
+        data: CH15_HE4.sat.slice(0,-1).map(r=>({x:r[0],y:r[2]})),
+        borderColor:C15.cyan, backgroundColor:C15.cyan+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Latent heat of vaporisation (He-4) */
+  ch15MkLine('ch15HvapChart', 'Temperature (K)', 'ΔH_vap (kJ/kg)',
+    [{  label:'He-4 ΔH_vap (NIST)',
+        data: CH15_HE4.sat.map(r=>({x:r[0],y:r[4]})),
+        borderColor:C15.amber, backgroundColor:C15.amber+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Log P–T with key operating points (He-4) */
+  const smoothPts = [];
+  for (let T=2.18; T<=5.18; T+=0.02) {
+    const P = ch15Interp(CH15_HE4.sat, T, 1);
+    if (P!==null) smoothPts.push({x:T, y:P});
+  }
+  ch15MkLine('ch15LogChart', 'Temperature (K)', 'Saturation Pressure (kPa)',
+    [
+      { label:'He-4 saturation', data:smoothPts,
+        borderColor:C15.blue, backgroundColor:'transparent',
+        tension:0.4, pointRadius:0, borderWidth:2, fill:false },
+      { label:'Key points (λ, NBP, critical)',
+        data:[{x:2.177,y:5.04},{x:4.2217,y:101.325},{x:5.1953,y:227.46}],
+        borderColor:C15.orange, backgroundColor:C15.orange,
+        showLine:false, pointRadius:7, pointStyle:'circle' }
+    ],
+    {yLog:true});
+
+  /* JT vs wet turbine expansion bar chart */
+  const jtCanvas = document.getElementById('ch15JtChart');
+  if (jtCanvas && typeof Chart !== 'undefined') {
+    new Chart(jtCanvas.getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:['JT Valve (baseline)','Wet Expansion Turbine'],
+        datasets:[{
+          label:'Relative liquid yield',
+          data:[1.0, 1.375],
+          backgroundColor:[C15.amber+'bb', C15.green+'bb'],
+          borderColor:[C15.amber, C15.green],
+          borderWidth:1
+        }]
+      },
+      options:{
+        animation:false, responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1 }},
+        scales:{
+          x:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'} },
+          y:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'},
+              title:{display:true, text:'Relative liquid yield (JT = 1.0)', color:'#8b949e'} }
+        }
+      }
+    });
+  }
+
+  /* PVPS pressure ladder — horizontal bar */
+  const pvpsCanvas = document.getElementById('ch15PvpsChart');
+  if (pvpsCanvas && typeof Chart !== 'undefined') {
+    new Chart(pvpsCanvas.getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:['VLP (nominal)','VLP (upper)','PVPS outlet (nominal)','PVPS outlet (upper)',
+                'Minimum supply','Baseline supply','Inventory'],
+        datasets:[{
+          label:'Pressure (mbar abs or barg *)',
+          data:[400, 550, 1050, 1200, 10000, 14000, 15000],
+          backgroundColor:C15.blue+'99',
+          borderColor:C15.blue,
+          borderWidth:1
+        }]
+      },
+      options:{
+        indexAxis:'y', animation:false, responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1,
+            callbacks:{ label: ctx => {
+              const v = ctx.raw;
+              return v < 2000 ? `${v} mbar abs` : `${v/1000} barg`;
+            }}}},
+        scales:{
+          x:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'},
+              title:{display:true, text:'Pressure (mbar abs  |  ×1000 = barg)', color:'#8b949e'} },
+          y:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'} }
+        }
+      }
+    });
+  }
+}
+
+/* Calculator logic */
+function ch15Calc() {
+  const mode = document.getElementById('ch15CalcMode').value;
+  const inp  = parseFloat(document.getElementById('ch15CalcInput').value);
+  let out = '—', unit = '';
+  if (isNaN(inp)) { document.getElementById('ch15CalcResult').textContent='Enter a number'; return; }
+  if (mode === 'leak_g_yr') {
+    // mbar·L/s → g/year  (He-4, M=4.0026 g/mol, 1 mol = 22.414 L at STP)
+    // mass flow [g/s] = Q[mbar·L/s] × 1e-3[bar·L/s] / (R[bar·L/(mol·K)] × T[K]) × M[g/mol]
+    // R = 83.14462 mbar·L/(mol·K), T = 293.15 K (20°C)
+    const g_per_s = inp * 4.0026 / (83.14462 * 293.15);
+    out = (g_per_s * 3.15576e7).toExponential(3); unit = 'g/year';
+  } else if (mode === 'leak_std_cc_s') {
+    // mbar·L/s → std cm³/s  (1 mbar·L/s = 0.9869 std cc/s at 0°C / 101.325 kPa → ≈ 1 std cc/s)
+    out = (inp * 0.9869).toExponential(3); unit = 'std cm³/s';
+  } else if (mode === 'pres_kpa_barg') {
+    out = ((inp - 101.325) / 100).toFixed(4); unit = 'barg';
+  } else if (mode === 'pres_barg_kpa') {
+    out = ((inp * 100) + 101.325).toFixed(2); unit = 'kPa (abs) — at 0 barg = 101.325 kPa abs';
+  } else if (mode === 'he_lookup') {
+    const T = inp;
+    const P   = ch15Interp(CH15_HE4.sat, T, 1);
+    const rho = ch15Interp(CH15_HE4.sat, T, 2);
+    const dH  = ch15Interp(CH15_HE4.sat, T, 4);
+    if (P === null) { out = 'Out of range (2.18–5.20 K)'; }
+    else { out = `P_sat=${P.toFixed(2)} kPa  ρ_liq=${rho.toFixed(1)} kg/m³  ΔH_vap=${dH.toFixed(1)} kJ/kg`; }
+    unit = `(He-4 at ${T} K)`;
+  }
+  document.getElementById('ch15CalcResult').textContent = out + (unit ? '  [' + unit + ']' : '');
+}
+
+/* Initialise charts when Ch 15 is first shown */
+let ch15ChartsBuilt = false;
+const _origShowChapter = showChapter;
+showChapter = function(id) {
+  _origShowChapter(id);
+  if (id === 'ch15_eng_tools' && !ch15ChartsBuilt) {
+    // small delay so the canvas is visible before Chart.js measures it
+    setTimeout(function() {
+      if (typeof Chart !== 'undefined') {
+        ch15ChartsBuilt = true;
+        ch15BuildCharts();
+      }
+      // else: Chart.js not yet loaded; will retry on next activation
+    }, 80);
+  }
+};
 </script>
 </body>
 </html>
