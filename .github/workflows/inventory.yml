@@ -8,9 +8,9 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -20,7 +20,7 @@ jobs:
         run: |
           python runners/dmaic_runner.py --action inventory
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: inventory-results
           path: DMAIC_V3_OUTPUT/inventory/

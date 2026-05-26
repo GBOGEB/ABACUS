@@ -122,6 +122,9 @@ backup/
 !DMAIC_V3/**/*.json
 !DMAIC_V3/**/*.md
 
+# DOW Logs (dashboard JSON artifacts must be versioned)
+!DOW_LOGS/*.json
+
 # Keep documentation
 !*.md
 !docs/
