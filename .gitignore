@@ -78,10 +78,9 @@ Thumbs.db
 # Docker
 .dockerignore
 
-<<<<<<< HEAD
 # Secrets
 secrets/
-=======
+
 # Generated PowerPoint files (always regenerate from templates using the generator scripts)
 # Example: python slides/qplant_sckcen_template.py
 *.pptx
@@ -93,7 +92,6 @@ secrets/
 *.hdf5
 
 # Sensitive data
->>>>>>> 1246535379fec46b70cda35854d925ccc325c441
 *.key
 *.pem
 *.crt
@@ -106,9 +104,7 @@ secrets/
 
 # Backup files
 *.backup
-<<<<<<< HEAD
 backup/
-=======
 *_backup.*
 
 # Archives
@@ -129,8 +125,8 @@ backup/
 # Keep documentation
 !*.md
 !docs/
+!docs/**/*.json
 !README.md
 !DEPLOY_NOW.md
 !GITHUB_SETUP_GUIDE.md
 maturity_assessment.json
->>>>>>> 1246535379fec46b70cda35854d925ccc325c441
