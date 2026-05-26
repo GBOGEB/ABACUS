@@ -1,0 +1,113 @@
+name: Update Documentation on Code Changes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'DMAIC_V3/**/*.py'
+      - 'local_mcp/**/*.py'
+      - 'staging/**/*.py'
+      - 'scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-docs:
+    name: Extract & Update Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Extract module docstrings
+        run: |
+          echo "=== Extracting docstrings from Python modules ==="
+          mkdir -p docs/api
+          python3 << 'PYEOF'
+          import ast, json, pathlib, datetime, traceback
+
+          modules = {}
+          for pattern in ["DMAIC_V3/**/*.py", "local_mcp/**/*.py", "staging/**/*.py"]:
+              for p in pathlib.Path(".").glob(pattern):
+                  try:
+                      source = p.read_text(encoding="utf-8", errors="replace")
+                      tree = ast.parse(source)
+                      doc = ast.get_docstring(tree) or ""
+                      classes = []
+                      for node in ast.walk(tree):
+                          if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                              cdoc = ast.get_docstring(node) or ""
+                              classes.append({"name": node.name, "doc": cdoc[:200]})
+                      modules[str(p)] = {"docstring": doc[:300], "members": classes}
+                  except Exception as exc:
+                      print(f"Warning: failed to parse {p}: {type(exc).__name__}: {exc}")
+                      modules[str(p)] = {"docstring": f"Parse error: {type(exc).__name__}: {exc}", "members": []}
+
+          out = {
+              "generated_at": datetime.datetime.now().isoformat(),
+              "module_count": len(modules),
+              "modules": modules,
+          }
+          pathlib.Path("docs/api/modules.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+          print(f"Extracted {len(modules)} modules")
+          PYEOF
+
+      - name: Update version docs
+        run: |
+          echo "=== Updating version-specific documentation ==="
+          VERSION=$(date +%Y.%m.%d)
+          mkdir -p docs_versioned/latest
+          cp docs/api/modules.json docs_versioned/latest/ 2>/dev/null || true
+          echo "Updated docs_versioned/latest for $VERSION"
+
+      - name: Generate deployment matrix
+        run: |
+          echo "=== Generating deployment matrix ==="
+          python3 << 'PYEOF'
+          import json, pathlib, datetime
+
+          dashboards = []
+          for html in pathlib.Path("docs").rglob("*.html"):
+              dashboards.append({
+                  "path": str(html),
+                  "size_bytes": html.stat().st_size,
+                  "name": html.stem,
+              })
+
+          matrix = {
+              "generated_at": datetime.datetime.now().isoformat(),
+              "dashboard_count": len(dashboards),
+              "dashboards": dashboards,
+          }
+          pathlib.Path("docs/api/deployment_matrix.json").write_text(json.dumps(matrix, indent=2))
+          print(f"Found {len(dashboards)} dashboards")
+          PYEOF
+
+      - name: Create PR with updated docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/api/ docs_versioned/latest/
+          if git diff --cached --quiet; then
+            echo "No documentation changes detected — skipping PR creation."
+            exit 0
+          fi
+          BRANCH="auto/update-docs-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          git commit -m "docs: auto-update API docs and deployment matrix"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "docs: auto-update API documentation" \
+            --body "Automated documentation update triggered by code changes." \
+            --base main \
+            --head "$BRANCH"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

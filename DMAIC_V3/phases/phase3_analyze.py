@@ -261,7 +261,48 @@ class Phase3Analyze:
         Returns:
             Tuple of (success: bool, result: Dict[str, Any])
         """
-        return self.run(iteration)
+        run_result = self.run(iteration)
+
+        if isinstance(run_result, tuple):
+            if (
+                len(run_result) == 2
+                and isinstance(run_result[1], tuple)
+                and len(run_result[1]) == 2
+                and isinstance(run_result[1][0], bool)
+                and isinstance(run_result[1][1], dict)
+            ):
+                return run_result[1]
+
+            if len(run_result) >= 2:
+                success = bool(run_result[0])
+                payload = run_result[1]
+                if isinstance(payload, dict):
+                    return success, payload
+                return False, {
+                    "phase": "ANALYZE",
+                    "iteration": iteration,
+                    "timestamp": datetime.now().isoformat(),
+                    "error": "Unexpected non-dict payload from run()",
+                    "raw_payload_type": type(payload).__name__,
+                }
+
+            return False, {
+                "phase": "ANALYZE",
+                "iteration": iteration,
+                "timestamp": datetime.now().isoformat(),
+                "error": "Unexpected empty tuple returned from run()",
+            }
+
+        if isinstance(run_result, dict):
+            return bool(run_result.get("success", "error" not in run_result)), run_result
+
+        return False, {
+            "phase": "ANALYZE",
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "error": "Unexpected return type from run()",
+            "raw_result_type": type(run_result).__name__,
+        }
 
     def run(self, iteration: int) -> Tuple[bool, Dict[str, Any]]:
         """
@@ -398,8 +439,8 @@ if __name__ == "__main__":
         if "--iteration" in sys.argv
         else 1
     )
-    result = phase3.run(iteration)
+    success, result = phase3.run(iteration)
 
-    if not result["success"]:
+    if not success:
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
