@@ -268,7 +268,7 @@ jobs:
           echo "quality_score=$QS" >> "$GITHUB_OUTPUT"
 
       - name: Open escalation issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const qs      = '${{ needs.collect-metrics.outputs.quality_score }}';
