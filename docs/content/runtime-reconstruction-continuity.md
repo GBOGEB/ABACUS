@@ -20,12 +20,12 @@ Machine-readable integration manifest:
 | reconstruction manifest | `docs/api/phase2_reconstruction_manifest.json`, `scripts/validate_reconstruction_manifest.py`, `src/dmaic/reconstruction_manifest.py` | `.github/workflows/ci.yml` | `DMAIC_V3/tests/test_reconstruction_manifest_validation.py` |
 | active invariant ledger | `src/dmaic/contract.py`, `DMAIC_V3/integrations/git_manager.py` | `.github/workflows/ci.yml` | `DMAIC_V3/tests/test_dmaic_contract_core.py`, `DMAIC_V3/tests/test_git_manager.py` |
 | semantic debt tracking | `DMAIC_V3/tests/test_maturity_tracker.py`, `maturity_assessment.json` | `.github/workflows/reports.yml` | `DMAIC_V3/tests/test_maturity_tracker.py` |
-| branch DAG | `workflow_analyzer.py`, `scripts/build_final_handover_tracker.py` | `.github/workflows/branch-analysis.yml`, `.github/workflows/ci.yml` | `DMAIC_V3/tests/test_bridge_integration.py` |
+| branch DAG | `scripts/build_final_handover_tracker.py` | `.github/workflows/branch-analysis.yml`, `.github/workflows/ci.yml` | `DMAIC_V3/tests/test_bridge_integration.py` |
 | semantic delta log | `CHANGELOG.md`, `CHANGE_MAPPING.md` | `.github/workflows/reports.yml` | `DMAIC_V3/tests/test_integration.py` |
 | replay/reconstruction workflow | `run_deployment_test_system.py`, `scripts/validate_reconstruction_manifest.py` | `.github/workflows/ci.yml`, `.github/workflows/dmaic-phase-execution.yml` | `DMAIC_V3/tests/test_bridge_integration.py`, `DMAIC_V3/tests/test_integration.py` |
 | PR evaluation matrix | `.github/PULL_REQUEST_TEMPLATE.md`, `handover/PR_BODY.md` | `.github/workflows/copilot-pr-creator.yml` | `DMAIC_V3/tests/test_phase4_improve.py` |
 | semantic runtime code stubs | `src/dmaic/recursion.py`, `src/dmaic/provenance.py` | `.github/workflows/dmaic-phase-execution.yml` | `DMAIC_V3/tests/test_phase3_analyze.py`, `DMAIC_V3/tests/test_phase5_control.py` |
-| metrics-driven automation stub | `src/dmaic/metrics.py`, `fast_metrics_collector.py` | `.github/workflows/reports.yml`, `.github/workflows/main.yml` | `DMAIC_V3/tests/test_maturity_tracker.py` |
+| metrics-driven automation stub | `src/dmaic/metrics.py` | `.github/workflows/reports.yml`, `.github/workflows/main.yml` | `DMAIC_V3/tests/test_maturity_tracker.py` |
 | viewer runtime scaffold | `docs/FINAL_HANDOVER.html`, `docs/dashboard.html` | `.github/workflows/export-docs.yml`, `.github/workflows/book-build.yml` | `DMAIC_V3/tests/test_bridge_integration.py` |
 | checksums | `scripts/archive_handover.py`, `handover/HANDOVER_MANIFEST.yaml` | `.github/workflows/reports.yml` | `DMAIC_V3/tests/test_bridge_integration.py` |
 | recursive continuation rules | `src/dmaic/recursion.py`, `DMAIC_V3/convergence/stability_monitor.py` | `.github/workflows/recursive-build.yml`, `.github/workflows/dmaic-phase-execution.yml` | `DMAIC_V3/tests/test_stability_monitor.py` |
