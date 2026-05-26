@@ -20,7 +20,14 @@ def main() -> int:
     args = parser.parse_args()
 
     input_path = ROOT_DIR / args.input if not Path(args.input).is_absolute() else Path(args.input)
-    payload = json.loads(input_path.read_text(encoding="utf-8"))
+    try:
+        payload = json.loads(input_path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"ERROR: Input file not found: {input_path}")
+        return 1
+    except json.JSONDecodeError as exc:
+        print(f"ERROR: Invalid JSON in {input_path}: {exc}")
+        return 1
     errors = validate_reconstruction_manifest(payload, ROOT_DIR)
     if errors:
         for error in errors:
