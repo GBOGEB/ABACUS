@@ -5,6 +5,7 @@ articles:
   - content/about-subject.md
   - content/how-to-task.md
   - content/reference.md
+  - content/runtime-reconstruction-continuity.md
 smoke_tested_repos:
   - GBOGEB/ABACUS
   - GBOGEB/CODEX
