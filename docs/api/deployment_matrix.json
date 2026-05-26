@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-05-26T19:29:44.894773",
+  "dashboard_count": 17,
+  "dashboards": [
+    {
+      "path": "docs/repository_structure.html",
+      "size_bytes": 17840,
+      "name": "repository_structure"
+    },
+    {
+      "path": "docs/dmaic-metrics.html",
+      "size_bytes": 18989,
+      "name": "dmaic-metrics"
+    },
+    {
+      "path": "docs/file_review_tracker.html",
+      "size_bytes": 21888,
+      "name": "file_review_tracker"
+    },
+    {
+      "path": "docs/index.html",
+      "size_bytes": 20556,
+      "name": "index"
+    },
+    {
+      "path": "docs/final_status_v4.4.0.html",
+      "size_bytes": 16092,
+      "name": "final_status_v4.4.0"
+    },
+    {
+      "path": "docs/metrics.html",
+      "size_bytes": 28039,
+      "name": "metrics"
+    },
+    {
+      "path": "docs/progress_tracker.html",
+      "size_bytes": 21993,
+      "name": "progress_tracker"
+    },
+    {
+      "path": "docs/dashboard.html",
+      "size_bytes": 4696,
+      "name": "dashboard"
+    },
+    {
+      "path": "docs/handover_book.html",
+      "size_bytes": 45813,
+      "name": "handover_book"
+    },
+    {
+      "path": "docs/deep_analysis_dashboard.html",
+      "size_bytes": 24302,
+      "name": "deep_analysis_dashboard"
+    },
+    {
+      "path": "docs/FINAL_HANDOVER.html",
+      "size_bytes": 6253,
+      "name": "FINAL_HANDOVER"
+    },
+    {
+      "path": "docs/testing/index.html",
+      "size_bytes": 5758,
+      "name": "index"
+    },
+    {
+      "path": "docs/cryo/index.html",
+      "size_bytes": 4918,
+      "name": "index"
+    },
+    {
+      "path": "docs/versions/index.html",
+      "size_bytes": 8200,
+      "name": "index"
+    },
+    {
+      "path": "docs/12-cluster/index.html",
+      "size_bytes": 7332,
+      "name": "index"
+    },
+    {
+      "path": "docs/tools/index.html",
+      "size_bytes": 7393,
+      "name": "index"
+    },
+    {
+      "path": "docs/dow/index.html",
+      "size_bytes": 7042,
+      "name": "index"
+    }
+  ]
+}
