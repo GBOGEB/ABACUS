@@ -103,6 +103,28 @@ class Phase1Define:
         suffix = file_path.suffix.lower()
         return self.file_type_map.get(suffix, 'unknown')
 
+    def _normalize_execute_results(self, results: Any) -> Dict:
+        """Normalize execute() payload to a dictionary."""
+        normalized: Dict[str, Any]
+        if isinstance(results, dict):
+            normalized = dict(results)
+        elif (
+            isinstance(results, tuple)
+            and len(results) == 2
+            and isinstance(results[0], bool)
+            and isinstance(results[1], dict)
+        ):
+            normalized = dict(results[1])
+        else:
+            raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
+
+        categorized = normalized.get('categorized')
+        if not isinstance(categorized, dict):
+            categorized = {}
+        normalized['code_files'] = normalized.get('code_files', categorized.get('code', 0))
+        normalized['documentation_files'] = normalized.get('documentation_files', categorized.get('docs', 0))
+        return normalized
+
     def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
         """Save scan progress for resumption"""
         progress = {
@@ -362,6 +384,18 @@ class Phase1Define:
 
     def execute(self, iteration: int) -> Tuple[bool, Dict]:
         """
+        Execute Phase 1: Define.
+
+        Args:
+            iteration: Current iteration number
+
+        Returns:
+            Tuple of (success: bool, results: Dict) with phase execution results
+        """
+        return self.run(iteration)
+
+    def run(self, iteration: int) -> Tuple[bool, Dict]:
+        """
         Execute Phase 1: Define with change detection
 
         Args:
@@ -481,6 +515,8 @@ class Phase1Define:
                     'total': change_summary.get('total', 0)
                 }
             }
+            results['code_files'] = results.get('code_files', results['categorized'].get('code', 0))
+            results['documentation_files'] = results.get('documentation_files', results['categorized'].get('docs', 0))
 
             print("\n[1.5] Saving results...")
 
@@ -521,7 +557,7 @@ class Phase1Define:
             print("="*80)
             print()
 
-            return True, results
+            return True, self._normalize_execute_results(results)
 
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
