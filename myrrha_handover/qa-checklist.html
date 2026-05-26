@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · QA Checklist</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>✅</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.qa-section{margin:18px 0}
+.qa-item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.qa-item:hover{background:var(--bg)}
+.qa-item input[type=checkbox]{margin-top:3px;accent-color:var(--accent)}
+.qa-item .id{min-width:50px;font-family:var(--mono);color:var(--fg2);font-size:12px}
+.qa-item .cat{min-width:80px;font-size:11px;text-transform:uppercase;color:var(--fg2)}
+.qa-counter{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 20px;display:inline-flex;align-items:center;gap:12px;margin:12px 0}
+.qa-counter .num{font-size:28px;font-weight:700;color:var(--accent)}
+.qa-counter .lbl{font-size:12px;color:var(--fg2)}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › QA Checklist</p>
+<h1>✅ QA Validation Checklist</h1>
+<p class="muted">Quality assurance steps for handover package validation · v0.4.1</p>
+
+<div class="qa-counter"><div class="num" id="qaDone">0</div><div class="lbl">of <span id="qaTotal">0</span> checks passed</div>
+<div class="progress" style="width:200px;margin-left:12px"><div id="qaBar" style="width:0%"></div></div></div>
+
+<div class="card">
+<h2 style="margin-top:0">1. Data Integrity</h2>
+<div class="qa-section" id="qaSec1">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-01</span><span>data.json is valid JSON (no syntax errors)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-02</span><span>All numeric values in data.json have correct units documented</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-03</span><span>Baseline values (350 g/s, 14 barG) consistent across all views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-04</span><span>ALaT specs (315 kW motor, 112.54 g/s/unit) match truth.html & data.json</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-05</span><span>LKT specs (250 kW motor, 88 g/s/unit) match truth.html & data.json</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-06</span><span>RCW temperatures (30→55°C, max 85°C) consistent</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-07</span><span>PVPS config (2×5, N+1, γ=50 g/s) consistent in pvps.html & data.json</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-08</span><span>Placeholder data clearly marked with ⚠ or "placeholder" tags</span></div>
+</div>
+
+<h2>2. Cross-Reference Consistency</h2>
+<div class="qa-section" id="qaSec2">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-09</span><span>All B-labels (B1-B7) have corresponding entries in xref-matrix.html</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-10</span><span>All G-labels (G1-G8) link to correct graph views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-11</span><span>All T-labels (T1-T6) link to correct table views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-12</span><span>All E-labels (E1-E5) link to correct equation/utility views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-13</span><span>No orphan labels (every label referenced at least twice)</span></div>
+</div>
+
+<h2>3. Functional Testing</h2>
+<div class="qa-section" id="qaSec3">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-14</span><span>All 19+ HTML pages load without console errors</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-15</span><span>All internal links (href) resolve correctly — no 404s</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-16</span><span>Theme toggle (light/dark) works on all views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-17</span><span>Font toggle (Aptos/Consolas) works on all views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-18</span><span>All Plotly/Chart.js charts render without errors</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-19</span><span>CSV/JSON export buttons produce valid output</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-20</span><span>PNG/SVG/PDF chart exports work correctly</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-21</span><span>Slide editor loads, previews, and saves without errors</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-22</span><span>Truth.html editable fields save to localStorage</span></div>
+</div>
+
+<h2>4. Visual & Layout</h2>
+<div class="qa-section" id="qaSec4">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-23</span><span>No text overflow or clipping on 1024px+ screens</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-24</span><span>Tables are scrollable on mobile (&lt;768px)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-25</span><span>Charts resize responsively (no overflow on resize)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-26</span><span>Breadcrumb navigation present on all non-hub views</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-27</span><span>Color contrast meets WCAG AA (4.5:1 for text)</span></div>
+</div>
+
+<h2>5. Documentation</h2>
+<div class="qa-section" id="qaSec5">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-28</span><span>README.md reflects current v0.4.7 state</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-29</span><span>SUMMARY.md is up to date with all views listed</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-30</span><span>Design guide covers all smart label conventions</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-31</span><span>Editing guide has correct file paths for master/ sources</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-32</span><span>Changelog includes all versions up to v0.4.1</span></div>
+</div>
+
+<h2>6. Calculation Verification</h2>
+<div class="qa-section" id="qaSec6">
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-33</span><span>V1: ALaT mass flow verified (PASS)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-34</span><span>V2: LKT mass flow verified (PASS)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-35</span><span>V3: RCW heat load verified (PASS)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-36</span><span>V4: PVPS compression — PENDING (coldbox data)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-37</span><span>V5: Energy balance verified (PASS)</span></div>
+<div class="qa-item"><input type="checkbox" onchange="updateQA()"><span class="id">QA-38</span><span>V6: COMBI feasibility — PENDING (Kaeser)</span></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:18px">
+<h3 style="margin-top:0">Notes</h3>
+<ul style="font-size:13px;color:var(--fg2)">
+<li>Check states persist in this browser session only (not saved to server)</li>
+<li>Items QA-36 and QA-38 are blocked on external vendor data</li>
+<li>Run this checklist after each version update</li>
+<li>Link: <a href="verification-checklist.html">Detailed hand calculations →</a></li>
+</ul>
+</div>
+
+</div>
+<script>
+function updateQA(){
+  const all=document.querySelectorAll('.qa-item input[type=checkbox]');
+  const done=[...all].filter(c=>c.checked).length;
+  document.getElementById('qaDone').textContent=done;
+  document.getElementById('qaTotal').textContent=all.length;
+  document.getElementById('qaBar').style.width=Math.round(done/all.length*100)+'%';
+}
+updateQA();
+</script>
+</body></html>

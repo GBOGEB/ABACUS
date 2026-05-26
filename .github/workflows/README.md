@@ -104,6 +104,61 @@ This directory contains the unified CI/CD workflows that integrate the DOW (DMAI
 - ✅ Log collection
 - ✅ Failure notifications
 
+### DELTA_1 Workflows
+
+#### 6. **delta-1-baseline.yml** - DELTA_1 Workflow Baseline (scaffold)
+**Purpose**: Placeholder bootstrap/validate/build steps for the DELTA_1 delivery baseline.
+**Triggers**: `workflow_dispatch` only (restricted until real checks are implemented)
+**Permissions**: `contents: read`
+
+#### 7. **delta-1-deploy.yml** - DELTA_1 Deployment (scaffold)
+**Purpose**: Placeholder deployment steps for DELTA_1.
+**Triggers**: `workflow_dispatch`
+**Permissions**: `contents: read`
+
+#### 8. **delta-1-release.yml** - DELTA_1 Release Workflow (scaffold)
+**Purpose**: Placeholder release pipeline steps for DELTA_1.
+**Triggers**: `workflow_dispatch` only
+**Permissions**: `contents: read` (expand to `contents: write` when release creation is implemented)
+
+#### 9. **deployment-enforcement.yml** - DELTA_1 Deployment Enforcement
+**Purpose**: Enforces deployment governance gates (dev / stage / prod environments).
+**Triggers**: `workflow_dispatch` (with `target_environment` choice input)
+**Permissions**: `contents: read`
+**Concurrency**: One run per environment; not cancelled in-progress
+
+#### 10. **runtime-governance.yml** - DELTA_1 Runtime Governance (scaffold)
+**Purpose**: Validates governance topology, release lineage, and runtime manifests.
+**Triggers**: `workflow_dispatch` only (restricted until real checks are implemented)
+**Permissions**: `contents: read`, `actions: read`
+
+#### 11. **runtime-verification.yml** - DELTA_1 Runtime Verification
+**Purpose**: Verifies runtime topology, operational readiness, deployment health, and certification continuity after a successful deployment enforcement run.
+**Triggers**: `workflow_dispatch`; `workflow_run` on completion of *DELTA_1 Deployment Enforcement* (only if conclusion is `success`)
+**Permissions**: `contents: read`
+
+#### 12. **reusable-ci.yml** - DELTA_1 Reusable CI
+**Purpose**: Reusable CI workflow (bootstrap → lint → test → build → package). Falls back to canonical project commands when Make targets are absent.
+**Triggers**: `workflow_call` (callable by other workflows)
+**Permissions**: `contents: read`
+
+#### 13. **reusable-security.yml** - DELTA_1 Reusable Security
+**Purpose**: Reusable security checks (dependency review, secret scanning, runtime-security validation, provenance validation).
+**Triggers**: `workflow_call`
+**Permissions**: `contents: read`
+
+#### 14. **codeql.yml** - CodeQL Analysis
+**Purpose**: Static security analysis of Python source code using GitHub CodeQL.
+**Triggers**: `push`/`pull_request` to `main`; weekly schedule
+**Permissions**: `actions: read`, `contents: read`, `security-events: write`
+**Concurrency**: One run per ref; cancels in-progress runs
+
+#### 15. **dependency-review.yml** - DELTA_1 Dependency Review
+**Purpose**: Reviews dependency changes on pull requests for known vulnerabilities (high severity and above).
+**Triggers**: `pull_request`
+**Permissions**: `contents: read`, `pull-requests: write`
+**Concurrency**: One run per ref; cancels in-progress runs
+
 ### Legacy Workflows (Archived)
 
 The following workflows have been archived to `legacy/`:
