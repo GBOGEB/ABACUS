@@ -290,7 +290,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Download DMAIC outputs
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: .
@@ -353,19 +353,19 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download manifest bundle
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           name: dmaic-handover-manifest-${{ github.run_id }}
           path: release-artifacts/
 
       - name: Download universal archives
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           name: dmaic-handover-archives-${{ github.run_id }}
           path: release-artifacts/
 
       - name: Download DMAIC outputs
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: release-artifacts/dmaic-outputs/
