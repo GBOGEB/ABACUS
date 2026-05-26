@@ -1452,9 +1452,9 @@ function ch15Calc() {
     // mbar·L/s → std cm³/s  (1 mbar·L/s = 0.9869 std cc/s at 0°C / 101.325 kPa → ≈ 1 std cc/s)
     out = (inp * 0.9869).toExponential(3); unit = 'std cm³/s';
   } else if (mode === 'pres_kpa_barg') {
-    out = (inp / 100).toFixed(4); unit = 'barg';
+    out = ((inp - 101.325) / 100).toFixed(4); unit = 'barg';
   } else if (mode === 'pres_barg_kpa') {
-    out = (inp * 100).toFixed(2); unit = 'kPa (abs) — at 0 barg = 101.325 kPa abs';
+    out = ((inp * 100) + 101.325).toFixed(2); unit = 'kPa (abs) — at 0 barg = 101.325 kPa abs';
   } else if (mode === 'he_lookup') {
     const T = inp;
     const P   = ch15Interp(CH15_HE4.sat, T, 1);
