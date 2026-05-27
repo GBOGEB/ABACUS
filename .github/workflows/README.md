@@ -85,7 +85,7 @@ This directory contains the unified CI/CD workflows that integrate the DOW (DMAI
 - Manual dispatch
 
 **Conditions**:
-- Only runs if `github.repository == 'GBOBEB/CODEX'`
+- Only runs if `github.repository == 'GBOGEB/CODEX'`
 
 **Matrix**:
 - OS: Ubuntu, Windows
