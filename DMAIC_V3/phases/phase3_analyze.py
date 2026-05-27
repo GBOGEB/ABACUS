@@ -398,8 +398,8 @@ if __name__ == "__main__":
         if "--iteration" in sys.argv
         else 1
     )
-    result = phase3.run(iteration)
+    success, result = phase3.run(iteration)
 
-    if not result["success"]:
+    if not success:
         print(f"[ERROR] Error: {result.get('error')}")
         sys.exit(1)
