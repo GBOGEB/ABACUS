@@ -1,0 +1,59 @@
+# federation/manifest.yaml
+# Global federation entry point for GBOGEB/ABACUS (DELTA_1 runtime plane).
+# This file is the canonical listing of federation members, DEV snapshots,
+# and assimilation hooks used by src/dmaic/federation.py and CI smoke tests.
+#
+# Authoritative spec: runtime/federation/codex-abacus-federation.yaml
+
+federation:
+  moniker: DELTA_1
+  version: "1.0"
+
+  planes:
+    governance:
+      repository: GBOGEB/CODEX
+      role: governance_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+    runtime:
+      repository: GBOGEB/ABACUS
+      role: runtime_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+
+  member_repos:
+    - name: GBOGEB/ABACUS
+      plane: runtime
+      status: active
+    - name: GBOGEB/CODEX
+      plane: governance
+      status: active
+    - name: GBOGEB/morris.js
+      plane: auxiliary
+      status: active
+
+  dev_snapshots:
+    # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
+    - path: ABACUS-v031/
+      status: legacy
+      note: Pre-V3 baseline snapshot
+    - path: ABACUS-v032/
+      status: snapshot
+      note: V3.2 feature snapshot
+    - path: deepagent-handover-package/
+      status: snapshot
+      note: TypeScript handover stubs
+    - path: ABACUS-UNIFIED/
+      status: merged
+      note: Unified merge checkpoint
+
+  assimilation_hooks:
+    # Python entry point: src/dmaic/federation.py::assimilate()
+    # Called by recursive_build.py --smoke --index GLOBAL_index.json
+    entry_point: src/dmaic/federation.py
+    function: assimilate
+    smoke_test: DMAIC_V3/tests/test_smoke_federation.py
+
+  knowledge_basis_refs:
+    - docs/FEDERATION_TOPOLOGY.md
+    - docs/CODEX_ABACUS_FEDERATION_MATRIX.md
+    - KNOWLEDGE_SYSTEMS_ARCHITECTURE.md
+    - docs/session-lifecycle/README.md
