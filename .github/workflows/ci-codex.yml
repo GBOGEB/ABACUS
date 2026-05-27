@@ -15,7 +15,7 @@ on:
 jobs:
   codex:
     name: CODEX - ${{ matrix.os }} - Python ${{ matrix.python-version }}
-    if: github.repository == 'GBOBEB/CODEX'
+    if: github.repository == 'GBOGEB/CODEX'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -30,6 +30,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Summarize repo relevance
+        run: |
+          python scripts/report_repo_relevance.py --repo "${{ github.repository }}" --format github-step-summary >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install tooling
         run: |
