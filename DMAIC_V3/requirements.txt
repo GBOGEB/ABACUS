@@ -22,7 +22,7 @@ typing-extensions>=4.0.0
 
 # Data manipulation and analysis
 pandas>=3.0.3,<4.0.0
-numpy>=1.21.0,<2.0.0
+numpy>=2.0.0,<3.0.0
 
 # ============================================================================
 # VISUALIZATION
@@ -70,7 +70,7 @@ colorama>=0.4.4,<1.0.0; platform_system == "Windows"
 # ============================================================================
 
 # File watching and monitoring
-watchdog>=2.1.0,<3.0.0
+watchdog>=2.1.0,<5.0.0
 
 # ============================================================================
 # HASHING & CHECKSUMS (for idempotency)
@@ -93,7 +93,7 @@ watchdog>=2.1.0,<3.0.0
 
 # Testing framework
 pytest>=9.0.3,<10.0.0
-pytest-cov>=3.0.0,<4.0.0
+pytest-cov>=3.0.0,<8.0.0
 pytest-mock>=3.6.0,<4.0.0
 
 # Code formatting
