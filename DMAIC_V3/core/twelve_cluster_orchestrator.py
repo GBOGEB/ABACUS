@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """
-12-Cluster Parallel Execution System for DMAIC V4.0
-Maps DMAIC phases to 12 temporal clusters for parallel processing
+Canonical 12-Cluster Orchestrator V3.0 for DMAIC.
 """
 
-import time
+from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import time
+from dataclasses import dataclass
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
 
 try:
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent))
     from keb import KEB
+
     KEB_AVAILABLE = True
 except ImportError:
     KEB_AVAILABLE = False
@@ -22,218 +26,347 @@ except ImportError:
 
 try:
     from gbogeb import GBOGEB
+
     GBOGEB_AVAILABLE = True
 except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available")
 
 
+@dataclass
 class ClusterConfig:
-    """Configuration for a single cluster"""
-    def __init__(self, cluster_id: int, name: str, phase: str, priority: int = 5):
-        self.cluster_id = cluster_id
-        self.name = name
-        self.phase = phase
-        self.priority = priority
-        self.status = "idle"
-        self.tasks_executed = 0
-        self.tasks_failed = 0
+    """Configuration for a single 12-cluster contract entry."""
+
+    cluster_id: int
+    name: str
+    phase: str
+    priority: int
+    tier: str
+    status: str = "idle"
+    tasks_executed: int = 0
+    tasks_failed: int = 0
 
 
 class TwelveClusterOrchestrator:
     """
-    12-Cluster Parallel Execution Orchestrator
-    
-    Maps DMAIC phases to 12 temporal clusters:
-    - Cluster 1-2: Phase 1 (Define) - File scanning & categorization
-    - Cluster 3-4: Phase 2 (Measure) - Static analysis & metrics
-    - Cluster 5-6: Phase 3-4 (Analyze/Improve) - Root cause & improvements
-    - Cluster 7-8: Phase 5-6 (Control/Knowledge) - Quality gates & DOW
-    - Cluster 9-10: Phase 7 (Action Tracking) - Feedback loops
-    - Cluster 11-12: Phase 8 (TODO Management) - Task tracking
+    Canonical 12-cluster orchestrator.
+
+    - C1-C2  -> phase1
+    - C3-C4  -> phase2
+    - C5-C6  -> phase3/phase4
+    - C7-C8  -> phase5/phase6
+    - C9-C10 -> phase7
+    - C11-C12 -> phase8
     """
-    
-    def __init__(self, max_workers: int = 12, use_keb: bool = True, use_gbogeb: bool = True):
+
+    CLUSTER_CONTRACT = [
+        (1, "Define-Scanner-1", "phase1", 10, "analysis"),
+        (2, "Define-Scanner-2", "phase1", 10, "analysis"),
+        (3, "Measure-Analyzer-1", "phase2", 9, "analysis"),
+        (4, "Measure-Analyzer-2", "phase2", 9, "analysis"),
+        (5, "Analyze-RootCause", "phase3", 8, "documentation"),
+        (6, "Improve-CodeFix", "phase4", 8, "documentation"),
+        (7, "Control-QualityGate", "phase5", 7, "recursive"),
+        (8, "Knowledge-DOW", "phase6", 7, "recursive"),
+        (9, "Action-Tracker-1", "phase7", 6, "knowledge_monitoring"),
+        (10, "Action-Tracker-2", "phase7", 6, "knowledge_monitoring"),
+        (11, "TODO-Manager-1", "phase8", 5, "knowledge_monitoring"),
+        (12, "TODO-Manager-2", "phase8", 5, "knowledge_monitoring"),
+    ]
+
+    PHASE_SEQUENCE = ["phase1", "phase2", "phase3", "phase4", "phase5", "phase6", "phase7", "phase8"]
+
+    def __init__(
+        self,
+        max_workers: int = 12,
+        use_keb: bool = True,
+        use_gbogeb: bool = True,
+        task_timeout_seconds: int = 30,
+    ):
         self.max_workers = max_workers
         self.use_keb = use_keb and KEB_AVAILABLE
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
-        
+        self.task_timeout_seconds = max(1, task_timeout_seconds)
+
         self.clusters = self._initialize_clusters()
+        self.temporal_events: List[Dict[str, Any]] = []
         self.keb = None
         self.gbogeb = None
-        
+
         if self.use_keb:
             print("[12-CLUSTER] Initializing KEB execution backbone...")
             self.keb = KEB(max_workers=min(max_workers, 4), max_memory_mb=2048)
-        
+
         if self.use_gbogeb:
             print("[12-CLUSTER] Initializing GBOGEB observability...")
             self.gbogeb = GBOGEB(workspace="DMAIC_V3_OUTPUT/12cluster_workspace")
-        
+
         print(f"[12-CLUSTER] Orchestrator initialized with {len(self.clusters)} clusters")
-    
+
     def _initialize_clusters(self) -> Dict[int, ClusterConfig]:
-        """Initialize 12 clusters with DMAIC phase mapping"""
-        cluster_mapping = [
-            (1, "Define-Scanner-1", "phase1", 10),
-            (2, "Define-Scanner-2", "phase1", 10),
-            (3, "Measure-Analyzer-1", "phase2", 9),
-            (4, "Measure-Analyzer-2", "phase2", 9),
-            (5, "Analyze-RootCause", "phase3", 8),
-            (6, "Improve-CodeFix", "phase4", 8),
-            (7, "Control-QualityGate", "phase5", 7),
-            (8, "Knowledge-DOW", "phase6", 7),
-            (9, "Action-Tracker-1", "phase7", 6),
-            (10, "Action-Tracker-2", "phase7", 6),
-            (11, "TODO-Manager-1", "phase8", 5),
-            (12, "TODO-Manager-2", "phase8", 5),
-        ]
-        
-        clusters = {}
-        for cluster_id, name, phase, priority in cluster_mapping:
-            clusters[cluster_id] = ClusterConfig(cluster_id, name, phase, priority)
-        
+        clusters: Dict[int, ClusterConfig] = {}
+        for cluster_id, name, phase, priority, tier in self.CLUSTER_CONTRACT:
+            clusters[cluster_id] = ClusterConfig(
+                cluster_id=cluster_id,
+                name=name,
+                phase=phase,
+                priority=priority,
+                tier=tier,
+            )
         return clusters
-    
-    def execute_phase_parallel(self, phase: str, tasks: List[Dict[str, Any]], 
-                               iteration: int) -> Dict[str, Any]:
-        """
-        Execute a DMAIC phase across multiple clusters in parallel
-        
-        Args:
-            phase: Phase name (e.g., "phase1", "phase2")
-            tasks: List of tasks to distribute across clusters
-            iteration: Current iteration number
-            
-        Returns:
-            Execution results
-        """
-        print(f"\n[12-CLUSTER] Executing {phase} across clusters (iteration {iteration})")
-        
+
+    def get_cluster_contract(self) -> List[Dict[str, Any]]:
+        """Return the canonical 12-cluster contract."""
+        return [
+            {
+                "cluster_id": c.cluster_id,
+                "name": c.name,
+                "phase": c.phase,
+                "priority": c.priority,
+                "tier": c.tier,
+            }
+            for c in self.clusters.values()
+        ]
+
+    def _record_temporal_event(
+        self,
+        phase: str,
+        iteration: int,
+        event: str,
+        status: str,
+        artifacts: Optional[List[str]] = None,
+        duration_seconds: Optional[float] = None,
+        clusters: Optional[List[int]] = None,
+        error: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        payload = {
+            "timestamp": datetime.now().isoformat(),
+            "phase": phase,
+            "iteration": iteration,
+            "event": event,
+            "status": status,
+            "artifacts": artifacts or [],
+            "duration_seconds": duration_seconds,
+            "clusters": clusters or [],
+            "error": error,
+        }
+        self.temporal_events.append(payload)
+        return payload
+
+    def execute_phase_parallel(self, phase: str, tasks: List[Dict[str, Any]], iteration: int) -> Dict[str, Any]:
+        """Execute a phase with cluster assignment, timeout safety, and result mapping."""
         phase_clusters = [c for c in self.clusters.values() if c.phase == phase]
-        print(f"[12-CLUSTER] Assigned clusters: {[c.name for c in phase_clusters]}")
-        
+        if not phase_clusters:
+            return {
+                "success": False,
+                "tasks_executed": 0,
+                "tasks_failed": len(tasks),
+                "clusters_used": 0,
+                "execution_time": 0.0,
+                "results_map": {},
+                "error": f"No clusters configured for {phase}",
+            }
+
         if not tasks:
-            print(f"[12-CLUSTER] No tasks to execute for {phase}")
-            return {"success": True, "tasks_executed": 0, "clusters_used": 0}
-        
-        chunk_size = max(1, len(tasks) // len(phase_clusters))
-        task_chunks = [tasks[i:i + chunk_size] for i in range(0, len(tasks), chunk_size)]
-        
-        print(f"[12-CLUSTER] Distributing {len(tasks)} tasks across {len(phase_clusters)} clusters")
-        print(f"[12-CLUSTER] Chunk size: ~{chunk_size} tasks per cluster")
-        
+            return {
+                "success": True,
+                "tasks_executed": 0,
+                "tasks_failed": 0,
+                "clusters_used": len(phase_clusters),
+                "execution_time": 0.0,
+                "results_map": {},
+            }
+
         start_time = time.time()
-        results = []
-        
+        cluster_chunk_pairs = [
+            (cluster, tasks[idx:: len(phase_clusters)])
+            for idx, cluster in enumerate(phase_clusters)
+        ]
+        results_map: Dict[str, Any] = {}
+
         if self.use_keb and self.keb:
+            # Keep existing behavior with KEB scheduling while preserving deterministic result map fallback.
             self.keb.start()
-            
-            for idx, (cluster, chunk) in enumerate(zip(phase_clusters, task_chunks)):
+            for cluster, chunk in cluster_chunk_pairs:
                 cluster.status = "running"
-                
                 for task_idx, task in enumerate(chunk):
                     task_id = f"{phase}_cluster{cluster.cluster_id}_task{task_idx}"
                     self.keb.schedule_task(
                         task_id=task_id,
                         func=self._execute_task,
                         priority=cluster.priority,
-                        args=(task, cluster)
+                        args=(task, cluster),
                     )
-            
+
             while not self.keb.task_queue.empty():
                 time.sleep(0.1)
-            
-            time.sleep(1)
+
+            time.sleep(0.2)
             self.keb.stop()
-            
-            for cluster in phase_clusters:
+
+            tasks_executed = 0
+            tasks_failed = 0
+            for cluster, chunk in cluster_chunk_pairs:
                 cluster.status = "idle"
-                cluster.tasks_executed += self.keb.tasks_executed
-                cluster.tasks_failed += self.keb.tasks_failed
-            
-            results = {
-                "success": True,
-                "tasks_executed": self.keb.tasks_executed,
-                "tasks_failed": self.keb.tasks_failed,
+                for task in chunk:
+                    key = task.get("file_path") or task.get("task_id") or f"{cluster.name}:{tasks_executed}"
+                    try:
+                        result = self._execute_task(task, cluster)
+                        results_map[key] = result
+                        cluster.tasks_executed += 1
+                        tasks_executed += 1
+                    except Exception as exc:
+                        results_map[key] = {"success": False, "error": str(exc)}
+                        cluster.tasks_failed += 1
+                        tasks_failed += 1
+
+            result = {
+                "success": tasks_failed == 0,
+                "tasks_executed": tasks_executed,
+                "tasks_failed": tasks_failed,
                 "clusters_used": len(phase_clusters),
-                "execution_time": time.time() - start_time
+                "execution_time": time.time() - start_time,
+                "results_map": results_map,
             }
         else:
-            with ThreadPoolExecutor(max_workers=len(phase_clusters)) as executor:
+            tasks_executed = 0
+            tasks_failed = 0
+            with ThreadPoolExecutor(max_workers=min(len(phase_clusters), self.max_workers)) as executor:
                 futures = {}
-                
-                for cluster, chunk in zip(phase_clusters, task_chunks):
+                for cluster, chunk in cluster_chunk_pairs:
                     cluster.status = "running"
-                    future = executor.submit(self._execute_cluster_tasks, cluster, chunk)
-                    futures[future] = cluster
-                
-                cluster_results = []
+                    future = executor.submit(self._execute_cluster_tasks, cluster, chunk, phase)
+                    futures[future] = (cluster, len(chunk))
+
                 for future in as_completed(futures):
-                    cluster = futures[future]
+                    cluster, chunk_len = futures[future]
                     try:
-                        result = future.result()
-                        cluster_results.append(result)
-                        cluster.tasks_executed += result.get("tasks_executed", 0)
-                        cluster.tasks_failed += result.get("tasks_failed", 0)
-                    except Exception as e:
-                        print(f"[12-CLUSTER] Cluster {cluster.name} failed: {e}")
-                        cluster.tasks_failed += len(chunk)
+                        outcome = future.result(timeout=self.task_timeout_seconds)
+                        cluster.tasks_executed += outcome["tasks_executed"]
+                        cluster.tasks_failed += outcome["tasks_failed"]
+                        tasks_executed += outcome["tasks_executed"]
+                        tasks_failed += outcome["tasks_failed"]
+                        results_map.update(outcome["results_map"])
+                    except FuturesTimeoutError:
+                        cluster.tasks_failed += chunk_len
+                        tasks_failed += chunk_len
+                    except Exception as exc:
+                        cluster.tasks_failed += chunk_len
+                        tasks_failed += chunk_len
+                        results_map[f"{phase}:{cluster.cluster_id}:error"] = {
+                            "success": False,
+                            "error": str(exc),
+                        }
                     finally:
                         cluster.status = "idle"
-                
-                total_executed = sum(r.get("tasks_executed", 0) for r in cluster_results)
-                total_failed = sum(r.get("tasks_failed", 0) for r in cluster_results)
-                
-                results = {
-                    "success": total_failed == 0,
-                    "tasks_executed": total_executed,
-                    "tasks_failed": total_failed,
-                    "clusters_used": len(phase_clusters),
-                    "execution_time": time.time() - start_time
-                }
-        
+
+            result = {
+                "success": tasks_failed == 0,
+                "tasks_executed": tasks_executed,
+                "tasks_failed": tasks_failed,
+                "clusters_used": len(phase_clusters),
+                "execution_time": time.time() - start_time,
+                "results_map": results_map,
+            }
+
         if self.use_gbogeb and self.gbogeb:
             self.gbogeb.collect_metric(
                 agent="12cluster_orchestrator",
                 metric_name=f"{phase}_execution",
-                metric_value=results["tasks_executed"],
-                tags={"iteration": str(iteration), "clusters": str(len(phase_clusters))}
+                metric_value=result["tasks_executed"],
+                tags={"iteration": str(iteration), "clusters": str(len(phase_clusters))},
             )
-        
-        print(f"[12-CLUSTER] {phase} complete: {results['tasks_executed']} executed, "
-              f"{results['tasks_failed']} failed in {results['execution_time']:.2f}s")
-        
-        return results
-    
-    def _execute_cluster_tasks(self, cluster: ClusterConfig, tasks: List[Dict]) -> Dict:
-        """Execute tasks for a single cluster"""
+
+        return result
+
+    def _execute_cluster_tasks(
+        self,
+        cluster: ClusterConfig,
+        tasks: List[Dict[str, Any]],
+        phase: str,
+    ) -> Dict[str, Any]:
         executed = 0
         failed = 0
-        
-        for task in tasks:
+        results_map = {}
+        for task_idx, task in enumerate(tasks):
+            key = task.get("file_path") or task.get("task_id") or f"{phase}:{cluster.cluster_id}:{task_idx}"
             try:
-                self._execute_task(task, cluster)
+                result = self._execute_task(task, cluster)
+                results_map[key] = result
                 executed += 1
-            except Exception as e:
-                print(f"[12-CLUSTER] Task failed in {cluster.name}: {e}")
+            except Exception as exc:
+                results_map[key] = {"success": False, "error": str(exc)}
                 failed += 1
-        
-        return {"tasks_executed": executed, "tasks_failed": failed}
-    
-    def _execute_task(self, task: Dict, cluster: ClusterConfig) -> Any:
-        """Execute a single task"""
+        return {"tasks_executed": executed, "tasks_failed": failed, "results_map": results_map}
+
+    def _execute_task(self, task: Dict[str, Any], cluster: ClusterConfig) -> Any:
         task_func = task.get("func")
         task_args = task.get("args", ())
         task_kwargs = task.get("kwargs", {})
-        
         if callable(task_func):
             return task_func(*task_args, **task_kwargs)
-        else:
-            return task
-    
+        return task
+
+    def run_phases_with_hooks(
+        self,
+        iteration: int,
+        phase_task_factory: Callable[[str], List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        """
+        Run phase1-phase8 with standardized temporal start/end hooks.
+        """
+        phase_results: Dict[str, Dict[str, Any]] = {}
+        for phase in self.PHASE_SEQUENCE:
+            phase_cluster_ids = [c.cluster_id for c in self.clusters.values() if c.phase == phase]
+            self._record_temporal_event(
+                phase=phase,
+                iteration=iteration,
+                event="phase_start",
+                status="started",
+                clusters=phase_cluster_ids,
+            )
+            start = time.time()
+            error = None
+            artifacts = []
+            try:
+                tasks = phase_task_factory(phase)
+                result = self.execute_phase_parallel(phase=phase, tasks=tasks, iteration=iteration)
+                phase_results[phase] = result
+                artifacts = sorted(list(result.get("results_map", {}).keys()))
+                if not result.get("success"):
+                    error = f"Phase failed with {result.get('tasks_failed', 0)} failed tasks"
+            except Exception as exc:
+                result = {"success": False, "error": str(exc), "tasks_executed": 0, "tasks_failed": 0}
+                phase_results[phase] = result
+                error = str(exc)
+            duration = time.time() - start
+            self._record_temporal_event(
+                phase=phase,
+                iteration=iteration,
+                event="phase_end",
+                status="completed" if error is None else "failed",
+                artifacts=artifacts,
+                duration_seconds=duration,
+                clusters=phase_cluster_ids,
+                error=error,
+            )
+            if error is not None:
+                break
+
+        total_executed = sum(p.get("tasks_executed", 0) for p in phase_results.values())
+        total_failed = sum(p.get("tasks_failed", 0) for p in phase_results.values())
+        return {
+            "success": total_failed == 0,
+            "iteration": iteration,
+            "phases_run": list(phase_results.keys()),
+            "phase_results": phase_results,
+            "total_tasks_executed": total_executed,
+            "total_tasks_failed": total_failed,
+            "temporal_events": list(self.temporal_events),
+            "final_status": "completed" if total_failed == 0 else "failed",
+        }
+
     def get_cluster_status(self) -> Dict[str, Any]:
-        """Get status of all clusters"""
         return {
             "total_clusters": len(self.clusters),
             "clusters": [
@@ -241,66 +374,65 @@ class TwelveClusterOrchestrator:
                     "id": c.cluster_id,
                     "name": c.name,
                     "phase": c.phase,
+                    "tier": c.tier,
                     "status": c.status,
                     "tasks_executed": c.tasks_executed,
-                    "tasks_failed": c.tasks_failed
+                    "tasks_failed": c.tasks_failed,
                 }
                 for c in self.clusters.values()
-            ]
+            ],
         }
-    
-    def generate_report(self, output_path: Path):
-        """Generate 12-cluster execution report"""
+
+    def generate_report(self, output_path: Path) -> None:
         status = self.get_cluster_status()
-        
         report = {
             "timestamp": datetime.now().isoformat(),
-            "orchestrator": "12-Cluster Parallel Execution",
+            "orchestrator": "12-Cluster Orchestrator V3.0",
+            "cluster_contract": self.get_cluster_contract(),
             "status": status,
+            "temporal_events": self.temporal_events,
             "keb_enabled": self.use_keb,
-            "gbogeb_enabled": self.use_gbogeb
+            "gbogeb_enabled": self.use_gbogeb,
         }
-        
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
-        
-        print(f"[12-CLUSTER] Report saved: {output_path}")
 
 
-def main():
-    """Test 12-cluster orchestrator"""
+def main() -> int:
     import argparse
-    
-    parser = argparse.ArgumentParser(description="12-Cluster Orchestrator Test")
-    parser.add_argument("--test", action="store_true", help="Run test")
-    parser.add_argument("--phase", type=str, default="phase2", help="Phase to test")
-    parser.add_argument("--tasks", type=int, default=100, help="Number of test tasks")
-    
+
+    parser = argparse.ArgumentParser(description="12-Cluster Orchestrator V3.0")
+    parser.add_argument("--test", action="store_true", help="Run self-test")
+    parser.add_argument("--tasks", type=int, default=24, help="Number of synthetic tasks")
     args = parser.parse_args()
-    
+
     if args.test:
-        orchestrator = TwelveClusterOrchestrator(max_workers=12, use_keb=False, use_gbogeb=True)
-        
-        test_tasks = [
-            {"func": lambda x: x * 2, "args": (i,)}
-            for i in range(args.tasks)
-        ]
-        
-        results = orchestrator.execute_phase_parallel(args.phase, test_tasks, iteration=1)
-        
-        print("\n[12-CLUSTER] Test Results:")
-        print(json.dumps(results, indent=2))
-        
-        status = orchestrator.get_cluster_status()
-        print("\n[12-CLUSTER] Cluster Status:")
-        print(json.dumps(status, indent=2))
-        
+        orchestrator = TwelveClusterOrchestrator(max_workers=12, use_keb=False, use_gbogeb=False)
+        sample_payloads = [{"sample_id": idx, "value": idx * 2} for idx in range(args.tasks)]
+
+        def phase_task_factory(phase: str) -> List[Dict[str, Any]]:
+            return [
+                {
+                    "task_id": f"{phase}-{p['sample_id']}",
+                    "func": lambda payload=p, phase_name=phase: {
+                        "success": True,
+                        "phase": phase_name,
+                        "sample_id": payload["sample_id"],
+                        "value": payload["value"],
+                    },
+                }
+                for p in sample_payloads[: max(1, len(sample_payloads) // 8)]
+            ]
+
+        result = orchestrator.run_phases_with_hooks(iteration=1, phase_task_factory=phase_task_factory)
+        print(json.dumps(result, indent=2))
         orchestrator.generate_report(Path("DMAIC_V3_OUTPUT/12cluster_test_report.json"))
-    
+
     return 0
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())
