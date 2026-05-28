@@ -57,7 +57,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
+      - name: Summarize repo relevance
+        run: |
+          python scripts/report_repo_relevance.py --repo "${{ github.repository }}" --format github-step-summary >> "$GITHUB_STEP_SUMMARY"
+
       - name: Verify integration files exist
         run: |
           echo "Checking for required integration files..."
