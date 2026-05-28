@@ -1,0 +1,534 @@
+# ARTIFACTS.yaml — Machine-readable catalog of project deliverables
+# MYRRHA QPLANT Cryogenic Leak Rate Dashboard v4.0.0
+# Generated: 2026-05-12
+# Commit: ff01ec8
+
+project:
+  name: MYRRHA QPLANT Cryogenic Leak Rate Dashboard
+  version: "4.0.0"
+  codename: "Critical Correction — 3× FSD575, SSoT Configuration"
+  branch: main
+  commit: ff01ec8
+  build_status: verified
+  test_status: "22/22 passing"
+
+artifacts:
+
+  # ── Configuration (SSoT) ──────────────────────────────────────────
+
+  - path: data/config.yaml
+    category: configuration
+    description: "Single Source of Truth — human-editable master configuration for all engineering parameters"
+    format: yaml
+    generated_from: null
+    role: primary_input
+
+  - path: data/config.json
+    category: configuration
+    description: "Machine-readable SSoT export (auto-generated from config.yaml)"
+    format: json
+    generated_from: data/config.yaml
+    role: derived
+
+  - path: data/config.md
+    category: configuration
+    description: "Human-readable parameter tables (auto-generated from config.yaml)"
+    format: markdown
+    generated_from: data/config.yaml
+    role: derived
+
+  - path: src/config_loader.py
+    category: configuration
+    description: "Python configuration loader with dot-notation access to SSoT"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: data/compressor_specs.json
+    category: configuration
+    description: "FSD575 SFC and HSD Twin Combi compressor specifications"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/helium_properties.json
+    category: configuration
+    description: "Helium thermophysical properties database (gas + liquid + saturation)"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/leak_classes.json
+    category: configuration
+    description: "Helium leak rate classifications (1e-9 to 1e-4 mbar·L/s)"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/scenarios.json
+    category: configuration
+    description: "System-level leak rate scenarios (baseline, uniform, RTM-048 cap)"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/valve_candidates.json
+    category: configuration
+    description: "Valve candidate specifications (Meca Inox, Swagelok, metal-sealed)"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/source_anchors.json
+    category: configuration
+    description: "External source document references with excerpts for traceability"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/standards_compliance.json
+    category: configuration
+    description: "Standards compliance framework (8 international codes)"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/material_costs.json
+    category: configuration
+    description: "Material cost data for valve/seal options"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/operating_conditions.json
+    category: configuration
+    description: "Operating temperature/pressure conditions"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/meca_inox_specs.json
+    category: configuration
+    description: "Meca Inox ball valve specifications"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  - path: data/swagelok_specs.json
+    category: configuration
+    description: "Swagelok SS-42GSE series specifications"
+    format: json
+    generated_from: null
+    role: primary_input
+
+  # ── Engineering Modules ───────────────────────────────────────────
+
+  - path: src/calc_leak_rate.py
+    category: engineering
+    description: "Core physics engine — first-principles mbar·L/s to mass-flow conversion"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/compressor_reliability.py
+    category: engineering
+    description: "HP compressor k-of-M availability and VFD energy savings modeling"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/liquid_he_loss.py
+    category: engineering
+    description: "Leak rate to liquid helium inventory loss conversion"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/wcs_scenarios.py
+    category: engineering
+    description: "WCS.HP supply protection logic and interlock scenarios"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/monte_carlo.py
+    category: engineering
+    description: "Monte Carlo simulation engine for uncertainty quantification"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/risk_model.py
+    category: engineering
+    description: "Risk assessment model"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/materials_db.py
+    category: engineering
+    description: "Material properties database module"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/manifest.py
+    category: engineering
+    description: "SHA256 hashing, idempotent writes, and output manifest builder"
+    format: python
+    generated_from: null
+    role: source_code
+
+  # ── Build / Generation Modules ────────────────────────────────────
+
+  - path: src/generate_dashboard.py
+    category: build
+    description: "Main dashboard generator — HTML pages, plots, tables, JSON/CSV output"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/build_all.py
+    category: build
+    description: "Orchestrator — runs dashboard + handover + manifest generation"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/build_dashboard.py
+    category: build
+    description: "Landing page (index.html) generator with phase cards and status pills"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/build_handover.py
+    category: build
+    description: "Formal handover document generator (Markdown → HTML → PDF)"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/generate_visuals_v3.py
+    category: build
+    description: "v3.1 visualization generator (22 Plotly charts)"
+    format: python
+    generated_from: null
+    role: source_code
+
+  - path: src/generate_standards_stats.py
+    category: build
+    description: "Standards compliance and statistical output generator"
+    format: python
+    generated_from: null
+    role: source_code
+
+  # ── Visualizations ────────────────────────────────────────────────
+
+  - path: docs/plots/plot1_leak_vs_loss.html
+    category: visualization
+    description: "Log-log leak rate vs helium mass loss (g/year) by temperature"
+    format: html_plotly
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/plots/plot2_temp_pressure_effects.html
+    category: visualization
+    description: "Temperature and pressure effects on helium loss"
+    format: html_plotly
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/plots/plot3_cost_vs_leaktightness.html
+    category: visualization
+    description: "Valve CAPEX vs helium-loss cost comparison"
+    format: html_plotly
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/plots/plot4_fleet_sensitivity.html
+    category: visualization
+    description: "System-level annual helium loss and cost by fleet size"
+    format: html_plotly
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/plots/plot5_reliability.html
+    category: visualization
+    description: "MTBF and recommended spare parts analysis"
+    format: html_plotly
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/visualizations_v3/
+    category: visualization
+    description: "22 extended Plotly charts (Monte Carlo, PCA, compressor, liquid He, etc.)"
+    format: html_plotly
+    generated_from: src/generate_visuals_v3.py
+    note: "Directory containing 22 interactive HTML charts"
+
+  - path: docs/visualizations/
+    category: visualization
+    description: "18 v3.0 material/supplier charts with backing CSV data"
+    format: html_plotly
+    generated_from: src/generate_standards_stats.py
+    note: "Directory containing 18 charts + data/ subdirectory"
+
+  # ── Documentation ─────────────────────────────────────────────────
+
+  - path: docs/STAKEHOLDER_PRESENTATION.html
+    category: documentation
+    description: "40-slide stakeholder presentation (full project overview)"
+    format: html
+    generated_from: src/build_all.py
+
+  - path: docs/index_v4_0.html
+    category: documentation
+    description: "40-slide master navigator with embedded charts and tables"
+    format: html
+    generated_from: src/build_all.py
+
+  - path: docs/index.html
+    category: documentation
+    description: "Landing page with phase cards, build status, and download links"
+    format: html
+    generated_from: src/build_dashboard.py
+
+  - path: docs/handover.html
+    category: documentation
+    description: "Formal handover document (HTML)"
+    format: html
+    generated_from: src/build_handover.py
+
+  - path: docs/handover.pdf
+    category: documentation
+    description: "Formal handover document (PDF)"
+    format: pdf
+    generated_from: docs/handover.html
+
+  - path: docs/HANDOVER_AGENT.md
+    category: documentation
+    description: "Agent-specific handover instructions"
+    format: markdown
+    generated_from: null
+
+  - path: docs/dashboard.html
+    category: documentation
+    description: "Interactive Plotly dashboard with embedded charts"
+    format: html
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/calculations.html
+    category: documentation
+    description: "Detailed calculation methodology pages"
+    format: html
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/executive_summary.html
+    category: documentation
+    description: "Executive summary for management audience"
+    format: html
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/rtm_traceability.html
+    category: documentation
+    description: "Requirements Traceability Matrix (RTM-047/048/067)"
+    format: html
+    generated_from: src/generate_dashboard.py
+
+  - path: docs/compressors/HP_Redundancy_Analysis.html
+    category: documentation
+    description: "HP compressor redundancy analysis (3× FSD575 SFC)"
+    format: html
+    generated_from: src/generate_visuals_v3.py
+
+  - path: docs/compressors/WCS_HP_Protection.html
+    category: documentation
+    description: "WCS.HP supply protection and interlock documentation"
+    format: html
+    generated_from: src/generate_visuals_v3.py
+
+  - path: docs/liquid_he/Liquid_Operations_Guide.html
+    category: documentation
+    description: "Liquid helium operations and inventory management guide"
+    format: html
+    generated_from: src/generate_visuals_v3.py
+
+  - path: docs/standards/Compliance_Matrix.csv
+    category: documentation
+    description: "Standards compliance matrix (CSV export)"
+    format: csv
+    generated_from: src/generate_standards_stats.py
+
+  - path: docs/standards/FAT_SAT_Procedures.md
+    category: documentation
+    description: "Factory/Site Acceptance Test procedures"
+    format: markdown
+    generated_from: src/generate_standards_stats.py
+
+  - path: docs/standards/PED_Compliance_Workflow.md
+    category: documentation
+    description: "PED 2014/68/EU compliance workflow"
+    format: markdown
+    generated_from: src/generate_standards_stats.py
+
+  # ── Testing ───────────────────────────────────────────────────────
+
+  - path: tests/test_engineering.py
+    category: testing
+    description: "Core physics engine validation (dimensional chain, temperature scaling, RTM-048)"
+    format: python
+    generated_from: null
+
+  - path: tests/test_calculations.py
+    category: testing
+    description: "Calculation integration tests"
+    format: python
+    generated_from: null
+
+  - path: tests/test_config_loader.py
+    category: testing
+    description: "SSoT configuration loader validation"
+    format: python
+    generated_from: null
+
+  - path: tests/test_data_integrity.py
+    category: testing
+    description: "Data file consistency and schema validation"
+    format: python
+    generated_from: null
+
+  - path: tests/test_build_outputs.py
+    category: testing
+    description: "Build output existence and format checks"
+    format: python
+    generated_from: null
+
+  - path: tests/test_outputs.py
+    category: testing
+    description: "Output file content validation"
+    format: python
+    generated_from: null
+
+  - path: tests/conftest.py
+    category: testing
+    description: "Shared pytest fixtures"
+    format: python
+    generated_from: null
+
+  - path: dist/test-report.html
+    category: testing
+    description: "HTML test execution report"
+    format: html
+    generated_from: validate.sh
+
+  - path: dist/test-results.json
+    category: testing
+    description: "Machine-readable test results"
+    format: json
+    generated_from: validate.sh
+
+  - path: dist/junit.xml
+    category: testing
+    description: "JUnit XML test results (CI-compatible)"
+    format: xml
+    generated_from: validate.sh
+
+  # ── Build Scripts ─────────────────────────────────────────────────
+
+  - path: setup.sh
+    category: build_script
+    description: "Environment setup — creates venv, installs dependencies, runs initial build"
+    format: bash
+    generated_from: null
+
+  - path: build.sh
+    category: build_script
+    description: "Full build pipeline — generates all HTML, plots, tables, manifests"
+    format: bash
+    generated_from: null
+
+  - path: validate.sh
+    category: build_script
+    description: "Test and verification pipeline — runs pytest, checks outputs"
+    format: bash
+    generated_from: null
+
+  - path: package.sh
+    category: build_script
+    description: "Distribution packaging — creates dist/handover.zip"
+    format: bash
+    generated_from: null
+
+  - path: Makefile
+    category: build_script
+    description: "Make targets for setup, build, validate, package"
+    format: makefile
+    generated_from: null
+
+  # ── Version Metadata ──────────────────────────────────────────────
+
+  - path: VERSION
+    category: metadata
+    description: "Plain text version number (4.0.0)"
+    format: text
+    generated_from: null
+
+  - path: VERSION.json
+    category: metadata
+    description: "Structured version metadata with codename and change list"
+    format: json
+    generated_from: null
+
+  - path: CHANGELOG.md
+    category: metadata
+    description: "Full changelog covering v3.0.0 → v3.1.0 → v4.0.0"
+    format: markdown
+    generated_from: null
+
+  - path: docs/manifest.json
+    category: metadata
+    description: "Build manifest — file hashes, timestamps, dependencies, test results"
+    format: json
+    generated_from: setup.sh
+
+  - path: OUTPUT_MANIFEST.json
+    category: metadata
+    description: "Output manifest with SHA256 hashes for all generated files"
+    format: json
+    generated_from: src/build_all.py
+
+  # ── Distribution ──────────────────────────────────────────────────
+
+  - path: dist/handover.zip
+    category: distribution
+    description: "Complete handover bundle (~2.7 MB)"
+    format: zip
+    generated_from: package.sh
+
+  - path: dist/handover.zip.sha256
+    category: distribution
+    description: "SHA256 checksum for handover.zip integrity verification"
+    format: text
+    generated_from: package.sh
+
+  # ── Handover Package ──────────────────────────────────────────────
+
+  - path: HANDOVER.md
+    category: handover
+    description: "Master handover document (this package)"
+    format: markdown
+    generated_from: null
+
+  - path: ARTIFACTS.yaml
+    category: handover
+    description: "Machine-readable artifact catalog (this file)"
+    format: yaml
+    generated_from: null
+
+  - path: DOWNLOAD_CHECKLIST.md
+    category: handover
+    description: "Download checklist for complete project handover"
+    format: markdown
+    generated_from: null
+
+  - path: REBUILD_GUIDE.md
+    category: handover
+    description: "Step-by-step idempotent rebuild instructions"
+    format: markdown
+    generated_from: null

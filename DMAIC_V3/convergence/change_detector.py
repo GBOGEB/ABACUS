@@ -252,61 +252,44 @@ class ChangeDetector:
             }
         except:
             return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
-        
+
+    def get_changed_files(self, file_types=None):
+        """Get list of changed files, optionally filtered by type.
+
         Args:
             file_types: Set of file extensions to filter (e.g., {'.py', '.md'})
-            
+
         Returns:
             List of changed file paths
         """
         if not self.changes_file.exists():
             return []
-            
+
         try:
             with open(self.changes_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                
+
             changed_files = []
             for change in data.get('changes', []):
                 if change['change_type'] != 'deleted':
                     path = change['path']
                     if file_types is None or Path(path).suffix in file_types:
                         changed_files.append(path)
-                        
+
             return changed_files
-            
+
         except Exception as e:
             print(f"  [!] Error loading changes: {e}")
             return []
-    
+
     def has_changes(self) -> bool:
         """Check if any changes were detected"""
         if not self.changes_file.exists():
             return True  # First run, consider everything changed
-            
+
         try:
             with open(self.changes_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             return data.get('total_changes', 0) > 0
         except:
             return True
-    
-    def get_change_summary(self) -> Dict[str, Any]:
-        """Get summary of detected changes"""
-        if not self.changes_file.exists():
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
-            
-        try:
-            with open(self.changes_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                
-            changes = data.get('changes', [])
-            return {
-                'total': len(changes),
-                'added': sum(1 for c in changes if c['change_type'] == 'added'),
-                'modified': sum(1 for c in changes if c['change_type'] == 'modified'),
-                'deleted': sum(1 for c in changes if c['change_type'] == 'deleted'),
-                'timestamp': data.get('timestamp', '')
-            }
-        except:
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}

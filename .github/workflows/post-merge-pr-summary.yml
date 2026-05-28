@@ -1,0 +1,121 @@
+name: Post-Merge PR Summary
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  checks: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  summarize-merged-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish merged PR quality summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const refSha = pr.merge_commit_sha || pr.head.sha;
+
+            const checksResponse = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: refSha,
+              per_page: 100
+            });
+            const checks = checksResponse.data.check_runs || [];
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: pr.number,
+              per_page: 100
+            });
+
+            const completed = checks.filter(c => c.status === 'completed');
+            const passed = completed.filter(c => c.conclusion === 'success').length;
+            const failedChecks = completed.filter(c =>
+              ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(c.conclusion)
+            );
+            const failed = failedChecks.length;
+            const totalCompleted = completed.length;
+            const passRate = totalCompleted > 0 ? ((passed / totalCompleted) * 100).toFixed(1) : '0.0';
+            const status = failed === 0 ? 'PASS ✅' : 'FAIL ❌';
+
+            let maturity = 'Low';
+            if (failed === 0 && Number(passRate) >= 90) maturity = 'High';
+            else if (Number(passRate) >= 70) maturity = 'Medium';
+
+            const completion = `${passRate}% checks passing (${passed}/${totalCompleted})`;
+            const progress = `Merged with ${pr.changed_files} files changed, +${pr.additions} / -${pr.deletions}, ${pr.commits} commit(s)`;
+            const codeChanged = files.some(f => /\.(py|yml|yaml|js|ts|tsx|go|java|rb|rs|php)$/i.test(f.filename));
+            const versionOrReleaseTouched = files.some(f =>
+              /(VERSION|CHANGELOG|release|docs\/api\/final_handover_tracker\.json|DEPLOYMENT_REPORT|INTEGRATION_TEST_REPORT)/i.test(f.filename)
+            );
+            const staleRisk = codeChanged && !versionOrReleaseTouched;
+
+            const nextSteps = failed === 0
+              ? [
+                  '- Monitor post-merge runs for regressions.',
+                  '- Continue with next backlog item on this stream.',
+                  '- Keep trend stable in upcoming PRs.'
+                ]
+              : [
+                  '- Prioritize failed checks listed below.',
+                  '- Run targeted fixes and open follow-up PR.',
+                  '- Re-run CI after each fix to confirm closure.'
+                ];
+
+            const todos = failedChecks.length > 0
+              ? failedChecks.slice(0, 10).map(c => `- [ ] Fix \`${c.name}\` (${c.conclusion})`)
+              : ['- [x] No pending CI fixes detected at merge time.'];
+            if (staleRisk) {
+              todos.push('- [ ] Review artifact/version references for staleness (code changed but no version/release artifact updates detected).');
+            }
+
+            const failedList = failedChecks.length > 0
+              ? failedChecks.slice(0, 10).map(c => `- ❌ ${c.name} — ${c.conclusion}`).join('\n')
+              : '- ✅ No failed checks recorded for merge commit.';
+
+            const body = [
+              '## 📊 Post-Merge PR Summary',
+              '',
+              `**PR:** #${pr.number}  `,
+              `**Merge SHA:** \`${refSha?.slice(0, 12) || 'n/a'}\`  `,
+              `**Overall:** **${status}**`,
+              '',
+              '### High-Level Stats',
+              `- Checks completed: **${totalCompleted}**`,
+              `- Passed: **${passed}**`,
+              `- Failed: **${failed}**`,
+              `- Pass rate: **${passRate}%**`,
+              '',
+              '### Developmental Maturity / Progress',
+              `- Maturity: **${maturity}**`,
+              `- Progress: ${progress}`,
+              `- Completion: ${completion}`,
+              `- Staleness risk: **${staleRisk ? 'Potential' : 'Low'}**`,
+              '',
+              '### Failure Scan (where it fails)',
+              failedList,
+              '',
+              '### Next Steps',
+              ...nextSteps,
+              '',
+              '### TODO (fixes not implemented yet)',
+              ...todos
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pr.number,
+              body
+            });
