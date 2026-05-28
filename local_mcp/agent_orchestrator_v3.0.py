@@ -4,29 +4,59 @@ Agent Orchestrator V3.0
 Memory-optimized DMAIC-based orchestrator for V2.3 agents
 Coordinates 6 V2.3 agents with 4M memory constraint
 """
+import importlib.util
 import json
 import sys
 import time
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-import importlib
 import traceback
+
+_AGENTS_DIR = Path(__file__).parent / "agents"
+_LOCAL_MCP_DIR = Path(__file__).parent
+
+
+def _load_dotted_module(loader_name: str, file_path: Path):
+    """Load a module whose filename contains version dots (e.g. v2.3) that
+    cannot be resolved via the normal ``import`` machinery."""
+    spec = importlib.util.spec_from_file_location(loader_name, file_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot locate module at {file_path}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    return mod
 
 
 class AgentOrchestratorV3:
     """V3.0 Orchestrator for V2.3 agents with DMAIC coordination"""
-    
+
+    # ------------------------------------------------------------------
+    # Agent catalogue: (logical_name, filename_in_agents_dir, class_name)
+    # All 6 V2.3 agents are listed here; filenames contain version dots
+    # so they must be loaded via _load_dotted_module rather than
+    # importlib.import_module.
+    # ------------------------------------------------------------------
+    _AGENT_CATALOGUE = [
+        ('cryo_analyzer',           'analysis_cryo_dm_v2.3_OPTIMIZED.py',           'MemoryEfficientCryoAnalyzerV23'),
+        ('document_consumer',       'analysis_document_consumer_v2.3_OPTIMIZED.py', 'MemoryEfficientDocumentConsumerV23'),
+        ('artifact_analyzer',       'analysis_artifact_analyzer_v2.3_OPTIMIZED.py', 'MemoryEfficientArtifactAnalyzerV23'),
+        ('smoke_test',              'analysis_smoke_test_v2.3_OPTIMIZED.py',         'MemoryEfficientSmokeTestV23'),
+        ('documentation_framework', 'documentation_framework_v2.3_OPTIMIZED.py',    'MemoryEfficientDocumentationFrameworkV23'),
+        ('recursive_framework',     'recursive_framework_v2.3_OPTIMIZED.py',         'MemoryEfficientRecursiveFrameworkV23'),
+    ]
+
     def __init__(self, config: dict = None):
         self.config = config or {}
         self.name = "agent_orchestrator"
         self.version = "v3.0.0"
         self.start_time = time.time()
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         self.agents = {}
         self.initialized = False
-        
+        self.knowledge = None
+
         self.performance_metrics = {
             'agents_initialized': 0,
             'tasks_executed': 0,
@@ -34,13 +64,13 @@ class AgentOrchestratorV3:
             'errors_handled': 0,
             'total_execution_time': 0
         }
-        
+
         self.dmaic_log = []
         self.execution_history = []
-        
+
         self.output_dir = Path(self.config.get('output_dir', 'orchestrator_outputs_v3.0'))
         self.output_dir.mkdir(exist_ok=True)
-    
+
     def _log_dmaic(self, phase: str, action: str, result: Any = None):
         """Log DMAIC action with memory efficiency"""
         log_entry = {
@@ -51,24 +81,32 @@ class AgentOrchestratorV3:
         }
         self.dmaic_log.append(log_entry)
         print(f"[{phase}] {action}")
-    
+
     def initialize_agents(self) -> Dict[str, Any]:
-        """Initialize all V2.3 agents"""
+        """Initialize all 6 V2.3 agents and the knowledge integration layer."""
         self._log_dmaic('INIT', 'Starting agent initialization')
-        
-        agent_configs = [
-            ('cryo_analyzer', 'local_mcp.agents.analysis_cryo_dm_v2.3_OPTIMIZED', 'MemoryEfficientCryoAnalyzerV23'),
-            ('document_consumer', 'local_mcp.agents.analysis_document_consumer_v2.3_OPTIMIZED', 'MemoryEfficientDocumentConsumerV23'),
-            ('artifact_analyzer', 'local_mcp.agents.analysis_artifact_analyzer_v2.3_OPTIMIZED', 'MemoryEfficientArtifactAnalyzerV23'),
-            ('smoke_test', 'local_mcp.agents.analysis_smoke_test_v2.3_OPTIMIZED', 'MemoryEfficientSmokeTestV23'),
-        ]
-        
-        for agent_name, module_path, class_name in agent_configs:
+
+        # ---- Load knowledge integration first so agents can query it ----
+        try:
+            ki_mod = _load_dotted_module(
+                'local_mcp._knowledge_init',
+                _LOCAL_MCP_DIR / 'knowledge_integration_v2.3.py',
+            )
+            self.knowledge = ki_mod.KnowledgeIntegrationV23(
+                workspace=str(self.output_dir / 'knowledge')
+            )
+            self._log_dmaic('INIT', 'Knowledge integration layer loaded')
+        except Exception as exc:
+            self._log_dmaic('INIT', f'Knowledge integration unavailable: {exc}')
+
+        # ---- Load individual agents ----
+        for agent_name, filename, class_name in self._AGENT_CATALOGUE:
+            agent_path = _AGENTS_DIR / filename
             try:
                 self._log_dmaic('INIT', f'Loading agent: {agent_name}')
-                module = importlib.import_module(module_path)
+                module = _load_dotted_module(f'local_mcp.agents._{agent_name}', agent_path)
                 agent_class = getattr(module, class_name)
-                
+
                 self.agents[agent_name] = {
                     'module': module,
                     'class': agent_class,
@@ -76,9 +114,9 @@ class AgentOrchestratorV3:
                     'status': 'loaded',
                     'version': 'v2.3.0'
                 }
-                
+
                 self.performance_metrics['agents_initialized'] += 1
-                
+
             except Exception as e:
                 self.performance_metrics['errors_handled'] += 1
                 self._log_dmaic('INIT', f'Failed to load {agent_name}: {str(e)}')
@@ -86,13 +124,14 @@ class AgentOrchestratorV3:
                     'status': 'failed',
                     'error': str(e)
                 }
-        
+
         self.initialized = True
         self._log_dmaic('INIT', f'Initialization complete: {self.performance_metrics["agents_initialized"]} agents loaded')
-        
+
         return {
             'status': 'initialized',
             'agents_loaded': self.performance_metrics['agents_initialized'],
+            'knowledge_ready': self.knowledge is not None,
             'timestamp': datetime.now().isoformat()
         }
     
