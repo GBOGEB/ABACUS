@@ -1,0 +1,112 @@
+/* ABACUS Docs – Shared Stylesheet */
+:root {
+  --primary: #1a73e8;
+  --primary-dark: #1557b0;
+  --accent: #34a853;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --text: #202124;
+  --text-secondary: #5f6368;
+  --border: #dadce0;
+  --code-bg: #f1f3f4;
+  --nav-bg: #1a2233;
+  --nav-text: #e8eaed;
+  --shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.12);
+  --radius: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--text);
+  line-height: 1.6;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Top nav */
+.topnav {
+  background: var(--nav-bg); color: var(--nav-text);
+  padding: .75rem 1.5rem; display: flex; align-items: center;
+  gap: 1.5rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow);
+}
+.topnav .brand { font-weight: 700; font-size: 1.15rem; color: #fff; }
+.topnav a { color: var(--nav-text); font-size: .9rem; }
+.topnav a:hover { color: #fff; text-decoration: none; }
+
+/* Breadcrumbs */
+.breadcrumbs {
+  padding: .5rem 1.5rem; font-size: .85rem; color: var(--text-secondary);
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.breadcrumbs a { color: var(--primary); }
+.breadcrumbs span { margin: 0 .35rem; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #1a2233 0%, #1a73e8 100%);
+  color: #fff; padding: 3rem 1.5rem; text-align: center;
+}
+.hero h1 { margin: 0 0 .5rem; font-size: 2.2rem; }
+.hero p { margin: 0; opacity: .9; max-width: 700px; margin-inline: auto; }
+
+/* Container */
+.container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+/* Cards */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem; margin: 1.5rem 0;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem;
+  box-shadow: var(--shadow); transition: box-shadow .2s, transform .2s;
+}
+.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.card h3 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.card p { margin: 0 0 .75rem; color: var(--text-secondary); font-size: .92rem; }
+.card .btn { display: inline-block; background: var(--primary); color: #fff; padding: .45rem 1rem; border-radius: 4px; font-size: .88rem; }
+.card .btn:hover { background: var(--primary-dark); text-decoration: none; }
+
+/* Status badges */
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: .78rem; font-weight: 600; text-transform: uppercase;
+}
+.badge-ok { background: #e6f4ea; color: #137333; }
+.badge-warn { background: #fef7e0; color: #b05e0a; }
+.badge-err { background: #fce8e6; color: #c5221f; }
+.badge-info { background: #e8f0fe; color: #1a73e8; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+th, td { padding: .65rem .9rem; text-align: left; border-bottom: 1px solid var(--border); font-size: .92rem; }
+th { background: var(--code-bg); font-weight: 600; }
+
+/* Code */
+code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: .88em; }
+pre { background: var(--nav-bg); color: #e8eaed; padding: 1rem; border-radius: var(--radius); overflow-x: auto; }
+pre code { background: transparent; padding: 0; color: inherit; }
+
+/* Section */
+.section { margin: 2rem 0; }
+.section h2 { border-bottom: 2px solid var(--primary); padding-bottom: .4rem; }
+
+/* Footer */
+.footer {
+  background: var(--nav-bg); color: var(--nav-text); text-align: center;
+  padding: 1.5rem; margin-top: 3rem; font-size: .85rem;
+}
+.footer a { color: #8ab4f8; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.6rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .topnav { gap: .75rem; }
+  .container { padding: 1rem; }
+}

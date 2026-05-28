@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ABACUS — Repository Structure</title>
+<meta name="description" content="Interactive ASCII map of the ABACUS repository structure with entry points and data flow."/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;margin:0;}
+  .wrap{max-width:1200px;margin:0 auto;padding:1.4rem;}
+  h1{margin:.2rem 0;font-size:1.6rem;}
+  h2{font-size:1.05rem;color:#93c5fd;text-transform:uppercase;letter-spacing:.04em;margin-top:1.4rem;}
+  .legend{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0 1rem;font-size:.82rem;}
+  .legend span{display:inline-flex;align-items:center;gap:.3rem;}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;}
+  .ascii{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:1.2rem 1.4rem;font-family:ui-monospace,SF Mono,Menlo,monospace;font-size:.86rem;line-height:1.5;white-space:pre;overflow-x:auto;}
+  .node{cursor:pointer;transition:background .15s;display:inline-block;padding:1px 4px;border-radius:3px;}
+  .node:hover{background:#334155;}
+  .node a{color:inherit;}
+  .active{color:#22c55e;}    .archived{color:#3b82f6;}
+  .legacy{color:#94a3b8;}     .governance{color:#facc15;}
+  .docs{color:#a78bfa;}       .cicd{color:#f472b6;}
+  .core{color:#fb923c;}
+  details{margin:.4rem 0;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:.6rem .9rem;}
+  details summary{cursor:pointer;font-weight:600;color:#93c5fd;}
+  details[open] summary{margin-bottom:.6rem;}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;}
+  th,td{padding:.45rem .6rem;border-bottom:1px solid #334155;text-align:left;}
+  th{color:#93c5fd;text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;}
+  .flow{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin:1rem 0;}
+  .flow-box{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:.6rem 1rem;text-align:center;min-width:140px;font-size:.82rem;}
+  .flow-arrow{align-self:center;font-size:1.1rem;color:#94a3b8;}
+  nav.topbar{display:flex;gap:1rem;padding:.8rem 1.4rem;background:#1e293b;border-bottom:1px solid #334155;}
+  nav.topbar a{color:#93c5fd;text-decoration:none;font-size:.9rem;}
+  nav.topbar a:hover{text-decoration:underline;}
+  footer{padding:1rem 1.4rem;color:#64748b;text-align:center;font-size:.78rem;}
+  .pill{display:inline-block;background:#334155;color:#e2e8f0;padding:1px 7px;border-radius:9px;font-size:.7rem;margin-left:.3rem;}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="./">⚛️ ABACUS Home</a>
+  <a href="handover_book.html">📖 Handover Book</a>
+  <a href="dashboard.html">🎯 Dashboard</a>
+  <a href="dmaic-metrics.html">📊 DMAIC Metrics</a>
+  <a href="https://github.com/GBOGEB/ABACUS">GitHub</a>
+</nav>
+
+<div class="wrap">
+  <h1>🗂️ ABACUS — Repository Structure</h1>
+  <div style="color:#94a3b8;font-size:.9rem;">Click any node to open it on GitHub. Sections below are expandable.</div>
+
+  <div class="legend">
+    <span><i style="background:#22c55e;"></i> Active</span>
+    <span><i style="background:#3b82f6;"></i> Archived</span>
+    <span><i style="background:#94a3b8;"></i> Legacy</span>
+    <span><i style="background:#facc15;"></i> Governance / CI</span>
+    <span><i style="background:#a78bfa;"></i> Documentation</span>
+    <span><i style="background:#f472b6;"></i> CI/CD workflows</span>
+    <span><i style="background:#fb923c;"></i> Core engine</span>
+  </div>
+
+  <h2>📁 Tree</h2>
+<pre class="ascii">
+<span class="node active">ABACUS/</span>
+├── <span class="node governance"><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github">.github/</a></span>                 <span class="pill">CI/CD &amp; Templates</span>
+│   ├── <span class="node cicd"><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows">workflows/</a></span>           <span class="pill">39 workflows</span>
+│   ├── <span class="node governance"><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a></span>      <span class="pill">4 templates</span>
+│   ├── <span class="node governance"><a href="https://github.com/GBOGEB/ABACUS/blob/main/.github/CONTRIBUTING.md">CONTRIBUTING.md</a></span>
+│   ├── <span class="node governance"><a href="https://github.com/GBOGEB/ABACUS/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a></span>
+│   └── <span class="node governance"><a href="https://github.com/GBOGEB/ABACUS/blob/main/.github/RELEASE_TEMPLATE.md">RELEASE_TEMPLATE.md</a></span>
+│
+├── <span class="node docs"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs">docs/</a></span>                    <span class="pill">GitHub Pages live</span>
+│   ├── <span class="node docs"><a href="https://gbogeb.github.io/ABACUS/">index.html</a></span>            <span class="pill">Main launcher</span>
+│   ├── <span class="node docs"><a href="handover_book.html">handover_book.html</a></span>   <span class="pill">12 chapters</span>
+│   ├── <span class="node docs"><a href="dashboard.html">dashboard.html</a></span>
+│   ├── <span class="node docs"><a href="dmaic-metrics.html">dmaic-metrics.html</a></span>
+│   ├── <span class="node docs"><a href="final_status_v4.4.0.html">final_status_v4.4.0.html</a></span>
+│   ├── <span class="node docs"><a href="cryo/">cryo/</a></span>                <span class="pill">Cryo dashboard</span>
+│   ├── <span class="node docs"><a href="12-cluster/">12-cluster/</a></span>          <span class="pill">Architecture</span>
+│   ├── <span class="node docs"><a href="dow/">dow/</a></span>                 <span class="pill">Governance</span>
+│   ├── <span class="node docs"><a href="testing/">testing/</a></span>             <span class="pill">Integration</span>
+│   ├── <span class="node docs"><a href="tools/">tools/</a></span>                <span class="pill">Engineering</span>
+│   ├── <span class="node docs"><a href="versions/">versions/</a></span>             <span class="pill">Lineage</span>
+│   └── <span class="node docs"><a href="workflows/">workflows/</a></span>            <span class="pill">Workflow docs</span>
+│
+├── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned">docs_versioned/</a></span>          <span class="pill">Historical docs</span>
+│   ├── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned/v2.1">v2.1/</a></span>
+│   ├── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned/v0.31">v0.31/</a></span>
+│   ├── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned/v0.32">v0.32/</a></span>
+│   ├── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned/v2.3">v2.3/</a></span>
+│   └── <span class="node archived"><a href="https://github.com/GBOGEB/ABACUS/tree/main/docs_versioned/v3.3">v3.3/</a></span>
+│
+├── <span class="node core"><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3">DMAIC_V3/</a></span>               <span class="pill">Core Engine</span>
+│   ├── <span class="node core"><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3/core">core/</a></span>
+│   ├── <span class="node core"><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3/phases">phases/</a></span>            <span class="pill">Phases 0-9</span>
+│   └── <span class="node core"><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3/convergence">convergence/</a></span>
+│
+├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/local_mcp">local_mcp/</a></span>              <span class="pill">Agent framework</span>
+│   └── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/local_mcp/agents">agents/</a></span>
+│
+├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/qplant">qplant/</a></span>                <span class="pill">QPLANT v4.4.0</span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/qplant/deployment">deployment/</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/qplant/canonical_master">canonical_master/</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/qplant/monitoring_dashboard">monitoring_dashboard/</a></span>
+│   └── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/qplant/load_testing">load_testing/</a></span>
+│
+├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/tree/main/repo_analysis_toolkit">repo_analysis_toolkit/</a></span>   <span class="pill">DMAIC toolkit (NEW)</span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/blob/main/repo_analysis_toolkit/analyze_repo.py">analyze_repo.py</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/blob/main/repo_analysis_toolkit/classify_artifacts.py">classify_artifacts.py</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/blob/main/repo_analysis_toolkit/generate_lineage.py">generate_lineage.py</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/blob/main/repo_analysis_toolkit/create_dashboard.py">create_dashboard.py</a></span>
+│   ├── <span class="node active"><a href="https://github.com/GBOGEB/ABACUS/blob/main/repo_analysis_toolkit/validate_cleanup.py">validate_cleanup.py</a></span>
+│   ├── <span class="node docs"><a href="https://github.com/GBOGEB/ABACUS/tree/main/repo_analysis_toolkit/templates">templates/</a></span>
+│   └── <span class="node cicd"><a href="https://github.com/GBOGEB/ABACUS/tree/main/repo_analysis_toolkit/workflow_templates">workflow_templates/</a></span>
+│
+└── <span class="legacy">[12-Cluster System: indexed across docs/12-cluster/, DMAIC_V3/, local_mcp/]</span>
+</pre>
+
+  <h2>🚪 Entry Points Map</h2>
+
+  <details open>
+    <summary>Python entry points — what launches what</summary>
+    <table>
+      <thead><tr><th>Entry point</th><th>Purpose</th><th>Triggered by</th></tr></thead>
+      <tbody>
+        <tr><td><code>DMAIC_V3/run_all_phases.py</code></td><td>Execute the full 9-phase DMAIC pipeline.</td><td>CLI / CI</td></tr>
+        <tr><td><code>DMAIC_V3/temporal_phase_runner.py</code></td><td>Run individual phases with temporal mapping.</td><td>CLI</td></tr>
+        <tr><td><code>local_mcp/agent_orchestrator_v3.0.py</code></td><td>Boot the multi-agent orchestrator.</td><td>CLI / MCP</td></tr>
+        <tr><td><code>qplant/deployment/*</code></td><td>QPLANT v4.4.0 deployment scripts.</td><td>release.yml</td></tr>
+        <tr><td><code>repo_analysis_toolkit/analyze_repo.py</code></td><td>DMAIC baseline analyzer (reusable).</td><td>CLI / repo-analysis.yml</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>HTML dashboards — which dashboard for what</summary>
+    <table>
+      <thead><tr><th>Dashboard</th><th>Audience</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><a href="index.html">index.html</a></td><td>Everyone</td><td>Card-based launcher with search.</td></tr>
+        <tr><td><a href="handover_book.html">handover_book.html</a></td><td>New contributors</td><td>12-chapter onboarding read.</td></tr>
+        <tr><td><a href="dashboard.html">dashboard.html</a></td><td>PMs / leads</td><td>Project-level status.</td></tr>
+        <tr><td><a href="deep_analysis_dashboard.html">deep_analysis_dashboard.html</a></td><td>Analysts</td><td>SSOT + metrics + recovery.</td></tr>
+        <tr><td><a href="dmaic-metrics.html">dmaic-metrics.html</a></td><td>Engineers</td><td>Per-commit quality trend.</td></tr>
+        <tr><td><a href="final_status_v4.4.0.html">final_status_v4.4.0.html</a></td><td>Stakeholders</td><td>v4.4.0 completion view.</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>Workflows — which automates what</summary>
+    <table>
+      <thead><tr><th>Workflow</th><th>Trigger</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>ci.yml</code></td><td>Push / PR</td><td>Lint + tests on every change.</td></tr>
+        <tr><td><code>deploy-docs.yml</code></td><td>Push to <code>docs/</code></td><td>Deploys GitHub Pages.</td></tr>
+        <tr><td><code>dashboard-health.yml</code></td><td>Daily</td><td>Validates every HTML dashboard.</td></tr>
+        <tr><td><code>dmaic-commit-metrics.yml</code></td><td>Push to main</td><td>Per-commit quality score + Plotly chart.</td></tr>
+        <tr><td><code>release.yml</code></td><td>Tag <code>v*</code></td><td>Builds release + auto-generates notes.</td></tr>
+        <tr><td><code>update-docs.yml</code></td><td>Code changes</td><td>Auto-PR for documentation refresh.</td></tr>
+        <tr><td><code>book-build.yml</code></td><td>Push</td><td>Re-builds the handover book.</td></tr>
+        <tr><td><code>dow-main-cicd.yml</code></td><td>Push</td><td>DOW governance pipeline.</td></tr>
+        <tr><td>…and 31 more</td><td>—</td><td>See <code>.github/workflows/</code>.</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>Documentation — which doc explains what</summary>
+    <table>
+      <thead><tr><th>Document</th><th>Explains</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/README.md">README.md</a></td><td>Top-level overview, quick start.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/TOTAL_PROGRESS_SUMMARY.md">TOTAL_PROGRESS_SUMMARY.md</a></td><td>Phase-by-phase progress + metrics.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_REPO_CLEANUP_METHODOLOGY.md">DMAIC_REPO_CLEANUP_METHODOLOGY.md</a></td><td>Reusable cleanup playbook.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/REPO_CLEANUP_QUICK_START.md">REPO_CLEANUP_QUICK_START.md</a></td><td>3-week execution guide.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/REPO_HEALTH_SCORECARD.md">REPO_HEALTH_SCORECARD.md</a></td><td>100-point scoring rubric.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/EXAMPLE_DRY_RUN.md">EXAMPLE_DRY_RUN.md</a></td><td>End-to-end worked example.</td></tr>
+        <tr><td><a href="handover_book.html">handover_book.html</a></td><td>12-chapter onboarding book.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/12_cluster_vision.md">12_cluster_vision.md</a></td><td>Canonical 12-Cluster architecture.</td></tr>
+        <tr><td><a href="https://github.com/GBOGEB/ABACUS/blob/main/tool_ecosystem_map.md">tool_ecosystem_map.md</a></td><td>Engineering tool catalogue.</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <h2>🔁 Data Flow</h2>
+  <div class="flow">
+    <div class="flow-box">Code change<br/><small>(push to main)</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">CI workflows<br/><small>ci.yml / book-build.yml</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">DMAIC metrics<br/><small>dmaic-commit-metrics.yml</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">docs/api/*.json<br/><small>JSON artifacts</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">GitHub Pages<br/><small>deploy-docs.yml</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Live dashboards<br/><small>index, metrics, status</small></div>
+  </div>
+
+  <p style="font-size:.86rem;color:#94a3b8;">
+    Every push to <code>main</code> runs the CI suite, recalculates the DMAIC quality score, writes JSON + chart artefacts into <code>docs/api/</code>, triggers <code>deploy-docs.yml</code>, and updates the live launcher. <code>dashboard-health.yml</code> validates the result the following morning.
+  </p>
+
+  <h2>📊 Status colour legend</h2>
+  <table>
+    <thead><tr><th>Colour</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><span style="color:#22c55e;">●</span> Green</td><td>Active &mdash; current production surface.</td><td><code>qplant/</code>, <code>local_mcp/</code></td></tr>
+      <tr><td><span style="color:#3b82f6;">●</span> Blue</td><td>Archived &mdash; historical, preserved.</td><td><code>docs_versioned/v2.1/</code></td></tr>
+      <tr><td><span style="color:#94a3b8;">●</span> Grey</td><td>Legacy &mdash; superseded but kept for context.</td><td>Old top-level <code>v2.x</code> reports</td></tr>
+      <tr><td><span style="color:#facc15;">●</span> Yellow</td><td>Governance / CI infrastructure.</td><td><code>.github/</code> templates</td></tr>
+      <tr><td><span style="color:#a78bfa;">●</span> Purple</td><td>Documentation.</td><td><code>docs/</code></td></tr>
+      <tr><td><span style="color:#f472b6;">●</span> Pink</td><td>CI/CD workflows.</td><td><code>.github/workflows/</code></td></tr>
+      <tr><td><span style="color:#fb923c;">●</span> Orange</td><td>Core engine.</td><td><code>DMAIC_V3/</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  ABACUS v4.4.0 &mdash; Recursive Multi-Agent Cryogenic Analysis System &copy; 2026 &middot;
+  <a href="https://github.com/GBOGEB/ABACUS" style="color:#93c5fd;">GitHub</a>
+</footer>
+
+</body>
+</html>

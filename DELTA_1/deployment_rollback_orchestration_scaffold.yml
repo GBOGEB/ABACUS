@@ -1,0 +1,35 @@
+name: DELTA_1 Rollback Orchestration
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        required: true
+        type: choice
+        options:
+          - stage
+          - prod
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate rollback lineage
+        run: |
+          echo "DELTA_1 rollback-lineage placeholder"
+
+      - name: Rollback orchestration
+        run: |
+          echo "DELTA_1 rollback placeholder"
+
+      - name: Runtime verification
+        run: |
+          echo "DELTA_1 runtime-verification placeholder"

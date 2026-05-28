@@ -35,6 +35,24 @@ jobs:
         run: |
           python scripts/generate_docs_html.py
 
+      - name: Generate dynamic handover tracker metadata
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+        run: |
+          python scripts/build_final_handover_tracker.py --output docs/api/final_handover_tracker.json
+
+      - name: Validate tuple metadata tracker payload
+        run: |
+          python scripts/validate_tuple_metadata.py \
+            --input docs/api/final_handover_tracker.json \
+            --output DMAIC_V3_OUTPUT/tuple_metadata.validated.json
+
+      - name: Validate Phase-2 reconstruction manifest
+        run: |
+          python scripts/validate_reconstruction_manifest.py \
+            --input docs/api/phase2_reconstruction_manifest.json \
+            --output DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json
+
       - name: Validate docs links
         run: |
           python scripts/validate_docs_links.py
@@ -63,11 +81,15 @@ jobs:
           name: test-results-${{ matrix.python-version }}
           path: |
             DMAIC_V3_OUTPUT/deployment_report.json
+            DMAIC_V3_OUTPUT/tuple_metadata.validated.json
+            DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json
+            docs/api/final_handover_tracker.json
+            docs/api/phase2_reconstruction_manifest.json
             actions.json
             .mcp/monitor.log
       
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: matrix.python-version == '3.12'
         with:
           file: ./coverage.xml
@@ -97,7 +119,7 @@ jobs:
       
       - name: Run mypy
         run: |
-          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports
+          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports --follow-imports=silent
       
       - name: Run pylint
         run: |

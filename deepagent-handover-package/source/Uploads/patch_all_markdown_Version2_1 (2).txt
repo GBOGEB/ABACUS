@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""
+main.py - lightweight orchestrator for handover_package
+
+Modes:
+  --detect       : compute checksums and report impacted files vs manifest
+  --update       : update manifest_checksums for impacted files and bump version
+  --force-package: mark package as forced (bump version) and exit
+"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+import datetime
+
+ROOT = Path(__file__).parent
+MANIFEST_JSON = ROOT / "handover_manifest.json"
+
+def sha256_of_file(p: Path):
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def load_manifest():
+    if MANIFEST_JSON.exists():
+        return json.loads(MANIFEST_JSON.read_text())
+    return {
+        "version": datetime.datetime.utcnow().isoformat() + "Z",
+        "artefacts": [],
+        "manifest_checksums": {}
+    }
+
+def save_manifest(m):
+    MANIFEST_JSON.write_text(json.dumps(m, indent=2))
+    print("Updated manifest:", MANIFEST_JSON)
+
+def detect_impacted(manifest):
+    artefacts = manifest.get("artefacts", [])
+    checks = manifest.get("manifest_checksums", {})
+    impacted = []
+    computed = {}
+    for af in artefacts:
+        p = ROOT / af
+        if not p.exists():
+            impacted.append(af)
+            computed[af] = None
+            continue
+        s = sha256_of_file(p)
+        computed[af] = s
+        if checks.get(af) != s:
+            impacted.append(af)
+    return impacted, computed
+
+def bump_version(manifest):
+    manifest["version"] = datetime.datetime.utcnow().isoformat() + "Z"
+    return manifest["version"]
+
+def main():
+    args = sys.argv[1:]
+    manifest = load_manifest()
+    mode = "--detect"
+    if "--update" in args:
+        mode = "--update"
+    if "--force-package" in args:
+        mode = "--force-package"
+    impacted, computed = detect_impacted(manifest)
+    if mode == "--detect":
+        if not impacted:
+            print("No impacted artefacts. Exit 0.")
+            sys.exit(0)
+        print("Impacted files:", impacted)
+        for k,v in computed.items():
+            print(k, v if v else "<MISSING>")
+        sys.exit(0)
+    if mode == "--force-package":
+        newver = bump_version(manifest)
+        save_manifest(manifest)
+        print("Forced package. New version:", newver)
+        sys.exit(0)
+    if mode == "--update":
+        if not impacted:
+            print("No impacted artefacts. Nothing to update.")
+            sys.exit(0)
+        if "manifest_checksums" not in manifest:
+            manifest["manifest_checksums"] = {}
+        for af in impacted:
+            manifest["manifest_checksums"][af] = computed.get(af)
+        newver = bump_version(manifest)
+        save_manifest(manifest)
+        print("Updated manifest for impacted files:", impacted)
+        print("New version token:", newver)
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()

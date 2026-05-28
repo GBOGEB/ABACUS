@@ -1,0 +1,400 @@
+
+# DeepAgent Apps Framework - Project Seed Template
+# Version: 1.0
+# Purpose: Comprehensive handover template for DeepAgent app development projects
+# Usage: Copy this template and customize for your specific project needs
+
+metadata:
+  project_name: "TODO: Enter your project name"
+  description: "TODO: Brief description of your app"
+  version: "1.0.0"
+  created_date: "TODO: YYYY-MM-DD"
+  team_lead: "TODO: Project lead name"
+  framework: "DeepAgent Apps"
+  status: "planning" # planning, development, testing, deployed
+  
+project_overview:
+  vision: "TODO: What problem does this app solve?"
+  target_audience: "TODO: Who will use this app?"
+  key_features:
+    - "TODO: Feature 1"
+    - "TODO: Feature 2" 
+    - "TODO: Feature 3"
+  success_metrics:
+    - "TODO: How will you measure success?"
+
+# Core DeepAgent App Building Workflow
+workflow:
+  description: "Step-by-step process for building apps with DeepAgent"
+  phases:
+    1_planning:
+      name: "Planning & Breakdown"
+      description: "Think like a product manager - break down your app into smaller parts"
+      steps:
+        - "Define app vision and core functionality"
+        - "Break complex features into manageable tasks"
+        - "Identify required integrations (database, auth, etc.)"
+        - "Plan iterative development milestones"
+      deliverables:
+        - "Feature breakdown document"
+        - "Development roadmap"
+        - "Technical requirements list"
+    
+    2_initial_build:
+      name: "Initial Build"
+      description: "Start with a simple prompt and basic functionality"
+      steps:
+        - "Create initial simple prompt describing core functionality"
+        - "Review AI-generated pages and structure"
+        - "Test basic navigation and core features"
+        - "Create first checkpoint"
+      best_practices:
+        - "Start simple - don't try to build everything at once"
+        - "Use crisp, concise, and contextual prompts"
+        - "Test immediately after each build"
+      example_prompts:
+        - "Create a simple task management app with add, edit, and delete functionality"
+        - "Build a basic blog website with post creation and viewing capabilities"
+    
+    3_iterative_development:
+      name: "Iterative Development"
+      description: "Build step by step using checkpoints"
+      steps:
+        - "Identify next feature to implement"
+        - "Prompt AI for specific changes"
+        - "Test new functionality thoroughly"
+        - "Create checkpoint if working correctly"
+        - "If broken, rollback to previous checkpoint"
+        - "Repeat until all features complete"
+      checkpoint_strategy:
+        max_rollbacks: 5
+        when_to_checkpoint: "After each successful feature addition"
+        rollback_triggers:
+          - "Feature breaks existing functionality"
+          - "UI becomes unusable"
+          - "Database connections fail"
+    
+    4_deployment:
+      name: "Deployment"
+      description: "Deploy your completed app"
+      options:
+        abacus_hosted:
+          steps:
+            - "Click Deploy button in workspace"
+            - "Select Abacus.AI Domain tab"
+            - "Enter desired subdomain (e.g., myapp.abacusai.app)"
+            - "Click Deploy"
+          use_case: "Fast, no-setup deployment for demos and testing"
+        
+        custom_domain:
+          steps:
+            - "Register domain with provider (GoDaddy, Namecheap, etc.)"
+            - "Open DeepAgent chat or Apps Management Console"
+            - "Click Deploy button"
+            - "Select Custom Domain tab"
+            - "Add domain and follow verification instructions"
+            - "Update nameservers in registrar dashboard"
+            - "Click Deploy once verified"
+          use_case: "Professional deployment with branded domain"
+
+# Key Capabilities of DeepAgent
+capabilities:
+  database_auth:
+    description: "Built-in database integration and secure authentication"
+    features:
+      - "Automatic database setup with tables and fields"
+      - "Sample data generation when needed"
+      - "Role-Based Access Control (RBAC)"
+      - "No manual configuration required"
+    implementation_notes:
+      - "Simply mention data needs in prompts"
+      - "DeepAgent handles all technical setup"
+      - "Can replace dummy data with real database on request"
+  
+  llm_integration:
+    description: "Add AI chat, document Q&A, or generation features"
+    use_cases:
+      - "AI-powered chatbots"
+      - "Document analysis and Q&A"
+      - "Content generation features"
+      - "Smart recommendations"
+    implementation: "Integrate LLMs directly into app flow via prompts"
+  
+  checkpointing:
+    description: "Version control with instant preview and deployment"
+    features:
+      - "Automatic progress saving"
+      - "Up to 5 checkpoint rollbacks"
+      - "Instant preview of changes"
+      - "Deploy any version instantly"
+    workflow: "Make changes → Preview → Deploy or Rollback"
+  
+  custom_domains:
+    description: "Host apps on your own domain"
+    process: "Provide domain → Complete integration → Live in minutes"
+    benefits:
+      - "Professional branding"
+      - "Custom URLs"
+      - "Full domain control"
+
+# Known Limitations
+limitations:
+  scope:
+    description: "Works best with small to medium-sized applications"
+    details:
+      - "Ideal for rapid prototyping and MVPs"
+      - "Not suitable for extremely complex enterprise apps"
+      - "Best for full-stack apps with moderate complexity"
+  
+  codebase_handling:
+    description: "Cannot handle large existing codebases"
+    restrictions:
+      - "No large zip file uploads"
+      - "Cannot build on top of pre-existing codebases"
+      - "Designed for new app development"
+  
+  evolution_note: "Actively expanding capabilities - limitations may change"
+
+# Vibe Coding Principles
+vibe_coding:
+  philosophy: "Start simple, test often, build step by step"
+  
+  effective_prompting:
+    crisp: "Keep prompts clean and free from fluff"
+    concise: "Use simple language and get to the point quickly"
+    contextual: "Ensure DeepAgent understands your goals with relevant background"
+    examples:
+      good_prompts:
+        - "Add user authentication with login/logout functionality"
+        - "Create a dashboard showing sales data in charts"
+        - "Set up a real database and connect it to this app"
+      avoid:
+        - "Make it better"
+        - "Add some features"
+        - "Fix everything"
+  
+  iterative_building:
+    approach: "Break down → Prompt → Test → Decide → Repeat"
+    breakdown_strategy:
+      - "Split complex features into small, manageable tasks"
+      - "Think like a product manager or engineer"
+      - "Plan milestones before starting"
+    
+    testing_cycle:
+      - "Use preview window after each change"
+      - "Test all existing functionality"
+      - "Verify new features work as expected"
+    
+    decision_points:
+      if_works: "Create checkpoint and move to next task"
+      if_broken: "Rollback to previous checkpoint and try different approach"
+
+# Deployment Options
+deployment:
+  abacus_hosted:
+    description: "Fast, no-setup deployment"
+    domain_format: "yourapp.abacusai.app"
+    use_cases:
+      - "Quick demos"
+      - "Testing and validation"
+      - "Sharing work with stakeholders"
+    steps:
+      - "Click Deploy in workspace"
+      - "Choose Abacus.AI Domain"
+      - "Enter subdomain name"
+      - "Deploy instantly"
+  
+  custom_domain:
+    description: "Professional deployment with your domain"
+    requirements:
+      - "Registered domain name"
+      - "Access to domain registrar account"
+      - "Nameserver update permissions"
+    process:
+      domain_registration:
+        - "Choose relevant domain name"
+        - "Register with provider (GoDaddy, Namecheap, Google Domains)"
+        - "Save login credentials"
+      
+      deployment:
+        - "Access DeepAgent workspace or Apps Management Console"
+        - "Click Deploy → Custom Domain"
+        - "Add domain and verify"
+        - "Update nameservers at registrar"
+        - "Complete deployment"
+
+# Debugging Approaches
+debugging:
+  philosophy: "Errors are normal in vibe coding - don't panic!"
+  
+  debugging_process:
+    1_describe_issue:
+      description: "Clearly explain what's wrong and where"
+      examples:
+        - "The submit button isn't working on the contact form"
+        - "User login redirects to wrong page"
+        - "Database isn't saving new entries"
+    
+    2_copy_errors:
+      description: "Include full error messages in prompts"
+      why: "DeepAgent can identify and fix issues from error messages"
+      how: "Copy exact error text from preview window"
+    
+    3_use_checkpoints:
+      description: "Roll back to stable version if needed"
+      when: "When fixes make things worse or too messy"
+      benefit: "Built-in safety net for development"
+    
+    4_retest:
+      description: "Thoroughly test after each fix"
+      scope: "Test both the fix and existing functionality"
+      importance: "Ensure no new issues introduced"
+  
+  common_issues:
+    ui_problems:
+      - "Buttons not responding"
+      - "Forms not submitting"
+      - "Navigation broken"
+    
+    database_issues:
+      - "Data not saving"
+      - "Dummy data instead of real database"
+      - "Connection errors"
+    
+    authentication_problems:
+      - "Login not working"
+      - "Access control issues"
+      - "User roles not functioning"
+
+# Best Practices
+best_practices:
+  project_management:
+    - "Start with clear vision and requirements"
+    - "Break complex apps into simple milestones"
+    - "Test frequently and create checkpoints"
+    - "Keep prompts specific and contextual"
+  
+  development_workflow:
+    - "Build one feature at a time"
+    - "Test immediately after each change"
+    - "Use rollback when things break"
+    - "Document what works in checkpoints"
+  
+  deployment_strategy:
+    - "Test thoroughly before deployment"
+    - "Use Abacus hosting for quick demos"
+    - "Consider custom domains for professional use"
+    - "Monitor app performance after deployment"
+  
+  debugging_mindset:
+    - "Expect and embrace errors as learning opportunities"
+    - "Be specific when describing problems"
+    - "Use error messages to guide fixes"
+    - "Don't hesitate to rollback and try again"
+
+# App Management
+app_management:
+  console_features:
+    - "View and edit all created apps"
+    - "Preview apps before deploying"
+    - "View and export database"
+    - "Deploy or undeploy apps anytime"
+    - "Access version history"
+    - "Configure custom domains"
+  
+  database_management:
+    setup: "Mention data needs in prompts for automatic setup"
+    features:
+      - "Automatic table and field creation"
+      - "Sample data generation"
+      - "Export capabilities"
+    access: "Via Apps Management Console or DeepAgent conversation"
+
+# Example Project Templates
+examples:
+  simple_blog:
+    description: "Basic blog with post creation and viewing"
+    features:
+      - "Post creation and editing"
+      - "Post listing and viewing"
+      - "Basic user authentication"
+      - "Comment system"
+    initial_prompt: "Create a simple blog website where users can create, edit, and view blog posts with a clean, modern design"
+  
+  task_manager:
+    description: "Personal task management application"
+    features:
+      - "Add, edit, delete tasks"
+      - "Mark tasks as complete"
+      - "Task categories and priorities"
+      - "User authentication"
+    initial_prompt: "Build a task management app where users can add, edit, delete, and mark tasks as complete with priority levels"
+  
+  business_dashboard:
+    description: "Simple business metrics dashboard"
+    features:
+      - "Data visualization with charts"
+      - "User authentication and roles"
+      - "Database integration"
+      - "Export capabilities"
+    initial_prompt: "Create a business dashboard that displays sales data in charts and graphs with user authentication"
+
+# Project Checklist
+checklist:
+  planning:
+    - "[ ] Define project vision and goals"
+    - "[ ] Identify target audience"
+    - "[ ] Break down features into tasks"
+    - "[ ] Plan development milestones"
+  
+  development:
+    - "[ ] Create initial simple version"
+    - "[ ] Test core functionality"
+    - "[ ] Add features iteratively"
+    - "[ ] Create checkpoints after each working version"
+    - "[ ] Test thoroughly before moving forward"
+  
+  deployment:
+    - "[ ] Choose deployment method (Abacus vs Custom)"
+    - "[ ] Test app functionality before deployment"
+    - "[ ] Complete deployment process"
+    - "[ ] Verify deployed app works correctly"
+    - "[ ] Share app URL with stakeholders"
+  
+  post_deployment:
+    - "[ ] Monitor app performance"
+    - "[ ] Gather user feedback"
+    - "[ ] Plan future enhancements"
+    - "[ ] Document lessons learned"
+
+# Resources and References
+resources:
+  documentation:
+    - "DeepAgent Apps official documentation"
+    - "Vibe coding best practices guide"
+    - "Deployment and hosting guide"
+  
+  support:
+    - "Apps Management Console"
+    - "DeepAgent conversation history"
+    - "Community forums and support"
+  
+  tools:
+    - "Preview window for testing"
+    - "Checkpoint system for version control"
+    - "Database viewer and export tools"
+    - "Custom domain configuration"
+
+# Notes and Customization
+notes:
+  customization_instructions: |
+    1. Replace all "TODO:" items with project-specific information
+    2. Customize feature lists based on your app requirements
+    3. Adjust milestones and checkpoints for your project timeline
+    4. Add project-specific debugging scenarios
+    5. Include team-specific best practices and guidelines
+  
+  template_usage: |
+    This template serves as a comprehensive guide for DeepAgent app development.
+    Use it as a starting point and customize based on your specific project needs.
+    Keep it updated as your project evolves and you learn new best practices.

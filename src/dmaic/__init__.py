@@ -11,5 +11,7 @@ from . import metrics
 from . import recursion
 from . import config
 from . import contract
+from . import tuple_metadata
+from . import reconstruction_manifest
 
-__all__ = ['idempotency', 'provenance', 'metrics', 'recursion', 'config', 'contract']
+__all__ = ['idempotency', 'provenance', 'metrics', 'recursion', 'config', 'contract', 'tuple_metadata', 'reconstruction_manifest']

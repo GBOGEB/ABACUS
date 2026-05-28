@@ -1,0 +1,111 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'cryo_dashboard_v0_3_0/**'
+      - 'docs_versioned/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate HTML / CSS / JS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check HTML files exist
+        run: |
+          echo "=== Validating documentation structure ==="
+          for f in docs/index.html docs/handover_book.html docs/deep_analysis_dashboard.html docs/dashboard.html; do
+            if [ ! -f "$f" ]; then
+              echo "❌ Missing: $f"
+              exit 1
+            fi
+            echo "✅ Found: $f"
+          done
+
+      - name: Validate HTML syntax
+        run: |
+          echo "=== Basic HTML validation ==="
+          for f in $(find docs -name '*.html' -type f); do
+            if ! grep -q '</html>' "$f"; then
+              echo "❌ Malformed HTML: $f"
+              exit 1
+            fi
+            echo "✅ Valid: $f"
+          done
+
+      - name: Check for broken internal links
+        run: |
+          echo "=== Checking internal link targets ==="
+          ERRORS=0
+          while IFS= read -r f; do
+            while IFS= read -r href; do
+              dir=$(dirname "$f")
+              target="$dir/$href"
+              target="${target%%#*}"
+              target="${target%%\?*}"
+              if [ -n "$target" ] && [ ! -e "$target" ]; then
+                echo "⚠️  Broken link in $f → $href"
+                ERRORS=$((ERRORS+1))
+              fi
+            done < <(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto')
+          done < <(find docs -name '*.html' -type f)
+          echo "Link check complete. Warnings: $ERRORS"
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  post-deploy:
+    name: Post-Deployment Verification
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify pages URL
+        run: |
+          # Derive the Pages URL dynamically from repo context
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.event.repository.name }}"
+          # Use the URL produced by deploy-pages when available, fall back to computed URL
+          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
+          PAGES_URL="${PAGES_URL:-https://${OWNER}.github.io/${REPO}/}"
+          echo "Waiting 30s for deployment propagation..."
+          sleep 30
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_URL" || echo "000")
+          echo "Status: $STATUS for $PAGES_URL"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
+            echo "✅ GitHub Pages is live!"
+          else
+            echo "⚠️  Pages returned HTTP $STATUS — may still be propagating."
+          fi

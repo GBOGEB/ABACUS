@@ -1,0 +1,97 @@
+# QPLANT API Server Deployment — Production
+# 3 replicas for high availability with rolling updates
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qplant-api-server
+  namespace: qplant-production
+  labels:
+    app: qplant-api
+    tier: backend
+    version: "v4.4.0"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: qplant-api
+  template:
+    metadata:
+      labels:
+        app: qplant-api
+        version: v4.4.0
+    spec:
+      initContainers:
+      - name: validate-ssot
+        image: python:3.11-slim
+        command: ["python3", "-c"]
+        args:
+          - |
+            import yaml, hashlib, sys
+            with open('/etc/qplant/config/config.yaml') as f:
+                cfg = yaml.safe_load(f.read())
+            assert cfg['compressors']['count'] == 3, 'Compressor count mismatch'
+            assert cfg['compressors']['motor_power_kw'] == 315, 'Motor power mismatch'
+            assert cfg['version'] == '4.4.0', 'Version mismatch'
+            print('✅ SSOT validation passed')
+        volumeMounts:
+        - name: ssot-volume
+          mountPath: /etc/qplant/config
+          readOnly: true
+
+      containers:
+      - name: api-server
+        image: qplant/api-server:v4.4.0
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: SSOT_CONFIG_PATH
+          value: "/etc/qplant/config/config.yaml"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: QPLANT_ADMIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: qplant-api-keys
+              key: admin-api-key
+
+        volumeMounts:
+        - name: ssot-volume
+          mountPath: /etc/qplant/config
+          readOnly: true
+
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 2
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+      volumes:
+      - name: ssot-volume
+        configMap:
+          name: qplant-ssot-v4-4-0

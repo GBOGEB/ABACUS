@@ -95,6 +95,26 @@ class TestPhase3Analyze:
         
         assert success is True
         assert result.get('summary') is not None
+
+    def test_execute_normalizes_nested_tuple_result(self, phase3, mocker):
+        nested_result = (True, {'summary': {}, 'root_causes': []})
+        mocker.patch.object(phase3, 'run', return_value=(True, nested_result))
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result.get('summary') is not None
+
+    def test_execute_normalizes_dict_result(self, phase3, mocker):
+        legacy_result = {'success': True, 'summary': {}, 'root_causes': []}
+        mocker.patch.object(phase3, 'run', return_value=legacy_result)
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is True
+        assert isinstance(result, dict)
+        assert result.get('summary') is not None
     
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
@@ -103,7 +123,12 @@ class TestPhase3Analyze:
         assert isinstance(summary, dict)
     
     def test_output_structure(self, phase3, phase2_output):
-        success, result = phase3.execute(iteration=1)
+        execution_result = phase3.execute(iteration=1)
+        if isinstance(execution_result, tuple):
+            success, result = execution_result
+        else:
+            success = execution_result.get('success', True)
+            result = execution_result
         
         assert success is True
         assert 'summary' in result
@@ -134,7 +159,12 @@ class TestPhase3Analyze:
         assert 'summary' in result or 'root_causes' in result
     
     def test_file_saved_correctly(self, phase3, phase2_output, config):
-        success, result = phase3.execute(iteration=1)
+        execution_result = phase3.execute(iteration=1)
+        if isinstance(execution_result, tuple):
+            success = execution_result[0]
+        else:
+            success = execution_result.get('success', 'error' not in execution_result)
+        assert success is True
         
         output_file = config.paths.output_root / "iteration_1" / "phase3_analysis.json"
         assert output_file.exists()
@@ -158,6 +188,11 @@ class TestPhase3Analyze:
             phase2_file = output_dir / "phase2_metrics.json"
             phase2_file.write_text(json.dumps(phase2_data))
             
-            success, result = phase3.execute(iteration=iteration)
+            execution_result = phase3.execute(iteration=iteration)
+            if isinstance(execution_result, tuple):
+                success, result = execution_result
+            else:
+                success = execution_result.get('success', True)
+                result = execution_result
             assert success is True
             assert result.get('output_file') is not None

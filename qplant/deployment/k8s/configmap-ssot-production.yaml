@@ -1,0 +1,50 @@
+# QPLANT Production SSOT ConfigMap — IMMUTABLE
+# Contains the canonical system configuration from config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qplant-ssot-v4-4-0
+  namespace: qplant-production
+  annotations:
+    version: "v4.4.0"
+    source: "QPS_Master_Addendum_II"
+    description: "Single Source of Truth configuration — read only"
+    last-updated: "2026-05-17T00:00:00Z"
+  labels:
+    app: qplant
+    component: ssot
+    version: "v4.4.0"
+immutable: true
+data:
+  config.yaml: |
+    # PRODUCTION Single Source of Truth — READ ONLY
+    version: "4.4.0"
+    environment: production
+    system:
+      name: "MYRRHA QPLANT Helium Refrigeration"
+      design_basis: "ALaT + LKT Pre-Study Baseline"
+      facility: "SCK CEN — MYRRHA"
+
+    compressors:
+      count: 3
+      model: "Kaeser FSD 575 SFC VFD"
+      motor_power_kw: 315
+      package_power_kw: 348.54
+      per_unit_flow_gs: 112.54
+      redundancy: "N+1"
+
+    flow_parameters:
+      wcs_hp:
+        design_flow_gs: 350
+        expected_flow_gs: 304
+        max_flow_gs: 336
+
+    refrigeration:
+      capacity_4K_watts: 450
+      capacity_80K_watts: 2350
+
+    financial:
+      compressor_capex_total_eur: 600000
+      system_capex_total_eur: 1420000
+      electricity_cost_eur_kwh: 0.15
+      helium_price_eur_kg: 120.0

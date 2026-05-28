@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABACUS Handover Book — 13-Chapter Technical Guide</title>
+<script src="assets/chart.umd.min.js" defer></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; }
+.header { background: linear-gradient(135deg, #161b22, #1a2332); padding: 20px 30px; border-bottom: 1px solid #30363d; }
+.header h1 { font-size: 1.5em; color: #58a6ff; }
+.header p { color: #8b949e; font-size: 0.9em; margin-top: 5px; }
+.container { display: flex; height: calc(100vh - 80px); }
+.sidebar { width: 260px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 10px; flex-shrink: 0; }
+.sidebar button { display: block; width: 100%; text-align: left; padding: 10px 12px; margin: 2px 0; background: none; border: none; color: #c9d1d9; cursor: pointer; border-radius: 6px; font-size: 0.85em; }
+.sidebar button:hover { background: #21262d; }
+.sidebar button.active { background: #1f6feb; color: #fff; }
+.content { flex: 1; overflow-y: auto; padding: 30px 40px; max-width: 900px; }
+.content h1 { color: #58a6ff; font-size: 1.6em; margin: 20px 0 15px; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+.content h2 { color: #79c0ff; font-size: 1.3em; margin: 18px 0 10px; }
+.content h3 { color: #d2a8ff; font-size: 1.1em; margin: 14px 0 8px; }
+.content p { line-height: 1.7; margin: 8px 0; }
+.content pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; overflow-x: auto; margin: 12px 0; font-size: 0.85em; }
+.content code { background: #1a2332; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.content pre code { background: none; padding: 0; }
+.content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+.content th, .content td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; font-size: 0.85em; }
+.content th { background: #161b22; color: #58a6ff; }
+.content ul, .content ol { margin: 8px 0 8px 24px; }
+.content li { margin: 4px 0; line-height: 1.6; }
+.content blockquote { border-left: 3px solid #f0883e; padding: 8px 16px; margin: 12px 0; background: #1a1e24; }
+@media (max-width: 768px) {
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; max-height: 200px; }
+    .content { padding: 15px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>📘 ABACUS System Handover Book</h1>
+<p>13-Chapter Comprehensive Technical Guide | Generated: 2026-05-25 00:00 | 558 commits · 201 Python files · 533 docs</p>
+</div>
+<div class="container">
+<nav class="sidebar" role="tablist" aria-label="Handover chapters">
+<button onclick="showChapter('ch01_introduction')" class="active" id="btn-ch01_introduction" role="tab" aria-selected="true" aria-controls="ch01_introduction">Ch 1: Introduction</button>
+<button onclick="showChapter('ch02_architecture')" id="btn-ch02_architecture" role="tab" aria-selected="false" aria-controls="ch02_architecture">Ch 2: 12-Cluster Architecture</button>
+<button onclick="showChapter('ch03_analysis_layer')" id="btn-ch03_analysis_layer" role="tab" aria-selected="false" aria-controls="ch03_analysis_layer">Ch 3: Analysis Layer (C1-C4)</button>
+<button onclick="showChapter('ch04_documentation_layer')" id="btn-ch04_documentation_layer" role="tab" aria-selected="false" aria-controls="ch04_documentation_layer">Ch 4: Documentation Layer (C5-C6)</button>
+<button onclick="showChapter('ch05_orchestration_layer')" id="btn-ch05_orchestration_layer" role="tab" aria-selected="false" aria-controls="ch05_orchestration_layer">Ch 5: Orchestration Layer (C7-C8)</button>
+<button onclick="showChapter('ch06_knowledge_layer')" id="btn-ch06_knowledge_layer" role="tab" aria-selected="false" aria-controls="ch06_knowledge_layer">Ch 6: Knowledge Layer (C9-C12)</button>
+<button onclick="showChapter('ch07_dow_governance')" id="btn-ch07_dow_governance" role="tab" aria-selected="false" aria-controls="ch07_dow_governance">Ch 7: DOW Governance</button>
+<button onclick="showChapter('ch08_keb_tools')" id="btn-ch08_keb_tools" role="tab" aria-selected="false" aria-controls="ch08_keb_tools">Ch 8: KEB & Tools</button>
+<button onclick="showChapter('ch09_version_lineage')" id="btn-ch09_version_lineage" role="tab" aria-selected="false" aria-controls="ch09_version_lineage">Ch 9: Version Lineage</button>
+<button onclick="showChapter('ch10_deployment')" id="btn-ch10_deployment" role="tab" aria-selected="false" aria-controls="ch10_deployment">Ch 10: Deployment</button>
+<button onclick="showChapter('ch11_testing')" id="btn-ch11_testing" role="tab" aria-selected="false" aria-controls="ch11_testing">Ch 11: Testing & QA</button>
+<button onclick="showChapter('ch12_roadmap')" id="btn-ch12_roadmap" role="tab" aria-selected="false" aria-controls="ch12_roadmap">Ch 12: Roadmap</button>
+<button onclick="showChapter('ch15_eng_tools')" id="btn-ch15_eng_tools" role="tab" aria-selected="false" aria-controls="ch15_eng_tools">Ch 15: Engineering Tools</button>
+</nav>
+<main class="content" id="main-content">
+<div id="ch01_introduction" class="chapter" role="tabpanel" aria-labelledby="btn-ch01_introduction" style="display:block"><h1>Chapter 1: Introduction & QPLANT Cryogenic System Overview</h1>
+<br>
+<h2>1.1 What is ABACUS?</h2>
+<br>
+<p>ABACUS (Automated Build And Continuous Unified System) is a recursive, self-improving multi-agent </p>
+<p>system that applies the DMAIC (Define, Measure, Analyze, Improve, Control) methodology to </p>
+<p>cryogenic engineering analysis, specifically for the QPLANT cryoplant system at SCK•CEN.</p>
+<br>
+<h2>1.2 The QPLANT Context</h2>
+<br>
+<p>QPLANT is a cryogenic plant system requiring rigorous engineering analysis. ABACUS provides:</p>
+<ul>
+<li><strong>Automated requirement traceability</strong> via RTM (Requirements Traceability Matrix)</li>
+<li><strong>Statistical process control</strong> for cryo system parameters</li>
+<li><strong>Anomaly detection</strong> for thermal and pressure data</li>
+<li><strong>Continuous improvement</strong> through recursive DMAIC cycles</li>
+</ul>
+<br>
+<h3>QPLANT RTM</h3>
+<p>The <code>QPLANT_RTM.xlsx</code> contains 16 formal requirements tracked across the DMAIC lifecycle:</p>
+<ul>
+<li>Located at: <code>rtm_integration/automation/docs/rtm/QPLANT_RTM.xlsx</code></li>
+<li>Engineering handover: <code>rtm_integration/docs/QPLANT_RTM_Engineering_Handover.md</code></li>
+<li>Analysis summary: <code>rtm_integration/docs/QPLANT_RTM_Analysis_Summary.md</code></li>
+</ul>
+<br>
+<h2>1.3 System Goals</h2>
+<p>1. <strong>Automated Analysis</strong> — Apply DMAIC phases automatically to cryo engineering data</p>
+<p>2. <strong>Self-Improvement</strong> — Each cycle improves upon the previous through convergence detection</p>
+<p>3. <strong>Knowledge Preservation</strong> — DOW governance ensures no knowledge loss between versions</p>
+<p>4. <strong>Traceability</strong> — Complete audit trail from requirement to implementation</p>
+<br>
+<h2>1.4 Key Metrics</h2>
+<table>
+<tr><th>Metric</th><th>Value</th></tr>
+<tr><td>Git Commits</td><td>558</td></tr>
+<tr><td>Python Files</td><td>201</td></tr>
+<tr><td>Documentation Files</td><td>533</td></tr>
+<tr><td>DOW References</td><td>1,327</td></tr>
+<tr><td>Active Versions</td><td>5 (v2.1, v0.31, v0.32, v2.3, v3.3)</td></tr>
+<tr><td>DMAIC Phases</td><td>10 (0-9)</td></tr>
+<tr><td>Agent Types</td><td>6</td></tr>
+<tr><td>Orchestrator Levels</td><td>4</td></tr>
+<tr><td>Quality Score</td><td>92.5/100</td></tr>
+</table>
+<br>
+<h2>1.5 Document Conventions</h2>
+<ul>
+<li>🟢 = Working/Implemented</li>
+<li>🟡 = Partial/In Progress  </li>
+<li>🔴 = Broken/Blocked</li>
+<li>⚠️ = Requires Attention</li>
+<li>> *Reconstructed from code* = Content inferred from analysis</li>
+</ul>
+<br></div>
+<div id="ch02_architecture" class="chapter" role="tabpanel" aria-labelledby="btn-ch02_architecture" style="display:none"><h1>Chapter 2: 12-Cluster Architecture Deep Dive</h1>
+<br>
+<h2>2.1 Architecture Overview</h2>
+<br>
+<p>The 12-Cluster Architecture is the <strong>core functioning model</strong> of ABACUS. It organizes all </p>
+<p>system components into 12 functional clusters across 4 tiers:</p>
+<br>
+<pre><code>
+┌─────────────────────────────────────────────────────────────────┐
+│                    12-CLUSTER ARCHITECTURE                       │
+│                                                                  │
+│  ANALYSIS TIER (C1-C4)                                          │
+│    C1: Define Agent      — Problem scoping, requirements         │
+│    C2: Measure Agent     — Data collection, baseline metrics     │
+│    C3: Analyze Agent     — Root cause, pattern detection         │
+│    C4: Improve Agent     — Solution generation, optimization     │
+│                                                                  │
+│  DOCUMENTATION TIER (C5-C6)                                     │
+│    C5: Doc Generator     — Automated documentation creation      │
+│    C6: Version Tracker   — Version lineage, changelog mgmt      │
+│                                                                  │
+│  ORCHESTRATION TIER (C7-C8)                                     │
+│    C7: Recursive Build   — Self-improvement iteration loops      │
+│    C8: Orchestrator      — Central coordination hub              │
+│                                                                  │
+│  KNOWLEDGE TIER (C9-C12)                                        │
+│    C9:  KEB              — Task scheduling, execution bridge     │
+│    C10: GBOGEB           — Governance, observability metrics     │
+│    C11: Temporal Scanner — Time-based tracking and history       │
+│    C12: Metrics Collector— Performance and quality metrics       │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<br>
+<h2>2.2 Design Principles</h2>
+<br>
+<p>1. <strong>Functional Organization</strong> — Clusters are functional roles, not rigid numbered units</p>
+<p>2. <strong>Parallel Execution</strong> — Up to 12 workers process phases simultaneously</p>
+<p>3. <strong>Phase Mapping</strong> — Each DMAIC phase maps to primary and secondary clusters</p>
+<p>4. <strong>Self-Improvement</strong> — Recursive tier enables continuous improvement loops</p>
+<p>5. <strong>Observability</strong> — Knowledge tier provides full system monitoring</p>
+<br>
+<h2>2.3 DMAIC Phase ↔ Cluster Mapping</h2>
+<br>
+<table>
+<tr><th>DMAIC Phase</th><th>Primary Clusters</th><th>Secondary</th><th>Description</th></tr>
+<tr><td>Phase 0: Init</td><td>C8, C9, C10</td><td>C11, C12</td><td>Bootstrap, orchestrator setup</td></tr>
+<tr><td>Phase 1: Define</td><td>C1, C3</td><td>C10, C11, C12</td><td>Problem definition</td></tr>
+<tr><td>Phase 2a: Measure</td><td>C1, C3, C4</td><td>C12</td><td>Data collection</td></tr>
+<tr><td>Phase 2b: Deep Measure</td><td>C4, C9</td><td>C11, C12</td><td>KEB-distributed analysis</td></tr>
+<tr><td>Phase 3: Analyze</td><td>C3, C4</td><td>C7, C12</td><td>Root cause analysis</td></tr>
+<tr><td>Phase 4: Improve</td><td>C4, C7</td><td>C5, C6</td><td>Solution generation</td></tr>
+<tr><td>Phase 5: Control</td><td>C8, C10</td><td>C11, C12</td><td>Quality gates</td></tr>
+<tr><td>Phase 6: Knowledge</td><td>C5, C6, C9</td><td>C7</td><td>Knowledge extraction</td></tr>
+<tr><td>Phase 7-8: Action</td><td>C7, C8</td><td>C11</td><td>Action & TODO tracking</td></tr>
+<tr><td>Phase 9: Documentation Generation</td><td>C5, C6, C8</td><td>C10, C12</td><td>Post-execution documentation and publication</td></tr>
+</table>
+<br>
+<h2>2.4 Implementation Location</h2>
+<br>
+<p>The primary implementation is in <code>DMAIC_V3/core/twelve_cluster_orchestrator.py</code>:</p>
+<ul>
+<li><code>TwelveClusterOrchestrator</code> class with 12-worker thread pool</li>
+<li><code>ClusterConfig</code> class for per-cluster configuration</li>
+<li>KEB integration for task scheduling</li>
+<li>GBOGEB integration for observability</li>
+</ul>
+<br>
+<h2>2.5 Cluster Lifecycle</h2>
+<br>
+<pre><code>
+IDLE → INITIALIZING → ACTIVE → PROCESSING → COMPLETED
+                                    ↓
+                              FAILED (retry → PROCESSING)
+</code></pre>
+<br>
+<p>Each cluster maintains:</p>
+<ul>
+<li>Task execution count</li>
+<li>Failure count  </li>
+<li>Priority level (1-10)</li>
+<li>Current status</li>
+<li>Phase assignment</li>
+</ul>
+<br></div>
+<div id="ch03_analysis_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch03_analysis_layer" style="display:none"><h1>Chapter 3: Clusters 1-4 — Analysis Layer</h1>
+<br>
+<h2>3.1 Overview</h2>
+<p>The Analysis Layer implements the core DMAIC methodology phases: Define, Measure, Analyze, Improve.</p>
+<br>
+<h2>3.2 Cluster 1 (C1): Define Agent — Baseline</h2>
+<br>
+<p><strong>Purpose:</strong> Problem scoping, requirements gathering, file scanning & categorization</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/phases/phase1_define.py</code></p>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Workspace scanning (130k+ files in full scope)</li>
+<li>File categorization by type, purpose, and version</li>
+<li>Requirement extraction from RTM artifacts</li>
+<li>Scope definition for improvement targets</li>
+</ul>
+<br>
+<p><strong>DMAIC Mapping:</strong> Phase 1 (Define)</p>
+<br>
+<h2>3.3 Cluster 2 (C2): Measure Agent — Anomaly Detection</h2>
+<br>
+<p><strong>Purpose:</strong> Data collection, baseline measurement, static analysis</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/phases/phase2_measure.py</code></p>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Chunked processing (5000 files per chunk for scalability)</li>
+<li>Static code analysis metrics</li>
+<li>Baseline measurement establishment</li>
+<li>Anomaly detection in measurement data</li>
+</ul>
+<br>
+<p><strong>DMAIC Mapping:</strong> Phase 2 (Measure)</p>
+<br>
+<h2>3.4 Cluster 3 (C3): Analyze Agent — Pattern Detection</h2>
+<br>
+<p><strong>Purpose:</strong> Root cause analysis, pattern detection across codebase</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/phases/phase3_analyze.py</code></p>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Root cause identification</li>
+<li>Pattern detection across versions</li>
+<li>Cross-reference analysis</li>
+<li>Dependency mapping</li>
+</ul>
+<br>
+<p><strong>DMAIC Mapping:</strong> Phase 3 (Analyze)</p>
+<br>
+<h2>3.5 Cluster 4 (C4): Improve Agent — Intervention</h2>
+<br>
+<p><strong>Purpose:</strong> Solution generation, code modification, optimization</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/phases/phase4_improve.py</code></p>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Real code modifications (100 files per iteration)</li>
+<li>Improvement plan generation</li>
+<li>Optimization suggestions</li>
+<li>Refactoring execution</li>
+</ul>
+<br>
+<p><strong>DMAIC Mapping:</strong> Phase 4 (Improve)</p>
+<br>
+<h2>3.6 Data Flow</h2>
+<pre><code>
+C1 (Define) → scope & requirements
+    ↓
+C2 (Measure) → baseline data
+    ↓
+C3 (Analyze) → root causes & patterns
+    ↓
+C4 (Improve) → modifications & solutions
+    ↓
+→ Control Layer (C7-C8)
+</code></pre>
+<br></div>
+<div id="ch04_documentation_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch04_documentation_layer" style="display:none"><h1>Chapter 4: Clusters 5-6 — Documentation Layer</h1>
+<br>
+<h2>4.1 Overview</h2>
+<p>The Documentation Layer automates documentation generation and version tracking.</p>
+<br>
+<h2>4.2 Cluster 5 (C5): Doc Generator — Technical Reports</h2>
+<br>
+<p><strong>Purpose:</strong> Automated documentation creation, report generation</p>
+<br>
+<p><strong>Implementations:</strong></p>
+<ul>
+<li><code>DMAIC_V3/phases/phase9_documentation_generation.py</code> — Phase 9 doc generation</li>
+<li><code>local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py</code> — V2.3 doc agent</li>
+<li><code>scripts/build_book.py</code> — Book compilation</li>
+<li><code>scripts/generate_docs_html.py</code> — HTML doc generation</li>
+<li><code>scripts/export_docs.py</code> — Documentation export</li>
+</ul>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Automated markdown documentation</li>
+<li>HTML report generation</li>
+<li>Knowledge pack creation</li>
+<li>Executive summary generation</li>
+</ul>
+<br>
+<h2>4.3 Cluster 6 (C6): Version Tracker — Visualizations</h2>
+<br>
+<p><strong>Purpose:</strong> Version lineage tracking, changelog management, visualization</p>
+<br>
+<p><strong>Implementations:</strong></p>
+<ul>
+<li><code>DMAIC_V3/integrations/version_manager.py</code> — Version management</li>
+<li><code>DMAIC_V3/core/temporal_metadata_engine.py</code> — Temporal tracking</li>
+<li><code>docs/deep_analysis_dashboard.html</code> — Interactive dashboard</li>
+<li><code>cryo_dashboard_v0_3_0/index.html</code> — Cryo visualization dashboard</li>
+</ul>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Version lineage visualization</li>
+<li>Temporal metadata tracking</li>
+<li>Interactive HTML dashboards</li>
+<li>Changelog generation</li>
+</ul>
+<br>
+<h2>4.4 Dashboard Assets</h2>
+<table>
+<tr><th>Dashboard</th><th>Path</th><th>Type</th><th>Status</th></tr>
+<tr><td>Deep Analysis</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>Static HTML/JS</td><td>🟢 Working</td></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>Static HTML</td><td>🟡 Needs data</td></tr>
+<tr><td>Main Index</td><td><code>docs/index.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
+<tr><td>FINAL Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
+<tr><td>Dashboard</td><td><code>docs/dashboard.html</code></td><td>Static HTML</td><td>🟢 Working</td></tr>
+</table>
+<br></div>
+<div id="ch05_orchestration_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch05_orchestration_layer" style="display:none"><h1>Chapter 5: Clusters 7-8 — Orchestration Layer</h1>
+<br>
+<h2>5.1 Overview</h2>
+<p>The Orchestration Layer provides recursive self-improvement and central coordination.</p>
+<br>
+<h2>5.2 Cluster 7 (C7): Recursive Build — Validation</h2>
+<br>
+<p><strong>Purpose:</strong> Self-improvement iteration, convergence detection</p>
+<br>
+<p><strong>Implementations:</strong></p>
+<ul>
+<li><code>local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py</code> — Recursive agent</li>
+<li><code>DMAIC_V3/convergence/change_detector.py</code> — Change detection (FIXED)</li>
+<li><code>scripts/check_convergence.py</code> — Convergence checking</li>
+</ul>
+<br>
+<p><strong>Convergence Detection:</strong></p>
+<pre><code>
+from pathlib import Path
+from DMAIC_V3.convergence.change_detector import ChangeDetector
+detector = ChangeDetector(workspace_root=Path('.'), state_dir=Path('.dmaic_state'))
+current_files = [p for p in Path('.').rglob('*.py')]
+changes = detector.detect_changes(current_files)
+if not changes:
+    print("Converged!")  # No more changes needed
+</code></pre>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>File change tracking via hashing</li>
+<li>Convergence analysis</li>
+<li>Iteration management</li>
+<li>Feedback loop: Phase 7 → Phase 1</li>
+</ul>
+<br>
+<h2>5.3 Cluster 8 (C8): TwelveClusterOrchestrator — Central Hub</h2>
+<br>
+<p><strong>Purpose:</strong> Coordination of all 12 clusters, pipeline execution</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/core/twelve_cluster_orchestrator.py</code></p>
+<br>
+<p><strong>Key Classes:</strong></p>
+<ul>
+<li><code>TwelveClusterOrchestrator</code> — Main orchestrator with ThreadPoolExecutor</li>
+<li><code>ClusterConfig</code> — Per-cluster configuration</li>
+</ul>
+<br>
+<p><strong>Orchestrator Hierarchy (4 levels):</strong></p>
+<p>1. <code>TwelveClusterOrchestrator</code> — Top-level parallel coordinator</p>
+<p>2. <code>full_pipeline_orchestrator.py</code> — Sequential pipeline runner</p>
+<p>3. <code>agent_orchestrator_v3.0.py</code> — Agent-level coordination</p>
+<p>4. Phase-specific orchestration within each phase module</p>
+<br>
+<p><strong>Pipeline Orchestrator Variants:</strong></p>
+<table>
+<tr><th>Variant</th><th>Path</th><th>Status</th></tr>
+<tr><td>Primary</td><td><code>DMAIC_V3/full_pipeline_orchestrator.py</code></td><td>🟢 Canonical</td></tr>
+<tr><td>Fixed</td><td><code>DMAIC_V3/full_pipeline_orchestrator_fixed.py</code></td><td>🟢 Clean</td></tr>
+<tr><td>Corrupted</td><td><code>DMAIC_V3/full_pipeline_orchestrator_corrupted.py</code></td><td>🔴 Merge conflict</td></tr>
+<tr><td>v032</td><td><code>ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py</code></td><td>🟢 v032 variant</td></tr>
+</table>
+<br>
+<h2>5.4 Execution Modes</h2>
+<ul>
+<li><strong>Parallel</strong> — All 12 clusters via ThreadPoolExecutor (default)</li>
+<li><strong>Sequential</strong> — Phase-by-phase execution</li>
+<li><strong>Hybrid</strong> — Parallel within phases, sequential across phases</li>
+</ul>
+<br></div>
+<div id="ch06_knowledge_layer" class="chapter" role="tabpanel" aria-labelledby="btn-ch06_knowledge_layer" style="display:none"><h1>Chapter 6: Clusters 9-12 — Knowledge Layer</h1>
+<br>
+<h2>6.1 Overview</h2>
+<p>The Knowledge Layer provides the foundation services: task scheduling, governance, </p>
+<p>temporal tracking, and metrics collection.</p>
+<br>
+<h2>6.2 Cluster 9 (C9): KEB — Entity & Execution Bridge</h2>
+<br>
+<p><strong>Purpose:</strong> Knowledge Execution Bridge — task scheduling, resource monitoring</p>
+<br>
+<p><strong>Architecture:</strong></p>
+<pre><code>
+KEB (Knowledge Execution Bridge)
+├── Task Scheduling — Priority-based task queue
+├── Resource Monitoring — Memory, CPU tracking  
+├── Agent Registry — Agent capability mapping
+└── Execution Bridge — Task → Agent → Result pipeline
+</code></pre>
+<br>
+<p><strong>Key Feature:</strong> Idempotency pattern — all tool outputs are idempotent, ensuring </p>
+<p>safe re-execution without side effects.</p>
+<br>
+<p><strong>Known Issue:</strong> Timeout issues reported in KEB execution (blocker for full pipeline)</p>
+<br>
+<h2>6.3 Cluster 10 (C10): GBOGEB — Causal & Governance</h2>
+<br>
+<p><strong>Purpose:</strong> Goal-Based Orchestration Graph Execution Bridge — governance, observability</p>
+<br>
+<p><strong>Architecture:</strong></p>
+<pre><code>
+GBOGEB (Governance & Observability)
+├── Metric Collection — System-wide metrics
+├── Compliance Checking — DOW governance rules
+├── Audit Trails — Complete execution history
+└── Observability — Dashboard integration
+</code></pre>
+<br>
+<p><strong>Known Issue:</strong> Timeout issues reported in GBOGEB (similar to KEB)</p>
+<br>
+<h2>6.4 Cluster 11 (C11): Temporal Scanner — Decision Support</h2>
+<br>
+<p><strong>Purpose:</strong> Time-based tracking, historical analysis</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/core/temporal_metadata_engine.py</code></p>
+<br>
+<p><strong>Capabilities:</strong></p>
+<ul>
+<li>Temporal versioning system</li>
+<li>Date-based artifact tracking</li>
+<li>Historical trend analysis</li>
+<li>Decision support via temporal patterns</li>
+</ul>
+<br>
+<h2>6.5 Cluster 12 (C12): Metrics Collector — Ontology</h2>
+<br>
+<p><strong>Purpose:</strong> Performance metrics, quality metrics, ontological mapping</p>
+<br>
+<p><strong>Implementation:</strong> <code>DMAIC_V3/core/metrics.py</code></p>
+<br>
+<p><strong>Metrics Tracked:</strong></p>
+<ul>
+<li>Phase execution times</li>
+<li>Convergence rates</li>
+<li>Quality scores (92.5/100 benchmark)</li>
+<li>Agent performance rankings</li>
+<li>File modification counts</li>
+</ul>
+<br>
+<h2>6.6 Cross-Tier Integration</h2>
+<pre><code>
+C9 (KEB) ←→ C10 (GBOGEB) — Execution ↔ Governance
+    ↓              ↓
+C11 (Temporal) ←→ C12 (Metrics) — History ↔ Performance
+    ↓              ↓
+    └──→ All Clusters (C1-C8) ←──┘
+</code></pre>
+<br></div>
+<div id="ch07_dow_governance" class="chapter" role="tabpanel" aria-labelledby="btn-ch07_dow_governance" style="display:none"><h1>Chapter 7: DOW Governance Framework & Omnipotent Oversight</h1>
+<br>
+<h2>7.1 What is DOW?</h2>
+<br>
+<p>DOW (Design of Work) is the <strong>omnipotent governance layer</strong> that oversees ALL operations in ABACUS.</p>
+<p>With 1,327 references found across the codebase, DOW is deeply integrated into every component.</p>
+<br>
+<h2>7.2 DOW Architecture</h2>
+<br>
+<pre><code>
+                    DOW (Omnipotent Governance)
+                    ┌─────────────────┐
+                    │  Design Control  │
+                    │  Code Governance │
+                    │  Human Oversight │
+                    │  MCP Protocol    │
+                    │  GitHub Ops      │
+                    │  CRYO Knowledge  │
+                    └────────┬────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        ↓                    ↓                    ↓
+   Code Layer          Execution Layer      Knowledge Layer
+   (DMAIC phases)      (KEB agents)        (GBOGEB metrics)
+</code></pre>
+<br>
+<h2>7.3 DOW Engine Configuration</h2>
+<br>
+<p>The canonical DOW configuration lives at <code>ABACUS-v031/dow_engine_config.yaml</code>:</p>
+<ul>
+<li>Pipeline stage definitions</li>
+<li>Phase ordering rules</li>
+<li>Governance policies</li>
+<li>Quality gate thresholds</li>
+</ul>
+<br>
+<h2>7.4 DOW Integration Points</h2>
+<br>
+<table>
+<tr><th>Component</th><th>DOW Integration</th><th>Reference Count</th></tr>
+<tr><td>DMAIC V3 Engine</td><td>Phase governance, quality gates</td><td>High</td></tr>
+<tr><td>KEB</td><td>Task approval, resource limits</td><td>Medium</td></tr>
+<tr><td>GBOGEB</td><td>Compliance checking, audit</td><td>High</td></tr>
+<tr><td>Agent Framework</td><td>Agent ranking, health checks</td><td>Medium</td></tr>
+<tr><td>Version Management</td><td>Change approval, lineage</td><td>Low</td></tr>
+<tr><td>CI/CD</td><td>Workflow governance</td><td>Medium</td></tr>
+</table>
+<br>
+<h2>7.5 DOW Governance Rules</h2>
+<p>1. <strong>No Knowledge Loss</strong> — Every version transition preserves all artifacts</p>
+<p>2. <strong>Idempotency</strong> — All operations must be safely re-executable</p>
+<p>3. <strong>Traceability</strong> — Complete audit trail from requirement to implementation</p>
+<p>4. <strong>Quality Gates</strong> — Phase transitions require quality threshold (Phase 5)</p>
+<p>5. <strong>Post-Execution Documentation</strong> — Every execution produces documentation artifacts</p>
+<br>
+<h2>7.6 Staging Integration Bridge</h2>
+<br>
+<p>The staging directory contains the DOW-ABACUS integration bridge:</p>
+<ul>
+<li><code>staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py</code></li>
+<li>Supports 5 integration modes: DOW_ONLY, DMAIC_ONLY, UNIFIED, PARALLEL, SEQUENTIAL</li>
+</ul>
+<br>
+<h2>7.7 DOW Key Documents</h2>
+<table>
+<tr><th>Document</th><th>Purpose</th></tr>
+<tr><td><code>DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md</code></td><td>Master integration doc</td></tr>
+<tr><td><code>DMAIC_V3/DOW_INTEGRATION_GAP_ANALYSIS.md</code></td><td>Gap analysis</td></tr>
+<tr><td><code>tool_ecosystem_map.md</code></td><td>Tool ecosystem with DOW overlay</td></tr>
+<tr><td><code>ABACUS-v031/dow_engine_config.yaml</code></td><td>Canonical config</td></tr>
+</table>
+<br></div>
+<div id="ch08_keb_tools" class="chapter" role="tabpanel" aria-labelledby="btn-ch08_keb_tools" style="display:none"><h1>Chapter 8: KEB & Tool Ecosystem Integration</h1>
+<br>
+<h2>8.1 KEB Architecture</h2>
+<br>
+<p>KEB (Knowledge Execution Bridge) serves as the execution engine:</p>
+<br>
+<pre><code>
+KEB Execution Engine
+├── Task Queue (priority-based)
+│   ├── High: Phase execution tasks
+│   ├── Medium: Agent coordination
+│   └── Low: Monitoring & metrics
+├── Resource Monitor
+│   ├── Memory tracking (2048MB default limit)
+│   ├── CPU utilization
+│   └── Thread pool management
+├── Agent Registry
+│   ├── 6 registered agent types
+│   └── Capability mapping
+└── Execution Bridge
+    ├── Task → Agent routing
+    ├── Result collection
+    └── Error handling
+</code></pre>
+<br>
+<h2>8.2 Tool Ecosystem</h2>
+<br>
+<h3>Engineering Tools</h3>
+<table>
+<tr><th>Tool</th><th>Path</th><th>Purpose</th><th>Type</th></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/</code></td><td>Cryogenic data visualization</td><td>Static HTML</td></tr>
+<tr><td>RTM Integration</td><td><code>rtm_integration/</code></td><td>Requirements traceability</td><td>Python + Excel</td></tr>
+<tr><td>Metrics Collector</td><td><code>fast_metrics_collector.py</code></td><td>Performance metrics</td><td>Python</td></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>System validation</td><td>Python</td></tr>
+<tr><td>Demo System</td><td><code>demo_integrated_system.py</code></td><td>Integration demo</td><td>Python</td></tr>
+</table>
+<br>
+<h3>Dashboards</h3>
+<table>
+<tr><th>Dashboard</th><th>Path</th><th>Hosting</th><th>Status</th></tr>
+<tr><td>Deep Analysis</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
+<tr><td>Cryo Dashboard</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>GitHub Pages ✅</td><td>Needs data</td></tr>
+<tr><td>Main Portal</td><td><code>docs/index.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
+<tr><td>FINAL Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>GitHub Pages ✅</td><td>Working</td></tr>
+</table>
+<br>
+<h3>CI/CD Tools</h3>
+<table>
+<tr><th>Tool</th><th>Path</th><th>Purpose</th></tr>
+<tr><td>CI/CD Orchestrator</td><td><code>cicd_github_orchestrator.py</code></td><td>GitHub workflow management</td></tr>
+<tr><td>CD Monitor</td><td><code>cd_monitor.py</code></td><td>Deployment monitoring</td></tr>
+<tr><td>CI Monitor</td><td><code>ci_monitor_local.py</code></td><td>Local CI monitoring</td></tr>
+<tr><td>Workflow Analyzer</td><td><code>workflow_analyzer.py</code></td><td>GH Actions analysis</td></tr>
+<tr><td>Deploy Helper</td><td><code>github_azure_deployment_helper.py</code></td><td>Azure deployment</td></tr>
+</table>
+<br>
+<h2>8.3 CRYO_LINAC Framework</h2>
+<p>The CRYO_LINAC framework provides cryogenic engineering analysis:</p>
+<ul>
+<li>Thermal analysis tools</li>
+<li>Statistical process control</li>
+<li>Pressure monitoring</li>
+<li>Temperature tracking</li>
+<li>Linked to QPLANT RTM requirements</li>
+</ul>
+<br>
+<h2>8.4 Agent Types (6 Registered)</h2>
+<p>1. <strong>Define Agent</strong> — Problem scoping</p>
+<p>2. <strong>Measure Agent</strong> — Data collection</p>
+<p>3. <strong>Analyze Agent</strong> — Root cause analysis</p>
+<p>4. <strong>Improve Agent</strong> — Solution generation</p>
+<p>5. <strong>Documentation Agent</strong> — Report creation</p>
+<p>6. <strong>Recursive Agent</strong> — Self-improvement</p>
+<br></div>
+<div id="ch09_version_lineage" class="chapter" role="tabpanel" aria-labelledby="btn-ch09_version_lineage" style="display:none"><h1>Chapter 9: Version Lineage & Migration Paths</h1>
+<br>
+<h2>9.1 Version Timeline</h2>
+<br>
+<pre><code>
+2025-Q3: v2.1 (Production Baseline)
+    │
+2025-Q4: v0.31 (Canonical Foundation)
+    │      └─ Established canonical indexes
+    │
+2025-Q4: v0.32 (Production Pipeline)  
+    │      └─ Extended DMAIC to 10 phases
+    │
+2025-Q4: ABACUS-UNIFIED (Merged Knowledge Base)
+    │      └─ v031 + v032 merge, 92.5/100 quality
+    │
+2025-Q4: v2.3 (MCP Integration)
+    │      └─ Agent framework, IDE connectivity
+    │
+2025-Q4/Q1: v3.3 (DMAIC V3 Engine)
+           └─ 12-Cluster Orchestrator, full engine
+</code></pre>
+<br>
+<h2>9.2 Version Directory Mapping</h2>
+<br>
+<table>
+<tr><th>Version</th><th>Directory</th><th>Key Content</th></tr>
+<tr><td>v2.1</td><td>Root-level <code>ABACUS_V21_*</code> files</td><td>Deployment, migration, architecture</td></tr>
+<tr><td>v0.31</td><td><code>ABACUS-v031/</code></td><td>Canonical indexes, DOW config</td></tr>
+<tr><td>v0.32</td><td><code>ABACUS-v032/</code></td><td>Full pipeline, Docker deployment</td></tr>
+<tr><td>UNIFIED</td><td><code>ABACUS-UNIFIED/</code></td><td>Merged knowledge, agent registry</td></tr>
+<tr><td>v2.3</td><td><code>local_mcp/</code></td><td>Agent orchestrator, knowledge integration</td></tr>
+<tr><td>v3.3</td><td><code>DMAIC_V3/</code></td><td>V3 engine, 12-cluster, all phases</td></tr>
+</table>
+<br>
+<h2>9.3 Migration Paths</h2>
+<br>
+<h3>v2.1 → v0.31</h3>
+<ul>
+<li><strong>What:</strong> Establish canonical foundation</li>
+<li><strong>Key Change:</strong> <code>canonical.index.json</code> becomes SSOT</li>
+<li><strong>Risk:</strong> Low (additive)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v2.1/migration/to_v031.md</code></li>
+</ul>
+<br>
+<h3>v0.31 → v0.32</h3>
+<ul>
+<li><strong>What:</strong> Extend to 10-phase pipeline</li>
+<li><strong>Key Change:</strong> Phases 6-9 added, Docker support</li>
+<li><strong>Risk:</strong> Low (extension)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v0.31/migration/to_v032.md</code></li>
+</ul>
+<br>
+<h3>v0.32 → v2.3</h3>
+<ul>
+<li><strong>What:</strong> Add MCP integration layer</li>
+<li><strong>Key Change:</strong> Agent orchestrator, IDE connectivity</li>
+<li><strong>Risk:</strong> Medium (new dependency: MCP protocol)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v0.32/migration/to_v23.md</code></li>
+</ul>
+<br>
+<h3>v2.3 → v3.3</h3>
+<ul>
+<li><strong>What:</strong> DMAIC V3 engine with 12-cluster architecture</li>
+<li><strong>Key Change:</strong> Complete engine rewrite, parallel execution</li>
+<li><strong>Risk:</strong> Medium (structural changes)</li>
+<li><strong>Guide:</strong> <code>docs_versioned/v2.3/migration/to_v33.md</code></li>
+</ul>
+<br>
+<h2>9.4 ⚠️ Critical: All Versions Are Active</h2>
+<p>No version should be archived or deleted. Each contains unique, irreplaceable content:</p>
+<ul>
+<li>v2.1: Deployment procedures and session analysis</li>
+<li>v0.31: Canonical indexes (live dependency)</li>
+<li>v0.32: Docker deployment and CI/CD</li>
+<li>v2.3: MCP integration layer</li>
+<li>v3.3: Current engine implementation</li>
+</ul>
+<br>
+<h2>9.5 Git Heritage</h2>
+<ul>
+<li><strong>Total Commits:</strong> 558</li>
+<li><strong>Key Branches:</strong> main, deep-analysis-phase2-deliverables</li>
+<li><strong>Parallel Development Streams:</strong> 8+ identified</li>
+</ul>
+<br></div>
+<div id="ch10_deployment" class="chapter" role="tabpanel" aria-labelledby="btn-ch10_deployment" style="display:none"><h1>Chapter 10: Entry Points, Deployment & Operations</h1>
+<br>
+<h2>10.1 Quick Start</h2>
+<br>
+<pre><code>
+# Test core imports
+python3 -c "from DMAIC_V3.config import DMAICConfig; print('Config OK')"
+
+# Run orchestrator
+python3 -c "from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator; print('Orchestrator OK')"
+
+# Launch dashboard
+open docs/deep_analysis_dashboard.html
+</code></pre>
+<br>
+<h2>10.2 Entry Points</h2>
+<br>
+<h3>Python Entry Points</h3>
+<table>
+<tr><th>Entry Point</th><th>Path</th><th>Purpose</th><th>Status</th></tr>
+<tr><td>Full Pipeline</td><td><code>DMAIC_V3/full_pipeline_orchestrator.py</code></td><td>Run all DMAIC phases</td><td>🟢</td></tr>
+<tr><td>12-Cluster</td><td><code>DMAIC_V3/core/twelve_cluster_orchestrator.py</code></td><td>Parallel execution</td><td>🟢</td></tr>
+<tr><td>v032 Pipeline</td><td><code>ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py</code></td><td>v032 pipeline</td><td>🟢</td></tr>
+<tr><td>Demo System</td><td><code>demo_integrated_system.py</code></td><td>Integration demo</td><td>🟡</td></tr>
+<tr><td>Deployment</td><td><code>run_comprehensive_deployment.py</code></td><td>Full deploy</td><td>🟡</td></tr>
+<tr><td>CI/CD</td><td><code>cicd_github_orchestrator.py</code></td><td>Workflow management</td><td>🟢</td></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>Validation</td><td>🟢</td></tr>
+</table>
+<br>
+<h3>HTML Entry Points</h3>
+<table>
+<tr><th>Entry Point</th><th>Path</th><th>Purpose</th><th>GH Pages?</th></tr>
+<tr><td>Docs Portal</td><td><code>docs/index.html</code></td><td>Main documentation</td><td>✅ Yes</td></tr>
+<tr><td>Dashboard</td><td><code>docs/deep_analysis_dashboard.html</code></td><td>Analysis dashboard</td><td>✅ Yes</td></tr>
+<tr><td>Cryo Dash</td><td><code>cryo_dashboard_v0_3_0/index.html</code></td><td>Cryo visualization</td><td>✅ Yes</td></tr>
+<tr><td>Handover</td><td><code>docs/FINAL_HANDOVER.html</code></td><td>Handover document</td><td>✅ Yes</td></tr>
+</table>
+<br>
+<h3>Shell Entry Points</h3>
+<table>
+<tr><th>Entry Point</th><th>Path</th><th>Purpose</th></tr>
+<tr><td>Deploy</td><td><code>scripts/deploy_to_github.sh</code></td><td>GitHub deployment</td></tr>
+<tr><td>Setup</td><td><code>setup_github.sh</code></td><td>Git configuration</td></tr>
+<tr><td>Permissions</td><td><code>test_permissions.sh</code></td><td>Permission validation</td></tr>
+</table>
+<br>
+<h2>10.3 Docker Deployment</h2>
+<br>
+<pre><code>
+cd ABACUS-v032/
+docker-compose up -d
+</code></pre>
+<br>
+<h2>10.4 GitHub Actions Workflows</h2>
+<br>
+<p>32+ workflows configured in <code>.github/workflows/</code>:</p>
+<ul>
+<li>CI pipelines for code quality</li>
+<li>CD pipelines for deployment</li>
+<li>DMAIC phase-specific workflows</li>
+<li>Documentation generation</li>
+</ul>
+<br>
+<h2>10.5 Environment Configuration</h2>
+<br>
+<pre><code>
+# .env.example provides template
+cp .env.example .env
+# Configure: API keys, paths, thresholds
+</code></pre>
+<br>
+<h2>10.6 GitHub Pages Deployment</h2>
+<br>
+<p>The <code>docs/</code> directory is GitHub Pages-ready:</p>
+<ul>
+<li><code>docs/_config.yml</code> — Jekyll configuration</li>
+<li><code>docs/index.html</code> — Landing page</li>
+<li>All HTML dashboards are static (no backend required)</li>
+</ul>
+<br></div>
+<div id="ch11_testing" class="chapter" role="tabpanel" aria-labelledby="btn-ch11_testing" style="display:none"><h1>Chapter 11: Integration Testing & Quality Assurance</h1>
+<br>
+<h2>11.1 Test Infrastructure</h2>
+<br>
+<h3>Test Files</h3>
+<table>
+<tr><th>Test</th><th>Path</th><th>Purpose</th><th>Status</th></tr>
+<tr><td>Smoke Tests</td><td><code>abacus_v21_smoke_tests.py</code></td><td>Core validation</td><td>🟢</td></tr>
+<tr><td>Integration Bridge</td><td><code>staging/test_integration_bridge.py</code></td><td>DOW-ABACUS bridge</td><td>🟡</td></tr>
+<tr><td>CI/CD Roundtrip</td><td><code>run_cicd_roundtrip_test.py</code></td><td>End-to-end CI/CD</td><td>🟡</td></tr>
+<tr><td>Permissions</td><td><code>test_permissions.sh</code></td><td>Access validation</td><td>🟢</td></tr>
+<tr><td>pytest config</td><td><code>pytest.ini</code></td><td>Test configuration</td><td>🟢</td></tr>
+</table>
+<br>
+<h2>11.2 Import Validation Results</h2>
+<br>
+<h3>✅ Successful Imports</h3>
+<ul>
+<li><code>DMAIC_V3.config.DMAICConfig</code> — Core configuration</li>
+<li><code>DMAIC_V3.core.state.StateManager</code> — State management</li>
+<li><code>DMAIC_V3.core.twelve_cluster_orchestrator.TwelveClusterOrchestrator</code> — 12-cluster (with warnings)</li>
+<li><code>DMAIC_V3.core.metrics</code> — Metrics system</li>
+<li><code>DMAIC_V3.convergence.change_detector.ChangeDetector</code> — Change detection (after fix)</li>
+</ul>
+<br>
+<h3>❌ Failed Imports</h3>
+<ul>
+<li><code>dmaic_v3_engine</code> — Depended on broken <code>change_detector.py</code> (NOW FIXED)</li>
+<li><code>local_mcp.agent_orchestrator</code> — Module path unavailable (<code>agent_orchestrator_v3.0.py</code> is not importable as a standard dotted module name)</li>
+</ul>
+<br>
+<h2>11.3 Syntax Validation</h2>
+<ul>
+<li><code>change_detector.py</code> — ✅ FIXED (unterminated string, missing method, duplicate)</li>
+<li><code>full_pipeline_orchestrator_corrupted.py</code> — 🔴 Merge conflict (use <code>_fixed.py</code>)</li>
+<li>Selected root scripts (11/11) — ✅ Valid syntax; note that <code>DMAIC_V3/core/temporal_metadata_engine.py</code> and <code>DMAIC_V3/core/ranking_engine.py</code> still report syntax errors in import checks</li>
+</ul>
+<br>
+<h2>11.4 GitHub Actions Workflow Status</h2>
+<ul>
+<li>32 workflows identified</li>
+<li>Key issues: <code>ci-codex.yml</code> typo (FIXED), outdated Python versions</li>
+<li>Recommendation: Consolidate from 32 to ~8 canonical workflows</li>
+</ul>
+<br>
+<h2>11.5 Quality Metrics</h2>
+<table>
+<tr><th>Metric</th><th>Value</th><th>Target</th></tr>
+<tr><td>ABACUS-UNIFIED Quality</td><td>92.5/100</td><td>90/100 ✅</td></tr>
+<tr><td>Import Success Rate</td><td>~85%</td><td>95%</td></tr>
+<tr><td>Syntax Error Rate</td><td>&lt;1%</td><td>0%</td></tr>
+<tr><td>Documentation Coverage</td><td>High</td><td>Complete</td></tr>
+<tr><td>Test Coverage</td><td>Partial</td><td>Full</td></tr>
+</table>
+<br>
+<h2>11.6 Known Blockers</h2>
+<p>1. KEB/GBOGEB timeout issues in execution</p>
+<p>2. Non-importable dotted module filenames in <code>local_mcp/</code> (for example <code>agent_orchestrator_v3.0.py</code>)</p>
+<p>3. Pipeline orchestrator needs consolidation (4 variants)</p>
+<p>4. Multiple zero-byte placeholder files need content</p>
+<br></div>
+<div id="ch12_roadmap" class="chapter" role="tabpanel" aria-labelledby="btn-ch12_roadmap" style="display:none"><h1>Chapter 12: Future Roadmap & Open Issues</h1>
+<br>
+<h2>12.1 Open Issues (Priority Ordered)</h2>
+<br>
+<h3>P0 — Critical</h3>
+<table>
+<tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
+<tr><td>Orchestrator Consolidation</td><td>4 variants → 1 canonical</td><td>Confusion, maintenance</td></tr>
+<tr><td>KEB/GBOGEB Timeouts</td><td>Execution hangs in full pipeline</td><td>Blocks end-to-end runs</td></tr>
+<tr><td>Non-importable module naming in <code>local_mcp/</code></td><td>Dotted filenames like <code>agent_orchestrator_v3.0.py</code> break standard imports</td><td>Import failures</td></tr>
+</table>
+<br>
+<h3>P1 — High</h3>
+<table>
+<tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
+<tr><td>Zero-byte Placeholders</td><td>12 files committed empty</td><td>Missing functionality</td></tr>
+<tr><td>Workflow Consolidation</td><td>32 → ~8 workflows</td><td>CI/CD complexity</td></tr>
+<tr><td><code>docs_versioned/</code></td><td>Now created (this deliverable)</td><td>Documentation gaps</td></tr>
+</table>
+<br>
+<h3>P2 — Medium</h3>
+<table>
+<tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
+<tr><td>Test Coverage</td><td>Partial → Full</td><td>Quality assurance</td></tr>
+<tr><td>Docker Validation</td><td>Container deployment untested</td><td>Deployment gaps</td></tr>
+<tr><td>GitHub Pages Setup</td><td>Dashboards need hosting</td><td>Accessibility</td></tr>
+</table>
+<br>
+<h3>P3 — Low</h3>
+<table>
+<tr><th>Issue</th><th>Description</th><th>Impact</th></tr>
+<tr><td>Legacy Script Cleanup</td><td>Root-level scripts to scripts/</td><td>Organization</td></tr>
+<tr><td>QPLANT Data Integration</td><td>Real cryo data pipeline</td><td>Value delivery</td></tr>
+<tr><td>Multi-repo Evaluation</td><td>Mono vs multi-repo decision</td><td>Architecture</td></tr>
+</table>
+<br>
+<h2>12.2 Roadmap</h2>
+<br>
+<h3>Phase 1: Stabilization (Immediate)</h3>
+<ul>
+<li>✅ Fix <code>change_detector.py</code> syntax error</li>
+<li>✅ Fix <code>ci-codex.yml</code> typo</li>
+<li>✅ Create <code>docs_versioned/</code> structure</li>
+<li>✅ Create handover book</li>
+<li>🔲 Add <code>local_mcp/__init__.py</code></li>
+<li>🔲 Consolidate pipeline orchestrators</li>
+<li>🔲 Resolve KEB/GBOGEB timeouts</li>
+</ul>
+<br>
+<h3>Phase 2: Testing & Validation (Short-term)</h3>
+<ul>
+<li>🔲 Comprehensive integration test suite</li>
+<li>🔲 Docker deployment validation</li>
+<li>🔲 GitHub Pages deployment</li>
+<li>🔲 Workflow consolidation</li>
+</ul>
+<br>
+<h3>Phase 3: Enhancement (Medium-term)</h3>
+<ul>
+<li>🔲 Real QPLANT data integration</li>
+<li>🔲 Full 12-cluster parallel execution</li>
+<li>🔲 Performance optimization</li>
+<li>🔲 External API integration</li>
+</ul>
+<br>
+<h3>Phase 4: Production (Long-term)</h3>
+<ul>
+<li>🔲 Production deployment to Azure/GitHub</li>
+<li>🔲 Monitoring and alerting</li>
+<li>🔲 User documentation and training</li>
+<li>🔲 Knowledge base maturation</li>
+</ul>
+<br>
+<h2>12.3 Architecture Decisions Pending</h2>
+<p>1. <strong>Mono-repo vs Multi-repo</strong> — Currently mono-repo; evaluate splitting</p>
+<p>2. <strong>Python Version</strong> — Standardize across all workflows</p>
+<p>3. <strong>CI/CD Platform</strong> — GitHub Actions consolidation strategy</p>
+<p>4. <strong>Deployment Target</strong> — Azure vs GitHub Pages vs hybrid</p>
+<br>
+<h2>12.4 Success Criteria</h2>
+<ul>
+<li>All DMAIC phases execute end-to-end without errors</li>
+<li>12-cluster parallel execution achieves >80% utilization</li>
+<li>Documentation coverage reaches 100%</li>
+<li>Quality score maintained above 90/100</li>
+<li>Zero critical bugs in production</li>
+</ul>
+<br></div>
+<div id="ch15_eng_tools" class="chapter" role="tabpanel" aria-labelledby="btn-ch15_eng_tools" style="display:none">
+<h1>Chapter 15: Engineering Tools — Helium Calculator &amp; Properties</h1>
+<br>
+<p>This chapter elaborates the engineering tools and cryogenic fluid data relevant to the
+QPLANT helium system at MYRRHA/SCK&bull;CEN. Content is derived from:</p>
+<ul>
+<li><strong>Gistau Baguer, G.</strong> — <em>Cryogenic Engineering for Scientists and Engineers</em>, Chapter&nbsp;15:
+Engineering Tools (thermodynamic tables, calculator methods, design charts)</li>
+<li>NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega <em>et al.</em> 2015; Donnelly &amp; Barenghi 1998)</li>
+<li>CODEX repository: <code>engineering_tools/hbhs_ep/</code> — HBHS-EP v8.3 SSoT parameters</li>
+<li>ABACUS: <code>cryo_dashboard_v0_3_0/</code> — interactive cryogenic properties reference</li>
+</ul>
+<br>
+<h2>15.1 QPLANT Operating Envelope</h2>
+<br>
+<p>The following parameters define the canonical HBHS-EP (Helium Buffer and Handling System — Engineering Package)
+operating window. Source: <code>CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wcs_ssot.json</code> (version HBHS-EP-v8.3).</p>
+<br>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Notes</th></tr>
+<tr><td>Design flow (GPS)</td><td>350</td><td>g/s</td><td>Helium mass-flow design point</td></tr>
+<tr><td>Minimum supply pressure</td><td>10</td><td>barg</td><td>Interlock lower limit</td></tr>
+<tr><td>Baseline supply pressure</td><td>14</td><td>barg</td><td>Nominal operating point (HCC/WCS)</td></tr>
+<tr><td>Inventory pressure</td><td>15</td><td>bar</td><td>Buffer storage</td></tr>
+<tr><td>VLP nominal</td><td>400</td><td>mbar abs</td><td>Very Low Pressure header</td></tr>
+<tr><td>VLP range</td><td>250 – 550</td><td>mbar abs</td><td>Acceptable operating band</td></tr>
+<tr><td>PVPS outlet nominal</td><td>1050</td><td>mbar abs</td><td>Primary Vacuum Pumping Station</td></tr>
+<tr><td>PVPS outlet range</td><td>800 – 1200</td><td>mbar abs</td><td>Acceptable operating band</td></tr>
+<tr><td>PVPS units total</td><td>10</td><td>—</td><td>N+1 redundancy</td></tr>
+<tr><td>PVPS nominal operating</td><td>9</td><td>—</td><td>1 unit in standby</td></tr>
+</table>
+<br>
+<h3>Figure 15.1 — QPLANT Pressure Ladder</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:300px">
+<canvas id="ch15PvpsChart"></canvas>
+</div>
+<p style="font-size:0.8em;color:#8b949e">VLP and PVPS values in mbar abs; supply and inventory values in barg × 1000 for scale.</p>
+<br>
+<h2>15.2 He-4 Thermodynamic Properties (NIST REFPROP 10)</h2>
+<br>
+<p>Helium-4 is the working fluid at 4.2 K (normal boiling point) and 2 K (superfluid bath) throughout the QPLANT
+cryogenic system. The following table and charts are the primary reference for thermal design and safety margin calculations.</p>
+<br>
+<h3>Key Constants — He-4</h3>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Unit</th></tr>
+<tr><td>Molar mass</td><td>4.0026</td><td>g/mol</td></tr>
+<tr><td>Specific gas constant R</td><td>2 077.3</td><td>J/(kg·K)</td></tr>
+<tr><td>Critical temperature T<sub>c</sub></td><td>5.1953</td><td>K</td></tr>
+<tr><td>Critical pressure P<sub>c</sub></td><td>227.46</td><td>kPa</td></tr>
+<tr><td>Critical density ρ<sub>c</sub></td><td>69.64</td><td>kg/m³</td></tr>
+<tr><td>Normal boiling point T<sub>NBP</sub></td><td>4.2217</td><td>K (at 1 atm)</td></tr>
+<tr><td>λ-point T<sub>λ</sub></td><td>2.177</td><td>K (superfluid onset)</td></tr>
+<tr><td>λ-point P<sub>λ</sub></td><td>5.04</td><td>kPa</td></tr>
+<tr><td>Latent heat at NBP ΔH<sub>vap</sub></td><td>20.4</td><td>kJ/kg</td></tr>
+</table>
+<br>
+<h3>Table 15.1 — He-4 Saturation Properties (NIST REFPROP 10)</h3>
+<div style="overflow-x:auto">
+<table>
+<tr><th>T (K)</th><th>P<sub>sat</sub> (kPa)</th><th>ρ<sub>liq</sub> (kg/m³)</th><th>ρ<sub>vap</sub> (kg/m³)</th><th>ΔH<sub>vap</sub> (kJ/kg)</th><th>Note</th></tr>
+<tr style="background:#1a2332"><td>2.177</td><td>5.04</td><td>146.2</td><td>0.372</td><td>22.6</td><td>λ-point</td></tr>
+<tr><td>2.5</td><td>9.97</td><td>145.4</td><td>0.706</td><td>22.2</td><td></td></tr>
+<tr><td>3.0</td><td>20.98</td><td>143.7</td><td>1.426</td><td>21.4</td><td></td></tr>
+<tr><td>3.5</td><td>40.24</td><td>141.7</td><td>2.638</td><td>20.3</td><td></td></tr>
+<tr><td>3.8</td><td>57.67</td><td>140.3</td><td>3.726</td><td>19.5</td><td></td></tr>
+<tr><td>4.0</td><td>72.50</td><td>139.3</td><td>4.678</td><td>18.9</td><td></td></tr>
+<tr style="background:#1a2332"><td>4.2217</td><td>101.325</td><td>125.0</td><td>16.87</td><td>20.4</td><td>NBP (1 atm)</td></tr>
+<tr><td>4.4</td><td>110.2</td><td>122.6</td><td>18.75</td><td>19.2</td><td></td></tr>
+<tr><td>4.6</td><td>132.4</td><td>119.8</td><td>22.80</td><td>17.7</td><td></td></tr>
+<tr><td>4.8</td><td>157.0</td><td>116.4</td><td>27.43</td><td>15.9</td><td></td></tr>
+<tr><td>5.0</td><td>184.0</td><td>111.6</td><td>33.60</td><td>13.5</td><td></td></tr>
+<tr style="background:#1a2332"><td>5.1953</td><td>227.46</td><td>69.64</td><td>69.64</td><td>0.0</td><td>Critical point</td></tr>
+</table>
+</div>
+<br>
+<h2>15.3 He-4 Property Charts</h2>
+<br>
+<h3>Figure 15.2 — He-4 Saturation Pressure vs Temperature</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:280px">
+<canvas id="ch15PtChart"></canvas>
+</div>
+<br>
+<h3>Figure 15.3 — He-4 Saturation Pressure vs Temperature (log scale) with Key Operating Points</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:300px">
+<canvas id="ch15LogChart"></canvas>
+</div>
+<p style="font-size:0.8em;color:#8b949e">Marked points: λ-transition (2.177 K, 5.04 kPa), NBP (4.2217 K, 101.3 kPa), critical point (5.1953 K, 227.5 kPa).</p>
+<br>
+<h3>Figure 15.4 — He-4 Liquid Density along Saturation Curve</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:260px">
+<canvas id="ch15RhoChart"></canvas>
+</div>
+<br>
+<h3>Figure 15.5 — He-4 Latent Heat of Vaporisation vs Temperature</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:260px">
+<canvas id="ch15HvapChart"></canvas>
+</div>
+<br>
+<h2>15.4 Thermodynamic Analysis — Expansion Methods</h2>
+<br>
+<p>Source: CODEX <code>engineering_tools/hbhs_ep/source/json/thermo_exergy_wave4.json</code> (HBHS-EP-v8.4-wave4)</p>
+<br>
+<h3>Figure 15.6 — JT Valve vs Wet Expansion Turbine: Relative Liquid Yield</h3>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:240px">
+<canvas id="ch15JtChart"></canvas>
+</div>
+<br>
+<table>
+<tr><th>Case</th><th>ID</th><th>Basis</th><th>Key Result</th></tr>
+<tr><td>JT vs wet turbine expansion</td><td>THERMO-001</td><td>3 bar, 4.5 K SHE → 2 K</td><td>Wet turbine yields <strong>~37.5 % more liquid</strong> than JT valve (relative yield 1.375 vs 1.0)</td></tr>
+<tr><td>2 K return vapour subcooling</td><td>THERMO-002</td><td>Subcool 4.5 K supply with 2 K return vapour</td><td><strong>77 % reduction</strong> in flash gas at the phase separator</td></tr>
+<tr><td>QLH buffer ride-through</td><td>THERMO-003</td><td>5 000 L external liquid He buffer</td><td><strong>8 hours</strong> of thermal and operational smoothing during disturbances</td></tr>
+<tr><td>2 K equivalent heat leak</td><td>THERMO-004</td><td>Non-isothermal transport losses</td><td>Effective interface load of <strong>80 W</strong> at 2 K; consumes exergy margin</td></tr>
+</table>
+<br>
+<h3>Diagram 15.7 — Cryogenic Expansion Process Comparison (ASCII)</h3>
+<pre><code>
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │         JT VALVE                         WET EXPANSION TURBINE              │
+  │  HP He (3 bar, 4.5 K)                 HP He (3 bar, 4.5 K)                 │
+  │         │                                       │                           │
+  │   ┌─────▼─────┐                         ┌───────▼──────┐                   │
+  │   │  JT valve  │  Isenthalpic expansion  │  Wet turbine │  Isentropic exp. │
+  │   └─────┬─────┘  ΔH = 0                 └───────┬──────┘  work extracted   │
+  │         │                                       │                           │
+  │  Phase separator                        Phase separator                     │
+  │   Liquid yield: 1.0 (reference)         Liquid yield: 1.375 (+37.5%)       │
+  │   ρ_liq = 125 kg/m³ @ 4.2 K            ρ_liq = 125 kg/m³ @ 4.2 K          │
+  │                                                                             │
+  │  KEY INSIGHT: The turbine recovers expansion work → more liquid at 4.2 K   │
+  │  Subcooling the 4.5 K supply with 2 K return vapour reduces flash gas 77%  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌───────────────────────────────────────────────────────────┐
+  │            SUPERFLUID He-4 PHASE DIAGRAM                  │
+  │                                                           │
+  │  P(kPa) │                                                 │
+  │  227.5  │             ● Critical point (5.195 K)          │
+  │         │           ╱                                     │
+  │  101.3  │         ╱       NORMAL LIQUID (He-I)            │
+  │         │       ╱                                         │
+  │   5.04  │─────●─────────────────────────────── T(K)       │
+  │  (λ-pt) │  He-II              He-I                        │
+  │         │  SUPER-             NORMAL                      │
+  │         │  FLUID              LIQUID                      │
+  │       0 │─────────────────────────────────────            │
+  │         2.177    4.217   5.195                            │
+  │                                                           │
+  │  λ-line at 2.177 K: superfluid transition                 │
+  │  Below λ: He-II (zero viscosity, high thermal cond.)      │
+  │  2 K operation: superfluid bath for SRF cavities          │
+  └───────────────────────────────────────────────────────────┘
+</code></pre>
+<br>
+<h2>15.5 Helium Engineering Calculator</h2>
+<br>
+<p>Interactive unit and property conversions for cryogenic helium engineering. All formulas use
+CODATA 2018 constants (R = 8 314.46 J/(kmol·K), M<sub>He</sub> = 4.0026 g/mol) and NIST saturation data.</p>
+<br>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:16px;max-width:600px">
+<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <label for="ch15CalcMode" style="font-size:0.78em;color:#8b949e">Conversion type</label>
+    <select id="ch15CalcMode" style="background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;font-size:0.88em;padding:6px 10px">
+      <option value="leak_g_yr">Leak rate: mbar·L/s → g/year (He-4)</option>
+      <option value="leak_std_cc_s">Leak rate: mbar·L/s → std cm³/s</option>
+      <option value="pres_kpa_barg">Pressure: kPa (abs) → barg</option>
+      <option value="pres_barg_kpa">Pressure: barg → kPa (abs)</option>
+      <option value="he_lookup">He-4 saturation lookup at T (K)</option>
+    </select>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <label for="ch15CalcInput" style="font-size:0.78em;color:#8b949e">Input value</label>
+    <input id="ch15CalcInput" type="number" step="any" value="1e-6"
+           style="background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;font-size:0.88em;padding:6px 10px;width:160px">
+  </div>
+  <button onclick="ch15Calc()" style="background:#1f6feb;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:0.88em;padding:8px 16px">Calculate</button>
+</div>
+<div style="background:#0d1117;border:1px solid #30363d;border-radius:4px;padding:10px 14px;font-family:monospace;font-size:0.9em;color:#79c0ff;min-height:2em" id="ch15CalcResult" aria-live="polite">→ press Calculate</div>
+</div>
+<br>
+<h3>Calculator Reference Formulas</h3>
+<table>
+<tr><th>Conversion</th><th>Formula</th><th>Constants</th></tr>
+<tr><td>Leak rate mbar·L/s → g/year</td><td>ṁ [g/s] = Q × M / (R × T); ×3.156×10⁷ s/yr</td><td>M=4.0026 g/mol, R=83.145 mbar·L/(mol·K), T=293.15 K</td></tr>
+<tr><td>Leak rate mbar·L/s → std cm³/s</td><td>× 0.9869</td><td>At 0 °C, 101.325 kPa (STP)</td></tr>
+<tr><td>kPa (abs) → barg</td><td>(P_kPa − 101.325) / 100</td><td>P_atm = 101.325 kPa</td></tr>
+<tr><td>barg → kPa (abs)</td><td>P_barg × 100 + 101.325</td><td>—</td></tr>
+<tr><td>He-4 sat. lookup</td><td>Linear interpolation of NIST REFPROP 10 table</td><td>Valid 2.18–5.19 K</td></tr>
+</table>
+<br>
+<h2>15.6 QPLANT System Block Diagram</h2>
+<br>
+<pre><code>
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                  QPLANT HELIUM CRYOGENIC SYSTEM — BLOCK DIAGRAM                 │
+  │                 (HBHS-EP v8.3 | Design flow: 350 g/s | SCK•CEN / MYRRHA)       │
+  ├─────────────────────────────────────────────────────────────────────────────────┤
+  │                                                                                 │
+  │  ┌──────────┐     ┌───────────────┐      ┌─────────────────────────────────┐   │
+  │  │He storage│─14b─│  HCC / WCS    │─14b──│  Heat Exchangers / Liquefier    │   │
+  │  │ 15 bar   │     │  Supply line  │      │  (Cold box, turbines, JT valve) │   │
+  │  └──────────┘     └───────────────┘      └─────────────┬───────────────────┘   │
+  │                                                         │ 4.2 K / 2 K LHe      │
+  │  ┌──────────────────────────────────────────────────────▼─────────────────┐    │
+  │  │                 SRF CAVITY CRYOMODULE STRING                            │    │
+  │  │   ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐          │    │
+  │  │   │Cryo-   │  │Cryo-   │  │Cryo-   │  │Cryo-   │  │Cryo-   │   ...    │    │
+  │  │   │module 1│  │module 2│  │module 3│  │module 4│  │module N│          │    │
+  │  │   │2 K bath│  │2 K bath│  │2 K bath│  │2 K bath│  │2 K bath│          │    │
+  │  │   └───┬────┘  └───┬────┘  └───┬────┘  └───┬────┘  └───┬────┘          │    │
+  │  └───────┼───────────┼───────────┼───────────┼───────────┼────────────────┘   │
+  │          │           │           │           │           │                     │
+  │          └───────────┴───────────▼───────────┴───────────┘                    │
+  │                              VLP header (400 mbar abs)                         │
+  │                                      │                                         │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  PVPS (10 units, N+1)    │                           │
+  │                         │  Outlet: 1050 mbar abs   │                           │
+  │                         └────────────┬────────────┘                           │
+  │                                      │ LP He gas                               │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  Compressor train (HCC)  │                           │
+  │                         │  Outlet: 14 barg         │                           │
+  │                         └────────────┬────────────┘                           │
+  │                                      │ HP He gas                               │
+  │                         ┌────────────▼────────────┐                           │
+  │                         │  QLH buffer (5 000 L)    │                           │
+  │                         │  8 h ride-through        │                           │
+  │                         └─────────────────────────┘                           │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+
+  Legend:  HCC = Helium Compressor Circuit  |  WCS = Warm Compression System
+           VLP = Very Low Pressure          |  PVPS = Primary Vacuum Pumping Station
+           QLH = Quasi-Liquid He buffer     |  SRF = Superconducting Radio-Frequency
+           NBP = Normal Boiling Point       |  JT  = Joule-Thomson
+</code></pre>
+<br>
+<h2>15.7 LN₂ Reference Data (Thermal Shielding)</h2>
+<br>
+<p>Liquid Nitrogen at 77 K is used for thermal shielding (80 K shields) around the helium cryostat string.
+Data source: NIST REFPROP 10 / Span et al. 2000.</p>
+<br>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Unit</th></tr>
+<tr><td>Molar mass</td><td>28.014</td><td>g/mol</td></tr>
+<tr><td>Critical temperature T<sub>c</sub></td><td>126.19</td><td>K</td></tr>
+<tr><td>Critical pressure P<sub>c</sub></td><td>3 395.8</td><td>kPa</td></tr>
+<tr><td>Normal boiling point T<sub>NBP</sub></td><td>77.355</td><td>K (at 1 atm)</td></tr>
+<tr><td>Liquid density at NBP ρ<sub>liq</sub></td><td>806.1</td><td>kg/m³</td></tr>
+<tr><td>Latent heat at NBP ΔH<sub>vap</sub></td><td>198.8</td><td>kJ/kg</td></tr>
+<tr><td>Triple point T<sub>tr</sub></td><td>63.15</td><td>K</td></tr>
+</table>
+<br>
+<h2>15.8 References &amp; Data Sources</h2>
+<br>
+<ul>
+<li><strong>Gistau Baguer, G.</strong> (2013). <em>Cryogenic Engineering for Scientists and Engineers</em>. CERN Yellow Report.
+Chapter 15: Engineering Tools — thermodynamic tables, calculator methods, design charts.
+Source archived at: <code>CODEX/GISTAU/sources/master/Chapter15_Gistau_tools.pdf</code></li>
+<li><strong>NIST REFPROP 10</strong> — NIST Standard Reference Database 23.
+Helmholtz EOS for He-4: Ortiz-Vega <em>et al.</em> (2015).
+<a href="https://webbook.nist.gov/chemistry/fluid/" target="_blank" rel="noopener">webbook.nist.gov</a></li>
+<li><strong>Donnelly, R.J. &amp; Barenghi, C.F.</strong> (1998). The observed properties of liquid helium at the saturated vapour pressure.
+<em>J. Phys. Chem. Ref. Data</em> <strong>27</strong>, 1217–1274.</li>
+<li><strong>CODEX repo</strong> <code>engineering_tools/hbhs_ep/</code> — HBHS-EP v8.3 SSoT parameters
+(<code>hcc_wcs_ssot.json</code>, <code>thermo_exergy_wave4.json</code>, <code>wave_plot_roadmap.json</code>)</li>
+<li><strong>ABACUS repo</strong> <code>cryo_dashboard_v0_3_0/</code> — interactive cryogenic properties dashboard</li>
+<li>CODATA 2018 fundamental constants (molar gas constant R = 8 314.462618 J/(kmol·K))</li>
+</ul>
+<br>
+<blockquote>⚠️ This chapter provides representative NIST data and engineering estimates for preliminary design and DMAIC analysis.
+For high-accuracy calculations, obtain data directly from NIST REFPROP 10 or the original Gistau source PDF.</blockquote>
+<br>
+</div>
+</main>
+</div>
+<script>
+function showChapter(id) {
+    document.querySelectorAll('.chapter').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('.sidebar button').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+    });
+    document.getElementById(id).style.display = 'block';
+    const activeButton = document.getElementById('btn-' + id);
+    activeButton.classList.add('active');
+    activeButton.setAttribute('aria-selected', 'true');
+}
+
+/* ================================================================
+   CHAPTER 15 — Helium engineering data & calculator
+   Data: NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega et al. 2015)
+   Reference: Gistau Baguer, "Cryogenic Engineering for Scientists
+   and Engineers", Chapter 15 — Engineering Tools.
+   QPLANT parameters: CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wcs_ssot.json
+   ================================================================ */
+
+/* ---- He-4 saturation data [T_K, P_kPa, rhoL, rhoV, dHvap, note] ---- */
+const CH15_HE4 = {
+  Tc: 5.1953, Pc: 227.46, rhoc: 69.64,
+  Tnbp: 4.2217, Pnbp: 101.325,
+  Tlambda: 2.177, Plambda: 5.04,
+  M: 4.0026,         // g/mol
+  Rspec: 2077.3,     // J/(kg·K)  specific gas constant
+  sat: [
+    [2.177, 5.04,   146.2,  0.372,  22.6, "λ-point (superfluid transition)"],
+    [2.5,   9.97,   145.4,  0.706,  22.2, ""],
+    [3.0,   20.98,  143.7,  1.426,  21.4, ""],
+    [3.5,   40.24,  141.7,  2.638,  20.3, ""],
+    [3.8,   57.67,  140.3,  3.726,  19.5, ""],
+    [4.0,   72.50,  139.3,  4.678,  18.9, ""],
+    [4.2217,101.325,125.0,  16.87,  20.4, "NBP — Normal Boiling Point (1 atm)"],
+    [4.4,   110.2,  122.6,  18.75,  19.2, ""],
+    [4.6,   132.4,  119.8,  22.80,  17.7, ""],
+    [4.8,   157.0,  116.4,  27.43,  15.9, ""],
+    [5.0,   184.0,  111.6,  33.60,  13.5, ""],
+    [5.1953,227.46,  69.64,  69.64,   0.0, "Critical point"]
+  ]
+};
+
+/* ---- utility interpolation ---- */
+function ch15Lerp(T, x0, x1, y0, y1) { return x1===x0 ? y0 : y0+(y1-y0)*(T-x0)/(x1-x0); }
+function ch15Interp(sat, T, col) {
+  if (T < sat[0][0] || T > sat[sat.length-1][0]) return null;
+  for (let i = 0; i < sat.length-1; i++) {
+    if (T >= sat[i][0] && T <= sat[i+1][0])
+      return ch15Lerp(T, sat[i][0], sat[i+1][0], sat[i][col], sat[i+1][col]);
+  }
+  return null;
+}
+
+/* ---- chart colour palette (matches GitHub dark theme) ---- */
+const C15 = {
+  blue:   '#58a6ff', green:  '#3fb950', orange: '#f78166',
+  amber:  '#d2a679', cyan:   '#79c0ff', grid:   'rgba(48,54,61,0.8)'
+};
+const C15_FONT = { color:'#8b949e', family:'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', size:11 };
+
+function ch15MkLine(canvasId, xLbl, yLbl, datasets, opts) {
+  opts = opts || {};
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  return new Chart(canvas.getContext('2d'), {
+    type:'line', data:{ datasets },
+    options:{
+      animation:false, responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ position:'top', labels:{ boxWidth:12, padding:10, color:'#8b949e' }},
+        tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1 }
+      },
+      scales:{
+        x:{ type: opts.xLog?'logarithmic':'linear',
+            title:{ display:true, text:xLbl, color:'#8b949e', font:C15_FONT },
+            grid:{ color:C15.grid } },
+        y:{ type: opts.yLog?'logarithmic':'linear',
+            title:{ display:true, text:yLbl, color:'#8b949e', font:C15_FONT },
+            grid:{ color:C15.grid } }
+      }
+    }
+  });
+}
+
+function ch15BuildCharts() {
+  if (typeof Chart === 'undefined') return;
+  Chart.defaults.color = '#8b949e';
+  Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+  Chart.defaults.font.size = 11;
+
+  /* P–T saturation (He-4) */
+  ch15MkLine('ch15PtChart', 'Temperature (K)', 'Saturation Pressure (kPa)',
+    [{  label:'He-4 (NIST REFPROP 10)',
+        data: CH15_HE4.sat.map(r=>({x:r[0],y:r[1]})),
+        borderColor:C15.blue, backgroundColor:C15.blue+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Liquid density (He-4) */
+  ch15MkLine('ch15RhoChart', 'Temperature (K)', 'Liquid Density (kg/m³)',
+    [{  label:'ρ_liq He-4 (NIST)',
+        data: CH15_HE4.sat.slice(0,-1).map(r=>({x:r[0],y:r[2]})),
+        borderColor:C15.cyan, backgroundColor:C15.cyan+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Latent heat of vaporisation (He-4) */
+  ch15MkLine('ch15HvapChart', 'Temperature (K)', 'ΔH_vap (kJ/kg)',
+    [{  label:'He-4 ΔH_vap (NIST)',
+        data: CH15_HE4.sat.map(r=>({x:r[0],y:r[4]})),
+        borderColor:C15.amber, backgroundColor:C15.amber+'22',
+        tension:0.4, pointRadius:4, fill:false }]);
+
+  /* Log P–T with key operating points (He-4) */
+  const smoothPts = [];
+  for (let T=2.18; T<=5.18; T+=0.02) {
+    const P = ch15Interp(CH15_HE4.sat, T, 1);
+    if (P!==null) smoothPts.push({x:T, y:P});
+  }
+  ch15MkLine('ch15LogChart', 'Temperature (K)', 'Saturation Pressure (kPa)',
+    [
+      { label:'He-4 saturation', data:smoothPts,
+        borderColor:C15.blue, backgroundColor:'transparent',
+        tension:0.4, pointRadius:0, borderWidth:2, fill:false },
+      { label:'Key points (λ, NBP, critical)',
+        data:[{x:2.177,y:5.04},{x:4.2217,y:101.325},{x:5.1953,y:227.46}],
+        borderColor:C15.orange, backgroundColor:C15.orange,
+        showLine:false, pointRadius:7, pointStyle:'circle' }
+    ],
+    {yLog:true});
+
+  /* JT vs wet turbine expansion bar chart */
+  const jtCanvas = document.getElementById('ch15JtChart');
+  if (jtCanvas && typeof Chart !== 'undefined') {
+    new Chart(jtCanvas.getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:['JT Valve (baseline)','Wet Expansion Turbine'],
+        datasets:[{
+          label:'Relative liquid yield',
+          data:[1.0, 1.375],
+          backgroundColor:[C15.amber+'bb', C15.green+'bb'],
+          borderColor:[C15.amber, C15.green],
+          borderWidth:1
+        }]
+      },
+      options:{
+        animation:false, responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1 }},
+        scales:{
+          x:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'} },
+          y:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'},
+              title:{display:true, text:'Relative liquid yield (JT = 1.0)', color:'#8b949e'} }
+        }
+      }
+    });
+  }
+
+  /* PVPS pressure ladder — horizontal bar */
+  const pvpsCanvas = document.getElementById('ch15PvpsChart');
+  if (pvpsCanvas && typeof Chart !== 'undefined') {
+    new Chart(pvpsCanvas.getContext('2d'), {
+      type:'bar',
+      data:{
+        labels:['VLP (nominal)','VLP (upper)','PVPS outlet (nominal)','PVPS outlet (upper)',
+                'Minimum supply','Baseline supply','Inventory'],
+        datasets:[{
+          label:'Pressure (mbar abs or barg *)',
+          data:[400, 550, 1050, 1200, 10000, 14000, 15000],
+          backgroundColor:C15.blue+'99',
+          borderColor:C15.blue,
+          borderWidth:1
+        }]
+      },
+      options:{
+        indexAxis:'y', animation:false, responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false},
+          tooltip:{ backgroundColor:'#161b22', borderColor:'#30363d', borderWidth:1,
+            callbacks:{ label: ctx => {
+              const v = ctx.raw;
+              return v < 2000 ? `${v} mbar abs` : `${v/1000} barg`;
+            }}}},
+        scales:{
+          x:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'},
+              title:{display:true, text:'Pressure (mbar abs  |  ×1000 = barg)', color:'#8b949e'} },
+          y:{ grid:{color:C15.grid}, ticks:{color:'#8b949e'} }
+        }
+      }
+    });
+  }
+}
+
+/* Calculator logic */
+function ch15Calc() {
+  const mode = document.getElementById('ch15CalcMode').value;
+  const inp  = parseFloat(document.getElementById('ch15CalcInput').value);
+  let out = '—', unit = '';
+  if (isNaN(inp)) { document.getElementById('ch15CalcResult').textContent='Enter a number'; return; }
+  if (mode === 'leak_g_yr') {
+    // mbar·L/s → g/year  (He-4, M=4.0026 g/mol, 1 mol = 22.414 L at STP)
+    // mass flow [g/s] = Q[mbar·L/s] × 1e-3[bar·L/s] / (R[bar·L/(mol·K)] × T[K]) × M[g/mol]
+    // R = 83.14462 mbar·L/(mol·K), T = 293.15 K (20°C)
+    const g_per_s = inp * 4.0026 / (83.14462 * 293.15);
+    out = (g_per_s * 3.15576e7).toExponential(3); unit = 'g/year';
+  } else if (mode === 'leak_std_cc_s') {
+    // mbar·L/s → std cm³/s  (1 mbar·L/s = 0.9869 std cc/s at 0°C / 101.325 kPa → ≈ 1 std cc/s)
+    out = (inp * 0.9869).toExponential(3); unit = 'std cm³/s';
+  } else if (mode === 'pres_kpa_barg') {
+    out = ((inp - 101.325) / 100).toFixed(4); unit = 'barg';
+  } else if (mode === 'pres_barg_kpa') {
+    out = ((inp * 100) + 101.325).toFixed(2); unit = 'kPa (abs) — at 0 barg = 101.325 kPa abs';
+  } else if (mode === 'he_lookup') {
+    const T = inp;
+    const P   = ch15Interp(CH15_HE4.sat, T, 1);
+    const rho = ch15Interp(CH15_HE4.sat, T, 2);
+    const dH  = ch15Interp(CH15_HE4.sat, T, 4);
+    if (P === null) { out = 'Out of range (2.18–5.20 K)'; }
+    else { out = `P_sat=${P.toFixed(2)} kPa  ρ_liq=${rho.toFixed(1)} kg/m³  ΔH_vap=${dH.toFixed(1)} kJ/kg`; }
+    unit = `(He-4 at ${T} K)`;
+  }
+  document.getElementById('ch15CalcResult').textContent = out + (unit ? '  [' + unit + ']' : '');
+}
+
+/* Initialise charts when Ch 15 is first shown */
+let ch15ChartsBuilt = false;
+const _origShowChapter = showChapter;
+showChapter = function(id) {
+  _origShowChapter(id);
+  if (id === 'ch15_eng_tools' && !ch15ChartsBuilt) {
+    // small delay so the canvas is visible before Chart.js measures it
+    setTimeout(function() {
+      if (typeof Chart !== 'undefined') {
+        ch15ChartsBuilt = true;
+        ch15BuildCharts();
+      }
+      // else: Chart.js not yet loaded; will retry on next activation
+    }, 80);
+  }
+};
+</script>
+</body>
+</html>

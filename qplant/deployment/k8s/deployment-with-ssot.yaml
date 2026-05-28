@@ -1,0 +1,148 @@
+# QPLANT Deployment with SSOT ConfigMap
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qplant-dashboard
+  namespace: qplant
+  labels:
+    app: qplant
+    component: dashboard
+    version: "4.3.0"
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: qplant
+      component: dashboard
+  template:
+    metadata:
+      labels:
+        app: qplant
+        component: dashboard
+      annotations:
+        qplant.io/ssot-sha256: "90596aca415deb1d"
+        checksum/config: "90596aca415deb1d"
+    spec:
+      initContainers:
+        - name: ssot-validator
+          image: qplant-ssot-validator:4.3.0
+          command: ["python3", "/app/validate_ssot.py"]
+          env:
+            - name: SSOT_PATH
+              value: "/config/config.yaml"
+            - name: EXPECTED_SHA256
+              value: "90596aca415deb1d"
+            - name: VALIDATION_MODE
+              value: "strict"
+          volumeMounts:
+            - name: ssot-config
+              mountPath: /config
+              readOnly: true
+      containers:
+        - name: dashboard-api
+          image: qplant-dashboard:4.3.0
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: CONFIG_PATH
+              value: "/config/config.yaml"
+            - name: ENVIRONMENT
+              value: "production"
+          volumeMounts:
+            - name: ssot-config
+              mountPath: /config
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+        - name: config-service
+          image: qplant-config-service:4.3.0
+          ports:
+            - containerPort: 8001
+              name: config-http
+          env:
+            - name: CONFIG_PATH
+              value: "/config/config.yaml"
+          volumeMounts:
+            - name: ssot-config
+              mountPath: /config
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+      volumes:
+        - name: ssot-config
+          configMap:
+            name: qplant-ssot-config
+            items:
+              - key: config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qplant-dashboard
+  namespace: qplant
+spec:
+  selector:
+    app: qplant
+    component: dashboard
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+    - name: config
+      port: 8001
+      targetPort: 8001
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qplant-ingress
+  namespace: qplant
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: qplant.sck-cen.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: qplant-dashboard
+                port:
+                  number: 80

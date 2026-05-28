@@ -19,7 +19,9 @@ from DMAIC_V3.core.test_system_bridge import TestSystemBridge  # noqa: E402
 
 def parse_args():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description="Run DMAIC V3 deployment test system")
+    parser = argparse.ArgumentParser(
+        description='Run DMAIC V3 deployment test system'
+    )
 
     parser.add_argument(
         "--test-suite",
@@ -81,21 +83,21 @@ def main():
     # Run test suite
     print(f"\n▶ Running {args.test_suite} test suite...")
 
-    if args.test_suite == "smoke" or args.test_suite == "all":
+    if args.test_suite == 'smoke' or args.test_suite == 'all':
         print("\n  → Running smoke tests...")
         result = test_bridge.run_pytest_suite(
             "DMAIC_V3/tests/test_bridge_integration.py", markers="smoke"
         )
         print(f"  ✓ Smoke tests: {'PASSED' if result.success else 'FAILED'}")
 
-    if args.test_suite == "unit" or args.test_suite == "all":
+    if args.test_suite == 'unit' or args.test_suite == 'all':
         print("\n  → Running unit tests...")
         result = test_bridge.run_pytest_suite(
             "DMAIC_V3/tests/test_bridge_integration.py", markers="unit"
         )
         print(f"  ✓ Unit tests: {'PASSED' if result.success else 'FAILED'}")
 
-    if args.test_suite == "integration" or args.test_suite == "all":
+    if args.test_suite == 'integration' or args.test_suite == 'all':
         print("\n  → Running integration tests...")
         result = test_bridge.run_pytest_suite(
             "DMAIC_V3/tests/test_bridge_integration.py", markers="integration"

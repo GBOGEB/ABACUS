@@ -1,0 +1,213 @@
+name: Branch Pruner
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to prune"
+        required: true
+        default: "merged-only"
+        type: choice
+        options:
+          - merged-only        # branches whose tip is already in main
+          - stale-and-merged   # merged + branches with closed/merged PRs older than stale_days
+          - all-closed-prs     # any branch whose PR is merged or closed (no open PR)
+          - empty-diff         # branches ahead of base but with 0 file changes (safe merge-only commits)
+          - all-stale          # merged-only + empty-diff together (comprehensive cleanup)
+      base_branch:
+        description: "Base branch to check merges against"
+        required: false
+        default: "main"
+      stale_days:
+        description: "Age in days before a branch is considered stale (used by stale-and-merged mode)"
+        required: false
+        default: "30"
+      dry_run:
+        description: "Dry run — list branches without deleting"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      branch_filter:
+        description: "Only consider branches matching this prefix (e.g. copilot/ or feature/). Leave blank for all."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  prune-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prune branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ inputs.base_branch }}
+          MODE: ${{ inputs.mode }}
+          STALE_DAYS: ${{ inputs.stale_days }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          BRANCH_FILTER: ${{ inputs.branch_filter }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true
+
+          echo "=== Branch Pruner ==="
+          echo "  Base    : ${BASE}"
+          echo "  Mode    : ${MODE}"
+          echo "  Dry run : ${DRY_RUN}"
+          echo "  Filter  : '${BRANCH_FILTER:-<all>}'"
+          echo ""
+
+          NOW=$(date +%s)
+          STALE_CUTOFF=$(( NOW - STALE_DAYS * 86400 ))
+
+          to_delete=()
+          to_keep=()
+
+          while IFS= read -r remote; do
+            branch="${remote#origin/}"
+
+            # Never delete protected branches
+            case "$branch" in
+              main|develop|release/*|hotfix/*|HEAD) continue ;;
+            esac
+
+            # Apply optional prefix filter
+            if [[ -n "$BRANCH_FILTER" ]]; then
+              case "$branch" in
+                ${BRANCH_FILTER}*) ;;
+                *) continue ;;
+              esac
+            fi
+
+            ahead=$(git rev-list --count "origin/${BASE}..${remote}" 2>/dev/null || echo 0)
+            last_ts=$(git log -1 --format="%ct" "${remote}" 2>/dev/null || echo "$NOW")
+            last_date=$(git log -1 --format="%ci" "${remote}" 2>/dev/null || echo "unknown")
+            age_days=$(( (NOW - last_ts) / 86400 ))
+
+            # Get PR state for this branch
+            pr_state=$(gh pr list --head "${branch}" --state all --json state,number \
+              --jq '.[0] | "\(.state)#\(.number)"' 2>/dev/null || echo "")
+
+            is_merged_into_base=false
+            if [[ "$ahead" -eq 0 ]]; then
+              is_merged_into_base=true
+            fi
+
+            # Check if branch has zero file-level diff vs base (empty merge commits)
+            merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+            files_changed=0
+            if [[ -n "$merge_base" ]]; then
+              files_changed=$(git diff --name-only "${merge_base}..${remote}" -- 2>/dev/null | wc -l | tr -d ' ')
+            fi
+            is_empty_diff=false
+            if [[ "$ahead" -gt 0 && "$files_changed" -eq 0 && -n "$merge_base" ]]; then
+              is_empty_diff=true
+            fi
+
+            should_delete=false
+            reason=""
+
+            case "$MODE" in
+              merged-only)
+                if $is_merged_into_base; then
+                  should_delete=true
+                  reason="fully merged into ${BASE}"
+                fi
+                ;;
+              stale-and-merged)
+                if $is_merged_into_base; then
+                  should_delete=true
+                  reason="fully merged into ${BASE}"
+                elif [[ "$last_ts" -lt "$STALE_CUTOFF" && "$pr_state" != OPEN* ]]; then
+                  should_delete=true
+                  reason="stale (${age_days}d old), ${ahead} unique commits, PR not open"
+                fi
+                ;;
+              all-closed-prs)
+                if $is_merged_into_base; then
+                  should_delete=true
+                  reason="fully merged into ${BASE}"
+                elif [[ "$pr_state" == MERGED* || "$pr_state" == CLOSED* ]]; then
+                  should_delete=true
+                  reason="PR ${pr_state} — branch content superseded"
+                fi
+                ;;
+              empty-diff)
+                if $is_empty_diff; then
+                  should_delete=true
+                  reason="${ahead} ahead but 0 files changed — merge-only commits, safe to prune"
+                fi
+                ;;
+              all-stale)
+                if $is_merged_into_base; then
+                  should_delete=true
+                  reason="fully merged into ${BASE}"
+                elif $is_empty_diff; then
+                  should_delete=true
+                  reason="${ahead} ahead but 0 files changed — merge-only commits"
+                fi
+                ;;
+            esac
+
+            if $should_delete; then
+              to_delete+=("${branch}|${age_days}d|${last_date}|${reason}|${pr_state}")
+            else
+              to_keep+=("${branch}|${age_days}d|${last_date}|ahead=${ahead}|${pr_state}")
+            fi
+
+          done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+
+          echo "--- Branches to DELETE (${#to_delete[@]}) ---"
+          for entry in "${to_delete[@]}"; do
+            IFS='|' read -r b age last reason pr <<< "$entry"
+            printf "  %-60s  %s  [%s]\n" "$b" "$age" "$reason"
+          done
+          echo ""
+
+          echo "--- Branches to KEEP (${#to_keep[@]}) ---"
+          for entry in "${to_keep[@]}"; do
+            IFS='|' read -r b age last reason pr <<< "$entry"
+            printf "  %-60s  %s  %s  PR:%s\n" "$b" "$age" "$reason" "${pr:-none}"
+          done
+          echo ""
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "Dry-run complete. Re-run with dry_run=false to execute deletions."
+            exit 0
+          fi
+
+          if [[ ${#to_delete[@]} -eq 0 ]]; then
+            echo "Nothing to delete."
+            exit 0
+          fi
+
+          echo "Deleting ${#to_delete[@]} branches..."
+          deleted=0
+          failed=0
+          for entry in "${to_delete[@]}"; do
+            IFS='|' read -r b age last reason pr <<< "$entry"
+            echo -n "  Deleting ${b} ... "
+            if git push origin --delete "${b}" 2>&1; then
+              echo "OK"
+              (( deleted++ )) || true
+            else
+              echo "FAILED (may already be gone)"
+              (( failed++ )) || true
+            fi
+          done
+
+          echo ""
+          echo "=== Done: ${deleted} deleted, ${failed} failed ==="
+          echo "Run 'git fetch --prune' locally to clean up stale remote-tracking refs."

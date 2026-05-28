@@ -56,7 +56,7 @@ class GitManager:
                 ["git", "--version"], capture_output=True, text=True, timeout=5
             )
             return result.returncode == 0
-        except:
+        except Exception:
             return False
 
     def _run_git(self, args: List[str], check: bool = True) -> Tuple[bool, str]:
@@ -103,6 +103,13 @@ class GitManager:
         success, output = self._run_git(["branch", "--show-current"], check=False)
         if success and output.strip():
             status.branch = output.strip()
+        else:
+            # Fallback for detached HEAD or older git: yields "HEAD" in detached mode
+            fb_success, fb_output = self._run_git(
+                ["rev-parse", "--abbrev-ref", "HEAD"], check=False
+            )
+            if fb_success and fb_output.strip():
+                status.branch = fb_output.strip()
 
         success, output = self._run_git(["status", "--porcelain"], check=False)
         if success:

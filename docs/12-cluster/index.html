@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>12-Cluster Architecture – ABACUS</title>
+  <meta name="description" content="ABACUS 12-Cluster functional agent architecture: Analysis, Documentation, Recursive, and Knowledge tiers."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .cluster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1.5rem 0}
+    .cluster{border-radius:var(--radius);padding:1rem;color:#fff;cursor:pointer;transition:transform .2s}
+    .cluster:hover{transform:scale(1.03)}
+    .cluster h4{margin:0 0 .3rem;font-size:1rem}
+    .cluster p{margin:0;font-size:.82rem;opacity:.9}
+    .tier-analysis{background:linear-gradient(135deg,#1a73e8,#4285f4)}
+    .tier-docs{background:linear-gradient(135deg,#34a853,#4caf50)}
+    .tier-recursive{background:linear-gradient(135deg,#f9ab00,#ff9800)}
+    .tier-knowledge{background:linear-gradient(135deg,#ea4335,#e91e63)}
+    .phase-map{overflow-x:auto}
+    .phase-map table th{white-space:nowrap}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> 12-Cluster Architecture</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#4285f4)">
+  <h1>🏗️ 12-Cluster Architecture</h1>
+  <p>The core functional agent model of ABACUS — 12 clusters across 4 tiers driving recursive cryogenic analysis.</p>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>Architecture Overview</h2>
+    <p>The 12-Cluster model is a <strong>functional agent architecture</strong>, not a rigid numbering system. Each cluster represents a capability domain that one or more agents can fulfil. Clusters are organized into four tiers:</p>
+  </section>
+
+  <section class="section">
+    <h2>🔷 Analysis Tier (C1–C4)</h2>
+    <div class="cluster-grid">
+      <div class="cluster tier-analysis"><h4>C1 – Data Ingestion</h4><p>Raw data intake, validation, format normalization from Excel/CSV/JSON sources.</p></div>
+      <div class="cluster tier-analysis"><h4>C2 – Statistical Analysis</h4><p>Descriptive/inferential stats, outlier detection, distribution fitting.</p></div>
+      <div class="cluster tier-analysis"><h4>C3 – Domain Modeling</h4><p>Cryogenic-specific heat load, cooldown, and flow network models.</p></div>
+      <div class="cluster tier-analysis"><h4>C4 – Optimization</h4><p>Parameter tuning, what-if scenarios, multi-objective optimization.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🟢 Documentation Tier (C5–C6)</h2>
+    <div class="cluster-grid">
+      <div class="cluster tier-docs"><h4>C5 – Report Generation</h4><p>Automated reports, dashboards, and handover documentation.</p></div>
+      <div class="cluster tier-docs"><h4>C6 – Knowledge Codification</h4><p>SSOT catalog, canonical indexes, artifact versioning.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🟠 Recursive / Orchestration Tier (C7–C8)</h2>
+    <div class="cluster-grid">
+      <div class="cluster tier-recursive"><h4>C7 – DMAIC Phases</h4><p>9-phase DMAIC pipeline orchestration with convergence detection.</p></div>
+      <div class="cluster tier-recursive"><h4>C8 – Orchestrator</h4><p>Multi-agent coordination, task scheduling, resource management.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🔴 Knowledge &amp; Monitoring Tier (C9–C12)</h2>
+    <div class="cluster-grid">
+      <div class="cluster tier-knowledge"><h4>C9 – KEB</h4><p>Knowledge Execution Bridge: task execution engine, scheduling, resource monitoring.</p></div>
+      <div class="cluster tier-knowledge"><h4>C10 – GBOGEB</h4><p>Goal-Based Orchestration: observability, metrics, compliance, audit trails.</p></div>
+      <div class="cluster tier-knowledge"><h4>C11 – DOW Governance</h4><p>Design-of-Work governance layer: 1,327 references, compliance checks.</p></div>
+      <div class="cluster tier-knowledge"><h4>C12 – Recursive Learning</h4><p>Self-improvement loop, quality scoring, change detection, temporal tracking.</p></div>
+    </div>
+  </section>
+
+  <section class="section phase-map">
+    <h2>DMAIC Phase → Cluster Mapping</h2>
+    <table>
+      <thead><tr><th>DMAIC Phase</th><th>Primary Cluster</th><th>Secondary</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Init (Phase 0)</td><td>C1, C8</td><td>C6</td><td>Setup, configuration, environment validation</td></tr>
+        <tr><td>Define (Phase 1)</td><td>C1</td><td>C5</td><td>Scope definition, requirements, RTM</td></tr>
+        <tr><td>Measure (Phase 2)</td><td>C2</td><td>C1</td><td>Data collection, baseline measurement</td></tr>
+        <tr><td>Analyze (Phase 3)</td><td>C3</td><td>C2, C4</td><td>Root cause analysis, modeling</td></tr>
+        <tr><td>Improve (Phase 4)</td><td>C4</td><td>C3</td><td>Solution implementation, optimization</td></tr>
+        <tr><td>Control (Phase 5)</td><td>C11</td><td>C10</td><td>Monitoring, governance, compliance</td></tr>
+        <tr><td>Knowledge (Phase 6)</td><td>C9</td><td>C6</td><td>Knowledge capture, codification</td></tr>
+        <tr><td>Action (Phase 7)</td><td>C8</td><td>C7</td><td>Deployment, execution, delivery</td></tr>
+        <tr><td>Recursive (Phase 8)</td><td>C12</td><td>C7</td><td>Convergence check, self-improvement loop</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Implementation Status</h2>
+    <table>
+      <thead><tr><th>Cluster</th><th>Status</th><th>Key Blocker</th></tr></thead>
+      <tbody>
+        <tr><td>C1–C4 Analysis</td><td><span class="badge badge-ok">Active</span></td><td>—</td></tr>
+        <tr><td>C5–C6 Documentation</td><td><span class="badge badge-ok">Active</span></td><td>—</td></tr>
+        <tr><td>C7 DMAIC Phases</td><td><span class="badge badge-ok">Active</span></td><td>—</td></tr>
+        <tr><td>C8 Orchestrator</td><td><span class="badge badge-warn">Partial</span></td><td>4 variants need consolidation</td></tr>
+        <tr><td>C9 KEB</td><td><span class="badge badge-warn">Fixed</span></td><td>Timeout handling improved</td></tr>
+        <tr><td>C10 GBOGEB</td><td><span class="badge badge-warn">Fixed</span></td><td>Timeout handling improved</td></tr>
+        <tr><td>C11 DOW</td><td><span class="badge badge-ok">Active</span></td><td>—</td></tr>
+        <tr><td>C12 Recursive</td><td><span class="badge badge-ok">Active</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="../../12_cluster_vision.md">12-Cluster Vision Document</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 2: Architecture</a></li>
+      <li><a href="../dow/">DOW Governance Framework</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS 12-Cluster Architecture &copy; 2026 | <a href="../">← Back to Home</a></footer>
+</body>
+</html>
