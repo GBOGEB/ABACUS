@@ -14,6 +14,9 @@
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
     }
   },
   
@@ -54,13 +57,13 @@
     }
   },
   
-  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && gh auth status || echo 'Please run: gh auth login'",
+  "postCreateCommand": "pip install --upgrade pip && pip install -r DMAIC_V3/requirements.txt && gh auth status || echo 'Please run: gh auth login'",
   
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
   
   "remoteUser": "vscode",
   
-  "forwardPorts": [8000, 8080, 5000],
+  "forwardPorts": [8000, 8080, 5000, 5678],
   
   "portsAttributes": {
     "8000": {
@@ -70,6 +73,10 @@
     "8080": {
       "label": "Preview",
       "onAutoForward": "openBrowser"
+    },
+    "5678": {
+      "label": "Debugpy",
+      "onAutoForward": "silent"
     }
   },
   

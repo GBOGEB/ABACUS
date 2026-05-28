@@ -1,43 +1,356 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ABACUS Project Docs - Entry</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ABACUS – Recursive Multi-Agent Cryogenic Analysis System</title>
+  <meta name="description" content="ABACUS: A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis. 12-Cluster Architecture with DOW governance."/>
+  <meta name="keywords" content="ABACUS, DMAIC, cryogenic engineering, multi-agent, 12-cluster, DOW governance"/>
+  <link rel="stylesheet" href="assets/style.css"/>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; max-width: 960px; }
-    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-    code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+    .stats-bar{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
+    .stat{background:rgba(255,255,255,.15);padding:.6rem 1.2rem;border-radius:var(--radius);text-align:center;min-width:130px}
+    .stat .num{font-size:1.6rem;font-weight:700;display:block}
+    .stat .lbl{font-size:.78rem;opacity:.85}
+    .search-box{margin:1.5rem auto;max-width:500px;position:relative}
+    .search-box input{width:100%;padding:.7rem 1rem .7rem 2.5rem;border:1px solid var(--border);border-radius:var(--radius);font-size:1rem;background:var(--surface)}
+    .search-box::before{content:'🔍';position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:1rem}
+    .quick-links{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin:1rem 0}
+    .quick-links a{background:var(--primary);color:#fff;padding:.4rem .9rem;border-radius:4px;font-size:.85rem}
+    .quick-links a:hover{background:var(--primary-dark);text-decoration:none}
+    .updates{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-top:1.5rem}
+    .updates h3{margin:0 0 .5rem}
+    .updates li{font-size:.9rem;margin-bottom:.35rem;color:var(--text-secondary)}
+    .progress-widget{background:linear-gradient(135deg,#1e3a8a,#0f766e);color:#fff;padding:1.5rem;border-radius:var(--radius);margin:1.5rem 0;text-align:center}
+    .progress-bar{background:rgba(255,255,255,.2);height:24px;border-radius:12px;overflow:hidden;margin:1rem 0;position:relative}
+    .progress-fill{background:linear-gradient(90deg,#10b981,#34d399);height:100%;border-radius:12px;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;color:#fff;font-weight:700;font-size:.85rem;transition:width 1s ease-out}
+    .progress-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:1rem;margin-top:1rem}
+    .progress-stat{background:rgba(255,255,255,.15);padding:.6rem;border-radius:8px}
+    .progress-stat .v{font-size:1.4rem;font-weight:700;display:block}
+    .progress-stat .l{font-size:.72rem;opacity:.9}
+    .callout{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;padding:1.5rem;border-radius:var(--radius);margin:1.5rem 0}
+    .callout h2{color:#fff;margin-top:0}
+    .callout .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+    .callout .step{background:rgba(255,255,255,.15);padding:1rem;border-radius:8px;font-size:.9rem}
+    .callout .step .num{display:inline-block;width:28px;height:28px;background:#fff;color:#ef4444;border-radius:50%;text-align:center;line-height:28px;font-weight:700;margin-right:.5rem}
+    .callout code{background:rgba(0,0,0,.3);padding:.15rem .4rem;border-radius:3px;font-size:.85em}
+    .callout .btn-light{background:#fff;color:#ef4444;padding:.5rem 1rem;border-radius:6px;font-weight:600;display:inline-block;margin-top:.5rem}
+    .callout .btn-light:hover{background:#fef3c7;text-decoration:none}
+    .method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+    .method-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;border-left:4px solid var(--primary)}
+    .method-card.phase-d{border-left-color:#3b82f6}
+    .method-card.phase-m{border-left-color:#10b981}
+    .method-card.phase-a{border-left-color:#f59e0b}
+    .method-card.phase-i{border-left-color:#8b5cf6}
+    .method-card.phase-c{border-left-color:#ef4444}
+    .phase-tag{display:inline-block;background:var(--primary);color:#fff;font-size:.7rem;padding:.15rem .5rem;border-radius:3px;text-transform:uppercase;letter-spacing:.5px}
   </style>
 </head>
 <body>
-  <h1>ABACUS Project Docs</h1>
-  <p><strong>Version:</strong> 1.0</p>
-  <p>This is the HTML entrypoint for ABACUS docs navigation.</p>
-  <div class="card">
-    <h2>Documentation</h2>
+
+<nav class="topnav">
+  <a class="brand" href="./">⚛️ ABACUS</a>
+  <a href="cryo/">Cryo Dashboard</a>
+  <a href="12-cluster/">12-Cluster</a>
+  <a href="dow/">DOW Governance</a>
+  <a href="testing/">Testing</a>
+  <a href="tools/">Engineering Tools</a>
+  <a href="versions/">Version Lineage</a>
+  <a href="handover_book.html">Handover Book</a>
+  <a href="deep_analysis_dashboard.html">Deep Analysis</a>
+  <a href="dmaic-metrics.html">📊 DMAIC Metrics</a>
+  <a href="metrics.html">📈 Metrics Dashboard</a>
+  <a href="repository_structure.html">🌳 Repo Structure</a>
+  <a href="#methodology">🧰 Methodology</a>
+  <a href="file_review_tracker.html">📋 File Review</a>
+</nav>
+
+<section class="hero">
+  <h1>ABACUS</h1>
+  <p>Recursive Self-Improving Multi-Agent System for Cryogenic Engineering Analysis</p>
+  <div class="stats-bar">
+    <div class="stat"><span class="num">558</span><span class="lbl">Commits Analyzed</span></div>
+    <div class="stat"><span class="num">12</span><span class="lbl">Agent Clusters</span></div>
+    <div class="stat"><span class="num">92.5</span><span class="lbl">Quality Score</span></div>
+    <div class="stat"><span class="num">1,327</span><span class="lbl">DOW References</span></div>
+    <div class="stat"><span class="num">41</span><span class="lbl">Doc Artifacts</span></div>
+  </div>
+  <div class="search-box">
+    <input type="text" id="globalSearch" placeholder="Search documentation…" onkeyup="filterCards(this.value)"/>
+  </div>
+  <div class="quick-links">
+    <a href="cryo/">🧊 Cryo Dashboard</a>
+    <a href="handover_book.html">📖 Handover Book</a>
+    <a href="deep_analysis_dashboard.html">📊 Deep Analysis</a>
+    <a href="dashboard.html">🎯 Project Dashboard</a>
+    <a href="repository_structure.html">🌳 Repository Structure</a>
+    <a href="#methodology">🧰 DMAIC Methodology</a>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- ============================================================ -->
+  <!-- TOTAL PROGRESS DASHBOARD WIDGET                                -->
+  <!-- ============================================================ -->
+  <div class="progress-widget">
+    <h2 style="color:#fff;margin:0 0 .5rem">🎯 Total Project Progress</h2>
+    <p style="margin:0;opacity:.9">From audit baseline (v2.1) to consolidated production release (v4.4.0)</p>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:95%">95% Complete</div>
+    </div>
+    <div class="progress-stats">
+      <div class="progress-stat"><span class="v">95%</span><span class="l">Completion</span></div>
+      <div class="progress-stat"><span class="v">92.5</span><span class="l">Quality Score</span></div>
+      <div class="progress-stat"><span class="v">558</span><span class="l">Commits</span></div>
+      <div class="progress-stat"><span class="v">39</span><span class="l">Workflows</span></div>
+      <div class="progress-stat"><span class="v">12+</span><span class="l">PRs Merged</span></div>
+      <div class="progress-stat"><span class="v">v4.4.0</span><span class="l">Current Release</span></div>
+    </div>
+    <p style="margin:1rem 0 0;font-size:.9rem">
+      <a href="https://github.com/GBOGEB/ABACUS/blob/main/TOTAL_PROGRESS_SUMMARY.md" style="color:#fff;text-decoration:underline">📊 Read full Total Progress Summary →</a>
+    </p>
+  </div>
+
+  <section class="section">
+    <h2>📂 Topic Dashboards</h2>
+    <div class="card-grid" id="cardContainer">
+
+      <div class="card" data-tags="cryo cryogenic dashboard helium analysis">
+        <h3>🧊 Cryogenic Analysis</h3>
+        <p>Interactive cryo dashboard with helium system analysis, heat load calculations, and cooldown simulations.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="cryo/">Open Dashboard →</a>
+      </div>
+
+      <div class="card" data-tags="12-cluster architecture agents orchestration">
+        <h3>🏗️ 12-Cluster Architecture</h3>
+        <p>Visual navigator for the 12 functional agent clusters spanning Analysis, Documentation, Recursive, and Knowledge tiers.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="12-cluster/">Explore Clusters →</a>
+      </div>
+
+      <div class="card" data-tags="dow governance framework compliance workflows">
+        <h3>🔒 DOW Governance</h3>
+        <p>Design-of-Work governance framework: compliance workflows, tool interconnections, and best practices.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="dow/">View Governance →</a>
+      </div>
+
+      <div class="card" data-tags="testing integration tests coverage CI">
+        <h3>🧪 Integration Testing</h3>
+        <p>Deep integration test results, coverage reports, and continuous testing status for the ABACUS pipeline.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="testing/">Test Results →</a>
+      </div>
+
+      <div class="card" data-tags="tools engineering catalog utilities scripts">
+        <h3>🛠️ Engineering Tools</h3>
+        <p>Full catalog of engineering tools with quick-launch buttons, dependency maps, and usage examples.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="tools/">Browse Tools →</a>
+      </div>
+
+      <div class="card" data-tags="versions lineage timeline migration upgrade">
+        <h3>📐 Version Lineage</h3>
+        <p>Interactive version timeline from v0.31 through v3.3 with migration guides and feature comparisons.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="versions/">View Lineage →</a>
+      </div>
+
+      <div class="card" data-tags="handover book documentation chapters">
+        <h3>📖 Handover Book</h3>
+        <p>Complete 12-chapter handover documentation covering architecture, execution, quality, and deployment.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="handover_book.html">Read Book →</a>
+      </div>
+
+      <div class="card" data-tags="deep analysis dashboard metrics">
+        <h3>📊 Deep Analysis Dashboard</h3>
+        <p>Comprehensive analysis dashboard with metrics, workflow status, SSOT artifacts, and recovery reports.</p>
+        <span class="badge badge-ok">Live</span>
+        <br/><br/>
+        <a class="btn" href="deep_analysis_dashboard.html">Open Dashboard →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- METHODOLOGY & TEMPLATES SECTION                                -->
+  <!-- ============================================================ -->
+  <section class="section" id="methodology">
+    <h2>🧰 DMAIC Methodology &amp; Reusable Toolkit</h2>
+    <p style="color:var(--text-secondary);margin-bottom:1.5rem">
+      The complete repo cleanup playbook applied to ABACUS, packaged as reusable templates and automation scripts for any repository.
+      Apply the same <strong>Define → Measure → Analyze → Improve → Control</strong> framework to your sister repos.
+    </p>
+
+    <div class="method-grid">
+
+      <div class="method-card phase-d">
+        <span class="phase-tag" style="background:#3b82f6">D · Define</span>
+        <h3 style="margin:.5rem 0">📘 DMAIC Methodology</h3>
+        <p>Complete 6-phase playbook (Phase 0 + DMAIC) with entry criteria, exit criteria, deliverables, and quality gates for repo cleanup.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_REPO_CLEANUP_METHODOLOGY.md">Read Methodology →</a>
+      </div>
+
+      <div class="method-card phase-m">
+        <span class="phase-tag" style="background:#10b981">M · Measure</span>
+        <h3 style="margin:.5rem 0">⏱️ Quick Start Guide</h3>
+        <p>Day-by-day execution plan: 3-week sprint roadmap with concrete commands, exact files to create, and daily checklists.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/blob/main/REPO_CLEANUP_QUICK_START.md">Open Quick Start →</a>
+      </div>
+
+      <div class="method-card phase-a">
+        <span class="phase-tag" style="background:#f59e0b">A · Analyze</span>
+        <h3 style="margin:.5rem 0">🐍 Analysis Toolkit</h3>
+        <p>5 Python scripts that automate audit, classification, lineage generation, dashboard creation, and validation scoring.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/tree/main/repo_analysis_toolkit">Browse Toolkit →</a>
+      </div>
+
+      <div class="method-card phase-i">
+        <span class="phase-tag" style="background:#8b5cf6">I · Improve</span>
+        <h3 style="margin:.5rem 0">📋 Phase Templates</h3>
+        <p>11 ready-to-use markdown templates covering charters, baselines, classifications, decisions, and runbooks for every DMAIC phase.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/tree/main/repo_analysis_toolkit/templates">View Templates →</a>
+      </div>
+
+      <div class="method-card phase-c">
+        <span class="phase-tag" style="background:#ef4444">C · Control</span>
+        <h3 style="margin:.5rem 0">📊 Health Scorecard</h3>
+        <p>100-point rubric (Documentation 25 + Organization 25 + Automation 25 + Governance 25) with target thresholds and validation rules.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/blob/main/REPO_HEALTH_SCORECARD.md">View Scorecard →</a>
+      </div>
+
+      <div class="method-card">
+        <span class="phase-tag" style="background:#0f766e">Example</span>
+        <h3 style="margin:.5rem 0">🎬 Example Walkthrough</h3>
+        <p>End-to-end dry-run on the fictional <em>Legacy-Dashboard-Project</em>: 38 → 91 score in 3 weeks, with concrete actions, commands, and outputs.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/blob/main/EXAMPLE_DRY_RUN.md">Read Walkthrough →</a>
+      </div>
+
+      <div class="method-card">
+        <span class="phase-tag" style="background:#06b6d4">Visualization</span>
+        <h3 style="margin:.5rem 0">🌳 Repository Structure</h3>
+        <p>Interactive color-coded ASCII tree showing entry points, data flow, governance docs, and the 12-cluster architecture map.</p>
+        <a class="btn" href="repository_structure.html">Open Structure →</a>
+      </div>
+
+      <div class="method-card">
+        <span class="phase-tag" style="background:#64748b">Summary</span>
+        <h3 style="margin:.5rem 0">🏆 Total Progress</h3>
+        <p>Full project summary: phase-by-phase work breakdown, weighted scoring, before/after metrics, and final 92.5/100 quality assessment.</p>
+        <a class="btn" href="https://github.com/GBOGEB/ABACUS/blob/main/TOTAL_PROGRESS_SUMMARY.md">Read Summary →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- APPLY TO YOUR REPO CALLOUT                                     -->
+  <!-- ============================================================ -->
+  <div class="callout">
+    <h2>📦 Apply This Methodology to Your Repo</h2>
+    <p>The toolkit and playbook are <strong>repo-agnostic</strong>. Use them to bring any of your sister repositories to ABACUS-level quality in 2–3 weeks.</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span><strong>Clone the toolkit</strong>
+        <p style="margin:.4rem 0 0">
+          Copy <code>repo_analysis_toolkit/</code> into your repo (or clone ABACUS and copy out).
+        </p>
+      </div>
+      <div class="step">
+        <span class="num">2</span><strong>Install dependencies</strong>
+        <p style="margin:.4rem 0 0">
+          <code>pip install -r repo_analysis_toolkit/requirements.txt</code>
+        </p>
+      </div>
+      <div class="step">
+        <span class="num">3</span><strong>Run baseline audit</strong>
+        <p style="margin:.4rem 0 0">
+          <code>python repo_analysis_toolkit/analyze_repo.py --repo .</code> → produces <code>baseline.json</code>
+        </p>
+      </div>
+      <div class="step">
+        <span class="num">4</span><strong>Classify artifacts</strong>
+        <p style="margin:.4rem 0 0">
+          <code>python repo_analysis_toolkit/classify_artifacts.py --repo .</code> → labels Active / Archived / Stale / Redundant / Corrupted
+        </p>
+      </div>
+      <div class="step">
+        <span class="num">5</span><strong>Follow Quick Start</strong>
+        <p style="margin:.4rem 0 0">
+          Open <code>REPO_CLEANUP_QUICK_START.md</code> and execute the 3-week plan day-by-day.
+        </p>
+      </div>
+      <div class="step">
+        <span class="num">6</span><strong>Validate &amp; iterate</strong>
+        <p style="margin:.4rem 0 0">
+          <code>python repo_analysis_toolkit/validate_cleanup.py --repo .</code> → target <strong>≥75/100</strong> for exit
+        </p>
+      </div>
+    </div>
+
+    <p style="margin:1rem 0 0">
+      <a class="btn-light" href="https://github.com/GBOGEB/ABACUS/blob/main/REPO_CLEANUP_QUICK_START.md">🚀 Start the 3-Week Plan</a>
+      <a class="btn-light" href="https://github.com/GBOGEB/ABACUS/blob/main/DMAIC_REPO_CLEANUP_METHODOLOGY.md">📘 Read Full Methodology</a>
+      <a class="btn-light" href="https://github.com/GBOGEB/ABACUS/blob/main/EXAMPLE_DRY_RUN.md">🎬 See Example Run</a>
+    </p>
+  </div>
+
+  <section class="section">
+    <h2>⚡ System Status</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Status</th><th>Version</th><th>Details</th></tr></thead>
+      <tbody>
+        <tr><td>DMAIC V3 Engine</td><td><span class="badge badge-ok">Active</span></td><td>v3.3</td><td>9-phase pipeline with convergence detection</td></tr>
+        <tr><td>12-Cluster Orchestrator</td><td><span class="badge badge-ok">Active</span></td><td>v3.0</td><td>All 12 clusters mapped and documented</td></tr>
+        <tr><td>DOW Governance</td><td><span class="badge badge-ok">Active</span></td><td>v2.3</td><td>1,327 governance references</td></tr>
+        <tr><td>KEB Execution</td><td><span class="badge badge-warn">Timeout Fix</span></td><td>v2.3</td><td>Timeout handling improved</td></tr>
+        <tr><td>GBOGEB Observability</td><td><span class="badge badge-warn">Timeout Fix</span></td><td>v2.3</td><td>Graceful timeout handling added</td></tr>
+        <tr><td>Cryo Dashboard</td><td><span class="badge badge-ok">Active</span></td><td>v0.3.0</td><td>GitHub Pages ready</td></tr>
+        <tr><td>GitHub Pages</td><td><span class="badge badge-warn">Ready</span></td><td>—</td><td>Enable in repo Settings → Pages → /docs on main</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="updates">
+    <h3>📢 Recent Updates</h3>
     <ul>
-      <li><a href="index.md">Markdown hub</a></li>
-      <li><a href="content/about-subject.md">content/about-subject.md</a></li>
-<li><a href="content/how-to-task.md">content/how-to-task.md</a></li>
-<li><a href="content/reference.md">content/reference.md</a></li>
+      <li><strong>May 2026</strong> – 🧰 <strong>DMAIC Methodology &amp; Toolkit Released</strong>: Reusable playbook, 5 Python scripts, 11 templates, scorecard, and example walkthrough for applying to sister repos</li>
+      <li><strong>May 2026</strong> – 🌳 Repository Structure visualization with color-coded ASCII tree and entry-point map</li>
+      <li><strong>May 2026</strong> – 🎯 Total Progress Summary: 95% complete, 92.5/100 quality score, v2.1 → v4.4.0 lineage</li>
+      <li><strong>May 2026</strong> – Phase 4: GitHub Pages deployment, 7 topic landing pages, timeout fixes, CI/CD workflows</li>
+      <li><strong>May 2026</strong> – Phase 3: 12-chapter handover book, deep integration tests, docs_versioned/ structure</li>
+      <li><strong>May 2026</strong> – Phase 2: Deep analysis dashboard, SSOT catalog, tool ecosystem map, 41 documentation artifacts</li>
+      <li><strong>May 2026</strong> – Phase 1: Comprehensive audit, 558 commits analyzed, recovery report, workflow inventory</li>
     </ul>
   </div>
-  <div class="card">
-    <h2>Repository Navigation</h2>
-    <ul>
-      <li><a href="../DMAIC_V3/">DMAIC_V3/</a></li>
-      <li><a href="../.github/workflows/">.github/workflows/</a></li>
-      <li><a href="../handover/">handover/</a></li>
-      <li><a href="dashboard.html">System dashboard</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2>Smoke-tested Repositories</h2>
-    <ul><li><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener">GBOGEB/ABACUS</a></li>
-<li><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener">GBOGEB/CODEX</a></li>
-<li><a href="https://github.com/GBOGEB/morris.js" target="_blank" rel="noopener">GBOGEB/morris.js</a></li></ul>
-  </div>
-  <p><small>Generated: 2026-05-15T10:56:33.609668</small></p>
+
+</main>
+
+<footer class="footer">
+  ABACUS – Recursive Multi-Agent Cryogenic Analysis System &copy; 2026 |
+  <a href="https://github.com/GBOGEB/ABACUS">GitHub Repository</a>
+</footer>
+
+<script>
+function filterCards(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('.card').forEach(c=>{
+    const text=(c.textContent+' '+(c.dataset.tags||'')).toLowerCase();
+    c.style.display=text.includes(q)?'':'none';
+  });
+}
+</script>
 </body>
 </html>

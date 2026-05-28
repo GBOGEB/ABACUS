@@ -25,7 +25,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 
 
 @dataclass
@@ -51,12 +51,24 @@ class MaturityAssessment:
     next_level: Optional[int]
     next_milestone: str
     convergence_score: float
-    levels: List[Any]
+    levels: List["MaturityLevelStatus"]
     tasks_completed: List[str]
     tasks_pending: List[str]
     blockers: List[str]
     recommendations: List[str]
     timestamp: str
+    score_history: List[Any] = field(default_factory=list)  # [{timestamp, convergence_score}, ...]
+
+
+@dataclass
+class MaturityLevelStatus:
+    """Per-level maturity progress."""
+
+    level: int
+    name: str
+    completion_percentage: float
+    status: str
+    convergence_achieved: bool
 
 
 @dataclass
@@ -425,9 +437,30 @@ class MaturityTracker:
         return recs
 
     def _save_assessment(self, assessment: MaturityAssessment):
-        """Save assessment to file"""
+        """Save assessment to file, appending to score_history for trend tracking."""
+        # Load existing history if file exists
+        history = []
+        if self.maturity_file.exists():
+            try:
+                with open(self.maturity_file, "r") as f:
+                    existing = json.load(f)
+                history = existing.get("score_history") or []
+            except Exception:
+                history = []
+
+        # Append this run's snapshot to history (keep last 50 entries)
+        history.append({
+            "timestamp": assessment.timestamp,
+            "convergence_score": assessment.convergence_score,
+            "current_level": assessment.current_level,
+            "overall_completion": assessment.overall_completion,
+        })
+        history = history[-50:]
+
+        data = asdict(assessment)
+        data["score_history"] = history
         with open(self.maturity_file, "w") as f:
-            json.dump(asdict(assessment), f, indent=2)
+            json.dump(data, f, indent=2)
 
     def generate_report(self) -> MaturityAssessment:
         """Generate the current maturity assessment."""

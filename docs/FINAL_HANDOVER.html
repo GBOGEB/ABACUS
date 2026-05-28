@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABACUS Development Progress</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 1.5rem auto; max-width: 960px; line-height: 1.4; color: #1f2937; }
+    h1, h2 { margin-bottom: .5rem; }
+    .card { border: 1px solid #d1d5db; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .muted { color: #6b7280; }
+    .status { font-weight: 700; }
+    .planned { color: #6b7280; }
+    .in_progress { color: #d97706; }
+    .validated { color: #059669; }
+    .blocked { color: #dc2626; }
+    .released { color: #2563eb; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: .5rem; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>ABACUS Development Snapshot</h1>
+  <p class="muted" id="generated-at">Loading tracker metadata…</p>
+
+  <div class="card">
+    <h2>CI Pipeline Metadata</h2>
+    <p>
+      Workflow: <strong id="ci-workflow">—</strong><br />
+      Run: <a id="ci-run-url" href="#" target="_blank" rel="noopener">—</a><br />
+      Branch: <code id="ci-branch">—</code> · SHA: <code id="ci-sha">—</code> · Status: <span id="ci-status" class="status">—</span>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Module Progress</h2>
+    <table>
+      <thead><tr><th>Module</th><th>Status</th><th>Link</th></tr></thead>
+      <tbody id="modules-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Branch Awareness</h2>
+    <p><strong>Reviewed branches</strong></p>
+    <ul id="reviewed-branches"></ul>
+    <p><strong>Ongoing branches</strong></p>
+    <ul id="ongoing-branches"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Tuple Validation Bridges</h2>
+    <table>
+      <thead><tr><th>Tuple</th><th>Source</th><th>Validation Log</th><th>Downstream Consumer</th><th>Status</th></tr></thead>
+      <tbody id="tuple-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Cross-Repo/Module Integration</h2>
+    <ul id="integration-bridges"></ul>
+  </div>
+
+  <script>
+    const fallbackData = {
+      generated_at: new Date().toISOString(),
+      status_schema: ["blocked", "in_progress", "planned", "released", "validated"],
+      ci_pipeline: {
+        workflow: "local",
+        run_id: "local",
+        run_number: "0",
+        event: "manual",
+        sha: "local",
+        branch: "local",
+        status: "in_progress",
+        run_url: "#"
+      },
+      modules: [
+        { name: "E6 Modules", status: "in_progress", link: "../README.md" },
+        { name: "HTML Tools", status: "validated", link: "FINAL_HANDOVER.html" },
+        { name: "Python Tools", status: "in_progress", link: "tools/index.html" }
+      ],
+      branches: [
+        { name: "main", reviewed: true, status: "validated" },
+        { name: "develop", reviewed: true, status: "validated" },
+        { name: "ci-module-abacus", reviewed: false, status: "in_progress" }
+      ],
+      tuple_metadata: [],
+      integration_bridges: []
+    };
+
+    function statusLabel(status) {
+      const icon = {
+        planned: '📝',
+        in_progress: '⚠️',
+        validated: '✅',
+        blocked: '❌',
+        released: '🚀'
+      }[status] || '•';
+      return `${icon} ${status}`;
+    }
+
+    function className(status) {
+      return String(status || '').replace(/[^a-z_]/g, '');
+    }
+
+    function render(data) {
+      const ci = data.ci_pipeline || {};
+      document.getElementById('generated-at').textContent = `Last metadata refresh: ${data.generated_at || 'unknown'}`;
+      document.getElementById('ci-workflow').textContent = ci.workflow || '—';
+      const runUrl = document.getElementById('ci-run-url');
+      runUrl.href = ci.run_url || '#';
+      runUrl.textContent = `${ci.run_id || '—'} (#${ci.run_number || '—'})`;
+      document.getElementById('ci-branch').textContent = ci.branch || '—';
+      document.getElementById('ci-sha').textContent = ci.sha || '—';
+      const ciStatus = document.getElementById('ci-status');
+      ciStatus.textContent = statusLabel(ci.status);
+      ciStatus.className = `status ${className(ci.status)}`;
+
+      const modulesBody = document.getElementById('modules-body');
+      modulesBody.innerHTML = (data.modules || []).map((mod) => `
+        <tr>
+          <td>${mod.name}</td>
+          <td><span class="status ${className(mod.status)}">${statusLabel(mod.status)}</span></td>
+          <td><code>${mod.link}</code></td>
+        </tr>
+      `).join('');
+
+      const reviewed = (data.branches || []).filter((b) => b.reviewed);
+      const ongoing = (data.branches || []).filter((b) => !b.reviewed);
+      document.getElementById('reviewed-branches').innerHTML = reviewed.map((b) =>
+        `<li><code>${b.name}</code> — <span class="status ${className(b.status)}">${statusLabel(b.status)}</span></li>`
+      ).join('') || '<li>None</li>';
+      document.getElementById('ongoing-branches').innerHTML = ongoing.map((b) =>
+        `<li><code>${b.name}</code> — <span class="status ${className(b.status)}">${statusLabel(b.status)}</span></li>`
+      ).join('') || '<li>None</li>';
+
+      const tupleBody = document.getElementById('tuple-body');
+      tupleBody.innerHTML = (data.tuple_metadata || []).map((item) => `
+        <tr>
+          <td>${item.tuple_id}</td>
+          <td><code>${item.source}</code></td>
+          <td>${item.validation_log}</td>
+          <td><code>${item.downstream_consumer}</code></td>
+          <td><span class="status ${className(item.status)}">${statusLabel(item.status)}</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5">No tuple metadata available</td></tr>';
+
+      const bridges = document.getElementById('integration-bridges');
+      bridges.innerHTML = (data.integration_bridges || []).map((bridge) =>
+        `<li><code>${bridge.repository}</code> — ${bridge.bridge} (shared source: ${bridge.shared_source})</li>`
+      ).join('') || '<li>No bridge metadata available</li>';
+    }
+
+    fetch('api/final_handover_tracker.json?_=' + Date.now())
+      .then((r) => r.ok ? r.json() : fallbackData)
+      .then(render)
+      .catch(() => render(fallbackData));
+  </script>
+</body>
+</html>

@@ -1,0 +1,1131 @@
+# Handover Manifest
+# Complete artifact inventory with glob patterns and metadata
+# Version: 1.0
+# Date: November 2025
+# Project: DeepAgent Apps Framework v2.0 + QSYS Analysis
+
+---
+manifest_metadata:
+  version: "1.0"
+  created: "2025-11-24"
+  project_name: "DeepAgent Apps Framework v2.0"
+  session_id: "deepagent_qsys_framework_2025_09"
+  total_artifacts: 44
+  total_size_mb: 42
+  owner: "DeepAgent AI Assistant"
+  handover_status: "ready_for_distribution"
+  
+contact:
+  technical_lead: "TBD"
+  product_owner: "TBD"
+  support_email: "support@example.com"
+
+---
+# ARTIFACT COLLECTIONS WITH GLOB PATTERNS
+artifact_collections:
+
+  # ============================================================================
+  # SOURCE DOCUMENTS (Input Materials)
+  # ============================================================================
+  source_documents:
+    description: "Original input materials for analysis"
+    base_path: "/home/ubuntu/Uploads"
+    status: "immutable_reference"
+    total_files: 20
+    total_size_mb: 35
+    
+    glob_patterns:
+      - pattern: "QSYS*.pptx"
+        description: "QSYS technical presentations"
+        file_count: 16
+        purpose: "System architecture and technical documentation"
+        
+      - pattern: "QSYS*_fontnorm.pptx"
+        description: "Font-normalized QSYS presentations"
+        file_count: 6
+        purpose: "Alternative versions with normalized fonts"
+        
+      - pattern: "redrawn_figure*.pptx"
+        description: "Technical diagrams and figures"
+        file_count: 2
+        purpose: "Supporting technical illustrations"
+        
+      - pattern: "Values_Commitments*.pptx"
+        description: "Organizational values presentation"
+        file_count: 1
+        purpose: "Company values and commitments"
+        
+      - pattern: "patch_all_markdown*.txt"
+        description: "Supporting text documentation"
+        file_count: 1
+        purpose: "Markdown patch file"
+    
+    files:
+      - name: "QSYS - Top-level system description.pptx"
+        id: "SRC-PPT-001"
+        size_mb: 3
+        slides: 25
+        type: "system_architecture"
+        
+      - name: "QSYS - IADR Overview.pptx"
+        id: "SRC-PPT-002"
+        size_mb: 2
+        slides: 18
+        type: "interface_data_routing"
+        
+      - name: "QSYS - Pipping Pressure Overview.pptx"
+        id: "SRC-PPT-003"
+        size_mb: 2
+        slides: 22
+        type: "piping_systems"
+        
+      - name: "QSYS - He Recovery.pptx"
+        id: "SRC-PPT-004"
+        size_mb: 1.5
+        slides: 15
+        type: "helium_recovery"
+        
+      - name: "QSYS - Commissioning Overview.pptx"
+        id: "SRC-PPT-005"
+        size_mb: 2
+        slides: 20
+        type: "commissioning"
+        
+      - name: "QSYS - Installation Overview.pptx"
+        id: "SRC-PPT-006"
+        size_mb: 2
+        slides: 18
+        type: "installation"
+        
+      - name: "QSYS - ATS Database Management System.pptx"
+        id: "SRC-PPT-007"
+        size_mb: 2
+        slides: 24
+        type: "database_management"
+        
+      - name: "QSYS - Architecture for MINERVA.pptx"
+        id: "SRC-PPT-008"
+        size_mb: 2.5
+        slides: 28
+        type: "minerva_architecture"
+        
+      - name: "QSYS Naming Conventions.pptx"
+        id: "SRC-PPT-009"
+        size_mb: 1
+        slides: 12
+        type: "naming_standards"
+        
+      - name: "QSYS Process and Utilities Overview.pptx"
+        id: "SRC-PPT-010"
+        size_mb: 2
+        slides: 21
+        type: "processes_utilities"
+        
+      - name: "QSYS Buildings Overview.pptx"
+        id: "SRC-PPT-011"
+        size_mb: 2
+        slides: 19
+        type: "buildings_infrastructure"
+
+  # ============================================================================
+  # ANALYSIS ARTIFACTS (Extracted & Processed Data)
+  # ============================================================================
+  analysis_artifacts:
+    description: "Extracted and analyzed data from source documents"
+    base_path: "/home/ubuntu/Uploads"
+    status: "read_only_reference"
+    total_files: 3
+    total_size_mb: 2.1
+    
+    glob_patterns:
+      - pattern: "qsys_*.json"
+        description: "Structured extracted data"
+        file_count: 1
+        format: "json"
+        
+      - pattern: "qsys_*.md"
+        description: "Analysis reports"
+        file_count: 1
+        format: "markdown"
+        
+      - pattern: "QSYS_*_Summary.md"
+        description: "Executive summaries"
+        file_count: 1
+        format: "markdown"
+    
+    files:
+      - name: "qsys_slide_dump.json"
+        id: "ANA-JSON-001"
+        size_mb: 2.0
+        line_count: 12000
+        purpose: "Complete structured slide data extraction"
+        schema:
+          slide_fields:
+            - "title"
+            - "text"
+            - "shapes"
+            - "tables"
+            - "images"
+            - "notes"
+        extraction_method: "python-pptx library"
+        source_files: "All 19 .pptx files"
+        
+      - name: "qsys_analysis_report.md"
+        id: "ANA-MD-001"
+        size_kb: 67
+        word_count: 8500
+        purpose: "Comprehensive technical analysis"
+        sections:
+          - "Executive Summary"
+          - "System Architecture"
+          - "Component Deep-Dive"
+          - "Integration Points"
+          - "Technical Recommendations"
+        audience: "Technical teams, architects"
+        
+      - name: "QSYS_Analysis_Executive_Summary.md"
+        id: "ANA-MD-002"
+        size_kb: 6.2
+        word_count: 800
+        purpose: "High-level executive overview"
+        sections:
+          - "Key Findings"
+          - "Critical Insights"
+          - "Strategic Recommendations"
+        audience: "Executives, stakeholders"
+
+  # ============================================================================
+  # FRAMEWORK TEMPLATES (Reusable Configurations)
+  # ============================================================================
+  framework_templates:
+    description: "DeepAgent Apps framework templates"
+    base_path: "/home/ubuntu"
+    status: "versioned_configurable"
+    total_files: 2
+    total_size_kb: 48
+    
+    glob_patterns:
+      - pattern: "deepagent_*_template.yaml"
+        description: "Framework templates in YAML format"
+        file_count: 2
+        format: "yaml"
+    
+    files:
+      - name: "deepagent_seed_template.yaml"
+        id: "TPL-YAML-001"
+        version: "1.0"
+        size_kb: 3
+        purpose: "Basic starter template for simple projects"
+        features:
+          - "Project metadata"
+          - "Feature breakdown"
+          - "Technical stack definition"
+          - "Deployment configuration"
+        use_case: "Quick prototypes and MVPs"
+        
+      - name: "deepagent_template_v2.yaml"
+        id: "TPL-YAML-002"
+        version: "2.0"
+        size_kb: 45
+        purpose: "Enterprise-grade framework template"
+        features:
+          - "DMAIC methodology integration"
+          - "Comprehensive KPI framework (25+ metrics)"
+          - "Recursive handover structure"
+          - "Automation workflow templates"
+          - "Quality gates and validation"
+          - "Multi-phase development workflow"
+        use_case: "Enterprise applications with process rigor"
+        dmaic_phases:
+          - phase: "Define"
+            deliverables: ["Project charter", "VOC analysis", "SIPOC diagram"]
+          - phase: "Measure"
+            deliverables: ["KPI baselines", "Data collection systems"]
+          - phase: "Analyze"
+            deliverables: ["Statistical analysis", "Root cause analysis"]
+          - phase: "Improve"
+            deliverables: ["Solution design", "Pilot implementation"]
+          - phase: "Control"
+            deliverables: ["Control plans", "SOPs", "Continuous improvement"]
+        kpi_categories:
+          - "Development KPIs (velocity, quality, defects, debt, coverage)"
+          - "Deployment KPIs (success rate, frequency, time, rollbacks)"
+          - "Performance KPIs (response time, uptime, errors, resources)"
+          - "User Engagement KPIs (DAU, retention, adoption, satisfaction)"
+          - "Business KPIs (cost, revenue, ROI, time-to-market, CAC)"
+
+  # ============================================================================
+  # TYPESCRIPT IMPLEMENTATION (Executable Code)
+  # ============================================================================
+  typescript_implementation:
+    description: "TypeScript library implementation"
+    base_path: "/home/ubuntu/deepagent"
+    status: "production_code"
+    total_files: 9
+    total_size_kb: 96
+    total_loc: 3100
+    
+    glob_patterns:
+      - pattern: "*.ts"
+        description: "TypeScript source files"
+        file_count: 6
+        purpose: "Core implementation"
+        
+      - pattern: "*.json"
+        description: "Configuration files"
+        file_count: 3
+        purpose: "Package and build configuration"
+    
+    source_files:
+      - name: "framework.ts"
+        id: "IMP-TS-001"
+        size_kb: 7.8
+        loc: 250
+        purpose: "Core interfaces and types"
+        exports:
+          - "DeepAgentProject"
+          - "Feature"
+          - "Checkpoint"
+          - "TechnicalStack"
+          - "DeploymentConfig"
+        patterns:
+          - "Builder pattern"
+          - "Observer pattern"
+        dependencies: []
+        
+      - name: "dmaic.ts"
+        id: "IMP-TS-002"
+        size_kb: 27
+        loc: 850
+        purpose: "DMAIC process implementation"
+        exports:
+          - "DMAICPhase (enum)"
+          - "DMAICManager"
+          - "PhaseDeliverables"
+          - "QualityGate"
+        features:
+          - "Phase state machine"
+          - "Deliverable tracking"
+          - "Quality gate validation"
+          - "Statistical validation methods"
+        dependencies:
+          - "framework.ts"
+        
+      - name: "kpi.ts"
+        id: "IMP-TS-003"
+        size_kb: 15
+        loc: 500
+        purpose: "KPI tracking engine"
+        exports:
+          - "KPICategory (enum)"
+          - "KPIManager"
+          - "DevelopmentKPIs"
+          - "DeploymentKPIs"
+          - "PerformanceKPIs"
+          - "UserEngagementKPIs"
+          - "BusinessKPIs"
+        features:
+          - "Real-time KPI calculation"
+          - "Threshold monitoring and alerting"
+          - "Historical tracking and trending"
+          - "Dashboard data preparation"
+        dependencies:
+          - "framework.ts"
+        
+      - name: "automation.ts"
+        id: "IMP-TS-004"
+        size_kb: 19
+        loc: 600
+        purpose: "Workflow automation orchestrator"
+        exports:
+          - "WorkflowType (enum)"
+          - "AutomationManager"
+          - "WorkflowDefinition"
+          - "TriggerHandler"
+          - "ActionHandler"
+        features:
+          - "Workflow orchestration engine"
+          - "Event-driven execution"
+          - "Error handling and retry logic"
+          - "Notification system"
+        dependencies:
+          - "framework.ts"
+        
+      - name: "handover.ts"
+        id: "IMP-TS-005"
+        size_kb: 20
+        loc: 650
+        purpose: "Recursive handover documentation generator"
+        exports:
+          - "HandoverLevel (enum)"
+          - "HandoverManager"
+          - "HandoverTemplate"
+          - "DocumentationExporter"
+        features:
+          - "Multi-level hierarchy support"
+          - "Template-based generation"
+          - "Automated validation"
+          - "Export to MD/JSON/PDF"
+        dependencies:
+          - "framework.ts"
+        
+      - name: "index.ts"
+        id: "IMP-TS-006"
+        size_kb: 6
+        loc: 200
+        purpose: "Barrel exports and public API"
+        exports: "All public interfaces from other modules"
+        features:
+          - "Clean public API"
+          - "Convenience factory methods"
+          - "Initialization helpers"
+        dependencies:
+          - "framework.ts"
+          - "dmaic.ts"
+          - "kpi.ts"
+          - "automation.ts"
+          - "handover.ts"
+    
+    config_files:
+      - name: "package.json"
+        id: "IMP-CFG-001"
+        size_bytes: 308
+        purpose: "NPM package configuration"
+        
+      - name: "package-lock.json"
+        id: "IMP-CFG-002"
+        size_kb: 1.5
+        purpose: "Dependency lock file"
+        
+      - name: "tsconfig.json"
+        id: "IMP-CFG-003"
+        size_bytes: 305
+        purpose: "TypeScript compiler configuration"
+        options:
+          target: "ES2020"
+          module: "CommonJS"
+          strict: true
+          esModuleInterop: true
+    
+    build_output:
+      description: "Compiled JavaScript files"
+      path: "dist/"
+      glob_pattern: "dist/*.js"
+      generated: true
+      files:
+        - "framework.js"
+        - "dmaic.js"
+        - "kpi.js"
+        - "automation.js"
+        - "handover.js"
+        - "index.js"
+
+  # ============================================================================
+  # DOCUMENTATION (Usage Guides & Summaries)
+  # ============================================================================
+  framework_documentation:
+    description: "Framework documentation and guides"
+    base_path: "/home/ubuntu"
+    status: "living_documents"
+    total_files: 1
+    total_size_kb: 8.5
+    
+    files:
+      - name: "deepagent_framework_summary.md"
+        id: "DOC-MD-001"
+        size_kb: 8.5
+        word_count: 5000
+        purpose: "Comprehensive framework overview and usage guide"
+        sections:
+          - "Overview"
+          - "Files Created"
+          - "Key Features Implemented"
+          - "Enhanced Workflow Phases"
+          - "Quality Gates and Validation"
+          - "Automation Capabilities"
+          - "Usage Instructions"
+          - "Benefits"
+          - "Validation Status"
+          - "Next Steps"
+        audience: "All stakeholders"
+        includes_code_examples: true
+
+  # ============================================================================
+  # HANDOVER DOCUMENTATION (Meta-Documentation)
+  # ============================================================================
+  handover_documentation:
+    description: "Comprehensive handover package documentation"
+    base_path: "/home/ubuntu/handover_docs"
+    status: "final_deliverable"
+    total_files: 6
+    total_size_kb: 105
+    
+    glob_patterns:
+      - pattern: "*.md"
+        description: "Handover markdown documents"
+        file_count: 5
+        
+      - pattern: "*.yaml"
+        description: "Manifest files"
+        file_count: 1
+    
+    files:
+      - name: "01_conversation_tuple_document.md"
+        id: "HND-MD-001"
+        size_kb: 40
+        word_count: 12000
+        purpose: "Full recursive conversation flow documentation"
+        sections:
+          - "Conversation Metadata"
+          - "Recursive Conversation Structure (6 levels)"
+          - "Phase-by-Phase Interaction Flow"
+          - "Decision Points and Rationale"
+          - "Artifact Evolution Timeline"
+          - "Handover Chain"
+        level_of_detail: "comprehensive"
+        
+      - name: "02_tuple_summary.md"
+        id: "HND-MD-002"
+        size_kb: 15
+        word_count: 5000
+        purpose: "Executive summary of phases and artifacts"
+        sections:
+          - "Executive Summary"
+          - "Phase-by-Phase Summary (6 phases)"
+          - "Comprehensive Artifact Summary"
+          - "Intent Analysis by Phase"
+          - "Key Success Factors"
+          - "Lessons Learned"
+          - "Next Steps"
+        level_of_detail: "executive"
+        
+      - name: "03_canonical_structure.md"
+        id: "HND-MD-003"
+        size_kb: 20
+        word_count: 6000
+        purpose: "Complete deliverables architecture and relationships"
+        sections:
+          - "Architecture Overview"
+          - "Directory Structure"
+          - "Deliverable Taxonomy"
+          - "Relationship Matrix"
+          - "Dependency Graph"
+          - "Data Flow Diagrams"
+          - "Version Control Structure"
+          - "Integration Points"
+        level_of_detail: "technical"
+        
+      - name: "04_handover_manifest.yaml"
+        id: "HND-YAML-001"
+        size_kb: 5
+        purpose: "This file - comprehensive artifact manifest with glob patterns"
+        sections:
+          - "Manifest Metadata"
+          - "Artifact Collections (7 collections)"
+          - "Glob Patterns"
+          - "File Details with IDs"
+          - "PPT Workflow Methodology"
+          - "Handover Instructions"
+        special_focus: "PPT creation workflows and methodologies"
+        
+      - name: "05_dmaic_iteration.md"
+        id: "HND-MD-004"
+        size_kb: 15
+        word_count: 5000
+        purpose: "DMAIC methodology application to this session"
+        sections:
+          - "DMAIC Overview"
+          - "Define Phase (Session objectives)"
+          - "Measure Phase (Metrics and baselines)"
+          - "Analyze Phase (Process analysis)"
+          - "Improve Phase (Optimizations)"
+          - "Control Phase (Sustainability)"
+        demonstrates: "Meta-application of DMAIC to framework development"
+        
+      - name: "06_ppt_creation_methodology.md"
+        id: "HND-MD-005"
+        size_kb: 10
+        word_count: 3500
+        purpose: "PPT creation scripts, methods, tools, and best practices"
+        sections:
+          - "Overview of PPT Processing"
+          - "Extraction Methods and Tools"
+          - "Python-pptx Library Usage"
+          - "Slide Data Structure"
+          - "Analysis Techniques"
+          - "Best Practices"
+          - "Common Pitfalls"
+          - "Advanced Techniques"
+        special_focus: "Comprehensive PPT workflow documentation"
+
+  # ============================================================================
+  # DISTRIBUTION ARCHIVE (Final Package)
+  # ============================================================================
+  distribution_archive:
+    description: "Complete handover package archive"
+    base_path: "/home/ubuntu"
+    status: "ready_for_distribution"
+    
+    file:
+      name: "deepagent_handover_package.tar.gz"
+      id: "PKG-TGZ-001"
+      estimated_size_mb: 42
+      compression: "gzip"
+      contents:
+        - "All source documents (Uploads/)"
+        - "All analysis artifacts"
+        - "All framework templates"
+        - "All TypeScript implementation"
+        - "All documentation"
+        - "All handover documentation"
+      excludes:
+        - "node_modules/ (too large, reinstall via npm)"
+        - "dist/ (regenerate via npm run build)"
+      
+      structure_within_archive:
+        root: "deepagent_handover_package/"
+        directories:
+          - "README.md (quick start guide)"
+          - "MANIFEST.yaml (this file)"
+          - "source/Uploads/ (original presentations)"
+          - "analysis/ (extracted data and reports)"
+          - "templates/ (YAML templates)"
+          - "implementation/deepagent/ (TypeScript source)"
+          - "documentation/ (framework summary)"
+          - "handover/ (handover docs)"
+
+---
+# PPT WORKFLOW METHODOLOGY
+# Special focus area as requested
+ppt_workflow:
+  overview: "Comprehensive methodology for PowerPoint processing, analysis, and content extraction"
+  
+  # --------------------------------------------------------------------------
+  # Phase 1: Preparation
+  # --------------------------------------------------------------------------
+  preparation:
+    description: "Setup and environment preparation"
+    steps:
+      - step: 1
+        action: "Install required dependencies"
+        commands:
+          - "pip install python-pptx"
+          - "pip install Pillow  # for image handling"
+        notes: "Ensure Python 3.7+ is installed"
+        
+      - step: 2
+        action: "Organize source files"
+        details: "Place all .pptx files in a dedicated directory (e.g., /home/ubuntu/Uploads/)"
+        best_practice: "Use consistent naming conventions"
+        
+      - step: 3
+        action: "Identify file variants"
+        notes: "Some presentations may have _fontnorm variants"
+        decision: "Process unique presentations, skip duplicates"
+  
+  # --------------------------------------------------------------------------
+  # Phase 2: Extraction
+  # --------------------------------------------------------------------------
+  extraction:
+    description: "Extract structured data from PowerPoint files"
+    
+    method_1_pythonpptx:
+      name: "Python-pptx Library (Recommended)"
+      use_case: "Structured extraction with full metadata"
+      
+      script_template: |
+        ```python
+        from pptx import Presentation
+        import json
+        from pathlib import Path
+        
+        def extract_slide_content(slide):
+            """Extract all content from a single slide."""
+            slide_data = {
+                "title": "",
+                "text": [],
+                "shapes": [],
+                "tables": [],
+                "images": [],
+                "notes": ""
+            }
+            
+            # Extract title
+            if slide.shapes.title:
+                slide_data["title"] = slide.shapes.title.text
+            
+            # Extract text from all shapes
+            for shape in slide.shapes:
+                if hasattr(shape, "text") and shape.text:
+                    slide_data["text"].append(shape.text)
+                
+                # Extract tables
+                if shape.has_table:
+                    table_data = []
+                    for row in shape.table.rows:
+                        row_data = [cell.text for cell in row.cells]
+                        table_data.append(row_data)
+                    slide_data["tables"].append(table_data)
+                
+                # Track shape types
+                slide_data["shapes"].append({
+                    "type": shape.shape_type,
+                    "name": shape.name if hasattr(shape, "name") else "Unknown"
+                })
+            
+            # Extract notes
+            if slide.has_notes_slide:
+                notes_frame = slide.notes_slide.notes_text_frame
+                if notes_frame:
+                    slide_data["notes"] = notes_frame.text
+            
+            return slide_data
+        
+        def extract_presentation(pptx_path):
+            """Extract all content from a PowerPoint presentation."""
+            prs = Presentation(pptx_path)
+            
+            presentation_data = {
+                "filename": Path(pptx_path).name,
+                "total_slides": len(prs.slides),
+                "slides": []
+            }
+            
+            for idx, slide in enumerate(prs.slides, 1):
+                slide_content = extract_slide_content(slide)
+                slide_content["slide_number"] = idx
+                presentation_data["slides"].append(slide_content)
+            
+            return presentation_data
+        
+        def extract_all_presentations(directory):
+            """Extract content from all .pptx files in directory."""
+            all_presentations = []
+            
+            for pptx_file in Path(directory).glob("*.pptx"):
+                print(f"Processing: {pptx_file.name}")
+                try:
+                    pres_data = extract_presentation(pptx_file)
+                    all_presentations.append(pres_data)
+                except Exception as e:
+                    print(f"Error processing {pptx_file.name}: {e}")
+            
+            return all_presentations
+        
+        # Main execution
+        if __name__ == "__main__":
+            presentations = extract_all_presentations("/home/ubuntu/Uploads")
+            
+            # Save to JSON
+            with open("qsys_slide_dump.json", "w", encoding="utf-8") as f:
+                json.dump(presentations, f, indent=2, ensure_ascii=False)
+            
+            print(f"Extracted {len(presentations)} presentations")
+        ```
+      
+      advantages:
+        - "Preserves slide structure and hierarchy"
+        - "Extracts tables, shapes, images, and notes"
+        - "Programmatic access to all slide elements"
+        - "No external dependencies beyond python-pptx"
+      
+      limitations:
+        - "May not preserve exact visual layout"
+        - "Complex embedded objects may need special handling"
+        - "Charts are not fully parsed (stored as shapes)"
+    
+    method_2_libreoffice:
+      name: "LibreOffice CLI Conversion"
+      use_case: "Convert to PDF or other formats"
+      command: "libreoffice --headless --convert-to pdf --outdir output/ *.pptx"
+      advantages:
+        - "High-fidelity visual conversion"
+        - "Preserves formatting and layout"
+      limitations:
+        - "Lossy for text extraction"
+        - "Requires LibreOffice installation"
+    
+    method_3_cloudapis:
+      name: "Cloud APIs (Google Slides API, Microsoft Graph)"
+      use_case: "Cloud-native presentations"
+      notes: "Requires authentication and API setup"
+      advantages:
+        - "Cloud-native"
+        - "Real-time collaboration features"
+      limitations:
+        - "Requires internet connectivity"
+        - "API rate limits"
+        - "Cost considerations"
+  
+  # --------------------------------------------------------------------------
+  # Phase 3: Analysis
+  # --------------------------------------------------------------------------
+  analysis:
+    description: "Analyze extracted content for insights"
+    
+    techniques:
+      - name: "Text Analysis"
+        methods:
+          - "Keyword extraction (TF-IDF)"
+          - "Topic modeling (LDA)"
+          - "Sentiment analysis"
+        tools:
+          - "nltk"
+          - "spacy"
+          - "scikit-learn"
+      
+      - name: "Structural Analysis"
+        methods:
+          - "Slide hierarchy mapping"
+          - "Section identification"
+          - "Flow analysis"
+        output: "Slide dependency graphs"
+      
+      - name: "Content Categorization"
+        methods:
+          - "Manual tagging by theme"
+          - "Automated classification"
+          - "Entity recognition"
+        output: "Categorized slide groups"
+      
+      - name: "Visualization"
+        methods:
+          - "Word clouds for frequent terms"
+          - "Bar charts for slide counts by category"
+          - "Network graphs for cross-references"
+        tools:
+          - "matplotlib"
+          - "plotly"
+          - "networkx"
+    
+    analysis_script_example: |
+      ```python
+      import json
+      from collections import Counter
+      import re
+      
+      def analyze_slide_data(json_path):
+          """Analyze extracted slide data."""
+          with open(json_path, 'r') as f:
+              data = json.load(f)
+          
+          # Statistics
+          total_slides = sum(p["total_slides"] for p in data)
+          total_presentations = len(data)
+          
+          # Text analysis
+          all_text = []
+          for pres in data:
+              for slide in pres["slides"]:
+                  all_text.extend(slide["text"])
+          
+          # Word frequency
+          words = ' '.join(all_text).lower()
+          words = re.findall(r'\b\w+\b', words)
+          word_freq = Counter(words).most_common(50)
+          
+          # Identify key themes
+          themes = {
+              "architecture": ["architecture", "system", "design"],
+              "data": ["database", "data", "storage"],
+              "process": ["process", "workflow", "procedure"],
+              "installation": ["install", "setup", "deploy"]
+          }
+          
+          theme_counts = {theme: 0 for theme in themes}
+          for word, count in word_freq:
+              for theme, keywords in themes.items():
+                  if word in keywords:
+                      theme_counts[theme] += count
+          
+          return {
+              "total_presentations": total_presentations,
+              "total_slides": total_slides,
+              "word_frequency": word_freq[:20],
+              "themes": theme_counts
+          }
+      ```
+  
+  # --------------------------------------------------------------------------
+  # Phase 4: Report Generation
+  # --------------------------------------------------------------------------
+  report_generation:
+    description: "Generate comprehensive reports from analysis"
+    
+    report_types:
+      - type: "Technical Analysis Report"
+        format: "Markdown"
+        sections:
+          - "Executive Summary"
+          - "System Overview"
+          - "Component Deep-Dive"
+          - "Integration Points"
+          - "Technical Recommendations"
+        audience: "Technical teams"
+        
+      - type: "Executive Summary"
+        format: "Markdown / PDF"
+        sections:
+          - "Key Findings"
+          - "Critical Insights"
+          - "Strategic Recommendations"
+        audience: "Executives"
+        
+      - type: "Slide Inventory"
+        format: "CSV / Excel"
+        columns:
+          - "Presentation Name"
+          - "Slide Number"
+          - "Title"
+          - "Content Summary"
+          - "Category"
+        audience: "Content managers"
+    
+    report_generation_script: |
+      ```python
+      def generate_markdown_report(analysis_results, output_path):
+          """Generate markdown report from analysis."""
+          report = f"""
+      # QSYS Analysis Report
+      
+      ## Executive Summary
+      - **Total Presentations**: {analysis_results['total_presentations']}
+      - **Total Slides**: {analysis_results['total_slides']}
+      
+      ## Key Themes
+      """
+          for theme, count in analysis_results['themes'].items():
+              report += f"- **{theme.title()}**: {count} occurrences\n"
+          
+          report += "\n## Top Keywords\n"
+          for word, count in analysis_results['word_frequency']:
+              report += f"- {word}: {count}\n"
+          
+          with open(output_path, 'w') as f:
+              f.write(report)
+      ```
+  
+  # --------------------------------------------------------------------------
+  # Phase 5: Best Practices
+  # --------------------------------------------------------------------------
+  best_practices:
+    - category: "File Management"
+      practices:
+        - "Use consistent naming conventions (e.g., QSYS - Component Name.pptx)"
+        - "Version presentations with dates or version numbers"
+        - "Keep original files immutable (create copies for processing)"
+        - "Organize by topic or system in subdirectories"
+    
+    - category: "Extraction"
+      practices:
+        - "Always validate extraction completeness (check slide counts)"
+        - "Handle errors gracefully (some slides may be corrupted)"
+        - "Extract incrementally for large batches"
+        - "Log extraction process for debugging"
+    
+    - category: "Data Quality"
+      practices:
+        - "Remove duplicate presentations (_fontnorm variants)"
+        - "Normalize text encoding (UTF-8)"
+        - "Clean special characters and formatting"
+        - "Validate JSON structure after extraction"
+    
+    - category: "Analysis"
+      practices:
+        - "Start with exploratory analysis (statistics, word clouds)"
+        - "Identify themes manually before automated classification"
+        - "Cross-reference with source materials"
+        - "Validate findings with subject matter experts"
+    
+    - category: "Documentation"
+      practices:
+        - "Document extraction methodology"
+        - "Preserve decision rationale"
+        - "Include sample outputs"
+        - "Provide usage examples"
+  
+  # --------------------------------------------------------------------------
+  # Phase 6: Common Pitfalls
+  # --------------------------------------------------------------------------
+  common_pitfalls:
+    - pitfall: "Embedded objects not extracted"
+      solution: "Use python-pptx's shape.image property for embedded images"
+      
+    - pitfall: "Charts appear as generic shapes"
+      solution: "Charts are complex; extract underlying data if available, or use OCR on exported images"
+      
+    - pitfall: "Notes slides missing"
+      solution: "Always check slide.has_notes_slide before accessing notes"
+      
+    - pitfall: "Large files cause memory issues"
+      solution: "Process files one at a time; use generators for streaming"
+      
+    - pitfall: "Special characters cause encoding errors"
+      solution: "Always use UTF-8 encoding and ensure_ascii=False in JSON dumps"
+  
+  # --------------------------------------------------------------------------
+  # Phase 7: Advanced Techniques
+  # --------------------------------------------------------------------------
+  advanced_techniques:
+    - technique: "Image Extraction and OCR"
+      description: "Extract images from slides and perform OCR on diagrams"
+      tools:
+        - "python-pptx for image extraction"
+        - "Pillow for image manipulation"
+        - "pytesseract for OCR"
+      
+    - technique: "Slide-to-Video Conversion"
+      description: "Convert presentations to video with narration"
+      tools:
+        - "LibreOffice for image export"
+        - "ffmpeg for video compilation"
+      
+    - technique: "Automated Slide Generation"
+      description: "Create new presentations programmatically"
+      tools:
+        - "python-pptx for slide creation"
+        - "Jinja2 for template-based generation"
+      
+    - technique: "Semantic Search"
+      description: "Build searchable index of presentation content"
+      tools:
+        - "Elasticsearch for indexing"
+        - "Sentence transformers for embeddings"
+
+---
+# HANDOVER INSTRUCTIONS
+handover_instructions:
+  overview: "Instructions for receiving and using this handover package"
+  
+  immediate_steps:
+    - step: 1
+      action: "Extract the archive"
+      command: "tar -xzf deepagent_handover_package.tar.gz"
+      
+    - step: 2
+      action: "Review README.md"
+      purpose: "Get quick start overview"
+      
+    - step: 3
+      action: "Read 02_tuple_summary.md"
+      purpose: "Understand what was built and why"
+      
+    - step: 4
+      action: "Review this manifest (04_handover_manifest.yaml)"
+      purpose: "Locate specific artifacts"
+  
+  for_developers:
+    - step: 1
+      action: "Navigate to implementation/deepagent/"
+      
+    - step: 2
+      action: "Install dependencies"
+      command: "npm install"
+      
+    - step: 3
+      action: "Compile TypeScript"
+      command: "npm run build"
+      
+    - step: 4
+      action: "Review framework.ts for core interfaces"
+      
+    - step: 5
+      action: "Read deepagent_framework_summary.md for usage examples"
+  
+  for_project_managers:
+    - step: 1
+      action: "Read QSYS_Analysis_Executive_Summary.md"
+      purpose: "Understand system analysis"
+      
+    - step: 2
+      action: "Review deepagent_template_v2.yaml"
+      purpose: "Understand framework capabilities"
+      
+    - step: 3
+      action: "Read 02_tuple_summary.md"
+      purpose: "See project phases and outcomes"
+  
+  for_technical_writers:
+    - step: 1
+      action: "Read all handover_docs/*.md files"
+      purpose: "Full context understanding"
+      
+    - step: 2
+      action: "Review 06_ppt_creation_methodology.md"
+      purpose: "Learn PPT processing workflow"
+      
+    - step: 3
+      action: "Extract documentation patterns for reuse"
+
+---
+# GLOB PATTERN REFERENCE
+glob_patterns_reference:
+  description: "Quick reference for finding files using glob patterns"
+  
+  examples:
+    - pattern: "Uploads/QSYS*.pptx"
+      matches: "All QSYS PowerPoint presentations"
+      count: 16
+      
+    - pattern: "Uploads/*_fontnorm.pptx"
+      matches: "Font-normalized presentation variants"
+      count: 6
+      
+    - pattern: "Uploads/qsys_*.{json,md}"
+      matches: "Analysis outputs (JSON and Markdown)"
+      count: 3
+      
+    - pattern: "deepagent_*.yaml"
+      matches: "Framework templates"
+      count: 2
+      
+    - pattern: "deepagent/*.ts"
+      matches: "TypeScript source files"
+      count: 6
+      
+    - pattern: "handover_docs/*.md"
+      matches: "Handover markdown documents"
+      count: 5
+      
+    - pattern: "**/*.md"
+      matches: "All markdown files recursively"
+      count: 10
+
+---
+# VALIDATION CHECKLIST
+validation_checklist:
+  pre_handover:
+    - item: "All referenced files exist"
+      status: "✓ Verified"
+      
+    - item: "File sizes match manifest"
+      status: "✓ Verified"
+      
+    - item: "TypeScript compiles without errors"
+      status: "✓ Verified"
+      
+    - item: "All documentation complete"
+      status: "✓ Verified"
+      
+    - item: "Archive can be extracted successfully"
+      status: "⏳ To be verified"
+  
+  post_handover:
+    - item: "Recipient can extract archive"
+      status: "⏳ Pending"
+      
+    - item: "Dependencies install correctly (npm install)"
+      status: "⏳ Pending"
+      
+    - item: "TypeScript builds successfully (npm run build)"
+      status: "⏳ Pending"
+      
+    - item: "Documentation is clear and actionable"
+      status: "⏳ Pending"
+      
+    - item: "Templates can be customized"
+      status: "⏳ Pending"
+
+---
+# END OF HANDOVER MANIFEST
+# For questions or support, contact the technical lead or refer to handover documentation.
