@@ -11,3 +11,9 @@ smoke_tested_repos:
   - GBOGEB/CODEX
   - GBOGEB/morris.js
 grouped_forks: true
+federation:
+  moniker: DELTA_1
+  manifest: ../federation/manifest.yaml
+  topology_doc: FEDERATION_TOPOLOGY.md
+  matrix_doc: CODEX_ABACUS_FEDERATION_MATRIX.md
+  session_lifecycle: session-lifecycle/README.md
