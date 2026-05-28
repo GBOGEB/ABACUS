@@ -46,7 +46,7 @@ jobs:
           if make -n test &>/dev/null 2>&1; then
             make test
           else
-            pip install pytest
+            pip install -r DMAIC_V3/requirements.txt
             python -m pytest DMAIC_V3/tests -q
           fi
 
