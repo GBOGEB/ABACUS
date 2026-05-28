@@ -97,6 +97,8 @@ def build_payload() -> dict:
                 "validation_log": "CI job: Validate tuple metadata tracker payload",
                 "downstream_consumer": "docs/FINAL_HANDOVER.html",
                 "status": ci_status,
+                "consumed_from": ["tuple-reconstruction-manifest"],
+                "feeds_into": ["tuple-artifact-export"],
             },
             {
                 "tuple_id": "tuple-artifact-export",
@@ -104,6 +106,8 @@ def build_payload() -> dict:
                 "validation_log": "validated tuple metadata artifact",
                 "downstream_consumer": "DMAIC_V3_OUTPUT/tuple_metadata.validated.json",
                 "status": "validated" if ci_status == "validated" else "in_progress",
+                "consumed_from": ["tuple-ci-validation"],
+                "feeds_into": ["tuple-reconstruction-manifest"],
             },
             {
                 "tuple_id": "tuple-reconstruction-manifest",
@@ -111,6 +115,8 @@ def build_payload() -> dict:
                 "validation_log": f"phase2 components: {phase2.get('component_count', 0)}",
                 "downstream_consumer": "DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json",
                 "status": "validated" if phase2.get("component_count", 0) else "in_progress",
+                "consumed_from": ["tuple-artifact-export"],
+                "feeds_into": ["tuple-ci-validation", "tuple-reconstruction-manifest"],
             },
         ],
         "integration_bridges": [
