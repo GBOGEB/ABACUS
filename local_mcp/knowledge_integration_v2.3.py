@@ -63,6 +63,22 @@ def _run_with_timeout(func, timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
         )
 
 
+def _run_with_timeout_retries(func, timeout_seconds: int, description: str, retries: int = MAX_RETRY_ATTEMPTS):
+    """Execute function with timeout and bounded retry policy for timeout failures."""
+    last_timeout = None
+    total_attempts = max(1, retries + 1)
+    for attempt in range(1, total_attempts + 1):
+        try:
+            return _run_with_timeout(func, timeout_seconds=timeout_seconds, description=description)
+        except OperationTimeoutError as exc:
+            last_timeout = exc
+            if attempt == total_attempts:
+                raise
+    if last_timeout is not None:
+        raise last_timeout
+    return None
+
+
 @dataclass
 class KnowledgeEntry:
     """Knowledge base entry"""
@@ -209,7 +225,7 @@ class KnowledgeIntegrationV23:
         if self.gbogeb_enabled:
             desc = f"GBOGEB metric {agent_name}.{metric_name}"
             try:
-                _run_with_timeout(
+                _run_with_timeout_retries(
                     lambda: self.gbogeb.collect_metric(
                         agent=agent_name,
                         metric_name=metric_name,
@@ -246,7 +262,7 @@ class KnowledgeIntegrationV23:
         desc = f"KEB task {agent_name}.{task_id}"
         if self.keb_enabled and self.keb:
             try:
-                _run_with_timeout(
+                _run_with_timeout_retries(
                     lambda: self.keb.schedule_task(
                         task_id=f"{agent_name}_{task_id}",
                         func=task_func,
@@ -264,13 +280,15 @@ class KnowledgeIntegrationV23:
         else:
             print(f"[TASK] Scheduled: {agent_name}.{task_id} (priority: {priority})")
             try:
-                _run_with_timeout(
+                _run_with_timeout_retries(
                     lambda: task_func(*args, **(kwargs or {})),
                     timeout_seconds=timeout,
                     description=desc,
                 )
             except OperationTimeoutError as exc:
                 print(f"[TIMEOUT] {desc}: {exc}")
+                self.collect_agent_metric(agent_name, "task_timeout", 1,
+                                          {"task_id": task_id, "mode": "fallback"})
             except Exception as e:
                 print(f"[ERROR] Task {task_id} failed: {e}")
     
@@ -281,7 +299,7 @@ class KnowledgeIntegrationV23:
         desc = f"GBOGEB compliance '{rule_name}'"
         if self.gbogeb_enabled:
             try:
-                return _run_with_timeout(
+                return _run_with_timeout_retries(
                     lambda: self.gbogeb.check_compliance(rule_name, check_func, severity),
                     timeout_seconds=timeout,
                     description=desc,
@@ -291,7 +309,7 @@ class KnowledgeIntegrationV23:
                 return False
         else:
             try:
-                result = _run_with_timeout(
+                result = _run_with_timeout_retries(
                     check_func,
                     timeout_seconds=timeout,
                     description=desc,
