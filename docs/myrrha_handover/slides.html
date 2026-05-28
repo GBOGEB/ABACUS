@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>MYRRHA QPLANT — Slides (master-rendered)</title>
+<style>
+:root {
+  --primary:#0b3d91; --accent:#ff8a00; --bg:#f7f8fa; --fg:#1b1f24; --rule:#d8dde3;
+  --body:Aptos, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif; --mono:Consolas, 'JetBrains Mono', 'Courier New', monospace;
+}
+* { box-sizing:border-box; }
+body { margin:0; font-family:var(--body); color:var(--fg); background:var(--bg); }
+.deck { max-width:1100px; margin:0 auto; padding:24px; }
+.slide { background:#fff; border:1px solid var(--rule); border-radius:12px;
+  padding:32px 40px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+.slide h1 { color:var(--primary); margin-top:0; }
+.slide .sub { color:#5b6470; margin-top:-6px; margin-bottom:18px; }
+.slide .label { display:inline-block; font-family:var(--mono); font-size:12px;
+  background:var(--primary); color:#fff; padding:2px 8px; border-radius:6px; margin-right:8px; }
+.ascii, pre, code { font-family:var(--mono); }
+pre.ascii { background:#0e1116; color:#e6edf3; padding:16px; border-radius:8px;
+  overflow:auto; line-height:1.45; }
+.caption { font-size:13px; color:#5b6470; font-style:italic; margin-top:6px; }
+.notes { margin-top:18px; border-top:1px dashed var(--rule); padding-top:10px;
+  font-size:13px; color:#5b6470; }
+.notes b { color:var(--accent); }
+.layout-text-table, .layout-text-graph { display:grid; grid-template-columns:1.618fr 1fr; gap:24px; }
+.layout-4-quadrants { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:16px; }
+</style></head>
+<body><div class="deck">
+<header style="margin-bottom:16px"><a href="index.html">← Hub</a> ·
+<a href="slide-editor.html">Open Slide Editor</a> ·
+<small>Rendered from <code>master/slides.md</code></small></header>
+
+<section class="slide layout-text-only" id="cover" data-index="0">
+  <div><span class="label">1/5</span><span class="label">text-only</span></div>
+  <h1>MYRRHA QPLANT — Engineering Handover</h1>
+  <div class="sub">v0.4 — SCK CEN × Kaeser</div>
+  <div class="content"><h1>MYRRHA QPLANT</h1>
+<p><strong>Engineering Handover</strong> — <em>v0.4</em></p>
+<p>Baseline: <strong>350 g/s @ 14 barG</strong> (see B1)</p></div>
+  
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: confirm version stamp before final export.</div>
+</section>
+
+<section class="slide layout-text-only" id="exec-summary" data-index="1">
+  <div><span class="label">2/5</span><span class="label">text-only</span></div>
+  <h1>Executive Summary</h1>
+  <div class="sub">Key design points (B1–B5)</div>
+  <div class="content"><ul><li><strong>B1</strong> Baseline: 350 g/s @ 14 barG</li><li><strong>B2</strong> ALaT: 2 FSD · SFC 575 · 72 Hz → ~220 g/s</li><li><strong>B3</strong> LKT: 3 FSD · SFC 475 · ~57 Hz → 264 g/s nominal</li><li><strong>B4</strong> RCW: 85 °C max · 30 °C inlet · ΔT = 25 °C</li><li><strong>B5</strong> LCC/PVPS: 50 g/s · 2×5 units (N+1)</li></ul></div>
+  
+  <div class="notes"><b>Slide notes</b><br><b>REVIEW</b>: cross-check B2/B3 against latest test bench data.</div>
+</section>
+
+<section class="slide layout-text-only" id="hierarchy" data-index="2">
+  <div><span class="label">3/5</span><span class="label">text-only</span></div>
+  <h1>MYRRHA QPLANT System Hierarchy</h1>
+  <div class="sub">Canonical decomposition (Slide #3)</div>
+  <div class="content"><pre class="ascii"><code>QPLANT
+├── QRB (cold side &amp; coldbox)
+└── WCS (warm side &amp; warm compressor station)
+    ├── HCC (LP→HP total, black box with utilities)
+    │   ├── HP1 (Kaeser SKID 1)
+    │   ├── HP2 (Kaeser SKID 2)
+    │   ├── HP3 (Kaeser SKID 3)
+    │   └── HP4 (Kaeser SKID 4)
+    └── LCC (PVPS - 50 g/s target)
+        └── 2×5 units (10 total, N+1 config)</code></pre>
+<p>Cross-refs: see <strong>T1</strong> (tables.html) and <strong>G1</strong> (graphs.html).</p></div>
+  <div class="caption">F1 — System decomposition tree</div>
+  <div class="notes"><b>Slide notes</b><br><b>ACTION</b>: validate skid IDs (HP1..HP4) with Kaeser nameplates.<br><b>TODO</b>: add LCC unit numbering scheme on next iteration.</div>
+</section>
+
+<section class="slide layout-text-table" id="baseline" data-index="3">
+  <div><span class="label">4/5</span><span class="label">text-table</span></div>
+  <h1>Baseline Operating Point — B1</h1>
+  
+  <div class="content"><p>The reference point <strong>B1 = 350 g/s @ 14 barG</strong> anchors HCC + LCC delivery.</p></div>
+  
+  <div class="notes"><b>Slide notes</b><br>Anchor for all sizing calcs.</div>
+</section>
+
+<section class="slide layout-text-only" id="pvps-overview" data-index="4">
+  <div><span class="label">5/8</span><span class="label">text-only</span></div>
+  <h1>PVPS System Overview (WCS.LCC)</h1>
+  <div class="sub">Low-pressure 2×5 array · γ = 50 g/s · N+1</div>
+  <div class="content">
+    <pre class="ascii"><code>Row A:  [LP1] [LP2] [LP3] [LP4] [LP5]
+Row B:  [LP6] [LP7] [LP8] [LP9] [LP10]
+        ─────  γ = 10 × 5.0 g/s = 50 g/s  ─────
+        N+1: 9 units × 5.56 g/s = 50 g/s  (1 standby)</code></pre>
+    <ul>
+      <li>Suction ~0.1 barA (from QRB return) → discharge ~1.05 barA (HCC suction)</li>
+      <li>Gamma symbol <strong>γ = 50 g/s</strong> baseline LP contribution</li>
+      <li>VFD-driven, redundant at unit level</li>
+    </ul>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: vendor selection still open.</div>
+</section>
+
+<section class="slide layout-text-only" id="pvps-scenarios" data-index="5">
+  <div><span class="label">6/8</span><span class="label">text-only</span></div>
+  <h1>PVPS Operating Scenarios</h1>
+  <div class="sub">Total WCS flow split: β (HP) + γ (PVPS) — INCLUSIVE model</div>
+  <div class="content">
+    <ul>
+      <li><strong>Baseline (350 g/s total)</strong>: β = 300 g/s (85.7%) + γ = 50 g/s (14.3%)</li>
+      <li><strong>Config30 (330 g/s total)</strong>: β = 280 g/s (84.8%) + γ = 50 g/s (15.2%)</li>
+      <li><strong>Config24 (304 g/s total)</strong>: β = 254 g/s (83.6%) + γ = 50 g/s (16.4%)</li>
+      <li><em>Critical Note:</em> γ is PART OF total, not additive. PVPS operates on helium from the total inventory.</li>
+    </ul>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>v0.4.7 CORRECTION</b>: Changed from additive to inclusive model. PVPS flow is included within total, not added to it.</div>
+</section>
+
+<section class="slide layout-text-only" id="pvps-utilities" data-index="6">
+  <div><span class="label">7/8</span><span class="label">text-only</span></div>
+  <h1>PVPS Utilities Breakdown</h1>
+  <div class="sub">Isothermal baseline @ η_iso = 0.50 (placeholder)</div>
+  <div class="content">
+    <ul>
+      <li>Total motor power: <strong>~148 kW</strong> (10 × 14.8 kW)</li>
+      <li>HVAC load (10 %): <strong>~14.8 kW</strong></li>
+      <li>Cooling water (90 %): <strong>~133 kW</strong> · ~7.7 m³/h @ ΔT 15 K</li>
+      <li>vs HCC: ~1046 kW (ALaT 3-skid) — PVPS is ~14 % of HCC electrical load</li>
+    </ul>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: replace with vendor map.</div>
+</section>
+
+<section class="slide layout-text-only" id="rcw-hx" data-index="7">
+  <div><span class="label">8/11</span><span class="label">text-only</span></div>
+  <h1>RCW Heat Exchanger Design</h1>
+  <div class="sub">30 °C nominal inlet · ΔT 25 K · oil 85 °C → 30 °C precool</div>
+  <div class="content">
+    <ul>
+      <li><b>HCC CW split</b> (per skid, FSD 575): 323.9 kW total → <b>197.6 kW oil</b> + <b>126.3 kW sensible He</b> (84 K → 300 K)</li>
+      <li>RCW per skid: <b>6.83 m³/h</b> @ ΔT 25 K · plant 20.5 m³/h (3-skid) / 27.3 m³/h (4-skid)</li>
+      <li>HX strategy: <b>1 duty per skid + 1 shared plant standby</b> (manifold N+1)</li>
+      <li>Loss-of-1 without standby ≈ −32 % He turn-down or +5 K oil-loop offset</li>
+    </ul>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: Kaeser oil-cooler thermal curve confirmation. See <a href="hx-sizing.html">hx-sizing.html</a>.</div>
+</section>
+
+<section class="slide layout-text-only" id="combi" data-index="8">
+  <div><span class="label">9/11</span><span class="label">text-only</span></div>
+  <h1>COMBI Unit Concept</h1>
+  <div class="sub">Fixed-speed @ 64 Hz + VFD @ 50–72 Hz</div>
+  <div class="content">
+    <ul>
+      <li>Fixed @ 64 Hz: <b>100 g/s</b> · 280 kW · 16.2 m³/h</li>
+      <li>VFD @ 60 Hz (design): <b>94 g/s</b> · 263 kW · 15.2 m³/h</li>
+      <li>2-unit COMBI design: <b>194 g/s</b> · max <b>213 g/s</b> @ 72 Hz</li>
+      <li>4-unit COMBI: <b>388 g/s</b> design · 425 g/s max — covers 304–350 g/s band cleanly</li>
+    </ul>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: vendor confirmation of fixed-speed @ 64 Hz mechanical option (gearbox vs locked-VFD).</div>
+</section>
+
+<section class="slide layout-text-table" id="utilities-comparison" data-index="9">
+  <div><span class="label">10/11</span><span class="label">text-table</span></div>
+  <h1>Utilities Comparison · 304 / 344 / 350 g/s</h1>
+  <div class="sub">Isothermal 50 % baseline + linear VFD scaling</div>
+  <div class="content">
+    <table>
+      <thead><tr><th>β (g/s)</th><th>Config</th><th>f (Hz)</th><th>ΣP (kW)</th><th>Σ V_PCW (m³/h)</th><th>Σ V_RCW (m³/h)</th><th>HVAC (kW)</th></tr></thead>
+      <tbody>
+        <tr><td>304</td><td>3 VFD</td><td>64.83</td><td><b>851</b></td><td>49.2</td><td>20.5</td><td>~85</td></tr>
+        <tr><td>344</td><td>4 VFD</td><td>55.0</td><td><b>963</b></td><td>55.7</td><td>27.3</td><td>~96</td></tr>
+        <tr><td>344</td><td>3 VFD</td><td>73.4 ⚠</td><td>963</td><td>55.7</td><td>20.5</td><td>~96</td></tr>
+        <tr><td>350</td><td>3 VFD</td><td>74.7 ⚠</td><td>981</td><td>56.7</td><td>20.5</td><td>~98</td></tr>
+        <tr><td>350</td><td>4 COMBI</td><td>56 (VFD)</td><td>990</td><td>54.6</td><td>27.3</td><td>~95</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notes"><b>Slide notes</b><br>⚠ = above 72 Hz vendor envelope. 4-VFD preferred for 344 g/s.</div>
+</section>
+
+<section class="slide layout-text-only" id="roadmap" data-index="10">
+  <div><span class="label">11/11</span><span class="label">text-only</span></div>
+  <h1>Roadmap &amp; Next Steps</h1>
+  
+  <div class="content"><ol><li>Validate B2/B3 on test bench</li><li>Finalize LCC unit-level P&amp;IDs</li><li>Lock RCW heat-exchanger sizing</li></ol></div>
+  
+  <div class="notes"><b>Slide notes</b><br><b>TODO</b>: schedule v0.5 review with full team.</div>
+</section>
+
+<section class="slide layout-text-only" id="thermo-waterfall" data-index="13">
+  <span class="label">T1</span>
+  <h1>WCS Energy Cascade — Waterfall View</h1>
+  <p class="sub">Grid → motor → shaft → ideal isothermal → heat sinks (350 g/s total baseline)</p>
+  <div class="content">
+    <ul>
+      <li><b>Grid input</b>: 1,290 kW (Kaeser HP 990 + PVPS 150 + HVAC 130 + Controls 20)</li>
+      <li><b>Compressor motors</b>: 1,140 kW (HP 990 + PVPS 150)</li>
+      <li><b>Motor efficiency</b> (η≈96.7%): 37.6 kW losses → cooling air / motor water</li>
+      <li><b>Shaft delivered</b>: 1,102 kW to compression</li>
+      <li><b>W_iso (ideal isothermal)</b>: 551 kW (50% efficiency baseline)</li>
+      <li><b>Excess compression heat</b>: 551 kW → cooling water (RCW + PCW)</li>
+    </ul>
+    <p><em>Note:</em> 350 g/s total flow split: 300 g/s HP (85.7%) + 50 g/s PVPS (14.3%)</p>
+    <p>→ Interactive: <a href="thermo-analysis.html#s1">thermo-analysis §1</a></p>
+  </div>
+  <div class="notes"><b>Slide notes</b><br><b>v0.4.7 UPDATE</b>: Corrected power values and flow accounting to inclusive model.</div>
+</section>
+
+<section class="slide layout-text-only" id="thermo-sankey" data-index="14">
+  <span class="label">T2</span>
+  <h1>Energy Flow — Sankey Diagram</h1>
+  <p class="sub">Visual energy distribution from grid to heat sinks</p>
+  <div class="content">
+    <ul>
+      <li><b>Blue</b> = electrical · <b>Green</b> = mechanical · <b>Purple</b> = useful compression · <b>Red/Orange</b> = heat rejection</li>
+      <li>Two main motor groups (3× HCC, 10× PVPS) feed shaft work</li>
+      <li>Compression heat splits 60/40 to RCW (oil) / PCW (gas sensible)</li>
+      <li>HVAC dissipates 135 kW to ambient</li>
+    </ul>
+    <p>→ Interactive: <a href="thermo-analysis.html#s2">thermo-analysis §2</a></p>
+  </div>
+  <div class="notes"><b>Slide notes</b><br>Use to communicate flow paths to facility team.</div>
+</section>
+
+<section class="slide layout-text-only" id="thermo-ts" data-index="15">
+  <span class="label">T3</span>
+  <h1>Compression Efficiency — T–s Diagram</h1>
+  <p class="sub">Isothermal baseline vs actual operating points</p>
+  <div class="content">
+    <ul>
+      <li><b>HCC (1.05→14 barA, 308 K)</b>: isolines at η_iso = 45/50/55/60%</li>
+      <li><b>FSD 575 actual</b>: η_iso,eff = 61.2% from datasheet heat balance</li>
+      <li><b>FSD 475 actual</b>: similar 60% range</li>
+      <li><b>50% baseline</b> retained as conservative design margin</li>
+      <li>PVPS analogous (0.10→1.05 barA, 293 K)</li>
+    </ul>
+    <p>→ Interactive: <a href="thermo-analysis.html#s3">thermo-analysis §3</a></p>
+  </div>
+  <div class="notes"><b>Slide notes</b><br>Justifies 50% baseline against vendor heat balances.</div>
+</section>
+
+<section class="slide layout-text-only" id="thermo-exergy" data-index="16">
+  <span class="label">T4</span>
+  <h1>Exergy Analysis — Second-Law Efficiency</h1>
+  <p class="sub">Where the work goes (η_II = 44.0%)</p>
+  <div class="content">
+    <ul>
+      <li><b>Exergy in (electrical)</b>: 1 482 kW (pure exergy)</li>
+      <li><b>Useful exergy out (compressed He)</b>: 651.6 kW = 44.0%</li>
+      <li><b>Destruction</b>: motors 44.5 kW · compression irreversibility 651.6 kW · HVAC 134.7 kW</li>
+      <li><b>Lever</b>: multi-stage intercooled compression → η_II 55–60%</li>
+      <li><b>Waste-heat recovery</b>: 100–300 kW available at 60–90 °C</li>
+    </ul>
+    <p>→ Interactive: <a href="thermo-analysis.html#s4">thermo-analysis §4</a> · Argument: <a href="reports.html#B7">B7</a></p>
+  </div>
+  <div class="notes"><b>Slide notes</b><br>Use B7 as the headline efficiency argument.</div>
+</section>
+
+</div>
+
+<!-- MT-10: Responsive Plotly charts on mobile -->
+<script>
+// Responsive Plotly charts on mobile
+if (window.innerWidth <= 768) {
+  window.addEventListener('load', function() {
+    // Find all Plotly divs
+    const charts = document.querySelectorAll('div[id^="chart-"], .js-plotly-plot, .plotly-chart');
+    charts.forEach(chart => {
+      if (chart._fullLayout) {
+        // Force responsive layout
+        const newWidth = window.innerWidth - 40; // 20px padding each side
+        Plotly.relayout(chart, {
+          width: newWidth,
+          height: newWidth, // Keep square aspect
+          autosize: true
+        });
+      }
+    });
+  });
+  
+  // Redraw on orientation change
+  window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+      const charts = document.querySelectorAll('div[id^="chart-"], .js-plotly-plot, .plotly-chart');
+      charts.forEach(chart => {
+        if (chart._fullLayout) {
+          const newWidth = window.innerWidth - 40;
+          Plotly.relayout(chart, {
+            width: newWidth,
+            height: newWidth
+          });
+        }
+      });
+    }, 200);
+  });
+  
+  // Also handle window resize
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (window.innerWidth <= 768) {
+        const charts = document.querySelectorAll('div[id^="chart-"], .js-plotly-plot, .plotly-chart');
+        charts.forEach(chart => {
+          if (chart._fullLayout) {
+            const newWidth = window.innerWidth - 40;
+            Plotly.relayout(chart, {
+              width: newWidth,
+              height: newWidth
+            });
+          }
+        });
+      }
+    }, 250);
+  });
+}
+</script>
+
+</body></html>
