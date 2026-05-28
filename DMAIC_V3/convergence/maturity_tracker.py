@@ -71,6 +71,17 @@ class MaturityLevelStatus:
     convergence_achieved: bool
 
 
+@dataclass
+class MaturityLevelStatus:
+    """Per-level maturity progress."""
+
+    level: int
+    name: str
+    completion_percentage: float
+    status: str
+    convergence_achieved: bool
+
+
 class MaturityTracker:
     """
     Tracks system maturity progression through defined levels
