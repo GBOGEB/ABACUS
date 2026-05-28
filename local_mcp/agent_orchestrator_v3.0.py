@@ -7,10 +7,11 @@ Coordinates 6 V2.3 agents with 4M memory constraint
 import json
 import sys
 import time
+import importlib
+import importlib.util
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-import importlib
 import traceback
 
 
@@ -55,20 +56,35 @@ class AgentOrchestratorV3:
     def initialize_agents(self) -> Dict[str, Any]:
         """Initialize all V2.3 agents"""
         self._log_dmaic('INIT', 'Starting agent initialization')
-        
+
+        # Resolve agents directory relative to this file so the orchestrator
+        # works regardless of the current working directory.
+        agents_dir = Path(__file__).parent / 'agents'
+
+        # (agent_name, filename_stem, class_name)
         agent_configs = [
-            ('cryo_analyzer', 'local_mcp.agents.analysis_cryo_dm_v2.3_OPTIMIZED', 'MemoryEfficientCryoAnalyzerV23'),
-            ('document_consumer', 'local_mcp.agents.analysis_document_consumer_v2.3_OPTIMIZED', 'MemoryEfficientDocumentConsumerV23'),
-            ('artifact_analyzer', 'local_mcp.agents.analysis_artifact_analyzer_v2.3_OPTIMIZED', 'MemoryEfficientArtifactAnalyzerV23'),
-            ('smoke_test', 'local_mcp.agents.analysis_smoke_test_v2.3_OPTIMIZED', 'MemoryEfficientSmokeTestV23'),
+            ('cryo_analyzer', 'analysis_cryo_dm_v2.3_OPTIMIZED', 'MemoryEfficientCryoAnalyzerV23'),
+            ('document_consumer', 'analysis_document_consumer_v2.3_OPTIMIZED', 'MemoryEfficientDocumentConsumerV23'),
+            ('artifact_analyzer', 'analysis_artifact_analyzer_v2.3_OPTIMIZED', 'MemoryEfficientArtifactAnalyzerV23'),
+            ('smoke_test', 'analysis_smoke_test_v2.3_OPTIMIZED', 'MemoryEfficientSmokeTestV23'),
         ]
-        
-        for agent_name, module_path, class_name in agent_configs:
+
+        for agent_name, filename_stem, class_name in agent_configs:
             try:
                 self._log_dmaic('INIT', f'Loading agent: {agent_name}')
-                module = importlib.import_module(module_path)
+
+                agent_file = agents_dir / f'{filename_stem}.py'
+                if not agent_file.exists():
+                    raise FileNotFoundError(f'Agent file not found: {agent_file}')
+
+                spec = importlib.util.spec_from_file_location(
+                    f'local_mcp_agent_{agent_name}', str(agent_file)
+                )
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
                 agent_class = getattr(module, class_name)
-                
+
                 self.agents[agent_name] = {
                     'module': module,
                     'class': agent_class,
@@ -76,9 +92,9 @@ class AgentOrchestratorV3:
                     'status': 'loaded',
                     'version': 'v2.3.0'
                 }
-                
+
                 self.performance_metrics['agents_initialized'] += 1
-                
+
             except Exception as e:
                 self.performance_metrics['errors_handled'] += 1
                 self._log_dmaic('INIT', f'Failed to load {agent_name}: {str(e)}')
@@ -86,10 +102,10 @@ class AgentOrchestratorV3:
                     'status': 'failed',
                     'error': str(e)
                 }
-        
+
         self.initialized = True
         self._log_dmaic('INIT', f'Initialization complete: {self.performance_metrics["agents_initialized"]} agents loaded')
-        
+
         return {
             'status': 'initialized',
             'agents_loaded': self.performance_metrics['agents_initialized'],
