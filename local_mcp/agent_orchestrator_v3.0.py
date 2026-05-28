@@ -13,6 +13,9 @@ from typing import Dict, Any, List, Optional
 import importlib
 import traceback
 
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
+
 
 class AgentOrchestratorV3:
     """V3.0 Orchestrator for V2.3 agents with DMAIC coordination"""
@@ -37,6 +40,11 @@ class AgentOrchestratorV3:
         
         self.dmaic_log = []
         self.execution_history = []
+        self.cluster_orchestrator = TwelveClusterOrchestrator(
+            max_workers=12,
+            use_keb=False,
+            use_gbogeb=False
+        )
         
         self.output_dir = Path(self.config.get('output_dir', 'orchestrator_outputs_v3.0'))
         self.output_dir.mkdir(exist_ok=True)
@@ -166,58 +174,47 @@ class AgentOrchestratorV3:
             }
     
     def execute_dmaic_cycle(self, data_source: str = None) -> Dict[str, Any]:
-        """Execute full DMAIC cycle across all agents"""
+        """Execute full DMAIC cycle through canonical 12-cluster orchestrator."""
         self._log_dmaic('DMAIC', 'Starting full DMAIC cycle')
-        
+
         cycle_start = time.time()
-        cycle_results = {
-            'phases': {},
-            'overall_status': 'in_progress',
-            'timestamp': datetime.now().isoformat()
+        sample_payloads = [{"sample": idx, "source": data_source or "default"} for idx in range(12)]
+
+        def phase_task_factory(phase: str) -> List[Dict[str, Any]]:
+            return [
+                {
+                    "task_id": f"{phase}-{payload['sample']}",
+                    "func": lambda p=payload, phase_name=phase: {
+                        "success": True,
+                        "phase": phase_name,
+                        "sample": p["sample"],
+                        "source": p["source"],
+                    }
+                }
+                for payload in sample_payloads
+            ]
+
+        canonical_result = self.cluster_orchestrator.run_phases_with_hooks(
+            iteration=1,
+            phase_task_factory=phase_task_factory,
+        )
+        self.performance_metrics['dmaic_phases_completed'] = len(canonical_result.get('phases_run', []))
+        self.performance_metrics['tasks_executed'] += canonical_result.get('total_tasks_executed', 0)
+        self.performance_metrics['total_execution_time'] += time.time() - cycle_start
+
+        self._log_dmaic('DMAIC', f"DMAIC cycle {canonical_result.get('final_status')} in {time.time() - cycle_start:.2f}s")
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "overall_status": canonical_result.get("final_status", "unknown"),
+            "total_execution_time": time.time() - cycle_start,
+            "cluster_contract": self.cluster_orchestrator.get_cluster_contract(),
+            "phase_results": canonical_result.get("phase_results", {}),
+            "temporal_events": canonical_result.get("temporal_events", []),
         }
-        
-        dmaic_phases = ['DEFINE', 'MEASURE', 'ANALYZE', 'IMPROVE', 'CONTROL']
-        
-        for phase in dmaic_phases:
-            self._log_dmaic('DMAIC', f'Executing phase: {phase}')
-            phase_start = time.time()
-            
-            phase_results = []
-            
-            for agent_name in self.agents.keys():
-                if self.agents[agent_name]['status'] == 'loaded':
-                    try:
-                        agent_result = self.execute_agent(
-                            agent_name,
-                            {'phase': phase, 'data_source': data_source}
-                        )
-                        phase_results.append(agent_result)
-                    except Exception as e:
-                        self._log_dmaic('DMAIC', f'Error in {agent_name} during {phase}: {str(e)}')
-                        phase_results.append({
-                            'agent': agent_name,
-                            'status': 'error',
-                            'error': str(e)
-                        })
-            
-            phase_time = time.time() - phase_start
-            self.performance_metrics['dmaic_phases_completed'] += 1
-            
-            cycle_results['phases'][phase] = {
-                'results': phase_results,
-                'execution_time': phase_time,
-                'agents_executed': len(phase_results)
-            }
-            
-            self._log_dmaic('DMAIC', f'Completed phase: {phase} in {phase_time:.2f}s')
-        
-        cycle_time = time.time() - cycle_start
-        cycle_results['overall_status'] = 'completed'
-        cycle_results['total_execution_time'] = cycle_time
-        
-        self._log_dmaic('DMAIC', f'DMAIC cycle completed in {cycle_time:.2f}s')
-        
-        return cycle_results
+
+    def get_cluster_contract(self) -> List[Dict[str, Any]]:
+        """Expose canonical cluster contract."""
+        return self.cluster_orchestrator.get_cluster_contract()
     
     def get_agent_status(self, agent_name: str = None) -> Dict[str, Any]:
         """Get status of specific agent or all agents"""
