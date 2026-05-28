@@ -32,9 +32,9 @@
 
 ## Sprint 1 / Wave 2 — High-priority backlog (In progress)
 - [x] Define execution structure with sprint/wave/phase tracking
-- [ ] Phase A: Root structure rationalization plan committed
-- [ ] Phase B: Recursive hooks parity audit completed
-- [ ] Phase C: Deployment activation checklist started
+- [x] Phase A: Root structure rationalization plan committed
+- [x] Phase B: Recursive hooks parity audit completed
+- [x] Phase C: Deployment activation checklist started
 
 ## Sprint 2 / Wave 3-4 — Planned
 - [ ] Execute approved root-structure changes in controlled batches
@@ -70,3 +70,24 @@
 ## 4) Update Rule
 
 For each execution session, update checkboxes and append evidence (command, artifact, or file path) before closing the session.
+
+## 5) Session Evidence (2026-05-28)
+
+### Phase A artifact
+- `/tmp/workspace/GBOGEB/ABACUS/PHASE_A_ROOT_STRUCTURE_RATIONALIZATION_PLAN_V4.4.0.md`
+- Root baseline captured: 363 root files, 293 markdown files, 33 python files.
+
+### Phase B artifact
+- `/tmp/workspace/GBOGEB/ABACUS/PHASE_B_RECURSIVE_HOOKS_PARITY_AUDIT_V4.4.0.md`
+- Audit evidence includes:
+  - `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py`
+  - `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/tests/test_dow_contract_emission.py`
+  - `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/phases/phase6_knowledge.py`
+
+### Phase C artifact
+- `/tmp/workspace/GBOGEB/ABACUS/PHASE_C_DEPLOYMENT_ACTIVATION_CHECKLIST_V4.4.0.md`
+- Workflow evidence includes:
+  - `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/deploy-docs.yml`
+  - `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/deployment-enforcement.yml`
+  - `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/main.yml`
+  - `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/dow-integration.yml`
