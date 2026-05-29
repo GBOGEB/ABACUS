@@ -42,7 +42,7 @@ Reduce top-level file sprawl without changing runtime behavior by moving non-run
 - Preserve currently referenced root scripts (example: `run_deployment_test_system.py`, `cicd_github_orchestrator.py`) during Phase A planning.
 - Run these validations after each batch:
   - `bash scripts/verify_workflows.sh`
-  - `python scripts/validate_docs_links.py`
+  - `python scripts/validate_docs_links.py` *(scope note: this currently validates links only under `docs/`; it does **not** cover root markdown moved into `docs_versioned/` or `handover/` during Batches A1/A2)*
   - `python -m pytest DMAIC_V3/tests -q`
 
 ## Exit Criteria for Phase A
