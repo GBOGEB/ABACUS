@@ -175,9 +175,12 @@ class MemoryEfficientCryoAnalyzerV23:
 
         definition = self.dmaic_define()
         measurement = self.dmaic_measure(data_source)
-        samples = []
-        for chunk in self.stream_cryo_data(data_source):
-            samples.extend(chunk.get("samples", []))
+
+        samples = measurement.get("samples")
+        if samples is None:
+            samples = []
+            for chunk in self.stream_cryo_data(data_source):
+                samples.extend(chunk.get("samples", []))
 
         analysis = self.dmaic_analyze(samples)
         improvement = self.dmaic_improve(analysis)
