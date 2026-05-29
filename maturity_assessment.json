@@ -60,16 +60,10 @@
     "Target Level 1 (Repeatable) - Convergence: 30+",
     "Focus on improving convergence metrics"
   ],
-  "timestamp": "2026-05-28T18:24:54.642739",
+  "timestamp": "2026-05-29T13:45:38.647301",
   "score_history": [
     {
       "timestamp": "2026-05-15T19:12:52.679124",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
-      "timestamp": "2026-05-26T01:39:51.444621",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
@@ -81,19 +75,7 @@
       "overall_completion": 20.83
     },
     {
-      "timestamp": "2026-05-26T01:43:19.543547",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
       "timestamp": "2026-05-26T01:43:19.544940",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
-      "timestamp": "2026-05-27T20:11:13.457017",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
@@ -105,19 +87,7 @@
       "overall_completion": 20.83
     },
     {
-      "timestamp": "2026-05-28T17:59:49.775223",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
       "timestamp": "2026-05-28T17:59:49.777013",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
-      "timestamp": "2026-05-28T18:00:10.808418",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
@@ -129,19 +99,7 @@
       "overall_completion": 20.83
     },
     {
-      "timestamp": "2026-05-28T18:17:47.461471",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
       "timestamp": "2026-05-28T18:17:47.463317",
-      "convergence_score": 0.0,
-      "current_level": 0,
-      "overall_completion": 20.83
-    },
-    {
-      "timestamp": "2026-05-28T18:23:09.457475",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
@@ -153,13 +111,43 @@
       "overall_completion": 20.83
     },
     {
-      "timestamp": "2026-05-28T18:24:54.640792",
+      "timestamp": "2026-05-28T18:24:54.642739",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
     },
     {
-      "timestamp": "2026-05-28T18:24:54.642739",
+      "timestamp": "2026-05-29T13:45:11.389679",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T13:45:11.391816",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T13:45:26.879350",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T13:45:26.881453",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T13:45:38.645226",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T13:45:38.647301",
       "convergence_score": 0.0,
       "current_level": 0,
       "overall_completion": 20.83
