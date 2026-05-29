@@ -12,7 +12,7 @@ codex_policy_ingestion:
     - deployment_policy
 
   notebook_plane:
-    repository: GBOGEB/codespace_jyperter
+    repository: GBOGEB/CODESPACES_jyperter
     branch: main
     certification_scope:
       - notebook_artifact_validation
