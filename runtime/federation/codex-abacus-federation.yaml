@@ -20,7 +20,7 @@ federation:
       - orchestration
 
   notebook_plane:
-    repository: GBOGEB/codespace_jyperter
+    repository: GBOGEB/CODESPACES_jyperter
     branch: main
     responsibilities:
       - notebook_execution

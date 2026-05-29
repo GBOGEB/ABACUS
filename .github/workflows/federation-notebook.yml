@@ -76,7 +76,7 @@ jobs:
           manifest = yaml.safe_load(Path('federation/manifest.yaml').read_text())
           members = manifest['federation']['member_repos']
           names = [m['name'] for m in members]
-          assert 'GBOGEB/codespace_jyperter' in names, f'notebook repo missing from manifest: {names}'
+          assert 'GBOGEB/CODESPACES_jyperter' in names, f'notebook repo missing from manifest: {names}'
           planes = manifest['federation']['planes']
           assert 'notebook' in planes, f'notebook plane missing: {list(planes.keys())}'
           print('✅ Notebook plane registered in manifest')
@@ -90,7 +90,7 @@ jobs:
           spec = yaml.safe_load(Path('runtime/federation/codex-abacus-federation.yaml').read_text())
           assert 'notebook_plane' in spec['federation'], 'notebook_plane missing from federation spec'
           repo = spec['federation']['notebook_plane']['repository']
-          assert repo == 'GBOGEB/codespace_jyperter', f'wrong repo: {repo}'
+          assert repo == 'GBOGEB/CODESPACES_jyperter', f'wrong repo: {repo}'
           print('✅ notebook_plane verified in federation spec')
           "
 
@@ -99,6 +99,6 @@ jobs:
         run: |
           echo "## 🪐 Notebook Plane Federation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Repo:** GBOGEB/codespace_jyperter" >> $GITHUB_STEP_SUMMARY
+          echo "**Repo:** GBOGEB/CODESPACES_jyperter" >> $GITHUB_STEP_SUMMARY
           echo "**Plane:** notebook" >> $GITHUB_STEP_SUMMARY
           echo "**Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY

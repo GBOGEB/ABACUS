@@ -1,8 +1,8 @@
 """
-Smoke tests for the notebook (codespace_jyperter) federation plane.
+Smoke tests for the notebook (CODESPACES_jyperter) federation plane.
 
 These tests verify that:
-  1. The global federation manifest registers GBOGEB/codespace_jyperter.
+  1. The global federation manifest registers GBOGEB/CODESPACES_jyperter.
   2. The manifest defines a 'notebook' plane entry.
   3. The DELTA_1 spec defines a 'notebook_plane' section.
   4. src/dmaic/federation.assimilate() still returns status == "ok" with the
@@ -22,7 +22,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 FEDERATION_MANIFEST = _REPO_ROOT / "federation" / "manifest.yaml"
 FEDERATION_SPEC = _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
 
-_NOTEBOOK_REPO = "GBOGEB/codespace_jyperter"
+_NOTEBOOK_REPO = "GBOGEB/CODESPACES_jyperter"
 
 
 # ---------------------------------------------------------------------------
@@ -43,7 +43,7 @@ def _load_yaml(path: Path):
 
 @pytest.mark.smoke
 def test_manifest_registers_notebook_member():
-    """federation/manifest.yaml must list GBOGEB/codespace_jyperter as a member."""
+    """federation/manifest.yaml must list GBOGEB/CODESPACES_jyperter as a member."""
     data = _load_yaml(FEDERATION_MANIFEST)
     members = data.get("federation", {}).get("member_repos", [])
     names = [m.get("name") for m in members]
@@ -54,7 +54,7 @@ def test_manifest_registers_notebook_member():
 
 @pytest.mark.smoke
 def test_manifest_notebook_plane_active():
-    """The codespace_jyperter member entry must have plane='notebook' and status='active'."""
+    """The CODESPACES_jyperter member entry must have plane='notebook' and status='active'."""
     data = _load_yaml(FEDERATION_MANIFEST)
     members = data.get("federation", {}).get("member_repos", [])
     entry = next((m for m in members if m.get("name") == _NOTEBOOK_REPO), None)
