@@ -15,8 +15,8 @@
   <h1>DMAIC Phase Metrics
     <span class="qs">75.0/100</span>
   </h1>
-  <div class="sub">SHA: d2b0ebf831f1 · Generated: 2026-05-29 17:04:26 UTC
-    · Commits (30d): 731 / 1265 total
+  <div class="sub">SHA: 770e10ffacae · Generated: 2026-05-29 20:20:43 UTC
+    · Commits (30d): 741 / 1275 total
   </div>
 </div>
 <div class="charts">
@@ -28,7 +28,7 @@
 <script>
 const phases   = ["Define", "Measure", "Analyze", "Improve", "Control"];
 const scores   = [75, 100, 100, 45, 5];
-const files    = [15, 26, 122, 9, 1];
+const files    = [15, 27, 123, 9, 1];
 const radarScores = [...scores, scores[0]];
 const radarLabels = [...phases, phases[0]];
 
@@ -63,14 +63,14 @@ Plotly.newPlot('coverage', [{
 }, {responsive:true});
 
 const meta = {
-  'Total commits':    1265,
-  'Recent (30d)':     731,
-  'Python files':     324,
-  'Test files':       57,
+  'Total commits':    1275,
+  'Recent (30d)':     741,
+  'Python files':     325,
+  'Test files':       58,
   'HTML docs':        77,
   'Markdown docs':    709,
-  'Workflows':        51,
-  'Total LOC':        83140,
+  'Workflows':        52,
+  'Total LOC':        83264,
 };
 Plotly.newPlot('activity', [{
   type:'bar', x:Object.keys(meta), y:Object.values(meta),
