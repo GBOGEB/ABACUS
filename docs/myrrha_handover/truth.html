@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MYRRHA QPLANT — Single Source of Truth</title>
+<style>
+  :root { --primary:#0b3d91; --accent:#ff8a00; --bg:#f7f8fa; --fg:#1b1f24;
+    --rule:#d8dde3; --muted:#5b6470;
+    --body:Aptos,'Segoe UI',system-ui,Helvetica,Arial,sans-serif;
+    --mono:Consolas,'JetBrains Mono','Courier New',monospace; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:var(--body); color:var(--fg); background:var(--bg); }
+  header { display:flex; align-items:center; gap:14px; padding:12px 20px;
+    background:var(--primary); color:#fff; }
+  header a { color:#fff; opacity:.9; text-decoration:none; }
+  header .spacer { flex:1; }
+  header button { background:var(--accent); color:#fff; border:0; padding:7px 14px;
+    border-radius:6px; cursor:pointer; font-weight:600; }
+  main { max-width:980px; margin:0 auto; padding:24px; }
+  .card { background:#fff; border:1px solid var(--rule); border-radius:10px;
+    padding:18px 22px; margin-bottom:16px; }
+  .card h2 { color:var(--primary); margin:0 0 8px; }
+  .row { display:grid; grid-template-columns:160px 1fr 110px; gap:10px;
+    align-items:center; padding:6px 0; border-bottom:1px dashed var(--rule); }
+  .row:last-child { border-bottom:0; }
+  .row code { font-family:var(--mono); }
+  .row label { font-weight:600; color:var(--muted); }
+  .row .v { font-family:var(--mono); }
+  .row input { font-family:var(--mono); padding:5px 8px; border:1px solid var(--rule);
+    border-radius:5px; width:100%; }
+  .row .id { font-family:var(--mono); font-size:12px; background:var(--primary);
+    color:#fff; padding:3px 8px; border-radius:5px; text-align:center; }
+  body[data-mode="view"] .row input { display:none; }
+  body[data-mode="edit"] .row .v { display:none; }
+  pre.flow { background:#0e1116; color:#e6edf3; padding:18px; border-radius:8px;
+    font-family:var(--mono); line-height:1.5; overflow:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  table th, table td { border:1px solid var(--rule); padding:6px 8px; text-align:left; }
+  table th { background:#eef1f5; }
+  .badge { display:inline-block; font-family:var(--mono); font-size:11px;
+    padding:2px 7px; border-radius:5px; background:#fff3e0; color:#a04500; }
+</style>
+</head>
+<body data-mode="view">
+<header>
+  <a href="index.html">← Hub</a>
+  <strong>Single Source of Truth (SSoT)</strong>
+  <span class="badge" id="ver">v0.4</span>
+  <span class="spacer"></span>
+  <button id="toggle">Edit mode</button>
+  <button id="save" style="display:none;background:#1f7a34">Save & regenerate</button>
+</header>
+
+<main>
+  <div class="card">
+    <h2>IMMUTABLE Design Decisions</h2>
+    <p style="color:var(--muted);margin-top:0">
+      These values flow into every slide, table, graph, and report via
+      <code>master/data.json</code> + <code>master/render_all.py</code>.
+      Editing here writes to <code>localStorage</code>; click
+      <b>Save &amp; regenerate</b> to download an updated <code>data.json</code>.
+    </p>
+
+    <div class="row"><span class="id">B1</span>
+      <label>Baseline mass flow</label>
+      <span class="v"><span data-key="baseline_mass">350</span> g/s @ <span data-key="baseline_pres">14</span> barG</span>
+      <span><input data-key="baseline_mass" type="number"> g/s @
+            <input data-key="baseline_pres" type="number"> barG</span>
+    </div>
+    <div class="row"><span class="id">B2</span>
+      <label>ALaT</label>
+      <span class="v"><span data-key="alat_fsd">2</span> FSD · SFC <span data-key="alat_model">575</span> @
+        <span data-key="alat_hz">72</span> Hz → ~<span data-key="alat_flow">220</span> g/s</span>
+      <span><input data-key="alat_fsd" type="number"> FSD · SFC
+            <input data-key="alat_model" type="number"> @
+            <input data-key="alat_hz" type="number"> Hz →
+            <input data-key="alat_flow" type="number"> g/s</span>
+    </div>
+    <div class="row"><span class="id">B3</span>
+      <label>LKT</label>
+      <span class="v"><span data-key="lkt_fsd">3</span> FSD · SFC <span data-key="lkt_model">475</span> @ ~<span data-key="lkt_hz">57</span> Hz →
+        <span data-key="lkt_flow">264</span> g/s nominal</span>
+      <span><input data-key="lkt_fsd" type="number"> FSD · SFC
+            <input data-key="lkt_model" type="number"> @
+            <input data-key="lkt_hz" type="number"> Hz →
+            <input data-key="lkt_flow" type="number"> g/s</span>
+    </div>
+    <div class="row"><span class="id">B4</span>
+      <label>RCW</label>
+      <span class="v"><span data-key="rcw_hot">85</span>°C max · <span data-key="rcw_in">30</span>°C inlet · ΔT =
+        <span data-key="rcw_dt">25</span>°C</span>
+      <span><input data-key="rcw_hot" type="number">°C max ·
+            <input data-key="rcw_in" type="number">°C inlet · ΔT=
+            <input data-key="rcw_dt" type="number">°C</span>
+    </div>
+    <div class="row"><span class="id">B5</span>
+      <label>LCC / PVPS</label>
+      <span class="v"><span data-key="lcc_target">50</span> g/s · 2×5 (10 total, N+1)</span>
+      <span><input data-key="lcc_target" type="number"> g/s · 2×5 (10 total, N+1)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Edit-propagation workflow</h2>
+<pre class="flow">
+truth.html (Edit Mode)
+   │  edit B1..B5
+   ▼
+master/data.json   ◄── single edit point ──►   master/truth.md
+   │
+   ▼
+python3 master/render_all.py
+   │
+   ├──► slides.html        (all slides, master-rendered)
+   ├──► slides/&lt;id&gt;.html   (per-slide pages)
+   ├──► slides.json        (consumed by slide-editor.html)
+   ├──► tables.html        (T1..Tn auto-numbered)
+   └──► graphs.html        (G1..Gn auto-numbered)
+</pre>
+  </div>
+
+  <div class="card">
+    <h2>Change log</h2>
+    <table id="log">
+      <thead><tr><th>Version</th><th>Timestamp</th><th>User</th><th>Field</th><th>Old → New</th></tr></thead>
+      <tbody><tr><td>v0.4</td><td>2026-05-10</td><td>system</td><td>(init)</td><td>— initial SSoT —</td></tr></tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+const DEFAULTS = {baseline_mass:350,baseline_pres:14,alat_fsd:2,alat_model:575,alat_hz:72,alat_flow:220,
+  lkt_fsd:3,lkt_model:475,lkt_hz:57,lkt_flow:264,rcw_hot:85,rcw_in:30,rcw_dt:25,lcc_target:50};
+const stored = JSON.parse(localStorage.getItem("myrrha.truth") || "{}");
+const VALUES = Object.assign({}, DEFAULTS, stored);
+const LOG = JSON.parse(localStorage.getItem("myrrha.truth.log") || "[]");
+
+function paint() {
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const k = el.dataset.key;
+    if (el.tagName === "INPUT") el.value = VALUES[k];
+    else el.textContent = VALUES[k];
+  });
+  const tbody = document.querySelector("#log tbody");
+  tbody.textContent = "";
+  const initRow = tbody.insertRow();
+  ["v0.4","2026-05-10","system","(init)","— initial SSoT —"].forEach((text, i) => {
+    const td = initRow.insertCell(i);
+    td.textContent = text;
+  });
+  LOG.forEach(e => {
+    const row = tbody.insertRow();
+    [e.ver, e.ts, e.user, e.field].forEach((text, i) => {
+      row.insertCell(i).textContent = text;
+    });
+    const td = row.insertCell(4);
+    const code = document.createElement("code");
+    code.textContent = e.old + " \u2192 " + e.neu;
+    td.appendChild(code);
+  });
+}
+
+document.getElementById("toggle").onclick = () => {
+  const m = document.body.dataset.mode === "edit" ? "view" : "edit";
+  document.body.dataset.mode = m;
+  document.getElementById("save").style.display = m === "edit" ? "" : "none";
+  document.getElementById("toggle").textContent = m === "edit" ? "Cancel" : "Edit mode";
+};
+
+document.getElementById("save").onclick = () => {
+  const user = prompt("Your name (for change log)?", "engineer") || "anonymous";
+  const ts = new Date().toISOString().slice(0,19).replace("T"," ");
+  const ver = "v0.4." + (LOG.length + 1);
+  document.querySelectorAll("input[data-key]").forEach(inp => {
+    const k = inp.dataset.key;
+    const neu = Number(inp.value);
+    if (neu !== VALUES[k]) {
+      LOG.push({ver, ts, user, field:k, old:VALUES[k], neu});
+      VALUES[k] = neu;
+    }
+  });
+  localStorage.setItem("myrrha.truth", JSON.stringify(VALUES));
+  localStorage.setItem("myrrha.truth.log", JSON.stringify(LOG));
+  // build a fresh data.json blob and offer download
+  const data = {
+    baseline:{id:"B1",mass_flow_g_s:VALUES.baseline_mass,pressure_barG:VALUES.baseline_pres},
+    operating_points:[
+      {id:"B2",name:"ALaT",fsd:VALUES.alat_fsd,model:`SFC ${VALUES.alat_model}`,speed_Hz:VALUES.alat_hz,delivery_g_s:VALUES.alat_flow},
+      {id:"B3",name:"LKT", fsd:VALUES.lkt_fsd, model:`SFC ${VALUES.lkt_model}`,speed_Hz:VALUES.lkt_hz,delivery_g_s:VALUES.lkt_flow}
+    ],
+    rcw:{id:"B4",hot_max_C:VALUES.rcw_hot,inlet_C:VALUES.rcw_in,deltaT_C:VALUES.rcw_dt},
+    lcc_pvps:{id:"B5",target_g_s:VALUES.lcc_target,units_total:10,config:"2x5 (N+1)"}
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "data.json"; a.click(); URL.revokeObjectURL(a.href);
+  document.getElementById("ver").textContent = ver;
+  document.getElementById("toggle").click();
+  paint();
+  alert("Saved.\n\nA fresh data.json was downloaded — replace master/data.json and run:\n  python3 master/render_all.py\nto regenerate all dependent artifacts.");
+};
+paint();
+</script>
+</body>
+</html>

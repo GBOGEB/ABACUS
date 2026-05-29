@@ -1,0 +1,368 @@
+/* MYRRHA Handover - shared styles */
+:root{
+  --bg:#f7f8fa; --bg2:#ffffff; --fg:#1a1d23; --fg2:#5b6270;
+  --border:#e3e6ec; --accent:#1D9E75; --accent2:#378ADD; --warn:#D85A30; --violet:#7F77DD;
+  --warn-bg:#fff3cd; --warn-border:#e6a800;
+  --radius:10px; --mono:'Consolas','SF Mono','Menlo',monospace;
+  --sans:'Aptos','Segoe UI','Inter',system-ui,sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);
+}
+[data-theme=dark]{
+  --bg:#0f1115; --bg2:#171a21; --fg:#e7eaf0; --fg2:#9aa3b2;
+  --border:#262a33; --shadow:0 1px 3px rgba(0,0,0,.5);
+  --warn-bg:#2d2a1e; --warn-border:#8a6d00;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+code,pre,.mono,.ascii{font-family:var(--mono)}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;overflow:auto;font-size:12.5px;line-height:1.5}
+.ascii{white-space:pre;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;overflow:auto;font-size:12.5px;line-height:1.45;color:var(--fg)}
+.container{max-width:1180px;margin:0 auto;padding:24px}
+.topbar{position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar .brand{font-weight:600;font-size:15px}
+.topbar .ver{background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:999px;font-size:12px;color:var(--fg2);font-family:var(--mono)}
+.topbar nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.topbar nav a{padding:6px 10px;border-radius:6px;color:var(--fg);font-size:13px}
+.topbar nav a.active,.topbar nav a:hover{background:var(--bg);text-decoration:none;color:var(--accent)}
+.controls{display:flex;gap:6px;align-items:center}
+.controls select,.controls button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit;cursor:pointer}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+h1{font-size:28px;margin:0 0 10px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:21px;margin:24px 0 8px;font-weight:600}
+h3{font-size:17px;margin:18px 0 6px;font-weight:600}
+h4{font-size:14px;margin:14px 0 4px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em}
+.muted{color:var(--fg2)}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--border);font-size:11px;font-family:var(--mono);color:var(--fg2)}
+.tag.ok{color:#1D9E75;border-color:#1D9E7544}
+.tag.warn{color:#D85A30;border-color:#D85A3044}
+.tag.b{color:var(--accent2);border-color:#378ADD44}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th,table td{padding:8px 10px;border-top:1px solid var(--border);text-align:right}
+table th:first-child,table td:first-child{text-align:left}
+table thead th{background:var(--bg);color:var(--fg2);font-weight:600;border-top:0;border-bottom:1px solid var(--border)}
+table tbody tr:hover{background:var(--bg)}
+.fig-cap{font-size:12px;color:var(--fg2);margin-top:6px;font-style:italic}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn.alt{background:var(--bg);color:var(--fg);border:1px solid var(--border)}
+.btn:hover{opacity:.92}
+.grid2{display:grid;grid-template-columns:1fr 2fr;gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.gridq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:780px){.grid2,.grid4,.gridq{grid-template-columns:1fr}}
+.metric{background:var(--bg);border-radius:8px;padding:12px;border:1px solid var(--border)}
+.metric .l{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em}
+.metric .v{font-size:22px;font-weight:600;margin-top:4px}
+.kbd{font-family:var(--mono);background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:12px}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+.progress{height:8px;background:var(--bg);border-radius:999px;overflow:hidden;border:1px solid var(--border)}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+details > summary{cursor:pointer;font-weight:600;padding:6px 0}
+details[open] > summary{margin-bottom:8px}
+[data-font=consolas] body, body[data-font=consolas]{font-family:var(--mono)}
+
+/* ========== MT-10: MOBILE RESPONSIVE FIXES (v0.4.7) ========== */
+
+/* Fix 1: Responsive Plotly charts on mobile */
+@media (max-width: 768px) {
+  /* All Plotly chart containers */
+  .chart-container,
+  .plotly-chart,
+  div[id^="chart-"],
+  div[class*="plotly"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 300px;
+    overflow-x: auto;
+  }
+  
+  /* Force Plotly to redraw responsive */
+  .js-plotly-plot {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Adjust chart config for mobile */
+  .plotly .main-svg {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Vendor charts specifically */
+  .vendor-chart {
+    width: 100% !important;
+    height: 280px !important;
+  }
+}
+
+/* Fix 2: Heatmap mobile strategy (thumbnail + modal) */
+@media (max-width: 768px) {
+  .heatmap-container {
+    position: relative;
+  }
+  
+  .heatmap-thumbnail {
+    display: block;
+    max-width: 100%;
+    border: 2px solid var(--accent);
+    cursor: pointer;
+    border-radius: var(--radius);
+  }
+  
+  .heatmap-full {
+    display: none;
+  }
+  
+  .zoom-label {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
+/* Heatmap zoom modal for mobile */
+.heatmap-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.heatmap-modal.active {
+  display: block;
+}
+
+.heatmap-modal-content {
+  width: 200%;
+  height: 200%;
+  padding: 20px;
+}
+
+.modal-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.6);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Fix 3: Mobile landscape sidebar overlap */
+@media (max-width: 768px) and (orientation: landscape) {
+  .sidebar {
+    width: 25% !important;
+    font-size: 12px;
+  }
+  .main-content {
+    width: 75% !important;
+    padding-left: 10px;
+  }
+}
+
+/* Fix 4: Table horizontal scroll with visual hint */
+@media (max-width: 1024px) {
+  .data-table-container,
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  
+  .data-table {
+    min-width: 600px;
+  }
+  
+  .data-table-container::after {
+    content: "← Swipe to see more →";
+    display: block;
+    text-align: center;
+    color: var(--fg2);
+    font-size: 12px;
+    padding: 8px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* Fix 5: Reports table scroll */
+@media (max-width: 768px) {
+  .report-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+}
+
+/* Fix 6: Tornado chart labels on mobile */
+@media (max-width: 768px) {
+  .tornado-label {
+    font-size: 10px;
+    word-wrap: break-word;
+    max-width: 100px;
+  }
+}
+
+/* Fix 7: Mobile portrait general improvements */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .topbar {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  h1 {
+    font-size: 22px;
+  }
+  
+  h2 {
+    font-size: 18px;
+  }
+  
+  h3 {
+    font-size: 15px;
+  }
+  
+  .card {
+    padding: 14px;
+    margin: 10px 0;
+  }
+  
+  table th, table td {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+/* ========== MT-9: ACCESSIBILITY IMPROVEMENTS (v0.4.7) ========== */
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+/* Improved focus indicators for accessibility */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+[tabindex]:focus {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+/* Keyboard navigation hints */
+.keyboard-hint {
+  font-size: 11px;
+  color: var(--fg2);
+  font-style: italic;
+  margin-left: 8px;
+}
+
+/* Fix colour contrast for muted text (WCAG AA compliance) */
+.muted,
+.fig-cap,
+.metric .l,
+.tag {
+  color: #666666; /* Was --fg2, now 4.6:1 contrast on white */
+}
+
+[data-theme=dark] .muted,
+[data-theme=dark] .fig-cap,
+[data-theme=dark] .metric .l,
+[data-theme=dark] .tag {
+  color: #a0a0a0; /* 4.6:1 contrast on dark bg */
+}
+
+/* Ensure sufficient contrast for interactive elements */
+.btn {
+  font-weight: 600;
+}
+
+.btn.alt {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* Table caption styles for accessibility */
+table caption {
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 10px;
+  caption-side: top;
+  color: var(--fg);
+  font-size: 14px;
+}
+
+/* Improved hover/focus states for interactive cards */
+.nav-card,
+[role="button"] {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nav-card:hover,
+.nav-card:focus,
+[role="button"]:hover,
+[role="button"]:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+
+/* Ensure visible focus on nav items */
+.topbar nav a:focus {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+/* ========== END MOBILE & ACCESSIBILITY FIXES ========== */
+
+/* Offline / CDN warning banner */
+.offline-warning{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:4px;padding:10px 16px;margin:12px auto;max-width:860px;font-size:.9em}
