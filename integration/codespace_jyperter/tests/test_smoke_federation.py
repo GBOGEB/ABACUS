@@ -11,7 +11,6 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 (pytest -m smoke) as well as the full suite.
 """
 
-import sys
 from pathlib import Path
 
 import pytest
@@ -26,9 +25,6 @@ _INTEGRATION_MANIFEST = (
 )
 _FEDERATION_SPEC = _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
 _GLOBAL_MANIFEST = _REPO_ROOT / "federation" / "manifest.yaml"
-
-# Allow importing the integration src module without installing it.
-sys.path.insert(0, str(_REPO_ROOT / "integration" / "codespace_jyperter"))
 
 
 @pytest.mark.smoke
@@ -95,7 +91,7 @@ def test_global_manifest_includes_codespace_jyperter():
 @pytest.mark.smoke
 def test_assimilate_returns_ok():
     """integration/codespace_jyperter/src/federation.assimilate() must return status == 'ok'."""
-    from src.federation import assimilate
+    from integration.codespace_jyperter.src.federation import assimilate
 
     result = assimilate(context={"session": "smoke-test"})
     assert isinstance(result, dict), "assimilate() must return a dict"
