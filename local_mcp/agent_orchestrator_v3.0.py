@@ -6,11 +6,10 @@ Coordinates 6 V2.3 agents with 4M memory constraint
 """
 import importlib.util
 import json
-import sys
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 import traceback
 
 _AGENTS_DIR = Path(__file__).parent / "agents"

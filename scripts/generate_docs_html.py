@@ -95,9 +95,9 @@ def _build_index_html(manifest: Dict[str, Any]) -> str:
   <div class="card">
     <h2>Repository Navigation</h2>
     <ul>
-      <li><a href="../DMAIC_V3/">DMAIC_V3/</a></li>
-      <li><a href="../.github/workflows/">.github/workflows/</a></li>
-      <li><a href="../handover/">handover/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3" target="_blank" rel="noopener">DMAIC_V3/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">.github/workflows/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/handover" target="_blank" rel="noopener">handover/</a></li>
       <li><a href="dashboard.html">System dashboard</a></li>
     </ul>
   </div>

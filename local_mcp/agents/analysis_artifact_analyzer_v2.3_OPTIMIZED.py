@@ -46,7 +46,9 @@ class MemoryEfficientArtifactAnalyzerV23:
         }
 
         self.dmaic_log: List[Dict[str, Any]] = []
-        self.artifact_index: Dict[str, List[str]] = {cat: [] for cat in _CATEGORY_MAP}
+        self.artifact_index: Dict[str, Dict[str, Any]] = {
+            cat: {"count": 0, "sample_paths": []} for cat in _CATEGORY_MAP
+        }
 
         self.output_dir = Path(self.config.get("output_dir", "artifact_outputs_v2.3"))
         self.output_dir.mkdir(exist_ok=True)
@@ -134,16 +136,29 @@ class MemoryEfficientArtifactAnalyzerV23:
 
     def dmaic_analyze(self, workspace: Optional[str] = None) -> Dict[str, Any]:
         self._log_dmaic("ANALYZE", "Categorise and map artifacts")
-        index: Dict[str, List[str]] = {cat: [] for cat in _CATEGORY_MAP}
+        sample_limit = int(self.config.get("sample_limit_per_category", 5))
+        index: Dict[str, Dict[str, Any]] = {
+            cat: {"count": 0, "sample_paths": []} for cat in _CATEGORY_MAP
+        }
         for chunk in self.stream_workspace(workspace):
             for fpath in chunk.get("files", []):
                 cat = self._categorize(Path(fpath))
-                index[cat].append(fpath)
+                entry = index[cat]
+                entry["count"] += 1
+                if len(entry["sample_paths"]) < sample_limit:
+                    entry["sample_paths"].append(fpath)
                 self.performance_metrics["artifacts_categorized"] += 1
         self.artifact_index = index
         self.performance_metrics["dmaic_phases_completed"] += 1
-        counts = {cat: len(paths) for cat, paths in index.items()}
-        return {"category_counts": counts, "total_categorized": self.performance_metrics["artifacts_categorized"]}
+        counts = {cat: data["count"] for cat, data in index.items()}
+        samples = {
+            cat: data["sample_paths"] for cat, data in index.items() if data["sample_paths"]
+        }
+        return {
+            "category_counts": counts,
+            "category_samples": samples,
+            "total_categorized": self.performance_metrics["artifacts_categorized"],
+        }
 
     def dmaic_improve(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         self._log_dmaic("IMPROVE", "Recommend artifact organisation improvements")

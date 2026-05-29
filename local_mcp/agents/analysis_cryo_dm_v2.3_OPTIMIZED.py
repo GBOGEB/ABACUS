@@ -78,18 +78,92 @@ class MemoryEfficientCryoAnalyzerV23:
         self, data_source: str = None, chunk_size: int = 10
     ) -> Iterator[Dict[str, Any]]:
         """Yield chunks of cryo measurements, staying within memory limits."""
+        def _iter_samples_from_json_array(path: Path) -> Iterator[Dict[str, Any]]:
+            decoder = json.JSONDecoder()
+            with open(path, encoding="utf-8") as fh:
+                buffer = fh.read(4096)
+                while True:
+                    stripped = buffer.lstrip()
+                    if not stripped:
+                        more = fh.read(4096)
+                        if not more:
+                            return
+                        buffer = more
+                        continue
+
+                    if stripped[0] != "[":
+                        raise ValueError("Expected JSON array payload")
+                    buffer = stripped[1:]
+                    break
+
+                while True:
+                    stripped = buffer.lstrip()
+                    if not stripped:
+                        more = fh.read(4096)
+                        if not more:
+                            raise ValueError("Unexpected EOF in JSON array")
+                        buffer = more
+                        continue
+                    if stripped[0] == "]":
+                        return
+                    if stripped[0] == ",":
+                        buffer = stripped[1:]
+                        continue
+
+                    try:
+                        item, end = decoder.raw_decode(stripped)
+                        yield item
+                        buffer = stripped[end:]
+                    except json.JSONDecodeError:
+                        more = fh.read(4096)
+                        if not more:
+                            raise
+                        buffer = stripped + more
+
+        def _iter_samples_from_json_lines(path: Path) -> Iterator[Dict[str, Any]]:
+            with open(path, encoding="utf-8") as fh:
+                for line in fh:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    yield json.loads(stripped)
+
         try:
             if data_source and Path(data_source).exists():
-                with open(data_source, encoding="utf-8") as fh:
-                    raw = json.load(fh)
-                samples = raw if isinstance(raw, list) else raw.get("samples", [])
-            else:
-                samples = self._generate_synthetic_data()
+                source_path = Path(data_source)
+                with open(source_path, encoding="utf-8") as probe:
+                    first_char = ""
+                    while True:
+                        ch = probe.read(1)
+                        if not ch:
+                            break
+                        if not ch.isspace():
+                            first_char = ch
+                            break
 
-            for i in range(0, len(samples), chunk_size):
-                chunk = samples[i : i + chunk_size]
+                if first_char == "[":
+                    sample_iter = _iter_samples_from_json_array(source_path)
+                elif first_char == "{":
+                    with open(source_path, encoding="utf-8") as fh:
+                        raw = json.load(fh)
+                    sample_iter = iter(raw if isinstance(raw, list) else raw.get("samples", []))
+                else:
+                    sample_iter = _iter_samples_from_json_lines(source_path)
+            else:
+                sample_iter = iter(self._generate_synthetic_data())
+
+            chunk: List[Dict[str, Any]] = []
+            chunk_index = 0
+            for sample in sample_iter:
+                chunk.append(sample)
+                if len(chunk) >= chunk_size:
+                    self.performance_metrics["memory_chunks_processed"] += 1
+                    yield {"samples": chunk, "chunk_index": chunk_index, "size": len(chunk)}
+                    chunk = []
+                    chunk_index += 1
+            if chunk:
                 self.performance_metrics["memory_chunks_processed"] += 1
-                yield {"samples": chunk, "chunk_index": i // chunk_size, "size": len(chunk)}
+                yield {"samples": chunk, "chunk_index": chunk_index, "size": len(chunk)}
         except Exception as exc:
             self.performance_metrics["errors_handled"] += 1
             self._log_dmaic("STREAM", f"Streaming error: {exc}")
@@ -119,7 +193,11 @@ class MemoryEfficientCryoAnalyzerV23:
             all_samples.extend(chunk.get("samples", []))
         self.performance_metrics["samples_processed"] = len(all_samples)
         self.performance_metrics["dmaic_phases_completed"] += 1
-        return {"total_samples": len(all_samples), "sample_preview": all_samples[:3]}
+        return {
+            "total_samples": len(all_samples),
+            "sample_preview": all_samples[:3],
+            "samples": all_samples,
+        }
 
     def dmaic_analyze(self, samples: List[Dict[str, Any]]) -> Dict[str, Any]:
         self._log_dmaic("ANALYZE", "Analyze heat-load statistics")
@@ -175,13 +253,7 @@ class MemoryEfficientCryoAnalyzerV23:
 
         definition = self.dmaic_define()
         measurement = self.dmaic_measure(data_source)
-
-        samples = measurement.get("samples")
-        if samples is None:
-            samples = []
-            for chunk in self.stream_cryo_data(data_source):
-                samples.extend(chunk.get("samples", []))
-
+        samples = measurement.get("samples", [])
         analysis = self.dmaic_analyze(samples)
         improvement = self.dmaic_improve(analysis)
         control = self.dmaic_control(improvement)
