@@ -9,11 +9,11 @@ Audit current recursive hook implementation against historical V2.2 expectations
 
 ## Evidence Reviewed
 
-- `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py`
-- `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/tests/test_dow_contract_emission.py`
-- `/tmp/workspace/GBOGEB/ABACUS/DMAIC_V3/phases/phase6_knowledge.py`
-- `/tmp/workspace/GBOGEB/ABACUS/V2.2_RECURSIVE_HOOKS_VERSION_ALIGNMENT.md`
-- `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/dow-integration.yml`
+- `DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py`
+- `DMAIC_V3/tests/test_dow_contract_emission.py`
+- `DMAIC_V3/phases/phase6_knowledge.py`
+- `V2.2_RECURSIVE_HOOKS_VERSION_ALIGNMENT.md`
+- `.github/workflows/dow-integration.yml`
 
 ## Parity Matrix
 
