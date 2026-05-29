@@ -51,8 +51,8 @@
 ## 3) Backlog Mapping (from current problem statement)
 
 ### Historical critical blockers (resolved state to preserve)
-- [x] V3 orchestrator availability
-- [x] Agent upgrade completion
+- [ ] V3 orchestrator availability
+- [ ] Agent upgrade completion
 - [x] KEB/GBOGEB integration presence
 
 ### High-priority backlog (active)
