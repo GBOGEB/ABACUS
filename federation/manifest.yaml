@@ -23,7 +23,7 @@ federation:
       branch: main
       role: notebook_plane
       spec_ref: runtime/federation/codex-abacus-federation.yaml
-      responsibilities:
+      responsibility:
         - notebook_execution
         - interactive_analysis
         - artifact_visualization
