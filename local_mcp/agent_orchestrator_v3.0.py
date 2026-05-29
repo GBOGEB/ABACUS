@@ -7,11 +7,15 @@ Coordinates 6 V2.3 agents with 4M memory constraint
 import json
 import sys
 import time
+import importlib
+import importlib.util
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-import importlib
 import traceback
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
 
 
 class AgentOrchestratorV3:
@@ -37,6 +41,11 @@ class AgentOrchestratorV3:
         
         self.dmaic_log = []
         self.execution_history = []
+        self.cluster_orchestrator = TwelveClusterOrchestrator(
+            max_workers=12,
+            use_keb=False,
+            use_gbogeb=False
+        )
         
         self.output_dir = Path(self.config.get('output_dir', 'orchestrator_outputs_v3.0'))
         self.output_dir.mkdir(exist_ok=True)
@@ -55,20 +64,35 @@ class AgentOrchestratorV3:
     def initialize_agents(self) -> Dict[str, Any]:
         """Initialize all V2.3 agents"""
         self._log_dmaic('INIT', 'Starting agent initialization')
-        
+
+        # Resolve agents directory relative to this file so the orchestrator
+        # works regardless of the current working directory.
+        agents_dir = Path(__file__).parent / 'agents'
+
+        # (agent_name, filename_stem, class_name)
         agent_configs = [
-            ('cryo_analyzer', 'local_mcp.agents.analysis_cryo_dm_v2.3_OPTIMIZED', 'MemoryEfficientCryoAnalyzerV23'),
-            ('document_consumer', 'local_mcp.agents.analysis_document_consumer_v2.3_OPTIMIZED', 'MemoryEfficientDocumentConsumerV23'),
-            ('artifact_analyzer', 'local_mcp.agents.analysis_artifact_analyzer_v2.3_OPTIMIZED', 'MemoryEfficientArtifactAnalyzerV23'),
-            ('smoke_test', 'local_mcp.agents.analysis_smoke_test_v2.3_OPTIMIZED', 'MemoryEfficientSmokeTestV23'),
+            ('cryo_analyzer', 'analysis_cryo_dm_v2.3_OPTIMIZED', 'MemoryEfficientCryoAnalyzerV23'),
+            ('document_consumer', 'analysis_document_consumer_v2.3_OPTIMIZED', 'MemoryEfficientDocumentConsumerV23'),
+            ('artifact_analyzer', 'analysis_artifact_analyzer_v2.3_OPTIMIZED', 'MemoryEfficientArtifactAnalyzerV23'),
+            ('smoke_test', 'analysis_smoke_test_v2.3_OPTIMIZED', 'MemoryEfficientSmokeTestV23'),
         ]
-        
-        for agent_name, module_path, class_name in agent_configs:
+
+        for agent_name, filename_stem, class_name in agent_configs:
             try:
                 self._log_dmaic('INIT', f'Loading agent: {agent_name}')
-                module = importlib.import_module(module_path)
+
+                agent_file = agents_dir / f'{filename_stem}.py'
+                if not agent_file.exists():
+                    raise FileNotFoundError(f'Agent file not found: {agent_file}')
+
+                spec = importlib.util.spec_from_file_location(
+                    f'local_mcp_agent_{agent_name}', str(agent_file)
+                )
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
                 agent_class = getattr(module, class_name)
-                
+
                 self.agents[agent_name] = {
                     'module': module,
                     'class': agent_class,
@@ -76,9 +100,9 @@ class AgentOrchestratorV3:
                     'status': 'loaded',
                     'version': 'v2.3.0'
                 }
-                
+
                 self.performance_metrics['agents_initialized'] += 1
-                
+
             except Exception as e:
                 self.performance_metrics['errors_handled'] += 1
                 self._log_dmaic('INIT', f'Failed to load {agent_name}: {str(e)}')
@@ -86,10 +110,10 @@ class AgentOrchestratorV3:
                     'status': 'failed',
                     'error': str(e)
                 }
-        
+
         self.initialized = True
         self._log_dmaic('INIT', f'Initialization complete: {self.performance_metrics["agents_initialized"]} agents loaded')
-        
+
         return {
             'status': 'initialized',
             'agents_loaded': self.performance_metrics['agents_initialized'],
@@ -166,58 +190,73 @@ class AgentOrchestratorV3:
             }
     
     def execute_dmaic_cycle(self, data_source: str = None) -> Dict[str, Any]:
-        """Execute full DMAIC cycle across all agents"""
+        """Execute full DMAIC cycle through canonical 12-cluster orchestrator."""
         self._log_dmaic('DMAIC', 'Starting full DMAIC cycle')
-        
-        cycle_start = time.time()
-        cycle_results = {
-            'phases': {},
-            'overall_status': 'in_progress',
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        dmaic_phases = ['DEFINE', 'MEASURE', 'ANALYZE', 'IMPROVE', 'CONTROL']
-        
-        for phase in dmaic_phases:
-            self._log_dmaic('DMAIC', f'Executing phase: {phase}')
-            phase_start = time.time()
-            
-            phase_results = []
-            
-            for agent_name in self.agents.keys():
-                if self.agents[agent_name]['status'] == 'loaded':
-                    try:
-                        agent_result = self.execute_agent(
-                            agent_name,
-                            {'phase': phase, 'data_source': data_source}
-                        )
-                        phase_results.append(agent_result)
-                    except Exception as e:
-                        self._log_dmaic('DMAIC', f'Error in {agent_name} during {phase}: {str(e)}')
-                        phase_results.append({
-                            'agent': agent_name,
-                            'status': 'error',
-                            'error': str(e)
-                        })
-            
-            phase_time = time.time() - phase_start
-            self.performance_metrics['dmaic_phases_completed'] += 1
-            
-            cycle_results['phases'][phase] = {
-                'results': phase_results,
-                'execution_time': phase_time,
-                'agents_executed': len(phase_results)
+
+        if not self.initialized:
+            self.initialize_agents()
+
+        loaded_agents = [
+            name for name, info in self.agents.items()
+            if info.get('status') == 'loaded'
+        ]
+        if not loaded_agents:
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "overall_status": "failed",
+                "error": "No loaded agents available for DMAIC execution",
+                "phase_results": {},
+                "temporal_events": [],
             }
-            
-            self._log_dmaic('DMAIC', f'Completed phase: {phase} in {phase_time:.2f}s')
-        
-        cycle_time = time.time() - cycle_start
-        cycle_results['overall_status'] = 'completed'
-        cycle_results['total_execution_time'] = cycle_time
-        
-        self._log_dmaic('DMAIC', f'DMAIC cycle completed in {cycle_time:.2f}s')
-        
-        return cycle_results
+
+        cycle_start = time.time()
+
+        def phase_task_factory(phase: str) -> List[Dict[str, Any]]:
+            return [
+                {
+                    "task_id": f"{phase}-{agent_name}",
+                    "func": lambda selected_agent=agent_name, phase_name=phase: self._execute_phase_agent_task(
+                        selected_agent, phase_name, data_source
+                    ),
+                }
+                for agent_name in loaded_agents
+            ]
+
+        canonical_result = self.cluster_orchestrator.run_phases_with_hooks(
+            iteration=1,
+            phase_task_factory=phase_task_factory,
+        )
+        self.performance_metrics['dmaic_phases_completed'] = len(canonical_result.get('phases_run', []))
+        self.performance_metrics['total_execution_time'] += time.time() - cycle_start
+
+        self._log_dmaic('DMAIC', f"DMAIC cycle {canonical_result.get('final_status')} in {time.time() - cycle_start:.2f}s")
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "overall_status": canonical_result.get("final_status", "unknown"),
+            "total_execution_time": time.time() - cycle_start,
+            "cluster_contract": self.cluster_orchestrator.get_cluster_contract(),
+            "phase_results": canonical_result.get("phase_results", {}),
+            "temporal_events": canonical_result.get("temporal_events", []),
+            "agents_executed": loaded_agents,
+        }
+
+    def _execute_phase_agent_task(self, agent_name: str, phase: str, data_source: Optional[str]) -> Dict[str, Any]:
+        result = self.execute_agent(
+            agent_name=agent_name,
+            task_config={"phase": phase, "data_source": data_source},
+        )
+        if result.get("status") != "success":
+            raise RuntimeError(result.get("error", f"{agent_name} execution failed"))
+        return {
+            "success": True,
+            "agent": agent_name,
+            "phase": phase,
+            "result": result.get("result"),
+        }
+
+    def get_cluster_contract(self) -> List[Dict[str, Any]]:
+        """Expose canonical cluster contract."""
+        return self.cluster_orchestrator.get_cluster_contract()
     
     def get_agent_status(self, agent_name: str = None) -> Dict[str, Any]:
         """Get status of specific agent or all agents"""
