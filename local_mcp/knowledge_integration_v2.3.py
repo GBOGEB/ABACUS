@@ -65,18 +65,13 @@ def _run_with_timeout(func, timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
 
 def _run_with_timeout_retries(func, timeout_seconds: int, description: str, retries: int = MAX_RETRY_ATTEMPTS):
     """Execute function with timeout and bounded retry policy for timeout failures."""
-    last_timeout = None
     total_attempts = max(1, retries + 1)
     for attempt in range(1, total_attempts + 1):
         try:
             return _run_with_timeout(func, timeout_seconds=timeout_seconds, description=description)
-        except OperationTimeoutError as exc:
-            last_timeout = exc
+        except OperationTimeoutError:
             if attempt == total_attempts:
                 raise
-    if last_timeout is not None:
-        raise last_timeout
-    return None
 
 
 @dataclass
