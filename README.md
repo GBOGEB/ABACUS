@@ -24,6 +24,27 @@
 
 ---
 
+## 🧭 12-CLUSTER PRIMARY NAVIGATION
+
+ABACUS is organized first by the canonical **12-CLUSTER contract**.
+
+| Cluster | Phase | Primary Responsibility | Entry Points |
+|---------|-------|------------------------|--------------|
+| C1-C2 | Phase 1 (Define) | Discovery and intake | `DMAIC_V3/phases/phase1_define.py` |
+| C3-C4 | Phase 2 (Measure) | Static metrics and baselines | `DMAIC_V3/phases/phase2_measure.py` |
+| C5-C6 | Phase 3-4 (Analyze/Improve) | Root-cause and implementation changes | `DMAIC_V3/phases/phase3_analyze.py`, `DMAIC_V3/phases/phase4_improve.py` |
+| C7-C8 | Phase 5-6 (Control/Knowledge) | Quality control and orchestration hub | `DMAIC_V3/phases/phase5_control.py`, `DMAIC_V3/phases/phase6_knowledge.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+| C9-C10 | Phase 7 (Action Tracking) | KEB/GBOGEB runtime operations | `DMAIC_V3/phases/phase7_action_tracking.py`, `local_mcp/knowledge_integration_v2.3.py` |
+| C11-C12 | Phase 8 (TODO Management + Temporal Monitoring) | Temporal hooks and task governance | `DMAIC_V3/phases/phase8_todo_management.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+
+### Canonical Orchestrator
+
+- **Canonical path:** `DMAIC_V3/core/twelve_cluster_orchestrator.py`
+- **Compatibility wrapper:** `local_mcp/agent_orchestrator_v3.0.py`
+- **Temporal phase hooks:** emitted at phase start/end for phases 1-8 by the canonical orchestrator
+
+---
+
 ## 📖 Documentation
 
 | Resource | Description |
@@ -45,7 +66,7 @@
 |------|----------|---------|
 | **Analysis** | C1–C4 | Data ingestion, DMAIC phases, quality scoring |
 | **Documentation** | C5–C6 | Handover generation, knowledge management |
-| **Recursive** | C7–C8 | Self-improvement loops, orchestration |
+| **Recursive** | C7–C8 | Self-improvement loops, orchestration hub |
 | **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
 
 ---
