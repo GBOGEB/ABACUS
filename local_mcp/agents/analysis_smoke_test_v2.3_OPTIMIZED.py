@@ -77,9 +77,7 @@ class MemoryEfficientSmokeTestV23:
         root = Path(agents_dir) if agents_dir else Path(__file__).parent
         agents = []
         for path in sorted(root.glob("*v2.3_OPTIMIZED.py")):
-            # Infer class name from filename
-            stem = path.stem  # e.g. analysis_cryo_dm_v2.3_OPTIMIZED → strip after last _OPTIMIZED prefix
-            # Class names are stored inside the files; use a heuristic based on known catalogue
+            # Record discovered agent files for later validation/import checks.
             agents.append({"path": str(path), "filename": path.name})
         return agents
 
@@ -168,13 +166,18 @@ class MemoryEfficientSmokeTestV23:
             "details": results,
         }
 
-    def dmaic_improve(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def dmaic_improve(
+        self, analysis: Dict[str, Any], measurement: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         self._log_dmaic("IMPROVE", "Recommend smoke-test improvements")
         recs: List[str] = []
         if analysis.get("tests_failed", 0) > 0:
             failed = [d["test"] for d in analysis.get("details", []) if not d["passed"]]
             recs.append(f"Fix failing agents: {', '.join(failed)}")
-        if analysis.get("agents_discovered", 6) < 6:
+        discovered = analysis.get("agents_discovered")
+        if discovered is None and measurement:
+            discovered = measurement.get("agents_discovered")
+        if discovered is not None and discovered < 6:
             recs.append("Missing agent files – check local_mcp/agents/")
         self.performance_metrics["dmaic_phases_completed"] += 1
         return {"recommendations": recs or ["All smoke tests passing"]}
@@ -200,7 +203,7 @@ class MemoryEfficientSmokeTestV23:
         definition = self.dmaic_define()
         measurement = self.dmaic_measure(agents_dir)
         analysis = self.dmaic_analyze(agents_dir)
-        improvement = self.dmaic_improve(analysis)
+        improvement = self.dmaic_improve(analysis, measurement)
         control = self.dmaic_control()
 
         elapsed = round(time.time() - run_start, 3)
