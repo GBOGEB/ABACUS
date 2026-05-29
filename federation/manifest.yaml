@@ -29,6 +29,9 @@ federation:
     - name: GBOGEB/morris.js
       plane: auxiliary
       status: active
+    - name: GBOGEB/codespace_jyperter
+      plane: auxiliary
+      status: active
 
   dev_snapshots:
     # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
