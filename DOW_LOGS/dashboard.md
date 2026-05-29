@@ -1,10 +1,10 @@
 # DOW Monitoring Dashboard
 
-**Generated:** 2026-05-29T15:12:06Z
+**Generated:** 2026-05-29T17:53:23Z
 **Status:** OK
 
 ## Components
-- DMAIC test files: 18
+- DMAIC test files: 25
 - DOW agents: 4
 
 ### DOW Agents
