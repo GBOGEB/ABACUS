@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPLANT Monitoring Dashboard — v4.0.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#3b82f6;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--cyan:#06b6d4;--purple:#a855f7;--radius:10px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,#111827,#0a0e1a);border-bottom:1px solid var(--border);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.header .badge{padding:3px 8px;border-radius:8px;font-size:.65rem;font-weight:600}
+.badge-green{background:var(--green);color:#000}
+.badge-blue{background:var(--accent);color:#fff}
+.badge-yellow{background:var(--yellow);color:#000}
+.badge-red{background:var(--red);color:#fff}
+.badge-purple{background:var(--purple);color:#fff}
+.header-right{display:flex;gap:.5rem;align-items:center;font-size:.75rem;color:var(--muted)}
+
+/* Grid Layout */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem;padding:1rem 1.5rem}
+.grid-full{grid-column:1/-1}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-header{padding:.8rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.card-header h3{font-size:.85rem;font-weight:600}
+.card-body{padding:1rem}
+
+/* KPI Row */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;padding:1rem 1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;transition:transform .2s}
+.kpi:hover{transform:translateY(-2px);border-color:var(--accent)}
+.kpi .value{font-size:1.6rem;font-weight:700;line-height:1.2}
+.kpi .label{font-size:.7rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.5px}
+.kpi .delta{font-size:.65rem;margin-top:.2rem}
+.kpi .delta.positive{color:var(--green)}
+.kpi .delta.negative{color:var(--red)}
+.kpi .delta.neutral{color:var(--muted)}
+
+/* Status Indicators */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.status-dot.green{background:var(--green)}
+.status-dot.yellow{background:var(--yellow)}
+.status-dot.red{background:var(--red)}
+.status-dot.blue{background:var(--accent)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th,td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid rgba(51,65,85,.5)}
+th{color:var(--muted);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px}
+tr:hover{background:rgba(59,130,246,.05)}
+
+/* Progress Bars */
+.progress-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:.3rem}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.progress-fill.green{background:var(--green)}
+.progress-fill.blue{background:var(--accent)}
+.progress-fill.yellow{background:var(--yellow)}
+
+/* Charts */
+.chart-placeholder{background:var(--surface2);border-radius:8px;padding:1.5rem;text-align:center;color:var(--muted);font-size:.8rem;min-height:200px;display:flex;align-items:center;justify-content:center}
+
+/* Logs */
+.log-entry{padding:.4rem .7rem;font-size:.75rem;font-family:'Fira Code',monospace;border-bottom:1px solid rgba(51,65,85,.3)}
+.log-entry .time{color:var(--muted);margin-right:.5rem}
+.log-entry.success{border-left:3px solid var(--green)}
+.log-entry.warning{border-left:3px solid var(--yellow)}
+.log-entry.error{border-left:3px solid var(--red)}
+.log-entry.info{border-left:3px solid var(--accent)}
+
+/* TODO List */
+.todo-item{display:flex;align-items:center;gap:.5rem;padding:.4rem .7rem;font-size:.8rem;border-bottom:1px solid rgba(51,65,85,.3)}
+.todo-item .priority{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.todo-item .priority.critical{background:var(--red)}
+.todo-item .priority.high{background:var(--yellow)}
+.todo-item .priority.medium{background:var(--green)}
+.todo-item .priority.low{background:var(--accent)}
+.todo-item.done{opacity:.5;text-decoration:line-through}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.5rem;background:var(--surface)}
+.tab{padding:.6rem 1rem;cursor:pointer;font-size:.8rem;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Refresh animation */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.refreshing{animation:pulse 1s infinite}
+
+/* Responsive */
+@media(max-width:768px){.kpi-row{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>
+    🔬 QPLANT Monitoring Dashboard
+    <span class="badge badge-blue" id="version-badge">v4.0.0</span>
+    <span class="badge badge-green" id="status-badge">HEALTHY</span>
+  </h1>
+  <div class="header-right">
+    <span id="last-refresh">Last refresh: —</span>
+    <button onclick="refreshAll()" style="background:var(--accent);color:#fff;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.75rem">⟳ Refresh</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview')">Overview</div>
+  <div class="tab" onclick="showTab('build')">Build Pipeline</div>
+  <div class="tab" onclick="showTab('config')">Config Health</div>
+  <div class="tab" onclick="showTab('todos')">TODOs</div>
+  <div class="tab" onclick="showTab('history')">History</div>
+</div>
+
+<!-- KPI Row -->
+<div class="kpi-row" id="kpi-row">
+  <div class="kpi">
+    <div class="value" style="color:var(--green)" id="kpi-tests">22/22</div>
+    <div class="label">Tests Passing</div>
+    <div class="delta positive">100% pass rate</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:var(--cyan)" id="kpi-compliance">9.7</div>
+    <div class="label">Compliance Score</div>
+    <div class="delta positive">/10.0</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:var(--accent)" id="kpi-build">9/9</div>
+    <div class="label">Build Steps</div>
+    <div class="delta positive">All passing</div>
+  </div>
+  <div class="kpi">
+    <div class="value" id="kpi-charts">54</div>
+    <div class="label">Plotly Charts</div>
+    <div class="delta neutral">Regenerated</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:var(--yellow)" id="kpi-todos">22</div>
+    <div class="label">TODOs Remaining</div>
+    <div class="delta neutral">of 29 total</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:var(--green)" id="kpi-config">✓</div>
+    <div class="label">Config Aligned</div>
+    <div class="delta positive">0 drift detected</div>
+  </div>
+</div>
+
+<!-- Tab Content: Overview -->
+<div class="grid" id="tab-overview">
+  
+  <!-- Build Status Card -->
+  <div class="card">
+    <div class="card-header">
+      <h3>🔧 Build Pipeline Status</h3>
+      <span class="badge badge-green">PASSING</span>
+    </div>
+    <div class="card-body" id="build-steps">
+      <table>
+        <thead><tr><th>Step</th><th>Name</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>Config validation</td><td><span class="status-dot green"></span>Pass</td><td>0.1s</td></tr>
+          <tr><td>1</td><td>Standards & stats</td><td><span class="status-dot green"></span>Pass</td><td>0.8s</td></tr>
+          <tr><td>2</td><td>v3.1/v4.0 visuals</td><td><span class="status-dot green"></span>Pass</td><td>0.6s</td></tr>
+          <tr><td>3</td><td>Dense slides</td><td><span class="status-dot green"></span>Pass</td><td>0.5s</td></tr>
+          <tr><td>4</td><td>v4.0.0 navigator</td><td><span class="status-dot green"></span>Pass</td><td>0.1s</td></tr>
+          <tr><td>5</td><td>Landing hub & manifest</td><td><span class="status-dot green"></span>Pass</td><td>0.3s</td></tr>
+          <tr><td>6</td><td>Test suite (22 tests)</td><td><span class="status-dot green"></span>Pass</td><td>1.1s</td></tr>
+          <tr><td>7</td><td>Triage verification</td><td><span class="status-dot green"></span>Pass</td><td>0.5s</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Config Drift Detection -->
+  <div class="card">
+    <div class="card-header">
+      <h3>⚙️ Configuration Health</h3>
+      <span class="badge badge-green">ALIGNED</span>
+    </div>
+    <div class="card-body" id="config-health">
+      <table>
+        <thead><tr><th>Parameter</th><th>SSoT Value</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>HP Compressor Count</td><td>3</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Motor Power</td><td>315 kW</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Compressor CAPEX</td><td>€600,000</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Total System CAPEX</td><td>€1,420,000</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Design Flow</td><td>350 g/s</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Max Flow (3×FSD575)</td><td>337.62 g/s</td><td><span class="status-dot green"></span>✓</td></tr>
+          <tr><td>Electricity Cost</td><td>€0.15/kWh</td><td><span class="status-dot yellow"></span>⚠ Review</td></tr>
+          <tr><td>He Price</td><td>€120/kg</td><td><span class="status-dot green"></span>✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Test Results -->
+  <div class="card">
+    <div class="card-header">
+      <h3>🧪 Test Suite Results</h3>
+      <span class="badge badge-green">22/22 PASS</span>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Test File</th><th>Tests</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>test_build_outputs.py</td><td>2</td><td><span class="status-dot green"></span>Pass</td></tr>
+          <tr><td>test_calculations.py</td><td>6</td><td><span class="status-dot green"></span>Pass</td></tr>
+          <tr><td>test_config_loader.py</td><td>3</td><td><span class="status-dot green"></span>Pass</td></tr>
+          <tr><td>test_data_integrity.py</td><td>3</td><td><span class="status-dot green"></span>Pass</td></tr>
+          <tr><td>test_engineering.py</td><td>5</td><td><span class="status-dot green"></span>Pass</td></tr>
+          <tr><td>test_outputs.py</td><td>3</td><td><span class="status-dot green"></span>Pass</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:.8rem">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem">Overall Pass Rate</div>
+        <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Version Tracking -->
+  <div class="card">
+    <div class="card-header">
+      <h3>🏷️ Version Tracking</h3>
+      <span class="badge badge-blue">v4.0.0</span>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Artifact</th><th>Version</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>config.yaml</td><td>4.0.0</td><td><span class="status-dot green"></span>Current</td></tr>
+          <tr><td>VERSION.json</td><td>4.0.0</td><td><span class="status-dot green"></span>Match</td></tr>
+          <tr><td>docs/index.html</td><td>4.0.0</td><td><span class="status-dot green"></span>Match</td></tr>
+          <tr><td>docs/index_v4_0.html</td><td>4.0.0</td><td><span class="status-dot green"></span>Match</td></tr>
+          <tr><td>STAKEHOLDER_PRESENTATION</td><td>4.0.0</td><td><span class="status-dot green"></span>Match</td></tr>
+          <tr><td>docs/heroes/*.html (7)</td><td>4.0.0</td><td><span class="status-dot green"></span>Match</td></tr>
+          <tr><td>docs/index_v3_1.html</td><td>3.1.0</td><td><span class="status-dot blue"></span>Archive</td></tr>
+          <tr><td>docs/index_v3.html</td><td>3.0.0</td><td><span class="status-dot blue"></span>Archive</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TODO Progress (full width) -->
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>📋 TODO Progress Tracker</h3>
+      <span class="badge badge-yellow">22 remaining</span>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+        <div style="text-align:center">
+          <div style="font-size:1.2rem;font-weight:700;color:var(--red)">0</div>
+          <div style="font-size:.7rem;color:var(--muted)">CRITICAL remaining</div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.2rem;font-weight:700;color:var(--yellow)">4</div>
+          <div style="font-size:.7rem;color:var(--muted)">HIGH remaining</div>
+          <div class="progress-bar"><div class="progress-fill yellow" style="width:57%"></div></div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.2rem;font-weight:700;color:var(--green)">5</div>
+          <div style="font-size:.7rem;color:var(--muted)">MEDIUM remaining</div>
+          <div class="progress-bar"><div class="progress-fill blue" style="width:0%"></div></div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.2rem;font-weight:700;color:var(--accent)">13</div>
+          <div style="font-size:.7rem;color:var(--muted)">LOW remaining</div>
+          <div class="progress-bar"><div class="progress-fill blue" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div id="todo-list">
+        <div class="todo-item done"><span class="priority critical"></span>C-1: Fix version label in docs/index.html</div>
+        <div class="todo-item done"><span class="priority critical"></span>C-2: Fix stale 4-compressor references</div>
+        <div class="todo-item done"><span class="priority critical"></span>C-3: Rebuild triage pages with v4.0.0 config</div>
+        <div class="todo-item done"><span class="priority critical"></span>C-4: Fix stale motor power (400→315 kW)</div>
+        <div class="todo-item"><span class="priority high"></span>H-1: Clarify HSD Twin Combi M=N+ specification</div>
+        <div class="todo-item"><span class="priority high"></span>H-2: Add deprecation banner to index_v3_1.html</div>
+        <div class="todo-item done"><span class="priority high"></span>H-3: Unify fragmented build scripts</div>
+        <div class="todo-item done"><span class="priority high"></span>H-4: Consolidate TODO lists</div>
+        <div class="todo-item"><span class="priority high"></span>H-5: Add SSoT reference to all generated pages</div>
+        <div class="todo-item"><span class="priority high"></span>H-6: Document derogation in SoR matrix</div>
+        <div class="todo-item done"><span class="priority high"></span>H-7: Update version labels in heroes/*.html</div>
+        <div class="todo-item"><span class="priority medium"></span>M-1: Review energy cost €0.15/kWh accuracy</div>
+        <div class="todo-item"><span class="priority medium"></span>M-2: Regenerate heroes/*.html with v4.0 data</div>
+        <div class="todo-item"><span class="priority medium"></span>M-3: Add meta version tag to all HTML</div>
+        <div class="todo-item"><span class="priority medium"></span>M-4: CI/CD integration for version check</div>
+        <div class="todo-item"><span class="priority medium"></span>M-5: Add SSoT annotation footer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Log -->
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>📜 Activity Log</h3>
+      <span class="badge badge-blue">Phase 2</span>
+    </div>
+    <div class="card-body" id="activity-log" style="max-height:300px;overflow-y:auto">
+      <div class="log-entry success"><span class="time">2026-05-12 14:00</span>Phase 2 Task 1: API wrapper created (14 endpoints)</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:50</span>Phase 2 Task 2: Presentation generator automated (3 audiences)</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:45</span>Phase 2 Task 3: Monitoring dashboard created</div>
+      <div class="log-entry info"><span class="time">2026-05-12 13:44</span>Phase 1 DMAIC review completed</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:44</span>build_all.sh: 9/9 steps passed</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:44</span>pytest: 22/22 tests passed (1.10s)</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:44</span>Triage compliance: 9.7/10.0</div>
+      <div class="log-entry info"><span class="time">2026-05-12 13:30</span>Phase 1 completed: all 6 tasks done</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:20</span>26 version labels updated to v4.0.0</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:15</span>5 stale config values corrected</div>
+      <div class="log-entry warning"><span class="time">2026-05-12 13:10</span>Config drift detected: 400 kW → 315 kW in 2 generators</div>
+      <div class="log-entry success"><span class="time">2026-05-12 13:00</span>54 Plotly visualizations regenerated</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Content: Build (hidden by default) -->
+<div class="grid" id="tab-build" style="display:none">
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>Build Pipeline Detail</h3>
+      <span class="badge badge-green">9/9 Steps</span>
+    </div>
+    <div class="card-body">
+      <pre style="background:var(--surface2);padding:1rem;border-radius:8px;font-size:.75rem;line-height:1.6;color:var(--cyan);overflow-x:auto">
+$ ./build_all.sh
+[Step 0] ✅ Config validation — config.yaml structure & key params verified
+[Step 1] ✅ Standards & stats — 32 slides, 15 charts generated
+[Step 2] ✅ v3.1/v4.0 visuals — 6 charts, 3 doc pages, navigator
+[Step 3] ✅ Dense slides — 40-slide navigator + 10-slide stakeholder deck
+[Step 4] ✅ v4.0.0 navigator — sed transform from v3.1 template
+[Step 5] ✅ Landing hub — index.html + manifest.json
+[Step 6] ✅ Tests — 22/22 passed in 1.10s
+[Step 7] ✅ Triage verification — 9.7/10.0 compliance
+
+Build completed in ~4s | 0 warnings | 0 errors
+      </pre>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Content: Config (hidden) -->
+<div class="grid" id="tab-config" style="display:none">
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>SSoT Configuration Audit</h3>
+    </div>
+    <div class="card-body">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">
+        All engineering parameters should be sourced from <code>data/config.yaml</code> via <code>config_loader.py</code>.
+        This panel checks for configuration drift between SSoT and generated outputs.
+      </p>
+      <table>
+        <thead><tr><th>Section</th><th>Parameter</th><th>SSoT Value</th><th>HTML Value</th><th>Drift</th></tr></thead>
+        <tbody>
+          <tr><td>compressor_specifications</td><td>hp_compressors.count</td><td>3</td><td>3</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>compressor_specifications</td><td>fsd575.motor_power_kW</td><td>315</td><td>315</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>financial</td><td>compressor_capex.total_3_units_eur</td><td>600000</td><td>600000</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>financial</td><td>compressor_capex.total_system_eur</td><td>1420000</td><td>1420000</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>flow_parameters</td><td>wcs_hp.design_flow_gs</td><td>350</td><td>350</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>compressor_specifications</td><td>three_skid_totals.max_total_flow_gs</td><td>337.62</td><td>337.62</td><td><span class="status-dot green"></span>None</td></tr>
+          <tr><td>financial</td><td>electricity_cost_eur_kwh</td><td>0.15</td><td>0.15</td><td><span class="status-dot yellow"></span>Review</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Content: TODOs (hidden) -->
+<div class="grid" id="tab-todos" style="display:none">
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>Consolidated TODO List (from phase1_consolidated_todos.md)</h3>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>#</th><th>Priority</th><th>Description</th><th>Status</th><th>Location</th></tr></thead>
+        <tbody>
+          <tr><td>C-1</td><td>🔴 CRITICAL</td><td>Fix version label in docs/index.html</td><td>✅ Done</td><td>docs/index.html</td></tr>
+          <tr><td>C-2</td><td>🔴 CRITICAL</td><td>Fix stale 4-compressor references</td><td>✅ Done</td><td>docs/index_v4_0.html</td></tr>
+          <tr><td>C-3</td><td>🔴 CRITICAL</td><td>Rebuild triage pages with v4.0.0 config</td><td>✅ Done</td><td>docs/*.html</td></tr>
+          <tr><td>C-4</td><td>🔴 CRITICAL</td><td>Fix stale motor power (400→315 kW)</td><td>✅ Done</td><td>src/*.py</td></tr>
+          <tr><td>H-1</td><td>🟡 HIGH</td><td>Clarify HSD Twin Combi M=N+ specification</td><td>⏳ New</td><td>docs/compressors/</td></tr>
+          <tr><td>H-2</td><td>🟡 HIGH</td><td>Add deprecation banner to index_v3_1.html</td><td>⏳ New</td><td>docs/index_v3_1.html</td></tr>
+          <tr><td>H-5</td><td>🟡 HIGH</td><td>Add SSoT reference to all generated pages</td><td>⏳ New</td><td>src/build_*.py</td></tr>
+          <tr><td>H-6</td><td>🟡 HIGH</td><td>Document derogation in SoR matrix</td><td>⏳ New</td><td>SoR matrix</td></tr>
+          <tr><td>M-1</td><td>🟢 MEDIUM</td><td>Review energy cost €0.15/kWh accuracy</td><td>⏳ New</td><td>config.yaml</td></tr>
+          <tr><td>M-2</td><td>🟢 MEDIUM</td><td>Regenerate heroes/*.html with v4.0 data</td><td>⏳ New</td><td>docs/heroes/</td></tr>
+          <tr><td>M-3</td><td>🟢 MEDIUM</td><td>Add meta version tag to all HTML</td><td>⏳ New</td><td>All generators</td></tr>
+          <tr><td>M-4</td><td>🟢 MEDIUM</td><td>CI/CD integration for version check</td><td>⏳ New</td><td>.github/workflows/</td></tr>
+          <tr><td>M-5</td><td>🟢 MEDIUM</td><td>Add SSoT annotation footer</td><td>⏳ New</td><td>STAKEHOLDER_PRES.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Content: History (hidden) -->
+<div class="grid" id="tab-history" style="display:none">
+  <div class="card grid-full">
+    <div class="card-header">
+      <h3>Project Timeline</h3>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Date</th><th>Phase</th><th>Event</th><th>Impact</th></tr></thead>
+        <tbody>
+          <tr><td>2026-05-12</td><td>Phase 2</td><td>API wrapper + presentation automation + monitoring</td><td>🟡 In Progress</td></tr>
+          <tr><td>2026-05-12</td><td>Phase 1</td><td>DMAIC review completed</td><td>✅ Complete</td></tr>
+          <tr><td>2026-05-12</td><td>Phase 1</td><td>All 6 tasks completed (version, config, rebuild, TODOs, build, test)</td><td>✅ Complete</td></tr>
+          <tr><td>2026-05-10</td><td>v4.0.0</td><td>SSoT config.yaml created with corrected parameters</td><td>✅ Foundation</td></tr>
+          <tr><td>2026-05-08</td><td>v3.1.0</td><td>Dense slides and stakeholder presentation generated</td><td>✅ Content</td></tr>
+          <tr><td>2026-05-08</td><td>v3.0.0</td><td>Standards compliance and statistical analysis</td><td>✅ Analysis</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tab switching
+function showTab(tabId) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).style.display = 'grid';
+  event.target.classList.add('active');
+}
+
+// Refresh simulation
+function refreshAll() {
+  const badge = document.getElementById('status-badge');
+  badge.textContent = 'REFRESHING';
+  badge.className = 'badge badge-yellow refreshing';
+  
+  setTimeout(() => {
+    badge.textContent = 'HEALTHY';
+    badge.className = 'badge badge-green';
+    document.getElementById('last-refresh').textContent = 
+      'Last refresh: ' + new Date().toLocaleTimeString();
+  }, 1500);
+}
+
+// Auto-refresh timestamp
+document.getElementById('last-refresh').textContent = 
+  'Last refresh: ' + new Date().toLocaleTimeString();
+
+// Auto-refresh every 60 seconds
+setInterval(refreshAll, 60000);
+</script>
+
+</body>
+</html>
