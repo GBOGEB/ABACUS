@@ -339,7 +339,7 @@ class Phase6Knowledge:
             List of knowledge-source descriptor dicts.  Returns an empty list
             if the extract directory does not exist or contains no sources.
         """
-        extract_dir = Path("integration/codespace_jyperter/extracts")
+        extract_dir = Path(__file__).resolve().parents[2] / "integration" / "codespace_jyperter" / "extracts"
         sources: List[Dict[str, Any]] = []
 
         if not extract_dir.is_dir():
