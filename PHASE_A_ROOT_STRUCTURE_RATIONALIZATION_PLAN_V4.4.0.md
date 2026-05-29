@@ -21,7 +21,8 @@ Reduce top-level file sprawl without changing runtime behavior by moving non-run
   - `docs_versioned/handover/`
   - `docs_versioned/v4.4/` (new, if needed)
   - `handover/` where applicable
-- Keep root-level pointers only (`README.md`, release summaries, essential navigation docs).
+- Treat versioned planning/audit/tracker artifacts (for example `*_V4.4.0.md` and `EXECUTION_TRACKER_V4.4.0.md`) as non-root documentation and place them under `docs_versioned/v4.4/` or `handover/`, not at repository top-level.
+- Keep at most a single root-level pointer/navigation document (`README.md`, release summary, or equivalent essential navigation doc) that links to the canonical versioned location.
 
 ### Batch A2 (archive-heavy)
 - Move legacy quick references and execution summaries not required by active workflows into:
