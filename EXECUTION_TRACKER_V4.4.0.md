@@ -25,7 +25,7 @@
 ## 2) Completion Tracking
 
 ## Sprint 1 / Wave 1 — Baseline (Started)
-- [x] Confirm current release state references v4.4.0 in `/tmp/workspace/GBOGEB/ABACUS/README.md`
+- [x] Confirm current release state references v4.4.0 in `README.md`
 - [x] Run workflow syntax verification: `bash scripts/verify_workflows.sh`
 - [x] Run docs link verification: `python scripts/validate_docs_links.py`
 - [x] Run core DMAIC tests: `python -m pytest DMAIC_V3/tests -q` (111 passed)
