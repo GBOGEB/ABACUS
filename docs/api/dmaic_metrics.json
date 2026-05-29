@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-05-28T14:57:50.740241Z",
+  "timestamp": "2026-05-29T16:19:04.095098Z",
   "trigger": "push",
   "ref": "main",
-  "sha": "f5fe67e4a396",
-  "quality_score": 69.0,
-  "total_commits": 1178,
-  "recent_commits": 644,
-  "python_files": 300,
-  "test_files": 48,
-  "total_loc": 79545,
-  "html_docs": 18,
-  "markdown_docs": 694,
+  "sha": "7a68a085c1a0",
+  "quality_score": 74.0,
+  "total_commits": 1234,
+  "recent_commits": 700,
+  "python_files": 310,
+  "test_files": 49,
+  "total_loc": 81376,
+  "html_docs": 77,
+  "markdown_docs": 707,
   "workflows": 50,
   "phase_scores": {
     "define": {
@@ -29,15 +29,15 @@
       "weight": 20
     },
     "improve": {
-      "files": 5,
-      "score": 25,
+      "files": 9,
+      "score": 45,
       "weight": 20
     },
     "control": {
-      "files": 0,
-      "score": 0,
+      "files": 1,
+      "score": 5,
       "weight": 20
     }
   },
-  "escalate": true
+  "escalate": false
 }
