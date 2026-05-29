@@ -9,14 +9,14 @@ Start deployment activation from existing CI/CD by using already-present workflo
 
 ## Workflow Evidence
 
-- `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/deploy-docs.yml`
+- `.github/workflows/deploy-docs.yml`
   - Deploy job uses environment `github-pages`
   - Uses `actions/deploy-pages@v5`
-- `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/deployment-enforcement.yml`
+- `.github/workflows/deployment-enforcement.yml`
   - Manual governance gate for `dev`, `stage`, `prod` environments
-- `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/main.yml`
+- `.github/workflows/main.yml`
   - Includes deployment readiness check
-- `/tmp/workspace/GBOGEB/ABACUS/.github/workflows/dow-integration.yml`
+- `.github/workflows/dow-integration.yml`
   - Includes deploy job on `main` push
 
 ## Activation Checklist
