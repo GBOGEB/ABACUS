@@ -19,8 +19,32 @@ federation:
       - runtime_validation
       - orchestration
 
+  auxiliary_planes:
+    - repository: GBOGEB/codespace_jyperter
+      role: auxiliary_plane
+      responsibility:
+        - notebook_runtime
+        - interactive_analysis
+        - codespace_environment
+        - notebook_data_extraction
+      integration_contract: integration/codespace_jyperter/abacus_contract.yaml
+      federation_entry_point: src/federation.py
+      federation_function: assimilate
+      smoke_test: tests/test_smoke_federation.py
+      consumes:
+        - phase: phase1_define
+          artifact: file_scan_results
+        - phase: phase3_analyze
+          artifact: root_cause_analysis_report
+      produces:
+        - artifact: notebook_cell_extracts
+          target_phase: phase2_measure
+        - artifact: notebook_knowledge_source
+          target_phase: phase6_knowledge
+
   federation_objectives:
     - recursive governance convergence
     - autonomous operational orchestration
     - provenance-aware runtime control
     - federated SDLC governance
+    - notebook-driven interactive analysis integration
