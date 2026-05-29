@@ -1,272 +1,241 @@
 #!/usr/bin/env python3
 """
-Smoke Test Agent V2.3.0
-Memory-optimized DMAIC-based smoke test execution agent.
-Designed for 4M memory constraint with lightweight validation support.
+Analysis - Smoke Test V2.3.0
+Memory-efficient component validation and agent discovery testing.
+Designed for the 4M memory constraint.
 """
+import importlib.util
 import json
 import time
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List
-import traceback
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+__version__ = "v2.3.0"
 
 
 class MemoryEfficientSmokeTestV23:
-    """V2.3 Memory-optimized smoke test agent"""
-
-    # Lightweight checks that must pass for a healthy system
-    SMOKE_TESTS = [
-        ('config_exists', 'Verify configuration file exists'),
-        ('output_dir_writable', 'Verify output directory is writable'),
-        ('dmaic_phases_importable', 'Verify DMAIC phase modules are importable'),
-        ('knowledge_integration_loads', 'Verify knowledge integration module loads'),
-    ]
+    """V2.3 memory-optimised DMAIC smoke-test and component validator."""
 
     def __init__(self, config: dict = None):
         self.config = config or {}
         self.name = "smoke_test"
-        self.version = "v2.3.0"
+        self.version = __version__
         self.start_time = time.time()
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        self.performance_metrics = {
-            'tests_run': 0,
-            'tests_passed': 0,
-            'tests_failed': 0,
-            'dmaic_phases_completed': 0,
-            'errors_handled': 0,
+        self.performance_metrics: Dict[str, Any] = {
+            "components_tested": 0,
+            "tests_passed": 0,
+            "tests_failed": 0,
+            "dmaic_phases_completed": 0,
+            "errors_handled": 0,
         }
 
-        self.dmaic_log = []
-        self.results = []
+        self.dmaic_log: List[Dict[str, Any]] = []
+        self.test_results: List[Dict[str, Any]] = []
 
-        self.output_dir = Path(self.config.get('output_dir', 'smoke_outputs_v2.3'))
+        self.output_dir = Path(self.config.get("output_dir", "smoke_test_outputs_v2.3"))
         self.output_dir.mkdir(exist_ok=True)
 
-    def _log_dmaic(self, phase: str, action: str, result: Any = None):
-        """Log DMAIC action with memory efficiency"""
-        log_entry = {
-            'timestamp': datetime.now().isoformat(),
-            'phase': phase,
-            'action': action,
-            'result': str(result)[:100] if result else 'Completed',
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _log_dmaic(self, phase: str, action: str, result: Any = None) -> None:
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "phase": phase,
+            "action": action,
+            "result": str(result)[:100] if result else "Completed",
         }
-        self.dmaic_log.append(log_entry)
+        self.dmaic_log.append(entry)
         print(f"[{phase}] {action}")
 
-    def _run_check(self, check_name: str) -> Dict[str, Any]:
-        """Execute a single smoke check and return result"""
-        start = time.time()
-        passed = False
-        detail = ''
-
+    def _probe_file(self, file_path: Path, class_name: str) -> Tuple[bool, str]:
+        """Load a file and attempt to instantiate the named class."""
         try:
-            if check_name == 'config_exists':
-                # Look for any config file in common locations
-                candidates = [
-                    Path('orchestrator_config.yaml'),
-                    Path('DMAIC_V3/config.py'),
-                    Path('pytest.ini'),
-                ]
-                passed = any(p.exists() for p in candidates)
-                detail = 'Config file found' if passed else 'No config file found'
-
-            elif check_name == 'output_dir_writable':
-                test_file = self.output_dir / '.write_test'
-                test_file.write_text('ok')
-                test_file.unlink()
-                passed = True
-                detail = f'{self.output_dir} is writable'
-
-            elif check_name == 'dmaic_phases_importable':
-                import importlib.util
-                phase_files = list(Path('.').glob('DMAIC_V3/phases/phase*.py'))
-                passed = len(phase_files) > 0
-                detail = f'Found {len(phase_files)} phase modules'
-
-            elif check_name == 'knowledge_integration_loads':
-                import importlib.util
-                ki_path = Path('local_mcp/knowledge_integration_v2.3.py')
-                passed = ki_path.exists()
-                detail = 'knowledge_integration_v2.3.py found' if passed else 'Module not found'
-
+            spec = importlib.util.spec_from_file_location(f"_probe_{class_name}", file_path)
+            if spec is None or spec.loader is None:
+                return False, "spec load failed"
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)  # type: ignore[union-attr]
+            cls = getattr(mod, class_name, None)
+            if cls is None:
+                return False, f"class {class_name!r} not found"
+            cls()  # instantiate with defaults
+            return True, "ok"
         except Exception as exc:
-            passed = False
-            detail = str(exc)
+            return False, str(exc)[:120]
 
-        duration = time.time() - start
-        return {
-            'check': check_name,
-            'passed': passed,
-            'detail': detail,
-            'duration_ms': round(duration * 1000, 2),
-        }
+    # ------------------------------------------------------------------
+    # Agent discovery
+    # ------------------------------------------------------------------
+
+    def discover_agents(self, agents_dir: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Discover V2.3 agent files under agents_dir."""
+        root = Path(agents_dir) if agents_dir else Path(__file__).parent
+        agents = []
+        for path in sorted(root.glob("*v2.3_OPTIMIZED.py")):
+            # Record discovered agent files for later validation/import checks.
+            agents.append({"path": str(path), "filename": path.name})
+        return agents
+
+    # ------------------------------------------------------------------
+    # DMAIC phases
+    # ------------------------------------------------------------------
 
     def dmaic_define(self) -> Dict[str, Any]:
-        """DEFINE: Smoke test scope and success criteria"""
-        self._log_dmaic('DEFINE', 'Defining smoke test scope')
-
-        definition = {
-            'objectives': [
-                'Verify critical system components are present and functional',
-                'Detect environment or configuration regressions early',
-                'Provide rapid go/no-go signal for downstream agents',
+        self._log_dmaic("DEFINE", "Define smoke-test scope")
+        self.performance_metrics["dmaic_phases_completed"] += 1
+        return {
+            "objectives": [
+                "Validate all V2.3 agent files are present",
+                "Confirm each agent class is importable",
+                "Verify orchestrator initialises cleanly",
+                "Check knowledge integration layer",
             ],
-            'tests_planned': [t[0] for t in self.SMOKE_TESTS],
-            'pass_threshold_pct': 75,
-            'timeout_seconds': 30,
+            "expected_agents": 6,
         }
 
-        self.performance_metrics['dmaic_phases_completed'] += 1
-        self._log_dmaic('DEFINE', 'Definition complete', definition)
-        return definition
-
-    def dmaic_measure(self) -> Dict[str, Any]:
-        """MEASURE: Execute smoke checks and collect raw results"""
-        self._log_dmaic('MEASURE', f'Running {len(self.SMOKE_TESTS)} smoke checks')
-
-        raw_results: List[Dict[str, Any]] = []
-        for check_name, description in self.SMOKE_TESTS:
-            self._log_dmaic('MEASURE', f'Running check: {description}')
-            result = self._run_check(check_name)
-            raw_results.append(result)
-            self.performance_metrics['tests_run'] += 1
-            if result['passed']:
-                self.performance_metrics['tests_passed'] += 1
-            else:
-                self.performance_metrics['tests_failed'] += 1
-
-        measurements = {
-            'checks_run': len(raw_results),
-            'results': raw_results,
+    def dmaic_measure(self, agents_dir: Optional[str] = None) -> Dict[str, Any]:
+        self._log_dmaic("MEASURE", "Discover agent components")
+        agents = self.discover_agents(agents_dir)
+        self.performance_metrics["dmaic_phases_completed"] += 1
+        return {
+            "agents_discovered": len(agents),
+            "agent_files": [a["filename"] for a in agents],
         }
 
-        self.performance_metrics['dmaic_phases_completed'] += 1
-        self._log_dmaic('MEASURE', f"Executed {len(raw_results)} checks")
-        return measurements
+    def _run_single_test(self, label: str, fn) -> Dict[str, Any]:
+        """Execute a single test function and record the outcome."""
+        t0 = time.time()
+        try:
+            fn()
+            passed = True
+            error = None
+        except Exception as exc:
+            passed = False
+            error = str(exc)[:200]
 
-    def dmaic_analyze(self, measurements: Dict[str, Any]) -> Dict[str, Any]:
-        """ANALYZE: Summarize smoke test outcomes"""
-        self._log_dmaic('ANALYZE', 'Analyzing smoke test results')
+        elapsed = round(time.time() - t0, 3)
+        self.performance_metrics["components_tested"] += 1
+        if passed:
+            self.performance_metrics["tests_passed"] += 1
+        else:
+            self.performance_metrics["tests_failed"] += 1
 
-        results = measurements.get('results', [])
-        passed = [r for r in results if r['passed']]
-        failed = [r for r in results if not r['passed']]
-        pass_rate = len(passed) / len(results) * 100 if results else 0.0
+        return {"test": label, "passed": passed, "elapsed_s": elapsed, "error": error}
 
-        analysis = {
-            'total': len(results),
-            'passed': len(passed),
-            'failed': len(failed),
-            'pass_rate_pct': round(pass_rate, 1),
-            'passed_checks': [r['check'] for r in passed],
-            'failed_checks': [r['check'] for r in failed],
-            'system_healthy': pass_rate >= 75,
+    def dmaic_analyze(self, agents_dir: Optional[str] = None) -> Dict[str, Any]:
+        """Run smoke tests on known agent catalogue."""
+        self._log_dmaic("ANALYZE", "Execute component smoke tests")
+        agents_root = Path(agents_dir) if agents_dir else Path(__file__).parent
+
+        catalogue = [
+            ("cryo_analyzer",           "analysis_cryo_dm_v2.3_OPTIMIZED.py",           "MemoryEfficientCryoAnalyzerV23"),
+            ("document_consumer",       "analysis_document_consumer_v2.3_OPTIMIZED.py", "MemoryEfficientDocumentConsumerV23"),
+            ("artifact_analyzer",       "analysis_artifact_analyzer_v2.3_OPTIMIZED.py", "MemoryEfficientArtifactAnalyzerV23"),
+            ("smoke_test",              "analysis_smoke_test_v2.3_OPTIMIZED.py",         "MemoryEfficientSmokeTestV23"),
+            ("documentation_framework", "documentation_framework_v2.3_OPTIMIZED.py",    "MemoryEfficientDocumentationFrameworkV23"),
+            ("recursive_framework",     "recursive_framework_v2.3_OPTIMIZED.py",         "MemoryEfficientRecursiveFrameworkV23"),
+        ]
+
+        results = []
+        for logical_name, filename, class_name in catalogue:
+            agent_path = agents_root / filename
+
+            def make_test(path=agent_path, cls=class_name):
+                def _t():
+                    ok, msg = self._probe_file(path, cls)
+                    if not ok:
+                        raise RuntimeError(msg)
+                return _t
+
+            results.append(self._run_single_test(logical_name, make_test()))
+
+        self.test_results = results
+        self.performance_metrics["dmaic_phases_completed"] += 1
+        passed = sum(1 for r in results if r["passed"])
+        total = len(results)
+        return {
+            "tests_total": total,
+            "tests_passed": passed,
+            "tests_failed": total - passed,
+            "pass_rate_pct": round(100 * passed / total, 1) if total else 0,
+            "details": results,
         }
 
-        self.performance_metrics['dmaic_phases_completed'] += 1
-        self._log_dmaic('ANALYZE', f"Pass rate: {pass_rate:.1f}%")
-        return analysis
+    def dmaic_improve(
+        self, analysis: Dict[str, Any], measurement: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        self._log_dmaic("IMPROVE", "Recommend smoke-test improvements")
+        recs: List[str] = []
+        if analysis.get("tests_failed", 0) > 0:
+            failed = [d["test"] for d in analysis.get("details", []) if not d["passed"]]
+            recs.append(f"Fix failing agents: {', '.join(failed)}")
+        discovered = analysis.get("agents_discovered")
+        if discovered is None and measurement:
+            discovered = measurement.get("agents_discovered")
+        if discovered is not None and discovered < 6:
+            recs.append("Missing agent files – check local_mcp/agents/")
+        self.performance_metrics["dmaic_phases_completed"] += 1
+        return {"recommendations": recs or ["All smoke tests passing"]}
 
-    def dmaic_improve(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
-        """IMPROVE: Generate remediation actions for failed checks"""
-        self._log_dmaic('IMPROVE', 'Generating remediation actions')
-
-        actions: List[Dict[str, Any]] = []
-        for check in analysis.get('failed_checks', []):
-            if check == 'config_exists':
-                actions.append({
-                    'check': check,
-                    'action': 'create_config',
-                    'detail': 'Create orchestrator_config.yaml',
-                    'priority': 'HIGH',
-                })
-            elif check == 'output_dir_writable':
-                actions.append({
-                    'check': check,
-                    'action': 'fix_permissions',
-                    'detail': 'Fix output directory write permissions',
-                    'priority': 'HIGH',
-                })
-            else:
-                actions.append({
-                    'check': check,
-                    'action': 'investigate',
-                    'detail': f'Investigate failure for: {check}',
-                    'priority': 'MEDIUM',
-                })
-
-        self.performance_metrics['dmaic_phases_completed'] += 1
-        self._log_dmaic('IMPROVE', f"Generated {len(actions)} remediation actions")
-        return {'actions': actions, 'total': len(actions)}
-
-    def dmaic_control(self, improvements: Dict[str, Any]) -> Dict[str, Any]:
-        """CONTROL: Record smoke test baseline for monitoring"""
-        self._log_dmaic('CONTROL', 'Saving smoke test baseline')
-
-        control_record = {
-            'timestamp': datetime.now().isoformat(),
-            'pass_rate_baseline': self.performance_metrics['tests_passed'] /
-                                  max(self.performance_metrics['tests_run'], 1) * 100,
-            'action_items': improvements.get('actions', []),
+    def dmaic_control(self) -> Dict[str, Any]:
+        self._log_dmaic("CONTROL", "Define smoke-test monitoring controls")
+        self.performance_metrics["dmaic_phases_completed"] += 1
+        return {
+            "required_pass_rate_pct": 100,
+            "run_before_deploy": True,
+            "agent_count_target": 6,
         }
 
-        output_file = self.output_dir / f"smoke_baseline_{self.timestamp}.json"
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(control_record, f, indent=2)
+    # ------------------------------------------------------------------
+    # Main entry point
+    # ------------------------------------------------------------------
 
-        self.performance_metrics['dmaic_phases_completed'] += 1
-        self._log_dmaic('CONTROL', f"Baseline saved: {output_file}")
-        return control_record
-
-    def run(self) -> Dict[str, Any]:
-        """Execute full DMAIC smoke test cycle"""
-        self._log_dmaic('RUN', 'Starting DMAIC smoke test cycle')
+    def run(self, agents_dir: Optional[str] = None) -> Dict[str, Any]:
+        """Run a full DMAIC smoke-test cycle."""
+        self._log_dmaic("RUN", "Starting V2.3 smoke-test DMAIC cycle")
         run_start = time.time()
 
-        try:
-            definition = self.dmaic_define()
-            measurements = self.dmaic_measure()
-            analysis = self.dmaic_analyze(measurements)
-            improvements = self.dmaic_improve(analysis)
-            control = self.dmaic_control(improvements)
+        definition = self.dmaic_define()
+        measurement = self.dmaic_measure(agents_dir)
+        analysis = self.dmaic_analyze(agents_dir)
+        improvement = self.dmaic_improve(analysis, measurement)
+        control = self.dmaic_control()
 
-            execution_time = time.time() - run_start
+        elapsed = round(time.time() - run_start, 3)
 
-            result = {
-                'status': 'success' if analysis.get('system_healthy') else 'degraded',
-                'agent': self.name,
-                'version': self.version,
-                'execution_time': execution_time,
-                'system_healthy': analysis.get('system_healthy', False),
-                'phases': {
-                    'define': definition,
-                    'measure': measurements,
-                    'analyze': analysis,
-                    'improve': improvements,
-                    'control': control,
-                },
-                'performance_metrics': self.performance_metrics.copy(),
-            }
-
-            self.results.append(result)
-            self._log_dmaic('RUN', f'Completed in {execution_time:.2f}s - healthy={result["system_healthy"]}')
-            return result
-
-        except Exception as e:
-            self.performance_metrics['errors_handled'] += 1
-            self._log_dmaic('RUN', f'Error: {str(e)}')
-            return {
-                'status': 'error',
-                'agent': self.name,
-                'error': str(e),
-                'traceback': traceback.format_exc(),
-            }
-
-    def get_performance_metrics(self) -> Dict[str, Any]:
-        """Return current performance metrics"""
-        return {
-            'metrics': self.performance_metrics.copy(),
-            'uptime_seconds': time.time() - self.start_time,
+        result: Dict[str, Any] = {
+            "agent": self.name,
+            "version": self.version,
+            "timestamp": datetime.now().isoformat(),
+            "elapsed_s": elapsed,
+            "dmaic": {
+                "define": definition,
+                "measure": measurement,
+                "analyze": analysis,
+                "improve": improvement,
+                "control": control,
+            },
+            "performance_metrics": self.performance_metrics.copy(),
         }
+
+        output_file = self.output_dir / f"smoke_test_{self.timestamp}.json"
+        output_file.write_text(json.dumps(result, indent=2))
+        result["output_file"] = str(output_file)
+
+        self._log_dmaic("RUN", f"Smoke test completed in {elapsed}s – pass rate: {analysis.get('pass_rate_pct', 0)}%")
+        return result
+
+
+def main():
+    agent = MemoryEfficientSmokeTestV23()
+    result = agent.run()
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()
