@@ -54,3 +54,64 @@ def test_validate_tracker_payload_rejects_invalid_status_schema():
 
     errors = validate_tracker_payload(payload)
     assert errors == ["status_schema must equal ['blocked', 'in_progress', 'planned', 'released', 'validated']"]
+
+
+def test_validate_tuple_metadata_accepts_recursive_tuple_chain():
+    errors = validate_tuple_metadata(
+        [
+            {
+                "tuple_id": "tuple-a",
+                "source": "ci.yml",
+                "validation_log": "ok",
+                "downstream_consumer": "artifact-a",
+                "status": "validated",
+                "consumed_from": ["tuple-c"],
+                "feeds_into": ["tuple-b"],
+            },
+            {
+                "tuple_id": "tuple-b",
+                "source": "validator.py",
+                "validation_log": "ok",
+                "downstream_consumer": "artifact-b",
+                "status": "validated",
+                "consumed_from": ["tuple-a"],
+                "feeds_into": ["tuple-c"],
+            },
+            {
+                "tuple_id": "tuple-c",
+                "source": "manifest.py",
+                "validation_log": "ok",
+                "downstream_consumer": "artifact-c",
+                "status": "validated",
+                "consumed_from": ["tuple-b"],
+                "feeds_into": ["tuple-a", "tuple-c"],
+            },
+        ]
+    )
+    assert errors == []
+
+
+def test_validate_tuple_metadata_rejects_invalid_recursive_references():
+    errors = validate_tuple_metadata(
+        [
+            {
+                "tuple_id": "tuple-a",
+                "source": "ci.yml",
+                "validation_log": "ok",
+                "downstream_consumer": "artifact-a",
+                "status": "validated",
+                "consumed_from": "tuple-missing",
+                "feeds_into": ["tuple-b"],
+            },
+            {
+                "tuple_id": "tuple-b",
+                "source": "validator.py",
+                "validation_log": "ok",
+                "downstream_consumer": "artifact-b",
+                "status": "validated",
+                "feeds_into": ["tuple-c"],
+            },
+        ]
+    )
+    assert "tuple_metadata[0].consumed_from must be a list" in errors
+    assert "tuple_metadata[1].feeds_into references unknown tuple_id: tuple-c" in errors
