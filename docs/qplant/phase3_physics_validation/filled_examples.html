@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>QPS Physics — Filled Examples</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+*{box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;background:#0a0e17;color:#c8d6e5;padding:2rem;line-height:1.7}
+h1{color:#00d4ff;border-bottom:2px solid #00d4ff33;padding-bottom:.5rem}
+h2{color:#ffd700;margin-top:2rem}h3{color:#7bed9f}
+.card{background:#111827;border:1px solid #2d3748;border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+.card h3{margin-top:0}
+.eq{background:#1a1225;padding:1rem;border-radius:8px;margin:.8rem 0;border-left:4px solid #a29bfe;text-align:center;font-size:1.1rem}
+table{border-collapse:collapse;width:100%;margin:.8rem 0}
+th,td{border:1px solid #2d3748;padding:.4rem .8rem;text-align:left}
+th{background:#1a1f36;color:#00d4ff}
+tr:nth-child(even){background:#0d1221}
+.ok{color:#2ecc71}.warn{color:#f39c12}.fail{color:#e74c3c}
+.result{background:#0d2818;border:1px solid #2ecc71;border-radius:8px;padding:1rem;margin:.5rem 0}
+.meta{color:#636e72;font-size:.85rem}
+</style></head><body>
+<h1>📐 QPS Physics — Filled Examples with Actual Sizing</h1>
+<p class="meta">Source: engineering_baseline.json (SSOT v4.3.0) | Validated against QPS MASTER Table 5-6 & Figure 6</p>
+
+<div class="card">
+<h3>1. Design Flow Volumetric Conversion</h3>
+<div class="eq">\[\dot{V} = \frac{\dot{m}}{\rho} = \frac{0.350 \text{ kg/s}}{2.19 \text{ kg/m³}} = 0.1598 \text{ m³/s} = 575 \text{ m³/h}\]</div>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>Unit</th></tr>
+<tr><td>Mass flow (design)</td><td>350</td><td>g/s</td></tr>
+<tr><td>Pressure</td><td>14</td><td>bar(g)</td></tr>
+<tr><td>Temperature</td><td>300</td><td>K</td></tr>
+<tr><td>Density (NIST)</td><td>2.19</td><td>kg/m³</td></tr>
+<tr><td><strong>Volumetric flow</strong></td><td><strong>575</strong></td><td><strong>m³/h</strong></td></tr>
+</table>
+<div class="result">✅ Matches FSD575 capacity rating of 575 Nm³/h (single unit at STP)</div>
+</div>
+
+<div class="card">
+<h3>2. Compressor VFD Operating Points</h3>
+<div class="eq">\[\dot{m}(f) = 112.54 \cdot \frac{f}{72}, \quad P(f) = 315 \cdot \left(\frac{f}{72}\right)^3\]</div>
+<table>
+<tr><th>Scenario</th><th>Demand (g/s)</th><th>Per Unit (g/s)</th><th>Freq (Hz)</th><th>Power/unit (kW)</th><th>Total (kW)</th></tr>
+<tr><td>S1: Nominal</td><td>304</td><td>101.3</td><td>64.8</td><td>230</td><td>690</td></tr>
+<tr><td>S2: Peak</td><td>350</td><td>116.7</td><td>74.6</td><td>351</td><td>1053</td></tr>
+<tr><td>S3: Partial</td><td>180</td><td>90.0</td><td>57.6</td><td>161</td><td>322</td></tr>
+<tr><td>S7: N-1</td><td>225</td><td>112.5</td><td>72.0</td><td>315</td><td>630</td></tr>
+</table>
+<div class="result">⚠️ S2 (350 g/s) requires 74.6 Hz, which is above the 72 Hz rating and outside the stated VFD 30-100% range (21.6-72 Hz). Vendor confirmation needed for 74.6 Hz operation.</div>
+</div>
+
+<div class="card">
+<h3>3. Heat Load → Refrigeration Power</h3>
+<div class="eq">\[W_{comp} = \frac{Q_{4K}}{COP_{real}} = \frac{280 \text{ W}}{0.00426} = 65{,}700 \text{ W} = 65.7 \text{ kW}\]</div>
+<div class="eq">\[COP_{real} = 0.28 \times \frac{4.5}{300 - 4.5} = 0.00426\]</div>
+<div class="result">📊 Required compressor power (65.7 kW) vs installed (1046 kW): ratio 1:16 — compression work dominates over net refrigeration</div>
+</div>
+
+<div class="card">
+<h3>4. LHe Consumption Rate</h3>
+<div class="eq">\[\dot{m}_{LHe} = \frac{Q_{total}}{h_{vap}} = \frac{280}{20.72} = 13.51 \text{ g/s} = 389 \text{ L/h}\]</div>
+<table>
+<tr><th>Metric</th><th>Value</th></tr>
+<tr><td>Total 4K heat load</td><td>280 W</td></tr>
+<tr><td>Latent heat of vaporization</td><td>20.72 J/g (HEPAK)</td></tr>
+<tr><td>Boil-off rate</td><td>13.51 g/s</td></tr>
+<tr><td>Volumetric consumption</td><td>389 L/h</td></tr>
+<tr><td>Daily consumption</td><td>9,344 L/day</td></tr>
+</table>
+<div class="result">📊 At €120/kg helium (SSOT), loss cost = €140/hour without recovery</div>
+</div>
+
+<div class="card">
+<h3>5. Pressure Drop — QRB to WCS</h3>
+<div class="eq">\[\Delta P = f \cdot \frac{L}{D} \cdot \frac{\rho v^2}{2} = 0.0139 \times \frac{50}{0.15} \times \frac{2.19 \times 9.62^2}{2} = 501 \text{ Pa} = 5.0 \text{ mbar}\]</div>
+<div class="result">✅ 5.0 mbar << 50 mbar allowed — 90% margin. Large diameter piping justified.</div>
+</div>
+
+</body></html>
