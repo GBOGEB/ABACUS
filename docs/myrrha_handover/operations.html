@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Operations (β/γ Analysis)</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+.greek{font-family:"Cambria Math",Georgia,serif;font-size:1.15em;color:#0a4d8c;font-weight:600}
+.eq{background:#f6f8fa;border-left:3px solid #0a4d8c;padding:8px 12px;font-family:Consolas,monospace;margin:8px 0}
+.plot{width:100%;height:520px;margin:12px 0;background:#fff;border:1px solid #e1e4e8;border-radius:6px}
+table.k td,table.k th{padding:6px 10px;border:1px solid #d0d7de}
+table.k th{background:#f6f8fa}
+.todo{background:#fff3cd;color:#664d03;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600}
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;background:#e7f1ff;color:#0a4d8c;font-size:12px;margin-right:4px}
+</style>
+</head><body>
+<div class="container">
+<p><a href="index.html">← Hub</a> · <span class="muted">operations.html · v0.4</span></p>
+<h1>Operational Analysis — <span class="greek">β / γ / α</span> Notation</h1>
+<p class="muted">Greek-letter framework for WCS mass-flow operating windows, turndown, and N+1 redundancy.</p>
+
+<div class="card">
+<h2 style="margin-top:0">§1 — Notation System</h2>
+<table class="k">
+<thead><tr><th>Symbol</th><th>Meaning</th><th>Range</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><span class="greek">β</span></td><td>WCS.HP mass flow [g/s]</td><td>200 – 350</td><td><b>β_max = 350 g/s</b> (utility sizing baseline)</td></tr>
+<tr><td><span class="greek">γ</span></td><td>PVPS (WCS.LCC) mass flow [g/s]</td><td>20 – 50</td><td>γ_nominal = 50 (10 units × 5 g/s)</td></tr>
+<tr><td><span class="greek">α</span></td><td>Turndown ratio = γ / γ_max</td><td>0.4 – 1.0</td><td>α_min = 0.4 (20 g/s); α_max = 1.0 (50 g/s)</td></tr>
+<tr><td><b>Σ</b></td><td>Total WCS flow [g/s]</td><td>—</td><td>Σ = β + γ</td></tr>
+</tbody></table>
+<div class="eq">β / β_max  →  fractional notation, e.g. 304 g/s = 0.869·β_max ; 330 g/s = 0.943·β_max</div>
+<div class="eq">β_WCS.HP = 350 − (50 − γ_actual)   ⟺   reservation-based scaling for coldbox compatibility</div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§2 — Operating-Window Surface</h2>
+<p class="muted">Total electrical utility load as a function of (β, γ) over the full operating envelope. Iso-lines mark constant total flow Σ and the Config24/30 design points.</p>
+<div id="surf" class="plot"></div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§3 — Utilities vs <span class="greek">β</span></h2>
+<div class="grid2">
+  <div id="pelec" class="plot" style="height:380px"></div>
+  <div id="pcw" class="plot" style="height:380px"></div>
+</div>
+<div id="phvac" class="plot" style="height:360px"></div>
+<p class="muted">Curves shown for 2-, 3-, and 4-unit HP groupings (VFD linear scaling). Marks: ◆ Config24 (β=304) ★ Config30 (β=330) ● β_max (350).</p>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§4 — Config24 / Config30 Detail</h2>
+<div class="grid2">
+<div>
+<h3>Config30 — β = 330, γ = 50 → Σ = 380 g/s</h3>
+<table class="k">
+<tr><th>HP units</th><td>3 × FSD 475 @ ~66 Hz</td></tr>
+<tr><th>PVPS units</th><td>10 × LP @ nominal (γ = 50)</td></tr>
+<tr><th>β / β_max</th><td>0.943</td></tr>
+<tr><th>Electrical (est.)</th><td>~1.10 MW</td></tr>
+<tr><th>Cooling water</th><td>~52 m³/h</td></tr>
+<tr><th>HVAC</th><td>~110 kW</td></tr>
+</table>
+</div>
+<div>
+<h3>Config24 — β = 304, γ = 50 → Σ = 354 g/s</h3>
+<table class="k">
+<tr><th>HP units</th><td>3 × FSD 475 @ ~61 Hz <i>or</i> 4 × COMBI</td></tr>
+<tr><th>PVPS units</th><td>10 × LP @ nominal (γ = 50)</td></tr>
+<tr><th>β / β_max</th><td>0.869</td></tr>
+<tr><th>Electrical (est.)</th><td>~1.01 MW</td></tr>
+<tr><th>Cooling water</th><td>~48 m³/h</td></tr>
+<tr><th>HVAC</th><td>~101 kW</td></tr>
+</table>
+</div>
+</div>
+
+<h3 style="margin-top:18px">Turndown scenarios <span class="todo">TODO — vendor input</span></h3>
+<table class="k">
+<thead><tr><th>Scenario</th><th>β</th><th>γ</th><th>α</th><th>Σ</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>C30(00)</td><td>330</td><td>50</td><td>1.0</td><td>380</td><td>Nominal</td></tr>
+<tr><td>C30(10)</td><td>330</td><td>20</td><td>0.4</td><td>350</td><td><span class="todo">TODO</span> — 1 PVPS unit, β preserved</td></tr>
+<tr><td>C24(00)</td><td>304</td><td>50</td><td>1.0</td><td>354</td><td>Nominal</td></tr>
+<tr><td>C24(10)</td><td>304</td><td>20</td><td>0.4</td><td>324</td><td><span class="todo">TODO</span> — turndown limit</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">N+1 boundaries</h2>
+<p><span class="pill">HP-N+1</span> Loss of one HP unit → β capped at 2/3·β_max ≈ 233 g/s for 3-unit, or 3/4·β_max for COMBI.</p>
+<p><span class="pill">PVPS-N+1</span> Loss of one of 10 PVPS units → γ_max = 50 g/s (9 units × 5.56 g/s); α_max = 1.0.</p>
+</div>
+</div>
+
+<script>
+// §2 surface
+const beta=[], gamma=[];
+for(let b=200;b<=350;b+=10) beta.push(b);
+for(let g=20;g<=50;g+=2) gamma.push(g);
+const Z=gamma.map(g=>beta.map(b=>{
+  // crude utility model: 3.0 kW per g/s β (HP) + 1.5 kW per g/s γ (PVPS)
+  return (3.0*b + 1.5*g)/1000; // MW
+}));
+Plotly.newPlot('surf',[{
+  type:'surface',x:beta,y:gamma,z:Z,colorscale:'Viridis',
+  contours:{z:{show:true,usecolormap:true,project:{z:true}}},
+  colorbar:{title:'Total elec [MW]'}
+},{
+  type:'scatter3d',mode:'markers+text',
+  x:[304,330,350],y:[50,50,50],z:[(3*304+1.5*50)/1000,(3*330+1.5*50)/1000,(3*350+1.5*50)/1000],
+  marker:{size:6,color:['#d97706','#dc2626','#1f2937']},
+  text:['◆ C24','★ C30','● β_max'],textposition:'top center',name:'design pts'
+}],{
+  margin:{l:0,r:0,t:10,b:0},
+  scene:{xaxis:{title:'β  [g/s]'},yaxis:{title:'γ  [g/s]'},zaxis:{title:'P_elec  [MW]'}}
+},{responsive:true});
+
+// §3 plots
+const bx=[];for(let b=200;b<=350;b+=5) bx.push(b);
+const pelec=n=>bx.map(b=>3.0*b/1000 + 0.05*n); // n units overhead
+Plotly.newPlot('pelec',[
+  {x:bx,y:pelec(2),name:'2 HP units',mode:'lines'},
+  {x:bx,y:pelec(3),name:'3 HP units',mode:'lines'},
+  {x:bx,y:pelec(4),name:'4 HP units (COMBI)',mode:'lines'},
+  {x:[304,330,350],y:[3.0*304/1000+.15,3.0*330/1000+.15,3.0*350/1000+.15],mode:'markers+text',
+   text:['C24','C30','βmax'],textposition:'top center',marker:{size:10,color:'#dc2626'},name:'design'}
+],{title:'Electrical Power vs β',xaxis:{title:'β [g/s]'},yaxis:{title:'P [MW]'},margin:{t:40}},{responsive:true});
+
+Plotly.newPlot('pcw',[
+  {x:bx,y:bx.map(b=>0.157*b),name:'CW flow [m³/h]',mode:'lines',line:{color:'#0ea5e9'}}
+],{title:'Cooling Water vs β',xaxis:{title:'β [g/s]'},yaxis:{title:'CW [m³/h]'},margin:{t:40}},{responsive:true});
+
+Plotly.newPlot('phvac',[
+  {x:bx,y:bx.map(b=>0.10*3.0*b),name:'HVAC ≈ 10% P_elec [kW]',mode:'lines',line:{color:'#16a34a'}}
+],{title:'HVAC Load vs β',xaxis:{title:'β [g/s]'},yaxis:{title:'HVAC [kW]'},margin:{t:40}},{responsive:true});
+</script>
+</body></html>
