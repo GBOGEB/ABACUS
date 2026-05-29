@@ -93,7 +93,7 @@ def test_spec_defines_notebook_plane():
     assert nb.get("repository") == _NOTEBOOK_REPO, (
         f"notebook_plane repository mismatch: {nb.get('repository')}"
     )
-    responsibilities = nb.get("responsibility", [])
+    responsibilities = nb.get("responsibilities", nb.get("responsibility", []))
     assert "notebook_execution" in responsibilities, (
         "'notebook_execution' not listed in notebook_plane responsibilities"
     )

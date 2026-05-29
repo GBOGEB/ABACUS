@@ -4,7 +4,7 @@ federation:
   governance_plane:
     repository: GBOGEB/CODEX
     branch: delta-1-codex-governance-baseline
-    responsibility:
+    responsibilities:
       - governance
       - certification
       - audit
@@ -13,7 +13,7 @@ federation:
   runtime_plane:
     repository: GBOGEB/ABACUS
     branch: delta-1-abacus-delivery-baseline
-    responsibility:
+    responsibilities:
       - ci_cd
       - deployment
       - runtime_validation
@@ -22,7 +22,7 @@ federation:
   notebook_plane:
     repository: GBOGEB/codespace_jyperter
     branch: main
-    responsibility:
+    responsibilities:
       - notebook_execution
       - interactive_analysis
       - artifact_visualization
