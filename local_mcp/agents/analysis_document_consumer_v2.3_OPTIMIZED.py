@@ -145,14 +145,17 @@ class MemoryEfficientDocumentConsumerV23:
 
     def dmaic_measure(self, doc_source: Optional[str] = None) -> Dict[str, Any]:
         self._log_dmaic("MEASURE", "Measure document content")
-        all_lines: List[str] = []
+        total_lines = 0
+        non_empty_lines = 0
         for chunk in self.stream_document(doc_source):
-            all_lines.extend(chunk.get("lines", []))
+            chunk_lines = chunk.get("lines", [])
+            total_lines += len(chunk_lines)
+            non_empty_lines += sum(1 for line in chunk_lines if line.strip())
         self.performance_metrics["documents_processed"] += 1
         self.performance_metrics["dmaic_phases_completed"] += 1
         return {
-            "total_lines": len(all_lines),
-            "non_empty_lines": sum(1 for l in all_lines if l.strip()),
+            "total_lines": total_lines,
+            "non_empty_lines": non_empty_lines,
         }
 
     def dmaic_analyze(self, doc_source: Optional[str] = None) -> Dict[str, Any]:
