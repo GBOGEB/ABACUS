@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Utility Calculations</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Abacus_Logo.svg/960px-Abacus_Logo.svg.png?_=20160430232533' viewBox='0 0 32 32'><text y='26' font-size='26'>🧮</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+.eq{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;margin:10px 0;font-size:14px;overflow-x:auto}
+.todo{background:#FFE9D6;border:1px solid #D85A30;color:#7a2f0e;border-radius:8px;padding:10px;margin:8px 0;font-size:13px}
+[data-theme=dark] .todo{background:#3a1d10;color:#ffb78a}
+</style>
+</head><body>
+<div class="container">
+<h1>Utility Calculations</h1>
+<p class="muted">All math at the <b>baseline 350 g/s @ 14 barG</b>. Per-skid figures from vendor sheets; plant figures = per-skid × deployed-skid count. <span class="tag">linked to <a href="truth.html">truth.html</a></span></p>
+
+<div class="card">
+<h2 style="margin-top:0">Notation</h2>
+<table><tbody>
+<tr><th>$\dot m$</th><td>mass flow [g/s, kg/s]</td></tr>
+<tr><th>$P$</th><td>electrical / shaft power [kW]</td></tr>
+<tr><th>$\dot Q$</th><td>heat duty [kW]</td></tr>
+<tr><th>$\dot V$</th><td>volumetric flow [m³/h]</td></tr>
+<tr><th>$c_p$</th><td>water specific heat = 4.186 kJ/(kg·K)</td></tr>
+<tr><th>$\rho$</th><td>water density ≈ 995 kg/m³ (≈55 °C bulk)</td></tr>
+</tbody></table>
+</div>
+
+<h2>1 · Electricity at baseline 350 g/s</h2>
+<div class="card">
+<p>Per-skid package input multiplied by 3 deployed skids (HP4 = N+1):</p>
+<div class="eq">$P_\text{plant,ALaT} = 3 \times 348.54 = \mathbf{1045.62~\text{kW}}$</div>
+<div class="eq">$P_\text{plant,LKT,nom} = 3 \times 266 = \mathbf{798~\text{kW}}$</div>
+<div class="eq">$P_\text{plant,LKT,max} = 3 \times 289 = \mathbf{867~\text{kW}}$</div>
+<p>For 350 g/s, ALaT remains within 3-skid duty <em>only</em> by extrapolating beyond 72 Hz; LKT requires a fourth duty skid (no longer N+1) or a 4-unit FSD 575 layout.</p>
+<div class="todo">TODO — confirm motor service-factor and starter inrush at 72 Hz+ (vendor).</div>
+</div>
+
+<h2>2 · PCW (Process Cooling Water)</h2>
+<div class="card">
+<p>Sensible heat balance on PCW:</p>
+<div class="eq">$\dot Q = \dot m_\text{w}\, c_p\, \Delta T \;\;\Longrightarrow\;\; \dot V = \dfrac{3600\,\dot Q}{\rho\, c_p\, \Delta T}$</div>
+<p>Per-skid heat from datasheet: ALaT 323.9 kW · LKT 230.9 kW. Per-skid CW: ALaT 18.2 m³/h · LKT 15.5 m³/h. Implied vendor ΔT (back-calc):</p>
+<div class="eq">$\Delta T_\text{ALaT} = \dfrac{3600 \cdot 323.9}{995 \cdot 4.186 \cdot 18.2} \approx \mathbf{15.4~\text{K}}$</div>
+<div class="eq">$\Delta T_\text{LKT} = \dfrac{3600 \cdot 230.9}{995 \cdot 4.186 \cdot 15.5} \approx \mathbf{12.9~\text{K}}$</div>
+<p>3-skid plant totals at 350 g/s baseline:</p>
+<table><thead><tr><th>Vendor</th><th>$\dot Q_\text{PCW}$ (kW)</th><th>$\dot V_\text{PCW}$ (m³/h)</th></tr></thead>
+<tbody>
+<tr><td>ALaT 575</td><td>971.7</td><td>54.6</td></tr>
+<tr><td>LKT 475 (machine sheet)</td><td>692.7</td><td>46.5</td></tr>
+<tr><td>LKT 475 (battery-limit allowance)</td><td>—</td><td>60</td></tr>
+</tbody></table>
+<div class="todo">TODO — reconcile LKT machine-sheet 15.5 m³/h vs site 20 m³/h allowance with utility group.</div>
+</div>
+
+<h2>3 · RCW for HCC oil precool</h2>
+<div class="card">
+<p>Boundary conditions (locked):</p>
+<ul>
+<li>$T_\text{in}=30~°C$ nominal</li>
+<li>$T_\text{out,max}=85~°C$ (ceiling)</li>
+<li>$\Delta T_\text{design}=25~\text{K}$ (30 → 55 °C)</li>
+</ul>
+<p>Required RCW volumetric flow as a function of duty $\dot Q_\text{oil}$:</p>
+<div class="eq">$\dot V_\text{RCW} = \dfrac{3600\,\dot Q_\text{oil}}{\rho\, c_p\, \Delta T} = \dfrac{3600\,\dot Q_\text{oil}}{995 \cdot 4.186 \cdot 25}\;\;\text{m}^3/\text{h}$</div>
+<p>Numerical sensitivity (3 deployed skids, oil-cooler load assumed equal to the package waste-to-air values per skid as a first proxy):</p>
+<table><thead><tr><th>Source proxy</th><th>$\dot Q_\text{oil}$ per skid (kW)</th><th>3-skid $\dot Q$ (kW)</th><th>$\dot V_\text{RCW}$ (m³/h)</th></tr></thead><tbody>
+<tr><td>ALaT waste-to-ambient</td><td>14.2</td><td>42.6</td><td>1.47</td></tr>
+<tr><td>LKT waste-to-ambient</td><td>5.1</td><td>15.3</td><td>0.53</td></tr>
+<tr><td>Placeholder oil-cooler 50 kW</td><td>50</td><td>150</td><td>5.18</td></tr>
+<tr><td>Placeholder oil-cooler 100 kW</td><td>100</td><td>300</td><td>10.36</td></tr>
+</tbody></table>
+<div class="todo">TODO — replace placeholders with vendor oil-cooler thermal curve. Both ALaT and LKT pre-studies do not isolate the oil-cooler duty from the package CW total in the released excerpts.</div>
+</div>
+
+<h2>4 · Sample calculation walk-through (ALaT @ 336 g/s)</h2>
+<div class="card">
+<p>Capacity check:</p>
+<div class="eq">$\dot m_\text{per skid} = \dfrac{336}{3} = 112~\text{g/s}$ &nbsp; ≤ &nbsp; $112.54~\text{g/s}$ basis ⇒ <span class="tag ok">OK</span></div>
+<div class="eq">$f_\text{est} = 72 \cdot \dfrac{112}{112.54} \approx 71.65~\text{Hz}$</div>
+<p>Plant utilities (linear scaling on package input):</p>
+<div class="eq">$P_\text{plant} \approx 3 \cdot 348.54 \cdot \dfrac{112}{112.54} \approx \mathbf{1040.6~\text{kW}}$</div>
+<div class="eq">$\dot Q_\text{PCW} \approx 3 \cdot 323.9 \cdot \dfrac{112}{112.54} \approx \mathbf{966.9~\text{kW}}$</div>
+<p class="muted" style="font-size:12px">Linear scaling is conservative for screw compressors at constant pressure ratio — actual specific-power degrades slightly off the design point.</p>
+</div>
+
+<h2>5 · PVPS (WCS.LCC) — isothermal sizing at γ = 50 g/s</h2>
+<div class="card">
+<p><b>Status:</b> <span class="tag warn">v0.4 placeholder pending vendor confirmation</span>. Sizing uses an <b>isothermal compression baseline</b> with <b>η<sub>iso</sub> = 0.50</b> and motor efficiency <b>η<sub>mot</sub> = 0.967</b> (Kaeser-class).</p>
+<p>Helium ideal-gas isothermal work for $\dot m = 0.050$ kg/s, $T = 293$ K, $p_1 = 0.1$ barA, $p_2 = 1.05$ barA, $R_\text{He} = 2077$ J/(kg·K):</p>
+<div class="eq">$\dot W_\text{iso} = \dot m\, R\, T\, \ln(p_2/p_1) = 0.050 \cdot 2077 \cdot 293 \cdot \ln(10.5) \approx \mathbf{71.55~\text{kW}}$</div>
+<div class="eq">$\dot W_\text{shaft} = \dot W_\text{iso} / \eta_\text{iso} = 71.55 / 0.50 = \mathbf{143.1~\text{kW}}$</div>
+<div class="eq">$P_\text{motor} = \dot W_\text{shaft} / \eta_\text{mot} = 143.1 / 0.967 \approx \mathbf{147.98~\text{kW}}$</div>
+<p>Heat split: HVAC = 10 % of motor electrical, cooling water = 90 % of remaining heat.</p>
+<div class="eq">$\dot Q_\text{HVAC} = 0.10 \cdot 147.98 \approx \mathbf{14.80~\text{kW}}$</div>
+<div class="eq">$\dot Q_\text{CW} = 0.90 \cdot 147.98 \approx \mathbf{133.18~\text{kW}}$</div>
+<div class="eq">$\dot V_\text{CW} = \dfrac{3600 \cdot 133.18}{995 \cdot 4.186 \cdot 15} \approx \mathbf{7.67~\text{m}^3/\text{h}}$ &nbsp;(at ΔT = 15 K)</div>
+
+<h3>Per-unit and total breakdown</h3>
+<table><thead><tr><th>Quantity</th><th>Per unit (5.0 g/s)</th><th>10-unit total (γ = 50 g/s)</th><th>9-unit N+1 (5.56 g/s ea)</th></tr></thead><tbody>
+<tr><td>Motor power</td><td>14.80 kW</td><td>147.98 kW</td><td>16.44 kW (per unit)</td></tr>
+<tr><td>HVAC load</td><td>1.48 kW</td><td>14.80 kW</td><td>1.64 kW (per unit)</td></tr>
+<tr><td>CW heat reject</td><td>13.32 kW</td><td>133.18 kW</td><td>14.80 kW (per unit)</td></tr>
+<tr><td>CW flow @ ΔT 15 K</td><td>0.77 m³/h</td><td>7.67 m³/h</td><td>0.85 m³/h (per unit)</td></tr>
+</tbody></table>
+<div class="todo">TODO — replace with vendor map once PVPS supplier selected. Adiabatic vs isothermal correction may shift motor sizing by ±20 %.</div>
+</div>
+
+<h2>6 · RCW Heat Exchanger Sizing &amp; COMBI Analysis</h2>
+<div class="card">
+<p><b>Linked detailed view: <a href="hx-sizing.html">hx-sizing.html</a></b> — interactive Plotly with drop-pin tool-tips and PNG/SVG/PDF export.</p>
+
+<h3>6.1 HCC cooling-water split (per skid)</h3>
+<div class="eq">$\dot Q_\text{He,sensible} = \dot m_\text{He}\,c_{p,\text{He}}\,\Delta T_\text{He} = 0.11254 \cdot 5.193 \cdot 216 \approx 126.3~\text{kW}$</div>
+<div class="eq">$\dot Q_\text{oil} = \dot Q_\text{CW,tot} - \dot Q_\text{He} = 323.9 - 126.3 \approx \mathbf{197.6~\text{kW}}$</div>
+<div class="eq">$\dot m_\text{oil} = \dfrac{\dot Q_\text{oil}}{c_{p,\text{oil}}\Delta T_\text{oil}} = \dfrac{197.6}{2.10 \cdot 55} \approx 1.71~\text{kg/s}$</div>
+
+<h3>6.2 RCW HX sizing (oil duty, ΔT 25 K)</h3>
+<div class="eq">$\dot V_\text{RCW,skid} = \dfrac{3600 \cdot 197.6}{995 \cdot 4.186 \cdot 25} \approx \mathbf{6.83~\text{m}^3/\text{h}}$</div>
+<table><thead><tr><th>Skids</th><th>$\dot Q_\text{oil}$ (kW)</th><th>$\dot V_\text{RCW}$ (m³/h)</th></tr></thead><tbody>
+<tr><td>3 (baseline)</td><td>592.8</td><td>20.5</td></tr>
+<tr><td>4 (COMBI)</td><td>790.4</td><td>27.3</td></tr>
+</tbody></table>
+
+<h3>6.3 COMBI VFD scaling (linear @ constant pressure ratio)</h3>
+<div class="eq">$\dot m(f) = 112.54 \cdot \dfrac{f}{72}~\text{g/s},\quad P(f) = 315 \cdot \dfrac{f}{72}~\text{kW},\quad \dot V_\text{CW}(f) = 18.2 \cdot \dfrac{f}{72}~\text{m}^3/\text{h}$</div>
+<table><thead><tr><th>Unit</th><th>f (Hz)</th><th>ṁ (g/s)</th><th>P (kW)</th><th>V_CW (m³/h)</th></tr></thead><tbody>
+<tr><td>Fixed</td><td>64</td><td>100.04</td><td>280.0</td><td>16.18</td></tr>
+<tr><td>VFD design</td><td>60</td><td>93.78</td><td>262.5</td><td>15.17</td></tr>
+<tr><td>2-unit COMBI design</td><td>64+60</td><td><b>193.82</b></td><td>542.5</td><td>31.35</td></tr>
+<tr><td>4-unit COMBI design</td><td>2×64 + 2×60</td><td><b>387.64</b></td><td>1085.0</td><td>62.70</td></tr>
+</tbody></table>
+
+<h3>6.4 Sample calculation — 304 g/s (Config24, 3 VFD)</h3>
+<div class="eq">$\dot m_\text{per unit} = 304/3 = 101.33~\text{g/s} \Rightarrow f = 72 \cdot 101.33/112.54 = \mathbf{64.83~\text{Hz}}$</div>
+<div class="eq">$\sum P = 3 \cdot 315 \cdot 101.33/112.54 = \mathbf{850.7~\text{kW}},\quad \sum \dot V_\text{CW} = 3 \cdot 18.2 \cdot 101.33/112.54 = \mathbf{49.2~\text{m}^3/\text{h}}$</div>
+
+<h3>6.5 Sample calculation — 344 g/s (4 VFD preferred)</h3>
+<div class="eq">$\dot m_\text{per unit} = 344/4 = 86~\text{g/s} \Rightarrow f = 72 \cdot 86/112.54 = \mathbf{55.0~\text{Hz}}$ &nbsp;(in band)</div>
+<div class="eq">$\sum P = 4 \cdot 315 \cdot 86/112.54 = \mathbf{962.7~\text{kW}},\quad \sum \dot V_\text{CW} = 55.7~\text{m}^3/\text{h}$</div>
+<div class="eq">3-unit alternative: $f = 72 \cdot 114.67/112.54 = 73.4~\text{Hz}$ ⇒ <span class="tag warn">over 72 Hz vendor envelope</span></div>
+
+<h3>6.6 N+1 loss-of-HX impact (3-skid baseline)</h3>
+<div class="eq">$\dot Q_\text{avail} = 2 \cdot 200 = 400~\text{kW}$ vs required 593 kW ⇒ deficit 193 kW (~32 % He turn-down or oil-loop +5 K)</div>
+<div class="todo">TODO — vendor confirmation of fixed-speed @ 64 Hz mechanical option (gearbox vs locked-VFD); Kaeser oil-cooler thermal curve; QRB warm-end interface He temp.</div>
+</div>
+
+<h2>7 · Open math TODOs</h2>
+<div class="card">
+<ul>
+<li>Off-design polytropic correction at ≠ design pressure ratio.</li>
+<li>VFD efficiency map @ 50–75 Hz.</li>
+<li>Oil-cooler approach temperature vs RCW return.</li>
+<li>LCC / PVPS power and cooling at 50 g/s.</li>
+<li>Combined HCC + LCC plant utility roll-up.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2 id="thermo">§7 Thermodynamic Analysis — Energy and Exergy Balances</h2>
+<p class="muted">Full interactive charts on <a href="thermo-analysis.html"><b>thermo-analysis.html</b></a>. Calculation steps below.</p>
+
+<h3>7.1 Isothermal compression work</h3>
+<p>Reversible isothermal work on an ideal gas:</p>
+<p>$$W_{iso} = \dot m\, R\, T_s\, \ln\!\left(\frac{P_2}{P_1}\right)$$</p>
+<ul>
+<li><b>HCC, 350 g/s, 1.05→14 barA, T_s=308 K:</b> W_iso = 0.350·2077.1·308·ln(13.33) = <b>580.0 kW</b></li>
+<li><b>PVPS, 50 g/s, 0.10→1.05 barA, T_s=293 K:</b> W_iso = 0.050·2077.1·293·ln(10.5) = <b>71.55 kW</b></li>
+</ul>
+
+<h3>7.2 Shaft and electrical demand (η_iso = 50%, η_motor = 96.7%)</h3>
+<p>$$W_{shaft} = \frac{W_{iso}}{\eta_{iso}}, \qquad P_{el} = \frac{W_{shaft}}{\eta_{motor}}$$</p>
+<ul>
+<li>HCC shaft = 580/0.50 = <b>1 160 kW</b>; HCC electrical = 1160/0.967 = <b>1 199.6 kW</b> (3 motors)</li>
+<li>PVPS shaft = <b>143.1 kW</b>; PVPS electrical = <b>148.0 kW</b> (10 motors)</li>
+<li>HVAC (10% of motor electrical) = <b>134.7 kW</b> → <b>Grand total ≈ 1 482 kW</b></li>
+</ul>
+
+<h3>7.3 Polytropic / actual discharge from heat balance (FSD 575)</h3>
+<p>Given: motor 315 kW, shaft 304.6 kW, 112.5 g/s, cooling water 323.9 kW. With Wiso = 186.4 kW:</p>
+<p>$$\eta_{iso,eff} = \frac{W_{iso}}{W_{shaft}} = \frac{186.4}{304.6} = 61.2\%$$</p>
+<p>Excess heat dissipated = 304.6 − 186.4 = <b>118.2 kW</b>. If all heated the gas adiabatically:
+$\Delta T = 118200/(0.1125·5193) = 202\,\text{K}$ → T_d ≈ 510 K. In practice oil-flooded screw → effective gas T after package ≈ 360–400 K (oil cooling intercepts ~60% of compression heat).</p>
+
+<h3>7.4 Exergy balance</h3>
+<p>For an ideal-gas stream relative to environment (T₀, P₀):</p>
+<p>$$\dot E = \dot m\big[c_p(T-T_0) - T_0 c_p\ln(T/T_0) + R T_0 \ln(P/P_0)\big]$$</p>
+<p>For isothermal compression (T = T₀): $\dot E_{out} = \dot m R T_0 \ln(P/P_0) = W_{iso}$.</p>
+<ul>
+<li>Useful exergy delivered: 580 + 71.6 = <b>651.6 kW</b></li>
+<li>Exergy in (electrical, pure exergy): <b>1 482 kW</b></li>
+<li>Second-law efficiency: η_II = 651.6/1482 = <b>44.0%</b></li>
+<li>Exergy destruction breakdown: motor irreversibility 44.5 kW, compression irreversibility 651.6 kW, HVAC 134.7 kW</li>
+</ul>
+
+<h3>7.5 Cooling-water heat split</h3>
+<p>Per HCC unit at 350/3 = 117 g/s: shaft 387 kW, excess heat 193 kW → ~60% to RCW oil (116 kW), ~40% to PCW gas sensible (77 kW).</p>
+</div>
+
+<p class="muted">↩ <a href="index.html">Hub</a> · <a href="truth.html">Truth</a> · <a href="reports.html">Reports</a> · <a href="thermo-analysis.html">Thermo charts</a></p>
+</div>
+</body></html>
