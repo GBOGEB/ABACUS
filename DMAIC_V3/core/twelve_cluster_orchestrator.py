@@ -10,8 +10,9 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from threading import Lock
 from typing import Any, Callable, Dict, List, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
+from concurrent.futures import ALL_COMPLETED, ThreadPoolExecutor, wait
 
 try:
     import sys
@@ -185,45 +186,36 @@ class TwelveClusterOrchestrator:
         results_map: Dict[str, Any] = {}
 
         if self.use_keb and self.keb:
-            # Keep existing behavior with KEB scheduling while preserving deterministic result map fallback.
+            state_lock = Lock()
+            execution_state = {"tasks_executed": 0, "tasks_failed": 0}
             self.keb.start()
             for cluster, chunk in cluster_chunk_pairs:
                 cluster.status = "running"
                 for task_idx, task in enumerate(chunk):
                     task_id = f"{phase}_cluster{cluster.cluster_id}_task{task_idx}"
+                    key = task.get("file_path") or task.get("task_id") or f"{cluster.name}:{task_idx}"
                     self.keb.schedule_task(
                         task_id=task_id,
-                        func=self._execute_task,
+                        func=self._execute_task_and_capture,
                         priority=cluster.priority,
-                        args=(task, cluster),
+                        args=(task, cluster, key, results_map, execution_state, state_lock),
                     )
 
-            while not self.keb.task_queue.empty():
-                time.sleep(0.1)
-
-            time.sleep(0.2)
+            task_queue = getattr(self.keb, "task_queue", None)
+            if task_queue is not None and hasattr(task_queue, "join"):
+                task_queue.join()
+            else:
+                while task_queue is not None and not task_queue.empty():
+                    time.sleep(0.1)
             self.keb.stop()
 
-            tasks_executed = 0
-            tasks_failed = 0
             for cluster, chunk in cluster_chunk_pairs:
                 cluster.status = "idle"
-                for task in chunk:
-                    key = task.get("file_path") or task.get("task_id") or f"{cluster.name}:{tasks_executed}"
-                    try:
-                        result = self._execute_task(task, cluster)
-                        results_map[key] = result
-                        cluster.tasks_executed += 1
-                        tasks_executed += 1
-                    except Exception as exc:
-                        results_map[key] = {"success": False, "error": str(exc)}
-                        cluster.tasks_failed += 1
-                        tasks_failed += 1
 
             result = {
-                "success": tasks_failed == 0,
-                "tasks_executed": tasks_executed,
-                "tasks_failed": tasks_failed,
+                "success": execution_state["tasks_failed"] == 0,
+                "tasks_executed": execution_state["tasks_executed"],
+                "tasks_failed": execution_state["tasks_failed"],
                 "clusters_used": len(phase_clusters),
                 "execution_time": time.time() - start_time,
                 "results_map": results_map,
@@ -231,25 +223,29 @@ class TwelveClusterOrchestrator:
         else:
             tasks_executed = 0
             tasks_failed = 0
-            with ThreadPoolExecutor(max_workers=min(len(phase_clusters), self.max_workers)) as executor:
+            executor = ThreadPoolExecutor(max_workers=min(len(phase_clusters), self.max_workers))
+            try:
                 futures = {}
                 for cluster, chunk in cluster_chunk_pairs:
                     cluster.status = "running"
                     future = executor.submit(self._execute_cluster_tasks, cluster, chunk, phase)
                     futures[future] = (cluster, len(chunk))
 
-                for future in as_completed(futures):
+                done_futures, pending_futures = wait(
+                    list(futures.keys()),
+                    timeout=self.task_timeout_seconds,
+                    return_when=ALL_COMPLETED,
+                )
+
+                for future in done_futures:
                     cluster, chunk_len = futures[future]
                     try:
-                        outcome = future.result(timeout=self.task_timeout_seconds)
+                        outcome = future.result()
                         cluster.tasks_executed += outcome["tasks_executed"]
                         cluster.tasks_failed += outcome["tasks_failed"]
                         tasks_executed += outcome["tasks_executed"]
                         tasks_failed += outcome["tasks_failed"]
                         results_map.update(outcome["results_map"])
-                    except FuturesTimeoutError:
-                        cluster.tasks_failed += chunk_len
-                        tasks_failed += chunk_len
                     except Exception as exc:
                         cluster.tasks_failed += chunk_len
                         tasks_failed += chunk_len
@@ -257,7 +253,22 @@ class TwelveClusterOrchestrator:
                             "success": False,
                             "error": str(exc),
                         }
-                    finally:
+                    cluster.status = "idle"
+
+                for future in pending_futures:
+                    cluster, chunk_len = futures[future]
+                    future.cancel()
+                    cluster.tasks_failed += chunk_len
+                    tasks_failed += chunk_len
+                    results_map[f"{phase}:{cluster.cluster_id}:timeout"] = {
+                        "success": False,
+                        "error": f"Cluster execution exceeded {self.task_timeout_seconds}s timeout",
+                    }
+                    cluster.status = "idle"
+            finally:
+                executor.shutdown(wait=False, cancel_futures=True)
+                for cluster, _ in cluster_chunk_pairs:
+                    if cluster.status == "running":
                         cluster.status = "idle"
 
             result = {
@@ -307,6 +318,31 @@ class TwelveClusterOrchestrator:
             return task_func(*task_args, **task_kwargs)
         return task
 
+    def _execute_task_and_capture(
+        self,
+        task: Dict[str, Any],
+        cluster: ClusterConfig,
+        key: str,
+        results_map: Dict[str, Any],
+        execution_state: Dict[str, int],
+        state_lock: Lock,
+    ) -> None:
+        failed = False
+        try:
+            result = self._execute_task(task, cluster)
+        except Exception as exc:
+            failed = True
+            result = {"success": False, "error": str(exc)}
+
+        with state_lock:
+            results_map[key] = result
+            execution_state["tasks_executed"] += 1
+            if failed:
+                execution_state["tasks_failed"] += 1
+                cluster.tasks_failed += 1
+            else:
+                cluster.tasks_executed += 1
+
     def run_phases_with_hooks(
         self,
         iteration: int,
@@ -315,7 +351,9 @@ class TwelveClusterOrchestrator:
         """
         Run phase1-phase8 with standardized temporal start/end hooks.
         """
+        self.temporal_events = []
         phase_results: Dict[str, Dict[str, Any]] = {}
+        aborted = False
         for phase in self.PHASE_SEQUENCE:
             phase_cluster_ids = [c.cluster_id for c in self.clusters.values() if c.phase == phase]
             self._record_temporal_event(
@@ -336,9 +374,10 @@ class TwelveClusterOrchestrator:
                 if not result.get("success"):
                     error = f"Phase failed with {result.get('tasks_failed', 0)} failed tasks"
             except Exception as exc:
-                result = {"success": False, "error": str(exc), "tasks_executed": 0, "tasks_failed": 0}
+                result = {"success": False, "error": str(exc), "tasks_executed": 0, "tasks_failed": 1}
                 phase_results[phase] = result
                 error = str(exc)
+                aborted = True
             duration = time.time() - start
             self._record_temporal_event(
                 phase=phase,
@@ -355,15 +394,16 @@ class TwelveClusterOrchestrator:
 
         total_executed = sum(p.get("tasks_executed", 0) for p in phase_results.values())
         total_failed = sum(p.get("tasks_failed", 0) for p in phase_results.values())
+        success = (total_failed == 0) and not aborted
         return {
-            "success": total_failed == 0,
+            "success": success,
             "iteration": iteration,
             "phases_run": list(phase_results.keys()),
             "phase_results": phase_results,
             "total_tasks_executed": total_executed,
             "total_tasks_failed": total_failed,
             "temporal_events": list(self.temporal_events),
-            "final_status": "completed" if total_failed == 0 else "failed",
+            "final_status": "completed" if success else "failed",
         }
 
     def get_cluster_status(self) -> Dict[str, Any]:

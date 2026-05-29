@@ -1,3 +1,5 @@
+import time
+
 from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
 
 
@@ -70,3 +72,52 @@ def test_end_to_end_12_cluster_with_sample_cryo_data_emits_temporal_hooks():
     assert all(evt["status"] in {"started", "completed"} for evt in temporal_events)
     assert any(set(evt["clusters"]) == {9, 10} for evt in start_events if evt["phase"] == "phase7")
     assert all(evt["artifacts"] for evt in end_events)
+
+
+def test_temporal_events_are_scoped_per_run():
+    orchestrator = TwelveClusterOrchestrator(use_keb=False, use_gbogeb=False)
+
+    def phase_task_factory(_phase):
+        return [{"task_id": "one", "func": lambda: {"success": True}}]
+
+    first = orchestrator.run_phases_with_hooks(iteration=1, phase_task_factory=phase_task_factory)
+    second = orchestrator.run_phases_with_hooks(iteration=2, phase_task_factory=phase_task_factory)
+
+    assert len(first["temporal_events"]) == 16
+    assert len(second["temporal_events"]) == 16
+    assert all(event["iteration"] == 2 for event in second["temporal_events"])
+
+
+def test_run_phases_with_hooks_marks_exceptional_phase_failed():
+    orchestrator = TwelveClusterOrchestrator(use_keb=False, use_gbogeb=False)
+
+    def phase_task_factory(phase):
+        if phase == "phase1":
+            raise RuntimeError("boom")
+        return []
+
+    result = orchestrator.run_phases_with_hooks(iteration=1, phase_task_factory=phase_task_factory)
+
+    assert result["success"] is False
+    assert result["final_status"] == "failed"
+    assert result["total_tasks_failed"] >= 1
+    assert result["phase_results"]["phase1"]["tasks_failed"] >= 1
+
+
+def test_execute_phase_parallel_enforces_cluster_timeout(monkeypatch):
+    orchestrator = TwelveClusterOrchestrator(use_keb=False, use_gbogeb=False, task_timeout_seconds=1)
+
+    def blocking_cluster_runner(cluster, tasks, phase):
+        time.sleep(2)
+        return {"tasks_executed": len(tasks), "tasks_failed": 0, "results_map": {}}
+
+    monkeypatch.setattr(orchestrator, "_execute_cluster_tasks", blocking_cluster_runner)
+    tasks = [{"task_id": f"t{idx}", "func": lambda: {"success": True}} for idx in range(2)]
+
+    start = time.time()
+    result = orchestrator.execute_phase_parallel("phase1", tasks, iteration=1)
+    elapsed = time.time() - start
+
+    assert elapsed < 2
+    assert result["success"] is False
+    assert result["tasks_failed"] == 2

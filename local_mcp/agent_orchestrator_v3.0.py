@@ -177,21 +177,33 @@ class AgentOrchestratorV3:
         """Execute full DMAIC cycle through canonical 12-cluster orchestrator."""
         self._log_dmaic('DMAIC', 'Starting full DMAIC cycle')
 
+        if not self.initialized:
+            self.initialize_agents()
+
+        loaded_agents = [
+            name for name, info in self.agents.items()
+            if info.get('status') == 'loaded'
+        ]
+        if not loaded_agents:
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "overall_status": "failed",
+                "error": "No loaded agents available for DMAIC execution",
+                "phase_results": {},
+                "temporal_events": [],
+            }
+
         cycle_start = time.time()
-        sample_payloads = [{"sample": idx, "source": data_source or "default"} for idx in range(12)]
 
         def phase_task_factory(phase: str) -> List[Dict[str, Any]]:
             return [
                 {
-                    "task_id": f"{phase}-{payload['sample']}",
-                    "func": lambda p=payload, phase_name=phase: {
-                        "success": True,
-                        "phase": phase_name,
-                        "sample": p["sample"],
-                        "source": p["source"],
-                    }
+                    "task_id": f"{phase}-{agent_name}",
+                    "func": lambda selected_agent=agent_name, phase_name=phase: self._execute_phase_agent_task(
+                        selected_agent, phase_name, data_source
+                    ),
                 }
-                for payload in sample_payloads
+                for agent_name in loaded_agents
             ]
 
         canonical_result = self.cluster_orchestrator.run_phases_with_hooks(
@@ -199,7 +211,6 @@ class AgentOrchestratorV3:
             phase_task_factory=phase_task_factory,
         )
         self.performance_metrics['dmaic_phases_completed'] = len(canonical_result.get('phases_run', []))
-        self.performance_metrics['tasks_executed'] += canonical_result.get('total_tasks_executed', 0)
         self.performance_metrics['total_execution_time'] += time.time() - cycle_start
 
         self._log_dmaic('DMAIC', f"DMAIC cycle {canonical_result.get('final_status')} in {time.time() - cycle_start:.2f}s")
@@ -210,6 +221,21 @@ class AgentOrchestratorV3:
             "cluster_contract": self.cluster_orchestrator.get_cluster_contract(),
             "phase_results": canonical_result.get("phase_results", {}),
             "temporal_events": canonical_result.get("temporal_events", []),
+            "agents_executed": loaded_agents,
+        }
+
+    def _execute_phase_agent_task(self, agent_name: str, phase: str, data_source: Optional[str]) -> Dict[str, Any]:
+        result = self.execute_agent(
+            agent_name=agent_name,
+            task_config={"phase": phase, "data_source": data_source},
+        )
+        if result.get("status") != "success":
+            raise RuntimeError(result.get("error", f"{agent_name} execution failed"))
+        return {
+            "success": True,
+            "agent": agent_name,
+            "phase": phase,
+            "result": result.get("result"),
         }
 
     def get_cluster_contract(self) -> List[Dict[str, Any]]:
