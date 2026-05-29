@@ -57,7 +57,7 @@
     }
   },
   
-  "postCreateCommand": "pip install --upgrade pip && pip install -r DMAIC_V3/requirements.txt && gh auth status || echo 'Please run: gh auth login'",
+  "postCreateCommand": "pip install --upgrade pip && pip install -r DMAIC_V3/requirements.txt && gh auth status || echo 'Please run: gh auth login' && python -c \"from src.dmaic.federation import assimilate; r=assimilate(); print('Federation ping:', r['status'])\" || echo 'Federation ping skipped (deps not ready)'",
   
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
   
@@ -85,6 +85,7 @@
   ],
   
   "containerEnv": {
-    "GITHUB_REPOSITORY": "GBOGEB/ABACUS"
+    "GITHUB_REPOSITORY": "GBOGEB/ABACUS",
+    "CODESPACE_JUPYTER_REPO": "GBOGEB/codespace_jyperter"
   }
 }
