@@ -1,5 +1,6 @@
 """Executable runtime path for the QPLANT Presentation Engine."""
 
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 from .metrics import load_metrics
@@ -7,10 +8,19 @@ from .truth_matrix import TRUTH_RULES
 from .validate import validate_runtime
 
 
+def _resolve_entrypoint_module() -> str:
+    top_level_entry = (
+        Path(__file__).resolve().parents[2] / "qplant_presentation_engine" / "__main__.py"
+    )
+    if top_level_entry.exists():
+        return "qplant_presentation_engine"
+    return __package__ or "qplant_presentation_engine"
+
+
 _RUNTIME_METADATA = {
     "engine": "QPLANT Presentation Engine",
     "version": "W001.1",
-    "entrypoint": "python -m qplant_presentation_engine",
+    "entrypoint": f"python -m {_resolve_entrypoint_module()}",
 }
 
 
@@ -40,4 +50,3 @@ def run_runtime() -> Tuple[int, List[str], Dict[str, str]]:
     report = run_smoke_test()
     exit_code = 0 if all(line.startswith("[OK]") for line in report) else 1
     return exit_code, report, metadata
-
