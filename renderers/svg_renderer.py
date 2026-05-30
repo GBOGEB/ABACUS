@@ -2,7 +2,7 @@
 
 import json
 import xml.etree.ElementTree as ET
-from typing import Dict, Iterable, List, Mapping, Optional
+from typing import Dict, Iterable, Mapping, Optional
 
 
 DEFAULT_STYLE_HOOKS = {

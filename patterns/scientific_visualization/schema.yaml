@@ -27,6 +27,8 @@ properties:
           - timeline
           - heatmap
           - process_flow
+          - table_metrics
+          - scientific_equations
       title:
         type: string
         minLength: 1
