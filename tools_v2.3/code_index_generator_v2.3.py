@@ -60,7 +60,7 @@ def _extract_classes(py_path: Path) -> List[str]:
     try:
         src = py_path.read_text(encoding="utf-8")
         tree = ast.parse(src)
-        return [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+        return [n.name for n in tree.body if isinstance(n, ast.ClassDef)]
     except Exception:
         return []
 
@@ -144,7 +144,7 @@ def generate_index() -> Dict[str, Any]:
             "version": __version__,
             "generated_at": datetime.now().isoformat(),
             "generator": "code_index_generator_v2.3.py",
-            "repo_root": str(_REPO_ROOT),
+            "repo_root": ".",
             "elapsed_seconds": round(time.time() - start, 3),
         },
         "summary": {
