@@ -3,11 +3,12 @@ from pathlib import Path
 
 import yaml
 
+from src.qplant_presentation_engine.schema_validation import CANONICAL_SCHEMA_DIR
 from src.qplant_presentation_engine.truth_matrix import TRUTH_RULES
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_DIR = REPO_ROOT / "patterns" / "scientific_visualization"
+SCHEMA_DIR = CANONICAL_SCHEMA_DIR
 
 
 def _load_yaml(path: Path):
@@ -24,6 +25,7 @@ def test_scientific_visualization_pattern_files_exist():
         SCHEMA_DIR / "schema.json",
         SCHEMA_DIR / "validation_rules.yaml",
         SCHEMA_DIR / "lineage.yaml",
+        SCHEMA_DIR / "README.md",
     ]
     for path in required:
         assert path.exists(), f"missing required schema artifact: {path}"

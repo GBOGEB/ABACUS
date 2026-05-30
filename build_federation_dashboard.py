@@ -12,9 +12,12 @@ from typing import Any, Dict, Mapping, Optional
 REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_ROLLUP_PATH = REPO_ROOT / "metrics" / "federation" / "federation_rollup.json"
 DEFAULT_SCREE_PATH = REPO_ROOT / "metrics" / "federation" / "federation_scree.json"
+DEFAULT_RUNTIME_REGISTRY_PATH = REPO_ROOT / "metrics" / "federation" / "runtime_registry.json"
+DEFAULT_RUNTIME_REGISTRY_REPORT_PATH = REPO_ROOT / "reports" / "runtime_registry_report.json"
 DEFAULT_BOTTLENECK_PATH = REPO_ROOT / "bottleneck_report.json"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "dashboard.html"
 DEFAULT_STATUS_OUTPUT_PATH = REPO_ROOT / "reports" / "dashboard_status.json"
+FEDERATION_REPOS = ("ABACUS", "ARTSTYLE", "QPLANT", "CODEX")
 
 
 def _read_json(path: Path) -> Dict[str, Any]:
@@ -93,6 +96,73 @@ def _extract_wave_progress(rollup: Mapping[str, Any]) -> Dict[str, Any]:
     return {f"W{i:03d}": _pick_value(progress_map, f"W{i:03d}") for i in range(11)}
 
 
+def _extract_repo_runtime_registry(
+    runtime_registry: Mapping[str, Any], runtime_report: Mapping[str, Any]
+) -> Dict[str, Mapping[str, Any]]:
+    registry_repos = _pick_value(runtime_registry, "repositories", "repos", "registry")
+    report_repos = _pick_value(runtime_report, "repositories", "repos", "runtime_report")
+    registry_map = registry_repos if isinstance(registry_repos, Mapping) else {}
+    report_map = report_repos if isinstance(report_repos, Mapping) else {}
+
+    rows: Dict[str, Mapping[str, Any]] = {}
+    for repo in FEDERATION_REPOS:
+        merged: Dict[str, Any] = {}
+        registry_entry = registry_map.get(repo) or registry_map.get(repo.lower())
+        report_entry = report_map.get(repo) or report_map.get(repo.lower())
+        if isinstance(registry_entry, Mapping):
+            merged.update(registry_entry)
+        if isinstance(report_entry, Mapping):
+            merged.update(report_entry)
+        rows[repo] = merged
+    return rows
+
+
+def _extract_runtime_evidence(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
+    return {
+        repo: _pick_value(data, "runtime_evidence", "evidence", "runtime_status", "status")
+        for repo, data in rows.items()
+    }
+
+
+def _extract_truth_matrix(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
+    return {
+        repo: _pick_value(data, "truth_matrix", "truth_matrix_status", "truth_status")
+        for repo, data in rows.items()
+    }
+
+
+def _extract_renderability(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
+    return {
+        repo: _pick_value(data, "renderability", "renderability_status", "render_status")
+        for repo, data in rows.items()
+    }
+
+
+def _extract_runtime_coverage(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
+    return {
+        repo: _pick_value(data, "runtime_coverage", "coverage", "runtime_coverage_pct", "coverage_pct")
+        for repo, data in rows.items()
+    }
+
+
+def _parse_percent(value: Any) -> Optional[int]:
+    if isinstance(value, (int, float)):
+        rounded = int(round(float(value)))
+        if 0 <= rounded <= 100:
+            return rounded
+        return None
+    if isinstance(value, str):
+        cleaned = value.strip().replace("%", "")
+        try:
+            parsed = float(cleaned)
+        except ValueError:
+            return None
+        rounded = int(round(parsed))
+        if 0 <= rounded <= 100:
+            return rounded
+    return None
+
+
 def _render_key_value_table(title: str, rows: Mapping[str, Any]) -> str:
     row_html = "".join(
         f"<tr><th>{escape(str(k))}</th><td>{escape(str(v))}</td></tr>" for k, v in rows.items()
@@ -128,12 +198,44 @@ def _render_scree_table(scree: Mapping[str, Mapping[str, Any]]) -> str:
     """
 
 
+def _render_runtime_coverage_gauges(runtime_coverage: Mapping[str, Any]) -> str:
+    rows = []
+    for repo, value in runtime_coverage.items():
+        pct = _parse_percent(value)
+        if pct is None:
+            gauge_html = "N/A"
+        else:
+            gauge_html = f"<progress max=\"100\" value=\"{pct}\"></progress> {pct}%"
+        rows.append(
+            "<tr>"
+            f"<th>{escape(repo)}</th>"
+            f"<td>{gauge_html}</td>"
+            f"<td>{escape(str(value))}</td>"
+            "</tr>"
+        )
+    return f"""
+    <section class=\"card\">
+      <h2>Runtime Coverage Gauges</h2>
+      <table>
+        <thead>
+          <tr><th>Repository</th><th>Gauge</th><th>Reported Coverage</th></tr>
+        </thead>
+        <tbody>{''.join(rows)}</tbody>
+      </table>
+    </section>
+    """
+
+
 def _render_dashboard(
     program_overview: Mapping[str, Any],
     federation_status: Mapping[str, Any],
     scree: Mapping[str, Mapping[str, Any]],
     bottleneck: Mapping[str, Any],
     wave_progress: Mapping[str, Any],
+    runtime_evidence: Mapping[str, Any],
+    truth_matrix: Mapping[str, Any],
+    renderability: Mapping[str, Any],
+    runtime_coverage: Mapping[str, Any],
 ) -> str:
     return f"""<!doctype html>
 <html lang=\"en\">
@@ -150,6 +252,7 @@ def _render_dashboard(
     table {{ width: 100%; border-collapse: collapse; }}
     th, td {{ text-align: left; padding: .45rem .6rem; border: 1px solid #d9e1ec; }}
     th {{ background: #f0f5fc; }}
+    progress {{ width: 120px; vertical-align: middle; }}
   </style>
 </head>
 <body>
@@ -170,6 +273,10 @@ def _render_dashboard(
       {_render_scree_table(scree)}
       {_render_key_value_table('Bottleneck Report', bottleneck)}
       {_render_key_value_table('Wave Progress Board', wave_progress)}
+      {_render_key_value_table('Runtime Evidence', runtime_evidence)}
+      {_render_key_value_table('Federation Truth Matrix', truth_matrix)}
+      {_render_key_value_table('Renderability', renderability)}
+      {_render_runtime_coverage_gauges(runtime_coverage)}
     </div>
   </main>
 </body>
@@ -180,19 +287,26 @@ def _render_dashboard(
 def build_federation_dashboard(
     rollup_path: Optional[Path] = None,
     scree_path: Optional[Path] = None,
+    runtime_registry_path: Optional[Path] = None,
+    runtime_registry_report_path: Optional[Path] = None,
     bottleneck_path: Optional[Path] = None,
     output_path: Optional[Path] = None,
     status_output_path: Optional[Path] = None,
 ) -> Path:
     resolved_rollup = rollup_path or DEFAULT_ROLLUP_PATH
     resolved_scree = scree_path or DEFAULT_SCREE_PATH
+    resolved_runtime_registry = runtime_registry_path or DEFAULT_RUNTIME_REGISTRY_PATH
+    resolved_runtime_registry_report = runtime_registry_report_path or DEFAULT_RUNTIME_REGISTRY_REPORT_PATH
     resolved_bottleneck = bottleneck_path or DEFAULT_BOTTLENECK_PATH
     resolved_output = output_path or DEFAULT_OUTPUT_PATH
     resolved_status = status_output_path or DEFAULT_STATUS_OUTPUT_PATH
 
     rollup = _read_json(resolved_rollup)
     scree = _read_json(resolved_scree)
+    runtime_registry = _read_json(resolved_runtime_registry)
+    runtime_registry_report = _read_json(resolved_runtime_registry_report)
     bottleneck = _read_json(resolved_bottleneck)
+    repo_runtime_rows = _extract_repo_runtime_registry(runtime_registry, runtime_registry_report)
 
     html = _render_dashboard(
         _extract_program_overview(rollup),
@@ -200,18 +314,26 @@ def build_federation_dashboard(
         _extract_scree(scree),
         _extract_bottleneck(bottleneck),
         _extract_wave_progress(rollup),
+        _extract_runtime_evidence(repo_runtime_rows),
+        _extract_truth_matrix(repo_runtime_rows),
+        _extract_renderability(repo_runtime_rows),
+        _extract_runtime_coverage(repo_runtime_rows),
     )
 
     resolved_output.parent.mkdir(parents=True, exist_ok=True)
     resolved_output.write_text(html, encoding="utf-8")
 
     all_inputs_present = all(path.exists() for path in (resolved_rollup, resolved_scree, resolved_bottleneck))
+    runtime_registry_consumed = all(
+        path.exists() for path in (resolved_runtime_registry, resolved_runtime_registry_report)
+    )
     status_payload = {
         "wave": "W005.2",
         "status": "dashboard_generated",
         "dashboard_generated": True,
         "github_pages_compatible": True,
         "json_consumed": all_inputs_present,
+        "runtime_registry_consumed": runtime_registry_consumed,
     }
     resolved_status.parent.mkdir(parents=True, exist_ok=True)
     resolved_status.write_text(json.dumps(status_payload, indent=2), encoding="utf-8")
