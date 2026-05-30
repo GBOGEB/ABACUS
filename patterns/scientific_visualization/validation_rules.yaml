@@ -10,6 +10,8 @@ schema_validation_rules:
       - timeline
       - heatmap
       - process_flow
+      - table_metrics
+      - scientific_equations
 
   - id: required_lineage_fields
     description: "Lineage evidence must include governance traceability fields."

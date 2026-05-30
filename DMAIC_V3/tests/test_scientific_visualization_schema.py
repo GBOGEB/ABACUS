@@ -47,6 +47,8 @@ def test_schema_supports_required_visualization_types():
         "timeline",
         "heatmap",
         "process_flow",
+        "table_metrics",
+        "scientific_equations",
     }
 
 

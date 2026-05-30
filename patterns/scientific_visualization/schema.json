@@ -29,7 +29,9 @@
             "violin",
             "timeline",
             "heatmap",
-            "process_flow"
+            "process_flow",
+            "table_metrics",
+            "scientific_equations"
           ]
         },
         "title": {

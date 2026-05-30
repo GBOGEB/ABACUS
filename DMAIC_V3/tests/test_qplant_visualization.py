@@ -22,5 +22,5 @@ def test_qplant_visualization_html_generation(tmp_path):
 
 
 def test_qplant_visualization_default_output_is_dist_html():
-    expected = Path(__file__).resolve().parents[1] / "dist" / "qplant_visualization.html"
+    expected = Path(__file__).resolve().parents[2] / "dist" / "qplant_visualization.html"
     assert DEFAULT_OUTPUT_PATH == expected

@@ -9,7 +9,7 @@ from renderers.process_flow_renderer import ProcessFlowRenderer
 from src.qplant_presentation_engine.schema_validation import canonical_schema_path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTENT_DIR = REPO_ROOT / "content" / "qplant"
 SCHEMA_PATH = canonical_schema_path("yaml")
 

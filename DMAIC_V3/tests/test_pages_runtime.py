@@ -4,7 +4,7 @@ import json
 from build_qplant_visualization import build_qplant_visualization
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_docs_index_exists() -> None:

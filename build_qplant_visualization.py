@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from html import escape
 from pathlib import Path
-from typing import Dict, List, Mapping, Optional
+from typing import List, Mapping, Optional
 
 import yaml
 

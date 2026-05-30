@@ -6,7 +6,8 @@ from pathlib import Path
 from src.qplant_presentation_engine import runtime
 
 
-def test_run_runtime_reports_success():
+def test_run_runtime_reports_success(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     exit_code, report, metadata = runtime.run_runtime()
 
     assert exit_code == 0
@@ -19,7 +20,8 @@ def test_run_runtime_reports_success():
     assert metadata["entrypoint"].startswith("python -m ")
 
 
-def test_run_runtime_reports_failure_when_validation_fails(monkeypatch):
+def test_run_runtime_reports_failure_when_validation_fails(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
         runtime,
         "validate_runtime",
@@ -37,11 +39,12 @@ def test_run_runtime_reports_failure_when_validation_fails(monkeypatch):
     assert report[-1] == "[FAIL] Validation Ready"
 
 
-def test_top_level_module_entrypoint_executes():
+def test_top_level_module_entrypoint_executes(tmp_path):
     repo_root = Path(__file__).resolve().parents[2]
     completed = subprocess.run(
         [sys.executable, "-m", "qplant_presentation_engine"],
-        cwd=repo_root,
+        cwd=str(tmp_path),
+        env={**__import__("os").environ, "PYTHONPATH": str(repo_root)},
         capture_output=True,
         text=True,
         check=False,
