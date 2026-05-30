@@ -39,7 +39,11 @@ def _runtime_coverage_map(runtime_registry_report: Mapping[str, Any]) -> Dict[st
     repositories = runtime_registry_report.get("repositories")
     if not isinstance(repositories, Mapping):
         return {}
-    return {str(repo): data.get("runtime_coverage", "N/A") for repo, data in repositories.items() if isinstance(data, Mapping)}
+    return {
+        str(repo): data.get("runtime_coverage", "N/A")
+        for repo, data in repositories.items()
+        if isinstance(data, Mapping)
+    }
 
 
 def build_dmaic_snapshot(
