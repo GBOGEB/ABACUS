@@ -1,0 +1,75 @@
+artifact: evidence_map
+generated_at: '2026-05-30T19:14:13+00:00'
+reports_dir: /tmp/workspace/GBOGEB/ABACUS/reports
+requirements:
+  REQ-RTM-001:
+    title: Runtime evidence is traceable
+    evidence:
+    - evidence_id: runtime_status
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
+      domain: runtime
+      available: true
+    - evidence_id: runtime_registry_report
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json
+      domain: runtime
+      available: true
+  REQ-RTM-002:
+    title: Governance evidence is traceable
+    evidence:
+    - evidence_id: governance_snapshot
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
+      domain: governance
+      available: false
+    - evidence_id: completion_vector
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json
+      domain: governance
+      available: false
+  REQ-RTM-003:
+    title: Validation evidence is traceable
+    evidence:
+    - evidence_id: runtime_status
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
+      domain: runtime
+      available: true
+    - evidence_id: dashboard_status
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json
+      domain: validation
+      available: true
+  REQ-RTM-004:
+    title: DMAIC evidence is traceable
+    evidence:
+    - evidence_id: dmaic_snapshot
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json
+      domain: dmaic
+      available: false
+    - evidence_id: governance_snapshot
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
+      domain: governance
+      available: false
+  REQ-RTM-005:
+    title: Integrated RTM matrix is generated
+    evidence:
+    - evidence_id: runtime_status
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
+      domain: runtime
+      available: true
+    - evidence_id: runtime_registry_report
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json
+      domain: runtime
+      available: true
+    - evidence_id: dashboard_status
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json
+      domain: validation
+      available: true
+    - evidence_id: dmaic_snapshot
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json
+      domain: dmaic
+      available: false
+    - evidence_id: governance_snapshot
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
+      domain: governance
+      available: false
+    - evidence_id: completion_vector
+      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json
+      domain: governance
+      available: false
