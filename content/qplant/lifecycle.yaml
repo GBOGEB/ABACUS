@@ -1,0 +1,41 @@
+visualization:
+  type: timeline
+  title: "QPLANT Lifecycle"
+  data_ref: "content/qplant/lifecycle.yaml"
+lineage:
+  wave: "W003.4"
+  pr: "PR-W003.4-QPLANT-CONTENT-INTEGRATION"
+  repo: "GBOGEB/ABACUS"
+  commit: "0000000"
+  runtime_evidence: "Lifecycle timeline payload is loadable and stage-order validated in tests"
+  validation_evidence: "Validated in tests/test_qplant_content.py"
+metrics:
+  pca:
+    forward_pca: 1.0
+    backward_pca: 1.0
+  geti: 1.0
+  truth_score: 1.0
+truth_matrix:
+  principles:
+    - chat_is_not_repo
+    - architecture_is_not_runtime
+    - claimed_is_not_validated
+    - exists_in_repo_is_not_ci_execution
+timeline:
+  stages:
+    - id: "L0"
+      label: "L0 Procurement"
+    - id: "L1"
+      label: "L1 Concept Design"
+    - id: "L2"
+      label: "L2 Detailed Design"
+    - id: "L3"
+      label: "L3 Construction"
+    - id: "L4"
+      label: "L4 Installation"
+    - id: "L5"
+      label: "L5 Commissioning"
+    - id: "L6"
+      label: "L6 Acceptance"
+    - id: "L8"
+      label: "L8 Integrated Operation"
