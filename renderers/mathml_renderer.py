@@ -246,16 +246,8 @@ def qplant_equation_definitions() -> Dict[str, Dict[str, object]]:
                     {"type": "operator", "value": "="},
                     {
                         "type": "fraction",
-                        "numerator": {
-                            "type": "subscript",
-                            "base": {"type": "identifier", "value": "Q"},
-                            "sub": {"type": "identifier", "value": "c"},
-                        },
-                        "denominator": {
-                            "type": "subscript",
-                            "base": {"type": "identifier", "value": "W"},
-                            "sub": {"type": "identifier", "value": "in"},
-                        },
+                        "numerator": {"type": "identifier", "value": "Q"},
+                        "denominator": {"type": "identifier", "value": "W"},
                     },
                 ],
             },
@@ -265,26 +257,14 @@ def qplant_equation_definitions() -> Dict[str, Dict[str, object]]:
             "expression": {
                 "type": "row",
                 "items": [
-                    {
-                        "type": "subscript",
-                        "base": {"type": "identifier", "value": "Q"},
-                        "sub": {"type": "identifier", "value": "in"},
-                    },
+                    {"type": "identifier", "value": "Q"},
                     {"type": "operator", "value": "="},
                     {"type": "identifier", "value": "m"},
                     {"type": "operator", "value": "·"},
-                    {
-                        "type": "subscript",
-                        "base": {"type": "identifier", "value": "c"},
-                        "sub": {"type": "identifier", "value": "p"},
-                    },
+                    {"type": "identifier", "value": "cp"},
                     {"type": "operator", "value": "·"},
                     {"type": "greek", "symbol": "Delta"},
-                    {
-                        "type": "superscript",
-                        "base": {"type": "identifier", "value": "T"},
-                        "sup": {"type": "number", "value": "2"},
-                    },
+                    {"type": "identifier", "value": "T"},
                 ],
             },
         },
