@@ -2,7 +2,7 @@ meta:
   version: v2.3.0
   generated_at: '2026-05-28T18:24:48.208065'
   generator: code_index_generator_v2.3.py
-  repo_root: /tmp/workspace/GBOGEB/ABACUS
+  repo_root: .
   elapsed_seconds: 0.056
 summary:
   total_agents: 19
@@ -189,8 +189,8 @@ tools:
   version: v2.3.0
   v2.3: true
   classes: []
-  stub: true
-  status: stub
+  stub: false
+  status: active
 - name: task_tracker
   file: tools_v2.3/task_tracker_v2.3_20251111.py
   type: tool

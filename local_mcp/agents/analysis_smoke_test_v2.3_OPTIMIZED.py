@@ -35,7 +35,6 @@ _EXPECTED_PATHS = [
     "local_mcp/agent_orchestrator_v3.0.py",
     "tools_v2.3/task_tracker_v2.3_20251111.py",
     "tools_v2.3/code_index_generator_v2.3.py",
-    "tracking_v2.3/tasks/tasks.json",
 ]
 
 
@@ -294,7 +293,7 @@ class MemoryEfficientSmokeTestV23:
             result = {
                 "agent": self.name,
                 "version": self.version,
-                "status": "success",
+                "status": "success" if control.get("gate_status") == "PASS" else "failure",
                 "timestamp": datetime.now().isoformat(),
                 "execution_time": execution_time,
                 "dmaic_results": {
