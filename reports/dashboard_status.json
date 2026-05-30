@@ -3,5 +3,6 @@
   "status": "dashboard_generated",
   "dashboard_generated": true,
   "github_pages_compatible": true,
-  "json_consumed": true
+  "json_consumed": true,
+  "runtime_registry_consumed": true
 }

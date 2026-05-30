@@ -11,6 +11,7 @@ def validate_runtime() -> Dict[str, bool]:
         "runtime_entry": False,
         "metrics_availability": False,
         "truth_matrix_availability": False,
+        "schema_consistency": False,
     }
 
     package_name = __package__ or "qplant_presentation_engine"
@@ -40,5 +41,12 @@ def validate_runtime() -> Dict[str, bool]:
         status["truth_matrix_availability"] = isinstance(rules, list) and bool(rules)
     except Exception:
         status["truth_matrix_availability"] = False
+
+    try:
+        schema_validation_module = import_module(f"{package_name}.schema_validation")
+        schema_validation = schema_validation_module.validate_canonical_schema()
+        status["schema_consistency"] = all(bool(value) for value in schema_validation.values())
+    except Exception:
+        status["schema_consistency"] = False
 
     return status
