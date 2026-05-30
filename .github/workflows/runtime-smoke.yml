@@ -1,0 +1,35 @@
+name: QPLANT Runtime Smoke
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  runtime-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Execute runtime entry
+        run: |
+          python -m qplant_presentation_engine
+
+      - name: Upload runtime evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-evidence-${{ github.run_id }}
+          if-no-files-found: error
+          path: |
+            runtime_status.json
+            validation_report.json
+            pca_snapshot.json
