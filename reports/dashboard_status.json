@@ -3,5 +3,5 @@
   "status": "dashboard_generated",
   "dashboard_generated": true,
   "github_pages_compatible": true,
-  "json_consumed": false
+  "json_consumed": true
 }
