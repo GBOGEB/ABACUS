@@ -30,11 +30,42 @@ def test_mathml_generation_for_initial_qplant_examples():
 
     cop = rendered["cop"]
     assert cop.find(f".//{_MATHML_NS}mfrac") is not None
-    assert len(cop.findall(f".//{_MATHML_NS}msub")) >= 2
+    assert cop.find(f".//{_MATHML_NS}msub") is None
 
     heat_balance = rendered["heat_balance"]
-    assert heat_balance.find(f".//{_MATHML_NS}msup") is not None
+    assert heat_balance.find(f".//{_MATHML_NS}msup") is None
     assert "Δ" in [elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text]
+    assert "cp" in [elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text]
+
+
+def test_superscript_and_subscript_nodes_render_to_mathml():
+    renderer = MathMLRenderer()
+    root = ET.fromstring(
+        renderer.render(
+            {
+                "name": "Scripts",
+                "expression": {
+                    "type": "row",
+                    "items": [
+                        {
+                            "type": "subscript",
+                            "base": {"type": "identifier", "value": "x"},
+                            "sub": {"type": "identifier", "value": "i"},
+                        },
+                        {"type": "operator", "value": "+"},
+                        {
+                            "type": "superscript",
+                            "base": {"type": "identifier", "value": "y"},
+                            "sup": {"type": "number", "value": "2"},
+                        },
+                    ],
+                },
+            }
+        )
+    )
+
+    assert root.find(f".//{_MATHML_NS}msub") is not None
+    assert root.find(f".//{_MATHML_NS}msup") is not None
 
 
 def test_lineage_metadata_annotation_is_included():
@@ -56,8 +87,14 @@ def test_lineage_metadata_annotation_is_included():
 def test_invalid_equation_definitions_are_rejected():
     renderer = MathMLRenderer()
 
+    with pytest.raises(ValueError, match="must be a mapping"):
+        renderer.render("not-a-definition")
+
     with pytest.raises(ValueError, match="missing required field"):
         renderer.render({"expression": {"type": "identifier", "value": "x"}})
+
+    with pytest.raises(ValueError, match="non-empty string"):
+        renderer.render({"name": "   ", "expression": {"type": "identifier", "value": "x"}})
 
     with pytest.raises(ValueError, match="unsupported node type"):
         renderer.render(
@@ -74,6 +111,17 @@ def test_invalid_equation_definitions_are_rejected():
                 "expression": {
                     "type": "row",
                     "items": [{"type": "greek", "symbol": "not_a_symbol"}],
+                },
+            }
+        )
+
+    with pytest.raises(ValueError, match="requires base and script"):
+        renderer.render(
+            {
+                "name": "Bad Script",
+                "expression": {
+                    "type": "superscript",
+                    "base": {"type": "identifier", "value": "x"},
                 },
             }
         )
