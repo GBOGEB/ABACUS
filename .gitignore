@@ -73,6 +73,7 @@ reports/*
 !bottleneck_report.json
 !requirements.json
 !package.json
+!rtm/trace_matrix.json
 
 # Temporary files
 *.tmp
