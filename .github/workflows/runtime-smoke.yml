@@ -79,6 +79,9 @@ jobs:
           path: |
             reports/runtime_output.txt
             reports/runtime_status.json
+            reports/pca_snapshot.json
+            reports/geti_snapshot.json
+            reports/truth_matrix_snapshot.json
             runtime_status.json
             validation_report.json
             pca_snapshot.json
