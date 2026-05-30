@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-29T15:12:06Z",
+  "generated_at": "2026-05-29T23:36:50Z",
   "status": "ok",
   "components": {
-    "dmaic_test_files": 18,
+    "dmaic_test_files": 26,
     "dow_agents": 4,
     "dow_agent_names": [
       "dow_convergence_calculator.py",
