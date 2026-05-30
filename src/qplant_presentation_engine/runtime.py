@@ -31,7 +31,9 @@ def _utc_timestamp() -> str:
 
 
 def _write_json_artifact(filename: str, payload: Dict[str, object]) -> None:
-    Path.cwd().joinpath(filename).write_text(
+    target = Path.cwd().joinpath(filename)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
         json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8"
     )
 
@@ -99,16 +101,56 @@ def generate_runtime_evidence(
         },
     )
 
+    truth_matrix_snapshot = metrics.get("truth_matrix_snapshot")
+    if not isinstance(truth_matrix_snapshot, dict):
+        truth_matrix_snapshot = {}
+
+    _write_json_artifact(
+        "reports/pca_snapshot.json",
+        {
+            "backward_pca": metrics.get("backward_pca", 0),
+            "forward_pca": metrics.get("forward_pca", 0),
+            "generated_at": generated_at,
+        },
+    )
+    _write_json_artifact(
+        "reports/geti_snapshot.json",
+        {
+            "generated_at": generated_at,
+            "geti": metrics.get("geti", 0),
+            "truth_score": metrics.get("truth_score", 0),
+        },
+    )
+    _write_json_artifact(
+        "reports/truth_matrix_snapshot.json",
+        {
+            "generated_at": generated_at,
+            "principles": truth_matrix_snapshot.get("principles", []),
+            "truth_score": truth_matrix_snapshot.get("truth_score", 0),
+            "evidence": truth_matrix_snapshot.get("evidence", {}),
+        },
+    )
+
 
 def run_runtime() -> Tuple[int, List[str], Dict[str, str]]:
     """Run the runtime path and return exit code, status report, and metadata."""
     metadata = load_runtime_metadata()
     report = run_smoke_test()
+    validation = validate_runtime()
+    rules_loaded = isinstance(TRUTH_RULES, list) and bool(TRUTH_RULES)
+    validation_ready = all(validation.values())
+    evidence = {
+        "repo_artifact_present": rules_loaded,
+        "runtime_executed": True,
+        "validation_ready": validation_ready,
+        "claimed_runtime_ready": True,
+    }
+    metrics = load_metrics(evidence)
     exit_code = 0 if all(line.startswith("[OK]") for line in report) else 1
     generate_runtime_evidence(
         exit_code=exit_code,
         report=report,
-        metrics=load_metrics(),
-        validation=validate_runtime(),
+        metrics=metrics,
+        validation=validation,
     )
     return exit_code, report, metadata
