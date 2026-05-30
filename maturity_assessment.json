@@ -1,0 +1,96 @@
+{
+  "current_level": 0,
+  "current_level_name": "Initial/Chaotic",
+  "completion_percentage": 100.0,
+  "overall_completion": 20.83,
+  "next_level": 1,
+  "next_milestone": "Level 1 - Repeatable",
+  "convergence_score": 0.0,
+  "levels": [
+    {
+      "level": 0,
+      "name": "Initial/Chaotic",
+      "completion_percentage": 100.0,
+      "status": "COMPLETED",
+      "convergence_achieved": true
+    },
+    {
+      "level": 1,
+      "name": "Repeatable",
+      "completion_percentage": 0.0,
+      "status": "PENDING",
+      "convergence_achieved": false
+    },
+    {
+      "level": 2,
+      "name": "Defined",
+      "completion_percentage": 0.0,
+      "status": "PENDING",
+      "convergence_achieved": false
+    },
+    {
+      "level": 3,
+      "name": "Managed",
+      "completion_percentage": 0.0,
+      "status": "PENDING",
+      "convergence_achieved": false
+    },
+    {
+      "level": 4,
+      "name": "Optimizing",
+      "completion_percentage": 25.0,
+      "status": "PENDING",
+      "convergence_achieved": false
+    },
+    {
+      "level": 5,
+      "name": "Production-Ready",
+      "completion_percentage": 0.0,
+      "status": "PENDING",
+      "convergence_achieved": false
+    }
+  ],
+  "tasks_completed": [
+    "idempotency_system",
+    "maturity_tracker"
+  ],
+  "tasks_pending": [],
+  "blockers": [],
+  "recommendations": [
+    "Target Level 1 (Repeatable) - Convergence: 30+",
+    "Focus on improving convergence metrics"
+  ],
+  "timestamp": "2026-05-29T13:45:39.639444",
+  "score_history": [
+    {
+      "timestamp": "2026-05-29T13:45:39.639444",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T06:21:20.436159",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T06:21:20.437977",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T06:21:32.317772",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    },
+    {
+      "timestamp": "2026-05-29T06:21:32.319615",
+      "convergence_score": 0.0,
+      "current_level": 0,
+      "overall_completion": 20.83
+    }
+  ]
+}

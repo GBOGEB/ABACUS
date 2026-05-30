@@ -18,6 +18,16 @@ federation:
       repository: GBOGEB/ABACUS
       role: runtime_plane
       spec_ref: runtime/federation/codex-abacus-federation.yaml
+    notebook:
+      repository: GBOGEB/CODESPACES_jyperter
+      branch: main
+      role: notebook_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+      responsibility:
+        - notebook_execution
+        - interactive_analysis
+        - artifact_visualization
+        - jupyter_based_reporting
 
   member_repos:
     - name: GBOGEB/ABACUS
@@ -29,9 +39,10 @@ federation:
     - name: GBOGEB/morris.js
       plane: auxiliary
       status: active
-    - name: GBOGEB/codespace_jyperter
-      plane: auxiliary
+    - name: GBOGEB/CODESPACES_jyperter
+      plane: notebook
       status: active
+      role: interactive_execution_plane
 
   dev_snapshots:
     # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
