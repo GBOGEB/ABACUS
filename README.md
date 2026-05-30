@@ -310,12 +310,12 @@ Master_Input/
 - ✅ 6/6 agents upgraded (memory-optimized)
 - ✅ Task tracking system operational
 - ✅ Code index automation working
-- ✅ CI/CD pipeline active (latest `v23-cicd.yml` runs on `main` successful)
+- ✅ CI/CD coverage active for core + integration paths (`v23-cicd.yml`, `gbogeb-abacus-integration-ci-cd.yml`, `bridge-ci.yml`, `federation-notebook.yml`)
 - ✅ Orchestrator v3.0 built and initializes successfully
 - ✅ KEB/GBOGEB integration active (`KEB Enabled: True`, `GBOGEB Enabled: True`)
 
 **Next Actions (remaining):**
-1. Maintain green `v23-cicd.yml` runs on `main`
+1. Maintain green core + integration pipelines (`v23-cicd.yml`, bridge/federation/integration workflows)
 2. Continue end-to-end validation for broader DMAIC pipelines
 3. Keep status docs synchronized with live runtime/CI evidence
 
@@ -456,7 +456,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - **Agents:** `local_mcp/agents/` (V2.3 agents)
 - **Tools:** `tools_v2.3/` (task tracker, code index, handover)
 - **Tracking:** `tracking_v2.3/tasks/` (task database)
-- **CI/CD:** `.github/workflows/cd.yml` (pipeline config)
+- **CI/CD:** `.github/workflows/v23-cicd.yml` + integration/federation/bridge workflows
 
 ### Development Environment
 - **Python:** 3.8+
