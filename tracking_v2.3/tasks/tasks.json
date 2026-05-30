@@ -8,7 +8,7 @@
   "tasks": [
     {
       "id": "T1",
-      "title": "Recreate/standardize active V2.3 task registry (15 tasks, status, owner, evidence link per task)",
+      "title": "Recreate/standardize active V2.3 task registry (status, owner, evidence link per task)",
       "state": "done",
       "depends_on": [],
       "owner": "@copilot",
