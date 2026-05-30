@@ -59,8 +59,11 @@ ABACUS_V21_*/
 ABACUS_SESSION_ANALYSIS/
 output/
 reports/
+!reports/
+reports/*
 *.pdf
 *.json
+!reports/runtime_publish_status.json
 !requirements.json
 !package.json
 
