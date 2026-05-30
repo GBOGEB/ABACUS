@@ -1,0 +1,97 @@
+{
+  "version": "2.3",
+  "states": [
+    "active",
+    "done",
+    "blocked"
+  ],
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Recreate/standardize active V2.3 task registry (status, owner, evidence link per task)",
+      "state": "done",
+      "depends_on": [],
+      "owner": "@copilot",
+      "verification_target": "Versioned tracker file + machine-readable task file committed",
+      "evidence_links": [
+        "https://github.com/GBOGEB/ABACUS/pull/516"
+      ]
+    },
+    {
+      "id": "T2",
+      "title": "Run CI pipeline for V2.3 and capture workflow run IDs, uploaded artifact names, and retention links",
+      "state": "done",
+      "depends_on": [
+        "T1"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Successful workflow run logs + artifact list",
+      "evidence_links": [
+        "https://github.com/GBOGEB/ABACUS/actions/runs/26660156492",
+        "https://github.com/GBOGEB/ABACUS/actions/runs/26684833090",
+        "https://api.github.com/repos/GBOGEB/ABACUS/actions/artifacts/7300259203",
+        "https://api.github.com/repos/GBOGEB/ABACUS/actions/artifacts/7308502895"
+      ]
+    },
+    {
+      "id": "T3",
+      "title": "Run docs deployment workflow and capture published Pages URL + HTTP verification",
+      "state": "active",
+      "depends_on": [
+        "T2"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Successful deploy workflow log + reachable URL check",
+      "evidence_links": []
+    },
+    {
+      "id": "T4",
+      "title": "Execute folder refactor completion pass (reduce root sprawl; move remaining V2.3 artifacts into canonical locations)",
+      "state": "active",
+      "depends_on": [
+        "T1"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Before/after root inventory report + updated structure map",
+      "evidence_links": []
+    },
+    {
+      "id": "T5",
+      "title": "Fix deployment readiness blockers causing static_analysis_passed=false in deployment test system",
+      "state": "blocked",
+      "depends_on": [
+        "T4"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Updated test output with static analysis pass",
+      "evidence_links": [],
+      "blocker": "Waiting on T4"
+    },
+    {
+      "id": "T6",
+      "title": "Execute end-to-end validation bundle (agents smoke + orchestrator init + deployment test system + core pytest)",
+      "state": "blocked",
+      "depends_on": [
+        "T5"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Consolidated test report showing all required checks pass",
+      "evidence_links": [],
+      "blocker": "Waiting on T5"
+    },
+    {
+      "id": "T7",
+      "title": "Produce production readiness checklist sign-off (security, CI/CD, tests, artifact integrity, rollback notes)",
+      "state": "blocked",
+      "depends_on": [
+        "T2",
+        "T3",
+        "T6"
+      ],
+      "owner": "@copilot",
+      "verification_target": "Completed checklist document with links to evidence",
+      "evidence_links": [],
+      "blocker": "Waiting on T3 and T6"
+    }
+  ]
+}
