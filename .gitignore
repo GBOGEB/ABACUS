@@ -64,6 +64,7 @@ reports/*
 *.pdf
 *.json
 !reports/runtime_publish_status.json
+!reports/dashboard_status.json
 !requirements.json
 !package.json
 
