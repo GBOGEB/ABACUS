@@ -1,0 +1,118 @@
+{
+  "artifact": "trace_matrix",
+  "generated_at": "2026-05-30T19:14:13+00:00",
+  "rows": [
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_status",
+      "requirement_id": "REQ-RTM-001",
+      "requirement_title": "Runtime evidence is traceable"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_registry_report",
+      "requirement_id": "REQ-RTM-001",
+      "requirement_title": "Runtime evidence is traceable"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json",
+      "evidence_domain": "governance",
+      "evidence_id": "governance_snapshot",
+      "requirement_id": "REQ-RTM-002",
+      "requirement_title": "Governance evidence is traceable"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json",
+      "evidence_domain": "governance",
+      "evidence_id": "completion_vector",
+      "requirement_id": "REQ-RTM-002",
+      "requirement_title": "Governance evidence is traceable"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_status",
+      "requirement_id": "REQ-RTM-003",
+      "requirement_title": "Validation evidence is traceable"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json",
+      "evidence_domain": "validation",
+      "evidence_id": "dashboard_status",
+      "requirement_id": "REQ-RTM-003",
+      "requirement_title": "Validation evidence is traceable"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json",
+      "evidence_domain": "dmaic",
+      "evidence_id": "dmaic_snapshot",
+      "requirement_id": "REQ-RTM-004",
+      "requirement_title": "DMAIC evidence is traceable"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json",
+      "evidence_domain": "governance",
+      "evidence_id": "governance_snapshot",
+      "requirement_id": "REQ-RTM-004",
+      "requirement_title": "DMAIC evidence is traceable"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_status",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_registry_report",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json",
+      "evidence_domain": "validation",
+      "evidence_id": "dashboard_status",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json",
+      "evidence_domain": "dmaic",
+      "evidence_id": "dmaic_snapshot",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json",
+      "evidence_domain": "governance",
+      "evidence_id": "governance_snapshot",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json",
+      "evidence_domain": "governance",
+      "evidence_id": "completion_vector",
+      "requirement_id": "REQ-RTM-005",
+      "requirement_title": "Integrated RTM matrix is generated"
+    }
+  ]
+}
