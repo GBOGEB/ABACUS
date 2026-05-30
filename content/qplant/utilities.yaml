@@ -4,7 +4,7 @@ visualization:
   data_ref: "content/qplant/utilities.yaml"
 lineage:
   wave: "W003.4"
-  pr: "PR-W003.4-QPLANT-CONTENT-INTEGRATION"
+  pr: 34
   repo: "GBOGEB/ABACUS"
   commit: "0000000"
   runtime_evidence: "Tabular utility metrics payload is loadable and validated in tests"

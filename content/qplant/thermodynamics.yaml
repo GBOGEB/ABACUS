@@ -4,7 +4,7 @@ visualization:
   data_ref: "content/qplant/thermodynamics.yaml"
 lineage:
   wave: "W003.4"
-  pr: "PR-W003.4-QPLANT-CONTENT-INTEGRATION"
+  pr: 34
   repo: "GBOGEB/ABACUS"
   commit: "0000000"
   runtime_evidence: "Equation payload can be rendered with renderers.mathml_renderer.MathMLRenderer"
