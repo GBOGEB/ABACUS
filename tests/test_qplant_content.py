@@ -6,11 +6,12 @@ from jsonschema import validate
 
 from renderers.mathml_renderer import MathMLRenderer
 from renderers.process_flow_renderer import ProcessFlowRenderer
+from src.qplant_presentation_engine.schema_validation import canonical_schema_path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONTENT_DIR = REPO_ROOT / "content" / "qplant"
-SCHEMA_PATH = REPO_ROOT / "patterns" / "scientific_visualization" / "schema.yaml"
+SCHEMA_PATH = canonical_schema_path("yaml")
 
 CONTENT_FILES = {
     "process_flow": CONTENT_DIR / "process_flow.yaml",
