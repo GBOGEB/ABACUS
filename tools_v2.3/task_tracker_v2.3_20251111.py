@@ -102,6 +102,8 @@ class TaskTrackerV23:
         task["updated_at"] = datetime.now().isoformat()
         if status == "completed":
             task["completed_at"] = datetime.now().isoformat()
+        else:
+            task["completed_at"] = None
         _save_db(db, self.db_path)
         return task
 
