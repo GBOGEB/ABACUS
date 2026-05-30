@@ -1,0 +1,21 @@
+artifact: requirements
+generated_at: '2026-05-30T19:14:13+00:00'
+requirements:
+- id: REQ-RTM-001
+  title: Runtime evidence is traceable
+  description: Runtime execution and registry artifacts are mapped into RTM evidence.
+- id: REQ-RTM-002
+  title: Governance evidence is traceable
+  description: Governance controls and completion vector artifacts are mapped into
+    RTM evidence.
+- id: REQ-RTM-003
+  title: Validation evidence is traceable
+  description: Validation-oriented runtime and dashboard signals are mapped into RTM
+    evidence.
+- id: REQ-RTM-004
+  title: DMAIC evidence is traceable
+  description: DMAIC status artifacts are mapped into RTM evidence.
+- id: REQ-RTM-005
+  title: Integrated RTM matrix is generated
+  description: A full matrix exists across runtime, governance, validation, and DMAIC
+    evidence.
