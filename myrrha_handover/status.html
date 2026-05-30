@@ -68,7 +68,7 @@
 </div>
 <div class="card">
   <h2 style="margin-top:0">📝 TODO</h2>
-  <p class="muted" style="font-size:12px;margin-top:6px">Active registry source: <code>assets/data/active-task-registry.json</code></p>
+  <p class="muted" style="font-size:12px;margin-top:6px">Active registry source: <code>../tracking_v2.3/tasks/tasks.json</code></p>
   <ul id="activeTaskList"></ul>
 </div>
 </div>
@@ -114,14 +114,42 @@
   const list=document.getElementById('activeTaskList');
   if(!list) return;
   try{
-    const res=await fetch('assets/data/active-task-registry.json',{cache:'no-store'});
+    const res=await fetch('../tracking_v2.3/tasks/tasks.json',{cache:'no-store'});
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
-    const active=(Array.isArray(data.tasks)?data.tasks:[]).filter(t=>t.status==='active');
-    list.innerHTML=active.map(t=>`<li><b>${t.id}:</b> ${t.title}${t.note?` — <em>${t.note}</em>`:''}</li>`).join('');
-    if(!active.length) list.innerHTML='<li><em>No active tasks in registry.</em></li>';
+    const active=(Array.isArray(data.tasks)?data.tasks:[]).filter(t=>t.state==='active');
+    list.replaceChildren();
+    if(!active.length){
+      const emptyItem=document.createElement('li');
+      const emptyText=document.createElement('em');
+      emptyText.textContent='No active tasks in registry.';
+      emptyItem.appendChild(emptyText);
+      list.appendChild(emptyItem);
+      return;
+    }
+    active.forEach((t)=>{
+      const item=document.createElement('li');
+      const idLabel=document.createElement('b');
+      const id=(t && typeof t.id==='string')?t.id:'Task';
+      idLabel.textContent=`${id}:`;
+      item.appendChild(idLabel);
+      const title=(t && typeof t.title==='string')?t.title:'';
+      item.appendChild(document.createTextNode(` ${title}`));
+      if(t && typeof t.note==='string' && t.note){
+        item.appendChild(document.createTextNode(' — '));
+        const note=document.createElement('em');
+        note.textContent=t.note;
+        item.appendChild(note);
+      }
+      list.appendChild(item);
+    });
   }catch(e){
-    list.innerHTML='<li><em>Unable to load active task registry.</em></li>';
+    list.replaceChildren();
+    const errorItem=document.createElement('li');
+    const errorText=document.createElement('em');
+    errorText.textContent='Unable to load active task registry.';
+    errorItem.appendChild(errorText);
+    list.appendChild(errorItem);
   }
 })();
 </script>
