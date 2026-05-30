@@ -63,6 +63,7 @@ reports/
 *.json
 !requirements.json
 !package.json
+!tracking_v2.3/tasks/tasks.json
 
 # Temporary files
 *.tmp
