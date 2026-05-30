@@ -155,7 +155,15 @@ def _render_dashboard(
 <body>
   <main>
     <h1>Federation Telemetry Dashboard</h1>
-    <p><a href=\"index.html\">← Back to home</a></p>
+    <p>
+      <a href="./">Home</a> ·
+      <a href="cryo/">Cryo</a> ·
+      <a href="12-cluster/">12-Cluster</a> ·
+      <a href="dow/">DOW</a> ·
+      <a href="testing/">Testing</a> ·
+      <a href="tools/">Tools</a> ·
+      <a href="versions/">Versions</a>
+    </p>
     <div class=\"grid\">
       {_render_key_value_table('Program Overview', program_overview)}
       {_render_key_value_table('Federation Status', federation_status)}

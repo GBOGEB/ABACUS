@@ -1,0 +1,9 @@
+{
+  "components": [
+    {"pc": "PC1", "variance": "40%", "rank": 1, "cumulative_variance": "40%"},
+    {"pc": "PC2", "variance": "25%", "rank": 2, "cumulative_variance": "65%"},
+    {"pc": "PC3", "variance": "15%", "rank": 3, "cumulative_variance": "80%"},
+    {"pc": "PC4", "variance": "12%", "rank": 4, "cumulative_variance": "92%"},
+    {"pc": "PC5", "variance": "8%", "rank": 5, "cumulative_variance": "100%"}
+  ]
+}
