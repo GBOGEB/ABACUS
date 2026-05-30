@@ -13,8 +13,7 @@ def test_svg_generation_and_root_validation():
     )
 
     root = ET.fromstring(svg)
-    assert root.tag.endswith("svg")
-    assert root.attrib["xmlns"] == "http://www.w3.org/2000/svg"
+    assert root.tag == "{http://www.w3.org/2000/svg}svg"
     assert root.attrib["data-scale"] == "1.5"
     assert int(root.attrib["width"]) > 0
     assert int(root.attrib["height"]) > 0
