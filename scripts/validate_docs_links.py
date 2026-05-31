@@ -28,6 +28,9 @@ def _is_external(link: str) -> bool:
         or normalized.startswith("https://")
         or normalized.startswith("mailto:")
         or normalized.startswith("#")
+        or normalized.startswith("data:")
+        or normalized.startswith("/")
+        or normalized.startswith("${")
     )
 
 
