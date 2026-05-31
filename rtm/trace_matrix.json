@@ -4,7 +4,7 @@
   "rows": [
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json",
+      "evidence_artifact": "reports/runtime_publish_status.json",
       "evidence_domain": "runtime",
       "evidence_id": "runtime_status",
       "requirement_id": "REQ-001",
@@ -12,7 +12,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/patterns/scientific_visualization/schema.json",
+      "evidence_artifact": "patterns/scientific_visualization/schema.json",
       "evidence_domain": "schema",
       "evidence_id": "scientific_visualization_schema",
       "requirement_id": "REQ-002",
@@ -20,7 +20,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/content/qplant/process_flow.yaml",
+      "evidence_artifact": "content/qplant/process_flow.yaml",
       "evidence_domain": "content",
       "evidence_id": "qplant_process_flow_content",
       "requirement_id": "REQ-003",
@@ -28,7 +28,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/content/qplant/thermodynamics.yaml",
+      "evidence_artifact": "content/qplant/thermodynamics.yaml",
       "evidence_domain": "content",
       "evidence_id": "qplant_thermodynamics_content",
       "requirement_id": "REQ-004",
@@ -36,7 +36,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/content/qplant/process_flow.yaml",
+      "evidence_artifact": "content/qplant/process_flow.yaml",
       "evidence_domain": "content",
       "evidence_id": "qplant_process_flow_content",
       "requirement_id": "REQ-005",
@@ -44,7 +44,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/content/qplant/thermodynamics.yaml",
+      "evidence_artifact": "content/qplant/thermodynamics.yaml",
       "evidence_domain": "content",
       "evidence_id": "qplant_thermodynamics_content",
       "requirement_id": "REQ-005",
@@ -52,7 +52,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json",
+      "evidence_artifact": "reports/dashboard_status.json",
       "evidence_domain": "validation",
       "evidence_id": "dashboard_status",
       "requirement_id": "REQ-006",
@@ -60,7 +60,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json",
+      "evidence_artifact": "reports/runtime_registry_report.json",
       "evidence_domain": "runtime",
       "evidence_id": "runtime_registry_report",
       "requirement_id": "REQ-007",
@@ -68,7 +68,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json",
+      "evidence_artifact": "reports/dmaic_snapshot.json",
       "evidence_domain": "dmaic",
       "evidence_id": "dmaic_snapshot",
       "requirement_id": "REQ-008",
@@ -76,7 +76,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json",
+      "evidence_artifact": "reports/governance_snapshot.json",
       "evidence_domain": "governance",
       "evidence_id": "governance_snapshot",
       "requirement_id": "REQ-008",
@@ -84,7 +84,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/patterns/scientific_visualization/schema.json",
+      "evidence_artifact": "patterns/scientific_visualization/schema.json",
       "evidence_domain": "schema",
       "evidence_id": "scientific_visualization_schema",
       "requirement_id": "REQ-009",
@@ -92,7 +92,7 @@
     },
     {
       "available": true,
-      "evidence_artifact": "/tmp/workspace/GBOGEB/ABACUS/patterns/scientific_visualization/validation_rules.yaml",
+      "evidence_artifact": "patterns/scientific_visualization/validation_rules.yaml",
       "evidence_domain": "schema",
       "evidence_id": "schema_validation_rules",
       "requirement_id": "REQ-009",
