@@ -29,7 +29,7 @@ def test_runtime_publish_status_json_generated() -> None:
     status = json.loads(status_path.read_text(encoding="utf-8"))
     assert status == {
         "wave": "W005.1",
-        "status": "published",
+        "runtime_status": "published",
         "runtime_evidence": True,
         "deployment_evidence": True,
     }

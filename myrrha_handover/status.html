@@ -68,29 +68,8 @@
 </div>
 <div class="card">
   <h2 style="margin-top:0">📝 TODO</h2>
-  <ul>
-    <li>Finalize RCW oil-precool sizing (vendor curve pending)</li>
-    <li>Confirm FSD 575 operability above 72 Hz</li>
-    <li>Confirm FSD 475 SFC up to 72 Hz</li>
-    <li>HP4 (N+1) layout drawing</li>
-    <li>PCW / RCW header hydraulic check</li>
-    <li>VFD harmonics study</li>
-    <li>LCC / PVPS detail (50 g/s, 2×5 N+1) — <em>v0.4 baseline added</em></li>
-    <li>Obtain vendor datasheets for PVPS units</li>
-    <li>Confirm suction pressure from coldbox QRB interface</li>
-    <li>Validate 50 % isothermal efficiency assumption</li>
-    <li>Define VFD turndown characteristics</li>
-    <li>Finalize Config30 and Config24 operational parameters</li>
-    <li>Specify C30(00,10) and C24(00,10) static/VFD splits</li>
-    <li>Acoustic enclosure go/no-go</li>
-    <li>Spare-part &amp; oil-change strategy</li>
-    <li><b>COMBI:</b> vendor confirmation of fixed-speed @ 64 Hz mechanical option (gearbox vs locked-VFD)</li>
-    <li><b>COMBI:</b> VFD lower-limit confirmation (50 Hz floor assumed) and recycle/bypass strategy below floor</li>
-    <li><b>RCW HX:</b> Kaeser oil-cooler thermal curve (oil ṁ, c_p, fouling factor)</li>
-    <li><b>RCW HX:</b> standby-HX manifold P&amp;ID and MOV interlock matrix</li>
-    <li><b>RCW HX:</b> 84 K → 300 K helium boundary — confirm with QRB warm-end interface</li>
-    <li><b>Config24/344:</b> live VFD-map confirmation in 55–65 Hz band with vendor</li>
-  </ul>
+  <p class="muted" style="font-size:12px;margin-top:6px">Active registry source: <code>../tracking_v2.3/tasks/tasks.json</code></p>
+  <ul id="activeTaskList"></ul>
 </div>
 </div>
 
@@ -130,4 +109,48 @@
 </div>
 
 </div>
+<script>
+(async function loadActiveTaskRegistry(){
+  const list=document.getElementById('activeTaskList');
+  if(!list) return;
+  try{
+    const res=await fetch('../tracking_v2.3/tasks/tasks.json',{cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    const active=(Array.isArray(data.tasks)?data.tasks:[]).filter(t=>t.state==='active');
+    list.replaceChildren();
+    if(!active.length){
+      const emptyItem=document.createElement('li');
+      const emptyText=document.createElement('em');
+      emptyText.textContent='No active tasks in registry.';
+      emptyItem.appendChild(emptyText);
+      list.appendChild(emptyItem);
+      return;
+    }
+    active.forEach((t)=>{
+      const item=document.createElement('li');
+      const idLabel=document.createElement('b');
+      const id=(t && typeof t.id==='string')?t.id:'Task';
+      idLabel.textContent=`${id}:`;
+      item.appendChild(idLabel);
+      const title=(t && typeof t.title==='string')?t.title:'';
+      item.appendChild(document.createTextNode(` ${title}`));
+      if(t && typeof t.note==='string' && t.note){
+        item.appendChild(document.createTextNode(' — '));
+        const note=document.createElement('em');
+        note.textContent=t.note;
+        item.appendChild(note);
+      }
+      list.appendChild(item);
+    });
+  }catch(e){
+    list.replaceChildren();
+    const errorItem=document.createElement('li');
+    const errorText=document.createElement('em');
+    errorText.textContent='Unable to load active task registry.';
+    errorItem.appendChild(errorText);
+    list.appendChild(errorItem);
+  }
+})();
+</script>
 </body></html>

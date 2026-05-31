@@ -29,7 +29,8 @@ jobs:
           if make -n bootstrap &>/dev/null 2>&1; then
             make bootstrap
           else
-            pip install -r DMAIC_V3/requirements.txt
+            python -m pip install --upgrade pip
+            python -m pip install -r DMAIC_V3/requirements.txt
           fi
 
       - name: Lint
@@ -37,7 +38,7 @@ jobs:
           if make -n lint &>/dev/null 2>&1; then
             make lint
           else
-            pip install flake8
+            python -m pip install flake8
             flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120
           fi
 
@@ -46,7 +47,7 @@ jobs:
           if make -n test &>/dev/null 2>&1; then
             make test
           else
-            pip install pytest
+            python -m pip install -r DMAIC_V3/requirements.txt
             python -m pytest DMAIC_V3/tests -q
           fi
 
