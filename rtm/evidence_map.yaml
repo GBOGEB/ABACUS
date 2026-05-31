@@ -1,75 +1,79 @@
 artifact: evidence_map
-generated_at: '2026-05-30T19:14:13+00:00'
-reports_dir: /tmp/workspace/GBOGEB/ABACUS/reports
+generated_at: '2026-05-31T08:27:43+00:00'
+reports_dir: reports
 requirements:
-  REQ-RTM-001:
-    title: Runtime evidence is traceable
+  REQ-001:
+    title: Runtime entry is executable
     evidence:
     - evidence_id: runtime_status
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
+      artifact: reports/runtime_publish_status.json
       domain: runtime
       available: true
-    - evidence_id: runtime_registry_report
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json
-      domain: runtime
-      available: true
-  REQ-RTM-002:
-    title: Governance evidence is traceable
+  REQ-002:
+    title: Scientific visualization schema is defined
     evidence:
-    - evidence_id: governance_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
-      domain: governance
-      available: false
-    - evidence_id: completion_vector
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json
-      domain: governance
-      available: false
-  REQ-RTM-003:
-    title: Validation evidence is traceable
-    evidence:
-    - evidence_id: runtime_status
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
-      domain: runtime
+    - evidence_id: scientific_visualization_schema
+      artifact: patterns/scientific_visualization/schema.json
+      domain: schema
       available: true
+  REQ-003:
+    title: SVG and process-flow rendering is supported
+    evidence:
+    - evidence_id: qplant_process_flow_content
+      artifact: content/qplant/process_flow.yaml
+      domain: content
+      available: true
+  REQ-004:
+    title: MathML rendering is supported
+    evidence:
+    - evidence_id: qplant_thermodynamics_content
+      artifact: content/qplant/thermodynamics.yaml
+      domain: content
+      available: true
+  REQ-005:
+    title: QPLANT content loads successfully
+    evidence:
+    - evidence_id: qplant_process_flow_content
+      artifact: content/qplant/process_flow.yaml
+      domain: content
+      available: true
+    - evidence_id: qplant_thermodynamics_content
+      artifact: content/qplant/thermodynamics.yaml
+      domain: content
+      available: true
+  REQ-006:
+    title: Dashboard generation produces status evidence
+    evidence:
     - evidence_id: dashboard_status
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json
+      artifact: reports/dashboard_status.json
       domain: validation
       available: true
-  REQ-RTM-004:
-    title: DMAIC evidence is traceable
+  REQ-007:
+    title: Federation runtime registry is consumed
+    evidence:
+    - evidence_id: runtime_registry_report
+      artifact: reports/runtime_registry_report.json
+      domain: runtime
+      available: true
+  REQ-008:
+    title: DMAIC governance snapshots are generated
     evidence:
     - evidence_id: dmaic_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json
+      artifact: reports/dmaic_snapshot.json
       domain: dmaic
       available: false
     - evidence_id: governance_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
+      artifact: reports/governance_snapshot.json
       domain: governance
       available: false
-  REQ-RTM-005:
-    title: Integrated RTM matrix is generated
+  REQ-009:
+    title: Schema validation is enforced
     evidence:
-    - evidence_id: runtime_status
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_publish_status.json
-      domain: runtime
+    - evidence_id: scientific_visualization_schema
+      artifact: patterns/scientific_visualization/schema.json
+      domain: schema
       available: true
-    - evidence_id: runtime_registry_report
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/runtime_registry_report.json
-      domain: runtime
+    - evidence_id: schema_validation_rules
+      artifact: patterns/scientific_visualization/validation_rules.yaml
+      domain: schema
       available: true
-    - evidence_id: dashboard_status
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dashboard_status.json
-      domain: validation
-      available: true
-    - evidence_id: dmaic_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json
-      domain: dmaic
-      available: false
-    - evidence_id: governance_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
-      domain: governance
-      available: false
-    - evidence_id: completion_vector
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/completion_vector.json
-      domain: governance
-      available: false
