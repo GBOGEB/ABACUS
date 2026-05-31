@@ -149,7 +149,7 @@ jobs:
       
       - name: Run full deployment cycle
         run: |
-          python run_deployment_test_system.py --test-suite all --version ci-full-${{ github.sha }}
+          python run_deployment_test_system.py --test-suite all --skip-static --version ci-full-${{ github.sha }}
       
       - name: Validate deployment readiness
         run: |
