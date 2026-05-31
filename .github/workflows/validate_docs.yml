@@ -23,13 +23,15 @@ jobs:
           npm install -g markdownlint-cli2
 
       - name: Lint Markdown
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
         run: |
-          mapfile -t MARKDOWN_FILES < <(find . -type f -name "*.md" -not -path "./node_modules/*" -print)
+          mapfile -t MARKDOWN_FILES < <(find . -type f -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" -print)
           if [ ${#MARKDOWN_FILES[@]} -eq 0 ]; then
             echo "No Markdown files found."
             exit 0
           fi
-          printf '%s\n' "${MARKDOWN_FILES[@]}" | xargs -r -n 100 markdownlint-cli2 || exit 1
+          printf '%s\n' "${MARKDOWN_FILES[@]}" | xargs -r -n 50 markdownlint-cli2 || exit 1
 
       - name: Setup Python (YAML/JSON checks)
         uses: actions/setup-python@v5
