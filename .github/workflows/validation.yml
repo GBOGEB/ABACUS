@@ -1,0 +1,80 @@
+name: Execution Spine Validation
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-evidence:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Generate runtime evidence
+        run: |
+          python -m src.qplant_presentation_engine
+
+      - name: Generate RTM artifacts
+        run: |
+          python - <<'EOF'
+          from src.qplant_presentation_engine.rtm import generate_rtm_artifacts
+          result = generate_rtm_artifacts()
+          summary = result["rtm_summary"]
+          print(f"RTM coverage: {summary['coverage_ratio']:.2%}")
+          print(f"Requirements: {summary['requirements_with_evidence']}/{summary['total_requirements']}")
+          EOF
+
+      - name: Run release gate (validation checks)
+        run: |
+          python - <<'EOF'
+          import json, sys
+          from src.qplant_presentation_engine.release_gate import evaluate_release_gate
+          result = evaluate_release_gate()
+          print(json.dumps(result, indent=2))
+
+          rtm_ok = result["checks"]["rtm_coverage"]["passed"]
+          runtime_ok = result["checks"]["runtime_evidence"]["passed"]
+
+          if not rtm_ok:
+              print(f"FAIL: {result['checks']['rtm_coverage']['message']}", file=sys.stderr)
+          if not runtime_ok:
+              print(f"FAIL: {result['checks']['runtime_evidence']['message']}", file=sys.stderr)
+          if not rtm_ok or not runtime_ok:
+              sys.exit(1)
+
+          print("Validation checks passed.")
+          EOF
+
+      - name: Run release gate tests
+        run: |
+          pip install pytest
+          python -m pytest tests/test_release_gate.py -v
+
+      - name: Upload CI status artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-status
+          path: |
+            reports/ci_status.json
+            reports/release_readiness.json
+            rtm/rtm_summary.json
+            rtm/trace_matrix.json
