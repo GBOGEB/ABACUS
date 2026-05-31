@@ -1,6 +1,6 @@
 {
   "wave": "W005.1",
-  "status": "published",
+  "runtime_status": "published",
   "runtime_evidence": true,
   "deployment_evidence": true
 }

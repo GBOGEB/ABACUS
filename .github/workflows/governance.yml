@@ -56,6 +56,15 @@ jobs:
               sys.exit(1)
           EOF
 
+      - name: Generate RTM artifacts
+        run: |
+          python - <<'EOF'
+          from src.qplant_presentation_engine.rtm import generate_rtm_artifacts
+          result = generate_rtm_artifacts()
+          summary = result["rtm_summary"]
+          print(f"RTM coverage: {summary['coverage_ratio']:.2%}")
+          EOF
+
       - name: Run release gate (full check)
         run: |
           python - <<'EOF'

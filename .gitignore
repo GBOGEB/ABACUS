@@ -74,6 +74,7 @@ reports/*
 !requirements.json
 !package.json
 !rtm/trace_matrix.json
+!tracking_v2.3/tasks/tasks.json
 
 # Temporary files
 *.tmp
