@@ -70,17 +70,16 @@ def generate_runtime_evidence(
     validation_ready = all(validation.values())
     validation_status = "ready" if validation_ready else "failed"
 
-    _write_json_artifact(
-        "runtime_status.json",
-        {
-            "command": _RUNTIME_METADATA["entrypoint"],
-            "exit_code": exit_code,
-            "generated_at": generated_at,
-            "report": report,
-            "runtime_status": runtime_status,
-            "validation_status": validation_status,
-        },
-    )
+    _runtime_status_payload = {
+        "command": _RUNTIME_METADATA["entrypoint"],
+        "exit_code": exit_code,
+        "generated_at": generated_at,
+        "report": report,
+        "runtime_status": runtime_status,
+        "validation_status": validation_status,
+    }
+    _write_json_artifact("runtime_status.json", _runtime_status_payload)
+    _write_json_artifact("reports/runtime_status.json", _runtime_status_payload)
 
     _write_json_artifact(
         "validation_report.json",
