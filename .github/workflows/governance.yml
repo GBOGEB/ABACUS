@@ -85,7 +85,7 @@ jobs:
 
       - name: Run release gate tests
         run: |
-          python -m pytest tests/test_release_gate.py -v
+          python -m pytest tests -v
 
       - name: Upload governance artifacts
         uses: actions/upload-artifact@v4
