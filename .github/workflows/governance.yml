@@ -83,7 +83,7 @@ jobs:
           print("All governance checks passed.")
           EOF
 
-      - name: Run release gate tests
+      - name: Run QPLANT presentation engine tests
         run: |
           python -m pytest tests -v
 
