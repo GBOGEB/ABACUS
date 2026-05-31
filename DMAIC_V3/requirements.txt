@@ -51,7 +51,7 @@ jinja2>=3.0.0,<4.0.0
 pyyaml>=6.0,<7.0
 
 # JSON schema validation
-jsonschema>=4.26.0,<5.0.0
+jsonschema>=4.17.3,<5.0.0
 
 # ============================================================================
 # UTILITIES
@@ -110,7 +110,8 @@ mypy>=2.1.0,<3.0.0
 
 # Documentation
 sphinx>=9.1.0,<10.0.0; python_version >= "3.12"
-sphinx>=8.2.3,<9.1.0; python_version < "3.12"
+sphinx>=8.2.3,<9.1.0; python_version >= "3.11" and python_version < "3.12"
+sphinx>=7.0.0,<8.2.0; python_version >= "3.9" and python_version < "3.11"
 sphinx-rtd-theme>=3.0.0,<4.0.0
 
 # ============================================================================
