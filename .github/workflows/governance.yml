@@ -1,0 +1,91 @@
+name: Execution Spine Governance
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml pytest
+
+      - name: Generate runtime evidence
+        run: |
+          python -m src.qplant_presentation_engine
+
+      - name: Generate DMAIC snapshot
+        run: |
+          python - <<'EOF'
+          from src.qplant_presentation_engine.dmaic import build_dmaic_snapshot
+          snapshot = build_dmaic_snapshot()
+          phases = snapshot.get("phase_status", {})
+          for phase, info in phases.items():
+              status = "PASS" if info.get("complete") else "FAIL"
+              print(f"  {phase}: {status}")
+          EOF
+
+      - name: Generate governance artifacts
+        run: |
+          python - <<'EOF'
+          import json, sys
+          from src.qplant_presentation_engine.governance import generate_governance_artifacts
+          gov, vec = generate_governance_artifacts()
+          print(f"Governance passed: {gov['governance_passed']}")
+          print(f"Completed phases: {vec['completed_phases']}/{vec['total_phases']}")
+          if not gov["governance_passed"]:
+              print("FAIL: governance not passed", file=sys.stderr)
+              sys.exit(1)
+          EOF
+
+      - name: Run release gate (full check)
+        run: |
+          python - <<'EOF'
+          import json, sys
+          from src.qplant_presentation_engine.release_gate import evaluate_release_gate
+          result = evaluate_release_gate()
+          print(json.dumps(result, indent=2))
+
+          failed = [name for name, info in result["checks"].items() if not info["passed"]]
+          if failed:
+              for name in failed:
+                  msg = result["checks"][name]["message"]
+                  print(f"FAIL [{name}]: {msg}", file=sys.stderr)
+              sys.exit(1)
+
+          print("All governance checks passed.")
+          EOF
+
+      - name: Run release gate tests
+        run: |
+          python -m pytest tests/test_release_gate.py -v
+
+      - name: Upload governance artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: governance-artifacts
+          path: |
+            reports/governance_snapshot.json
+            reports/dmaic_snapshot.json
+            reports/completion_vector.json
+            reports/release_readiness.json
+            reports/ci_status.json
