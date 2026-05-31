@@ -1,0 +1,24 @@
+# ABACUS Federation - Advanced CodeQL Configuration
+#
+# This file establishes ABACUS as an Advanced CodeQL consumer.
+# GitHub Default CodeQL Setup MUST be disabled in repository settings
+# (Settings > Code security and analysis > Code scanning > Default setup)
+# to prevent SARIF processing conflicts.
+#
+# Federation governance policy: Advanced CodeQL only (Default Setup disabled).
+
+name: ABACUS Advanced CodeQL
+
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+paths-ignore:
+  - '**/*.md'
+  - 'docs/**'
+  - 'reports/**'
+  - 'tracking_v2.3/**'
+  - 'qplant/**'
+  - 'myrrha_handover/**'
+  - 'DMAIC_CANONICAL_OUTPUT/**'
+  - 'DMAIC_V3_OUTPUT/**'
