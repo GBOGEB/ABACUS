@@ -63,7 +63,7 @@ jobs:
           print("Validation checks passed.")
           EOF
 
-      - name: Run release gate tests
+      - name: Run QPLANT presentation engine tests
         run: |
           pip install pytest
           python -m pytest tests -v
