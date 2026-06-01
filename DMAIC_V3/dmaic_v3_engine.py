@@ -23,7 +23,6 @@ from .core.state import StateManager
 from .core.metrics import MetricsAggregator
 from .core.handover_bridge import HandoverBridge, IdempotentPhase
 from .convergence.iterative_controller import IterativeController
-from .phases.phase0_init import Phase0Init as Phase0Setup
 from .phases.phase1_define import Phase1Define
 from .phases.phase2_measure import Phase2Measure
 from .phases.phase3_analyze import Phase3Analyze
