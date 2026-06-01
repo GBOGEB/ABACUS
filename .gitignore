@@ -59,10 +59,21 @@ ABACUS_V21_*/
 ABACUS_SESSION_ANALYSIS/
 output/
 reports/
+!reports/
+reports/*
 *.pdf
 *.json
+!reports/runtime_publish_status.json
+!reports/dashboard_status.json
+!reports/runtime_registry_report.json
+!metrics/federation/federation_rollup.json
+!metrics/federation/federation_scree.json
+!metrics/federation/runtime_registry.json
+!patterns/scientific_visualization/schema.json
+!bottleneck_report.json
 !requirements.json
 !package.json
+!rtm/trace_matrix.json
 !tracking_v2.3/tasks/tasks.json
 
 # Temporary files

@@ -3,131 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ABACUS Repository Dashboard</title>
+  <title>Federation Telemetry Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f7f9fc;
-      color: #162033;
-    }
-    .topnav {
-      display: flex;
-      gap: .8rem;
-      flex-wrap: wrap;
-      padding: .75rem 1rem;
-      background: #162033;
-      border-bottom: 1px solid #2e3d55;
-    }
-    .topnav a {
-      color: #b8cef7;
-      font-size: .92rem;
-      text-decoration: none;
-    }
-    .topnav a.brand {
-      color: #fff;
-      font-weight: 700;
-      margin-right: .4rem;
-    }
-    .topnav a:hover { text-decoration: underline; }
-    main {
-      width: min(1100px, calc(100% - 2rem));
-      margin: 0 auto;
-      padding: 2rem 0;
-    }
-    .toolbar, .grid, .links {
-      display: grid;
-      gap: 1rem;
-    }
-    .toolbar {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      margin-bottom: 1rem;
-    }
-    .grid {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-    .card {
-      background: #fff;
-      border: 1px solid #d9e1ec;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 8px 24px rgba(22, 32, 51, 0.05);
-    }
-    .label {
-      color: #556070;
-      font-size: 0.92rem;
-      margin-bottom: 0.35rem;
-    }
-    .value {
-      font-size: 1.7rem;
-      font-weight: 700;
-    }
-    a { color: #1f5fbf; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    h1, h2 { margin-top: 0; }
-    .links {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      margin-top: 1rem;
-    }
-    ul {
-      margin: 0.5rem 0 0;
-      padding-left: 1.1rem;
-    }
-    li + li { margin-top: 0.35rem; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f7f9fc; color: #162033; }
+    main { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0; }
+    h1 { margin-top: 0; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+    .card { background: #fff; border: 1px solid #d9e1ec; border-radius: 10px; padding: 1rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: .45rem .6rem; border: 1px solid #d9e1ec; }
+    th { background: #f0f5fc; }
+    progress { width: 120px; vertical-align: middle; }
   </style>
 </head>
 <body>
-  <nav class="topnav">
-    <a class="brand" href="./">⚛️ ABACUS</a>
-    <a href="cryo/">Cryo</a>
-    <a href="12-cluster/">12-Cluster</a>
-    <a href="dow/">DOW</a>
-    <a href="testing/">Testing</a>
-    <a href="tools/">Tools</a>
-    <a href="versions/">Versions</a>
-    <a href="deep_analysis_dashboard.html">Deep Analysis</a>
-  </nav>
   <main>
-    <h1>ABACUS Repository Dashboard</h1>
-    <p><a href="index.html">← Back to repository navigation</a></p>
-
-    <div class="toolbar">
-      <div class="card"><div class="label">Primary repo</div><div class="value" style="font-size:1.1rem;">GBOGEB/ABACUS</div></div>
-      <div class="card"><div class="label">Maturity</div><div class="value">Level 4</div></div>
-      <div class="card"><div class="label">Overall completion</div><div class="value">95%</div></div>
-      <div class="card"><div class="label">Convergence score</div><div class="value">96.0</div></div>
-    </div>
-
+    <h1>Federation Telemetry Dashboard</h1>
+    <p>
+      <a href="./">Home</a> ·
+      <a href="cryo/">Cryo</a> ·
+      <a href="12-cluster/">12-Cluster</a> ·
+      <a href="dow/">DOW</a> ·
+      <a href="testing/">Testing</a> ·
+      <a href="tools/">Tools</a> ·
+      <a href="versions/">Versions</a>
+    </p>
     <div class="grid">
-      <div class="card"><div class="label">Python files</div><div class="value">300</div></div>
-      <div class="card"><div class="label">Markdown files</div><div class="value">694</div></div>
-      <div class="card"><div class="label">Workflow files</div><div class="value">50</div></div>
-      <div class="card"><div class="label">DMAIC V3 tests</div><div class="value">18</div></div>
-      <div class="card"><div class="label">Changelog files</div><div class="value">14</div></div>
-      <div class="card"><div class="label">Canonical index files</div><div class="value">7</div></div>
-      <div class="card"><div class="label">Links on this dashboard</div><div class="value">17</div></div>
-      <div class="card"><div class="label">JSON files</div><div class="value">112</div></div>
-    </div>
-
-    <div class="links">
-      <div class="card">
-        <h2>Key routes</h2>
-        <ul>
-          <li><a href="index.html#hierarchy">Repository hierarchy</a></li>
-          <li><a href="index.html#functions">Function entry points</a></li>
-          <li><a href="index.html#bridge">Bridge, smoke, evaluation</a></li>
-          <li><a href="index.html#canonical">Canonical artefacts</a></li>
-        </ul>
-      </div>
-      <div class="card">
-        <h2>Quick repo links</h2>
-        <ul>
-          <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3" target="_blank" rel="noopener">DMAIC_V3/</a></li>
-          <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">.github/workflows/</a></li>
-          <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/maturity_assessment.json" target="_blank" rel="noopener">maturity_assessment.json</a></li>
-          <li><a href="https://github.com/GBOGEB/ABACUS/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></li>
-        </ul>
-      </div>
+      
+    <section class="card">
+      <h2>Program Overview</h2>
+      <table><tr><th>Forward PCA</th><td>100%</td></tr><tr><th>Backward PCA</th><td>100%</td></tr><tr><th>GETI</th><td>0.97</td></tr><tr><th>PCI</th><td>0.96</td></tr><tr><th>Expansion Factor</th><td>1.20</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Federation Status</h2>
+      <table><tr><th>ABACUS</th><td>active</td></tr><tr><th>ARTSTYLE</th><td>active</td></tr><tr><th>QPLANT</th><td>active</td></tr><tr><th>CODEX</th><td>active</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Scree Analysis</h2>
+      <table>
+        <thead>
+          <tr><th>Component</th><th>Variance</th><th>Rank</th><th>Cumulative variance</th></tr>
+        </thead>
+        <tbody><tr><th>PC1</th><td>40%</td><td>1</td><td>40%</td></tr><tr><th>PC2</th><td>25%</td><td>2</td><td>65%</td></tr><tr><th>PC3</th><td>15%</td><td>3</td><td>80%</td></tr><tr><th>PC4</th><td>12%</td><td>4</td><td>92%</td></tr><tr><th>PC5</th><td>8%</td><td>5</td><td>100%</td></tr></tbody>
+      </table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Bottleneck Report</h2>
+      <table><tr><th>dominant_repo</th><td>CODEX</td></tr><tr><th>dominant_wave</th><td>W005</td></tr><tr><th>dominant_bottleneck</th><td>Federation telemetry publication lag</td></tr><tr><th>recommended_next_action</th><td>Automate CODEX artifact handoff into ABACUS metrics/federation</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Wave Progress Board</h2>
+      <table><tr><th>W000</th><td>done</td></tr><tr><th>W001</th><td>done</td></tr><tr><th>W002</th><td>done</td></tr><tr><th>W003</th><td>done</td></tr><tr><th>W004</th><td>done</td></tr><tr><th>W005</th><td>active</td></tr><tr><th>W006</th><td>queued</td></tr><tr><th>W007</th><td>queued</td></tr><tr><th>W008</th><td>queued</td></tr><tr><th>W009</th><td>queued</td></tr><tr><th>W010</th><td>queued</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Runtime Evidence</h2>
+      <table><tr><th>ABACUS</th><td>validated</td></tr><tr><th>ARTSTYLE</th><td>validated</td></tr><tr><th>QPLANT</th><td>validated</td></tr><tr><th>CODEX</th><td>validated</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Federation Truth Matrix</h2>
+      <table><tr><th>ABACUS</th><td>aligned</td></tr><tr><th>ARTSTYLE</th><td>aligned</td></tr><tr><th>QPLANT</th><td>aligned</td></tr><tr><th>CODEX</th><td>aligned</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Renderability</h2>
+      <table><tr><th>ABACUS</th><td>ready</td></tr><tr><th>ARTSTYLE</th><td>ready</td></tr><tr><th>QPLANT</th><td>ready</td></tr><tr><th>CODEX</th><td>ready</td></tr></table>
+    </section>
+    
+      
+    <section class="card">
+      <h2>Runtime Coverage Gauges</h2>
+      <table>
+        <thead>
+          <tr><th>Repository</th><th>Gauge</th><th>Reported Coverage</th></tr>
+        </thead>
+        <tbody><tr><th>ABACUS</th><td><progress max="100" value="95"></progress> 95%</td><td>95%</td></tr><tr><th>ARTSTYLE</th><td><progress max="100" value="93"></progress> 93%</td><td>93%</td></tr><tr><th>QPLANT</th><td><progress max="100" value="94"></progress> 94%</td><td>94%</td></tr><tr><th>CODEX</th><td><progress max="100" value="96"></progress> 96%</td><td>96%</td></tr></tbody>
+      </table>
+    </section>
+    
     </div>
   </main>
 </body>
