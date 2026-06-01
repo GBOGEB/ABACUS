@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ABACUS v032 - Quality Gate Check Stub"""
+
 import os
 import sys
 

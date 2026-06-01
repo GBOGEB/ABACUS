@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ABACUS v032 - Update Documentation Versions Stub"""
+
 import sys
 
 
