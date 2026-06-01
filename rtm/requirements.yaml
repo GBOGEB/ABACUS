@@ -1,0 +1,36 @@
+artifact: requirements
+generated_at: '2026-05-31T08:47:56+00:00'
+requirements:
+- id: REQ-001
+  title: Runtime entry is executable
+  description: python -m qplant_presentation_engine executes successfully and produces
+    runtime evidence.
+- id: REQ-002
+  title: Scientific visualization schema is defined
+  description: A canonical JSON/YAML schema exists covering all supported visualization
+    types.
+- id: REQ-003
+  title: SVG and process-flow rendering is supported
+  description: Process-flow YAML content exists and drives SVG rendering.
+- id: REQ-004
+  title: MathML rendering is supported
+  description: Thermodynamics YAML content with equations exists and drives MathML
+    rendering.
+- id: REQ-005
+  title: QPLANT content loads successfully
+  description: All QPLANT YAML content files are present and accessible.
+- id: REQ-006
+  title: Dashboard generation produces status evidence
+  description: Dashboard build generates dashboard_status.json as evidence of successful
+    execution.
+- id: REQ-007
+  title: Federation runtime registry is consumed
+  description: Federation registry report is ingested and available as runtime evidence.
+- id: REQ-008
+  title: DMAIC governance snapshots are generated
+  description: DMAIC and governance artifacts are produced as evidence of governance
+    execution.
+- id: REQ-009
+  title: Schema validation is enforced
+  description: Validation rules enforce schema conformance for all supported visualization
+    types.

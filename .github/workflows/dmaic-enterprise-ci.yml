@@ -57,6 +57,7 @@ jobs:
       continue-on-error: true
     
     - name: Verify Python syntax
+      shell: bash
       run: |
         python -m py_compile DMAIC_V3/agents/*.py
         python -m py_compile DMAIC_V3/convergence/*.py

@@ -1,0 +1,26 @@
+{
+  "forward_pca": "100%",
+  "backward_pca": "100%",
+  "geti": "0.97",
+  "pci": "0.96",
+  "expansion_factor": "1.20",
+  "federation_status": {
+    "ABACUS": "active",
+    "ARTSTYLE": "active",
+    "QPLANT": "active",
+    "CODEX": "active"
+  },
+  "wave_progress": {
+    "W000": "done",
+    "W001": "done",
+    "W002": "done",
+    "W003": "done",
+    "W004": "done",
+    "W005": "active",
+    "W006": "queued",
+    "W007": "queued",
+    "W008": "queued",
+    "W009": "queued",
+    "W010": "queued"
+  }
+}
