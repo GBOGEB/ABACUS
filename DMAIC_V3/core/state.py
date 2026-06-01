@@ -6,10 +6,13 @@ Handles execution state, checkpoints, and resume capability
 import json
 import hashlib
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import TYPE_CHECKING, Dict, Any, Optional, List
 from datetime import datetime
 from dataclasses import dataclass, asdict
 from enum import Enum
+
+if TYPE_CHECKING:
+    from .models import IterationResult
 
 
 class PhaseStatus(Enum):
@@ -384,7 +387,7 @@ class StateManager:
 
     def get_execution_summary(self) -> Dict[str, Any]:
         """Get summary of execution state"""
-        summary = {
+        summary: Dict[str, Any] = {
             "total_iterations": len(self.execution_history),
             "current_iteration": None,
             "history": []

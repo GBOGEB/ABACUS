@@ -177,7 +177,7 @@ class MetricsAggregator:
     
     def generate_summary(self) -> Dict[str, Any]:
         """Generate comprehensive metrics summary"""
-        summary = {
+        summary: Dict[str, Any] = {
             "total_phases": len(self.phase_metrics),
             "total_iterations": len(self.iteration_metrics),
             "phase_summaries": {},

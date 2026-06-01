@@ -5,7 +5,7 @@ Bridges handover pipeline (src/dmaic/) with DMAIC V3 structure (DMAIC_V3/)
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
@@ -280,7 +280,7 @@ def _parse_opportunities(path: Path) -> list:
 
     # Simple parsing - extract opportunity sections
     lines = content.split('\n')
-    current_opp = None
+    current_opp: Optional[Dict[str, Any]] = None
 
     for line in lines:
         if line.startswith('## OPP-') or line.startswith('### OPP-'):
