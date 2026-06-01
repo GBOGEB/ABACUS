@@ -1,0 +1,121 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "abacus/patterns/scientific_visualization/schema"
+title: "ABACUS Federated Scientific Visualization Schema"
+description: "Canonical schema for federated scientific visualization evidence payloads."
+type: object
+additionalProperties: false
+required:
+  - visualization
+  - lineage
+  - metrics
+  - truth_matrix
+properties:
+  visualization:
+    type: object
+    additionalProperties: false
+    required:
+      - type
+      - title
+      - data_ref
+    properties:
+      type:
+        type: string
+        enum:
+          - sankey
+          - boxplot
+          - violin
+          - timeline
+          - heatmap
+          - process_flow
+          - table_metrics
+          - scientific_equations
+      title:
+        type: string
+        minLength: 1
+      data_ref:
+        type: string
+        minLength: 1
+      renderer:
+        type:
+          - "null"
+        description: "Renderer intentionally deferred for W003.1."
+  lineage:
+    type: object
+    additionalProperties: false
+    required:
+      - wave
+      - pr
+      - repo
+      - commit
+      - runtime_evidence
+      - validation_evidence
+    properties:
+      wave:
+        type: string
+        minLength: 1
+      pr:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            pattern: "^PR[-_ ]?[0-9]+$"
+      repo:
+        type: string
+        minLength: 1
+      commit:
+        type: string
+        pattern: "^[a-fA-F0-9]{7,40}$"
+      runtime_evidence:
+        type: string
+        minLength: 1
+      validation_evidence:
+        type: string
+        minLength: 1
+  metrics:
+    type: object
+    additionalProperties: false
+    required:
+      - pca
+      - geti
+      - truth_score
+    properties:
+      pca:
+        type: object
+        additionalProperties: false
+        required:
+          - forward_pca
+          - backward_pca
+        properties:
+          forward_pca:
+            type: number
+            minimum: 0
+            maximum: 1
+          backward_pca:
+            type: number
+            minimum: 0
+            maximum: 1
+      geti:
+        type: number
+        minimum: 0
+        maximum: 1
+      truth_score:
+        type: number
+        minimum: 0
+        maximum: 1
+  truth_matrix:
+    type: object
+    additionalProperties: false
+    required:
+      - principles
+    properties:
+      principles:
+        type: array
+        uniqueItems: true
+        minItems: 4
+        items:
+          type: string
+          enum:
+            - chat_is_not_repo
+            - architecture_is_not_runtime
+            - claimed_is_not_validated
+            - exists_in_repo_is_not_ci_execution
