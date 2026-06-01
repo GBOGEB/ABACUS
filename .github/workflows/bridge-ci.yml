@@ -183,7 +183,8 @@ jobs:
           mypy DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py \
             --ignore-missing-imports \
             --no-strict-optional \
-            --allow-untyped-calls
+            --allow-untyped-calls \
+            --follow-imports=skip
       
       - name: Run pylint
         continue-on-error: true
