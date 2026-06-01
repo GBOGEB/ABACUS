@@ -8,6 +8,5 @@ import sys
 
 from execute_full_dmaic_phases_0_to_9_v033 import main
 
-
 if __name__ == "__main__":
     sys.exit(main())
