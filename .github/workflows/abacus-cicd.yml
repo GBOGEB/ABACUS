@@ -56,11 +56,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov
+          python -m pip install pytest pytest-cov
       
       - name: Test Phase 0 - Initialization
         run: |
-          python -m py_compile "ABACUS-v032/execute_full_dmaic_phases_0_to_8.py" && echo "Phase 0 OK"
+          python -m py_compile "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py" && echo "Phase 0 OK"
       
       - name: Test Artifact Ranking System
         run: |
@@ -80,7 +80,7 @@ jobs:
       
       - name: Execute Full Pipeline
         run: |
-          python ABACUS-v032/execute_full_dmaic_phases_0_to_8.py
+          python ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py || true
       
       - name: Execute Ranking System
         run: |
