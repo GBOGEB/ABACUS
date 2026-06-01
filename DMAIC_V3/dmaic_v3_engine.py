@@ -1,4 +1,5 @@
 from typing import Any
+
 """
 DMAIC V3.3 Engine - Main Execution Controller
 Updated: 2025-11-12
@@ -54,20 +55,21 @@ def main():
             cfg = DMAICConfig()
             state = StateManager(cfg.paths.state_dir)
             exec_result = Phase6Knowledge(cfg, state).execute(iteration=1)
-            
+
             # Handle both tuple (old) and dict (new) return types
             if isinstance(exec_result, tuple):
                 ok, results = exec_result
             else:
                 results = exec_result
-                ok = not results.get('error') and not results.get('skipped', False)
-                
+                ok = not results.get("error") and not results.get("skipped", False)
+
             # Persist minimal report to reports dir
             reports_dir = cfg.paths.reports_dir
             reports_dir.mkdir(parents=True, exist_ok=True)
-            (reports_dir / f"phase6_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json").write_text(
-                json.dumps(results, indent=2), encoding="utf-8"
-            )
+            (
+                reports_dir
+                / f"phase6_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            ).write_text(json.dumps(results, indent=2), encoding="utf-8")
             return 0 if ok else 2
         # ...existing code for other phases...
         pass
@@ -84,6 +86,7 @@ def main():
             print(f"[WARN] Phase 6 execution skipped/failed: {_e}")
         # ...existing code...
         pass
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
