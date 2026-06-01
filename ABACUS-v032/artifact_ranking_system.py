@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ABACUS v032 - Artifact Ranking System Stub"""
+
 import os
 import sys
 
