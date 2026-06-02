@@ -64,11 +64,10 @@ jobs:
       - name: Run bridge integration tests
         run: |
           python -m pytest DMAIC_V3/tests/test_bridge_integration.py -v \
-            --cov=DMAIC_V3/core \
-            --cov=src/dmaic \
+            --cov=DMAIC_V3.core.test_system_bridge \
             --cov-report=term-missing \
             --cov-report=xml \
-            --cov-fail-under=19
+            --cov-fail-under=70
       
       - name: Run smoke tests
         run: |
