@@ -71,8 +71,10 @@ jobs:
         id: test_result
         run: |
           test_exit="${{ steps.run_tests.outputs.test_exit }}"
-          passed=$(grep -oP '\d+ passed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
-          failed=$(grep -oP '\d+ failed' /tmp/test_output.txt | head -1 | grep -oP '\d+' || echo 0)
+          passed=$(grep -oE '[0-9]+ passed' /tmp/test_output.txt | head -n1 | awk '{print $1}')
+          failed=$(grep -oE '[0-9]+ failed' /tmp/test_output.txt | head -n1 | awk '{print $1}')
+          passed=${passed:-0}
+          failed=${failed:-0}
           total=$((passed + failed))
           pass_rate="N/A"
           if [[ "$total" -gt 0 ]]; then
