@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - build_qplant_visualization.py
+      - tools/gate_rollup.py
+      - logs/**
       - content/qplant/**
       - renderers/**
       - .github/workflows/pages.yml
@@ -47,6 +49,9 @@ jobs:
         run: |
           mkdir -p docs
           cp dist/qplant_visualization.html docs/index.html
+
+      - name: Build CI gate rollup feed
+        run: python tools/gate_rollup.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
