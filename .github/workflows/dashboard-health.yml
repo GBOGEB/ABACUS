@@ -80,6 +80,12 @@ jobs:
           BROKEN=0
           while IFS= read -r f; do
             while IFS= read -r href; do
+              href="${href#"${href%%[![:space:]]*}"}"
+              case "$href" in
+                ""|http://*|https://*|mailto:*|#*|data:*|javascript:*|/*|\$\{*)
+                  continue
+                  ;;
+              esac
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"
@@ -88,16 +94,7 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done < <(
-              grep -oP 'href="\K[^"]+' "$f" \
-                | grep -v '^http' \
-                | grep -v '^#' \
-                | grep -v '^mailto' \
-                | grep -v '^data:' \
-                | grep -v '^javascript:' \
-                | grep -v '^/' \
-                | grep -v '^\${'
-            )
+            done < <(grep -oP 'href="\K[^"]+' "$f")
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
