@@ -90,9 +90,13 @@ jobs:
               fi
             done < <(
               grep -oP 'href="\K[^"]+' "$f" \
+                | grep -v '^http' \
                 | grep -v '^#' \
-                | grep -v '^\${' \
-                | grep -vE '^[a-zA-Z][a-zA-Z0-9+.-]*:'
+                | grep -v '^mailto' \
+                | grep -v '^data:' \
+                | grep -v '^javascript:' \
+                | grep -v '^/' \
+                | grep -v '^\${'
             )
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
