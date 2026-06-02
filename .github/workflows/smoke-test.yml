@@ -9,7 +9,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
+      - name: Ensure global index exists
+        run: |
+          if [ ! -f GLOBAL_index.json ]; then
+            echo '{"artefacts": []}' > GLOBAL_index.json
+          fi
       - name: Self Smoke
         run: |
           python scripts/recursive_build.py --smoke --index GLOBAL_index.json
-

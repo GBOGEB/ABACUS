@@ -1,3 +1,4 @@
+# fmt: off
 from typing import Any
 """
 DMAIC V3 - Temporal Metadata Engine

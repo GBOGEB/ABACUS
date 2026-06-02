@@ -77,35 +77,30 @@ jobs:
       - name: Report broken links
         run: |
           echo "=== Internal link report ==="
-          python - <<'PY'
-          import os
-          import re
-          from pathlib import Path
-
-          html_href = re.compile(r"""href\s*=\s*(["'])(.*?)\1""", re.IGNORECASE)
-          docs_dir = Path("docs")
-          broken = 0
-
-          for file_path in sorted(docs_dir.rglob("*.html")):
-              content = file_path.read_text(encoding="utf-8", errors="ignore")
-              for _, raw_href in html_href.findall(content):
-                  href = raw_href.strip()
-                  if href.startswith(("http://", "https://", "mailto:", "#", "data:", "/", "${")):
-                      continue
-
-                  target = href.split("#", 1)[0].split("?", 1)[0]
-                  if not target:
-                      continue
-
-                  resolved = (file_path.parent / target).resolve()
-                  if not resolved.exists():
-                      print(f"🔗 Broken: {file_path} → {raw_href}")
-                      broken += 1
-
-          print(f"Total broken internal links: {broken}")
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as github_output:
-              github_output.write(f"broken_links={broken}\n")
-          PY
+          BROKEN=0
+          while IFS= read -r f; do
+            while IFS= read -r href; do
+              dir=$(dirname "$f")
+              target="$dir/$href"
+              target="${target%%#*}"
+              target="${target%%\?*}"
+              if [ -n "$target" ] && [ ! -e "$target" ]; then
+                echo "🔗 Broken: $f → $href"
+                BROKEN=$((BROKEN+1))
+              fi
+            done < <(
+              grep -oP 'href="\K[^"]+' "$f" \
+                | grep -v '^http' \
+                | grep -v '^#' \
+                | grep -v '^mailto' \
+                | grep -v '^data:' \
+                | grep -v '^javascript:' \
+                | grep -v '^/' \
+                | grep -v '^\${'
+            )
+          done < <(find docs -name '*.html' -type f)
+          echo "Total broken internal links: $BROKEN"
+          echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
         id: link_check
 
       - name: Summary

@@ -80,7 +80,7 @@ jobs:
       
       - name: Execute Full Pipeline
         run: |
-          python ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py || true
+          python ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py
       
       - name: Execute Ranking System
         run: |
