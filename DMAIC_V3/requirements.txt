@@ -23,7 +23,7 @@ typing-extensions>=4.0.0
 # Data manipulation and analysis
 pandas>=3.0.3,<4.0.0; python_version >= "3.11"
 pandas>=2.2.3,<3.0.0; python_version < "3.11"
-numpy>=2.0.0,<3.0.0
+numpy>=2.4.6,<3.0.0
 
 # ============================================================================
 # VISUALIZATION
