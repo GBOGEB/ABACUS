@@ -5,7 +5,7 @@ Bridges handover pipeline (src/dmaic/) with DMAIC V3 structure (DMAIC_V3/)
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
@@ -52,10 +52,14 @@ class HandoverBridge:
             run_id: Unique run identifier (timestamp__git_sha)
         """
         config_dict = {
-            'workspace_root': str(self.config.paths.workspace_root),
-            'output_root': str(self.config.paths.output_root),
-            'execution_mode': self.config.execution_mode.value if hasattr(self.config.execution_mode, 'value') else str(self.config.execution_mode),
-            'max_iterations': self.config.max_iterations
+            "workspace_root": str(self.config.paths.workspace_root),
+            "output_root": str(self.config.paths.output_root),
+            "execution_mode": (
+                self.config.execution_mode.value
+                if hasattr(self.config.execution_mode, "value")
+                else str(self.config.execution_mode)
+            ),
+            "max_iterations": self.config.max_iterations,
         }
         config_hash = idempotency.hash_json(config_dict)
         self.run_id = provenance.begin_run(config_hash, inputs_hash)
@@ -72,8 +76,15 @@ class HandoverBridge:
         if self.run_id:
             provenance.finish_run(self.run_id, status, total_metrics)
 
-    def record_phase(self, phase_name: str, iteration: int, status: str,
-                     inputs_hash: str, outputs_hash: str, metrics: Dict[str, Any]):
+    def record_phase(
+        self,
+        phase_name: str,
+        iteration: int,
+        status: str,
+        inputs_hash: str,
+        outputs_hash: str,
+        metrics: Dict[str, Any],
+    ):
         """Record phase execution in provenance"""
         provenance.record_phase(
             self.run_id,
@@ -82,11 +93,12 @@ class HandoverBridge:
             status,
             inputs_hash,
             outputs_hash,
-            metrics
+            metrics,
         )
 
-    def record_artifact(self, phase: str, kind: str, path: str,
-                       bytes_hash: str, meta: dict = None):
+    def record_artifact(
+        self, phase: str, kind: str, path: str, bytes_hash: str, meta: dict = None
+    ):
         """
         Record artifact in handover ledger
 
@@ -116,9 +128,10 @@ class HandoverBridge:
         Returns:
             Decorator function
         """
+
         def run_key_fn(**kwargs):
-            params = kwargs.get('params', {})
-            iteration = kwargs.get('iteration', 1)
+            params = kwargs.get("params", {})
+            iteration = kwargs.get("iteration", 1)
             return f"{phase_name}::{iteration}::{idempotency.hash_json(params)}"
 
         return idempotency.idempotent(run_key_fn)
@@ -135,8 +148,9 @@ class HandoverBridge:
         """
         return provenance.get_recent_runs(limit)
 
-    def should_stop_iteration(self, history: List[Dict[str, Any]],
-                             rules: List[Dict[str, Any]]) -> Tuple[bool, str]:
+    def should_stop_iteration(
+        self, history: List[Dict[str, Any]], rules: List[Dict[str, Any]]
+    ) -> Tuple[bool, str]:
         """
         Determine if iteration should stop based on rules
 
@@ -148,6 +162,7 @@ class HandoverBridge:
             Tuple of (should_stop, reason)
         """
         from src.dmaic.recursion import should_stop
+
         return should_stop(history, rules)
 
     def analyze_convergence(self, history: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -161,6 +176,7 @@ class HandoverBridge:
             Convergence analysis results
         """
         from src.dmaic.recursion import analyze_convergence
+
         return analyze_convergence(history)
 
 
@@ -200,20 +216,25 @@ class IdempotentPhase:
         Returns:
             Phase execution results (tuple of success, results)
         """
+
         @self.idempotent_decorator
         def _execute(**exec_kwargs):
             result = self.phase.execute(iteration)
 
             if isinstance(result, tuple):
                 success, results = result
-                metrics = results.get('metrics', {}) if isinstance(results, dict) else {}
+                metrics = (
+                    results.get("metrics", {}) if isinstance(results, dict) else {}
+                )
             else:
                 success = True
                 results = result
-                metrics = result.get('metrics', {}) if isinstance(result, dict) else {}
+                metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
 
-            inputs_hash = idempotency.hash_json({'iteration': iteration, **kwargs})
-            outputs_hash = idempotency.hash_json(results if isinstance(results, dict) else str(results))
+            inputs_hash = idempotency.hash_json({"iteration": iteration, **kwargs})
+            outputs_hash = idempotency.hash_json(
+                results if isinstance(results, dict) else str(results)
+            )
 
             self.bridge.record_phase(
                 self.phase_name,
@@ -221,7 +242,7 @@ class IdempotentPhase:
                 "success" if success else "failed",
                 inputs_hash,
                 outputs_hash,
-                metrics
+                metrics,
             )
 
             return result
@@ -255,20 +276,23 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
         integrated = []
 
         for opp in opportunities:
-            integrated.append({
-                'opportunity_id': opp['id'],
-                'title': opp['title'],
-                'priority': opp['priority'],
-                'actions': opp['actions'],
-                'related_recommendations': [
-                    r for r in recommendations
-                    if _matches_opportunity(r, opp)
-                ]
-            })
+            integrated.append(
+                {
+                    "opportunity_id": opp["id"],
+                    "title": opp["title"],
+                    "priority": opp["priority"],
+                    "actions": opp["actions"],
+                    "related_recommendations": [
+                        r for r in recommendations if _matches_opportunity(r, opp)
+                    ],
+                }
+            )
 
         return integrated
 
-    phase4_instance.integrate_opportunities_with_recommendations = integrate_with_recommendations
+    phase4_instance.integrate_opportunities_with_recommendations = (
+        integrate_with_recommendations
+    )
 
     return phase4_instance
 
@@ -276,30 +300,30 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
 def _parse_opportunities(path: Path) -> list:
     """Parse opportunities from markdown file"""
     opportunities = []
-    content = path.read_text(encoding='utf-8')
+    content = path.read_text(encoding="utf-8")
 
     # Simple parsing - extract opportunity sections
-    lines = content.split('\n')
-    current_opp = None
+    lines = content.split("\n")
+    current_opp: Optional[Dict[str, Any]] = None
 
     for line in lines:
-        if line.startswith('## OPP-') or line.startswith('### OPP-'):
+        if line.startswith("## OPP-") or line.startswith("### OPP-"):
             if current_opp:
                 opportunities.append(current_opp)
 
-            opp_id = line.split(':')[0].strip('#').strip()
-            title = line.split(':')[1].strip() if ':' in line else ''
+            opp_id = line.split(":")[0].strip("#").strip()
+            title = line.split(":")[1].strip() if ":" in line else ""
             current_opp = {
-                'id': opp_id,
-                'title': title,
-                'priority': 'MEDIUM',
-                'actions': [],
-                'success_criteria': []
+                "id": opp_id,
+                "title": title,
+                "priority": "MEDIUM",
+                "actions": [],
+                "success_criteria": [],
             }
-        elif current_opp and line.startswith('**Priority:**'):
-            current_opp['priority'] = line.split('**Priority:**')[1].strip()
-        elif current_opp and line.strip().startswith('-'):
-            current_opp['actions'].append(line.strip()[1:].strip())
+        elif current_opp and line.startswith("**Priority:**"):
+            current_opp["priority"] = line.split("**Priority:**")[1].strip()
+        elif current_opp and line.strip().startswith("-"):
+            current_opp["actions"].append(line.strip()[1:].strip())
 
     if current_opp:
         opportunities.append(current_opp)
@@ -310,7 +334,7 @@ def _parse_opportunities(path: Path) -> list:
 def _matches_opportunity(recommendation: dict, opportunity: dict) -> bool:
     """Check if recommendation matches opportunity"""
     # Simple matching based on keywords
-    opp_keywords = opportunity['title'].lower().split()
-    rec_keywords = recommendation.get('issue_type', '').lower().split('_')
+    opp_keywords = opportunity["title"].lower().split()
+    rec_keywords = recommendation.get("issue_type", "").lower().split("_")
 
     return any(k in rec_keywords for k in opp_keywords)
