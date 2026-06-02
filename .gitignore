@@ -47,7 +47,8 @@ coverage.xml
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/.gitkeep
 
 # Environment variables
 .env
