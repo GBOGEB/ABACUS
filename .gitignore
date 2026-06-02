@@ -63,6 +63,7 @@ reports/
 reports/*
 *.pdf
 *.json
+!GLOBAL_index.json
 !reports/runtime_publish_status.json
 !reports/dashboard_status.json
 !reports/runtime_registry_report.json
