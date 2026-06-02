@@ -121,8 +121,8 @@ jobs:
           files_changed=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | wc -l | tr -d ' ')
           insertions=$(git diff --stat "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | tail -1 | grep -oP '\d+ insertion' | grep -oP '\d+' || echo 0)
           deletions=$(git diff --stat "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | tail -1 | grep -oP '\d+ deletion' | grep -oP '\d+' || echo 0)
-          test_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | grep -c 'test_' || echo 0)
-          workflow_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | grep -c '\.github/workflows' || echo 0)
+          test_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | (grep -c 'test_' || true))
+          workflow_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | (grep -c '\.github/workflows' || true))
           behind=$(git rev-list --count "origin/${BASE_REF}..${BASE_SHA}" 2>/dev/null || echo 0)
           age_days=0
           if tip_ts=$(git log -1 --format="%ct" "${HEAD_SHA}" 2>/dev/null); then
@@ -132,7 +132,7 @@ jobs:
           # Check for theoretical conflicts
           conflict_markers=$(git merge-tree \
             "$(git merge-base "${BASE_SHA}" "${HEAD_SHA}" 2>/dev/null || echo "${HEAD_SHA}")" \
-            "${BASE_SHA}" "${HEAD_SHA}" 2>/dev/null | grep -c '<<<<<<<' || echo 0)
+            "${BASE_SHA}" "${HEAD_SHA}" 2>/dev/null | (grep -c '<<<<<<<' || true))
 
           echo "files_changed=${files_changed}" >> "$GITHUB_OUTPUT"
           echo "insertions=${insertions:-0}" >> "$GITHUB_OUTPUT"
