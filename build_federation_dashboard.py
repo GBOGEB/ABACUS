@@ -226,6 +226,33 @@ def _render_runtime_coverage_gauges(runtime_coverage: Mapping[str, Any]) -> str:
     """
 
 
+def _render_gate_rollup_card() -> str:
+    return """
+    <section class="card">
+      <h2>CI Gate Rollup</h2>
+      <p>
+        Last updated:
+        <strong id="gate-rollup-last-updated">N/A</strong>
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Status</th>
+            <th>First Failed Gate</th>
+            <th>Failed Gates</th>
+            <th>Total Gates Run</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="gate-rollup-body">
+          <tr><td colspan="6">No gate rollup data yet.</td></tr>
+        </tbody>
+      </table>
+    </section>
+    """
+
+
 def _render_dashboard(
     program_overview: Mapping[str, Any],
     federation_status: Mapping[str, Any],
@@ -277,8 +304,66 @@ def _render_dashboard(
       {_render_key_value_table('Federation Truth Matrix', truth_matrix)}
       {_render_key_value_table('Renderability', renderability)}
       {_render_runtime_coverage_gauges(runtime_coverage)}
+      {_render_gate_rollup_card()}
     </div>
   </main>
+  <script>
+    (function () {{
+      var body = document.getElementById("gate-rollup-body");
+      var updated = document.getElementById("gate-rollup-last-updated");
+
+      function safe(value) {{
+        if (value === null || value === undefined || value === "") {{
+          return "N/A";
+        }}
+        return String(value);
+      }}
+
+      function escapeHtml(value) {{
+        return value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }}
+
+      function renderRows(payload) {{
+        var rows = Array.isArray(payload && payload.prs) ? payload.prs : [];
+        updated.textContent = safe(payload && payload.generated_at);
+        if (!rows.length) {{
+          body.innerHTML = '<tr><td colspan="6">No CI gate runs recorded yet.</td></tr>';
+          return;
+        }}
+
+        body.innerHTML = rows.map(function (row) {{
+          var failed = Array.isArray(row.failed_gates) && row.failed_gates.length
+            ? row.failed_gates.join(", ")
+            : "None";
+          return "<tr>"
+            + "<th>" + escapeHtml(safe(row.pr_id)) + "</th>"
+            + "<td>" + escapeHtml(safe(row.status)) + "</td>"
+            + "<td>" + escapeHtml(safe(row.first_failed_gate)) + "</td>"
+            + "<td>" + escapeHtml(safe(failed)) + "</td>"
+            + "<td>" + escapeHtml(safe(row.total_gates_run)) + "</td>"
+            + "<td>" + escapeHtml(safe(row.last_updated)) + "</td>"
+            + "</tr>";
+        }}).join("");
+      }}
+
+      fetch("dashboard-gates.json", {{ cache: "no-store" }})
+        .then(function (response) {{
+          if (!response.ok) {{
+            throw new Error("HTTP " + response.status);
+          }}
+          return response.json();
+        }})
+        .then(renderRows)
+        .catch(function () {{
+          body.innerHTML = '<tr><td colspan="6">Gate rollup feed unavailable.</td></tr>';
+        }});
+    }})();
+  </script>
 </body>
 </html>
 """
