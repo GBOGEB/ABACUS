@@ -490,3 +490,202 @@ def note_box(x, y, lines, w=130, color="#005500", title=None, text_size=6.0):
         parts.append(_text(x + 5, ty - 3, ln, size=text_size, anchor="start",
                            fill="#222"))
     return "".join(parts), h
+
+
+
+# ===========================================================================
+# v4 additions
+#   * tag_with_box      - white-boxed text tag (anti-overlap, front layer)
+#   * line_label        - inline pipe-name label (boxed), optional rotation
+#   * cloud             - scalloped off-sheet/area callout outline
+#   * terminal_point_edge - AD_01.10-style edge terminal-point assembly
+#   * valve_inline / valve_horizontal_overlay - dual valve representation
+# ===========================================================================
+
+# Mean glyph width for Arial/Helvetica as a fraction of font-size (digits/caps).
+_CHAR_W = 0.60
+
+
+def text_box_size(text, size, pad):
+    """Return (w, h) of a tag box for `text` at `size` with `pad` on all sides."""
+    w = len(str(text)) * size * _CHAR_W + 2 * pad
+    h = size + 2 * pad
+    return w, h
+
+
+def tag_with_box(cx, cy, text, size=6.6, pad=1.9, anchor="middle",
+                 weight="bold", fill="#000000", box_fill="#ffffff",
+                 box_stroke="#000000", box_sw=0.38, box_opacity=1.0,
+                 family="Arial, Helvetica, sans-serif"):
+    """Text tag sitting inside an opaque white box.
+
+    Box height = text height + pad on all sides; box width fits the text.
+    `(cx, cy)` is the text anchor point; the box is centred on the text's
+    vertical mid-line.  Intended for the front-most tag layer so instrument
+    and valve labels never become unreadable over piping.
+    """
+    w, h = text_box_size(text, size, pad)
+    if anchor == "middle":
+        bx = cx - w / 2.0
+    elif anchor == "start":
+        bx = cx - pad
+    else:  # end
+        bx = cx - w + pad
+    by = cy - size * 0.78 - pad
+    rect = (f'<rect x="{bx:.2f}" y="{by:.2f}" width="{w:.2f}" height="{h:.2f}" '
+            f'rx="0.6" fill="{box_fill}" fill-opacity="{box_opacity:.2f}" '
+            f'stroke="{box_stroke}" stroke-width="{box_sw:.2f}"/>')
+    txt = _text(cx, cy, text, size=size, anchor=anchor, weight=weight,
+                fill=fill, family=family)
+    return rect + txt
+
+
+def line_label(x, y, text, size=6.0, pad=1.5, color="#000000", angle=0.0,
+               box_opacity=1.0):
+    """Inline pipe-name label inside a small white box, optionally rotated.
+
+    `angle` (degrees) lets the label follow vertical/angled pipe runs.
+    Colour version: pass the pipe colour; mono version: pass black.
+    """
+    w, h = text_box_size(text, size, pad)
+    bx = x - w / 2.0
+    by = y - h / 2.0
+    g_open = (f'<g transform="rotate({angle:.1f} {x:.2f} {y:.2f})">'
+              if abs(angle) > 0.01 else "<g>")
+    rect = (f'<rect x="{bx:.2f}" y="{by:.2f}" width="{w:.2f}" height="{h:.2f}" '
+            f'rx="0.6" fill="#ffffff" fill-opacity="{box_opacity:.2f}" '
+            f'stroke="{color}" stroke-width="0.3"/>')
+    txt = _text(x, y + size * 0.34, text, size=size, anchor="middle",
+                weight="bold", fill=color)
+    return g_open + rect + txt + "</g>"
+
+
+def cloud(cx, cy, w, h, color="#000000", fill="#ffffff", sw=0.7, bumps=7):
+    """Scalloped 'cloud' callout outline (off-sheet / area reference)."""
+    import math as _m
+    x0, y0 = cx - w / 2.0, cy - h / 2.0
+    pts = []
+    # build a ring of bump centres around the rectangle perimeter
+    perim = []
+    nx = max(3, int(bumps))
+    ny = max(2, int(bumps * h / max(w, 1)))
+    for i in range(nx):  # top
+        perim.append((x0 + w * i / nx, y0))
+    for i in range(ny):  # right
+        perim.append((x0 + w, y0 + h * i / ny))
+    for i in range(nx):  # bottom
+        perim.append((x0 + w - w * i / nx, y0 + h))
+    for i in range(ny):  # left
+        perim.append((x0, y0 + h - h * i / ny))
+    r = min(w / nx, h / ny) * 0.62
+    d = f'M {perim[0][0]:.2f} {perim[0][1]:.2f} '
+    for i in range(1, len(perim) + 1):
+        p = perim[i % len(perim)]
+        d += f'A {r:.2f} {r:.2f} 0 0 1 {p[0]:.2f} {p[1]:.2f} '
+    d += "Z"
+    return (f'<path d="{d}" fill="{fill}" stroke="{color}" stroke-width="{sw:.2f}"/>')
+
+
+def terminal_point_edge(xedge, y, direction, system, dwg_ref, line_no,
+                        tp_code, next_sys="", category="G", color="#000000",
+                        mono=False, ts=4.6, scale=1.0):
+    """AD_01.10-style terminal-point assembly anchored at a page edge.
+
+    direction: 'in'  -> left edge, flow enters the sheet (FROM <area>)
+               'out' -> right edge, flow leaves the sheet (TO <area>)
+    Draws: connection stub to the frame, a flow-direction arrow box carrying
+    the destination drawing ref + line number, a scalloped cloud with the
+    medium name + FROM/TO annotation, and a 3-compartment TP diamond.
+    """
+    s = scale
+    cloud_w = 88 * s
+    cloud_h = 30 * s
+    stub = 16 * s
+    incoming = (direction == "in")
+    arrow_col = color
+    # geometry: assembly grows inward from the edge
+    if incoming:
+        # cloud hugs the left edge; pipe continues to the right
+        cl_cx = xedge + cloud_w / 2.0
+        dia_cx = xedge + cloud_w + 20 * s
+        pipe_x2 = dia_cx + stub
+        arrow_dir = 1     # arrow points right (into sheet)
+        verb = "FROM"
+    else:
+        cl_cx = xedge - cloud_w / 2.0
+        dia_cx = xedge - cloud_w - 20 * s
+        pipe_x2 = dia_cx - stub
+        arrow_dir = 1     # still drawn pointing right (outgoing to area)
+        verb = "TO"
+    parts = []
+    # connecting pipe stub (diamond <-> edge), routed through the cloud centre line
+    x_from = xedge
+    parts.append(f'<line x1="{x_from:.2f}" y1="{y:.2f}" x2="{dia_cx:.2f}" '
+                 f'y2="{y:.2f}" stroke="{color}" stroke-width="{1.1*s:.2f}"/>')
+    # short stub from diamond further into the drawing with arrowhead
+    parts.append(f'<line x1="{dia_cx:.2f}" y1="{y:.2f}" x2="{pipe_x2:.2f}" '
+                 f'y2="{y:.2f}" stroke="{color}" stroke-width="{1.1*s:.2f}"/>')
+    ah = 4.0 * s
+    if incoming:
+        tipx = pipe_x2
+        parts.append(f'<path d="M {tipx:.2f} {y:.2f} l {-ah:.2f} {-ah*0.6:.2f} '
+                     f'l 0 {ah*1.2:.2f} Z" fill="{color}"/>')
+    else:
+        tipx = pipe_x2
+        parts.append(f'<path d="M {tipx:.2f} {y:.2f} l {ah:.2f} {-ah*0.6:.2f} '
+                     f'l 0 {ah*1.2:.2f} Z" fill="{color}"/>')
+    # cloud
+    parts.append(cloud(cl_cx, y, cloud_w, cloud_h, color=color, sw=0.7))
+    # cloud content: medium name (top), arrow ref box (mid), FROM/TO (bottom)
+    parts.append(_text(cl_cx, y - cloud_h * 0.27, (system or "")[:26], size=ts,
+                       weight="bold", fill=color))
+    # arrow ref box
+    rb_w = cloud_w * 0.82
+    rb_h = ts + 2.4 * s
+    rbx = cl_cx - rb_w / 2.0
+    rby = y - rb_h / 2.0
+    parts.append(f'<rect x="{rbx:.2f}" y="{rby:.2f}" width="{rb_w:.2f}" '
+                 f'height="{rb_h:.2f}" fill="#ffffff" stroke="{color}" '
+                 f'stroke-width="0.4"/>')
+    # little flow arrow at the leading edge of the ref box
+    axx = rbx + (rb_w - 3 * s if not incoming else 3 * s)
+    parts.append(_text(cl_cx, y + ts * 0.34, f'{dwg_ref}  {line_no}', size=ts * 0.86,
+                       weight="bold", fill="#000000"))
+    parts.append(_text(cl_cx, y + cloud_h * 0.30, f'{verb} {next_sys}'[:28],
+                       size=ts * 0.82, fill="#333333"))
+    # TP diamond (reuse 3-compartment)
+    parts.append(scope_diamond_3c(dia_cx, y, tp_code, next_sys=next_sys,
+                                  size=11 * s, color=color, text_size=ts * 0.8))
+    # category triangle flag above the diamond
+    tfx, tfy = dia_cx, y - 16 * s
+    ts2 = 5.5 * s
+    parts.append(f'<path d="M {tfx:.2f} {tfy-ts2:.2f} L {tfx+ts2:.2f} {tfy+ts2*0.7:.2f} '
+                 f'L {tfx-ts2:.2f} {tfy+ts2*0.7:.2f} Z" fill="#ffffff" '
+                 f'stroke="{color}" stroke-width="0.6"/>')
+    parts.append(_text(tfx, tfy + ts2 * 0.5, category, size=ts * 0.8, weight="bold",
+                       fill=color))
+    return "".join(parts)
+
+
+def valve_horizontal_overlay(ox, oy, kind, tag, size=7.0, color="#000000",
+                             from_xy=None, ts=5.0):
+    """'Tracked-asset' horizontal valve drawn in an overlay row.
+
+    Drawn at (ox, oy) with a semi-transparent white background box, the valve
+    symbol, its tag, and (optionally) a thin grey leader line back to the
+    primary in-line valve at `from_xy`.
+    """
+    parts = []
+    bw = size * 3.0
+    bh = size * 2.4
+    if from_xy is not None:
+        parts.append(f'<line x1="{from_xy[0]:.2f}" y1="{from_xy[1]:.2f}" '
+                     f'x2="{ox:.2f}" y2="{oy:.2f}" stroke="#9a9a9a" '
+                     f'stroke-width="0.35" stroke-dasharray="2,1.5"/>')
+    parts.append(f'<rect x="{ox-bw/2:.2f}" y="{oy-bh/2:.2f}" width="{bw:.2f}" '
+                 f'height="{bh:.2f}" rx="1.2" fill="#ffffff" fill-opacity="0.72" '
+                 f'stroke="#9a9a9a" stroke-width="0.3"/>')
+    parts.append(valve(ox, oy - size * 0.2, kind=kind, size=size, color=color))
+    parts.append(tag_with_box(ox, oy + bh / 2 - 0.6, tag, size=ts, pad=1.0,
+                              box_sw=0.3))
+    return "".join(parts)
