@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node (for markdownlint)
         uses: actions/setup-node@v6
@@ -27,7 +29,9 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            mapfile -t MARKDOWN_FILES < <(git diff --name-only --diff-filter=ACMR HEAD^ HEAD -- '*.md' 2>/dev/null || true)
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            mapfile -t MARKDOWN_FILES < <(git diff --name-only --diff-filter=ACMR "${BASE_SHA}...${HEAD_SHA}" -- '*.md' 2>/dev/null || true)
           else
             mapfile -t MARKDOWN_FILES < <(git ls-files '*.md')
           fi
