@@ -64,6 +64,7 @@ jobs:
         python -m py_compile DMAIC_V3/core/*.py
     
     - name: Run pytest with coverage
+      shell: bash
       run: |
         pytest DMAIC_V3/tests/ -v \
           --cov=DMAIC_V3 \
