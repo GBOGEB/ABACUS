@@ -75,7 +75,7 @@ jobs:
 
       - name: Build handover PDF
         run: |
-          bash scripts/build_handover_book.sh
+          python scripts/build_book.py
 
       - name: Build GLOOB bundle
         run: |
