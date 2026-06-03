@@ -26,12 +26,23 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: |
-          mapfile -t MARKDOWN_FILES < <(find . -type f -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" -print)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mapfile -t MARKDOWN_FILES < <(git diff --name-only --diff-filter=ACMR HEAD^ HEAD -- '*.md' 2>/dev/null || true)
+          else
+            mapfile -t MARKDOWN_FILES < <(git ls-files '*.md')
+          fi
+
+          FILTERED_FILES=()
+          for file in "${MARKDOWN_FILES[@]}"; do
+            [ -f "$file" ] && FILTERED_FILES+=("$file")
+          done
+
+          MARKDOWN_FILES=("${FILTERED_FILES[@]}")
           if [ ${#MARKDOWN_FILES[@]} -eq 0 ]; then
             echo "No Markdown files found."
             exit 0
           fi
-          printf '%s\n' "${MARKDOWN_FILES[@]}" | xargs -r -n 50 markdownlint-cli2 || exit 1
+          printf '%s\0' "${MARKDOWN_FILES[@]}" | xargs -0 -r -n 50 markdownlint-cli2 || exit 1
 
       - name: Setup Python (YAML/JSON checks)
         uses: actions/setup-python@v5
