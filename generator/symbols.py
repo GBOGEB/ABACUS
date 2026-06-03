@@ -90,6 +90,44 @@ def bubble(cx, cy, prefix, number, role="sensor", is_safety=False,
     return "".join(parts)
 
 
+def bubble_v3(cx, cy, prefix, number, r=11.0, fill="#ffffff", location="field",
+              is_safety=False, mono=False, tag_size=6.6, lw=0.95):
+    """ISA-5.1 instrument bubble with location/accessibility modifier.
+
+    location:
+      'field'  -> plain circle (field mounted)
+      'front'  -> solid horizontal line through bubble (front-of-panel)
+      'rear'   -> dashed horizontal line (behind panel / not accessible)
+      'shared' -> square-around-circle (shared display / PLC)
+    is_safety -> dashed outline (SIS / interlock).
+    mono=True -> always white fill, black stroke (monochrome plot).
+    """
+    if mono:
+        fill = "#ffffff"
+    dash = ' stroke-dasharray="3,2"' if is_safety else ""
+    parts = []
+    if location == "shared":
+        h = r + 2.0
+        parts.append(f'<rect x="{cx-h:.2f}" y="{cy-h:.2f}" width="{2*h:.2f}" '
+                     f'height="{2*h:.2f}" fill="{fill}" stroke="#000000" '
+                     f'stroke-width="{lw:.2f}"{dash}/>')
+    parts.append(f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r="{r:.2f}" fill="{fill}" '
+                 f'stroke="#000000" stroke-width="{lw:.2f}"{dash}/>')
+    if location == "front":
+        parts.append(f'<line x1="{cx-r:.2f}" y1="{cy:.2f}" x2="{cx+r:.2f}" '
+                     f'y2="{cy:.2f}" stroke="#000000" stroke-width="{lw:.2f}"/>')
+    elif location == "rear":
+        parts.append(f'<line x1="{cx-r:.2f}" y1="{cy:.2f}" x2="{cx+r:.2f}" '
+                     f'y2="{cy:.2f}" stroke="#000000" stroke-width="{lw:.2f}" '
+                     f'stroke-dasharray="2,1.5"/>')
+    if number:
+        parts.append(_text(cx, cy - 0.8, prefix, size=tag_size, weight="bold"))
+        parts.append(_text(cx, cy + tag_size, number, size=tag_size))
+    else:
+        parts.append(_text(cx, cy + 2, prefix, size=tag_size, weight="bold"))
+    return "".join(parts)
+
+
 def bubble_square(cx, cy, prefix, number, half=12.0):
     """Shared-display / PLC function: bubble inside a square."""
     parts = [f'<rect x="{cx-half:.2f}" y="{cy-half:.2f}" width="{2*half:.2f}" '
@@ -165,10 +203,12 @@ def heat_exchanger(cx, cy, r=22, label="", color="#000000"):
     return "".join(parts)
 
 
-def cavity(cx, cy, w=46, h=30, label="", color="#aa4400"):
-    """Schematic SRF cavity / coupler body (rounded brown block)."""
+def cavity(cx, cy, w=46, h=30, label="", color="#aa4400", fill=None):
+    """Schematic SRF cavity / coupler body (rounded block)."""
+    if fill is None:
+        fill = "#ffffff" if color == "#000000" else "#f3e2d8"
     parts = [f'<rect x="{cx-w/2:.2f}" y="{cy-h/2:.2f}" width="{w:.2f}" height="{h:.2f}" '
-             f'rx="6" fill="#f3e2d8" stroke="{color}" stroke-width="1.4"/>']
+             f'rx="6" fill="{fill}" stroke="{color}" stroke-width="1.4"/>']
     if label:
         parts.append(_text(cx, cy + 3, label, size=7.5, weight="bold", fill=color))
     return "".join(parts)
@@ -204,14 +244,16 @@ def heat_load(cx, cy, color="#008000"):
 # v2 additions: scope diamonds, bellows, DIS interlock, limit switch, Lemo
 # ---------------------------------------------------------------------------
 
-# Scope-boundary category prefixes (TP + category + serial = TPXYYYY)
+# Scope-boundary category letters per SCK CEN standard AD_01.16
+#   Termination-point diamond carries: TP / <category><unique no.> / <next system>
 SCOPE_CATEGORY = {
-    "B": ("Bulk", "#7a3b00"),
-    "C": ("Cryogenic", "#0033cc"),
+    "B": ("Building", "#7a3b00"),
+    "C": ("Civil", "#5d4037"),
     "E": ("Electrical", "#b8860b"),
+    "G": ("Compressed gasses", "#0066a6"),
     "H": ("HVAC", "#008080"),
-    "L": ("Liquid", "#1f7a1f"),
-    "S": ("Steam", "#c0392b"),
+    "L": ("Liquid waste", "#1f7a1f"),
+    "S": ("Solid waste", "#6d4c41"),
     "W": ("Water", "#00a000"),
 }
 
@@ -220,8 +262,7 @@ def scope_diamond(cx, cy, code, size=9.0, color="#a000a0", text_size=5.6,
                   label_below=True):
     """ISA scope / terminal-point diamond carrying a TPXYYYY interface code.
 
-    The diamond marks the 'last-meter' hand-over boundary between in-scope
-    and out-of-scope assets.
+    Simple single-cell diamond (kept for legend / compatibility).
     """
     s = size
     parts = [
@@ -235,6 +276,97 @@ def scope_diamond(cx, cy, code, size=9.0, color="#a000a0", text_size=5.6,
     else:
         parts.append(_text(cx, cy + 2.0, code, size=text_size - 1.2, weight="bold",
                            fill=color))
+    return "".join(parts)
+
+
+def scope_diamond_3c(cx, cy, cat_code, next_sys="", size=13.0, color="#a000a0",
+                     text_size=4.6):
+    """AD_01.16 termination-point diamond: 3 stacked compartments.
+
+      top    = 'TP'
+      middle = category letter + unique number (e.g. 'G1001')
+      bottom = next system / process the line continues into (ZZZ)
+
+    The diamond marks the 'last-meter' hand-over boundary between in-scope
+    and out-of-scope assets.
+    """
+    s = size
+    # diamond outline
+    parts = [
+        f'<path d="M {cx:.2f} {cy-s:.2f} L {cx+s:.2f} {cy:.2f} '
+        f'L {cx:.2f} {cy+s:.2f} L {cx-s:.2f} {cy:.2f} Z" '
+        f'fill="#ffffff" stroke="{color}" stroke-width="1.2"/>'
+    ]
+    # two horizontal dividers at +/- s/3 (chord lines inside the diamond)
+    for frac in (-1.0 / 3.0, 1.0 / 3.0):
+        yy = cy + frac * s
+        half = s * (1.0 - abs(frac))      # half-width of diamond at this height
+        parts.append(f'<line x1="{cx-half:.2f}" y1="{yy:.2f}" '
+                     f'x2="{cx+half:.2f}" y2="{yy:.2f}" '
+                     f'stroke="{color}" stroke-width="0.6"/>')
+    parts.append(_text(cx, cy - s / 3.0 + text_size / 2.0, "TP",
+                       size=text_size, weight="bold", fill=color))
+    parts.append(_text(cx, cy + text_size / 2.0 - 0.3, cat_code,
+                       size=text_size, weight="bold", fill="#000000"))
+    parts.append(_text(cx, cy + s / 3.0 + text_size / 2.0 + 0.3,
+                       (next_sys or "\u2014")[:6], size=text_size - 0.6,
+                       fill="#333333"))
+    return "".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Signal / instrument-connection lines (ISA 5.1 / AD_01.16)
+#   All instrument signals are drawn thin (0.25 mm).  Three visually-distinct
+#   patterns are provided so a black-and-white plot still differentiates them.
+# ---------------------------------------------------------------------------
+
+def signal_line(x1, y1, x2, y2, kind="electric", color="#000000", w=0.95):
+    """Return an instrument-signal connection line.
+
+    kind:
+      'electric'  -> dotted (fine dot pattern)
+      'pneumatic' -> dashed with cross-ticks (// hatch) per AD_01.16
+      'hydraulic' -> dash-dot (L / dash-dot pattern)
+      'software'  -> dotted with circles (kept dotted-fine for clarity)
+      'capillary' -> dash with x marks
+    """
+    base = (f'fill:none;stroke:{color};stroke-width:{w:.2f};'
+            f'stroke-linecap:round')
+    if kind == "electric":
+        dash = ';stroke-dasharray:0.1,3'        # dotted
+    elif kind == "pneumatic":
+        dash = ';stroke-dasharray:7,3'          # long dashes (cross-ticks added)
+    elif kind == "hydraulic":
+        dash = ';stroke-dasharray:9,2.5,1.5,2.5'  # dash-dot
+    elif kind == "software":
+        dash = ';stroke-dasharray:0.1,3.5'
+    elif kind == "capillary":
+        dash = ';stroke-dasharray:5,2,1,2'
+    else:
+        dash = ''
+    parts = [f'<line x1="{x1:.2f}" y1="{y1:.2f}" x2="{x2:.2f}" y2="{y2:.2f}" '
+             f'style="{base}{dash}"/>']
+    # pneumatic gets // cross-tick hatch marks along the line
+    if kind == "pneumatic":
+        length = math.hypot(x2 - x1, y2 - y1)
+        if length > 1e-6:
+            ux, uy = (x2 - x1) / length, (y2 - y1) / length
+            nx, ny = -uy, ux          # normal
+            step = 14.0
+            t = step / 2.0
+            tick = 3.0
+            while t < length:
+                mx, my = x1 + ux * t, y1 + uy * t
+                # double tick (//) slanted
+                for off in (-1.4, 1.4):
+                    bx, by = mx + ux * off, my + uy * off
+                    parts.append(
+                        f'<line x1="{bx-nx*tick-ux*tick:.2f}" '
+                        f'y1="{by-ny*tick-uy*tick:.2f}" '
+                        f'x2="{bx+nx*tick+ux*tick:.2f}" '
+                        f'y2="{by+ny*tick+uy*tick:.2f}" '
+                        f'stroke="{color}" stroke-width="{max(0.5,w*0.8):.2f}"/>')
+                t += step
     return "".join(parts)
 
 
@@ -303,7 +435,7 @@ def dis_block(x, y, w=150, h=92, color="#000000", accent="#c01010",
     parts.append(
         f'<path d="M {gx:.2f} {gy:.2f} h 14 a 12 12 0 0 1 0 24 h -14 Z" '
         f'fill="#ffffff" stroke="{color}" stroke-width="1.0"/>')
-    parts.append(_text(gx + 6, gy + 16, "&amp;", size=8.5, weight="bold"))
+    parts.append(_text(gx + 6, gy + 16, "&", size=8.5, weight="bold"))
     # inputs
     iy = y + 28
     for i, lab in enumerate(inputs):
