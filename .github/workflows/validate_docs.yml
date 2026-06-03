@@ -33,7 +33,7 @@ jobs:
           git ls-files -z -- '*.md' | xargs -0 -r -n 50 markdownlint-cli2 || exit 1
 
       - name: Setup Python (YAML/JSON checks)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
