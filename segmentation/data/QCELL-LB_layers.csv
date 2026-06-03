@@ -1,0 +1,55 @@
+id,label,depth,text_count
+layer5,electrical,1,0
+QM,QM - DUT at FREIA,1,0
+layer55,Vacuum vessel,2,5
+layer18-6,CPLR 1,2,5
+layer18,CPLR 2,2,4
+layer6-9-1-3,EH TT,4,1
+layer2,Piping and series instrumentation,2,144
+layer56,CPLR circuit,3,7
+layer74,Namings,4,8
+layer9,CPLR cuff and port metal,3,5
+layer4,2 K tank,3,11
+layer58,Bottom connection,5,8
+layer24,Instrumentation,4,16
+layer6,EHTT,5,1
+layer10,RFCELL 2,3,5
+layer19,RFCELL 1,3,5
+layer59,INVAC,2,11
+layer3-7,V502,3,3
+layer26,Comments,2,5
+layer17,Heat loads,3,53
+layer22,Terminal points,3,22
+layer62,QM - PeMo,1,0
+layer34,CPLR pressure limiter,4,4
+testcap,TC-LB,1,8
+layer3-7-6,V,3,3
+layer42,QVB,1,0
+layer21,Headers A B C D,3,6
+layer20,Naming and conditions,4,9
+layer49,CPLR,3,1
+layer7,Spare heaters,3,4
+layer46,Over-instrumentalization,2,0
+layer29,Instrumentation Pcav Observer,3,22
+layer30,Flowmeter for AL,4,3
+layer51,Pre-series,3,2
+layer31,He guard,2,1
+layer27,PeMo-HEGU1,3,6
+layer52,Users,4,4
+layer23-3,Instrument air,2,2
+layer44,QINFRA,1,0
+layer45,Piping,2,2
+layer28,W,3,3
+layer3,V501,3,3
+layer23,Utilities NA.PS,1,8
+layer1,General comments,1,0
+version,Versions,2,6
+legend,Legend,2,14
+layer11,Instrumentation naming zones,2,0
+layer12,Bottom line and common,3,0
+layer13,6 - Main process line return + buffer tank (V),3,0
+layer16,5 - Main process line inlet + buffer tank (L),3,0
+layer15,4 - Coupler B intercept,3,0
+layer14,3 - Coupler A intercept + common,3,0
+layer8,pn levels,2,8
+layer61,Scope division,2,18

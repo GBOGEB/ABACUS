@@ -1,0 +1,14 @@
+tag,prefix,meaning,x,y,layer
+SV560,SV,Safety / Solenoid Valve,1092.39,557.12,Piping and series instrumentation
+SV561,SV,Safety / Solenoid Valve,1092.5,511.34,Piping and series instrumentation
+PZ-021,PZ,Pressure (special / safety),598.6,619.46,RFCELL 2
+PZ-022,PZ,Pressure (special / safety),598.62,624.27,RFCELL 2
+PZ-011,PZ,Pressure (special / safety),878.42,619.28,RFCELL 1
+PZ-012,PZ,Pressure (special / safety),878.44,624.09,RFCELL 1
+SV590,SV,Safety / Solenoid Valve,311.97,621.02,V502
+PL538,PL,Pressure Limiter,1110.96,750.13,CPLR pressure limiter
+PL548,PL,Pressure Limiter,1109.03,806.09,CPLR pressure limiter
+RV560,RV,Relief Valve,1049.06,409.61,Piping and series instrumentation
+SV591,SV,Safety / Solenoid Valve,299.53,564.84,V
+SV500,SV,Safety / Solenoid Valve,234.28,303.29,Piping and series instrumentation
+SV570,SV,Safety / Solenoid Valve,154.59,310.84,Piping and series instrumentation

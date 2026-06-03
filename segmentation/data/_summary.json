@@ -1,0 +1,44 @@
+{
+  "QCELL-LB": {
+    "file": "PFD-PID MINERVA QCELL-LB.svg",
+    "texts": 456,
+    "instruments": 230,
+    "unique_instrument_tags": 221,
+    "equipment": 42,
+    "temperature_points": 77,
+    "pressure_points": 28,
+    "safety_devices": 13,
+    "vacuum_barriers": 5,
+    "instrument_bubbles": 271,
+    "process_line_classes": {
+      "B": 78,
+      "A": 124,
+      "WATER": 87,
+      "E": 83,
+      "D": 83
+    },
+    "unique_colors": 35,
+    "layers": 54
+  },
+  "RFCELL": {
+    "file": "PFD-PID MINERVA RFCELL seen by ACR.svg",
+    "texts": 77,
+    "instruments": 67,
+    "unique_instrument_tags": 45,
+    "equipment": 2,
+    "temperature_points": 23,
+    "pressure_points": 11,
+    "safety_devices": 6,
+    "vacuum_barriers": 0,
+    "instrument_bubbles": 96,
+    "process_line_classes": {
+      "B": 11,
+      "A": 32,
+      "WATER": 27,
+      "E": 2,
+      "D": 5
+    },
+    "unique_colors": 24,
+    "layers": 24
+  }
+}
