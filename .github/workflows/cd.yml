@@ -75,7 +75,11 @@ jobs:
 
       - name: Build handover PDF
         run: |
-          bash scripts/build_handover_book.sh
+          if [ -f scripts/build_handover_book.sh ]; then
+            bash scripts/build_handover_book.sh
+          else
+            python scripts/build_book.py
+          fi
 
       - name: Build GLOOB bundle
         run: |
