@@ -31,7 +31,7 @@ jobs:
             echo "No Markdown files found."
             exit 0
           fi
-          printf '%s\n' "${MARKDOWN_FILES[@]}" | xargs -r -n 50 markdownlint-cli2 || exit 1
+          printf '%s\n' "${MARKDOWN_FILES[@]}" | xargs -r -n 1 markdownlint-cli2 || exit 1
 
       - name: Setup Python (YAML/JSON checks)
         uses: actions/setup-python@v5
