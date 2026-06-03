@@ -30,7 +30,7 @@ jobs:
       escalate:      ${{ steps.metrics.outputs.escalate }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0   # full history for commit-level metrics
 
@@ -259,7 +259,7 @@ jobs:
     if: needs.collect-metrics.outputs.escalate == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Read metrics
         id: read
@@ -320,7 +320,7 @@ jobs:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify deployed pages & collect post-deploy signal
         run: |
