@@ -82,7 +82,7 @@ jobs:
             while IFS= read -r href; do
               href="${href#"${href%%[![:space:]]*}"}"
               case "$href" in
-                ""|http://*|https://*|mailto:*|#*|data:*|javascript:*|/*|\$\{*)
+                ""|#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
                   continue
                   ;;
               esac
