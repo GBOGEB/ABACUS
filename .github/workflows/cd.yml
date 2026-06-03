@@ -75,11 +75,11 @@ jobs:
 
       - name: Build handover PDF
         run: |
-          bash scripts/build_handover_book.sh
+          python scripts/build_book.py
 
       - name: Build GLOOB bundle
         run: |
-          python scripts/build_handover_bundle.py
+          python scripts/build_handover_from_glob_yaml.py
 
       - name: Build handover ZIP from manifest (GLOOB.yaml)
         run: |
