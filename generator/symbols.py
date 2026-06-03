@@ -198,3 +198,163 @@ def heat_load(cx, cy, color="#008000"):
     return (f'<path d="M {cx:.2f} {cy-s:.2f} L {cx+s:.2f} {cy+s:.2f} '
             f'L {cx-s:.2f} {cy+s:.2f} Z" fill="{color}" stroke="{color}" '
             f'stroke-width="0.5"/>')
+
+
+# ---------------------------------------------------------------------------
+# v2 additions: scope diamonds, bellows, DIS interlock, limit switch, Lemo
+# ---------------------------------------------------------------------------
+
+# Scope-boundary category prefixes (TP + category + serial = TPXYYYY)
+SCOPE_CATEGORY = {
+    "B": ("Bulk", "#7a3b00"),
+    "C": ("Cryogenic", "#0033cc"),
+    "E": ("Electrical", "#b8860b"),
+    "H": ("HVAC", "#008080"),
+    "L": ("Liquid", "#1f7a1f"),
+    "S": ("Steam", "#c0392b"),
+    "W": ("Water", "#00a000"),
+}
+
+
+def scope_diamond(cx, cy, code, size=9.0, color="#a000a0", text_size=5.6,
+                  label_below=True):
+    """ISA scope / terminal-point diamond carrying a TPXYYYY interface code.
+
+    The diamond marks the 'last-meter' hand-over boundary between in-scope
+    and out-of-scope assets.
+    """
+    s = size
+    parts = [
+        f'<path d="M {cx:.2f} {cy-s:.2f} L {cx+s:.2f} {cy:.2f} '
+        f'L {cx:.2f} {cy+s:.2f} L {cx-s:.2f} {cy:.2f} Z" '
+        f'fill="#ffffff" stroke="{color}" stroke-width="1.1"/>'
+    ]
+    if label_below:
+        parts.append(_text(cx, cy + s + text_size + 1, code, size=text_size,
+                           weight="bold", fill=color))
+    else:
+        parts.append(_text(cx, cy + 2.0, code, size=text_size - 1.2, weight="bold",
+                           fill=color))
+    return "".join(parts)
+
+
+def bellows(cx, cy, length=22.0, amp=4.0, n=5, color="#000000", w=1.0,
+            horizontal=True):
+    """Mechanical bellows / expansion element (anti thermal short-circuit)."""
+    pts = []
+    if horizontal:
+        x0 = cx - length / 2.0
+        step = length / n
+        for i in range(n + 1):
+            x = x0 + i * step
+            y = cy + (amp if i % 2 else -amp)
+            pts.append((x, y))
+        d = "M %.2f %.2f " % (x0, cy) + " ".join("L %.2f %.2f" % p for p in pts) \
+            + " L %.2f %.2f" % (cx + length / 2.0, cy)
+    else:
+        y0 = cy - length / 2.0
+        step = length / n
+        for i in range(n + 1):
+            y = y0 + i * step
+            x = cx + (amp if i % 2 else -amp)
+            pts.append((x, y))
+        d = "M %.2f %.2f " % (cx, y0) + " ".join("L %.2f %.2f" % p for p in pts) \
+            + " L %.2f %.2f" % (cx, cy + length / 2.0)
+    return (f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w:.2f}" '
+            f'stroke-linejoin="round"/>')
+
+
+def limit_switch(cx, cy, number="", size=9.0, color="#000000", text_size=5.6):
+    """ISA limit switch: bubble with 'LS' and an external roller/lever stub."""
+    parts = [
+        f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r="{size:.2f}" fill="#ffffff" '
+        f'stroke="{color}" stroke-width="1.0"/>',
+        # lever + roller stub (mechanical actuation)
+        f'<line x1="{cx:.2f}" y1="{cy-size:.2f}" x2="{cx+size*0.9:.2f}" '
+        f'y2="{cy-size*1.7:.2f}" stroke="{color}" stroke-width="1.0"/>',
+        f'<circle cx="{cx+size*0.9:.2f}" cy="{cy-size*1.7:.2f}" r="{size*0.22:.2f}" '
+        f'fill="#ffffff" stroke="{color}" stroke-width="0.8"/>',
+        _text(cx, cy - 0.6, "LS", size=text_size, weight="bold", fill=color),
+    ]
+    if number:
+        parts.append(_text(cx, cy + text_size + 0.5, number, size=text_size, fill=color))
+    return "".join(parts)
+
+
+def dis_block(x, y, w=150, h=92, color="#000000", accent="#c01010",
+              title="DIS", subtitle="Device Interlock System",
+              inputs=None, output="MASTER INTERLOCK \u2192 RF"):
+    """Aggregating interlock-logic block (DIS).
+
+    Draws a rounded rectangle with a title bar, listed aggregated inputs on the
+    left and a single master-interlock output arrow on the right.
+    """
+    inputs = inputs or ["Vacuum OK", "Cryo OK", "Utilities OK"]
+    parts = [
+        f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="5" '
+        f'fill="#fff8f8" stroke="{accent}" stroke-width="1.6"/>',
+        f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="16" rx="5" '
+        f'fill="{accent}"/>',
+        _text(x + w / 2.0, y + 11.5, f"{title} \u2014 {subtitle}", size=7.0,
+              weight="bold", fill="#ffffff"),
+    ]
+    # AND-gate glyph in centre
+    gx, gy = x + w / 2.0 - 12, y + 34
+    parts.append(
+        f'<path d="M {gx:.2f} {gy:.2f} h 14 a 12 12 0 0 1 0 24 h -14 Z" '
+        f'fill="#ffffff" stroke="{color}" stroke-width="1.0"/>')
+    parts.append(_text(gx + 6, gy + 16, "&amp;", size=8.5, weight="bold"))
+    # inputs
+    iy = y + 28
+    for i, lab in enumerate(inputs):
+        ly = iy + i * 13
+        parts.append(f'<line x1="{x+6:.2f}" y1="{ly:.2f}" x2="{gx:.2f}" y2="{ly:.2f}" '
+                     f'stroke="{color}" stroke-width="0.7" stroke-dasharray="3,2"/>')
+        parts.append(_text(x + 8, ly - 2, lab, size=5.6, anchor="start", fill="#333"))
+    # output arrow
+    oy = y + 46
+    ox = gx + 26
+    parts.append(f'<line x1="{ox:.2f}" y1="{oy:.2f}" x2="{x+w-6:.2f}" y2="{oy:.2f}" '
+                 f'stroke="{accent}" stroke-width="1.4"/>')
+    parts.append(f'<path d="M {x+w-6:.2f} {oy:.2f} l -6 -3 l 0 6 Z" fill="{accent}"/>')
+    parts.append(_text(x + w / 2.0 + 14, oy + 12, output, size=5.8, weight="bold",
+                       fill=accent))
+    return "".join(parts)
+
+
+def lemo_connector(cx, cy, label="Lemo B (HV)", size=7.0, color="#000000",
+                   text_size=5.4):
+    """Patch-panel Lemo B-series connector glyph (circular multi-pin)."""
+    parts = [
+        f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r="{size:.2f}" fill="#eef2ff" '
+        f'stroke="{color}" stroke-width="1.0"/>',
+        f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r="{size*0.45:.2f}" fill="#ffffff" '
+        f'stroke="{color}" stroke-width="0.7"/>',
+    ]
+    # 3 pin dots
+    for ang in (90, 210, 330):
+        a = math.radians(ang)
+        px = cx + size * 0.62 * math.cos(a)
+        py = cy - size * 0.62 * math.sin(a)
+        parts.append(f'<circle cx="{px:.2f}" cy="{py:.2f}" r="1.0" fill="{color}"/>')
+    parts.append(_text(cx, cy + size + text_size + 0.5, label, size=text_size,
+                       weight="bold", fill=color))
+    return "".join(parts)
+
+
+def note_box(x, y, lines, w=130, color="#005500", title=None, text_size=6.0):
+    """Annotation note box (buffer volumes, handover notes, etc.)."""
+    lh = text_size + 3.2
+    h = lh * len(lines) + 10 + (lh if title else 0)
+    parts = [f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="3" '
+             f'fill="#f5fff5" stroke="{color}" stroke-width="0.9"/>']
+    ty = y + 8
+    if title:
+        ty += lh - 2
+        parts.append(_text(x + 5, ty - 3, title, size=text_size + 0.6, anchor="start",
+                           weight="bold", fill=color))
+    for ln in lines:
+        ty += lh
+        parts.append(_text(x + 5, ty - 3, ln, size=text_size, anchor="start",
+                           fill="#222"))
+    return "".join(parts), h
