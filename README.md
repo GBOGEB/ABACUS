@@ -502,7 +502,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - ❌ End-to-end deployment readiness pending
 - ❌ Production readiness pending
 
-See `V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, dependency sequence, and actionable tasks.
+See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, dependency sequence, and actionable tasks.
 
 ---
 
