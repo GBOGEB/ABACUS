@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -75,7 +75,7 @@ jobs:
 
       - name: Build handover PDF
         run: |
-          bash scripts/build_handover_book.sh
+          python scripts/build_book.py
 
       - name: Build GLOOB bundle
         run: |
