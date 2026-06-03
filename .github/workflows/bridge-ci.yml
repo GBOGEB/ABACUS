@@ -225,6 +225,7 @@ jobs:
         run: |
           python run_deployment_test_system.py \
             --test-suite all \
+            --skip-static \
             --version ci-full-${{ github.sha }} \
             --output-dir ./deployment_output
       

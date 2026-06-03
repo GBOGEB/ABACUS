@@ -47,8 +47,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
+        python -m pip install -r requirements.txt
+        python -m pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist PyGithub
     
     - name: Install dev dependencies
       run: |
@@ -65,14 +65,7 @@ jobs:
     
     - name: Run pytest with coverage
       run: |
-        pytest DMAIC_V3/tests/ -v \
-          --cov=DMAIC_V3 \
-          --cov-report=xml \
-          --cov-report=term-missing \
-          --cov-report=html \
-          --tb=short \
-          --maxfail=5 \
-          -n auto
+        python -m pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3 --cov-report=xml --cov-report=term-missing --cov-report=html --tb=short --maxfail=5 -n auto
       continue-on-error: ${{ matrix.python-version != '3.11' }}
     
     - name: Upload coverage to Codecov
