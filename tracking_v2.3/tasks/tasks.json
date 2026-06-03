@@ -36,53 +36,68 @@
     {
       "id": "T3",
       "title": "Run docs deployment workflow and capture published Pages URL + HTTP verification",
-      "state": "active",
+      "state": "done",
       "depends_on": [
         "T2"
       ],
       "owner": "@copilot",
       "verification_target": "Successful deploy workflow log + reachable URL check",
-      "evidence_links": []
+      "evidence_links": [
+        "https://github.com/GBOGEB/ABACUS/actions/runs/26808489875",
+        "https://github.com/GBOGEB/ABACUS/actions/runs/26808489875/job/79034583478",
+        "https://gbogeb.github.io/ABACUS/"
+      ]
     },
     {
       "id": "T4",
       "title": "Execute folder refactor completion pass (reduce root sprawl; move remaining V2.3 artifacts into canonical locations)",
-      "state": "active",
+      "state": "done",
       "depends_on": [
         "T1"
       ],
       "owner": "@copilot",
       "verification_target": "Before/after root inventory report + updated structure map",
-      "evidence_links": []
+      "evidence_links": [
+        "docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md",
+        "docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md",
+        "docs_versioned/v2.3_active/V2.3_IMMEDIATE_ACTION_PLAN_20251111.md",
+        "docs_versioned/v2.3_active/V2.3_PROGRESS_SUMMARY_20251111.md",
+        "tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md"
+      ]
     },
     {
       "id": "T5",
       "title": "Fix deployment readiness blockers causing static_analysis_passed=false in deployment test system",
-      "state": "blocked",
+      "state": "done",
       "depends_on": [
         "T4"
       ],
       "owner": "@copilot",
       "verification_target": "Updated test output with static analysis pass",
-      "evidence_links": [],
-      "blocker": "Waiting on T4"
+      "evidence_links": [
+        "DMAIC_V3/core/test_system_bridge.py",
+        "DMAIC_V3_OUTPUT/deployment_report.json"
+      ]
     },
     {
       "id": "T6",
       "title": "Execute end-to-end validation bundle (agents smoke + orchestrator init + deployment test system + core pytest)",
-      "state": "blocked",
+      "state": "done",
       "depends_on": [
         "T5"
       ],
       "owner": "@copilot",
       "verification_target": "Consolidated test report showing all required checks pass",
-      "evidence_links": [],
-      "blocker": "Waiting on T5"
+      "evidence_links": [
+        "smoke_test_outputs_v2.3/smoke_test_results_20260603_224836.json",
+        "DMAIC_V3_OUTPUT/deployment_report.json",
+        "python -m pytest DMAIC_V3/tests -q"
+      ]
     },
     {
       "id": "T7",
       "title": "Produce production readiness checklist sign-off (security, CI/CD, tests, artifact integrity, rollback notes)",
-      "state": "blocked",
+      "state": "done",
       "depends_on": [
         "T2",
         "T3",
@@ -90,8 +105,11 @@
       ],
       "owner": "@copilot",
       "verification_target": "Completed checklist document with links to evidence",
-      "evidence_links": [],
-      "blocker": "Waiting on T3 and T6"
+      "evidence_links": [
+        "tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md#production-readiness-checklist-sign-off",
+        "https://github.com/GBOGEB/ABACUS/actions/runs/26808489875",
+        "DMAIC_V3_OUTPUT/deployment_report.json"
+      ]
     }
   ]
 }
