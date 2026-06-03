@@ -48,7 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
+        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist PyGithub
     
     - name: Install dev dependencies
       run: |
