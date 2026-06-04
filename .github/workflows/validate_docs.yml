@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v6
 
       - name: Setup Node (for markdownlint)
         uses: actions/setup-node@v6
@@ -28,28 +26,14 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-            mapfile -t MARKDOWN_FILES < <(git diff --name-only --diff-filter=ACMR "${BASE_SHA}...${HEAD_SHA}" -- '*.md' 2>/dev/null || true)
-          else
-            mapfile -t MARKDOWN_FILES < <(git ls-files '*.md')
-          fi
-
-          FILTERED_FILES=()
-          for file in "${MARKDOWN_FILES[@]}"; do
-            [ -f "$file" ] && FILTERED_FILES+=("$file")
-          done
-
-          MARKDOWN_FILES=("${FILTERED_FILES[@]}")
-          if [ ${#MARKDOWN_FILES[@]} -eq 0 ]; then
+          if ! git ls-files -- '*.md' | grep -q .; then
             echo "No Markdown files found."
             exit 0
           fi
-          printf '%s\0' "${MARKDOWN_FILES[@]}" | xargs -0 -r -n 50 markdownlint-cli2 || exit 1
+          git ls-files -z -- '*.md' | xargs -0 -r -n 50 markdownlint-cli2 || exit 1
 
       - name: Setup Python (YAML/JSON checks)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
