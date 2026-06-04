@@ -77,6 +77,11 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install runtime dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
       
       - name: Execute Full Pipeline
         run: |

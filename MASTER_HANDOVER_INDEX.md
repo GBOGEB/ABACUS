@@ -10,10 +10,10 @@
 | Need | Go to |
 |------|-------|
 | Understand the project | ← **you are here** |
-| See current status | [V2.3_CANONICAL_STATUS.md](V2.3_CANONICAL_STATUS.md) |
+| See current status | [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md) |
 | Find gaps/issues | [DMAIC_V3/OPEN_ISSUES.md](DMAIC_V3/OPEN_ISSUES.md) |
-| Plan next sprint | [V2.3_IMMEDIATE_ACTION_PLAN_20251111.md](V2.3_IMMEDIATE_ACTION_PLAN_20251111.md) |
-| Check metrics | [V2.3_PROGRESS_SUMMARY_20251111.md](V2.3_PROGRESS_SUMMARY_20251111.md) |
+| Plan next sprint | [V2.3_IMMEDIATE_ACTION_PLAN_20251111.md](docs_versioned/v2.3_active/V2.3_IMMEDIATE_ACTION_PLAN_20251111.md) |
+| Check metrics | [V2.3_PROGRESS_SUMMARY_20251111.md](docs_versioned/v2.3_active/V2.3_PROGRESS_SUMMARY_20251111.md) |
 | Learn V2.2 history | [V2.2_COMPLETE_SESSION_SUMMARY.md](V2.2_COMPLETE_SESSION_SUMMARY.md) |
 | Run tests | `python -m pytest DMAIC_V3/tests -q` |
 | Validate workflows | `bash scripts/verify_workflows.sh` |
