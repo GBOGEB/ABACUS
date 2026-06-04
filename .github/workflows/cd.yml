@@ -79,7 +79,11 @@ jobs:
 
       - name: Build GLOOB bundle
         run: |
-          python scripts/build_handover_bundle.py
+          if [ -f "scripts/build_handover_bundle.py" ]; then
+            python scripts/build_handover_bundle.py
+          else
+            echo "scripts/build_handover_bundle.py not found; skipping bundle build"
+          fi
 
       - name: Build handover ZIP from manifest (GLOOB.yaml)
         run: |
