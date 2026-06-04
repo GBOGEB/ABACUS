@@ -55,6 +55,12 @@ run python3 -m abacus_svg_pid.build_w003_w004
 run python3 -m abacus_svg_pid.build_catalog
 
 # ---------------------------------------------------------------------------
+# 3b. W005 — Tag & instrument register reconciliation (reads the catalog above)
+#     Cross-references the as-drawn catalog against the design nomenclature XLSX.
+# ---------------------------------------------------------------------------
+run python3 -m abacus_svg_pid.build_w005
+
+# ---------------------------------------------------------------------------
 # 4. Layered atlas v6 (per-source 13-layer SVG/PDF + HTML)
 # ---------------------------------------------------------------------------
 run python3 -m abacus_svg_pid.build_atlas_v6
@@ -67,6 +73,6 @@ run python3 src/abacus_svg_pid/render_collage.py
 echo ""
 echo "=========================================================================="
 echo " Regeneration complete. Derived outputs written to:"
-echo "   data/model/   data/pemo/   output_v6/   publish/   reports/*.xlsx"
+echo "   data/model/   data/pemo/   data/excel/   output_v6/   publish/   reports/*.xlsx"
 echo " Run the tests to validate:  PYTHONPATH=src python3 -m pytest tests/ -v"
 echo "=========================================================================="

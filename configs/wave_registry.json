@@ -2,7 +2,7 @@
   "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
   "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
   "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
-  "current_wave": "W005",
+  "current_wave": "W006",
   "waves": [
     {
       "id": "W001",
@@ -32,9 +32,9 @@
       "id": "W005",
       "name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
       "expected_output": "Reconcile the 297 auto-catalogued components against the official tag/instrument register (XLSX); report coverage delta (matched / false-positive / missing) + nomenclature reconciliation; cross-validate colour-derived line identity against ISA tag class (configs/isa_classes.json)",
-      "status": "active",
+      "status": "complete",
       "priority": "HIGH",
-      "note": "Swapped to first position per engineering review — this is the question a reviewer asks first. Interactive viewer moved to W006."
+      "note": "Swapped to first position per engineering review \u2014 this is the question a reviewer asks first. Interactive viewer moved to W006. [W005 delivered: 0 exact-tag overlap is a real finding \u2014 design & as-drawn schemes orthogonal; coverage reported per TYPE. See reports/W005_XLSX_RECONCILIATION_REPORT.md]"
     },
     {
       "id": "W006",

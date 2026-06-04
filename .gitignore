@@ -9,6 +9,7 @@ extracted/master/*.pptx
 output_v6/
 data/model/
 data/pemo/
+data/excel/
 publish/
 reports/*.xlsx
 

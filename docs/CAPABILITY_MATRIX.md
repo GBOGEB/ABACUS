@@ -28,6 +28,12 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Detect scope boundaries | 5/5 (QM/QVB/vac/Jumper/QINFRA) |
 | Detect handover diamonds (TP#NNN) | 22 |
 | Emit PEMO YAML 1.2 SSOT | 122 loops, 60 heat loads |
+| Reconcile as-drawn catalog vs design nomenclature XLSX (W005) | 97 design tags vs 141 as-drawn real tags; per-TYPE coverage delta |
+| Detect orthogonal tag schemes (design circuit-seq vs as-drawn instance) | 0 exact overlap — reported honestly, not forced |
+| Flag instrument TYPES missing from catalog (W005) | 10 design TYPES (FT/FV/HX/J/LE/LI/PV/RD/SV/V) absent |
+| Flag RFCELL template placeholders as non-reconcilable | 24 placeholders (TTxxx/EHx11…) flagged |
+| Apply documented PPT instrument re-allocations | 2 (TT535→PZ coldest, TT525→PZ warmest) |
+| Emit canonical merged instrument register (SSOT) | `data/excel/canonical_register_v1.yaml`, 238 entries |
 
 ## CANNOT — blocked by source data / toolchain
 
@@ -45,6 +51,9 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Bind the 77 floating arrows to source lines | DEFERRED — needs nearest-line heuristic |
 | Populate 04G_E_RED line layer (geometry) | DEFERRED — RED currently text-only |
 | Populate manifold COLD/WARM header layers (03A/03B) | DEFERRED — reserved placeholders |
+| Design ↔ as-drawn tag cross-map (keyed on TYPE+circuit+position) | DEFERRED — W005 quantified the need (0 exact overlap); the engineering cross-map itself is the next step |
+| Extend as-drawn catalog to the 10 missing design TYPES (FV/SV/FT/V/HX/J/LE/LI/PV/RD) | DEFERRED — W003/W004 category sheets covered only CV/EH/HV/LS/PT/TT |
+| Exhaustive parse of the 65 MB QSYS instrumentation PPT | DEFERRED — cost; 2 documented re-allocations encoded from cited slides |
 | Cross-drawing identity reconciliation (QCELL↔RFCELL) | DEFERRED — Wave W006 |
 | Temperature/pressure annotation per segment | DEFERRED — Wave W007 |
 | CI / GitHub Actions workflow | DEFERRED — only PLANNED in `GITHUB_PR_PLAN.md` |
