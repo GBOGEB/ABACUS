@@ -139,7 +139,7 @@ sphinx-rtd-theme>=3.0.0,<4.0.0
 # ============================================================================
 
 # Windows-specific
-pywin32>=300; platform_system == "Windows"
+pywin32>=311; platform_system == "Windows"
 
 # Unix-specific
 # (most Unix tools are in standard library)
