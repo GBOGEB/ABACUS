@@ -1,0 +1,84 @@
+{
+  "unmapped_before": 982,
+  "reclassified_count": 870,
+  "still_unresolved_count": 112,
+  "categories_reclassified": {
+    "symbol_glyph_or_heatload_marker": 236,
+    "structure_symbol_path": 57,
+    "structure_leader_or_signal_line": 211,
+    "structure_boundary_or_titleblock": 27,
+    "spec_change_dot_uncoloured": 153,
+    "instrument_bubble": 146,
+    "annotation_flow_arrow": 40
+  },
+  "categories_still_unresolved": {
+    "UNRESOLVED_OTHER_COLOUR": 112
+  },
+  "examples": {
+    "symbol_glyph_or_heatload_marker": [
+      "path4079",
+      "path2646",
+      "path2636",
+      "path10247",
+      "path5861",
+      "path28507"
+    ],
+    "structure_symbol_path": [
+      "path4386",
+      "path9385",
+      "path4138",
+      "path6-9",
+      "path7-7",
+      "path6-4-7"
+    ],
+    "structure_leader_or_signal_line": [
+      "path4192",
+      "path4194",
+      "path4196",
+      "path4198",
+      "path4200",
+      "path4202"
+    ],
+    "UNRESOLVED_OTHER_COLOUR": [
+      "path42",
+      "path44",
+      "path62",
+      "path63",
+      "path62-5",
+      "path63-8"
+    ],
+    "structure_boundary_or_titleblock": [
+      "rect6332-4",
+      "rect4-0",
+      "rect4-4-6",
+      "rect4-4",
+      "rect4",
+      "rect6591-1"
+    ],
+    "spec_change_dot_uncoloured": [
+      "path10-3-8-1-8-6-5-7-6-9-7-9-5-9-4",
+      "path10-3-8-1-8-6-5-7-4-7-8-3-8-5-6-99-4-6-9-0-9",
+      "path10-3-8-1-8-6-5-7-4-7-8-3-8-5-6-99-4-6-9-0-9-2",
+      "path10-3-8-1-8-6-5-7-4-7-8-3-8-6-2-2",
+      "path10-3-8-1-8-6-5-7-6-9-7-9-5-9-4-4",
+      "path10-3-8-1-8-6-5-7-4-7-8-3-8-5-6-99-4-6-9-0-9-2-3"
+    ],
+    "instrument_bubble": [
+      "path9-9-2-8-0-7-6-0-4-1-8-1-0-4-0",
+      "path9-9-2-8-0-7-6-0-5-3-8-3-94-2-7-63-8-6-4-8-0",
+      "path9-9-2-8-0-7-6-0-5-3-8-3-94-2-7-63-8-6-4-8-0-4",
+      "path9-9-2-8-0-7-6-0-5-3-8-3-94-7-1-2",
+      "path9-9-2-8-0-7-6-0-4-1-8-1-0-4-0-7",
+      "path9-9-2-8-0-7-6-0-5-3-8-3-94-2-7-63-8-6-4-8-0-4-9"
+    ],
+    "annotation_flow_arrow": [
+      "path5564-9-6-5-6-83-1",
+      "path5564-9-6-5-6-8-0-6-73",
+      "path5564-9-6-5-6-83",
+      "path5564-9-6-5-6-8-0-6-5",
+      "path5564-9-6-5-6-8-0-6-0",
+      "path5564-9-6-5-6-83-4-7"
+    ]
+  },
+  "method": "Shape classification (dot/triangle/arrow/bubble/rect/line/path) cross-referenced against AD_01.16 legend symbol families; black family treated as structure, unresolved-other colours kept flagged."
+}

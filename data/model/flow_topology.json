@@ -1,0 +1,476 @@
+{
+  "sheets": {
+    "QCELL": {
+      "process_lines": 271,
+      "flow_arrows": 99,
+      "entry_points": [
+        {
+          "code": "A",
+          "arrow_id": "path10231-5-0-3-3-3",
+          "x": 272.7,
+          "y": 330.28
+        },
+        {
+          "code": "B",
+          "arrow_id": "path4142-8",
+          "x": 613.23,
+          "y": 230.32
+        },
+        {
+          "code": "D",
+          "arrow_id": "path10231-5-0-3-3-3-5",
+          "x": 239.7,
+          "y": 409.51
+        }
+      ],
+      "exit_points": [
+        {
+          "code": "A",
+          "arrow_id": "path6956-4-4-4-7",
+          "x": 785.41,
+          "y": 659.58
+        },
+        {
+          "code": "B",
+          "arrow_id": "path10231-5-0-3-3-9-0-2-4",
+          "x": 1052.78,
+          "y": 602.54
+        },
+        {
+          "code": "D",
+          "arrow_id": "path4142-9",
+          "x": 602.56,
+          "y": 247.91
+        }
+      ],
+      "floating_arrows": [
+        {
+          "arrow_id": "path5564-9-6-5-6-83-1",
+          "code": "unknown",
+          "nearest_line_px": 54.7
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-83",
+          "code": "unknown",
+          "nearest_line_px": 57.6
+        },
+        {
+          "arrow_id": "path5182-6",
+          "code": "W",
+          "nearest_line_px": 51.4
+        },
+        {
+          "arrow_id": "path5182-6-7",
+          "code": "W",
+          "nearest_line_px": 52.4
+        },
+        {
+          "arrow_id": "path6956-5-3",
+          "code": "B",
+          "nearest_line_px": 56.3
+        },
+        {
+          "arrow_id": "path6956-5-3-3",
+          "code": "B",
+          "nearest_line_px": 70.2
+        },
+        {
+          "arrow_id": "path6956-4-4-4-7",
+          "code": "A",
+          "nearest_line_px": 32.6
+        },
+        {
+          "arrow_id": "path6684-0-9-6-3-1-8",
+          "code": "V",
+          "nearest_line_px": 39.3
+        },
+        {
+          "arrow_id": "path6684-0-9-6-3-1",
+          "code": "V",
+          "nearest_line_px": 38.4
+        },
+        {
+          "arrow_id": "path26009",
+          "code": "A",
+          "nearest_line_px": 47.2
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6",
+          "code": "unknown",
+          "nearest_line_px": 68.0
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-8",
+          "code": "unknown",
+          "nearest_line_px": 69.5
+        },
+        {
+          "arrow_id": "path5564-9-6-8",
+          "code": "unknown",
+          "nearest_line_px": 38.3
+        },
+        {
+          "arrow_id": "path10231-1",
+          "code": "unknown",
+          "nearest_line_px": 155.9
+        },
+        {
+          "arrow_id": "path59",
+          "code": "unknown",
+          "nearest_line_px": 41.6
+        },
+        {
+          "arrow_id": "path6684-0-9-6-3-6-4-1-9",
+          "code": "V",
+          "nearest_line_px": 33.1
+        },
+        {
+          "arrow_id": "path11009",
+          "code": "V",
+          "nearest_line_px": 48.0
+        },
+        {
+          "arrow_id": "path6684-0-0-9-7-0-5-4",
+          "code": "W",
+          "nearest_line_px": 50.3
+        },
+        {
+          "arrow_id": "path6684-0-0-9-7-0-5-4-8",
+          "code": "W",
+          "nearest_line_px": 49.4
+        },
+        {
+          "arrow_id": "path10231-1-9-1",
+          "code": "unknown",
+          "nearest_line_px": 46.4
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-8-0-8-6",
+          "code": "unknown",
+          "nearest_line_px": 42.7
+        },
+        {
+          "arrow_id": "path4142-8",
+          "code": "B",
+          "nearest_line_px": 41.5
+        },
+        {
+          "arrow_id": "path4142-9",
+          "code": "D",
+          "nearest_line_px": 48.9
+        },
+        {
+          "arrow_id": "path4142-83",
+          "code": "D",
+          "nearest_line_px": 30.8
+        },
+        {
+          "arrow_id": "path6956-2",
+          "code": "A",
+          "nearest_line_px": 51.0
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-8-0-6-3-4-7",
+          "code": "unknown",
+          "nearest_line_px": 32.5
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-2",
+          "code": "A",
+          "nearest_line_px": 32.5
+        },
+        {
+          "arrow_id": "path2446-9",
+          "code": "W",
+          "nearest_line_px": 61.4
+        },
+        {
+          "arrow_id": "path6684-7",
+          "code": "B",
+          "nearest_line_px": 37.9
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-8-0-6-3-4",
+          "code": "unknown",
+          "nearest_line_px": 37.5
+        },
+        {
+          "arrow_id": "path10231-1-9",
+          "code": "unknown",
+          "nearest_line_px": 74.1
+        },
+        {
+          "arrow_id": "path42-4",
+          "code": "unknown",
+          "nearest_line_px": 134.0
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-3-1",
+          "code": "unknown",
+          "nearest_line_px": 140.5
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-3-1-5",
+          "code": "unknown",
+          "nearest_line_px": 133.6
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-3-1-0",
+          "code": "unknown",
+          "nearest_line_px": 126.5
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-3-1-4",
+          "code": "unknown",
+          "nearest_line_px": 119.4
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-1",
+          "code": "unknown",
+          "nearest_line_px": 104.7
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-3-4",
+          "code": "unknown",
+          "nearest_line_px": 106.8
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-52-9",
+          "code": "unknown",
+          "nearest_line_px": 109.1
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-2-8",
+          "code": "unknown",
+          "nearest_line_px": 101.1
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-2-6-2",
+          "code": "unknown",
+          "nearest_line_px": 100.9
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-0-4",
+          "code": "unknown",
+          "nearest_line_px": 110.4
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-9-5",
+          "code": "unknown",
+          "nearest_line_px": 103.2
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-3-5-2",
+          "code": "unknown",
+          "nearest_line_px": 102.0
+        },
+        {
+          "arrow_id": "path9639",
+          "code": "V",
+          "nearest_line_px": 45.9
+        },
+        {
+          "arrow_id": "path42-4-7",
+          "code": "unknown",
+          "nearest_line_px": 188.8
+        },
+        {
+          "arrow_id": "path6684-0-0-9-7-0-9",
+          "code": "W",
+          "nearest_line_px": 199.8
+        },
+        {
+          "arrow_id": "path6684-0-0-9-7-0-9-0",
+          "code": "W",
+          "nearest_line_px": 127.2
+        },
+        {
+          "arrow_id": "path4142-4-2",
+          "code": "W",
+          "nearest_line_px": 58.0
+        },
+        {
+          "arrow_id": "path2617",
+          "code": "S",
+          "nearest_line_px": 71.5
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-9",
+          "code": "S",
+          "nearest_line_px": 90.4
+        },
+        {
+          "arrow_id": "path40246-4-6-6-7",
+          "code": "S",
+          "nearest_line_px": 159.1
+        },
+        {
+          "arrow_id": "path40246-4-6-6",
+          "code": "S",
+          "nearest_line_px": 163.3
+        },
+        {
+          "arrow_id": "path6684-0-9-6-3-6-4-1",
+          "code": "V",
+          "nearest_line_px": 102.9
+        },
+        {
+          "arrow_id": "path6684-0-9-6-3-6-4",
+          "code": "V",
+          "nearest_line_px": 101.6
+        },
+        {
+          "arrow_id": "path2617-7",
+          "code": "unknown",
+          "nearest_line_px": 142.6
+        },
+        {
+          "arrow_id": "path10231-5-0-3-3-3-4-2-8",
+          "code": "unknown",
+          "nearest_line_px": 117.8
+        },
+        {
+          "arrow_id": "path43253-6-6-9-8-8-7-36-4-2",
+          "code": "unknown",
+          "nearest_line_px": 107.5
+        }
+      ],
+      "floating_arrow_count": 58,
+      "junctions_detected": 36,
+      "heat_load_process_flow": [
+        "1. INPUT  - cold headers (A blue / B cyan / D orange / E red) enter",
+        "2. ABSORB - heat-load triangles on QCELL transfer heat to fluid",
+        "3. OUTPUT - warmed headers exit (same A/B/D/E codes)"
+      ]
+    },
+    "RFCELL": {
+      "process_lines": 35,
+      "flow_arrows": 33,
+      "entry_points": [
+        {
+          "code": "A",
+          "arrow_id": "path13",
+          "x": 641.91,
+          "y": 804.48
+        }
+      ],
+      "exit_points": [
+        {
+          "code": "A",
+          "arrow_id": "path13-2",
+          "x": 792.36,
+          "y": 804.02
+        }
+      ],
+      "floating_arrows": [
+        {
+          "arrow_id": "path6307",
+          "code": "unknown",
+          "nearest_line_px": 495.8
+        },
+        {
+          "arrow_id": "path22-7",
+          "code": "A_prime",
+          "nearest_line_px": 35.5
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-9-50-1-9-5-2",
+          "code": "A_prime",
+          "nearest_line_px": 35.3
+        },
+        {
+          "arrow_id": "path12",
+          "code": "A",
+          "nearest_line_px": 74.0
+        },
+        {
+          "arrow_id": "path13",
+          "code": "A",
+          "nearest_line_px": 50.0
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3",
+          "code": "unknown",
+          "nearest_line_px": 79.6
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-9-5",
+          "code": "unknown",
+          "nearest_line_px": 79.6
+        },
+        {
+          "arrow_id": "path12-5",
+          "code": "A",
+          "nearest_line_px": 73.5
+        },
+        {
+          "arrow_id": "path13-2",
+          "code": "A",
+          "nearest_line_px": 49.0
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-1",
+          "code": "unknown",
+          "nearest_line_px": 79.9
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-9-5-5",
+          "code": "unknown",
+          "nearest_line_px": 79.3
+        },
+        {
+          "arrow_id": "path10-2-8",
+          "code": "W",
+          "nearest_line_px": 52.7
+        },
+        {
+          "arrow_id": "path10-2",
+          "code": "W",
+          "nearest_line_px": 49.3
+        },
+        {
+          "arrow_id": "path10-2-0",
+          "code": "W",
+          "nearest_line_px": 115.2
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-5",
+          "code": "unknown",
+          "nearest_line_px": 117.7
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-5-2",
+          "code": "unknown",
+          "nearest_line_px": 125.7
+        },
+        {
+          "arrow_id": "path10-2-0-7",
+          "code": "W",
+          "nearest_line_px": 138.0
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-5-4",
+          "code": "unknown",
+          "nearest_line_px": 110.4
+        },
+        {
+          "arrow_id": "path5564-9-6-5-6-4-3-5-2-9",
+          "code": "unknown",
+          "nearest_line_px": 109.1
+        }
+      ],
+      "floating_arrow_count": 19,
+      "junctions_detected": 0,
+      "heat_load_process_flow": [
+        "1. INPUT  - cold headers (A blue / B cyan / D orange / E red) enter",
+        "2. ABSORB - heat-load triangles on QCELL transfer heat to fluid",
+        "3. OUTPUT - warmed headers exit (same A/B/D/E codes)"
+      ]
+    }
+  },
+  "summary": {
+    "total_flow_arrows": 132,
+    "total_floating_arrows": 77,
+    "total_junctions": 36
+  }
+}

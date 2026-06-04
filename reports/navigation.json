@@ -1,9 +1,9 @@
 {
-  "current_wave": "W002",
-  "current_wave_name": "Colour Line Decomposition & Validation",
-  "next_wave": "W003",
-  "next_wave_name": "Layer / Mechanical-Section Engine",
-  "status": "active",
+  "current_wave": "W003+W004",
+  "current_wave_name": "Layer Hierarchy & Geometric Tracing",
+  "next_wave": "W005",
+  "next_wave_name": "Tag & Instrument Association",
+  "status": "complete",
   "svg_files_found": [
     "PFD-PID MINERVA QCELL-LB.svg",
     "PFD-PID MINERVA RFCELL seen by ACR.svg"

@@ -1,0 +1,192 @@
+{
+  "boundaries_detected": {
+    "QM": [
+      "Cryomodule (QM)",
+      "QCELL P&ID for QM AssemblySCK CEN/87541845[according to SCK CEN/55801725PID v.3.0; PFD v.3.0]",
+      "QCELL P&ID for QMST TenderSCK CEN/95757180[according to SCK CEN/55801725PID v.2.2; PFD v.2.3]",
+      "QCELL-QM",
+      "scope QM"
+    ],
+    "QVB": [
+      "Double O-ring flange DN40Capped on QVB-LB",
+      "Only\nQVB-LBI",
+      "PFD-PID MINERVA QVB-LB + TC-LB.svgSCK CEN/55801725PID v.3.0  - MAY 2026PFD v.3.0  - MAY 2026",
+      "PeMo only for QVB-LBI",
+      "QVB INVAC connection CF40",
+      "QVB-LB + TC-LB P&ID for QDB tenderSCK CEN/94591913 [according to SCK CEN/55801725PID v.2.4; PFD v.2.4]",
+      "To QVB and PeMo valves",
+      "VCR 1/2'' capped on QVB-LB",
+      "scope QVB",
+      "scope QVB (AUB)",
+      "vacuum barrier"
+    ],
+    "vacuum_barrier": [
+      "vacuum barrier"
+    ],
+    "Jumper": [
+      "Jumper"
+    ],
+    "QINFRA": [
+      "QINFRA - Implementation by NFS",
+      "scope QINFRA"
+    ]
+  },
+  "handover_diamonds_TPXYYYY": [
+    {
+      "sheet": "QCELL",
+      "text": "TP#101",
+      "x": 770.21,
+      "y": 505.85
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#102",
+      "x": 657.61,
+      "y": 502.52
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#104",
+      "x": 305.76,
+      "y": 533.24
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#105",
+      "x": 452.13,
+      "y": 536.94
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#103",
+      "x": 511.65,
+      "y": 503.06
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#401",
+      "x": 735.9,
+      "y": 759.71
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#402",
+      "x": 556.03,
+      "y": 774.57
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#404",
+      "x": 705.58,
+      "y": 782.22
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#403",
+      "x": 862.7,
+      "y": 762.94
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#501",
+      "x": 916.27,
+      "y": 723.39
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#502",
+      "x": 913.63,
+      "y": 777.42
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#106",
+      "x": 600.4,
+      "y": 518.77
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#201",
+      "x": 372.19,
+      "y": 895.47
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#202",
+      "x": 904.56,
+      "y": 871.3
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#303",
+      "x": 877.41,
+      "y": 684.13
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#304",
+      "x": 599.2,
+      "y": 723.18
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#302",
+      "x": 538.28,
+      "y": 685.17
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#603",
+      "x": 756.4,
+      "y": 712.31
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#604",
+      "x": 674.6,
+      "y": 722.37
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#301",
+      "x": 831.78,
+      "y": 708.49
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#602",
+      "x": 625.54,
+      "y": 551.51
+    },
+    {
+      "sheet": "QCELL",
+      "text": "TP#601",
+      "x": 809.68,
+      "y": 543.05
+    }
+  ],
+  "handover_count": 22,
+  "W_line_bottom_right_elements": 19,
+  "W_line_bottom_right_ids_sample": [
+    "path6684-0-0",
+    "path4332-5-0-8-4-61-9-4-6-1-6-8-6-7-1-6-50-5-6-2-0-0",
+    "path4332-5-0-8-4-61-9-4-6-1-6-8-6-7-1-6-50-5-6-2-0",
+    "path6684-0-0-9-7-0-5-4",
+    "path6684-0-0-9-7-0-5-4-8",
+    "path43253-6-6-9-8-8-0-8-1",
+    "path4877-8-3-0-4-7-5-4-3-9",
+    "path4879-0-7-8-8-7-3-7-79-8",
+    "path43253-6-6-9-8-8-5-1",
+    "path17-6",
+    "path43253-6-6-9-8-8-0-8-1-0",
+    "path4877-8-3-0-4-7-5-4-3-9-4",
+    "path4879-0-7-8-8-7-3-7-79-8-9",
+    "path43253-6-6-9-8-8-5-1-1",
+    "path17-6-5"
+  ],
+  "continuity_flags": [
+    "W line bottom-right zone isolated for visual review (see atlas layer 04C).",
+    "Handover diamonds matched on TPXYYYY pattern; verify category prefix per AD_01.16."
+  ],
+  "ambiguities": []
+}
