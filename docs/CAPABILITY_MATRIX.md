@@ -16,6 +16,7 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Pair text → components | 315 pairs |
 | Colour-classify text nodes | 533 nodes |
 | Pair dots / heat-load triangles / arrows → lines | 205 / 100 / 132 |
+| Pairing distance quality (honest caveat) | 752 pairs, median 25px. 10% above 355px flagged low-confidence; max 1040px (known outlier, deferred to W005 review) |
 | Standardize text to Consolas + 4 mm tiers | 533 nodes tiered |
 | Assign 13 top-level layers (21 named sub-layers) per element | `layer_assignment.json` |
 | Render layered SVG + PDF | QCELL 1834/14, RFCELL 591/12 |
