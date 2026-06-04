@@ -23,7 +23,8 @@ typing-extensions>=4.0.0
 # Data manipulation and analysis
 pandas>=3.0.3,<4.0.0; python_version >= "3.11"
 pandas>=2.2.3,<3.0.0; python_version < "3.11"
-numpy>=2.0.0,<3.0.0
+numpy>=2.4.6,<3.0.0; python_version >= "3.11"
+numpy>=2.0.0,<2.4.0; python_version < "3.11"
 
 # ============================================================================
 # VISUALIZATION
@@ -104,7 +105,7 @@ black>=25.0.0,<26.0.0; python_version < "3.10"
 
 # Linting
 flake8>=7.0.0
-pylint>=2.12.0,<3.0.0
+pylint>=4.0.5,<5.0.0
 
 # Type checking
 mypy>=2.1.0,<3.0.0; python_version >= "3.10"
