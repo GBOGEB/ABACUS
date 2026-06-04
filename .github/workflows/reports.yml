@@ -91,7 +91,7 @@ jobs:
           fi
 
       - name: Upload report artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reports-${{ github.run_number }}
           path: |
@@ -156,7 +156,7 @@ jobs:
           cat weekly_report.md
 
       - name: Upload weekly report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: weekly-report-${{ github.run_number }}
           path: weekly_report.md
