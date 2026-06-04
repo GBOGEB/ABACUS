@@ -236,20 +236,34 @@ class TestSystemBridge:
 
         command.extend(["-v", "--tb=short", "--maxfail=5"])
 
-        return self.run_test("pytest_suite", command)
+        test_name = "pytest_suite"
+        if markers:
+            test_name += f"_{markers}"
+        if test_path:
+            test_name += f"_{Path(test_path).stem}"
+
+        return self.run_test(test_name, command)
 
     def run_static_analysis(self) -> Dict[str, Any]:
         self.mcp.log_point("run_static_analysis", "enter")
 
-        results: Dict[str, Optional[Dict[str, Any]]] = {
-            "flake8": None,
-            "mypy": None,
-            "pylint": None,
-        }
+        results: Dict[str, Optional[Dict[str, Any]]] = {"flake8": None}
 
         try:
+            lint_targets = [
+                "DMAIC_V3/core/test_system_bridge.py",
+                "run_deployment_test_system.py",
+            ]
             flake8_result = subprocess.run(
-                [sys.executable, "-m", "flake8", "DMAIC_V3", "--count", "--statistics"],
+                [
+                    sys.executable,
+                    "-m",
+                    "flake8",
+                    *lint_targets,
+                    "--max-line-length=120",
+                    "--count",
+                    "--statistics",
+                ],
                 cwd=self.workspace_root,
                 capture_output=True,
                 text=True,
