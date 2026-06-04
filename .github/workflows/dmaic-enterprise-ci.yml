@@ -28,13 +28,13 @@ jobs:
         fetch-depth: 0
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
     
     - name: Cache pip packages
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.cache/pip
@@ -48,7 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
+        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist PyGithub
     
     - name: Install dev dependencies
       run: |
@@ -66,14 +66,7 @@ jobs:
     - name: Run pytest with coverage
       shell: bash
       run: |
-        pytest DMAIC_V3/tests/ -v \
-          --cov=DMAIC_V3 \
-          --cov-report=xml \
-          --cov-report=term-missing \
-          --cov-report=html \
-          --tb=short \
-          --maxfail=5 \
-          -n auto
+        python -m pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3 --cov-report=xml --cov-report=term-missing --cov-report=html --tb=short --maxfail=5 -n auto
       continue-on-error: ${{ matrix.python-version != '3.11' }}
     
     - name: Upload coverage to Codecov
@@ -105,7 +98,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
@@ -143,7 +136,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -178,7 +171,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -211,7 +204,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -234,7 +227,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
