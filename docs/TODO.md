@@ -7,6 +7,13 @@ honest backlog after the v6.0 (W003+W004) build.
 
 ## High priority (data fidelity)
 
+- [ ] **W005 — XLSX tag/instrument register reconciliation + coverage delta** *(NEXT, top priority)*.
+  Reconcile the 297 auto-catalogued components against the official tag/instrument
+  register (XLSX): report which are matched, which are **false positives**, which
+  register tags are **missing**, plus nomenclature reconciliation (our segment
+  labels vs official naming). Cross-validate colour-derived line identity against
+  ISA tag class (`configs/isa_classes.json`). This is the question an engineering
+  reviewer asks first.
 - [ ] **Recover the U line** (top-left). Currently rendered black; needs colour
   re-attribution so it joins the parent-header tree alongside A/B/D/E/W/S/V.
 - [ ] **Map the 112 residual `UNRESOLVED_OTHER_COLOUR` elements** (magenta / non-canonical
@@ -23,9 +30,9 @@ honest backlog after the v6.0 (W003+W004) build.
 
 ## Future waves (planned, not started)
 
-- [ ] **W005** — Tag & Instrument Association (geometric proximity / CTM validation).
-- [ ] **W006** — Cross-drawing reconciliation (unify QCELL ↔ RFCELL line identity).
-- [ ] **W007** — Temperature / pressure annotation per segment (4.5 K / 2 K / warm).
+- [ ] **W005** — Tag & Instrument Register Reconciliation (XLSX coverage delta). *(active, HIGH — see top)*
+- [ ] **W006** — Interactive layered viewer (layer toggle / colour-line isolation / click-through).
+- [ ] **W007** — CI (GitHub Actions) + cross-drawing reconciliation + temperature/pressure annotation.
 - [ ] **W008** — Round-trip reassembly (recompose isolated lines into full P&ID).
 - [ ] **W009** — Publication & engineering sign-off.
 

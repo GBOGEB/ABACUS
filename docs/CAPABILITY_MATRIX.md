@@ -17,8 +17,8 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Colour-classify text nodes | 533 nodes |
 | Pair dots / heat-load triangles / arrows → lines | 205 / 100 / 132 |
 | Standardize text to Consolas + 4 mm tiers | 533 nodes tiered |
-| Assign 21 named layers per element | `layer_assignment.json` |
-| Render 13-layer SVG + PDF | QCELL 1834/14, RFCELL 591/12 |
+| Assign 13 top-level layers (21 named sub-layers) per element | `layer_assignment.json` |
+| Render layered SVG + PDF | QCELL 1834/14, RFCELL 591/12 |
 | Build interactive layer-toggle atlas | `layered_atlas_v6.html` |
 | Trace flow arrows + junctions | 132 arrows, 36 junctions |
 | Parse vertical-letter nomenclature into tree | 33 segments, 8 parents |

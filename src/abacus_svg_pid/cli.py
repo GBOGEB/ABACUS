@@ -149,11 +149,11 @@ def run():
     reports_dir = os.path.join(PROJECT_ROOT, "reports")
     os.makedirs(reports_dir, exist_ok=True)
     navigation = {
-        "current_wave": "W002",
-        "current_wave_name": "Colour Line Decomposition & Validation",
-        "next_wave": "W003",
-        "next_wave_name": "Layer / Mechanical-Section Engine",
-        "status": "active",
+        "current_wave": "W001-W004 (consolidated)",
+        "current_wave_name": "Colour-Line Model, Layer Hierarchy & Geometric Tracing",
+        "next_wave": "W005",
+        "next_wave_name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
+        "status": "ready_for_PR1_review",
         "svg_files_found": svg_files,
         "svg_files_found_count": len(svg_files),
         "unique_stroke_colours": len(unique_strokes),

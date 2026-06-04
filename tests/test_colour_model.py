@@ -73,7 +73,16 @@ def test_deferred_placeholders():
         assert rec["sequential_components"] == "DEFERRED_W004"
 
 
+def _data_available():
+    """Derived outputs are git-ignored; this test only runs after ./make.sh."""
+    return os.path.exists(os.path.join(MODEL, "line_model.json"))
+
+
 if __name__ == "__main__":
+    if not _data_available():
+        print("SKIP  W002 colour-model assertions — data/model/ not built. "
+              "Run ./make.sh first (derived outputs are git-ignored).")
+        sys.exit(0)
     passed = 0
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

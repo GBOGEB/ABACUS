@@ -1,9 +1,9 @@
 {
-  "current_wave": "W003+W004",
-  "current_wave_name": "Layer Hierarchy & Geometric Tracing",
+  "current_wave": "W001-W004 (consolidated)",
+  "current_wave_name": "Colour-Line Model, Layer Hierarchy & Geometric Tracing",
   "next_wave": "W005",
-  "next_wave_name": "Tag & Instrument Association",
-  "status": "complete",
+  "next_wave_name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
+  "status": "ready_for_PR1_review",
   "svg_files_found": [
     "PFD-PID MINERVA QCELL-LB.svg",
     "PFD-PID MINERVA RFCELL seen by ACR.svg"

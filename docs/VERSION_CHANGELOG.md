@@ -10,8 +10,8 @@ Versioning tracks the wave roadmap (`configs/wave_registry.json`).
 **Baseline:** v5 / W002 (`5d43a9e`)
 
 ### Added
-- **13-layer (21 named) visual hierarchy** with per-element layer assignment
-  (`data/model/layer_assignment.json`).
+- **13 top-level layers (21 named sub-layers) visual hierarchy** with per-element
+  layer assignment (`data/model/layer_assignment.json`).
 - **Layered atlas v6** — interactive layer-toggle viewer (`publish/layered_atlas_v6.html`).
 - **13-layer rendered drawings** — `output_v6/{QCELL,RFCELL}/*_13layers.{svg,pdf}`
   (QCELL 1834 elements / 14 layers, RFCELL 591 / 12 layers).

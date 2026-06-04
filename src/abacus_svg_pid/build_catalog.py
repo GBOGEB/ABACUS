@@ -216,3 +216,18 @@ def run(models, instruments):
     with open(os.path.join(MODEL, "component_line_assignment.json"), "w") as fh:
         json.dump({"count": len(enriched), "components": enriched}, fh, indent=2)
     return {"xlsx": xlsx, "html": html, "components": len(enriched)}
+
+
+def main():
+    """CLI entrypoint: load models + instruments, build the catalog."""
+    os.makedirs(REPORTS, exist_ok=True)
+    os.makedirs(PUBLISH, exist_ok=True)
+    models = B.load_models()
+    instruments = B.load_instruments()
+    result = run(models, instruments)
+    print(json.dumps(result, indent=2))
+    return result
+
+
+if __name__ == "__main__":
+    main()

@@ -106,7 +106,16 @@ def test_pemo_yaml_exists():
     assert "1.2" in txt
 
 
+def _data_available():
+    """Derived outputs are git-ignored; this test only runs after ./make.sh."""
+    return os.path.exists(os.path.join(MODEL, "unmapped_reduction.json"))
+
+
 def _run_all():
+    if not _data_available():
+        print("SKIP  W003+W004 assertions — data/model/ not built. "
+              "Run ./make.sh first (derived outputs are git-ignored).")
+        return 0
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     passed = 0
     for fn in fns:
@@ -114,6 +123,7 @@ def _run_all():
         print(f"  PASS  {fn.__name__}")
         passed += 1
     print(f"\n{passed}/{len(fns)} W003+W004 assertions passed.")
+    return passed
 
 
 if __name__ == "__main__":

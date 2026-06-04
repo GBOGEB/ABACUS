@@ -1,57 +1,128 @@
 # GitHub PR Plan — MINERVA QCELL/RFCELL Colour-Line Model
 
-Branch & PR strategy mapped to the wave roadmap. One PR per wave (or combined wave),
-each squashed onto `main` after engineering review. **PRs are never auto-merged.**
+Branch & PR strategy. **Consolidated** — we do NOT open one PR per wave. Completed
+waves are bundled into a single reviewable PR so the reviewer sees a coherent
+capability set, not a trickle of partial commits. **PRs are never auto-merged.**
 
 ---
 
-## PR1 — W002: Colour-line decomposition & validation  *(merged — `5d43a9e`)*
+## PR1 — W001 + W002 + W003 + W004: Colour-line model, layer hierarchy & geometric tracing  *(THIS PR — ready for review)*
 
-- Colour inventory, line model, per-line JSON, W002 validation report, colour-line
-  collage. Baseline for all subsequent work.
+**Branch:** `wave/w001-w004-colour-line-layer-geometry`
+**Base:** `main`
 
-## PR2 — W003 + W004: Layer hierarchy & geometric tracing  *(THIS PR — ready for review)*
+This single PR consolidates the entire foundation: source ingestion + style
+extraction (W001), colour-line decomposition (W002), the 13-top-level /
+21-named-sub-layer hierarchy (W003), and geometric arrow/flow tracing (W004).
 
-**Branch:** `wave/w003-w004-layer-hierarchy-geometric-tracing`
-**Base:** `main` (`5d43a9e`)
+### Reproducibility (read first)
+Derived outputs (`data/model/`, `data/pemo/`, `output_v6/`, `publish/`,
+`reports/*.xlsx`) are **git-ignored** — they are regenerable, not source. To
+reproduce every number quoted below from a fresh clone:
 
-### Scope
-- Geometry engine (`src/abacus_svg_pid/geometry.py`).
-- Build orchestrators: `build_w003_w004.py`, `build_catalog.py`, `build_atlas_v6.py`.
-- 10 phases: unmapped reduction (982→112), pairing, text standardization, 21-layer
-  hierarchy, flow tracing, nomenclature parser, component catalog, scope-boundary
-  validation, PEMO YAML SSOT, docs.
-- Outputs: `data/model/*.json`, `data/pemo/ic_system_v1.2.yaml`, `reports/*.md` + xlsx,
-  `publish/*.html`, `output_v6/**`, `docs/*`.
-- Registry/navigation advanced; tests added.
+```bash
+./make.sh                                  # regenerate all derived outputs
+PYTHONPATH=src python3 tests/test_integration_pipeline.py   # source-only smoke test
+PYTHONPATH=src python3 tests/test_colour_model.py           # W002 assertions (after make.sh)
+PYTHONPATH=src python3 tests/test_w003_w004.py              # W003/W004 assertions (after make.sh)
+```
+
+Tracked source of record: `src/`, `segmentation/data/*.json`, `configs/`,
+`data/svg/`, `tests/`, `reports/*.md`, `docs/`.
+
+### PR description — Capability Matrix
+
+Honest "Claim ≠ Complete" accounting. Every row is **CAN** (implemented &
+verified by runtime counts), **CANNOT** (not possible with current source /
+toolchain), or **DID NOT / DEFERRED** (possible but intentionally not done).
+
+#### CAN — implemented and verified
+
+| Capability | Evidence |
+| --- | --- |
+| Ingest both real source SVGs with inline-style colour precedence | QCELL + RFCELL, 1888 drawable elements |
+| Reduce unmapped elements via legend reclassification | 982 → 112 (88.6 %) |
+| CTM-resolved geometry extraction (bbox/centroid/shape) | `geometry.py`; 7 shape classes |
+| Pair text → components | 315 pairs |
+| Colour-classify text nodes | 533 nodes |
+| Pair dots / heat-load triangles / arrows → lines | 205 / 100 / 132 |
+| Pairing-distance quality recorded | median 25.35 / p90 355.4 / max 1040.2 px (>p90 flagged low-confidence) |
+| Standardize text to Consolas + 4 mm tiers | 533 nodes tiered |
+| Assign 13 top-level layers (21 named sub-layers) per element | `layer_assignment.json` |
+| Layer sum-check balances exactly | 1888 drawable + 533 text = 2421, no drops |
+| Render layered SVG + PDF | QCELL 1834/14, RFCELL 591/12 |
+| Build interactive layer-toggle atlas | `layered_atlas_v6.html` |
+| Trace flow arrows + junctions | 132 arrows, 36 junctions |
+| Parse vertical-letter nomenclature into tree | 33 segments, 8 parents |
+| Catalog components to Excel + HTML | 297 components |
+| Catalog spec-change dots by line | S 40, V 10, B 2, uncol. 153 |
+| Detect scope boundaries | 5/5 (QM/QVB/vac/Jumper/QINFRA) |
+| Detect handover diamonds (TP#NNN) | 22 |
+| Emit PEMO YAML 1.2 SSOT | 122 loops, 60 heat loads |
+
+#### CANNOT — blocked by source data / toolchain
+
+| Capability | Reason |
+| --- | --- |
+| Map the 112 residual magenta elements to a line | No legend swatch for that colour family in the source SVG |
+| Confirm true 3-D pipe routing / elevations | Source is 2-D schematic; no z-data |
+| Resolve the degenerate-transform coordinate outlier to a real position | Source transform is mathematically degenerate; mitigated via viewBox bounds |
+
+#### DID NOT / DEFERRED — possible, deferred to a later wave
+
+| Capability | Status / target wave |
+| --- | --- |
+| XLSX tag/instrument register reconciliation + coverage delta | **W005 (next, PR2)** |
+| Recover the U line (top-left, currently black) | DEFERRED — colour re-attribution pass |
+| Bind the 77 floating arrows to source lines | DEFERRED — nearest-line heuristic |
+| Populate 04G_E_RED / manifold header layers | DEFERRED — reserved placeholders |
+| Interactive layered viewer (beyond static atlas) | DEFERRED — W006, PR3 |
+| Cross-drawing reconciliation, temperature/pressure annotation | DEFERRED — later waves |
+| CI / GitHub Actions workflow | DEFERRED — W007, PR3 |
 
 ### Review checklist
-- [ ] Confirm 21-layer assignment matches engineering intent.
+- [ ] `./make.sh` reproduces all derived outputs from a clean clone.
+- [ ] Integration smoke test passes (`tests/test_integration_pipeline.py`).
+- [ ] Confirm 13-top-level / 21-named-sub-layer assignment matches engineering intent.
 - [ ] Sanity-check the 297-component catalog against the drawing.
 - [ ] Confirm handover-diamond list (22) and 5 scope boundaries.
-- [ ] Accept the documented deferrals (U line, 112 magenta, floating arrows).
+- [ ] Accept the documented deferrals (U line, 112 magenta, 77 floating arrows).
 
 ### Not merged automatically
-This PR is opened for review only. Merge after sign-off.
+Opened for review only. Merge after sign-off.
 
-## PR3 — W005: Tag & instrument association  *(planned)*
+---
 
-- Validated tag-to-line association via geometric proximity / CTM.
+## PR2 — W005: Tag & Instrument Register Reconciliation (XLSX coverage delta)  *(planned — next)*
 
-## PR4 — W006: Cross-drawing reconciliation  *(planned)*
+**This is the #1 next priority** — it is the question an engineering reviewer
+asks first. Reconcile the 297 auto-catalogued components against the official
+tag/instrument register (XLSX) and report the **coverage delta**:
+- which catalogued components appear in the official register (matched),
+- which are **false positives** (catalogued but not in register),
+- which register tags are **missing** from our catalog,
+- nomenclature reconciliation (our segment labels vs official tag naming).
 
-- Unified line identity across QCELL & RFCELL.
+Cross-validates colour-derived line identity against ISA tag class
+(`configs/isa_classes.json`) per the governance principle in `AGENTS.md`.
 
-## PR5 — W007: Temperature / pressure annotation  *(planned)*
+## PR3 — W006 + W007: Interactive layered viewer + CI  *(planned)*
 
-## PR6 — W008: Round-trip reassembly  *(planned)*
+- **W006** — interactive layered viewer (beyond the static atlas HTML): toggle
+  layers, isolate colour lines, click-through component inspection.
+- **W007** — CI / GitHub Actions workflow running `./make.sh` + the test suite
+  on every push.
 
-## PR7 — W009: Publication & sign-off  *(planned)*
+## PR4 — W008 + W009: Round-trip reassembly + publication & sign-off  *(planned)*
+
+- **W008** — recompose isolated colour lines back into the full P&ID without
+  loss of meaning (the round-trip success metric).
+- **W009** — engineering-reviewed colour-line atlas + sign-off record.
 
 ---
 
 ### Conventions
-- One feature branch per wave; never commit directly to `main`.
+- One consolidated feature branch per PR bundle; never commit directly to `main`.
 - Commit identity: `Abacus Agent <agent@abacus.ai>`.
-- Squash-merge with the wave id in the title.
-- CI (GitHub Actions) is **planned**, not yet implemented (see `TODO.md`).
+- Squash-merge with the wave ids in the title.
+- Derived outputs are git-ignored and regenerated by `./make.sh` (see `.gitignore`).

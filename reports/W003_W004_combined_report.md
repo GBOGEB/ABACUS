@@ -10,12 +10,13 @@
 
 ## Executive summary
 
-This build extends the W002 colour-line decomposition with a full 13-layer (21 named)
-visual hierarchy and a geometric flow-tracing pass. Headline outcomes:
+This build extends the W002 colour-line decomposition with a full hierarchy of
+**13 top-level layers (21 named sub-layers)** and a geometric flow-tracing pass.
+Headline outcomes:
 
 - Unmapped elements reduced **982 → 112** (88.6 % resolved).
-- **21 named layers** assigned; QCELL annotated **1834** elements (14 layers used),
-  RFCELL **591** (12 layers).
+- **13 top-level layers (21 named sub-layers)** assigned; QCELL annotated **1834**
+  elements (14 sub-layers used), RFCELL **591** (12 sub-layers).
 - **132** flow arrows traced, **77** floating arrows isolated, **36** junctions.
 - **297** components cataloged to Excel + HTML.
 - **22** handover diamonds and **5/5** scope boundaries validated.
@@ -50,6 +51,14 @@ titleblock 27. Detail → `reports/unmapped_reduction_analysis.md`.
 | Arrows paired to lines | 132 |
 | Arrows floating (unpaired) | 77 |
 
+**Pairing-distance quality (752 paired elements with `distance_px`):** median
+**25.35 px**, p90 **355.4 px**, max **1040.2 px**. On a 1527 px-wide canvas a
+1040 px pairing is almost certainly wrong, so pairs above the p90 (~355 px) are
+flagged **LOW-CONFIDENCE** and must not be trusted as ground truth; the **77**
+floating arrows are left unmatched rather than force-paired (governance: no
+silent deletion of unresolved data). Tight median (25 px) confirms the bulk of
+pairings are sound.
+
 Output → `data/model/paired_elements.json`.
 
 ## Phase 3 — Text standardization
@@ -65,7 +74,7 @@ Target font `Consolas, 'DejaVu Sans Mono', monospace`; 4 mm-based tiers.
 
 533 text nodes total. Detail → `reports/text_standardization_report.md`.
 
-## Phase 4 — 13-layer hierarchy (21 named layers)
+## Phase 4 — 13 top-level layers (21 named sub-layers)
 
 Per-layer element counts (assignment model):
 
@@ -95,6 +104,15 @@ reserved placeholders for future waves. Rendered artifacts:
 - Interactive layer-toggle atlas → `publish/layered_atlas_v6.html`
 
 Elements are annotated **in place** with `class="lyr-NN"` to preserve CTM transforms.
+
+**Layer sum-check (exact reconciliation):** `1888 drawable + 533 text = 2421`
+total elements assigned, with **no drops and no double-counts** — every input
+element lands in exactly one layer bucket. (The 1888 drawable = 1375 QCELL +
+513 RFCELL; shapes: 670 triangle / 374 line / 239 path / 205 dot / 162 bubble /
+132 arrow / 106 rect.) The in-place atlas annotation reports **2425**
+(1834 QCELL + 591 RFCELL); the **+4** difference versus 2421 is group-wrapper
+`<g>` elements that receive a class during annotation but are not leaf drawables
+— documented here honestly rather than reconciled away.
 
 ## Phase 5 — Geometric tracing (flow topology)
 

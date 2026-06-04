@@ -1,2 +1,17 @@
 # large reference binaries kept out of git
 extracted/master/*.pptx
+
+# ---------------------------------------------------------------------------
+# Derived / regenerable outputs — NOT source of record.
+# Rebuilt from tracked source (src/, segmentation/data/, configs/, data/svg/)
+# by ./make.sh. See AGENTS.md "Reproducibility over committed artifacts".
+# ---------------------------------------------------------------------------
+output_v6/
+data/model/
+data/pemo/
+publish/
+reports/*.xlsx
+
+# Python bytecode
+__pycache__/
+*.pyc

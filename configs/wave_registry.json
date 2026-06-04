@@ -30,20 +30,22 @@
     },
     {
       "id": "W005",
-      "name": "Tag & Instrument Association",
-      "expected_output": "Validated tag-to-line association via geometric proximity / CTM",
-      "status": "active"
+      "name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
+      "expected_output": "Reconcile the 297 auto-catalogued components against the official tag/instrument register (XLSX); report coverage delta (matched / false-positive / missing) + nomenclature reconciliation; cross-validate colour-derived line identity against ISA tag class (configs/isa_classes.json)",
+      "status": "active",
+      "priority": "HIGH",
+      "note": "Swapped to first position per engineering review — this is the question a reviewer asks first. Interactive viewer moved to W006."
     },
     {
       "id": "W006",
-      "name": "Cross-Drawing Reconciliation (QCELL vs RFCELL)",
-      "expected_output": "Unified line identity across both source drawings",
+      "name": "Interactive Layered Viewer",
+      "expected_output": "Interactive layered viewer beyond static atlas HTML: layer toggling, colour-line isolation, click-through component inspection",
       "status": "deferred"
     },
     {
       "id": "W007",
-      "name": "Temperature / Pressure Annotation",
-      "expected_output": "Validated 4.5 K / 2 K / warm classification per line segment",
+      "name": "CI Workflow + Cross-Drawing / Temperature Annotation",
+      "expected_output": "CI (GitHub Actions) running ./make.sh + tests on push; cross-drawing QCELL<->RFCELL identity reconciliation; 4.5 K / 2 K / warm classification per segment",
       "status": "deferred"
     },
     {

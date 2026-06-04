@@ -217,3 +217,17 @@ def run():
         annotated.append((key, out_svg, counts))
     html = build_atlas_html(annotated)
     return {"annotated": [(a[0], a[2]) for a in annotated], "atlas_html": html}
+
+
+def main():
+    """CLI entrypoint: annotate each source SVG into the 13-layer atlas."""
+    os.makedirs(OUT_V6, exist_ok=True)
+    result = run()
+    for key, counts in result["annotated"]:
+        print(f"{key}: {counts}")
+    print(f"atlas_html: {result['atlas_html']}")
+    return result
+
+
+if __name__ == "__main__":
+    main()
