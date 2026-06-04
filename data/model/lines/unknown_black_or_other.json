@@ -1,0 +1,59 @@
+{
+  "canonical_name": "unknown_black_or_other",
+  "records": [
+    {
+      "line_id": "L01",
+      "canonical_name": "unknown_black_or_other",
+      "source_colour": "#000000",
+      "source_colour_variants": [
+        "#000000",
+        "#1a1a1a",
+        "#ff00ff",
+        "#ffffff",
+        "#bf512e",
+        "#d35f5f",
+        "#80b3ff",
+        "#55ff99",
+        "#800000"
+      ],
+      "process_code": "unknown",
+      "temperature_pressure_note": "Structure/boundary/symbol (not validated as a process colour)",
+      "mechanical_section": "TBD (QM / Jumper / QVB / QINFRA - W004)",
+      "role": "scope_boundary",
+      "inlet_side": "DEFERRED_W004",
+      "outlet_side": "DEFERRED_W004",
+      "arrows_detected": "DEFERRED_W004",
+      "sequential_components": "DEFERRED_W004",
+      "associated_tags": [],
+      "element_count": 982,
+      "confidence": "low",
+      "evidence_svg_ids": [
+        "path4079",
+        "path2646",
+        "path2636",
+        "path10247",
+        "path5861",
+        "path28507",
+        "path27589",
+        "path23903",
+        "path23893",
+        "path1615",
+        "path18506",
+        "path15394",
+        "path15144",
+        "path14912",
+        "path4386"
+      ],
+      "evidence_text": [
+        "Q1",
+        "EH514",
+        "TT514",
+        "MP-011",
+        "ARC-014",
+        "ARC-013"
+      ]
+    }
+  ],
+  "total_elements": 982,
+  "note": "arrows & sequential components DEFERRED_W004"
+}

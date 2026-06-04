@@ -1,0 +1,88 @@
+{
+  "svg_files_loaded": 2,
+  "svg_file_names": [
+    "PFD-PID MINERVA QCELL-LB.svg",
+    "PFD-PID MINERVA RFCELL seen by ACR.svg"
+  ],
+  "unique_stroke_colours": 15,
+  "path_elements_per_process_code": {
+    "unknown": 982,
+    "A": 171,
+    "W": 160,
+    "S": 125,
+    "V": 116,
+    "D": 116,
+    "B": 105,
+    "A_prime": 70,
+    "E": 9
+  },
+  "text_nodes_per_file": {
+    "PFD-PID MINERVA QCELL-LB.svg": 566,
+    "PFD-PID MINERVA RFCELL seen by ACR.svg": 128
+  },
+  "colours_unmapped": [
+    "#55ff99",
+    "#800000",
+    "#80b3ff",
+    "#bf512e",
+    "#d35f5f",
+    "#ff00ff",
+    "#ffffff"
+  ],
+  "colours_unmapped_counts": {
+    "#ff00ff": 78,
+    "#bf512e": 8,
+    "#ffffff": 10,
+    "#d35f5f": 8,
+    "#55ff99": 3,
+    "#80b3ff": 4,
+    "#800000": 1
+  },
+  "structure_black_family_counts": {
+    "#000000": 728,
+    "#1a1a1a": 142
+  },
+  "boundaries_detected": {
+    "QM": [
+      "Cryomodule (QM)",
+      "QCELL P&ID for QM Assembly",
+      "QCELL P&ID for QMST Tender",
+      "QCELL-QM",
+      "scope QM"
+    ],
+    "QVB": [
+      "Capped on QVB-LB",
+      "PFD-PID MINERVA QVB-LB + TC-LB.svg",
+      "PeMo only for QVB-LBI",
+      "QVB INVAC",
+      "QVB-",
+      "QVB-LB + TC-LB P&ID for QDB tender",
+      "To QVB and PeMo valves",
+      "VCR 1/2'' capped on QVB-LB",
+      "scope QVB",
+      "scope QVB (AUB)",
+      "vacuum barrier"
+    ],
+    "vacuum_barrier": [
+      "vacuum barrier"
+    ],
+    "Jumper": [
+      "Jumper"
+    ],
+    "QINFRA": [
+      "QINFRA - Implementation by NFS",
+      "scope QINFRA"
+    ]
+  },
+  "colour_inventory_pairs": 220,
+  "line_records": 9,
+  "per_colour_files": [
+    "blue_A.json",
+    "cyan_B_2K.json",
+    "green_W_coupler.json",
+    "grey_V_vent.json",
+    "olive_S_line.json",
+    "red_orange_D_E.json",
+    "unknown_black_or_other.json"
+  ]
+}

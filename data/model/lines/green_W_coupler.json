@@ -1,0 +1,65 @@
+{
+  "canonical_name": "green_W_coupler",
+  "records": [
+    {
+      "line_id": "L03",
+      "canonical_name": "green_W_coupler",
+      "source_colour": "#00ff00",
+      "source_colour_variants": [
+        "#00ff00",
+        "#008000"
+      ],
+      "process_code": "W",
+      "temperature_pressure_note": "Coupler line (splits from BLUE A inside QM)",
+      "mechanical_section": "TBD (QM / Jumper / QVB / QINFRA - W004)",
+      "role": "primary_process",
+      "inlet_side": "DEFERRED_W004",
+      "outlet_side": "DEFERRED_W004",
+      "arrows_detected": "DEFERRED_W004",
+      "sequential_components": "DEFERRED_W004",
+      "associated_tags": [
+        "Q1",
+        "EH514",
+        "TT514",
+        "MP-011",
+        "ARC-014",
+        "ARC-013",
+        "TT513",
+        "EH524",
+        "TT524",
+        "ARC-023",
+        "MP-021",
+        "ARC-024"
+      ],
+      "element_count": 160,
+      "confidence": "high",
+      "evidence_svg_ids": [
+        "path5192",
+        "path3580",
+        "path29120",
+        "path23883",
+        "path7511",
+        "path4892",
+        "path4888",
+        "path4884",
+        "path4880",
+        "path4876",
+        "path4872",
+        "path4505",
+        "path4501",
+        "path12689",
+        "path4157"
+      ],
+      "evidence_text": [
+        "Q1",
+        "EH514",
+        "TT514",
+        "MP-011",
+        "ARC-014",
+        "ARC-013"
+      ]
+    }
+  ],
+  "total_elements": 160,
+  "note": "arrows & sequential components DEFERRED_W004"
+}

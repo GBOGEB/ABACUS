@@ -1,0 +1,64 @@
+{
+  "canonical_name": "olive_S_line",
+  "records": [
+    {
+      "line_id": "L04",
+      "canonical_name": "olive_S_line",
+      "source_colour": "#808000",
+      "source_colour_variants": [
+        "#808000"
+      ],
+      "process_code": "S",
+      "temperature_pressure_note": "S line (warm)",
+      "mechanical_section": "TBD (QM / Jumper / QVB / QINFRA - W004)",
+      "role": "warm_line",
+      "inlet_side": "DEFERRED_W004",
+      "outlet_side": "DEFERRED_W004",
+      "arrows_detected": "DEFERRED_W004",
+      "sequential_components": "DEFERRED_W004",
+      "associated_tags": [
+        "Q1",
+        "EH514",
+        "TT514",
+        "MP-011",
+        "ARC-014",
+        "ARC-013",
+        "TT513",
+        "EH524",
+        "TT524",
+        "ARC-023",
+        "MP-021",
+        "ARC-024"
+      ],
+      "element_count": 125,
+      "confidence": "high",
+      "evidence_svg_ids": [
+        "path2637",
+        "path2627",
+        "path14",
+        "path14-2",
+        "circle1",
+        "path14-7",
+        "circle1-9",
+        "circle1-2",
+        "circle2",
+        "path2627-1",
+        "path3-0",
+        "path2627-0",
+        "path14-71",
+        "circle1-2-5",
+        "circle1-20"
+      ],
+      "evidence_text": [
+        "Q1",
+        "EH514",
+        "TT514",
+        "MP-011",
+        "ARC-014",
+        "ARC-013"
+      ]
+    }
+  ],
+  "total_elements": 125,
+  "note": "arrows & sequential components DEFERRED_W004"
+}

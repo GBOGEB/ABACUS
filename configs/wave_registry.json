@@ -1,0 +1,62 @@
+{
+  "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
+  "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
+  "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
+  "current_wave": "W002",
+  "waves": [
+    {
+      "id": "W001",
+      "name": "Source Ingestion & Style Extraction",
+      "expected_output": "data/svg/*.svg copied from real sources; element/colour/style extraction with correct inline-style precedence",
+      "status": "complete"
+    },
+    {
+      "id": "W002",
+      "name": "Colour Line Decomposition & Validation",
+      "expected_output": "data/model/colour_inventory.json, data/model/line_model.json, data/model/lines/*.json, reports/W002_colour_line_validation.md, publish/colour_line_collage.html",
+      "status": "active"
+    },
+    {
+      "id": "W003",
+      "name": "Layer / Mechanical-Section Engine",
+      "expected_output": "Per-section (QM / Jumper / QVB / QINFRA) layer assignment for every colour line",
+      "status": "deferred"
+    },
+    {
+      "id": "W004",
+      "name": "Geometry, Arrow Tracing & Sequential Ordering",
+      "expected_output": "arrows_detected + sequential_components per line (currently DEFERRED_W004 placeholders)",
+      "status": "deferred"
+    },
+    {
+      "id": "W005",
+      "name": "Tag & Instrument Association",
+      "expected_output": "Validated tag-to-line association via geometric proximity / CTM",
+      "status": "deferred"
+    },
+    {
+      "id": "W006",
+      "name": "Cross-Drawing Reconciliation (QCELL vs RFCELL)",
+      "expected_output": "Unified line identity across both source drawings",
+      "status": "deferred"
+    },
+    {
+      "id": "W007",
+      "name": "Temperature / Pressure Annotation",
+      "expected_output": "Validated 4.5 K / 2 K / warm classification per line segment",
+      "status": "deferred"
+    },
+    {
+      "id": "W008",
+      "name": "Round-Trip Reassembly",
+      "expected_output": "Recompose isolated colour lines back into the full P&ID without loss of meaning",
+      "status": "deferred"
+    },
+    {
+      "id": "W009",
+      "name": "Publication & Sign-Off",
+      "expected_output": "Engineering-reviewed colour-line atlas + sign-off record",
+      "status": "deferred"
+    }
+  ]
+}
