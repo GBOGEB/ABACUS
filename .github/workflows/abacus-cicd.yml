@@ -87,7 +87,7 @@ jobs:
           python ABACUS-v032/artifact_ranking_system.py
       
       - name: Upload Execution Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-execution-reports
           path: |
@@ -138,7 +138,7 @@ jobs:
           tar -czf abacus-v032-artifacts.tar.gz deploy/
       
       - name: Upload to Release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: abacus-v032-release
           path: abacus-v032-artifacts.tar.gz
