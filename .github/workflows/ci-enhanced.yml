@@ -102,7 +102,7 @@ jobs:
           pytest -v -n auto --cov=. --cov-report=term-missing --cov-report=xml --cov-report=html || echo "Tests completed"
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.python-version == '3.11'
         with:
           name: coverage-reports-ubuntu-${{ matrix.python-version }}
@@ -116,7 +116,7 @@ jobs:
           python -m pytest DMAIC_V3/tests/ -v || echo "DMAIC tests completed"
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-ubuntu-py${{ matrix.python-version }}
           path: |
@@ -190,7 +190,7 @@ jobs:
           python -m pytest DMAIC_V3/tests/ -v || echo "DMAIC tests completed"
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-rhel8
           path: |
@@ -262,7 +262,7 @@ jobs:
           python -m pytest DMAIC_V3/tests/ -v || echo "DMAIC tests completed"
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-rhel9
           path: |
