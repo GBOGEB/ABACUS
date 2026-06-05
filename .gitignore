@@ -16,3 +16,6 @@ reports/*.xlsx
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Auto-generated office-doc preview artifacts (HTML/asset renderings of .docx/.pptx)
+*_preview/
