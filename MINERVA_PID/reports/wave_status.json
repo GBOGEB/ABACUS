@@ -1,0 +1,193 @@
+{
+  "schema": "{wave, name, claim, actual{...}, pass, known_gaps[]}",
+  "note": "Normalized Claim != Complete record. 'pass' is true only when output files exist, a validation report exists, runtime counts are recorded here, and known_gaps are listed (see AGENTS.md Governance section 1). All 'actual' numbers are runtime-produced, regenerable via ./make.sh.",
+  "generated_for": "PR2 (W005 reconciliation) on top of PR1 (W001-W004)",
+  "waves": [
+    {
+      "wave": "W001",
+      "name": "Source Ingestion & Style Extraction",
+      "claim": "Both real QCELL/RFCELL SVGs ingested; every drawable element extracted with correct inline-style colour precedence (style wins over attribute).",
+      "actual": {
+        "svgs_ingested": 2,
+        "svg_files": [
+          "data/svg/QCELL.svg",
+          "data/svg/RFCELL.svg"
+        ],
+        "drawable_elements_total": 1888,
+        "drawable_by_source": {
+          "QCELL": 1375,
+          "RFCELL": 513
+        },
+        "shape_breakdown": {
+          "triangle": 670,
+          "line": 374,
+          "path": 239,
+          "dot": 205,
+          "bubble": 162,
+          "arrow": 132,
+          "rect": 106
+        },
+        "text_nodes": 533,
+        "canvas_viewbox": [
+          0,
+          0,
+          1527.2727,
+          1080
+        ]
+      },
+      "validation_report": "reports/W002_colour_line_validation.md (extraction precedence section)",
+      "pass": true,
+      "known_gaps": [
+        "One degenerate transform produces an x-coordinate outlier (~6.9M); mitigated by using viewBox bounds for all extent/quadrant math rather than raw element coords."
+      ]
+    },
+    {
+      "wave": "W002",
+      "name": "Colour Line Decomposition & Validation",
+      "claim": "Every drawable element clustered to nearest canonical colour anchor by RGB distance; seven per-colour process-line files emitted; unmapped reduced.",
+      "actual": {
+        "colour_inventory": "data/model/colour_inventory.json",
+        "line_model": "data/model/line_model.json",
+        "per_colour_line_files": "data/model/lines/*.json",
+        "unmapped_before": 982,
+        "unmapped_after": 112,
+        "collage": "publish/colour_line_collage.html"
+      },
+      "validation_report": "reports/W002_colour_line_validation.md + reports/unmapped_reduction_analysis.md",
+      "pass": true,
+      "known_gaps": [
+        "112 elements remain unmapped (flagged 'unknown', not deleted) \u2014 mostly magenta/other off-legend colours.",
+        "Colour is treated as primary line identity; cross-validation against tag/ISA class is documented but NOT yet automated (see AGENTS.md Governance 3)."
+      ]
+    },
+    {
+      "wave": "W003",
+      "name": "Layer / Mechanical-Section Engine",
+      "claim": "Every colour line and element assigned to a layer in a 13 top-level / 21 named sub-layer hierarchy; assignment is exhaustive (sum-check balances).",
+      "actual": {
+        "top_level_layers": 13,
+        "named_sub_layers": 21,
+        "layer_assignment": "data/model/layer_assignment.json",
+        "layer_sum_check": {
+          "total": 2421,
+          "drawable": 1888,
+          "text": 533,
+          "exact": true,
+          "note": "drawable + text = total, no drops or double-counts. Atlas in-place annotation reports 2425 = 1834 QCELL + 591 RFCELL; the +4 vs 2421 is group-wrapper elements (documented, honest)."
+        },
+        "nomenclature_segments": 33,
+        "scope_boundaries": {
+          "physical": 5,
+          "logical": 5
+        },
+        "handovers": 22,
+        "configs": [
+          "configs/layers.yaml",
+          "configs/isa_classes.json"
+        ]
+      },
+      "validation_report": "reports/W003_W004_combined_report.md + reports/scope_boundary_validation.md",
+      "pass": true,
+      "known_gaps": [
+        "Layer ids are a stability contract (never rename id; use aliases map in configs/layers.yaml). Renames would break downstream references."
+      ]
+    },
+    {
+      "wave": "W004",
+      "name": "Geometry, Arrow Tracing & Sequential Ordering",
+      "claim": "Geometric pairing of text/dots/triangles/arrows to lines; flow topology from arrows + junctions; spec dots catalogued.",
+      "actual": {
+        "paired_elements": "data/model/paired_elements.json",
+        "pairs_total": 752,
+        "pair_breakdown": {
+          "text_to_component": 315,
+          "dots_to_lines": 205,
+          "triangles_to_lines": 100,
+          "arrows_to_lines": 132,
+          "floating_unmatched": 77
+        },
+        "pairing_distance_px": {
+          "median": 25.35,
+          "p90": 355.4,
+          "max": 1040.2
+        },
+        "flow": {
+          "arrows": 132,
+          "junctions": 36
+        },
+        "components_catalogued": 297,
+        "spec_dots": {
+          "S": 40,
+          "V": 10,
+          "B": 2,
+          "uncoloured": 153
+        },
+        "pemo": {
+          "loops": 122,
+          "heat_loads": 60,
+          "file": "data/pemo/ic_system_v1.2.yaml"
+        },
+        "catalog": "reports/COMPONENT_CATALOG.xlsx"
+      },
+      "validation_report": "reports/W003_W004_combined_report.md + reports/text_standardization_report.md",
+      "pass": true,
+      "known_gaps": [
+        "77 elements remain floating (unmatched to any line) \u2014 flagged, not deleted.",
+        "Pairing max distance 1040.2px on a 1527px-wide canvas is almost certainly a wrong pairing; pairs above ~355px (p90) are flagged LOW-CONFIDENCE in the combined report and must not be trusted as ground truth.",
+        "Sequential ordering uses arrow + left-to-right evidence only; lines without arrow evidence keep extraction order (not re-ordered)."
+      ]
+    },
+    {
+      "wave": "W005",
+      "name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
+      "claim": "Cross-reference the auto-catalogued as-drawn instrument tags against the official design nomenclature register; quantify per-tag and per-TYPE coverage delta (matched/missing/extra), cross-validate against ISA classes, and apply documented PPT re-allocations.",
+      "actual": {
+        "design_register": "data/excel/excel_register.json",
+        "design_instrument_tags": 97,
+        "design_prefix_types": 15,
+        "catalog_register": "data/excel/catalog_register.json",
+        "catalog_real_tags": 141,
+        "catalog_template_placeholders": 24,
+        "catalog_prefix_types": 6,
+        "exact_tag_matches": 0,
+        "exact_tag_coverage_pct": 0.0,
+        "missing_in_catalog": 97,
+        "extra_in_catalog": 141,
+        "types_present_in_both": [
+          "CV",
+          "EH",
+          "HV",
+          "PT",
+          "TT"
+        ],
+        "types_missing_from_catalog": [
+          "FT",
+          "FV",
+          "HX",
+          "J",
+          "LE",
+          "LI",
+          "PV",
+          "RD",
+          "SV",
+          "V"
+        ],
+        "types_missing_from_excel": [
+          "LS"
+        ],
+        "ppt_reallocations_applied": 2,
+        "canonical_register": "data/excel/canonical_register_v1.yaml",
+        "catalog_v2": "reports/COMPONENT_CATALOG_v2.xlsx",
+        "coverage_statistics": "reports/W005_coverage_statistics.json"
+      },
+      "validation_report": "reports/W005_validation_report.md",
+      "pass": true,
+      "known_gaps": [
+        "Exact tag overlap is 0: design (circuit-sequential CV001/TT100...) and as-drawn (SVG-instance CV560/TT514...) numbering schemes are orthogonal. A design<->as-drawn engineering cross-map is required for tag-level reconciliation; coverage is therefore reported per instrument TYPE.",
+        "10 design instrument TYPES (FT, FV, HX, J, LE, LI, PV, RD, SV, V) are not represented in the as-drawn catalog because the W003/W004 category sheets covered only CV/EH/HV/LS/PT/TT.",
+        "The 65 MB QSYS instrumentation PPT was not exhaustively machine-parsed (cost); only the two explicitly documented re-allocations (TT535 -> PZ coldest, TT525 -> PZ warmest) are encoded with citations. TT525 is absent from the as-drawn catalog.",
+        "24 RFCELL template placeholders (tags containing a literal x, e.g. TTxxx/EHx11) are flagged non-reconcilable rather than matched."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+tag,prefix,number,meaning,variable,role,is_safety,x,y,layer
+EH514,EH,514,Electric Heater,heat,actuator,False,891.66,955.92,CPLR 1
+TT514,TT,514,Temperature Transmitter,temperature,sensor,False,891.7,965.29,CPLR 1
+TT513,TT,513,Temperature Transmitter,temperature,sensor,False,777.31,902.69,CPLR 1
+EH524,EH,524,Electric Heater,heat,actuator,False,573.69,959.25,EH TT
+TT524,TT,524,Temperature Transmitter,temperature,sensor,False,573.72,968.62,EH TT
+TT523,TT,523,Temperature Transmitter,temperature,sensor,False,688.2,900.77,CPLR 2
+TT535,TT,535,Temperature Transmitter,temperature,sensor,False,494.61,720.33,CPLR circuit
+KW2,KW,2,Connector / coupler,mechanical,annotation,False,913.68,803.26,Namings
+KW1,KW,1,Connector / coupler,mechanical,annotation,False,915.84,750.48,Namings
+AK2,AK,2,Antenna / connector,mechanical,annotation,False,530.28,789.82,Namings
+AK1,AK,1,Antenna / connector,mechanical,annotation,False,530.28,736.67,Namings
+TT536,TT,536,Temperature Transmitter,temperature,sensor,False,877.05,724.82,CPLR circuit
+TT546,TT,546,Temperature Transmitter,temperature,sensor,False,710.21,778.4,CPLR circuit
+TT512,TT,512,Temperature Transmitter,temperature,sensor,False,801.72,683.1,CPLR cuff and port metal
+TT511,TT,511,Temperature Transmitter,temperature,sensor,False,801.93,675.11,CPLR cuff and port metal
+TT522,TT,522,Temperature Transmitter,temperature,sensor,False,663.66,682.96,CPLR cuff and port metal
+TT521,TT,521,Temperature Transmitter,temperature,sensor,False,663.41,674.08,CPLR cuff and port metal
+TT521,TT,521,Temperature Transmitter,temperature,sensor,False,663.42,674.08,CPLR cuff and port metal
+LT551,LT,551,Level Transmitter,level,sensor,False,699.24,548.77,2 K tank
+LT550,LT,550,Level Transmitter,level,sensor,False,774.9,550.25,2 K tank
+LT552,LT,552,Level Transmitter,level,sensor,False,774.92,556.66,2 K tank
+TT515,TT,515,Temperature Transmitter,temperature,sensor,False,832.16,583.67,Instrumentation
+TT516,TT,516,Temperature Transmitter,temperature,sensor,False,832.18,590.88,Instrumentation
+TT526,TT,526,Temperature Transmitter,temperature,sensor,False,637.24,589.17,Instrumentation
+TT526,TT,526,Temperature Transmitter,temperature,sensor,False,637.25,589.16,Instrumentation
+TT517,TT,517,Temperature Transmitter,temperature,sensor,False,868.76,649.74,Instrumentation
+TT517,TT,517,Temperature Transmitter,temperature,sensor,False,868.76,649.73,Instrumentation
+TT557,TT,557,Temperature Transmitter,temperature,sensor,False,656.75,560.39,Instrumentation
+TT557,TT,557,Temperature Transmitter,temperature,sensor,False,656.75,560.38,Instrumentation
+EH520,EH,520,Electric Heater,heat,actuator,False,690.74,654.03,Instrumentation
+TT520,TT,520,Temperature Transmitter,temperature,sensor,False,690.74,661.24,Instrumentation
+EH559,EH,559,Electric Heater,heat,actuator,False,693.6,607.87,Instrumentation
+TT559,TT,559,Temperature Transmitter,temperature,sensor,False,693.6,615.08,Instrumentation
+EH558,EH,558,Electric Heater,heat,actuator,False,772.28,608.43,Instrumentation
+TT558,TT,558,Temperature Transmitter,temperature,sensor,False,772.28,615.65,Instrumentation
+EH510,EH,510,Electric Heater,heat,actuator,False,782.18,654.6,Instrumentation
+TT510,TT,510,Temperature Transmitter,temperature,sensor,False,782.18,661.82,Instrumentation
+MV2,MV,2,Manual / Motorised Valve,control,valve,False,867.95,529.77,Piping and series instrumentation
+MV1,MV,1,Manual / Motorised Valve,control,valve,False,877.54,555.63,Piping and series instrumentation
+SV560,SV,560,Safety / Solenoid Valve,safety,valve,True,1092.39,557.12,Piping and series instrumentation
+SV561,SV,561,Safety / Solenoid Valve,safety,valve,True,1092.5,511.34,Piping and series instrumentation
+TT556,TT,556,Temperature Transmitter,temperature,sensor,False,714.63,620.56,Piping and series instrumentation
+TT509,TT,509,Temperature Transmitter,temperature,sensor,False,758.71,703.12,Piping and series instrumentation
+TT561,TT,561,Temperature Transmitter,temperature,sensor,False,762.15,531.2,Piping and series instrumentation
+CF50,CF,50,CF-flange callout,mechanical,annotation,False,752.91,486.04,Piping and series instrumentation
+EH576,EH,576,Electric Heater,heat,actuator,False,681.31,829.33,EHTT
+TT576,TT,576,Temperature Transmitter,temperature,sensor,False,681.35,838.7,EHTT
+EH575,EH,575,Electric Heater,heat,actuator,False,646.97,827.39,Piping and series instrumentation
+TT575,TT,575,Temperature Transmitter,temperature,sensor,False,647.0,836.76,Piping and series instrumentation
+EH574,EH,574,Electric Heater,heat,actuator,False,563.25,825.29,Piping and series instrumentation
+TT574,TT,574,Temperature Transmitter,temperature,sensor,False,563.28,834.66,Piping and series instrumentation
+EH573,EH,573,Electric Heater,heat,actuator,False,530.48,829.06,Piping and series instrumentation
+TT573,TT,573,Temperature Transmitter,temperature,sensor,False,530.51,838.44,Piping and series instrumentation
+TT579,TT,579,Temperature Transmitter,temperature,sensor,False,437.95,541.27,Piping and series instrumentation
+TT570,TT,570,Temperature Transmitter,temperature,sensor,False,362.05,542.26,Piping and series instrumentation
+TT571,TT,571,Temperature Transmitter,temperature,sensor,False,445.65,835.94,Piping and series instrumentation
+TT577,TT,577,Temperature Transmitter,temperature,sensor,False,717.68,836.13,Piping and series instrumentation
+TT578,TT,578,Temperature Transmitter,temperature,sensor,False,770.5,835.33,Piping and series instrumentation
+TT572,TT,572,Temperature Transmitter,temperature,sensor,False,496.58,836.61,Piping and series instrumentation
+TT581,TT,581,Temperature Transmitter,temperature,sensor,False,471.99,893.08,Piping and series instrumentation
+TT582,TT,582,Temperature Transmitter,temperature,sensor,False,738.77,893.31,Piping and series instrumentation
+PZ-021,PZ,021,Pressure (special / safety),pressure,sensor,True,598.6,619.46,RFCELL 2
+PZ-022,PZ,022,Pressure (special / safety),pressure,sensor,True,598.62,624.27,RFCELL 2
+LS-024,LS,024,Level Switch,level,switch,False,598.63,629.08,RFCELL 2
+LS-021,LS,021,Level Switch,level,switch,False,612.46,573.14,RFCELL 2
+LS-022,LS,022,Level Switch,level,switch,False,612.47,577.95,RFCELL 2
+LS-023,LS,023,Level Switch,level,switch,False,612.49,582.76,RFCELL 2
+TT528,TT,528,Temperature Transmitter,temperature,sensor,False,607.59,594.29,RFCELL 2
+TT529,TT,529,Temperature Transmitter,temperature,sensor,False,607.61,599.11,RFCELL 2
+LS-011,LS,011,Level Switch,level,switch,False,876.79,573.89,RFCELL 1
+LS-012,LS,012,Level Switch,level,switch,False,876.8,578.7,RFCELL 1
+LS-013,LS,013,Level Switch,level,switch,False,876.82,583.51,RFCELL 1
+PZ-011,PZ,011,Pressure (special / safety),pressure,sensor,True,878.42,619.28,RFCELL 1
+PZ-012,PZ,012,Pressure (special / safety),pressure,sensor,True,878.44,624.09,RFCELL 1
+LS-014,LS,014,Level Switch,level,switch,False,878.46,628.9,RFCELL 1
+TT518,TT,518,Temperature Transmitter,temperature,sensor,False,869.67,594.39,RFCELL 1
+TT519,TT,519,Temperature Transmitter,temperature,sensor,False,869.69,599.2,RFCELL 1
+CF100,CF,100,CF-flange callout,mechanical,annotation,False,314.34116040000004,879.7582283843076,INVAC
+CF100,CF,100,CF-flange callout,mechanical,annotation,False,312.97877730000005,813.9356727014721,INVAC
+SV590,SV,590,Safety / Solenoid Valve,safety,valve,True,311.97,621.02,V502
+HL572,HL,572,Heat Load annotation,heat,annotation,False,449.46,863.94,Heat loads
+HL520,HL,520,Heat Load annotation,heat,annotation,False,652.87,668.9,Heat loads
+HL528,HL,528,Heat Load annotation,heat,annotation,False,652.57,660.89,Heat loads
+HL529,HL,529,Heat Load annotation,heat,annotation,False,660.83,641.21,Heat loads
+HL519,HL,519,Heat Load annotation,heat,annotation,False,846.24,639.96,Heat loads
+HL521,HL,521,Heat Load annotation,heat,annotation,False,616.47,637.54,Heat loads
+HL522,HL,522,Heat Load annotation,heat,annotation,False,619.71,612.62,Heat loads
+HL523,HL,523,Heat Load annotation,heat,annotation,False,709.86,625.25,Heat loads
+HL524,HL,524,Heat Load annotation,heat,annotation,False,709.51,643.27,Heat loads
+HL514,HL,514,Heat Load annotation,heat,annotation,False,796.24,643.85,Heat loads
+HL513,HL,513,Heat Load annotation,heat,annotation,False,795.0,624.21,Heat loads
+HL512,HL,512,Heat Load annotation,heat,annotation,False,886.08,612.59,Heat loads
+HL559,HL,559,Heat Load annotation,heat,annotation,False,860.98,518.37,Heat loads
+HL558,HL,558,Heat Load annotation,heat,annotation,False,871.78,542.71,Heat loads
+HL557,HL,557,Heat Load annotation,heat,annotation,False,706.33,562.63,Heat loads
+HL511,HL,511,Heat Load annotation,heat,annotation,False,889.43,637.18,Heat loads
+HL518,HL,518,Heat Load annotation,heat,annotation,False,852.95,660.57,Heat loads
+HL510,HL,510,Heat Load annotation,heat,annotation,False,853.13,668.48,Heat loads
+HL573,HL,573,Heat Load annotation,heat,annotation,False,528.59,865.39,Heat loads
+HL574,HL,574,Heat Load annotation,heat,annotation,False,602.54,865.14,Heat loads
+HL580,HL,580,Heat Load annotation,heat,annotation,False,416.39,497.7,Heat loads
+HL576,HL,576,Heat Load annotation,heat,annotation,False,696.65,864.96,Heat loads
+HL575,HL,575,Heat Load annotation,heat,annotation,False,641.21,864.49,Heat loads
+HL578,HL,578,Heat Load annotation,heat,annotation,False,794.42,864.36,Heat loads
+HL579,HL,579,Heat Load annotation,heat,annotation,False,864.72,864.67,Heat loads
+HL577,HL,577,Heat Load annotation,heat,annotation,False,740.99,864.31,Heat loads
+HL553,HL,553,Heat Load annotation,heat,annotation,False,718.18,535.95,Heat loads
+HL561,HL,561,Heat Load annotation,heat,annotation,False,769.33,539.47,Heat loads
+EH537,EH,537,Electric Heater,heat,actuator,False,1011.96,722.35,Piping and series instrumentation
+TT537,TT,537,Temperature Transmitter,temperature,sensor,False,1011.99,731.72,Piping and series instrumentation
+EH547,EH,547,Electric Heater,heat,actuator,False,1011.9,774.27,Piping and series instrumentation
+TT547,TT,547,Temperature Transmitter,temperature,sensor,False,1011.94,783.65,Piping and series instrumentation
+TT538,TT,538,Temperature Transmitter,temperature,sensor,False,1057.52,729.07,Piping and series instrumentation
+TT548,TT,548,Temperature Transmitter,temperature,sensor,False,1056.22,782.45,Piping and series instrumentation
+PL538,PL,538,Pressure Limiter,pressure,safety,True,1110.96,750.13,CPLR pressure limiter
+PL548,PL,548,Pressure Limiter,pressure,safety,True,1109.03,806.09,CPLR pressure limiter
+HV560,HV,560,Hand (Manual) Valve,control,valve,False,1052.15,619.22,Piping and series instrumentation
+LS560,LS,560,Level Switch,level,switch,False,1012.61,622.66,Piping and series instrumentation
+HV561,HV,561,Hand (Manual) Valve,control,valve,False,1052.36,658.82,Piping and series instrumentation
+LS561,LS,561,Level Switch,level,switch,False,1012.51,665.48,Piping and series instrumentation
+PT560,PT,560,Pressure Transmitter,pressure,sensor,False,1055.03,640.81,Piping and series instrumentation
+PT561,PT,561,Pressure Transmitter,pressure,sensor,False,1013.69,648.88,Piping and series instrumentation
+PT562,PT,562,Pressure Transmitter,pressure,sensor,False,1012.64,633.29,Piping and series instrumentation
+LS562,LS,562,Level Switch,level,switch,False,990.92,420.81,Piping and series instrumentation
+LS563,LS,563,Level Switch,level,switch,False,986.64,413.88,Piping and series instrumentation
+CV560,CV,560,Control Valve,control,valve,False,985.58,394.54,Piping and series instrumentation
+RV560,RV,560,Relief Valve,safety,valve,True,1049.06,409.61,Piping and series instrumentation
+TT596,TT,596,Temperature Transmitter,temperature,sensor,False,1044.36,391.6,Piping and series instrumentation
+FT549,FT,549,Flow Transmitter,flow,sensor,False,1380.02,474.97,Piping and series instrumentation
+FT539,FT,539,Flow Transmitter,flow,sensor,False,1310.55,474.39,Piping and series instrumentation
+CV539,CV,539,Control Valve,control,valve,False,1305.52,513.0,Piping and series instrumentation
+LS538,LS,538,Level Switch,level,switch,False,1273.08,524.4,Piping and series instrumentation
+CV549,CV,549,Control Valve,control,valve,False,1375.24,513.82,Piping and series instrumentation
+LS548,LS,548,Level Switch,level,switch,False,1341.74,526.19,Piping and series instrumentation
+HV539,HV,539,Hand (Manual) Valve,control,valve,False,1305.04,435.75,Piping and series instrumentation
+LS539,LS,539,Level Switch,level,switch,False,1273.03,448.09,Piping and series instrumentation
+HV549,HV,549,Hand (Manual) Valve,control,valve,False,1375.52,436.2,Piping and series instrumentation
+LS549,LS,549,Level Switch,level,switch,False,1343.5,448.54,Piping and series instrumentation
+CF50,CF,50,CF-flange callout,mechanical,annotation,False,752.92,486.04,TC-LB
+SV591,SV,591,Safety / Solenoid Valve,safety,valve,True,299.53,564.84,V
+EH590,EH,590,Electric Heater,heat,actuator,False,317.39,418.23,Vacuum vessel
+TT590,TT,590,Temperature Transmitter,temperature,sensor,False,317.43,427.6,Vacuum vessel
+HX550,HX,550,Heat Exchanger,process,equipment,False,669.89,374.21,Piping and series instrumentation
+CV571,CV,571,Control Valve,control,valve,False,362.7,332.98,Piping and series instrumentation
+CV589,CV,589,Control Valve,control,valve,False,429.89,332.98,Piping and series instrumentation
+TT583,TT,583,Temperature Transmitter,temperature,sensor,False,436.67,433.31,Piping and series instrumentation
+TT586,TT,586,Temperature Transmitter,temperature,sensor,False,442.8,355.01,Piping and series instrumentation
+EH585,EH,585,Electric Heater,heat,actuator,False,453.35,372.27,Piping and series instrumentation
+TT585,TT,585,Temperature Transmitter,temperature,sensor,False,453.38,381.65,Piping and series instrumentation
+EH584,EH,584,Electric Heater,heat,actuator,False,453.68,411.13,Piping and series instrumentation
+TT584,TT,584,Temperature Transmitter,temperature,sensor,False,453.71,420.51,Piping and series instrumentation
+EH589,EH,589,Electric Heater,heat,actuator,False,415.7,284.38,Headers A B C D
+TT589,TT,589,Temperature Transmitter,temperature,sensor,False,415.73,293.75,Headers A B C D
+EH588,EH,588,Electric Heater,heat,actuator,False,507.45,291.57,Headers A B C D
+TT588,TT,588,Temperature Transmitter,temperature,sensor,False,507.48,300.94,Headers A B C D
+TT500,TT,500,Temperature Transmitter,temperature,sensor,False,539.31,224.38,Headers A B C D
+CV501,CV,501,Control Valve,control,valve,False,556.6,409.62,Piping and series instrumentation
+CV500,CV,500,Control Valve,control,valve,False,556.1,304.68,Piping and series instrumentation
+CV551,CV,551,Control Valve,control,valve,False,697.73,409.24,Piping and series instrumentation
+TT550,TT,550,Temperature Transmitter,temperature,sensor,False,701.15,348.39,Piping and series instrumentation
+TT551,TT,551,Temperature Transmitter,temperature,sensor,False,680.57,386.28,Piping and series instrumentation
+SV500,SV,500,Safety / Solenoid Valve,safety,valve,True,234.28,303.29,Piping and series instrumentation
+TT595,TT,595,Temperature Transmitter,temperature,sensor,False,228.57,281.53,Piping and series instrumentation
+SV570,SV,570,Safety / Solenoid Valve,safety,valve,True,154.59,310.84,Piping and series instrumentation
+TT594,TT,594,Temperature Transmitter,temperature,sensor,False,186.33,288.68,Piping and series instrumentation
+CV569,CV,569,Control Valve,control,valve,False,750.44,322.61,Piping and series instrumentation
+TT568,TT,568,Temperature Transmitter,temperature,sensor,False,751.6,355.88,Piping and series instrumentation
+TT567,TT,567,Temperature Transmitter,temperature,sensor,False,751.93,389.53,Piping and series instrumentation
+PT501,PT,501,Pressure Transmitter,pressure,sensor,False,251.14,364.45,Piping and series instrumentation
+HV503,HV,503,Hand (Manual) Valve,control,valve,False,230.34,349.27,Piping and series instrumentation
+LS503,LS,503,Level Switch,level,switch,False,220.05,327.15,Piping and series instrumentation
+HV502,HV,502,Hand (Manual) Valve,control,valve,False,271.41,349.29,Piping and series instrumentation
+LS502,LS,502,Level Switch,level,switch,False,261.11,327.18,Piping and series instrumentation
+PT570,PT,570,Pressure Transmitter,pressure,sensor,False,216.35,444.1,Piping and series instrumentation
+HV571,HV,571,Hand (Manual) Valve,control,valve,False,197.28,430.23,Piping and series instrumentation
+LS571,LS,571,Level Switch,level,switch,False,186.98,408.11,Piping and series instrumentation
+HV570,HV,570,Hand (Manual) Valve,control,valve,False,240.78,430.35,Piping and series instrumentation
+LS570,LS,570,Level Switch,level,switch,False,230.49,408.23,Piping and series instrumentation
+EH592,EH,592,Electric Heater,heat,actuator,False,65.99,409.89,Spare heaters
+TT592,TT,592,Temperature Transmitter,temperature,sensor,False,66.02,419.26,Spare heaters
+EH591,EH,591,Electric Heater,heat,actuator,False,32.23,389.75,Spare heaters
+TT591,TT,591,Temperature Transmitter,temperature,sensor,False,32.26,399.12,Spare heaters
+EH593,EH,593,Electric Heater,heat,actuator,False,35.95,428.64,Spare heaters
+TT593,TT,593,Temperature Transmitter,temperature,sensor,False,35.98,438.02,Spare heaters
+PT568,PT,568,Pressure Transmitter,pressure,sensor,False,820.42,150.25,Instrumentation Pcav Observer
+PT569,PT,569,Pressure Transmitter,pressure,sensor,False,825.22,173.45,Instrumentation Pcav Observer
+HV568,HV,568,Hand (Manual) Valve,control,valve,False,792.14,171.26,Instrumentation Pcav Observer
+LS568,LS,568,Level Switch,level,switch,False,784.0,148.42,Instrumentation Pcav Observer
+HV569,HV,569,Hand (Manual) Valve,control,valve,False,861.56,170.43,Instrumentation Pcav Observer
+LS569,LS,569,Level Switch,level,switch,False,854.49,147.89,Instrumentation Pcav Observer
+PT500,PT,500,Pressure Transmitter,pressure,sensor,False,636.64,150.96,Instrumentation Pcav Observer
+HV500,HV,500,Hand (Manual) Valve,control,valve,False,611.53,174.58,Instrumentation Pcav Observer
+LS500,LS,500,Level Switch,level,switch,False,602.17,151.49,Instrumentation Pcav Observer
+HV501,HV,501,Hand (Manual) Valve,control,valve,False,669.2,174.52,Instrumentation Pcav Observer
+LS501,LS,501,Level Switch,level,switch,False,670.09,151.43,Instrumentation Pcav Observer
+FT500,FT,500,Flow Transmitter,flow,sensor,False,620.83,293.19,Flowmeter for AL
+TT566,TT,566,Temperature Transmitter,temperature,sensor,False,767.26,441.43,Pre-series
+TT569,TT,569,Temperature Transmitter,temperature,sensor,False,768.85,290.34,Pre-series
+CF100,CF,100,CF-flange callout,mechanical,annotation,False,338.16,172.29,INVAC
+CF40,CF,40,CF-flange callout,mechanical,annotation,False,274.764808,463.070363,INVAC
+CV590,CV,590,Control Valve,control,valve,False,47.5,304.0,PeMo-HEGU1
+LS590,LS,590,Level Switch,level,switch,False,15.27,292.24,PeMo-HEGU1
+PT590,PT,590,Pressure Transmitter,pressure,sensor,False,65.83,323.74,PeMo-HEGU1
+HL570,HL,570,Heat Load annotation,heat,annotation,False,383.16,448.26,Heat loads
+HL586,HL,586,Heat Load annotation,heat,annotation,False,380.98,365.33,Heat loads
+HL587,HL,587,Heat Load annotation,heat,annotation,False,450.28,344.46,Heat loads
+HL552,HL,552,Heat Load annotation,heat,annotation,False,718.94,449.64,Heat loads
+HL551,HL,551,Heat Load annotation,heat,annotation,False,718.83,392.56,Heat loads
+HL502,HL,502,Heat Load annotation,heat,annotation,False,611.45,449.37,Heat loads
+HL503,HL,503,Heat Load annotation,heat,annotation,False,612.27,470.92,Heat loads
+HL532,HL,532,Heat Load annotation,heat,annotation,False,522.31,475.97,Heat loads
+HL501,HL,501,Heat Load annotation,heat,annotation,False,576.35,349.63,Heat loads
+HL531,HL,531,Heat Load annotation,heat,annotation,False,522.77,449.54,Heat loads
+HL550,HL,550,Heat Load annotation,heat,annotation,False,665.65,365.31,Heat loads
+HL553,HL,553,Heat Load annotation,heat,annotation,False,718.17,470.22,Heat loads
+HL562,HL,562,Heat Load annotation,heat,annotation,False,769.66,470.26,Heat loads
+HL563,HL,563,Heat Load annotation,heat,annotation,False,769.13,450.4,Heat loads
+HL564,HL,564,Heat Load annotation,heat,annotation,False,769.86,300.4,Heat loads
+HL569,HL,569,Heat Load annotation,heat,annotation,False,522.88,236.92,Heat loads
+HL571,HL,571,Heat Load annotation,heat,annotation,False,381.44,473.78,Heat loads
+HL582,HL,582,Heat Load annotation,heat,annotation,False,419.17,448.69,Heat loads
+HL585,HL,585,Heat Load annotation,heat,annotation,False,416.53,400.32,Heat loads
+HL584,HL,584,Heat Load annotation,heat,annotation,False,416.06,414.21,Heat loads
+HL589,HL,589,Heat Load annotation,heat,annotation,False,506.27,262.1,Heat loads
+HL588,HL,588,Heat Load annotation,heat,annotation,False,482.01,238.62,Heat loads
+HL500,HL,500,Heat Load annotation,heat,annotation,False,489.46,218.94,Heat loads
+HL581,HL,581,Heat Load annotation,heat,annotation,False,416.79,474.49,Heat loads
+HLxxx,HL,xxx,Heat Load annotation,heat,annotation,False,967.48,455.29,Heat loads
+AA00xx,AA,00xx,Analysis / Alarm,analysis,alarm,False,606.36,61.5,Utilities NA.PS
+AA00xx,AA,00xx,Analysis / Alarm,analysis,alarm,False,633.23,62.05,Utilities NA.PS

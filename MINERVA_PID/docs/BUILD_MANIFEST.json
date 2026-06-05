@@ -1,0 +1,107 @@
+{
+  "version": "v6.0",
+  "wave": "W003+W004",
+  "wave_name": "Layer Hierarchy & Geometric Tracing (combined)",
+  "baseline_commit": "5d43a9e",
+  "build_date": "2026-06-04",
+  "toolchain": ["python-stdlib", "cairosvg", "openpyxl"],
+  "project": "MINERVA CryoCell / QCELL & RFCELL P&ID colour-line model",
+  "programme": "Mott MacDonald / SCK CEN / MYRRHA-MINERVA Phase 1",
+  "capabilities": {
+    "legend_based_unmapped_reduction": true,
+    "element_pairing": true,
+    "text_standardization": true,
+    "layer_hierarchy_13_21named": true,
+    "layered_svg_pdf_render": true,
+    "interactive_layered_atlas": true,
+    "geometric_flow_tracing": true,
+    "vertical_letter_nomenclature_parser": true,
+    "component_catalog_excel_html": true,
+    "spec_dot_catalog": true,
+    "scope_boundary_validation": true,
+    "handover_diamond_detection": true,
+    "pemo_yaml_ssot": true,
+    "u_line_recovery": false,
+    "magenta_colour_mapping": false,
+    "floating_arrow_source_binding": false
+  },
+  "statistics": {
+    "total_layers_named": 21,
+    "unmapped_before": 982,
+    "unmapped_reclassified": 870,
+    "unmapped_after": 112,
+    "unmapped_reduction_pct": 88.6,
+    "text_nodes": 533,
+    "text_to_component_pairs": 315,
+    "dots_paired": 205,
+    "heat_load_triangles_paired": 100,
+    "arrows_paired": 132,
+    "arrows_floating": 77,
+    "junctions": 36,
+    "nomenclature_parsed": 33,
+    "components_cataloged": 297,
+    "spec_dots_S": 40,
+    "spec_dots_V": 10,
+    "spec_dots_B": 2,
+    "spec_dots_uncoloured": 153,
+    "handover_diamonds": 22,
+    "w_line_bottom_right_elements": 19,
+    "scope_boundaries_detected": 5,
+    "control_loops": 122,
+    "heat_loads_yaml": 60,
+    "qcell_elements_annotated": 1834,
+    "qcell_layers_used": 14,
+    "rfcell_elements_annotated": 591,
+    "rfcell_layers_used": 12
+  },
+  "outputs": {
+    "models": [
+      "data/model/unmapped_reduction.json",
+      "data/model/paired_elements.json",
+      "data/model/text_standardization.json",
+      "data/model/layer_assignment.json",
+      "data/model/flow_topology.json",
+      "data/model/segment_nomenclature.json",
+      "data/model/spec_dots_catalog.json",
+      "data/model/scope_boundary_validation.json",
+      "data/model/component_line_assignment.json",
+      "data/model/w003_w004_stats.json"
+    ],
+    "pemo": ["data/pemo/ic_system_v1.2.yaml"],
+    "reports": [
+      "reports/unmapped_reduction_analysis.md",
+      "reports/text_standardization_report.md",
+      "reports/scope_boundary_validation.md",
+      "reports/W003_W004_combined_report.md",
+      "reports/COMPONENT_CATALOG.xlsx"
+    ],
+    "publish": [
+      "publish/layered_atlas_v6.html",
+      "publish/component_catalog.html"
+    ],
+    "drawings": [
+      "output_v6/QCELL/QCELL_13layers.svg",
+      "output_v6/QCELL/QCELL_13layers.pdf",
+      "output_v6/RFCELL/RFCELL_13layers.svg",
+      "output_v6/RFCELL/RFCELL_13layers.pdf"
+    ],
+    "docs": [
+      "docs/VERSION_CHANGELOG.md",
+      "docs/BUILD_MANIFEST.json",
+      "docs/CAPABILITY_MATRIX.md",
+      "docs/TODO.md",
+      "docs/GITHUB_PR_PLAN.md"
+    ]
+  },
+  "engines": [
+    "src/abacus_svg_pid/geometry.py",
+    "src/abacus_svg_pid/build_w003_w004.py",
+    "src/abacus_svg_pid/build_catalog.py",
+    "src/abacus_svg_pid/build_atlas_v6.py"
+  ],
+  "reproduction": [
+    "PYTHONPATH=src python3 -m abacus_svg_pid.build_w003_w004",
+    "PYTHONPATH=src python3 -m abacus_svg_pid.build_catalog",
+    "PYTHONPATH=src python3 -m abacus_svg_pid.build_atlas_v6"
+  ]
+}

@@ -1,0 +1,78 @@
+line_class,start,layer,dash,width
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(-10.0, 0.0)",(root),none,1pt
+B,"(-10.69, -4.44)",(root),none,0.625
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(-10.69, -4.44)",(root),none,0.625
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.69, -4.44)",(root),none,0.625
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(676.49, 698.41)",CPLR water loops,none,1
+A,"(676.49, 836.99)",CPLR water loops,none,1
+A,"(758.32, 698.78)",CPLR water loops,none,1
+A,"(758.32, 836.99)",CPLR water loops,none,1
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(755.97, 837.13)",Tubes for FREIA,none,1
+WATER,"(678.78, 837.13)",Tubes for FREIA,none,1
+WATER,"(530.51, 958.57)",Green pipes,none,1
+WATER,"(530.51, 933.61)",Green pipes,none,1
+WATER,"(530.51, 917.86)",Green pipes,none,1
+WATER,"(530.51, 974.11)",Green pipes,none,1
+E,"(-10.69, -4.44)",(root),none,0.625
+E,"(-10.0, 0.0)",(root),none,1pt
+D,"(1.96, 0.0)",(root),none,1pt
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.69, -4.44)",(root),none,0.625
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.69, -4.44)",(root),none,0.625
