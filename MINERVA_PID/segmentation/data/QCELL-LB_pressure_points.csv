@@ -1,0 +1,31 @@
+tag,value,meaning,x,y,layer,source_text
+,31 mbar,,791.86,587.11,2 K tank,31 mbar @2K1250 mbar @4K (LTU)1070 mbar @4K (FREIA)
+,1250 mbar,,791.86,587.11,2 K tank,31 mbar @2K1250 mbar @4K (LTU)1070 mbar @4K (FREIA)
+,1070 mbar,,791.86,587.11,2 K tank,31 mbar @2K1250 mbar @4K (LTU)1070 mbar @4K (FREIA)
+PZ-021,,Pressure (special / safety),598.6,619.46,RFCELL 2,
+PZ-022,,Pressure (special / safety),598.62,624.27,RFCELL 2,
+PZ-011,,Pressure (special / safety),878.42,619.28,RFCELL 1,
+PZ-012,,Pressure (special / safety),878.44,624.09,RFCELL 1,
+PL538,,Pressure Limiter,1110.96,750.13,CPLR pressure limiter,
+PL548,,Pressure Limiter,1109.03,806.09,CPLR pressure limiter,
+,1.15 bar,,1122.22,718.02,CPLR pressure limiter,"Pressure limiter
+1.15 bar"
+,1.15 bar,,1122.22,772.76,CPLR pressure limiter,"Pressure limiter
+1.15 bar"
+PT560,,Pressure Transmitter,1055.03,640.81,Piping and series instrumentation,
+PT561,,Pressure Transmitter,1013.69,648.88,Piping and series instrumentation,
+PT562,,Pressure Transmitter,1012.64,633.29,Piping and series instrumentation,
+,3 bar,,972.51,216.84,Naming and conditions,4.5 K; 3 bar
+,27 mbar,,981.07,234.56,Naming and conditions,3.5 K; 27 mbar
+,28 mbar,,715.37,240.22,Naming and conditions,Spec 28 mbar
+,14 bar,,972.51,252.28,Naming and conditions,40 K; 14 bar
+,13 bar,,972.51,269.99,Naming and conditions,60 K; 13 bar
+PT501,,Pressure Transmitter,251.14,364.45,Piping and series instrumentation,
+PT570,,Pressure Transmitter,216.35,444.1,Piping and series instrumentation,
+PT568,,Pressure Transmitter,820.42,150.25,Instrumentation Pcav Observer,
+PT569,,Pressure Transmitter,825.22,173.45,Instrumentation Pcav Observer,
+PT500,,Pressure Transmitter,636.64,150.96,Instrumentation Pcav Observer,
+PT590,,Pressure Transmitter,65.83,323.74,PeMo-HEGU1,
+,1.15 bar,,8.69,102.47,He guard,He guard header292 K; 1.15 bar
+,1.05 bar,,1423.15,117.73,W,292 K; 1.05 bar
+,1.05 bar,,1429.77,101.71,Piping,2-292 K; 1.05 bar

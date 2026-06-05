@@ -1,0 +1,43 @@
+label,kind,x,y,layer
+CPLR.1,Coupler,785.19,930.54,CPLR 1
+CPLR.2,Coupler,672.11,931.08,CPLR 2
+K1,Connector/Coupler node,828.38,732.92,Namings
+K2,Connector/Coupler node,650.76,786.07,Namings
+CPLR.B,Coupler,636.1,769.87,Namings
+CPLR.A,Coupler,816.41,768.31,Namings
+CAV.2,Cavity,644.04,631.81,2 K tank
+CAV.1,Cavity,819.46,632.83,2 K tank
+TUN.A,Tuner,754.32,879.64,Piping and series instrumentation
+CWT.B,Cooling Water Tank,492.26,879.64,Piping and series instrumentation
+CAV.B,Cavity,552.91,875.89,Piping and series instrumentation
+CAV.A,Cavity,650.07,875.89,Piping and series instrumentation
+TUN.B,Tuner,439.11,879.55,Piping and series instrumentation
+CWT.A,Cooling Water Tank,701.17,879.64,Piping and series instrumentation
+RAD,Radiation shield,608.88,875.58,Piping and series instrumentation
+PICKUP-021,Pickup antenna,644.93,604.57,RFCELL 2
+PICKUP-011,Pickup antenna,821.49,604.43,RFCELL 1
+V502,Vessel / Valve body,257.33,618.66,V502
+TP#101,Terminal Point,770.21,505.85,Terminal points
+TP#102,Terminal Point,657.61,502.52,Terminal points
+TP#104,Terminal Point,305.76,533.24,Terminal points
+TP#105,Terminal Point,452.13,536.94,Terminal points
+TP#103,Terminal Point,511.65,503.06,Terminal points
+TP#401,Terminal Point,735.9,759.71,Terminal points
+TP#402,Terminal Point,556.03,774.57,Terminal points
+TP#404,Terminal Point,705.58,782.22,Terminal points
+TP#403,Terminal Point,862.7,762.94,Terminal points
+TP#501,Terminal Point,916.27,723.39,Terminal points
+TP#502,Terminal Point,913.63,777.42,Terminal points
+TP#106,Terminal Point,600.4,518.77,Terminal points
+TP#201,Terminal Point,372.19,895.47,Terminal points
+TP#202,Terminal Point,904.56,871.3,Terminal points
+TP#303,Terminal Point,877.41,684.13,Terminal points
+TP#304,Terminal Point,599.2,723.18,Terminal points
+TP#302,Terminal Point,538.28,685.17,Terminal points
+TP#603,Terminal Point,756.4,712.31,Terminal points
+TP#604,Terminal Point,674.6,722.37,Terminal points
+TP#301,Terminal Point,831.78,708.49,Terminal points
+TP#602,Terminal Point,625.54,551.51,Terminal points
+TP#601,Terminal Point,809.68,543.05,Terminal points
+V503,Vessel / Valve body,245.72,561.87,V
+V501,Vessel / Valve body,1155.71,188.88,V501
