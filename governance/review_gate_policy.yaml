@@ -1,0 +1,9 @@
+review_gates:
+  gate_1:
+    name: Technical Review
+  gate_2:
+    name: Contract Review
+  gate_3:
+    name: Procurement Review
+  gate_4:
+    name: Publish Approval

@@ -14,7 +14,7 @@ jobs:
     name: Validate Dashboards
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Check all dashboard HTML files exist
         id: check_files
@@ -117,7 +117,7 @@ jobs:
         if: >
           steps.check_files.outputs.missing_count != '0' ||
           steps.link_check.outputs.broken_links != '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const missing = '${{ steps.check_files.outputs.missing_count }}';
