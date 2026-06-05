@@ -1,0 +1,5 @@
+pr_control:
+  required_reviewers: 1
+  require_ssot_traceability: true
+  require_rtm_reference: true
+  require_management_review: true
