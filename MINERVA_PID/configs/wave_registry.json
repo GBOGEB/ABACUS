@@ -1,0 +1,64 @@
+{
+  "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
+  "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
+  "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
+  "current_wave": "W006",
+  "waves": [
+    {
+      "id": "W001",
+      "name": "Source Ingestion & Style Extraction",
+      "expected_output": "data/svg/*.svg copied from real sources; element/colour/style extraction with correct inline-style precedence",
+      "status": "complete"
+    },
+    {
+      "id": "W002",
+      "name": "Colour Line Decomposition & Validation",
+      "expected_output": "data/model/colour_inventory.json, data/model/line_model.json, data/model/lines/*.json, reports/W002_colour_line_validation.md, publish/colour_line_collage.html",
+      "status": "active"
+    },
+    {
+      "id": "W003",
+      "name": "Layer / Mechanical-Section Engine",
+      "expected_output": "Per-section (QM / Jumper / QVB / QINFRA) layer assignment for every colour line",
+      "status": "complete"
+    },
+    {
+      "id": "W004",
+      "name": "Geometry, Arrow Tracing & Sequential Ordering",
+      "expected_output": "arrows_detected + sequential_components per line (currently DEFERRED_W004 placeholders)",
+      "status": "complete"
+    },
+    {
+      "id": "W005",
+      "name": "Tag & Instrument Register Reconciliation (XLSX coverage delta)",
+      "expected_output": "Reconcile the 297 auto-catalogued components against the official tag/instrument register (XLSX); report coverage delta (matched / false-positive / missing) + nomenclature reconciliation; cross-validate colour-derived line identity against ISA tag class (configs/isa_classes.json)",
+      "status": "complete",
+      "priority": "HIGH",
+      "note": "Swapped to first position per engineering review \u2014 this is the question a reviewer asks first. Interactive viewer moved to W006. [W005 delivered: 0 exact-tag overlap is a real finding \u2014 design & as-drawn schemes orthogonal; coverage reported per TYPE. See reports/W005_XLSX_RECONCILIATION_REPORT.md]"
+    },
+    {
+      "id": "W006",
+      "name": "Interactive Layered Viewer",
+      "expected_output": "Interactive layered viewer beyond static atlas HTML: layer toggling, colour-line isolation, click-through component inspection",
+      "status": "deferred"
+    },
+    {
+      "id": "W007",
+      "name": "CI Workflow + Cross-Drawing / Temperature Annotation",
+      "expected_output": "CI (GitHub Actions) running ./make.sh + tests on push; cross-drawing QCELL<->RFCELL identity reconciliation; 4.5 K / 2 K / warm classification per segment",
+      "status": "deferred"
+    },
+    {
+      "id": "W008",
+      "name": "Round-Trip Reassembly",
+      "expected_output": "Recompose isolated colour lines back into the full P&ID without loss of meaning",
+      "status": "deferred"
+    },
+    {
+      "id": "W009",
+      "name": "Publication & Sign-Off",
+      "expected_output": "Engineering-reviewed colour-line atlas + sign-off record",
+      "status": "deferred"
+    }
+  ]
+}
