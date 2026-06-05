@@ -1,0 +1,5 @@
+ci_cd:
+  require_yaml_validation: true
+  require_ssot_traceability: true
+  require_review_artifacts: true
+  deployment_mode: controlled

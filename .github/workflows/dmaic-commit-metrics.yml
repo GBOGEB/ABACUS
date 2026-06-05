@@ -30,11 +30,11 @@ jobs:
       escalate:      ${{ steps.metrics.outputs.escalate }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0   # full history for commit-level metrics
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -259,7 +259,7 @@ jobs:
     if: needs.collect-metrics.outputs.escalate == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Read metrics
         id: read
@@ -268,7 +268,7 @@ jobs:
           echo "quality_score=$QS" >> "$GITHUB_OUTPUT"
 
       - name: Open escalation issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const qs      = '${{ needs.collect-metrics.outputs.quality_score }}';
@@ -320,7 +320,7 @@ jobs:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify deployed pages & collect post-deploy signal
         run: |

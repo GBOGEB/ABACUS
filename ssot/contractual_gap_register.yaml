@@ -1,0 +1,13 @@
+contractual_gaps:
+  - id: CG-01
+    title: Recovery buffering philosophy undefined
+  - id: CG-02
+    title: Purification sizing basis undefined
+  - id: CG-03
+    title: Warm-up responsibility boundary undefined
+  - id: CG-04
+    title: Abnormal-event philosophy undefined
+  - id: CG-05
+    title: Line S design pressure undefined
+  - id: CG-06
+    title: Line W design pressure undefined
