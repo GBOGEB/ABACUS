@@ -1,0 +1,133 @@
+{
+  "wave": "W005",
+  "n_excel_design_tags": 97,
+  "n_catalog_real_tags": 141,
+  "n_catalog_template_placeholders": 24,
+  "n_exact_matches": 0,
+  "n_missing_in_catalog": 97,
+  "n_extra_in_catalog": 141,
+  "exact_tag_coverage_pct": 0.0,
+  "design_types_count": 15,
+  "catalog_types_count": 6,
+  "types_present_in_both": [
+    "CV",
+    "EH",
+    "HV",
+    "PT",
+    "TT"
+  ],
+  "types_missing_from_catalog": [
+    "FT",
+    "FV",
+    "HX",
+    "J",
+    "LE",
+    "LI",
+    "PV",
+    "RD",
+    "SV",
+    "V"
+  ],
+  "types_missing_from_excel": [
+    "LS"
+  ],
+  "per_type": {
+    "CV": {
+      "excel_count": 12,
+      "catalog_count": 10,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "EH": {
+      "excel_count": 6,
+      "catalog_count": 22,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "FT": {
+      "excel_count": 2,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "FV": {
+      "excel_count": 9,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "HV": {
+      "excel_count": 6,
+      "catalog_count": 12,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "HX": {
+      "excel_count": 1,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "J": {
+      "excel_count": 1,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "LE": {
+      "excel_count": 1,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "LI": {
+      "excel_count": 1,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "LS": {
+      "excel_count": 0,
+      "catalog_count": 25,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "PT": {
+      "excel_count": 9,
+      "catalog_count": 9,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "PV": {
+      "excel_count": 1,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "RD": {
+      "excel_count": 2,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "SV": {
+      "excel_count": 6,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "TT": {
+      "excel_count": 37,
+      "catalog_count": 63,
+      "type_present_in_catalog": true,
+      "exact_tag_coverage_pct": 0.0
+    },
+    "V": {
+      "excel_count": 3,
+      "catalog_count": 0,
+      "type_present_in_catalog": false,
+      "exact_tag_coverage_pct": 0.0
+    }
+  },
+  "reallocations_applied": 2
+}

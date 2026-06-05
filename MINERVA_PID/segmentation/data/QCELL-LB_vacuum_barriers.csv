@@ -1,0 +1,6 @@
+type,text,layer,dash,x,y,start
+label,vacuum barrier,Vacuum vessel,,888.01,448.33,
+dashed-boundary,,Vacuum vessel,"2.5, 2.5",,,"(676.61, 912.04)"
+dashed-boundary,,Vacuum vessel,"2.5, 2.5",,,"(354.53, 483.72)"
+dashed-boundary,,Vacuum vessel,"2.5, 2.5",,,"(1015.38, 197.35)"
+dashed-boundary,,Vacuum vessel,"5.57767, 2.78884, 1.39441, 2.78884",,,"(933.57, 453.7)"
