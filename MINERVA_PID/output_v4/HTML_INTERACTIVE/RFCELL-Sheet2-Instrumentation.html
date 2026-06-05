@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RFCELL (ACR) - Instrumentation & Control | MINERVA P&amp;ID v4</title>
+<link rel="stylesheet" href="css/viewer.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <span class="title">MINERVA CryoCell P&amp;ID <small>v4.0</small></span>
+      <span class="title">&nbsp;|&nbsp; RFCELL (ACR) &mdash; Instrumentation & Control</span>
+      <span class="spacer"></span>
+      <span class="seg">
+        <button class="btn small" data-style="STANDARD">Standard</button>
+        <button class="btn small" data-style="CONTROL-CENTRIC">Control-centric</button>
+      </span>
+      <button class="btn small" id="btnMono">Mono: OFF</button>
+      <button class="btn small" id="btnPng">Export PNG</button>
+      <a class="btn small" href="index.html">&larr; All sheets</a>
+    </div>
+    <aside class="sidebar">
+      <div class="section">
+        <h4>Preset views</h4>
+        <div class="seg">
+          <button class="btn small" data-view="DEFAULT_FULL">Full</button>
+          <button class="btn small" data-view="DEFAULT_PROCESS">Process</button>
+          <button class="btn small" data-view="DEFAULT_CONTROL">Control</button>
+          <button class="btn small" data-view="DEFAULT_MAIN">Main</button>
+          <button class="btn small" data-view="PRINT_MONO">Print/mono</button>
+        </div>
+      </div>
+      <div class="section">
+        <h4>Find a tag</h4>
+        <div class="search">
+          <input id="searchInput" placeholder="e.g. CV500, TT, 2K PRIMARY, TP" />
+          <button class="btn small" id="searchBtn">Go</button>
+          <button class="btn small" id="searchClear">x</button>
+        </div>
+        <div id="searchResults"></div>
+      </div>
+      <div class="section">
+        <h4>Layers</h4>
+        <div id="layerPanel"></div>
+        <p class="legendNote">Amber labels are hidden by default (overlays).
+        Toggle <b>Legend</b> for the colour/signal key, and
+        <b>Horizontal valve overlay</b> for the tracked-asset valve row.</p>
+      </div>
+    </aside>
+    <main class="stage" id="stage">
+      <div class="canvasWrap" id="canvasWrap"></div>
+      <div class="zoomctl">
+        <button class="btn" id="btnZin">+</button>
+        <button class="btn" id="btnZout">&minus;</button>
+        <button class="btn" id="btnFit" title="Fit">&#9633;</button>
+      </div>
+      <div class="hint">Scroll to <b>zoom</b>, drag to <b>pan</b>.
+      <span class="kbd">Fit</span> resets. Search highlights &amp; jumps to a tag.</div>
+    </main>
+  </div>
+  <script>window.SHEET = { base: "RFCELL-Sheet2-Instrumentation", dir: "assets",
+    title: "RFCELL (ACR) - Instrumentation & Control" };</script>
+  <script src="js/pid-viewer.js"></script>
+  <script src="js/search.js"></script>
+</body>
+</html>
