@@ -1,0 +1,337 @@
+{
+  "realloc": {
+    "QCELL-LB": [
+      [
+        "TT535",
+        "PZ535",
+        "TT-CX",
+        "coldest part of Piezo (PZ)"
+      ]
+    ],
+    "RFCELL": []
+  },
+  "scope_codes": {
+    "QCELL-LB": [
+      [
+        "TP-G1001",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1002",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-H1001",
+        "H",
+        "HVAC",
+        "Terminal points"
+      ],
+      [
+        "TP-G1003",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1004",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1005",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-E1001",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TP-G1006",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1007",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-E1002",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TP-E1003",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TP-G1008",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1009",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1010",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1011",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-E1004",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TP-E1005",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TP-G1012",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1013",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-G1014",
+        "G",
+        "Compressed gasses",
+        "Terminal points"
+      ],
+      [
+        "TP-L1001",
+        "L",
+        "Liquid waste",
+        "Terminal points"
+      ],
+      [
+        "TP-L1002",
+        "L",
+        "Liquid waste",
+        "Terminal points"
+      ]
+    ],
+    "RFCELL": []
+  },
+  "mag_coupler": [
+    [
+      "TT-CX",
+      "MAG cold port",
+      "TT-CX on MAG (cold)"
+    ],
+    [
+      "TT-PT100",
+      "MAG warm port",
+      "TT-PT100 on MAG (warm)"
+    ],
+    [
+      "TT-CX",
+      "Coupler port (cold)",
+      "TT-CX coupler thermalisation"
+    ],
+    [
+      "TT-PT100",
+      "Coupler port (warm)",
+      "TT-PT100 coupler thermalisation"
+    ]
+  ],
+  "layer_names": [
+    "00_Background_TitleBlock",
+    "01_Scope_Boundaries",
+    "02_Structure_Reference",
+    "02C_Zone_Bands",
+    "03_Equipment_Vessels",
+    "04A_Piping_PRIMARY_40K",
+    "04B_Piping_BRANCHES_40K",
+    "04E_Piping_PRIMARY_60K",
+    "04F_Piping_BRANCHES_60K",
+    "05A_Piping_PRIMARY_4p5K",
+    "05B_Piping_BRANCHES_4p5K",
+    "06A_Piping_PRIMARY_2K",
+    "06B_Piping_BRANCHES_2K",
+    "07_Piping_SECONDARY_Water",
+    "08_Piping_OUTSIDE_SCOPE",
+    "09_Valves_Mechanical",
+    "08B_Valves_HORIZONTAL_OVERLAY",
+    "10_Signals_Pneumatic",
+    "11_Signals_Electric",
+    "12_Signals_Hydraulic",
+    "13_Instruments_Sensors",
+    "14_Instruments_Control_DIS",
+    "04C_Piping_LINENAMES",
+    "04D_Piping_LINE_LABELS",
+    "04G_Flow_Arrows",
+    "02B_TerminalPoints_EDGE",
+    "15_Temperature_Gradient",
+    "12_Tags_Instruments",
+    "16_Legend_INTERACTIVE",
+    "17_Notes_TOGGLEABLE"
+  ],
+  "default_views": {
+    "DEFAULT_FULL": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "02B_TerminalPoints_EDGE",
+      "02C_Zone_Bands",
+      "02_Structure_Reference",
+      "03_Equipment_Vessels",
+      "04A_Piping_PRIMARY_40K",
+      "04B_Piping_BRANCHES_40K",
+      "04C_Piping_LINENAMES",
+      "04D_Piping_LINE_LABELS",
+      "04E_Piping_PRIMARY_60K",
+      "04F_Piping_BRANCHES_60K",
+      "04G_Flow_Arrows",
+      "05A_Piping_PRIMARY_4p5K",
+      "05B_Piping_BRANCHES_4p5K",
+      "06A_Piping_PRIMARY_2K",
+      "06B_Piping_BRANCHES_2K",
+      "07_Piping_SECONDARY_Water",
+      "08_Piping_OUTSIDE_SCOPE",
+      "09_Valves_Mechanical",
+      "10_Signals_Pneumatic",
+      "11_Signals_Electric",
+      "12_Signals_Hydraulic",
+      "12_Tags_Instruments",
+      "13_Instruments_Sensors",
+      "14_Instruments_Control_DIS",
+      "15_Temperature_Gradient",
+      "16_Legend_INTERACTIVE"
+    ],
+    "DEFAULT_PROCESS": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "02B_TerminalPoints_EDGE",
+      "02C_Zone_Bands",
+      "02_Structure_Reference",
+      "03_Equipment_Vessels",
+      "04A_Piping_PRIMARY_40K",
+      "04B_Piping_BRANCHES_40K",
+      "04C_Piping_LINENAMES",
+      "04D_Piping_LINE_LABELS",
+      "04E_Piping_PRIMARY_60K",
+      "04F_Piping_BRANCHES_60K",
+      "04G_Flow_Arrows",
+      "05A_Piping_PRIMARY_4p5K",
+      "05B_Piping_BRANCHES_4p5K",
+      "06A_Piping_PRIMARY_2K",
+      "06B_Piping_BRANCHES_2K",
+      "07_Piping_SECONDARY_Water",
+      "08_Piping_OUTSIDE_SCOPE",
+      "09_Valves_Mechanical",
+      "12_Tags_Instruments",
+      "13_Instruments_Sensors"
+    ],
+    "DEFAULT_CONTROL": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "03_Equipment_Vessels",
+      "08_Piping_OUTSIDE_SCOPE",
+      "10_Signals_Pneumatic",
+      "11_Signals_Electric",
+      "12_Signals_Hydraulic",
+      "12_Tags_Instruments",
+      "13_Instruments_Sensors",
+      "14_Instruments_Control_DIS"
+    ],
+    "DEFAULT_MAIN": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "02B_TerminalPoints_EDGE",
+      "02C_Zone_Bands",
+      "03_Equipment_Vessels",
+      "04A_Piping_PRIMARY_40K",
+      "04C_Piping_LINENAMES",
+      "04D_Piping_LINE_LABELS",
+      "04E_Piping_PRIMARY_60K",
+      "04G_Flow_Arrows",
+      "05A_Piping_PRIMARY_4p5K",
+      "06A_Piping_PRIMARY_2K",
+      "07_Piping_SECONDARY_Water",
+      "09_Valves_Mechanical",
+      "12_Tags_Instruments",
+      "15_Temperature_Gradient"
+    ],
+    "VIEW_MAINLINES_ONLY": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "02B_TerminalPoints_EDGE",
+      "02C_Zone_Bands",
+      "03_Equipment_Vessels",
+      "04A_Piping_PRIMARY_40K",
+      "04C_Piping_LINENAMES",
+      "04D_Piping_LINE_LABELS",
+      "04E_Piping_PRIMARY_60K",
+      "04G_Flow_Arrows",
+      "05A_Piping_PRIMARY_4p5K",
+      "06A_Piping_PRIMARY_2K",
+      "07_Piping_SECONDARY_Water",
+      "12_Tags_Instruments",
+      "15_Temperature_Gradient"
+    ],
+    "PRINT_MONO": [
+      "00_Background_TitleBlock",
+      "01_Scope_Boundaries",
+      "02B_TerminalPoints_EDGE",
+      "02C_Zone_Bands",
+      "02_Structure_Reference",
+      "03_Equipment_Vessels",
+      "04A_Piping_PRIMARY_40K",
+      "04B_Piping_BRANCHES_40K",
+      "04C_Piping_LINENAMES",
+      "04D_Piping_LINE_LABELS",
+      "04E_Piping_PRIMARY_60K",
+      "04F_Piping_BRANCHES_60K",
+      "04G_Flow_Arrows",
+      "05A_Piping_PRIMARY_4p5K",
+      "05B_Piping_BRANCHES_4p5K",
+      "06A_Piping_PRIMARY_2K",
+      "06B_Piping_BRANCHES_2K",
+      "07_Piping_SECONDARY_Water",
+      "08_Piping_OUTSIDE_SCOPE",
+      "09_Valves_Mechanical",
+      "10_Signals_Pneumatic",
+      "11_Signals_Electric",
+      "12_Signals_Hydraulic",
+      "12_Tags_Instruments",
+      "13_Instruments_Sensors",
+      "14_Instruments_Control_DIS",
+      "15_Temperature_Gradient",
+      "16_Legend_INTERACTIVE"
+    ]
+  }
+}
