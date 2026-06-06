@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abacus-svg-pid"
+version = "1.0.0"
+description = "MINERVA QCELL/RFCELL P&ID — SVG-driven colour-line model, layered atlas, component catalog and tag/instrument reconciliation (W001–W005)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Proprietary" }
+authors = [{ name = "ABACUS / MINERVA P&ID team" }]
+keywords = ["P&ID", "SVG", "MINERVA", "QCELL", "RFCELL", "engineering-drawings"]
+
+# Stdlib-first design: only the packages actually imported by the source tree
+# are declared. Lower bounds match the validated versions in requirements.txt;
+# use requirements.txt for the exact, reproducible pin set.
+dependencies = [
+    "openpyxl>=3.1.5",   # XLSX catalog + W005 register
+    "PyYAML>=6.0.2",     # YAML colour/layer model
+    "cairosvg>=2.9.0",   # SVG rasterisation (atlas, collage)
+]
+
+[project.optional-dependencies]
+# Auxiliary slide-deck / preview tooling under generator/ and standards/.
+# Not required by the core make.sh pipeline.
+deck = [
+    "Pillow>=10.4.0",
+    "python-pptx>=1.0.2",
+]
+
+[project.urls]
+"Pull Request" = "https://github.com/GBOGEB/ABACUS/pull/546"
+"Repository" = "https://github.com/GBOGEB/ABACUS"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["abacus_svg_pid*"]
