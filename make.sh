@@ -61,6 +61,13 @@ run python3 -m abacus_svg_pid.build_catalog
 run python3 -m abacus_svg_pid.build_w005
 
 # ---------------------------------------------------------------------------
+# 3c. W006 — Design <-> As-Drawn tag cross-map (reads the W005 registers above)
+#     Builds a confidence-scored bidirectional map between the design register
+#     (circuit-sequential) and the as-drawn catalog (SVG-instance) tags.
+# ---------------------------------------------------------------------------
+run python3 -m abacus_svg_pid.build_w006_crossmap
+
+# ---------------------------------------------------------------------------
 # 4. Layered atlas v6 (per-source 13-layer SVG/PDF + HTML)
 # ---------------------------------------------------------------------------
 run python3 -m abacus_svg_pid.build_atlas_v6
@@ -69,6 +76,12 @@ run python3 -m abacus_svg_pid.build_atlas_v6
 # 5. Colour-line collage (W002 publish deliverable)
 # ---------------------------------------------------------------------------
 run python3 src/abacus_svg_pid/render_collage.py
+
+# ---------------------------------------------------------------------------
+# 6. Interactive cross-map viewer (W006 Option B -- SCAFFOLD/WIP)
+#    Depends on the W006 crossmap (step 3c) and the atlas SVG (step 4).
+# ---------------------------------------------------------------------------
+run python3 -m abacus_svg_pid.build_viewer
 
 echo ""
 echo "=========================================================================="
