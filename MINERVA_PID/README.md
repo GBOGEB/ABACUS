@@ -23,6 +23,25 @@ PYTHONPATH=src python3 tests/test_w005_reconciliation.py    # W005 (after make.s
 
 Verified: fresh `make.sh` exit 0 → **31/31 tests pass**.
 
+## Setup & dependencies
+
+The pipeline is **stdlib-first** — only three packages are required for the core
+`make.sh` regeneration (`openpyxl`, `PyYAML`, `cairosvg`), plus two optional ones
+for the slide-deck / preview tooling (`Pillow`, `python-pptx`).
+
+```bash
+sudo apt-get install -y libcairo2   # native dep for CairoSVG (see SYSTEM_DEPENDENCIES.md)
+pip install -r requirements.txt     # exact reproducible pins
+```
+
+- **Exact pins:** [`requirements.txt`](requirements.txt)
+- **Packaging metadata / optional extras:** [`pyproject.toml`](pyproject.toml)
+- **Native system libraries:** [`SYSTEM_DEPENDENCIES.md`](SYSTEM_DEPENDENCIES.md)
+- **Step-by-step guide:** [`docs/INSTALLATION.md`](docs/INSTALLATION.md)
+
+These manifests also feed GitHub's dependency graph / Dependabot
+(`/MINERVA_PID` pip ecosystem) so the subproject is tracked for security updates.
+
 ## Waves delivered
 
 | Wave | Scope |
