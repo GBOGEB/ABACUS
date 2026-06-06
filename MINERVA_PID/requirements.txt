@@ -13,7 +13,7 @@
 
 # --- Core pipeline (required by make.sh: cli.py -> build_w005 -> build_atlas_v6) ---
 openpyxl==3.1.5          # XLSX component catalog + W005 tag/instrument register
-PyYAML==6.0.2            # configs/*.yml colour-line + layer model loading
+PyYAML==6.0.3            # configs/*.yml colour-line + layer model loading
 cairosvg==2.9.0          # SVG -> PNG/PDF rasterisation (atlas v6, collage)
 
 # --- Auxiliary deck / preview generators (generator/, standards/) -------------
