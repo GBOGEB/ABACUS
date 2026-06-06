@@ -2,7 +2,7 @@
   "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
   "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
   "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
-  "current_wave": "W006",
+  "current_wave": "W008",
   "waves": [
     {
       "id": "W001",
@@ -53,9 +53,11 @@
     },
     {
       "id": "W008",
-      "name": "Round-Trip Reassembly",
-      "expected_output": "Recompose isolated colour lines back into the full P&ID without loss of meaning",
-      "status": "deferred"
+      "name": "Interactive Viewer Enhancement",
+      "expected_output": "Production-ready single-file interactive design<->as-drawn cross-map viewer (build_viewer.py -> publish/interactive_viewer.html) completing W006 Option B: bidirectional tag<->SVG highlighting, confidence-based triage workflow, per-layer show/hide + export, side-by-side QCELL/RFCELL comparison, design<->as-drawn toggle, search, 21-layer tree, zoom/pan, deep-link URL state.",
+      "status": "complete",
+      "priority": "HIGH",
+      "note": "Completes the W006 Interactive UI Plan (docs/W006_INTERACTIVE_UI_PLAN.md). All five core features delivered as a self-contained HTML file (no build step). 97 design / 141 as-drawn rows; 43 mapped (0 HIGH / 39 MEDIUM / 4 LOW); 54 unmapped. 141 hit-testable SVG markers (139 QCELL / 2 RFCELL) injected from catalog x/y in the shared viewBox. Triage decisions persist in localStorage and export as triage_decisions.json for KNOWN_SEEDS feedback (heuristic map stays read-only). 6 viewer tests green (tests/test_w008_viewer.py); report in reports/W008_VIEWER_REPORT.md. NOTE: this slot was originally the deferred 'Round-Trip Reassembly' wave; repurposed per the W008 handover to finish the interactive viewer."
     },
     {
       "id": "W009",
