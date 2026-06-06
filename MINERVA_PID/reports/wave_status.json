@@ -239,6 +239,61 @@
         "0 HIGH-confidence pairs exist by design (KNOWN_SEEDS empty); all 43 mapped pairs are MEDIUM/LOW heuristic proposals requiring human triage.",
         "PNG raster export is not implemented; export is SVG (vector, current view + per-layer) and CSV (filtered table). SVG can be rasterised externally if a PNG is needed."
       ]
+    },
+    {
+      "wave": "W007",
+      "name": "CI/CD Pipeline (GitHub Actions test & reproducibility)",
+      "claim": "Complete, validated GitHub Actions workflow staged at ci/minerva-pid-test.yml that, on every push/PR/dispatch, runs a Python 3.10/3.11/3.12 matrix on ubuntu-latest: installs system deps (poppler-utils, libcairo2-dev) + pinned requirements.txt, regenerates ALL derived artifacts via ./make.sh --clean && ./make.sh (reproducibility gate), runs every tests/test_*.py standalone runner (50 assertions), emits optional pytest coverage (reports/coverage.xml), enforces a semantic golden-file gate (ci/golden_gate.py over reports/*_statistics.json, tolerant of XLSX byte jitter), and uploads build artifacts. Staged (not under .github/workflows/) because the Abacus GitHub App lacks the 'workflows' permission; maintainer activation documented in docs/W007_MANUAL_SETUP.md.",
+      "actual": {
+        "workflow_file": "ci/minerva-pid-test.yml",
+        "golden_gate_script": "ci/golden_gate.py",
+        "setup_guide": "docs/W007_MANUAL_SETUP.md",
+        "report": "reports/W007_CICD_REPORT.md",
+        "python_matrix": [
+          "3.10",
+          "3.11",
+          "3.12"
+        ],
+        "runner": "ubuntu-latest",
+        "system_deps": [
+          "poppler-utils",
+          "libcairo2-dev"
+        ],
+        "reproducibility": "./make.sh --clean && ./make.sh (must exit 0)",
+        "test_runners": [
+          "test_colour_model",
+          "test_integration_pipeline",
+          "test_w003_w004",
+          "test_w005_reconciliation",
+          "test_w006_crossmap",
+          "test_w008_viewer"
+        ],
+        "total_assertions": 50,
+        "golden_files": [
+          "reports/W005_coverage_statistics.json",
+          "reports/W006_crossmap_statistics.json"
+        ],
+        "golden_gate_local_run": "PASS (0 drift entries)",
+        "coverage": "optional pytest+coverage step (continue-on-error), reports/coverage.xml",
+        "artifacts_uploaded": [
+          "publish/*.html",
+          "reports/*.md",
+          "reports/*_statistics.json",
+          "data/crossmap/*.json",
+          "reports/coverage.xml"
+        ],
+        "write_back": false,
+        "auto_merge": false
+      },
+      "validation_report": "reports/W007_CICD_REPORT.md",
+      "pass": true,
+      "known_gaps": [
+        "Workflow is STAGED at ci/ and not yet active: maintainer must grant the Abacus GitHub App 'workflows' permission OR manually git mv it to .github/workflows/minerva-pid-test.yml (see docs/W007_MANUAL_SETUP.md).",
+        "Matrix green status on real GitHub runners is unverified until the file is landed and a throwaway PR run completes.",
+        "README status badge not yet added (requires <owner>/<repo> and an active workflow).",
+        "Golden gate currently covers the two committed reports/*_statistics.json; add more snapshots as new statistics files are introduced.",
+        "pip/apt caching beyond setup-python's pip cache is left for post-W007 optimization."
+      ]
     }
   ]
 }
