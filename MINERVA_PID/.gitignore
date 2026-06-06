@@ -10,6 +10,7 @@ output_v6/
 data/model/
 data/pemo/
 data/excel/
+data/crossmap/
 publish/
 reports/*.xlsx
 

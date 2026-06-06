@@ -51,10 +51,11 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Bind the 77 floating arrows to source lines | DEFERRED — needs nearest-line heuristic |
 | Populate 04G_E_RED line layer (geometry) | DEFERRED — RED currently text-only |
 | Populate manifold COLD/WARM header layers (03A/03B) | DEFERRED — reserved placeholders |
-| Design ↔ as-drawn tag cross-map (keyed on TYPE+circuit+position) | DEFERRED — W005 quantified the need (0 exact overlap); the engineering cross-map itself is the next step |
+| Design ↔ as-drawn tag cross-map (keyed on TYPE+circuit+position) | **DELIVERED — W006.** Confidence-scored bidirectional map; 43/97 mapped (0 HIGH / 39 MEDIUM / 4 LOW), 54 unmapped. HIGH requires independent corroborator. See `reports/W006_CROSSMAP_REPORT.md` |
 | Extend as-drawn catalog to the 10 missing design TYPES (FV/SV/FT/V/HX/J/LE/LI/PV/RD) | DEFERRED — W003/W004 category sheets covered only CV/EH/HV/LS/PT/TT |
 | Exhaustive parse of the 65 MB QSYS instrumentation PPT | DEFERRED — cost; 2 documented re-allocations encoded from cited slides |
 | Cross-drawing identity reconciliation (QCELL↔RFCELL) | DEFERRED — Wave W006 |
 | Temperature/pressure annotation per segment | DEFERRED — Wave W007 |
-| CI / GitHub Actions workflow | DEFERRED — only PLANNED in `GITHUB_PR_PLAN.md` |
-| UI framework / web app | DEFERRED — static HTML only this wave |
+| CI / GitHub Actions workflow | PLANNED — W007. Full plan in `docs/W007_CICD_PLAN.md`; workflow staged at `ci/minerva-pid-test.yml` (blocked on GitHub App `workflows` permission) |
+| Interactive cross-map viewer (layer toggle, pan/zoom, tag search, metadata) | **SCAFFOLDED — W006 Option B.** `publish/interactive_viewer.html` skeleton working; full feature plan in `docs/W006_INTERACTIVE_UI_PLAN.md` |
+| UI framework / web app | DEFERRED — single-file static HTML (no bundler) by design |
