@@ -2,7 +2,7 @@
   "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
   "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
   "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
-  "current_wave": "W008",
+  "current_wave": "W009",
   "waves": [
     {
       "id": "W001",
@@ -61,9 +61,12 @@
     },
     {
       "id": "W009",
-      "name": "Publication & Sign-Off",
-      "expected_output": "Engineering-reviewed colour-line atlas + sign-off record",
-      "status": "deferred"
+      "name": "Final Deliverables & Commissioning",
+      "expected_output": "Commissioned v1.0 canonical register (data/excel/canonical_register_release_v1.0.yaml) + engineering sign-off record (reports/W009_SIGNOFF_RECORD.{json,md}) + commissioning report (reports/W009_COMMISSIONING_REPORT.md). Triage feedback loop: viewer triage_decisions.json -> ingest_triage -> configs/known_seeds.json (KNOWN_SEEDS) -> HIGH-tier promotion on next build_w006_crossmap.",
+      "status": "active",
+      "priority": "HIGH",
+      "note": "Commissioning infrastructure delivered. ingest_triage.py promotes reviewer-CONFIRMED viewer decisions into configs/known_seeds.json (TYPE-gated + register-existence validated; reject/defer recorded for audit). build_w009_release.py consolidates W005 reconciliation + W006 cross-map + seeds into a commissioned v1.0 register with per-tag status (commissioned=HIGH/confirmed | provisional=MEDIUM/LOW | open=unmapped) plus a sign-off sheet. Honesty preserved: committed known_seeds.json is EMPTY, so the honest baseline is 0 commissioned / 43 provisional / 54 open until a reviewer signs off. W009 stats registered in ci/golden_gate.py. 13 W009 tests green (tests/test_w009_commissioning.py). Remaining for sign-off: reviewer triages the 43 provisional + 54 open tags in the viewer, ingests decisions, completes the sign-off record."
     }
-  ]
+  ],
+  "current_wave_note": "W009 commissioning infrastructure landed; awaiting engineering reviewer triage + sign-off to populate KNOWN_SEEDS and commission tags."
 }

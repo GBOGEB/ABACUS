@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "wave": "W009",
+  "description": "Engineering-CONFIRMED design<->as-drawn seed pairs. A pair appears here ONLY after a human reviewer confirms it in the interactive viewer and the decision is promoted via `python -m abacus_svg_pid.ingest_triage`. build_w006_crossmap.py loads this file into KNOWN_SEEDS; each listed pair scores 1.0 (HIGH). Intentionally empty until sign-off — no HIGH-confidence pair is fabricated.",
+  "seeds": {},
+  "provenance": {},
+  "audit": {
+    "last_ingested": null,
+    "source_file": null,
+    "confirmed_count": 0,
+    "rejected_recorded": 0,
+    "deferred_recorded": 0
+  }
+}

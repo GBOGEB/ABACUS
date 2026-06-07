@@ -26,6 +26,7 @@ from pathlib import Path
 GOLDEN_FILES = [
     "reports/W005_coverage_statistics.json",
     "reports/W006_crossmap_statistics.json",
+    "reports/W009_commissioning_statistics.json",
 ]
 
 

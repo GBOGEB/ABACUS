@@ -34,7 +34,12 @@ honest backlog after the v6.0 (W003+W004) build.
 - [ ] **W006** — Interactive layered viewer (layer toggle / colour-line isolation / click-through).
 - [ ] **W007** — CI (GitHub Actions) + cross-drawing reconciliation + temperature/pressure annotation.
 - [ ] **W008** — Round-trip reassembly (recompose isolated lines into full P&ID).
-- [ ] **W009** — Publication & engineering sign-off.
+- [~] **W009** — Final Deliverables & Commissioning. *(infrastructure landed)*
+  Triage-feedback loop (`ingest_triage.py`) + commissioned v1.0 register & sign-off
+  record (`build_w009_release.py`) delivered; `configs/known_seeds.json` committed
+  empty. **Awaiting engineering sign-off:** triage the 43 provisional + 54 open
+  tags in the viewer, ingest decisions, complete `reports/W009_SIGNOFF_RECORD.md`.
+  See `docs/W009_COMMISSIONING.md`.
 
 ## Engineering / infra (deferred)
 

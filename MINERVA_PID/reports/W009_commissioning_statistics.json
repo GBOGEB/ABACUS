@@ -1,0 +1,15 @@
+{
+  "release_version": "1.0",
+  "wave": "W009",
+  "summary": {
+    "total_design_tags": 97,
+    "commissioned": 0,
+    "provisional": 43,
+    "open": 54,
+    "engineering_confirmed_seeds": 0,
+    "tier_high": 0,
+    "tier_medium": 39,
+    "tier_low": 4,
+    "tier_unmapped": 54
+  }
+}
