@@ -1,0 +1,44 @@
+# Coverage.py configuration for the MINERVA P&ID project (W007 CI/CD).
+#
+# IMPORTANT — this project does NOT use pytest. Tests are standalone runners
+# (`python3 tests/test_*.py`, each with a `_run_all()` + `__main__` guard).
+# coverage.py wraps those runners directly:
+#
+#     PYTHONPATH=src coverage run -p tests/test_colour_model.py
+#     ... (one `run -p` per test file) ...
+#     coverage combine
+#     coverage report
+#     coverage xml
+#
+# `-p` (parallel mode) appends a unique suffix per process so the per-file
+# runs can be merged with `coverage combine`. This is the pytest-cov-free
+# equivalent of `pytest --cov`.
+
+[run]
+branch = True
+parallel = True
+# Only measure the project source package, not the test harness itself.
+source = src/abacus_svg_pid
+omit =
+    */tests/*
+    */__main__.py
+    setup.py
+
+[report]
+show_missing = True
+skip_covered = False
+# Do not fail the local report on coverage floor; the CI workflow decides the
+# gate explicitly so the threshold is visible in the pipeline, not hidden here.
+precision = 1
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+
+[xml]
+output = coverage.xml
+
+[html]
+directory = htmlcov

@@ -1,0 +1,154 @@
+# MINERVA QCELL/RFCELL P&ID subproject — regenerate + test + coverage + golden gate (W007)
+# Scoped to MINERVA_PID/** so it never interferes with other ABACUS subprojects.
+#
+# DEPLOYMENT NOTE: this file lives at MINERVA_PID/ci/minerva-pid-test.yml because
+# the integration bot lacks the GitHub `workflows` permission and cannot push
+# under .github/workflows/. A maintainer activates it once with:
+#
+#     cp MINERVA_PID/ci/minerva-pid-test.yml .github/workflows/minerva-pid-test.yml
+#     git add .github/workflows/minerva-pid-test.yml && git commit && git push
+#
+# CONVENTION NOTE: this project deliberately does NOT use pytest. Tests are
+# standalone runners (`python3 tests/test_*.py`). Coverage is collected by
+# wrapping those runners with `coverage run -p` (the pytest-cov-free equivalent),
+# never by invoking `pytest`.
+name: MINERVA P&ID — build, test & coverage
+
+on:
+  push:
+    paths:
+      - "MINERVA_PID/**"
+      - ".github/workflows/minerva-pid-test.yml"
+  pull_request:
+    paths:
+      - "MINERVA_PID/**"
+      - ".github/workflows/minerva-pid-test.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: MINERVA_PID
+
+jobs:
+  build-and-test:
+    name: build & test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install native libraries (CairoSVG, lxml, PDF tooling)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcairo2 libcairo2-dev \
+            poppler-utils \
+            libxml2-dev libxslt1-dev
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies (exact pins) + coverage.py
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install coverage
+
+      - name: Verify CairoSVG native binding
+        run: python -c "import cairosvg; print('cairosvg', cairosvg.__version__)"
+
+      - name: Regenerate all derived outputs (make.sh)
+        run: |
+          chmod +x make.sh
+          ./make.sh
+
+      - name: Run test suite under coverage (standalone runners — no pytest)
+        run: |
+          export PYTHONPATH=src
+          rm -f .coverage .coverage.* coverage.xml
+          fail=0
+          for t in tests/test_*.py; do
+            echo "::group::$t"
+            # `coverage run -p` (parallel mode) wraps each standalone runner;
+            # a non-zero exit from the runner is captured as a test failure.
+            coverage run -p "$t" || fail=1
+            echo "::endgroup::"
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::One or more MINERVA P&ID test files failed."
+            exit 1
+          fi
+
+      - name: Combine + report coverage
+        run: |
+          coverage combine
+          coverage report
+          coverage xml
+          # Re-print a compact total line into the job summary.
+          echo "### Coverage (py${{ matrix.python-version }})" >> "$GITHUB_STEP_SUMMARY"
+          coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY" || \
+            coverage report >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Golden-file regression gate
+        run: |
+          export PYTHONPATH=src
+          # Dedicated standalone runner comparing make.sh outputs against the
+          # committed tests/golden/ snapshots (counts, ids, roles, histograms —
+          # NOT volatile geometry/XLSX bytes, so the gate is deterministic).
+          python3 tests/test_golden_files.py
+
+      - name: Reproducibility check (make.sh --clean is idempotent)
+        run: |
+          # A clean rebuild must reproduce the key derived artifacts. The known
+          # ~1-byte XLSX jitter is intentionally excluded from the golden gate,
+          # so this step only asserts the artifacts exist after a clean rebuild.
+          ./make.sh --clean
+          missing=0
+          for f in \
+            data/model/line_model.json \
+            data/excel/canonical_register_v1.yaml \
+            data/excel/catalog_register.json \
+            reports/COMPONENT_CATALOG_v2.xlsx; do
+            if [ ! -f "$f" ]; then
+              echo "::error::reproducibility: expected artifact missing after clean rebuild: $f"
+              missing=1
+            else
+              echo "ok: $f"
+            fi
+          done
+          [ "$missing" -eq 0 ]
+
+      - name: Re-run golden gate after clean rebuild
+        run: |
+          export PYTHONPATH=src
+          python3 tests/test_golden_files.py
+
+      - name: Upload build + coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: minerva-pid-py${{ matrix.python-version }}
+          path: |
+            MINERVA_PID/coverage.xml
+            MINERVA_PID/reports/*.md
+            MINERVA_PID/reports/*.json
+            MINERVA_PID/publish/*.html
+          if-no-files-found: warn
+          retention-days: 14
+
+      # OPTIONAL — Codecov upload. Requires a CODECOV_TOKEN repository secret
+      # configured by a maintainer; left commented so the pipeline is green
+      # without external service setup.
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     files: MINERVA_PID/coverage.xml
+      #     flags: minerva-pid
+      #     token: ${{ secrets.CODECOV_TOKEN }}
