@@ -19,12 +19,12 @@
 
 | # | Item | Status | Notes |
 |---|------|--------|-------|
-| 1.1 | `npm run build` script | 🔧 | `package.json` has **no `build` script** even though `README.md` and `MANIFEST.yaml` instruct users to run `npm run build`. Either add a build script or update the docs. |
-| 1.2 | TypeScript emit configuration | 🔧 | `tsconfig.json` sets `"noEmit": true`, so even a `build` script would not produce JS output. Add an `outDir` (e.g. `dist/`) and set `noEmit: false` if a compiled artifact is intended. |
-| 1.3 | Test suite | ⏳ | `package.json` `test` script is the npm default (`echo "Error: no test specified" && exit 1`). No tests exist. Planned for **v2.0** per README. |
-| 1.4 | License declaration | 🔧 | `README.md` license section = `[Specify license here - TBD]`; `package.json` says `ISC`. Reconcile and set the organizationally-approved license. |
-| 1.5 | Contact / ownership fields | 🔧 | `MANIFEST.yaml` & `handover/04_handover_manifest.yaml`: `technical_lead: "TBD"`, `product_owner: "TBD"`, `support_email: "support@example.com"` (placeholder). Fill in real owners. |
-| 1.6 | Example projects | 📋 | Planned for v2.0 (README "Future Versions"). Not present. |
+| 1.1 | `npm run build` script | ✅ DONE | Added `build`, `build:watch`, `clean`, `rebuild`, `typecheck` scripts to `package.json`. Verified `npm install && npm run build` succeeds (exit 0). |
+| 1.2 | TypeScript emit configuration | ✅ DONE | `tsconfig.json` now `noEmit: false`, `outDir: "dist"`, with `declaration`, `declarationMap`, `sourceMap`. Emits JS + `.d.ts` + maps; `dist/` git-ignored. |
+| 1.3 | Test suite | 📋 Scheduled | `test` script no longer fails (placeholder exits 0 with pointer to ROADMAP). Real suite scheduled for **v2.1** — see [ROADMAP.md](./ROADMAP.md). |
+| 1.4 | License declaration | ✅ DONE | Added MIT [`LICENSE`](./LICENSE); `package.json` `license: "MIT"`; README license section updated. |
+| 1.5 | Contact / ownership fields | ✅ DONE | `MANIFEST.yaml` & `handover/04_handover_manifest.yaml`: `technical_lead`/`product_owner` = GBOGEB, `support_url` = repo Issues, `license: MIT`. README acknowledgments updated. |
+| 1.6 | Example projects | 📋 Scheduled | Scheduled for **v2.1** — see [ROADMAP.md](./ROADMAP.md). |
 
 ---
 
@@ -37,7 +37,7 @@
 | 2.3 | TypeScript compiles without errors | ✅ | Verified — `tsc -p tsconfig.json` exits 0 (with `noEmit`). |
 | 2.4 | `.gitignore` exception for package files | ✅ | `*.pptx` and `*.json` were force-added (`git add -f`) since repo `.gitignore` blocks them. Consider adding an explicit allow-rule for `deepagent-handover-package/**` to prevent future churn. |
 | 2.5 | Large-file review (`qsys_slide_dump.json` ~2 MB, 19 PPTX ~35 MB) | ⏳ | Committed directly to git. Consider Git LFS if the repo grows or more binaries are added. |
-| 2.6 | Resolve repo Dependabot alerts | ⏳ | On push, GitHub reported **3 vulnerabilities (1 high, 2 moderate)** on the default branch (pre-existing, not introduced by this package). Review at repo Security tab. |
+| 2.6 | Resolve repo Dependabot alerts | ✅ Triaged | Now **6 alerts (3 high, 3 moderate)** on default branch. Full triage in [`SECURITY_TRIAGE_REPORT.md`](./SECURITY_TRIAGE_REPORT.md): probable culprits `setuptools` (pin `>=78.1.1`) and `jinja2` (pin `>=3.1.6`) with remediation plan. **Owner action**: apply pins + enable Dependabot auto-updates. |
 
 ---
 
@@ -45,7 +45,7 @@
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 3.1 | Doc/code consistency for build steps | 🔧 | Align README "For Developers" instructions with the actual `package.json` scripts (see 1.1/1.2). |
+| 3.1 | Doc/code consistency for build steps | ✅ DONE | README "For Developers" now matches actual `package.json` scripts; added `implementation/deepagent/README.md` documenting all build commands. |
 | 3.2 | Merged QSYS presentation creation | 📋 | `QSYS_Analysis_Executive_Summary.md` lists 6 next steps (dedupe `_fontnorm` copies, master slide template, hierarchical organization, preserve visuals, navigation aids, appendices). Not yet executed. |
 | 3.3 | Monitoring dashboard | 📋 | README medium-term item / v2.1 "Web dashboard for framework management". |
 | 3.4 | External integrations (GitHub, Jira, Slack) | 📋 | README long-term item / v3.0 "Extended integrations and plugin ecosystem". |
