@@ -2,7 +2,7 @@
   "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
   "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
   "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
-  "current_wave": "W008",
+  "current_wave": "W007",
   "waves": [
     {
       "id": "W001",
@@ -40,7 +40,7 @@
       "id": "W006",
       "name": "Design<->As-Drawn Cross-Map + Interactive Viewer",
       "expected_output": "Confidence-scored bidirectional design<->as-drawn tag cross-map (build_w006_crossmap.py -> data/crossmap/*.json, reports/W006_*); interactive layered viewer with layer toggling, pan/zoom, tag search, click-through metadata (build_viewer.py -> publish/interactive_viewer.html)",
-      "status": "active",
+      "status": "complete",
       "priority": "HIGH",
       "note": "Option A DELIVERED: cross-map engine turns W005's 0%-exact-overlap finding into a functional confidence-scored map - 97 design / 141 as-drawn real; 43 mapped (0 HIGH / 39 MEDIUM@0.75 / 4 LOW@0.45); 54 unmapped. Honesty enforced: HIGH requires an independent corroborator (SIGNAL_MATCH or KNOWN_SEED), KNOWN_SEEDS empty by design. Option B SCAFFOLDED: interactive_viewer.html skeleton (layer toggles, pan/zoom, tag search, metadata popup) - full plan in docs/W006_INTERACTIVE_UI_PLAN.md. 13 W006 tests green."
     },
@@ -48,16 +48,15 @@
       "id": "W007",
       "name": "CI Workflow + Cross-Drawing / Temperature Annotation",
       "expected_output": "CI (GitHub Actions) running ./make.sh + tests on push; cross-drawing QCELL<->RFCELL identity reconciliation; 4.5 K / 2 K / warm classification per segment",
-      "status": "planned",
-      "note": "Plan documented in docs/W007_CICD_PLAN.md. Workflow file staged as ci/minerva-pid-test.yml (cannot push .github/workflows/ - GitHub App lacks 'workflows' permission); W007 must land it. Matrix Py3.10-3.12, libcairo2, standalone test runners, golden-file gate tolerant of known XLSX byte jitter."
+      "status": "active",
+      "note": "CI/CD half DELIVERED: ci/minerva-pid-test.yml (Py3.10-3.12) regenerates via ./make.sh, runs 48 standalone-runner assertions under coverage.py (NO pytest - honors project convention), golden-file gate (tests/test_golden_files.py + tests/golden/), --clean reproducibility check, artifact upload. .coveragerc + [tool.coverage.*], advisory .pre-commit-config.yaml. Workflow staged (GitHub App lacks 'workflows' perm) - maintainer copies to .github/workflows/. See docs/W007_CI_IMPLEMENTATION.md + reports/W007_CICD_REPORT.md. Cross-drawing QCELL<->RFCELL reconciliation + 4.5K/2K/warm segment classification remain modelling scope (follow-up).",
+      "priority": "HIGH"
     },
     {
       "id": "W008",
-      "name": "Interactive Viewer Enhancement",
-      "expected_output": "Production-ready single-file interactive design<->as-drawn cross-map viewer (build_viewer.py -> publish/interactive_viewer.html) completing W006 Option B: bidirectional tag<->SVG highlighting, confidence-based triage workflow, per-layer show/hide + export, side-by-side QCELL/RFCELL comparison, design<->as-drawn toggle, search, 21-layer tree, zoom/pan, deep-link URL state.",
-      "status": "complete",
-      "priority": "HIGH",
-      "note": "Completes the W006 Interactive UI Plan (docs/W006_INTERACTIVE_UI_PLAN.md). All five core features delivered as a self-contained HTML file (no build step). 97 design / 141 as-drawn rows; 43 mapped (0 HIGH / 39 MEDIUM / 4 LOW); 54 unmapped. 141 hit-testable SVG markers (139 QCELL / 2 RFCELL) injected from catalog x/y in the shared viewBox. Triage decisions persist in localStorage and export as triage_decisions.json for KNOWN_SEEDS feedback (heuristic map stays read-only). 6 viewer tests green (tests/test_w008_viewer.py); report in reports/W008_VIEWER_REPORT.md. NOTE: this slot was originally the deferred 'Round-Trip Reassembly' wave; repurposed per the W008 handover to finish the interactive viewer."
+      "name": "Round-Trip Reassembly",
+      "expected_output": "Recompose isolated colour lines back into the full P&ID without loss of meaning",
+      "status": "deferred"
     },
     {
       "id": "W009",
