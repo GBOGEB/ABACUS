@@ -78,8 +78,10 @@ run python3 -m abacus_svg_pid.build_atlas_v6
 run python3 src/abacus_svg_pid/render_collage.py
 
 # ---------------------------------------------------------------------------
-# 6. Interactive cross-map viewer (W006 Option B -- SCAFFOLD/WIP)
-#    Depends on the W006 crossmap (step 3c) and the atlas SVG (step 4).
+# 6. Interactive cross-map viewer (W008 -- FULL interactive viewer)
+#    Depends on the W006 crossmap (step 3c), the W006 statistics report and
+#    the QCELL/RFCELL atlas SVGs (step 4). Emits a single self-contained
+#    offline HTML with tag->SVG highlighting, triage, export and compare views.
 # ---------------------------------------------------------------------------
 run python3 -m abacus_svg_pid.build_viewer
 
