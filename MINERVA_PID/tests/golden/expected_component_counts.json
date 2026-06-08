@@ -1,0 +1,23 @@
+{
+  "_comment": "W007 golden file. Stable count invariants of data/excel/catalog_register.json. Generated from verified runtime output.",
+  "scheme": "as-drawn (SVG-instance numbering)",
+  "unique_count": 165,
+  "real_count": 141,
+  "template_count": 24,
+  "instrument_sheets": [
+    "CV_ControlValves",
+    "EH_ElectricalHeaters",
+    "HV_ManualValves",
+    "LS_LimitSwitches",
+    "PT_Pressure",
+    "TT_Temperature"
+  ],
+  "real_prefix_histogram": {
+    "CV": 10,
+    "EH": 22,
+    "HV": 12,
+    "LS": 25,
+    "PT": 9,
+    "TT": 63
+  }
+}
