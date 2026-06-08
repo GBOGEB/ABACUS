@@ -56,6 +56,9 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Exhaustive parse of the 65 MB QSYS instrumentation PPT | DEFERRED — cost; 2 documented re-allocations encoded from cited slides |
 | Cross-drawing identity reconciliation (QCELL↔RFCELL) | DEFERRED — Wave W006 |
 | Temperature/pressure annotation per segment | DEFERRED — Wave W007 |
-| CI / GitHub Actions workflow | PLANNED — W007. Full plan in `docs/W007_CICD_PLAN.md`; workflow staged at `ci/minerva-pid-test.yml` (blocked on GitHub App `workflows` permission) |
+| CI / GitHub Actions workflow | **DELIVERED — W007.** Workflow `ci/minerva-pid-test.yml` (Py 3.10–3.12 matrix) regenerates via `./make.sh`, runs 48 standalone-runner assertions under `coverage.py` (no pytest), enforces a golden-file gate (`tests/test_golden_files.py` + `tests/golden/`), checks `--clean` reproducibility, uploads artifacts. Staged for one-time maintainer activation (GitHub App lacks `workflows` permission). See `docs/W007_CI_IMPLEMENTATION.md` + `reports/W007_CICD_REPORT.md` |
+| Coverage reporting (pytest-cov-free) | **DELIVERED — W007.** `coverage run -p` over standalone runners → combine/report/xml; `.coveragerc` + `[tool.coverage.*]`. ~18% reported honestly (tests target pure fns; `build_*` run via make.sh), not gated |
+| Golden-file regression gate | **DELIVERED — W007.** Invariant snapshots (line model, catalog counts, crossmap stats) generated from verified runtime output; deterministic (volatile XLSX bytes excluded) |
+| Pre-commit hooks | **DELIVERED (advisory) — W007.** `.pre-commit-config.yaml` hygiene + black/flake8 (opt-in; not CI-enforced to avoid mass reformat) |
 | Interactive cross-map viewer (layer toggle, pan/zoom, tag search, metadata) | **SCAFFOLDED — W006 Option B.** `publish/interactive_viewer.html` skeleton working; full feature plan in `docs/W006_INTERACTIVE_UI_PLAN.md` |
 | UI framework / web app | DEFERRED — single-file static HTML (no bundler) by design |
