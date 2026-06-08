@@ -25,10 +25,11 @@ cd deepagent_handover_package/
 ### 3. For Developers
 ```bash
 cd implementation/deepagent/
-npm install
-npm run build
-# Review implementation files
+npm install        # install dev dependencies (typescript, @types/node)
+npm run build      # compile TypeScript -> dist/ (JS + .d.ts + source maps)
+npm run typecheck  # optional: type-check only, no emit
 ```
+> See `implementation/deepagent/README.md` for the full list of build scripts and usage examples.
 
 ### 4. For Project Managers
 - Read: **analysis/QSYS_Analysis_Executive_Summary.md**
@@ -294,9 +295,11 @@ deepagent_handover_package/
 ## Acknowledgments
 
 ### Contributors
-- **Project Lead**: DeepAgent AI Assistant
+- **Maintainer / Owner**: [GBOGEB](https://github.com/GBOGEB)
+- **Original Authoring**: DeepAgent AI Assistant
 - **Methodology**: Six Sigma DMAIC, Industry Best Practices
 - **Inspiration**: Real-world enterprise development needs
+- **Support**: [GitHub Issues](https://github.com/GBOGEB/ABACUS/issues)
 
 ### Technologies Used
 - Python-pptx for PowerPoint processing
@@ -322,15 +325,17 @@ deepagent_handover_package/
 - Zero defects in critical deliverables
 
 ### Future Versions
-- v2.0: Test suite and example projects
-- v2.1: Web dashboard for framework management
-- v3.0: Extended integrations and plugin ecosystem
+See **[ROADMAP.md](./ROADMAP.md)** for the full scheduled plan. Summary:
+- **v2.1** (Q3 2026): Test suite & quality gates
+- **v2.2** (Q3 2026): Merged QSYS master presentation
+- **v2.3** (Q4 2026): Web dashboard for framework management
+- **v3.0** (Q1 2027): Extended integrations & plugin ecosystem
 
 ---
 
 ## License
 
-[Specify license here - TBD based on organizational policy]
+This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
 
 ---
 
