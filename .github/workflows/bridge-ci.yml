@@ -107,7 +107,7 @@ jobs:
           python run_deployment_test_system.py --test-suite unit --skip-static --version ci-unit-${{ github.sha }}
       
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         if: always()
         with:
           file: ./coverage.xml
