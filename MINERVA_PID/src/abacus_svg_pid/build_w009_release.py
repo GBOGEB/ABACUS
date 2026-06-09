@@ -233,7 +233,7 @@ def write_signoff(summary, seeds_doc, generated):
         "",
         "## Sign-off",
         "",
-        "> To approve this release, complete the fields below and commit "
+        "> To approve this release, complete the fields below and commit " +
         "`reports/W009_SIGNOFF_RECORD.json` (mirror the same values there).",
         "",
         "- **Reviewer name:** ______________________________",
