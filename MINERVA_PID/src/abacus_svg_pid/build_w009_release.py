@@ -291,8 +291,8 @@ def write_report(entries, summary, seeds_doc, generated):
     ]
     if summary["engineering_confirmed_seeds"] == 0:
         md += [
-            "> No seeds are confirmed yet, so **no tag is commissioned**. This is the "
-            "honest baseline: the register is entirely provisional/open until a "
+            "> No seeds are confirmed yet, so **no tag is commissioned**. This is the " +
+            "honest baseline: the register is entirely provisional/open until a " +
             "reviewer triages pairs in the viewer and the decisions are ingested.",
             "",
         ]
