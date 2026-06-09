@@ -162,7 +162,8 @@ def test_assemble_register_high_tier_is_commissioned():
 
 @needs_data
 def test_release_summary_counts_balance():
-    confidence = json.load(open(CONFIDENCE))
+    with open(CONFIDENCE, encoding="utf-8") as f:
+        confidence = json.load(f)
     seeds_doc = rel._load_json(rel.KNOWN_SEEDS_FILE, default={})
     entries, summary = rel.assemble_register(confidence, seeds_doc)
     assert (summary["commissioned"] + summary["provisional"] + summary["open"]
@@ -175,7 +176,8 @@ def test_known_seeds_committed_file_is_empty_for_honesty():
     path = os.path.join(ROOT, "configs", "known_seeds.json")
     if not os.path.exists(path):
         pytest.skip("known_seeds.json not present")
-    doc = json.load(open(path))
+    with open(path, encoding="utf-8") as f:
+        doc = json.load(f)
     assert doc.get("seeds", {}) == {}, (
         "configs/known_seeds.json must be empty in version control — seeds are "
         "added only via reviewer triage ingestion, never fabricated.")
