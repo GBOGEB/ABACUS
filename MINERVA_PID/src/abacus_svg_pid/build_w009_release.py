@@ -262,10 +262,10 @@ def write_report(entries, summary, seeds_doc, generated):
         "",
         "## 1. What W009 does",
         "",
-        "W009 consolidates the W005 reconciliation and the W006 heuristic cross-map "
-        "into a single **commissioned v1.0 canonical register** plus an engineering "
-        "**sign-off record**. Reviewer confirmations captured in the W008 viewer are "
-        "promoted into `configs/known_seeds.json` (via `ingest_triage`) and lift the "
+        "W009 consolidates the W005 reconciliation and the W006 heuristic cross-map " +
+        "into a single **commissioned v1.0 canonical register** plus an engineering " +
+        "**sign-off record**. Reviewer confirmations captured in the W008 viewer are " +
+        "promoted into `configs/known_seeds.json` (via `ingest_triage`) and lift the " +
         "affected pairs to the HIGH tier / `commissioned` status.",
         "",
         "## 2. Commissioning status breakdown",
