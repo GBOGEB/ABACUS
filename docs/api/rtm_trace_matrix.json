@@ -75,7 +75,7 @@
       "requirement_title": "DMAIC governance snapshots are generated"
     },
     {
-      "available": true,
+      "available": false,
       "evidence_artifact": "reports/governance_snapshot.json",
       "evidence_domain": "governance",
       "evidence_id": "governance_snapshot",
