@@ -1,3 +1,3 @@
-# Work Report Test
+# Universal Work Report Schema (SSOT)
 
-Reusable work report placeholder.
+Placeholder scaffold for the Universal Work Report Schema single source of truth (SSOT).
