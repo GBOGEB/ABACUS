@@ -4,9 +4,20 @@ on:
     paths:
       - 'docs/**'
       - 'ssot/**'
+      - 'governance/**'
+      - 'scripts/validate_review_package.py'
+      - '.github/workflows/review-artifact-validation.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'ssot/**'
+      - 'governance/**'
+      - 'scripts/validate_review_package.py'
+      - '.github/workflows/review-artifact-validation.yml'
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: echo 'Validate review artifacts and SSOT references'
+      - name: Validate W000 review package
+        run: python scripts/validate_review_package.py
