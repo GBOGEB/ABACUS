@@ -4,6 +4,7 @@ Version: 3.2.0
 Created: 2025-11-12T04:50:00Z
 """
 
+import tempfile
 import unittest
 from pathlib import Path
 import sys
@@ -18,8 +19,12 @@ from DMAIC_V3.convergence.maturity_tracker import (  # noqa: E402
 
 class TestMaturityTracker(unittest.TestCase):
     def setUp(self):
-        self.workspace = Path(__file__).parent.parent.parent
+        self._tmp_dir = tempfile.TemporaryDirectory()
+        self.workspace = Path(self._tmp_dir.name)
         self.tracker = MaturityTracker(self.workspace)
+
+    def tearDown(self):
+        self._tmp_dir.cleanup()
 
     def test_initialization(self):
         self.assertIsNotNone(self.tracker)

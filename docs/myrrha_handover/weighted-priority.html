@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Weighted Priority</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚖</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.formula-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 18px;font-family:var(--mono);font-size:13px;margin:12px 0}
+.formula-box .label{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:var(--sans)}
+.alloc-bar{margin:8px 0}
+.alloc-bar .bar-wrap{height:28px;background:var(--bg);border-radius:6px;overflow:hidden;border:1px solid var(--border);position:relative}
+.alloc-bar .bar-fill{height:100%;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:700;color:#fff;transition:width .5s}
+.alloc-bar .bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--fg2);margin-top:4px}
+.sev-badge{display:inline-block;min-width:22px;text-align:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);color:#fff}
+.sev-5{background:#C0392B}.sev-4{background:#D85A30}.sev-3{background:#E5A100;color:#1a1d23}.sev-2{background:#378ADD}.sev-1{background:#7F77DD}
+.priority-score{font-family:var(--mono);font-weight:700;font-size:13px}
+.ps-high{color:#C0392B}.ps-med{color:#D85A30}.ps-low{color:#378ADD}
+.strat-step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}
+.strat-step:last-child{border-bottom:0}
+.strat-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.strat-content h4{margin:0 0 4px;text-transform:none;color:var(--fg);font-size:14px}
+.strat-content p{margin:0;font-size:12.5px;color:var(--fg2)}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.summary-card{text-align:center;padding:16px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg2)}
+.summary-card .num{font-size:28px;font-weight:700;font-family:var(--mono)}.summary-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+.heatmap{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:14px 0}
+.heatmap .cell{padding:8px 4px;text-align:center;font-size:11px;font-family:var(--mono);border-radius:4px;font-weight:600}
+.h-empty{background:var(--bg);color:var(--fg2);font-weight:400}
+.h-crit{background:#C0392B;color:#fff}.h-high{background:#D85A30;color:#fff}
+.h-med{background:#E5A100;color:#1a1d23}.h-low{background:#378ADD;color:#fff}
+.h-nice{background:#7F77DD;color:#fff}.h-header{background:var(--bg);color:var(--fg);font-weight:600;font-size:10px}
+@media(max-width:780px){.summary-grid{grid-template-columns:1fr}.heatmap{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Weighted Priority</p>
+<h1>⚖ Weighted Priority — Scoring Dashboard</h1>
+<p class="muted">Weighted time allocation across all categories with execution strategy · v0.4.2</p>
+
+<!-- FORMULA -->
+<div class="card">
+<div class="formula-box">
+  <div class="label">Priority Score Formula</div>
+  <b>Priority</b> = (Severity/5 × <span style="color:var(--accent)">0.50</span>) + (Impact/5 × <span style="color:var(--accent2)">0.30</span>) + ((10 − Effort_hrs)/10 × <span style="color:#7F77DD">0.20</span>)<br>
+  <span style="color:var(--fg2);font-size:11px">Effort capped at 10 hrs for normalization · Score range: 0.00 → 1.00 · Higher = do first</span>
+</div>
+<table style="font-size:12px">
+<thead><tr><th>Weight Component</th><th>Weight</th><th>Rationale</th></tr></thead>
+<tbody>
+<tr><td><b>Severity</b> (1–5)</td><td>50%</td><td>Downstream impact and risk drives priority most</td></tr>
+<tr><td><b>Impact</b> (1–5)</td><td>30%</td><td>Technical/cost/schedule/quality scope</td></tr>
+<tr><td><b>Effort Inverse</b></td><td>20%</td><td>Quick wins should float up — low effort = high inverse</td></tr>
+</tbody></table>
+</div>
+
+<!-- OVERALL TIME DISTRIBUTION -->
+<h2>Overall Time Distribution</h2>
+<div class="summary-grid">
+  <div class="summary-card" style="border-left:4px solid #1D9E75"><div class="num" style="color:#1D9E75">1.7h</div><div class="lbl">Short-term · 2.1%</div><div style="font-size:11px;color:var(--fg2)">6 actions · 100% complete</div></div>
+  <div class="summary-card" style="border-left:4px solid #E5A100"><div class="num" style="color:#E5A100">35h</div><div class="lbl">Medium-term · 42.3%</div><div style="font-size:11px;color:var(--fg2)">13 actions · 0% complete</div></div>
+  <div class="summary-card" style="border-left:4px solid #378ADD"><div class="num" style="color:#378ADD">250h</div><div class="lbl">Long-term · 55.6%</div><div style="font-size:11px;color:var(--fg2)">10 actions · 0% complete</div></div>
+</div>
+
+<!-- TIME ALLOCATION BARS -->
+<div class="card">
+<h3 style="margin-top:0">Time Allocation Visualization</h3>
+<div class="alloc-bar">
+  <div class="bar-label"><span>Short-term (6 actions)</span><span>1.7 hrs · 2.1%</span></div>
+  <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,#1D9E75,#1D9E7588)">✓ COMPLETE</div></div>
+</div>
+<div class="alloc-bar">
+  <div class="bar-label"><span>Medium-term (13 actions)</span><span>28–42 hrs · 42.3%</span></div>
+  <div class="bar-wrap"><div class="bar-fill" style="width:0%;background:linear-gradient(90deg,#E5A100,#D85A30)">0%</div></div>
+</div>
+<div class="alloc-bar">
+  <div class="bar-label"><span>Long-term (10 actions)</span><span>180–320 hrs · 55.6%</span></div>
+  <div class="bar-wrap"><div class="bar-fill" style="width:0%;background:linear-gradient(90deg,#378ADD,#7F77DD)">0%</div></div>
+</div>
+</div>
+
+<!-- SEVERITY HEATMAP -->
+<h2>Severity × Category Heatmap</h2>
+<div class="card">
+<div class="heatmap">
+  <div class="cell h-header"></div>
+  <div class="cell h-header">5 CRIT</div>
+  <div class="cell h-header">4 HIGH</div>
+  <div class="cell h-header">3 MED</div>
+  <div class="cell h-header">2 LOW</div>
+  <div class="cell h-header">1 NICE</div>
+
+  <div class="cell h-header">SHORT</div>
+  <div class="cell h-empty">—</div>
+  <div class="cell h-high">2</div>
+  <div class="cell h-med">3</div>
+  <div class="cell h-low">1</div>
+  <div class="cell h-empty">—</div>
+
+  <div class="cell h-header">MED</div>
+  <div class="cell h-crit">1</div>
+  <div class="cell h-high">5</div>
+  <div class="cell h-med">3</div>
+  <div class="cell h-low">2</div>
+  <div class="cell h-nice">2</div>
+
+  <div class="cell h-header">LONG</div>
+  <div class="cell h-empty">—</div>
+  <div class="cell h-high">3</div>
+  <div class="cell h-med">4</div>
+  <div class="cell h-low">3</div>
+  <div class="cell h-empty">—</div>
+</div>
+</div>
+
+<!-- MEDIUM-TERM BREAKDOWN -->
+<h2>Medium-Term Effort Breakdown by Severity</h2>
+<div class="card">
+<table style="font-size:12.5px">
+<thead><tr><th>Severity</th><th>Actions</th><th>Effort Range</th><th>% of Category</th><th>Weighted Hrs</th></tr></thead>
+<tbody>
+<tr><td><span class="sev-badge sev-5">5</span> CRITICAL</td><td>MT-13</td><td>2–3 hrs</td><td style="font-weight:700">8%</td><td>2.5 hrs</td></tr>
+<tr><td><span class="sev-badge sev-4">4</span> HIGH</td><td>MT-1, MT-2, MT-3, MT-11, MT-12</td><td>12–20 hrs</td><td style="font-weight:700">49%</td><td>16 hrs</td></tr>
+<tr><td><span class="sev-badge sev-3">3</span> MEDIUM</td><td>MT-4, MT-5, MT-6, MT-7</td><td>4.5–7 hrs</td><td style="font-weight:700">17%</td><td>5.8 hrs</td></tr>
+<tr><td><span class="sev-badge sev-2">2</span> LOW</td><td>MT-8</td><td>2 hrs</td><td style="font-weight:700">6%</td><td>2 hrs</td></tr>
+<tr><td><span class="sev-badge sev-1">1</span> NICE</td><td>MT-9, MT-10</td><td>3.5 hrs</td><td style="font-weight:700">10%</td><td>3.5 hrs</td></tr>
+<tr style="font-weight:700;background:var(--bg)"><td colspan="2">TOTAL</td><td>28–42 hrs</td><td>100%</td><td>~35 hrs</td></tr>
+</tbody></table>
+
+<div class="alloc-bar" style="margin-top:14px">
+  <div class="bar-wrap" style="display:flex;height:28px">
+    <div style="width:8%;background:#C0392B;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">5</div>
+    <div style="width:49%;background:#D85A30;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">SEV 4 — 49%</div>
+    <div style="width:17%;background:#E5A100;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1a1d23;font-weight:700">3</div>
+    <div style="width:6%;background:#378ADD;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">2</div>
+    <div style="width:10%;background:#7F77DD;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">1</div>
+  </div>
+</div>
+</div>
+
+<!-- LONG-TERM BREAKDOWN -->
+<h2>Long-Term Effort Breakdown by Severity</h2>
+<div class="card">
+<table style="font-size:12.5px">
+<thead><tr><th>Severity</th><th>Actions</th><th>Effort Range</th><th>% of Category</th><th>Weighted Hrs</th></tr></thead>
+<tbody>
+<tr><td><span class="sev-badge sev-4">4</span> HIGH</td><td>LT-1, LT-6, LT-8</td><td>36–60 hrs</td><td style="font-weight:700">25%</td><td>~48 hrs</td></tr>
+<tr><td><span class="sev-badge sev-3">3</span> MEDIUM</td><td>LT-2, LT-3, LT-4, LT-5</td><td>80–148 hrs</td><td style="font-weight:700">55%</td><td>~114 hrs</td></tr>
+<tr><td><span class="sev-badge sev-2">2</span> LOW</td><td>LT-7, LT-9, LT-10</td><td>48–80 hrs</td><td style="font-weight:700">20%</td><td>~64 hrs</td></tr>
+<tr style="font-weight:700;background:var(--bg)"><td colspan="2">TOTAL</td><td>180–320 hrs</td><td>100%</td><td>~250 hrs</td></tr>
+</tbody></table>
+
+<div class="alloc-bar" style="margin-top:14px">
+  <div class="bar-wrap" style="display:flex;height:28px">
+    <div style="width:25%;background:#D85A30;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">SEV 4 — 25%</div>
+    <div style="width:55%;background:#E5A100;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1a1d23;font-weight:700">SEV 3 — 55%</div>
+    <div style="width:20%;background:#378ADD;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700">SEV 2 — 20%</div>
+  </div>
+</div>
+</div>
+
+<!-- PRIORITY RANKING TABLE -->
+<h2>Full Priority Ranking — All 29 Actions</h2>
+<div class="card" style="overflow-x:auto">
+<table style="font-size:12px">
+<thead><tr><th>#</th><th>ID</th><th>Action</th><th>Sev</th><th>Impact</th><th>Effort</th><th>Priority</th><th>Category</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>MT-13</td><td>400V power supply constraint analysis</td><td><span class="sev-badge sev-5">5</span></td><td>5</td><td>2.5h</td><td class="priority-score ps-high">0.91</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>2</td><td>ST-1</td><td>Cross-reference matrix</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>0.5h</td><td class="priority-score ps-high">0.84</td><td>Short</td><td>✓ Done</td></tr>
+<tr><td>3</td><td>ST-2</td><td>Calculation verification checklist</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>0.25h</td><td class="priority-score ps-high">0.83</td><td>Short</td><td>✓ Done</td></tr>
+<tr><td>4</td><td>MT-11</td><td>Kaeser HCC deep-scout preparation</td><td><span class="sev-badge sev-4">4</span></td><td>5</td><td>5h</td><td class="priority-score ps-high">0.78</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>5</td><td>MT-2</td><td>Validate COMBI concept with Kaeser</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>1.5h</td><td class="priority-score ps-high">0.76</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>6</td><td>MT-12</td><td>PVPS vendor deep-scout preparation</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>4h</td><td class="priority-score ps-high">0.76</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>7</td><td>MT-1</td><td>Obtain PVPS vendor datasheets</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>3h</td><td class="priority-score ps-high">0.74</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>8</td><td>MT-3</td><td>Define coldbox suction pressure</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>2.5h</td><td class="priority-score ps-high">0.74</td><td>Medium</td><td>Blocked</td></tr>
+<tr><td>9</td><td>LT-1</td><td>QRB coldbox interface</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>12h</td><td class="priority-score ps-high">0.70</td><td>Long</td><td>Planned</td></tr>
+<tr><td>10</td><td>ST-3</td><td>Breadcrumb navigation</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>0.17h</td><td class="priority-score ps-med">0.66</td><td>Short</td><td>✓ Done</td></tr>
+<tr><td>11</td><td>ST-4</td><td>QA validation checklist</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>0.17h</td><td class="priority-score ps-med">0.66</td><td>Short</td><td>✓ Done</td></tr>
+<tr><td>12</td><td>ST-5</td><td>Searchable term/equation index</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>0.25h</td><td class="priority-score ps-med">0.65</td><td>Short</td><td>✓ Done</td></tr>
+<tr><td>13</td><td>LT-8</td><td>Cost estimation module</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>16h</td><td class="priority-score ps-med">0.62</td><td>Long</td><td>Planned</td></tr>
+<tr><td>14</td><td>LT-6</td><td>Exergy optimization solver</td><td><span class="sev-badge sev-4">4</span></td><td>4</td><td>20h</td><td class="priority-score ps-med">0.60</td><td>Long</td><td>Planned</td></tr>
+<tr><td>15</td><td>MT-6</td><td>Automated backup script</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>0.5h</td><td class="priority-score ps-med">0.59</td><td>Medium</td><td>Ready</td></tr>
+<tr><td>16</td><td>MT-7</td><td>Git version control integration</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>1h</td><td class="priority-score ps-med">0.56</td><td>Medium</td><td>Ready</td></tr>
+<tr><td>17</td><td>MT-4</td><td>Calculate polytropic efficiency</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>1h</td><td class="priority-score ps-med">0.56</td><td>Medium</td><td>Waiting</td></tr>
+<tr><td>18</td><td>LT-4</td><td>Monte Carlo uncertainty</td><td><span class="sev-badge sev-3">3</span></td><td>4</td><td>10h</td><td class="priority-score ps-med">0.52</td><td>Long</td><td>Planned</td></tr>
+<tr><td>19</td><td>MT-5</td><td>Expand turndown scenarios</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>2h</td><td class="priority-score ps-med">0.52</td><td>Medium</td><td>Waiting</td></tr>
+<tr><td>20</td><td>ST-6</td><td>Batch graph export</td><td><span class="sev-badge sev-2">2</span></td><td>2</td><td>0.33h</td><td class="priority-score ps-med">0.46</td><td>Short</td><td>Ready</td></tr>
+<tr><td>21</td><td>LT-5</td><td>Automated report generation</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>14h</td><td class="priority-score ps-med">0.46</td><td>Long</td><td>Planned</td></tr>
+<tr><td>22</td><td>LT-2</td><td>Collaborative editing</td><td><span class="sev-badge sev-3">3</span></td><td>3</td><td>30h</td><td class="priority-score ps-low">0.42</td><td>Long</td><td>Planned</td></tr>
+<tr><td>23</td><td>MT-8</td><td>Optimize Plotly loading</td><td><span class="sev-badge sev-2">2</span></td><td>2</td><td>2h</td><td class="priority-score ps-low">0.40</td><td>Medium</td><td>Ready</td></tr>
+<tr><td>24</td><td>LT-3</td><td>Dynamic web app</td><td><span class="sev-badge sev-3">3</span></td><td>4</td><td>60h</td><td class="priority-score ps-low">0.38</td><td>Long</td><td>Planned</td></tr>
+<tr><td>25</td><td>LT-10</td><td>Industry benchmark comparison</td><td><span class="sev-badge sev-2">2</span></td><td>3</td><td>12h</td><td class="priority-score ps-low">0.36</td><td>Long</td><td>Planned</td></tr>
+<tr><td>26</td><td>LT-7</td><td>3D CAD integration</td><td><span class="sev-badge sev-2">2</span></td><td>2</td><td>32h</td><td class="priority-score ps-low">0.30</td><td>Long</td><td>Planned</td></tr>
+<tr><td>27</td><td>LT-9</td><td>Training module</td><td><span class="sev-badge sev-2">2</span></td><td>2</td><td>20h</td><td class="priority-score ps-low">0.30</td><td>Long</td><td>Planned</td></tr>
+<tr><td>28</td><td>MT-9</td><td>Add ARIA labels</td><td><span class="sev-badge sev-1">1</span></td><td>2</td><td>1.5h</td><td class="priority-score ps-low">0.27</td><td>Medium</td><td>Ready</td></tr>
+<tr><td>29</td><td>MT-10</td><td>Mobile-optimized charts</td><td><span class="sev-badge sev-1">1</span></td><td>2</td><td>2h</td><td class="priority-score ps-low">0.24</td><td>Medium</td><td>Ready</td></tr>
+</tbody></table>
+</div>
+
+<!-- EXECUTION STRATEGY -->
+<h2>Recommended Execution Strategy</h2>
+<div class="card">
+<div class="strat-step">
+  <div class="strat-num" style="background:#1D9E75">✓</div>
+  <div class="strat-content"><h4>Phase 1: Short-term actions — COMPLETE</h4><p>5/6 done (1.4 hrs spent). ST-6 batch export ready for next sprint. <b>All critical quality gates met.</b></p></div>
+</div>
+<div class="strat-step">
+  <div class="strat-num">2</div>
+  <div class="strat-content"><h4>Phase 2: Critical/High severity medium-term (MT-13 → MT-11 → MT-12)</h4><p><b>Start with MT-13</b> (400V power constraint) — unblocks all motor/vendor decisions. Then MT-11 (Kaeser deep-scout) and MT-12 (PVPS deep-scout) in parallel. <b>Est. 9–14 hrs.</b></p></div>
+</div>
+<div class="strat-step">
+  <div class="strat-num">3</div>
+  <div class="strat-content"><h4>Phase 3: Parallel track — Independent medium-term</h4><p>MT-6 (backup), MT-7 (Git), MT-8 (Plotly optimization) — no vendor dependencies, can run in parallel with Phase 2. <b>Est. 3.5 hrs.</b></p></div>
+</div>
+<div class="strat-step">
+  <div class="strat-num">4</div>
+  <div class="strat-content"><h4>Phase 4: Vendor-dependent medium-term</h4><p>MT-1, MT-2, MT-3 unblock once vendor data arrives. Then MT-4, MT-5 (downstream calcs). <b>Est. 8–13 hrs.</b></p></div>
+</div>
+<div class="strat-step">
+  <div class="strat-num">5</div>
+  <div class="strat-content"><h4>Phase 5: Long-term — Hold until medium-term vendor data arrives</h4><p>Prioritize LT-1 (QRB interface), LT-8 (cost estimation), LT-6 (exergy solver) based on severity. Defer LT-2, LT-3 (collaborative/dynamic app) until engineering basis is locked. <b>Est. 180–320 hrs over 6 months.</b></p></div>
+</div>
+</div>
+
+<!-- CRITICAL PATH -->
+<h2>Critical Path</h2>
+<div class="card">
+<div style="font-family:var(--mono);font-size:12px;line-height:2;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;white-space:pre">
+<span style="color:#C0392B;font-weight:700">MT-13 (400V)</span> ──→ <span style="color:#D85A30;font-weight:700">MT-11 (Kaeser)</span> ──→ MT-2 (COMBI validate)
+       │                    └──→ MT-4 (polytropic η)
+       │                    └──→ MT-5 (turndown scenarios)
+       └──→ <span style="color:#D85A30;font-weight:700">MT-12 (PVPS)</span> ──→ MT-1 (datasheets) ──→ MT-3 (suction P)
+                                                     └──→ LT-1 (QRB interface)
+
+<span style="color:var(--fg2)">Independent parallel:</span>  MT-6 (backup) │ MT-7 (Git) │ MT-8 (Plotly) │ MT-9 (ARIA) │ MT-10 (mobile)
+</div>
+</div>
+
+<!-- NAV -->
+<div class="card">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="grid4">
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4></a>
+<a class="card" href="artifact-tracker.html"><h4 style="margin-top:0">📦 Artifact Tracker</h4></a>
+<a class="card" href="diff-tracker.html"><h4 style="margin-top:0">🔀 Diff Tracker</h4></a>
+<a class="card" href="ci-cd-pipeline.html"><h4 style="margin-top:0">🚀 CI/CD Pipeline</h4></a>
+</div>
+</div>
+</div>
+</body></html>

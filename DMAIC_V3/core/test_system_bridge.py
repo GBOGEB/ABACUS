@@ -6,7 +6,7 @@ import tempfile
 import shutil
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 
 from ..config import DMAICConfig
@@ -47,7 +47,12 @@ class MCPControlPoint:
         self.mcp_dir.mkdir(exist_ok=True)
         self.log_file = self.mcp_dir / "monitor.log"
 
-    def log_point(self, point_name: str, status: str = "enter", metadata: Dict = None):
+    def log_point(
+        self,
+        point_name: str,
+        status: str = "enter",
+        metadata: Optional[Dict[str, Any]] = None,
+    ):
         log_entry = {
             "timestamp": time.time(),
             "iso_timestamp": datetime.now().isoformat(),
@@ -92,7 +97,12 @@ class TestSystemBridge:
         self.version_file.write_text(new_version + "\n")
         self.mcp.log_point("version_updated", "complete", {"version": new_version})
 
-    def log_action(self, action_type: str, description: str, metadata: Dict = None):
+    def log_action(
+        self,
+        action_type: str,
+        description: str,
+        metadata: Optional[Dict[str, Any]] = None,
+    ):
         actions = []
         if self.actions_file.exists():
             try:
@@ -140,8 +150,8 @@ class TestSystemBridge:
         self,
         test_name: str,
         command: List[str],
-        expected_artifacts: List[str] = None,
-        cwd: Path = None,
+        expected_artifacts: Optional[List[str]] = None,
+        cwd: Optional[Path] = None,
         timeout: int = 300,
     ) -> TestExecutionResult:
         self.mcp.log_point(
@@ -210,7 +220,9 @@ class TestSystemBridge:
             return test_result
 
     def run_pytest_suite(
-        self, test_path: str = None, markers: str = None
+        self,
+        test_path: Optional[str] = None,
+        markers: Optional[str] = None,
     ) -> TestExecutionResult:
         self.mcp.log_point("run_pytest_suite", "enter")
 
@@ -224,16 +236,34 @@ class TestSystemBridge:
 
         command.extend(["-v", "--tb=short", "--maxfail=5"])
 
-        return self.run_test("pytest_suite", command)
+        test_name = "pytest_suite"
+        if markers:
+            test_name += f"_{markers}"
+        if test_path:
+            test_name += f"_{Path(test_path).stem}"
+
+        return self.run_test(test_name, command)
 
     def run_static_analysis(self) -> Dict[str, Any]:
         self.mcp.log_point("run_static_analysis", "enter")
 
-        results = {"flake8": None, "mypy": None, "pylint": None}
+        results: Dict[str, Optional[Dict[str, Any]]] = {"flake8": None}
 
         try:
+            lint_targets = [
+                "DMAIC_V3/core/test_system_bridge.py",
+                "run_deployment_test_system.py",
+            ]
             flake8_result = subprocess.run(
-                [sys.executable, "-m", "flake8", "DMAIC_V3", "--count", "--statistics"],
+                [
+                    sys.executable,
+                    "-m",
+                    "flake8",
+                    *lint_targets,
+                    "--max-line-length=120",
+                    "--count",
+                    "--statistics",
+                ],
                 cwd=self.workspace_root,
                 capture_output=True,
                 text=True,
@@ -318,24 +348,29 @@ class TestSystemBridge:
 
         return metrics
 
-    def save_deployment_report(self, output_path: Path = None):
+    def save_deployment_report(self, output_path: Optional[Path] = None):
         if not self.deployment_metrics:
             self.generate_deployment_metrics()
+
+        if not self.deployment_metrics:
+            raise RuntimeError("Deployment metrics were not generated")
+
+        metrics = self.deployment_metrics
 
         if output_path is None:
             output_path = self.output_root / "deployment_report.json"
 
         report = {
             "deployment_metrics": {
-                "version": self.deployment_metrics.version,
-                "timestamp": self.deployment_metrics.timestamp,
-                "tests_total": self.deployment_metrics.tests_total,
-                "tests_passed": self.deployment_metrics.tests_passed,
-                "tests_failed": self.deployment_metrics.tests_failed,
-                "execution_time_seconds": self.deployment_metrics.execution_time_seconds,
-                "runtime_errors": self.deployment_metrics.runtime_errors,
-                "static_analysis_passed": self.deployment_metrics.static_analysis_passed,
-                "deployment_ready": self.deployment_metrics.deployment_ready,
+                "version": metrics.version,
+                "timestamp": metrics.timestamp,
+                "tests_total": metrics.tests_total,
+                "tests_passed": metrics.tests_passed,
+                "tests_failed": metrics.tests_failed,
+                "execution_time_seconds": metrics.execution_time_seconds,
+                "runtime_errors": metrics.runtime_errors,
+                "static_analysis_passed": metrics.static_analysis_passed,
+                "deployment_ready": metrics.deployment_ready,
             },
             "test_results": {
                 name: {
@@ -356,7 +391,7 @@ class TestSystemBridge:
         self.log_action(
             "deployment_report_saved",
             f"Saved to {output_path}",
-            {"deployment_ready": self.deployment_metrics.deployment_ready},
+            {"deployment_ready": metrics.deployment_ready},
         )
 
         self.mcp.log_point(

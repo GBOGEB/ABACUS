@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-08T16:58:38.690651Z",
+  "trigger": "push",
+  "ref": "main",
+  "sha": "7480e3bcd6d8",
+  "quality_score": 75.0,
+  "total_commits": 1767,
+  "recent_commits": 1233,
+  "python_files": 411,
+  "test_files": 80,
+  "total_loc": 105909,
+  "html_docs": 78,
+  "markdown_docs": 773,
+  "workflows": 59,
+  "phase_scores": {
+    "define": {
+      "files": 15,
+      "score": 75,
+      "weight": 20
+    },
+    "measure": {
+      "files": 36,
+      "score": 100,
+      "weight": 20
+    },
+    "analyze": {
+      "files": 133,
+      "score": 100,
+      "weight": 20
+    },
+    "improve": {
+      "files": 9,
+      "score": 45,
+      "weight": 20
+    },
+    "control": {
+      "files": 1,
+      "score": 5,
+      "weight": 20
+    }
+  },
+  "escalate": false
+}

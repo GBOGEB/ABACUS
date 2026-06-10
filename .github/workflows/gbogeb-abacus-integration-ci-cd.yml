@@ -10,6 +10,11 @@ on:
       - '.github/workflows/gbogeb-abacus-integration-ci-cd.yml'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py'
+      - 'test_integration_bridge.py'
+      - 'UNIFIED_GLOB_CONFIG.yaml'
+      - '.github/workflows/gbogeb-abacus-integration-ci-cd.yml'
   workflow_dispatch:
     inputs:
       integration_mode:
@@ -52,7 +57,11 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
+      - name: Summarize repo relevance
+        run: |
+          python scripts/report_repo_relevance.py --repo "${{ github.repository }}" --format github-step-summary >> "$GITHUB_STEP_SUMMARY"
+
       - name: Verify integration files exist
         run: |
           echo "Checking for required integration files..."

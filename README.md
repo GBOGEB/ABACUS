@@ -24,6 +24,27 @@
 
 ---
 
+## 🧭 12-CLUSTER PRIMARY NAVIGATION
+
+ABACUS is organized first by the canonical **12-CLUSTER contract**.
+
+| Cluster | Phase | Primary Responsibility | Entry Points |
+|---------|-------|------------------------|--------------|
+| C1-C2 | Phase 1 (Define) | Discovery and intake | `DMAIC_V3/phases/phase1_define.py` |
+| C3-C4 | Phase 2 (Measure) | Static metrics and baselines | `DMAIC_V3/phases/phase2_measure.py` |
+| C5-C6 | Phase 3-4 (Analyze/Improve) | Root-cause and implementation changes | `DMAIC_V3/phases/phase3_analyze.py`, `DMAIC_V3/phases/phase4_improve.py` |
+| C7-C8 | Phase 5-6 (Control/Knowledge) | Quality control and orchestration hub | `DMAIC_V3/phases/phase5_control.py`, `DMAIC_V3/phases/phase6_knowledge.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+| C9-C10 | Phase 7 (Action Tracking) | KEB/GBOGEB runtime operations | `DMAIC_V3/phases/phase7_action_tracking.py`, `local_mcp/knowledge_integration_v2.3.py` |
+| C11-C12 | Phase 8 (TODO Management + Temporal Monitoring) | Temporal hooks and task governance | `DMAIC_V3/phases/phase8_todo_management.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+
+### Canonical Orchestrator
+
+- **Canonical path:** `DMAIC_V3/core/twelve_cluster_orchestrator.py`
+- **Compatibility wrapper:** `local_mcp/agent_orchestrator_v3.0.py`
+- **Temporal phase hooks:** emitted at phase start/end for phases 1-8 by the canonical orchestrator
+
+---
+
 ## 📖 Documentation
 
 | Resource | Description |
@@ -45,7 +66,7 @@
 |------|----------|---------|
 | **Analysis** | C1–C4 | Data ingestion, DMAIC phases, quality scoring |
 | **Documentation** | C5–C6 | Handover generation, knowledge management |
-| **Recursive** | C7–C8 | Self-improvement loops, orchestration |
+| **Recursive** | C7–C8 | Self-improvement loops, orchestration hub |
 | **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
 
 ---
@@ -280,25 +301,24 @@ Master_Input/
 - No DMAIC tracking
 - No CI/CD deployment
 
-### V2.3 (Historical Development Snapshot) 📚
-**Status:** 4/15 tasks (26.7%)  
+### V2.3 (Historical Development Snapshot + Current Verification) 📚
+**Status:** Historical snapshot was 4/15 tasks (26.7%); runtime and CI/CD checks below are now verified operational.  
 **Date:** Started 2025-11-11  
 **Docs:** `docs_versioned/v2.3_active/`
 
-**Progress:**
-- ✅ 4/6 agents upgraded (memory-optimized)
+**Progress (current verification):**
+- ✅ 6/6 agents upgraded (memory-optimized)
 - ✅ Task tracking system operational
 - ✅ Code index automation working
-- ✅ CI/CD pipeline created
-- 🚧 2 agents pending upgrade
-- ❌ Orchestrator v3.0 not built (critical blocker)
-- ❌ KEB/GBOGEB integration pending
+- ✅ CI/CD coverage active for core + integration paths (`v23-cicd.yml`, `gbogeb-abacus-integration-ci-cd.yml`, `bridge-ci.yml`, `federation-notebook.yml`)
+- ✅ Orchestrator v3.0 built and initializes successfully
+- ✅ KEB/GBOGEB integration active (`KEB Enabled: True`, `GBOGEB Enabled: True`)
 
-**Next Actions:**
-1. Complete agent upgrades (2 remaining)
-2. Build orchestrator v3.0
-3. Integrate KEB/GBOGEB knowledge bases
-4. Activate CI/CD deployment
+**Next Actions (remaining):**
+1. Maintain green core + integration pipelines (`v23-cicd.yml`, bridge/federation/integration workflows)
+2. Continue end-to-end validation for broader DMAIC pipelines
+3. Keep status docs synchronized with live runtime/CI evidence
+>>>>>>> refs/remotes/origin/main
 
 ---
 
@@ -419,12 +439,12 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - [ ] Identify next task from V2.3 action plan
 
 ### Phase snapshot — week 1 (historical)
-- [ ] Complete agent upgrades (2 remaining)
-- [ ] Build orchestrator v3.0
-- [ ] Integrate KEB/GBOGEB knowledge bases
+- [x] Complete agent upgrades (2 remaining)
+- [x] Build orchestrator v3.0
+- [x] Integrate KEB/GBOGEB knowledge bases
 
 ### Phase snapshot — week 2 (historical)
-- [ ] Activate CI/CD deployment
+- [x] Activate CI/CD deployment
 - [ ] Generate dashboards
 - [ ] Complete folder refactoring
 
@@ -437,7 +457,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - **Agents:** `local_mcp/agents/` (V2.3 agents)
 - **Tools:** `tools_v2.3/` (task tracker, code index, handover)
 - **Tracking:** `tracking_v2.3/tasks/` (task database)
-- **CI/CD:** `.github/workflows/cd.yml` (pipeline config)
+- **CI/CD:** `.github/workflows/v23-cicd.yml` + integration/federation/bridge workflows
 
 ### Development Environment
 - **Python:** 3.8+
@@ -456,22 +476,33 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ### V2.3 Completion (Historical target)
 - [ ] All 15 tasks complete
-- [ ] All 6 agents upgraded to v2.3
-- [ ] Orchestrator v3.0 operational
-- [ ] KEB/GBOGEB integrated
-- [ ] CI/CD deploying outputs
+- [x] All 6 agents upgraded to v2.3
+- [x] Orchestrator v3.0 operational
+- [x] KEB/GBOGEB integrated
+- [x] CI/CD deploying outputs
 - [ ] Folder structure refactored
 - [ ] End-to-end testing passed
 - [ ] Production ready
 
-### Historical Progress at Snapshot: 26.7%
-- ✅ 4/6 agents upgraded
+### Current Verified Progress (for previously blocked items)
+- ✅ 6/6 agents upgraded
 - ✅ Task tracker operational
 - ✅ Code index automated
 - ✅ Memory optimization complete
 - 🚧 Folder refactoring started
-- ❌ Orchestrator v3.0 pending
-- ❌ KEB/GBOGEB integration pending
+- ✅ Orchestrator v3.0 operational
+- ✅ KEB/GBOGEB integration operational
+
+### Current Validation Snapshot (2026-05-29)
+- ✅ 6/6 agents upgraded and loading
+- ✅ Orchestrator v3.0 operational
+- ✅ KEB/GBOGEB runtime integration active
+- ✅ CI/CD run evidence captured (successful run IDs and artifact retention links recorded)
+- ❌ Folder refactor completion pending
+- ❌ End-to-end deployment readiness pending
+- ❌ Production readiness pending
+
+See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, dependency sequence, and actionable tasks.
 
 ---
 

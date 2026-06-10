@@ -1,0 +1,2178 @@
+{
+  "file": "PFD-PID MINERVA RFCELL seen by ACR.svg",
+  "key": "RFCELL",
+  "instruments": [
+    {
+      "tag": "EHx21",
+      "prefix": "EH",
+      "number": "x21",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 566.01,
+      "y": 385.07,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx21",
+      "prefix": "TT",
+      "number": "x21",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 566.05,
+      "y": 394.45,
+      "layer": "TUN"
+    },
+    {
+      "tag": "EHx22",
+      "prefix": "EH",
+      "number": "x22",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 568.78,
+      "y": 408.32,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx22",
+      "prefix": "TT",
+      "number": "x22",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 568.82,
+      "y": 417.69,
+      "layer": "TUN"
+    },
+    {
+      "tag": "EHx11",
+      "prefix": "EH",
+      "number": "x11",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 851.57,
+      "y": 393.33,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx11",
+      "prefix": "TT",
+      "number": "x11",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 851.6,
+      "y": 402.7,
+      "layer": "TUN"
+    },
+    {
+      "tag": "EHx12",
+      "prefix": "EH",
+      "number": "x12",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 851.18,
+      "y": 416.12,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx12",
+      "prefix": "TT",
+      "number": "x12",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 851.21,
+      "y": 425.49,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx21",
+      "prefix": "PZ",
+      "number": "x21",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.58,
+      "y": 359.98,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx22",
+      "prefix": "PZ",
+      "number": "x22",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.61,
+      "y": 369.36,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx11",
+      "prefix": "PZ",
+      "number": "x11",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.51,
+      "y": 366.38,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx12",
+      "prefix": "PZ",
+      "number": "x12",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.54,
+      "y": 375.75,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx23",
+      "prefix": "TT",
+      "number": "x23",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 562.45,
+      "y": 249.57,
+      "layer": "TUN"
+    },
+    {
+      "tag": "SMx21",
+      "prefix": "SM",
+      "number": "x21",
+      "meaning": "Special Measurement",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 562.49,
+      "y": 258.95,
+      "layer": "TUN"
+    },
+    {
+      "tag": "RSx21",
+      "prefix": "RS",
+      "number": "x21",
+      "meaning": "Special / status",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 562.52,
+      "y": 268.32,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx13",
+      "prefix": "TT",
+      "number": "x13",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 854.36,
+      "y": 251.97,
+      "layer": "TUN"
+    },
+    {
+      "tag": "SMx11",
+      "prefix": "SM",
+      "number": "x11",
+      "meaning": "Special Measurement",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 854.4,
+      "y": 261.34,
+      "layer": "TUN"
+    },
+    {
+      "tag": "RSx11",
+      "prefix": "RS",
+      "number": "x11",
+      "meaning": "Special / status",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 854.43,
+      "y": 270.72,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx21",
+      "prefix": "LS",
+      "number": "x21",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 550.89,
+      "y": 324.94,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx22",
+      "prefix": "LS",
+      "number": "x22",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 550.92,
+      "y": 334.32,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx23",
+      "prefix": "LS",
+      "number": "x23",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 550.95,
+      "y": 343.69,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx21",
+      "prefix": "LS",
+      "number": "x21",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 630.26,
+      "y": 247.91,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx22",
+      "prefix": "LS",
+      "number": "x22",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 630.29,
+      "y": 257.28,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx23",
+      "prefix": "LS",
+      "number": "x23",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 630.33,
+      "y": 266.66,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx11",
+      "prefix": "LS",
+      "number": "x11",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 862.81,
+      "y": 333.04,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx12",
+      "prefix": "LS",
+      "number": "x12",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 862.84,
+      "y": 342.42,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx13",
+      "prefix": "LS",
+      "number": "x13",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 862.88,
+      "y": 351.79,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx11",
+      "prefix": "LS",
+      "number": "x11",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 801.44,
+      "y": 246.34,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx12",
+      "prefix": "LS",
+      "number": "x12",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 801.48,
+      "y": 255.71,
+      "layer": "TUN"
+    },
+    {
+      "tag": "LSx13",
+      "prefix": "LS",
+      "number": "x13",
+      "meaning": "Level Switch",
+      "variable": "level",
+      "role": "switch",
+      "is_safety": false,
+      "x": 801.51,
+      "y": 265.09,
+      "layer": "TUN"
+    },
+    {
+      "tag": "APx21",
+      "prefix": "AP",
+      "number": "x21",
+      "meaning": "Antenna / Analysis Probe",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 618.12,
+      "y": 341.39,
+      "layer": "CAV"
+    },
+    {
+      "tag": "APx11",
+      "prefix": "AP",
+      "number": "x11",
+      "meaning": "Antenna / Analysis Probe",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 807.91,
+      "y": 340.74,
+      "layer": "CAV"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 199.48,
+      "y": 918.46,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 198.84,
+      "y": 979.68,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 449.44,
+      "y": 959.3,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 471.09,
+      "y": 993.87,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "SVxxx",
+      "prefix": "SV",
+      "number": "xxx",
+      "meaning": "Safety / Solenoid Valve",
+      "variable": "safety",
+      "role": "valve",
+      "is_safety": true,
+      "x": 460.93,
+      "y": 982.62,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "SVxxx",
+      "prefix": "SV",
+      "number": "xxx",
+      "meaning": "Safety / Solenoid Valve",
+      "variable": "safety",
+      "role": "valve",
+      "is_safety": true,
+      "x": 439.28,
+      "y": 948.54,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 193.77,
+      "y": 945.67,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "EH526",
+      "prefix": "EH",
+      "number": "526",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 511.99,
+      "y": 682.94,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "TT526",
+      "prefix": "TT",
+      "number": "526",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 512.02,
+      "y": 692.32,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "EH516",
+      "prefix": "EH",
+      "number": "516",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 904.91,
+      "y": 682.94,
+      "layer": "CPLR flange heater"
+    },
+    {
+      "tag": "TT516",
+      "prefix": "TT",
+      "number": "516",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 904.95,
+      "y": 692.32,
+      "layer": "CPLR flange heater"
+    },
+    {
+      "tag": "EHx24",
+      "prefix": "EH",
+      "number": "x24",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 562.12,
+      "y": 831.2,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "TTx24",
+      "prefix": "TT",
+      "number": "x24",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 562.16,
+      "y": 840.57,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "EHx14",
+      "prefix": "EH",
+      "number": "x14",
+      "meaning": "Electric Heater",
+      "variable": "heat",
+      "role": "actuator",
+      "is_safety": false,
+      "x": 839.52,
+      "y": 832.61,
+      "layer": "RF tee anti-freeze"
+    },
+    {
+      "tag": "TTx14",
+      "prefix": "TT",
+      "number": "x14",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 839.56,
+      "y": 841.98,
+      "layer": "RF tee anti-freeze"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 647.13,
+      "y": 828.89,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 577.13,
+      "y": 740.89,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 833.45,
+      "y": 739.18,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 841.35,
+      "y": 817.31,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 571.71,
+      "y": 816.32,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 767.54,
+      "y": 828.99,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "PTx21",
+      "prefix": "PT",
+      "number": "x21",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 559.04,
+      "y": 713.48,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "ADx21",
+      "prefix": "AD",
+      "number": "x21",
+      "meaning": "Analysis Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 560.0,
+      "y": 690.88,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "ADx22",
+      "prefix": "AD",
+      "number": "x22",
+      "meaning": "Analysis Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 559.57,
+      "y": 724.68,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "ADx11",
+      "prefix": "AD",
+      "number": "x11",
+      "meaning": "Analysis Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 856.06,
+      "y": 691.44,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "ADx12",
+      "prefix": "AD",
+      "number": "x12",
+      "meaning": "Analysis Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 855.61,
+      "y": 723.7,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "EDx21",
+      "prefix": "ED",
+      "number": "x21",
+      "meaning": "Element Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 559.9,
+      "y": 701.13,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "EDx11",
+      "prefix": "ED",
+      "number": "x11",
+      "meaning": "Element Device",
+      "variable": "analysis",
+      "role": "device",
+      "is_safety": false,
+      "x": 855.91,
+      "y": 701.47,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "PTx11",
+      "prefix": "PT",
+      "number": "x11",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 856.52,
+      "y": 712.6,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 696.03,
+      "y": 867.5,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 717.85,
+      "y": 856.9,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 684.15,
+      "y": 764.38,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 726.56,
+      "y": 764.07,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 727.82,
+      "y": 690.24,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 690.3,
+      "y": 690.38,
+      "layer": "Instrumentation"
+    }
+  ],
+  "equipment": [
+    {
+      "label": "CAV.A",
+      "kind": "Cavity",
+      "x": 767.7,
+      "y": 356.32,
+      "layer": "CAV"
+    },
+    {
+      "label": "CAV.B",
+      "kind": "Cavity",
+      "x": 647.17,
+      "y": 355.6,
+      "layer": "CAV"
+    }
+  ],
+  "temperature_points": [
+    {
+      "tag": "TTx21",
+      "prefix": "TT",
+      "number": "x21",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 566.05,
+      "y": 394.45,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx22",
+      "prefix": "TT",
+      "number": "x22",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 568.82,
+      "y": 417.69,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx11",
+      "prefix": "TT",
+      "number": "x11",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 851.6,
+      "y": 402.7,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx12",
+      "prefix": "TT",
+      "number": "x12",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 851.21,
+      "y": 425.49,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx23",
+      "prefix": "TT",
+      "number": "x23",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 562.45,
+      "y": 249.57,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTx13",
+      "prefix": "TT",
+      "number": "x13",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 854.36,
+      "y": 251.97,
+      "layer": "TUN"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 193.77,
+      "y": 945.67,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "TT526",
+      "prefix": "TT",
+      "number": "526",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 512.02,
+      "y": 692.32,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "TT516",
+      "prefix": "TT",
+      "number": "516",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 904.95,
+      "y": 692.32,
+      "layer": "CPLR flange heater"
+    },
+    {
+      "tag": "TTx24",
+      "prefix": "TT",
+      "number": "x24",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 562.16,
+      "y": 840.57,
+      "layer": "EH TT"
+    },
+    {
+      "tag": "TTx14",
+      "prefix": "TT",
+      "number": "x14",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 839.56,
+      "y": 841.98,
+      "layer": "RF tee anti-freeze"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 647.13,
+      "y": 828.89,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 577.13,
+      "y": 740.89,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 833.45,
+      "y": 739.18,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 841.35,
+      "y": 817.31,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 571.71,
+      "y": 816.32,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 767.54,
+      "y": 828.99,
+      "layer": "RF Tee monitoring (FREIA)"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 696.03,
+      "y": 867.5,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 717.85,
+      "y": 856.9,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 684.15,
+      "y": 764.38,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 726.56,
+      "y": 764.07,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 727.82,
+      "y": 690.24,
+      "layer": "Instrumentation"
+    },
+    {
+      "tag": "TTxxx",
+      "prefix": "TT",
+      "number": "xxx",
+      "meaning": "Temperature Transmitter",
+      "variable": "temperature",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 690.3,
+      "y": 690.38,
+      "layer": "Instrumentation"
+    }
+  ],
+  "pressure_points": [
+    {
+      "tag": "PZx21",
+      "prefix": "PZ",
+      "number": "x21",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.58,
+      "y": 359.98,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx22",
+      "prefix": "PZ",
+      "number": "x22",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.61,
+      "y": 369.36,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx11",
+      "prefix": "PZ",
+      "number": "x11",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.51,
+      "y": 366.38,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx12",
+      "prefix": "PZ",
+      "number": "x12",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.54,
+      "y": 375.75,
+      "layer": "TUN"
+    },
+    {
+      "tag": null,
+      "value": "2 bar",
+      "source_text": "Comp. air 2 bar, permanently connected",
+      "x": 251.41,
+      "y": 867.15,
+      "layer": "CPLR",
+      "variable": "pressure"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 199.48,
+      "y": 918.46,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 198.84,
+      "y": 979.68,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 449.44,
+      "y": 959.3,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTxxx",
+      "prefix": "PT",
+      "number": "xxx",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 471.09,
+      "y": 993.87,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "PTx21",
+      "prefix": "PT",
+      "number": "x21",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 559.04,
+      "y": 713.48,
+      "layer": "CPLR AD, ED, PT"
+    },
+    {
+      "tag": "PTx11",
+      "prefix": "PT",
+      "number": "x11",
+      "meaning": "Pressure Transmitter",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": false,
+      "x": 856.52,
+      "y": 712.6,
+      "layer": "CPLR AD, ED, PT"
+    }
+  ],
+  "safety_devices": [
+    {
+      "tag": "PZx21",
+      "prefix": "PZ",
+      "number": "x21",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.58,
+      "y": 359.98,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx22",
+      "prefix": "PZ",
+      "number": "x22",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 564.61,
+      "y": 369.36,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx11",
+      "prefix": "PZ",
+      "number": "x11",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.51,
+      "y": 366.38,
+      "layer": "TUN"
+    },
+    {
+      "tag": "PZx12",
+      "prefix": "PZ",
+      "number": "x12",
+      "meaning": "Pressure (special / safety)",
+      "variable": "pressure",
+      "role": "sensor",
+      "is_safety": true,
+      "x": 864.54,
+      "y": 375.75,
+      "layer": "TUN"
+    },
+    {
+      "tag": "SVxxx",
+      "prefix": "SV",
+      "number": "xxx",
+      "meaning": "Safety / Solenoid Valve",
+      "variable": "safety",
+      "role": "valve",
+      "is_safety": true,
+      "x": 460.93,
+      "y": 982.62,
+      "layer": "CPLR"
+    },
+    {
+      "tag": "SVxxx",
+      "prefix": "SV",
+      "number": "xxx",
+      "meaning": "Safety / Solenoid Valve",
+      "variable": "safety",
+      "role": "valve",
+      "is_safety": true,
+      "x": 439.28,
+      "y": 948.54,
+      "layer": "CPLR"
+    }
+  ],
+  "vacuum_barriers": [],
+  "process_line_segments": {
+    "B": [
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.0,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      }
+    ],
+    "A": [
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.0,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          676.49,
+          698.41
+        ],
+        "layer": "CPLR water loops",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          676.49,
+          836.99
+        ],
+        "layer": "CPLR water loops",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          758.32,
+          698.78
+        ],
+        "layer": "CPLR water loops",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          758.32,
+          836.99
+        ],
+        "layer": "CPLR water loops",
+        "dash": "none",
+        "width": "1"
+      }
+    ],
+    "WATER": [
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          755.97,
+          837.13
+        ],
+        "layer": "Tubes for FREIA",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          678.78,
+          837.13
+        ],
+        "layer": "Tubes for FREIA",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          530.51,
+          958.57
+        ],
+        "layer": "Green pipes",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          530.51,
+          933.61
+        ],
+        "layer": "Green pipes",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          530.51,
+          917.86
+        ],
+        "layer": "Green pipes",
+        "dash": "none",
+        "width": "1"
+      },
+      {
+        "start": [
+          530.51,
+          974.11
+        ],
+        "layer": "Green pipes",
+        "dash": "none",
+        "width": "1"
+      }
+    ],
+    "E": [
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      },
+      {
+        "start": [
+          -10.0,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      }
+    ],
+    "D": [
+      {
+        "start": [
+          1.96,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.0,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      },
+      {
+        "start": [
+          -10.0,
+          0.0
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "1pt"
+      },
+      {
+        "start": [
+          -10.69,
+          -4.44
+        ],
+        "layer": "(root)",
+        "dash": "none",
+        "width": "0.625"
+      }
+    ]
+  },
+  "color_groups": {
+    "#000000": 172,
+    "#00ffff": 11,
+    "#999999": 2,
+    "#0000ff": 32,
+    "#00ff00": 27,
+    "#808000": 2,
+    "#9b9b9b": 4,
+    "#008000": 17,
+    "#ff0000": 5,
+    "#808080": 2,
+    "#898585": 4,
+    "#ff00ff": 1,
+    "#1a1a1a": 32,
+    "#000080": 65
+  },
+  "layers": [
+    {
+      "id": "layer1",
+      "label": "background",
+      "depth": 1,
+      "text_count": 2
+    },
+    {
+      "id": "layer18",
+      "label": "CPLR B",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer18-3",
+      "label": "CPLR A",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer18-8",
+      "label": "Tee B",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer18-8-6",
+      "label": "Tee A",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer10",
+      "label": "Legend",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer9",
+      "label": "Comments",
+      "depth": 2,
+      "text_count": 0
+    },
+    {
+      "id": "layer12",
+      "label": "Scopes",
+      "depth": 3,
+      "text_count": 3
+    },
+    {
+      "id": "layer19-4",
+      "label": "Version",
+      "depth": 2,
+      "text_count": 1
+    },
+    {
+      "id": "layer4",
+      "label": "coldmasses",
+      "depth": 1,
+      "text_count": 0
+    },
+    {
+      "id": "layer19",
+      "label": "RFCELL",
+      "depth": 1,
+      "text_count": 0
+    },
+    {
+      "id": "layer8",
+      "label": "TUN",
+      "depth": 2,
+      "text_count": 12
+    },
+    {
+      "id": "layer2",
+      "label": "CAV",
+      "depth": 2,
+      "text_count": 6
+    },
+    {
+      "id": "layer3",
+      "label": "CPLR",
+      "depth": 2,
+      "text_count": 25
+    },
+    {
+      "id": "layer11",
+      "label": "CPLR water loops",
+      "depth": 3,
+      "text_count": 0
+    },
+    {
+      "id": "layer6-9-1",
+      "label": "CPLR flange heater",
+      "depth": 3,
+      "text_count": 2
+    },
+    {
+      "id": "layer6-9-1-3",
+      "label": "EH TT",
+      "depth": 4,
+      "text_count": 3
+    },
+    {
+      "id": "layer6-9-1-9",
+      "label": "RF tee anti-freeze",
+      "depth": 3,
+      "text_count": 1
+    },
+    {
+      "id": "layer6",
+      "label": "Comment",
+      "depth": 4,
+      "text_count": 2
+    },
+    {
+      "id": "layer5",
+      "label": "RF Tee monitoring (FREIA)",
+      "depth": 3,
+      "text_count": 6
+    },
+    {
+      "id": "layer14",
+      "label": "CPLR AD, ED, PT",
+      "depth": 3,
+      "text_count": 8
+    },
+    {
+      "id": "layer21",
+      "label": "Tubes for FREIA",
+      "depth": 3,
+      "text_count": 0
+    },
+    {
+      "id": "layer7",
+      "label": "Green pipes",
+      "depth": 4,
+      "text_count": 0
+    },
+    {
+      "id": "layer13",
+      "label": "Instrumentation",
+      "depth": 4,
+      "text_count": 6
+    }
+  ],
+  "instrument_bubbles": 96
+}

@@ -10,6 +10,11 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with: { python-version: "3.11" }
+      - name: Ensure GLOBAL index exists
+        run: |
+          if [ ! -f GLOBAL_index.json ]; then
+            echo '{"artefacts": []}' > GLOBAL_index.json
+          fi
       - name: Recursive build
         run: |
           python scripts/recursive_build.py --index GLOBAL_index.json --out metrics/metrics.json --update-metrics
@@ -26,4 +31,3 @@ jobs:
           git add -A
           git commit -m "ci: recursive build + preview-diff" || echo "no changes"
           git push || true
-

@@ -1,0 +1,426 @@
+{
+  "QCELL-LB": {
+    "total_layers": 54,
+    "groups": {
+      "Piping / process lines": [
+        {
+          "id": "layer2",
+          "label": "Piping and series instrumentation",
+          "text_count": 144
+        },
+        {
+          "id": "layer45",
+          "label": "Piping",
+          "text_count": 2
+        },
+        {
+          "id": "layer12",
+          "label": "Bottom line and common",
+          "text_count": 0
+        },
+        {
+          "id": "layer13",
+          "label": "6 - Main process line return + buffer tank (V)",
+          "text_count": 0
+        },
+        {
+          "id": "layer16",
+          "label": "5 - Main process line inlet + buffer tank (L)",
+          "text_count": 0
+        },
+        {
+          "id": "layer15",
+          "label": "4 - Coupler B intercept",
+          "text_count": 0
+        },
+        {
+          "id": "layer14",
+          "label": "3 - Coupler A intercept + common",
+          "text_count": 0
+        }
+      ],
+      "Vacuum / barrier": [
+        {
+          "id": "layer55",
+          "label": "Vacuum vessel",
+          "text_count": 5
+        },
+        {
+          "id": "layer59",
+          "label": "INVAC",
+          "text_count": 11
+        },
+        {
+          "id": "layer42",
+          "label": "QVB",
+          "text_count": 0
+        }
+      ],
+      "Equipment / vessels": [
+        {
+          "id": "layer18-6",
+          "label": "CPLR 1",
+          "text_count": 5
+        },
+        {
+          "id": "layer18",
+          "label": "CPLR 2",
+          "text_count": 4
+        },
+        {
+          "id": "layer56",
+          "label": "CPLR circuit",
+          "text_count": 7
+        },
+        {
+          "id": "layer9",
+          "label": "CPLR cuff and port metal",
+          "text_count": 5
+        },
+        {
+          "id": "layer4",
+          "label": "2 K tank",
+          "text_count": 11
+        },
+        {
+          "id": "layer58",
+          "label": "Bottom connection",
+          "text_count": 8
+        },
+        {
+          "id": "layer34",
+          "label": "CPLR pressure limiter",
+          "text_count": 4
+        },
+        {
+          "id": "layer21",
+          "label": "Headers A B C D",
+          "text_count": 6
+        },
+        {
+          "id": "layer49",
+          "label": "CPLR",
+          "text_count": 1
+        },
+        {
+          "id": "layer7",
+          "label": "Spare heaters",
+          "text_count": 4
+        },
+        {
+          "id": "layer29",
+          "label": "Instrumentation Pcav Observer",
+          "text_count": 22
+        },
+        {
+          "id": "layer30",
+          "label": "Flowmeter for AL",
+          "text_count": 3
+        }
+      ],
+      "Instrumentation": [
+        {
+          "id": "layer6-9-1-3",
+          "label": "EH TT",
+          "text_count": 1
+        },
+        {
+          "id": "layer24",
+          "label": "Instrumentation",
+          "text_count": 16
+        },
+        {
+          "id": "layer6",
+          "label": "EHTT",
+          "text_count": 1
+        },
+        {
+          "id": "layer46",
+          "label": "Over-instrumentalization",
+          "text_count": 0
+        },
+        {
+          "id": "layer23-3",
+          "label": "Instrument air",
+          "text_count": 2
+        },
+        {
+          "id": "layer11",
+          "label": "Instrumentation naming zones",
+          "text_count": 0
+        }
+      ],
+      "Sub-systems / zones": [
+        {
+          "id": "QM",
+          "label": "QM - DUT at FREIA",
+          "text_count": 0
+        },
+        {
+          "id": "layer10",
+          "label": "RFCELL 2",
+          "text_count": 5
+        },
+        {
+          "id": "layer19",
+          "label": "RFCELL 1",
+          "text_count": 5
+        },
+        {
+          "id": "layer62",
+          "label": "QM - PeMo",
+          "text_count": 0
+        },
+        {
+          "id": "testcap",
+          "label": "TC-LB",
+          "text_count": 8
+        },
+        {
+          "id": "layer31",
+          "label": "He guard",
+          "text_count": 1
+        },
+        {
+          "id": "layer27",
+          "label": "PeMo-HEGU1",
+          "text_count": 6
+        },
+        {
+          "id": "layer52",
+          "label": "Users",
+          "text_count": 4
+        },
+        {
+          "id": "layer44",
+          "label": "QINFRA",
+          "text_count": 0
+        },
+        {
+          "id": "layer23",
+          "label": "Utilities NA.PS",
+          "text_count": 8
+        }
+      ],
+      "Annotation / legend": [
+        {
+          "id": "layer5",
+          "label": "electrical",
+          "text_count": 0
+        },
+        {
+          "id": "layer74",
+          "label": "Namings",
+          "text_count": 8
+        },
+        {
+          "id": "layer26",
+          "label": "Comments",
+          "text_count": 5
+        },
+        {
+          "id": "layer17",
+          "label": "Heat loads",
+          "text_count": 53
+        },
+        {
+          "id": "layer22",
+          "label": "Terminal points",
+          "text_count": 22
+        },
+        {
+          "id": "layer20",
+          "label": "Naming and conditions",
+          "text_count": 9
+        },
+        {
+          "id": "layer1",
+          "label": "General comments",
+          "text_count": 0
+        },
+        {
+          "id": "version",
+          "label": "Versions",
+          "text_count": 6
+        },
+        {
+          "id": "legend",
+          "label": "Legend",
+          "text_count": 14
+        },
+        {
+          "id": "layer8",
+          "label": "pn levels",
+          "text_count": 8
+        },
+        {
+          "id": "layer61",
+          "label": "Scope division",
+          "text_count": 18
+        }
+      ],
+      "Other / uncategorized": [
+        {
+          "id": "layer3-7",
+          "label": "V502",
+          "text_count": 3
+        },
+        {
+          "id": "layer3-7-6",
+          "label": "V",
+          "text_count": 3
+        },
+        {
+          "id": "layer51",
+          "label": "Pre-series",
+          "text_count": 2
+        },
+        {
+          "id": "layer28",
+          "label": "W",
+          "text_count": 3
+        },
+        {
+          "id": "layer3",
+          "label": "V501",
+          "text_count": 3
+        }
+      ]
+    }
+  },
+  "RFCELL": {
+    "total_layers": 24,
+    "groups": {
+      "Piping / process lines": [
+        {
+          "id": "layer18-8",
+          "label": "Tee B",
+          "text_count": 0
+        },
+        {
+          "id": "layer18-8-6",
+          "label": "Tee A",
+          "text_count": 0
+        },
+        {
+          "id": "layer11",
+          "label": "CPLR water loops",
+          "text_count": 0
+        },
+        {
+          "id": "layer6-9-1-9",
+          "label": "RF tee anti-freeze",
+          "text_count": 1
+        },
+        {
+          "id": "layer5",
+          "label": "RF Tee monitoring (FREIA)",
+          "text_count": 6
+        },
+        {
+          "id": "layer7",
+          "label": "Green pipes",
+          "text_count": 0
+        }
+      ],
+      "Equipment / vessels": [
+        {
+          "id": "layer18",
+          "label": "CPLR B",
+          "text_count": 0
+        },
+        {
+          "id": "layer18-3",
+          "label": "CPLR A",
+          "text_count": 0
+        },
+        {
+          "id": "layer4",
+          "label": "coldmasses",
+          "text_count": 0
+        },
+        {
+          "id": "layer2",
+          "label": "CAV",
+          "text_count": 6
+        },
+        {
+          "id": "layer3",
+          "label": "CPLR",
+          "text_count": 25
+        },
+        {
+          "id": "layer6-9-1",
+          "label": "CPLR flange heater",
+          "text_count": 2
+        },
+        {
+          "id": "layer14",
+          "label": "CPLR AD, ED, PT",
+          "text_count": 8
+        },
+        {
+          "id": "layer21",
+          "label": "Tubes for FREIA",
+          "text_count": 0
+        }
+      ],
+      "Instrumentation": [
+        {
+          "id": "layer6-9-1-3",
+          "label": "EH TT",
+          "text_count": 3
+        },
+        {
+          "id": "layer13",
+          "label": "Instrumentation",
+          "text_count": 6
+        }
+      ],
+      "Sub-systems / zones": [
+        {
+          "id": "layer1",
+          "label": "background",
+          "text_count": 2
+        },
+        {
+          "id": "layer19",
+          "label": "RFCELL",
+          "text_count": 0
+        },
+        {
+          "id": "layer8",
+          "label": "TUN",
+          "text_count": 12
+        }
+      ],
+      "Annotation / legend": [
+        {
+          "id": "layer10",
+          "label": "Legend",
+          "text_count": 0
+        },
+        {
+          "id": "layer9",
+          "label": "Comments",
+          "text_count": 0
+        },
+        {
+          "id": "layer12",
+          "label": "Scopes",
+          "text_count": 3
+        },
+        {
+          "id": "layer19-4",
+          "label": "Version",
+          "text_count": 1
+        },
+        {
+          "id": "layer6",
+          "label": "Comment",
+          "text_count": 2
+        }
+      ]
+    }
+  }
+}

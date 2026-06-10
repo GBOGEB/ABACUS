@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Artifact Index</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📦</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.view-tabs{display:flex;gap:4px;margin:14px 0;flex-wrap:wrap}
+.view-tabs button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.view-tabs button.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.artifact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:14px 0}
+.artifact-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:all .2s;position:relative}
+.artifact-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.artifact-card .a-icon{font-size:22px;margin-bottom:6px}
+.artifact-card .a-name{font-weight:600;font-size:14px;margin-bottom:4px}
+.artifact-card .a-path{font-family:var(--mono);font-size:11px;color:var(--fg2)}
+.artifact-card .a-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.artifact-card .a-tag{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--bg);border:1px solid var(--border)}
+.a-tag.critical{background:#FFEBEE;color:#C62828;border-color:#FFCDD2}
+.a-tag.high{background:#FFF3E0;color:#E65100;border-color:#FFCC80}
+.a-tag.stable{background:#E8F5E9;color:#2E7D32;border-color:#A5D6A7}
+.a-tag.evolving{background:#FFF8E1;color:#F57F17;border-color:#FFF176}
+.a-tag.unstable{background:#FFEBEE;color:#C62828;border-color:#EF9A9A}
+[data-theme=dark] .a-tag.critical{background:#3a1515;border-color:#5a2020}
+[data-theme=dark] .a-tag.high{background:#3a2a10;border-color:#5a4020}
+[data-theme=dark] .a-tag.stable{background:#1a3a1a;border-color:#2a5a2a}
+[data-theme=dark] .a-tag.evolving{background:#3a3510;border-color:#5a5020}
+[data-theme=dark] .a-tag.unstable{background:#3a1515;border-color:#5a2020}
+.artifact-card .a-actions{display:flex;gap:4px;margin-top:10px}
+.artifact-card .a-btn{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--bg);border:1px solid var(--border);cursor:pointer;color:var(--fg);font-family:inherit}
+.artifact-card .a-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.dep-graph{width:100%;min-height:400px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin:14px 0}
+.yaml-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;white-space:pre;overflow-x:auto;line-height:1.6}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:14px 0}
+.summary-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.summary-card .big{font-size:26px;font-weight:700}.summary-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+.version-grid{margin:14px 0}
+.version-grid table{font-size:12px}
+.status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.s-sync{background:#1D9E75}.s-ahead{background:#E5A100}.s-behind{background:#D85A30}.s-na{background:#ccc}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › Artifact Index</p>
+<h1>📦 Comprehensive Artifact Repository</h1>
+<p class="muted">All project artifacts · toggle views · dependency graph · version tracking · v0.4.3</p>
+
+<!-- SUMMARY -->
+<div class="summary-grid">
+  <div class="summary-card"><div class="big" id="totalCount">0</div><div class="lbl">Total Artifacts</div></div>
+  <div class="summary-card"><div class="big" id="htmlCount">0</div><div class="lbl">HTML Views</div></div>
+  <div class="summary-card"><div class="big" id="dataCount">0</div><div class="lbl">Data Sources</div></div>
+  <div class="summary-card"><div class="big" id="stableCount">0</div><div class="lbl">🟢 Stable</div></div>
+  <div class="summary-card"><div class="big" id="evolvingCount">0</div><div class="lbl">🟡 Evolving</div></div>
+  <div class="summary-card"><div class="big" id="unstableCount">0</div><div class="lbl">🔴 Unstable</div></div>
+</div>
+
+<!-- VIEW TABS -->
+<div class="view-tabs">
+  <button class="active" onclick="setView('type',this)">By Type</button>
+  <button onclick="setView('importance',this)">By Importance</button>
+  <button onclick="setView('stability',this)">By Stability</button>
+  <button onclick="setView('user_facing',this)">By User-Facing</button>
+  <button onclick="setView('all',this)">All (flat)</button>
+</div>
+
+<!-- ARTIFACT GRID -->
+<div id="artifactContainer"></div>
+
+<!-- VERSION TRACKING -->
+<h2>Version Tracking</h2>
+<div class="card version-grid">
+<table><thead><tr><th>Artifact</th><th>Current (local)</th><th>Live (v0.4.2)</th><th>Deployed (GH Pages)</th><th>Status</th></tr></thead>
+<tbody id="versionBody"></tbody></table>
+</div>
+
+<!-- YAML TOP-5 -->
+<h2>Top Artifacts (YAML)</h2>
+<div class="yaml-block" id="yamlTop5"></div>
+
+<!-- DEPENDENCY GRAPH -->
+<h2>Dependency Network</h2>
+<div class="card"><div id="plotDeps" class="dep-graph"></div></div>
+
+<!-- UNSTABLE FOCUS -->
+<h2>⚠ Unstable Artifacts — Stabilization Plan</h2>
+<div id="unstableSection"></div>
+
+</div><!-- /container -->
+
+<script>
+const ARTIFACTS = [
+  {name:"index.html",path:"index.html",type:"HTML",importance:"Critical",stability:"Stable",user_facing:"End-user",size_kb:4.2,dmaic:"Define",last_mod:"v0.4.2",deps:["assets/style.css","assets/common.js"],icon:"🏠"},
+  {name:"slides.html",path:"slides.html",type:"HTML",importance:"Critical",stability:"Stable",user_facing:"End-user",size_kb:18.5,dmaic:"Define",last_mod:"v0.4.0",deps:["slides.json","assets/style.css"],icon:"🎞"},
+  {name:"slide-editor.html",path:"slide-editor.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"Internal",size_kb:12.3,dmaic:"Improve",last_mod:"v0.4.0",deps:["slides.json","assets/style.css"],icon:"✏️"},
+  {name:"reports.html",path:"reports.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"End-user",size_kb:8.1,dmaic:"Analyse",last_mod:"v0.4.0",deps:["master/data.json","assets/style.css"],icon:"📄"},
+  {name:"tables.html",path:"tables.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"End-user",size_kb:6.7,dmaic:"Measure",last_mod:"v0.4.1",deps:["master/data.json","assets/style.css"],icon:"📊"},
+  {name:"graphs.html",path:"graphs.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"End-user",size_kb:9.2,dmaic:"Analyse",last_mod:"v0.4.0",deps:["master/data.json","assets/style.css"],icon:"📈"},
+  {name:"truth.html",path:"truth.html",type:"HTML",importance:"Critical",stability:"Stable",user_facing:"End-user",size_kb:5.4,dmaic:"Define",last_mod:"v0.4.0",deps:["master/truth.md","assets/style.css"],icon:"📌"},
+  {name:"utilities.html",path:"utilities.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:7.8,dmaic:"Measure",last_mod:"v0.4.0",deps:["master/data.json","assets/style.css"],icon:"🧮"},
+  {name:"pvps.html",path:"pvps.html",type:"HTML",importance:"Critical",stability:"Evolving",user_facing:"End-user",size_kb:11.2,dmaic:"Measure",last_mod:"v0.4.2",deps:["master/data.json","assets/style.css"],icon:"🔧",unstable_note:"Placeholder data (60% complete)",stab_plan:"Integrate vendor data (MT-12)",stab_target:"v0.4.4"},
+  {name:"hx-sizing.html",path:"hx-sizing.html",type:"HTML",importance:"High",stability:"Evolving",user_facing:"End-user",size_kb:14.6,dmaic:"Analyse",last_mod:"v0.4.2",deps:["master/data.json","assets/style.css"],icon:"♨",unstable_note:"HX count and N+1 strategy undefined",stab_plan:"Engineering decision + vendor input",stab_target:"v0.5.0"},
+  {name:"thermo-analysis.html",path:"thermo-analysis.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"End-user",size_kb:16.3,dmaic:"Analyse",last_mod:"v0.4.0",deps:["master/data.json","assets/style.css"],icon:"🌡"},
+  {name:"operations.html",path:"operations.html",type:"HTML",importance:"High",stability:"Evolving",user_facing:"End-user",size_kb:13.8,dmaic:"Analyse",last_mod:"v0.4.0",deps:["master/data.json","assets/style.css"],icon:"🎛",unstable_note:"Turndown scenarios incomplete",stab_plan:"Define C30/C24 scenarios (MT-5)",stab_target:"v0.5.0"},
+  {name:"review-dmaic.html",path:"review-dmaic.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"Internal",size_kb:10.1,dmaic:"Control",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"📋"},
+  {name:"action-tracker.html",path:"action-tracker.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"Internal",size_kb:22.4,dmaic:"Improve",last_mod:"v0.4.2",deps:["assets/style.css"],icon:"📌"},
+  {name:"weighted-priority.html",path:"weighted-priority.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:9.5,dmaic:"Analyse",last_mod:"v0.4.2",deps:["assets/style.css"],icon:"⚖"},
+  {name:"qa-checklist.html",path:"qa-checklist.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:5.8,dmaic:"Control",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"✅"},
+  {name:"vendor-kaeser.html",path:"vendor-kaeser.html",type:"HTML",importance:"Critical",stability:"Evolving",user_facing:"End-user",size_kb:18.0,dmaic:"Measure",last_mod:"v0.4.3",deps:["assets/style.css"],icon:"🏭"},
+  {name:"bt-ranking.html",path:"bt-ranking.html",type:"HTML",importance:"High",stability:"Evolving",user_facing:"Internal",size_kb:16.0,dmaic:"Analyse",last_mod:"v0.4.3",deps:["assets/style.css"],icon:"📊"},
+  {name:"qa-interactive.html",path:"qa-interactive.html",type:"HTML",importance:"High",stability:"Evolving",user_facing:"Internal",size_kb:12.0,dmaic:"Control",last_mod:"v0.4.3",deps:["assets/style.css"],icon:"✅"},
+  {name:"data.json",path:"master/data.json",type:"Data",importance:"Critical",stability:"Evolving",user_facing:"Dev only",size_kb:45.2,dmaic:"Measure",last_mod:"v0.4.2",deps:[],icon:"💾"},
+  {name:"config.yaml",path:"master/config.yaml",type:"Data",importance:"High",stability:"Stable",user_facing:"Dev only",size_kb:2.1,dmaic:"Define",last_mod:"v0.4.0",deps:[],icon:"⚙"},
+  {name:"slides.json",path:"slides.json",type:"Data",importance:"High",stability:"Stable",user_facing:"Dev only",size_kb:8.3,dmaic:"Define",last_mod:"v0.4.0",deps:[],icon:"📋"},
+  {name:"style.css",path:"assets/style.css",type:"Assets",importance:"Critical",stability:"Stable",user_facing:"Dev only",size_kb:3.8,dmaic:"Define",last_mod:"v0.4.2",deps:[],icon:"🎨"},
+  {name:"common.js",path:"assets/common.js",type:"Assets",importance:"Critical",stability:"Stable",user_facing:"Dev only",size_kb:2.4,dmaic:"Define",last_mod:"v0.4.2",deps:[],icon:"⚡"},
+  {name:"render_all.py",path:"master/render_all.py",type:"Code",importance:"Medium",stability:"Stable",user_facing:"Dev only",size_kb:3.2,dmaic:"Improve",last_mod:"v0.4.0",deps:["master/slides.md","master/truth.md"],icon:"🐍"},
+  {name:"slides.md",path:"master/slides.md",type:"Docs",importance:"High",stability:"Stable",user_facing:"Dev only",size_kb:12.5,dmaic:"Define",last_mod:"v0.4.0",deps:[],icon:"📝"},
+  {name:"truth.md",path:"master/truth.md",type:"Docs",importance:"Critical",stability:"Stable",user_facing:"Dev only",size_kb:8.7,dmaic:"Define",last_mod:"v0.4.0",deps:[],icon:"📝"},
+  {name:"search-index.html",path:"search-index.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"End-user",size_kb:6.2,dmaic:"Control",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"🔎"},
+  {name:"artifact-tracker.html",path:"artifact-tracker.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:8.9,dmaic:"Control",last_mod:"v0.4.2",deps:["assets/style.css"],icon:"📦"},
+  {name:"diff-tracker.html",path:"diff-tracker.html",type:"HTML",importance:"Low",stability:"Stable",user_facing:"Internal",size_kb:7.1,dmaic:"Control",last_mod:"v0.4.2",deps:["assets/style.css"],icon:"🔀"},
+  {name:"ci-cd-pipeline.html",path:"ci-cd-pipeline.html",type:"HTML",importance:"Low",stability:"Stable",user_facing:"Dev only",size_kb:5.5,dmaic:"Control",last_mod:"v0.4.2",deps:["assets/style.css"],icon:"🚀"},
+  {name:"missed-opportunities.html",path:"missed-opportunities.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:9.3,dmaic:"Improve",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"🔍"},
+  {name:"xref-matrix.html",path:"xref-matrix.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:4.8,dmaic:"Control",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"🔗"},
+  {name:"verification-checklist.html",path:"verification-checklist.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:5.2,dmaic:"Control",last_mod:"v0.4.1",deps:["assets/style.css"],icon:"🔢"},
+  {name:"handover.html",path:"handover.html",type:"HTML",importance:"High",stability:"Stable",user_facing:"End-user",size_kb:7.6,dmaic:"Define",last_mod:"v0.4.0",deps:["assets/style.css"],icon:"🤝"},
+  {name:"status.html",path:"status.html",type:"HTML",importance:"Medium",stability:"Stable",user_facing:"Internal",size_kb:5.9,dmaic:"Control",last_mod:"v0.4.0",deps:["assets/style.css"],icon:"✅"}
+];
+
+let currentView='type';
+
+function setView(view,btn){
+  currentView=view;
+  document.querySelectorAll('.view-tabs button').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  render();
+}
+
+function render(){
+  const container=document.getElementById('artifactContainer');
+  container.innerHTML='';
+
+  // Summary counts
+  document.getElementById('totalCount').textContent=ARTIFACTS.length;
+  document.getElementById('htmlCount').textContent=ARTIFACTS.filter(a=>a.type==='HTML').length;
+  document.getElementById('dataCount').textContent=ARTIFACTS.filter(a=>a.type==='Data').length;
+  document.getElementById('stableCount').textContent=ARTIFACTS.filter(a=>a.stability==='Stable').length;
+  document.getElementById('evolvingCount').textContent=ARTIFACTS.filter(a=>a.stability==='Evolving').length;
+  document.getElementById('unstableCount').textContent=ARTIFACTS.filter(a=>a.stability==='Unstable').length;
+
+  let groups={};
+  if(currentView==='type'){
+    ARTIFACTS.forEach(a=>{if(!groups[a.type])groups[a.type]=[];groups[a.type].push(a);});
+  } else if(currentView==='importance'){
+    ['Critical','High','Medium','Low'].forEach(k=>groups[k]=[]);
+    ARTIFACTS.forEach(a=>groups[a.importance].push(a));
+  } else if(currentView==='stability'){
+    ['Stable','Evolving','Unstable'].forEach(k=>groups[k]=[]);
+    ARTIFACTS.forEach(a=>groups[a.stability].push(a));
+  } else if(currentView==='user_facing'){
+    ARTIFACTS.forEach(a=>{if(!groups[a.user_facing])groups[a.user_facing]=[];groups[a.user_facing].push(a);});
+  } else {
+    groups['All Artifacts']=ARTIFACTS;
+  }
+
+  Object.entries(groups).forEach(([groupName,items])=>{
+    if(items.length===0)return;
+    const section=document.createElement('div');
+    section.innerHTML=`<h3>${groupName} (${items.length})</h3>`;
+    const grid=document.createElement('div');
+    grid.className='artifact-grid';
+    items.forEach(a=>{
+      const card=document.createElement('div');
+      card.className='artifact-card';
+      card.innerHTML=`
+        <div class="a-icon">${a.icon}</div>
+        <div class="a-name">${a.name}</div>
+        <div class="a-path">${a.path}</div>
+        <div class="a-meta">
+          <span class="a-tag ${a.importance.toLowerCase()}">${a.importance}</span>
+          <span class="a-tag ${a.stability.toLowerCase()}">${a.stability}</span>
+          <span class="a-tag">${a.dmaic}</span>
+          <span class="a-tag">${a.size_kb} KB</span>
+          <span class="a-tag">${a.last_mod}</span>
+        </div>
+        <div class="a-actions">
+          <button class="a-btn" onclick="window.open('${a.path}','_blank')">👁 View</button>
+          <button class="a-btn" onclick="showDeps('${a.name}')">🔗 Deps</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+
+  renderVersionTable();
+  renderYAML();
+  renderDepGraph();
+  renderUnstable();
+}
+
+function renderVersionTable(){
+  const tbody=document.getElementById('versionBody');
+  const versionMap={
+    'index.html':{live:'v0.4.2',deployed:'v0.4.2',status:'sync'},
+    'slides.html':{live:'v0.4.2',deployed:'v0.4.1',status:'ahead'},
+    'data.json':{live:'v0.4.2',deployed:'v0.4.1',status:'ahead'},
+    'pvps.html':{live:'v0.4.2',deployed:'N/A',status:'behind'},
+    'vendor-kaeser.html':{live:'N/A',deployed:'N/A',status:'behind'},
+    'bt-ranking.html':{live:'N/A',deployed:'N/A',status:'behind'},
+    'qa-interactive.html':{live:'N/A',deployed:'N/A',status:'behind'},
+  };
+  const key=['index.html','slides.html','reports.html','tables.html','graphs.html','truth.html','pvps.html','hx-sizing.html','thermo-analysis.html','operations.html','data.json','vendor-kaeser.html','bt-ranking.html','qa-interactive.html'];
+  tbody.innerHTML=key.map(name=>{
+    const vm=versionMap[name]||{live:'v0.4.2',deployed:'v0.4.2',status:'sync'};
+    const a=ARTIFACTS.find(a=>a.name===name)||{last_mod:'v0.4.3'};
+    const dotClass=vm.status==='sync'?'s-sync':vm.status==='ahead'?'s-ahead':'s-behind';
+    const label=vm.status==='sync'?'🟢 Synced':vm.status==='ahead'?'🟡 Ahead':'🔴 Not deployed';
+    return `<tr><td>${name}</td><td>v0.4.3-dev</td><td>${vm.live}</td><td>${vm.deployed}</td><td><span class="status-dot ${dotClass}"></span>${label}</td></tr>`;
+  }).join('');
+}
+
+function renderYAML(){
+  const sorted=[...ARTIFACTS].sort((a,b)=>{
+    const imp={Critical:4,High:3,Medium:2,Low:1};
+    return (imp[b.importance]||0)-(imp[a.importance]||0);
+  });
+  const top5=sorted.slice(0,5);
+  const htmlTop=[...ARTIFACTS].filter(a=>a.type==='HTML').sort((a,b)=>{
+    const imp={Critical:4,High:3,Medium:2,Low:1};
+    return (imp[b.importance]||0)-(imp[a.importance]||0);
+  }).slice(0,5);
+  const dataTop=ARTIFACTS.filter(a=>a.type==='Data'||a.type==='Code');
+  document.getElementById('yamlTop5').textContent=`# Artifact Rankings — v0.4.3
+top_artifacts_overall:
+${top5.map((a,i)=>`  - name: "${a.name}"
+    importance: ${a.importance}
+    stability: ${a.stability}
+    path: "${a.path}"`).join('\n')}
+
+top_by_category:
+  html_views:
+${htmlTop.map(a=>`    - ${a.name}`).join('\n')}
+  data_sources:
+${dataTop.map(a=>`    - ${a.name}`).join('\n')}`;
+}
+
+function renderDepGraph(){
+  // Use Plotly network-like scatter
+  const nodes=ARTIFACTS.map((a,i)=>({id:i,name:a.name,type:a.type}));
+  const edges=[];
+  ARTIFACTS.forEach((a,i)=>{
+    a.deps.forEach(dep=>{
+      const j=ARTIFACTS.findIndex(b=>b.path===dep||b.name===dep);
+      if(j>=0) edges.push([i,j]);
+    });
+  });
+  // Simple circular layout
+  const n=nodes.length;
+  const xs=nodes.map((_,i)=>Math.cos(2*Math.PI*i/n));
+  const ys=nodes.map((_,i)=>Math.sin(2*Math.PI*i/n));
+  const typeColors={HTML:'#378ADD',Data:'#1D9E75',Assets:'#D85A30',Code:'#7F77DD',Docs:'#E5A100'};
+  const edgeX=[],edgeY=[];
+  edges.forEach(([a,b])=>{edgeX.push(xs[a],xs[b],null);edgeY.push(ys[a],ys[b],null);});
+  Plotly.newPlot('plotDeps',[
+    {x:edgeX,y:edgeY,mode:'lines',line:{color:'#ccc',width:0.8},hoverinfo:'skip',type:'scatter'},
+    {x:xs,y:ys,mode:'markers+text',text:nodes.map(n=>n.name.replace('.html','').replace('.json','')),
+      textposition:'top center',textfont:{size:8},
+      marker:{size:12,color:nodes.map(n=>typeColors[n.type]||'#999'),line:{width:1,color:'#fff'}},
+      hovertext:nodes.map(n=>`${n.name} (${n.type})`),hoverinfo:'text',type:'scatter'}
+  ],{margin:{l:20,r:20,t:30,b:20},height:420,
+    xaxis:{visible:false},yaxis:{visible:false,scaleanchor:'x'},
+    plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)',
+    title:{text:'Dependency Network',font:{size:13,family:'Aptos,sans-serif'}},
+    showlegend:false},{responsive:true});
+}
+
+function renderUnstable(){
+  const unstable=ARTIFACTS.filter(a=>a.stability!=='Stable'&&a.unstable_note);
+  const section=document.getElementById('unstableSection');
+  section.innerHTML=unstable.map(a=>`
+    <div class="card">
+      <h4 style="margin-top:0">${a.icon} ${a.name} — <span class="a-tag ${a.stability.toLowerCase()}">${a.stability}</span></h4>
+      <table style="font-size:12.5px"><tbody>
+        <tr><td class="muted" style="width:130px">Issue</td><td>${a.unstable_note}</td></tr>
+        <tr><td class="muted">Stabilization Plan</td><td>${a.stab_plan}</td></tr>
+        <tr><td class="muted">Target Version</td><td>${a.stab_target}</td></tr>
+      </tbody></table>
+    </div>`).join('');
+}
+
+function showDeps(name){
+  const a=ARTIFACTS.find(x=>x.name===name);
+  if(!a)return;
+  const depNames=a.deps.join(', ')||'None';
+  const dependents=ARTIFACTS.filter(x=>x.deps.includes(a.path)||x.deps.includes(a.name)).map(x=>x.name).join(', ')||'None';
+  alert(`${name}\n\nDepends on: ${depNames}\nDepended by: ${dependents}`);
+}
+
+render();
+</script>
+</body></html>

@@ -1,0 +1,10 @@
+semantic_traceability:
+  Q3:
+    ssot: SSOT-Q3
+    gaps: [CG-01, CG-02]
+  Q4:
+    ssot: SSOT-Q4
+    gaps: [CG-03, CG-04, CG-05, CG-07]
+  Q5:
+    ssot: SSOT-Q5
+    gaps: [CG-06, CG-08]

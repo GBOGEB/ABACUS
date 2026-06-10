@@ -31,6 +31,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Summarize repo relevance
+        run: |
+          python scripts/report_repo_relevance.py --repo "${{ github.repository }}" --format github-step-summary >> "$GITHUB_STEP_SUMMARY"
+
       - name: Install tooling
         run: |
           python -m pip install --upgrade pip
