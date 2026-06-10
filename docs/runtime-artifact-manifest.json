@@ -59,6 +59,13 @@
       "path": ".github/workflows/runtime-governance.yml",
       "status": "active",
       "description": "Runtime governance workflow that executes W007 validation."
+    },
+    {
+      "id": "runtime_governance_status",
+      "capability": "runtime_governance_status",
+      "path": "reports/runtime_governance_status.json",
+      "status": "active",
+      "description": "Machine-readable runtime governance status evidence for W007."
     }
   ]
 }
