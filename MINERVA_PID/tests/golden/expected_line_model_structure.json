@@ -1,0 +1,60 @@
+{
+  "_comment": "W007 golden file. Stable structural invariants of data/model/line_model.json produced by ./make.sh. Generated from verified runtime output (not hand-authored). Volatile geometry/coordinate fields are intentionally excluded so the gate tolerates non-semantic jitter.",
+  "line_count": 9,
+  "lines": [
+    {
+      "line_id": "L01",
+      "canonical_name": "unknown_black_or_other",
+      "role": "scope_boundary",
+      "process_code": "unknown"
+    },
+    {
+      "line_id": "L02",
+      "canonical_name": "blue_A",
+      "role": "primary_process",
+      "process_code": "A"
+    },
+    {
+      "line_id": "L03",
+      "canonical_name": "green_W_coupler",
+      "role": "primary_process",
+      "process_code": "W"
+    },
+    {
+      "line_id": "L04",
+      "canonical_name": "olive_S_line",
+      "role": "warm_line",
+      "process_code": "S"
+    },
+    {
+      "line_id": "L05",
+      "canonical_name": "grey_V_vent",
+      "role": "vent_line",
+      "process_code": "V"
+    },
+    {
+      "line_id": "L06",
+      "canonical_name": "red_orange_D_E",
+      "role": "manifold",
+      "process_code": "D"
+    },
+    {
+      "line_id": "L07",
+      "canonical_name": "cyan_B_2K",
+      "role": "internal_branch",
+      "process_code": "B"
+    },
+    {
+      "line_id": "L08",
+      "canonical_name": "blue_A",
+      "role": "internal_branch",
+      "process_code": "A_prime"
+    },
+    {
+      "line_id": "L09",
+      "canonical_name": "red_orange_D_E",
+      "role": "manifold",
+      "process_code": "E"
+    }
+  ]
+}

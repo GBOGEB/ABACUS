@@ -7,10 +7,19 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "types": ["node"]
   },
   "include": [
     "*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

@@ -20,3 +20,10 @@ __pycache__/
 
 # Auto-generated office-doc preview artifacts (HTML/asset renderings of .docx/.pptx)
 *_preview/
+
+# W007 CI/CD — coverage.py runtime artifacts (regenerated in CI; never committed)
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
