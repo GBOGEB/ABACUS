@@ -174,6 +174,9 @@ def validate_review_package() -> List[str]:
             ".github/workflows/review-artifact-validation.yml",
         ),
     )
+    if errors:
+        return errors
+
     _validate_ssot(errors)
     _validate_gaps(errors)
     _validate_governance(errors)
