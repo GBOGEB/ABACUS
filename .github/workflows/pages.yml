@@ -6,10 +6,16 @@ on:
       - main
     paths:
       - build_qplant_visualization.py
+      - scripts/validate_runtime_foundation.py
       - tools/gate_rollup.py
       - logs/**
       - content/qplant/**
       - renderers/**
+      - rtm/**
+      - reports/runtime_governance_status.json
+      - docs/runtime.html
+      - docs/runtime-artifact-manifest.json
+      - docs/api/rtm_trace_matrix.json
       - .github/workflows/pages.yml
   workflow_dispatch:
 
@@ -52,6 +58,12 @@ jobs:
 
       - name: Build CI gate rollup feed
         run: python tools/gate_rollup.py
+
+      - name: Publish RTM traceability feed
+        run: cp rtm/trace_matrix.json docs/api/rtm_trace_matrix.json
+
+      - name: Validate W007 runtime foundation
+        run: python scripts/validate_runtime_foundation.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
