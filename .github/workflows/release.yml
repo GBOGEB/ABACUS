@@ -89,7 +89,7 @@ jobs:
             exit 1
           fi
           tar czf release-artifacts/abacus-docs-${{ steps.version.outputs.tag }}.tar.gz \
-            docs/ rtm/ reports/runtime_governance_status.json cryo_dashboard_v0_3_0/ docs_versioned/
+            docs/ rtm/ cryo_dashboard_v0_3_0/ docs_versioned/
           echo "Package size: $(du -h release-artifacts/*.tar.gz | cut -f1)"
 
       - name: Generate release notes
