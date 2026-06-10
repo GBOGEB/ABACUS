@@ -87,7 +87,7 @@ class Phase1Define:
             '.pytest_cache', '__MACOSX', 'dist', 'build', '.tox',
             '.mypy_cache', '.ruff_cache', 'htmlcov', '.coverage',
             'DMAIC_V3_OUTPUT', '.vscode', '.idea', 'site-packages',
-            'ariana_trace_project', 'CODESPACES_jyperter', 'ABACUS',
+            'ariana_trace_project', 'ABACUS',
             'QPLANT_GitHub_Integration', 'pipeline-automation-hub'
         }
 

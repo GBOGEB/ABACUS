@@ -113,8 +113,20 @@ class FullPipelineOrchestrator:
                  enable_idempotency_flag: bool = True,
                  enable_git_commits: bool = True,
                  verbose: bool = True,
-                 debug_port: int = None):
-        """Initialize the Full Pipeline Orchestrator"""
+                 debug_port: int = None,
+                 codespace_jyperter_notebooks: list = None):
+        """Initialize the Full Pipeline Orchestrator
+
+        Args:
+            enable_idempotency_flag: Enable idempotency caching.
+            enable_git_commits: Commit outputs to git after each iteration.
+            verbose: Enable verbose output.
+            debug_port: Optional port for debug monitoring server.
+            codespace_jyperter_notebooks: Optional list of .ipynb paths to
+                parse as a Phase0 pre-step.  Extracts are written to
+                ``integration/codespace_jyperter/extracts/`` and registered
+                as notebook knowledge sources for Phase6.
+        """
 
         self.config = DMAICConfig()
         self.state_mgr = StateManager(self.config.paths.state_dir)
@@ -124,6 +136,7 @@ class FullPipelineOrchestrator:
         self.enable_git_commits = enable_git_commits
         self.verbose = verbose
         self.debug_port = debug_port
+        self.codespace_jyperter_notebooks = codespace_jyperter_notebooks or []
 
         self.execution_log: List[Dict] = []
 
@@ -176,7 +189,13 @@ class FullPipelineOrchestrator:
         
         # Integration Point 3: Start background change detection
         self.bg_change_detector.start()
-        
+
+        # Integration Point 4: codespace_jyperter notebook pre-step (optional)
+        # If .ipynb paths were supplied, parse them before Phase 0 so the
+        # resulting extracts are available to Phase 2 and Phase 6.
+        if self.codespace_jyperter_notebooks:
+            self._run_codespace_jyperter_prestep(iteration)
+
         try:
             # Phase 0: Initialization
             success, results = self._execute_phase_with_tracking(
@@ -330,7 +349,43 @@ class FullPipelineOrchestrator:
             if change_summary.get('timestamp'):
                 print(f"  Last snapshot: {change_summary.get('timestamp')}")
             print(f"{'='*80}")
-    
+
+    def _run_codespace_jyperter_prestep(self, iteration: int) -> None:
+        """Parse codespace_jyperter notebooks as a Phase0 pre-step.
+
+        Iterates over ``self.codespace_jyperter_notebooks``, parses each
+        .ipynb file with ``NotebookParser``, writes JSON extracts to
+        ``integration/codespace_jyperter/extracts/``, and prints a summary.
+        Failures are non-fatal: a warning is printed and execution continues.
+        """
+        try:
+            from integration.codespace_jyperter.notebook_parser import NotebookParser
+        except ImportError:
+            print("[WARNING] codespace_jyperter notebook_parser not importable; skipping pre-step.")
+            return
+
+        parser = NotebookParser()
+        extract_dir = Path("integration/codespace_jyperter/extracts")
+
+        print("\n" + "=" * 80)
+        print("CODESPACE_JYPERTER PRE-STEP: Notebook parsing")
+        print("=" * 80)
+
+        for nb_path in self.codespace_jyperter_notebooks:
+            try:
+                extract = parser.parse(nb_path)
+                out = parser.save_extract(extract, extract_dir, iteration=iteration)
+                print(
+                    f"  [OK] {Path(nb_path).name} → {out.name} "
+                    f"({extract['cell_count']} cells, "
+                    f"{extract['code_cell_count']} code, "
+                    f"{extract['markdown_cell_count']} markdown)"
+                )
+            except Exception as exc:
+                print(f"  [WARNING] Could not parse {nb_path}: {exc}")
+
+        print("=" * 80)
+
     def _execute_phase_with_tracking(self,
                                      phase_obj: Any,
                                      phase_name: str,

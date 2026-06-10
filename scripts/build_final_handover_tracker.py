@@ -14,6 +14,18 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 from dmaic.tuple_metadata import default_status_schema, validate_tracker_payload  # noqa: E402
 
 
+def _load_phase2_manifest() -> dict:
+    manifest = ROOT_DIR / "docs" / "api" / "phase2_reconstruction_manifest.json"
+    if not manifest.exists():
+        return {"manifest_version": "missing", "component_count": 0}
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    return {
+        "manifest_version": payload.get("manifest_version", "unknown"),
+        "component_count": len(payload.get("component_map", [])),
+        "artifact_count": len(payload.get("artifacts", [])),
+    }
+
+
 def _ci_status() -> str:
     raw = os.getenv("GITHUB_JOB_STATUS", "").lower().strip()
     if raw == "success":
@@ -39,6 +51,7 @@ def build_payload() -> dict:
     current_branch = _current_branch()
     reviewed_branches = _reviewed_branches(current_branch)
     ci_status = _ci_status()
+    phase2 = _load_phase2_manifest()
 
     branches = []
     for name in reviewed_branches:
@@ -70,6 +83,11 @@ def build_payload() -> dict:
             {"name": "E6 Modules", "status": "in_progress", "link": "../README.md"},
             {"name": "HTML Tools", "status": "validated", "link": "FINAL_HANDOVER.html"},
             {"name": "Python Tools", "status": "in_progress", "link": "tools/index.html"},
+            {
+                "name": "Phase-2 Reconstruction",
+                "status": "validated" if phase2.get("component_count", 0) else "in_progress",
+                "link": "api/phase2_reconstruction_manifest.json",
+            },
         ],
         "branches": branches,
         "tuple_metadata": [
@@ -79,6 +97,8 @@ def build_payload() -> dict:
                 "validation_log": "CI job: Validate tuple metadata tracker payload",
                 "downstream_consumer": "docs/FINAL_HANDOVER.html",
                 "status": ci_status,
+                "consumed_from": ["tuple-reconstruction-manifest"],
+                "feeds_into": ["tuple-artifact-export"],
             },
             {
                 "tuple_id": "tuple-artifact-export",
@@ -86,6 +106,17 @@ def build_payload() -> dict:
                 "validation_log": "validated tuple metadata artifact",
                 "downstream_consumer": "DMAIC_V3_OUTPUT/tuple_metadata.validated.json",
                 "status": "validated" if ci_status == "validated" else "in_progress",
+                "consumed_from": ["tuple-ci-validation"],
+                "feeds_into": ["tuple-reconstruction-manifest"],
+            },
+            {
+                "tuple_id": "tuple-reconstruction-manifest",
+                "source": "scripts/validate_reconstruction_manifest.py",
+                "validation_log": f"phase2 components: {phase2.get('component_count', 0)}",
+                "downstream_consumer": "DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json",
+                "status": "validated" if phase2.get("component_count", 0) else "in_progress",
+                "consumed_from": ["tuple-artifact-export"],
+                "feeds_into": ["tuple-ci-validation", "tuple-reconstruction-manifest"],
             },
         ],
         "integration_bridges": [

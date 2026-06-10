@@ -1,0 +1,51 @@
+# Pre-commit hooks for the MINERVA QCELL/RFCELL P&ID subproject (W007 CI/CD).
+#
+# ADVISORY / OPT-IN. These hooks are NOT enforced by CI and are not auto-run
+# against the existing tree (that would create a large reformatting diff and
+# could perturb the carefully-pinned, reproducible outputs). To adopt locally:
+#
+#     pip install pre-commit
+#     pre-commit install          # install the git hook
+#     pre-commit run --all-files  # one-off sweep (review the diff!)
+#
+# The hygiene hooks (whitespace / EOF / YAML / JSON / large-files) are safe and
+# recommended. `black` and `flake8` are formatting/lint opinions kept here for
+# convenience; enable them deliberately. flake8 line length is set to 100 to
+# match the existing source style.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        # Preserve trailing whitespace inside Markdown (hard line breaks).
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        # Golden snapshots use a leading `_comment` key but are valid JSON.
+        exclude: '^tests/golden/.*\.json$|\.ipynb$'
+      - id: check-added-large-files
+        args: ["--maxkb=5120"]
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: ["--line-length=100"]
+        # Generated/derived trees and the staged CI snapshot are excluded.
+        exclude: '^(data/|reports/|publish/)'
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        args:
+          - "--max-line-length=100"
+          # E203/W503 conflict with black; E501 handled by max-line-length.
+          - "--extend-ignore=E203,W503"
+        exclude: '^(data/|reports/|publish/)'

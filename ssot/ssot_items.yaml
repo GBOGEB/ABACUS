@@ -1,0 +1,9 @@
+ssot_items:
+  - id: SSOT-Q3
+    name: Recovery System Philosophy
+  - id: SSOT-Q4
+    name: Line S Design Basis
+  - id: SSOT-Q5
+    name: Line W Design Basis
+  - id: SSOT-CG
+    name: Contractual Gap Register

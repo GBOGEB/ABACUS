@@ -1,0 +1,7 @@
+release_policy:
+  release_tags:
+    - W000
+    - W001
+    - W002
+  require_review_approval: true
+  require_traceability: true

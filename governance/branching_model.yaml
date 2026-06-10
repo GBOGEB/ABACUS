@@ -1,0 +1,12 @@
+branching:
+  main: protected
+  wave_pattern: 'wave/W###-*'
+  require_pr: true
+  release_tags:
+    - W000
+    - W001
+    - W002
+    - W003
+    - W004
+    - W005
+    - W006

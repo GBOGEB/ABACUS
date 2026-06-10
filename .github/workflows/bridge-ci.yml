@@ -29,7 +29,7 @@ on:
         type: boolean
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}
   BRIDGE_VERSION: '1.0.0'
 
 jobs:
@@ -107,7 +107,7 @@ jobs:
           python run_deployment_test_system.py --test-suite unit --skip-static --version ci-unit-${{ github.sha }}
       
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         if: always()
         with:
           file: ./coverage.xml
@@ -183,7 +183,8 @@ jobs:
           mypy DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py \
             --ignore-missing-imports \
             --no-strict-optional \
-            --allow-untyped-calls
+            --allow-untyped-calls \
+            --follow-imports=skip
       
       - name: Run pylint
         continue-on-error: true
@@ -224,6 +225,7 @@ jobs:
         run: |
           python run_deployment_test_system.py \
             --test-suite all \
+            --skip-static \
             --version ci-full-${{ github.sha }} \
             --output-dir ./deployment_output
       

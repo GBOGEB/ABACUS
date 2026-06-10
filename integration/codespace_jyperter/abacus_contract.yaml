@@ -1,0 +1,92 @@
+# integration/codespace_jyperter/abacus_contract.yaml
+#
+# Integration contract between GBOGEB/codespace_jyperter (auxiliary plane)
+# and GBOGEB/ABACUS (runtime plane) within the DELTA_1 federation.
+#
+# This contract is referenced by:
+#   - runtime/federation/codex-abacus-federation.yaml (auxiliary_planes[].integration_contract)
+#   - src/dmaic/contract.py::DOWNSTREAM_CONSUMERS["codespace_jyperter"]
+#   - DMAIC_V3/phases/phase6_knowledge.py (_load_notebook_knowledge_sources)
+
+contract:
+  version: "1.0.0"
+  consumer: GBOGEB/codespace_jyperter
+  provider: GBOGEB/ABACUS
+  federation_moniker: DELTA_1
+  plane: auxiliary
+
+  # ABACUS outputs that codespace_jyperter consumes
+  consumed_from_abacus:
+    - phase: phase1_define
+      artifact: file_scan_results
+      description: >
+        File-tree scan output (JSON) produced by Phase1Define.run().
+        codespace_jyperter uses this to correlate notebook cells with scanned
+        source files.
+      path_pattern: "DMAIC_V3_OUTPUT/iteration_*/phase1_define.json"
+      required: false
+
+    - phase: phase3_analyze
+      artifact: root_cause_analysis_report
+      description: >
+        Root-cause analysis report (JSON) from Phase3Analyze.  Feeds the
+        analysis context shown in interactive notebook environments.
+      path_pattern: "DMAIC_V3_OUTPUT/iteration_*/phase3_analysis.json"
+      required: false
+
+  # codespace_jyperter outputs that ABACUS consumes
+  produced_for_abacus:
+    - artifact: notebook_cell_extracts
+      description: >
+        Structured JSON produced by the notebook parser (notebook_parser.py).
+        One entry per notebook cell containing: cell_type, source, outputs,
+        metadata, and execution_count.
+      target_phase: phase2_measure
+      schema:
+        type: array
+        items:
+          type: object
+          required: [cell_index, cell_type, source]
+          properties:
+            cell_index: {type: integer}
+            cell_type: {type: string, enum: [code, markdown, raw]}
+            source: {type: string}
+            outputs: {type: array}
+            execution_count: {type: [integer, "null"]}
+            metadata: {type: object}
+      path_pattern: "integration/codespace_jyperter/extracts/notebook_cells_*.json"
+
+    - artifact: notebook_knowledge_source
+      description: >
+        Knowledge-source descriptor (JSON) registered in Phase6Knowledge.
+        Points to notebook extract files and provides provenance metadata so
+        Phase6 can include notebook-derived insights in its maturity score.
+      target_phase: phase6_knowledge
+      schema:
+        type: object
+        required: [source_id, source_type, repo, extract_path, timestamp]
+        properties:
+          source_id: {type: string}
+          source_type: {type: string, enum: [notebook_extract]}
+          repo: {type: string}
+          extract_path: {type: string}
+          timestamp: {type: string, format: date-time}
+          cell_count: {type: integer}
+          code_cell_count: {type: integer}
+          markdown_cell_count: {type: integer}
+      path_pattern: "integration/codespace_jyperter/extracts/knowledge_source_*.json"
+
+  # Tuple metadata to be emitted by codespace_jyperter when publishing extracts.
+  # Validated by src/dmaic/tuple_metadata.py::validate_tuple_metadata().
+  tuple_template:
+    tuple_id: "codespace_jyperter-notebook-extract-<iteration>"
+    source: "GBOGEB/codespace_jyperter"
+    validation_log: "integration/codespace_jyperter/extracts/validation_<iteration>.log"
+    downstream_consumer: "GBOGEB/ABACUS"
+    status: "validated"
+    consumed_from: []
+    feeds_into: []
+
+  idempotency:
+    enabled: true
+    cache_key_fields: [notebook_path, notebook_sha256]

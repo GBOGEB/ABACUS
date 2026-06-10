@@ -1,0 +1,24 @@
+{
+  "_comment": "ISA-5.1-style instrument/equipment class map for the MINERVA QCELL/RFCELL P&ID. Externalized so classification logic is config-driven and testable. prefix -> {canonical_name, variable, layer, discipline}. layer values reference configs/layers.yaml ids.",
+  "schema_version": 1,
+  "classes": {
+    "TT": {"canonical_name": "Temperature Transmitter", "variable": "Temperature", "layer": "08_Instruments_Bubbles", "discipline": "instrumentation"},
+    "PT": {"canonical_name": "Pressure Transmitter", "variable": "Pressure", "layer": "08_Instruments_Bubbles", "discipline": "instrumentation"},
+    "FT": {"canonical_name": "Flow Transmitter", "variable": "Flow", "layer": "08_Instruments_Bubbles", "discipline": "instrumentation"},
+    "LT": {"canonical_name": "Level Transmitter", "variable": "Level", "layer": "08_Instruments_Bubbles", "discipline": "instrumentation"},
+    "LS": {"canonical_name": "Level/Limit Switch", "variable": "Level/Position", "layer": "09_Control_Elements", "discipline": "instrumentation"},
+    "HL": {"canonical_name": "Heat Load", "variable": "Heat", "layer": "05_HeatLoads_ALL", "discipline": "process"},
+    "EH": {"canonical_name": "Electrical Heater", "variable": "Electrical/Heat", "layer": "09_Control_Elements", "discipline": "electrical"},
+    "HV": {"canonical_name": "Hand/Manual Valve", "variable": "Hand/Manual", "layer": "09_Control_Elements", "discipline": "valves"},
+    "CV": {"canonical_name": "Control Valve", "variable": "Control", "layer": "09_Control_Elements", "discipline": "valves"},
+    "FV": {"canonical_name": "Stop / On-Off Valve", "variable": "Flow/Isolation", "layer": "09_Control_Elements", "discipline": "valves"},
+    "SV": {"canonical_name": "Safety Valve", "variable": "Safety", "layer": "09_Control_Elements", "discipline": "safety"},
+    "PZ": {"canonical_name": "Piezo / Tuner Item", "variable": "Position/Tuning", "layer": "09_Control_Elements", "discipline": "rfcell"},
+    "HX": {"canonical_name": "Heat Exchanger", "variable": "Heat Exchange", "layer": "07_Equipment_Major", "discipline": "equipment"}
+  },
+  "ambiguous_single_letters": {
+    "_comment": "Single-letter prefixes (V, J) are NOT auto-classified as instruments to avoid false positives from dimension/segment labels. They are resolved only by colour-line / geometry context.",
+    "V": {"note": "vent-line code OR vessel; resolve by colour (GREY=V line) + geometry"},
+    "J": {"note": "jumper / pumping item; resolve by context, not regex alone"}
+  }
+}

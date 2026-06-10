@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MYRRHA warm-compressor comparison &mdash; interactive mass-flow view</title>
+<!--
+  Standalone interactive visualization for:
+  MYRRHA warm-compressor comparison: ALaT FSD 575 SFC vs LKT FSD 475 SFC
+
+  This page was extracted from the analysis Markdown document so that the
+  interactive chart can run in any browser. GitHub strips <script>/<style>
+  from rendered Markdown, so the live version must live here.
+
+  NOTE on theming: the original embedded version relied on GitHub-app CSS
+  custom properties (var(--color-*), var(--font-sans), var(--border-radius-*)).
+  Those resolve to nothing outside the GitHub app shell, so every theme token
+  below is now an explicit, self-contained value. Engineering accent colours
+  (#1D9E75 ok, #D85A30 over, #7F77DD cap line, #378ADD per-skid, #BA7517 amber)
+  are preserved exactly as in the source.
+-->
+<style>
+  :root{
+    --color-text-primary:#1f2328;
+    --color-text-secondary:#656d76;
+    --color-text-info:#0969da;
+    --color-background-primary:#ffffff;
+    --color-background-secondary:#f6f8fa;
+    --color-border-tertiary:#d0d7de;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --border-radius-lg:12px;
+    --border-radius-md:8px;
+  }
+  body{
+    margin:0;
+    padding:24px;
+    background:var(--color-background-secondary);
+    color:var(--color-text-primary);
+    font:14px/1.5 var(--font-sans);
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:22px;font-weight:600;margin:0 0 4px}
+  .sub{color:var(--color-text-secondary);font-size:13px;margin-bottom:20px}
+  .vbtn{border:0.5px solid var(--color-border-tertiary);border-radius:999px;padding:8px 12px;background:var(--color-background-primary);color:var(--color-text-primary);font:500 13px var(--font-sans);cursor:pointer}
+  .vbtn.active{border-color:var(--color-text-info);color:var(--color-text-info)}
+  .vcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px}
+  .vtbl{width:100%;border-collapse:collapse;font:12px var(--font-sans)}
+  .vtbl td,.vtbl th{padding:7px 8px;border-top:0.5px solid var(--color-border-tertiary);text-align:right}
+  .vtbl td:first-child,.vtbl th:first-child{text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>MYRRHA warm-compressor comparison</h1>
+  <div class="sub">Interactive mass-flow view &mdash; ALaT FSD 575 SFC vs LKT FSD 475 SFC. Frequency values are first-pass equal-load estimates using proportional flow-vs-speed scaling from the documented basis point.</div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    <button class="vbtn active" data-key="alat575">ALaT FSD575 full point</button>
+    <button class="vbtn" data-key="lkt475nom">LKT FSD475 actual nominal</button>
+    <button class="vbtn" data-key="lkt475max">LKT FSD475 documented max</button>
+  </div>
+
+  <div id="metrics" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px"></div>
+
+  <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:16px">
+    <div class="vcard">
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px">Target total mass flow vs 3-skid capacity</div>
+      <div id="chartA"></div>
+    </div>
+    <div class="vcard">
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px">Per-skid flow and estimated equal-load frequency</div>
+      <div id="chartB"></div>
+    </div>
+  </div>
+
+  <div class="vcard" style="margin-top:16px">
+    <div style="font-size:14px;font-weight:500;margin-bottom:8px">Requested total-flow checks</div>
+    <div id="tableWrap"></div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-top:10px">
+      Frequency values are first-pass equal-load estimates using proportional flow-vs-speed scaling from the documented basis point.
+    </div>
+  </div>
+</div>
+<script>
+const targets=[350,344,336,304,275,250,200];
+const models={
+  alat575:{
+    title:"ALaT FSD575 full point",
+    perUnit:112.54,
+    freq:72,
+    units:3,
+    motor:315,
+    pkg:348.54,
+    cw:18.2,
+    cwHeat:323.9,
+    airHeat:17.4
+  },
+  lkt475nom:{
+    title:"LKT FSD475 actual nominal",
+    perUnit:88.0,
+    freq:57,
+    units:3,
+    motor:250,
+    pkg:266,
+    cw:15.5,
+    cwHeat:230.9,
+    airHeat:13.1
+  },
+  lkt475max:{
+    title:"LKT FSD475 documented max",
+    perUnit:96.1,
+    freq:62,
+    units:3,
+    motor:250,
+    pkg:289,
+    cw:15.5,
+    cwHeat:230.9,
+    airHeat:13.1
+  }
+};
+let current="alat575";
+
+function metric(label,val){
+  return `<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:3px">${label}</div>
+    <div style="font-size:23px;font-weight:500">${val}</div>
+  </div>`;
+}
+function fmt(n,d=1){ return Number(n).toFixed(d).replace(/\.0$/,''); }
+
+function render(){
+  const m=models[current];
+  const maxTotal=m.perUnit*m.units;
+  document.getElementById('metrics').innerHTML=
+    metric("Basis point per skid",`${fmt(m.perUnit,2)} g/s`) +
+    metric("3-skid max total",`${fmt(maxTotal,1)} g/s`) +
+    metric("Per-skid package power",`${fmt(m.pkg,1)} kW`) +
+    metric("Per-skid cooling water",`${fmt(m.cw,1)} m³/h`);
+
+  const maxScale=Math.max(360,maxTotal)*1.05;
+  const rows=targets.map((t,i)=>{
+    const y=28+i*34;
+    const w=420*t/maxScale;
+    const capW=420*maxTotal/maxScale;
+    const ok=t<=maxTotal+1e-9;
+    return `
+      <text x="10" y="${y+14}" font-size="12" fill="var(--color-text-secondary)">${t} g/s</text>
+      <rect x="92" y="${y}" width="420" height="18" rx="4" fill="var(--color-background-secondary)"></rect>
+      <rect x="92" y="${y}" width="${capW}" height="18" rx="4" fill="#1D9E75" opacity="0.22"></rect>
+      <rect x="92" y="${y}" width="${w}" height="18" rx="4" fill="${ok?'#1D9E75':'#D85A30'}"></rect>
+      <text x="${Math.min(520,96+w)}" y="${y+14}" font-size="12" fill="var(--color-text-primary)">${ok?'OK':'Over'}</text>
+    `;
+  }).join("");
+  document.getElementById('chartA').innerHTML=`
+    <svg width="100%" viewBox="0 0 560 280">
+      <text x="10" y="16" font-size="12" fill="var(--color-text-secondary)">Capacity line = documented 3-skid basis point</text>
+      ${rows}
+      <line x1="${92+420*maxTotal/maxScale}" y1="22" x2="${92+420*maxTotal/maxScale}" y2="266" stroke="#7F77DD" stroke-width="1.5"></line>
+      <text x="${96+420*maxTotal/maxScale}" y="34" font-size="12" fill="#7F77DD">${fmt(maxTotal,1)} g/s cap</text>
+    </svg>`;
+
+  const rowsB=targets.map((t,i)=>{
+    const per=t/m.units;
+    const f=m.freq*per/m.perUnit;
+    const ok=t<=maxTotal+1e-9;
+    const y=26+i*30;
+    const bar=260*per/Math.max(120,m.perUnit*1.08);
+    return `
+      <text x="8" y="${y+12}" font-size="12" fill="var(--color-text-secondary)">${t}</text>
+      <rect x="52" y="${y}" width="260" height="16" rx="4" fill="var(--color-background-secondary)"></rect>
+      <rect x="52" y="${y}" width="${bar}" height="16" rx="4" fill="${ok?'#378ADD':'#BA7517'}"></rect>
+      <text x="320" y="${y+12}" font-size="12" fill="var(--color-text-primary)">${fmt(per,1)} g/s</text>
+      <text x="405" y="${y+12}" font-size="12" fill="${ok?'var(--color-text-primary)':'#BA7517'}">${fmt(f,1)} Hz</text>
+    `;
+  }).join("");
+  document.getElementById('chartB').innerHTML=`
+    <svg width="100%" viewBox="0 0 500 250">
+      <text x="8" y="14" font-size="12" fill="var(--color-text-secondary)">Target</text>
+      <text x="320" y="14" font-size="12" fill="var(--color-text-secondary)">per skid</text>
+      <text x="405" y="14" font-size="12" fill="var(--color-text-secondary)">est. Hz</text>
+      ${rowsB}
+    </svg>`;
+
+  const tableRows=targets.map(t=>{
+    const per=t/m.units;
+    const f=m.freq*per/m.perUnit;
+    const ok=t<=maxTotal+1e-9;
+    return `<tr>
+      <td>${t} g/s</td>
+      <td>${fmt(per,2)} g/s</td>
+      <td>${fmt(f,2)} Hz</td>
+      <td>${ok?'within 3-skid basis capacity':'above 3-skid basis capacity'}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById('tableWrap').innerHTML=`<table class="vtbl">
+    <thead><tr><th>Target total</th><th>Per skid</th><th>Estimated Hz</th><th>Status</th></tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table>`;
+  document.querySelectorAll('.vbtn').forEach(b=>b.classList.toggle('active',b.dataset.key===current));
+}
+document.querySelectorAll('.vbtn').forEach(b=>b.onclick=()=>{current=b.dataset.key;render();});
+render();
+</script>
+</body>
+</html>

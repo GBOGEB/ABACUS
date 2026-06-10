@@ -54,24 +54,26 @@
 
 <!-- If applicable, add screenshots or command output to demonstrate changes -->
 
-## 👁 Human File Review
+## 👁 Human/User Review (Read • Review • Agree)
 
 <!-- Use the interactive tracker: https://gbogeb.github.io/ABACUS/file_review_tracker.html -->
-<!-- Add files reviewed for this PR, tick each checkbox, then paste the exported table here. -->
+<!-- Add any reviewed items for this PR (files, checklist tasks, requirements), tick each checkbox, then paste the exported table here. -->
 
-### Files Reviewed
+### Items Reviewed
 
-| File | Type | Confirmed by Human | Review Date (UTC) |
-|------|----- |--------------------|-------------------|
-| <!-- e.g. `.github/workflows/ci.yml` --> | <!-- Workflow/Script/Python/Docs/Config --> | - [ ] Confirmed | <!-- YYYY-MM-DD HH:MM --> |
+| Item | Type/Context | Confirmed by Human | Review Date (UTC) |
+|------|--------------|--------------------|-------------------|
+| <!-- e.g. `.github/workflows/ci.yml` or `Issue #390 > Phase 5.1 Full-Text Search` --> | <!-- Workflow/Script/Python/Docs/Config/PR-Issue/Requirement --> | - [ ] Confirmed | <!-- YYYY-MM-DD HH:MM --> |
 
 > 💡 Open the [Human File Review Tracker](https://gbogeb.github.io/ABACUS/file_review_tracker.html),
-> add the files changed in this PR, tick ✅ each one after reviewing, then click **Export for PR**
+> add each item you reviewed (file, task, or requirement), tick ✅ after reading/reviewing, then click **Export for PR**
 > and paste the generated table above.
 
 ### Review Confirmation
 
-- [ ] I have opened and reviewed each file listed above
+- [ ] I have read each listed item before checking it
+- [ ] I have reviewed each listed item before marking it confirmed
+- [ ] I agree with the confirmed items and approve them
 - [ ] Each review has been date-stamped in the tracker
 - [ ] No unintended changes were included
 

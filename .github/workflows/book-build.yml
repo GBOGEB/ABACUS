@@ -31,7 +31,7 @@ jobs:
       - name: Install Pandoc
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xelatex texlive-fonts-recommended texlive-fonts-extra
+          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-fonts-extra
       
       - name: Verify Pandoc installation
         run: pandoc --version

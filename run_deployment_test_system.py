@@ -24,30 +24,28 @@ def parse_args():
     )
 
     parser.add_argument(
-        '--test-suite',
-        choices=['all', 'smoke', 'unit', 'integration'],
-        default='all',
-        help='Test suite to run'
+        "--test-suite",
+        choices=["all", "smoke", "unit", "integration"],
+        default="all",
+        help="Test suite to run",
     )
 
     parser.add_argument(
-        '--skip-static',
-        action='store_true',
-        help='Skip static analysis'
+        "--skip-static", action="store_true", help="Skip static analysis"
     )
 
     parser.add_argument(
-        '--version',
+        "--version",
         type=str,
-        default='dev',
-        help='Version identifier for this deployment'
+        default="dev",
+        help="Version identifier for this deployment",
     )
 
     parser.add_argument(
-        '--output-dir',
+        "--output-dir",
         type=Path,
         default=None,
-        help='Output directory for test results'
+        help="Output directory for test results",
     )
 
     return parser.parse_args()
@@ -88,24 +86,21 @@ def main():
     if args.test_suite == 'smoke' or args.test_suite == 'all':
         print("\n  → Running smoke tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='smoke'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="smoke"
         )
         print(f"  ✓ Smoke tests: {'PASSED' if result.success else 'FAILED'}")
 
     if args.test_suite == 'unit' or args.test_suite == 'all':
         print("\n  → Running unit tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='unit'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="unit"
         )
         print(f"  ✓ Unit tests: {'PASSED' if result.success else 'FAILED'}")
 
     if args.test_suite == 'integration' or args.test_suite == 'all':
         print("\n  → Running integration tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='integration'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="integration"
         )
         print(f"  ✓ Integration tests: {'PASSED' if result.success else 'FAILED'}")
 
@@ -120,9 +115,9 @@ def main():
         metrics.static_analysis_passed = True
         # Recalculate deployment_ready with updated static analysis status
         metrics.deployment_ready = (
-            metrics.tests_passed == metrics.tests_total and
-            len(metrics.runtime_errors) == 0 and
-            metrics.static_analysis_passed
+            metrics.tests_passed == metrics.tests_total
+            and len(metrics.runtime_errors) == 0
+            and metrics.static_analysis_passed
         )
         test_bridge.deployment_metrics = metrics
     else:
@@ -130,7 +125,7 @@ def main():
 
     # Save deployment report
     if args.output_dir is not None:
-        output_path = args.output_dir / 'deployment_report.json'
+        output_path = args.output_dir / "deployment_report.json"
     else:
         output_path = None
     report_path = test_bridge.save_deployment_report(output_path)
@@ -146,7 +141,9 @@ def main():
     print(f"Runtime Errors: {len(metrics.runtime_errors)}")
 
     if not args.skip_static:
-        print(f"Static Analysis: {'PASSED' if metrics.static_analysis_passed else 'FAILED'}")
+        print(
+            f"Static Analysis: {'PASSED' if metrics.static_analysis_passed else 'FAILED'}"
+        )
     else:
         print("Static Analysis: SKIPPED (assumed PASSED)")
 
@@ -163,5 +160,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

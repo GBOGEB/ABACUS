@@ -17,6 +17,20 @@ REQUIRED_TOP_LEVEL_FIELDS = [
     "knowledge_gain",
 ]
 
+# Registry of downstream consumers that interact with ABACUS via integration contracts.
+# Each entry maps a consumer short-name to its contract metadata.
+DOWNSTREAM_CONSUMERS: Dict[str, Dict[str, Any]] = {
+    "codespace_jyperter": {
+        "repo": "GBOGEB/codespace_jyperter",
+        "plane": "auxiliary",
+        "federation_moniker": "DELTA_1",
+        "contract_path": "integration/codespace_jyperter/abacus_contract.yaml",
+        "consumes_phases": ["phase1_define", "phase3_analyze"],
+        "produces_for_phases": ["phase2_measure", "phase6_knowledge"],
+        "tuple_source": "GBOGEB/codespace_jyperter",
+    },
+}
+
 
 def _now_iso() -> str:
     return datetime.now().isoformat()
@@ -137,3 +151,47 @@ def validate_contract(data: Dict[str, Any]) -> List[str]:
                 errors.append(f"recursive_hooks missing: {key}")
 
     return errors
+
+
+def register_downstream_consumer(
+    name: str,
+    repo: str,
+    *,
+    plane: str = "auxiliary",
+    federation_moniker: str = "DELTA_1",
+    contract_path: str = "",
+    consumes_phases: Optional[List[str]] = None,
+    produces_for_phases: Optional[List[str]] = None,
+    tuple_source: str = "",
+) -> Dict[str, Any]:
+    """Register or update a downstream consumer in DOWNSTREAM_CONSUMERS.
+
+    Args:
+        name: Short consumer name (used as registry key).
+        repo: GitHub repository slug, e.g. "GBOGEB/codespace_jyperter".
+        plane: Federation plane ("auxiliary", "runtime", "governance").
+        federation_moniker: DELTA_1 moniker string.
+        contract_path: Repo-relative path to the integration contract YAML.
+        consumes_phases: List of DMAIC phase names the consumer reads.
+        produces_for_phases: List of DMAIC phase names the consumer feeds.
+        tuple_source: Source identifier used in tuple metadata.
+
+    Returns:
+        The consumer entry dict that was stored.
+    """
+    entry: Dict[str, Any] = {
+        "repo": repo,
+        "plane": plane,
+        "federation_moniker": federation_moniker,
+        "contract_path": contract_path,
+        "consumes_phases": consumes_phases or [],
+        "produces_for_phases": produces_for_phases or [],
+        "tuple_source": tuple_source or repo,
+    }
+    DOWNSTREAM_CONSUMERS[name] = entry
+    return entry
+
+
+def get_downstream_consumer(name: str) -> Optional[Dict[str, Any]]:
+    """Return the registered consumer entry for *name*, or None if not found."""
+    return DOWNSTREAM_CONSUMERS.get(name)

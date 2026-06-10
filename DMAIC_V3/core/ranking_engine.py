@@ -366,7 +366,7 @@ class RankingEngine:
         self._save_global_ranking(global_ranking)
         return global_ranking
     
-    def update_rankings_for_all_entities(self, entity_type -> Any: Optional[str] = None):
+    def update_rankings_for_all_entities(self, entity_type: Optional[str] = None):
         """
         Update rank positions and percentiles for all entities
         
@@ -498,7 +498,7 @@ class RankingEngine:
         
         return history
     
-    def generate_ranking_report(self, output_path -> Any: Path, 
+    def generate_ranking_report(self, output_path: Path, 
                                entity_type: Optional[str] = None):
         """
         Generate comprehensive ranking report
@@ -550,7 +550,7 @@ class RankingEngine:
         rel_path = entity_path.relative_to(self.workspace_root) if entity_path.is_relative_to(self.workspace_root) else entity_path
         return str(rel_path).replace('\\', '/').replace('/', '__')
     
-    def _save_self_ranking(self, self_ranking -> Any: SelfRanking):
+    def _save_self_ranking(self, self_ranking: SelfRanking):
         """Save self ranking to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -575,7 +575,7 @@ class RankingEngine:
         conn.commit()
         conn.close()
     
-    def _save_global_ranking(self, global_ranking -> Any: GlobalRanking):
+    def _save_global_ranking(self, global_ranking: GlobalRanking):
         """Save global ranking to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

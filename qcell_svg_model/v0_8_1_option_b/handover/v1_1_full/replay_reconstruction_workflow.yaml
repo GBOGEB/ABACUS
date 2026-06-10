@@ -1,0 +1,8 @@
+workflow_version: "1.1.0"
+name: "Phase-2 Replay/Reconstruction"
+stages:
+  - load_manifest
+  - hydrate_ledgers
+  - replay_deltas
+  - validate_invariants
+  - publish_runtime_overlay

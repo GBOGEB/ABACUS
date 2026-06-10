@@ -16,9 +16,10 @@ manifest_metadata:
   handover_status: "ready_for_distribution"
   
 contact:
-  technical_lead: "TBD"
-  product_owner: "TBD"
-  support_email: "support@example.com"
+  technical_lead: "GBOGEB (https://github.com/GBOGEB)"
+  product_owner: "GBOGEB (https://github.com/GBOGEB)"
+  support_url: "https://github.com/GBOGEB/ABACUS/issues"
+  license: "MIT"
 
 ---
 # ARTIFACT COLLECTIONS WITH GLOB PATTERNS

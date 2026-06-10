@@ -95,9 +95,9 @@ def _build_index_html(manifest: Dict[str, Any]) -> str:
   <div class="card">
     <h2>Repository Navigation</h2>
     <ul>
-      <li><a href="../DMAIC_V3/">DMAIC_V3/</a></li>
-      <li><a href="../.github/workflows/">.github/workflows/</a></li>
-      <li><a href="../handover/">handover/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/DMAIC_V3" target="_blank" rel="noopener">DMAIC_V3/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/.github/workflows" target="_blank" rel="noopener">.github/workflows/</a></li>
+      <li><a href="https://github.com/GBOGEB/ABACUS/tree/main/handover" target="_blank" rel="noopener">handover/</a></li>
       <li><a href="dashboard.html">System dashboard</a></li>
     </ul>
   </div>
@@ -132,9 +132,20 @@ def _build_dashboard_html(manifest: Dict[str, Any]) -> str:
     .tile {{ border: 1px solid #ddd; border-radius: 8px; padding: 1rem; }}
     .label {{ color: #555; font-size: 0.9rem; }}
     .value {{ font-size: 1.4rem; font-weight: 700; }}
+    nav a {{ margin-right: 1rem; text-decoration: none; color: #0969da; }}
+    nav a:hover {{ text-decoration: underline; }}
   </style>
 </head>
 <body>
+  <nav>
+    <a href="./">Home</a>
+    <a href="cryo/">Cryo</a>
+    <a href="12-cluster/">12-Cluster</a>
+    <a href="dow/">DOW</a>
+    <a href="testing/">Testing</a>
+    <a href="tools/">Tools</a>
+    <a href="versions/">Versions</a>
+  </nav>
   <h1>ABACUS State of System</h1>
   <p><a href="index.html">Back to HTML entry</a></p>
   <div class="grid">
