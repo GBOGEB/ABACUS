@@ -190,54 +190,78 @@
       ]
     },
     {
-      "wave": "W008",
-      "name": "Interactive Viewer Enhancement (W006 Option B completion)",
-      "claim": "Production-ready single-file interactive design<->as-drawn cross-map review surface delivering all five planned features from docs/W006_INTERACTIVE_UI_PLAN.md: (1) bidirectional tag<->SVG element highlighting, (2) confidence-based triage workflow with persisted Confirm/Reject/Defer decisions exportable as KNOWN_SEEDS, (3) per-layer show/hide + export controls, (4) side-by-side QCELL vs RFCELL comparison with synchronised highlight, (5) design<->as-drawn toggle mode. Plus tag search, colour-coded confidence indicators, 21-layer tree, responsive layout, per-panel zoom/pan, and deep-link URL state.",
+      "wave": "W006",
+      "name": "Design<->As-Drawn Cross-Map + Interactive Viewer",
+      "claim": "Confidence-scored bidirectional design<->as-drawn tag cross-map turning W005's 0%-exact-overlap finding into a functional map; interactive layered viewer scaffold.",
       "actual": {
-        "generator": "src/abacus_svg_pid/build_viewer.py",
-        "output": "publish/interactive_viewer.html",
-        "self_contained_single_file": true,
-        "output_size_kb": 2532,
-        "design_rows": 97,
-        "asdrawn_rows": 141,
-        "mapped_pairs": 43,
-        "tier_breakdown": {
-          "HIGH": 0,
-          "MEDIUM": 39,
-          "LOW": 4,
-          "unmapped_design": 54
-        },
-        "svg_markers_injected": {
-          "QCELL": 139,
-          "RFCELL": 2
-        },
-        "layers_in_tree": 21,
-        "sheets_embedded": [
-          "QCELL",
-          "RFCELL"
-        ],
-        "features": [
-          "tag<->SVG bidirectional highlight + centre-on-select",
-          "triage Confirm/Reject/Defer (localStorage) -> triage_decisions.json (KNOWN_SEEDS)",
-          "filter chips (tier/type/circuit-band) + quick views (unmapped/needs-review/confirmed)",
-          "column sorting + live search",
-          "21-layer grouped/collapsible tree with all-on/off",
-          "export filtered table CSV, export composited view SVG, export any single layer SVG",
-          "side-by-side QCELL vs RFCELL compare with synced highlight",
-          "design<->as-drawn pivot mode",
-          "per-panel wheel-zoom + drag-pan, deep-link URL hash"
-        ],
-        "tests": "tests/test_w008_viewer.py",
-        "tests_count": 6
+        "crossmap_statistics": "reports/W006_crossmap_statistics.json",
+        "total_design_tags": 97,
+        "total_asdrawn_real_tags": 141,
+        "mapped": 43,
+        "mapped_pct_of_design": 44.3,
+        "high_confidence": 0,
+        "medium_confidence": 39,
+        "low_confidence": 4,
+        "unmapped_design": 54,
+        "asdrawn_unclaimed": 98,
+        "known_seeds": 0,
+        "viewer": "publish/interactive_viewer.html (scaffold)",
+        "tests": "tests/test_w006_crossmap.py (13 assertions)"
       },
-      "validation_report": "reports/W008_VIEWER_REPORT.md",
+      "validation_report": "reports/W006_CROSSMAP_REPORT.md",
       "pass": true,
       "known_gaps": [
-        "SVG element highlight uses an overlay marker positioned from each instrument's catalog x/y (shared 1527x1080 viewBox), NOT a hit-test of the original drawn bubble geometry. Placement is approximate (catalog assign-distance median ~20px); a tag lights up the correct neighbourhood but the ring may sit slightly off the exact glyph.",
-        "RFCELL has only 2 real instrument instances with coordinates in the as-drawn catalog (the W003/W004 category sheets are QCELL-dominant), so RFCELL marker highlighting is sparse; the comparison view still renders the full RFCELL atlas drawing.",
-        "Triage decisions persist in browser localStorage and are user-exportable as triage_decisions.json; they are intentionally NOT written back to the heuristic crossmap (honesty invariant). Promotion to HIGH only happens on a subsequent build_w006_crossmap run once the exported file is wired into KNOWN_SEEDS.",
-        "0 HIGH-confidence pairs exist by design (KNOWN_SEEDS empty); all 43 mapped pairs are MEDIUM/LOW heuristic proposals requiring human triage.",
-        "PNG raster export is not implemented; export is SVG (vector, current view + per-layer) and CSV (filtered table). SVG can be rasterised externally if a PNG is needed."
+        "0 HIGH-confidence mappings by design: HIGH requires an independent corroborator (SIGNAL_MATCH or KNOWN_SEED); KNOWN_SEEDS is intentionally empty, so honest output is 39 MEDIUM@0.75 / 4 LOW@0.45.",
+        "54 design tags remain unmapped and 98 as-drawn tags unclaimed (orthogonal numbering schemes from W005).",
+        "Interactive viewer is a working scaffold (layer toggles, pan/zoom, tag search, metadata popup); full feature build planned in docs/W006_INTERACTIVE_UI_PLAN.md."
+      ]
+    },
+    {
+      "wave": "W007",
+      "name": "CI/CD Pipeline",
+      "claim": "GitHub Actions workflow regenerates derived artifacts (./make.sh), runs the full standalone test battery under coverage, enforces a deterministic golden-file gate, checks clean-rebuild reproducibility, and uploads artifacts - without pytest (honoring the standalone-runner convention).",
+      "actual": {
+        "workflow": "ci/minerva-pid-test.yml (staged; maintainer copies to .github/workflows/)",
+        "python_matrix": [
+          "3.10",
+          "3.11",
+          "3.12"
+        ],
+        "test_runner": "standalone (python3 tests/test_*.py) - NO pytest",
+        "test_files": 6,
+        "test_assertions_total": 48,
+        "test_breakdown": {
+          "test_colour_model.py": 5,
+          "test_golden_files.py": 4,
+          "test_integration_pipeline.py": 5,
+          "test_w003_w004.py": 10,
+          "test_w005_reconciliation.py": 11,
+          "test_w006_crossmap.py": 13
+        },
+        "coverage_tool": "coverage.py (coverage run -p -> combine -> report -> xml); pytest-cov NOT used",
+        "coverage_total_pct": 17.9,
+        "coverage_config": [
+          ".coveragerc",
+          "pyproject.toml [tool.coverage.*]"
+        ],
+        "golden_files": [
+          "tests/golden/expected_line_model_structure.json",
+          "tests/golden/expected_component_counts.json",
+          "tests/golden/expected_crossmap_stats.json"
+        ],
+        "golden_runner": "tests/test_golden_files.py",
+        "pre_commit": ".pre-commit-config.yaml (advisory, not CI-enforced)",
+        "implementation_doc": "docs/W007_CI_IMPLEMENTATION.md",
+        "make_sh_clean": true
+      },
+      "validation_report": "reports/W007_CICD_REPORT.md",
+      "pass": true,
+      "known_gaps": [
+        "Coverage (~17.9%) is reported, not gated: tests target pure functions while build_* scripts run their main bodies via ./make.sh as __main__ (not counted). No inflated fail_under was added; a real floor needs build-script importability refactoring.",
+        "Workflow cannot self-activate: the connected GitHub App lacks the 'workflows' permission, so ci/minerva-pid-test.yml is staged and a maintainer must copy it to .github/workflows/ once.",
+        "Codecov upload step is included but commented out (needs a maintainer CODECOV_TOKEN secret).",
+        "pre-commit hooks are advisory/opt-in (not run in CI) to avoid a mass black/flake8 reformat diff that could perturb reproducible outputs.",
+        "The wave-registry W007 line also names cross-drawing QCELL<->RFCELL reconciliation and 4.5K/2K/warm per-segment classification; those remain modelling scope deferred to a follow-up. This deliverable is the CI/CD half."
       ]
     },
     {
