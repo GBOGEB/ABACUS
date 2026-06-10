@@ -84,27 +84,42 @@ def _validate_manifest(manifest: Mapping[str, Any], repo_root: Path, errors: Lis
         errors.append(f"runtime manifest missing capability: {capability}")
 
 
-def _validate_trace_matrix(trace_matrix: Mapping[str, Any], errors: List[str]) -> None:
+def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, errors: List[str]) -> None:
     rows = trace_matrix.get("rows")
     if not isinstance(rows, list) or not rows:
         errors.append("RTM trace matrix must contain traceability rows")
         return
 
     required_fields = {"requirement_id", "evidence_id", "evidence_artifact", "available"}
-    missing_evidence = []
+    missing_evidence: List[str] = []
     for index, row in enumerate(rows, start=1):
         if not isinstance(row, dict):
             errors.append(f"RTM trace row #{index} must be an object")
             continue
+
         missing_fields = sorted(required_fields - set(row))
         if missing_fields:
             errors.append(f"RTM trace row #{index} missing fields: {', '.join(missing_fields)}")
-        if row.get("available") is not True:
-            missing_evidence.append(str(row.get("evidence_id", f"row-{index}")))
+
+        evidence_id = str(row.get("evidence_id", f"row-{index}"))
+        evidence_artifact = row.get("evidence_artifact")
+        available = row.get("available") is True
+
+        if not available:
+            missing_evidence.append(evidence_id)
+            continue
+
+        if not isinstance(evidence_artifact, str) or not evidence_artifact:
+            errors.append(f"RTM trace row #{index} evidence_artifact must be a non-empty string")
+            missing_evidence.append(evidence_id)
+            continue
+
+        artifact_path = repo_root / evidence_artifact
+        if not artifact_path.exists():
+            missing_evidence.append(evidence_id)
 
     if missing_evidence:
-        errors.append(f"RTM trace matrix has unavailable evidence: {', '.join(missing_evidence)}")
-
+        errors.append(f"RTM trace matrix has unavailable or missing evidence: {', '.join(missing_evidence)}")
 
 def _validate_runtime_portal(portal_path: Path, errors: List[str]) -> None:
     if not portal_path.exists():
