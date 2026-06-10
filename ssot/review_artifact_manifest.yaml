@@ -1,6 +1,31 @@
 artifacts:
-  - MAIN_QA_REGISTER.md
-  - COMPENDIUM.md
-  - MANAGEMENT_SUMMARY.md
-  - WHAT_ALAT_IS_REALLY_ASKING.md
-  - CONTRACTUAL_GAPS.md
+  - id: tender-main-register
+    domain: tender_review_package
+    path: docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md
+  - id: tender-compendium
+    domain: tender_review_package
+    path: docs/Q3_Q4_Q5/COMPENDIUM.md
+  - id: tender-management-summary
+    domain: tender_review_package
+    path: docs/Q3_Q4_Q5/MANAGEMENT_SUMMARY.md
+  - id: tender-alat-intent
+    domain: tender_review_package
+    path: docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md
+  - id: tender-gap-summary
+    domain: contractual_gap_register
+    path: docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md
+  - id: ssot-registry
+    domain: ssot_registry
+    path: ssot/ssot_items.yaml
+  - id: ssot-gap-register
+    domain: contractual_gap_register
+    path: ssot/contractual_gap_register.yaml
+  - id: governance-review-gates
+    domain: governance_controls
+    path: governance/review_gate_policy.yaml
+  - id: governance-pr-control
+    domain: governance_controls
+    path: governance/pr_review_control.yaml
+  - id: review-artifact-ci
+    domain: ci_cd_scaffolding
+    path: .github/workflows/review-artifact-validation.yml
