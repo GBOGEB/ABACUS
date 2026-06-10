@@ -150,8 +150,7 @@ def validate_runtime_foundation(repo_root: Path = REPO_ROOT) -> List[str]:
 
     trace_matrix = _load_json(trace_matrix_path, repo_root, errors)
     if trace_matrix:
-        _validate_trace_matrix(trace_matrix, errors)
-
+        _validate_trace_matrix(trace_matrix, repo_root, errors)
     _validate_runtime_portal(runtime_portal_path, errors)
     return errors
 
