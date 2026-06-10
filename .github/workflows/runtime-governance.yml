@@ -28,5 +28,4 @@ jobs:
           echo "DELTA_1 release-lineage validation"
 
       - name: Validate runtime manifests
-        run: |
-          echo "DELTA_1 runtime manifest validation"
+        run: python scripts/validate_runtime_foundation.py
