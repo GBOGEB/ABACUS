@@ -2,11 +2,7 @@
   "project": "MINERVA QCELL P&ID - Colour-Line-First Engineering Process Model",
   "owner": "Mott MacDonald / SCK CEN - MYRRHA-MINERVA Phase 1",
   "description": "Wave roadmap for decomposing the real QCELL/RFCELL P&ID SVGs into colour-defined process lines, preserving sequence and scope boundaries.",
-<<<<<<< HEAD
   "current_wave": "W009",
-=======
-  "current_wave": "W007",
->>>>>>> origin/main
   "waves": [
     {
       "id": "W001",

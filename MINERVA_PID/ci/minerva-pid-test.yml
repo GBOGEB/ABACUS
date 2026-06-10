@@ -1,40 +1,3 @@
-<<<<<<< HEAD
-# =============================================================================
-# MINERVA P&ID — CI / CD test & reproducibility pipeline
-# =============================================================================
-# STAGED LOCATION NOTICE
-# ----------------------
-# This file lives at `ci/minerva-pid-test.yml` because the connected Abacus
-# GitHub App currently lacks the `workflows` permission and therefore cannot
-# push files under `.github/workflows/`. A maintainer must land it:
-#
-#     git mv ci/minerva-pid-test.yml .github/workflows/minerva-pid-test.yml
-#     git commit -m "ci: activate MINERVA P&ID workflow" && git push
-#
-# See docs/W007_MANUAL_SETUP.md for full instructions.
-# =============================================================================
-
-name: MINERVA P&ID — Test & Reproducibility
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch: {}
-
-# Read-only token; CI reports status, humans merge (no write-back / auto-merge).
-permissions:
-  contents: read
-
-concurrency:
-  group: minerva-pid-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  test:
-    name: build + test (py${{ matrix.python-version }})
-=======
 # MINERVA QCELL/RFCELL P&ID subproject — regenerate + test + coverage + golden gate (W007)
 # Scoped to MINERVA_PID/** so it never interferes with other ABACUS subprojects.
 #
@@ -69,28 +32,12 @@ defaults:
 jobs:
   build-and-test:
     name: build & test (py${{ matrix.python-version }})
->>>>>>> origin/main
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
 
-<<<<<<< HEAD
-    defaults:
-      run:
-        working-directory: MINERVA_PID
-
-    env:
-      PYTHONPATH: src
-
-    steps:
-      # ----------------------------------------------------------------------
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # ----------------------------------------------------------------------
-=======
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -103,95 +50,10 @@ jobs:
             poppler-utils \
             libxml2-dev libxslt1-dev
 
->>>>>>> origin/main
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-<<<<<<< HEAD
-          cache: pip
-          cache-dependency-path: MINERVA_PID/requirements.txt
-
-      # ----------------------------------------------------------------------
-      # System deps:
-      #   - libcairo2-dev : cairosvg (SVG -> PDF/PNG rasterisation, atlas v6)
-      #   - poppler-utils : PDF tooling used by report/preview generation
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends poppler-utils libcairo2-dev
-
-      # ----------------------------------------------------------------------
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # ----------------------------------------------------------------------
-      # Reproducibility: regenerate EVERY derived artifact from tracked source.
-      # `make.sh` is itself a 7-stage integration test and must exit 0.
-      - name: Regenerate all artifacts (reproducibility — make.sh)
-        run: |
-          ./make.sh --clean   # wipe derived outputs, then full regeneration
-          ./make.sh           # second pass confirms idempotent reproducibility
-
-      # ----------------------------------------------------------------------
-      # Test battery: standalone runners (NO pytest). Each tests/test_*.py uses
-      # assert + _run_all() and self-skips data-dependent suites if needed.
-      # Falls back to `pytest` automatically if it is available in the env.
-      - name: Run full test suite (standalone runners)
-        run: |
-          set -e
-          fail=0
-          for t in tests/test_*.py; do
-            echo "::group::$t"
-            if python3 "$t"; then
-              echo "PASS  $t"
-            else
-              echo "::error file=$t::test runner returned non-zero"
-              fail=1
-            fi
-            echo "::endgroup::"
-          done
-          if [ "$fail" -ne 0 ]; then
-            echo "One or more test runners failed."
-            exit 1
-          fi
-
-      # Optional pytest pass (collects the same assert-based tests). Non-fatal:
-      # the standalone runners above are the source of truth.
-      - name: Coverage report (optional pytest + coverage)
-        continue-on-error: true
-        run: |
-          pip install pytest pytest-cov coverage || exit 0
-          PYTHONPATH=src pytest tests/ \
-            --cov=src/abacus_svg_pid \
-            --cov-report=term-missing \
-            --cov-report=xml:reports/coverage.xml || true
-
-      # ----------------------------------------------------------------------
-      # Golden-file gate: committed reports/*_statistics.json are golden
-      # snapshots. Compare regenerated stats semantically. Fail on count drift;
-      # ignore the documented ~1-byte XLSX zip jitter (xlsx excluded entirely).
-      - name: Golden-file comparison gate
-        run: |
-          python3 ci/golden_gate.py
-
-      # ----------------------------------------------------------------------
-      - name: Upload build artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: minerva-pid-artifacts-py${{ matrix.python-version }}
-          if-no-files-found: ignore
-          retention-days: 14
-          path: |
-            MINERVA_PID/publish/*.html
-            MINERVA_PID/reports/*.md
-            MINERVA_PID/reports/*_statistics.json
-            MINERVA_PID/data/crossmap/*.json
-            MINERVA_PID/reports/coverage.xml
-=======
 
       - name: Install Python dependencies (exact pins) + coverage.py
         run: |
@@ -290,4 +152,3 @@ jobs:
       #     files: MINERVA_PID/coverage.xml
       #     flags: minerva-pid
       #     token: ${{ secrets.CODECOV_TOKEN }}
->>>>>>> origin/main
