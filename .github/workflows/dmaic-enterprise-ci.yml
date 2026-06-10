@@ -48,7 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
+        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist PyGithub
     
     - name: Install dev dependencies
       run: |
@@ -57,26 +57,21 @@ jobs:
       continue-on-error: true
     
     - name: Verify Python syntax
+      shell: bash
       run: |
         python -m py_compile DMAIC_V3/agents/*.py
         python -m py_compile DMAIC_V3/convergence/*.py
         python -m py_compile DMAIC_V3/core/*.py
     
     - name: Run pytest with coverage
+      shell: bash
       run: |
-        pytest DMAIC_V3/tests/ -v \
-          --cov=DMAIC_V3 \
-          --cov-report=xml \
-          --cov-report=term-missing \
-          --cov-report=html \
-          --tb=short \
-          --maxfail=5 \
-          -n auto
+        python -m pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3 --cov-report=xml --cov-report=term-missing --cov-report=html --tb=short --maxfail=5 -n auto
       continue-on-error: ${{ matrix.python-version != '3.11' }}
     
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
-      uses: codecov/codecov-action@v6
+      uses: codecov/codecov-action@v7
       with:
         file: ./coverage.xml
         flags: unittests

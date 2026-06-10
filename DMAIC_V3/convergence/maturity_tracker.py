@@ -71,6 +71,17 @@ class MaturityLevelStatus:
     convergence_achieved: bool
 
 
+@dataclass
+class MaturityLevelStatus:
+    """Per-level maturity progress."""
+
+    level: int
+    name: str
+    completion_percentage: float
+    status: str
+    convergence_achieved: bool
+
+
 class MaturityTracker:
     """
     Tracks system maturity progression through defined levels
@@ -437,13 +448,26 @@ class MaturityTracker:
             except Exception:
                 history = []
 
-        # Append this run's snapshot to history (keep last 50 entries)
-        history.append({
+        # Append this run's snapshot to history only when metrics change.
+        snapshot = {
             "timestamp": assessment.timestamp,
             "convergence_score": assessment.convergence_score,
             "current_level": assessment.current_level,
             "overall_completion": assessment.overall_completion,
-        })
+        }
+        if not history:
+            history.append(snapshot)
+        else:
+            last = history[-1]
+            same_metrics = (
+                last.get("convergence_score") == snapshot["convergence_score"]
+                and last.get("current_level") == snapshot["current_level"]
+                and last.get("overall_completion") == snapshot["overall_completion"]
+            )
+            if same_metrics:
+                history[-1]["timestamp"] = snapshot["timestamp"]
+            else:
+                history.append(snapshot)
         history = history[-50:]
 
         data = asdict(assessment)

@@ -14,7 +14,7 @@ jobs:
     name: Validate Dashboards
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Check all dashboard HTML files exist
         id: check_files
@@ -80,6 +80,12 @@ jobs:
           BROKEN=0
           while IFS= read -r f; do
             while IFS= read -r href; do
+              href="${href#"${href%%[![:space:]]*}"}"
+              case "$href" in
+                ""|#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
+                  continue
+                  ;;
+              esac
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"
@@ -88,7 +94,7 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done < <(grep -oP 'href="\K[^"]+' "$f" | grep -v '^http' | grep -v '^#' | grep -v '^mailto')
+            done < <(grep -oP 'href="\K[^"]+' "$f")
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
@@ -111,7 +117,7 @@ jobs:
         if: >
           steps.check_files.outputs.missing_count != '0' ||
           steps.link_check.outputs.broken_links != '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const missing = '${{ steps.check_files.outputs.missing_count }}';

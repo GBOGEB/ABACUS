@@ -278,7 +278,7 @@ class Phase3Analyze:
                 payload = run_result[1]
                 if isinstance(payload, dict):
                     return success, payload
-                return success, {
+                return False, {
                     "phase": "ANALYZE",
                     "iteration": iteration,
                     "timestamp": datetime.now().isoformat(),
