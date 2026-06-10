@@ -11,8 +11,8 @@ def _load_validator():
         "validate_review_package",
         VALIDATOR_PATH,
     )
+    assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
 
