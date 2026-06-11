@@ -41,11 +41,9 @@ __dmaic_version__ = 'V3'
 __integration_mode__ = 'BIDIRECTIONAL'
 
 __all__ = [
-    'DocumentGenerator',
-    'StyleManager',
-    'ArtifactProcessor',
-    'ExecutionTracker',
-    'VERSION_INFO'
+    'VERSION_INFO',
+    'get_version_info',
+    'check_victory_conditions'
 ]
 
 VERSION_INFO = {
