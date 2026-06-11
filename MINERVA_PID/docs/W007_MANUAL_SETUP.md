@@ -96,14 +96,10 @@ Each job:
 6. **Test suite:** loops over `tests/test_*.py`, running each standalone runner
    with `PYTHONPATH=src python3 <file>`. Any non-zero exit fails the job.
    Current battery is 50 assertions across 6 suites.
-7. **Coverage (optional):** installs `pytest`/`coverage` and emits
-   `reports/coverage.xml`. This step is `continue-on-error` — informational only.
-8. **Golden-file gate:** `ci/golden_gate.py` semantically diffs regenerated
-   `reports/*_statistics.json` against the committed golden snapshots. Fails on
-   any count drift; ignores the documented ~1-byte XLSX zip jitter.
+7. **Coverage:** installs `coverage.py` and emits `reports/coverage.xml`.
+8. **Golden-file gate:** `tests/test_golden_files.py` asserts key make.sh outputs against committed golden snapshots (stable semantic invariants; excludes XLSX jitter).
 9. **Upload artifacts:** `publish/*.html`, `reports/*.md`,
    `reports/*_statistics.json`, `data/crossmap/*.json`, `coverage.xml`
-   (downloadable from the run page for 14 days).
 
 **Green run = ** all three Python versions reproduced artifacts, passed every
 test, and matched the golden statistics.
