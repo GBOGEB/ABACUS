@@ -9,7 +9,7 @@ on:
   workflow_run:
     workflows:
       - "DELTA_1 CodeQL"
-      - "Security Scan — Bandit + Ruff + OSV"
+      - "Security Scan — Bandit + Ruff + OSV + Semgrep"
       - "Semgrep"
     types: [completed]
   schedule:
