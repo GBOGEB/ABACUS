@@ -12,11 +12,11 @@ from datetime import datetime
 
 class SelfRankingAgent:
     """Performs self-ranking of code artifacts"""
-    
+
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-    
+
     def rank_artifacts(self, artifacts: List[Dict]) -> List[Dict]:
         """Rank artifacts by importance"""
         for artifact in artifacts:
@@ -27,11 +27,11 @@ class SelfRankingAgent:
                 score += 5
             if artifact.get('has_tests'):
                 score += 3
-            
+
             artifact['rank_score'] = score
-        
+
         return sorted(artifacts, key=lambda x: x.get('rank_score', 0), reverse=True)
-    
+
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
         return {

@@ -1,17 +1,13 @@
 """
-Idempotency module.
-Provides deterministic hashing and persistent idempotent execution support.
+Idempotency Module - Stub Implementation
+Provides hashing and idempotent execution support
 """
 
-import functools
-import hashlib
 import json
-import logging
-import os
+import hashlib
+import functools
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional
-
-LOGGER = logging.getLogger(__name__)
+from typing import Any, Callable, Dict
 
 
 def hash_json(data: Any) -> str:
@@ -32,40 +28,7 @@ def hash_json(data: Any) -> str:
     return hashlib.sha256(json_str.encode()).hexdigest()
 
 
-def _default_cache_dir() -> Path:
-    base = os.environ.get("DMAIC_CACHE_DIR")
-    if base:
-        path = Path(base)
-    else:
-        path = Path.cwd() / ".dmaic" / "idempotency"
-    path.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def _cache_file_for_key(run_key: str, cache_dir: Path) -> Path:
-    key_hash = hashlib.sha256(run_key.encode("utf-8")).hexdigest()
-    return cache_dir / f"{key_hash}.json"
-
-
-def _load_cache(cache_file: Path) -> Optional[Any]:
-    if not cache_file.exists():
-        return None
-    try:
-        return json.loads(cache_file.read_text(encoding="utf-8")).get("result")
-    except (json.JSONDecodeError, OSError, AttributeError):
-        LOGGER.warning("Unreadable cache file: %s", cache_file)
-        return None
-
-
-def _save_cache(cache_file: Path, run_key: str, result: Any) -> None:
-    payload = {
-        "run_key": run_key,
-        "result": result,
-    }
-    cache_file.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
-
-
-def idempotent(run_key_fn: Callable, cache_dir: Optional[Path] = None, enabled: bool = True) -> Callable:
+def idempotent(run_key_fn: Callable) -> Callable:
     """
     Decorator to make a function idempotent based on a run key
     
@@ -76,32 +39,20 @@ def idempotent(run_key_fn: Callable, cache_dir: Optional[Path] = None, enabled: 
         Decorator function
     """
     def decorator(func: Callable) -> Callable:
-        mem_cache: Dict[str, Any] = {}
-        resolved_cache_dir = cache_dir or _default_cache_dir()
-        resolved_cache_dir.mkdir(parents=True, exist_ok=True)
-
+        cache: Dict[str, Any] = {}
+        
         @functools.wraps(func)
         def wrapper(**kwargs):
-            if not enabled:
-                return func(**kwargs)
-
             run_key = run_key_fn(**kwargs)
-            if run_key in mem_cache:
-                return mem_cache[run_key]
-
-            cache_file = _cache_file_for_key(run_key, resolved_cache_dir)
-            persisted = _load_cache(cache_file)
-            if persisted is not None:
-                mem_cache[run_key] = persisted
-                return persisted
-
+            
+            if run_key in cache:
+                return cache[run_key]
+            
             result = func(**kwargs)
-            mem_cache[run_key] = result
-            _save_cache(cache_file, run_key, result)
+            cache[run_key] = result
             return result
-
+            
         return wrapper
-
     return decorator
 
 

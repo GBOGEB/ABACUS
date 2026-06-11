@@ -13,11 +13,11 @@ from datetime import datetime
 
 class HealthCheckerAgent:
     """Monitors system health"""
-    
+
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-    
+
     def check_health(self) -> Dict[str, Any]:
         """Check system health"""
         return {
@@ -27,7 +27,7 @@ class HealthCheckerAgent:
             'disk_percent': psutil.disk_usage('/').percent,
             'status': 'healthy'
         }
-    
+
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
         return {

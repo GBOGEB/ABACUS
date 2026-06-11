@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Local CI Monitor for GitHub Pull Requests
 Monitors CI/CD status and creates issues for failures
 Uses GitHub CLI authentication (gh auth) for secure access
@@ -8,10 +14,10 @@ Uses GitHub CLI authentication (gh auth) for secure access
 import os
 import sys
 import time
+import json
 import argparse
 import subprocess
 from datetime import datetime
-from typing import Dict, Optional
 
 try:
     from github import Github
@@ -362,8 +368,7 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except Exception:
-            # Ignore all exceptions here: unable to get git remote URL, fallback to requiring --repo or GITHUB_REPOSITORY.
+        except:
             pass
 
     if not repo_name:

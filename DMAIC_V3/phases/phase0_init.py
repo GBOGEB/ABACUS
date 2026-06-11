@@ -2,12 +2,12 @@
 DMAIC V3.3 - Phase 0: Initialization & Setup
 =============================================================================
 ASCII WORKFLOW:
-    
+
     ╔════════════════════════════════════════════════════════════════╗
     ║                    PHASE 0: INITIALIZATION                      ║
     ║                    Status: SETUP & VALIDATION                   ║
     ╚════════════════════════════════════════════════════════════════╝
-    
+
     +----------------------------------------------------------------+
     | [0.1] Environment Check                                        |
     |       +- Verify workspace structure                            |
@@ -74,7 +74,7 @@ ASCII WORKFLOW:
     |       +- Prepare phase output directories                      |
     |       +- Initialize logging system                             |
     +----------------------------------------------------------------+
-    
+
     OUTPUT:
     +- phase0_init.json                 # Initialization results
     +- environment_state.json            # Environment snapshot
@@ -105,7 +105,7 @@ from ..config import DMAICConfig
 class Phase0Init:
     """
     Phase 0: Initialization & Setup
-    
+
     Responsibilities:
     - Environment validation
     - Agent initialization (12-agent architecture)
@@ -116,7 +116,7 @@ class Phase0Init:
     - TODO/Planning matrix (PLANNED vs ACTUAL vs CURRENT)
     - Ranking system bootstrap
     """
-    
+
     def __init__(self, config: DMAICConfig, state_manager: StateManager):
         self.config = config
         self.state_manager = state_manager
@@ -148,11 +148,11 @@ class Phase0Init:
             'knowledge': ['context_manager', 'dependency_graph'],
             'monitoring': ['health_checker', 'performance_tracker']
         }
-    
+
     def _check_environment(self) -> Dict[str, Any]:
         """[0.1] Environment Check"""
         print("\n[0.1] Checking environment...")
-        
+
         env_state = {
             'python_version': sys.version,
             'workspace_root': str(self.workspace_root),
@@ -161,13 +161,13 @@ class Phase0Init:
             'git_available': self._check_git(),
             'dependencies': self._check_dependencies()
         }
-        
+
         print(f"  Python: {sys.version.split()[0]}")
         print(f"  Workspace: {self.workspace_root}")
         print(f"  Git: {'[OK]' if env_state['git_available'] else '[FAIL]'}")
-        
+
         return env_state
-    
+
     def _check_git(self) -> bool:
         """Check if git is available"""
         try:
@@ -175,7 +175,7 @@ class Phase0Init:
             return True
         except:
             return False
-    
+
     def _check_dependencies(self) -> Dict[str, bool]:
         """Check Python dependencies"""
         deps = {}
@@ -186,13 +186,13 @@ class Phase0Init:
             except ImportError:
                 deps[module] = False
         return deps
-    
+
     def _initialize_agents(self) -> Dict[str, Any]:
         """[0.2] Agent Initialization (12-Agent Architecture)"""
         # Delegate initialization to AgentManager which encapsulates
         # the logic for discovering and initializing agents.
         return self.agent_manager.initialize_all_agents()
-    
+
     def _check_agent(self, category: str, agent: str) -> Dict:
         """Check if agent is available"""
         agent_file = self.workspace_root / f"local_mcp/agents/{category}_{agent}_v2.3_OPTIMIZED.py"
@@ -202,11 +202,11 @@ class Phase0Init:
             'version': '2.3.0' if agent_file.exists() else 'unknown',
             'size': agent_file.stat().st_size if agent_file.exists() else 0
         }
-    
+
     def _setup_canonical_files(self) -> Dict[str, Any]:
         """[0.3] Canonical File System Setup"""
         print("\n[0.3] Setting up canonical file system...")
-        
+
         canonical_status = {}
         for name, path in self.canonical_files.items():
             file_path = self.workspace_root / path
@@ -218,17 +218,17 @@ class Phase0Init:
             }
             symbol = "[OK]" if canonical_status[name]['exists'] else "[FAIL]"
             print(f"  {symbol} {name}: {path}")
-        
+
         return canonical_status
-    
+
     def _detect_changes(self) -> Dict[str, Any]:
         """[0.4] Iteration State Detection - Detect code changes via git diff"""
         print("\n[0.4] Detecting code changes...")
-        
+
         if not self._check_git():
             print("  Git not available - skipping change detection")
             return {'git_available': False, 'modified_files': [], 'modified_phases': []}
-        
+
         try:
             result = subprocess.run(
                 ['git', 'diff', '--name-only', 'HEAD'],
@@ -238,17 +238,17 @@ class Phase0Init:
                 check=True
             )
             modified_files = [f.strip() for f in result.stdout.split('\n') if f.strip()]
-            
+
             modified_phases = []
             for file in modified_files:
                 if 'DMAIC_V3/phases/phase' in file:
                     phase_name = Path(file).stem
                     if phase_name not in modified_phases:
                         modified_phases.append(phase_name)
-            
+
             print(f"  Modified files: {len(modified_files)}")
             print(f"  Modified phases: {modified_phases if modified_phases else 'None'}")
-            
+
             return {
                 'git_available': True,
                 'modified_files': modified_files,
@@ -258,43 +258,43 @@ class Phase0Init:
         except Exception as e:
             print(f"  Warning: Git diff failed - {e}")
             return {'git_available': True, 'error': str(e), 'modified_files': [], 'modified_phases': []}
-    
+
     def _configure_idempotency(self, enable: bool = True) -> Dict:
         """[0.5] Idempotency Configuration"""
         print(f"\n[0.5] Configuring idempotency... {'ENABLED' if enable else 'DISABLED'}")
-        
+
         from ..core.idempotency_wrapper import enable_idempotency
         enable_idempotency(enabled=enable, cache_dir=self.config.paths.state_dir / "cache")
-        
+
         return {
             'enabled': enable,
             'cache_dir': str(self.config.paths.state_dir / "cache"),
             'algorithm': 'sha256'
         }
-    
+
     def _integrate_time_engine(self) -> Dict:
         """[0.6] Time Engine Integration (V2.3)"""
         print("\n[0.6] Integrating V2.3 time engine...")
-        
+
         time_engine_file = self.workspace_root / "tools_v2.3/time_tracking_engine_v2.3.py"
-        
+
         time_state = {
             'v2_3_engine_exists': time_engine_file.exists(),
             'execution_start': datetime.now().isoformat(),
             'iteration_timer_initialized': True
         }
-        
+
         print(f"  V2.3 Engine: {'[OK]' if time_state['v2_3_engine_exists'] else '[FAIL]'}")
         print(f"  Start Time: {time_state['execution_start']}")
-        
+
         return time_state
-    
+
     def _load_todo_matrix(self) -> Dict:
         """[0.7] TODO & Planning Matrix (PLANNED vs ACTUAL vs CURRENT)"""
         print("\n[0.7] Loading TODO & planning matrix...")
-        
+
         todo_file = self.workspace_root / self.canonical_files['TODO']
-        
+
         matrix = {
             'todo_file_exists': todo_file.exists(),
             'planned_vs_actual': {
@@ -304,7 +304,7 @@ class Phase0Init:
                 'possible': []
             }
         }
-        
+
         if todo_file.exists():
             try:
                 import yaml
@@ -314,68 +314,68 @@ class Phase0Init:
                     matrix['categories'] = list(todo_data.keys()) if todo_data else []
             except Exception as e:
                 matrix['error'] = str(e)
-        
+
         print(f"  TODO file: {'[OK]' if matrix['todo_file_exists'] else '[FAIL]'}")
         print(f"  Matrix loaded: {matrix.get('loaded', False)}")
-        
+
         return matrix
-    
+
     def _bootstrap_ranking_system(self) -> Dict:
         """[0.8] Ranking System Bootstrap"""
         print("\n[0.8] Bootstrapping ranking system...")
-        
+
         ranking_state = {
             'ranking_engine_exists': (self.workspace_root / 'ranking_engine.py').exists(),
             'recursive_ranking_exists': (self.workspace_root / 'CRYO_LINAC_HANDOVER_v2.1.0_20251103_020746/recursive_self_ranking_system.py').exists(),
             'global_ranking_exists': (self.workspace_root / self.canonical_files['GLOBAL_RANKING']).exists(),
             'ready_for_phase1': False
         }
-        
+
         if all([ranking_state['ranking_engine_exists'], ranking_state['global_ranking_exists']]):
             ranking_state['ready_for_phase1'] = True
-        
+
         print(f"  RankingEngine: {'[OK]' if ranking_state['ranking_engine_exists'] else '[FAIL]'}")
         print(f"  RecursiveSelfRanking: {'[OK]' if ranking_state['recursive_ranking_exists'] else '[FAIL]'}")
         print(f"  GlobalRanking: {'[OK]' if ranking_state['global_ranking_exists'] else '[FAIL]'}")
         print(f"  Ready for Phase 1: {'[OK]' if ranking_state['ready_for_phase1'] else '[FAIL]'}")
-        
+
         return ranking_state
-    
+
     def _validate_output_structure(self, iteration: int = 1) -> Dict:
         """[0.9] Output Structure Validation"""
         print("\n[0.9] Validating output structure...")
-        
+
         output_dirs = {
             'root': self.config.paths.output_root,
             'iteration': self.config.paths.output_root / f"iteration_{iteration}",
             'phases': {}
         }
-        
+
         for i in range(6):
             phase_dir = output_dirs['iteration'] / f"phase{i}_{'init' if i == 0 else ['define', 'measure', 'analyze', 'improve', 'control'][i-1]}"
             ensure_directory(phase_dir)
             output_dirs['phases'][f'phase{i}'] = phase_dir
-        
+
         print(f"  Output root: {output_dirs['root']}")
         print(f"  Iteration directory: iteration_{iteration}")
         print(f"  Phase directories: 6 created [OK]")
-        
+
         return {
             'output_root': str(output_dirs['root']),
             'iteration_dir': str(output_dirs['iteration']),
             'phase_count': 6,
             'all_created': True
         }
-    
+
     @GLOBAL_IDEMPOTENCY.idempotent(phase_name="phase0_init")
     def execute(self, iteration: int = 1, enable_idempotency: bool = True) -> Tuple[bool, Dict[str, Any]]:
         """
         Execute Phase 0: Initialization & Setup
-        
+
         Args:
             iteration: Iteration number
             enable_idempotency: Enable idempotent caching
-            
+
         Returns:
             Tuple of (success: bool, results: dict)
         """
@@ -383,14 +383,14 @@ class Phase0Init:
             print("\n" + "="*80)
             print(f"DMAIC V3.3 - PHASE 0: INITIALIZATION (Iteration {iteration})")
             print("="*80)
-            
+
             results = {
                 'phase': 'INIT',
                 'iteration': iteration,
                 'timestamp': datetime.now().isoformat(),
                 'version': '3.3.0'
             }
-            
+
             results['environment'] = self._check_environment()
             results['agents'] = self._initialize_agents()
             results['canonical_files'] = self._setup_canonical_files()
@@ -400,7 +400,7 @@ class Phase0Init:
             results['todo_matrix'] = self._load_todo_matrix()
             results['ranking'] = self._bootstrap_ranking_system()
             results['output_structure'] = self._validate_output_structure(iteration)
-            
+
             print("\n[0.10] Saving Phase 0 results...")
             output_dir = self.config.paths.output_root / f"iteration_{iteration}" / "phase0_init"
             ensure_directory(output_dir)
@@ -426,7 +426,7 @@ class Phase0Init:
             print()
 
             return True, results
-            
+
         except Exception as e:
             print(f"\n[X] Phase 0 failed: {e}")
             import traceback
@@ -437,13 +437,13 @@ class Phase0Init:
 if __name__ == "__main__":
     from ..config import DMAICConfig
     from ..core.state import StateManager
-    
+
     config = DMAICConfig()
     state_mgr = StateManager(config.paths.state_dir)
     phase0 = Phase0Init(config, state_mgr)
-    
+
     success, results = phase0.execute(iteration=1, enable_idempotency=True)
-    
+
     if success:
         print(f"[OK] Phase 0 completed successfully")
     else:

@@ -1,4 +1,10 @@
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 DMAIC V3.0 - Metrics Tracking and Aggregation
 Comprehensive metrics collection, aggregation, and export functionality
 """
@@ -27,7 +33,10 @@ class MetricsTracker:
     def __init__(self, phase_name: str, iteration: int):
         self.phase_name = phase_name
         self.iteration = iteration
-        self.phase_metrics = PhaseMetrics(phase_name=phase_name, iteration=iteration)
+        self.phase_metrics = PhaseMetrics(
+            phase_name=phase_name,
+            iteration=iteration
+        )
         self.start_time: Optional[datetime] = None
         self.end_time: Optional[datetime] = None
 
@@ -51,7 +60,7 @@ class MetricsTracker:
                 name=f"{self.phase_name}_duration",
                 value=duration,
                 unit="seconds",
-                metric_type=MetricType.DURATION,
+                metric_type=MetricType.DURATION
             )
 
     def record_metric(
@@ -60,7 +69,7 @@ class MetricsTracker:
         value: float,
         unit: str,
         metric_type: MetricType,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None
     ):
         """Record a single metric"""
         metric = Metric(
@@ -68,7 +77,7 @@ class MetricsTracker:
             value=value,
             unit=unit,
             metric_type=metric_type,
-            metadata=metadata or {},
+            metadata=metadata or {}
         )
         self.phase_metrics.add_metric(metric)
 
@@ -76,15 +85,11 @@ class MetricsTracker:
         """Record a counter metric"""
         self.record_metric(name, value, "count", MetricType.COUNTER, metadata)
 
-    def record_gauge(
-        self, name: str, value: float, unit: str, metadata: Optional[Dict] = None
-    ):
+    def record_gauge(self, name: str, value: float, unit: str, metadata: Optional[Dict] = None):
         """Record a gauge metric"""
         self.record_metric(name, value, unit, MetricType.GAUGE, metadata)
 
-    def record_histogram(
-        self, name: str, value: float, unit: str, metadata: Optional[Dict] = None
-    ):
+    def record_histogram(self, name: str, value: float, unit: str, metadata: Optional[Dict] = None):
         """Record a histogram metric"""
         self.record_metric(name, value, unit, MetricType.HISTOGRAM, metadata)
 
@@ -164,7 +169,7 @@ class MetricsAggregator:
             "min": min(values),
             "max": max(values),
             "mean": sum(values) / len(values),
-            "sum": sum(values),
+            "sum": sum(values)
         }
 
     def get_phase_success_rate(self, phase_name: str) -> float:
@@ -178,11 +183,11 @@ class MetricsAggregator:
 
     def generate_summary(self) -> Dict[str, Any]:
         """Generate comprehensive metrics summary"""
-        summary: Dict[str, Any] = {
+        summary = {
             "total_phases": len(self.phase_metrics),
             "total_iterations": len(self.iteration_metrics),
             "phase_summaries": {},
-            "iteration_summaries": {},
+            "iteration_summaries": {}
         }
 
         for phase_name, history in self.phase_metrics.items():
@@ -190,14 +195,14 @@ class MetricsAggregator:
                 "executions": len(history),
                 "average_duration": self.calculate_phase_average_duration(phase_name),
                 "success_rate": self.get_phase_success_rate(phase_name),
-                "total_metrics": sum(len(pm.metrics) for pm in history),
+                "total_metrics": sum(len(pm.metrics) for pm in history)
             }
 
         for iteration, metrics in self.iteration_metrics.items():
             summary["iteration_summaries"][iteration] = {
                 "phases_executed": len(metrics),
                 "total_duration": self.calculate_iteration_total_duration(iteration),
-                "total_metrics": sum(len(pm.metrics) for pm in metrics),
+                "total_metrics": sum(len(pm.metrics) for pm in metrics)
             }
 
         return summary
@@ -218,23 +223,19 @@ class MetricsExporter:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def export_phase_metrics_json(
-        self, metrics: PhaseMetrics, filename: Optional[str] = None
-    ):
+    def export_phase_metrics_json(self, metrics: PhaseMetrics, filename: Optional[str] = None):
         """Export phase metrics to JSON"""
         if filename is None:
             filename = f"{metrics.phase_name}_iter{metrics.iteration}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
         output_file = self.output_dir / filename
 
-        with open(output_file, "w") as f:
+        with open(output_file, 'w') as f:
             json.dump(metrics.to_dict(), f, indent=2)
 
         return output_file
 
-    def export_aggregated_metrics_json(
-        self, aggregator: MetricsAggregator, filename: str = "aggregated_metrics.json"
-    ):
+    def export_aggregated_metrics_json(self, aggregator: MetricsAggregator, filename: str = "aggregated_metrics.json"):
         """Export aggregated metrics to JSON"""
         output_file = self.output_dir / filename
 
@@ -244,10 +245,10 @@ class MetricsExporter:
                 phase: [pm.to_dict() for pm in history]
                 for phase, history in aggregator.phase_metrics.items()
             },
-            "exported_at": datetime.now().isoformat(),
+            "exported_at": datetime.now().isoformat()
         }
 
-        with open(output_file, "w") as f:
+        with open(output_file, 'w') as f:
             json.dump(data, f, indent=2)
 
         return output_file
@@ -259,25 +260,21 @@ class MetricsExporter:
 
         output_file = self.output_dir / filename
 
-        with open(output_file, "w") as f:
+        with open(output_file, 'w') as f:
             f.write("metric_name,value,unit,type,timestamp\n")
 
             for metric in metrics.metrics:
-                f.write(
-                    f"{metric.name},{metric.value},{metric.unit},{metric.metric_type.value},{metric.timestamp.isoformat()}\n"
-                )
+                f.write(f"{metric.name},{metric.value},{metric.unit},{metric.metric_type.value},{metric.timestamp.isoformat()}\n")
 
         return output_file
 
-    def export_summary_markdown(
-        self, aggregator: MetricsAggregator, filename: str = "metrics_summary.md"
-    ):
+    def export_summary_markdown(self, aggregator: MetricsAggregator, filename: str = "metrics_summary.md"):
         """Export metrics summary as markdown"""
         output_file = self.output_dir / filename
 
         summary = aggregator.generate_summary()
 
-        with open(output_file, "w") as f:
+        with open(output_file, 'w') as f:
             f.write("# DMAIC V3 Metrics Summary\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
 
@@ -286,22 +283,18 @@ class MetricsExporter:
             f.write(f"- **Total Iterations:** {summary['total_iterations']}\n\n")
 
             f.write("## Phase Summaries\n\n")
-            for phase_name, phase_summary in summary["phase_summaries"].items():
+            for phase_name, phase_summary in summary['phase_summaries'].items():
                 f.write(f"### {phase_name}\n\n")
                 f.write(f"- **Executions:** {phase_summary['executions']}\n")
-                f.write(
-                    f"- **Average Duration:** {phase_summary['average_duration']:.2f}s\n"
-                )
+                f.write(f"- **Average Duration:** {phase_summary['average_duration']:.2f}s\n")
                 f.write(f"- **Success Rate:** {phase_summary['success_rate']:.1f}%\n")
                 f.write(f"- **Total Metrics:** {phase_summary['total_metrics']}\n\n")
 
             f.write("## Iteration Summaries\n\n")
-            for iteration, iter_summary in summary["iteration_summaries"].items():
+            for iteration, iter_summary in summary['iteration_summaries'].items():
                 f.write(f"### Iteration {iteration}\n\n")
                 f.write(f"- **Phases Executed:** {iter_summary['phases_executed']}\n")
-                f.write(
-                    f"- **Total Duration:** {iter_summary['total_duration']:.2f}s\n"
-                )
+                f.write(f"- **Total Duration:** {iter_summary['total_duration']:.2f}s\n")
                 f.write(f"- **Total Metrics:** {iter_summary['total_metrics']}\n\n")
 
         return output_file
@@ -309,12 +302,8 @@ class MetricsExporter:
     def export_all(self, aggregator: MetricsAggregator, prefix: str = "dmaic_v3"):
         """Export all metrics in all formats"""
         results = {
-            "json": self.export_aggregated_metrics_json(
-                aggregator, f"{prefix}_metrics.json"
-            ),
-            "markdown": self.export_summary_markdown(
-                aggregator, f"{prefix}_summary.md"
-            ),
+            "json": self.export_aggregated_metrics_json(aggregator, f"{prefix}_metrics.json"),
+            "markdown": self.export_summary_markdown(aggregator, f"{prefix}_summary.md")
         }
 
         return results

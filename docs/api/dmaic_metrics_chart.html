@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
   <meta charset="utf-8"/>
-  <title>DMAIC Metrics – 2026-06-08</title>
+  <title>DMAIC Metrics – 2026-06-11</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>body{font-family:system-ui,sans-serif;margin:0;background:#0d1117;color:#e6edf3}
   .header{padding:1.5rem 2rem;background:#161b22;border-bottom:1px solid #30363d}
@@ -13,10 +13,10 @@
 </head><body>
 <div class="header">
   <h1>DMAIC Phase Metrics
-    <span class="qs">75.0/100</span>
+    <span class="qs">77.0/100</span>
   </h1>
-  <div class="sub">SHA: 7480e3bcd6d8 · Generated: 2026-06-08 16:58:38 UTC
-    · Commits (30d): 1233 / 1767 total
+  <div class="sub">SHA: 6178594f40d1 · Generated: 2026-06-11 17:38:47 UTC
+    · Commits (30d): 1348 / 1882 total
   </div>
 </div>
 <div class="charts">
@@ -27,8 +27,8 @@
 </div>
 <script>
 const phases   = ["Define", "Measure", "Analyze", "Improve", "Control"];
-const scores   = [75, 100, 100, 45, 5];
-const files    = [15, 36, 133, 9, 1];
+const scores   = [85, 100, 100, 45, 5];
+const files    = [17, 48, 152, 9, 1];
 const radarScores = [...scores, scores[0]];
 const radarLabels = [...phases, phases[0]];
 
@@ -63,14 +63,14 @@ Plotly.newPlot('coverage', [{
 }, {responsive:true});
 
 const meta = {
-  'Total commits':    1767,
-  'Recent (30d)':     1233,
-  'Python files':     411,
-  'Test files':       80,
-  'HTML docs':        78,
-  'Markdown docs':    773,
-  'Workflows':        59,
-  'Total LOC':        105909,
+  'Total commits':    1882,
+  'Recent (30d)':     1348,
+  'Python files':     432,
+  'Test files':       92,
+  'HTML docs':        79,
+  'Markdown docs':    779,
+  'Workflows':        80,
+  'Total LOC':        109463,
 };
 Plotly.newPlot('activity', [{
   type:'bar', x:Object.keys(meta), y:Object.values(meta),

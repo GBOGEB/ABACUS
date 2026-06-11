@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 import sys
 import json
 import time
@@ -6,8 +12,10 @@ import tempfile
 import shutil
 from pathlib import Path
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 from ..config import DMAICConfig
 from .state import StateManager
@@ -45,32 +53,23 @@ class MCPControlPoint:
     def __init__(self, mcp_dir: Path):
         self.mcp_dir = Path(mcp_dir)
         self.mcp_dir.mkdir(exist_ok=True)
-        self.log_file = self.mcp_dir / "monitor.log"
+        self.log_file = self.mcp_dir / 'monitor.log'
 
-    def log_point(
-        self,
-        point_name: str,
-        status: str = "enter",
-        metadata: Optional[Dict[str, Any]] = None,
-    ):
+    def log_point(self, point_name: str, status: str = 'enter', metadata: Dict = None):
         log_entry = {
-            "timestamp": time.time(),
-            "iso_timestamp": datetime.now().isoformat(),
-            "point": point_name,
-            "status": status,
-            "metadata": metadata or {},
+            'timestamp': time.time(),
+            'iso_timestamp': datetime.now().isoformat(),
+            'point': point_name,
+            'status': status,
+            'metadata': metadata or {}
         }
-        with open(self.log_file, "a") as f:
-            f.write(json.dumps(log_entry) + "\n")
+        with open(self.log_file, 'a') as f:
+            f.write(json.dumps(log_entry) + '\n')
 
 
 class TestSystemBridge:
-    def __init__(
-        self,
-        config: DMAICConfig,
-        state_manager: StateManager,
-        handover_bridge: HandoverBridge,
-    ):
+    def __init__(self, config: DMAICConfig, state_manager: StateManager,
+                 handover_bridge: HandoverBridge):
         self.config = config
         self.state_manager = state_manager
         self.handover_bridge = handover_bridge
@@ -78,15 +77,16 @@ class TestSystemBridge:
         self.workspace_root = Path(config.paths.workspace_root)
         self.output_root = Path(config.paths.output_root)
 
-        self.mcp = MCPControlPoint(self.workspace_root / ".mcp")
+        self.mcp = MCPControlPoint(self.workspace_root / '.mcp')
 
         self.test_results: Dict[str, TestExecutionResult] = {}
         self.deployment_metrics: Optional[DeploymentMetrics] = None
+        self.test_results_lock = threading.Lock()
 
-        self.version_file = self.workspace_root / "DMAIC_V3" / "VERSION"
-        self.actions_file = self.workspace_root / "actions.json"
+        self.version_file = self.workspace_root / 'DMAIC_V3' / 'VERSION'
+        self.actions_file = self.workspace_root / 'actions.json'
 
-        self.mcp.log_point("test_system_bridge_initialized", "complete")
+        self.mcp.log_point('test_system_bridge_initialized', 'complete')
 
     def get_current_version(self) -> str:
         if self.version_file.exists():
@@ -94,15 +94,10 @@ class TestSystemBridge:
         return "0.0.0"
 
     def update_version(self, new_version: str):
-        self.version_file.write_text(new_version + "\n")
-        self.mcp.log_point("version_updated", "complete", {"version": new_version})
+        self.version_file.write_text(new_version + '\n')
+        self.mcp.log_point('version_updated', 'complete', {'version': new_version})
 
-    def log_action(
-        self,
-        action_type: str,
-        description: str,
-        metadata: Optional[Dict[str, Any]] = None,
-    ):
+    def log_action(self, action_type: str, description: str, metadata: Dict = None):
         actions = []
         if self.actions_file.exists():
             try:
@@ -119,44 +114,33 @@ class TestSystemBridge:
                 actions = []
 
         action_entry = {
-            "timestamp": datetime.now().isoformat(),
-            "type": action_type,
-            "description": description,
-            "metadata": metadata or {},
+            'timestamp': datetime.now().isoformat(),
+            'type': action_type,
+            'description': description,
+            'metadata': metadata or {}
         }
         actions.append(action_entry)
 
         self.actions_file.write_text(json.dumps(actions, indent=2))
-        self.mcp.log_point("action_logged", "complete", {"action_type": action_type})
+        self.mcp.log_point('action_logged', 'complete', {'action_type': action_type})
 
     def setup_test_environment(self, sut_path: Path) -> Path:
-        self.mcp.log_point(
-            "setup_test_environment", "enter", {"sut_path": str(sut_path)}
-        )
+        self.mcp.log_point('setup_test_environment', 'enter', {'sut_path': str(sut_path)})
 
-        test_env = Path(tempfile.mkdtemp(prefix="dmaic_test_"))
+        test_env = Path(tempfile.mkdtemp(prefix='dmaic_test_'))
 
         if sut_path.is_dir():
-            shutil.copytree(sut_path, test_env / "sut", dirs_exist_ok=True)
+            shutil.copytree(sut_path, test_env / 'sut', dirs_exist_ok=True)
         else:
-            shutil.copy2(sut_path, test_env / "sut")
+            shutil.copy2(sut_path, test_env / 'sut')
 
-        self.mcp.log_point(
-            "setup_test_environment", "complete", {"test_env": str(test_env)}
-        )
+        self.mcp.log_point('setup_test_environment', 'complete', {'test_env': str(test_env)})
         return test_env
 
-    def run_test(
-        self,
-        test_name: str,
-        command: List[str],
-        expected_artifacts: Optional[List[str]] = None,
-        cwd: Optional[Path] = None,
-        timeout: int = 300,
-    ) -> TestExecutionResult:
-        self.mcp.log_point(
-            f"run_test_{test_name}", "enter", {"command": " ".join(command)}
-        )
+    def run_test(self, test_name: str, command: List[str],
+                 expected_artifacts: List[str] = None,
+                 cwd: Path = None, timeout: int = 300) -> TestExecutionResult:
+        self.mcp.log_point(f'run_test_{test_name}', 'enter', {'command': ' '.join(command)})
 
         start_time = time.time()
 
@@ -166,7 +150,7 @@ class TestSystemBridge:
                 cwd=cwd or self.workspace_root,
                 capture_output=True,
                 text=True,
-                timeout=timeout,
+                timeout=timeout
             )
 
             duration = time.time() - start_time
@@ -177,7 +161,7 @@ class TestSystemBridge:
                 stdout=result.stdout,
                 stderr=result.stderr,
                 success=result.returncode == 0,
-                duration_seconds=duration,
+                duration_seconds=duration
             )
 
             if expected_artifacts and cwd:
@@ -187,17 +171,15 @@ class TestSystemBridge:
                         artifacts_found.append(artifact)
                 test_result.artifacts_found = artifacts_found
                 test_result.artifacts_expected = expected_artifacts
-                test_result.artifacts_match = set(artifacts_found) == set(
-                    expected_artifacts
-                )
+                test_result.artifacts_match = set(artifacts_found) == set(expected_artifacts)
 
-            self.test_results[test_name] = test_result
+            with self.test_results_lock:
+                self.test_results[test_name] = test_result
 
-            self.mcp.log_point(
-                f"run_test_{test_name}",
-                "complete",
-                {"success": test_result.success, "duration": duration},
-            )
+            self.mcp.log_point(f'run_test_{test_name}', 'complete', {
+                'success': test_result.success,
+                'duration': duration
+            })
 
             return test_result
 
@@ -206,104 +188,85 @@ class TestSystemBridge:
             test_result = TestExecutionResult(
                 test_name=test_name,
                 returncode=-1,
-                stdout="",
-                stderr="Test timed out",
+                stdout='',
+                stderr='Test timed out',
                 success=False,
-                duration_seconds=duration,
+                duration_seconds=duration
             )
-            self.test_results[test_name] = test_result
+            with self.test_results_lock:
+                self.test_results[test_name] = test_result
 
-            self.mcp.log_point(
-                f"run_test_{test_name}", "timeout", {"duration": duration}
-            )
+            self.mcp.log_point(f'run_test_{test_name}', 'timeout', {'duration': duration})
 
             return test_result
 
-    def run_pytest_suite(
-        self,
-        test_path: Optional[str] = None,
-        markers: Optional[str] = None,
-    ) -> TestExecutionResult:
-        self.mcp.log_point("run_pytest_suite", "enter")
+    def run_pytest_suite(self, test_path: str = None, markers: str = None) -> TestExecutionResult:
+        self.mcp.log_point('run_pytest_suite', 'enter')
 
-        command = [sys.executable, "-m", "pytest"]
+        command = [sys.executable, '-m', 'pytest']
 
         if test_path:
             command.append(test_path)
 
         if markers:
-            command.extend(["-m", markers])
+            command.extend(['-m', markers])
 
-        command.extend(["-v", "--tb=short", "--maxfail=5"])
+        command.extend(['-v', '--tb=short', '--maxfail=5'])
 
-        test_name = "pytest_suite"
-        if markers:
-            test_name += f"_{markers}"
-        if test_path:
-            test_name += f"_{Path(test_path).stem}"
-
-        return self.run_test(test_name, command)
+        return self.run_test('pytest_suite', command)
 
     def run_static_analysis(self) -> Dict[str, Any]:
-        self.mcp.log_point("run_static_analysis", "enter")
+        self.mcp.log_point('run_static_analysis', 'enter')
 
-        results: Dict[str, Optional[Dict[str, Any]]] = {"flake8": None}
+        results = {
+            'flake8': None,
+            'mypy': None,
+            'pylint': None
+        }
 
         try:
-            lint_targets = [
-                "DMAIC_V3/core/test_system_bridge.py",
-                "run_deployment_test_system.py",
-            ]
             flake8_result = subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "flake8",
-                    *lint_targets,
-                    "--max-line-length=120",
-                    "--count",
-                    "--statistics",
-                ],
+                [sys.executable, '-m', 'flake8', 'DMAIC_V3', '--count', '--statistics'],
                 cwd=self.workspace_root,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=120
             )
-            results["flake8"] = {
-                "returncode": flake8_result.returncode,
-                "output": flake8_result.stdout + flake8_result.stderr,
+            results['flake8'] = {
+                'returncode': flake8_result.returncode,
+                'output': flake8_result.stdout + flake8_result.stderr
             }
         except Exception as e:
-            results["flake8"] = {"error": str(e)}
+            results['flake8'] = {'error': str(e)}
 
-        self.mcp.log_point("run_static_analysis", "complete", results)
+        self.mcp.log_point('run_static_analysis', 'complete', results)
         return results
 
     def detect_runtime_errors(self) -> List[Dict[str, Any]]:
-        self.mcp.log_point("detect_runtime_errors", "enter")
+        self.mcp.log_point('detect_runtime_errors', 'enter')
 
         runtime_errors = []
 
         for test_name, result in self.test_results.items():
             if not result.success:
                 error_info = {
-                    "test_name": test_name,
-                    "returncode": result.returncode,
-                    "stderr": result.stderr,
-                    "timestamp": result.timestamp,
+                    'test_name': test_name,
+                    'returncode': result.returncode,
+                    'stderr': result.stderr,
+                    'timestamp': result.timestamp
                 }
 
-                if "Traceback" in result.stderr or "Error" in result.stderr:
+                if 'Traceback' in result.stderr or 'Error' in result.stderr:
                     runtime_errors.append(error_info)
 
-        self.mcp.log_point(
-            "detect_runtime_errors", "complete", {"errors_found": len(runtime_errors)}
-        )
+        self.mcp.log_point('detect_runtime_errors', 'complete', {
+            'errors_found': len(runtime_errors)
+        })
 
         return runtime_errors
 
     def generate_deployment_metrics(self) -> DeploymentMetrics:
-        self.mcp.log_point("generate_deployment_metrics", "enter")
+        self.mcp.log_point('generate_deployment_metrics', 'enter')
 
         version = self.get_current_version()
 
@@ -317,13 +280,15 @@ class TestSystemBridge:
 
         static_analysis = self.run_static_analysis()
         static_passed = all(
-            r.get("returncode", 1) == 0
+            r.get('returncode', 1) == 0
             for r in static_analysis.values()
-            if r and "returncode" in r
+            if r and 'returncode' in r
         )
 
         deployment_ready = (
-            tests_passed == tests_total and len(runtime_errors) == 0 and static_passed
+            tests_passed == tests_total and
+            len(runtime_errors) == 0 and
+            static_passed
         )
 
         metrics = DeploymentMetrics(
@@ -335,99 +300,153 @@ class TestSystemBridge:
             execution_time_seconds=total_time,
             runtime_errors=runtime_errors,
             static_analysis_passed=static_passed,
-            deployment_ready=deployment_ready,
+            deployment_ready=deployment_ready
         )
 
         self.deployment_metrics = metrics
 
-        self.mcp.log_point(
-            "generate_deployment_metrics",
-            "complete",
-            {"deployment_ready": deployment_ready},
-        )
+        self.mcp.log_point('generate_deployment_metrics', 'complete', {
+            'deployment_ready': deployment_ready
+        })
 
         return metrics
 
-    def save_deployment_report(self, output_path: Optional[Path] = None):
+    def save_deployment_report(self, output_path: Path = None):
         if not self.deployment_metrics:
             self.generate_deployment_metrics()
 
-        if not self.deployment_metrics:
-            raise RuntimeError("Deployment metrics were not generated")
-
-        metrics = self.deployment_metrics
-
         if output_path is None:
-            output_path = self.output_root / "deployment_report.json"
+            output_path = self.output_root / 'deployment_report.json'
 
         report = {
-            "deployment_metrics": {
-                "version": metrics.version,
-                "timestamp": metrics.timestamp,
-                "tests_total": metrics.tests_total,
-                "tests_passed": metrics.tests_passed,
-                "tests_failed": metrics.tests_failed,
-                "execution_time_seconds": metrics.execution_time_seconds,
-                "runtime_errors": metrics.runtime_errors,
-                "static_analysis_passed": metrics.static_analysis_passed,
-                "deployment_ready": metrics.deployment_ready,
+            'deployment_metrics': {
+                'version': self.deployment_metrics.version,
+                'timestamp': self.deployment_metrics.timestamp,
+                'tests_total': self.deployment_metrics.tests_total,
+                'tests_passed': self.deployment_metrics.tests_passed,
+                'tests_failed': self.deployment_metrics.tests_failed,
+                'execution_time_seconds': self.deployment_metrics.execution_time_seconds,
+                'runtime_errors': self.deployment_metrics.runtime_errors,
+                'static_analysis_passed': self.deployment_metrics.static_analysis_passed,
+                'deployment_ready': self.deployment_metrics.deployment_ready
             },
-            "test_results": {
+            'test_results': {
                 name: {
-                    "test_name": result.test_name,
-                    "success": result.success,
-                    "returncode": result.returncode,
-                    "duration_seconds": result.duration_seconds,
-                    "timestamp": result.timestamp,
-                    "artifacts_match": result.artifacts_match,
+                    'test_name': result.test_name,
+                    'success': result.success,
+                    'returncode': result.returncode,
+                    'duration_seconds': result.duration_seconds,
+                    'timestamp': result.timestamp,
+                    'artifacts_match': result.artifacts_match
                 }
                 for name, result in self.test_results.items()
-            },
+            }
         }
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(report, indent=2))
 
-        self.log_action(
-            "deployment_report_saved",
-            f"Saved to {output_path}",
-            {"deployment_ready": metrics.deployment_ready},
-        )
+        self.log_action('deployment_report_saved', f'Saved to {output_path}', {
+            'deployment_ready': self.deployment_metrics.deployment_ready
+        })
 
-        self.mcp.log_point(
-            "save_deployment_report", "complete", {"output_path": str(output_path)}
-        )
+        self.mcp.log_point('save_deployment_report', 'complete', {
+            'output_path': str(output_path)
+        })
 
         return output_path
 
     def execute_full_test_cycle(self) -> bool:
-        self.mcp.log_point("execute_full_test_cycle", "enter")
+        self.mcp.log_point('execute_full_test_cycle', 'enter')
 
-        self.log_action("test_cycle_started", "Beginning full test cycle")
+        self.log_action('test_cycle_started', 'Beginning full test cycle')
 
-        self.run_pytest_suite(markers="unit")
+        self.run_pytest_suite(markers='unit')
 
-        self.run_pytest_suite(markers="integration")
+        self.run_pytest_suite(markers='integration')
 
-        self.run_pytest_suite(markers="smoke")
+        self.run_pytest_suite(markers='smoke')
 
         metrics = self.generate_deployment_metrics()
 
         self.save_deployment_report()
 
-        self.log_action(
-            "test_cycle_completed",
-            "Test cycle finished",
-            {
-                "deployment_ready": metrics.deployment_ready,
-                "tests_passed": metrics.tests_passed,
-                "tests_total": metrics.tests_total,
-            },
-        )
+        self.log_action('test_cycle_completed', 'Test cycle finished', {
+            'deployment_ready': metrics.deployment_ready,
+            'tests_passed': metrics.tests_passed,
+            'tests_total': metrics.tests_total
+        })
 
-        self.mcp.log_point(
-            "execute_full_test_cycle", "complete", {"success": metrics.deployment_ready}
-        )
+        self.mcp.log_point('execute_full_test_cycle', 'complete', {
+            'success': metrics.deployment_ready
+        })
+
+        return metrics.deployment_ready
+
+    def run_tests_parallel(  # noqa: E501
+        self, test_configs: List[Dict[str, Any]], max_workers: int = 4
+    ) -> Dict[str, Any]:
+        self.mcp.log_point('run_tests_parallel', 'enter', {'test_count': len(test_configs), 'max_workers': max_workers})
+
+        results: Dict[str, Any] = {}
+
+        def run_single_test(test_config):
+            test_name = test_config.get('name', 'unnamed_test')
+            command = test_config.get('command', [])
+            expected_artifacts = test_config.get('expected_artifacts', None)
+            cwd = test_config.get('cwd', None)
+            timeout = test_config.get('timeout', 300)
+
+            return test_name, self.run_test(test_name, command, expected_artifacts, cwd, timeout)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_test = {executor.submit(run_single_test, config): config for config in test_configs}
+
+            for future in as_completed(future_to_test):
+                try:
+                    test_name, result = future.result()
+                    results[test_name] = result
+                    status = "✅" if result.success else "❌"
+                    print(f"  {status} {test_name} completed in {result.duration_seconds:.2f}s")
+                except Exception as e:
+                    test_config = future_to_test[future]
+                    test_name = test_config.get('name', 'unknown')
+                    print(f"  ❌ {test_name} failed with exception: {str(e)}")
+
+        self.mcp.log_point('run_tests_parallel', 'complete', {
+            'tests_completed': len(results),
+            'tests_passed': sum(1 for r in results.values() if r.success)
+        })
+
+        return results
+
+    def execute_full_test_cycle_parallel(self, max_workers: int = 4) -> bool:
+        self.mcp.log_point('execute_full_test_cycle_parallel', 'enter')
+
+        self.log_action('test_cycle_started', 'Beginning parallel test cycle')
+
+        test_configs = [
+            {'name': 'unit_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'unit']},
+            {'name': 'integration_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'integration']},
+            {'name': 'smoke_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'smoke']},
+        ]
+
+        print(f"\n[PARALLEL EXECUTION] Running {len(test_configs)} test suites with {max_workers} workers...")
+        self.run_tests_parallel(test_configs, max_workers=max_workers)
+
+        metrics = self.generate_deployment_metrics()
+
+        self.save_deployment_report()
+
+        self.log_action('test_cycle_completed', 'Parallel test cycle finished', {
+            'deployment_ready': metrics.deployment_ready,
+            'tests_passed': metrics.tests_passed,
+            'tests_total': metrics.tests_total
+        })
+
+        self.mcp.log_point('execute_full_test_cycle_parallel', 'complete', {
+            'success': metrics.deployment_ready
+        })
 
         return metrics.deployment_ready
 
@@ -440,10 +459,10 @@ class IdempotentPhase:
         self.outputs_hash = None
 
     def __enter__(self):
-        self.bridge.mcp.log_point(f"phase_{self.phase_name}", "enter")
+        self.bridge.mcp.log_point(f'phase_{self.phase_name}', 'enter')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        status = "success" if exc_type is None else "failed"
-        self.bridge.mcp.log_point(f"phase_{self.phase_name}", status)
+        status = 'success' if exc_type is None else 'failed'
+        self.bridge.mcp.log_point(f'phase_{self.phase_name}', status)
         return False

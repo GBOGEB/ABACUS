@@ -14,9 +14,6 @@
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/powershell:1": {
-      "version": "latest"
     }
   },
   
@@ -28,20 +25,27 @@
         "github.copilot-chat",
         "github.vscode-github-actions",
         "eamodio.gitlens",
+        "ziyasal.vscode-open-in-github",
         "gitkraken.gitkraken-authentication",
         "ms-vscode.vscode-github-issue-notebooks",
         "github.remotehub",
         "ms-vscode-remote.remote-repositories",
         "ms-python.python",
         "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
         "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
         "redhat.vscode-yaml",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.makefile-tools",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": true,
+        "python.linting.flake8Enabled": true,
         "python.formatting.provider": "black",
         "python.testing.pytestEnabled": true,
         "terminal.integrated.defaultProfile.linux": "bash",
@@ -52,18 +56,29 @@
           "yaml": true,
           "markdown": true,
           "python": true
+        },
+        "openInGitHub.defaultBranch": "main",
+        "openInGitHub.remote": "origin",
+        "bitbucket.enabled": false,
+        "docker.enableDockerComposeLanguageService": true,
+        "docker.containers.groupBy": "Compose Project Name",
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.mypy_cache": true,
+          "**/*.pyc": true
         }
       }
     }
   },
   
-  "postCreateCommand": "pip install --upgrade pip && pip install -r DMAIC_V3/requirements.txt && gh auth status || echo 'Please run: gh auth login' && python -c \"from src.dmaic.federation import assimilate; r=assimilate(); print('Federation ping:', r['status'])\" || echo 'Federation ping skipped (deps not ready)'",
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && gh auth status || echo 'Please run: gh auth login'",
   
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
   
   "remoteUser": "vscode",
   
-  "forwardPorts": [8000, 8080, 5000, 5678],
+  "forwardPorts": [8000, 8080, 5000],
   
   "portsAttributes": {
     "8000": {
@@ -73,10 +88,6 @@
     "8080": {
       "label": "Preview",
       "onAutoForward": "openBrowser"
-    },
-    "5678": {
-      "label": "Debugpy",
-      "onAutoForward": "silent"
     }
   },
   
@@ -85,7 +96,6 @@
   ],
   
   "containerEnv": {
-    "GITHUB_REPOSITORY": "GBOGEB/ABACUS",
-    "CODESPACE_JUPYTER_REPO": "GBOGEB/codespace_jyperter"
+    "GITHUB_REPOSITORY": "GBOGEB/ABACUS"
   }
 }

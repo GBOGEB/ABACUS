@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Recursive build orchestrator (lightweight stub):
 - Validates artefact references listed in GLOBAL_index.json
 - Emits metrics/metrics.json with basic counts
@@ -60,7 +66,7 @@ def main():
     out.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     print(f"[WROTE] {out}")
 
-    if args.update_metrics:
+    if args.update-metrics:
         csv_path = Path("metrics/metrics.csv")
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         # Append minimal row; real KPIs are managed elsewhere
@@ -72,3 +78,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

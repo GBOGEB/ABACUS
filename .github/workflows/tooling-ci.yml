@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -61,10 +61,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -93,16 +93,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then
+            pip install -r DMAIC_V3/requirements.txt
+          fi
           pip install flake8 pylint
 
       - name: Validate local_mcp
@@ -134,16 +137,19 @@ jobs:
     needs: [validate-scripts, validate-tools, validate-mcp]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then
+            pip install -r DMAIC_V3/requirements.txt
+          fi
           pip install pytest
 
       - name: Test script utilities
@@ -195,16 +201,19 @@ jobs:
     needs: test-utilities
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then
+            pip install -r DMAIC_V3/requirements.txt
+          fi
 
       - name: Check tooling integration
         run: |
