@@ -27,7 +27,7 @@ class CheckResult:
 class Phase0Setup:
     """
     Phase 0: Setup and Initialization
-    
+
     Responsibilities:
     1. Python version validation
     2. System requirements check
@@ -37,11 +37,11 @@ class Phase0Setup:
     6. Workspace validation
     7. Previous state recovery
     """
-    
+
     def __init__(self, config):
         """
         Initialize Phase 0
-        
+
         Args:
             config: DMAICConfig instance
         """
@@ -50,11 +50,11 @@ class Phase0Setup:
         self.checks_passed: List[CheckResult] = []
         self.checks_failed: List[CheckResult] = []
         self.checks_warnings: List[CheckResult] = []
-    
+
     def execute(self) -> Tuple[bool, Dict]:
         """
         Execute all setup checks
-        
+
         Returns:
             Tuple of (success, results_dict)
         """
@@ -63,7 +63,7 @@ class Phase0Setup:
         print("="*80)
         print(f"Timestamp: {datetime.now().isoformat()}")
         print()
-        
+
         # Run all checks
         self._check_python_version()
         self._check_system_requirements()
@@ -74,10 +74,10 @@ class Phase0Setup:
         self._validate_configuration()
         self._validate_workspace()
         self._check_previous_state()
-        
+
         # Generate report
         return self._generate_report()
-    
+
     def _add_result(self, result: CheckResult):
         """Add check result to appropriate list"""
         if result.passed:
@@ -86,17 +86,17 @@ class Phase0Setup:
             self.checks_warnings.append(result)
         else:
             self.checks_failed.append(result)
-    
+
     def _check_python_version(self) -> Any:
         """Check Python version meets minimum requirements"""
         print("[0.1] Checking Python version...")
-        
+
         current_version = sys.version_info
         required_version = tuple(map(int, self.phase0_config.python_min_version.split('.')))
-        
+
         version_str = f"{current_version.major}.{current_version.minor}.{current_version.micro}"
         required_str = self.phase0_config.python_min_version
-        
+
         if current_version >= required_version:
             result = CheckResult(
                 name="Python Version",
@@ -115,22 +115,22 @@ class Phase0Setup:
                 details={"current": version_str, "required": required_str}
             )
             print(f"  [X] {result.message}")
-        
+
         self._add_result(result)
-    
+
     def _check_system_requirements(self) -> Any:
         """Check system requirements"""
         print("[0.2] Checking system requirements...")
-        
+
         # Check OS
         os_name = sys.platform
         print(f"  • Operating System: {os_name}")
-        
+
         # Check architecture
         import platform
         arch = platform.machine()
         print(f"  • Architecture: {arch}")
-        
+
         result = CheckResult(
             name="System Requirements",
             passed=True,
@@ -139,20 +139,20 @@ class Phase0Setup:
             details={"os": os_name, "architecture": arch}
         )
         print(f"  [OK] System requirements checked")
-        
+
         self._add_result(result)
-    
+
     def _check_disk_space(self) -> Any:
         """Check available disk space"""
         print("[0.3] Checking disk space...")
-        
+
         try:
             output_path = self.config.paths.output_root
             stat = shutil.disk_usage(output_path.parent if output_path.exists() else Path.cwd())
-            
+
             available_mb = stat.free / (1024 * 1024)
             required_mb = self.phase0_config.required_disk_space_mb
-            
+
             if available_mb >= required_mb:
                 result = CheckResult(
                     name="Disk Space",
@@ -167,12 +167,12 @@ class Phase0Setup:
                     name="Disk Space",
                     passed=False,
                     message=f"Insufficient disk space: {available_mb:.0f} MB (required: {required_mb} MB)",
-                        
+
                     severity="warning",
                     details={"available_mb": available_mb, "required_mb": required_mb}
                 )
                 print(f"  [!] {result.message}")
-            
+
             self._add_result(result)
         except Exception as e:
             result = CheckResult(
@@ -183,14 +183,14 @@ class Phase0Setup:
             )
             print(f"  [!] {result.message}")
             self._add_result(result)
-    
+
     def _check_git_availability(self) -> Any:
         """Check if git is available"""
         if not self.phase0_config.check_git:
             return
-        
+
         print("[0.4] Checking git availability...")
-        
+
         try:
             result_code = subprocess.run(
                 ["git", "--version"],
@@ -198,7 +198,7 @@ class Phase0Setup:
                 text=True,
                 timeout=5
             )
-            
+
             if result_code.returncode == 0:
                 version = result_code.stdout.strip()
                 result = CheckResult(
@@ -217,7 +217,7 @@ class Phase0Setup:
                     severity="warning"
                 )
                 print(f"  [!] {result.message}")
-            
+
             self._add_result(result)
         except Exception as e:
             result = CheckResult(
@@ -228,21 +228,21 @@ class Phase0Setup:
             )
             print(f"  [!] {result.message}")
             self._add_result(result)
-    
+
     def _setup_virtual_environment(self) -> Any:
         """Setup or verify virtual environment"""
         if not self.phase0_config.auto_create_venv:
             return
-        
+
         print("[0.5] Checking virtual environment...")
-        
+
         venv_path = Path(self.phase0_config.venv_name)
-        
+
         # Check if already in venv
         in_venv = hasattr(sys, 'real_prefix') or (
             hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
         )
-        
+
         if in_venv:
             result = CheckResult(
                 name="Virtual Environment",
@@ -254,7 +254,7 @@ class Phase0Setup:
             print(f"  [OK] {result.message}")
             self._add_result(result)
             return
-        
+
         # Check if venv exists
         if venv_path.exists():
             result = CheckResult(
@@ -277,30 +277,30 @@ class Phase0Setup:
             )
             print(f"  [!] {result.message}")
             print(f"  [i] Create with: python -m venv {venv_path}")
-        
+
         self._add_result(result)
-    
+
     def _validate_dependencies(self) -> Any:
         """Validate required dependencies"""
         if not self.phase0_config.validate_dependencies:
             return
-        
+
         print("[0.6] Validating dependencies...")
-        
+
         required_packages = [
             "pathlib",
             "json",
             "dataclasses",
             "typing",
         ]
-        
+
         missing = []
         for package in required_packages:
             try:
                 __import__(package)
             except ImportError:
                 missing.append(package)
-        
+
         if not missing:
             result = CheckResult(
                 name="Dependencies",
@@ -319,26 +319,26 @@ class Phase0Setup:
                 details={"missing": missing}
             )
             print(f"  [X] {result.message}")
-        
+
         self._add_result(result)
-    
+
     def _validate_configuration(self) -> Any:
         """Validate configuration"""
         print("[0.7] Validating configuration...")
-        
+
         issues = []
-        
+
         # Check paths
         if not self.config.paths.workspace_root:
             issues.append("Workspace root not set")
-        
+
         if not self.config.paths.output_root:
             issues.append("Output root not set")
-        
+
         # Check iteration count
         if self.config.max_iterations < 1:
             issues.append("Max iterations must be >= 1")
-        
+
         if not issues:
             result = CheckResult(
                 name="Configuration",
@@ -356,15 +356,15 @@ class Phase0Setup:
                 details={"issues": issues}
             )
             print(f"  [X] {result.message}")
-        
+
         self._add_result(result)
-    
+
     def _validate_workspace(self) -> Any:
         """Validate workspace"""
         print("[0.8] Validating workspace...")
-        
+
         workspace = self.config.paths.workspace_root
-        
+
         if not workspace.exists():
             result = CheckResult(
                 name="Workspace",
@@ -400,9 +400,9 @@ class Phase0Setup:
                     details={"path": str(workspace)}
                 )
                 print(f"  [OK] {result.message}")
-        
+
         self._add_result(result)
-        
+
         # Check output directory
         output_dir = self.config.paths.output_root
         try:
@@ -423,15 +423,15 @@ class Phase0Setup:
                 severity="error"
             )
             print(f"  [X] {result.message}")
-        
+
         self._add_result(result)
-    
+
     def _check_previous_state(self) -> Any:
         """Check for previous execution state"""
         print("[0.9] Checking previous state...")
-        
+
         state_file = self.config.paths.state_dir / "execution_state.json"
-        
+
         if state_file.exists():
             result = CheckResult(
                 name="Previous State",
@@ -451,42 +451,42 @@ class Phase0Setup:
                 details={"can_resume": False}
             )
             print(f"  [OK] {result.message}")
-        
+
         self._add_result(result)
-    
+
     def _generate_report(self) -> Tuple[bool, Dict]:
         """Generate setup report"""
         print()
         print("="*80)
         print("PHASE 0 SUMMARY")
         print("="*80)
-        
+
         total_checks = len(self.checks_passed) + len(self.checks_failed) + len(self.checks_warnings)
-        
+
         print(f"Total Checks: {total_checks}")
         print(f"  [OK] Passed:   {len(self.checks_passed)}")
         print(f"  [!] Warnings: {len(self.checks_warnings)}")
         print(f"  [X] Failed:   {len(self.checks_failed)}")
         print()
-        
+
         # Show failures
         if self.checks_failed:
             print("FAILED CHECKS:")
             for check in self.checks_failed:
                 print(f"  [X] {check.name}: {check.message}")
             print()
-        
+
         # Show warnings
         if self.checks_warnings:
             print("WARNINGS:")
             for check in self.checks_warnings:
                 print(f"  [!] {check.name}: {check.message}")
             print()
-        
+
         # Determine success
         has_errors = len(self.checks_failed) > 0
         has_warnings = len(self.checks_warnings) > 0
-        
+
         if has_errors:
             print("[FAIL] PHASE 0 FAILED - Cannot proceed")
             success = False
@@ -496,10 +496,10 @@ class Phase0Setup:
         else:
             print("[OK] PHASE 0 PASSED - Ready to proceed")
             success = True
-        
+
         print("="*80)
         print()
-        
+
         # Build results dictionary
         results = {
             "success": success,
@@ -513,7 +513,7 @@ class Phase0Setup:
                 "failed": [{"name": c.name, "message": c.message} for c in self.checks_failed],
             }
         }
-        
+
         return success, results
 
 
@@ -521,18 +521,18 @@ if __name__ == "__main__":
     # Test Phase 0
     print("Testing Phase 0: Setup & Initialization")
     print()
-    
+
     # Import config
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent))
-    
+
     from config import DMAICConfig
-    
+
     config = DMAICConfig()
     phase0 = Phase0Setup(config)
-    
+
     success, results = phase0.execute()
-    
+
     print(f"\nFinal Result: {'SUCCESS' if success else 'FAILURE'}")
     print(f"Results: {results}")

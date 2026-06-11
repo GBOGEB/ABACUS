@@ -21,10 +21,8 @@ typing-extensions>=4.0.0
 # ============================================================================
 
 # Data manipulation and analysis
-pandas>=3.0.3,<4.0.0; python_version >= "3.11"
-pandas>=2.2.3,<3.0.0; python_version < "3.11"
-numpy>=2.4.6,<3.0.0; python_version >= "3.11"
-numpy>=2.0.0,<2.4.0; python_version < "3.11"
+pandas>=1.3.0,<2.0.0
+numpy>=1.21.0,<2.0.0
 
 # ============================================================================
 # VISUALIZATION
@@ -39,10 +37,10 @@ seaborn>=0.11.0,<1.0.0
 # ============================================================================
 
 # Markdown processing
-markdown>=3.10.2,<4.0.0
+markdown>=3.3.0,<4.0.0
 
 # Template engine
-jinja2>=3.1.6,<4.0.0
+jinja2>=3.0.0,<4.0.0
 
 # ============================================================================
 # STATE MANAGEMENT & SERIALIZATION
@@ -52,7 +50,7 @@ jinja2>=3.1.6,<4.0.0
 pyyaml>=6.0,<7.0
 
 # JSON schema validation
-jsonschema>=4.26.0,<5.0.0
+jsonschema>=4.0.0,<5.0.0
 
 # ============================================================================
 # UTILITIES
@@ -72,7 +70,7 @@ colorama>=0.4.4,<1.0.0; platform_system == "Windows"
 # ============================================================================
 
 # File watching and monitoring
-watchdog>=2.1.0,<5.0.0
+watchdog>=2.1.0,<3.0.0
 
 # ============================================================================
 # HASHING & CHECKSUMS (for idempotency)
@@ -94,28 +92,23 @@ watchdog>=2.1.0,<5.0.0
 # ============================================================================
 
 # Testing framework
-pytest>=9.0.3,<10.0.0
-pytest-cov>=3.0.0,<8.0.0
+pytest>=7.0.0,<8.0.0
+pytest-cov>=3.0.0,<4.0.0
 pytest-mock>=3.6.0,<4.0.0
-pytest-subtests>=0.15.0,<1.0.0
 
 # Code formatting
-black>=26.5.0,<27.0.0; python_version >= "3.10"
-black>=25.0.0,<26.0.0; python_version < "3.10"
+black>=22.0.0,<23.0.0
 
 # Linting
 flake8>=7.0.0
-pylint>=4.0.5,<5.0.0
+pylint>=2.12.0,<3.0.0
 
 # Type checking
-mypy>=2.1.0,<3.0.0; python_version >= "3.10"
-mypy>=1.10.0,<2.0.0; python_version < "3.10"
+mypy>=0.950,<1.0.0
 
 # Documentation
-sphinx>=9.1.0,<10.0.0; python_version >= "3.12"
-sphinx>=8.2.3,<9.1.0; python_version >= "3.11" and python_version < "3.12"
-sphinx>=7.0.0,<8.2.0; python_version >= "3.9" and python_version < "3.11"
-sphinx-rtd-theme>=3.1.0,<4.0.0
+sphinx>=4.0.0,<5.0.0
+sphinx-rtd-theme>=1.0.0,<2.0.0
 
 # ============================================================================
 # OPTIONAL: ENHANCED FEATURES
@@ -139,7 +132,7 @@ sphinx-rtd-theme>=3.1.0,<4.0.0
 # ============================================================================
 
 # Windows-specific
-pywin32>=311; platform_system == "Windows"
+pywin32>=300; platform_system == "Windows"
 
 # Unix-specific
 # (most Unix tools are in standard library)

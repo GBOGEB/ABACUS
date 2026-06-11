@@ -22,26 +22,26 @@ class TestAndDocumentRunner:
         self.config = DMAICConfig()
         self.test_results = {}
         self.execution_log = []
-        
+
     def run_pipeline_test(self, iteration: int = 1) -> Dict[str, Any]:
         """Run pipeline and capture execution data"""
         print(f"\n{'='*80}")
         print(f"DMAIC V3 TEST EXECUTION - Iteration {iteration}")
         print(f"{'='*80}\n")
-        
+
         start_time = time.time()
-        
+
         orchestrator = FullPipelineOrchestrator(
             enable_idempotency_flag=True,
             enable_git_commits=False,
             verbose=True,
             debug_port=None
         )
-        
+
         success = orchestrator.execute_full_pipeline(iteration=iteration)
-        
+
         duration = time.time() - start_time
-        
+
         result = {
             'iteration': iteration,
             'success': success,
@@ -49,16 +49,16 @@ class TestAndDocumentRunner:
             'timestamp': datetime.now().isoformat(),
             'statistics': orchestrator.statistics if hasattr(orchestrator, 'statistics') else {}
         }
-        
+
         self.test_results[f'iteration_{iteration}'] = result
         self.execution_log.append(result)
-        
+
         return result
-    
+
     def analyze_outputs(self, iteration: int) -> Dict[str, Any]:
         """Analyze generated outputs from iteration"""
         output_dir = self.config.paths.output_root / f"iteration_{iteration}"
-        
+
         analysis = {
             'iteration': iteration,
             'output_directory': str(output_dir),
@@ -66,30 +66,30 @@ class TestAndDocumentRunner:
             'artifacts': [],
             'agents_used': []
         }
-        
+
         if not output_dir.exists():
             analysis['error'] = 'Output directory not found'
             return analysis
-        
+
         for phase_dir in sorted(output_dir.iterdir()):
             if phase_dir.is_dir():
                 phase_name = phase_dir.name
                 phase_files = list(phase_dir.glob('**/*'))
-                
+
                 analysis['phases'][phase_name] = {
                     'directory': str(phase_dir),
                     'file_count': len([f for f in phase_files if f.is_file()]),
                     'files': [str(f.relative_to(output_dir)) for f in phase_files if f.is_file()]
                 }
-        
+
         agent_registry = self.config.paths.output_root / 'agent_registry.json'
         if agent_registry.exists():
             with open(agent_registry) as f:
                 agents_data = json.load(f)
                 analysis['agents_used'] = list(agents_data.get('agents', {}).keys())
-        
+
         return analysis
-    
+
     def generate_architecture_diagram(self) -> str:
         """Generate ASCII architecture diagram from actual execution"""
         diagram = """
@@ -219,7 +219,7 @@ class TestAndDocumentRunner:
 ╚════════════════════════════════════════════════════════════════════════════╝
 """
         return diagram
-    
+
     def generate_execution_report(self) -> str:
         """Generate comprehensive execution report"""
         report = f"""
@@ -249,26 +249,26 @@ Generated: {datetime.now().isoformat()}
 - Total Duration: {orch.get('total_duration_seconds', 0):.2f}s
 
 """
-        
+
         return report
-    
+
     def save_documentation(self):
         """Save all generated documentation"""
         docs_dir = Path('DMAIC_V3_DOCS')
         docs_dir.mkdir(exist_ok=True)
-        
+
         (docs_dir / 'ARCHITECTURE_DIAGRAM.txt').write_text(
             self.generate_architecture_diagram()
         )
-        
+
         (docs_dir / 'EXECUTION_REPORT.md').write_text(
             self.generate_execution_report()
         )
-        
+
         (docs_dir / 'test_results.json').write_text(
             json.dumps(self.test_results, indent=2)
         )
-        
+
         print(f"\n✓ Documentation saved to {docs_dir}/")
         print(f"  - ARCHITECTURE_DIAGRAM.txt")
         print(f"  - EXECUTION_REPORT.md")
@@ -276,23 +276,23 @@ Generated: {datetime.now().isoformat()}
 
 def main():
     runner = TestAndDocumentRunner()
-    
+
     print("Starting DMAIC V3 Test and Documentation Generation...")
-    
+
     result = runner.run_pipeline_test(iteration=1)
-    
+
     print(f"\n{'='*80}")
     print(f"TEST RESULT: {'SUCCESS' if result['success'] else 'FAILED'}")
     print(f"Duration: {result['duration_seconds']:.2f} seconds")
     print(f"{'='*80}\n")
-    
+
     analysis = runner.analyze_outputs(iteration=1)
     print(f"\nOutput Analysis:")
     print(f"  Phases executed: {len(analysis['phases'])}")
     print(f"  Agents used: {len(analysis.get('agents_used', []))}")
-    
+
     runner.save_documentation()
-    
+
     return 0 if result['success'] else 1
 
 if __name__ == "__main__":

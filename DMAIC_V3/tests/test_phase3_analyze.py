@@ -38,7 +38,7 @@ def phase3(config, state_manager):
 def phase2_output(config):
     output_dir = config.paths.output_root / "iteration_1"
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     phase2_data = {
         'phase': 'MEASURE',
         'iteration': 1,
@@ -70,7 +70,7 @@ def phase2_output(config):
             }
         }
     }
-    
+
     phase2_file = output_dir / "phase2_metrics.json"
     phase2_file.write_text(json.dumps(phase2_data))
     return phase2_data
@@ -79,20 +79,20 @@ def phase2_output(config):
 @pytest.mark.phase3
 @pytest.mark.unit
 class TestPhase3Analyze:
-    
+
     def test_initialization(self, phase3, config):
         assert phase3.config == config
-    
+
     def test_execute_with_phase2_output(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
-        
+
         assert success is True
         assert result.get('summary') is not None
         assert result.get('root_causes') is not None
-    
+
     def test_identify_high_complexity_files(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
-        
+
         assert success is True
         assert result.get('summary') is not None
 
@@ -115,13 +115,13 @@ class TestPhase3Analyze:
         assert success is True
         assert isinstance(result, dict)
         assert result.get('summary') is not None
-    
+
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
-        
+
         summary = result.get('summary', {})
         assert isinstance(summary, dict)
-    
+
     def test_output_structure(self, phase3, phase2_output):
         execution_result = phase3.execute(iteration=1)
         if isinstance(execution_result, tuple):
@@ -129,21 +129,21 @@ class TestPhase3Analyze:
         else:
             success = execution_result.get('success', True)
             result = execution_result
-        
+
         assert success is True
         assert 'summary' in result
         assert 'root_causes' in result
         assert 'output_file' in result
-    
+
     def test_missing_phase2_output(self, phase3, config):
         success, result = phase3.execute(iteration=99)
-        
+
         assert success is False
         assert 'error' in result
-    
+
     def test_issue_categorization(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
-        
+
         summary = result.get('summary', {})
         if 'critical_issues' in summary:
             assert isinstance(summary['critical_issues'], int)
@@ -151,13 +151,13 @@ class TestPhase3Analyze:
             assert isinstance(summary['high_issues'], int)
         if 'medium_issues' in summary:
             assert isinstance(summary['medium_issues'], int)
-    
+
     def test_analysis_recommendations(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
-        
+
         assert success is True
         assert 'summary' in result or 'root_causes' in result
-    
+
     def test_file_saved_correctly(self, phase3, phase2_output, config):
         execution_result = phase3.execute(iteration=1)
         if isinstance(execution_result, tuple):
@@ -165,29 +165,29 @@ class TestPhase3Analyze:
         else:
             success = execution_result.get('success', 'error' not in execution_result)
         assert success is True
-        
+
         output_file = config.paths.output_root / "iteration_1" / "phase3_analysis.json"
         assert output_file.exists()
-        
+
         with open(output_file) as f:
             data = json.load(f)
             assert data['iteration'] == 1
             assert 'summary' in data
-    
+
     def test_multiple_iterations(self, phase3, config):
         for iteration in [1, 2]:
             output_dir = config.paths.output_root / f"iteration_{iteration}"
             output_dir.mkdir(parents=True, exist_ok=True)
-            
+
             phase2_data = {
                 'phase': 'MEASURE',
                 'iteration': iteration,
                 'file_metrics': {}
             }
-            
+
             phase2_file = output_dir / "phase2_metrics.json"
             phase2_file.write_text(json.dumps(phase2_data))
-            
+
             execution_result = phase3.execute(iteration=iteration)
             if isinstance(execution_result, tuple):
                 success, result = execution_result

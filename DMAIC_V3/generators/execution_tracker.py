@@ -79,13 +79,13 @@ class ExecutionResult:
     classes_count: int = 0
     imports_count: int = 0
     timestamp: str = ""
-    
+
     def __post_init__(self):
         """TODO: Add function description"""
 
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         result = asdict(self)
@@ -112,7 +112,7 @@ class ExecutionStatistics:
     total_classes: int = 0
     error_breakdown: Dict[str, int] = None
     victory_conditions_met: Dict[str, bool] = None
-    
+
     def __post_init__(self):
         """TODO: Add function description"""
 
@@ -120,7 +120,7 @@ class ExecutionStatistics:
             self.error_breakdown = {}
         if self.victory_conditions_met is None:
             self.victory_conditions_met = {}
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return asdict(self)
@@ -129,7 +129,7 @@ class ExecutionStatistics:
 class ExecutionTracker:
     """
     Track execution of Python and VBA code with comprehensive statistics
-    
+
     Victory Conditions:
     1. python_execution: All Python files execute without errors
     2. vba_validation: All VBA files validate successfully
@@ -138,7 +138,7 @@ class ExecutionTracker:
     5. documentation_alignment: All markdown files version-aligned
     6. report_generation: JSON/YAML reports generated and linked
     """
-    
+
     def __init__(
         """TODO: Add function description"""
 
@@ -180,9 +180,9 @@ class ExecutionTracker:
                     imports.extend([alias.name for alias in node.names])
                 elif isinstance(node, ast.ImportFrom):
                     imports.append(node.module if node.module else '')
-            
+
             lines_of_code = len([l for l in content.split('\n') if l.strip() and not l.strip().startswith('#')])
-            
+
             result = subprocess.run(
                 [sys.executable, str(file_path)],
                 capture_output=True,
@@ -190,9 +190,9 @@ class ExecutionTracker:
                 timeout=self.timeout,
                 cwd=file_path.parent
             )
-            
+
             execution_time = (datetime.now() - start_time).total_seconds()
-            
+
             if result.returncode == 0:
                 exec_result = ExecutionResult(
                     file_path=str(file_path),
@@ -224,14 +224,14 @@ class ExecutionTracker:
                     classes_count=len(classes),
                     imports_count=len(set(imports))
                 )
-            
+
             if self.metrics:
                 self.metrics.record_counter('python_files_executed', 1)
                 self.metrics.record_histogram('python_execution_time', execution_time, 'seconds')
                 self.metrics.record_gauge('python_lines_of_code', lines_of_code, 'lines')
-            
+
             return exec_result
-            
+
         except subprocess.TimeoutExpired:
             execution_time = (datetime.now() - start_time).total_seconds()
             return ExecutionResult(
@@ -242,7 +242,7 @@ class ExecutionTracker:
                 error_type=ErrorType.TIMEOUT_ERROR,
                 error_message=f"Execution timeout after {self.timeout} seconds"
             )
-        
+
         except SyntaxError as e:
             execution_time = (datetime.now() - start_time).total_seconds()
             return ExecutionResult(
@@ -254,7 +254,7 @@ class ExecutionTracker:
                 error_message=str(e),
                 error_traceback=traceback.format_exc()
             )
-        
+
         except Exception as e:
             execution_time = (datetime.now() - start_time).total_seconds()
             error_type = self._classify_error(str(e))
@@ -267,29 +267,29 @@ class ExecutionTracker:
                 error_message=str(e),
                 error_traceback=traceback.format_exc()
             )
-    
+
     def validate_vba_file(self, file_path: Path) -> ExecutionResult:
         """Validate a VBA file (.bas) for syntax"""
         start_time = datetime.now()
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-            
+
             lines_of_code = len([l for l in content.split('\n') if l.strip() and not l.strip().startswith("'")])
-            
+
             functions = re.findall(r'(?:Public|Private)?\s*(?:Sub|Function)\s+(\w+)',
                 content,
                 re.IGNORECASE)
-            
+
             syntax_errors = []
             if 'End Sub' in content and content.count('Sub ') != content.count('End Sub'):
                 syntax_errors.append("Mismatched Sub/End Sub")
             if 'End Function' in content and content.count('Function ') != content.count('End Function'):
                 syntax_errors.append("Mismatched Function/End Function")
-            
+
             execution_time = (datetime.now() - start_time).total_seconds()
-            
+
             if syntax_errors:
                 exec_result = ExecutionResult(
                     file_path=str(file_path),
@@ -310,14 +310,14 @@ class ExecutionTracker:
                     lines_of_code=lines_of_code,
                     functions_count=len(functions)
                 )
-            
+
             if self.metrics:
                 self.metrics.record_counter('vba_files_validated', 1)
                 self.metrics.record_histogram('vba_validation_time', execution_time, 'seconds')
                 self.metrics.record_gauge('vba_lines_of_code', lines_of_code, 'lines')
-            
+
             return exec_result
-            
+
         except Exception as e:
             execution_time = (datetime.now() - start_time).total_seconds()
             return ExecutionResult(
@@ -329,11 +329,11 @@ class ExecutionTracker:
                 error_message=str(e),
                 error_traceback=traceback.format_exc()
             )
-    
+
     def _classify_error(self, error_message: str) -> ErrorType:
         """Classify error type from error message"""
         error_lower = error_message.lower()
-        
+
         if 'syntaxerror' in error_lower or 'invalid syntax' in error_lower:
             return ErrorType.SYNTAX_ERROR
         elif 'importerror' in error_lower or 'modulenotfounderror' in error_lower:
@@ -354,29 +354,29 @@ class ExecutionTracker:
             return ErrorType.TIMEOUT_ERROR
         else:
             return ErrorType.UNKNOWN_ERROR
-    
+
     def scan_and_execute(self, root_dir: Path, patterns: List[str] = None) -> ExecutionStatistics:
         """Scan directory and execute all Python/VBA files"""
         if patterns is None:
             patterns = ['**/*.py', '**/*.bas']
-        
+
         files_to_execute = []
         for pattern in patterns:
             files_to_execute.extend(root_dir.glob(pattern))
-        
+
         files_to_execute = [f for f in files_to_execute if f.is_file()]
-        
+
         self.statistics.total_files = len(files_to_execute)
-        
+
         print(f"\n{'='*80}")
         print(f"EXECUTION TRACKER - Scanning {root_dir}")
         print(f"{'='*80}")
         print(f"Found {len(files_to_execute)} files to execute")
         print(f"{'='*80}\n")
-        
+
         for file_path in files_to_execute:
             print(f"Executing: {file_path.name}...", end=' ')
-            
+
             if file_path.suffix == '.py':
                 result = self.execute_python_file(file_path)
                 self.statistics.python_files += 1
@@ -385,9 +385,9 @@ class ExecutionTracker:
                 self.statistics.vba_files += 1
             else:
                 continue
-            
+
             self.execution_results.append(result)
-            
+
             if result.status == ExecutionStatus.SUCCESS:
                 self.statistics.successful_executions += 1
                 print("[OK] SUCCESS")
@@ -400,29 +400,29 @@ class ExecutionTracker:
             else:
                 self.statistics.skipped_executions += 1
                 print("o SKIPPED")
-            
+
             self.statistics.total_execution_time += result.execution_time
             self.statistics.total_lines_of_code += result.lines_of_code
             self.statistics.total_functions += result.functions_count
             self.statistics.total_classes += result.classes_count
-            
+
             if result.error_type:
                 error_name = result.error_type.value
                 self.statistics.error_breakdown[error_name] = self.statistics.error_breakdown.get(error_name,
                     0) + 1
-        
+
         if self.statistics.total_files > 0:
             self.statistics.average_execution_time = self.statistics.total_execution_time / self.statistics.total_files
-        
+
         self.statistics.victory_conditions_met = self._check_victory_conditions()
-        
+
         return self.statistics
-    
+
     def _check_victory_conditions(self) -> Dict[str, bool]:
         """Check if victory conditions are met"""
         return {
             'python_execution': self.statistics.python_files > 0 and self.statistics.failed_executions == 0,
-                
+
             'vba_validation': self.statistics.vba_files > 0 and all(
                 r.status == ExecutionStatus.SUCCESS for r in self.execution_results if r.file_type == 'vba'
             ),
@@ -431,11 +431,11 @@ class ExecutionTracker:
             'documentation_alignment': False,  # Will be checked separately
             'report_generation': False  # Will be set after export
         }
-    
+
     def export_json(self, filename: str = "execution_report.json") -> Path:
         """Export execution results to JSON"""
         output_file = self.output_dir / filename
-        
+
         report = {
             'metadata': {
                 'version': '3.1.0',
@@ -448,19 +448,19 @@ class ExecutionTracker:
             'execution_results': [r.to_dict() for r in self.execution_results],
             'victory_conditions': self.statistics.victory_conditions_met
         }
-        
+
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2)
-        
+
         self.statistics.victory_conditions_met['report_generation'] = True
-        
+
         print(f"\n[OK] JSON report exported: {output_file}")
         return output_file
-    
+
     def export_yaml(self, filename: str = "execution_report.yaml") -> Path:
         """Export execution results to YAML"""
         output_file = self.output_dir / filename
-        
+
         report = {
             'metadata': {
                 'version': '3.1.0',
@@ -473,24 +473,24 @@ class ExecutionTracker:
             'execution_results': [r.to_dict() for r in self.execution_results],
             'victory_conditions': self.statistics.victory_conditions_met
         }
-        
+
         with open(output_file, 'w', encoding='utf-8') as f:
             yaml.dump(report, f, default_flow_style=False, sort_keys=False)
-        
+
         print(f"[OK] YAML report exported: {output_file}")
         return output_file
-    
+
     def export_markdown(self, filename: str = "EXECUTION_REPORT.md") -> Path:
         """Export execution results to Markdown"""
         output_file = self.output_dir / filename
-        
+
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write("# DMAIC V3 - Execution Report\n\n")
             f.write(f"**Version**: 3.1.0  \n")
             f.write(f"**DMAIC Version**: V3  \n")
             f.write(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  \n")
             f.write(f"**Execution Duration**: {(datetime.now() - self.start_time).total_seconds():.2f} seconds  \n\n")
-            
+
             f.write("---\n\n")
             f.write("## Executive Summary\n\n")
             f.write(f"- **Total Files**: {self.statistics.total_files}\n")
@@ -500,14 +500,14 @@ class ExecutionTracker:
             f.write(f"- **Failed**: {self.statistics.failed_executions} [FAIL]\n")
             f.write(f"- **Timeout**: {self.statistics.timeout_executions} [TIME]\n")
             f.write(f"- **Success Rate**: {(self.statistics.successful_executions / self.statistics.total_files * 100) if self.statistics.total_files > 0 else 0:.1f}%\n\n")
-            
+
             f.write("---\n\n")
             f.write("## Victory Conditions\n\n")
             for condition, met in self.statistics.victory_conditions_met.items():
                 status = "[OK] MET" if met else "[FAIL] NOT MET"
                 f.write(f"- **{condition.replace('_', ' ').title()}**: {status}\n")
             f.write("\n")
-            
+
             f.write("---\n\n")
             f.write("## Statistics\n\n")
             f.write(f"- **Total Execution Time**: {self.statistics.total_execution_time:.2f} seconds\n")
@@ -515,7 +515,7 @@ class ExecutionTracker:
             f.write(f"- **Total Lines of Code**: {self.statistics.total_lines_of_code:,}\n")
             f.write(f"- **Total Functions**: {self.statistics.total_functions}\n")
             f.write(f"- **Total Classes**: {self.statistics.total_classes}\n\n")
-            
+
             if self.statistics.error_breakdown:
                 f.write("---\n\n")
                 f.write("## Error Breakdown\n\n")
@@ -525,10 +525,10 @@ class ExecutionTracker:
                     reverse=True):
                     f.write(f"- **{error_type}**: {count}\n")
                 f.write("\n")
-            
+
             f.write("---\n\n")
             f.write("## Detailed Results\n\n")
-            
+
             for result in self.execution_results:
                 status_icon = "[OK]" if result.status == ExecutionStatus.SUCCESS else "[FAIL]"
                 f.write(f"### {status_icon} {Path(result.file_path).name}\n\n")
@@ -539,23 +539,23 @@ class ExecutionTracker:
                 f.write(f"- **Lines of Code**: {result.lines_of_code}\n")
                 f.write(f"- **Functions**: {result.functions_count}\n")
                 f.write(f"- **Classes**: {result.classes_count}\n")
-                
+
                 if result.error_type:
                     f.write(f"- **Error Type**: {result.error_type.value}\n")
                     f.write(f"- **Error Message**: `{result.error_message}`\n")
-                
+
                 f.write("\n")
-            
+
             f.write("---\n\n")
             f.write("## Linked Reports\n\n")
             f.write("- [JSON Report](./execution_report.json)\n")
             f.write("- [YAML Report](./execution_report.yaml)\n")
             f.write("- [Integration Plan](../INTEGRATION_PLAN.md)\n")
             f.write("- [README](../README.md)\n\n")
-        
+
         print(f"[OK] Markdown report exported: {output_file}")
         return output_file
-    
+
     def print_summary(self):
         """Print execution summary to console"""
         print(f"\n{'='*80}")
@@ -571,7 +571,7 @@ class ExecutionTracker:
         print(f"Total Exec Time:    {self.statistics.total_execution_time:.2f}s")
         print(f"Average Exec Time:  {self.statistics.average_execution_time:.4f}s")
         print(f"{'='*80}\n")
-        
+
         print("Victory Conditions:")
         for condition, met in self.statistics.victory_conditions_met.items():
             status = "[OK] MET" if met else "[FAIL] NOT MET"
@@ -584,15 +584,15 @@ if __name__ == '__main__':
         output_dir=Path(__file__).parent.parent.parent / 'output' / 'execution_reports',
         timeout=30
     )
-    
+
     root_dir = Path(__file__).parent.parent.parent
-    
+
     stats = tracker.scan_and_execute(root_dir,
         patterns=['DMAIC_V3/generators/**/*.py',
         'DMAIC_V3/generators/**/*.bas'])
-    
+
     tracker.print_summary()
-    
+
     tracker.export_json()
     tracker.export_yaml()
     tracker.export_markdown()

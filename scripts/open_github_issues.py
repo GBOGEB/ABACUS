@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Open GitHub Issue Creation Pages with Pre-filled Content
 This script generates URLs that open GitHub with pre-filled issue forms
 """

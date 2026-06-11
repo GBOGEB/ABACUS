@@ -17,12 +17,12 @@ from dmaic import idempotency
 
 class DOWRecursiveHooksInjector:
     """Agent to inject recursive hooks into JSON files"""
-    
+
     def __init__(self, config_path: str = "orchestrator_config.yaml"):
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
         self.dependency_map = self._build_dependency_map()
-        
+
     def _build_dependency_map(self) -> Dict[str, Dict[str, List[str]]]:
         """Build dependency map for recursive hooks"""
         return {
@@ -55,13 +55,13 @@ class DOWRecursiveHooksInjector:
                 'feeds_into': ['next_iteration']
             }
         }
-    
+
     def inject_recursive_hooks(self, file_path: Path, iteration: int) -> Dict[str, Any]:
         """Inject recursive hooks into JSON file"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             file_name = file_path.name
             dependencies = self.dependency_map.get(file_name, {
                 'consumed_from': [],
@@ -69,7 +69,7 @@ class DOWRecursiveHooksInjector:
             })
             iteration_lineage = self._get_iteration_lineage(iteration)
             version_history = self._get_version_history(data)
-            
+
             # Hash is computed from original payload prior to enrichment to track input state.
             input_hash = idempotency.hash_json(data)
             data = ensure_contract(
@@ -91,35 +91,35 @@ class DOWRecursiveHooksInjector:
             data['lineage']['updated_at'] = datetime.now().isoformat()
             data['idempotency']['input_hash'] = input_hash
             data['idempotency']['output_hash'] = idempotency.hash_json(data)
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
-            
+
             self.logger.info(f"✅ Recursive hooks injected: {file_path}")
             return {'status': 'success', 'file': str(file_path)}
-            
+
         except Exception as e:
             self.logger.error(f"❌ Recursive hooks injection failed: {e}")
             return {'status': 'error', 'error': str(e)}
-    
+
     def inject_batch(self, file_paths: List[Path], iteration: int) -> Dict[str, Any]:
         """Inject recursive hooks into multiple files"""
         results = []
         for file_path in file_paths:
             result = self.inject_recursive_hooks(file_path, iteration)
             results.append(result)
-        
+
         return {
             'total': len(file_paths),
             'success': sum(1 for r in results if r['status'] == 'success'),
             'failed': sum(1 for r in results if r['status'] == 'error'),
             'results': results
         }
-    
+
     def _get_iteration_lineage(self, current_iteration: int) -> List[int]:
         """Get iteration lineage"""
         return list(range(0, current_iteration + 1))
-    
+
     def _get_version_history(self, data: Dict[str, Any]) -> List[str]:
         """Get dynamic version history from current payload/repo."""
         versions: List[str] = []
@@ -142,40 +142,40 @@ class DOWRecursiveHooksInjector:
 def main():
     """Main entry point"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='DOW Recursive Hooks Injector')
     parser.add_argument('--iteration', type=int, default=1, help='Iteration number')
     parser.add_argument('--target', type=str, default='DMAIC_CANONICAL_OUTPUT', help='Target directory')
     parser.add_argument('--verbose', action='store_true', help='Verbose output')
-    
+
     args = parser.parse_args()
-    
+
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-    
+
     injector = DOWRecursiveHooksInjector()
-    
+
     target_dir = Path(args.target)
     if not target_dir.exists():
         print(f"❌ Target directory not found: {target_dir}")
         sys.exit(1)
-    
+
     json_files = list(target_dir.glob("*.json"))
-    
+
     if not json_files:
         print(f"⚠️ No JSON files found in {target_dir}")
         sys.exit(0)
-    
+
     print(f"🔄 Processing {len(json_files)} JSON files...")
     result = injector.inject_batch(json_files, iteration=args.iteration)
-    
+
     print(f"\n✅ Recursive hooks injection complete:")
     print(f"   Total: {result['total']}")
     print(f"   Success: {result['success']}")
     print(f"   Failed: {result['failed']}")
-    
+
     if result['failed'] > 0:
         print(f"\n❌ Some files failed. Check logs for details.")
         sys.exit(1)
