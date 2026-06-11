@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Status</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>✅</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+</head><body>
+<div class="container">
+<h1>Session Status</h1>
+<p class="muted">Live tracker for the WCS handover work-stream. Edit any cell — content is plain HTML.</p>
+
+<div class="card">
+  <h2 style="margin-top:0">Version control</h2>
+  <table><thead><tr><th>Version</th><th>Scope</th><th>State</th></tr></thead><tbody>
+    <tr><td><span class="tag ok">v0.4.7</span></td><td><strong>MT-9 + MT-10: Mobile &amp; Accessibility Sprint</strong> · Responsive charts (FAIL→PASS) · Mobile heatmap modal · ARIA labels (WCAG 2.1 AA) · PVPS flow accounting corrected (inclusive model) · 990 kW HP power · 1,290 kW total · Skip links · Colour contrast fixes · 97% test pass rate</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.6</span></td><td><strong>MT-13: 400V Power Analysis Complete</strong> · Electrical CAPEX (€736k) · 2,000 kVA transformer · Harmonic filter + PFC · UPS backup · MT-11 RFQ ready · MT-12 vendor scout ready · 43 total views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.5</span></td><td>Kaeser corrected · BT artifact ranking · BT scatter · QA BT + collapsible · automated test suite · responsive review · British English · 4 new views · 40 total</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.4</span></td><td>BT fix · interaction analysis · testing strategy · code quality · BT validation · DMAIC statistical · 5 new views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag b">v0.4.3</span></td><td>Bradley-Terry ranking · Kaeser deep-dive · QA interactive · artifact index · changelog · math proofs</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4.2</span></td><td>Severity rankings · vendor deep-scouts · artifact/diff/ci-cd/priority trackers</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4.1</span></td><td>DMAIC quality review · 7 new views · xref matrix · QA suite</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4</span></td><td>Slide editor · master sources · smart labels · 13 views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.3</span></td><td>Multi-file HTML ecosystem (8 pages)</td><td><span class="tag">superseded</span></td></tr>
+    <tr><td><span class="tag">v0.2</span></td><td>Single-file Playground artifact</td><td><span class="tag">superseded</span></td></tr>
+    <tr><td><span class="tag">v0.1</span></td><td>Markdown comparison note</td><td><span class="tag">archived</span></td></tr>
+  </tbody></table>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Progress</h2>
+  <div class="progress"><div style="width:96%"></div></div>
+  <p class="muted" style="font-size:12px;margin-top:6px">~96% towards engineering decision lock (v0.4.7) — MT-9 (accessibility) and MT-10 (mobile rendering) complete. PVPS flow accounting corrected to inclusive model across all views. Test pass rate: 97% (29/30). QA pass rate: 97.4% (37/38). Responsive pass rate: 95% (53/56). 43 total views + 2 new docs. Next: Vendor responses (target 2 weeks), COMBI validation, PVPS datasheets.</p>
+</div>
+
+<div class="grid2">
+<div class="card">
+  <h2 style="margin-top:0">✅ Completed</h2>
+  <ul>
+    <li>Datasheet extraction (FSD 575 + FSD 475)</li>
+    <li>Per-skid spec alignment table</li>
+    <li>3-skid totals derivation</li>
+    <li>Flow-target capacity matrix (7 totals × 3 cases)</li>
+    <li>Interactive Playground artifact (v0.2)</li>
+    <li>Multi-file handover ecosystem (v0.3)</li>
+    <li>Recommendations B1–B4 articulated</li>
+    <li><b>v0.4:</b> RCW HX sizing &amp; COMBI analysis (<a href="hx-sizing.html">hx-sizing.html</a>) — interactive Plotly with drop pins</li>
+    <li><b>v0.4:</b> Argument B6 (RCW + COMBI) added to reports</li>
+    <li><b>v0.4:</b> Utility math §6 (oil/He split, COMBI scaling, 304/344 calcs)</li>
+    <li><b>v0.4:</b> Slides 8–10 (RCW HX, COMBI, utilities comparison)</li>
+    <li><b>v0.4.2:</b> Enhanced action-tracker with severity rankings (1–5 scale)</li>
+    <li><b>v0.4.2:</b> Vendor deep-scout tasks: MT-11 (Kaeser HCC), MT-12 (PVPS), MT-13 (400V power)</li>
+    <li><b>v0.4.2:</b> Artifact tracker — 35 artifacts with per-artifact DMAIC phases</li>
+    <li><b>v0.4.2:</b> Diff tracker — version comparison with impact analysis</li>
+    <li><b>v0.4.2:</b> CI/CD pipeline — GitHub Actions + Pages deployment strategy</li>
+    <li><b>v0.4.2:</b> Weighted priority dashboard — scoring formula + execution strategy</li>
+    <li><b>v0.4.6:</b> <strong>MT-13: 400V Power Analysis Complete</strong> — <a href="mt-13-report.html">mt-13-report.html</a> (full electrical CAPEX, transformer, harmonic/PFC, UPS)</li>
+    <li><b>v0.4.6:</b> <strong>MT-11: Kaeser RFQ Package</strong> — <a href="mt-11-kaeser-technical-requirements.html">mt-11-kaeser-technical-requirements.html</a> (400V specs, vendor checklist, electrical constraints)</li>
+    <li><b>v0.4.6:</b> <strong>MT-12: PVPS Vendor Scout</strong> — <a href="mt-12-pvps-technical-requirements.html">mt-12-pvps-technical-requirements.html</a> (5 candidate vendors, N+1 redundancy, specifications)</li>
+    <li><b>v0.4.6:</b> Updated vendor-kaeser.html with electrical requirements section (critical 400V constraint, cost impact)</li>
+    <li><b>v0.4.6:</b> Updated action-tracker with MT-13 completion and MT-11/MT-12 unblocked status</li>
+    <li><b>v0.4.7:</b> <strong>MT-10: Mobile Rendering Fixes</strong> — Responsive Plotly charts, heatmap zoom modal, sidebar/table/chart mobile fixes</li>
+    <li><b>v0.4.7:</b> <strong>MT-9: Accessibility Improvements</strong> — ARIA labels on 6 views, skip links, colour contrast (WCAG 2.1 AA), keyboard navigation</li>
+    <li><b>v0.4.7:</b> <strong>PVPS Flow Accounting Corrected</strong> — Inclusive model (not additive) across slides.html, reports.html, tables.html, index.html</li>
+    <li><b>v0.4.7:</b> Corrected Kaeser HP power: 990 kW (was 945 kW). Total electrical: 1,290 kW</li>
+    <li><b>v0.4.7:</b> Test pass rate: 83% → 97%. QA pass rate: 92.1% → 97.4%. Responsive: 86% → 95%</li>
+  </ul>
+</div>
+<div class="card">
+  <h2 style="margin-top:0">📝 TODO</h2>
+  <p class="muted" style="font-size:12px;margin-top:6px">Active registry source: <code>../tracking_v2.3/tasks/tasks.json</code></p>
+  <ul id="activeTaskList"></ul>
+</div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">🌀 Loose ends &amp; open questions</h2>
+  <ul>
+    <li>LKT plant utility allowance lists 60 m³/h CW total (3×20) vs 15.5 m³/h on machine sheet — keep both as <em>equipment</em> vs <em>battery-limit</em>.</li>
+    <li>RCW max 85 °C ceiling vs 30 °C inlet → ΔT 25 K design, but maximum permissible return needs site-loop confirmation.</li>
+    <li>Is FSD 475 SFC characterized between 62 Hz and 72 Hz? Vendor data gap.</li>
+    <li>Does QRB cold-side actually demand 350 g/s nominal, or is 304–336 g/s the realistic operating envelope?</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">✨ Possible enhancements</h2>
+  <ul>
+    <li>PFD-style diagram embedded in slides</li>
+    <li>Sankey of utility flows at 350 g/s baseline</li>
+    <li>3D layout sketch of HP1..HP4</li>
+    <li>Auto-generated change feed from a JSON log</li>
+    <li>Integration of Kaeser ESS curves once available</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Summary tuple</h2>
+  <table><tbody>
+    <tr><th>Intent</th><td>Hand off MYRRHA WCS engineering basis as a navigable HTML package.</td></tr>
+    <tr><th>Actions</th><td>Extract datasheets · build capacity matrix · derive utilities · author 8-file site.</td></tr>
+    <tr><th>Progress</th><td>v0.3 released · ~72 % to lock.</td></tr>
+    <tr><th>Key artifacts</th><td>index, slides, reports, tables, graphs, status, truth, utilities (HTML)</td></tr>
+    <tr><th>Links</th><td><a href="index.html">Hub</a> · <a href="truth.html">Truth</a> · <a href="utilities.html">Utilities</a></td></tr>
+    <tr><th>Interactions</th><td>theme/font selectors · slide deck nav · table copy/sort/filter · graph zoom/export</td></tr>
+    <tr><th>Methods</th><td>parallel doc-read → sequential derivation → iterative target sweep → closure</td></tr>
+    <tr><th>Workflow</th><td>md → single-file artifact → multi-file ecosystem → freeze → vendor loop</td></tr>
+  </tbody></table>
+</div>
+
+</div>
+<script>
+(async function loadActiveTaskRegistry(){
+  const list=document.getElementById('activeTaskList');
+  if(!list) return;
+  try{
+    const res=await fetch('../tracking_v2.3/tasks/tasks.json',{cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    const active=(Array.isArray(data.tasks)?data.tasks:[]).filter(t=>t.state==='active');
+    list.replaceChildren();
+    if(!active.length){
+      const emptyItem=document.createElement('li');
+      const emptyText=document.createElement('em');
+      emptyText.textContent='No active tasks in registry.';
+      emptyItem.appendChild(emptyText);
+      list.appendChild(emptyItem);
+      return;
+    }
+    active.forEach((t)=>{
+      const item=document.createElement('li');
+      const idLabel=document.createElement('b');
+      const id=(t && typeof t.id==='string')?t.id:'Task';
+      idLabel.textContent=`${id}:`;
+      item.appendChild(idLabel);
+      const title=(t && typeof t.title==='string')?t.title:'';
+      item.appendChild(document.createTextNode(` ${title}`));
+      if(t && typeof t.note==='string' && t.note){
+        item.appendChild(document.createTextNode(' — '));
+        const note=document.createElement('em');
+        note.textContent=t.note;
+        item.appendChild(note);
+      }
+      list.appendChild(item);
+    });
+  }catch(e){
+    list.replaceChildren();
+    const errorItem=document.createElement('li');
+    const errorText=document.createElement('em');
+    errorText.textContent='Unable to load active task registry.';
+    errorItem.appendChild(errorText);
+    list.appendChild(errorItem);
+  }
+})();
+</script>
+</body></html>

@@ -1,0 +1,172 @@
+name: Release & Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v3.3.1)'
+        required: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Determine version
+        id: version
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Building release: $TAG"
+
+      - name: Validate critical files
+        run: |
+          echo "=== Pre-release validation ==="
+          ERRORS=0
+          for f in docs/index.html docs/handover_book.html DMAIC_V3/config.py local_mcp/__init__.py; do
+            if [ ! -f "$f" ]; then
+              echo "❌ Missing: $f"
+              ERRORS=$((ERRORS+1))
+            else
+              echo "✅ $f"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "Release blocked: $ERRORS missing files"
+            exit 1
+          fi
+
+      - name: Python syntax check
+        run: |
+          echo "=== Syntax validation ==="
+          ERRORS=0
+          while IFS= read -r f; do
+            if python3 -m py_compile "$f" 2>/dev/null; then
+              echo "✅ $f"
+            else
+              echo "❌ Syntax error: $f"
+              ERRORS=$((ERRORS+1))
+            fi
+          done < <(find DMAIC_V3 local_mcp staging -name '*.py' -type f 2>/dev/null)
+          if [ $ERRORS -gt 0 ]; then
+            echo "Release blocked: $ERRORS files with syntax errors"
+            exit 1
+          fi
+
+      - name: Package dashboards
+        run: |
+          echo "=== Packaging dashboards ==="
+          mkdir -p release-artifacts
+          PACKAGE_SOURCES=()
+          SKIPPED_DIRS=()
+          for d in docs/ cryo_dashboard_v0_3_0/ docs_versioned/; do
+            if [ -d "$d" ]; then
+              PACKAGE_SOURCES+=("$d")
+            else
+              SKIPPED_DIRS+=("$d")
+            fi
+          done
+          if [ ${#SKIPPED_DIRS[@]} -gt 0 ]; then
+            echo "⚠️ Skipping missing optional directories: ${SKIPPED_DIRS[*]}"
+          fi
+          if [ ${#PACKAGE_SOURCES[@]} -eq 0 ]; then
+            echo "⚠️ No dashboard/documentation directories found to package; skipping archive creation."
+          else
+            ARCHIVE_PATH="release-artifacts/abacus-docs-${{ steps.version.outputs.tag }}.tar.gz"
+            tar czf "$ARCHIVE_PATH" "${PACKAGE_SOURCES[@]}"
+            echo "Packaged directories: ${PACKAGE_SOURCES[*]}"
+            echo "Package size: $(du -h "$ARCHIVE_PATH" | cut -f1)"
+          fi
+
+      - name: Generate release notes
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          PYTHON_FILES=$(find DMAIC_V3 local_mcp staging -name '*.py' 2>/dev/null | wc -l | tr -d ' ')
+          WF_COUNT=$(find .github/workflows -name '*.yml' 2>/dev/null | wc -l | tr -d ' ')
+          DOC_COUNT=$(find docs -name '*.html' 2>/dev/null | wc -l | tr -d ' ')
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            CHANGES_SINCE="Changes since ${PREV_TAG}:"
+            COMMIT_LOG=$(git log --oneline "${PREV_TAG}..HEAD" --no-merges 2>/dev/null | head -20 || echo "")
+          else
+            CHANGES_SINCE="Initial release."
+            COMMIT_LOG=""
+          fi
+          cat > release-artifacts/RELEASE_NOTES.md << EOF
+          # ABACUS $TAG Release Notes
+
+          ## What's Included
+          - 📖 12-Chapter Handover Book (HTML, Markdown)
+          - 📊 Deep Analysis Dashboard
+          - 🧊 Cryo Dashboard v0.3.0
+          - 🏗️ 12-Cluster Architecture documentation
+          - 🔒 DOW Governance framework
+          - 🧪 Integration test results
+          - 🛠️ Engineering tools catalog
+          - 📐 Version lineage navigator
+          - 7 topic-specific landing pages
+
+          ## Key Metrics
+          - ${COMMIT_COUNT} total commits
+          - ${PYTHON_FILES} Python source files
+          - ${WF_COUNT} CI/CD workflows
+          - ${DOC_COUNT} documentation artifacts
+
+          ## $CHANGES_SINCE
+          ${COMMIT_LOG}
+
+          ## CI/CD
+          - Daily dashboard health checks
+          - Automated docs deployment pipeline
+          - Per-commit DMAIC quality tracking
+          EOF
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.version.outputs.tag }}
+          path: release-artifacts/
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4.1.3
+        with:
+          name: release-${{ needs.build.outputs.tag }}
+          path: release-artifacts/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: "ABACUS ${{ needs.build.outputs.tag }}"
+          body_path: release-artifacts/RELEASE_NOTES.md
+          files: release-artifacts/*.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

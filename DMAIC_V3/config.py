@@ -235,11 +235,11 @@ def get_testing_config() -> DMAICConfig:
 def load_config(config_file: Path = None, environment: str = "default") -> DMAICConfig:
     """
     Load configuration from file or use defaults
-    
+
     Args:
         config_file: Path to configuration file (JSON/YAML)
         environment: Environment name (default, development, production, testing)
-    
+
     Returns:
         DMAICConfig instance
     """
@@ -249,14 +249,14 @@ def load_config(config_file: Path = None, environment: str = "default") -> DMAIC
         return get_production_config()
     elif environment == "testing":
         return get_testing_config()
-    
+
     if config_file and config_file.exists():
         # Load from file (implementation depends on format)
         import json
         with open(config_file, 'r') as f:
             data = json.load(f)
         return DMAICConfig.from_dict(data)
-    
+
     return DEFAULT_CONFIG
 
 
@@ -265,27 +265,27 @@ if __name__ == "__main__":
     print("="*80)
     print(f"DMAIC V{VERSION} - Configuration")
     print("="*80)
-    
+
     config = DEFAULT_CONFIG
     print(f"\nVersion: {config.version}")
     print(f"Execution Mode: {config.execution_mode.value}")
     print(f"\nCore Principles:")
     for principle in CORE_PRINCIPLES:
         print(f"  - {principle}")
-    
+
     print(f"\nPaths:")
     print(f"  Workspace: {config.paths.workspace_root}")
     print(f"  Output: {config.paths.output_root}")
     print(f"  State: {config.paths.state_dir}")
-    
+
     print(f"\nPhase 0 (Setup):")
     print(f"  Enabled: {config.phase0.enabled}")
     print(f"  Python Min Version: {config.phase0.python_min_version}")
     print(f"  Auto Create Venv: {config.phase0.auto_create_venv}")
-    
+
     print(f"\nIdempotency:")
     print(f"  Enabled: {config.idempotency.enabled}")
     print(f"  Allow Resume: {config.idempotency.allow_resume}")
     print(f"  Verify Checksums: {config.idempotency.verify_checksums}")
-    
+
     print("\n" + "="*80)

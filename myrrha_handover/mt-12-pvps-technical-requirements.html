@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MT-12: PVPS Vendor Specification</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #fff; color: #1a1a1a; line-height: 1.6; }
+  .page { max-width: 900px; margin: 0 auto; page-break-after: always; }
+  h1 { font-size: 24px; border-bottom: 3px solid #2ecc71; padding-bottom: 10px; margin-bottom: 20px; }
+  h2 { font-size: 18px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-top: 20px; margin-bottom: 12px; }
+  h3 { font-size: 14px; color: #333; margin-top: 16px; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #f5f5f5; padding: 10px; text-align: left; border: 1px solid #ccc; font-weight: 600; }
+  td { padding: 10px; border: 1px solid #e0e0e0; }
+  tr:hover { background: #fafafa; }
+  .box { border: 1px solid #2ecc71; background: #f0f8f5; padding: 12px; margin: 12px 0; border-left: 4px solid #2ecc71; }
+  .warn-box { border: 1px solid #f39c12; background: #fff8f0; padding: 12px; margin: 12px 0; border-left: 4px solid #f39c12; }
+  .ok { color: #2ecc71; font-weight: 600; }
+  .warn { color: #f39c12; font-weight: 600; }
+  .critical { color: #e74c3c; font-weight: 600; }
+  .section { page-break-inside: avoid; }
+  .signature { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 10px; }
+  .vendor-list { columns: 2; column-gap: 20px; }
+  .vendor-list li { break-inside: avoid; margin-bottom: 8px; }
+  @media print { body { margin: 0; padding: 10px; } .page { margin: 0; padding: 20px; } }
+</style>
+</head><body>
+
+<div class="page">
+  <h1>MT-12: PVPS Vendor Specification & Scout Package</h1>
+  <p><strong>MYRRHA WCS Handover v0.4.6 · Pre-Vacuum Pumping System (PVPS)</strong></p>
+  <p style="color: #666; font-size: 12px;">
+    Date: 2025-05-18<br>
+    Project: MYRRHA Helium Conditioning Circuit (HCC)<br>
+    Classification: Technical Procurement Specification<br>
+    Version: Final (MT-13: 400V Power Analysis Complete)
+  </p>
+
+  <div class="box">
+    <strong style="color: #2ecc71;">🎯 PVPS Primary Role: Inventory Control & Redundancy</strong><br>
+    The Pre-Vacuum Pumping System evacuates helium from the cryogenic coldbox during startup and manages helium
+    inventory during operation. PVPS does NOT supply the main 300 g/s flow (HCC does). PVPS reduces coldbox pressure
+    to maintain cryogenic conditions and provides redundant evacuation during thermal transients.
+  </div>
+
+  <h2>1. System Overview</h2>
+
+  <h3>1.1 PVPS Role in WCS Architecture</h3>
+  <table>
+    <tr><th>Function</th><th>Duty</th><th>Integration Point</th></tr>
+    <tr><td>Coldbox evacuation (startup)</td><td>Reduces tank pressure from 1 barA → 0.1 barA (10 min)</td><td>Solenoid valve (inlet, isolation)</td></tr>
+    <tr><td>Inventory management (continuous)</td><td>Removes 50 g/s excess helium during operation</td><td>Suction tapping on coldbox shell</td></tr>
+    <tr><td>Thermal transient response</td><td>Absorbs pressure spikes if HCC temporarily offline</td><td>Check valve + relief (solenoid isolation)</td></tr>
+    <tr><td>Redundant capacity (N+1)</td><td>Any 9 of 10 units maintain 50 g/s evacuation</td><td>Parallel piping with individual solenoid isolation</td></tr>
+    <tr><td>Exhaust routing</td><td>Discharge to safe stack or atmospheric vent</td><td>Pressure relief + thermal dump (post-cooler optional)</td></tr>
+  </table>
+
+  <h3>1.2 Helium Inventory Flow Accounting</h3>
+  <div class="warn-box">
+    <strong>⚠ Critical model correction (v0.4.5 final):</strong><br>
+    <strong>Total helium flow to coldbox = 350 g/s</strong><br>
+    • HCC supplies: 300 g/s @ 20 bar, 300 °C (main cryogenic loop)<br>
+    • PVPS removes: 50 g/s @ variable pressure (inventory control)<br>
+    • <strong>Net result:</strong> 300 g/s flows through coldbox; 50 g/s exits via PVPS<br>
+    <br>
+    <strong>Old (WRONG) model:</strong> Total = Kaeser + PVPS (additive). <strong>NEW (CORRECT):</strong> PVPS is parasitic draw from total inlet.
+  </div>
+
+  <h2>2. PVPS Operational Requirements</h2>
+
+  <h3>2.1 Evacuation & Pumping Duty</h3>
+  <table>
+    <tr><th>Phase</th><th>Duration</th><th>Inlet Pressure (barA)</th><th>Outlet Pressure (barA)</th><th>Flow Demand (g/s)</th><th>Notes</th></tr>
+    <tr><td>Startup evacuation</td><td>10 minutes</td><td>1.0 → 0.1</td><td>Atm (~1.0)</td><td>30–50 g/s</td><td>Remove residual air; cool coldbox walls</td></tr>
+    <tr><td>Normal operation</td><td>Continuous, 24/7</td><td>0.1–0.5 barA</td><td>Atm (~1.0)</td><td>50 g/s steady</td><td>Inventory control; helium exit stream</td></tr>
+    <tr><td>N+1 failure (HCC partial loss)</td><td>Transient (seconds–minutes)</td><td>0.2–1.0 barA</td><td>Atm (~1.0)</td><td>Up to 100 g/s (spike)</td><td>Two active units + load balance across 9</td></tr>
+    <tr><td>Emergency shutdown</td><td>Rapid (5–10 seconds)</td><td>1.0 barA (max)</td><td>Atm</td><td>Determined by relief valve</td><td>Solenoid isolation closes; relief bleeds pressure</td></tr>
+  </table>
+
+  <h3>2.2 Compression Ratio & Pump Sizing</h3>
+  <div class="box">
+    <strong>Target inlet pressure:</strong> 0.1–0.5 barA (coldbox suction)<br>
+    <strong>Discharge pressure:</strong> Atmospheric (stack or vent) ~1.0 barA<br>
+    <strong>Compression ratio per unit:</strong> P_discharge / P_inlet ≈ 10 (worst case: 1.0 / 0.1)<br>
+    <br>
+    <strong>Implication:</strong> PVPS units must be designed for vacuum-to-atmospheric compression (turbo or rotary screw suitable).
+  </div>
+
+  <h3>2.3 Gas Properties (Helium)</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th><th>Impact on Pump Selection</th></tr>
+    <tr><td>Molecular weight</td><td>4 g/mol</td><td>Low MW → high speed of sound; may require special impeller design for turbo pumps</td></tr>
+    <tr><td>Viscosity (@ 300 K)</td><td>19.7 µPa·s</td><td>Very low → low friction loss; affects bearing lubrication (helium incompatible with mineral oil)</td></tr>
+    <tr><td>Density (@ 0.1 barA, 300 K)</td><td>~0.016 kg/m³</td><td>Low density → large volumetric flow (m³/s) for given mass flow; motor power scales with displacement, not pressure</td></tr>
+    <tr><td>Specific heat ratio (γ)</td><td>1.66</td><td>Polytropic process: n ≈ 1.3–1.4 (assume isothermal for sizing, ~50% efficient)</td></tr>
+  </table>
+
+  <h2>3. PVPS Pump Type Selection</h2>
+
+  <h3>3.1 Candidate Pump Technologies</h3>
+  <p><strong>Four (4) mainstream options for vacuum-to-atmospheric helium pumping:</strong></p>
+
+  <table>
+    <tr><th>Pump Type</th><th>Suitable for PVPS?</th><th>Pros</th><th>Cons</th><th>Est. Power / Unit @ 50 g/s</th></tr>
+    <tr>
+      <td><strong>Rotary screw (dry)</strong></td>
+      <td class="ok">✅ Primary choice</td>
+      <td>Oil-free; low maintenance; good part-load efficiency; compact</td>
+      <td>Higher cost (~€40–60k per unit); noise ~80 dB(A)</td>
+      <td>~15 kW (estimated)</td>
+    </tr>
+    <tr>
+      <td><strong>Rotary vane (dry)</strong></td>
+      <td class="ok">✅ Good alternative</td>
+      <td>Simple, proven; lower cost (~€15–25k); good vacuum performance</td>
+      <td>Lower displacement; may need 2–3 stages for 0.1 barA inlet; higher speed (N = 1,450–3,000 rpm)</td>
+      <td>~12–18 kW (2-stage estimate)</td>
+    </tr>
+    <tr>
+      <td><strong>Centrifugal turbo (1-stage)</strong></td>
+      <td class="warn">⚠ Possible, if helium-optimised</td>
+      <td>Compact; low noise; high speed (60,000+ rpm)</td>
+      <td>Complex; requires helium-compatible bearing (magnetic or sleeve); cost ~€80k+; weight penalty</td>
+      <td>~10 kW (if optimised)</td>
+    </tr>
+    <tr>
+      <td><strong>Sliding vane rotary (oil-flooded)</strong></td>
+      <td class="critical">❌ Not suitable</td>
+      <td>Very low cost; simple</td>
+      <td><span class="critical">Oil contamination risk (helium incompatible)</span>; requires coalescence filtration</td>
+      <td>N/A (excluded)</td>
+    </tr>
+  </table>
+
+  <h3>3.2 Recommended Approach</h3>
+  <div class="box">
+    <strong>Primary recommendation: 10× rotary screw (dry, oil-free) pump units</strong><br>
+    • Parallel piping configuration (9 active + 1 standby for N+1 redundancy)<br>
+    • Individual 24 VDC solenoid isolation valve per pump<br>
+    • Common discharge manifold (with check valve per pump to prevent backflow)<br>
+    • Single relief valve (atmospheric setpoint ~1.0 barA + 0.1 bar margin)<br>
+    <br>
+    <strong>Fallback:</strong> If screw not available, consider 10× rotary vane 2-stage units (each ~25 kW, slightly higher power budget).
+  </div>
+
+  <h2>4. Electrical Specifications (MT-13: 400V Power Analysis)</h2>
+
+  <h3>4.1 Electrical Supply</h3>
+  <div class="box">
+    <strong>400V 3-phase 50 Hz AC grid supply</strong><br>
+    VFD optional (constant-speed pump) or load-matching VFD (efficiency optimisation)<br>
+    <strong>Constraint:</strong> Must meet 72 Hz max frequency limit @ 400V (if VFD used)
+  </div>
+
+  <h3>4.2 Motor Specifications (Per Unit)</h3>
+  <table>
+    <tr><th>Parameter</th><th>Value (Estimated)</th><th>Notes</th></tr>
+    <tr><td>Rated power (continuous @ 50 g/s, 0.1 barA inlet)</td><td>~15 kW</td><td><strong>✘ PENDING VENDOR CONFIRMATION</strong>; estimated from isothermal compression</td></tr>
+    <tr><td>Voltage</td><td>400V 3-phase AC</td><td>±10% tolerance acceptable</td></tr>
+    <tr><td>Frequency</td><td>50 Hz (fixed) or 50–72 Hz (VFD variable)</td><td>If VFD: same 72 Hz max constraint as HCC</td></tr>
+    <tr><td>Power factor</td><td>~0.85–0.90 (without correction)</td><td>Grouped with HCC under site PFC capacitor bank</td></tr>
+    <tr><td>Efficiency (motor)</td><td>≥90% (IE2 standard)</td><td>Premium IE3 preferred if cost-neutral</td></tr>
+    <tr><td>Service factor</td><td>≥1.15</td><td>Allows 15% overload (N+1 scenario: load concentrates on 9 units)</td></tr>
+    <tr><td>Insulation class</td><td>B (130 °C) or F (155 °C)</td><td>Thermal margin adequate</td></tr>
+    <tr><td>Cooling</td><td>TEFC (totally enclosed fan-cooled)</td><td>Standard for industrial duty</td></tr>
+  </table>
+
+  <h3>4.3 Control & Protection</h3>
+  <ul>
+    <li><strong>Start method:</strong> Direct on-line (DOL) or soft-start (recommended to reduce inrush)</li>
+    <li><strong>Speed control (if not constant):</strong> VFD (0–10 VDC command) or fixed speed contactor</li>
+    <li><strong>Motor protection:</strong> Thermal overload relay (Class 10); embedded PTC thermistor (optional, if VFD)</li>
+    <li><strong>Pressure protection:</strong> Discharge relief valve (solenoid-piloted, atmospheric setpoint ~1.0 barA)</li>
+    <li><strong>Solenoid isolation valve:</strong> 24 VDC coil; pilot-operated; fail-safe (closes on de-energise)</li>
+    <li><strong>Check valve:</strong> Inlet (suction) to prevent backflow during shutdown</li>
+    <li><strong>Non-return valve:</strong> Discharge side per pump (prevents reverse flow from common manifold)</li>
+  </ul>
+
+  <h2>5. Mechanical Specifications</h2>
+
+  <h3>5.1 Pump Configuration</h3>
+  <table>
+    <tr><th>Specification</th><th>Value</th><th>Rationale</th></tr>
+    <tr><td>Pump type (primary)</td><td>Rotary screw, dry (oil-free)</td><td>Helium compatibility; ISO 8573-1 Class 1 achievable with built-in filter</td></tr>
+    <tr><td>Displacement</td><td>TBD (vendor-dependent)</td><td>Must deliver 50 g/s @ 0.1 barA inlet, atmospheric outlet; confirm from performance curve</td></tr>
+    <tr><td>Inlet port (size)</td><td>1.5″–2″ (40–50 mm)</td><td>Large bore to minimise suction line restriction (&lt;0.05 bar drop target)</td></tr>
+    <tr><td>Outlet port (size)</td><td>1.0″–1.5″ (25–40 mm)</td><td>Pressure drops minimised (&lt;0.1 bar discharge side)</td></tr>
+    <tr><td>Base/mounting</td><td>Vibration isolation (natural rubber or neoprene)</td><td>Reduces noise transmission to building; ISO 10816 Group 1 target</td></tr>
+    <tr><td>Material (gas path)</td><td>Cast iron or aluminium alloy (internals: stainless rotor)</td><td>Helium-compatible; no ferrous surfaces in compression chamber</td></tr>
+    <tr><td>Noise level</td><td>≤80 dB(A) @ 1 m (target)</td><td>Oil-free screws typically 75–82 dB; in-line muffler (discharge) reduces by 5–10 dB</td></tr>
+  </table>
+
+  <h3>5.2 Dimensional Requirements</h3>
+  <table>
+    <tr><th>Component</th><th>Estimated Footprint</th><th>Weight</th><th>Floor Loading</th></tr>
+    <tr><td>Pump unit (rotor + motor) mounted on frame</td><td>~0.8m (L) × 0.6m (W) × 1.0m (H)</td><td>~100–150 kg</td><td>~1.5–2.0 kPa (negligible; wall-mount recommended)</td></tr>
+    <tr><td>Manifold block (discharge, relief, check)</td><td>~0.4m × 0.3m × 0.2m</td><td>~10 kg</td><td>Wall-mounted</td></tr>
+    <tr><td>Muffler (inlet/outlet, silencer)</td><td>~0.3m diameter × 0.5m length</td><td>~5 kg</td><td>Ductwork or hose mounting</td></tr>
+  </table>
+
+  <h3>5.3 Piping & Connections</h3>
+  <ul>
+    <li><strong>Suction line (coldbox → pump):</strong> 1.5″–2″ stainless steel or aluminium tube; insulated (prevent condensation)</li>
+    <li><strong>Discharge line (pump → manifold):</strong> 1″ stainless; carries atmospheric helium; low pressure drop target &lt;0.1 bar</li>
+    <li><strong>Vent stack (manifold → atmosphere):</strong> 1.5″ duct; thermal insulation if discharge temp &gt;40 °C (helium expands significantly)</li>
+    <li><strong>Isolation valves:</strong> Ball valves (manual) @ inlet and outlet per pump for service isolation</li>
+    <li><strong>Pressure taps:</strong> Inlet and outlet (for monitoring); 1/8″ NPT standard</li>
+    <li><strong>Temperature measurement:</strong> RTD pocket in discharge manifold (outlet)</li>
+  </ul>
+
+  <h2>6. Performance Specifications & Data Requirements</h2>
+
+  <h3>6.1 Mandatory Vendor Datasheet Items</h3>
+  <p><strong>Each PVPS vendor candidate MUST provide:</strong></p>
+  <ul>
+    <li><strong>Performance curve:</strong> Volume flow rate (m³/h or g/s) vs. inlet pressure (0.05–1.0 barA)</li>
+    <li><strong>Motor power consumption (kW):</strong> vs. inlet pressure at rated speed (50 Hz)</li>
+    <li><strong>Displacement:</strong> Volumetric (cm³/rev) and actual suction flow @ rated conditions</li>
+    <li><strong>Maximum displacement:</strong> Confirm suitable for helium (molecular weight 4)</li>
+    <li><strong>Compression ratio:</strong> Max allowable (inlet to outlet); helium compatibility rating</li>
+    <li><strong>Lubrication:</strong> Oil-free (preferred) or oil type (if flooded); helium incompatibility warnings</li>
+    <li><strong>Suction line resistance:</strong> ΔP @ maximum flow (m³/h)</li>
+    <li><strong>Discharge temperature rise:</strong> ΔT @ compression ratio = 10 (isothermal assumption vs. actual)</li>
+    <li><strong>Noise level:</strong> dB(A) @ 1 m at rated conditions</li>
+    <li><strong>MTBF & warranty:</strong> 10,000+ hours; 2-year parts + labour typical</li>
+  </ul>
+
+  <h3>6.2 Verification & Acceptance Criteria</h3>
+  <table>
+    <tr><th>Test / Metric</th><th>Target / Acceptance</th><th>Method</th></tr>
+    <tr><td>Delivery flow (@ 0.1 barA inlet, 1.0 barA outlet)</td><td>≥50 g/s per unit</td><td>Mass flow measurement (helium tracer, calibrated flow meter)</td></tr>
+    <tr><td>Motor power draw (continuous)</td><td>≤15 kW per unit (budget)</td><td>Electrical power measurement during performance test</td></tr>
+    <tr><td>Helium purity (outlet)</td><td>≥99.99% He (ISO 14175 Grade A)</td><td>Gas chromatography; confirm no oil carryover</td></tr>
+    <tr><td>Noise level</td><td>≤80 dB(A) @ 1 m</td><td>Acoustic measurement per ISO 3744</td></tr>
+    <tr><td>Pressure drop (suction line)</td><td>&lt;0.05 bar @ maximum flow</td><td>Measure inlet/pump inlet pressure difference</td></tr>
+    <tr><td>Vibration (bearing health)</td><td>ISO 10816-3 Group 1 (&lt;7.1 mm/s RMS, 10–200 Hz)</td><td>Accelerometer measurement; FFT analysis</td></tr>
+  </table>
+
+  <h2>7. Redundancy & Operational Modes</h2>
+
+  <h3>7.1 N+1 Configuration</h3>
+  <ul>
+    <li><strong>Total units:</strong> 10 identical pumps (each ~15 kW motor)</li>
+    <li><strong>Normal operation:</strong> 9 units active (demand: 50 g/s total); 1 standby (rotating duty, no failures expected in 24/7 mode)</li>
+    <li><strong>Loss of 1 unit:</strong> 9 operating units maintain 50 g/s (slight overdrive; load redistributes automatically via common suction line)</li>
+    <li><strong>Loss of 2 units:</strong> 8 operating units deliver ~44 g/s (90% capacity); slight pressure rise in coldbox but controllable</li>
+    <li><strong>Isolation valves:</strong> Individual 24 VDC solenoid per pump; allows selective shutdown (e.g., unit #3 for maintenance)</li>
+  </ul>
+
+  <h3>7.2 Duty Cycling (Standby Rotation)</h3>
+  <p>
+    To extend MTBF and balance wear, standby unit rotates every 7 days:
+  </p>
+  <ul>
+    <li>Day 1–7: Units 1–9 active; Unit 10 idle</li>
+    <li>Day 8–14: Units 2–10 active; Unit 1 idle (solenoid opens Unit 1, closes Unit 2)</li>
+    <li>Cycle repeats every 70 days (all units share equivalent run hours)</li>
+  </ul>
+
+  <h2>8. Instrumentation & Control</h2>
+
+  <h3>8.1 Monitoring Parameters (Per Pump)</h3>
+  <table>
+    <tr><th>Parameter</th><th>Sensor</th><th>Signal Output</th><th>Alarm/Setpoint</th></tr>
+    <tr><td>Inlet pressure (coldbox suction)</td><td>0–1 barA gauge transmitter</td><td>4–20 mA</td><td>Alarm: &lt;0.05 barA (inlet starvation)</td></tr>
+    <tr><td>Discharge pressure (pump outlet)</td><td>0–3 bar gauge transmitter</td><td>4–20 mA</td><td>Alarm: &gt;1.2 barA (clogged discharge)</td></tr>
+    <tr><td>Motor temperature (winding)</td><td>PTC thermistor or RTD</td><td>Resistance or 4–20 mA</td><td>Trip: 130 °C (Class B); Warning: 120 °C</td></tr>
+    <tr><td>Discharge temperature (gas)</td><td>RTD Pt100 (optional)</td><td>4–20 mA or Modbus</td><td>Monitor: &lt;60 °C (typical); Alarm: &gt;80 °C</td></tr>
+    <tr><td>Vibration (bearing diagnostics)</td><td>Accelerometer (optional)</td><td>FFT or overall RMS</td><td>Alarm: &gt;7.1 mm/s (ISO 10816)</td></tr>
+  </table>
+
+  <h3>8.2 Control Interface & Interlocks</h3>
+  <ul>
+    <li><strong>ON/OFF command:</strong> 24 VDC logic (from site PLC); selectable via individual solenoid isolation valve per pump</li>
+    <li><strong>Inlet starvation protection:</strong> If inlet pressure &lt;0.05 barA, solenoid valve closes automatically (prevents cavitation damage)</li>
+    <li><strong>Discharge overpressure:</strong> Solenoid-piloted relief opens @ 1.0 bar (vents to atmosphere)</li>
+    <li><strong>Motor overtemp:</strong> If winding &gt;130 °C, PLC receives signal; soft-stop (de-energises solenoid after 5 s delay)</li>
+    <li><strong>Common suction manifold check valve:</strong> Prevents backflow from any pump to coldbox when inactive</li>
+  </ul>
+
+  <h2>9. PVPS Vendor Candidate List</h2>
+
+  <h3>9.1 Shortlisted Manufacturers (Preliminary)</h3>
+  <p>
+    The following vendors are known for helium-compatible vacuum pumping equipment.
+    Requests for quotation (RFQs) shall be distributed in parallel; target response: 2 weeks.
+  </p>
+
+  <table>
+    <tr><th>Vendor</th><th>Product Line</th><th>Est. Price (per 10 units)</th><th>Lead Time</th><th>Contact / Notes</th></tr>
+    <tr><td><strong>Busch GmbH</strong> (Germany)</td><td>Screw / Rotary vane dry pumps; Cobra, Puma series</td><td>€150–180k</td><td>8–10 weeks</td><td>Helium experience (aerospace, space simulation)</td></tr>
+    <tr><td><strong>Pfeiffer Vacuum</strong> (Germany)</td><td>Rotary vane (Duo/Trio) dry pumps; turbo units</td><td>€140–170k</td><td>8–12 weeks</td><td>Premium brand; excellent support; higher cost</td></tr>
+    <tr><td><strong>Atlas Copco</strong> (Sweden)</td><td>Screw pumps; various displacement sizes</td><td>€120–150k</td><td>6–8 weeks</td><td>Strong regional presence; good lead time</td></tr>
+    <tr><td><strong>Edwards Vacuum</strong> (UK)</td><td>Dry screw / turbo units; GV series</td><td>€160–190k</td><td>10–14 weeks</td><td>Large global support; somewhat longer lead time</td></tr>
+    <tr><td><strong>Leybold</strong> (Germany)</td><td>TRIVAC rotary vane dry pumps</td><td>€110–140k</td><td>8–10 weeks</td><td>Cost-competitive; smaller displacement may require 2-stage</td></tr>
+  </table>
+
+  <h3>9.2 RFQ Preparation</h3>
+  <p>For each candidate, request:</p>
+  <ul>
+    <li>Technical datasheet for 2–3 pump sizes suitable for 50 g/s helium @ 0.1 barA inlet</li>
+    <li>Motor specifications (power, voltage, efficiency)</li>
+    <li>Unit price (single unit and 10-unit volume discount)</li>
+    <li>Lead time to MYRRHA site, Belgium</li>
+    <li>Warranty terms (2 years standard?)</li>
+    <li>Spare parts kit availability & pricing</li>
+    <li>References (other helium pumping installations)</li>
+  </ul>
+
+  <h2>10. Power Budget & Integration</h2>
+
+  <h3>10.1 Electrical Load Summary (MT-13 Component)</h3>
+  <table>
+    <tr><th>PVPS Configuration</th><th>Total Power (9 active + 1 standby)</th><th>Avg. Active Load (9 units)</th></tr>
+    <tr><td>10× 15 kW motors @ 50 Hz (estimated)</td><td>~150 kW peak (if all 10 running)</td><td>135 kW (9 active @ ~15 kW each)</td></tr>
+    <tr><td>Contingency (10% margin)</td><td>+15 kW (soft-start inrush, momentary)</td><td>—</td></tr>
+    <tr><td style="font-weight: 600"><td>Total PVPS CAPEX (motors + drives)</td><td>~45k (9 × €5k/unit estimated)</td><td>See MT-13 cost breakdown</td></tr>
+  </table>
+
+  <p>
+    <strong>Note:</strong> PVPS is grouped with HCC and auxiliary loads under site 2,000 kVA transformer capacity (total site load ~1,437 kW).
+    See MT-13 report for detailed electrical infrastructure cost and harmonic filtering requirements.
+  </p>
+
+  <h2>11. Delivery & Installation</h2>
+
+  <h3>11.1 Scope of Supply (Vendor)</h3>
+  <ul>
+    <li>10 complete pump units (motor + pump + base frame + isolators)</li>
+    <li>3-phase electric motors (400V, soft-start compatible)</li>
+    <li>Individual 24 VDC solenoid isolation valves (per pump)</li>
+    <li>Discharge manifold block (common piping, check/relief valves)</li>
+    <li>Suction line inlet check valve</li>
+    <li>Discharge relief valve (atmospheric setpoint)</li>
+    <li>Pressure transmitters (inlet/outlet) — site option (may be source-separate)</li>
+    <li>Motor protection thermistors (PTC type)</li>
+    <li>Silencers/mufflers (inlet and discharge)</li>
+    <li>Vibration isolation pads</li>
+    <li>Hose assemblies (suction, discharge, solenoid piloting)</li>
+    <li>Spare parts kit (bearings, seals, rotor set for 1 unit)</li>
+    <li>Technical documentation: datasheets, assembly drawings, parts lists, maintenance manuals</li>
+  </ul>
+
+  <h3>11.2 Installation Schedule</h3>
+  <ul>
+    <li><strong>Week 1:</strong> RFQ issued; vendor responses collected (target: 2 weeks return)</li>
+    <li><strong>Week 3–4:</strong> Vendor evaluation; technical clarifications; cost negotiation</li>
+    <li><strong>Week 5:</strong> Purchase order release</li>
+    <li><strong>Week 13–15:</strong> Equipment delivery to MYRRHA site</li>
+    <li><strong>Week 16–17:</strong> Installation in compressor room (wall-mount piping); commissioning</li>
+    <li><strong>Week 18:</strong> Performance testing & acceptance</li>
+  </ul>
+
+  <h2>12. Questions for Vendors (RFQ Template)</h2>
+  <div class="box">
+    <ol style="margin: 0; padding-left: 20px;">
+      <li>What pump models do you recommend for helium duty (50 g/s @ 0.1 barA inlet, atmospheric outlet)?</li>
+      <li>Is your pump oil-free (dry) or oil-flooded? If flooded, what filtration is required for ISO 8573-1 Class 1?</li>
+      <li>What is the motor power @ rated conditions? Provide performance curve (flow vs. inlet pressure, power vs. inlet pressure).</li>
+      <li>Can motors be supplied in 400V 3-phase 50 Hz with soft-start compatibility?</li>
+      <li>What is the MTBF (Mean Time Between Failures) and warranty period?</li>
+      <li>Do you have any helium pumping installations in aerospace/cryogenic applications? (References?)</li>
+      <li>What is your lead time to Belgium from order date?</li>
+      <li>Provide pricing for 10 units (single + volume discount) and spare parts kit (1-year consumables).</li>
+      <li>Can you supply 24 VDC solenoid isolation valve per pump, or should we source separately?</li>
+      <li>What noise level (dB(A) @ 1 m) do you achieve with your pump + motor combination?</li>
+    </ol>
+  </div>
+
+  <h2 style="page-break-before: always;">Signature & Approval</h2>
+  <div class="signature">
+    <p>
+      <strong>Prepared by:</strong> MYRRHA WCS Engineering Team<br>
+      <strong>Date:</strong> 2025-05-18<br>
+      <strong>Version:</strong> v1.0 (Final)<br>
+      <strong>Approval:</strong> Project Manager __________ Date __________
+    </p>
+    <p style="margin-top: 20px; font-size: 12px; color: #666;">
+      This MT-12 scout package is the basis for vendor engagement. Responses from shortlisted manufacturers will inform
+      final pump selection and PVPS integration into the WCS architecture. Critical acceptance: helium-compatible dry pumps,
+      15 kW per unit motor power (TBD), and N+1 redundancy (10 units total).
+    </p>
+  </div>
+</div>
+
+</body></html>

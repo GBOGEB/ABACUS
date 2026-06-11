@@ -1,0 +1,12 @@
+tag,value,meaning,x,y,layer,source_text
+PZx21,,Pressure (special / safety),564.58,359.98,TUN,
+PZx22,,Pressure (special / safety),564.61,369.36,TUN,
+PZx11,,Pressure (special / safety),864.51,366.38,TUN,
+PZx12,,Pressure (special / safety),864.54,375.75,TUN,
+,2 bar,,251.41,867.15,CPLR,"Comp. air 2 bar, permanently connected"
+PTxxx,,Pressure Transmitter,199.48,918.46,CPLR,
+PTxxx,,Pressure Transmitter,198.84,979.68,CPLR,
+PTxxx,,Pressure Transmitter,449.44,959.3,CPLR,
+PTxxx,,Pressure Transmitter,471.09,993.87,CPLR,
+PTx21,,Pressure Transmitter,559.04,713.48,"CPLR AD, ED, PT",
+PTx11,,Pressure Transmitter,856.52,712.6,"CPLR AD, ED, PT",

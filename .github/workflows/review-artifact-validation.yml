@@ -1,0 +1,12 @@
+name: Review Artifact Validation
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'ssot/**'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python scripts/validate_runtime_foundation.py

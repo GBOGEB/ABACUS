@@ -1,0 +1,39 @@
+visualization:
+  type: table_metrics
+  title: "130 QPLANT Utilities"
+  data_ref: "content/qplant/utilities.yaml"
+lineage:
+  wave: "W003.4"
+  pr: 34
+  repo: "GBOGEB/ABACUS"
+  commit: "0000000"
+  runtime_evidence: "Tabular utility metrics payload is loadable and validated in tests"
+  validation_evidence: "Validated in tests/test_qplant_content.py"
+metrics:
+  pca:
+    forward_pca: 1.0
+    backward_pca: 1.0
+  geti: 1.0
+  truth_score: 1.0
+truth_matrix:
+  principles:
+    - chat_is_not_repo
+    - architecture_is_not_runtime
+    - claimed_is_not_validated
+    - exists_in_repo_is_not_ci_execution
+utilities:
+  - name: "Cooling Water (PCW)"
+    capacity: 1300
+    unit: "kW"
+  - name: "Electricity"
+    capacity: 1526
+    unit: "kW"
+  - name: "HVAC"
+    capacity: 124
+    unit: "kW"
+  - name: "Heat Recovery"
+    capacity: 850
+    unit: "kW"
+  - name: "Instrument Air"
+    capacity: 60
+    unit: "m3/h"

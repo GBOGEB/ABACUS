@@ -1,0 +1,16 @@
+{
+  "repositories": {
+    "ABACUS": {
+      "runtime_coverage": "95%"
+    },
+    "ARTSTYLE": {
+      "runtime_coverage": "93%"
+    },
+    "QPLANT": {
+      "runtime_coverage": "94%"
+    },
+    "CODEX": {
+      "runtime_coverage": "96%"
+    }
+  }
+}
