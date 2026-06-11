@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Recursive build orchestrator (lightweight stub):
 - Validates artefact references listed in GLOBAL_index.json
 - Emits metrics/metrics.json with basic counts

@@ -134,3 +134,51 @@ backup/
 !GITHUB_SETUP_GUIDE.md
 maturity_assessment.json
 >>>>>>> 1246535379fec46b70cda35854d925ccc325c441
+BACKUPS/
+**/BACKUPS/
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+.benchmarks/
+.sessions/
+.temporal_state/
+cache/
+*.log
+*.coverage
+node_modules/
+
+# nested repos — ignore until you decide A/B/C
+rich_padding/
+CODESPACES_jyperter/
+
+# === SECURITY GUARDS (added 2026-06-10) ===
+*token*.txt
+*recovery-codes*
+*.pem
+*.key
+.env
+.ssh/
+.gnupg/
+.aws/
+.azure/
+# Personal documents
+*IRP5*
+*ITA34*
+*Aanslagbiljet*
+*Invoice*
+
+# === SECURITY GUARDS (added 2026-06-10) ===
+*token*.txt
+*recovery-codes*
+*.pem
+*.key
+.env
+.ssh/
+.gnupg/
+.aws/
+.azure/
+*IRP5*
+*ITA34*
+*Aanslagbiljet*
+*Invoice*

@@ -1,7 +1,7 @@
 # 🚀 QUICK START GUIDE - 12-CLUSTER INTEGRATION
 
 
-**Version:** 2.3.0  
+**Version:** 4.0.0  
 **Generated:** 2025-11-08T19:22:20.320040+00:00  
 **Ready to execute in 3 steps!**
 

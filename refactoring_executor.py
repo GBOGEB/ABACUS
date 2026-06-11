@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 REFACTORING EXECUTOR
 Executes refactoring plan based on PRE-CD metrics
 """
@@ -46,28 +52,43 @@ class RefactoringExecutor:
             print(f"   [BACKUP] {file_path} -> {backup_path}")
     
     def remove_duplicates(self):
-        """Remove duplicate files in batches, keeping primary in 13_CORE_SYSTEMS"""
-        print("\n[REFACTOR] Removing duplicates (batched)...")
+        """Remove duplicate files in batches, keeping primary with smart selection"""
+        print("\n[REFACTOR] Removing duplicates with smart selection (batched)...")
 
         duplicates = self.metrics.get("duplicates", {})
 
-        # Collect all files to remove
         files_to_remove = []
         for file_hash, files in duplicates.items():
             if len(files) <= 1:
                 continue
 
-            # Prioritize files in 13_CORE_SYSTEMS
             primary = None
+
             for f in files:
-                if "13_CORE_SYSTEMS" in f:
-                    primary = f
-                    break
+                file_path = Path(f)
+                if not file_path.exists():
+                    continue
+
+                try:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as fp:
+                        content = fp.read()
+
+                    if any(marker in content[:500] for marker in ['__version__', 'VERSION', '@version', '# Version:']):
+                        primary = f
+                        print(f"   [PRESERVE] {f} (has version header)")
+                        break
+                except Exception:
+                    continue
+
+            if not primary:
+                for f in files:
+                    if "13_CORE_SYSTEMS" in f:
+                        primary = f
+                        break
 
             if not primary:
                 primary = files[0]
 
-            # Add duplicates to removal list
             for f in files:
                 if f != primary:
                     files_to_remove.append((f, primary))
@@ -75,7 +96,6 @@ class RefactoringExecutor:
         total_files = len(files_to_remove)
         print(f"   Total duplicates to remove: {total_files}")
 
-        # Process in batches
         for batch_num in range(0, total_files, self.batch_size):
             batch = files_to_remove[batch_num:batch_num + self.batch_size]
             batch_id = batch_num // self.batch_size + 1
@@ -103,7 +123,6 @@ class RefactoringExecutor:
             self.stats["batches_processed"] += 1
             print(f"[OK] Batch {batch_id}/{total_batches} complete ({self.stats['duplicates_removed']} removed so far)")
 
-            # Small delay between batches to avoid overwhelming the system
             if not self.dry_run and batch_id < total_batches:
                 time.sleep(0.5)
 
@@ -233,11 +252,11 @@ class RefactoringExecutor:
 
         print(f"\n[OK] Added {self.stats['headers_added']} version headers in {self.stats['batches_processed']} batches")
         return self.stats["headers_added"]
-    
+
     def execute_refactoring(self, actions: List[str] = None, max_headers: int = 5000):
         """Execute complete refactoring plan"""
         print("\n" + "="*80)
-        print("REFACTORING EXECUTOR V2 - BATCHED PROCESSING")
+        print("REFACTORING EXECUTOR V3 - SMART DUPLICATE HANDLING")
         print("="*80)
         print(f"Metrics File: {self.metrics_file}")
         print(f"Mode: {'DRY RUN' if self.dry_run else 'LIVE'}")
@@ -247,23 +266,21 @@ class RefactoringExecutor:
         print("="*80)
 
         if actions is None:
-            actions = ["duplicates", "imports", "headers"]
+            actions = ["headers", "duplicates", "imports"]
 
         start_time = time.time()
 
-        # Execute refactoring actions
+        if "headers" in actions:
+            self.add_version_headers(max_files=max_headers)
+
         if "duplicates" in actions:
             self.remove_duplicates()
 
         if "imports" in actions:
             self.fix_import_paths()
 
-        if "headers" in actions:
-            self.add_version_headers(max_files=max_headers)
-
         elapsed_time = time.time() - start_time
 
-        # Save results
         output_dir = Path("DMAIC_INTEGRATION_OUTPUT/cicd_github")
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / f"refactoring_{self.execution_id}.json"
@@ -300,14 +317,14 @@ class RefactoringExecutor:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Refactoring executor v2 - batched processing")
+    parser = argparse.ArgumentParser(description="Refactoring executor v3 - smart duplicate handling")
     parser.add_argument("--metrics", required=True, help="Path to PRE-CD metrics JSON file")
     parser.add_argument("--dry-run", action="store_true", help="Dry run mode (no changes)")
     parser.add_argument("--batch-size", type=int, default=1000, help="Batch size for processing (default: 1000)")
     parser.add_argument("--actions", nargs="+", choices=["duplicates", "imports", "headers"],
-                        default=["duplicates", "imports", "headers"],
-                        help="Actions to execute (default: all)")
-    parser.add_argument("--max-headers", type=int, default=5000, help="Maximum headers to add (default: 5000)")
+                        default=["headers", "duplicates", "imports"],
+                        help="Actions to execute (default: headers, duplicates, imports)")
+    parser.add_argument("--max-headers", type=int, default=60000, help="Maximum headers to add (default: 60000)")
 
     args = parser.parse_args()
 
