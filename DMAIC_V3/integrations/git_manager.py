@@ -43,7 +43,7 @@ class GitManager:
                                    text=True,
                                    timeout=5)
             return result.returncode == 0
-        except:
+        except Exception:
             return False
     
     def _run_git(self, args: List[str], check: bool = True) -> Tuple[bool, str]:

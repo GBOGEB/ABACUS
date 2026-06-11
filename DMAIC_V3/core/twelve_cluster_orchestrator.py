@@ -13,7 +13,7 @@ Maps DMAIC phases to 12 temporal clusters for parallel processing
 import time
 import json
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 

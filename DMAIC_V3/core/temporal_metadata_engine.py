@@ -348,15 +348,10 @@ class TemporalMetadataEngine:
         
         is_main = file_path.name in ['main.py', '__main__.py', 'app.py', 'run.py']
         
-        dependencies,
-            imports,
-            exports,
-            functions,
-            classes = self._analyze_python_file(file_path) if file_type == FileType.PYTHON else ([],
-            [],
-            [],
-            [],
-            [])
+        if file_type == FileType.PYTHON:
+            dependencies, imports, exports, functions, classes = self._analyze_python_file(file_path)
+        else:
+            dependencies, imports, exports, functions, classes = [], [], [], [], []
         
         return FileMetadata(
             file_path=str(file_path.relative_to(self.workspace_root)),

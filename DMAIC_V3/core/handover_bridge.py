@@ -11,7 +11,7 @@ Bridges handover pipeline with DMAIC V3 structure
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Any, Tuple
 from datetime import datetime
 import json
 
