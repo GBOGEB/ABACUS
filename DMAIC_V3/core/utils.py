@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 import hashlib
 import json
 import logging
@@ -11,32 +17,32 @@ from datetime import datetime
 def setup_logger(name: str, log_file: Optional[Path] = None, level: int = logging.INFO) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    
+
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    
+
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    
+
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-    
+
     return logger
 
 
 def compute_hash(data: Union[str, bytes, Dict, List]) -> str:
     if isinstance(data, dict) or isinstance(data, list):
         data = json.dumps(data, sort_keys=True)
-    
+
     if isinstance(data, str):
         data = data.encode('utf-8')
-    
+
     return hashlib.sha256(data).hexdigest()
 
 
@@ -57,10 +63,10 @@ def safe_write_json(data: Any, file_path: Path, indent: int = 2) -> bool:
     try:
         file_path.parent.mkdir(parents=True, exist_ok=True)
         temp_path = file_path.with_suffix('.tmp')
-        
+
         with open(temp_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=indent, default=str)
-        
+
         shutil.move(str(temp_path), str(file_path))
         return True
     except Exception as e:
@@ -74,7 +80,7 @@ def safe_read_json(file_path: Path) -> Optional[Dict]:
     try:
         if not file_path.exists():
             return None
-        
+
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
@@ -110,11 +116,11 @@ def validate_directory_writable(dir_path: Path) -> bool:
     if not dir_path.is_dir():
         logging.error(f"Not a directory: {dir_path}")
         return False
-    
+
     if not os.access(dir_path, os.W_OK):
         logging.error(f"Directory not writable: {dir_path}")
         return False
-    
+
     return True
 
 
@@ -137,7 +143,7 @@ def copy_file_with_backup(src: Path, dst: Path, backup_suffix: str = ".bak") -> 
         if dst.exists():
             backup_path = dst.with_suffix(dst.suffix + backup_suffix)
             shutil.copy2(src, backup_path)
-        
+
         shutil.copy2(src, dst)
         return True
     except Exception as e:
@@ -159,7 +165,7 @@ def archive_directory(src_dir: Path, archive_path: Path) -> bool:
 def format_duration(seconds: float) -> str:
     hours, remainder = divmod(int(seconds), 3600)
     minutes, seconds = divmod(remainder, 60)
-    
+
     if hours > 0:
         return f"{hours}h {minutes}m {seconds}s"
     elif minutes > 0:

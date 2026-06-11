@@ -1,86 +1,159 @@
 {
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "plaintext": false,
-    "markdown": true,
-    "python": true,
-    "powershell": true
-  },
-  "github.copilot.advanced": {
-    "debug.overrideEngine": "gpt-4",
-    "debug.testOverrideProxyUrl": "",
-    "debug.overrideProxyUrl": ""
-  },
-  "githubPullRequests.pullBranch": "never",
-  "githubPullRequests.createOnPublish": "ask",
-  "githubPullRequests.defaultMergeMethod": "squash",
-  "githubPullRequests.showPullRequestNumberInTree": true,
-  "githubIssues.queries": [
-    {
-      "label": "CI Failures",
-      "query": "is:open is:issue label:ci-failure"
+    "gitlens.plusFeatures.enabled": true,
+    "gitlens.advanced.messages": {
+        "suppressGitMissingWarning": false
     },
-    {
-      "label": "CD Issues",
-      "query": "is:open is:issue label:cd-failure"
+    "gitlens.gitCommands.closeOnFocusOut": true,
+    "gitlens.hovers.currentLine.over": "line",
+    "gitlens.currentLine.enabled": true,
+    "gitlens.currentLine.pullRequests.enabled": true,
+    "gitlens.codeLens.enabled": true,
+    "gitlens.codeLens.authors.enabled": true,
+    "gitlens.codeLens.recentChange.enabled": true,
+    "gitlens.statusBar.enabled": true,
+    "gitlens.views.repositories.files.layout": "tree",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "gitlens.views.compare.enabled": true,
+    "gitlens.views.search.enabled": true,
+    "gitlens.graph.layout": "editor",
+    "gitlens.graph.minimap.enabled": true,
+    "gitlens.graph.scrollMarkers.enabled": true,
+    "gitlens.graph.showRemoteNames": true,
+    "gitlens.graph.statusBar.enabled": true,
+    "gitlens.integrations.enabled": true,
+    "gitlens.ai.experimental.provider": "none",
+    "gitlens.virtualRepositories.enabled": true,
+    "gitlens.worktrees.enabled": true,
+    "gitlens.blame.avatars": true,
+    "gitlens.blame.compact": false,
+    "gitlens.blame.format": "${author|10} ${date}",
+    "gitlens.blame.highlight.enabled": true,
+    "gitlens.blame.highlight.locations": [
+        "gutter",
+        "line",
+        "overview"
+    ],
+    "gitlens.changes.locations": [
+        "gutter",
+        "overview"
+    ],
+    "gitlens.heatmap.locations": [
+        "gutter",
+        "overview"
+    ],
+    "gitlens.rebaseEditor.enabled": true,
+    "gitlens.rebaseEditor.ordering": "asc",
+    "gitlens.showWelcomeOnInstall": false,
+    "gitlens.showWhatsNewAfterUpgrades": true,
+    "gitlens.outputLevel": "info",
+    "gitlens.defaultDateFormat": "YYYY-MM-DD HH:mm:ss",
+    "gitlens.defaultDateShortFormat": "YYYY-MM-DD",
+    "gitlens.defaultDateStyle": "absolute",
+    "gitlens.defaultTimeFormat": "HH:mm:ss",
+    "gitlens.keymap": "chorded",
+    "gitlens.menus": {
+        "editor": {
+            "blame": true,
+            "clipboard": true,
+            "compare": true,
+            "history": true,
+            "remote": true
+        },
+        "editorGroup": {
+            "blame": true,
+            "compare": true
+        },
+        "editorTab": {
+            "clipboard": true,
+            "compare": true,
+            "history": true,
+            "remote": true
+        },
+        "explorer": {
+            "clipboard": true,
+            "compare": true,
+            "history": true,
+            "remote": true
+        },
+        "scm": {
+            "authors": true
+        },
+        "scmGroup": {
+            "compare": true,
+            "openClose": true,
+            "stash": true
+        },
+        "scmGroupInline": {
+            "stash": true
+        },
+        "scmItem": {
+            "clipboard": true,
+            "compare": true,
+            "history": true,
+            "remote": true,
+            "stash": true
+        }
     },
-    {
-      "label": "Automated Issues",
-      "query": "is:open is:issue label:automated"
+    "git.enabled": true,
+    "git.autofetch": true,
+    "git.autoStash": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.fetchOnPull": true,
+    "git.pruneOnFetch": true,
+    "git.pullBeforeCheckout": true,
+    "git.showPushSuccessNotification": true,
+    "git.suggestSmartCommit": true,
+    "git.timeline.showAuthor": true,
+    "git.timeline.showUncommitted": true,
+    "github.gitProtocol": "https",
+    "github.copilot.enable": {
+        "*": false
     },
-    {
-      "label": "My Issues",
-      "query": "is:open is:issue assignee:@me"
-    }
-  ],
-  "githubIssues.createIssueTriggers": [
-    "TODO",
-    "FIXME",
-    "BUG"
-  ],
-  "git.autofetch": true,
-  "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "git.postCommitCommand": "push",
-  "git.showPushSuccessNotification": true,
-  "gitlens.currentLine.enabled": true,
-  "gitlens.hovers.currentLine.over": "line",
-  "gitlens.codeLens.enabled": true,
-  "gitlens.statusBar.enabled": true,
-  "gitlens.views.repositories.branches.layout": "tree",
-  "gitlens.gitCommands.closeOnFocusOut": true,
-  "yaml.schemas": {
-    "https://json.schemastore.org/github-workflow.json": [
-      ".github/workflows/*.yml",
-      ".github/workflows/*.yaml"
-    ]
-  },
-  "yaml.customTags": [
-    "!reference sequence"
-  ],
-  "yaml.format.enable": true,
-  "yaml.validate": true,
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "python.formatting.provider": "black",
-  "python.testing.pytestEnabled": true,
-  "python.testing.unittestEnabled": false,
-  "files.associations": {
-    "*.yml": "yaml",
-    "*.yaml": "yaml",
-    ".github/workflows/*": "yaml"
-  },
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
-  },
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "terminal.integrated.defaultProfile.linux": "bash",
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#1e1e1e",
-    "statusBar.background": "#007acc",
-    "statusBar.foreground": "#ffffff"
-  },
-  "tasks.autoDetect": "on"
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.minimap.enabled": true,
+    "editor.rulers": [80, 120],
+    "editor.wordWrap": "on",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.iconTheme": "vs-seti",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "black",
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml",
+        "editor.formatOnSave": true
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "editor.formatOnSave": true
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "on"
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+    },
+    "yaml.validate": true,
+    "yaml.format.enable": true,
+    "yaml.completion": true
 }

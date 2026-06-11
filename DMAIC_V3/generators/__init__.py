@@ -15,7 +15,7 @@ Provides multi-format document generation with:
 
 Bidirectional Integration:
     DMAIC V3 Engine <--> Document Generator <--> Recursive Engine
-    
+
     Entry Points:
     1. From DMAIC V3 phases (phase1_define.py, phase2_measure.py, etc.)
     2. From recursive_dmaic_engine_v2.py (artifact processing)
@@ -41,11 +41,9 @@ __dmaic_version__ = 'V3'
 __integration_mode__ = 'BIDIRECTIONAL'
 
 __all__ = [
-    'DocumentGenerator',
-    'StyleManager', 
-    'ArtifactProcessor',
-    'ExecutionTracker',
-    'VERSION_INFO'
+    'VERSION_INFO',
+    'get_version_info',
+    'check_victory_conditions'
 ]
 
 VERSION_INFO = {

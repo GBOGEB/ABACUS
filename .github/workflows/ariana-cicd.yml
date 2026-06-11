@@ -1,0 +1,94 @@
+name: Ariana CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'ARTEFACT_TYPE_GROUPING/PYTHON_code/**'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-ariana:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python -m pip install --upgrade pip
+        pip install -r ariana_requirements.txt
+    
+    - name: Run fix script
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python fix_ariana.py
+    
+    - name: Run tests
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python test_ariana.py
+    
+    - name: Test agent execution
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python -c "from ariana_agent import ArianaAgent; agent = ArianaAgent(); result = agent.run(); print('Agent test passed:', result['status'])"
+    
+    - name: Test DOW integration
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python test_ariana_dow_integration.py
+    
+    - name: Upload logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ariana-logs
+        path: ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/
+
+  deploy-ariana:
+    needs: test-ariana
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        pip install -r ariana_requirements.txt
+    
+    - name: Deploy Ariana with DOW
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        python ariana_dow_bridge.py
+    
+    - name: Verify deployment
+      run: |
+        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
+        test -f DOW/AGENTS_REGISTRY.json && echo "✅ Agent registered in DOW"
+        test -f DOW/ariana_health.json && echo "✅ Health monitoring active"
+    
+    - name: Upload deployment artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ariana-deployment
+        path: |
+          ARTEFACT_TYPE_GROUPING/PYTHON_code/DOW/
+          ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/

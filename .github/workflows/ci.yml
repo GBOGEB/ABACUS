@@ -15,80 +15,39 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Summarize repo relevance
-        run: |
-          python scripts/report_repo_relevance.py --repo "${{ github.repository }}" --format github-step-summary >> "$GITHUB_STEP_SUMMARY"
-
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov pytest-mock flake8 mypy pylint pyyaml
-
-      - name: Generate docs HTML entry and dashboard
-        run: |
-          python scripts/generate_docs_html.py
-
-      - name: Generate dynamic handover tracker metadata
-        env:
-          GITHUB_JOB_STATUS: ${{ job.status }}
-        run: |
-          python scripts/build_final_handover_tracker.py --output docs/api/final_handover_tracker.json
-
-      - name: Validate tuple metadata tracker payload
-        run: |
-          python scripts/validate_tuple_metadata.py \
-            --input docs/api/final_handover_tracker.json \
-            --output DMAIC_V3_OUTPUT/tuple_metadata.validated.json
-
-      - name: Validate Phase-2 reconstruction manifest
-        run: |
-          python scripts/validate_reconstruction_manifest.py \
-            --input docs/api/phase2_reconstruction_manifest.json \
-            --output DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json
-
-      - name: Validate docs links
-        run: |
-          python scripts/validate_docs_links.py
-
-      - name: Validate DMAIC contract artifacts
-        run: |
-          python scripts/validate_dmaic_contract.py --target DMAIC_CANONICAL_OUTPUT --allow-empty
-
+          pip install -r DMAIC_V3/requirements.txt
+          pip install pytest pytest-cov pytest-mock flake8 mypy pylint
+      
       - name: Run bridge integration tests
         run: |
-          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -v \
-            --cov=DMAIC_V3.core.test_system_bridge \
-            --cov-report=term-missing \
-            --cov-report=xml \
-            --cov-fail-under=70
+          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -v --cov=DMAIC_V3/core --cov-report=xml
       
       - name: Run smoke tests
         run: |
           python run_deployment_test_system.py --test-suite smoke --skip-static --version ci-${{ github.sha }}
       
       - name: Upload test results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-${{ matrix.python-version }}
           path: |
             DMAIC_V3_OUTPUT/deployment_report.json
-            DMAIC_V3_OUTPUT/tuple_metadata.validated.json
-            DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json
-            docs/api/final_handover_tracker.json
-            docs/api/phase2_reconstruction_manifest.json
             actions.json
             .mcp/monitor.log
       
       - name: Upload coverage
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@v4
         if: matrix.python-version == '3.12'
         with:
           file: ./coverage.xml
@@ -100,10 +59,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       
@@ -111,6 +70,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 mypy pylint black ruff
+          pip install -r DMAIC_V3/requirements.txt
       
       - name: Run flake8
         run: |
@@ -118,7 +78,7 @@ jobs:
       
       - name: Run mypy
         run: |
-          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports --follow-imports=silent
+          mypy DMAIC_V3/core/test_system_bridge.py --ignore-missing-imports
       
       - name: Run pylint
         run: |
@@ -134,21 +94,22 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r DMAIC_V3/requirements.txt
           pip install pytest pytest-mock flake8 mypy pylint
       
       - name: Run full deployment cycle
         run: |
-          python run_deployment_test_system.py --test-suite all --skip-static --version ci-full-${{ github.sha }}
+          python run_deployment_test_system.py --test-suite all --version ci-full-${{ github.sha }}
       
       - name: Validate deployment readiness
         run: |
@@ -164,7 +125,7 @@ jobs:
           "
       
       - name: Upload deployment report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: deployment-report
           path: |

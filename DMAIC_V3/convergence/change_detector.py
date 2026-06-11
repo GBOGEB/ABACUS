@@ -28,7 +28,7 @@ class FileChange:
     old_size: Optional[int] = None
     new_size: Optional[int] = None
     timestamp: str = ""
-    
+
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
@@ -37,18 +37,18 @@ class FileChange:
 class ChangeDetector:
     """
     Detects changes in workspace files between iterations
-    
+
     Tracks:
     - File additions
     - File modifications (content hash changes)
     - File deletions
     - File size changes
     """
-    
+
     def __init__(self, workspace_root: Path, state_dir: Path):
         """
         Initialize change detector
-        
+
         Args:
             workspace_root: Root directory to monitor
             state_dir: Directory to store change tracking state
@@ -56,13 +56,13 @@ class ChangeDetector:
         self.workspace_root = workspace_root
         self.state_dir = state_dir
         self.state_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.snapshot_file = state_dir / "file_snapshot.json"
         self.changes_file = state_dir / "detected_changes.json"
-        
+
         self.current_snapshot: Dict[str, Dict[str, Any]] = {}
         self.previous_snapshot: Dict[str, Dict[str, Any]] = {}
-        
+
     def compute_file_hash(self, file_path: Path) -> str:
         """
         Compute SHA256 hash of file content
@@ -123,17 +123,17 @@ class ChangeDetector:
 
         print(f"  Completed: {processed}/{total_files} files analyzed")
         return snapshot
-    
+
     def load_previous_snapshot(self) -> Dict[str, Dict[str, Any]]:
         """
         Load previous snapshot from disk
-        
+
         Returns:
             Previous snapshot dictionary
         """
         if not self.snapshot_file.exists():
             return {}
-            
+
         try:
             with open(self.snapshot_file, 'r', encoding='utf-8') as f:
                 return json.load(f)

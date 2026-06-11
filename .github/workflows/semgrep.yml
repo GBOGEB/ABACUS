@@ -1,0 +1,48 @@
+name: Semgrep
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '30 6 * * 1'   # Monday 06:30 UTC (after CodeQL at 06:00)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read            # required for upload-sarif on private repos
+
+jobs:
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        # semgrep/semgrep-action@v1 — official action, no container needed.
+        # Rulesets governed by .github/security/security.toml [semgrep].
+        # continue-on-error: findings go to Security tab, not build failure.
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/python
+            p/owasp-top-ten
+            p/secrets
+          generateSarif: '1'
+          auditOn: push
+        env:
+          # Optional: links results to Semgrep Cloud dashboard.
+          # Add SEMGREP_APP_TOKEN in repo Settings → Secrets → Actions.
+          # Absent = fully offline run; SARIF still uploads fine.
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep

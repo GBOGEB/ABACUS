@@ -22,3 +22,7 @@ paths-ignore:
   - 'myrrha_handover/**'
   - 'DMAIC_CANONICAL_OUTPUT/**'
   - 'DMAIC_V3_OUTPUT/**'
+  - 'BACKUPS/**'
+  - '11_PREVIOUS_SESSIONS/**'
+  - '**/*_corrupted.py'
+  # Governed by .github/security/security.toml — edit paths there, mirror here

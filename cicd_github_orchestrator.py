@@ -1,4 +1,10 @@
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 CI/CD GITHUB ROUNDTRIP ORCHESTRATOR
 ====================================
 
@@ -57,12 +63,72 @@ class CICDGitHubOrchestrator:
         self.workspace = Path(workspace)
         self.output_dir = self.workspace / "DMAIC_INTEGRATION_OUTPUT" / "cicd_github"
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.execution_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.pre_metrics: Optional[MetricsSnapshot] = None
         self.post_metrics: Optional[MetricsSnapshot] = None
-        
+
+        self.gitlens_config = self._load_gitlens_config()
+        self.gitkraken_config = self._load_gitkraken_config()
+
         sys.path.insert(0, str(self.workspace))
+
+    def _load_gitlens_config(self) -> Dict:
+        """Load GitLens configuration"""
+        config_path = self.workspace / ".vscode" / "settings.json"
+        if config_path.exists():
+            try:
+                import json
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                return {
+                    "enabled": settings.get("gitlens.plusFeatures.enabled", False),
+                    "graph_enabled": settings.get("gitlens.graph.layout") == "editor",
+                    "ai_enabled": settings.get("gitlens.ai.experimental.provider") is not None
+                }
+            except Exception as e:
+                print(f"[WARN] Failed to load GitLens config: {e}")
+        return {"enabled": False}
+
+    def _load_gitkraken_config(self) -> Dict:
+        """Load GitKraken configuration"""
+        config_path = self.workspace / ".gitkraken" / "config.json"
+        if config_path.exists():
+            try:
+                import json
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"[WARN] Failed to load GitKraken config: {e}")
+        return {"enabled": False}
+
+    def verify_git_tools(self) -> Dict:
+        """Verify GitLens and GitKraken integration"""
+        print("\n[VERIFY] Checking Git tools integration...")
+
+        verification = {
+            "gitlens": {
+                "configured": self.gitlens_config.get("enabled", False),
+                "graph_enabled": self.gitlens_config.get("graph_enabled", False),
+                "ai_enabled": self.gitlens_config.get("ai_enabled", False)
+            },
+            "gitkraken": {
+                "configured": self.gitkraken_config.get("authentication", {}).get("gitlens", {}).get("enabled", False),
+                "pro_token_set": bool(self.gitkraken_config.get("authentication", {}).get("gitlens", {}).get("pro_token"))
+            },
+            "vscode_extensions": {
+                "extensions_json_exists": (self.workspace / ".vscode" / "extensions.json").exists()
+            }
+        }
+
+        print(f"   GitLens configured: {verification['gitlens']['configured']}")
+        print(f"   GitLens Graph enabled: {verification['gitlens']['graph_enabled']}")
+        print(f"   GitLens AI enabled: {verification['gitlens']['ai_enabled']}")
+        print(f"   GitKraken configured: {verification['gitkraken']['configured']}")
+        print(f"   GitKraken Pro token set: {verification['gitkraken']['pro_token_set']}")
+        print(f"   VS Code extensions configured: {verification['vscode_extensions']['extensions_json_exists']}")
+
+        return verification
     
     def collect_metrics(self, label: str) -> MetricsSnapshot:
         """Collect comprehensive codebase metrics (optimized for large codebases)"""
@@ -421,14 +487,17 @@ class CICDGitHubOrchestrator:
         print(f"Mode: {'DRY RUN' if dry_run else 'LIVE EXECUTION'}")
         print(f"Execution ID: {self.execution_id}")
         print("=" * 80)
-        
+
         pipeline_results = {
             "execution_id": self.execution_id,
             "timestamp": datetime.now().isoformat(),
             "dry_run": dry_run,
             "stages": {}
         }
-        
+
+        git_tools_verification = self.verify_git_tools()
+        pipeline_results["stages"]["git_tools_verification"] = git_tools_verification
+
         self.pre_metrics = self.collect_metrics("PRE")
         self.save_metrics(self.pre_metrics, "pre")
         pipeline_results["stages"]["pre_metrics"] = {

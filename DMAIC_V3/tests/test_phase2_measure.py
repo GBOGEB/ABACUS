@@ -153,7 +153,7 @@ def func3(): pass
         assert success is True
         assert isinstance(result, dict)
         assert result['phase'] == 'MEASURE'
-    
+
     def test_output_structure(self, phase2, temp_workspace, config):
         phase1_dir = config.paths.output_root / "iteration_1" / "phase1_define"
         phase1_dir.mkdir(parents=True, exist_ok=True)
