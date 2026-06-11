@@ -10,35 +10,14 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v4
         with:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install black
+          pip install -r requirements.txt || true
       - name: Check code format
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            base_ref="${{ github.event.pull_request.base.sha }}"
-          else
-            base_ref="${{ github.event.before }}"
-          fi
-          if [ -z "$base_ref" ] || [ "$base_ref" = "0000000000000000000000000000000000000000" ]; then
-            echo "No comparison base available; skipping format check."
-            exit 0
-          fi
-
-          targets=$(git diff --name-only "$base_ref" "$GITHUB_SHA" -- '*.py')
-          if [ -z "$targets" ]; then
-            echo "No changed Python files to format-check."
-            exit 0
-          fi
-
-          echo "Checking format for:"
-          echo "$targets"
-          black --check $targets
+          python runners/dmaic_runner.py --action format-check

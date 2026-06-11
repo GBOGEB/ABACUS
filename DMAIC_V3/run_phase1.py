@@ -13,17 +13,17 @@ from DMAIC_V3.phases.phase1_define import Phase1Define
 def main():
     print(f"=== DMAIC V3.3 - Phase 1: Define ===")
     print(f"Version: {__version__}")
-    
+
     config = DMAICConfig()
     state_manager = StateManager(config)
-    
+
     phase1 = Phase1Define(config, state_manager)
-    
+
     iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
-    
+
     print(f"\n[SEARCH] Starting Phase 1 - Iteration {iteration}")
     result = phase1.run(iteration)
-    
+
     if result['success']:
         print(f"\n[OK] Phase 1 Complete!")
         print(f"   Files scanned: {result.get('files_scanned', 0)}")
