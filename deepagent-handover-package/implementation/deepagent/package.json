@@ -1,0 +1,49 @@
+{
+  "name": "deepagent",
+  "version": "2.0.0",
+  "description": "DeepAgent Apps Framework v2.0 - TypeScript implementation providing DMAIC process management, KPI tracking, automation workflows, and recursive handover structures.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run rebuild",
+    "test": "echo \"No tests specified yet - planned for v2.1 (see ROADMAP.md)\" && exit 0"
+  },
+  "keywords": [
+    "deepagent",
+    "dmaic",
+    "kpi",
+    "automation",
+    "workflow",
+    "handover",
+    "framework",
+    "six-sigma",
+    "qsys"
+  ],
+  "author": "GBOGEB <GBOGEB@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GBOGEB/ABACUS.git",
+    "directory": "deepagent-handover-package/implementation/deepagent"
+  },
+  "bugs": {
+    "url": "https://github.com/GBOGEB/ABACUS/issues"
+  },
+  "homepage": "https://github.com/GBOGEB/ABACUS/tree/main/deepagent-handover-package",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@types/node": "^24.5.1",
+    "typescript": "^5.9.2"
+  }
+}

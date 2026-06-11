@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS Handover · Hub</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚙</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+</head><body>
+<div class="container">
+  <h1>MYRRHA Warm Compressor Engineering Handover</h1>
+  <p class="muted">Single-package HTML ecosystem · cross-linked views · v0.4.7 · last touched <span id="ts"></span></p>
+
+  <div class="card">
+    <h2 style="margin-top:0">What this is</h2>
+    <p>A self-contained engineering handover bundle for the <b>Warm Compressor Station (WCS)</b> of the MYRRHA cryogenic plant (QPLANT). It compares the two pre-studied warm-compressor concepts (Kaeser <b>FSD&nbsp;575&nbsp;SFC</b> as offered by ALaT vs Kaeser <b>FSD&nbsp;475&nbsp;SFC</b> as offered by LKT), checks the requested target mass-flow range against 3-skid capacity, and consolidates utility requirements at a 350&nbsp;g/s&nbsp;@&nbsp;14&nbsp;barG baseline.</p>
+  </div>
+
+  <h2>Navigation</h2>
+  <div class="grid4">
+    <a class="card" href="slides.html"><h3>🎞 Slides</h3><p class="muted">Interactive deck — hierarchy, comparison, recommendations.</p></a>
+    <a class="card" href="slide-editor.html"><h3>✏️ Slide Editor</h3><p class="muted">Dual-view live editor · per-slide notes · export HTML/MD.</p></a>
+    <a class="card" href="docs/design-guide.md"><h3>📘 Design Guide</h3><p class="muted">Layouts · typography · smart labels (B/G/T/E/F).</p></a>
+    <a class="card" href="docs/editing-guide.md"><h3>📗 Editing Guide</h3><p class="muted">Master markdown · render pipeline.</p></a>
+    <a class="card" href="docs/slide-notes-guide.md"><h3>📒 Slide Notes Guide</h3><p class="muted">TODO · REVIEW · ACTION conventions.</p></a>
+    <a class="card" href="reports.html"><h3>📄 Reports</h3><p class="muted">Rendered markdown · arguments B1–B4.</p></a>
+    <a class="card" href="tables.html"><h3>📊 Tables</h3><p class="muted">Copyable specs · CSV / JSON export.</p></a>
+    <a class="card" href="graphs.html"><h3>📈 Graphs</h3><p class="muted">Chart.js plots · PNG / SVG / PDF.</p></a>
+    <a class="card" href="status.html"><h3>✅ Session Status</h3><p class="muted">TODOs · changelog · progress.</p></a>
+    <a class="card" href="truth.html"><h3>📌 Source of Truth</h3><p class="muted">Immutable design decisions.</p></a>
+    <a class="card" href="utilities.html"><h3>🧮 Utilities</h3><p class="muted">Math · proofs · sample calcs.</p></a>
+    <a class="card" href="pvps.html"><h3>🔧 PVPS (WCS.LCC)</h3><p class="muted">2×5 LP array · γ = 50 g/s · N+1.</p></a>
+    <a class="card" href="hx-sizing.html"><h3>♨ RCW HX &amp; COMBI</h3><p class="muted">Oil cooler sizing · COMBI fixed+VFD · 304/344/350 g/s · interactive Plotly.</p></a>
+    <a class="card" href="thermo-analysis.html"><h3>🌡 Thermo Analysis</h3><p class="muted">Energy waterfall · Sankey · T-s diagram · Exergy sunburst · η curves.</p></a>
+    <a class="card" href="operations.html"><h3>🎛 Operations (β/γ)</h3><p class="muted">3D operating window · utilities vs β · Config24/30 · turndown α.</p></a>
+    <a class="card" href="handover.html"><h3>🤝 Handover</h3><p class="muted">Agent BIOS · session protocol · TODO tracker · canonical structure.</p></a>
+    <a class="card" href="review-dmaic.html"><h3>📋 DMAIC Review</h3><p class="muted">Six Sigma quality review · D-M-A-I-C phases · KPIs.</p></a>
+    <a class="card" href="missed-opportunities.html"><h3>🔍 Missed Opportunities</h3><p class="muted">30 technical/usability/integration gaps.</p></a>
+    <a class="card" href="action-tracker.html"><h3>📌 Action Tracker</h3><p class="muted">29 items · severity rankings · vendor scouts.</p></a>
+    <a class="card" href="xref-matrix.html"><h3>🔗 Cross-Reference</h3><p class="muted">B↔G↔T↔E traceability matrix.</p></a>
+    <a class="card" href="verification-checklist.html"><h3>🔢 Verification</h3><p class="muted">Hand-calc cross-checks · 4/6 PASS.</p></a>
+    <a class="card" href="qa-checklist.html"><h3>✅ QA Checklist</h3><p class="muted">38-item validation suite.</p></a>
+    <a class="card" href="search-index.html"><h3>🔎 Search Index</h3><p class="muted">Full-text term/equation search.</p></a>
+    <a class="card" href="artifact-tracker.html"><h3>📦 Artifact Tracker</h3><p class="muted">Per-artifact DMAIC · stability · bugs.</p></a>
+    <a class="card" href="diff-tracker.html"><h3>🔀 Diff Tracker</h3><p class="muted">Version diffs · impact analysis.</p></a>
+    <a class="card" href="ci-cd-pipeline.html"><h3>🚀 CI/CD Pipeline</h3><p class="muted">GitHub Pages deploy · auth strategy.</p></a>
+    <a class="card" href="weighted-priority.html"><h3>⚖ Weighted Priority</h3><p class="muted">Severity scoring · time allocation.</p></a>
+    <a class="card" href="bt-ranking.html"><h3>📊 BT Ranking</h3><p class="muted">Bradley-Terry pairwise · 97.5% CI · MLE.</p></a>
+    <a class="card" href="vendor-kaeser.html"><h3>🏭 Kaeser Deep-Dive</h3><p class="muted">Cost analysis · utilities · room layout.</p></a>
+    <a class="card" href="qa-interactive.html"><h3>✅ QA Interactive</h3><p class="muted">38-item checklist · persistent state.</p></a>
+    <a class="card" href="artifact-index.html"><h3>📦 Artifact Index</h3><p class="muted">Repository · deps · version tracking.</p></a>
+    <a class="card" href="changelog-dev.html"><h3>📝 Dev Changelog</h3><p class="muted">Intent history · v0.1 → v0.4.4.</p></a>
+    <a class="card" href="stats-proofs.html"><h3>🔬 Math Proofs</h3><p class="muted">BT derivation · Fisher info · MathJax.</p></a>
+    <a class="card" href="interaction-analysis.html"><h3>🌪 Interaction Analysis</h3><p class="muted">Dependency tornado · network graph · hub detection.</p></a>
+    <a class="card" href="testing-strategy.html"><h3>🧪 Testing Strategy</h3><p class="muted">Risk-weighted testing · effort allocation · coverage targets.</p></a>
+    <a class="card" href="code-quality.html"><h3>🔧 Code Quality</h3><p class="muted">Bug tracker · modernization · security · performance.</p></a>
+    <a class="card" href="bt-validation.html"><h3>🔬 BT Validation</h3><p class="muted">Cross-validation · alternative models · sensitivity.</p></a>
+    <a class="card" href="dmaic-statistical.html"><h3>📐 DMAIC Statistical</h3><p class="muted">Six Sigma for BT ranking branch.</p></a>
+    <a class="card" href="bt-artifacts.html"><h3>📊 BT Artifacts</h3><p class="muted">BT ranking for all 67 artifacts · by type · filters.</p></a>
+    <a class="card" href="bt-scatter.html"><h3>📈 BT Scatter</h3><p class="muted">Interactive scatter visualisations · quick wins.</p></a>
+    <a class="card" href="qa-test-suite.html"><h3>🧪 QA Test Suite</h3><p class="muted">30 automated tests · Playwright · pytest.</p></a>
+    <a class="card" href="responsive-review.html"><h3>📐 Responsive Review</h3><p class="muted">Multi-screen rendering · colour verification.</p></a>
+    <a class="card" href="#changelog"><h3>📋 Version Log</h3><p class="muted">Quick changelog below.</p></a>
+  </div>
+
+  <div class="card" id="changelog">
+    <h2 style="margin-top:0">Version control</h2>
+    <table><thead><tr><th>Version</th><th>Date</th><th>Summary</th></tr></thead><tbody>
+      <tr><td><span class="tag ok">v0.4.7</span></td><td>2026-05-20</td><td>MT-9 + MT-10: Mobile &amp; Accessibility Sprint · Responsive charts (FAIL→PASS) · Mobile heatmap modal · ARIA labels (WCAG 2.1 AA) · PVPS flow accounting corrected (inclusive model) · 990 kW HP power · 1,290 kW total · Skip links · Colour contrast fixes · 97% test pass rate</td></tr>
+      <tr><td><span class="tag ok">v0.4.6</span></td><td>2026-05-15</td><td>MT-13: 400V Power Analysis Complete · Electrical CAPEX (€736k) · 2,000 kVA transformer · Harmonic filter + PFC · UPS backup · MT-11 RFQ ready · MT-12 vendor scout ready · 43 total views</td></tr>
+      <tr><td><span class="tag ok">v0.4.5</span></td><td>2026-05-14</td><td>Kaeser data corrected (PVPS flow accounting, isothermal 50%, oil-free, VFD 50–72 Hz) · BT artifact ranking (67 items) · BT scatter visualisations · QA BT ranking + collapsible sections · Automated test suite (30 tests) · Responsive review · British English audit · 4 new views · 40 total artifacts</td></tr>
+      <tr><td><span class="tag ok">v0.4.4</span></td><td>2026-05-13</td><td>BUG-004 fixed (BT rendering) · Interaction analysis (dependency tornado) · Testing strategy (risk-weighted) · Code quality review · BT validation (cross-validation, alternatives) · DMAIC statistical branch · Top 5 artifact DMAIC/KPI dashboard · 5 new views · 36 total artifacts</td></tr>
+      <tr><td><span class="tag b">v0.4.3</span></td><td>2026-05-13</td><td>Bradley-Terry pairwise ranking · Kaeser vendor deep-dive with cost model · interactive QA checklist · artifact index · development changelog · mathematical proofs (MathJax) · 6 new views</td></tr>
+      <tr><td><span class="tag b">v0.4.2</span></td><td>2026-05-13</td><td>Enhanced action-tracker with severity rankings · vendor deep-scout (MT-11/12/13) · artifact-tracker · diff-tracker · ci-cd-pipeline · weighted-priority · 29 total actions</td></tr>
+      <tr><td><span class="tag">v0.4.1</span></td><td>2026-05-13</td><td>DMAIC quality review · missed-opportunities · action-tracker · xref-matrix · verification-checklist · qa-checklist · search-index · breadcrumbs · version bump</td></tr>
+      <tr><td><span class="tag">v0.4</span></td><td>2026-05-10</td><td>Dual-view <b>slide-editor.html</b> · <b>master/</b> canonical sources (slides.md, truth.md, config.yaml, data.json) · <b>render_all.py</b> · editable <b>truth.html</b> · docs/ guidance · smart labels B/G/T/E/F</td></tr>
+      <tr><td><span class="tag">v0.3</span></td><td>2026-05-10</td><td>Multi-file HTML ecosystem · Slides · Reports B1–B4 · Tables · Graphs · Status · Truth · Utilities</td></tr>
+      <tr><td><span class="tag">v0.2</span></td><td>—</td><td>Single-file interactive comparison artifact (Playground)</td></tr>
+      <tr><td><span class="tag">v0.1</span></td><td>—</td><td>Markdown comparison note (ALaT vs LKT)</td></tr>
+    </tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Headline numbers <span class="tag warn">v0.4.7 updated</span></h2>
+    <div class="grid4">
+      <div class="metric"><div class="l">Total WCS Flow</div><div class="v">350 g/s</div><div class="muted">300 HP + 50 PVPS @ 14 barG</div></div>
+      <div class="metric"><div class="l">Total Electrical</div><div class="v">1,290 kW</div><div class="muted">990 HP + 150 PVPS + 130 HVAC + 20 Controls</div></div>
+      <div class="metric"><div class="l">CAPEX Estimate</div><div class="v">€1.68M</div><div class="muted">€1.08M Equipment + €0.60M Electrical</div></div>
+      <div class="metric"><div class="l">PVPS as % of total</div><div class="v">14.3%</div><div class="muted">50 g/s PVPS ÷ 350 g/s total</div></div>
+    </div>
+    <div class="grid4" style="margin-top: 12px;">
+      <div class="metric"><div class="l">ALaT 2 × FSD 575 @ 72 Hz</div><div class="v">~220 g/s</div><div class="muted">deployed config</div></div>
+      <div class="metric"><div class="l">LKT 3 × FSD 475 @ ~57 Hz</div><div class="v">264 g/s</div><div class="muted">nominal</div></div>
+      <div class="metric"><div class="l">RCW (HCC oil precool)</div><div class="v">ΔT 25 °C</div><div class="muted">30 → 55 °C (≤85 max)</div></div>
+      <div class="metric"><div class="l">Thermodynamic η₂</div><div class="v">~44%</div><div class="muted">Second-law efficiency</div></div>
+    </div>
+    <p class="muted" style="margin-top: 10px; font-size: 12px;"><em>Note:</em> PVPS flow is <strong>inclusive</strong> within total (not additive). 350 g/s total = 300 g/s HP + 50 g/s PVPS.</p>
+  </div>
+
+  <p class="muted" style="margin-top:24px;font-size:12px">Fonts: <span class="kbd">Aptos</span> body · <span class="kbd">Consolas</span> ASCII / code · switch in top bar.</p>
+</div>
+<script>document.getElementById('ts').textContent=new Date().toISOString().slice(0,10)</script>
+</body></html>

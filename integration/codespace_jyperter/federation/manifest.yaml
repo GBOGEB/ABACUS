@@ -1,0 +1,46 @@
+# integration/codespace_jyperter/federation/manifest.yaml
+# Federation manifest stub for GBOGEB/codespace_jyperter (DELTA_1 auxiliary plane).
+#
+# This file mirrors the manifest that GBOGEB/codespace_jyperter should carry in its
+# own repository under federation/manifest.yaml. It is kept here in ABACUS as the
+# authoritative integration record for the DELTA_1 runtime plane.
+#
+# Authoritative federation spec: runtime/federation/codex-abacus-federation.yaml
+
+federation:
+  moniker: DELTA_1
+  version: "1.0"
+
+  planes:
+    governance:
+      repository: GBOGEB/CODEX
+      role: governance_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+    runtime:
+      repository: GBOGEB/ABACUS
+      role: runtime_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+    auxiliary:
+      repository: GBOGEB/codespace_jyperter
+      role: auxiliary_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+
+  member_self:
+    name: GBOGEB/codespace_jyperter
+    plane: auxiliary
+    status: active
+    responsibilities:
+      - notebook_runtime
+      - interactive_analysis
+      - codespace_environment
+      - notebook_data_extraction
+
+  assimilation_hooks:
+    # Python entry point in codespace_jyperter: src/federation.py::assimilate()
+    entry_point: src/federation.py
+    function: assimilate
+    smoke_test: tests/test_smoke_federation.py
+
+  knowledge_basis_refs:
+    - docs/FEDERATION_TOPOLOGY.md
+    - docs/CODEX_ABACUS_FEDERATION_MATRIX.md

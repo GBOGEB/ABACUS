@@ -1,0 +1,24 @@
+{
+  "repositories": {
+    "ABACUS": {
+      "runtime_evidence": "validated",
+      "truth_matrix": "aligned",
+      "renderability": "ready"
+    },
+    "ARTSTYLE": {
+      "runtime_evidence": "validated",
+      "truth_matrix": "aligned",
+      "renderability": "ready"
+    },
+    "QPLANT": {
+      "runtime_evidence": "validated",
+      "truth_matrix": "aligned",
+      "renderability": "ready"
+    },
+    "CODEX": {
+      "runtime_evidence": "validated",
+      "truth_matrix": "aligned",
+      "renderability": "ready"
+    }
+  }
+}
