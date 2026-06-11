@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Responsive Review</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📐</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.matrix-table{font-size:12px;overflow-x:auto}
+.matrix-table th,.matrix-table td{padding:8px 10px;text-align:center;min-width:100px}
+.matrix-table th:first-child,.matrix-table td:first-child{text-align:left;min-width:180px}
+.status-pass{color:#1D9E75;font-weight:700}.status-minor{color:#E5A100;font-weight:700}.status-fail{color:#D85A30;font-weight:700}
+.check-section{margin:18px 0}
+.css-code{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--mono);font-size:12px;white-space:pre-wrap;margin:8px 0;overflow-x:auto}
+.colour-swatch{display:inline-block;width:24px;height:24px;border-radius:4px;border:1px solid var(--border);vertical-align:middle;margin-right:8px}
+.plotly-chart{width:100%;min-height:350px;margin:14px 0}
+
+</style>
+
+</head><body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="container" id="main-content" role="main">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="testing-strategy.html">Testing</a> › Responsive Review</p>
+<h1>📐 Multi-Screen Rendering Review</h1>
+<p class="muted">Comprehensive review across devices · portrait/landscape · colour verification · v0.4.5</p>
+
+<h2>Test Matrix</h2>
+<div class="card" style="overflow-x:auto">
+<table class="matrix-table"><caption>Data Table</caption><thead><tr>
+  <th>View</th><th>Desktop (16:9)</th><th>Tablet (4:3)</th><th>Mobile Portrait (9:16)</th><th>Mobile Landscape (16:9)</th>
+</tr></thead><tbody>
+  <tr><td>index.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td></tr>
+  <tr><td>slides.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-fail">🔴 FAIL</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>vendor-kaeser.html</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>bt-ranking.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-fail">🔴 FAIL</td><td class="status-minor">🟡 MINOR</td></tr>
+  <tr><td>bt-artifacts.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>qa-interactive.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>thermo-analysis.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>hx-sizing.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>reports.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>action-tracker.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>tables.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>bt-scatter.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>stats-proofs.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td></tr>
+  <tr><td>weighted-priority.html</td><td class="status-pass">✅ PASS</td><td class="status-pass">✅ PASS</td><td class="status-minor">🟡 MINOR</td><td class="status-pass">✅ PASS</td></tr>
+</tbody></table>
+</div>
+
+<div class="card"><div id="plotMatrix" class="plotly-chart" role="img" aria-label="Interactive chart: plotMatrix"></div></div>
+
+<h2>Specific Checks</h2>
+<div class="card">
+<table><thead><tr><th>Check</th><th>Requirement</th><th>Status</th><th>Notes</th></tr></thead><tbody>
+  <tr><td>Charts (Plotly)</td><td>1:1 aspect for scientific papers</td><td class="status-pass">✅ PASS</td><td>All charts use responsive:true</td></tr>
+  <tr><td>Tables</td><td>Horizontal scroll on mobile</td><td class="status-pass">✅ PASS</td><td>overflow-x:auto on wrapper</td></tr>
+  <tr><td>Navigation</td><td>Hamburger on mobile</td><td class="status-fail">🔴 FAIL</td><td>Topbar wraps but no collapse</td></tr>
+  <tr><td>Collapsible sections</td><td>Touch-friendly ≥44×44px</td><td class="status-minor">🟡 MINOR</td><td>Some buttons at 36px</td></tr>
+  <tr><td>Fonts</td><td>Min 14px on mobile</td><td class="status-pass">✅ PASS</td><td>Base 14.5px, min 12.5px (mono)</td></tr>
+</tbody></table>
+</div>
+
+<h2>Colour &amp; Style Verification</h2>
+<div class="card">
+<table><thead><tr><th>Element</th><th>Light</th><th>Dark</th><th>Status</th></tr></thead><tbody>
+  <tr><td>Background</td><td><span class="colour-swatch" style="background:#f7f8fa"></span>#f7f8fa</td><td><span class="colour-swatch" style="background:#0f1115"></span>#0f1115</td><td class="status-pass">✅</td></tr>
+  <tr><td>Accent (green)</td><td><span class="colour-swatch" style="background:#1D9E75"></span>#1D9E75</td><td>Same</td><td class="status-pass">✅</td></tr>
+  <tr><td>Accent (blue)</td><td><span class="colour-swatch" style="background:#378ADD"></span>#378ADD</td><td>Same</td><td class="status-pass">✅</td></tr>
+  <tr><td>Warning (orange)</td><td><span class="colour-swatch" style="background:#D85A30"></span>#D85A30</td><td>Same</td><td class="status-pass">✅</td></tr>
+  <tr><td>Muted text</td><td><span class="colour-swatch" style="background:#5b6270"></span>#5b6270</td><td><span class="colour-swatch" style="background:#9aa3b2"></span>#9aa3b2</td><td class="status-minor">🟡 3.8:1 (needs 4.5:1)</td></tr>
+  <tr><td>Status badges</td><td colspan="2">🟢 #1D9E75 · 🟡 #E5A100 · 🔴 #D85A30 · 🔵 #378ADD</td><td class="status-pass">✅</td></tr>
+</tbody></table>
+</div>
+
+<h2>Orientation CSS</h2>
+<div class="card">
+<details>
+<summary>Recommended responsive rules</summary>
+<div class="css-code">/* Portrait mobile (9:16) */
+@media (max-width: 768px) and (orientation: portrait) {
+  .chart { width: 100%; height: auto; }
+  .sidebar { display: none; } /* Collapsible hamburger */
+}
+
+/* Landscape mobile (16:9) */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chart { width: 50%; float: left; }
+  .sidebar { width: 30%; } /* Utilise horizontal space */
+}
+
+/* Desktop (16:9) */
+@media (min-width: 1024px) {
+  .chart { width: 60%; margin: 0 auto; } /* Centre, avoid full-width stretch */
+  .sidebar { width: 20%; position: sticky; } /* Side panels for metadata */
+}</div>
+</details>
+</div>
+
+<h2>Issue Summary</h2>
+<div class="card">
+<table><thead><tr><th>Priority</th><th>Issue</th><th>Views Affected</th><th>Fix</th></tr></thead><tbody>
+  <tr><td><span style="color:#D85A30;font-weight:700">P1</span></td><td>Chart overflow on mobile Safari</td><td>slides.html, bt-ranking.html</td><td>Add max-width:100% to .js-plotly-plot</td></tr>
+  <tr><td><span style="color:#D85A30;font-weight:700">P1</span></td><td>Navigation doesn't collapse</td><td>All views</td><td>Add hamburger menu component</td></tr>
+  <tr><td><span style="color:#E5A100;font-weight:700">P2</span></td><td>Dark theme contrast (muted text)</td><td>All views</td><td>Change --fg2 to #b0b8c4</td></tr>
+  <tr><td><span style="color:#E5A100;font-weight:700">P2</span></td><td>Table scroll indicators missing</td><td>vendor-kaeser, action-tracker</td><td>Add scroll shadow gradient</td></tr>
+  <tr><td><span style="color:#378ADD;font-weight:700">P3</span></td><td>Touch targets &lt;44px</td><td>Some filter buttons</td><td>Increase padding to 8px 14px</td></tr>
+</tbody></table>
+</div>
+</div><!-- /container -->
+<script>
+
+const pc={bg:'rgba(0,0,0,0)',paper:'rgba(0,0,0,0)'};
+const pl={font:{family:'Aptos,sans-serif',size:11},margin:{l:140,r:30,t:50,b:50},plot_bgcolor:pc.bg,paper_bgcolor:pc.paper};
+
+const views=['index','slides','vendor-kaeser','bt-ranking','bt-artifacts','qa-interactive',
+  'thermo-analysis','hx-sizing','reports','action-tracker','tables','bt-scatter','stats-proofs','weighted-priority'];
+const devices=['Desktop','Tablet','Mobile Portrait','Mobile Landscape'];
+const matrix = [
+  [1,1,1,0.5],[1,1,0,1],[1,0.5,0.5,1],[1,1,0,0.5],
+  [1,1,0.5,1],[1,1,1,1],[1,1,0.5,1],[1,1,0.5,1],
+  [1,1,1,1],[1,1,0.5,1],[1,1,1,1],[1,1,0.5,1],[1,1,1,1],[1,1,0.5,1]
+];
+
+const z = matrix.map(r=>r.map(v=>v));
+const text = matrix.map(r=>r.map(v=>v===1?'PASS':v===0.5?'MINOR':'FAIL'));
+const colorscale = [[0,'#D85A30'],[0.5,'#FFE082'],[1,'#A5D6A7']];
+
+Plotly.newPlot('plotMatrix',[{
+  z:z, x:devices, y:views.map(v=>v+'.html'),
+  type:'heatmap', colorscale:colorscale, showscale:false,
+  text:text, texttemplate:'%{text}', textfont:{size:11},
+  hoverinfo:'y+x+text'
+}],{...pl, title:{text:'Responsive Rendering Matrix (Green=Pass, Yellow=Minor, Red=Fail)',font:{size:13}},
+  yaxis:{automargin:true}},{responsive:true});
+
+</script>
+</body></html>

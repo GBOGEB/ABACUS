@@ -7,13 +7,12 @@
 import sys
 import json
 import time
-import hashlib
 import subprocess
 import tempfile
 import shutil
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
@@ -55,7 +54,7 @@ class MCPControlPoint:
         self.mcp_dir = Path(mcp_dir)
         self.mcp_dir.mkdir(exist_ok=True)
         self.log_file = self.mcp_dir / 'monitor.log'
-        
+
     def log_point(self, point_name: str, status: str = 'enter', metadata: Dict = None):
         log_entry = {
             'timestamp': time.time(),
@@ -69,12 +68,12 @@ class MCPControlPoint:
 
 
 class TestSystemBridge:
-    def __init__(self, config: DMAICConfig, state_manager: StateManager, 
+    def __init__(self, config: DMAICConfig, state_manager: StateManager,
                  handover_bridge: HandoverBridge):
         self.config = config
         self.state_manager = state_manager
         self.handover_bridge = handover_bridge
-        
+
         self.workspace_root = Path(config.paths.workspace_root)
         self.output_root = Path(config.paths.output_root)
 
@@ -86,18 +85,18 @@ class TestSystemBridge:
 
         self.version_file = self.workspace_root / 'DMAIC_V3' / 'VERSION'
         self.actions_file = self.workspace_root / 'actions.json'
-        
+
         self.mcp.log_point('test_system_bridge_initialized', 'complete')
-    
+
     def get_current_version(self) -> str:
         if self.version_file.exists():
             return self.version_file.read_text().strip()
         return "0.0.0"
-    
+
     def update_version(self, new_version: str):
         self.version_file.write_text(new_version + '\n')
         self.mcp.log_point('version_updated', 'complete', {'version': new_version})
-    
+
     def log_action(self, action_type: str, description: str, metadata: Dict = None):
         actions = []
         if self.actions_file.exists():
@@ -124,27 +123,27 @@ class TestSystemBridge:
 
         self.actions_file.write_text(json.dumps(actions, indent=2))
         self.mcp.log_point('action_logged', 'complete', {'action_type': action_type})
-    
+
     def setup_test_environment(self, sut_path: Path) -> Path:
         self.mcp.log_point('setup_test_environment', 'enter', {'sut_path': str(sut_path)})
-        
+
         test_env = Path(tempfile.mkdtemp(prefix='dmaic_test_'))
-        
+
         if sut_path.is_dir():
             shutil.copytree(sut_path, test_env / 'sut', dirs_exist_ok=True)
         else:
             shutil.copy2(sut_path, test_env / 'sut')
-        
+
         self.mcp.log_point('setup_test_environment', 'complete', {'test_env': str(test_env)})
         return test_env
-    
-    def run_test(self, test_name: str, command: List[str], 
+
+    def run_test(self, test_name: str, command: List[str],
                  expected_artifacts: List[str] = None,
                  cwd: Path = None, timeout: int = 300) -> TestExecutionResult:
         self.mcp.log_point(f'run_test_{test_name}', 'enter', {'command': ' '.join(command)})
-        
+
         start_time = time.time()
-        
+
         try:
             result = subprocess.run(
                 command,
@@ -153,9 +152,9 @@ class TestSystemBridge:
                 text=True,
                 timeout=timeout
             )
-            
+
             duration = time.time() - start_time
-            
+
             test_result = TestExecutionResult(
                 test_name=test_name,
                 returncode=result.returncode,
@@ -176,7 +175,7 @@ class TestSystemBridge:
 
             with self.test_results_lock:
                 self.test_results[test_name] = test_result
-            
+
             self.mcp.log_point(f'run_test_{test_name}', 'complete', {
                 'success': test_result.success,
                 'duration': duration
@@ -196,35 +195,35 @@ class TestSystemBridge:
             )
             with self.test_results_lock:
                 self.test_results[test_name] = test_result
-            
+
             self.mcp.log_point(f'run_test_{test_name}', 'timeout', {'duration': duration})
-            
+
             return test_result
-    
+
     def run_pytest_suite(self, test_path: str = None, markers: str = None) -> TestExecutionResult:
         self.mcp.log_point('run_pytest_suite', 'enter')
-        
+
         command = [sys.executable, '-m', 'pytest']
-        
+
         if test_path:
             command.append(test_path)
-        
+
         if markers:
             command.extend(['-m', markers])
-        
+
         command.extend(['-v', '--tb=short', '--maxfail=5'])
-        
+
         return self.run_test('pytest_suite', command)
-    
+
     def run_static_analysis(self) -> Dict[str, Any]:
         self.mcp.log_point('run_static_analysis', 'enter')
-        
+
         results = {
             'flake8': None,
             'mypy': None,
             'pylint': None
         }
-        
+
         try:
             flake8_result = subprocess.run(
                 [sys.executable, '-m', 'flake8', 'DMAIC_V3', '--count', '--statistics'],
@@ -239,15 +238,15 @@ class TestSystemBridge:
             }
         except Exception as e:
             results['flake8'] = {'error': str(e)}
-        
+
         self.mcp.log_point('run_static_analysis', 'complete', results)
         return results
-    
+
     def detect_runtime_errors(self) -> List[Dict[str, Any]]:
         self.mcp.log_point('detect_runtime_errors', 'enter')
-        
+
         runtime_errors = []
-        
+
         for test_name, result in self.test_results.items():
             if not result.success:
                 error_info = {
@@ -256,42 +255,42 @@ class TestSystemBridge:
                     'stderr': result.stderr,
                     'timestamp': result.timestamp
                 }
-                
+
                 if 'Traceback' in result.stderr or 'Error' in result.stderr:
                     runtime_errors.append(error_info)
-        
+
         self.mcp.log_point('detect_runtime_errors', 'complete', {
             'errors_found': len(runtime_errors)
         })
-        
+
         return runtime_errors
-    
+
     def generate_deployment_metrics(self) -> DeploymentMetrics:
         self.mcp.log_point('generate_deployment_metrics', 'enter')
-        
+
         version = self.get_current_version()
-        
+
         tests_total = len(self.test_results)
         tests_passed = sum(1 for r in self.test_results.values() if r.success)
         tests_failed = tests_total - tests_passed
-        
+
         total_time = sum(r.duration_seconds for r in self.test_results.values())
-        
+
         runtime_errors = self.detect_runtime_errors()
-        
+
         static_analysis = self.run_static_analysis()
         static_passed = all(
-            r.get('returncode', 1) == 0 
-            for r in static_analysis.values() 
+            r.get('returncode', 1) == 0
+            for r in static_analysis.values()
             if r and 'returncode' in r
         )
-        
+
         deployment_ready = (
             tests_passed == tests_total and
             len(runtime_errors) == 0 and
             static_passed
         )
-        
+
         metrics = DeploymentMetrics(
             version=version,
             timestamp=datetime.now().isoformat(),
@@ -303,22 +302,22 @@ class TestSystemBridge:
             static_analysis_passed=static_passed,
             deployment_ready=deployment_ready
         )
-        
+
         self.deployment_metrics = metrics
-        
+
         self.mcp.log_point('generate_deployment_metrics', 'complete', {
             'deployment_ready': deployment_ready
         })
-        
+
         return metrics
-    
+
     def save_deployment_report(self, output_path: Path = None):
         if not self.deployment_metrics:
             self.generate_deployment_metrics()
-        
+
         if output_path is None:
             output_path = self.output_root / 'deployment_report.json'
-        
+
         report = {
             'deployment_metrics': {
                 'version': self.deployment_metrics.version,
@@ -343,51 +342,53 @@ class TestSystemBridge:
                 for name, result in self.test_results.items()
             }
         }
-        
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(report, indent=2))
-        
+
         self.log_action('deployment_report_saved', f'Saved to {output_path}', {
             'deployment_ready': self.deployment_metrics.deployment_ready
         })
-        
+
         self.mcp.log_point('save_deployment_report', 'complete', {
             'output_path': str(output_path)
         })
-        
+
         return output_path
-    
+
     def execute_full_test_cycle(self) -> bool:
         self.mcp.log_point('execute_full_test_cycle', 'enter')
-        
+
         self.log_action('test_cycle_started', 'Beginning full test cycle')
-        
+
         self.run_pytest_suite(markers='unit')
-        
+
         self.run_pytest_suite(markers='integration')
-        
+
         self.run_pytest_suite(markers='smoke')
-        
+
         metrics = self.generate_deployment_metrics()
-        
+
         self.save_deployment_report()
-        
+
         self.log_action('test_cycle_completed', 'Test cycle finished', {
             'deployment_ready': metrics.deployment_ready,
             'tests_passed': metrics.tests_passed,
             'tests_total': metrics.tests_total
         })
-        
+
         self.mcp.log_point('execute_full_test_cycle', 'complete', {
             'success': metrics.deployment_ready
         })
 
         return metrics.deployment_ready
 
-    def run_tests_parallel(self, test_configs: List[Dict[str, Any]], max_workers: int = 4) -> Dict[str, TestExecutionResult]:
+    def run_tests_parallel(  # noqa: E501
+        self, test_configs: List[Dict[str, Any]], max_workers: int = 4
+    ) -> Dict[str, Any]:
         self.mcp.log_point('run_tests_parallel', 'enter', {'test_count': len(test_configs), 'max_workers': max_workers})
 
-        results = {}
+        results: Dict[str, Any] = {}
 
         def run_single_test(test_config):
             test_name = test_config.get('name', 'unnamed_test')
@@ -431,7 +432,7 @@ class TestSystemBridge:
         ]
 
         print(f"\n[PARALLEL EXECUTION] Running {len(test_configs)} test suites with {max_workers} workers...")
-        results = self.run_tests_parallel(test_configs, max_workers=max_workers)
+        self.run_tests_parallel(test_configs, max_workers=max_workers)
 
         metrics = self.generate_deployment_metrics()
 
@@ -456,11 +457,11 @@ class IdempotentPhase:
         self.bridge = bridge
         self.inputs_hash = None
         self.outputs_hash = None
-    
+
     def __enter__(self):
         self.bridge.mcp.log_point(f'phase_{self.phase_name}', 'enter')
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         status = 'success' if exc_type is None else 'failed'
         self.bridge.mcp.log_point(f'phase_{self.phase_name}', status)

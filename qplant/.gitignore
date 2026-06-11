@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# API Keys & Secrets
+*.key
+*.pem
+api_keys.json
+.env
+.env.local
+secrets/
+authentication/api_keys.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Build artifacts
+*.pyc
+node_modules/
+package-lock.json
+.next/
+out/
+
+# Load testing reports
+load_testing/reports/*.html
+load_testing/reports/*.csv
+
+# Visual regression
+visual_regression/screenshots/
+visual_regression/diffs/
+visual_regression/baselines/*.png
+
+# SBOM sensitive data
+sbom/vulnerability_*.json
+
+# Kubernetes secrets
+deployment/k8s/secrets.yaml
+deployment/k8s/*-generated.yaml
+
+# Temporary files
+*.tmp
+*.bak
+temp/
+tmp/
+
+# Large data files
+*.csv
+*.xlsx
+!**/test_data/*.csv
+!**/examples/*.xlsx
+
+# Documentation builds
+docs/_build/
+site/

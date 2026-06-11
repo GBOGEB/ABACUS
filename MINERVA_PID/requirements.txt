@@ -1,0 +1,23 @@
+# =============================================================================
+# requirements.txt — ABACUS SVG P&ID (MINERVA QCELL/RFCELL) subproject
+# =============================================================================
+# Governance note: this pipeline is *stdlib-first* by design. The Python
+# standard library does all parsing, geometry, CSV/JSON/HTML emission and
+# tag reconciliation. The third-party surface is deliberately minimal — only
+# the packages actually imported by the source tree are listed below. They
+# are pinned to the exact versions used to produce the W001–W005 deliverables
+# so a reviewer can reproduce every quoted number bit-for-bit.
+#
+#   Verify after install:   ./make.sh  &&  see docs/INSTALLATION.md
+# -----------------------------------------------------------------------------
+
+# --- Core pipeline (required by make.sh: cli.py -> build_w005 -> build_atlas_v6) ---
+openpyxl==3.1.5          # XLSX component catalog + W005 tag/instrument register
+PyYAML==6.0.3            # configs/*.yml colour-line + layer model loading
+cairosvg==2.9.0          # SVG -> PNG/PDF rasterisation (atlas v6, collage)
+
+# --- Auxiliary deck / preview generators (generator/, standards/) -------------
+# Not exercised by make.sh, but imported by the slide-deck and HTML-viewer
+# tooling. Kept pinned so the publish/ deliverables are reproducible too.
+Pillow==11.3.0           # raster compositing for preview collages & PPTX images
+python-pptx==1.0.2       # dissection slide-deck (build_dissection_*.py)

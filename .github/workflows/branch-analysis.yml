@@ -1,0 +1,455 @@
+name: Branch Analysis & Auto-Review
+
+# Triggered in two ways:
+#   1. Automatically on every PR opened/synchronised (posts a review comment)
+#   2. Manually via workflow_dispatch to analyse a specific branch or all unmerged branches
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      branch_pattern:
+        description: >
+          Analyse branches matching this glob pattern (e.g. "copilot/*", "feature/*").
+          Leave blank to analyse all unmerged branches.
+        required: false
+        default: ""
+      base_branch:
+        description: "Base branch to compare against"
+        required: false
+        default: "main"
+      post_comment:
+        description: "Post analysis comment on matching open PRs"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # ─── Job 1: automatic per-PR analysis ───────────────────────────────────────
+  pr-analysis:
+    name: Analyse PR branch
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          grep -vi '^sphinx' DMAIC_V3/requirements.txt > /tmp/requirements-no-sphinx.txt
+          python -m pip install -r /tmp/requirements-no-sphinx.txt
+          python -m pip install pytest pytest-cov pytest-mock pyyaml 2>/dev/null || true
+
+      - name: Run test suite on PR branch
+        id: run_tests
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          python -m pytest DMAIC_V3/tests -q --tb=short 2>&1 | tee /tmp/test_output.txt
+          pytest_exit=${PIPESTATUS[0]}
+          echo "test_exit=${pytest_exit}" >> "$GITHUB_OUTPUT"
+
+      - name: Collect test result
+        id: test_result
+        run: |
+          test_exit="${{ steps.run_tests.outputs.test_exit }}"
+          passed=$(grep -oE '[0-9]+ passed' /tmp/test_output.txt | head -n1 | awk '{print $1}')
+          failed=$(grep -oE '[0-9]+ failed' /tmp/test_output.txt | head -n1 | awk '{print $1}')
+          passed=${passed:-0}
+          failed=${failed:-0}
+          total=$((passed + failed))
+          pass_rate="N/A"
+          if [[ "$total" -gt 0 ]]; then
+            pass_rate=$(awk -v p="$passed" -v t="$total" 'BEGIN { printf "%.1f%%", (p/t)*100 }')
+          fi
+
+          if grep -q "error" /tmp/test_output.txt 2>/dev/null && [[ "$passed" -eq 0 && "$failed" -eq 0 ]]; then
+            echo "status=⚠️ Tests: collection/import errors" >> "$GITHUB_OUTPUT"
+            echo "passed=0" >> "$GITHUB_OUTPUT"
+            echo "failed=0" >> "$GITHUB_OUTPUT"
+            echo "total=0" >> "$GITHUB_OUTPUT"
+            echo "pass_rate=N/A" >> "$GITHUB_OUTPUT"
+          elif [[ "$test_exit" == "0" && "$failed" -eq 0 ]]; then
+            echo "status=✅ Tests: ${passed} passed, 0 failed" >> "$GITHUB_OUTPUT"
+            echo "passed=${passed}" >> "$GITHUB_OUTPUT"
+            echo "failed=0" >> "$GITHUB_OUTPUT"
+            echo "total=${total}" >> "$GITHUB_OUTPUT"
+            echo "pass_rate=${pass_rate}" >> "$GITHUB_OUTPUT"
+          elif [[ "$failed" -gt 0 || "$test_exit" != "0" ]]; then
+            echo "status=❌ Tests: ${passed} passed, ${failed} failed" >> "$GITHUB_OUTPUT"
+            echo "passed=${passed}" >> "$GITHUB_OUTPUT"
+            echo "failed=${failed}" >> "$GITHUB_OUTPUT"
+            echo "total=${total}" >> "$GITHUB_OUTPUT"
+            echo "pass_rate=${pass_rate}" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=❓ Tests: could not determine result" >> "$GITHUB_OUTPUT"
+            echo "passed=0" >> "$GITHUB_OUTPUT"
+            echo "failed=0" >> "$GITHUB_OUTPUT"
+            echo "total=0" >> "$GITHUB_OUTPUT"
+            echo "pass_rate=N/A" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Analyse diff and categorise branch
+        id: diff_analysis
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          AHEAD: ${{ github.event.pull_request.commits }}
+        run: |
+          set -euo pipefail
+
+          files_changed=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | wc -l | tr -d ' ')
+          insertions=$(git diff --stat "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | tail -1 | grep -oP '\d+ insertion' | grep -oP '\d+' || echo 0)
+          deletions=$(git diff --stat "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | tail -1 | grep -oP '\d+ deletion' | grep -oP '\d+' || echo 0)
+          test_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | (grep -c 'test_' || true))
+          workflow_files=$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}" 2>/dev/null | (grep -c '\.github/workflows' || true))
+          behind=$(git rev-list --count "origin/${BASE_REF}..${BASE_SHA}" 2>/dev/null || echo 0)
+          age_days=0
+          if tip_ts=$(git log -1 --format="%ct" "${HEAD_SHA}" 2>/dev/null); then
+            age_days=$(( ($(date +%s) - tip_ts) / 86400 ))
+          fi
+
+          # Check for theoretical conflicts
+          conflict_markers=$(git merge-tree \
+            "$(git merge-base "${BASE_SHA}" "${HEAD_SHA}" 2>/dev/null || echo "${HEAD_SHA}")" \
+            "${BASE_SHA}" "${HEAD_SHA}" 2>/dev/null | (grep -c '<<<<<<<' || true))
+
+          echo "files_changed=${files_changed}" >> "$GITHUB_OUTPUT"
+          echo "insertions=${insertions:-0}" >> "$GITHUB_OUTPUT"
+          echo "deletions=${deletions:-0}" >> "$GITHUB_OUTPUT"
+          echo "test_files=${test_files}" >> "$GITHUB_OUTPUT"
+          echo "workflow_files=${workflow_files}" >> "$GITHUB_OUTPUT"
+          echo "behind=${behind}" >> "$GITHUB_OUTPUT"
+          echo "age_days=${age_days}" >> "$GITHUB_OUTPUT"
+          echo "conflict_markers=${conflict_markers}" >> "$GITHUB_OUTPUT"
+
+          # ── Categorisation logic ──────────────────────────────────────────
+          category="needs-review"
+          verdict_emoji="🔍"
+          verdict_title="Needs Review"
+          verdict_body="Branch has unique changes. Manual review required."
+
+          if [[ "$files_changed" -eq 0 ]]; then
+            category="prune-candidate"
+            verdict_emoji="🗑️"
+            verdict_title="Prune Candidate"
+            verdict_body="No file differences vs base. Branch content is already in \`${BASE_REF}\` or is a pure merge commit. Safe to delete."
+          elif [[ "$conflict_markers" -gt 0 ]]; then
+            category="conflicts"
+            verdict_emoji="❌"
+            verdict_title="Merge Conflicts Detected"
+            verdict_body="Branch has ${conflict_markers} potential conflict marker(s). Resolve before merging."
+          elif [[ "$files_changed" -le 5 && "$behind" -le 5 && "${AHEAD:-1}" -le 3 && "$conflict_markers" -eq 0 ]]; then
+            category="easy-merge"
+            verdict_emoji="✅"
+            verdict_title="Easy Merge"
+            verdict_body="Small, clean diff (${files_changed} files, ≤3 commits, ≤5 behind base, no conflicts). Safe to merge or squash."
+          elif [[ "$files_changed" -le 15 && "$conflict_markers" -eq 0 ]]; then
+            category="clean-diff"
+            verdict_emoji="🟢"
+            verdict_title="Clean Diff"
+            verdict_body="No conflicts. Moderate change size (${files_changed} files). Review recommended before merging."
+          fi
+
+          echo "category=${category}" >> "$GITHUB_OUTPUT"
+          echo "verdict_emoji=${verdict_emoji}" >> "$GITHUB_OUTPUT"
+          echo "verdict_title=${verdict_title}" >> "$GITHUB_OUTPUT"
+          echo "verdict_body=${verdict_body}" >> "$GITHUB_OUTPUT"
+
+      - name: Build changed-files list
+        id: file_list
+        run: |
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          git diff --name-only \
+            "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
+            2>/dev/null | head -20 | sed 's|^|- `|; s|$|`|' >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Post analysis comment on PR
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const category     = '${{ steps.diff_analysis.outputs.category }}';
+            const verdict      = '${{ steps.diff_analysis.outputs.verdict_emoji }} **${{ steps.diff_analysis.outputs.verdict_title }}**';
+            const verdictBody  = `${{ steps.diff_analysis.outputs.verdict_body }}`;
+            const testStatus   = `${{ steps.test_result.outputs.status }}`;
+            const testFailed   = parseInt('${{ steps.test_result.outputs.failed }}') || 0;
+            const testPassed   = parseInt('${{ steps.test_result.outputs.passed }}') || 0;
+            const testTotal    = parseInt('${{ steps.test_result.outputs.total }}') || 0;
+            const testPassRate = `${{ steps.test_result.outputs.pass_rate }}`;
+
+            const filesChanged = '${{ steps.diff_analysis.outputs.files_changed }}';
+            const insertions   = '${{ steps.diff_analysis.outputs.insertions }}';
+            const deletions    = '${{ steps.diff_analysis.outputs.deletions }}';
+            const testFiles    = '${{ steps.diff_analysis.outputs.test_files }}';
+            const wfFiles      = '${{ steps.diff_analysis.outputs.workflow_files }}';
+            const behind       = '${{ steps.diff_analysis.outputs.behind }}';
+            const ageDays      = '${{ steps.diff_analysis.outputs.age_days }}';
+            const conflicts    = '${{ steps.diff_analysis.outputs.conflict_markers }}';
+
+            const labelMap = {
+              'easy-merge':       'easy-merge',
+              'prune-candidate':  'prune-candidate',
+              'clean-diff':       'clean-diff',
+              'conflicts':        'has-conflicts',
+              'needs-review':     'needs-review',
+            };
+
+            // Try to add a label (best-effort)
+            try {
+              const labelName = labelMap[category];
+              // Ensure label exists
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: labelName,
+                });
+              } catch {
+                const colours = {
+                  'easy-merge': '0e8a16',
+                  'prune-candidate': 'cccccc',
+                  'clean-diff': '1d76db',
+                  'has-conflicts': 'd93f0b',
+                  'needs-review': 'e4e669',
+                };
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: labelName,
+                  color: colours[labelName] || 'cccccc',
+                });
+              }
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: [labelName],
+              });
+            } catch (e) {
+              console.log('Label step failed (non-fatal):', e.message);
+            }
+
+            const testBlock = testFailed > 0
+              ? `\n\n> ⚠️ **${testFailed} test(s) failed** — review test output before merging.`
+              : '';
+
+            const body = [
+              `## 🤖 Branch Analysis`,
+              ``,
+              `${verdict}`,
+              `> ${verdictBody}${testBlock}`,
+              ``,
+              `### Metrics`,
+              `| Metric | Value |`,
+              `|---|---|`,
+              `| Files changed | ${filesChanged} |`,
+              `| Insertions | +${insertions} |`,
+              `| Deletions | -${deletions} |`,
+              `| Test files touched | ${testFiles} |`,
+              `| Workflow files touched | ${wfFiles} |`,
+              `| Commits behind base | ${behind} |`,
+              `| Branch age | ${ageDays} days |`,
+              `| Conflict markers | ${conflicts} |`,
+              `| Tests executed | ${testTotal} |`,
+              `| Tests passed | ${testPassed} |`,
+              `| Pass rate | ${testPassRate} |`,
+              ``,
+              `### Test Results`,
+              `${testStatus}`,
+              ``,
+              `### Recommendation`,
+              `| Category | Action |`,
+              `|---|---|`,
+              `| \`easy-merge\` | ✅ Merge or squash immediately |`,
+              `| \`clean-diff\` | 🟢 Review then merge |`,
+              `| \`prune-candidate\` | 🗑️ Close PR, delete branch |`,
+              `| \`has-conflicts\` | ❌ Resolve conflicts first |`,
+              `| \`needs-review\` | 🔍 Manual review required |`,
+              ``,
+              `---`,
+              `*Auto-generated by [Branch Analysis workflow](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions) · run \`${{ github.run_id }}\`*`,
+            ].join('\n');
+
+            // Delete previous bot analysis comment if exists
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            for (const c of comments.data) {
+              if (c.user.type === 'Bot' && c.body.includes('🤖 Branch Analysis')) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: c.id,
+                });
+              }
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+  # ─── Job 2: manual bulk analysis across all unmerged branches ───────────────
+  bulk-analysis:
+    name: Bulk branch analysis
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          grep -vi '^sphinx' DMAIC_V3/requirements.txt > /tmp/requirements-no-sphinx.txt
+          python -m pip install -r /tmp/requirements-no-sphinx.txt
+          python -m pip install pytest pytest-cov pytest-mock pyyaml 2>/dev/null || true
+
+      - name: Analyse all unmerged branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PATTERN: ${{ inputs.branch_pattern }}
+          BASE: ${{ inputs.base_branch }}
+          POST_COMMENT: ${{ inputs.post_comment }}
+        run: |
+          set -euo pipefail
+
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true
+
+          NOW=$(date +%s)
+          declare -a easy_merge=()
+          declare -a clean_diff=()
+          declare -a prune_candidates=()
+          declare -a has_conflicts=()
+          declare -a needs_review=()
+
+          echo "=== Bulk Branch Analysis (base: ${BASE}) ==="
+          echo ""
+
+          while IFS= read -r remote; do
+            branch="${remote#origin/}"
+            [[ "$branch" == "$BASE" || "$branch" == "HEAD" ]] && continue
+            [[ -n "$PATTERN" ]] && case "$branch" in $PATTERN) ;; *) continue ;; esac
+
+            ahead=$(git rev-list --count "origin/${BASE}..${remote}" 2>/dev/null || echo 0)
+            [[ "$ahead" -eq 0 ]] && echo "SKIP (0 ahead): $branch" && continue
+
+            # Check for common merge base
+            merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+            if [[ -z "$merge_base" ]]; then
+              echo "NO_BASE: $branch — stale history, no merge base with ${BASE}"
+              prune_candidates+=("$branch|no-merge-base|N/A")
+              continue
+            fi
+
+            files=$(git diff --name-only "${merge_base}..${remote}" -- 2>/dev/null | wc -l | tr -d ' ')
+            behind=$(git rev-list --count "${remote}..origin/${BASE}" 2>/dev/null || echo 0)
+            age_days=$(( (NOW - $(git log -1 --format="%ct" "${remote}")) / 86400 ))
+            conflict_markers=$(git merge-tree "${merge_base}" "origin/${BASE}" "${remote}" 2>/dev/null | grep -c '<<<<<<<' || echo 0)
+            ins=$(git diff --stat "${merge_base}..${remote}" -- 2>/dev/null | tail -1 | grep -oP '\d+ insertion' | grep -oP '\d+' || echo 0)
+            del=$(git diff --stat "${merge_base}..${remote}" -- 2>/dev/null | tail -1 | grep -oP '\d+ deletion' | grep -oP '\d+' || echo 0)
+
+            label="files:${files} +${ins:-0}/-${del:-0} behind:${behind} conflicts:${conflict_markers} age:${age_days}d"
+
+            if [[ "$files" -eq 0 ]]; then
+              category="prune-candidate"; prune_candidates+=("$branch|empty-diff|$label")
+            elif [[ "$conflict_markers" -gt 0 ]]; then
+              category="has-conflicts"; has_conflicts+=("$branch|conflicts:${conflict_markers}|$label")
+            elif [[ "$files" -le 5 && "$behind" -le 5 && "$ahead" -le 3 ]]; then
+              category="easy-merge"; easy_merge+=("$branch|ahead:${ahead}|$label")
+            elif [[ "$files" -le 15 ]]; then
+              category="clean-diff"; clean_diff+=("$branch|files:${files}|$label")
+            else
+              category="needs-review"; needs_review+=("$branch|files:${files}|$label")
+            fi
+
+            echo "[${category}] $branch — $label"
+          done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+
+          echo ""
+          echo "========================================="
+          echo "=== SUMMARY ==="
+          echo "  ✅ easy-merge    : ${#easy_merge[@]}"
+          for e in "${easy_merge[@]}"; do IFS='|' read -r b c l <<< "$e"; echo "     $b  ($l)"; done
+          echo "  🟢 clean-diff    : ${#clean_diff[@]}"
+          for e in "${clean_diff[@]}"; do IFS='|' read -r b c l <<< "$e"; echo "     $b  ($l)"; done
+          echo "  🔍 needs-review  : ${#needs_review[@]}"
+          for e in "${needs_review[@]}"; do IFS='|' read -r b c l <<< "$e"; echo "     $b  ($l)"; done
+          echo "  ❌ has-conflicts : ${#has_conflicts[@]}"
+          for e in "${has_conflicts[@]}"; do IFS='|' read -r b c l <<< "$e"; echo "     $b  ($l)"; done
+          echo "  🗑️ prune-cands   : ${#prune_candidates[@]}"
+          for e in "${prune_candidates[@]}"; do IFS='|' read -r b c l <<< "$e"; echo "     $b  ($l)"; done
+
+          # Post comment on any matching open PR
+          if [[ "$POST_COMMENT" == "true" ]]; then
+            echo ""
+            echo "=== Posting analysis comments on open PRs ==="
+            all_entries=(
+              "${easy_merge[@]+"${easy_merge[@]}"}"
+              "${clean_diff[@]+"${clean_diff[@]}"}"
+              "${needs_review[@]+"${needs_review[@]}"}"
+              "${has_conflicts[@]+"${has_conflicts[@]}"}"
+              "${prune_candidates[@]+"${prune_candidates[@]}"}"
+            )
+            for entry in "${all_entries[@]+"${all_entries[@]}"}"; do
+              IFS='|' read -r branch category label <<< "$entry"
+              pr_number=$(gh pr list --head "${branch}" --state open --json number \
+                --jq '.[0].number' 2>/dev/null || echo "")
+              [[ -z "$pr_number" || "$pr_number" == "null" ]] && continue
+
+              emoji_map_easy_merge="✅ Easy Merge"
+              emoji_map_clean_diff="🟢 Clean Diff"
+              emoji_map_needs_review="🔍 Needs Review"
+              emoji_map_has_conflicts="❌ Merge Conflicts"
+              emoji_map_prune_candidate="🗑️ Prune Candidate"
+              var="emoji_map_${category//-/_}"
+              title="${!var:-🔍 Needs Review}"
+
+              comment="## 🤖 Branch Analysis (bulk run)
+
+          **${title}**
+
+          | Field | Value |
+          |---|---|
+          | Branch | \`${branch}\` |
+          | Category | \`${category}\` |
+          | Details | ${label} |
+
+          *Auto-generated by [Branch Analysis](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}) bulk scan.*"
+
+              gh pr comment "${pr_number}" --body "${comment}" 2>/dev/null || true
+              echo "  Posted on PR #${pr_number} for ${branch}"
+            done
+          fi

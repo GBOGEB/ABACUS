@@ -1,7 +1,7 @@
 # QPLANT Unified Handover Package - Summary Report
 
 
-**Version:** 4.0.0  
+**Version:** 2.3.0  
 **Generated:** 2025-11-08T19:22:20.319033+00:00  
 **Generated:** 2025-11-08  
 **Package Version:** 1.0.0  

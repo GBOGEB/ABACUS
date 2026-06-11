@@ -1,0 +1,30 @@
+# QPLANT API Ingress — External HTTPS Access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qplant-api-ingress
+  namespace: qplant-production
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  labels:
+    app: qplant-api
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.qplant.myrrha.example.com
+    secretName: qplant-tls-cert
+  rules:
+  - host: api.qplant.myrrha.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: qplant-api-service
+            port:
+              number: 80

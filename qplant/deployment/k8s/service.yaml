@@ -1,0 +1,22 @@
+# QPLANT API Service — Load Balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: qplant-api-service
+  namespace: qplant-production
+  labels:
+    app: qplant-api
+    tier: backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: qplant-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+    name: http
+  - protocol: TCP
+    port: 443
+    targetPort: 8000
+    name: https

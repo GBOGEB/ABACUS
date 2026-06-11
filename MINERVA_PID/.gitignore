@@ -1,0 +1,29 @@
+# large reference binaries kept out of git
+extracted/master/*.pptx
+
+# ---------------------------------------------------------------------------
+# Derived / regenerable outputs — NOT source of record.
+# Rebuilt from tracked source (src/, segmentation/data/, configs/, data/svg/)
+# by ./make.sh. See AGENTS.md "Reproducibility over committed artifacts".
+# ---------------------------------------------------------------------------
+output_v6/
+data/model/
+data/pemo/
+data/excel/
+data/crossmap/
+publish/
+reports/*.xlsx
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Auto-generated office-doc preview artifacts (HTML/asset renderings of .docx/.pptx)
+*_preview/
+
+# W007 CI/CD — coverage.py runtime artifacts (regenerated in CI; never committed)
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/

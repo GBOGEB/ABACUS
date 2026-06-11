@@ -1,0 +1,19 @@
+governance_runtime_ontology_registry:
+  moniker: DELTA_1
+
+  ontology_domains:
+    - governance_entities
+    - runtime_entities
+    - deployment_entities
+    - provenance_entities
+    - remediation_entities
+
+  ontology_requirements:
+    semantic_entity_alignment: required
+    recursive_ontology_consistency: enabled
+    distributed_semantic_visibility: enabled
+
+  objectives:
+    - semantic_governance_modeling
+    - recursive_operational_ontology
+    - federated_governance_semantics

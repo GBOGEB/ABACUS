@@ -146,29 +146,29 @@ class DigitalTwinState:
 class TemporalMetadataEngine:
     """
     Temporal Metadata Engine for comprehensive workspace tracking
-    
+
     Tracks:
     - File/folder hierarchy with temporal metadata
     - Execution provenance and digital twin state
     - Bidirectional input/output relationships
     - CI/CD quality metrics
     """
-    
+
     def __init__(self, workspace_root: Path, db_path: Optional[Path] = None):
         """TODO: Add function description"""
 
         self.workspace_root = Path(workspace_root)
         self.db_path = db_path or (self.workspace_root / ".dmaic" / "temporal_metadata.db")
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         self._init_database()
         self.file_type_map = self._build_file_type_map()
-        
+
     def _init_database(self) -> Any:
         """Initialize SQLite database with comprehensive schema"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS file_metadata (
                 file_path TEXT PRIMARY KEY,
@@ -194,7 +194,7 @@ class TemporalMetadataEngine:
                 test_coverage REAL
             )
         """)
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS folder_metadata (
                 folder_path TEXT PRIMARY KEY,
@@ -214,7 +214,7 @@ class TemporalMetadataEngine:
                 canonical_index TEXT
             )
         """)
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS execution_metadata (
                 execution_id TEXT PRIMARY KEY,
@@ -232,7 +232,7 @@ class TemporalMetadataEngine:
                 provenance_chain TEXT
             )
         """)
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS digital_twin_state (
                 twin_id TEXT PRIMARY KEY,
@@ -247,7 +247,7 @@ class TemporalMetadataEngine:
                 convergence_status TEXT
             )
         """)
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS bidirectional_links (
                 link_id TEXT PRIMARY KEY,
@@ -258,10 +258,10 @@ class TemporalMetadataEngine:
                 metadata TEXT
             )
         """)
-        
+
         conn.commit()
         conn.close()
-        
+
     def _build_file_type_map(self) -> Dict[str, FileType]:
         """Build file extension to FileType mapping"""
         return {
@@ -290,21 +290,21 @@ class TemporalMetadataEngine:
             '.vba': FileType.VBA,
             '.bas': FileType.VBA,
         }
-        
+
     def scan_workspace(self) -> Tuple[List[FileMetadata], List[FolderMetadata]]:
         """
         Scan entire workspace and generate comprehensive metadata
-        
+
         Returns:
             Tuple of (file_metadata_list, folder_metadata_list)
         """
         files = []
         folders = []
-        
+
         for path in self.workspace_root.rglob('*'):
             if self._should_skip(path):
                 continue
-                
+
             if path.is_file():
                 file_meta = self._extract_file_metadata(path)
                 files.append(file_meta)
@@ -313,9 +313,9 @@ class TemporalMetadataEngine:
                 folder_meta = self._extract_folder_metadata(path)
                 folders.append(folder_meta)
                 self._store_folder_metadata(folder_meta)
-                
+
         return files, folders
-        
+
     def _should_skip(self, path: Path) -> bool:
         """Determine if path should be skipped"""
         skip_patterns = [
@@ -330,24 +330,24 @@ class TemporalMetadataEngine:
             '*.pyc',
             '.DS_Store'
         ]
-        
+
         for pattern in skip_patterns:
             if pattern in str(path):
                 return True
         return False
-        
+
     def _extract_file_metadata(self, file_path: Path) -> FileMetadata:
         """Extract comprehensive metadata from file"""
         stat = file_path.stat()
-        
+
         file_type = self._determine_file_type(file_path)
         hash_val = self._compute_file_hash(file_path)
-        
+
         parent = str(file_path.parent.relative_to(self.workspace_root))
         depth = len(file_path.relative_to(self.workspace_root).parts) - 1
-        
+
         is_main = file_path.name in ['main.py', '__main__.py', 'app.py', 'run.py']
-        
+
         dependencies,
             imports,
             exports,
@@ -357,7 +357,7 @@ class TemporalMetadataEngine:
             [],
             [],
             [])
-        
+
         return FileMetadata(
             file_path=str(file_path.relative_to(self.workspace_root)),
             file_type=file_type,
@@ -375,15 +375,15 @@ class TemporalMetadataEngine:
             functions=functions,
             classes=classes
         )
-        
+
     def _determine_file_type(self, file_path: Path) -> FileType:
         """Determine file type from extension"""
         if file_path.name in self.file_type_map:
             return self.file_type_map[file_path.name]
-        
+
         suffix = file_path.suffix.lower()
         return self.file_type_map.get(suffix, FileType.OTHER)
-        
+
     def _compute_file_hash(self, file_path: Path) -> str:
         """Compute SHA256 hash of file"""
         try:
@@ -391,7 +391,7 @@ class TemporalMetadataEngine:
                 return hashlib.sha256(f.read()).hexdigest()
         except:
             return "error_computing_hash"
-            
+
     def _analyze_python_file(self,
         file_path: Path) -> Tuple[List[str],
         List[str],
@@ -401,11 +401,11 @@ class TemporalMetadataEngine:
         """Analyze Python file for dependencies, imports, exports, functions, classes"""
         try:
             content = file_path.read_text(encoding='utf-8', errors='ignore')
-            
+
             imports = []
             functions = []
             classes = []
-            
+
             for line in content.split('\n'):
                 line = line.strip()
                 if line.startswith('import ') or line.startswith('from '):
@@ -416,26 +416,26 @@ class TemporalMetadataEngine:
                 elif line.startswith('class '):
                     class_name = line.split('(')[0].split(':')[0].replace('class ', '').strip()
                     classes.append(class_name)
-                    
+
             dependencies = [imp.split()[1].split('.')[0] for imp in imports if 'import' in imp]
             exports = functions + classes
-            
+
             return dependencies, imports, exports, functions, classes
         except:
             return [], [], [], [], []
-            
+
     def _extract_folder_metadata(self, folder_path: Path) -> FolderMetadata:
         """Extract metadata from folder"""
         stat = folder_path.stat()
-        
+
         files = list(folder_path.glob('*'))
         file_count = sum(1 for f in files if f.is_file())
         subfolder_count = sum(1 for f in files if f.is_dir())
-        
+
         total_size = sum(f.stat().st_size for f in files if f.is_file())
-        
+
         depth = len(folder_path.relative_to(self.workspace_root).parts)
-        
+
         folder_name = folder_path.name.lower()
         is_venv = 'venv' in folder_name or 'env' in folder_name
         is_git = folder_name == '.git'
@@ -443,9 +443,9 @@ class TemporalMetadataEngine:
         is_source = folder_name in ['src', 'source', 'lib']
         is_test = folder_name in ['test', 'tests', 'testing']
         is_output = folder_name in ['output', 'outputs', 'results', 'artifacts']
-        
+
         purpose = self._determine_folder_purpose(folder_path)
-        
+
         return FolderMetadata(
             folder_path=str(folder_path.relative_to(self.workspace_root)),
             depth_level=depth,
@@ -462,11 +462,11 @@ class TemporalMetadataEngine:
             is_test=is_test,
             is_output=is_output
         )
-        
+
     def _determine_folder_purpose(self, folder_path: Path) -> str:
         """Determine folder purpose from name and contents"""
         name = folder_path.name.lower()
-        
+
         purpose_map = {
             'src': 'Source Code',
             'source': 'Source Code',
@@ -488,14 +488,14 @@ class TemporalMetadataEngine:
             'convergence': 'Convergence Logic',
             'integrations': 'External Integrations'
         }
-        
+
         return purpose_map.get(name, 'General Purpose')
-        
+
     def _store_file_metadata(self, metadata: FileMetadata):
         """Store file metadata in database"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             INSERT OR REPLACE INTO file_metadata VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -523,15 +523,15 @@ class TemporalMetadataEngine:
             metadata.quality_score,
             metadata.test_coverage
         ))
-        
+
         conn.commit()
         conn.close()
-        
+
     def _store_folder_metadata(self, metadata: FolderMetadata):
         """Store folder metadata in database"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             INSERT OR REPLACE INTO folder_metadata VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -553,15 +553,15 @@ class TemporalMetadataEngine:
             int(metadata.is_output),
             metadata.canonical_index
         ))
-        
+
         conn.commit()
         conn.close()
-        
+
     def record_execution(self, execution: ExecutionMetadata):
         """Record execution metadata"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             INSERT INTO execution_metadata VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -581,26 +581,26 @@ class TemporalMetadataEngine:
             json.dumps(execution.warnings),
             json.dumps(execution.provenance_chain)
         ))
-        
+
         conn.commit()
         conn.close()
-        
+
     def create_digital_twin(self) -> DigitalTwinState:
         """Create digital twin snapshot of current workspace state"""
         files, folders = self.scan_workspace()
-        
+
         twin_id = f"twin_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
+
         total_size = sum(f.size_bytes for f in files)
-        
+
         quality_metrics = {
             'avg_file_size': total_size / len(files) if files else 0,
             'python_file_ratio': sum(1 for f in files if f.file_type == FileType.PYTHON) / len(files) if files else 0,
-                
+
             'test_coverage': sum(f.test_coverage for f in files) / len(files) if files else 0,
             'avg_quality_score': sum(f.quality_score for f in files) / len(files) if files else 0
         }
-        
+
         twin = DigitalTwinState(
             twin_id=twin_id,
             source_workspace=str(self.workspace_root),
@@ -613,16 +613,16 @@ class TemporalMetadataEngine:
             improvement_actions=[],
             convergence_status={}
         )
-        
+
         self._store_digital_twin(twin)
-        
+
         return twin
-        
+
     def _store_digital_twin(self, twin: DigitalTwinState):
         """Store digital twin state in database"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             INSERT INTO digital_twin_state VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -639,14 +639,14 @@ class TemporalMetadataEngine:
             json.dumps(twin.improvement_actions),
             json.dumps(twin.convergence_status)
         ))
-        
+
         conn.commit()
         conn.close()
-        
+
     def generate_hierarchy_report(self, output_path: Path):
         """Generate comprehensive hierarchy report in JSON"""
         files, folders = self.scan_workspace()
-        
+
         report = {
             'generated_at': datetime.now().isoformat(),
             'workspace_root': str(self.workspace_root),
@@ -662,13 +662,13 @@ class TemporalMetadataEngine:
             'main_entry_points': [f.file_path for f in files if f.is_main_entry],
             'dependency_graph': self._build_dependency_graph(files)
         }
-        
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, default=str)
-            
+
         return report
-        
+
     def _count_file_types(self, files: List[FileMetadata]) -> Dict[str, int]:
         """Count files by type"""
         counts = {}
@@ -676,14 +676,14 @@ class TemporalMetadataEngine:
             type_name = f.file_type.value
             counts[type_name] = counts.get(type_name, 0) + 1
         return counts
-        
+
     def _count_folder_purposes(self, folders: List[FolderMetadata]) -> Dict[str, int]:
         """Count folders by purpose"""
         counts = {}
         for f in folders:
             counts[f.purpose] = counts.get(f.purpose, 0) + 1
         return counts
-        
+
     def _build_dependency_graph(self, files: List[FileMetadata]) -> Dict[str, List[str]]:
         """Build dependency graph from file metadata"""
         graph = {}
