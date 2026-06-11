@@ -25,7 +25,6 @@ from .core.handover_bridge import HandoverBridge, IdempotentPhase
 from .convergence.iterative_controller import IterativeController
 try:
     from .phases.phase1_define import Phase1Define
-    from .phases.phase2_measure import Phase2Measure
     from .phases.phase3_analyze import Phase3Analyze
     from .phases.phase4_improve import Phase4Improve
 except ImportError:
