@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 from datetime import datetime
@@ -27,7 +33,7 @@ class Metric:
     metric_type: MetricType
     timestamp: datetime = field(default_factory=datetime.now)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
@@ -48,10 +54,10 @@ class PhaseMetrics:
     end_time: Optional[datetime] = None
     duration_seconds: float = 0.0
     status: PhaseStatus = PhaseStatus.PENDING
-    
+
     def add_metric(self, metric: Metric):
         self.metrics.append(metric)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "phase_name": self.phase_name,
@@ -74,7 +80,7 @@ class KnowledgePack:
     references: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "iteration": self.iteration,
@@ -100,7 +106,7 @@ class IterationResult:
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     success: bool = False
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "iteration": self.iteration,
@@ -125,7 +131,7 @@ class ExecutionState:
     execution_start: Optional[datetime] = None
     execution_end: Optional[datetime] = None
     total_iterations_completed: int = 0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "current_iteration": self.current_iteration,

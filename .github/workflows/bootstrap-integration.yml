@@ -1,0 +1,265 @@
+name: Bootstrap Statistics Integration CI/CD
+on:
+  push:
+    branches: [ main, develop, sprint-6 ]
+    paths:
+      - 'bootstrap_eval.py'
+      - 'tests/test_bootstrap_eval.py'
+      - 'tests/bootstrap_bridge.py'
+      - 'tests/test_integration_bootstrap_bridges.py'
+      - 'run_integrated_tests.py'
+      - 'comprehensive_bridge_test_suite.py'
+      - 'tests/conftest.py'
+      - 'pytest.ini'
+      - '.github/workflows/bootstrap-integration.yml'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test execution mode'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - smoke
+          - bootstrap
+          - bridges
+          - full
+          - dmaic
+
+env:
+  PYTHON_VERSION: '3.12'
+  REPORTS_DIR: test_reports
+
+jobs:
+  bootstrap-tests:
+    name: Bootstrap Statistics Tests (28 tests)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-bootstrap-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-bootstrap-
+            ${{ runner.os }}-pip-
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-html numpy scipy pandas
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Validate Prerequisites
+        run: |
+          echo "🔍 Validating Bootstrap Prerequisites"
+          python -c "import numpy; import scipy; import pandas; print('✅ Scientific libraries available')"
+          python -c "from tests.bootstrap_bridge import BootstrapBridge; print('✅ Bootstrap bridge importable')"
+          ls -la bootstrap_eval.py tests/test_bootstrap_eval.py tests/bootstrap_bridge.py
+      
+      - name: Run Bootstrap Statistics Tests (pytest)
+        run: |
+          echo "📊 Running 28 Bootstrap Statistical Tests"
+          pytest tests/test_bootstrap_eval.py -v --tb=short \
+            --junit-xml=${{ env.REPORTS_DIR }}/bootstrap-junit.xml \
+            --html=${{ env.REPORTS_DIR }}/bootstrap-report.html \
+            --self-contained-html
+      
+      - name: Run Bootstrap Bridge (DMAIC)
+        run: |
+          echo "🌉 Running Bootstrap Bridge (DMAIC Integration)"
+          python tests/bootstrap_bridge.py
+      
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-test-reports
+          path: ${{ env.REPORTS_DIR }}
+          retention-days: 30
+      
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ${{ env.REPORTS_DIR }}/*junit*.xml
+          check_name: Bootstrap Statistics Tests
+  
+  bridge-integration:
+    name: Bridge Integration Tests
+    runs-on: ubuntu-latest
+    needs: bootstrap-tests
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-html numpy scipy pandas
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run Integration Tests
+        run: |
+          echo "🔗 Running Bootstrap + Bridge Integration Tests"
+          pytest tests/test_integration_bootstrap_bridges.py -v --tb=short \
+            --junit-xml=${{ env.REPORTS_DIR }}/integration-junit.xml \
+            --html=${{ env.REPORTS_DIR }}/integration-report.html \
+            --self-contained-html
+      
+      - name: Upload Integration Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: ${{ env.REPORTS_DIR }}
+          retention-days: 30
+  
+  comprehensive-suite:
+    name: Comprehensive Test Suite (DMAIC)
+    runs-on: ubuntu-latest
+    needs: [bootstrap-tests, bridge-integration]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.test_mode == 'dmaic'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-html numpy scipy pandas pyyaml
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run DMAIC-Orchestrated Tests
+        run: |
+          echo "🎯 Running DMAIC-Orchestrated Comprehensive Test Suite"
+          python run_integrated_tests.py dmaic
+      
+      - name: Run Bridge Orchestrator
+        run: |
+          echo "🌉 Running Comprehensive Bridge Test Suite"
+          python comprehensive_bridge_test_suite.py
+      
+      - name: Generate Coverage Report
+        run: |
+          pytest tests/ --cov=. --cov-report=html --cov-report=xml --cov-report=term
+      
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: comprehensive-suite
+          name: comprehensive-coverage
+      
+      - name: Upload DMAIC Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmaic-comprehensive-reports
+          path: |
+            ${{ env.REPORTS_DIR }}
+            test_reports/
+            htmlcov/
+          retention-days: 30
+  
+  smoke-tests:
+    name: Quick Smoke Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest numpy scipy pandas
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run Smoke Tests
+        run: |
+          echo "💨 Running Quick Smoke Tests"
+          python run_integrated_tests.py smoke
+  
+  deployment-check:
+    name: Deployment Validation
+    runs-on: ubuntu-latest
+    needs: [bootstrap-tests, bridge-integration]
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Validate Deployment Scripts
+        run: |
+          echo "✅ Checking deployment scripts"
+          chmod +x deploy_integrated_tests.sh
+          bash -n deploy_integrated_tests.sh || exit 1
+          echo "✅ deploy_integrated_tests.sh syntax valid"
+      
+      - name: Validate Test Runner
+        run: |
+          python -m py_compile run_integrated_tests.py
+          python -m py_compile tests/bootstrap_bridge.py
+          python -m py_compile comprehensive_bridge_test_suite.py
+          echo "✅ Python scripts valid"
+      
+      - name: Check Documentation
+        run: |
+          echo "📚 Checking documentation files"
+          [ -f "TEST_SUITE_BOOK.md" ] && echo "✅ TEST_SUITE_BOOK.md exists" || echo "❌ Missing TEST_SUITE_BOOK.md"
+          grep -q "Chapter 09" TEST_SUITE_BOOK.md && echo "✅ Bootstrap chapter present" || echo "❌ Bootstrap chapter missing"
+  
+  summary:
+    name: Test Suite Summary
+    runs-on: ubuntu-latest
+    needs: [bootstrap-tests, bridge-integration, smoke-tests]
+    if: always()
+    
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "# 📊 Bootstrap Statistics Integration CI/CD Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Bootstrap Tests (28): ${{ needs.bootstrap-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Bridge Integration: ${{ needs.bridge-integration.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Smoke Tests: ${{ needs.smoke-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Status" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.bootstrap-tests.result }}" == "success" ] && [ "${{ needs.bridge-integration.result }}" == "success" ]; then
+            echo "✅ All critical tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed - review artifacts" >> $GITHUB_STEP_SUMMARY
+          fi

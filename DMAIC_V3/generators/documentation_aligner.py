@@ -28,23 +28,23 @@ import yaml
 
 class DocumentationAligner:
     """Align documentation with version numbers and changelogs"""
-    
+
     VERSION = "3.1.0"
     DMAIC_VERSION = "V3"
     INTEGRATION_MODE = "BIDIRECTIONAL"
-    
+
     MARKDOWN_FILES = [
         "INTEGRATION_PLAN.md",
         "DEPLOYMENT_COMPLETE.md",
         "IMPLEMENTATION_SUMMARY.md",
         "README.md"
     ]
-    
+
     def __init__(self, docs_dir: Path):
         self.docs_dir = Path(docs_dir)
         self.changelog = self._load_changelog()
         self.version_info = self._create_version_info()
-    
+
     def _load_changelog(self) -> List[Dict]:
         """Load changelog from version history"""
         return [
@@ -88,7 +88,7 @@ class DocumentationAligner:
                 'status': 'SUPERSEDED - Refactored to DMAIC V3 integration'
             }
         ]
-    
+
     def _create_version_info(self) -> Dict:
         """Create version information block"""
         return {
@@ -109,14 +109,14 @@ class DocumentationAligner:
                 'markdown': 'output/execution_reports/EXECUTION_REPORT.md'
             }
         }
-    
+
     def _create_version_header(self) -> str:
         """Create standardized version header"""
         return f"""---
-**Version**: {self.VERSION}  
-**DMAIC Version**: {self.DMAIC_VERSION}  
-**Integration**: {self.INTEGRATION_MODE} (`DMAIC V3 Engine <--> Document Generator <--> Recursive Engine`)  
-**Last Updated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
+**Version**: {self.VERSION}
+**DMAIC Version**: {self.DMAIC_VERSION}
+**Integration**: {self.INTEGRATION_MODE} (`DMAIC V3 Engine <--> Document Generator <--> Recursive Engine`)
+**Last Updated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 **Status**: [OK] ACTIVE
 
 **Quick Links**:
@@ -127,36 +127,36 @@ class DocumentationAligner:
 - [Changelog](#changelog)
 ---
 """
-    
+
     def _create_changelog_section(self) -> str:
         """Create changelog section"""
         changelog_md = "\n## Changelog\n\n"
-        
+
         for entry in self.changelog:
             changelog_md += f"### Version {entry['version']} - {entry['date']}\n\n"
-            
+
             if 'status' in entry:
                 changelog_md += f"**Status**: {entry['status']}\n\n"
-            
+
             changelog_md += "**Changes**:\n"
             for change in entry['changes']:
                 changelog_md += f"- {change}\n"
             changelog_md += "\n"
-            
+
             if 'files_modified' in entry:
                 changelog_md += "**Files Modified**:\n"
                 for file in entry['files_modified']:
                     changelog_md += f"- [`{file}`](../{file})\n"
                 changelog_md += "\n"
-            
+
             if 'victory_conditions' in entry:
                 changelog_md += "**Victory Conditions**:\n"
                 for condition in entry['victory_conditions']:
                     changelog_md += f"- {condition}\n"
                 changelog_md += "\n"
-        
+
         return changelog_md
-    
+
     def _create_integration_diagram(self) -> str:
         """Create integration diagram"""
         return """
@@ -216,33 +216,33 @@ class DocumentationAligner:
    python -m DMAIC_V3.generators generate --format docx --output report.docx
    ```
 """
-    
+
     def align_file(self, filename: str) -> Tuple[bool, str]:
         """Align a single markdown file"""
         file_path = self.docs_dir / filename
-        
+
         if not file_path.exists():
             return False, f"File not found: {file_path}"
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             lines = content.split('\n')
-            
+
             if lines and lines[0].startswith('#'):
                 title = lines[0]
                 rest_content = '\n'.join(lines[1:])
             else:
                 title = f"# {filename.replace('.md', '').replace('_', ' ').title()}"
                 rest_content = content
-            
+
             rest_content = re.sub(r'---\n\*\*Version\*\*:.*?---\n', '', rest_content, flags=re.DOTALL)
-            
+
             rest_content = re.sub(r'## Changelog\n.*?(?=\n##|\Z)', '', rest_content, flags=re.DOTALL)
-            
+
             rest_content = re.sub(r'## Integration Architecture\n.*?```\n', '', rest_content, flags=re.DOTALL)
-            
+
             aligned_content = (
                 title + '\n\n' +
                 self._create_version_header() + '\n' +
@@ -250,19 +250,19 @@ class DocumentationAligner:
                 self._create_integration_diagram() + '\n' +
                 self._create_changelog_section()
             )
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(aligned_content)
-            
+
             return True, f"[OK] Aligned: {filename}"
-            
+
         except Exception as e:
             return False, f"[FAIL] Error aligning {filename}: {e}"
-    
+
     def align_all(self) -> Dict[str, Tuple[bool, str]]:
         """Align all markdown files"""
         results = {}
-        
+
         print(f"\n{'='*80}")
         print("DOCUMENTATION VERSION ALIGNER")
         print(f"{'='*80}")
@@ -270,58 +270,58 @@ class DocumentationAligner:
         print(f"DMAIC Version: {self.DMAIC_VERSION}")
         print(f"Integration Mode: {self.INTEGRATION_MODE}")
         print(f"{'='*80}\n")
-        
+
         for filename in self.MARKDOWN_FILES:
             success, message = self.align_file(filename)
             results[filename] = (success, message)
             print(message)
-        
+
         print(f"\n{'='*80}")
         successful = sum(1 for s, _ in results.values() if s)
         print(f"Aligned {successful}/{len(self.MARKDOWN_FILES)} files successfully")
         print(f"{'='*80}\n")
-        
+
         return results
-    
+
     def export_version_info_json(self) -> Path:
         """Export version info to JSON"""
         output_file = self.docs_dir / "VERSION_INFO.json"
-        
+
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump({
                 'version_info': self.version_info,
                 'changelog': self.changelog
             }, f, indent=2)
-        
+
         print(f"[OK] Version info exported: {output_file}")
         return output_file
-    
+
     def export_version_info_yaml(self) -> Path:
         """Export version info to YAML"""
         output_file = self.docs_dir / "VERSION_INFO.yaml"
-        
+
         with open(output_file, 'w', encoding='utf-8') as f:
             yaml.dump({
                 'version_info': self.version_info,
                 'changelog': self.changelog
             }, f, default_flow_style=False, sort_keys=False)
-        
+
         print(f"[OK] Version info exported: {output_file}")
         return output_file
 
 
 if __name__ == '__main__':
     docs_dir = Path(__file__).parent.parent.parent / 'master_document_system'
-    
+
     aligner = DocumentationAligner(docs_dir)
-    
+
     results = aligner.align_all()
-    
+
     aligner.export_version_info_json()
     aligner.export_version_info_yaml()
-    
+
     all_success = all(success for success, _ in results.values())
-    
+
     if all_success:
         print("\n[OK] All documentation files aligned successfully!")
     else:
