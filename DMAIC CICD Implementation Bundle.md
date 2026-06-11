@@ -1,4 +1,4 @@
-DMAIC CI/CD Implementation Bundle
+SCDMAIC CI/CD Implementation Bundle
 
 
 # 🔄 DMAIC CI/CD Implementation Bundle
