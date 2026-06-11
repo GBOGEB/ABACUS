@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 GitHub CI/CD Tracking Manager
 Tracks PR lifecycle, CI/CD runs, issues, Copilot feedback, and missed opportunities
 Maintains both JSON and YAML state files for local and GitHub synchronization
@@ -12,7 +18,7 @@ import yaml
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Any
 
 try:
     from github import Github
@@ -425,8 +431,8 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        print(f"Warning: Failed to get GitHub token from CLI: {e}", file=sys.stderr)
+    except:
+        pass
     
     token = os.environ.get('GITHUB_TOKEN')
     if token:
@@ -476,9 +482,8 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except Exception as e:
-            # Ignore errors: unable to determine repo from git remote
-            pass  # noqa: F841
+        except:
+            pass
     
     if not repo_name:
         print("❌ Repository name required")

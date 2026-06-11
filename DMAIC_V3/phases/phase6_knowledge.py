@@ -101,15 +101,6 @@ class Phase6Knowledge:
             print(f"  [OK] New insights discovered: {hunger_metrics['insights_count']}")
             print(f"  [OK] Knowledge gaps identified: {hunger_metrics['gaps_count']}")
 
-            # Integration Point: codespace_jyperter notebook knowledge sources
-            print("\n[6.7] Loading codespace_jyperter notebook knowledge sources...")
-            notebook_sources = self._load_notebook_knowledge_sources()
-            print(f"  [OK] Found {len(notebook_sources)} notebook knowledge source(s)")
-            if notebook_sources:
-                # Each source contributes a small maturity boost (capped at 100)
-                maturity_score = min(maturity_score + len(notebook_sources) * 2, 100)
-                print(f"  [OK] Maturity score updated to {maturity_score}/100")
-
             results = {
                 'success': True,
                 'iteration': iteration,
@@ -120,17 +111,13 @@ class Phase6Knowledge:
                 'recursive_hooks_registered': hooks_registered,
                 'maturity_score': maturity_score,
                 'improvement_patterns_extracted': len(improvement_knowledge),
-                'notebook_knowledge_sources': len(notebook_sources),
                 'report_path': str(report_path),
                 'temporal_integration': TEMPORAL_AVAILABLE
             }
 
             print("\n" + "="*80)
             print("PHASE 6: COMPLETED SUCCESSFULLY")
-            print(
-                f"Books: {len(knowledge_refs)} | Hooks: {hooks_registered} | "
-                f"Maturity: {maturity_score}/100 | Notebook sources: {len(notebook_sources)}"
-            )
+            print(f"Books: {len(knowledge_refs)} | Hooks: {hooks_registered} | Maturity: {maturity_score}/100")
             print("="*80)
 
             return True, results
@@ -327,37 +314,6 @@ class Phase6Knowledge:
 
             f.write("---\n\n")
             f.write("*Integrated with canonical knowledge books and temporal tracker*\n")
-
-    def _load_notebook_knowledge_sources(self) -> List[Dict[str, Any]]:
-        """Load codespace_jyperter notebook knowledge-source descriptors.
-
-        Scans ``integration/codespace_jyperter/extracts/`` for
-        ``knowledge_source_*.json`` files written by the NotebookParser
-        (``notebook_parser.py::NotebookParser.build_knowledge_source``).
-
-        Returns:
-            List of knowledge-source descriptor dicts.  Returns an empty list
-            if the extract directory does not exist or contains no sources.
-        """
-        extract_dir = Path(__file__).resolve().parents[2] / "integration" / "codespace_jyperter" / "extracts"
-        sources: List[Dict[str, Any]] = []
-
-        if not extract_dir.is_dir():
-            return sources
-
-        for source_file in sorted(extract_dir.glob("knowledge_source_*.json")):
-            try:
-                with open(source_file, "r", encoding="utf-8") as f:
-                    descriptor = json.load(f)
-                required = {"source_id", "source_type", "repo", "extract_path", "timestamp"}
-                if not required.issubset(descriptor.keys()):
-                    print(f"  [WARNING] Skipping malformed source descriptor: {source_file.name}")
-                    continue
-                sources.append(descriptor)
-            except Exception as exc:
-                print(f"  [WARNING] Could not load {source_file.name}: {exc}")
-
-        return sources
 
     def _activate_knowledge_hunger(self, iteration: int, knowledge_refs: List[KnowledgeReference]) -> Dict[str, Any]:
         """
