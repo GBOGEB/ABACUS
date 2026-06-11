@@ -1,0 +1,188 @@
+# =============================================================================
+# ABACUS Security Governance — Single Source of Truth
+# All scanners (CodeQL, Bandit, Ruff, OSV) read from this file.
+# Topology: agents → orchestrators → core → integrations
+# =============================================================================
+
+[project]
+name        = "ABACUS"
+version     = "v032"
+language    = "python"
+entry_points = [
+  "DMAIC_V3/dmaic_v3_engine.py",
+  "DMAIC_V3/full_pipeline_orchestrator.py",
+  "DMAIC_V3/dow_integration_executor.py",
+]
+
+# =============================================================================
+# CODEQL
+# =============================================================================
+[codeql]
+query_suites  = ["security-extended", "security-and-quality"]
+language      = "python"
+paths_ignore  = [
+  "**/*.md",
+  "docs/**",
+  "reports/**",
+  "DMAIC_CANONICAL_OUTPUT/**",
+  "DMAIC_V3_OUTPUT/**",
+  "BACKUPS/**",
+  "11_PREVIOUS_SESSIONS/**",
+  "*_corrupted.py",         # known-bad artefacts kept for reference only
+]
+
+# =============================================================================
+# BANDIT  (B-series rule IDs)
+# Hierarchy: critical > high > medium — fix in that order
+# =============================================================================
+[bandit]
+targets   = ["DMAIC_V3"]
+exclude   = ["DMAIC_V3/tests", "DMAIC_V3/generators/test_*.py", "*_corrupted.py"]
+severity  = "medium"          # report medium and above
+confidence = "medium"
+
+  [bandit.skips]
+  # B101: assert in tests is intentional, not security bypass
+  B101 = "test files only — assert used for pytest assertions"
+  # B603: subprocess with list args (no shell=True) — verified safe
+  B603 = "all subprocess.run calls use list args, shell=False (default)"
+
+  [bandit.watch]
+  # Rules that ARE active and must never be suppressed without review:
+  B105 = "hardcoded password string"
+  B106 = "hardcoded password in function arg"
+  B108 = "insecure temp file"
+  B201 = "flask debug mode"
+  B301 = "pickle usage"
+  B302 = "marshal usage"
+  B324 = "use of weak MD5/SHA1 hash"
+  B506 = "yaml.load without Loader"
+  B601 = "paramiko shell exec"
+  B602 = "subprocess with shell=True"
+
+# =============================================================================
+# RUFF  (linting + security rules)
+# =============================================================================
+[ruff]
+line-length = 120
+target-version = "py310"
+src = ["DMAIC_V3"]
+exclude = [
+  "*_corrupted.py",
+  "*_fixed.py",
+  "DMAIC_V3_OUTPUT/**",
+  "BACKUPS/**",
+]
+
+  [ruff.select]
+  # Security-relevant rule groups always ON:
+  S   = true    # flake8-bandit (maps to Bandit rules)
+  E   = true    # pycodestyle errors
+  F   = true    # pyflakes
+  I   = true    # isort
+  UP  = true    # pyupgrade
+  B   = true    # flake8-bugbear
+  SIM = true    # simplify
+
+  [ruff.ignore]
+  # Must document WHY each rule is ignored here:
+  S603 = "subprocess list-form — safe, verified (see bandit.skips.B603)"
+  S101 = "assert in tests — intentional (see bandit.skips.B101)"
+  E501  = "line length handled by formatter"
+
+# =============================================================================
+# OSV SCANNER  (dependency vulnerabilities)
+# =============================================================================
+[osv]
+ecosystems = ["PyPI"]
+lock_files = [
+  "requirements.txt",
+  "requirements-dev.txt",
+  "pyproject.toml",
+]
+severity_threshold = "MEDIUM"  # block on MEDIUM+
+
+# =============================================================================
+# REX ALERT TAXONOMY  (Return of Experience)
+# Groups map to fix-strategy templates in REX_alerts.md
+# =============================================================================
+[rex.groups]
+
+  [rex.groups.SEC_SUBPROCESS]
+  codeql_rules = ["py/shell-command-constructed-from-input"]
+  bandit_rules = ["B602", "B603", "B604"]
+  ruff_rules   = ["S603", "S604"]
+  risk         = "HIGH"
+  pattern      = "subprocess called with user-controlled input or shell=True"
+  fix_strategy = "use list-form args; never interpolate external input into cmd"
+  files        = [
+    "DMAIC_V3/dow_integration_executor.py",
+    "DMAIC_V3/core/test_system_bridge.py",
+    "DMAIC_V3/full_pipeline_orchestrator.py",
+  ]
+
+  [rex.groups.SEC_PATH_TRAVERSAL]
+  codeql_rules = ["py/path-injection"]
+  bandit_rules = ["B101"]
+  ruff_rules   = ["S324"]
+  risk         = "HIGH"
+  pattern      = "open() with externally-derived path, no sanitisation"
+  fix_strategy = "resolve paths with pathlib.Path.resolve(); check is_relative_to(base)"
+  files        = [
+    "DMAIC_V3/agents/self_improvement_agent.py",
+    "DMAIC_V3/agents/context_manager.py",
+  ]
+
+  [rex.groups.SEC_TEMPFILE]
+  codeql_rules = []
+  bandit_rules = ["B108"]
+  ruff_rules   = ["S108"]
+  risk         = "MEDIUM"
+  pattern      = "NamedTemporaryFile with delete=False leaves file on disk"
+  fix_strategy = "use tempfile.TemporaryDirectory context manager; or set delete=True"
+  files        = [
+    "DMAIC_V3/generators/test_integration_pipeline.py",
+    "DMAIC_V3/core/test_system_bridge.py",
+  ]
+
+  [rex.groups.SEC_COMPILE_EXEC]
+  codeql_rules = ["py/code-injection"]
+  bandit_rules = ["B102"]
+  ruff_rules   = ["S102"]
+  risk         = "MEDIUM"
+  pattern      = "compile()+exec() on file content — arbitrary code execution if file is tampered"
+  fix_strategy = "restrict to trusted internal paths; add hash/signature check before compile"
+  files        = [
+    "DMAIC_V3/debug_pipeline.py",
+    "DMAIC_V3/generators/github_quality_check.py",
+  ]
+
+  [rex.groups.SEC_ASSERT]
+  codeql_rules = []
+  bandit_rules = ["B101"]
+  ruff_rules   = ["S101"]
+  risk         = "LOW"
+  pattern      = "assert used outside pytest — stripped by -O flag at runtime"
+  fix_strategy = "replace production-path asserts with explicit if/raise ValueError"
+  files        = [
+    "DMAIC_V3/generators/test_integration_pipeline.py",
+    "DMAIC_V3/tests/test_agents_apis.py",
+  ]
+
+  [rex.groups.QUAL_DEAD_CODE]
+  codeql_rules = ["py/unused-import", "py/unused-local-variable"]
+  bandit_rules = []
+  ruff_rules   = ["F401", "F841"]
+  risk         = "LOW"
+  pattern      = "unused imports and variables — noise in security scan output"
+  fix_strategy = "auto-fix with: ruff check --fix --select F401,F841"
+
+  [rex.groups.QUAL_DUPLICATE_FILES]
+  risk         = "INFO"
+  pattern      = "_corrupted.py / _fixed.py / _clean.py variants pollute scan surface"
+  fix_strategy = "delete non-canonical variants; keep only the active orchestrator"
+  files        = [
+    "DMAIC_V3/full_pipeline_orchestrator_corrupted.py",
+    "DMAIC_V3/full_pipeline_orchestrator_fixed.py",
+    "DMAIC_V3/full_pipeline_orchestrator_clean.py",
+  ]

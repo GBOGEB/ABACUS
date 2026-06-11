@@ -1,4 +1,5 @@
 # Root requirements shim — delegates to DMAIC_V3/requirements.txt
 # This file exists so that generic tooling (Codespaces postCreateCommand,
 # scripts that pip install -r requirements.txt) resolve correctly.
+setuptools>=68.0  # required for pkg_resources on Python 3.12+
 -r DMAIC_V3/requirements.txt
