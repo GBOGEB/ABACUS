@@ -30,7 +30,7 @@ GOLDEN_FILES = [
 ]
 
 
-def _git_committed(path: str) -> str | None:
+def _git_committed(path: str) -> "str | None":
     """Return the committed (HEAD) contents of *path*, or None if untracked."""
     try:
         return subprocess.check_output(
