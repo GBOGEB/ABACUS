@@ -1,49 +1,48 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow file requires a free account on Semgrep.dev to
-# manage rules, file ignores, notifications, and more.
-#
-# See https://semgrep.dev/docs
-
 name: Semgrep
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main, develop]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: [main]
   schedule:
-    - cron: '18 6 * * 3'
+    - cron: '30 6 * * 1'   # Monday 06:30 UTC (after CodeQL at 06:00)
+  workflow_dispatch:
 
 permissions:
   contents: read
+  security-events: write
+  actions: read            # required for upload-sarif on private repos
 
 jobs:
   semgrep:
-    permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    name: Scan
+    name: Semgrep SAST
     runs-on: ubuntu-latest
     steps:
-      # Checkout project source
       - uses: actions/checkout@v4
 
-      # Scan code using project's configuration on https://semgrep.dev/manage
-      - uses: returntocorp/semgrep-action@fcd5ab7459e8d91cb1777481980d1b18b4fc6735
+      - name: Run Semgrep
+        # semgrep/semgrep-action@v1 — official action, no container needed.
+        # Rulesets governed by .github/security/security.toml [semgrep].
+        # continue-on-error: findings go to Security tab, not build failure.
+        uses: semgrep/semgrep-action@v1
         with:
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
-          publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
-          generateSarif: "1"
+          config: >-
+            p/python
+            p/owasp-top-ten
+            p/secrets
+          generateSarif: '1'
+          auditOn: push
+        env:
+          # Optional: links results to Semgrep Cloud dashboard.
+          # Add SEMGREP_APP_TOKEN in repo Settings → Secrets → Actions.
+          # Absent = fully offline run; SARIF still uploads fine.
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        continue-on-error: true
 
-      # Upload SARIF file generated in previous step
-      - name: Upload SARIF file
+      - name: Upload SARIF to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
+        if: always()
         with:
           sarif_file: semgrep.sarif
-        if: always()
+          category: semgrep

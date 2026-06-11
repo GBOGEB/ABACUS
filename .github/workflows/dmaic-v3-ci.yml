@@ -1,0 +1,360 @@
+name: DMAIC V3 Test Suite - Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop, feature/** ]
+    paths:
+      - '13_CORE_SYSTEMS/DMAIC/**'
+      - 'ABACUS-UNIFIED/**'
+      - '.github/workflows/dmaic-v3-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '13_CORE_SYSTEMS/DMAIC/**'
+      - 'ABACUS-UNIFIED/**'
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  DMAIC_ROOT: '13_CORE_SYSTEMS/DMAIC'
+
+jobs:
+  
+  smoke-tests:
+    name: Smoke Tests (Quick Validation)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+      
+      - name: Run smoke tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ -v -m "smoke" --tb=short --maxfail=3
+      
+      - name: Upload smoke test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results
+          path: ${{ env.DMAIC_ROOT }}/test-results/
+          retention-days: 7
+
+  
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    timeout-minutes: 15
+    
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+          pip install pytest-cov pytest-xdist
+      
+      - name: Run unit tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ -v -m "unit" --tb=short \
+            --cov=DMAIC_V3/core --cov-report=xml --cov-report=html \
+            -n auto
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ${{ env.DMAIC_ROOT }}/coverage.xml
+          flags: unit-tests
+          name: unit-tests-py${{ matrix.python-version }}
+      
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results-py${{ matrix.python-version }}
+          path: |
+            ${{ env.DMAIC_ROOT }}/test-results/
+            ${{ env.DMAIC_ROOT }}/htmlcov/
+          retention-days: 14
+
+  
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+          pip install pytest-timeout
+      
+      - name: Run integration tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ -v -m "integration" --tb=short \
+            --timeout=300
+      
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: ${{ env.DMAIC_ROOT }}/test-results/
+          retention-days: 14
+
+  
+  dow-core-tests:
+    name: DOW Core Tests (SUT_CORE_DOW)
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+      
+      - name: Run DOW core health checks
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/test_sut_core_dow_health.py -v --tb=short
+      
+      - name: Run DOW cognitive loop tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/test_dow_cognitive_loop.py -v --tb=short
+      
+      - name: Run DOW ranking tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/test_dow_top_bottom_ranking.py -v --tb=short
+      
+      - name: Upload DOW core test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dow-core-test-results
+          path: ${{ env.DMAIC_ROOT }}/test-results/
+          retention-days: 14
+
+  
+  phase-tests:
+    name: DOW Phase Tests (0-9)
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    timeout-minutes: 30
+    
+    strategy:
+      matrix:
+        phase-group: 
+          - 'phase0 or phase1 or phase2'
+          - 'phase3 or phase4 or phase5'
+          - 'phase6 or phase7 or phase8 or phase9'
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+      
+      - name: Run phase tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ -v -m "${{ matrix.phase-group }}" --tb=short
+      
+      - name: Upload phase test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-test-results-${{ matrix.phase-group }}
+          path: ${{ env.DMAIC_ROOT }}/test-results/
+          retention-days: 14
+
+  
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: [integration-tests, dow-core-tests]
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+      
+      - name: Run end-to-end tests
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ -v -m "e2e" --tb=short
+      
+      - name: Upload e2e test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: ${{ env.DMAIC_ROOT }}/test-results/
+          retention-days: 14
+
+  
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, dow-core-tests]
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pip install -r requirements.txt
+          pip install pytest-cov pylint mypy
+      
+      - name: Run linting
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pylint DMAIC_V3/core/ --exit-zero --output-format=text > pylint-report.txt
+          cat pylint-report.txt
+      
+      - name: Run type checking
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          mypy DMAIC_V3/core/ --ignore-missing-imports --no-strict-optional || true
+      
+      - name: Check test coverage threshold
+        run: |
+          cd ${{ env.DMAIC_ROOT }}
+          pytest DMAIC_V3/tests/ --cov=DMAIC_V3/core --cov-fail-under=70 --cov-report=term
+      
+      - name: Upload quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            ${{ env.DMAIC_ROOT }}/pylint-report.txt
+            ${{ env.DMAIC_ROOT }}/coverage.xml
+          retention-days: 30
+
+  
+  test-summary:
+    name: Test Summary Report
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, unit-tests, integration-tests, dow-core-tests, phase-tests, e2e-tests, quality-gates]
+    if: always()
+    
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results/
+      
+      - name: Generate test summary
+        run: |
+          echo "# DMAIC V3 Test Suite - CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Execution Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Tests | ${{ needs.smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.unit-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | ${{ needs.integration-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| DOW Core Tests | ${{ needs.dow-core-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase Tests | ${{ needs.phase-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality Gates | ${{ needs.quality-gates.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+
+  
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: test-summary
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    steps:
+      - name: Send notification
+        run: |
+          echo "CI pipeline completed with status: ${{ needs.test-summary.result }}"

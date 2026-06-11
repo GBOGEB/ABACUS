@@ -23,18 +23,18 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
     
     - name: Cache pip packages
-      uses: actions/cache@v5
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cache/pip
@@ -48,7 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist PyGithub
+        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
     
     - name: Install dev dependencies
       run: |
@@ -57,21 +57,26 @@ jobs:
       continue-on-error: true
     
     - name: Verify Python syntax
-      shell: bash
       run: |
         python -m py_compile DMAIC_V3/agents/*.py
         python -m py_compile DMAIC_V3/convergence/*.py
         python -m py_compile DMAIC_V3/core/*.py
     
     - name: Run pytest with coverage
-      shell: bash
       run: |
-        python -m pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3 --cov-report=xml --cov-report=term-missing --cov-report=html --tb=short --maxfail=5 -n auto
+        pytest DMAIC_V3/tests/ -v \
+          --cov=DMAIC_V3 \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --cov-report=html \
+          --tb=short \
+          --maxfail=5 \
+          -n auto
       continue-on-error: ${{ matrix.python-version != '3.11' }}
     
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
-      uses: codecov/codecov-action@v7
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
@@ -80,7 +85,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ matrix.os }}-py${{ matrix.python-version }}
         path: |
@@ -95,10 +100,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
@@ -133,10 +138,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -154,7 +159,7 @@ jobs:
     
     - name: Upload security reports
       if: always()
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: |
@@ -168,10 +173,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -188,7 +193,7 @@ jobs:
         twine check dist/*
     
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
         name: dist
         path: dist/
@@ -201,10 +206,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -224,10 +229,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
