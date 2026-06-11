@@ -28,9 +28,8 @@ try:
     from .phases.phase2_measure import Phase2Measure
     from .phases.phase3_analyze import Phase3Analyze
     from .phases.phase4_improve import Phase4Improve
-    from .phases.phase5_control import Phase5Control
 except ImportError:
-    Phase1Define = Phase2Measure = Phase3Analyze = Phase4Improve = Phase5Control = None
+    Phase1Define = Phase2Measure = Phase3Analyze = Phase4Improve = None
 from .phases.phase6_knowledge import Phase6Knowledge
 
 ENGINE_VERSION = "3.3.0"
