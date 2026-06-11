@@ -1,0 +1,13 @@
+{
+  "_comment": "W007 golden file. Copy of reports/W006_crossmap_statistics.json invariants (design<->as-drawn cross-map). Generated from verified runtime output.",
+  "total_design_tags": 97,
+  "total_asdrawn_real_tags": 141,
+  "mapped": 43,
+  "mapped_pct_of_design": 44.3,
+  "high_confidence": 0,
+  "medium_confidence": 39,
+  "low_confidence": 4,
+  "unmapped_design": 54,
+  "asdrawn_unclaimed": 98,
+  "known_seeds": 0
+}

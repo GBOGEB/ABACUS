@@ -1,0 +1,15 @@
+color,count,group,meaning,confidence
+#000000,244,Structure / outlines / text,"generic geometry, borders, labels",high
+#0000ff,124,Process line A,4.5 K / 3 bar helium supply,high
+#1a1a1a,95,Dark strokes / text,near-black strokes and annotations,high
+#00ff00,87,Coupler / utility water lines,DI cooling water to couplers / FREIA,high
+#808000,83,He-guard / Class E header,292 K 1.15 bar guard or 60 K/13 bar return,medium
+#ff0000,83,Process line D,40 K / 14 bar thermal-shield helium,high
+#00ffff,78,Process line B,3.5 K / 27 mbar helium (2 K return),high
+#999999,32,Grey structure,mechanical structure / shading,medium
+#ff00ff,29,Instrument air,pneumatic / instrument-air signal lines,high
+#9b9b9b,27,(unmapped),,low
+#008000,24,QINFRA scope piping,infrastructure scope-division lines,medium
+#898585,4,(unmapped),,low
+#808080,2,Grey shading,mid-grey shading,medium
+#000080,2,Water loop (navy),RFCELL water-loop / process line,medium

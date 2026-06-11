@@ -1,0 +1,19 @@
+semantic_remediation_planner:
+  moniker: DELTA_1
+
+  remediation_domains:
+    - governance_failures
+    - runtime_failures
+    - deployment_failures
+    - trust_failures
+    - reconciliation_failures
+
+  planner_requirements:
+    recursive_remediation_alignment: enabled
+    semantic_remediation_validation: required
+    autonomous_remediation_execution: enabled
+
+  objectives:
+    - self_healing_governance_runtime
+    - recursive_operational_remediation
+    - semantic_failure_resolution

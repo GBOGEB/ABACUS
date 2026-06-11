@@ -1,0 +1,57 @@
+renderer_dmaic:
+  global_maturity_score: 71.0
+
+  waves:
+    - wave: 4
+      title: CAD alignment engine
+      completion: 73
+      maturity: 69
+      status: active
+      metrics:
+        layout_stability: 78
+        alignment_accuracy: 81
+        responsiveness: 62
+
+    - wave: 5
+      title: heading lock system
+      completion: 67
+      maturity: 66
+      status: active
+      metrics:
+        heading_consistency: 88
+        semantic_hierarchy: 72
+
+    - wave: 7
+      title: slide classification engine
+      completion: 59
+      maturity: 58
+      status: recursive
+      blocked_by:
+        - deck_002
+        - deck_003
+
+    - wave: 8
+      title: evidence renderer
+      completion: 64
+      maturity: 74
+      status: active
+      metrics:
+        image_fidelity: 91
+        evidence_integrity: 89
+        ocr_governance: 84
+
+    - wave: 9
+      title: semantic card system
+      completion: 61
+      maturity: 63
+      status: recursive
+
+recursive_convergence:
+  dataset_count: 1
+  lineage_depth: 1
+  renderer_reuse_factor: 0.42
+  convergence_velocity: medium
+
+awaiting_datasets:
+  - deck_002
+  - deck_003

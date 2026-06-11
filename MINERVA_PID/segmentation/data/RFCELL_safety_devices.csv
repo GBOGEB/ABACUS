@@ -1,0 +1,7 @@
+tag,prefix,meaning,x,y,layer
+PZx21,PZ,Pressure (special / safety),564.58,359.98,TUN
+PZx22,PZ,Pressure (special / safety),564.61,369.36,TUN
+PZx11,PZ,Pressure (special / safety),864.51,366.38,TUN
+PZx12,PZ,Pressure (special / safety),864.54,375.75,TUN
+SVxxx,SV,Safety / Solenoid Valve,460.93,982.62,CPLR
+SVxxx,SV,Safety / Solenoid Valve,439.28,948.54,CPLR

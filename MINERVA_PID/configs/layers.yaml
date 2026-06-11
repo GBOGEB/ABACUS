@@ -1,0 +1,60 @@
+# ============================================================================
+# Canonical layer contract for the MINERVA QCELL/RFCELL colour-line model.
+#
+# STABILITY RULE: layer `id`s are a published contract consumed by the atlas,
+# the layered SVG/PDF export and downstream reviewers. NEVER rename an `id`.
+# To evolve a layer, add an entry under `aliases:` (old -> current) instead of
+# renaming. Adding NEW layers is allowed; removing/renaming is a breaking change.
+#
+# STRUCTURE: 13 top-level layer GROUPS (00..13). Group 03 and 04 fan out into
+# named sub-layers, giving 21 named layers in total. Counts below are the
+# runtime element counts from the last build (informative, not a contract).
+# ============================================================================
+
+schema_version: 1
+model: "MINERVA_QCELL_RFCELL_colour_line"
+top_level_groups: 13
+named_layers_total: 21
+
+# --- the 21 named layers, in paint order (back -> front) -------------------
+layers:
+  - { id: "00_Background_Grid",            group: 0,  kind: background,   count: 0 }
+  - { id: "01_TitleBlock",                 group: 1,  kind: frame,        count: 0 }
+  - { id: "02_ScopeBoundaries_Main",       group: 2,  kind: boundary,     count: 565 }
+  # group 03 = manifold headers (2 named sub-layers)
+  - { id: "03A_Manifold_COLD_Header",      group: 3,  kind: manifold,     count: 0 }
+  - { id: "03B_Manifold_WARM_Header",      group: 3,  kind: manifold,     count: 0 }
+  # group 04 = colour-defined process lines (7 named sub-layers, one per code)
+  - { id: "04A_Lines_A_BLUE",              group: 4,  kind: process_line, code: A,  count: 103 }
+  - { id: "04B_Lines_B_CYAN",              group: 4,  kind: process_line, code: B,  count: 43 }
+  - { id: "04C_Lines_W_GREEN",             group: 4,  kind: process_line, code: W,  count: 61 }
+  - { id: "04D_Lines_S_OLIVE",             group: 4,  kind: process_line, code: S,  count: 67 }
+  - { id: "04E_Lines_V_GREY",              group: 4,  kind: process_line, code: V,  count: 40 }
+  - { id: "04F_Lines_D_ORANGE",            group: 4,  kind: process_line, code: D,  count: 65 }
+  - { id: "04G_Lines_E_RED",               group: 4,  kind: process_line, code: E,  count: 0 }
+  - { id: "05_HeatLoads_ALL",              group: 5,  kind: heat_load,    count: 100 }
+  - { id: "06_SegmentNames_Vertical_Black",group: 6,  kind: label,        count: 17 }
+  - { id: "07_Equipment_Major",            group: 7,  kind: equipment,    count: 372 }
+  - { id: "08_Instruments_Bubbles",        group: 8,  kind: instrument,   count: 162 }
+  - { id: "09_Control_Elements",           group: 9,  kind: control,      count: 51 }
+  - { id: "10_Signals_Dashed",             group: 10, kind: signal,       count: 54 }
+  - { id: "11_Text_ColorCoded",            group: 11, kind: text,         count: 516 }
+  - { id: "12_Dots_SpecChanges_ALL",       group: 12, kind: spec_dot,     count: 205 }
+  - { id: "13_Legend_Toggleable",          group: 13, kind: legend,       count: 0 }
+
+# --- alias map (deprecated_id -> current_id). Keep forever; never delete. ---
+aliases: {}
+
+# --- canonical colour -> code anchors (RGB-nearest, not exact hex) ----------
+colour_codes:
+  A:  { colour: BLUE,   meaning: "4.5 K main line" }
+  "A'": { colour: NAVY, meaning: "4.5 K internal branch" }
+  B:  { colour: CYAN,   meaning: "2 K internal line" }
+  "B'": { colour: TEAL, meaning: "2 K branch" }
+  W:  { colour: GREEN,  meaning: "coupler (splits from BLUE A inside QM)" }
+  S:  { colour: OLIVE,  meaning: "warm S line" }
+  V:  { colour: GREY,   meaning: "vent line (per module, to outside)" }
+  D:  { colour: ORANGE, meaning: "cold manifold" }
+  E:  { colour: RED,    meaning: "warm manifold" }
+  structure: { colour: BLACK, meaning: "boundary / symbols / unknown" }
+  unknown:   { colour: OTHER, meaning: "unresolved (e.g. magenta) - flagged, never silently dropped" }

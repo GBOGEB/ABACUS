@@ -1,0 +1,102 @@
+{
+  "artifact": "trace_matrix",
+  "generated_at": "2026-05-31T08:47:56+00:00",
+  "rows": [
+    {
+      "available": true,
+      "evidence_artifact": "reports/runtime_publish_status.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_status",
+      "requirement_id": "REQ-001",
+      "requirement_title": "Runtime entry is executable"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "patterns/scientific_visualization/schema.json",
+      "evidence_domain": "schema",
+      "evidence_id": "scientific_visualization_schema",
+      "requirement_id": "REQ-002",
+      "requirement_title": "Scientific visualization schema is defined"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "content/qplant/process_flow.yaml",
+      "evidence_domain": "content",
+      "evidence_id": "qplant_process_flow_content",
+      "requirement_id": "REQ-003",
+      "requirement_title": "SVG and process-flow rendering is supported"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "content/qplant/thermodynamics.yaml",
+      "evidence_domain": "content",
+      "evidence_id": "qplant_thermodynamics_content",
+      "requirement_id": "REQ-004",
+      "requirement_title": "MathML rendering is supported"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "content/qplant/process_flow.yaml",
+      "evidence_domain": "content",
+      "evidence_id": "qplant_process_flow_content",
+      "requirement_id": "REQ-005",
+      "requirement_title": "QPLANT content loads successfully"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "content/qplant/thermodynamics.yaml",
+      "evidence_domain": "content",
+      "evidence_id": "qplant_thermodynamics_content",
+      "requirement_id": "REQ-005",
+      "requirement_title": "QPLANT content loads successfully"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "reports/dashboard_status.json",
+      "evidence_domain": "validation",
+      "evidence_id": "dashboard_status",
+      "requirement_id": "REQ-006",
+      "requirement_title": "Dashboard generation produces status evidence"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "reports/runtime_registry_report.json",
+      "evidence_domain": "runtime",
+      "evidence_id": "runtime_registry_report",
+      "requirement_id": "REQ-007",
+      "requirement_title": "Federation runtime registry is consumed"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "reports/dmaic_snapshot.json",
+      "evidence_domain": "dmaic",
+      "evidence_id": "dmaic_snapshot",
+      "requirement_id": "REQ-008",
+      "requirement_title": "DMAIC governance snapshots are generated"
+    },
+    {
+      "available": false,
+      "evidence_artifact": "reports/governance_snapshot.json",
+      "evidence_domain": "governance",
+      "evidence_id": "governance_snapshot",
+      "requirement_id": "REQ-008",
+      "requirement_title": "DMAIC governance snapshots are generated"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "patterns/scientific_visualization/schema.json",
+      "evidence_domain": "schema",
+      "evidence_id": "scientific_visualization_schema",
+      "requirement_id": "REQ-009",
+      "requirement_title": "Schema validation is enforced"
+    },
+    {
+      "available": true,
+      "evidence_artifact": "patterns/scientific_visualization/validation_rules.yaml",
+      "evidence_domain": "schema",
+      "evidence_id": "schema_validation_rules",
+      "requirement_id": "REQ-009",
+      "requirement_title": "Schema validation is enforced"
+    }
+  ]
+}

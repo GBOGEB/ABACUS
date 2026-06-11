@@ -1,0 +1,101 @@
+name: QPLANT Pages Runtime Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - build_qplant_visualization.py
+      - scripts/validate_runtime_foundation.py
+      - tools/gate_rollup.py
+      - logs/**
+      - content/qplant/**
+      - renderers/**
+      - rtm/**
+      - reports/runtime_governance_status.json
+      - docs/runtime.html
+      - docs/runtime-artifact-manifest.json
+      - docs/api/rtm_trace_matrix.json
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: qplant-pages
+  cancel-in-progress: false
+
+jobs:
+  publish-runtime:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+
+      - name: Build QPLANT visualization
+        run: python build_qplant_visualization.py
+
+      - name: Copy runtime page to docs
+        run: |
+          mkdir -p docs
+          cp dist/qplant_visualization.html docs/index.html
+
+      - name: Build CI gate rollup feed
+        run: python tools/gate_rollup.py
+
+      - name: Publish runtime governance feeds
+        run: |
+          mkdir -p docs/api docs/reports
+          cp rtm/trace_matrix.json docs/api/rtm_trace_matrix.json
+          cp reports/*.json docs/reports/
+
+      - name: Validate W007 runtime foundation
+        run: python scripts/validate_runtime_foundation.py
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Generate runtime publish status
+        run: |
+          mkdir -p reports
+          cat > reports/runtime_publish_status.json <<'JSON'
+          {
+            "wave": "W005.1",
+            "runtime_status": "published",
+            "runtime_evidence": true,
+            "deployment_evidence": true
+          }
+          JSON
+
+      - name: Upload runtime evidence artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: qplant-runtime-evidence
+          path: |
+            dist/qplant_visualization.html
+            reports/runtime_publish_status.json

@@ -1,0 +1,4 @@
+# Root requirements shim — delegates to DMAIC_V3/requirements.txt
+# This file exists so that generic tooling (Codespaces postCreateCommand,
+# scripts that pip install -r requirements.txt) resolve correctly.
+-r DMAIC_V3/requirements.txt

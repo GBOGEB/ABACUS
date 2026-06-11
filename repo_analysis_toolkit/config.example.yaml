@@ -1,0 +1,35 @@
+# repo_analysis_toolkit — example configuration.
+# Copy to config.yaml and edit, then pass --config config.yaml to any script.
+
+include_patterns:
+  - "**/*"
+
+exclude_patterns:
+  - ".git/**"
+  - "**/node_modules/**"
+  - "**/__pycache__/**"
+  - "**/.venv/**"
+  - "**/.mypy_cache/**"
+  - "**/.pytest_cache/**"
+  - "**/.next/**"
+  - "**/dist/**"
+  - "**/build/**"
+
+classification:
+  # File touched in the last N days is "Active".
+  active_age_days: 90
+  # File older than this but referenced is "Archived".
+  archive_age_days: 365
+  # File older than this and unreferenced is "Stale".
+  stale_age_days: 730
+  # Fuzzy duplicate detection threshold for "Redundant".
+  similarity_threshold: 0.95
+  # File treated as "Corrupted" if size == 0 or it fails parse for its language.
+
+lineage:
+  # Branches with no commits for this many days are flagged as "abandoned".
+  abandoned_branch_days: 180
+  # How many tags to render on the timeline diagram.
+  diagram_tag_limit: 30
+
+output_dir: "reports/"

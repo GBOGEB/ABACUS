@@ -47,7 +47,8 @@ coverage.xml
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/.gitkeep
 
 # Environment variables
 .env
@@ -59,10 +60,24 @@ ABACUS_V21_*/
 ABACUS_SESSION_ANALYSIS/
 output/
 reports/
+!reports/
+reports/*
 *.pdf
 *.json
+!GLOBAL_index.json
+!reports/runtime_publish_status.json
+!reports/dashboard_status.json
+!reports/runtime_registry_report.json
+!metrics/federation/federation_rollup.json
+!metrics/federation/federation_scree.json
+!metrics/federation/runtime_registry.json
+!patterns/scientific_visualization/schema.json
+!bottleneck_report.json
 !requirements.json
 !package.json
+!GLOBAL_index.json
+!rtm/trace_matrix.json
+!tracking_v2.3/tasks/tasks.json
 
 # Temporary files
 *.tmp
@@ -78,10 +93,9 @@ Thumbs.db
 # Docker
 .dockerignore
 
-<<<<<<< HEAD
 # Secrets
 secrets/
-=======
+
 # Generated PowerPoint files (always regenerate from templates using the generator scripts)
 # Example: python slides/qplant_sckcen_template.py
 *.pptx
@@ -93,7 +107,6 @@ secrets/
 *.hdf5
 
 # Sensitive data
->>>>>>> 1246535379fec46b70cda35854d925ccc325c441
 *.key
 *.pem
 *.crt
@@ -106,9 +119,7 @@ secrets/
 
 # Backup files
 *.backup
-<<<<<<< HEAD
 backup/
-=======
 *_backup.*
 
 # Archives
@@ -126,59 +137,14 @@ backup/
 !DMAIC_V3/**/*.json
 !DMAIC_V3/**/*.md
 
+# DOW Logs (dashboard JSON artifacts must be versioned)
+!DOW_LOGS/*.json
+
 # Keep documentation
 !*.md
 !docs/
+!docs/**/*.json
 !README.md
 !DEPLOY_NOW.md
 !GITHUB_SETUP_GUIDE.md
 maturity_assessment.json
->>>>>>> 1246535379fec46b70cda35854d925ccc325c441
-BACKUPS/
-**/BACKUPS/
-venv/
-.venv/
-__pycache__/
-.pytest_cache/
-.benchmarks/
-.sessions/
-.temporal_state/
-cache/
-*.log
-*.coverage
-node_modules/
-
-# nested repos — ignore until you decide A/B/C
-rich_padding/
-CODESPACES_jyperter/
-
-# === SECURITY GUARDS (added 2026-06-10) ===
-*token*.txt
-*recovery-codes*
-*.pem
-*.key
-.env
-.ssh/
-.gnupg/
-.aws/
-.azure/
-# Personal documents
-*IRP5*
-*ITA34*
-*Aanslagbiljet*
-*Invoice*
-
-# === SECURITY GUARDS (added 2026-06-10) ===
-*token*.txt
-*recovery-codes*
-*.pem
-*.key
-.env
-.ssh/
-.gnupg/
-.aws/
-.azure/
-*IRP5*
-*ITA34*
-*Aanslagbiljet*
-*Invoice*

@@ -1,0 +1,1826 @@
+{
+  "metadata": {
+    "title": "MINERVA / MYRRHA P&ID Symbol Reference Library",
+    "source_document": "AD_01.16 SUP - PID General Legend Sheet.pdf",
+    "drawing_number": "106889-PID00",
+    "doc_number": "MYR100PTF-0521",
+    "owner": "SCK CEN (MYRRHA - MINERVA)",
+    "revision": "A (Released)",
+    "drawing_date": "2023-11-16",
+    "sheet_size": "A1 (9 legend sheets)",
+    "standards_basis": [
+      "ANSI/ISA-5.1-2022 (instrument letter codes Table 4.1 & symbolic representation Table 5.1.1)",
+      "ISO 10628 (process diagram house style)",
+      "IEC 60617 / publication 617 (electrical symbols, Sheet 7)",
+      "Tag numbering: SCK CEN/36557490; mnemonics SCK CEN/36793249",
+      "ANSI C37.2 (relay function numbers)"
+    ],
+    "generated": "2026-06-03",
+    "generator": "standards/build_legend_library.py",
+    "drawn_symbol_count": 159,
+    "catalogued_symbol_count": 159
+  },
+  "style_spec": {
+    "canvas": {
+      "background": "#ffffff",
+      "default_stroke": "#111111",
+      "default_fill": "#ffffff",
+      "font_family": "Arial, Helvetica, sans-serif"
+    },
+    "line_weights_mm": {
+      "primary": 1.0,
+      "secondary": 0.5,
+      "signal": 0.25,
+      "hvac": 1.0
+    },
+    "stroke_width_userspace": {
+      "primary": 2.4,
+      "secondary": 1.4,
+      "signal": 0.9,
+      "symbol": 1.8,
+      "thin": 1.1
+    },
+    "fills": {
+      "instrument_field": "#ffffff",
+      "filled_marker": "#111111",
+      "vessel": "#ffffff"
+    }
+  },
+  "naming_conventions": {
+    "general_tag_scheme": {
+      "pattern": "W-X:Y-Z-1",
+      "basis": "Subordinate to Primary Systems Naming Convention & Terminology (SCK CEN/36557490)",
+      "fields": {
+        "W": "Section (1-6 characters)",
+        "X": "Subsection (1-6 characters, when it exists in the section)",
+        "Y": "Discipline (1-6 characters)",
+        "Z": "Deviceclass (1-6 characters)",
+        "1": "Index / running number"
+      },
+      "register_reference": "Primary Systems Naming Convention and Terminology - Mnemonics (SCK CEN/36793249)"
+    },
+    "pipe_line_tag": {
+      "pattern": "W-X:Y-Z-1 / S1-M1",
+      "fields": {
+        "W-X:Y-Z-1": "See general tag scheme",
+        "S1": "Diameter",
+        "M1": "Material"
+      },
+      "example": "THSITS-GSRSEL:HYD-PIPE-123 / DN40-SS316"
+    },
+    "instrument_tag": {
+      "rule": "Instrument tag numbers are not shown explicitly; they are composed by taking (1) the first line of the tag number of the element they are attached to, then (2) the top and bottom part shown inside the instrument bubble, joined by '-'.",
+      "examples": {
+        "LS attached to THSITS-GSRSEL:PNE-VALVE-1002 (bubble LS/1001)": "THSITS-GSRSEL:PNE-LS-1001",
+        "TT attached to THSITS-GSRSEL:PNE-PIPE-111 (bubble TT/202)": "THSITS-GSRSEL:PNE-TT-202"
+      }
+    },
+    "nfs_tag": "See MINERVA NFS naming convention (non-primary systems).",
+    "valve_lock_fail_codes": {
+      "LC": "Locked closed",
+      "LO": "Locked open",
+      "NC": "Closed in normal operation",
+      "NO": "Open in normal operation",
+      "FC": "Fail to closed position",
+      "FO": "Fail to open position",
+      "FA": "Fail as it is"
+    }
+  },
+  "categories": {
+    "lines": {
+      "source_sheet": "Sheet 1/9 - LINETYPES & HVAC LINETYPES",
+      "symbols": [
+        {
+          "id": "line-primary",
+          "name": "Primary line segment",
+          "description": "Main process pipe, line weight 1 mm, with flow arrow.",
+          "tag_notation": "LW=1mm",
+          "usage": "Main/primary process piping.",
+          "drawn": true
+        },
+        {
+          "id": "line-secondary",
+          "name": "Secondary line segment",
+          "description": "Branch/secondary process pipe, line weight 0.5 mm, with flow arrow.",
+          "tag_notation": "LW=0,5mm",
+          "usage": "Branch / secondary piping.",
+          "drawn": true
+        },
+        {
+          "id": "line-primary-future",
+          "name": "Primary line - future extension",
+          "description": "Future primary pipe (dash-dot), 1 mm.",
+          "tag_notation": "LW=1mm",
+          "usage": "Proposed/future primary piping.",
+          "drawn": true
+        },
+        {
+          "id": "line-secondary-future",
+          "name": "Secondary line - future extension",
+          "description": "Future secondary pipe (dash-dot), 0.5 mm.",
+          "tag_notation": "LW=0,5mm",
+          "usage": "Proposed/future secondary piping.",
+          "drawn": true
+        },
+        {
+          "id": "line-electrical-signal",
+          "name": "Electrical signal line",
+          "description": "Dashed thin signal line.",
+          "tag_notation": "LW=0,25mm",
+          "usage": "Electrical instrument signal.",
+          "drawn": true
+        },
+        {
+          "id": "line-pneumatic-signal",
+          "name": "Pneumatic signal line",
+          "description": "Line with double cross-hatch ticks.",
+          "tag_notation": "LW=0,25mm",
+          "usage": "Pneumatic instrument signal.",
+          "drawn": true
+        },
+        {
+          "id": "line-hydraulic-signal",
+          "name": "Hydraulic signal line",
+          "description": "Line with periodic L-marks.",
+          "tag_notation": "LW=0,25mm",
+          "usage": "Hydraulic instrument signal.",
+          "drawn": true
+        },
+        {
+          "id": "line-software-signal",
+          "name": "Software / data signal line",
+          "description": "Line with small ring markers.",
+          "tag_notation": "LW=0,25mm",
+          "usage": "Software / data link / system bus.",
+          "drawn": true
+        },
+        {
+          "id": "line-em-sonic-signal",
+          "name": "Guided electromagnetic or sonic signal",
+          "description": "Line with wave marker.",
+          "tag_notation": "",
+          "usage": "Guided EM / sonic signal.",
+          "drawn": true
+        },
+        {
+          "id": "line-capillary",
+          "name": "Capillary tube",
+          "description": "Line with x cross marks.",
+          "tag_notation": "LW=0,25mm",
+          "usage": "Filled thermal / capillary connection.",
+          "drawn": true
+        },
+        {
+          "id": "line-hose",
+          "name": "Hose",
+          "description": "Continuous wavy line.",
+          "tag_notation": "",
+          "usage": "Flexible hose.",
+          "drawn": true
+        },
+        {
+          "id": "line-pipe-insulated",
+          "name": "Pipe, insulated",
+          "description": "Pipe with hatch band.",
+          "tag_notation": "",
+          "usage": "Thermally insulated pipe.",
+          "drawn": true
+        },
+        {
+          "id": "line-tracer",
+          "name": "Tracer for heating or cooling",
+          "description": "Main line plus parallel dashed trace line.",
+          "tag_notation": "",
+          "usage": "Heat/cool tracing.",
+          "drawn": true
+        },
+        {
+          "id": "line-jacketed",
+          "name": "Jacketed pipeline",
+          "description": "Pipe inside an outer jacket rectangle.",
+          "tag_notation": "",
+          "usage": "Jacketed / double-wall pipe.",
+          "drawn": true
+        },
+        {
+          "id": "line-heated-insulated",
+          "name": "Piping, heated or cooled and insulated",
+          "description": "Hatched + traced pipe.",
+          "tag_notation": "",
+          "usage": "Traced and insulated pipe.",
+          "drawn": true
+        },
+        {
+          "id": "line-hvac-supply",
+          "name": "HVAC air supply segment",
+          "description": "Solid 1 mm line.",
+          "tag_notation": "LW=1mm",
+          "usage": "HVAC supply air duct/line.",
+          "drawn": true
+        },
+        {
+          "id": "line-hvac-return",
+          "name": "HVAC air return segment",
+          "description": "Dash-dot 1 mm line.",
+          "tag_notation": "LW=1mm",
+          "usage": "HVAC return air duct/line.",
+          "drawn": true
+        },
+        {
+          "id": "conn-connected-lines",
+          "name": "Connected lines",
+          "description": "Lines crossing with a connection (loop bridge over junction).",
+          "tag_notation": "",
+          "usage": "Show electrically/process connected crossing lines.",
+          "drawn": true
+        },
+        {
+          "id": "conn-non-connected-lines",
+          "name": "Non-connected lines",
+          "description": "Lines crossing with a gap/hop.",
+          "tag_notation": "",
+          "usage": "Show crossing lines that are NOT connected.",
+          "drawn": true
+        }
+      ]
+    },
+    "instrumentation": {
+      "source_sheet": "Sheet 2/9 - ISA-5.1 letter code + symbolic representation matrix; Sheet 3/9 - INSTRUMENT SYMBOLS",
+      "bubble_matrix": {
+        "type_columns": {
+          "A": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle",
+          "B": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals",
+          "C": "Computer systems and software: hexagon",
+          "D": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure)"
+        },
+        "location_rows": {
+          "1": "Located in field; not panel/cabinet/console mounted; visible at field location; normally operator accessible (NO line)",
+          "2": "Located in/on front of central or main panel/console; visible on panel front or video display; normally accessible (single solid line)",
+          "3": "Located in rear of central/main panel or in cabinet behind panel; not visible on front; not normally accessible (single dashed line)",
+          "4": "Located in/on front of secondary or local panel/console; visible on front; normally accessible (double solid line)",
+          "5": "Located in rear of secondary/local panel or in field cabinet; not visible on front; not normally accessible (double dashed line)"
+        }
+      },
+      "letter_code": {
+        "A": {
+          "first": "Analysis",
+          "succeeding_readout": "Alarm"
+        },
+        "B": {
+          "first": "Burner, combustion"
+        },
+        "C": {
+          "succeeding_output": "Control",
+          "modifier": "Close"
+        },
+        "D": {
+          "first": "Density",
+          "modifier_var": "Difference, differential",
+          "modifier": "Deviation"
+        },
+        "E": {
+          "first": "Voltage",
+          "succeeding_readout": "Sensor, primary element"
+        },
+        "F": {
+          "first": "Flow, flow rate",
+          "modifier_var": "Ratio"
+        },
+        "G": {
+          "succeeding_readout": "Glass, gauge, viewing device"
+        },
+        "H": {
+          "first": "Hand",
+          "modifier": "High"
+        },
+        "I": {
+          "first": "Current",
+          "succeeding_readout": "Indicate"
+        },
+        "J": {
+          "first": "Power",
+          "succeeding_readout": "Scan"
+        },
+        "K": {
+          "first": "Time, schedule",
+          "modifier_var": "Time rate of change",
+          "succeeding_output": "Control station"
+        },
+        "L": {
+          "first": "Level",
+          "succeeding_readout": "Light",
+          "modifier": "Low"
+        },
+        "M": {
+          "first": "Moisture or humidity",
+          "modifier": "Middle, intermediate"
+        },
+        "N": {
+          "note": "User's choice"
+        },
+        "O": {
+          "succeeding_readout": "Orifice, restriction",
+          "modifier": "Open"
+        },
+        "P": {
+          "first": "Pressure or vacuum",
+          "succeeding_readout": "Point (test connection)"
+        },
+        "Q": {
+          "first": "Quantity",
+          "modifier_var": "Integrate, totalize",
+          "succeeding_readout": "Integrate, totalize"
+        },
+        "R": {
+          "first": "Radiation",
+          "succeeding_readout": "Record",
+          "modifier": "Run"
+        },
+        "S": {
+          "first": "Speed, frequency",
+          "modifier_var": "Safety",
+          "succeeding_output": "Switch",
+          "modifier": "Stop"
+        },
+        "T": {
+          "first": "Temperature",
+          "succeeding_output": "Transmit"
+        },
+        "U": {
+          "first": "Multivariable",
+          "succeeding_readout": "Multifunction",
+          "succeeding_output": "Multifunction"
+        },
+        "V": {
+          "first": "Vibration, mechanical analysis",
+          "succeeding_output": "Valve, damper, louver"
+        },
+        "W": {
+          "first": "Weight, force",
+          "succeeding_readout": "Well, probe"
+        },
+        "X": {
+          "first": "Unclassified",
+          "modifier_var": "X-axis",
+          "succeeding_readout": "Accessory devices, unclassified",
+          "succeeding_output": "Unclassified",
+          "modifier": "Unclassified"
+        },
+        "Y": {
+          "first": "Event, state, presence",
+          "modifier_var": "Y-axis",
+          "succeeding_output": "Auxiliary devices"
+        },
+        "Z": {
+          "first": "Position, dimension",
+          "modifier_var": "Z-axis, safety instrumented system",
+          "succeeding_output": "Driver, actuator, unclassified final control element"
+        }
+      },
+      "symbols": [
+        {
+          "id": "inst-A1",
+          "name": "Basic Process Control System (BPCS) / location 1",
+          "description": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle -- Located in field; not panel/cabinet/console mounted; visible at field location; normally operator accessible (NO line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-A2",
+          "name": "Basic Process Control System (BPCS) / location 2",
+          "description": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle -- Located in/on front of central or main panel/console; visible on panel front or video display; normally accessible (single solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-A3",
+          "name": "Basic Process Control System (BPCS) / location 3",
+          "description": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle -- Located in rear of central/main panel or in cabinet behind panel; not visible on front; not normally accessible (single dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-A4",
+          "name": "Basic Process Control System (BPCS) / location 4",
+          "description": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle -- Located in/on front of secondary or local panel/console; visible on front; normally accessible (double solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-A5",
+          "name": "Basic Process Control System (BPCS) / location 5",
+          "description": "Shared display, shared control - Basic Process Control System (BPCS): square enclosing a circle -- Located in rear of secondary/local panel or in field cabinet; not visible on front; not normally accessible (double dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-B1",
+          "name": "Safety Instrumented System (SIS) / location 1",
+          "description": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals -- Located in field; not panel/cabinet/console mounted; visible at field location; normally operator accessible (NO line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-B2",
+          "name": "Safety Instrumented System (SIS) / location 2",
+          "description": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals -- Located in/on front of central or main panel/console; visible on panel front or video display; normally accessible (single solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-B3",
+          "name": "Safety Instrumented System (SIS) / location 3",
+          "description": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals -- Located in rear of central/main panel or in cabinet behind panel; not visible on front; not normally accessible (single dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-B4",
+          "name": "Safety Instrumented System (SIS) / location 4",
+          "description": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals -- Located in/on front of secondary or local panel/console; visible on front; normally accessible (double solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-B5",
+          "name": "Safety Instrumented System (SIS) / location 5",
+          "description": "Shared display, shared control - Safety Instrumented System (SIS): square enclosing a circle, with diagonals -- Located in rear of secondary/local panel or in field cabinet; not visible on front; not normally accessible (double dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-C1",
+          "name": "Computer systems and software / location 1",
+          "description": "Computer systems and software: hexagon -- Located in field; not panel/cabinet/console mounted; visible at field location; normally operator accessible (NO line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-C2",
+          "name": "Computer systems and software / location 2",
+          "description": "Computer systems and software: hexagon -- Located in/on front of central or main panel/console; visible on panel front or video display; normally accessible (single solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-C3",
+          "name": "Computer systems and software / location 3",
+          "description": "Computer systems and software: hexagon -- Located in rear of central/main panel or in cabinet behind panel; not visible on front; not normally accessible (single dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-C4",
+          "name": "Computer systems and software / location 4",
+          "description": "Computer systems and software: hexagon -- Located in/on front of secondary or local panel/console; visible on front; normally accessible (double solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-C5",
+          "name": "Computer systems and software / location 5",
+          "description": "Computer systems and software: hexagon -- Located in rear of secondary/local panel or in field cabinet; not visible on front; not normally accessible (double dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-D1",
+          "name": "Discrete visualisation of instruments / location 1",
+          "description": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure) -- Located in field; not panel/cabinet/console mounted; visible at field location; normally operator accessible (NO line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-D2",
+          "name": "Discrete visualisation of instruments / location 2",
+          "description": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure) -- Located in/on front of central or main panel/console; visible on panel front or video display; normally accessible (single solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-D3",
+          "name": "Discrete visualisation of instruments / location 3",
+          "description": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure) -- Located in rear of central/main panel or in cabinet behind panel; not visible on front; not normally accessible (single dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-D4",
+          "name": "Discrete visualisation of instruments / location 4",
+          "description": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure) -- Located in/on front of secondary or local panel/console; visible on front; normally accessible (double solid line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-D5",
+          "name": "Discrete visualisation of instruments / location 5",
+          "description": "Discrete visualisation of instruments: plain circle (elongated/stadium when two instruments share an enclosure) -- Located in rear of secondary/local panel or in field cabinet; not visible on front; not normally accessible (double dashed line)",
+          "tag_notation": "two-line tag: letters (top) / number (bottom)",
+          "usage": "ISA-5.1 instrument bubble.",
+          "drawn": true
+        },
+        {
+          "id": "inst-discrete-oval",
+          "name": "Discrete - shared (two instruments)",
+          "description": "Stadium/oval enclosure holding two discrete instruments.",
+          "tag_notation": "",
+          "usage": "Two instruments sharing one enclosure.",
+          "drawn": true
+        },
+        {
+          "id": "flow-sonic",
+          "name": "Sonic flow meter",
+          "description": "Inline box, 'S'.",
+          "tag_notation": "",
+          "usage": "Sonic/ultrasonic flow element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-variable-area",
+          "name": "Variable area flowmeter",
+          "description": "Inline box with float taper.",
+          "tag_notation": "",
+          "usage": "Rotameter / VA flowmeter.",
+          "drawn": true
+        },
+        {
+          "id": "flow-coriolis",
+          "name": "Coriolis flow meter",
+          "description": "Inline box with bent-tube mark.",
+          "tag_notation": "",
+          "usage": "Mass (Coriolis) flow element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-magnetic",
+          "name": "Magnetic flow meter",
+          "description": "Inline box, 'M'.",
+          "tag_notation": "",
+          "usage": "Magnetic flow element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-vortex",
+          "name": "Vortex shedding flowmeter",
+          "description": "Inline box with vortex mark.",
+          "tag_notation": "",
+          "usage": "Vortex flow element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-radiation",
+          "name": "Radiation meter",
+          "description": "Inline box, 'R'.",
+          "tag_notation": "",
+          "usage": "Radiation-based flow/level element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-orifice-generic",
+          "name": "Generic orifice plate",
+          "description": "Plate bar across line.",
+          "tag_notation": "",
+          "usage": "Generic orifice flow restriction.",
+          "drawn": true
+        },
+        {
+          "id": "flow-nozzle",
+          "name": "Flow nozzle",
+          "description": "Convergent nozzle in line.",
+          "tag_notation": "",
+          "usage": "Flow nozzle primary element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-venturi",
+          "name": "Venturi tube",
+          "description": "Convergent-divergent venturi.",
+          "tag_notation": "",
+          "usage": "Venturi primary element.",
+          "drawn": true
+        },
+        {
+          "id": "flow-positive-displacement",
+          "name": "Positive displacement flow meter",
+          "description": "Rounded body with two lobes.",
+          "tag_notation": "",
+          "usage": "PD flow meter.",
+          "drawn": true
+        },
+        {
+          "id": "flow-turbine",
+          "name": "Turbine flow meter",
+          "description": "Box with rotor mark.",
+          "tag_notation": "",
+          "usage": "Turbine flow element.",
+          "drawn": true
+        }
+      ]
+    },
+    "valves": {
+      "source_sheet": "Sheet 3/9 - VALVE GRAPHICAL SYMBOLS & ACTUATING ELEMENTS",
+      "lock_fail_codes": {
+        "LC": "Locked closed",
+        "LO": "Locked open",
+        "NC": "Closed in normal operation",
+        "NO": "Open in normal operation",
+        "FC": "Fail to closed position",
+        "FO": "Fail to open position",
+        "FA": "Fail as it is"
+      },
+      "symbols": [
+        {
+          "id": "valve-generic",
+          "name": "Valve (generic)",
+          "description": "Two-triangle (hour-glass/bow-tie) body.",
+          "tag_notation": "X = LC/LO/NC/NO above body",
+          "usage": "Generic isolation valve; add lock/fail code.",
+          "drawn": true
+        },
+        {
+          "id": "valve-gate",
+          "name": "Gate valve",
+          "description": "Plain bow-tie body.",
+          "tag_notation": "",
+          "usage": "Gate (on/off) valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-globe",
+          "name": "Globe valve",
+          "description": "Bow-tie with open centre circle.",
+          "tag_notation": "",
+          "usage": "Globe (throttling) valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-ball",
+          "name": "Ball valve",
+          "description": "Bow-tie with solid centre circle outline.",
+          "tag_notation": "",
+          "usage": "Ball valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-needle",
+          "name": "Needle valve",
+          "description": "Bow-tie with needle wedge.",
+          "tag_notation": "",
+          "usage": "Needle (fine throttle) valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-butterfly",
+          "name": "Butterfly valve",
+          "description": "Bow-tie with disc shaft.",
+          "tag_notation": "",
+          "usage": "Butterfly valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-angle",
+          "name": "Angle valve",
+          "description": "90 deg angle body.",
+          "tag_notation": "",
+          "usage": "Angle pattern valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-three-way",
+          "name": "Three-way valve",
+          "description": "Bow-tie with third (bottom) port.",
+          "tag_notation": "",
+          "usage": "3-way diverting/mixing valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-check",
+          "name": "Check valve",
+          "description": "Disc against seat (flow one way).",
+          "tag_notation": "",
+          "usage": "Non-return / check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-swing-check",
+          "name": "Swing check valve",
+          "description": "Hinged disc.",
+          "tag_notation": "",
+          "usage": "Swing check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-ball-check",
+          "name": "Ball check valve",
+          "description": "Bow-tie with solid ball.",
+          "tag_notation": "",
+          "usage": "Ball check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-globe-check",
+          "name": "Check valve, globe type",
+          "description": "Globe body with check disc.",
+          "tag_notation": "",
+          "usage": "Globe-type check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-tilting-disk-check",
+          "name": "Tilting disk check valve",
+          "description": "Body with tilting disc line.",
+          "tag_notation": "",
+          "usage": "Tilting-disk check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-piston-lift-check",
+          "name": "Piston lift check valve",
+          "description": "Body with piston rectangle.",
+          "tag_notation": "",
+          "usage": "Piston lift check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-y-piston-lift-check",
+          "name": "'Y' pattern piston lift check valve",
+          "description": "Y body with piston.",
+          "tag_notation": "",
+          "usage": "Y-pattern piston lift check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-butterfly-check",
+          "name": "Butterfly check valve",
+          "description": "Wafer with check vane.",
+          "tag_notation": "",
+          "usage": "Butterfly (dual-plate) check valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-y-globe",
+          "name": "Valve, globe 'Y' pattern type",
+          "description": "Y-pattern globe body.",
+          "tag_notation": "",
+          "usage": "Y-pattern globe valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-safety",
+          "name": "Safety valve",
+          "description": "Bow-tie with spring stem.",
+          "tag_notation": "",
+          "usage": "Safety valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-safety-spring-angle",
+          "name": "Safety valve, spring loaded (angle type)",
+          "description": "Angle body with spring.",
+          "tag_notation": "",
+          "usage": "Spring-loaded angle safety/relief valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-pressure-reducing",
+          "name": "Pressure reducing valve",
+          "description": "Bow-tie with diaphragm dome.",
+          "tag_notation": "",
+          "usage": "Self-acting pressure reducing valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-balancing",
+          "name": "Balancing valve",
+          "description": "Bow-tie with balancing bar.",
+          "tag_notation": "",
+          "usage": "Balancing valve.",
+          "drawn": true
+        },
+        {
+          "id": "valve-differential-pressure",
+          "name": "Differential pressure valve",
+          "description": "Bow-tie with dP spring head.",
+          "tag_notation": "",
+          "usage": "Differential pressure valve.",
+          "drawn": true
+        }
+      ]
+    },
+    "actuators": {
+      "source_sheet": "Sheet 3/9 - ACTUATING ELEMENTS",
+      "symbols": [
+        {
+          "id": "act-diaphragm",
+          "name": "Diaphragm actuator (pneumatic)",
+          "description": "Valve + diaphragm dome.",
+          "tag_notation": "",
+          "usage": "Pneumatic diaphragm actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-piston",
+          "name": "Piston actuator",
+          "description": "Valve + piston cylinder.",
+          "tag_notation": "",
+          "usage": "Piston/cylinder actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-hydraulic",
+          "name": "Hydraulic fluid actuator",
+          "description": "Valve + 'H' cylinder.",
+          "tag_notation": "",
+          "usage": "Hydraulic actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-solenoid",
+          "name": "Solenoid actuator",
+          "description": "Valve + 'S' box.",
+          "tag_notation": "",
+          "usage": "Solenoid actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-manual",
+          "name": "Manual operation",
+          "description": "Valve + hand lever.",
+          "tag_notation": "",
+          "usage": "Manual (hand) operation.",
+          "drawn": true
+        },
+        {
+          "id": "act-motor-electric",
+          "name": "Electric motor actuator",
+          "description": "Valve + 'M' circle.",
+          "tag_notation": "M",
+          "usage": "Electric motor actuator (MOV).",
+          "drawn": true
+        },
+        {
+          "id": "act-motor-dc",
+          "name": "D.C. electric motor",
+          "description": "Valve + 'M' circle with bar.",
+          "tag_notation": "M",
+          "usage": "DC motor actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-motor-pos-transmit",
+          "name": "Electric motor operated with position transmitter",
+          "description": "Valve + 'M' + transmitter ring.",
+          "tag_notation": "M",
+          "usage": "MOV with position transmitter.",
+          "drawn": true
+        },
+        {
+          "id": "act-self-fcv",
+          "name": "Self-acting flow control valve (FCV)",
+          "description": "Valve + diaphragm + FCV bubble.",
+          "tag_notation": "FCV",
+          "usage": "Self-acting flow control.",
+          "drawn": true
+        },
+        {
+          "id": "act-self-pcv",
+          "name": "Self-acting pressure control valve (PCV)",
+          "description": "Valve + diaphragm + PCV bubble.",
+          "tag_notation": "PCV",
+          "usage": "Self-acting pressure control.",
+          "drawn": true
+        },
+        {
+          "id": "act-self-tcv",
+          "name": "Self regulating temperature control valve (TCV)",
+          "description": "Valve + diaphragm + TCV bubble.",
+          "tag_notation": "TCV",
+          "usage": "Self-regulating temperature control.",
+          "drawn": true
+        },
+        {
+          "id": "act-self-lcv",
+          "name": "Self regulating level control valve (LCV)",
+          "description": "Valve + diaphragm + LCV bubble.",
+          "tag_notation": "LCV",
+          "usage": "Self-regulating level control.",
+          "drawn": true
+        },
+        {
+          "id": "act-fixed-spring",
+          "name": "Operation against fixed spring",
+          "description": "Valve + spring.",
+          "tag_notation": "",
+          "usage": "Spring-return operation.",
+          "drawn": true
+        },
+        {
+          "id": "act-float",
+          "name": "Float operated",
+          "description": "Valve + float ball.",
+          "tag_notation": "",
+          "usage": "Float operated valve.",
+          "drawn": true
+        },
+        {
+          "id": "act-weight",
+          "name": "Weight operated",
+          "description": "Valve + weight.",
+          "tag_notation": "",
+          "usage": "Weight operated valve.",
+          "drawn": true
+        },
+        {
+          "id": "act-high-speed",
+          "name": "High speed actuator",
+          "description": "Valve + fast-action mark.",
+          "tag_notation": "",
+          "usage": "High-speed actuator.",
+          "drawn": true
+        },
+        {
+          "id": "act-fail-closed",
+          "name": "Fail to closed position (FC)",
+          "description": "Valve + 'FC'.",
+          "tag_notation": "FC",
+          "usage": "Fails closed on loss of signal/power.",
+          "drawn": true
+        },
+        {
+          "id": "act-fail-open",
+          "name": "Fail to open position (FO)",
+          "description": "Valve + 'FO'.",
+          "tag_notation": "FO",
+          "usage": "Fails open on loss of signal/power.",
+          "drawn": true
+        },
+        {
+          "id": "act-fail-as-is",
+          "name": "Fail as it is (FA)",
+          "description": "Valve + 'FA'.",
+          "tag_notation": "FA",
+          "usage": "Fails in last position.",
+          "drawn": true
+        }
+      ]
+    },
+    "equipment": {
+      "source_sheet": "Sheet 4/9 - EQUIPMENT",
+      "symbols": [
+        {
+          "id": "eq-pump-liquid",
+          "name": "Pump, liquid type (general)",
+          "description": "Circle with flow triangle.",
+          "tag_notation": "",
+          "usage": "General liquid pump.",
+          "drawn": true
+        },
+        {
+          "id": "eq-pump-centrifugal",
+          "name": "Pump, centrifugal type",
+          "description": "Circle with inlet vee.",
+          "tag_notation": "",
+          "usage": "Centrifugal pump.",
+          "drawn": true
+        },
+        {
+          "id": "eq-pump-cavity",
+          "name": "Pump, progressive cavity type",
+          "description": "Circle with sine.",
+          "tag_notation": "",
+          "usage": "Progressive cavity pump.",
+          "drawn": true
+        },
+        {
+          "id": "eq-compressor-vacuum",
+          "name": "Compressor / vacuum pump",
+          "description": "Plain circle.",
+          "tag_notation": "",
+          "usage": "Compressor / vacuum pump.",
+          "drawn": true
+        },
+        {
+          "id": "eq-turbo-compressor",
+          "name": "Turbo compressor / turbo vacuum pump",
+          "description": "Circle with inner ring.",
+          "tag_notation": "",
+          "usage": "Turbo compressor / vacuum pump.",
+          "drawn": true
+        },
+        {
+          "id": "eq-blower-fan",
+          "name": "Blower, fan",
+          "description": "Circle with blades.",
+          "tag_notation": "",
+          "usage": "Blower / fan.",
+          "drawn": true
+        },
+        {
+          "id": "eq-heat-exchanger-general",
+          "name": "Heat exchanger (general) / condenser",
+          "description": "Circle with zig-zag.",
+          "tag_notation": "",
+          "usage": "General heat exchanger / condenser.",
+          "drawn": true
+        },
+        {
+          "id": "eq-heat-exchanger-u-tube",
+          "name": "Heat exchanger with U-shaped tubes",
+          "description": "Shell with U-tube.",
+          "tag_notation": "",
+          "usage": "U-tube shell & tube HX.",
+          "drawn": true
+        },
+        {
+          "id": "eq-heat-exchanger-plate",
+          "name": "Heat exchanger of plate type",
+          "description": "Box with cross.",
+          "tag_notation": "",
+          "usage": "Plate heat exchanger.",
+          "drawn": true
+        },
+        {
+          "id": "eq-electric-heater",
+          "name": "Electric heater",
+          "description": "'E' box with elements.",
+          "tag_notation": "E",
+          "usage": "Electric heater.",
+          "drawn": true
+        },
+        {
+          "id": "eq-steam-generator",
+          "name": "Steam generator",
+          "description": "Box with diagonal.",
+          "tag_notation": "",
+          "usage": "Steam generator.",
+          "drawn": true
+        },
+        {
+          "id": "eq-chiller",
+          "name": "Chiller",
+          "description": "Condenser/evaporator stack.",
+          "tag_notation": "",
+          "usage": "Chiller package.",
+          "drawn": true
+        },
+        {
+          "id": "eq-gas-filter",
+          "name": "Gas filter (general)",
+          "description": "Tall box with bands.",
+          "tag_notation": "",
+          "usage": "General gas filter.",
+          "drawn": true
+        },
+        {
+          "id": "eq-gas-filter-hepa",
+          "name": "Gas filter HEPA",
+          "description": "Box labelled HEPA.",
+          "tag_notation": "HEPA",
+          "usage": "HEPA gas filter.",
+          "drawn": true
+        },
+        {
+          "id": "eq-liquid-filter",
+          "name": "Liquid filter (general)",
+          "description": "Box with dashed band.",
+          "tag_notation": "",
+          "usage": "General liquid filter.",
+          "drawn": true
+        },
+        {
+          "id": "eq-mixed-bed-filter",
+          "name": "Mixed bed filter",
+          "description": "Box with double cross.",
+          "tag_notation": "",
+          "usage": "Mixed-bed filter.",
+          "drawn": true
+        },
+        {
+          "id": "eq-ion-exchanger",
+          "name": "Liquid bed filter, ion exchanger type",
+          "description": "Box labelled ION.",
+          "tag_notation": "ION",
+          "usage": "Ion-exchange bed.",
+          "drawn": true
+        },
+        {
+          "id": "eq-charcoal-filter",
+          "name": "Activated charcoal filter",
+          "description": "Box with centre cartridge.",
+          "tag_notation": "",
+          "usage": "Activated charcoal filter.",
+          "drawn": true
+        },
+        {
+          "id": "eq-horizontal-tank",
+          "name": "Horizontal tank (dished ends)",
+          "description": "Horizontal vessel.",
+          "tag_notation": "",
+          "usage": "Horizontal tank/vessel.",
+          "drawn": true
+        },
+        {
+          "id": "eq-vertical-tank",
+          "name": "Vertical tank (dished ends)",
+          "description": "Vertical vessel.",
+          "tag_notation": "",
+          "usage": "Vertical tank/vessel.",
+          "drawn": true
+        },
+        {
+          "id": "eq-conical-tank",
+          "name": "Tank with conical roof and flat bottom",
+          "description": "Roofed tank.",
+          "tag_notation": "",
+          "usage": "Conical-roof tank.",
+          "drawn": true
+        },
+        {
+          "id": "eq-hopper",
+          "name": "Hopper",
+          "description": "Inverted triangle.",
+          "tag_notation": "",
+          "usage": "Hopper.",
+          "drawn": true
+        },
+        {
+          "id": "eq-rupture-disc",
+          "name": "Rupture disc",
+          "description": "Line with bowed disc.",
+          "tag_notation": "",
+          "usage": "Rupture / bursting disc.",
+          "drawn": true
+        },
+        {
+          "id": "eq-steam-trap",
+          "name": "Steam / air trap",
+          "description": "Circle with half-fill.",
+          "tag_notation": "",
+          "usage": "Steam/air trap.",
+          "drawn": true
+        },
+        {
+          "id": "eq-viewing-glass",
+          "name": "Viewing glass",
+          "description": "Inline window with eye.",
+          "tag_notation": "",
+          "usage": "Sight / viewing glass.",
+          "drawn": true
+        },
+        {
+          "id": "eq-orifice-plate-line",
+          "name": "Orifice plate (in line)",
+          "description": "Plate across line.",
+          "tag_notation": "",
+          "usage": "Inline orifice plate.",
+          "drawn": true
+        }
+      ]
+    },
+    "connections": {
+      "source_sheet": "Sheet 3/9 - (EQUIPMENT) CONNECTIONS",
+      "symbols": [
+        {
+          "id": "conn-threaded",
+          "name": "Threaded / screw ends",
+          "description": "Threaded end caps.",
+          "tag_notation": "",
+          "usage": "Threaded/screwed pipe ends.",
+          "drawn": true
+        },
+        {
+          "id": "conn-flanged-ends",
+          "name": "Flanged ends",
+          "description": "Flange bars both ends.",
+          "tag_notation": "",
+          "usage": "Flanged pipe ends.",
+          "drawn": true
+        },
+        {
+          "id": "conn-wafer",
+          "name": "Wafer type",
+          "description": "Wafer body between flanges.",
+          "tag_notation": "",
+          "usage": "Wafer connection.",
+          "drawn": true
+        },
+        {
+          "id": "conn-welded-ends",
+          "name": "Welded ends",
+          "description": "Weld dots both ends.",
+          "tag_notation": "",
+          "usage": "Welded pipe ends.",
+          "drawn": true
+        },
+        {
+          "id": "conn-quick-coupling",
+          "name": "With quick connection / coupling",
+          "description": "Quick-coupling end.",
+          "tag_notation": "",
+          "usage": "Quick connect coupling.",
+          "drawn": true
+        },
+        {
+          "id": "conn-hose",
+          "name": "Hose connection",
+          "description": "Hose barb ends.",
+          "tag_notation": "",
+          "usage": "Hose connection.",
+          "drawn": true
+        },
+        {
+          "id": "conn-flanged-connection",
+          "name": "Flanged connection",
+          "description": "Single flange pair.",
+          "tag_notation": "",
+          "usage": "Flanged joint.",
+          "drawn": true
+        },
+        {
+          "id": "conn-isolating-flange",
+          "name": "Isolating flange",
+          "description": "Flange pair with isolator.",
+          "tag_notation": "",
+          "usage": "Electrically isolating flange.",
+          "drawn": true
+        },
+        {
+          "id": "conn-blind-flange",
+          "name": "Blind flange",
+          "description": "Capped flange bar.",
+          "tag_notation": "",
+          "usage": "Blind flange.",
+          "drawn": true
+        },
+        {
+          "id": "conn-screw-cap",
+          "name": "Screw cap",
+          "description": "Threaded end cap.",
+          "tag_notation": "",
+          "usage": "Screwed cap.",
+          "drawn": true
+        },
+        {
+          "id": "conn-welded-cap",
+          "name": "Welded cap",
+          "description": "Domed welded cap.",
+          "tag_notation": "",
+          "usage": "Welded cap.",
+          "drawn": true
+        },
+        {
+          "id": "conn-reducer",
+          "name": "Reducer",
+          "description": "Concentric/eccentric reducer.",
+          "tag_notation": "DN1/DN2",
+          "usage": "Pipe size reducer.",
+          "drawn": true
+        }
+      ]
+    },
+    "interfaces_scope": {
+      "source_sheet": "Sheet 1/9 - INTERFACES / CONNECTIONS, OFF PAGE CONNECTOR, DESIGN CONDITIONS & CODE JURISDICTION BREAKS",
+      "termination_point_codes": {
+        "B": "Building",
+        "C": "Civil",
+        "E": "Electrical",
+        "G": "Compressed gasses",
+        "H": "HVAC",
+        "L": "Liquid waste",
+        "S": "Solid waste",
+        "W": "Water"
+      },
+      "symbols": [
+        {
+          "id": "iface-termination-point",
+          "name": "Termination point (primary systems)",
+          "description": "Diamond 'TPXYYYY / ZZZ'. X = interface category (B/C/E/G/H/L/S/W), YYYY = unique number, ZZZ = next system/process.",
+          "tag_notation": "TPXYYYY / ZZZ",
+          "usage": "Primary-system interface / termination point.",
+          "drawn": true
+        },
+        {
+          "id": "iface-offpage-connector",
+          "name": "Off-page connector (primary systems)",
+          "description": "Arrow box 'XXXXX | 123456-PID01 | WWWWW'. XXXXX=unique number/name, 123456-PID01=interconnecting P&ID, WWWWW=from/to process, ZZZZZ=medium.",
+          "tag_notation": "XXXXX / 123456-PID01 / WWWWW",
+          "usage": "Continuation to/from another P&ID sheet.",
+          "drawn": true
+        },
+        {
+          "id": "iface-system-nfs",
+          "name": "Interface between systems (NFS)",
+          "description": "Valve + system boundary (PBS1).",
+          "tag_notation": "PBS1",
+          "usage": "Boundary between systems (non-primary).",
+          "drawn": true
+        },
+        {
+          "id": "scope-design-limit",
+          "name": "System and design conditions limit",
+          "description": "Valve with diamond marker on a stem.",
+          "tag_notation": "",
+          "usage": "System / design-conditions scope boundary.",
+          "drawn": true
+        },
+        {
+          "id": "scope-code-jurisdiction",
+          "name": "Code jurisdiction break",
+          "description": "Valve + diamond + code letters (e.g. ASME VIII / ASME B31.3).",
+          "tag_notation": "ASME VIII | ASME B31.3",
+          "usage": "Piping code jurisdiction / scope-of-supply break (* = supplier).",
+          "drawn": true
+        }
+      ]
+    },
+    "misc_specialty": {
+      "source_sheet": "Sheet 5/9 - MISCELLANEOUS SYMBOLS",
+      "symbols": [
+        {
+          "id": "misc-reducer",
+          "name": "Reducer",
+          "description": "Concentric reducer w/ DN1/DN2.",
+          "tag_notation": "DN1/DN2",
+          "usage": "Line size change.",
+          "drawn": true
+        },
+        {
+          "id": "misc-vfd",
+          "name": "Variable frequency driver",
+          "description": "Box 'VFD'.",
+          "tag_notation": "VFD",
+          "usage": "Variable frequency drive.",
+          "drawn": true
+        },
+        {
+          "id": "misc-flame-arrestor",
+          "name": "Flame arrestor",
+          "description": "Inline matrix box.",
+          "tag_notation": "",
+          "usage": "Flame arrestor.",
+          "drawn": true
+        },
+        {
+          "id": "misc-dielectric-joint",
+          "name": "Dielectric joint",
+          "description": "Insulated inline box.",
+          "tag_notation": "",
+          "usage": "Dielectric (isolating) joint.",
+          "drawn": true
+        },
+        {
+          "id": "misc-strainer-y",
+          "name": "'Y' type strainer",
+          "description": "Y leg off line.",
+          "tag_notation": "",
+          "usage": "Y-type strainer.",
+          "drawn": true
+        },
+        {
+          "id": "misc-strainer-t",
+          "name": "'T' type strainer",
+          "description": "T leg off line.",
+          "tag_notation": "",
+          "usage": "T-type strainer.",
+          "drawn": true
+        },
+        {
+          "id": "misc-strainer-cone",
+          "name": "Cone type strainer",
+          "description": "Cone in line.",
+          "tag_notation": "",
+          "usage": "Conical (temporary) strainer.",
+          "drawn": true
+        },
+        {
+          "id": "misc-sampling-point",
+          "name": "Sampling point",
+          "description": "Inline sample take-off.",
+          "tag_notation": "",
+          "usage": "Sampling connection.",
+          "drawn": true
+        },
+        {
+          "id": "misc-atmospheric-vent",
+          "name": "Atmospheric vent",
+          "description": "Up arrow to atmosphere.",
+          "tag_notation": "",
+          "usage": "Vent to atmosphere.",
+          "drawn": true
+        },
+        {
+          "id": "misc-spray-nozzle",
+          "name": "Spray nozzle",
+          "description": "Nozzle with spray.",
+          "tag_notation": "",
+          "usage": "Spray nozzle.",
+          "drawn": true
+        },
+        {
+          "id": "misc-agitator",
+          "name": "Agitator, stirrer (general)",
+          "description": "Shaft with blade.",
+          "tag_notation": "",
+          "usage": "Agitator / stirrer.",
+          "drawn": true
+        },
+        {
+          "id": "misc-compensator",
+          "name": "Compensator",
+          "description": "Inline bellows expansion joint.",
+          "tag_notation": "",
+          "usage": "Expansion compensator.",
+          "drawn": true
+        },
+        {
+          "id": "misc-funnel",
+          "name": "Funnel",
+          "description": "Funnel + drain.",
+          "tag_notation": "",
+          "usage": "Funnel / tundish.",
+          "drawn": true
+        },
+        {
+          "id": "misc-special-joint",
+          "name": "Special joint",
+          "description": "Double parallel bar.",
+          "tag_notation": "",
+          "usage": "Special joint.",
+          "drawn": true
+        }
+      ]
+    },
+    "hvac": {
+      "source_sheet": "Sheet 5/9 - HVAC SYMBOLS",
+      "symbols": [
+        {
+          "id": "hvac-shutoff-damper",
+          "name": "Shut-off damper",
+          "description": "Box with diagonal blade.",
+          "tag_notation": "",
+          "usage": "HVAC shut-off damper.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-parallel-damper",
+          "name": "Parallel-blade damper",
+          "description": "Box with parallel blades.",
+          "tag_notation": "",
+          "usage": "Parallel-blade damper.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-opposed-damper",
+          "name": "Opposed-blade damper",
+          "description": "Box with opposed blades.",
+          "tag_notation": "",
+          "usage": "Opposed-blade damper.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-fan-general",
+          "name": "Fan (general)",
+          "description": "Circle with blades.",
+          "tag_notation": "",
+          "usage": "HVAC fan.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-radiator",
+          "name": "Radiator",
+          "description": "Finned box.",
+          "tag_notation": "",
+          "usage": "Radiator.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-heating-coil",
+          "name": "Water or steam heating coil",
+          "description": "Box '+' diagonal.",
+          "tag_notation": "",
+          "usage": "Heating coil.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-cooling-coil",
+          "name": "Cooling coil",
+          "description": "Box '-' diagonal.",
+          "tag_notation": "",
+          "usage": "Cooling coil.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-filter",
+          "name": "Filter (gen / HEPA / carb)",
+          "description": "Trapezoid labelled.",
+          "tag_notation": "HEPA/GEN/CARB",
+          "usage": "HVAC filter.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-supply-terminal",
+          "name": "Supply air terminal device",
+          "description": "Box with out arrow.",
+          "tag_notation": "",
+          "usage": "Supply air terminal.",
+          "drawn": true
+        },
+        {
+          "id": "hvac-exhaust-terminal",
+          "name": "Exhaust air terminal device",
+          "description": "Box with in arrow.",
+          "tag_notation": "",
+          "usage": "Exhaust air terminal.",
+          "drawn": true
+        }
+      ]
+    }
+  },
+  "reference_only_sets": {
+    "minerva_rib_line": {
+      "source_sheet": "Sheet 6/9 - MINERVA RIB LINE SPECIFIC ELEMENTS",
+      "standard": "MINERVA facility-specific",
+      "items": [
+        "Pillow seal",
+        "Clamped connection",
+        "Thin window",
+        "Cooled window",
+        "Collimator",
+        "Hall sensor",
+        "Heat exchanger",
+        "Magnet",
+        "Electrical insulator",
+        "Inflatable bellow",
+        "Bellow",
+        "Target"
+      ]
+    },
+    "minerva_beam_optics": {
+      "source_sheet": "Sheet 6/9 - MINERVA BEAM OPTICS",
+      "standard": "MINERVA facility-specific",
+      "items": [
+        "Beam position monitor",
+        "Halo monitor",
+        "Beam profile monitor",
+        "Tail monitor",
+        "Quadrupole",
+        "Wire scanner",
+        "Steering plates horizontal",
+        "Steering plates vertical",
+        "Steering plates horizontal & vertical",
+        "Faraday cup",
+        "Electrostatic bender",
+        "Mirror",
+        "Mirror motorized",
+        "Selectable slits",
+        "Vertical slits",
+        "Beam shutter",
+        "Beam dump",
+        "Optical diagnostics (WLM/PM/EM)",
+        "Laser",
+        "Dye laser head",
+        "Laser cool unit (to water)",
+        "Laser cool unit (to air)",
+        "Atomic beam unit (ABU)",
+        "Frequency convertor unit (FCU)",
+        "Optical fibre switch"
+      ]
+    },
+    "electrical_iec60617": {
+      "source_sheet": "Sheet 7/9 - ELECTRICAL SYMBOLS",
+      "standard": "IEC 60617 (publication 617); items marked '*' are non-standard; relay function numbers '**' per ANSI C37.2",
+      "items": [
+        "Direct current",
+        "Alternating current",
+        "Key interlock",
+        "Mechanical interlock",
+        "Electrical interlock",
+        "Normally open*",
+        "Normally closed*",
+        "Ground",
+        "Generator (G)",
+        "Motor",
+        "Inductor/coil",
+        "Battery",
+        "2/3-winding transformer",
+        "Current transformer",
+        "Thermocouple",
+        "RTD",
+        "Signal converter",
+        "Diode",
+        "Thyristor",
+        "Rectifier/charger",
+        "Inverter",
+        "Static transfer switch",
+        "Fuse",
+        "Fuse disconnector",
+        "Automatic circuit breaker",
+        "Relay (various)",
+        "Make/break/time-delay contacts",
+        "Push-button/limit/level/flow/temperature switches",
+        "Meters (A/V/W/VAR/Hz/...)",
+        "Horn/bell/siren/buzzer/loudspeaker",
+        "Surge arrester"
+      ]
+    },
+    "fire_safety": {
+      "source_sheet": "Sheets 8-9/9 - FIRE DETECTION, EXTINGUISHING & SAFETY",
+      "standard": "Fire-detection / life-safety symbology (house standard)",
+      "items": [
+        "Emergency exits / evacuation arrows / assembly point",
+        "Fire extinguisher / hose reel / ladder / phone / alarm",
+        "First aid / AED / doctor / emergency shower / eyewash / stretcher",
+        "Fire separation E30/EI30/EI60/EI120",
+        "Extinguishing system & controls (XC10/GAS/EWP/...)",
+        "Optical/thermal/multicriteria/flame/gas/duct/beam detectors",
+        "Sounders / sirens / optical & optical-acoustic signals",
+        "Modules (input/output) / Zener barrier / fire station",
+        "Fire damper / aspirating smoke detection (ASD)"
+      ]
+    }
+  },
+  "svg_library": {
+    "file": "symbol_library.svg",
+    "usage": "Reference a symbol via <use href=\"#<id>\"/> after embedding or linking symbol_library.svg.",
+    "drawn_ids": [
+      "act-diaphragm",
+      "act-fail-as-is",
+      "act-fail-closed",
+      "act-fail-open",
+      "act-fixed-spring",
+      "act-float",
+      "act-high-speed",
+      "act-hydraulic",
+      "act-manual",
+      "act-motor-dc",
+      "act-motor-electric",
+      "act-motor-pos-transmit",
+      "act-piston",
+      "act-self-fcv",
+      "act-self-lcv",
+      "act-self-pcv",
+      "act-self-tcv",
+      "act-solenoid",
+      "act-weight",
+      "conn-blind-flange",
+      "conn-connected-lines",
+      "conn-flanged-connection",
+      "conn-flanged-ends",
+      "conn-hose",
+      "conn-isolating-flange",
+      "conn-non-connected-lines",
+      "conn-quick-coupling",
+      "conn-reducer",
+      "conn-screw-cap",
+      "conn-threaded",
+      "conn-wafer",
+      "conn-welded-cap",
+      "conn-welded-ends",
+      "eq-blower-fan",
+      "eq-charcoal-filter",
+      "eq-chiller",
+      "eq-compressor-vacuum",
+      "eq-conical-tank",
+      "eq-electric-heater",
+      "eq-gas-filter",
+      "eq-gas-filter-hepa",
+      "eq-heat-exchanger-general",
+      "eq-heat-exchanger-plate",
+      "eq-heat-exchanger-u-tube",
+      "eq-hopper",
+      "eq-horizontal-tank",
+      "eq-ion-exchanger",
+      "eq-liquid-filter",
+      "eq-mixed-bed-filter",
+      "eq-orifice-plate-line",
+      "eq-pump-cavity",
+      "eq-pump-centrifugal",
+      "eq-pump-liquid",
+      "eq-rupture-disc",
+      "eq-steam-generator",
+      "eq-steam-trap",
+      "eq-turbo-compressor",
+      "eq-vertical-tank",
+      "eq-viewing-glass",
+      "flow-coriolis",
+      "flow-magnetic",
+      "flow-nozzle",
+      "flow-orifice-generic",
+      "flow-positive-displacement",
+      "flow-radiation",
+      "flow-sonic",
+      "flow-turbine",
+      "flow-variable-area",
+      "flow-venturi",
+      "flow-vortex",
+      "hvac-cooling-coil",
+      "hvac-exhaust-terminal",
+      "hvac-fan-general",
+      "hvac-filter",
+      "hvac-heating-coil",
+      "hvac-opposed-damper",
+      "hvac-parallel-damper",
+      "hvac-radiator",
+      "hvac-shutoff-damper",
+      "hvac-supply-terminal",
+      "iface-offpage-connector",
+      "iface-system-nfs",
+      "iface-termination-point",
+      "inst-A1",
+      "inst-A2",
+      "inst-A3",
+      "inst-A4",
+      "inst-A5",
+      "inst-B1",
+      "inst-B2",
+      "inst-B3",
+      "inst-B4",
+      "inst-B5",
+      "inst-C1",
+      "inst-C2",
+      "inst-C3",
+      "inst-C4",
+      "inst-C5",
+      "inst-D1",
+      "inst-D2",
+      "inst-D3",
+      "inst-D4",
+      "inst-D5",
+      "inst-discrete-oval",
+      "line-capillary",
+      "line-electrical-signal",
+      "line-em-sonic-signal",
+      "line-heated-insulated",
+      "line-hose",
+      "line-hvac-return",
+      "line-hvac-supply",
+      "line-hydraulic-signal",
+      "line-jacketed",
+      "line-pipe-insulated",
+      "line-pneumatic-signal",
+      "line-primary",
+      "line-primary-future",
+      "line-secondary",
+      "line-secondary-future",
+      "line-software-signal",
+      "line-tracer",
+      "misc-agitator",
+      "misc-atmospheric-vent",
+      "misc-compensator",
+      "misc-dielectric-joint",
+      "misc-flame-arrestor",
+      "misc-funnel",
+      "misc-reducer",
+      "misc-sampling-point",
+      "misc-special-joint",
+      "misc-spray-nozzle",
+      "misc-strainer-cone",
+      "misc-strainer-t",
+      "misc-strainer-y",
+      "misc-vfd",
+      "scope-code-jurisdiction",
+      "scope-design-limit",
+      "valve-angle",
+      "valve-balancing",
+      "valve-ball",
+      "valve-ball-check",
+      "valve-butterfly",
+      "valve-butterfly-check",
+      "valve-check",
+      "valve-differential-pressure",
+      "valve-gate",
+      "valve-generic",
+      "valve-globe",
+      "valve-globe-check",
+      "valve-needle",
+      "valve-piston-lift-check",
+      "valve-pressure-reducing",
+      "valve-safety",
+      "valve-safety-spring-angle",
+      "valve-swing-check",
+      "valve-three-way",
+      "valve-tilting-disk-check",
+      "valve-y-globe",
+      "valve-y-piston-lift-check"
+    ]
+  }
+}

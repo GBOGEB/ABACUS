@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "wave": "W007",
+  "title": "ABACUS Runtime Foundation Manifest",
+  "status": "operational",
+  "artifacts": [
+    {
+      "id": "pages_portal",
+      "capability": "github_pages_portal",
+      "path": "docs/runtime.html",
+      "status": "active",
+      "description": "Published runtime portal for ABACUS governance, traceability, and visualization."
+    },
+    {
+      "id": "ssot_dashboard",
+      "capability": "ssot_dashboard",
+      "path": "docs/dashboard.html",
+      "status": "active",
+      "description": "SSOT dashboard summarizing dashboard generation and runtime registry evidence."
+    },
+    {
+      "id": "rtm_trace_matrix",
+      "capability": "rtm_validator",
+      "path": "docs/api/rtm_trace_matrix.json",
+      "status": "active",
+      "description": "Published traceability matrix linking runtime requirements to evidence artifacts."
+    },
+    {
+      "id": "artifact_manifest_validator",
+      "capability": "artifact_manifest_validation",
+      "path": "scripts/validate_runtime_foundation.py",
+      "status": "active",
+      "description": "Validation script for the W007 manifest, runtime portal, and RTM rows."
+    },
+    {
+      "id": "release_workflow",
+      "capability": "release_automation",
+      "path": ".github/workflows/release.yml",
+      "status": "active",
+      "description": "Release automation that packages runtime dashboards and validates W007 evidence."
+    },
+    {
+      "id": "qplant_visualization_builder",
+      "capability": "visualization_layer",
+      "path": "build_qplant_visualization.py",
+      "status": "active",
+      "description": "Visualization builder for static Pages publication."
+    },
+    {
+      "id": "pages_workflow",
+      "capability": "github_pages_portal",
+      "path": ".github/workflows/pages.yml",
+      "status": "active",
+      "description": "GitHub Pages publication workflow."
+    },
+    {
+      "id": "runtime_governance_workflow",
+      "capability": "artifact_manifest_validation",
+      "path": ".github/workflows/runtime-governance.yml",
+      "status": "active",
+      "description": "Runtime governance workflow that executes W007 validation."
+    },
+    {
+      "id": "runtime_governance_status",
+      "capability": "runtime_governance_status",
+      "path": "reports/runtime_governance_status.json",
+      "status": "active",
+      "description": "Machine-readable runtime governance status evidence for W007."
+    }
+  ]
+}

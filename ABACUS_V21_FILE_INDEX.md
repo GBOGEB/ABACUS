@@ -1,6 +1,6 @@
 # ABACUS v2.1 File Index & Ranking System
 
-**Version:** 4.0.0  
+**Version:** 1.0.0  
 **Generated:** 2025-11-23  
 **Status:** ACTIVE INDEX
 

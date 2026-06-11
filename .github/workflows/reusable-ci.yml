@@ -1,0 +1,69 @@
+name: DELTA_1 Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      run_package:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Bootstrap
+        run: |
+          if make -n bootstrap &>/dev/null 2>&1; then
+            make bootstrap
+          else
+            python -m pip install --upgrade pip
+            python -m pip install -r DMAIC_V3/requirements.txt
+          fi
+
+      - name: Lint
+        run: |
+          if make -n lint &>/dev/null 2>&1; then
+            make lint
+          else
+            python -m pip install flake8
+            flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120
+          fi
+
+      - name: Test
+        run: |
+          if make -n test &>/dev/null 2>&1; then
+            make test
+          else
+            python -m pip install -r DMAIC_V3/requirements.txt
+            python -m pytest DMAIC_V3/tests -q
+          fi
+
+      - name: Build
+        run: |
+          if make -n build &>/dev/null 2>&1; then
+            make build
+          else
+            echo "DELTA_1 build: no build target defined, skipping"
+          fi
+
+      - name: Package
+        if: inputs.run_package
+        run: |
+          if make -n package &>/dev/null 2>&1; then
+            make package
+          else
+            make docs-zip
+          fi

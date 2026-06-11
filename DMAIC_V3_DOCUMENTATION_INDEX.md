@@ -1,6 +1,6 @@
 # DMAIC V3.0 - Documentation Index
 
-**Version:** 4.0.0  
+**Version:** 3.0.0  
 **Last Updated:** November 8, 2024  
 **Status:** Complete
 

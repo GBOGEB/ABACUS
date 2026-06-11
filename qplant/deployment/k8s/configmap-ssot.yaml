@@ -1,0 +1,160 @@
+# QPLANT SSOT ConfigMap — Generated 2026-05-12T19:57:41.154818
+# SHA256: 90596aca415deb1d
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qplant-ssot-config
+  namespace: qplant
+  labels:
+    app: qplant
+    component: ssot
+    version: "4.3.0"
+  annotations:
+    qplant.io/ssot-sha256: "90596aca415deb1d"
+    qplant.io/source: "handover_dashboard/data/config.yaml"
+    qplant.io/immutable: "true"
+data:
+  config.yaml: |
+    # ─────────────────────────────────────────────────────────────────────────────
+    # QPLANT Cryogenic System Configuration — Single Source of Truth (SSoT)
+    # ─────────────────────────────────────────────────────────────────────────────
+    # This file is the SOLE authoritative source for all design parameters.
+    # All Python modules, HTML documentation, and charts read from this file
+    # via src/config_loader.py.  Do NOT hardcode values anywhere else.
+    #
+    # To update a parameter: edit here, re-run build, commit.
+    # ─────────────────────────────────────────────────────────────────────────────
+    
+    version: "4.2.0"
+    last_updated: "2026-05-10T00:00:00Z"
+    description: "QPLANT Cryogenic System Configuration — Single Source of Truth"
+    
+    system:
+      name: "MYRRHA QPLANT Helium Refrigeration"
+      design_basis: "ALaT + LKT Pre-Study Baseline"
+      facility: "SCK CEN — MYRRHA"
+    
+    # ── Flow Parameters ─────────────────────────────────────────────────────────
+    flow_parameters:
+      wcs_hp:
+        design_flow_gs: 350          # Max user demand (g/s)
+        expected_flow_gs: 304        # Expected operational flow
+        max_flow_gs: 336             # WCS.HCC|WCS.HP limit (3× FSD575 @ 72 Hz)
+        redundancy_formula: "3/112 × (N+1), N=3"
+    
+      pvps:
+        total_flow_gs: 50
+        units_total: 10              # 9 active + 1 redundant
+        units_active: 9
+        flow_per_unit_gs: 5
+        n_minus_1_capable: true      # 9 units can handle 50 g/s via VFD ramp-up
+    
+    # ── Pressure Parameters ─────────────────────────────────────────────────────
+    pressure_parameters:
+      wcs_hp_outlet:
+        nominal_barg: 14
+        max_barg: 15
+        min_barg: 10                 # ALL operating conditions
+    
+      helium_inventory:
+        storage_bar: 15
+        vessel_count: 3
+        vessel_volume_m3: 120
+    
+      hcc_inlet:
+        nominal_mbar: 1050           # >atm to prevent air ingress
+    
+      wcs_lcc_suction:
+        nominal_mbar: 400
+        min_mbar: 250
+        max_mbar: 550
+        control: "VFD"
+    
+      pressure_drops:
+        qrb_to_wcs_mbar: 50         # Allowed, expected lower (large diameter)
+        cold_b_return_mbar: 26       # Flow-induced
+    
+      heat_loads:
+        non_isothermal_transport_W: 80
+        equivalent_delta_T_K: 2
+    
+    # ── Monte Carlo Distributions ───────────────────────────────────────────────
+    monte_carlo_distributions:
+      vlp_pressure:
+        min_mbar: 250
+        expected_mbar: 400
+        max_mbar: 500
+        distribution: "PERT"
+    
+      lp_outlet:
+        min_mbar: 900
+        expected_mbar: 1050
+        max_mbar: 1200
+        distribution: "PERT"
+    
+    # ── Compressor Specifications ───────────────────────────────────────────────
+    compressor_specifications:
+      hp_compressors:
+        count: 3                     # CORRECTED from 4 (v3.1.0 used 4)
+        model: "Kaeser FSD 575 SFC"
+        power_supply: "400V 3-phase"
+        redundancy: "N+1 where N=3"
+        configuration: "3 active compressors"
+    
+      fsd575:
+        capacity_nm3h: 575
+        motor_power_kW: 315          # ALaT vendor sheet
+        package_power_kW: 348.54     # Package input (water-cooled)
+        per_unit_flow_gs: 112.54     # Full point @ 72 Hz
+        frequency_hz: 72
+        vfd_range_pct: [30, 100]
+        efficiency_percent: [70, 75]
+        cooling_water_m3h: 18.2
+        heat_rejection_kW: 323.9
+        noise_dba: 75
+        dimensions_mm: "3240 × 2145 × 2360"
+        weight_kg: 6770
+        oil_charge_L: 173
+        mtbf_hours: 8760
+        mttr_hours: 8
+        capital_cost_eur: 200000     # Per unit with VFD
+        annual_maint_eur: 15000
+    
+      three_skid_totals:
+        max_total_flow_gs: 337.62    # 3 × 112.54
+        package_power_kW: 1045.62    # 3 × 348.54
+        cooling_water_m3h: 54.6      # 3 × 18.2
+        heat_rejection_kW: 971.7     # 3 × 323.9
+    
+    # ── Financial Parameters ────────────────────────────────────────────────────
+    financial:
+      electricity_cost_eur_kwh: 0.15
+      helium_price_eur_kg: 120.0
+      operating_hours_year: 8000
+      discount_rate_pct: 5.0
+      project_lifetime_years: 20
+    
+      compressor_capex:
+        per_unit_eur: 200000
+        total_3_units_eur: 600000    # CORRECTED from 800k (4 units)
+        total_system_eur: 1420000    # Including ancillaries
+    
+      annual_energy:
+        per_unit_kwh: 1120000        # 400 kW × 8000 h × 0.35 avg load
+        total_3_units_kwh: 3360000
+        cost_3_units_eur: 504000     # At €0.15/kWh avg load
+    
+    # ── Modeling Standards ──────────────────────────────────────────────────────
+    modeling_standards:
+      fluid_properties: "Real Gas (NIST REFPROP)"
+      pressure_reference: "Absolute (unless marked barg)"
+      temperature_reference: "Kelvin"
+    
+    # ── Compliance ──────────────────────────────────────────────────────────────
+    compliance:
+      standards:
+        - "PED 2014/68/EU"
+        - "ASME B31.3"
+        - "EN 13185"
+        - "ISO 5208"
+    

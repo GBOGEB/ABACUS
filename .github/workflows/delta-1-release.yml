@@ -1,0 +1,39 @@
+name: DELTA_1 Release Workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: delta-1-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Bootstrap
+        run: |
+          echo "DELTA_1 bootstrap placeholder"
+
+      - name: Test
+        run: |
+          echo "DELTA_1 test placeholder"
+
+      - name: Package
+        run: |
+          echo "DELTA_1 package placeholder"
+
+      - name: Release lineage
+        run: |
+          echo "DELTA_1 release-lineage placeholder"
+
+      - name: Create release placeholder
+        run: |
+          echo "DELTA_1 release placeholder"

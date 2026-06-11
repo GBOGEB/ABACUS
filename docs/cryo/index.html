@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Cryogenic Analysis Dashboard – ABACUS</title>
+  <meta name="description" content="ABACUS cryogenic analysis dashboard: helium systems, heat loads, cooldown simulations."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> Cryogenic Analysis</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#0d3b66 0%,#1a73e8 100%)">
+  <h1>🧊 Cryogenic Analysis Dashboard</h1>
+  <p>Interactive visualization of helium system analysis, heat load calculations, and cooldown simulations for the QPLANT cryoplant.</p>
+</section>
+
+<main class="container">
+  <section class="section">
+    <h2>Overview</h2>
+    <p>The Cryo Dashboard (v0.3.0) provides real-time interactive visualization of cryogenic engineering data processed through the DMAIC pipeline. It covers helium distribution networks, thermal load profiles, and cooldown trajectory modeling.</p>
+  </section>
+
+  <section class="section">
+    <h2>🚀 Quick Start</h2>
+    <ol>
+      <li>Open the <a href="../cryo_dashboard_v0_3_0/index.html">Cryo Dashboard v0.3.0</a> in your browser.</li>
+      <li>Use the sidebar tabs to navigate between Heat Load, Cooldown, and Distribution views.</li>
+      <li>Hover over chart elements for detailed tooltips; click to drill down.</li>
+      <li>Export data via the <code>Export CSV</code> button in each panel.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>📊 Dashboard Capabilities</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Heat Load Analysis</h3>
+        <p>Static + dynamic heat load breakdown by component. Supports what-if scenarios for insulation upgrades.</p>
+        <span class="badge badge-ok">Ready</span>
+      </div>
+      <div class="card">
+        <h3>Cooldown Simulation</h3>
+        <p>Time-temperature trajectory modeling from 300 K → 4.5 K with configurable flow rates and boundary conditions.</p>
+        <span class="badge badge-ok">Ready</span>
+      </div>
+      <div class="card">
+        <h3>Helium Distribution</h3>
+        <p>P&amp;ID-linked helium flow network visualization with pressure drop and mass flow calculations.</p>
+        <span class="badge badge-ok">Ready</span>
+      </div>
+      <div class="card">
+        <h3>DMAIC Integration</h3>
+        <p>Each analysis maps to DMAIC phases: Define (scope), Measure (data), Analyze (model), Improve (optimize), Control (validate).</p>
+        <span class="badge badge-info">Documented</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>📋 Data Requirements</h2>
+    <table>
+      <thead><tr><th>Data Source</th><th>Format</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>QPLANT_RTM.xlsx</td><td>Excel</td><td>Yes</td><td>16 formal requirements with traceability matrix</td></tr>
+        <tr><td>Heat load CSV</td><td>CSV</td><td>Yes</td><td>Component-level heat load measurements</td></tr>
+        <tr><td>Cooldown profiles</td><td>JSON</td><td>Optional</td><td>Pre-computed cooldown trajectories</td></tr>
+        <tr><td>HEPAK / CoolProp</td><td>API</td><td>Optional</td><td>Helium thermophysical properties</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>🔧 Troubleshooting</h2>
+    <table>
+      <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td>Dashboard shows blank charts</td><td>Ensure data files are in <code>cryo_dashboard_v0_3_0/data/</code>. Check browser console for 404 errors.</td></tr>
+        <tr><td>Slow rendering</td><td>Reduce dataset size or enable progressive loading in settings panel.</td></tr>
+        <tr><td>Export fails</td><td>Check browser pop-up blocker settings. CSV export uses <code>Blob</code> API.</td></tr>
+        <tr><td>Missing thermophysical data</td><td>Install CoolProp: <code>pip install CoolProp</code> or use bundled lookup tables.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="../cryo_dashboard_v0_3_0/index.html">Launch Cryo Dashboard v0.3.0</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 3: Cryogenic Framework</a></li>
+      <li><a href="../deep_analysis_dashboard.html">Deep Analysis Dashboard</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS Cryogenic Analysis &copy; 2026 | <a href="../">← Back to Home</a></footer>
+</body>
+</html>

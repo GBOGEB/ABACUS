@@ -1,7 +1,7 @@
 # Python Coding Agent Handover
 
 
-**Version:** 4.0.0  
+**Version:** 2.3.0  
 **Generated:** 2025-11-08T19:22:20.318046+00:00  
 ## Critical Information for Python Agents
 

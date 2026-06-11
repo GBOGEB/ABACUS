@@ -1,0 +1,366 @@
+name: DMAIC Metrics — Per-Commit Tracking & Feedback Loop
+
+# Runs on every push to main and on post-deployment to give a real,
+# iterating signal on quality, coverage, and DMAIC phase health.
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Deploy Documentation to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'DMAIC phase to focus on (all|define|measure|analyze|improve|control)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  collect-metrics:
+    name: Collect DMAIC Commit Metrics
+    runs-on: ubuntu-latest
+    outputs:
+      quality_score: ${{ steps.metrics.outputs.quality_score }}
+      phase_health:  ${{ steps.metrics.outputs.phase_health }}
+      escalate:      ${{ steps.metrics.outputs.escalate }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history for commit-level metrics
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install analysis dependencies
+        run: pip install plotly pandas numpy --quiet
+
+      - name: Collect DMAIC metrics
+        id: metrics
+        run: |
+          python3 << 'PYEOF'
+          import json, os, pathlib, subprocess, datetime, sys, math
+
+          repo_root = pathlib.Path(".")
+          out_dir   = repo_root / "docs" / "api"
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          # ── Commit stats ─────────────────────────────────────────────────
+          result = subprocess.run(
+              ["git", "log", "--oneline", "--since=30 days ago"],
+              capture_output=True, text=True
+          )
+          recent_commits = [l.strip() for l in result.stdout.splitlines() if l.strip()]
+          total_commits  = int(subprocess.run(
+              ["git", "rev-list", "--count", "HEAD"],
+              capture_output=True, text=True
+          ).stdout.strip() or "0")
+
+          # ── Python file / test stats ──────────────────────────────────────
+          py_files   = list(repo_root.rglob("*.py"))
+          test_files = [f for f in py_files if "test" in f.name.lower()]
+          total_loc  = 0
+          for f in py_files:
+              try:
+                  total_loc += len(f.read_text(encoding="utf-8", errors="replace").splitlines())
+              except OSError:
+                  pass
+
+          # ── DMAIC phase health ────────────────────────────────────────────
+          dmaic_phases = {
+              "define":  {"pattern": "DMAIC_V3/core",  "weight": 20},
+              "measure": {"pattern": "DMAIC_V3/tests", "weight": 20},
+              "analyze": {"pattern": "DMAIC_V3",       "weight": 20},
+              "improve": {"pattern": "local_mcp",      "weight": 20},
+              "control": {"pattern": "docs",           "weight": 20},
+          }
+          phase_scores = {}
+          for phase, cfg in dmaic_phases.items():
+              matched = list(repo_root.glob(f'{cfg["pattern"]}/**/*.py'))
+              score   = min(100, len(matched) * 5)
+              phase_scores[phase] = {"files": len(matched), "score": score, "weight": cfg["weight"]}
+
+          # ── Composite quality score ───────────────────────────────────────
+          raw_q = sum(v["score"] * v["weight"] / 100 for v in phase_scores.values())
+          # Normalise: additional bonus for recent commit activity
+          activity_bonus = min(10, len(recent_commits) * 0.5)
+          quality_score  = round(min(100, raw_q + activity_bonus), 1)
+
+          # ── Doc coverage ─────────────────────────────────────────────────
+          html_files = list((repo_root / "docs").rglob("*.html"))
+          md_files   = list(repo_root.rglob("*.md"))
+
+          # ── Workflow health ───────────────────────────────────────────────
+          wf_dir   = repo_root / ".github" / "workflows"
+          wf_files = list(wf_dir.glob("*.yml")) if wf_dir.exists() else []
+
+          # ── Escalation signal ─────────────────────────────────────────────
+          escalate = quality_score < 70 or len(test_files) == 0
+
+          # ── Write metrics artefact ────────────────────────────────────────
+          timestamp = datetime.datetime.utcnow().isoformat() + "Z"
+          metrics = {
+              "timestamp":      timestamp,
+              "trigger":        "${{ github.event_name }}",
+              "ref":            "${{ github.ref_name }}",
+              "sha":            "${{ github.sha }}"[:12],
+              "quality_score":  quality_score,
+              "total_commits":  total_commits,
+              "recent_commits": len(recent_commits),
+              "python_files":   len(py_files),
+              "test_files":     len(test_files),
+              "total_loc":      total_loc,
+              "html_docs":      len(html_files),
+              "markdown_docs":  len(md_files),
+              "workflows":      len(wf_files),
+              "phase_scores":   phase_scores,
+              "escalate":       escalate,
+          }
+          (out_dir / "dmaic_metrics.json").write_text(
+              json.dumps(metrics, indent=2), encoding="utf-8"
+          )
+          print(json.dumps(metrics, indent=2))
+
+          # ── GitHub Actions outputs ────────────────────────────────────────
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"quality_score={quality_score}\n")
+              fh.write(f"phase_health={json.dumps(phase_scores)}\n")
+              fh.write(f"escalate={'true' if escalate else 'false'}\n")
+          PYEOF
+
+      - name: Generate Plotly metrics chart
+        run: |
+          python3 << 'PYEOF'
+          import json, pathlib, datetime
+
+          metrics_path = pathlib.Path("docs/api/dmaic_metrics.json")
+          metrics      = json.loads(metrics_path.read_text(encoding="utf-8"))
+          phases       = metrics["phase_scores"]
+          labels       = [p.capitalize() for p in phases]
+          scores       = [phases[p]["score"] for p in phases]
+          files_       = [phases[p]["files"] for p in phases]
+          ts           = metrics["timestamp"]
+          qs           = metrics["quality_score"]
+
+          # Generate an inline HTML Plotly chart snippet saved to docs/api/
+          chart_html = f"""<!DOCTYPE html>
+          <html lang="en"><head>
+            <meta charset="utf-8"/>
+            <title>DMAIC Metrics – {ts[:10]}</title>
+            <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+            <style>body{{font-family:system-ui,sans-serif;margin:0;background:#0d1117;color:#e6edf3}}
+            .header{{padding:1.5rem 2rem;background:#161b22;border-bottom:1px solid #30363d}}
+            h1{{margin:0;font-size:1.5rem}}
+            .sub{{color:#8b949e;font-size:.9rem;margin-top:.3rem}}
+            .qs{{font-size:2rem;font-weight:700;color:#58a6ff;display:inline-block;margin-left:1rem}}
+            .charts{{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem 2rem}}
+            @media(max-width:700px){{.charts{{grid-template-columns:1fr}}}}</style>
+          </head><body>
+          <div class="header">
+            <h1>DMAIC Phase Metrics
+              <span class="qs">{qs}/100</span>
+            </h1>
+            <div class="sub">SHA: {metrics["sha"]} · Generated: {ts[:19].replace("T"," ")} UTC
+              · Commits (30d): {metrics["recent_commits"]} / {metrics["total_commits"]} total
+            </div>
+          </div>
+          <div class="charts">
+            <div id="radar"></div>
+            <div id="bar"></div>
+            <div id="coverage"></div>
+            <div id="activity"></div>
+          </div>
+          <script>
+          const phases   = {json.dumps(labels)};
+          const scores   = {json.dumps(scores)};
+          const files    = {json.dumps(files_)};
+          const radarScores = [...scores, scores[0]];
+          const radarLabels = [...phases, phases[0]];
+
+          Plotly.newPlot('radar', [{{
+            type:'scatterpolar', r:radarScores, theta:radarLabels, fill:'toself',
+            line:{{color:'#58a6ff'}}, fillcolor:'rgba(88,166,255,0.2)', name:'Phase score'
+          }}], {{
+            polar:{{radialaxis:{{visible:true,range:[0,100]}}}},
+            paper_bgcolor:'#161b22', font:{{color:'#e6edf3'}},
+            title:{{text:'DMAIC Phase Radar', font:{{color:'#e6edf3'}}}}
+          }}, {{responsive:true}});
+
+          Plotly.newPlot('bar', [{{
+            type:'bar', x:phases, y:scores,
+            marker:{{color:scores.map(s=>s>=70?'#3fb950':s>=40?'#d29922':'#f85149')}},
+            text:scores.map(s=>s+'/100'), textposition:'outside'
+          }}], {{
+            paper_bgcolor:'#161b22', plot_bgcolor:'#0d1117',
+            font:{{color:'#e6edf3'}}, xaxis:{{gridcolor:'#30363d'}},
+            yaxis:{{gridcolor:'#30363d',range:[0,110]}},
+            title:{{text:'Phase Scores', font:{{color:'#e6edf3'}}}}
+          }}, {{responsive:true}});
+
+          Plotly.newPlot('coverage', [{{
+            type:'bar', x:phases, y:files, marker:{{color:'#bc8cff'}},
+            text:files.map(f=>f+' files'), textposition:'outside', name:'Files'
+          }}], {{
+            paper_bgcolor:'#161b22', plot_bgcolor:'#0d1117',
+            font:{{color:'#e6edf3'}}, xaxis:{{gridcolor:'#30363d'}},
+            yaxis:{{gridcolor:'#30363d'}},
+            title:{{text:'Files per DMAIC Phase', font:{{color:'#e6edf3'}}}}
+          }}, {{responsive:true}});
+
+          const meta = {{
+            'Total commits':    {metrics["total_commits"]},
+            'Recent (30d)':     {metrics["recent_commits"]},
+            'Python files':     {metrics["python_files"]},
+            'Test files':       {metrics["test_files"]},
+            'HTML docs':        {metrics["html_docs"]},
+            'Markdown docs':    {metrics["markdown_docs"]},
+            'Workflows':        {metrics["workflows"]},
+            'Total LOC':        {metrics["total_loc"]},
+          }};
+          Plotly.newPlot('activity', [{{
+            type:'bar', x:Object.keys(meta), y:Object.values(meta),
+            marker:{{color:'#58a6ff'}}, orientation:'v'
+          }}], {{
+            paper_bgcolor:'#161b22', plot_bgcolor:'#0d1117',
+            font:{{color:'#e6edf3'}}, xaxis:{{gridcolor:'#30363d',tickangle:-30}},
+            yaxis:{{gridcolor:'#30363d'}},
+            title:{{text:'Repository Activity Snapshot', font:{{color:'#e6edf3'}}}}
+          }}, {{responsive:true}});
+          </script>
+          </body></html>"""
+
+          pathlib.Path("docs/api/dmaic_metrics_chart.html").write_text(
+              chart_html, encoding="utf-8"
+          )
+          print("Chart generated → docs/api/dmaic_metrics_chart.html")
+          PYEOF
+
+      - name: Commit metrics artefacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/api/dmaic_metrics.json docs/api/dmaic_metrics_chart.html
+          if git diff --cached --quiet; then
+            echo "Metrics unchanged — no commit needed."
+          else
+            git commit -m "metrics: update DMAIC metrics for ${{ github.sha }}"
+            git push origin HEAD
+          fi
+
+  escalate:
+    name: Escalate on Quality Regression
+    needs: collect-metrics
+    if: needs.collect-metrics.outputs.escalate == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read metrics
+        id: read
+        run: |
+          QS=$(python3 -c "import json; m=json.load(open('docs/api/dmaic_metrics.json')); print(m['quality_score'])" 2>/dev/null || echo "unknown")
+          echo "quality_score=$QS" >> "$GITHUB_OUTPUT"
+
+      - name: Open escalation issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const qs      = '${{ needs.collect-metrics.outputs.quality_score }}';
+            const sha     = '${{ github.sha }}'.slice(0,12);
+            const runUrl  = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const chartUrl = `https://${context.repo.owner.toLowerCase()}.github.io/${context.repo.repo}/api/dmaic_metrics_chart.html`;
+
+            const body = [
+              '## ⚠️ DMAIC Quality Regression Detected',
+              '',
+              `**Quality score:** ${qs}/100 (threshold: 70)`,
+              `**Commit:** \`${sha}\``,
+              `**Branch:** \`${{ github.ref_name }}\``,
+              '',
+              '### Recommended Actions',
+              '- [ ] Review failing DMAIC phases in the metrics chart',
+              '- [ ] Add/fix tests to improve Measure phase score',
+              '- [ ] Check new commits for missing docstrings or broken imports',
+              '- [ ] Re-run DMAIC pipeline: `python -m pytest DMAIC_V3/tests -v`',
+              '',
+              `**Metrics chart:** ${chartUrl}`,
+              `**Workflow run:** ${runUrl}`,
+              '',
+              '_Auto-opened by DMAIC commit metrics workflow. Close when quality is restored._',
+            ].join('\n');
+
+            // Avoid duplicate open issues for the same branch
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'dmaic-regression',
+            });
+            const alreadyOpen = existing.data.some(i =>
+              i.title.includes('${{ github.ref_name }}')
+            );
+            if (!alreadyOpen) {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: `⚠️ DMAIC quality regression on ${{ github.ref_name }} (score: ${qs})`,
+                body,
+                labels: ['dmaic-regression', 'quality'],
+              });
+            } else {
+              console.log('Escalation issue already open for this branch — skipping duplicate.');
+            }
+
+  post-deploy-feedback:
+    name: Post-Deploy DMAIC Feedback Loop
+    needs: collect-metrics
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify deployed pages & collect post-deploy signal
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.event.repository.name }}"
+          BASE="https://${OWNER}.github.io/${REPO}"
+          echo "=== Post-Deploy Verification for $BASE ==="
+          PAGES=(
+            ""
+            "/cryo/"
+            "/12-cluster/"
+            "/dow/"
+            "/testing/"
+            "/tools/"
+            "/versions/"
+            "/api/dmaic_metrics_chart.html"
+          )
+          PASS=0; FAIL=0
+          for path in "${PAGES[@]}"; do
+            URL="${BASE}${path}"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
+              echo "✅ $URL → $STATUS"
+              PASS=$((PASS+1))
+            else
+              echo "❌ $URL → $STATUS"
+              FAIL=$((FAIL+1))
+            fi
+          done
+          echo ""
+          echo "Post-deploy: $PASS pages OK, $FAIL pages failing."
+          echo "## 🚀 Post-Deploy Feedback" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Page | Result |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          for path in "${PAGES[@]}"; do
+            URL="${BASE}${path:-/}"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
+            ICON=$( [ "$STATUS" = "200" ] && echo "✅" || echo "❌" )
+            echo "| \`${path:-/}\` | $ICON HTTP $STATUS |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          if [ $FAIL -gt 0 ]; then
+            echo "⚠️  $FAIL page(s) unreachable — see summary above."
+          fi

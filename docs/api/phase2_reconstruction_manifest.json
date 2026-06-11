@@ -1,0 +1,240 @@
+{
+  "manifest_version": "2.0.0",
+  "description": "Phase-2 reconstruction manifest: semantic component mapping for ABACUS reconstructable execution substrate.",
+  "artifacts": [
+    {
+      "name": "replay-reconstruction-workflow",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/replay_reconstruction_workflow.yaml"
+    },
+    {
+      "name": "pr-evaluation-matrix",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/pr_evaluation_matrix.md"
+    },
+    {
+      "name": "semantic-runtime-stubs",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/semantic_runtime_stubs.md"
+    },
+    {
+      "name": "metrics-automation-stub",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/metrics_automation_stub.yaml"
+    },
+    {
+      "name": "viewer-runtime-scaffold",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/viewer_runtime_scaffold.md"
+    },
+    {
+      "name": "recursive-continuation-rules",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/recursive_continuation_rules.md"
+    },
+    {
+      "name": "mantra-dmaic-continuity",
+      "path": "qcell_svg_model/v0_8_1_option_b/handover/v1_1_full/mantra_dmaic_continuity.md"
+    }
+  ],
+  "component_map": [
+    {
+      "name": "semantic tuple ledger",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "scripts/build_final_handover_tracker.py",
+        "scripts/validate_tuple_metadata.py",
+        "src/dmaic/tuple_metadata.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/ci.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_tuple_metadata_validation.py"
+      ]
+    },
+    {
+      "name": "reconstruction manifest",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "scripts/validate_reconstruction_manifest.py",
+        "src/dmaic/reconstruction_manifest.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/ci.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_reconstruction_manifest_validation.py"
+      ]
+    },
+    {
+      "name": "active invariant ledger",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "src/dmaic/contract.py",
+        "DMAIC_V3/integrations/git_manager.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/ci.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_dmaic_contract_core.py",
+        "DMAIC_V3/tests/test_git_manager.py"
+      ]
+    },
+    {
+      "name": "semantic debt tracking",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "maturity_assessment.json"
+      ],
+      "workflow_refs": [
+        ".github/workflows/reports.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_maturity_tracker.py"
+      ]
+    },
+    {
+      "name": "branch DAG",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "scripts/build_final_handover_tracker.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/branch-analysis.yml",
+        ".github/workflows/ci.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_bridge_integration.py"
+      ]
+    },
+    {
+      "name": "semantic delta log",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "CHANGELOG.md",
+        "CHANGE_MAPPING.md"
+      ],
+      "workflow_refs": [
+        ".github/workflows/reports.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_integration.py"
+      ]
+    },
+    {
+      "name": "replay/reconstruction workflow",
+      "artifact": "replay-reconstruction-workflow",
+      "file_refs": [
+        "run_deployment_test_system.py",
+        "scripts/validate_reconstruction_manifest.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/dmaic-phase-execution.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_bridge_integration.py",
+        "DMAIC_V3/tests/test_integration.py"
+      ]
+    },
+    {
+      "name": "PR evaluation matrix",
+      "artifact": "pr-evaluation-matrix",
+      "file_refs": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "handover/PR_BODY.md"
+      ],
+      "workflow_refs": [
+        ".github/workflows/copilot-pr-creator.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_phase4_improve.py"
+      ]
+    },
+    {
+      "name": "semantic runtime code stubs",
+      "artifact": "semantic-runtime-stubs",
+      "file_refs": [
+        "src/dmaic/recursion.py",
+        "src/dmaic/provenance.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/dmaic-phase-execution.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_phase3_analyze.py",
+        "DMAIC_V3/tests/test_phase5_control.py"
+      ]
+    },
+    {
+      "name": "metrics-driven automation stub",
+      "artifact": "metrics-automation-stub",
+      "file_refs": [
+        "src/dmaic/metrics.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/reports.yml",
+        ".github/workflows/main.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_maturity_tracker.py"
+      ]
+    },
+    {
+      "name": "viewer runtime scaffold",
+      "artifact": "viewer-runtime-scaffold",
+      "file_refs": [
+        "docs/FINAL_HANDOVER.html",
+        "docs/dashboard.html"
+      ],
+      "workflow_refs": [
+        ".github/workflows/export-docs.yml",
+        ".github/workflows/book-build.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_bridge_integration.py"
+      ]
+    },
+    {
+      "name": "checksums",
+      "artifact": "recursive-continuation-rules",
+      "file_refs": [
+        "scripts/archive_handover.py",
+        "handover/HANDOVER_MANIFEST.yaml"
+      ],
+      "workflow_refs": [
+        ".github/workflows/reports.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_bridge_integration.py"
+      ]
+    },
+    {
+      "name": "recursive continuation rules",
+      "artifact": "recursive-continuation-rules",
+      "file_refs": [
+        "src/dmaic/recursion.py",
+        "DMAIC_V3/convergence/stability_monitor.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/recursive-build.yml",
+        ".github/workflows/dmaic-phase-execution.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_stability_monitor.py"
+      ]
+    },
+    {
+      "name": "MANTRA/DMAIC continuity",
+      "artifact": "mantra-dmaic-continuity",
+      "file_refs": [
+        "local_mcp/agent_orchestrator_v3.0.py",
+        "DMAIC_V3/core/test_system_bridge.py"
+      ],
+      "workflow_refs": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/dmaic-phase-execution.yml"
+      ],
+      "test_refs": [
+        "DMAIC_V3/tests/test_bridge_integration.py",
+        "DMAIC_V3/tests/test_phase1_define.py"
+      ]
+    }
+  ]
+}

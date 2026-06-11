@@ -1,0 +1,17 @@
+schema:
+  yaml_version: '1.2'
+  schema_version: '0.1.0'
+locked_origin_tuple:
+  master_docx: MASTER.docx
+  pdf_mirror: QPS_Contract_mirror_DOCX(1).pdf
+questions:
+  - parent_id: Q3
+    topic: Recovery System
+  - parent_id: Q4
+    topic: Line S
+  - parent_id: Q5
+    topic: Line W
+governance:
+  route: Q3-Q4-Q5
+  pressure_temperature_source: main input/interface tables
+  dbe_action: Confirm Line W and Line S nominal, transient and abnormal handover boundaries

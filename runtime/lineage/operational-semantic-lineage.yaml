@@ -1,0 +1,19 @@
+operational_semantic_lineage:
+  moniker: DELTA_1
+
+  lineage_domains:
+    - governance_events
+    - runtime_events
+    - deployment_events
+    - provenance_events
+    - reconciliation_events
+
+  lineage_requirements:
+    semantic_traceability: required
+    recursive_lineage: enabled
+    provenance_alignment: required
+
+  objectives:
+    - governance_semantic_continuity
+    - recursive_operational_lineage
+    - semantic_runtime_federation

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>DOW Governance Framework – ABACUS</title>
+  <meta name="description" content="Design-of-Work governance framework for ABACUS: compliance, workflows, tool interconnections."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .flow-diagram{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;font-family:monospace;line-height:2;overflow-x:auto;white-space:pre}
+    .checklist{list-style:none;padding:0}
+    .checklist li{padding:.4rem 0;border-bottom:1px solid var(--border)}
+    .checklist li::before{content:'☐ ';font-size:1.1rem}
+    .checklist li.done::before{content:'☑ ';color:var(--accent)}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> DOW Governance</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#34a853)">
+  <h1>🔒 DOW Governance Framework</h1>
+  <p>Design-of-Work — the omnipotent governance layer overseeing all ABACUS operations with 1,327 compliance references.</p>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>Framework Overview</h2>
+    <p>DOW (Design of Work) is the governance layer that controls design decisions, code quality, human oversight, MCP integration, GitHub workflows, and cryogenic knowledge across the entire ABACUS system. Every agent action, every pipeline execution, and every artifact creation passes through DOW governance.</p>
+  </section>
+
+  <section class="section">
+    <h2>🔄 Governance Workflow</h2>
+    <div class="flow-diagram">
+┌─────────────┐    ┌──────────────┐    ┌──────────────┐
+│  Agent Task  │───▶│ DOW Validate │───▶│  KEB Execute │
+└─────────────┘    └──────┬───────┘    └──────┬───────┘
+                          │                    │
+                   ┌──────▼───────┐    ┌──────▼───────┐
+                   │ Compliance   │    │   GBOGEB     │
+                   │   Check      │    │  Observe     │
+                   └──────┬───────┘    └──────┬───────┘
+                          │                    │
+                   ┌──────▼────────────────────▼──────┐
+                   │       DOW Audit Trail            │
+                   └──────────────────────────────────┘
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🛡️ Governance Domains</h2>
+    <div class="card-grid">
+      <div class="card"><h3>Design Governance</h3><p>Architecture decisions, pattern enforcement, 12-Cluster alignment verification.</p><span class="badge badge-ok">Active</span></div>
+      <div class="card"><h3>Code Quality</h3><p>Syntax validation, linting, type checking, test coverage thresholds.</p><span class="badge badge-ok">Active</span></div>
+      <div class="card"><h3>Human Oversight</h3><p>Approval gates for critical operations, manual review triggers, escalation paths.</p><span class="badge badge-ok">Active</span></div>
+      <div class="card"><h3>MCP Integration</h3><p>Model Context Protocol compliance, IDE connectivity standards (VS Code, Cursor).</p><span class="badge badge-info">Documented</span></div>
+      <div class="card"><h3>GitHub Workflows</h3><p>CI/CD governance, branch protection, PR review requirements, deployment gates.</p><span class="badge badge-ok">Active</span></div>
+      <div class="card"><h3>CRYO Knowledge</h3><p>Domain-specific validation of cryogenic calculations, unit consistency, data provenance.</p><span class="badge badge-ok">Active</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>📊 Tool Interconnections</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Role</th><th>DOW Integration</th><th>References</th></tr></thead>
+      <tbody>
+        <tr><td>KEB</td><td>Execution Engine</td><td>Task scheduling governed by DOW priority rules</td><td>312</td></tr>
+        <tr><td>GBOGEB</td><td>Observability</td><td>Compliance metrics fed back to DOW audit trail</td><td>289</td></tr>
+        <tr><td>DMAIC V3</td><td>Pipeline</td><td>Phase transitions require DOW validation gates</td><td>445</td></tr>
+        <tr><td>12-Cluster</td><td>Architecture</td><td>Cluster activation follows DOW governance rules</td><td>281</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>✅ Compliance Checklist</h2>
+    <ul class="checklist">
+      <li class="done">All agents registered in AGENT_REGISTRY.md</li>
+      <li class="done">Canonical index maintained in canonical_index.json</li>
+      <li class="done">DMAIC phase outputs validated before next phase</li>
+      <li class="done">All modifications tracked via DOW audit trail</li>
+      <li class="done">Idempotency pattern enforced for tool outputs</li>
+      <li class="done">Post-execution documentation generated</li>
+      <li class="done">Version lineage maintained across all artifacts</li>
+      <li>Pipeline orchestrator variants consolidated (4→1)</li>
+      <li>Full end-to-end integration test passing</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Best Practices</h2>
+    <ol>
+      <li><strong>Always validate before execute</strong> — DOW gates ensure no unverified data enters the pipeline.</li>
+      <li><strong>Idempotency first</strong> — Every tool output must be reproducible with identical inputs.</li>
+      <li><strong>Document post-execution</strong> — All results are captured in the knowledge base after execution.</li>
+      <li><strong>Escalate on failure</strong> — DOW defines escalation paths for every failure mode.</li>
+      <li><strong>Version everything</strong> — Every artifact, configuration, and output carries version metadata.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="../../tool_ecosystem_map.md">Tool Ecosystem Map</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 5: DOW Governance</a></li>
+      <li><a href="../12-cluster/">12-Cluster Architecture</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS DOW Governance &copy; 2026 | <a href="../">← Back to Home</a></footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abacus-svg-pid"
+version = "1.0.0"
+description = "MINERVA QCELL/RFCELL P&ID — SVG-driven colour-line model, layered atlas, component catalog and tag/instrument reconciliation (W001–W005)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Proprietary" }
+authors = [{ name = "ABACUS / MINERVA P&ID team" }]
+keywords = ["P&ID", "SVG", "MINERVA", "QCELL", "RFCELL", "engineering-drawings"]
+
+# Stdlib-first design: only the packages actually imported by the source tree
+# are declared. Lower bounds match the validated versions in requirements.txt;
+# use requirements.txt for the exact, reproducible pin set.
+dependencies = [
+    "openpyxl>=3.1.5",   # XLSX catalog + W005 register
+    "PyYAML>=6.0.2",     # YAML colour/layer model
+    "cairosvg>=2.9.0",   # SVG rasterisation (atlas, collage)
+]
+
+[project.optional-dependencies]
+# Auxiliary slide-deck / preview tooling under generator/ and standards/.
+# Not required by the core make.sh pipeline.
+deck = [
+    "Pillow>=10.4.0",
+    "python-pptx>=1.0.2",
+]
+
+[project.urls]
+"Pull Request" = "https://github.com/GBOGEB/ABACUS/pull/546"
+"Repository" = "https://github.com/GBOGEB/ABACUS"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["abacus_svg_pid*"]
+
+# ---------------------------------------------------------------------------
+# Coverage.py (W007 CI/CD). Mirrors .coveragerc so the config is discoverable
+# from either entry point. NOTE: this project deliberately does NOT use pytest
+# (see AGENTS.md / docs/W007_CICD_PLAN.md). Coverage is collected by wrapping
+# the standalone test runners with `coverage run -p`, then `coverage combine`.
+# ---------------------------------------------------------------------------
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["src/abacus_svg_pid"]
+omit = ["*/tests/*", "*/__main__.py", "setup.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.coverage.html]
+directory = "htmlcov"
