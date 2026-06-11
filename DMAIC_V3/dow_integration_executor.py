@@ -150,7 +150,7 @@ class DOWIntegrationExecutor:
         print(f"[>] Running: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 — list-form args, shell=False
                 cmd,
                 capture_output=True,
                 text=True,
@@ -188,7 +188,7 @@ class DOWIntegrationExecutor:
         print(f"[>] Running: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 — list-form args, shell=False
                 cmd,
                 capture_output=True,
                 text=True,

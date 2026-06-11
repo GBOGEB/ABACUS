@@ -449,9 +449,9 @@ class FullPipelineOrchestrator:
         """Commit iteration results to git"""
         try:
             print("\n[GIT] Committing iteration results...")
-            subprocess.run(['git', 'add', 'DMAIC_V3_OUTPUT/', 'planning_matrix.json'],
+            subprocess.run(['git', 'add', 'DMAIC_V3_OUTPUT/', 'planning_matrix.json'],  # noqa: S603
                           check=False)
-            subprocess.run(['git', 'commit', '-m',
+            subprocess.run(['git', 'commit', '-m',  # noqa: S603
                           f'DMAIC V3.3 - Iteration {iteration} complete'],
                           check=False)
             print("[GIT] [OK] Committed")
