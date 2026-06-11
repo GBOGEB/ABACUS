@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "generated_at": "1970-01-01T00:00:00Z",
+  "source": {
+    "path": "logs/ci-runs.jsonl",
+    "records_read": 0,
+    "records_used": 0,
+    "malformed_lines": 0
+  },
+  "prs": []
+}

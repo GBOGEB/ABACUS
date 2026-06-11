@@ -1,0 +1,6 @@
+stub_version: "1.1.0"
+name: "metrics-driven-automation"
+signals:
+  - tuple_validation_rate
+  - reconstruction_success_rate
+  - continuity_drift

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>DMAIC Metrics Dashboard – ABACUS</title>
+  <meta name="description" content="Live DMAIC metrics per commit, quality score trends, phase health, and escalation hub."/>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
+    .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center}
+    .metric-card .num{font-size:2rem;font-weight:700;color:var(--primary);display:block}
+    .metric-card .lbl{font-size:.78rem;color:var(--text-secondary)}
+    .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0}
+    @media(max-width:700px){.chart-grid{grid-template-columns:1fr}}
+    .phase-table td,.phase-table th{padding:.5rem .8rem;font-size:.9rem}
+    .escalation-box{background:#1a0d0d;border:2px solid #f85149;border-radius:var(--radius);padding:1.2rem;margin:1rem 0}
+    .escalation-box h3{color:#f85149;margin:0 0 .5rem}
+    .escalation-item{display:flex;align-items:center;gap:.6rem;margin:.4rem 0;font-size:.9rem}
+    .escalation-icon{font-size:1.2rem}
+    .ok-box{background:#0d1a0f;border:1px solid #3fb950;border-radius:var(--radius);padding:.8rem;margin:.5rem 0;color:#3fb950}
+    .tab-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+    .tab-bar button{padding:.4rem .9rem;border:1px solid var(--border);background:var(--surface);
+      color:var(--text-secondary);border-radius:4px;cursor:pointer;font-size:.85rem}
+    .tab-bar button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .tab-panel{display:none}.tab-panel.active{display:block}
+    .loading{text-align:center;color:var(--text-secondary);padding:2rem;font-size:1rem}
+    .insight-card{background:var(--surface);border-left:4px solid var(--primary);
+      border-radius:0 var(--radius) var(--radius) 0;padding:.8rem 1rem;margin:.6rem 0}
+    .insight-card .label{font-size:.75rem;text-transform:uppercase;color:var(--text-secondary);margin-bottom:.2rem}
+    pre.snippet{background:#0d1117;border:1px solid var(--border);border-radius:4px;
+      padding:.8rem;font-size:.82rem;overflow-x:auto;color:#e6edf3}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="./">⚛️ ABACUS</a>
+  <a href="cryo/">Cryo Dashboard</a>
+  <a href="12-cluster/">12-Cluster</a>
+  <a href="dow/">DOW Governance</a>
+  <a href="testing/">Testing</a>
+  <a href="tools/">Engineering Tools</a>
+  <a href="versions/">Version Lineage</a>
+  <a href="dmaic-metrics.html" aria-current="page">📊 DMAIC Metrics</a>
+</nav>
+
+<section class="hero" style="background:linear-gradient(135deg,#0d1117,#1a3a5c)">
+  <h1>📊 DMAIC Metrics Dashboard</h1>
+  <p>Per-commit quality tracking, phase health, escalation hub, and post-deploy feedback loop</p>
+</section>
+
+<main class="container">
+
+  <!-- ── Tab navigation ───────────────────────────────────────────────── -->
+  <div class="tab-bar">
+    <button class="active" onclick="showTab('overview',this)">Overview</button>
+    <button onclick="showTab('phases',this)">Phase Health</button>
+    <button onclick="showTab('charts',this)">Charts</button>
+    <button onclick="showTab('escalation',this)">Escalation Hub</button>
+    <button onclick="showTab('insights',this)">Insights</button>
+  </div>
+
+  <!-- ── Overview ─────────────────────────────────────────────────────── -->
+  <div id="tab-overview" class="tab-panel active">
+    <p id="metrics-ts" class="loading">Loading metrics from <code>api/dmaic_metrics.json</code>…</p>
+    <div class="metrics-grid" id="metric-cards"></div>
+
+    <h3>⚡ System Status</h3>
+    <table>
+      <thead><tr><th>Component</th><th>Status</th><th>Details</th></tr></thead>
+      <tbody id="status-rows">
+        <tr><td colspan="3" class="loading">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Phase health ──────────────────────────────────────────────────── -->
+  <div id="tab-phases" class="tab-panel">
+    <h3>DMAIC Phase Scores</h3>
+    <table class="phase-table">
+      <thead><tr><th>Phase</th><th>Score</th><th>Files</th><th>Health</th></tr></thead>
+      <tbody id="phase-rows"><tr><td colspan="4" class="loading">Loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- ── Charts ────────────────────────────────────────────────────────── -->
+  <div id="tab-charts" class="tab-panel">
+    <div class="chart-grid">
+      <div id="chart-radar" style="min-height:350px"></div>
+      <div id="chart-bar"   style="min-height:350px"></div>
+      <div id="chart-files" style="min-height:350px"></div>
+      <div id="chart-snap"  style="min-height:350px"></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--text-secondary);text-align:center">
+      Charts refresh when metrics are updated by the
+      <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/workflows/dmaic-commit-metrics.yml">dmaic-commit-metrics workflow</a>.
+    </p>
+  </div>
+
+  <!-- ── Escalation hub ────────────────────────────────────────────────── -->
+  <div id="tab-escalation" class="tab-panel">
+    <div id="escalation-content">
+      <div class="loading">Checking quality threshold…</div>
+    </div>
+
+    <h3 style="margin-top:1.5rem">Escalation Rules</h3>
+    <table>
+      <thead><tr><th>Trigger</th><th>Action</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Quality score &lt; 70</td><td>Open GitHub Issue with phase analysis</td><td>dmaic-commit-metrics.yml</td></tr>
+        <tr><td>Missing dashboards</td><td>Open GitHub Issue + fail job</td><td>dashboard-health.yml</td></tr>
+        <tr><td>Broken internal links</td><td>Open GitHub Issue</td><td>dashboard-health.yml</td></tr>
+        <tr><td>Post-deploy page 4xx/5xx</td><td>Step summary + warning</td><td>dmaic-commit-metrics.yml</td></tr>
+        <tr><td>KEB task timeout</td><td>Metric logged + retry</td><td>knowledge_integration_v2.3.py</td></tr>
+        <tr><td>GBOGEB metric timeout</td><td>Metric logged gracefully</td><td>knowledge_integration_v2.3.py</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:1.5rem">Enable These Workflows</h3>
+    <p>Copy the workflow templates from <code>docs/workflows/</code> to <code>.github/workflows/</code>:</p>
+    <pre class="snippet">cp docs/workflows/dmaic-commit-metrics.yml  .github/workflows/
+cp docs/workflows/dashboard-health.yml     .github/workflows/
+cp docs/workflows/deploy-docs.yml          .github/workflows/
+cp docs/workflows/update-docs.yml          .github/workflows/
+cp docs/workflows/release.yml              .github/workflows/</pre>
+  </div>
+
+  <!-- ── Insights ──────────────────────────────────────────────────────── -->
+  <div id="tab-insights" class="tab-panel">
+    <h3>Knowledge & Insights</h3>
+    <div id="insight-cards">
+      <div class="loading">Deriving insights from metrics…</div>
+    </div>
+
+    <h3 style="margin-top:1.5rem">DMAIC Improvement Opportunities</h3>
+    <table id="opportunity-table">
+      <thead><tr><th>Phase</th><th>Opportunity</th><th>Impact</th><th>Effort</th></tr></thead>
+      <tbody>
+        <tr><td>Define</td><td>Add module-level docstrings to all DMAIC_V3/core files</td><td>High</td><td>Low</td></tr>
+        <tr><td>Measure</td><td>Increase test-to-source file ratio to ≥ 30%</td><td>High</td><td>Medium</td></tr>
+        <tr><td>Analyze</td><td>Enable CodeQL scanning on every PR</td><td>High</td><td>Low</td></tr>
+        <tr><td>Improve</td><td>Migrate agent files to valid Python identifier names</td><td>Medium</td><td>Medium</td></tr>
+        <tr><td>Control</td><td>Deploy DMAIC metrics workflow to .github/workflows/</td><td>High</td><td>Low</td></tr>
+        <tr><td>All</td><td>Set up branch protection rules requiring status checks</td><td>High</td><td>Low</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer class="footer">
+  ABACUS DMAIC Metrics Dashboard &copy; 2026 |
+  <a href="./">← Home</a> |
+  <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/workflows/dmaic-commit-metrics.yml">Workflow Source</a>
+</footer>
+
+<script>
+// ── Tab switching ─────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'charts' && !window._chartsDrawn) drawCharts();
+}
+
+// ── Load metrics JSON ─────────────────────────────────────────────────────
+let _metrics = null;
+
+async function loadMetrics() {
+  try {
+    const r = await fetch('api/dmaic_metrics.json?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    _metrics = await r.json();
+    renderAll(_metrics);
+  } catch (e) {
+    document.getElementById('metrics-ts').textContent =
+      '⚠️  Metrics file not yet available. Run the dmaic-commit-metrics workflow to generate it.';
+    renderFallback();
+  }
+}
+
+// ── Render overview ───────────────────────────────────────────────────────
+function renderAll(m) {
+  document.getElementById('metrics-ts').innerHTML =
+    `Last updated: <strong>${(m.timestamp||'').replace('T',' ').slice(0,19)} UTC</strong>
+     · SHA: <code>${m.sha||'—'}</code> · Branch: <code>${m.ref||'—'}</code>`;
+
+  const cards = [
+    { num: m.quality_score, lbl: 'Quality Score / 100' },
+    { num: m.total_commits,  lbl: 'Total Commits' },
+    { num: m.recent_commits, lbl: 'Commits (30d)' },
+    { num: m.python_files,   lbl: 'Python Files' },
+    { num: m.test_files,     lbl: 'Test Files' },
+    { num: m.html_docs,      lbl: 'HTML Pages' },
+    { num: m.workflows,      lbl: 'Workflows' },
+    { num: m.total_loc,      lbl: 'Lines of Code' },
+  ];
+  document.getElementById('metric-cards').innerHTML = cards.map(c =>
+    `<div class="metric-card"><span class="num">${c.num ?? '—'}</span><span class="lbl">${c.lbl}</span></div>`
+  ).join('');
+
+  const qs = m.quality_score || 0;
+  const qColor = qs >= 70 ? 'badge-ok' : qs >= 50 ? 'badge-warn' : 'badge-err';
+  document.getElementById('status-rows').innerHTML = `
+    <tr><td>Quality Score</td><td><span class="badge ${qColor}">${qs}/100</span></td><td>Composite DMAIC phase score</td></tr>
+    <tr><td>Test Coverage Signal</td><td><span class="badge ${m.test_files > 0 ? 'badge-ok' : 'badge-warn'}">${m.test_files > 0 ? 'Tests present' : 'No tests found'}</span></td><td>${m.test_files} test file(s) detected</td></tr>
+    <tr><td>Documentation</td><td><span class="badge badge-ok">Active</span></td><td>${m.html_docs} HTML · ${m.markdown_docs} Markdown docs</td></tr>
+    <tr><td>Workflows</td><td><span class="badge badge-ok">Active</span></td><td>${m.workflows} CI/CD workflow(s) in .github/workflows/</td></tr>
+    <tr><td>Escalation</td><td><span class="badge ${m.escalate ? 'badge-err' : 'badge-ok'}">${m.escalate ? 'Issue opened' : 'OK'}</span></td><td>${m.escalate ? 'Quality below threshold — see Escalation Hub' : 'All thresholds met'}</td></tr>`;
+
+  renderPhases(m);
+  renderEscalation(m);
+  renderInsights(m);
+}
+
+// ── Phase health ──────────────────────────────────────────────────────────
+function renderPhases(m) {
+  const ps = m.phase_scores || {};
+  document.getElementById('phase-rows').innerHTML = Object.entries(ps).map(([phase, v]) => {
+    const color = v.score >= 70 ? 'badge-ok' : v.score >= 40 ? 'badge-warn' : 'badge-err';
+    return `<tr>
+      <td><strong>${phase.charAt(0).toUpperCase()+phase.slice(1)}</strong></td>
+      <td><span class="badge ${color}">${v.score}/100</span></td>
+      <td>${v.files} file(s)</td>
+      <td>${v.score >= 70 ? '✅ Healthy' : v.score >= 40 ? '⚠️ Needs attention' : '❌ Critical'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4">No phase data available.</td></tr>';
+}
+
+// ── Escalation hub ────────────────────────────────────────────────────────
+function renderEscalation(m) {
+  const box = document.getElementById('escalation-content');
+  if (m.escalate) {
+    box.innerHTML = `<div class="escalation-box">
+      <h3>⚠️ Active Escalation</h3>
+      <div class="escalation-item"><span class="escalation-icon">📉</span>Quality score <strong>${m.quality_score}</strong> is below threshold (70)</div>
+      ${m.test_files === 0 ? '<div class="escalation-item"><span class="escalation-icon">🧪</span>No test files detected — Measure phase at risk</div>' : ''}
+      <p style="margin:.8rem 0 0;font-size:.9rem">A GitHub Issue has been automatically opened in the repository. Check the <a href="https://github.com/GBOGEB/ABACUS/issues?q=label%3Admaic-regression">dmaic-regression label</a>.</p>
+    </div>`;
+  } else {
+    box.innerHTML = `<div class="ok-box">✅ All quality thresholds met — no escalation triggered. Quality score: ${m.quality_score}/100</div>`;
+  }
+}
+
+// ── Insights ──────────────────────────────────────────────────────────────
+function renderInsights(m) {
+  const ps = m.phase_scores || {};
+  const insights = [];
+  Object.entries(ps).forEach(([phase, v]) => {
+    if (v.score < 40) insights.push({
+      icon:'❌', label: phase.toUpperCase() + ' — Critical',
+      text: `Only ${v.files} file(s) tracked in this phase. Add more ${phase} artifacts.`
+    });
+    else if (v.score < 70) insights.push({
+      icon:'⚠️', label: phase.toUpperCase() + ' — Needs Attention',
+      text: `Score ${v.score}/100 (${v.files} files). Consider expanding coverage.`
+    });
+    else insights.push({
+      icon:'✅', label: phase.toUpperCase() + ' — Healthy',
+      text: `Score ${v.score}/100 with ${v.files} tracked files.`
+    });
+  });
+  if (m.test_files === 0) insights.unshift({
+    icon:'🧪', label:'No Tests Detected',
+    text:'Add pytest tests in DMAIC_V3/tests/ to improve the Measure phase score.'
+  });
+  if (m.recent_commits > 20) insights.push({
+    icon:'🚀', label:'High Commit Velocity',
+    text:`${m.recent_commits} commits in last 30 days — great momentum!`
+  });
+  document.getElementById('insight-cards').innerHTML = insights.map(i =>
+    `<div class="insight-card"><div class="label">${i.icon} ${i.label}</div>${i.text}</div>`
+  ).join('') || '<p>No insights available.</p>';
+}
+
+// ── Fallback when no metrics.json exists ──────────────────────────────────
+function renderFallback() {
+  const stub = {
+    quality_score:0, total_commits:'—', recent_commits:'—',
+    python_files:'—', test_files:'—', html_docs:'—', workflows:'—', total_loc:'—',
+    phase_scores:{
+      define:{score:0,files:0},measure:{score:0,files:0},analyze:{score:0,files:0},
+      improve:{score:0,files:0},control:{score:0,files:0},
+    },
+    escalate:false,
+  };
+  renderAll(stub);
+}
+
+// ── Plotly charts ─────────────────────────────────────────────────────────
+function drawCharts() {
+  window._chartsDrawn = true;
+  if (!_metrics) return;
+  const m = _metrics;
+  const ps = m.phase_scores || {};
+  const phases = Object.keys(ps).map(p => p.charAt(0).toUpperCase()+p.slice(1));
+  const scores = Object.values(ps).map(v => v.score);
+  const files  = Object.values(ps).map(v => v.files);
+  const dark = {paper_bgcolor:'#0d1117',plot_bgcolor:'#0d1117',
+    font:{color:'#e6edf3'},xaxis:{gridcolor:'#30363d'},yaxis:{gridcolor:'#30363d'}};
+
+  // Radar
+  Plotly.newPlot('chart-radar', [{
+    type:'scatterpolar', r:[...scores, scores[0]], theta:[...phases, phases[0]],
+    fill:'toself', line:{color:'#58a6ff'}, fillcolor:'rgba(88,166,255,0.2)', name:'Score'
+  }], {
+    polar:{radialaxis:{visible:true,range:[0,100],gridcolor:'#30363d'},
+           angularaxis:{gridcolor:'#30363d'}},
+    ...dark,
+    title:{text:'DMAIC Phase Radar', font:{color:'#e6edf3'}}
+  }, {responsive:true});
+
+  // Bar — phase scores
+  Plotly.newPlot('chart-bar', [{
+    type:'bar', x:phases, y:scores,
+    marker:{color:scores.map(s => s>=70 ? '#3fb950' : s>=40 ? '#d29922' : '#f85149')},
+    text:scores.map(s => s+'/100'), textposition:'outside'
+  }], {
+    ...dark, yaxis:{...dark.yaxis, range:[0,115]},
+    title:{text:'Phase Scores', font:{color:'#e6edf3'}}
+  }, {responsive:true});
+
+  // Bar — files per phase
+  Plotly.newPlot('chart-files', [{
+    type:'bar', x:phases, y:files, marker:{color:'#bc8cff'},
+    text:files.map(f => f+' files'), textposition:'outside'
+  }], {
+    ...dark, title:{text:'Files per DMAIC Phase', font:{color:'#e6edf3'}}
+  }, {responsive:true});
+
+  // Snapshot bar
+  const snap = {
+    'Total Commits': m.total_commits||0,
+    'Commits (30d)': m.recent_commits||0,
+    'Python Files':  m.python_files||0,
+    'Test Files':    m.test_files||0,
+    'HTML Docs':     m.html_docs||0,
+    'Workflows':     m.workflows||0,
+  };
+  Plotly.newPlot('chart-snap', [{
+    type:'bar', x:Object.keys(snap), y:Object.values(snap), marker:{color:'#58a6ff'}
+  }], {
+    ...dark, title:{text:'Repository Activity Snapshot', font:{color:'#e6edf3'}},
+    xaxis:{...dark.xaxis, tickangle:-20}
+  }, {responsive:true});
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadMetrics();
+</script>
+</body>
+</html>

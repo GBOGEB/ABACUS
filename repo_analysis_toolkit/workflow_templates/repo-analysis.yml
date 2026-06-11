@@ -1,0 +1,55 @@
+# Reusable repo-analysis workflow — runs the DMAIC toolkit on every push to main
+# and on a weekly schedule. Uploads reports as artifacts.
+
+name: Repo Analysis (DMAIC)
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history required for lineage analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install toolkit deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r repo_analysis_toolkit/requirements.txt
+
+      - name: Run baseline analysis
+        run: python repo_analysis_toolkit/analyze_repo.py --repo . --out reports/baseline.json
+
+      - name: Run classification
+        run: python repo_analysis_toolkit/classify_artifacts.py --repo . --out reports/classification.csv --dedup
+
+      - name: Run lineage
+        run: python repo_analysis_toolkit/generate_lineage.py --repo . --out reports/lineage.md
+
+      - name: Build dashboard
+        run: python repo_analysis_toolkit/create_dashboard.py --reports reports/ --out reports/dashboard.html
+
+      - name: Validate cleanup
+        run: python repo_analysis_toolkit/validate_cleanup.py --repo . --out reports/validation.json
+        continue-on-error: true   # don't fail the workflow on a score drop; surface in artefact
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-analysis-reports
+          path: reports/
+          retention-days: 30

@@ -1,0 +1,45 @@
+# Dependabot configuration
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+version: 2
+updates:
+  # Keep GitHub Actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "ci/cd"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    open-pull-requests-limit: 10
+
+  # Keep Python dependencies in DMAIC_V3/requirements.txt up to date
+  - package-ecosystem: "pip"
+    directory: "/DMAIC_V3"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    open-pull-requests-limit: 5
+
+  # Keep Python dependencies in MINERVA_PID/requirements.txt up to date
+  # (MINERVA QCELL/RFCELL P&ID subproject — W001-W005)
+  - package-ecosystem: "pip"
+    directory: "/MINERVA_PID"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    open-pull-requests-limit: 5

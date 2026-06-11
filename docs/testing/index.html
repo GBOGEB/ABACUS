@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Integration Testing – ABACUS</title>
+  <meta name="description" content="ABACUS integration test results, coverage reports, and continuous testing status."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .result-pass{color:#137333;font-weight:600}.result-fail{color:#c5221f;font-weight:600}.result-warn{color:#b05e0a;font-weight:600}
+    .progress-bar{height:20px;background:#e0e0e0;border-radius:10px;overflow:hidden;margin:.5rem 0}
+    .progress-fill{height:100%;background:var(--accent);border-radius:10px;transition:width .5s}
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="../">⚛️ ABACUS</a>
+  <a href="../cryo/">Cryo</a><a href="../12-cluster/">12-Cluster</a><a href="../dow/">DOW</a>
+  <a href="../testing/">Testing</a><a href="../tools/">Tools</a><a href="../versions/">Versions</a>
+</nav>
+<div class="breadcrumbs"><a href="../">Home</a> <span>›</span> Integration Testing</div>
+
+<section class="hero" style="background:linear-gradient(135deg,#1a2233,#ea4335)">
+  <h1>🧪 Integration Testing</h1>
+  <p>Deep integration test results, coverage analysis, and continuous testing status for the ABACUS pipeline.</p>
+</section>
+
+<main class="container">
+
+  <section class="section">
+    <h2>Test Results Overview</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Module Imports</h3>
+        <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+        <p>6 / 8 modules import successfully. 2 blockers resolved (change_detector.py syntax, local_mcp __init__.py).</p>
+      </div>
+      <div class="card">
+        <h3>Syntax Validation</h3>
+        <div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div>
+        <p>Critical files pass syntax checks. change_detector.py fix verified.</p>
+      </div>
+      <div class="card">
+        <h3>Workflow Validation</h3>
+        <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+        <p>32 of 34 GitHub Actions workflows validated. 2 have minor issues (typo fix applied to ci-codex.yml).</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>📋 Detailed Test Results</h2>
+    <table>
+      <thead><tr><th>Test</th><th>Module</th><th>Result</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Import DMAICConfig</td><td>DMAIC_V3.config</td><td><span class="result-pass">✅ PASS</span></td><td>Configuration loads correctly</td></tr>
+        <tr><td>Import StateManager</td><td>DMAIC_V3.core.state</td><td><span class="result-pass">✅ PASS</span></td><td>State management functional</td></tr>
+        <tr><td>Import 12-Cluster Orchestrator</td><td>DMAIC_V3.12_cluster</td><td><span class="result-pass">✅ PASS</span></td><td>Imports with warnings (expected)</td></tr>
+        <tr><td>Import ChangeDetector</td><td>DMAIC_V3.convergence</td><td><span class="result-pass">✅ PASS</span></td><td>Syntax fix applied and verified</td></tr>
+        <tr><td>Import DMAIC V3 Engine</td><td>DMAIC_V3.engine</td><td><span class="result-pass">✅ PASS</span></td><td>Fixed via change_detector dependency</td></tr>
+        <tr><td>Import Agent Orchestrator</td><td>local_mcp.agent_orchestrator</td><td><span class="result-pass">✅ PASS</span></td><td>Fixed via __init__.py addition</td></tr>
+        <tr><td>Import Knowledge Integration</td><td>local_mcp.knowledge_integration</td><td><span class="result-warn">⚠️ WARN</span></td><td>Fallback mode (KEB/GBOGEB optional imports)</td></tr>
+        <tr><td>Import Integration Bridge</td><td>staging.bridge</td><td><span class="result-pass">✅ PASS</span></td><td>5 integration modes available</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>🔄 Continuous Testing</h2>
+    <table>
+      <thead><tr><th>Workflow</th><th>Schedule</th><th>Status</th><th>Last Run</th></tr></thead>
+      <tbody>
+        <tr><td>CI Pipeline</td><td>On push / PR</td><td><span class="badge badge-ok">Active</span></td><td>Latest commit</td></tr>
+        <tr><td>Dashboard Health</td><td>Daily</td><td><span class="badge badge-ok">Active</span></td><td>Scheduled</td></tr>
+        <tr><td>Docs Deployment</td><td>On docs/** push</td><td><span class="badge badge-ok">Active</span></td><td>On merge</td></tr>
+        <tr><td>Link Checker</td><td>Weekly</td><td><span class="badge badge-info">New</span></td><td>Pending</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>🚀 Test Execution Guide</h2>
+    <h4>Run import tests</h4>
+    <pre><code>cd ABACUS
+python -c "from DMAIC_V3.config import DMAICConfig; print('Config OK')"
+python -c "from DMAIC_V3.core.state import StateManager; print('State OK')"
+python -c "import local_mcp; print('local_mcp OK')"</code></pre>
+    <h4>Run syntax validation</h4>
+    <pre><code>python -m py_compile DMAIC_V3/convergence/change_detector.py
+python -m py_compile local_mcp/agent_orchestrator_v3.0.py</code></pre>
+    <h4>Run integration bridge test</h4>
+    <pre><code>cd staging
+python test_integration_bridge.py</code></pre>
+  </section>
+
+  <section class="section">
+    <h2>Related Resources</h2>
+    <ul>
+      <li><a href="../../integration_test_results.md">Full Integration Test Results</a></li>
+      <li><a href="../deep_analysis_dashboard.html">Deep Analysis Dashboard</a></li>
+      <li><a href="../handover_book.html">Handover Book – Chapter 10: Testing</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">ABACUS Integration Testing &copy; 2026 | <a href="../">← Back to Home</a></footer>
+</body>
+</html>

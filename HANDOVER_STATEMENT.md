@@ -1,7 +1,7 @@
 # CRYO LINAC Calculator - Handover Statement
 
 
-**Version:** 4.0.0  
+**Version:** 2.3.0  
 **Generated:** 2025-11-08T19:22:20.310028+00:00  
 ## Quick Start (30 seconds)
 

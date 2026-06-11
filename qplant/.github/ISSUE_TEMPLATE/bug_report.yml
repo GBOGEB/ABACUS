@@ -1,0 +1,72 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[BUG] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the sections below.
+  
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component is affected?
+      options:
+        - Authentication
+        - API Endpoints
+        - Config Service
+        - Physics Validation
+        - Load Testing
+        - Visual Regression
+        - Kubernetes Deployment
+        - Documentation
+        - Other
+    validations:
+      required: true
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear description of the bug
+      placeholder: What happened?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Run command...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+  
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which version are you using?
+      placeholder: "v4.4.0"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste relevant logs
+      render: shell

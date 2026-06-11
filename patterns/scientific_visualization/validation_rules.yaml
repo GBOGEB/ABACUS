@@ -1,0 +1,55 @@
+schema_validation_rules:
+  - id: valid_visualization_type
+    description: "Visualization type must match canonical supported list."
+    field: "visualization.type"
+    rule: "enum"
+    allowed_values:
+      - sankey
+      - boxplot
+      - violin
+      - timeline
+      - heatmap
+      - process_flow
+      - table_metrics
+      - scientific_equations
+
+  - id: required_lineage_fields
+    description: "Lineage evidence must include governance traceability fields."
+    field: "lineage"
+    rule: "required_fields"
+    required:
+      - wave
+      - pr
+      - repo
+      - commit
+      - runtime_evidence
+      - validation_evidence
+
+  - id: pca_metrics_required
+    description: "PCA metrics must expose forward and backward values."
+    field: "metrics.pca"
+    rule: "required_fields"
+    required:
+      - forward_pca
+      - backward_pca
+
+  - id: normalized_metric_bounds
+    description: "PCA, GETI and truth scores are normalized to [0,1]."
+    fields:
+      - "metrics.pca.forward_pca"
+      - "metrics.pca.backward_pca"
+      - "metrics.geti"
+      - "metrics.truth_score"
+    rule: "range"
+    minimum: 0
+    maximum: 1
+
+  - id: truth_matrix_principles_alignment
+    description: "Truth matrix principles must align with runtime governance principles."
+    field: "truth_matrix.principles"
+    rule: "contains_all"
+    required:
+      - chat_is_not_repo
+      - architecture_is_not_runtime
+      - claimed_is_not_validated
+      - exists_in_repo_is_not_ci_execution

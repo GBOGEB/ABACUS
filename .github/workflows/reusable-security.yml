@@ -1,0 +1,47 @@
+name: DELTA_1 Reusable Security
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: python
+          config-file: .github/codeql/codeql-config.yml
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:python'
+
+      - name: Dependency review placeholder
+        run: |
+          echo "DELTA_1 dependency-review validation"
+
+      - name: Secret scanning placeholder
+        run: |
+          echo "DELTA_1 secret-scanning validation"
+
+      - name: Runtime governance security validation
+        run: |
+          echo "DELTA_1 runtime-security validation"
+
+      - name: Provenance validation
+        run: |
+          echo "DELTA_1 provenance validation"

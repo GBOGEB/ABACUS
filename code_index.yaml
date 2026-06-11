@@ -1,0 +1,213 @@
+meta:
+  version: v2.3.0
+  generated_at: '2026-05-28T18:24:48.208065'
+  generator: code_index_generator_v2.3.py
+  repo_root: .
+  elapsed_seconds: 0.056
+summary:
+  total_agents: 19
+  v2.3_agents: 3
+  stub_agents: 12
+  total_tools: 2
+  orchestrator_present: true
+agents:
+- name: analysis_smoke_test
+  file: local_mcp/agents/analysis_smoke_test_v2.3_OPTIMIZED.py
+  type: agent
+  version: v2.3.0
+  v2.3: true
+  classes:
+  - MemoryEfficientSmokeTestV23
+  stub: false
+  status: active
+- name: documentation_framework
+  file: local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py
+  type: agent
+  version: unknown
+  v2.3: true
+  classes:
+  - MemoryEfficientDocumentationFrameworkV23
+  stub: false
+  status: active
+- name: recursive_framework
+  file: local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py
+  type: agent
+  version: unknown
+  v2.3: true
+  classes:
+  - MemoryEfficientRecursiveFrameworkV23
+  stub: false
+  status: active
+- name: analysis_artifact_analyzer
+  file: DMAIC_V3/local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - ArtifactAnalyzerAgent
+  stub: true
+  status: stub
+- name: analysis_cryo_dm
+  file: DMAIC_V3/local_mcp/agents/analysis_cryo_dm_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - CryoDmAgent
+  stub: true
+  status: stub
+- name: analysis_document_consumer
+  file: DMAIC_V3/local_mcp/agents/analysis_document_consumer_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - DocumentConsumerAgent
+  stub: true
+  status: stub
+- name: analysis_smoke_test
+  file: DMAIC_V3/local_mcp/agents/analysis_smoke_test_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - SmokeTestAgent
+  stub: true
+  status: stub
+- name: documentation_framework
+  file: DMAIC_V3/local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - FrameworkAgent
+  stub: true
+  status: stub
+- name: documentation_style_extractor
+  file: DMAIC_V3/local_mcp/agents/documentation_style_extractor_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - StyleExtractorAgent
+  stub: true
+  status: stub
+- name: dow_convergence_calculator
+  file: DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py
+  type: agent
+  version: unknown
+  v2.3: false
+  classes:
+  - DOWConvergenceCalculator
+  stub: false
+  status: active
+- name: dow_knowledge_extractor
+  file: DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py
+  type: agent
+  version: unknown
+  v2.3: false
+  classes:
+  - DOWKnowledgeExtractor
+  stub: false
+  status: active
+- name: dow_metadata_injector
+  file: DMAIC_V3/local_mcp/agents/dow_metadata_injector.py
+  type: agent
+  version: unknown
+  v2.3: false
+  classes:
+  - DOWMetadataInjector
+  stub: false
+  status: active
+- name: dow_recursive_hooks_injector
+  file: DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py
+  type: agent
+  version: unknown
+  v2.3: false
+  classes:
+  - DOWRecursiveHooksInjector
+  stub: false
+  status: active
+- name: knowledge_context_manager
+  file: DMAIC_V3/local_mcp/agents/knowledge_context_manager_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - ContextManagerAgent
+  stub: true
+  status: stub
+- name: knowledge_dependency_graph
+  file: DMAIC_V3/local_mcp/agents/knowledge_dependency_graph_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - DependencyGraphAgent
+  stub: true
+  status: stub
+- name: monitoring_health_checker
+  file: DMAIC_V3/local_mcp/agents/monitoring_health_checker_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - HealthCheckerAgent
+  stub: true
+  status: stub
+- name: monitoring_performance_tracker
+  file: DMAIC_V3/local_mcp/agents/monitoring_performance_tracker_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - PerformanceTrackerAgent
+  stub: true
+  status: stub
+- name: recursive_iteration_tracker
+  file: DMAIC_V3/local_mcp/agents/recursive_iteration_tracker_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - IterationTrackerAgent
+  stub: true
+  status: stub
+- name: recursive_self_ranking
+  file: DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py
+  type: agent
+  version: 0.0.0-stub
+  v2.3: true
+  classes:
+  - SelfRankingAgent
+  stub: true
+  status: stub
+tools:
+- name: code_index_generator
+  file: tools_v2.3/code_index_generator_v2.3.py
+  type: tool
+  version: v2.3.0
+  v2.3: true
+  classes: []
+  stub: false
+  status: active
+- name: task_tracker
+  file: tools_v2.3/task_tracker_v2.3_20251111.py
+  type: tool
+  version: v2.3.0
+  v2.3: true
+  classes:
+  - TaskTrackerV23
+  stub: false
+  status: active
+orchestrator:
+  name: agent_orchestrator
+  file: local_mcp/agent_orchestrator_v3.0.py
+  type: orchestrator
+  version: unknown
+  v2.3: false
+  v3.0: true
+  classes:
+  - AgentOrchestratorV3
+  stub: false
+  status: active

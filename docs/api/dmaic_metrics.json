@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-10T19:39:30.700658Z",
+  "trigger": "workflow_run",
+  "ref": "main",
+  "sha": "0c4cba3d663e",
+  "quality_score": 75.0,
+  "total_commits": 1834,
+  "recent_commits": 1300,
+  "python_files": 412,
+  "test_files": 80,
+  "total_loc": 106111,
+  "html_docs": 79,
+  "markdown_docs": 775,
+  "workflows": 59,
+  "phase_scores": {
+    "define": {
+      "files": 15,
+      "score": 75,
+      "weight": 20
+    },
+    "measure": {
+      "files": 36,
+      "score": 100,
+      "weight": 20
+    },
+    "analyze": {
+      "files": 133,
+      "score": 100,
+      "weight": 20
+    },
+    "improve": {
+      "files": 9,
+      "score": 45,
+      "weight": 20
+    },
+    "control": {
+      "files": 1,
+      "score": 5,
+      "weight": 20
+    }
+  },
+  "escalate": false
+}

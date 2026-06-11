@@ -202,6 +202,24 @@ git push origin feature/your-branch
 
 ## Branch Strategy
 
+### Dormancy-Safe Merge Order
+
+Use the repository script to apply the approved merge ordering and reduce dormant branches:
+
+```bash
+# Preview the merge order (safe dry-run)
+bash scripts/merge_dormancy_order.sh
+
+# Execute merges into your current branch in that order
+bash scripts/merge_dormancy_order.sh --execute
+```
+
+Weekly hygiene:
+
+```bash
+git fetch --prune origin
+```
+
 ### Recommended Branch Structure
 
 ```

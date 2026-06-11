@@ -1,0 +1,456 @@
+line_class,start,layer,dash,width
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(-10.0, 0.0)",(root),none,1pt
+B,"(-10.69, -4.44)",(root),none,0.625
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(-10.0, 0.0)",(root),none,1pt
+B,"(-10.0, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(1.96, 0.0)",(root),none,1pt
+B,"(675.74, 615.64)",2 K tank,none,0.999216
+B,"(811.7, 615.64)",2 K tank,none,0.999216
+B,"(744.68, 479.15)",Piping and series instrumentation,none,1
+B,"(741.38, 480.6)",Piping and series instrumentation,none,0.854545
+B,"(1046.94, 675.66)",Piping and series instrumentation,none,1.00975px
+B,"(1047.07, 616.96)",Piping and series instrumentation,none,0.7
+B,"(1051.0, 623.04)",Piping and series instrumentation,none,0.7
+B,"(1041.58, 613.42)",Piping and series instrumentation,none,0.7
+B,"(1036.52, 621.65)",Piping and series instrumentation,none,0.584
+B,"(1047.03, 656.18)",Piping and series instrumentation,none,0.7
+B,"(1050.96, 662.25)",Piping and series instrumentation,none,0.7
+B,"(1041.54, 652.64)",Piping and series instrumentation,none,0.7
+B,"(1036.3, 661.09)",Piping and series instrumentation,none,0.584
+B,"(1058.64, 602.54)",Piping and series instrumentation,none,1
+B,"(1055.28, 598.77)",Piping and series instrumentation,none,0.999518
+B,"(1053.73, 604.98)",Piping and series instrumentation,none,0.999518
+B,"(1039.49, 582.42)",Piping and series instrumentation,none,1.875
+B,"(1050.72, 672.22)",Piping and series instrumentation,none,0.999518
+B,"(1044.5, 670.66)",Piping and series instrumentation,none,0.999518
+B,"(744.67, 479.15)",TC-LB,none,1
+B,"(741.39, 480.6)",TC-LB,none,0.854545
+B,"(889.58, 230.32)",Headers A B C D,none,1px
+B,"(790.14, 189.2)",Headers A B C D,none,1.00975px
+B,"(797.29, 187.27)",Headers A B C D,none,1.875
+B,"(791.84, 189.27)",Headers A B C D,none,0.599698
+B,"(734.04, 230.54)",Piping and series instrumentation,none,1
+B,"(747.8, 476.13)",Piping and series instrumentation,none,0.854545
+B,"(740.14, 316.49)",Piping and series instrumentation,none,0.639818
+B,"(744.84, 320.0)",Piping and series instrumentation,none,0.644882
+B,"(748.76, 326.08)",Piping and series instrumentation,none,0.644882
+B,"(740.26, 320.0)",Piping and series instrumentation,none,0.582274
+B,"(734.35, 327.67)",Piping and series instrumentation,none,0.584
+B,"(735.34, 325.61)",Piping and series instrumentation,none,0.3
+B,"(736.16, 325.6)",Piping and series instrumentation,none,0.3
+B,"(736.97, 325.6)",Piping and series instrumentation,none,0.3
+B,"(737.77, 325.6)",Piping and series instrumentation,none,0.3
+B,"(890.18, 159.22)",Instrumentation Pcav Observer,none,1.00975px
+B,"(804.41, 159.37)",Instrumentation Pcav Observer,none,0.7
+B,"(798.33, 163.3)",Instrumentation Pcav Observer,none,0.7
+B,"(807.95, 153.88)",Instrumentation Pcav Observer,none,0.7
+B,"(799.72, 148.82)",Instrumentation Pcav Observer,none,0.584
+B,"(871.67, 159.27)",Instrumentation Pcav Observer,none,0.7
+B,"(865.6, 163.2)",Instrumentation Pcav Observer,none,0.7
+B,"(875.22, 153.77)",Instrumentation Pcav Observer,none,0.7
+B,"(866.99, 148.72)",Instrumentation Pcav Observer,none,0.584
+B,"(783.87, 155.33)",Instrumentation Pcav Observer,none,0.999518
+B,"(785.43, 161.55)",Instrumentation Pcav Observer,none,0.999518
+B,"(790.14, 159.14)",Instrumentation Pcav Observer,none,1.00975px
+B,"(886.76, 155.37)",Instrumentation Pcav Observer,none,0.999518
+B,"(885.2, 161.59)",Instrumentation Pcav Observer,none,0.999518
+B,"(782.48, 182.87)",Instrumentation Pcav Observer,none,1.875
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(-10.69, -4.44)",(root),none,0.625
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.69, -4.44)",(root),none,0.625
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(-10.0, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(1.96, 0.0)",(root),none,1pt
+A,"(736.7, 655.48)",Bottom connection,none,0.545455
+A,"(756.55, 655.61)",Bottom connection,none,0.545455
+A,"(726.96, 479.15)",Piping and series instrumentation,none,1
+A,"(726.96, 569.06)",Piping and series instrumentation,"1, 1",1
+A,"(729.32, 484.44)",Piping and series instrumentation,none,0.854563
+A,"(745.5, 687.13)",Piping and series instrumentation,none,1
+A,"(853.59, 651.68)",Piping and series instrumentation,none,1
+A,"(587.59, 484.44)",Piping and series instrumentation,none,0.854563
+A,"(744.67, 561.31)",TC-LB,none,1
+A,"(726.94, 561.31)",TC-LB,none,1
+A,"(587.59, 484.44)",TC-LB,none,0.854563
+A,"(729.32, 484.44)",TC-LB,none,0.854563
+A,"(301.37, 212.48)",Headers A B C D,none,1px
+A,"(585.33, 477.65)",Piping and series instrumentation,none,1
+A,"(581.42, 482.94)",Piping and series instrumentation,none,0.854563
+A,"(585.21, 352.83)",Piping and series instrumentation,none,1
+A,"(723.12, 482.94)",Piping and series instrumentation,none,0.854563
+A,"(590.01, 410.76)",Piping and series instrumentation,none,0.639818
+A,"(585.32, 407.24)",Piping and series instrumentation,none,0.644882
+A,"(581.39, 401.17)",Piping and series instrumentation,none,0.644882
+A,"(589.89, 407.24)",Piping and series instrumentation,none,0.582274
+A,"(595.8, 399.57)",Piping and series instrumentation,none,0.584
+A,"(594.81, 401.64)",Piping and series instrumentation,none,0.3
+A,"(593.99, 401.64)",Piping and series instrumentation,none,0.3
+A,"(593.18, 401.64)",Piping and series instrumentation,none,0.3
+A,"(592.39, 401.64)",Piping and series instrumentation,none,0.3
+A,"(589.93, 306.1)",Piping and series instrumentation,none,0.639818
+A,"(585.23, 302.59)",Piping and series instrumentation,none,0.644882
+A,"(581.3, 296.51)",Piping and series instrumentation,none,0.644882
+A,"(589.81, 302.59)",Piping and series instrumentation,none,0.582274
+A,"(595.72, 294.92)",Piping and series instrumentation,none,0.584
+A,"(594.73, 296.99)",Piping and series instrumentation,none,0.3
+A,"(593.91, 296.99)",Piping and series instrumentation,none,0.3
+A,"(593.1, 296.99)",Piping and series instrumentation,none,0.3
+A,"(592.3, 296.99)",Piping and series instrumentation,none,0.3
+A,"(726.86, 407.24)",Piping and series instrumentation,none,0.644882
+A,"(722.93, 401.17)",Piping and series instrumentation,none,0.644882
+A,"(731.43, 407.24)",Piping and series instrumentation,none,0.582274
+A,"(737.34, 399.57)",Piping and series instrumentation,none,0.584
+A,"(736.35, 401.64)",Piping and series instrumentation,none,0.3
+A,"(735.53, 401.64)",Piping and series instrumentation,none,0.3
+A,"(734.72, 401.64)",Piping and series instrumentation,none,0.3
+A,"(733.93, 401.64)",Piping and series instrumentation,none,0.3
+A,"(731.56, 410.75)",Piping and series instrumentation,none,0.639818
+A,"(610.28, 186.19)",Piping and series instrumentation,none,1.00975px
+A,"(612.61, 191.57)",Piping and series instrumentation,none,0.854563
+A,"(225.36, 337.97)",Piping and series instrumentation,none,1.00975px
+A,"(240.46, 338.1)",Piping and series instrumentation,none,0.7
+A,"(234.38, 342.03)",Piping and series instrumentation,none,0.7
+A,"(244.0, 332.61)",Piping and series instrumentation,none,0.7
+A,"(235.77, 327.56)",Piping and series instrumentation,none,0.584
+A,"(281.52, 338.13)",Piping and series instrumentation,none,0.7
+A,"(275.45, 342.06)",Piping and series instrumentation,none,0.7
+A,"(285.06, 332.63)",Piping and series instrumentation,none,0.7
+A,"(276.83, 327.58)",Piping and series instrumentation,none,0.584
+A,"(228.94, 341.86)",Piping and series instrumentation,none,0.999518
+A,"(230.49, 335.64)",Piping and series instrumentation,none,0.999518
+A,"(596.52, 163.18)",Instrumentation Pcav Observer,none,1
+A,"(610.28, 163.18)",Instrumentation Pcav Observer,none,1
+A,"(606.38, 190.02)",Instrumentation Pcav Observer,none,0.854563
+A,"(625.37, 163.12)",Instrumentation Pcav Observer,none,0.7
+A,"(619.3, 167.05)",Instrumentation Pcav Observer,none,0.7
+A,"(628.92, 157.62)",Instrumentation Pcav Observer,none,0.7
+A,"(620.69, 152.57)",Instrumentation Pcav Observer,none,0.584
+A,"(683.04, 163.06)",Instrumentation Pcav Observer,none,0.7
+A,"(676.97, 166.99)",Instrumentation Pcav Observer,none,0.7
+A,"(686.59, 157.56)",Instrumentation Pcav Observer,none,0.7
+A,"(678.36, 152.51)",Instrumentation Pcav Observer,none,0.584
+A,"(599.92, 167.0)",Instrumentation Pcav Observer,none,0.999518
+A,"(601.48, 160.79)",Instrumentation Pcav Observer,none,0.999518
+A,"(696.36, 159.35)",Instrumentation Pcav Observer,none,0.999518
+A,"(694.81, 165.56)",Instrumentation Pcav Observer,none,0.999518
+A,"(585.31, 325.65)",Flowmeter for AL,none,1
+A,"(585.31, 325.26)",Flowmeter for AL,"1, 1",1
+A,"(630.42, 306.58)",Flowmeter for AL,none,1.5625px
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(-10.0, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(1.96, 0.0)",(root),none,1pt
+WATER,"(797.83, 739.96)",CPLR circuit,none,1
+WATER,"(691.53, 793.11)",CPLR circuit,none,1
+WATER,"(620.66, 793.11)",CPLR circuit,none,1
+WATER,"(868.69, 739.96)",CPLR circuit,none,1
+WATER,"(967.36, 795.5)",CPLR circuit,none,0.999518
+WATER,"(967.36, 742.26)",CPLR circuit,none,0.999518
+WATER,"(621.53, 775.28)",CPLR circuit,"5.625, 5.625",0.9375
+WATER,"(621.49, 793.12)",CPLR circuit,none,1
+WATER,"(798.65, 722.01)",CPLR circuit,"5.625, 5.625",0.9375
+WATER,"(798.61, 739.85)",CPLR circuit,none,1
+WATER,"(499.01, 484.44)",CPLR circuit,none,0.854563
+WATER,"(1167.3, 739.96)",Piping and series instrumentation,none,1
+WATER,"(1167.3, 792.9)",Piping and series instrumentation,none,1
+WATER,"(1125.13, 735.3)",CPLR pressure limiter,none,0.639818
+WATER,"(1121.62, 740.0)",CPLR pressure limiter,none,0.644882
+WATER,"(1115.54, 743.93)",CPLR pressure limiter,none,0.644882
+WATER,"(1121.62, 735.43)",CPLR pressure limiter,none,0.582274
+WATER,"(1126.6, 736.8)",CPLR pressure limiter,none,0.545455
+WATER,"(1124.31, 788.6)",CPLR pressure limiter,none,0.639818
+WATER,"(1120.8, 793.3)",CPLR pressure limiter,none,0.644882
+WATER,"(1114.72, 797.23)",CPLR pressure limiter,none,0.644882
+WATER,"(1120.8, 788.73)",CPLR pressure limiter,none,0.582274
+WATER,"(1125.78, 790.1)",CPLR pressure limiter,none,0.545455
+WATER,"(969.95, 736.0)",Piping and series instrumentation,none,0.854563
+WATER,"(969.95, 789.28)",Piping and series instrumentation,none,0.854563
+WATER,"(1300.9, 545.61)",Piping and series instrumentation,none,1
+WATER,"(1300.77, 494.58)",Piping and series instrumentation,none,1
+WATER,"(1290.87, 498.43)",Piping and series instrumentation,none,0.999518
+WATER,"(1292.43, 492.22)",Piping and series instrumentation,none,0.999518
+WATER,"(1371.27, 494.58)",Piping and series instrumentation,none,1
+WATER,"(1361.33, 498.37)",Piping and series instrumentation,none,0.999518
+WATER,"(1362.89, 492.15)",Piping and series instrumentation,none,0.999518
+WATER,"(1371.3, 544.72)",Piping and series instrumentation,none,1
+WATER,"(1366.93, 468.84)",Piping and series instrumentation,none,1.5625px
+WATER,"(1296.6, 468.73)",Piping and series instrumentation,none,1.5625px
+WATER,"(1296.31, 506.78)",Piping and series instrumentation,none,0.639818
+WATER,"(1301.01, 510.29)",Piping and series instrumentation,none,0.644882
+WATER,"(1304.94, 516.37)",Piping and series instrumentation,none,0.644882
+WATER,"(1296.44, 510.29)",Piping and series instrumentation,none,0.582274
+WATER,"(1290.53, 515.15)",Piping and series instrumentation,none,0.584
+WATER,"(1366.59, 507.73)",Piping and series instrumentation,none,0.639818
+WATER,"(1371.28, 511.24)",Piping and series instrumentation,none,0.644882
+WATER,"(1375.21, 517.32)",Piping and series instrumentation,none,0.644882
+WATER,"(1366.71, 511.24)",Piping and series instrumentation,none,0.582274
+WATER,"(1360.8, 516.1)",Piping and series instrumentation,none,0.584
+WATER,"(1300.87, 432.89)",Piping and series instrumentation,none,0.7
+WATER,"(1304.8, 438.97)",Piping and series instrumentation,none,0.7
+WATER,"(1295.38, 429.35)",Piping and series instrumentation,none,0.7
+WATER,"(1290.32, 437.58)",Piping and series instrumentation,none,0.584
+WATER,"(1371.35, 433.34)",Piping and series instrumentation,none,0.7
+WATER,"(1375.28, 439.42)",Piping and series instrumentation,none,0.7
+WATER,"(1365.86, 429.8)",Piping and series instrumentation,none,0.7
+WATER,"(1360.8, 438.03)",Piping and series instrumentation,none,0.584
+WATER,"(504.26, 540.14)",TC-LB,none,1
+WATER,"(499.01, 484.44)",TC-LB,none,0.854563
+WATER,"(496.65, 477.65)",CPLR,none,1
+WATER,"(492.81, 482.94)",CPLR,none,0.854563
+WATER,"(1167.3, 739.96)",W,none,1
+WATER,"(1371.36, 393.53)",W,none,1
+WATER,"(1300.91, 393.53)",W,none,1
+WATER,"(1167.3, 793.11)",W,none,1
+WATER,"(1334.96, 114.63)",W,none,1px
+E,"(-10.69, -4.44)",(root),none,0.625
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(-10.0, 0.0)",(root),none,1pt
+E,"(962.09, 456.09)",electrical,none,1
+E,"(962.09, 458.09)",electrical,none,1
+E,"(961.9, 420.65)",electrical,none,1
+E,"(961.9, 422.65)",electrical,none,1
+E,"(961.88, 526.95)",electrical,none,1
+E,"(961.88, 528.95)",electrical,none,1
+E,"(962.01, 562.23)",electrical,none,1
+E,"(962.01, 564.23)",electrical,none,1
+E,"(961.79, 633.09)",electrical,none,1
+E,"(961.79, 635.09)",electrical,none,1
+E,"(961.93, 597.66)",electrical,none,1
+E,"(961.93, 599.66)",electrical,none,1
+E,"(961.88, 491.52)",electrical,none,1
+E,"(961.88, 493.52)",electrical,none,1
+E,"(961.88, 668.69)",electrical,none,1
+E,"(961.88, 670.69)",electrical,none,1
+E,"(1003.06, 412.82)",electrical,none,1
+E,"(1001.06, 412.82)",electrical,none,1
+E,"(949.44, 689.36)",electrical,none,1
+E,"(947.44, 689.36)",electrical,none,1
+E,"(914.0, 689.36)",electrical,none,1
+E,"(912.0, 689.36)",electrical,none,1
+E,"(878.57, 689.36)",electrical,none,1
+E,"(876.57, 689.36)",electrical,none,1
+E,"(843.14, 689.36)",electrical,none,1
+E,"(841.14, 689.36)",electrical,none,1
+E,"(807.7, 689.36)",electrical,none,1
+E,"(805.7, 689.36)",electrical,none,1
+E,"(772.27, 689.36)",electrical,none,1
+E,"(770.27, 689.36)",electrical,none,1
+E,"(1024.02, 411.02)",electrical,none,1
+E,"(681.17, 689.4)",electrical,none,1
+E,"(679.17, 689.4)",electrical,none,1
+E,"(645.52, 689.27)",electrical,none,1
+E,"(643.52, 689.27)",electrical,none,1
+E,"(610.0, 689.13)",electrical,none,1
+E,"(608.0, 689.13)",electrical,none,1
+E,"(561.3, 688.99)",electrical,none,1
+E,"(559.3, 688.99)",electrical,none,1
+E,"(557.3, 688.99)",electrical,none,1
+E,"(715.58, 689.36)",electrical,none,1
+E,"(713.58, 689.36)",electrical,none,1
+E,"(1047.07, 344.38)",Piping and series instrumentation,none,1
+E,"(1039.49, 484.92)",Piping and series instrumentation,none,1.875
+E,"(1046.91, 377.5)",Piping and series instrumentation,none,1
+E,"(1018.18, 398.45)",Piping and series instrumentation,none,0.644882
+E,"(1022.11, 404.53)",Piping and series instrumentation,none,0.644882
+E,"(1007.7, 406.12)",Piping and series instrumentation,none,0.584
+E,"(1013.61, 398.45)",Piping and series instrumentation,none,0.582274
+E,"(1013.48, 394.94)",Piping and series instrumentation,none,0.639818
+E,"(1047.2, 417.54)",Piping and series instrumentation,none,0.644882
+E,"(1051.13, 423.61)",Piping and series instrumentation,none,0.644882
+E,"(1039.1, 417.53)",Piping and series instrumentation,none,0.512
+E,"(1035.31, 453.84)",Piping and series instrumentation,none,1
+E,"(1038.72, 457.69)",Piping and series instrumentation,none,0.999518
+E,"(1040.27, 451.48)",Piping and series instrumentation,none,0.999518
+E,"(744.52, 533.43)",TC-LB,none,0.999998
+E,"(1046.81, 533.67)",TC-LB,none,0.999998
+E,"(1046.81, 575.09)",TC-LB,none,0.999998
+E,"(1054.29, 492.43)",TC-LB,none,1.875
+E,"(1048.48, 494.43)",TC-LB,none,0.599698
+E,"(1054.29, 575.09)",TC-LB,none,1.875
+E,"(1048.48, 573.09)",TC-LB,none,0.599698
+E,"(585.31, 314.9)",Piping and series instrumentation,none,1
+E,"(231.22, 300.58)",Piping and series instrumentation,none,0.644882
+E,"(235.15, 306.65)",Piping and series instrumentation,none,0.644882
+E,"(223.12, 300.58)",Piping and series instrumentation,none,0.512
+E,"(390.49, 390.59)",Piping and series instrumentation,none,0.999999
+E,"(189.04, 308.5)",Piping and series instrumentation,none,0.644882
+E,"(192.97, 314.57)",Piping and series instrumentation,none,0.644882
+E,"(180.95, 308.49)",Piping and series instrumentation,none,0.512
+E,"(1334.96, 97.61)",Piping,none,1px
+E,"(1047.08, 97.51)",Piping,none,1
+E,"(231.19, 97.61)",Piping,none,0.999999
+E,"(189.2, 97.69)",Piping,none,0.999999
+D,"(1.96, 0.0)",(root),none,1pt
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.69, -4.44)",(root),none,0.625
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.69, -4.44)",(root),none,0.625
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(-10.0, 0.0)",(root),none,1pt
+D,"(1.96, 0.0)",(root),none,1pt
+D,"(390.35, 479.15)",Piping and series instrumentation,none,1
+D,"(437.09, 507.74)",Piping and series instrumentation,none,0.9375
+D,"(462.72, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(480.06, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(498.15, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(515.49, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(418.3, 857.83)",Piping and series instrumentation,none,3.28125
+D,"(533.59, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(550.92, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(568.64, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(585.97, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(604.07, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(621.41, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(693.42, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(710.75, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(639.89, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(657.22, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(674.94, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(727.71, 846.88)",Piping and series instrumentation,none,0.9375
+D,"(428.06, 484.44)",Piping and series instrumentation,none,0.854563
+D,"(392.73, 484.44)",Piping and series instrumentation,none,0.854563
+D,"(390.33, 479.15)",TC-LB,none,1
+D,"(437.54, 509.63)",TC-LB,none,1.65266
+D,"(437.54, 526.97)",TC-LB,none,1.65266
+D,"(425.65, 504.09)",TC-LB,none,3.28125
+D,"(428.06, 484.44)",TC-LB,none,0.854563
+D,"(392.74, 484.44)",TC-LB,none,0.854563
+D,"(390.33, 248.16)",Piping and series instrumentation,none,1
+D,"(386.53, 482.94)",Piping and series instrumentation,none,0.854563
+D,"(421.86, 482.94)",Piping and series instrumentation,none,0.854563
+D,"(436.73, 381.76)",Piping and series instrumentation,none,1.65266
+D,"(436.73, 399.1)",Piping and series instrumentation,none,1.65266
+D,"(425.78, 374.29)",Piping and series instrumentation,none,3.28125
+D,"(394.9, 335.01)",Piping and series instrumentation,none,0.639818
+D,"(390.21, 331.49)",Piping and series instrumentation,none,0.644882
+D,"(386.28, 325.42)",Piping and series instrumentation,none,0.644882
+D,"(394.78, 331.49)",Piping and series instrumentation,none,0.582274
+D,"(400.69, 323.82)",Piping and series instrumentation,none,0.584
+D,"(399.7, 325.89)",Piping and series instrumentation,none,0.3
+D,"(398.88, 325.89)",Piping and series instrumentation,none,0.3
+D,"(398.07, 325.89)",Piping and series instrumentation,none,0.3
+D,"(397.28, 325.89)",Piping and series instrumentation,none,0.3
+D,"(421.11, 326.71)",Piping and series instrumentation,none,0.639818
+D,"(425.81, 330.22)",Piping and series instrumentation,none,0.644882
+D,"(429.74, 336.3)",Piping and series instrumentation,none,0.644882
+D,"(421.24, 330.22)",Piping and series instrumentation,none,0.582274
+D,"(415.33, 337.89)",Piping and series instrumentation,none,0.584
+D,"(416.32, 335.82)",Piping and series instrumentation,none,0.3
+D,"(417.14, 335.82)",Piping and series instrumentation,none,0.3
+D,"(417.95, 335.82)",Piping and series instrumentation,none,0.3
+D,"(418.74, 335.82)",Piping and series instrumentation,none,0.3
+D,"(437.63, 477.99)",Piping and series instrumentation,none,0.9375
+D,"(301.37, 247.91)",Headers A B C D,none,1px
+D,"(889.58, 265.63)",Headers A B C D,none,1px
+D,"(433.77, 265.82)",Headers A B C D,none,0.9375
+D,"(451.1, 265.82)",Headers A B C D,none,0.9375
+D,"(477.31, 265.82)",Headers A B C D,none,0.9375
+D,"(494.65, 265.82)",Headers A B C D,none,0.9375
+D,"(191.37, 418.92)",Piping and series instrumentation,none,1.00975px
+D,"(207.39, 419.06)",Piping and series instrumentation,none,0.7
+D,"(201.32, 422.99)",Piping and series instrumentation,none,0.7
+D,"(210.93, 413.57)",Piping and series instrumentation,none,0.7
+D,"(202.7, 408.52)",Piping and series instrumentation,none,0.584
+D,"(250.9, 419.18)",Piping and series instrumentation,none,0.7
+D,"(244.82, 423.11)",Piping and series instrumentation,none,0.7
+D,"(254.44, 413.69)",Piping and series instrumentation,none,0.7
+D,"(246.21, 408.64)",Piping and series instrumentation,none,0.584
+D,"(194.69, 422.71)",Piping and series instrumentation,none,0.999518
+D,"(196.24, 416.49)",Piping and series instrumentation,none,0.999518
+D,"(177.17, 70.87)",pn levels,none,7.08661
+D,"(177.17, 88.58)",pn levels,none,7.08661
+D,"(177.17, 106.3)",pn levels,none,7.08661
+D,"(938.98, 168.31)",pn levels,none,7.08661

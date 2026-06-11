@@ -1,0 +1,38 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  deploy-k8s-staging:
+    name: Deploy to K8s Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure kubectl
+      uses: azure/setup-kubectl@v3
+    
+    - name: Set K8s context
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+    
+    - name: Deploy to staging
+      run: |
+        cd deployment
+        ./scripts/deploy_production.sh staging
+    
+    - name: Validate deployment
+      run: |
+        cd deployment
+        ./scripts/validate_deployment.sh staging
+    
+    - name: Run health checks
+      run: |
+        kubectl get pods -n qplant-staging
+        kubectl rollout status deployment/qplant-api-server -n qplant-staging

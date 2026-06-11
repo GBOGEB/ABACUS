@@ -204,7 +204,7 @@ Executes Phase 3 (Analyze) using direct imports instead of subprocess with `-m` 
 **Size:** ~2 KB (estimated)
 
 **Contents:**
-- Python version: 4.0.0
+- Python version: 3.12.7
 - System checks: 10/10 passed
 - Disk space: 53,782 MB
 - Git availability: Yes

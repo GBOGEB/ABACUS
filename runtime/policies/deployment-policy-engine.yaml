@@ -1,0 +1,26 @@
+deployment_policy_engine:
+  moniker: DELTA_1
+
+  protected_environments:
+    - dev
+    - stage
+    - prod
+
+  deployment_requirements:
+    ci_validation: required
+    security_validation: required
+    runtime_verification: required
+    release_certification: required
+
+  rollback_requirements:
+    rollback_manifest: required
+    rollback_validation: required
+
+  provenance_requirements:
+    release_evidence: required
+    provenance_graph: required
+
+  enforcement:
+    deployment_blocking: enabled
+    certification_blocking: enabled
+    runtime_governance_blocking: enabled

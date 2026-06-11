@@ -1,0 +1,37 @@
+codex_policy_ingestion:
+  moniker: DELTA_1
+
+  source_repository:
+    repository: GBOGEB/CODEX
+    branch: delta-1-codex-governance-baseline
+
+  ingestion_domains:
+    - governance_policy
+    - release_certification
+    - operational_audit
+    - deployment_policy
+
+  notebook_plane:
+    repository: GBOGEB/CODESPACES_jyperter
+    branch: main
+    certification_scope:
+      - notebook_artifact_validation
+      - interactive_analysis_governance
+      - jupyter_output_provenance
+    policy_requirements:
+      - notebook_outputs_must_be_cleared_before_commit
+      - artifacts_must_carry_dmaic_provenance_metadata
+      - notebook_plane_changes_require_runtime_plane_approval
+
+  synchronization_requirements:
+    policy_alignment: required
+    runtime_alignment: required
+    provenance_alignment: required
+    notebook_alignment: required
+
+  objectives:
+    - live governance synchronization
+    - recursive policy convergence
+    - federated operational governance
+    - governance-runtime continuity
+    - notebook plane artifact certification

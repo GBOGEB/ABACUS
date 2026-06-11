@@ -83,7 +83,7 @@
 
 **Current Status:**
 - Location: `local_mcp/agents/documentation_framework_v2.0_OPTIMIZED.py`
-- Version: 4.0.0
+- Version: 2.0.0
 - Maturity: 1 (foundation)
 - Blockers: Needs memory optimization, DMAIC tracking
 
@@ -115,7 +115,7 @@
 
 **Current Status:**
 - Location: `local_mcp/agents/recursive_framework_v2.1_OPTIMIZED.py`
-- Version: 4.0.0
+- Version: 2.1.0
 - Maturity: 1 (foundation)
 - Blockers: Needs v2.3 upgrade, hook porting, memory optimization
 

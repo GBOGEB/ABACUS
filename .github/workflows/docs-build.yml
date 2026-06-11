@@ -1,0 +1,11 @@
+name: Docs Build
+on:
+  push:
+    paths:
+      - 'docs/**'
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo 'Build documentation portal and review assets'

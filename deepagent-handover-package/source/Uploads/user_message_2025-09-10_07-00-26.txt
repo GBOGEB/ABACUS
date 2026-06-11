@@ -1,0 +1,161 @@
+Make an updated template - JSON or yml or YAML prefilled with handover and seed to fit the general:
+
+DeepAgent Apps
+Prompt, run, edit, and deploy full-stack websites.
+
+Think of DeepAgent as your go-to coding assistant. It's here to help you bring your ideas to life, even if you're not a seasoned programmer. Like any helpful companion, DeepAgent is powerful - but it works best when you guide it well.
+
+Large Language Models (LLMs) can sometimes be unpredictable. That's why it's important to start small, test often, and build step by step. Begin with a simple version of your app, check that it works, and then gradually add features. This approach keeps things smooth and helps avoid confusion.
+
+In this guide, we'll share a few easy tips to help you get the most out of your DeepAgent experience and make "vibe coding" more fun and productive. It covers:
+
+How to build Apps with DeepAgent
+How does DeepAgent help with vibe coding?
+How does it work?
+What are the key capabilities of DeepAgent
+Limitations of DeepAgent
+Managing Your Apps
+How to Add a Database to Your App?
+App deployment & hosting
+Abacus hosted domain
+Custom Domain
+Vibe Coding Guide
+Effective Prompting: Crisp, Concise, and Contextual
+Build Iteratively with Checkpoints
+Authentication and RBAC Made Easy
+Built-In Database Support
+Launch your app in one click—no setup, no stress
+Debugging Your App
+How to build apps with DeepAgent?
+How does DeepAgent help with vibe coding?
+DeepAgent helps you get started with vibe coding. Start with something simple and then learn how to nudge the AI to make changes, fix bugs, and iterate.
+
+DeepAgent is meant for full-stack apps but we will start with simple apps and front-end heavy websites.
+
+How does it work?
+Here are the steps to using DeepAgent to create apps:
+
+Start with a simple prompt
+Check out the pages that the AI built
+Ask the AI to make edits
+When you are ready, hit deploy to publish the app
+We will give you a friendly URL to share with the world. You can also host your apps on custom domains that you own.
+What are the key capabilities of DeepAgent
+Database + Auth Support: Build apps with built-in database integration and secure, reliable authentication. No setup needed.
+LLM-Enabled Apps: Add AI chat, document Q&A, or generation features to your app. DeepAgent can integrate LLMs right into the flow.
+Checkpointing & Deployments: Make changes, preview versions, and deploy the one you like — instantly. Iterate at the speed of thought.
+Custom Domain Publishing: Host your app on your own domain. Provide the domain on the DeepAgent platform and complete the simple integration — your app goes live with a custom URL in minutes.
+Limitations of DeepAgent
+While DeepAgent is powerful and evolving fast, there are a few limitations to keep in mind:
+
+DeepAgent works best with small to medium-sized applications. Extremely complex or enterprise-grade apps may go beyond its current capabilities.
+If your project involves uploading or unpacking large zip files, or building on top of pre-existing codebases, DeepAgent won't be able to handle those scenarios yet.
+We're actively working on expanding what DeepAgent can do—but for now, it's ideal for rapid prototyping, MVPs, and simpler full-stack apps.
+
+Managing Your Apps
+All the apps you create with DeepAgent can be accessed and managed easily through the Apps Management Console.
+
+From there, you can:
+
+View and edit all your created apps
+Preview apps before deploying
+View database
+Deploy or undeploy apps anytime
+Access version history to view or revert changes
+Configure and manage custom domains
+Whether you're refining an existing app or managing multiple projects, the console gives you full control in one place.
+
+How to Add a Database to Your App?
+If your app requires a database, you don't need to worry about setting one up yourself. Just mention your data needs in your prompt, and DeepAgent will create the necessary database for you, including tables, fields, and sample data when needed.
+
+Once the app is created successfully, you can view/export the database from Apps Management Console or respective DeepAgent conversation.
+
+App deployment & hosting
+With DeepAgent, deploying your app is incredibly simple.
+
+Abacus.AI hosted domain
+Use this if you want a fast, no-setup way to get your app online.
+
+Click the "Deploy" button in the top-right corner of your App workspace.
+Select the "Abacus.AI Domain" tab.
+Enter your desired subdomain (e.g., mycoolapp.abacusai.app) in the input box.
+Click "Deploy".
+Custom Domain
+Point your existing domain to the app by updating your nameservers through your domain provider.
+
+Step 1: Register Your Custom Domain
+
+Pick a domain name relevant to your app.
+Use a registrar like GoDaddy, Namecheap, or Google Domains to purchase it.
+Register the domain, ensuring your contact details are correct. Save your login credentials for later use.
+Step 2: Connect and Deploy with DeepAgent
+
+Open the chat where your app is being built or a custom domain in the apps management console.
+Click the "Deploy" button.
+Select the "Custom Domain" tab.
+Add your domain and follow the instructions to verify it by updating the nameservers in your registrar dashboard.
+Once verified, click "Deploy" and your app will be live on your domain!
+Once deployed, you'll find your live app's link under the "Deployed URL" section.
+
+Follow these tips to unlock the full potential of DeepAgent.
+Vibe Coding Guide
+Effective Prompting: Crisp, Concise, and Contextual
+Your app is only as good as the instructions you give it. That's why we recommend following:
+
+Crisp – Keep your prompt clean and free from fluff.
+Concise – Use simple language and get to the point quickly.
+Contextual – Make sure DeepAgent understands what you're trying to build. Share any relevant background and context.
+The more clearly you explain what you want, the more likely you are to get the results you're aiming for.
+
+Build Iteratively with Checkpoints
+Don't try to build everything at once—build your app step by step.
+
+Before you start prompting, take a moment to think like a product manager or engineer. Break down your app idea into smaller parts or milestones. Then, build and test one part at a time.
+
+Here's a simple flow to follow:
+
+Break it down – Split complex features into small, manageable tasks.
+Prompt the AI – Ask DeepAgent to build just one task at a time.
+Test immediately – Use the preview window to check if it works the way you expect.
+Decide –
+If it works: great! Move on to the next task.
+If it doesn't: roll back and try again.
+DeepAgent automatically saves your progress as checkpoints, like save-points in a game. You can roll back up to the last 5 checkpoints, so make sure to test after each step. That way, you won't lose a version that was working well.
+
+Building in small steps keeps things stable, makes debugging easier, and helps you stay in control.
+
+Authentication and RBAC Made Easy
+DeepAgent takes the pain out of setting up login and access control.
+
+With built-in support for Authentication and Role-Based Access Control (RBAC), you don't need to worry about technical setup or third-party tools. There's no coding, no configuration, and no external integrations required.
+
+Just describe what kind of login system or access control you want in your prompt, and DeepAgent will handle the rest—quickly and securely.
+
+Built-In Database Support
+Need a database? DeepAgent sets it up for you—automatically.
+If your app requires a database, you don't need to worry about setting one up yourself. Just mention your data needs in your prompt, and DeepAgent will create the necessary database for you, including tables, fields, and sample data when needed.
+
+Sometimes, you might notice the app using dummy data instead of a real database—especially in early versions or quick mockups. If that happens, simply prompt the AI with something like: "Set up a real database and connect it to this app.
+
+DeepAgent will replace the dummy data with a proper backend setup so your app is ready for real users and dynamic content.
+
+Launch your app in one click—no setup, no stress
+With DeepAgent, deploying your app is incredibly simple. You can publish it instantly using a free Abacus-hosted domain—perfect for quick demos, testing, or sharing your work.
+
+Want to use your own domain?
+Custom Domain – Point your existing domain to the app by updating your nameservers through your domain provider.
+Whether you're launching something personal, professional, or experimental, DeepAgent makes deployment effortless.
+
+Debugging Your App
+When you're vibe coding, a few errors are totally normal—don't panic!
+
+If something breaks or doesn't work as expected, DeepAgent can help you fix it. Here's what to do when things go off track:
+
+How to Debug with DeepAgent:
+Describe the issue clearly - Tell DeepAgent what's going wrong and where it's happening on your app (e.g., "The submit button isn't working on the form"). The clearer you are, the better the fix.
+Copy error messages into the prompt- If you see an error in the preview window, copy and paste the full message into your prompt. DeepAgent can often identify and correct the issue directly from that.
+Use checkpoints to roll back- If things get too messy, just revert to a previous checkpoint and rebuild from a stable version. It's like a built-in safety net.
+Always re-test after debugging- Once you've made a fix, test the app thoroughly to make sure everything works as expected before moving forward.
+Remember: errors are part of the process. The key is to fix, test, and keep iterating with confidence.
+
+By following these tips, you can make the most out of DeepAgent's powerful capabilities.

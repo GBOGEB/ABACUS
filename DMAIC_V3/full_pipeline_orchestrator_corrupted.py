@@ -250,8 +250,8 @@ class Phase6Knowledge:
                 insights.append({
                     'type': 'complexity',
                     'message': f"Found {len(phase3['high_complexity_files'])} high complexity files",
-                        
-                        
+
+
                     'priority': 'high'
                 })
 
@@ -337,16 +337,16 @@ class Phase8RecursiveOptimization:
 class FullPipelineOrchestrator:
     """
     Full Pipeline Orchestrator
-    
+
     Executes complete DMAIC V3.3 pipeline:
     - Phase 0: Initialization
     - Phases 1-5: DMAIC Core
     - Phase 6: Knowledge (Devour/Learn)
     - Phases 7-8: Future expansion stubs
-    
+
     With full tracking, artifacts, and recursive hooks
     """
-    
+
     def __init__(self,
                  enable_idempotency_flag: bool = True,
                  enable_git_commits: bool = True,
@@ -372,14 +372,14 @@ class FullPipelineOrchestrator:
             workspace_root=self.config.paths.workspace_root,
             state_dir=state_dir
         )
-    
+
     def execute_full_pipeline(self, iteration: int = 1) -> bool:
         """
         Execute full pipeline for one iteration
-        
+
         Args:
             iteration: Iteration number
-            
+
         Returns:
             bool: Success status
         """
@@ -414,7 +414,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase0_init')
-            
+
             # Phase 1: Define
             success, results = self._execute_phase_with_tracking(
                 Phase1Define(self.config, self.state_mgr),
@@ -424,7 +424,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase1_define')
-            
+
             # Phase 2: Measure
             success, results = self._execute_phase_with_tracking(
                 Phase2Measure(self.config, self.state_mgr),
@@ -434,7 +434,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase2_measure')
-            
+
             # Phase 3: Analyze
             success, results = self._execute_phase_with_tracking(
                 Phase3Analyze(self.config, self.state_mgr),
@@ -444,7 +444,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase3_analyze')
-            
+
             # Phase 4: Improve
             success, results = self._execute_phase_with_tracking(
                 Phase4Improve(self.config, self.state_mgr),
@@ -454,7 +454,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase4_improve')
-            
+
             # Phase 5: Control
             success, results = self._execute_phase_with_tracking(
                 Phase5Control(self.config, self.state_mgr),
@@ -464,7 +464,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase5_control')
-            
+
             # Phase 6: Knowledge (Devour/Learn)
             success, results = self._execute_phase_with_tracking(
                 Phase6Knowledge(self.config, self.state_mgr),
@@ -474,7 +474,7 @@ class FullPipelineOrchestrator:
             if not success:
                 print("[WARNING] Phase 6 failed but continuing...")
             phases_executed.append('phase6_knowledge')
-            
+
             # Phase 7: Action Tracking
             success, results = self._execute_phase_with_tracking(
                 Phase7ActionTracking(self.config, self.state_mgr),
@@ -494,29 +494,29 @@ class FullPipelineOrchestrator:
             if not success:
                 print("[WARNING] Phase 8 failed but continuing...")
             phases_executed.append('phase8_todo_management')
-            
+
             # Update planning matrix
             print("\n[TRACKING] Updating planning matrix...")
             self.planning_tracker.scan_actual_state(Path("DMAIC_V3_OUTPUT"))
             self.planning_tracker.determine_current_state()
             self.planning_tracker.calculate_possible_next()
             self.planning_tracker.save_snapshot(iteration)
-            
+
             # Generate execution summary
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            
+
             self._generate_execution_summary(
                 iteration=iteration,
                 phases_executed=phases_executed,
                 duration=duration,
                 success=True
             )
-            
+
             # Commit to git
             if self.enable_git_commits:
                 self._git_commit(iteration)
-            
+
             print("\n" + "="*80)
             print(f"[SUCCESS] ITERATION {iteration} COMPLETE")
             print(f"Duration: {duration:.2f}s")
@@ -553,7 +553,7 @@ class FullPipelineOrchestrator:
             except Exception:
                 # If summary retrieval fails, log minimal info and continue
                 print("\n[Background Change Detection] No summary available.")
-    
+
     def _execute_phase_with_tracking(self,
                                      phase_obj: Any,
                                      phase_name: str,
@@ -564,10 +564,10 @@ class FullPipelineOrchestrator:
         print(f"{'-'*80}")
 
         start_time = datetime.now()
-        
+
         try:
             result = phase_obj.execute(iteration=iteration)
-            
+
             # Handle both tuple (success, results) and dict returns
             if isinstance(result, tuple):
                 success, results = result
@@ -575,10 +575,10 @@ class FullPipelineOrchestrator:
                 # Assume dict return - success determined by presence of 'phase' field
                 results = result
                 success = 'phase' in results
-            
+
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            
+
             log_entry = {
                 'phase': phase_name,
                 'iteration': iteration,
@@ -587,21 +587,21 @@ class FullPipelineOrchestrator:
                 'timestamp': end_time.isoformat()
             }
             self.execution_log.append(log_entry)
-            
+
             if success:
                 print(f"\n[OK] {phase_name} completed in {duration:.2f}s")
             else:
                 print(f"\n[FAIL] {phase_name} failed after {duration:.2f}s")
-            
+
             return success, results
-            
+
         except Exception as e:
             print(f"\n[FAIL] {phase_name} crashed: {e}")
             import traceback
             traceback.print_exc()
             return False, {'error': str(e)}
-    
-    def _generate_execution_summary(self, 
+
+    def _generate_execution_summary(self,
                                     iteration: int,
                                     phases_executed: List[str],
                                     duration: float,
@@ -609,30 +609,30 @@ class FullPipelineOrchestrator:
         """Generate execution summary"""
         summary_file = Path(f"DMAIC_V3_OUTPUT/iteration_{iteration}/EXECUTION_SUMMARY.md")
         summary_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         summary = []
         summary.append(f"# DMAIC V3.3 - Iteration {iteration} Execution Summary\n")
         summary.append(f"**Status:** {'SUCCESS' if success else 'FAILED'}")
         summary.append(f"**Duration:** {duration:.2f} seconds")
         summary.append(f"**Timestamp:** {datetime.now().isoformat()}\n")
-        
+
         summary.append("## Phases Executed\n")
         for idx, phase in enumerate(phases_executed, 1):
             log = next((l for l in self.execution_log if phase in l.get('phase', '')), None)
             if log:
                 status = "[OK]" if log['success'] else "[FAIL]"
                 summary.append(f"{idx}. {status} {phase} ({log['duration_seconds']:.2f}s)")
-        
+
         summary.append("\n## Execution Log\n")
         summary.append("```json")
         summary.append(json.dumps(self.execution_log, indent=2))
         summary.append("```")
-        
+
         with open(summary_file, 'w') as f:
             f.write('\n'.join(summary))
-        
+
         print(f"\n[TRACKING] Execution summary saved: {summary_file}")
-    
+
     def _git_commit(self, iteration: int):
         """Commit iteration results to git"""
         try:
@@ -650,9 +650,9 @@ class FullPipelineOrchestrator:
 def main() -> Any:
     """Main execution entry point"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='DMAIC V3.3 Full Pipeline Orchestrator')
-    parser.add_argument('--iteration', type=int, default=1, 
+    parser.add_argument('--iteration', type=int, default=1,
                        help='Iteration number (default: 1)')
     parser.add_argument('--no-idempotency', action='store_true',
                        help='Disable idempotency (force re-run)')
@@ -660,17 +660,17 @@ def main() -> Any:
                        help='Disable git commits')
     parser.add_argument('--quiet', action='store_true',
                        help='Reduce output verbosity')
-    
+
     args = parser.parse_args()
-    
+
     orchestrator = FullPipelineOrchestrator(
         enable_idempotency_flag=not args.no_idempotency,
         enable_git_commits=not args.no_git,
         verbose=not args.quiet
     )
-    
+
     success = orchestrator.execute_full_pipeline(iteration=args.iteration)
-    
+
     sys.exit(0 if success else 1)
 
 

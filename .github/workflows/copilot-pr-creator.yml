@@ -1,0 +1,215 @@
+name: Copilot Branch PR Creator
+# Reusable workflow — call via workflow_call or trigger manually via workflow_dispatch.
+# To call from another workflow:
+#   uses: GBOGEB/ABACUS/.github/workflows/copilot-pr-creator.yml@main
+#   with:
+#     branch_pattern: "feature/*"
+#     base_branch: "main"
+#     dry_run: "false"
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_pattern:
+        description: >
+          Glob pattern for branches to create PRs for.
+          Defaults to all unmerged copilot/* branches.
+          Example: "copilot/fix-*" or "feature/*"
+        required: false
+        default: "copilot/*"
+      base_branch:
+        description: "Target base branch for the PRs"
+        required: false
+        default: "main"
+      dry_run:
+        description: "Dry run — list branches without creating PRs"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      min_ahead:
+        description: "Minimum number of unique commits a branch must have (default: 1)"
+        required: false
+        default: "1"
+      skip_no_base:
+        description: "Skip branches with no shared history with base (default: true)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+  # Reusable via workflow_call — same inputs usable from any calling workflow
+  workflow_call:
+    inputs:
+      branch_pattern:
+        description: "Glob pattern for branches (e.g. 'copilot/*' or 'feature/*')"
+        required: false
+        default: "copilot/*"
+        type: string
+      base_branch:
+        description: "Target base branch for PRs"
+        required: false
+        default: "main"
+        type: string
+      dry_run:
+        description: "Dry run mode ('true'/'false')"
+        required: false
+        default: "true"
+        type: string
+      min_ahead:
+        description: "Min unique commits ahead of base"
+        required: false
+        default: "1"
+        type: string
+      skip_no_base:
+        description: "Skip branches with no shared history ('true'/'false')"
+        required: false
+        default: "true"
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Identify unmerged branches and create PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ inputs.base_branch }}
+          PATTERN: ${{ inputs.branch_pattern }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          MIN_AHEAD: ${{ inputs.min_ahead }}
+          SKIP_NO_BASE: ${{ inputs.skip_no_base }}
+        run: |
+          set -euo pipefail
+
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true
+
+          echo "=== Copilot PR Creator ==="
+          echo "  Base branch  : ${BASE}"
+          echo "  Pattern      : ${PATTERN}"
+          echo "  Dry run      : ${DRY_RUN}"
+          echo "  Min ahead    : ${MIN_AHEAD}"
+          echo "  Skip no-base : ${SKIP_NO_BASE}"
+          echo ""
+
+          created=0
+          skipped=0
+          existing=0
+
+          while IFS= read -r remote; do
+            branch="${remote#origin/}"
+
+            # Skip base and HEAD
+            [[ "$branch" == "$BASE" ]] && continue
+            [[ "$branch" == "HEAD" ]] && continue
+
+            # Filter by pattern (simple glob match via case)
+            case "$branch" in
+              $PATTERN) ;;  # matches
+              *) continue ;;
+            esac
+
+            # Skip branches with no shared history if requested
+            if [[ "${SKIP_NO_BASE}" == "true" ]]; then
+              merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+              if [[ -z "$merge_base" ]]; then
+                echo "SKIP (no shared history with ${BASE}): ${branch}"
+                (( skipped++ )) || true
+                continue
+              fi
+            fi
+
+            # Count unique commits ahead of base
+            ahead=$(git rev-list --count "origin/${BASE}..${remote}" 2>/dev/null || echo 0)
+            if [[ "$ahead" -lt "$MIN_AHEAD" ]]; then
+              echo "SKIP (${ahead} ahead < ${MIN_AHEAD}): ${branch}"
+              (( skipped++ )) || true
+              continue
+            fi
+
+            last_commit=$(git log -1 --format="%s" "${remote}" 2>/dev/null || echo "(unknown)")
+            last_date=$(git log -1 --format="%ci" "${remote}" 2>/dev/null || echo "")
+            behind=$(git rev-list --count "${remote}..origin/${BASE}" 2>/dev/null || echo 0)
+
+            echo "---"
+            echo "Branch : ${branch}"
+            echo "  ahead=${ahead}  behind=${behind}  last='${last_commit}'"
+
+            if [[ "$DRY_RUN" == "true" ]]; then
+              echo "  [DRY RUN] Would create PR: '${last_commit}' <- ${branch} -> ${BASE}"
+              (( created++ )) || true
+              continue
+            fi
+
+            # Check for existing open PR
+            existing_pr=$(gh pr list --head "${branch}" --base "${BASE}" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+            if [[ -n "$existing_pr" ]]; then
+              echo "  SKIP: open PR #${existing_pr} already exists"
+              (( existing++ )) || true
+              continue
+            fi
+
+            # Build PR body
+            body="## Summary
+          Auto-generated PR for unmerged branch \`${branch}\`.
+
+          | Field | Value |
+          |---|---|
+          | Branch | \`${branch}\` |
+          | Base | \`${BASE}\` |
+          | Unique commits | ${ahead} |
+          | Behind base | ${behind} |
+          | Last commit | ${last_date} |
+
+          > **Review carefully** before merging — this branch may be stale or its fixes already incorporated via a different route.
+
+          ## Checklist
+          - [ ] Changes are still relevant (not superseded by main)
+          - [ ] Tests pass on this branch
+          - [ ] No conflicts with \`${BASE}\`
+          - [ ] Safe to merge or close
+          "
+
+            # Derive a human-readable title from the branch name
+            title=$(echo "${branch}" | sed 's|copilot/||;s|feature/||;s|-| |g;s|fix ||Fix: |')
+
+            echo "  Creating PR: '${title}'"
+            pr_url=$(gh pr create \
+              --base "${BASE}" \
+              --head "${branch}" \
+              --title "${title}" \
+              --body "${body}" \
+              --draft 2>&1 || echo "FAILED")
+
+            if [[ "$pr_url" == FAILED* ]]; then
+              echo "  ERROR creating PR: ${pr_url}"
+            else
+              echo "  Created: ${pr_url}"
+              (( created++ )) || true
+            fi
+
+          done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
+
+          echo ""
+          echo "=== Summary ==="
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "  Would create: ${created}"
+            echo "  Below threshold (< ${MIN_AHEAD} ahead): ${skipped}"
+          else
+            echo "  Created : ${created}"
+            echo "  Skipped (below threshold): ${skipped}"
+            echo "  Skipped (existing PR): ${existing}"
+          fi

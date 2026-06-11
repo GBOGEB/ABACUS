@@ -1,0 +1,121 @@
+# SSOT Validation Init Container Spec
+# Validates config.yaml integrity before pod starts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ssot-validator-script
+  namespace: qplant
+data:
+  validate_ssot.py: |
+    #!/usr/bin/env python3
+    """SSOT Validation Init Container Script.
+    
+    Validates config.yaml integrity, schema compliance,
+    and engineering constraints before pod startup.
+    """
+    import os, sys, yaml, hashlib, json
+    from datetime import datetime
+    
+    SSOT_PATH = os.environ.get("SSOT_PATH", "/config/config.yaml")
+    EXPECTED_SHA = os.environ.get("EXPECTED_SHA256", "")
+    MODE = os.environ.get("VALIDATION_MODE", "strict")
+    
+    def validate():
+        results = {"timestamp": datetime.now().isoformat(), "checks": [], "passed": True}
+        
+        # 1. File existence
+        if not os.path.exists(SSOT_PATH):
+            results["checks"].append({"check": "file_exists", "passed": False, "msg": f"SSOT not found: {SSOT_PATH}"})
+            results["passed"] = False
+            return results
+        results["checks"].append({"check": "file_exists", "passed": True})
+        
+        # 2. SHA256 checksum
+        content = open(SSOT_PATH, "rb").read()
+        actual_sha = hashlib.sha256(content).hexdigest()[:16]
+        if EXPECTED_SHA and actual_sha != EXPECTED_SHA:
+            results["checks"].append({"check": "sha256", "passed": False,
+                "msg": f"Expected {EXPECTED_SHA}, got {actual_sha}"})
+            if MODE == "strict":
+                results["passed"] = False
+        else:
+            results["checks"].append({"check": "sha256", "passed": True, "sha": actual_sha})
+        
+        # 3. YAML parse
+        try:
+            config = yaml.safe_load(content)
+            results["checks"].append({"check": "yaml_parse", "passed": True})
+        except Exception as e:
+            results["checks"].append({"check": "yaml_parse", "passed": False, "msg": str(e)})
+            results["passed"] = False
+            return results
+        
+        # 4. Required sections
+        required = ["version", "system", "flow_parameters", "pressure_parameters",
+                     "compressor_specifications", "financial", "compliance"]
+        for sec in required:
+            present = sec in config
+            results["checks"].append({"check": f"section_{sec}", "passed": present})
+            if not present and MODE == "strict":
+                results["passed"] = False
+        
+        # 5. Engineering constraints
+        specs = config.get("compressor_specifications", {})
+        hp = specs.get("hp_compressors", {})
+        fsd = specs.get("fsd575", {})
+        
+        if hp.get("count", 0) < 2:
+            results["checks"].append({"check": "min_compressors", "passed": False,
+                "msg": f"Count {hp.get('count')} < 2"})
+            results["passed"] = False
+        
+        if fsd.get("motor_power_kW", 0) < 100 or fsd.get("motor_power_kW", 0) > 500:
+            results["checks"].append({"check": "motor_power_range", "passed": False,
+                "msg": f"Power {fsd.get('motor_power_kW')} outside 100-500 kW"})
+            results["passed"] = False
+        
+        results["checks"].append({"check": "engineering_constraints", "passed": True})
+        
+        return results
+    
+    if __name__ == "__main__":
+        results = validate()
+        print(json.dumps(results, indent=2))
+        if not results["passed"]:
+            print("❌ SSOT validation FAILED — pod will not start")
+            sys.exit(1)
+        print("✅ SSOT validation PASSED")
+        sys.exit(0)
+---
+# Checksum validation CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ssot-integrity-check
+  namespace: qplant
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: integrity-checker
+              image: qplant-ssot-validator:4.3.0
+              command: ["python3", "/app/validate_ssot.py"]
+              env:
+                - name: SSOT_PATH
+                  value: "/config/config.yaml"
+                - name: EXPECTED_SHA256
+                  value: "90596aca415deb1d"
+                - name: VALIDATION_MODE
+                  value: "audit"
+              volumeMounts:
+                - name: ssot-config
+                  mountPath: /config
+                  readOnly: true
+          volumes:
+            - name: ssot-config
+              configMap:
+                name: qplant-ssot-config
+          restartPolicy: OnFailure

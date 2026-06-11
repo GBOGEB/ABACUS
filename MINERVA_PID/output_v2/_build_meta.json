@@ -1,0 +1,172 @@
+{
+  "realloc": {
+    "QCELL-LB": [
+      [
+        "TT535",
+        "PZ535",
+        "TT-CX",
+        "coldest part of Piezo (PZ)"
+      ]
+    ],
+    "RFCELL": []
+  },
+  "scope_codes": {
+    "QCELL-LB": [
+      [
+        "TPC0001",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0002",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPH0003",
+        "H",
+        "HVAC",
+        "Terminal points"
+      ],
+      [
+        "TPC0004",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0005",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0006",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPE0007",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TPC0008",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0009",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPE0010",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TPE0011",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TPC0012",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0013",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0014",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0015",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPE0016",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TPE0017",
+        "E",
+        "Electrical",
+        "Terminal points"
+      ],
+      [
+        "TPC0018",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0019",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPC0020",
+        "C",
+        "Cryogenic",
+        "Terminal points"
+      ],
+      [
+        "TPL0021",
+        "L",
+        "Liquid",
+        "Terminal points"
+      ],
+      [
+        "TPL0022",
+        "L",
+        "Liquid",
+        "Terminal points"
+      ]
+    ],
+    "RFCELL": []
+  },
+  "mag_coupler": [
+    [
+      "TT-CX",
+      "MAG cold port",
+      "TT-CX on MAG (cold)"
+    ],
+    [
+      "TT-PT100",
+      "MAG warm port",
+      "TT-PT100 on MAG (warm)"
+    ],
+    [
+      "TT-CX",
+      "Coupler port (cold)",
+      "TT-CX coupler thermalisation"
+    ],
+    [
+      "TT-PT100",
+      "Coupler port (warm)",
+      "TT-PT100 coupler thermalisation"
+    ]
+  ]
+}

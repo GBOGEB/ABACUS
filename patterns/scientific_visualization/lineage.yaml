@@ -1,0 +1,49 @@
+lineage_schema:
+  entity: "federated_scientific_visualization"
+  schema_ref: "patterns/scientific_visualization/schema.yaml"
+  required_fields:
+    - wave
+    - pr
+    - repo
+    - commit
+    - runtime_evidence
+    - validation_evidence
+
+  field_definitions:
+    wave:
+      type: "string"
+      description: "Wave identifier for federated execution lineage."
+      example: "wave-003"
+    pr:
+      type: "integer|string"
+      description: "Pull request identifier associated to lineage evidence."
+      example: 517
+    repo:
+      type: "string"
+      description: "Repository in owner/name format."
+      example: "GBOGEB/ABACUS"
+    commit:
+      type: "string"
+      description: "Commit SHA for immutable lineage pinning."
+      example: "5a1d7c0"
+    runtime_evidence:
+      type: "string"
+      description: "Path or URI to runtime evidence artifact."
+      example: "reports/runtime_status.json"
+    validation_evidence:
+      type: "string"
+      description: "Path or URI to validation evidence artifact."
+      example: "reports/truth_matrix_snapshot.json"
+
+  governance_bindings:
+    metrics:
+      pca:
+        forward: "reports/pca_snapshot.json#forward_pca"
+        backward: "reports/pca_snapshot.json#backward_pca"
+      geti: "reports/geti_snapshot.json#geti"
+      truth_score: "reports/truth_matrix_snapshot.json#truth_score"
+    truth_matrix_principles:
+      - chat_is_not_repo
+      - architecture_is_not_runtime
+      - claimed_is_not_validated
+      - exists_in_repo_is_not_ci_execution
