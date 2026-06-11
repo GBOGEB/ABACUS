@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node (for markdownlint)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
 
@@ -23,17 +23,11 @@ jobs:
           npm install -g markdownlint-cli2
 
       - name: Lint Markdown
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
         run: |
-          if ! git ls-files -- '*.md' | grep -q .; then
-            echo "No Markdown files found."
-            exit 0
-          fi
-          git ls-files -z -- '*.md' | xargs -0 -r -n 50 markdownlint-cli2 || exit 1
+          markdownlint-cli2 "**/*.md" "!**/node_modules/**" || exit 1
 
       - name: Setup Python (YAML/JSON checks)
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 

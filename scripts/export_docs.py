@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Local exporter (best-effort):
 - Copies Markdown and Mermaid sources to an `out/` tree
 - Pandoc/PDF generation is handled in CI via container (see export-docs.yml)

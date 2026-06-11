@@ -1,0 +1,97 @@
+name: Session Tuple CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        working-directory: ./rich_padding
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run DOW Module Tests
+        working-directory: ./rich_padding
+        run: |
+          pytest tests/test_dow_modules/ -v --tb=short --junitxml=junit-dow.xml
+      
+      - name: Run Integration Tests
+        working-directory: ./rich_padding
+        run: |
+          pytest tests/test_integration/ -v --tb=short --junitxml=junit-integration.xml
+      
+      - name: Run Full Test Suite
+        working-directory: ./rich_padding
+        run: |
+          pytest tests/ --tb=short -v --junitxml=junit-full.xml
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: rich_padding/junit-*.xml
+      
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results Python ${{ matrix.python-version }}
+          path: rich_padding/junit-*.xml
+          reporter: java-junit
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install linting tools
+        run: |
+          pip install flake8 black mypy
+      - name: Run flake8
+        working-directory: ./rich_padding
+        run: flake8 ariana_trace_project/ --max-line-length=120 --extend-ignore=E203,W503
+      - name: Run black check
+        working-directory: ./rich_padding
+        run: black --check ariana_trace_project/
+
+  deploy:
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Notification
+        run: |
+          echo "🚀 Deployment ready - All tests passed!"
+          echo "Test Coverage: Target 70%+"
+          echo "Tuple Version: v2.1.0+"

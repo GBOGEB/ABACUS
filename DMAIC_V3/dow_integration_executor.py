@@ -148,15 +148,15 @@ class DOWIntegrationExecutor:
         cmd = [sys.executable, agent_path] + args
 
         print(f"[>] Running: {' '.join(cmd)}")
-        
+
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 — list-form args, shell=False
                 cmd,
                 capture_output=True,
                 text=True,
                 timeout=300
             )
-            
+
             print(result.stdout)
 
             if result.returncode == 0:
@@ -188,7 +188,7 @@ class DOWIntegrationExecutor:
         print(f"[>] Running: {' '.join(cmd)}")
 
         try:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 — list-form args, shell=False
                 cmd,
                 capture_output=True,
                 text=True,
@@ -276,7 +276,7 @@ Stage Results:
 
 def main():
     """Main entry point"""
-    
+
     parser = argparse.ArgumentParser(
         description='DOW Integration Master Executor',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -284,49 +284,49 @@ def main():
 Examples:
   # Run for iteration 1
   python dow_integration_executor.py --iteration 1
-  
+
   # Run for iteration 2 with custom target
   python dow_integration_executor.py --iteration 2 --target DMAIC_V3_OUTPUT/iteration_2
-  
+
   # Run with verbose logging
   python dow_integration_executor.py --iteration 1 --verbose
         """
     )
-    
+
     parser.add_argument(
         '--iteration',
         type=int,
         default=1,
         help='Iteration number (default: 1)'
     )
-    
+
     parser.add_argument(
         '--target',
         type=str,
         default='DMAIC_CANONICAL_OUTPUT',
         help='Target directory (default: DMAIC_CANONICAL_OUTPUT)'
     )
-    
+
     parser.add_argument(
         '--verbose',
         action='store_true',
         help='Verbose output'
     )
-    
+
     args = parser.parse_args()
-    
+
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-    
+
     executor = DOWIntegrationExecutor()
-    
+
     result = executor.execute_pipeline(
         iteration=args.iteration,
         target_dir=args.target
     )
-    
+
     # Save results
     results_file = f"dow_integration_results_iteration_{args.iteration}.json"
     with open(results_file, 'w', encoding='utf-8') as f:

@@ -7,9 +7,9 @@ jobs:
   export:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - name: Render Markdown to PDF/DOCX via Pandoc
-        uses: docker://pandoc/latex:3.1
+        uses: docker://pandoc/core:3.1
         with:
           args: --version
       - name: Export
@@ -17,10 +17,10 @@ jobs:
           mkdir -p out
           for f in $(git ls-files 'docs/**/*.md'); do
             base=$(basename "$f" .md)
-            docker run --rm -v $PWD:/data pandoc/latex:3.1 "$f" -o "out/${base}.pdf"
-            docker run --rm -v $PWD:/data pandoc/latex:3.1 "$f" -o "out/${base}.docx"
+            docker run --rm -v $PWD:/data pandoc/core:3.1 "$f" -o "out/${base}.pdf"
+            docker run --rm -v $PWD:/data pandoc/core:3.1 "$f" -o "out/${base}.docx"
           done
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: exported-docs
           path: out/
