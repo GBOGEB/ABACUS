@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 
 from ..config import DMAICConfig
 from .state import StateManager
-from .test_system_bridge import TestSystemBridge, TestExecutionResult
+from .test_system_bridge import TestSystemBridge
 
 
 @dataclass
