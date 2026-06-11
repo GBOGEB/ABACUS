@@ -167,14 +167,14 @@ python compare_iterations.py
 ### For Each Iteration (After Re-run)
 
 **Phase 3 Must Show:**
-- ✅ Version: 3.3.1 or higher
+- ✅ Version: 4.0.0 or higher
 - ✅ High complexity files: 50-200 (not 0)
 - ✅ Medium complexity files: 500-1000 (not 0)
 - ✅ Actual complexity values: non-zero
 - ✅ Root causes identified: 3-5 categories
 
 **Phase 4 Must Show:**
-- ✅ Version: 3.3.1 or higher
+- ✅ Version: 4.0.0 or higher
 - ✅ Total improvements: > 0
 - ✅ Implementation results: files modified
 - ✅ No TypeError crashes

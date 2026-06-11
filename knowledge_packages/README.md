@@ -15,7 +15,7 @@ with open('knowledge_packages/agent_context.json') as f:
     agent = json.load(f)
 ```
 
-**Version:** 3.3.0  
+**Version:** 4.0.0  
 **Generated:** 2025-11-12 08:35:05
 
 ## Overview

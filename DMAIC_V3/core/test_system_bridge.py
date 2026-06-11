@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 import sys
 import json
 import time
@@ -9,6 +15,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 from ..config import DMAICConfig
 from .state import StateManager
@@ -69,12 +77,13 @@ class TestSystemBridge:
         
         self.workspace_root = Path(config.paths.workspace_root)
         self.output_root = Path(config.paths.output_root)
-        
+
         self.mcp = MCPControlPoint(self.workspace_root / '.mcp')
-        
+
         self.test_results: Dict[str, TestExecutionResult] = {}
         self.deployment_metrics: Optional[DeploymentMetrics] = None
-        
+        self.test_results_lock = threading.Lock()
+
         self.version_file = self.workspace_root / 'DMAIC_V3' / 'VERSION'
         self.actions_file = self.workspace_root / 'actions.json'
         
@@ -155,7 +164,7 @@ class TestSystemBridge:
                 success=result.returncode == 0,
                 duration_seconds=duration
             )
-            
+
             if expected_artifacts and cwd:
                 artifacts_found = []
                 for artifact in expected_artifacts:
@@ -164,16 +173,17 @@ class TestSystemBridge:
                 test_result.artifacts_found = artifacts_found
                 test_result.artifacts_expected = expected_artifacts
                 test_result.artifacts_match = set(artifacts_found) == set(expected_artifacts)
-            
-            self.test_results[test_name] = test_result
+
+            with self.test_results_lock:
+                self.test_results[test_name] = test_result
             
             self.mcp.log_point(f'run_test_{test_name}', 'complete', {
                 'success': test_result.success,
                 'duration': duration
             })
-            
+
             return test_result
-            
+
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
             test_result = TestExecutionResult(
@@ -184,7 +194,8 @@ class TestSystemBridge:
                 success=False,
                 duration_seconds=duration
             )
-            self.test_results[test_name] = test_result
+            with self.test_results_lock:
+                self.test_results[test_name] = test_result
             
             self.mcp.log_point(f'run_test_{test_name}', 'timeout', {'duration': duration})
             
@@ -370,7 +381,72 @@ class TestSystemBridge:
         self.mcp.log_point('execute_full_test_cycle', 'complete', {
             'success': metrics.deployment_ready
         })
-        
+
+        return metrics.deployment_ready
+
+    def run_tests_parallel(self, test_configs: List[Dict[str, Any]], max_workers: int = 4) -> Dict[str, TestExecutionResult]:
+        self.mcp.log_point('run_tests_parallel', 'enter', {'test_count': len(test_configs), 'max_workers': max_workers})
+
+        results = {}
+
+        def run_single_test(test_config):
+            test_name = test_config.get('name', 'unnamed_test')
+            command = test_config.get('command', [])
+            expected_artifacts = test_config.get('expected_artifacts', None)
+            cwd = test_config.get('cwd', None)
+            timeout = test_config.get('timeout', 300)
+
+            return test_name, self.run_test(test_name, command, expected_artifacts, cwd, timeout)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_test = {executor.submit(run_single_test, config): config for config in test_configs}
+
+            for future in as_completed(future_to_test):
+                try:
+                    test_name, result = future.result()
+                    results[test_name] = result
+                    status = "✅" if result.success else "❌"
+                    print(f"  {status} {test_name} completed in {result.duration_seconds:.2f}s")
+                except Exception as e:
+                    test_config = future_to_test[future]
+                    test_name = test_config.get('name', 'unknown')
+                    print(f"  ❌ {test_name} failed with exception: {str(e)}")
+
+        self.mcp.log_point('run_tests_parallel', 'complete', {
+            'tests_completed': len(results),
+            'tests_passed': sum(1 for r in results.values() if r.success)
+        })
+
+        return results
+
+    def execute_full_test_cycle_parallel(self, max_workers: int = 4) -> bool:
+        self.mcp.log_point('execute_full_test_cycle_parallel', 'enter')
+
+        self.log_action('test_cycle_started', 'Beginning parallel test cycle')
+
+        test_configs = [
+            {'name': 'unit_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'unit']},
+            {'name': 'integration_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'integration']},
+            {'name': 'smoke_tests', 'command': [sys.executable, '-m', 'pytest', '-m', 'smoke']},
+        ]
+
+        print(f"\n[PARALLEL EXECUTION] Running {len(test_configs)} test suites with {max_workers} workers...")
+        results = self.run_tests_parallel(test_configs, max_workers=max_workers)
+
+        metrics = self.generate_deployment_metrics()
+
+        self.save_deployment_report()
+
+        self.log_action('test_cycle_completed', 'Parallel test cycle finished', {
+            'deployment_ready': metrics.deployment_ready,
+            'tests_passed': metrics.tests_passed,
+            'tests_total': metrics.tests_total
+        })
+
+        self.mcp.log_point('execute_full_test_cycle_parallel', 'complete', {
+            'success': metrics.deployment_ready
+        })
+
         return metrics.deployment_ready
 
 

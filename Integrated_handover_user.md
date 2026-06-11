@@ -97,7 +97,7 @@ Place this at the project root as `.GLOOB.yaml`
 # === BEGIN .GLOOB.yaml (DMAIC_V3_CODE_TWIN_HANDOVER) ===
 package:
   name: dmaic_v3_code_twin_handover
-  version: 0.2.0
+  version: 4.0.0
   description: >
     Canonical recursive handover bundle for DMAIC_V3 Code Digital Twin
     (PROJECT_QPLANT) including handover docs, code subsystems, metrics, and

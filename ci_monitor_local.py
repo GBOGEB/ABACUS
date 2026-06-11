@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Local CI Monitor for GitHub Pull Requests
 Monitors CI/CD status and creates issues for failures
 Uses GitHub CLI authentication (gh auth) for secure access
