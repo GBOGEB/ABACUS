@@ -1,4 +1,9 @@
-name: Security Scan — Bandit + Ruff + OSV + Semgrep
+name: Security Scan — Ruff
+
+# Bandit  → bandit.yml
+# OSV     → osv-scanner.yml
+# Semgrep → semgrep.yml
+# This workflow runs Ruff security rules (S-series) which have no dedicated file.
 
 on:
   push:
@@ -6,43 +11,13 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 6 * * 1'   # weekly Monday 06:00 UTC (dashboard runs at 08:00)
+    - cron: '0 6 * * 1'
 
 permissions:
   contents: read
   security-events: write
 
 jobs:
-  bandit:
-    name: Bandit SAST
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Bandit
-        run: pip install bandit[toml]
-
-      - name: Run Bandit
-        # Config governed by .github/security/security.toml [bandit] section
-        run: |
-          bandit -r DMAIC_V3 \
-            --exclude DMAIC_V3/tests,DMAIC_V3/generators/test_integration_pipeline.py \
-            --skip B101,B603 \
-            --severity-level medium \
-            --confidence-level medium \
-            -f sarif \
-            -o bandit-results.sarif || true
-
-      - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: bandit-results.sarif
-          category: bandit
-
   ruff-security:
     name: Ruff Security Rules
     runs-on: ubuntu-latest
@@ -65,26 +40,3 @@ jobs:
             --exclude "*_corrupted.py,*_fixed.py,*_clean.py" \
             --output-format github || true
 
-  osv-scan:
-    name: OSV Dependency Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run OSV Scanner
-        # v1.1+ uses Node 20-compatible actions internally
-        uses: google/osv-scanner-action@v1.9.2
-        with:
-          scan-args: |-
-            --lockfile=requirements.txt
-            --format=sarif
-            --output=osv-results.sarif
-        continue-on-error: true
-
-      - name: Upload OSV SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: osv-results.sarif
-          category: osv-scanner
-  # Semgrep runs in its own workflow: .github/workflows/semgrep.yml
