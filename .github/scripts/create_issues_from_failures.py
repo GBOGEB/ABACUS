@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 Automated Issue Creator for CI/CD Test Failures
 
 This script:
@@ -33,7 +39,6 @@ class CIIssueCreator:
         self.repo = self.github.get_repo(repo_name)
         self.pr_number = pr_number
         self.created_issues = []
-        self.closed_issues = []
         
     def parse_test_report(self, report_path: str = "test_report.json") -> Dict:
         """Parse pytest JSON report"""
@@ -48,25 +53,6 @@ class CIIssueCreator:
         """Check if issue already exists for this test"""
         query = f'repo:{self.repo.full_name} is:issue is:open label:ci-failure "{test_name}"'
         return list(self.github.search_issues(query))
-
-    def close_issue_for_test(self, test_name: str) -> int:
-        """Close matching open CI failure issues after a test passes again."""
-        existing = self.get_existing_issues(test_name)
-        closed_count = 0
-
-        for issue in existing:
-            try:
-                issue.create_comment(
-                    f"✅ Closing automatically because `{test_name}` passed in CI again."
-                )
-                issue.edit(state='closed')
-                self.closed_issues.append(issue.number)
-                closed_count += 1
-                print(f"✅ Closed resolved issue #{issue.number} for {test_name}")
-            except GithubException as e:
-                print(f"⚠️  Could not close issue #{issue.number} for {test_name}: {e}")
-
-        return closed_count
     
     def create_issue_for_test(self, test: Dict) -> Optional[str]:
         """Create a GitHub issue for a failing test"""
@@ -253,45 +239,22 @@ This issue was automatically created by the CI monitoring system. The test faile
         print(f"   ❌ Failed: {failed}")
         print()
         
-        tests = report.get('tests', [])
-        failed_tests = [test for test in tests if test.get('outcome') == 'failed']
-        passed_test_names = {
-            test.get('nodeid')
-            for test in tests
-            if test.get('outcome') == 'passed' and test.get('nodeid')
-        }
-        failed_test_names = {
-            test.get('nodeid')
-            for test in failed_tests
-            if test.get('nodeid')
-        }
-
-        resolved_test_names = sorted(passed_test_names - failed_test_names)
-        if resolved_test_names:
-            print(f"🔁 Closing issues for {len(resolved_test_names)} resolved test(s)...\n")
-            for test_name in resolved_test_names:
-                self.close_issue_for_test(test_name)
-
         if failed == 0:
             print("✅ All tests passing! No issues to create.")
-            if self.closed_issues:
-                print(f"   Closed issue numbers: {', '.join(f'#{n}' for n in self.closed_issues)}")
             return
         
         # Process each failing test
         print(f"🔍 Processing {failed} failing test(s)...\n")
         
-        for test in failed_tests:
-            self.create_issue_for_test(test)
+        for test in report.get('tests', []):
+            if test.get('outcome') == 'failed':
+                self.create_issue_for_test(test)
         
         # Summary
         print("\n" + "=" * 60)
         print(f"✅ Created {len(self.created_issues)} issue(s)")
         if self.created_issues:
             print(f"   Issue numbers: {', '.join(f'#{n}' for n in self.created_issues)}")
-        if self.closed_issues:
-            print(f"✅ Closed {len(self.closed_issues)} resolved issue(s)")
-            print(f"   Closed issue numbers: {', '.join(f'#{n}' for n in self.closed_issues)}")
         print("=" * 60)
 
 

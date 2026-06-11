@@ -21,17 +21,17 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v3
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
       
       - name: Install Pandoc
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex texlive-fonts-recommended texlive-fonts-extra
+          sudo apt-get install -y pandoc texlive-xelatex texlive-fonts-recommended texlive-fonts-extra
       
       - name: Verify Pandoc installation
         run: pandoc --version
@@ -40,21 +40,21 @@ jobs:
         run: python scripts/build_book.py
       
       - name: Upload PDF artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: DMAIC_V3_BOOK_PDF
           path: build/DMAIC_V3_BOOK.pdf
           retention-days: 30
       
       - name: Upload HTML artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: DMAIC_V3_BOOK_HTML
           path: build/DMAIC_V3_BOOK.html
           retention-days: 30
       
       - name: Upload EPUB artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: DMAIC_V3_BOOK_EPUB
           path: build/DMAIC_V3_BOOK.epub

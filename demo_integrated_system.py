@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 DMAIC + DOW Integrated System Demonstration
 ============================================
 This script demonstrates the unified DMAIC Sprint System + DOW Core Engine
@@ -478,7 +484,7 @@ def main():
 
     # ... existing code ...
 
-    num_iterations = 3
+    num_iterations = 5
 
     for i in range(1, num_iterations + 1):
         system.run_iteration(i)

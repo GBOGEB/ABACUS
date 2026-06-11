@@ -7,7 +7,7 @@ with open('full_pipeline_orchestrator.py', 'r', encoding='utf-8') as f:
 # Integration Point 2: Add bg_change_detector initialization in __init__
 init_pattern = r'(if self\.enable_idempotency_flag:\s+enable_idempotency\(enabled=True\))'
 init_replacement = r'''\1
-        
+
         # Integration Point 2: Initialize background change detector
         state_dir = self.config.paths.output_root / "convergence_state"
         self.bg_change_detector = BackgroundChangeDetector(
@@ -19,7 +19,7 @@ content = re.sub(init_pattern, init_replacement, content)
 # Integration Point 3: Start background detector in execute_full_pipeline
 start_pattern = r'(start_time = datetime\.now\(\)\s+phases_executed = \[\])'
 start_replacement = r'''\1
-        
+
         # Integration Point 3: Start background change detection
         self.bg_change_detector.start()'''
 content = re.sub(start_pattern, start_replacement, content)
@@ -30,7 +30,7 @@ finally_replacement = r'''\1
         finally:
             # Integration Point 4: Stop background change detection
             self.bg_change_detector.stop()
-            
+
             # Integration Point 5: Get and display final summary
             change_summary = self.bg_change_detector.get_summary()
             print(f"\\n{'='*80}")

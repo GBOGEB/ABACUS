@@ -1,0 +1,324 @@
+name: Bootstrap Statistics CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, staging ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+
+env:
+  PYTHON_VERSION: '3.12'
+  MIN_COVERAGE: 80
+
+jobs:
+  lint:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy pylint
+        pip install -r requirements.txt
+    
+    - name: Run Black (code formatting)
+      run: black --check --diff .
+      continue-on-error: true
+    
+    - name: Run isort (import sorting)
+      run: isort --check-only --diff .
+      continue-on-error: true
+    
+    - name: Run Flake8 (style check)
+      run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    
+    - name: Run Pylint
+      run: |
+        pylint bootstrap_eval.py dow_phase2_statistics.py \
+               dow_phase3_reporting.py aht_statistics_bridge.py \
+               --disable=C0103,C0114,C0115,C0116 || true
+      continue-on-error: true
+
+  test:
+    name: Unit & Integration Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          - os: macos-latest
+            python-version: '3.8'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-xdist pytest-benchmark
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Run smoke tests
+      run: pytest -m smoke -v
+    
+    - name: Run unit tests
+      run: pytest tests/test_bootstrap_eval.py tests/test_aht_bridge.py -v --cov --cov-report=xml
+    
+    - name: Run integration tests
+      run: pytest tests/test_integration.py -v
+    
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  dow-workflow:
+    name: DOW Phase 2/3 Workflow Test
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Create test data
+      run: |
+        cat > test_data.csv << EOF
+        group,score
+        test_a,95.5
+        test_a,94.2
+        test_b,88.7
+        test_b,89.1
+        EOF
+    
+    - name: Run DOW Phase 2
+      run: |
+        python dow_phase2_statistics.py \
+          --results-dir test_data.csv \
+          --dow-root dow_output \
+          --alpha 0.05 \
+          --mode csv
+    
+    - name: Find Phase 2 metadata
+      id: find_metadata
+      run: |
+        METADATA=$(find dow_output -name "phase2_metadata.json" | head -n 1)
+        echo "metadata_path=$METADATA" >> $GITHUB_OUTPUT
+    
+    - name: Run DOW Phase 3
+      run: |
+        python dow_phase3_reporting.py \
+          --phase2-metadata "${{ steps.find_metadata.outputs.metadata_path }}"
+    
+    - name: Upload DOW reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: dow-reports-${{ github.run_number }}
+        path: |
+          dow_output/**/*.md
+          dow_output/**/*.json
+          dow_output/**/*.png
+          phase3_reports/**/*
+
+  aht-hypothesis-tests:
+    name: AHT Hypothesis Testing
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Run AHT comprehensive tests
+      run: python test_aht_bridge_comprehensive.py
+    
+    - name: Upload learnings database
+      uses: actions/upload-artifact@v4
+      with:
+        name: aht-learnings-${{ github.run_number }}
+        path: test_aht_bridge_learnings.json
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install security tools
+      run: |
+        pip install bandit safety
+    
+    - name: Run Bandit (security linter)
+      run: bandit -r . -f json -o bandit-report.json || true
+    
+    - name: Run Safety (dependency checker)
+      run: safety check --json > safety-report.json || true
+      continue-on-error: true
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [lint, test, dow-workflow, aht-hypothesis-tests]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Run deployment script
+      run: python deploy.py --env staging
+    
+    - name: Upload deployment package
+      uses: actions/upload-artifact@v4
+      with:
+        name: staging-deployment-${{ github.run_number }}
+        path: deployment_staging_*/**/*
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [lint, test, dow-workflow, aht-hypothesis-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Run deployment script
+      run: python deploy.py --env production
+    
+    - name: Create release tag
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        VERSION=$(date +"%Y.%m.%d-%H%M")
+        git tag -a "v$VERSION" -m "Production release $VERSION"
+        git push origin "v$VERSION" || true
+    
+    - name: Upload deployment package
+      uses: actions/upload-artifact@v4
+      with:
+        name: production-deployment-${{ github.run_number }}
+        path: deployment_production_*/**/*
+    
+    - name: Notify deployment
+      run: |
+        echo "🚀 Deployment to production completed successfully!"
+        echo "Version: $(date +"%Y.%m.%d-%H%M")"
+        echo "Commit: ${{ github.sha }}"
+
+  performance-benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || contains(github.event.head_commit.message, '[benchmark]')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-benchmark
+        pip install numpy scipy matplotlib pandas
+    
+    - name: Run benchmarks
+      run: pytest -m benchmark --benchmark-only --benchmark-json=benchmark-results.json
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: benchmark-results.json

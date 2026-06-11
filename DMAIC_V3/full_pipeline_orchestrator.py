@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 from typing import Any
 """
 DMAIC V3.3 - FULL PIPELINE ORCHESTRATOR
@@ -99,34 +105,22 @@ class Phase8RecursiveOptimization:
 class FullPipelineOrchestrator:
     """
     Full Pipeline Orchestrator
-    
+
     Executes complete DMAIC V3.3 pipeline:
     - Phase 0: Initialization
     - Phases 1-5: DMAIC Core
     - Phase 6: Knowledge (Devour/Learn)
     - Phases 7-8: Future expansion stubs
-    
+
     With full tracking, artifacts, and recursive hooks
     """
-    
+
     def __init__(self,
                  enable_idempotency_flag: bool = True,
                  enable_git_commits: bool = True,
                  verbose: bool = True,
-                 debug_port: int = None,
-                 codespace_jyperter_notebooks: list = None):
-        """Initialize the Full Pipeline Orchestrator
-
-        Args:
-            enable_idempotency_flag: Enable idempotency caching.
-            enable_git_commits: Commit outputs to git after each iteration.
-            verbose: Enable verbose output.
-            debug_port: Optional port for debug monitoring server.
-            codespace_jyperter_notebooks: Optional list of .ipynb paths to
-                parse as a Phase0 pre-step.  Extracts are written to
-                ``integration/codespace_jyperter/extracts/`` and registered
-                as notebook knowledge sources for Phase6.
-        """
+                 debug_port: int = None):
+        """Initialize the Full Pipeline Orchestrator"""
 
         self.config = DMAICConfig()
         self.state_mgr = StateManager(self.config.paths.state_dir)
@@ -136,7 +130,6 @@ class FullPipelineOrchestrator:
         self.enable_git_commits = enable_git_commits
         self.verbose = verbose
         self.debug_port = debug_port
-        self.codespace_jyperter_notebooks = codespace_jyperter_notebooks or []
 
         self.execution_log: List[Dict] = []
 
@@ -164,14 +157,14 @@ class FullPipelineOrchestrator:
         if self.debug_port:
             print(f"[DEBUG] Debug port enabled: {self.debug_port}")
             self._setup_debug_monitoring()
-    
+
     def execute_full_pipeline(self, iteration: int = 1) -> bool:
         """
         Execute full pipeline for one iteration
-        
+
         Args:
             iteration: Iteration number
-            
+
         Returns:
             bool: Success status
         """
@@ -183,18 +176,12 @@ class FullPipelineOrchestrator:
         print(f"Idempotency: {'ENABLED' if self.enable_idempotency_flag else 'DISABLED'}")
         print(f"Git Commits: {'ENABLED' if self.enable_git_commits else 'DISABLED'}")
         print("="*80)
-        
+
         start_time = datetime.now()
         phases_executed = []
-        
+
         # Integration Point 3: Start background change detection
         self.bg_change_detector.start()
-
-        # Integration Point 4: codespace_jyperter notebook pre-step (optional)
-        # If .ipynb paths were supplied, parse them before Phase 0 so the
-        # resulting extracts are available to Phase 2 and Phase 6.
-        if self.codespace_jyperter_notebooks:
-            self._run_codespace_jyperter_prestep(iteration)
 
         try:
             # Phase 0: Initialization
@@ -206,7 +193,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase0_init')
-            
+
             # Phase 1: Define
             success, results = self._execute_phase_with_tracking(
                 Phase1Define(self.config, self.state_mgr),
@@ -216,7 +203,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase1_define')
-            
+
             # Phase 2: Measure
             success, results = self._execute_phase_with_tracking(
                 Phase2Measure(self.config, self.state_mgr),
@@ -226,7 +213,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase2_measure')
-            
+
             # Phase 3: Analyze
             success, results = self._execute_phase_with_tracking(
                 Phase3Analyze(self.config, self.state_mgr),
@@ -236,7 +223,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase3_analyze')
-            
+
             # Phase 4: Improve
             success, results = self._execute_phase_with_tracking(
                 Phase4Improve(self.config, self.state_mgr),
@@ -246,7 +233,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase4_improve')
-            
+
             # Phase 5: Control
             success, results = self._execute_phase_with_tracking(
                 Phase5Control(self.config, self.state_mgr),
@@ -256,7 +243,7 @@ class FullPipelineOrchestrator:
             if not success:
                 return False
             phases_executed.append('phase5_control')
-            
+
             # Phase 6: Knowledge (Devour/Learn)
             success, results = self._execute_phase_with_tracking(
                 Phase6Knowledge(self.config, self.state_mgr),
@@ -266,7 +253,7 @@ class FullPipelineOrchestrator:
             if not success:
                 print("[WARNING] Phase 6 failed but continuing...")
             phases_executed.append('phase6_knowledge')
-            
+
             # Phase 7: Action Tracking
             success, results = self._execute_phase_with_tracking(
                 Phase7ActionTracking(self.config, self.state_mgr),
@@ -296,14 +283,14 @@ class FullPipelineOrchestrator:
             if not success:
                 print("[WARNING] Phase 9 failed but continuing...")
             phases_executed.append('phase9_documentation_generation')
-            
+
             # Update planning matrix
             print("\n[TRACKING] Updating planning matrix...")
             self.planning_tracker.scan_actual_state(Path("DMAIC_V3_OUTPUT"))
             self.planning_tracker.determine_current_state()
             self.planning_tracker.calculate_possible_next()
             self.planning_tracker.save_snapshot(iteration)
-            
+
             # Generate execution summary
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
@@ -328,7 +315,7 @@ class FullPipelineOrchestrator:
             print("="*80)
 
             return True
-            
+
         except Exception as e:
             print(f"\n[ERROR] Pipeline failed: {e}")
             import traceback
@@ -337,7 +324,7 @@ class FullPipelineOrchestrator:
         finally:
             # Integration Point 4: Stop background change detection
             self.bg_change_detector.stop()
-            
+
             # Integration Point 5: Get and display final summary
             change_summary = self.bg_change_detector.get_summary()
             print(f"\n{'='*80}")
@@ -349,42 +336,6 @@ class FullPipelineOrchestrator:
             if change_summary.get('timestamp'):
                 print(f"  Last snapshot: {change_summary.get('timestamp')}")
             print(f"{'='*80}")
-
-    def _run_codespace_jyperter_prestep(self, iteration: int) -> None:
-        """Parse codespace_jyperter notebooks as a Phase0 pre-step.
-
-        Iterates over ``self.codespace_jyperter_notebooks``, parses each
-        .ipynb file with ``NotebookParser``, writes JSON extracts to
-        ``integration/codespace_jyperter/extracts/``, and prints a summary.
-        Failures are non-fatal: a warning is printed and execution continues.
-        """
-        try:
-            from integration.codespace_jyperter.notebook_parser import NotebookParser
-        except ImportError:
-            print("[WARNING] codespace_jyperter notebook_parser not importable; skipping pre-step.")
-            return
-
-        parser = NotebookParser()
-        extract_dir = Path("integration/codespace_jyperter/extracts")
-
-        print("\n" + "=" * 80)
-        print("CODESPACE_JYPERTER PRE-STEP: Notebook parsing")
-        print("=" * 80)
-
-        for nb_path in self.codespace_jyperter_notebooks:
-            try:
-                extract = parser.parse(nb_path)
-                out = parser.save_extract(extract, extract_dir, iteration=iteration)
-                print(
-                    f"  [OK] {Path(nb_path).name} → {out.name} "
-                    f"({extract['cell_count']} cells, "
-                    f"{extract['code_cell_count']} code, "
-                    f"{extract['markdown_cell_count']} markdown)"
-                )
-            except Exception as exc:
-                print(f"  [WARNING] Could not parse {nb_path}: {exc}")
-
-        print("=" * 80)
 
     def _execute_phase_with_tracking(self,
                                      phase_obj: Any,
@@ -399,7 +350,7 @@ class FullPipelineOrchestrator:
 
         try:
             result = phase_obj.execute(iteration=iteration)
-            
+
             # Handle both tuple (success, results) and dict returns
             if isinstance(result, tuple):
                 success, results = result
@@ -407,7 +358,7 @@ class FullPipelineOrchestrator:
                 # Assume dict return - success determined by presence of 'phase' field
                 results = result
                 success = 'phase' in results
-            
+
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
 
@@ -461,8 +412,8 @@ class FullPipelineOrchestrator:
             self.statistics['orchestration']['failed_phases'] += 1
 
             return False, {'error': str(e)}
-    
-    def _generate_execution_summary(self, 
+
+    def _generate_execution_summary(self,
                                     iteration: int,
                                     phases_executed: List[str],
                                     duration: float,
@@ -470,37 +421,37 @@ class FullPipelineOrchestrator:
         """Generate execution summary"""
         summary_file = Path(f"DMAIC_V3_OUTPUT/iteration_{iteration}/EXECUTION_SUMMARY.md")
         summary_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         summary = []
         summary.append(f"# DMAIC V3.3 - Iteration {iteration} Execution Summary\n")
         summary.append(f"**Status:** {'SUCCESS' if success else 'FAILED'}")
         summary.append(f"**Duration:** {duration:.2f} seconds")
         summary.append(f"**Timestamp:** {datetime.now().isoformat()}\n")
-        
+
         summary.append("## Phases Executed\n")
         for idx, phase in enumerate(phases_executed, 1):
             log = next((l for l in self.execution_log if phase in l.get('phase', '')), None)
             if log:
                 status = "[OK]" if log['success'] else "[FAIL]"
                 summary.append(f"{idx}. {status} {phase} ({log['duration_seconds']:.2f}s)")
-        
+
         summary.append("\n## Execution Log\n")
         summary.append("```json")
         summary.append(json.dumps(self.execution_log, indent=2))
         summary.append("```")
-        
+
         with open(summary_file, 'w') as f:
             f.write('\n'.join(summary))
-        
+
         print(f"\n[TRACKING] Execution summary saved: {summary_file}")
-    
+
     def _git_commit(self, iteration: int):
         """Commit iteration results to git"""
         try:
             print("\n[GIT] Committing iteration results...")
-            subprocess.run(['git', 'add', 'DMAIC_V3_OUTPUT/', 'planning_matrix.json'],
+            subprocess.run(['git', 'add', 'DMAIC_V3_OUTPUT/', 'planning_matrix.json'],  # noqa: S603
                           check=False)
-            subprocess.run(['git', 'commit', '-m',
+            subprocess.run(['git', 'commit', '-m',  # noqa: S603
                           f'DMAIC V3.3 - Iteration {iteration} complete'],
                           check=False)
             print("[GIT] [OK] Committed")

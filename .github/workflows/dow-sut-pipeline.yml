@@ -1,0 +1,280 @@
+name: DOW Pipeline with SUT Configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      sut_mode:
+        description: 'SUT Mode'
+        required: true
+        default: 'last_7_days'
+        type: choice
+        options:
+          - full_workspace
+          - last_7_days
+          - abacus_v032
+          - quick_test
+          - custom_subset
+      dmaic_phases:
+        description: 'DMAIC Phases (comma-separated, 0-9)'
+        required: false
+        default: '0,1,2,3,4,5,6,7,8,9'
+      iterations:
+        description: 'Number of iterations'
+        required: false
+        default: '3'
+      adr_ocd_discovery:
+        description: 'Run ADR/OCD Discovery'
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: '0 2 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'DOW/**'
+      - 'ABACUS-v032/**'
+      - '.github/workflows/dow-sut-pipeline.yml'
+
+env:
+  PYTHON_VERSION: '3.11'
+  DOW_OUTPUT_DIR: 'DOW/outputs'
+
+jobs:
+  setup-sut:
+    runs-on: ubuntu-latest
+    outputs:
+      sut_mode: ${{ steps.config.outputs.sut_mode }}
+      artifact_count: ${{ steps.config.outputs.artifact_count }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      
+      - name: Configure SUT
+        id: config
+        run: |
+          SUT_MODE="${{ github.event.inputs.sut_mode || 'last_7_days' }}"
+          echo "sut_mode=${SUT_MODE}" >> $GITHUB_OUTPUT
+          
+          python -c "
+          from DOW.sut_config import SUTConfig, SUTMode
+          import json
+          
+          mode = SUTMode('${SUT_MODE}')
+          config = SUTConfig(mode=mode)
+          stats = config.get_statistics()
+          
+          print(f'Artifact count: {stats[\"total_artifacts\"]}')
+          print(f'artifact_count={stats[\"total_artifacts\"]}', file=open('$GITHUB_OUTPUT', 'a'))
+          
+          config.save_config('sut_config.json')
+          "
+      
+      - name: Upload SUT Config
+        uses: actions/upload-artifact@v4
+        with:
+          name: sut-config
+          path: sut_config.json
+
+  execute-dmaic-pipeline:
+    needs: setup-sut
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        phase: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Download SUT Config
+        uses: actions/download-artifact@v4
+        with:
+          name: sut-config
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      
+      - name: Execute DMAIC Phase ${{ matrix.phase }}
+        run: |
+          python DOW/pipeline_runner.py \
+            --mode ${{ needs.setup-sut.outputs.sut_mode }} \
+            --phases ${{ matrix.phase }} \
+            --iterations 1
+      
+      - name: Upload Phase Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-${{ matrix.phase }}-results
+          path: ${{ env.DOW_OUTPUT_DIR }}/*.json
+
+  run-iterations:
+    needs: [setup-sut, execute-dmaic-pipeline]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Download SUT Config
+        uses: actions/download-artifact@v4
+        with:
+          name: sut-config
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      
+      - name: Run Full Pipeline Iterations
+        run: |
+          ITERATIONS="${{ github.event.inputs.iterations || '3' }}"
+          PHASES="${{ github.event.inputs.dmaic_phases || '0,1,2,3,4,5,6,7,8,9' }}"
+          
+          python DOW/pipeline_runner.py \
+            --mode ${{ needs.setup-sut.outputs.sut_mode }} \
+            --phases ${PHASES//,/ } \
+            --iterations ${ITERATIONS}
+      
+      - name: Upload Pipeline Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-results
+          path: ${{ env.DOW_OUTPUT_DIR }}/*.json
+
+  adr-ocd-discovery:
+    if: github.event.inputs.adr_ocd_discovery == 'true' || github.event_name == 'schedule'
+    needs: setup-sut
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Download SUT Config
+        uses: actions/download-artifact@v4
+        with:
+          name: sut-config
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      
+      - name: Run ADR/OCD Discovery
+        run: |
+          python DOW/pipeline_runner.py \
+            --mode ${{ needs.setup-sut.outputs.sut_mode }} \
+            --adr-ocd-discovery
+      
+      - name: Upload ADR/OCD Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: adr-ocd-discovery
+          path: ${{ env.DOW_OUTPUT_DIR }}/adr_ocd_discovery_*.json
+
+  convergence-analysis:
+    needs: run-iterations
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download Pipeline Results
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-results
+          path: results
+      
+      - name: Analyze Convergence
+        run: |
+          python -c "
+          import json
+          import glob
+          
+          results_files = glob.glob('results/*.json')
+          if results_files:
+              with open(results_files[0], 'r') as f:
+                  results = json.load(f)
+              
+              print('=== Convergence Analysis ===')
+              for i, metric in enumerate(results.get('convergence_metrics', [])):
+                  print(f'Iteration {i+1}:')
+                  print(f'  Converged: {metric.get(\"converged\", False)}')
+                  print(f'  Confidence: {metric.get(\"confidence\", 0):.2%}')
+                  print(f'  Avg Score: {metric.get(\"avg_score\", 0):.4f}')
+          "
+      
+      - name: Generate Summary Report
+        run: |
+          echo "## DOW Pipeline Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **SUT Mode**: ${{ needs.setup-sut.outputs.sut_mode }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifacts Processed**: ${{ needs.setup-sut.outputs.artifact_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Iterations**: ${{ github.event.inputs.iterations || '3' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **DMAIC Phases**: ${{ github.event.inputs.dmaic_phases || '0-9' }}" >> $GITHUB_STEP_SUMMARY
+
+  deploy-validation:
+    needs: [run-iterations, convergence-analysis]
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build ABACUS Docker Image
+        run: |
+          cd ABACUS-v032
+          docker-compose build
+      
+      - name: Validate Deployment
+        run: |
+          cd ABACUS-v032
+          docker-compose up -d
+          sleep 10
+          docker-compose ps
+          docker-compose logs
+          docker-compose down
+      
+      - name: Upload Deployment Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-logs
+          path: ABACUS-v032/*.log

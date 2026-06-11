@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
+"""
 GitHub Workflow Analyzer
 Analyzes past GitHub Actions workflows to identify missed opportunities
 Reviews CI/CD history and suggests improvements
@@ -10,7 +16,7 @@ import sys
 import json
 import subprocess
 from datetime import datetime, timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional
 from collections import defaultdict
 
 try:
@@ -283,7 +289,7 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except:
         pass
     
     token = os.environ.get('GITHUB_TOKEN')
@@ -330,8 +336,7 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except Exception:
-            # Ignore errors if unable to determine repo name from git
+        except:
             pass
     
     if not repo_name:

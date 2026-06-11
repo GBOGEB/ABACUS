@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 """Generate a QPLANT/SCK CEN aligned PowerPoint template.
 
 This script creates a professional PowerPoint presentation that follows the

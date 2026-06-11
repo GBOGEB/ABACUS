@@ -1,3 +1,9 @@
+"""
+# Version: 1.0.0
+# Date: 2025-11-25
+# Description: Auto-generated version header
+"""
+
 def check_brackets(expression):
     """
     Function to check if all brackets in the given expression are balanced.

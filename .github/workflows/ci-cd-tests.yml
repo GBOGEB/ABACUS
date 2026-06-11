@@ -1,0 +1,327 @@
+name: CI/CD Test Suite
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  COVERAGE_THRESHOLD: 75
+
+jobs:
+  lint-and-format:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort mypy pylint
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Black
+        run: black --check --diff .
+        continue-on-error: true
+      
+      - name: Run isort
+        run: isort --check-only --diff .
+        continue-on-error: true
+      
+      - name: Run Flake8
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        continue-on-error: true
+      
+      - name: Run Pylint
+        run: pylint **/*.py --exit-zero
+        continue-on-error: true
+
+  unit-tests:
+    name: Unit Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-xdist pytest-asyncio pytest-benchmark
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+        shell: bash
+      
+      - name: Run Unit Tests
+        run: |
+          pytest tests/ -v --tb=short --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
+        continue-on-error: true
+      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: junit/test-results-*.xml
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov coverage
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Tests with Coverage
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
+      
+      - name: Check Coverage Threshold
+        run: |
+          coverage report --fail-under=${{ env.COVERAGE_THRESHOLD }}
+        continue-on-error: true
+      
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
+      
+      - name: Upload Coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-asyncio pytest-timeout
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Integration Tests
+        run: |
+          pytest tests/test_dow_integration.py -v --tb=short
+        timeout-minutes: 15
+      
+      - name: Run DMAIC Orchestration Tests
+        run: |
+          pytest tests/test_dmaic_orchestration.py -v --tb=short
+        timeout-minutes: 10
+
+  docker-tests:
+    name: Docker Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-asyncio docker
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Docker Tests
+        run: |
+          pytest tests/test_docker_integration.py -v --tb=short
+        timeout-minutes: 20
+
+  performance-tests:
+    name: Performance & Benchmark Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-benchmark
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Benchmark Tests
+        run: |
+          pytest -m benchmark --benchmark-only --benchmark-json=benchmark.json
+        continue-on-error: true
+      
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark.json
+
+  comprehensive-test-suite:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, unit-tests]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-xdist pytest-asyncio pytest-benchmark pytest-cov
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+      
+      - name: Run Comprehensive Tests
+        run: |
+          python scripts/run_comprehensive_tests.py full > test_output.log 2>&1
+        continue-on-error: true
+      
+      - name: Upload Test Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-test-output
+          path: test_output.log
+      
+      - name: Upload Dashboard
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-dashboard
+          path: dashboard/
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+      
+      - name: Run Bandit
+        run: bandit -r . -f json -o bandit-report.json
+        continue-on-error: true
+      
+      - name: Run Safety Check
+        run: safety check --json > safety-report.json
+        continue-on-error: true
+      
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+
+  deploy-dashboard:
+    name: Deploy Test Dashboard
+    runs-on: ubuntu-latest
+    needs: [comprehensive-test-suite, coverage]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Dashboard Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-dashboard
+          path: dashboard/
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dashboard
+          publish_branch: gh-pages
+        continue-on-error: true
+
+  notification:
+    name: Test Results Notification
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, docker-tests, coverage, performance-tests]
+    if: always()
+    
+    steps:
+      - name: Check Test Results
+        run: |
+          echo "Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "Integration Tests: ${{ needs.integration-tests.result }}"
+          echo "Docker Tests: ${{ needs.docker-tests.result }}"
+          echo "Coverage: ${{ needs.coverage.result }}"
+          echo "Performance Tests: ${{ needs.performance-tests.result }}"
