@@ -28,7 +28,6 @@
  Inputs
  ------
    data/crossmap/crossmap_confidence.json   (W006 pairs + unmapped + tiers)
-   data/excel/reconciliation_results.json   (W005 coverage + reallocations)
    configs/known_seeds.json                 (W009 reviewer-confirmed seeds)
 
  Outputs
