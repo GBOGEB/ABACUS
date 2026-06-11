@@ -101,9 +101,7 @@ ingest step (3) is manual because it consumes a reviewer-produced file.
   validation (TYPE-gate, register existence), provenance/audit, the seed-loader's
   graceful degradation, register assembly, the HIGH→commissioned mapping, and the
   honesty invariant (committed `known_seeds.json` must be empty).
-- `ci/golden_gate.py` now snapshots `reports/W009_commissioning_statistics.json`
-  so any change in commissioned/provisional/open counts is surfaced as semantic
-  drift in CI.
+- `ci/golden_gate.py` provides a statistics drift gate for `reports/W009_commissioning_statistics.json`; ensure the CI workflow calls it to enforce semantic stability.
 
 ## 7. Definition of done (engineering sign-off)
 
