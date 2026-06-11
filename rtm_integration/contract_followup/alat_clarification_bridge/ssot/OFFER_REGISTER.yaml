@@ -1,0 +1,12 @@
+offer_register:
+  bidder: ALaT
+  status: Open
+  clarification_groups:
+    - Q3
+    - Q4
+    - Q5
+  review_state:
+    dsbt: Open
+    dbe: Open
+    qcell: Open
+    ped: Open

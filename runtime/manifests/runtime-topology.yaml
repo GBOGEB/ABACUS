@@ -1,0 +1,24 @@
+runtime_topology:
+  moniker: DELTA_1
+  phase: DELTA_1_PHASE_11_AUTONOMOUS_GOVERNANCE
+
+  governance:
+    repository: GBOGEB/CODEX
+    branch: delta-1-codex-governance-baseline
+
+  runtime:
+    repository: GBOGEB/ABACUS
+    branch: delta-1-abacus-delivery-baseline
+
+  capabilities:
+    - runtime_governance
+    - release_certification
+    - deployment_enforcement
+    - rollback_orchestration
+    - provenance_generation
+    - evidence_generation
+
+  protected_environments:
+    - dev
+    - stage
+    - prod

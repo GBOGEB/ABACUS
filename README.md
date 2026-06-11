@@ -1,9 +1,172 @@
-# MASTER_INPUT - 12-Cluster Analysis Framework
+# ABACUS — 12-Cluster Analysis Framework
+
+[![Version](https://img.shields.io/badge/version-v4.4.0-blue?style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)
+[![Completion](https://img.shields.io/badge/completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
+[![Build](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci.yml?branch=main&style=flat-square&label=build)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/smoke-test.yml?branch=main&style=flat-square&label=tests)](https://github.com/GBOGEB/ABACUS/actions/workflows/smoke-test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen?style=flat-square)](docs/testing/index.html)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://gbogeb.github.io/ABACUS/)
+[![Workflows](https://img.shields.io/badge/workflows-32%20active%20%2B%205%20staged-purple?style=flat-square)](https://github.com/GBOGEB/ABACUS/actions)
+[![Dashboards](https://img.shields.io/badge/dashboards-6%20live-orange?style=flat-square)](https://gbogeb.github.io/ABACUS/)
+[![Tuple Validation](https://img.shields.io/badge/tuple--validation-passing-brightgreen?style=flat-square)](scripts/validate_tuple_metadata.py)
+[![Progress Tracker](https://img.shields.io/badge/progress--tracker-interactive-blueviolet?style=flat-square)](docs/progress_tracker.html)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** V2.3.0 (Active Development - 100% complete) ✅
-**Workspace:** Master_Input
-**Last Updated:** 2025-11-17
+**Current Version:** v4.4.0 — Release Published; Workflow Activation Pending  
+**Quality Score:** 92.1/100  
+**Last Updated:** 2026-05-18
+
+> A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
+
+### 🎉 v4.4.0 Released — [Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0) | [Announcement](ANNOUNCEMENT_v4.4.0.md) | [Final Status Dashboard](docs/final_status_v4.4.0.html)
+
+---
+
+## 🧭 12-CLUSTER PRIMARY NAVIGATION
+
+ABACUS is organized first by the canonical **12-CLUSTER contract**.
+
+| Cluster | Phase | Primary Responsibility | Entry Points |
+|---------|-------|------------------------|--------------|
+| C1-C2 | Phase 1 (Define) | Discovery and intake | `DMAIC_V3/phases/phase1_define.py` |
+| C3-C4 | Phase 2 (Measure) | Static metrics and baselines | `DMAIC_V3/phases/phase2_measure.py` |
+| C5-C6 | Phase 3-4 (Analyze/Improve) | Root-cause and implementation changes | `DMAIC_V3/phases/phase3_analyze.py`, `DMAIC_V3/phases/phase4_improve.py` |
+| C7-C8 | Phase 5-6 (Control/Knowledge) | Quality control and orchestration hub | `DMAIC_V3/phases/phase5_control.py`, `DMAIC_V3/phases/phase6_knowledge.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+| C9-C10 | Phase 7 (Action Tracking) | KEB/GBOGEB runtime operations | `DMAIC_V3/phases/phase7_action_tracking.py`, `local_mcp/knowledge_integration_v2.3.py` |
+| C11-C12 | Phase 8 (TODO Management + Temporal Monitoring) | Temporal hooks and task governance | `DMAIC_V3/phases/phase8_todo_management.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
+
+### Canonical Orchestrator
+
+- **Canonical path:** `DMAIC_V3/core/twelve_cluster_orchestrator.py`
+- **Compatibility wrapper:** `local_mcp/agent_orchestrator_v3.0.py`
+- **Temporal phase hooks:** emitted at phase start/end for phases 1-8 by the canonical orchestrator
+
+---
+
+## 📖 Documentation
+
+| Resource | Description |
+|----------|-------------|
+| 🌐 **[Documentation Site](https://gbogeb.github.io/ABACUS/)** | Full documentation with landing pages, dashboards, and guides |
+| 📋 **[Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)** | v4.4.0 changelog and release details |
+| 🏗️ **[12-Cluster Architecture](12_cluster_vision.md)** | Core architecture: 12 functional clusters across 4 tiers |
+| 🔧 **[Tool Ecosystem](tool_ecosystem_map.md)** | DOW/KEB/GBOGEB interconnections and tool catalog |
+| 📊 **[Analysis Dashboard](https://gbogeb.github.io/ABACUS/deep_analysis_dashboard.html)** | Interactive repository audit dashboard |
+| 📖 **[Handover Book](https://gbogeb.github.io/ABACUS/handover_book.html)** | 12-chapter comprehensive handover documentation |
+| 🖥️ **[Final Status Dashboard](docs/final_status_v4.4.0.html)** | v4.4.0 release dashboard with workflow staging status |
+| ⏱️ **[Timeout Guide](docs/TIMEOUT_HANDLING.md)** | KEB/GBOGEB timeout configuration |
+| 🏆 **[Completion Report](FINAL_COMPLETION_REPORT_v4.4.0.md)** | Final v4.4.0 completion report |
+| 🤝 **[Contributing](.github/CONTRIBUTING.md)** | How to contribute to ABACUS |
+
+### 12-Cluster Architecture Overview
+
+| Tier | Clusters | Purpose |
+|------|----------|---------|
+| **Analysis** | C1–C4 | Data ingestion, DMAIC phases, quality scoring |
+| **Documentation** | C5–C6 | Handover generation, knowledge management |
+| **Recursive** | C7–C8 | Self-improvement loops, orchestration hub |
+| **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
+
+---
+
+## 🧩 E6 Modules — Modular Enhancements
+
+The **E6 (Phase 6 — Knowledge)** module layer provides modular enhancements for knowledge management, recursive processing, and metadata-driven pipelines across the ABACUS system.
+
+| Module | Location | Status | Description |
+|--------|----------|--------|-------------|
+| **Phase 6 Knowledge Engine** | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Active | Temporal knowledge references, cross-phase learning integration |
+| **Temporal Metadata Engine** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | ✅ Active | Metadata timeline tracking, versioned state management |
+| **Handover Bridge** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | ✅ Active | Bridge between handover documents and execution state |
+| **Tuple Metadata Validator** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | ✅ Active | Validates tuple entries with required bridge keys and status |
+| **Session Tuple Analyzer** | [`abacus_v21_session_tuple_analyzer.py`](abacus_v21_session_tuple_analyzer.py) | ✅ Active | Analyzes session tuples for coverage and completeness |
+| **Knowledge Preservation** | [`abacus_v21_knowledge_preservation.py`](abacus_v21_knowledge_preservation.py) | ✅ Active | Ensures knowledge continuity across versions |
+| **Knowledge Integration** | [`local_mcp/knowledge_integration_v2.3.py`](local_mcp/knowledge_integration_v2.3.py) | ✅ Active | KEB/GBOGEB integration layer for v2.3+ |
+
+#### E6 Module Architecture
+
+```
+E6 Knowledge Layer
+├── phase6_knowledge.py          → Knowledge reference extraction & cross-phase linkage
+├── temporal_metadata_engine.py  → Temporal tracking of metadata state changes
+├── handover_bridge.py           → Document-to-execution handover pipeline
+├── tuple_metadata.py            → Tuple validation (status, source, downstream)
+└── knowledge_integration_v2.3.py → KEB ↔ GBOGEB bidirectional integration
+```
+
+> **Cross-links:** E6 modules feed into [CI/CD workflows](.github/workflows/), [tuple validation](scripts/validate_tuple_metadata.py), and the [interactive progress tracker](docs/progress_tracker.html).
+
+---
+
+## 🔧 HTML Export Tools
+
+HTML export tools generate interactive dashboards, handover visualizations, and status reports from repository data.
+
+| Tool | Location | Output | Description |
+|------|----------|--------|-------------|
+| **Docs HTML Generator** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py) | `docs/*.html` | Converts markdown documentation to styled HTML pages |
+| **Export Docs** | [`scripts/export_docs.py`](scripts/export_docs.py) | Various HTML | Exports documentation summaries for GitHub Pages deployment |
+| **Final Status Dashboard** | [`docs/final_status_v4.4.0.html`](docs/final_status_v4.4.0.html) | Static HTML | v4.4.0 release status with active workflow indicators |
+| **Deep Analysis Dashboard** | [`docs/deep_analysis_dashboard.html`](docs/deep_analysis_dashboard.html) | Interactive HTML | Repository audit with metrics and health scores |
+| **Handover Book** | [`docs/handover_book.html`](docs/handover_book.html) | Interactive HTML | 12-chapter handover documentation viewer |
+| **Progress Tracker** | [`docs/progress_tracker.html`](docs/progress_tracker.html) | Interactive HTML | **NEW** — Development stages, branch status, and milestones |
+| **DMAIC Metrics** | [`docs/dmaic-metrics.html`](docs/dmaic-metrics.html) | Interactive HTML | DMAIC phase metrics visualization |
+| **Repository Structure** | [`docs/repository_structure.html`](docs/repository_structure.html) | Static HTML | Visual repo structure overview |
+
+> **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](.github/workflows/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
+
+---
+
+## 🐍 Python Tools & Scripts
+
+Core Python tooling for CI/CD, validation, analysis, and automation.
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Validation** | [`validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py), [`validate_docs_links.py`](scripts/validate_docs_links.py), [`validate_dmaic_contract.py`](scripts/validate_dmaic_contract.py) | Schema validation, link checking, contract verification |
+| **CI/CD** | [`cicd_github_orchestrator.py`](cicd_github_orchestrator.py), [`run_cicd_roundtrip_test.py`](run_cicd_roundtrip_test.py), [`ci_monitor_local.py`](ci_monitor_local.py) | Pipeline orchestration, roundtrip testing, local monitoring |
+| **Deployment** | [`deploy_full_integration.py`](deploy_full_integration.py), [`run_comprehensive_deployment.py`](run_comprehensive_deployment.py), [`run_streamlined_deployment.py`](run_streamlined_deployment.py) | Full deployment, comprehensive checks, streamlined deploy |
+| **Analysis** | [`workflow_analyzer.py`](workflow_analyzer.py), [`refactoring_executor.py`](refactoring_executor.py), [`fast_metrics_collector.py`](fast_metrics_collector.py) | Workflow analysis, code refactoring, metrics collection |
+| **Handover** | [`scripts/handover_generator.py`](scripts/handover_generator.py), [`scripts/archive_handover.py`](scripts/archive_handover.py), [`scripts/build_handover_from_glob_yaml.py`](scripts/build_handover_from_glob_yaml.py) | Generate, archive, and build handover packages |
+| **Code Health** | [`scripts/code_health_check.py`](scripts/code_health_check.py), [`scripts/cold_start_doctor.py`](scripts/cold_start_doctor.py), [`scripts/env_doctor.py`](scripts/env_doctor.py) | Code health audit, environment diagnostics |
+| **Documentation** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py), [`scripts/export_docs.py`](scripts/export_docs.py), [`scripts/normalize_markdown.py`](scripts/normalize_markdown.py) | HTML generation, doc export, markdown normalization |
+
+> **Cross-links:** Python tools are invoked by [GitHub Actions workflows](.github/workflows/), validated via [CI pipelines](.github/workflows/ci.yml), and their outputs feed into the [progress tracker](docs/progress_tracker.html) and [bridges document](docs/BRIDGES_AND_CONNECTIONS.md).
+
+---
+
+## 🌉 Bridges & Connections
+
+Explicit links between validated tuples, handoff logs, and metadata workflows. See the full [Bridges & Connections](docs/BRIDGES_AND_CONNECTIONS.md) document for details.
+
+| Bridge | Source | Target | Status |
+|--------|--------|--------|--------|
+| **Tuple → Handoff** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | [`deepagent-handover-package/`](deepagent-handover-package/) | ✅ Connected |
+| **Handoff → CI** | [`scripts/validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py) | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | ✅ Connected |
+| **Metadata → Knowledge** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Connected |
+| **Handover → Execution** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | [`local_mcp/agent_orchestrator_v3.0.py`](local_mcp/agent_orchestrator_v3.0.py) | ✅ Connected |
+| **CI → Dashboard** | [`.github/workflows/`](.github/workflows/) | [`docs/progress_tracker.html`](docs/progress_tracker.html) | ✅ Connected |
+| **Tuple Tests → CI** | [`DMAIC_V3/tests/test_tuple_metadata_validation.py`](DMAIC_V3/tests/test_tuple_metadata_validation.py) | [`.github/workflows/smoke-test.yml`](.github/workflows/smoke-test.yml) | ✅ Connected |
+
+---
+
+## 📊 Development Status Snapshot
+
+| Module | Status | Last Updated | Notes |
+|--------|--------|-------------|-------|
+| E6 Knowledge Engine | ✅ Completed | 2026-05-18 | Temporal references, cross-phase learning |
+| HTML Export Pipeline | ✅ Completed | 2026-05-18 | 8 dashboards live on GitHub Pages |
+| Python Tool Suite | ✅ Completed | 2026-05-18 | 30+ scripts for CI/CD, validation, analysis |
+| Tuple Validation | ✅ Completed | 2026-05-18 | Schema checks, bridge key enforcement |
+| CI/CD Workflows | ✅ Completed | 2026-05-20 | 37 active in `.github/workflows/` |
+| Progress Tracker | ✅ Completed | 2026-05-18 | Interactive HTML visualization |
+| Bridges & Connections | ✅ Completed | 2026-05-18 | 6 documented bridges with validation |
+| Recursive Tuples | 🚧 In Progress | 2026-05-18 | Self-referencing tuple chains in progress |
+| Branch Protection | ⏳ Pending | — | Awaiting repository admin action |
+
+> **Interactive view:** See the full [Progress Tracker](docs/progress_tracker.html) for a visual timeline with milestones and branch details.
 
 ---
 
@@ -13,18 +176,20 @@
 A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. Built for the 12-cluster cryoplant analysis workflow.
 
 ### Current Status
-- **V2.2:** ✅ Infrastructure complete (orchestrator, KEB, MCP controller) - Archived
-- **V2.3:** ✅ 6/6 agents upgraded, orchestrator v3.0 BUILT, KEB/GBOGEB integrated ✅
-- **DOW Framework Sprint 6:** ✅ Enhanced metrics, P0 validation, CI/CD pipeline - 100% complete
-- **Next Milestone:** Production deployment + end-to-end testing
+- **v4.4.0:** ✅ Production release live (95% complete, quality score 92.5/100)
+- **V2.2:** ✅ Archived historical baseline
+- **V2.3:** ✅ Historical implementation milestone (superseded by v4.4.0)
+- **Workflows:** ✅ 37 active in `.github/workflows/`
+- **Next Milestones:** Branch protection and optional documentation polish
 
 ### Get Started Now
 1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
 2. **DMAIC V3 Handover:** [ABACUS_Handover_Book.md](DMAIC_V3/docs/handover/ABACUS_Handover_Book.md) (Complete reference) 📚
-3. **DOW Sprint 6:** [SPRINT_6_CANONICAL_INDEX.md](SPRINT_6_CANONICAL_INDEX.md) (Navigation guide) 🎯
-4. **Status:** [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md) (5 min)
-5. **Test:** `python local_mcp/agent_orchestrator_v3.0.py`
-6. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (10 min)
+3. **Status:** [Final Status Dashboard](docs/final_status_v4.4.0.html) + [TOTAL_PROGRESS_SUMMARY.md](TOTAL_PROGRESS_SUMMARY.md) (5 min)
+4. **Test:** `python local_mcp/agent_orchestrator_v3.0.py`
+5. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (Historical lineage) 📘
+
+> **Note:** The remaining V2.2/V2.3 sections below are preserved as historical lineage and handover context. Use the v4.4.0 links above for the current release state.
 
 ---
 
@@ -76,26 +241,11 @@ Master_Input/
 │   │   ├── V2.2_TODO_HANDOVER_CHATREADY.md
 │   │   └── V2.2_USER_GUIDE.md
 │   │
-│   └── v2.3_active/                   ← Current development ⭐
+│   └── v2.3_active/                   ← Historical development snapshot ⭐
 │       ├── V2.3_CANONICAL_STATUS.md              (Current status)
 │       ├── V2.3_EVOLUTION_PLAN_20251111.md       (Full roadmap)
 │       ├── V2.3_IMMEDIATE_ACTION_PLAN_20251111.md
 │       └── V2.3_PROGRESS_SUMMARY_20251111.md
-│
-├── SPRINT_6/                          ← DOW Framework Sprint 6 🎯
-│   ├── SPRINT_6_CANONICAL_INDEX.md              (Navigation guide) ⭐
-│   ├── SPRINT_6_FINAL_COMPLETION_REPORT.md      (Master record)
-│   ├── SPRINT_6_P0_VALIDATION_REPORT.md         (Component validation)
-│   ├── SPRINT_6_METRICS_INTEGRATION_REPORT.md   (Metrics architecture)
-│   ├── SPRINT_6_CICD_ITERATION_LOG.md           (CI/CD pipeline)
-│   ├── SPRINT_6_SUMMARY.md                      (Quick reference)
-│   ├── SPRINT_6_ARTIFACT_RECONCILIATION_MATRIX_v20251129.md (Audit trail)
-│   └── archive/sprint_6/historical/             (5 historical documents)
-│       ├── SPRINT_6_ACTION_TRACKER.md
-│       ├── SPRINT_6_INTEGRATION_MAPPING.md
-│       ├── SPRINT_6_READINESS_CHECKLIST.md
-│       ├── SPRINT_6_IMPLEMENTATION_SUMMARY.md
-│       └── SPRINT_6_SESSION_SUMMARY.md
 │
 ├── local_mcp/
 │   ├── agent_orchestrator_v3.0.py     ← Orchestrator v3.0 ✅
@@ -121,14 +271,16 @@ Master_Input/
 ├── code_index.json
 │
 ├── .github/workflows/
-│   └── cd.yml                         ← CI/CD pipeline (to be activated)
+│   └── ...                            ← 37 active workflows
+├── workflows-to-install/
+│   └── *.yml                          ← Archived activation bundle retained for traceability
 │
 └── [Legacy files in root - to be refactored]
 ```
 
 ---
 
-## 🎯 VERSION OVERVIEW
+## 🎯 VERSION OVERVIEW (Historical Lineage Snapshot)
 
 ### V2.2 (COMPLETE - ARCHIVED) ✅
 **Status:** 21/21 tasks (100%)  
@@ -149,85 +301,57 @@ Master_Input/
 - No DMAIC tracking
 - No CI/CD deployment
 
-### V2.3 (ACTIVE DEVELOPMENT) 🚧
-**Status:** 4/15 tasks (26.7%)  
+### V2.3 (Historical Development Snapshot + Current Verification) 📚
+**Status:** Historical snapshot was 4/15 tasks (26.7%); runtime and CI/CD checks below are now verified operational.  
 **Date:** Started 2025-11-11  
 **Docs:** `docs_versioned/v2.3_active/`
 
-**Progress:**
-- ✅ 4/6 agents upgraded (memory-optimized)
+**Progress (current verification):**
+- ✅ 6/6 agents upgraded (memory-optimized)
 - ✅ Task tracking system operational
 - ✅ Code index automation working
-- ✅ CI/CD pipeline created
-- 🚧 2 agents pending upgrade
-- ❌ Orchestrator v3.0 not built (critical blocker)
-- ❌ KEB/GBOGEB integration pending
+- ✅ CI/CD coverage active for core + integration paths (`v23-cicd.yml`, `gbogeb-abacus-integration-ci-cd.yml`, `bridge-ci.yml`, `federation-notebook.yml`)
+- ✅ Orchestrator v3.0 built and initializes successfully
+- ✅ KEB/GBOGEB integration active (`KEB Enabled: True`, `GBOGEB Enabled: True`)
 
-### DOW Framework Sprint 6 (COMPLETE) ✅
-**Status:** 100% complete - All objectives delivered
-**Date:** Completed 2025-11-29
-**Docs:** Sprint 6 canonical documents (5 active + 5 archived)
-
-**Delivered:**
-- ✅ Enhanced Metrics Collector (36+ phases tracked)
-- ✅ 5 P0 components validated and deployed
-- ✅ CI/CD pipeline with 5-step healing iteration
-- ✅ Integration tests (all passing, zero errors)
-- ✅ Comprehensive documentation suite
-- ✅ Zero-defect deployment readiness
-
-**Sprint 6 Documentation:**
-- **Quick Start:** [SPRINT_6_CANONICAL_INDEX.md](SPRINT_6_CANONICAL_INDEX.md) (Navigation guide) 🎯
-- **Complete Report:** [SPRINT_6_FINAL_COMPLETION_REPORT.md](SPRINT_6_FINAL_COMPLETION_REPORT.md) (Master record)
-- **Component Details:** [SPRINT_6_P0_VALIDATION_REPORT.md](SPRINT_6_P0_VALIDATION_REPORT.md)
-- **Metrics Architecture:** [SPRINT_6_METRICS_INTEGRATION_REPORT.md](SPRINT_6_METRICS_INTEGRATION_REPORT.md)
-- **CI/CD Pipeline:** [SPRINT_6_CICD_ITERATION_LOG.md](SPRINT_6_CICD_ITERATION_LOG.md)
-- **Archive:** `archive/sprint_6/historical/` (5 historical documents)
-
-**Next Actions:**
-1. Complete agent upgrades (2 remaining)
-2. Build orchestrator v3.0
-3. Integrate KEB/GBOGEB knowledge bases
-4. Activate CI/CD deployment
+**Next Actions (remaining):**
+1. Maintain green core + integration pipelines (`v23-cicd.yml`, bridge/federation/integration workflows)
+2. Continue end-to-end validation for broader DMAIC pipelines
+3. Keep status docs synchronized with live runtime/CI evidence
+>>>>>>> refs/remotes/origin/main
 
 ---
 
 ## 🔥 CRITICAL DOCUMENTS (READ THESE FIRST)
 
 ### 1. ⭐ MASTER_HANDOVER_INDEX.md
-**Location:** `docs_versioned/handover/MASTER_HANDOVER_INDEX.md`
-**Purpose:** One-page overview with links to all key documents
-**Time:** 5 minutes
+**Location:** `docs_versioned/handover/MASTER_HANDOVER_INDEX.md`  
+**Purpose:** One-page overview with links to all key documents  
+**Time:** 5 minutes  
 **Who:** Everyone - start here!
 
-### 2. 🎯 SPRINT_6_CANONICAL_INDEX.md
-**Location:** `SPRINT_6_CANONICAL_INDEX.md`
-**Purpose:** DOW Framework Sprint 6 navigation guide - "Which document do I need?"
-**Time:** 2 minutes (quick reference)
-**Who:** DOW Framework developers, Sprint 6 stakeholders
-
-### 3. COMPREHENSIVE_VERSION_ANALYSIS_20251111.md
-**Location:** `docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md`
-**Purpose:** Complete version alignment, gaps, action plan
-**Time:** 10 minutes
+### 2. COMPREHENSIVE_VERSION_ANALYSIS_20251111.md
+**Location:** `docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md`  
+**Purpose:** Complete version alignment, gaps, action plan  
+**Time:** 10 minutes  
 **Who:** Technical leads, project managers
 
-### 4. V2.3_CANONICAL_STATUS.md
-**Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`
-**Purpose:** Current development status (single source of truth)
-**Time:** 5 minutes
+### 3. V2.3_CANONICAL_STATUS.md
+**Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`  
+**Purpose:** Historical development status before the v4.4.0 release  
+**Time:** 5 minutes  
 **Who:** Developers, active contributors
 
-### 5. V2.2_FINAL_ARCHIVE_STATUS.md
-**Location:** `docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md`
-**Purpose:** V2.2 completion record and archival summary
-**Time:** 5 minutes
+### 4. V2.2_FINAL_ARCHIVE_STATUS.md
+**Location:** `docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md`  
+**Purpose:** V2.2 completion record and archival summary  
+**Time:** 5 minutes  
 **Who:** Historical reference, new team members
 
-### 6. V2.3_EVOLUTION_PLAN_20251111.md
-**Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`
-**Purpose:** Full roadmap with 15 tasks, 3 phases
-**Time:** 15 minutes
+### 5. V2.3_EVOLUTION_PLAN_20251111.md
+**Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`  
+**Purpose:** Historical roadmap used to reach the v4.4.0 release  
+**Time:** 15 minutes  
 **Who:** Project planning, long-term contributors
 
 ---
@@ -262,14 +386,14 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ---
 
-## ⚠️ CRITICAL GAPS & BLOCKERS
+## ⚠️ HISTORICAL GAPS & BLOCKERS (V2.3 ERA)
 
-### 🔴 Critical (Must Fix Immediately)
+### 🔴 Critical (Historical, now resolved in v4.4.0)
 1. **No V3.0 Orchestrator** - Cannot run V2.3 agents in production
 2. **Incomplete Agent Upgrades** - 2/6 agents still at v2.0/v2.1
 3. **No KEB/GBOGEB Integration** - Knowledge bases not connected
 
-### 🟡 High Priority (This Sprint)
+### 🟡 High Priority (Historical backlog)
 4. **Folder Structure Chaos** - 581 files in root, no version control
 5. **Recursive Hooks Not Ported** - V2.3 may lose V2.2 capabilities
 6. **No Deployment Active** - CI/CD exists but not deploying
@@ -290,7 +414,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - **Test Coverage:** 90% (19/21)
 - **Status:** ✅ 100% complete
 
-### V2.3 (Current - Active)
+### V2.3 (Historical Snapshot)
 - **Files:** 7 code + 3 docs (+ 4 handover)
 - **Code:** ~50K characters
 - **Docs:** 1,036 lines (+ handover)
@@ -306,21 +430,21 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ---
 
-## 🎬 IMMEDIATE ACTIONS
+## 🎬 HISTORICAL ACTION PLAN (V2.3 SNAPSHOT)
 
-### Today (1-2 hours)
+### Phase snapshot — day 1 (historical)
 - [ ] Review [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
 - [ ] Read [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md)
 - [ ] Run smoke test to validate environment
 - [ ] Identify next task from V2.3 action plan
 
-### This Week (6-8 hours)
-- [ ] Complete agent upgrades (2 remaining)
-- [ ] Build orchestrator v3.0
-- [ ] Integrate KEB/GBOGEB knowledge bases
+### Phase snapshot — week 1 (historical)
+- [x] Complete agent upgrades (2 remaining)
+- [x] Build orchestrator v3.0
+- [x] Integrate KEB/GBOGEB knowledge bases
 
-### Next Week (2-3 hours)
-- [ ] Activate CI/CD deployment
+### Phase snapshot — week 2 (historical)
+- [x] Activate CI/CD deployment
 - [ ] Generate dashboards
 - [ ] Complete folder refactoring
 
@@ -333,7 +457,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - **Agents:** `local_mcp/agents/` (V2.3 agents)
 - **Tools:** `tools_v2.3/` (task tracker, code index, handover)
 - **Tracking:** `tracking_v2.3/tasks/` (task database)
-- **CI/CD:** `.github/workflows/cd.yml` (pipeline config)
+- **CI/CD:** `.github/workflows/v23-cicd.yml` + integration/federation/bridge workflows
 
 ### Development Environment
 - **Python:** 3.8+
@@ -350,24 +474,35 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ## 🏆 SUCCESS CRITERIA
 
-### V2.3 Completion (Target: 100%)
+### V2.3 Completion (Historical target)
 - [ ] All 15 tasks complete
-- [ ] All 6 agents upgraded to v2.3
-- [ ] Orchestrator v3.0 operational
-- [ ] KEB/GBOGEB integrated
-- [ ] CI/CD deploying outputs
+- [x] All 6 agents upgraded to v2.3
+- [x] Orchestrator v3.0 operational
+- [x] KEB/GBOGEB integrated
+- [x] CI/CD deploying outputs
 - [ ] Folder structure refactored
 - [ ] End-to-end testing passed
 - [ ] Production ready
 
-### Current Progress: 26.7% ✅
-- ✅ 4/6 agents upgraded
+### Current Verified Progress (for previously blocked items)
+- ✅ 6/6 agents upgraded
 - ✅ Task tracker operational
 - ✅ Code index automated
 - ✅ Memory optimization complete
 - 🚧 Folder refactoring started
-- ❌ Orchestrator v3.0 pending
-- ❌ KEB/GBOGEB integration pending
+- ✅ Orchestrator v3.0 operational
+- ✅ KEB/GBOGEB integration operational
+
+### Current Validation Snapshot (2026-05-29)
+- ✅ 6/6 agents upgraded and loading
+- ✅ Orchestrator v3.0 operational
+- ✅ KEB/GBOGEB runtime integration active
+- ✅ CI/CD run evidence captured (successful run IDs and artifact retention links recorded)
+- ❌ Folder refactor completion pending
+- ❌ End-to-end deployment readiness pending
+- ❌ Production readiness pending
+
+See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, dependency sequence, and actionable tasks.
 
 ---
 
@@ -396,10 +531,10 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ## 🔄 VERSION CONTROL
 
-**Current Version:** V2.3.0  
-**Previous Version:** V2.2.0 (archived)  
-**Git Status:** main branch (OneDrive sync)  
-**Last Major Update:** 2025-11-11 (folder refactoring + handover docs)
+**Current Version:** v4.4.0  
+**Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
+**Git Status:** Release published; 37 workflows active, branch protection pending  
+**Last Major Update:** 2026-05-20 (workflow activation + post-merge status sync)
 
 ---
 
@@ -456,11 +591,11 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** 🚧 ACTIVE DEVELOPMENT  
-**Current Focus:** Agent upgrades (4/6 done) + Orchestrator v3.0 (critical)  
-**Next Milestone:** Complete V2.3 (target 100%)  
-**Last Updated:** 2025-11-11
+**Project Status:** ✅ v4.4.0 released / ✅ workflow activation complete  
+**Current Focus:** Apply branch protection and roll out the cleanup toolkit to sister repos  
+**Next Milestone:** Sustain 95%+ quality with the active workflow set and complete branch protection
+**Last Updated:** 2026-05-20
 
 ---
 
-*Welcome to Master_Input! This is a living project under active development. Start with the Quick Start section above and explore the documentation structure. Happy coding!*
+*Welcome to ABACUS. Start with the Quick Start section above for the current v4.4.0 release state, then use the historical sections below for lineage and handover context.*
