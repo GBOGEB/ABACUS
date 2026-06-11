@@ -1,4 +1,4 @@
-name: Security Scan — Bandit + Ruff + OSV
+name: Security Scan — Bandit + Ruff + OSV + Semgrep
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 7 * * 1'   # weekly Monday 07:00 UTC
+    - cron: '0 6 * * 1'   # weekly Monday 06:00 UTC (dashboard runs at 08:00)
 
 permissions:
   contents: read
@@ -86,3 +86,33 @@ jobs:
         with:
           sarif_file: osv-results.sarif
           category: osv-scanner
+
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        # Rulesets governed by .github/security/security.toml [semgrep]
+        run: |
+          semgrep ci \
+            --config p/python \
+            --config p/owasp-top-ten \
+            --config p/secrets \
+            --exclude "*_corrupted.py" \
+            --exclude "DMAIC_V3_OUTPUT" \
+            --exclude "BACKUPS" \
+            --sarif \
+            --output semgrep-results.sarif || true
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload Semgrep SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep-results.sarif
+          category: semgrep

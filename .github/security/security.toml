@@ -1,7 +1,9 @@
 # =============================================================================
 # ABACUS Security Governance — Single Source of Truth
-# All scanners (CodeQL, Bandit, Ruff, OSV) read from this file.
+# Tools: CodeQL · Bandit · Ruff · OSV Scanner · Semgrep
 # Topology: agents → orchestrators → core → integrations
+# Dashboard: .github/security/dashboard.md  (auto-generated, do not edit)
+# Telemetry:  .github/security/alerts.yaml  (auto-generated, do not edit)
 # =============================================================================
 
 [project]
@@ -101,6 +103,49 @@ lock_files = [
   "pyproject.toml",
 ]
 severity_threshold = "MEDIUM"  # block on MEDIUM+
+
+# =============================================================================
+# SEMGREP
+# =============================================================================
+[semgrep]
+# Config sourced from Semgrep registry — python.lang.security.*
+# Results upload as SARIF to GitHub Security tab (category: semgrep)
+rulesets = [
+  "p/python",
+  "p/owasp-top-ten",
+  "p/secrets",
+]
+exclude = [
+  "*_corrupted.py",
+  "DMAIC_V3_OUTPUT/**",
+  "BACKUPS/**",
+]
+
+# =============================================================================
+# ACTIVE TOOLS  (used by dashboard generator to label sources)
+# =============================================================================
+[tools]
+active = ["CodeQL", "Bandit", "Semgrep", "OSV-Scanner"]
+
+  [tools.CodeQL]
+  sarif_category = "codeql"
+  trigger        = "push+schedule"
+  scope          = "SAST — logic, injection, path traversal"
+
+  [tools.Bandit]
+  sarif_category = "bandit"
+  trigger        = "push+schedule"
+  scope          = "SAST — Python-specific (B-series rules)"
+
+  [tools.Semgrep]
+  sarif_category = "semgrep"
+  trigger        = "push+PR"
+  scope          = "SAST — logic patterns + OWASP top-10 + secrets"
+
+  [tools.OSV-Scanner]
+  sarif_category = "osv-scanner"
+  trigger        = "push+schedule"
+  scope          = "SCA — dependency CVE matching"
 
 # =============================================================================
 # REX ALERT TAXONOMY  (Return of Experience)

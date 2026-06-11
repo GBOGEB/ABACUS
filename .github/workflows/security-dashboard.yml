@@ -1,0 +1,55 @@
+name: Security Dashboard — REX Telemetry
+
+# Runs after any scanner finishes, or on schedule.
+# Fetches ALL code-scanning alerts (CodeQL, Bandit, OSV, Semgrep),
+# groups them by REX category, and commits dashboard.md + alerts.yaml
+# to .github/security/.
+
+on:
+  workflow_run:
+    workflows:
+      - "DELTA_1 CodeQL"
+      - "Security Scan — Bandit + Ruff + OSV"
+      - "Semgrep"
+    types: [completed]
+  schedule:
+    - cron: '0 8 * * 1'   # Monday 08:00 UTC (after scanners at 06:00/07:00)
+  workflow_dispatch:       # manual trigger from Actions tab
+
+permissions:
+  contents: write          # to commit dashboard files
+  security-events: read    # to read code-scanning alerts
+
+jobs:
+  build-dashboard:
+    name: Build Security Dashboard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Generate dashboard
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO:  ${{ github.repository }}
+        run: python .github/scripts/security_dashboard.py
+
+      - name: Commit dashboard if changed
+        run: |
+          git config user.name  "ABACUS Security Bot"
+          git config user.email "abacus-security@noreply"
+
+          git add .github/security/dashboard.md .github/security/alerts.yaml
+
+          if git diff --cached --quiet; then
+            echo "No changes to dashboard — skipping commit"
+          else
+            git commit -m "security(dashboard): auto-update REX telemetry [skip ci]"
+            git push
+          fi
