@@ -1,20 +1,20 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-06-12T01:56:29Z
+# generated: 2026-06-12T05:50:22Z
 
-generated_at:"2026-06-12T01:56:29Z"
+generated_at:"2026-06-12T05:50:22Z"
 repo:GBOGEB/ABACUS
-total_open:2415
+total_open:2408
 by_severity:
-  warning: 285
+  warning: 278
   error: 74
   note: 2056
 by_tool:
-  osv-scanner: 101
+  osv-scanner: 94
   CodeQL: 492
   Semgrep: 65
   Bandit: 1757
 by_rex_group:
-  OTHER: 600
+  OTHER: 593
   QUAL_DEAD_CODE: 250
   SEC_WEAK_HASH: 10
   SEC_SUBPROCESS: 92
@@ -693,12 +693,6 @@ groups:
       severity: warning
       file: "DMAIC_V3/requirements.txt"
       line: 1
-    - number: 677
-      tool: osv-scanner
-      rule_id: "CVE-2026-42308"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
-      line: 1
     - number: 664
       tool: osv-scanner
       rule_id: "CVE-2020-28493"
@@ -819,18 +813,6 @@ groups:
       severity: warning
       file: "DMAIC_V3/requirements.txt"
       line: 1
-    - number: 626
-      tool: osv-scanner
-      rule_id: "CVE-2026-42308"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
-      line: 1
-    - number: 625
-      tool: osv-scanner
-      rule_id: "CVE-2026-40192"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
-      line: 1
     - number: 624
       tool: osv-scanner
       rule_id: "CVE-2017-18342"
@@ -842,12 +824,6 @@ groups:
       rule_id: "CVE-2017-18342"
       severity: warning
       file: "requirements.txt"
-      line: 1
-    - number: 622
-      tool: osv-scanner
-      rule_id: "CVE-2026-42310"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
       line: 1
     - number: 621
       tool: osv-scanner
@@ -866,12 +842,6 @@ groups:
       rule_id: "CVE-2024-56326"
       severity: warning
       file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 618
-      tool: osv-scanner
-      rule_id: "CVE-2026-42311"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
       line: 1
     - number: 617
       tool: osv-scanner
@@ -1089,12 +1059,6 @@ groups:
       severity: warning
       file: "DMAIC_V3/requirements.txt"
       line: 1
-    - number: 579
-      tool: osv-scanner
-      rule_id: "CVE-2026-25990"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
-      line: 1
     - number: 578
       tool: osv-scanner
       rule_id: "CVE-2019-6446"
@@ -1160,12 +1124,6 @@ groups:
       rule_id: "CVE-2025-71176"
       severity: warning
       file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 567
-      tool: osv-scanner
-      rule_id: "CVE-2026-42309"
-      severity: warning
-      file: "MINERVA_PID/requirements.txt"
       line: 1
     - number: 566
       tool: osv-scanner
