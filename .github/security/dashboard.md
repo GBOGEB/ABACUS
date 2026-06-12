@@ -1,13 +1,13 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-06-11T17:43:02Z · repo: `GBOGEB/ABACUS`  
-> **2415 open alerts** across 4 tools
+> Auto-generated 2026-06-12T05:50:55Z · repo: `GBOGEB/ABACUS`  
+> **2408 open alerts** across 4 tools
 
 ## Severity Overview
 
 | Severity | Count |
 |----------|------:|
 | Error | 74 |
-| Warning | 285 |
+| Warning | 278 |
 | Note | 2056 |
 
 ## Alerts by Tool
@@ -16,7 +16,7 @@
 |------|------------:|
 | Bandit | 1757 |
 | CodeQL | 492 |
-| osv-scanner | 101 |
+| osv-scanner | 94 |
 | Semgrep | 65 |
 
 ## REX Group Summary
@@ -30,7 +30,7 @@ _Groups are defined in [security.toml](security.toml)_
 | 🟠 SEC_TEMPFILE | MEDIUM | 4 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 1452 | Suppress / defer |
 | 🟡 QUAL_DEAD_CODE | LOW | 250 | Suppress / defer |
-| ⚪ OTHER | INFO | 600 | Suppress / defer |
+| ⚪ OTHER | INFO | 593 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
@@ -193,7 +193,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [506](https://github.com/GBOGEB/ABACUS/security/code-scanning/506) | CodeQL | `py/unused-local-variable` | `symbols.py` | 651 | note |
 | … | _220 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (600 alerts)
+### ⚪ OTHER (593 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -227,7 +227,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2493](https://github.com/GBOGEB/ABACUS/security/code-scanning/2493) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `build_atlas_v6.py` | 96 | error |
 | [2492](https://github.com/GBOGEB/ABACUS/security/code-scanning/2492) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `segment_pid.py` | 228 | error |
 | [2491](https://github.com/GBOGEB/ABACUS/security/code-scanning/2491) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `svg_extract.py` | 195 | error |
-| … | _570 more — see alerts.yaml_ | | | | |
+| … | _563 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
@@ -240,4 +240,4 @@ _Groups are defined in [security.toml](security.toml)_
 | 5 | SEC_ASSERT | 1452 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 250 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-06-11T17:43:02Z_
+_Dashboard last updated: 2026-06-12T05:50:55Z_
