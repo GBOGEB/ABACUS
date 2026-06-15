@@ -36,14 +36,14 @@ jobs:
     
     - name: Upload Test Reports
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: test-reports
         path: TESTING_SUITE/05_TEST_REPORTS/
     
     - name: Upload Integration Reports
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: integration-reports
         path: demo_workspace/integration_report_*.json
