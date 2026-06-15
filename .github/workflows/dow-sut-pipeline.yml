@@ -85,7 +85,7 @@ jobs:
           "
       
       - name: Upload SUT Config
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sut-config
           path: sut_config.json
@@ -125,7 +125,7 @@ jobs:
             --iterations 1
       
       - name: Upload Phase Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: phase-${{ matrix.phase }}-results
           path: ${{ env.DOW_OUTPUT_DIR }}/*.json
@@ -164,7 +164,7 @@ jobs:
             --iterations ${ITERATIONS}
       
       - name: Upload Pipeline Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pipeline-results
           path: ${{ env.DOW_OUTPUT_DIR }}/*.json
@@ -200,7 +200,7 @@ jobs:
             --adr-ocd-discovery
       
       - name: Upload ADR/OCD Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: adr-ocd-discovery
           path: ${{ env.DOW_OUTPUT_DIR }}/adr_ocd_discovery_*.json
@@ -274,7 +274,7 @@ jobs:
           docker-compose down
       
       - name: Upload Deployment Logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-logs
           path: ABACUS-v032/*.log

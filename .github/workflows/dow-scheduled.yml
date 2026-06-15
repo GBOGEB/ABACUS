@@ -43,7 +43,7 @@ jobs:
           python DMAIC_V3/full_pipeline_orchestrator.py || echo "Pipeline execution completed"
 
       - name: Upload execution logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scheduled-execution-${{ github.run_id }}
           path: |
