@@ -1,9 +1,32 @@
 ssot_items:
   - id: SSOT-Q3
     name: Recovery System Philosophy
+    source: docs/Q3_Q4_Q5/COMPENDIUM.md#q3
+    owner: Tender Review Board
+    status: draft-review
+    linked_artifacts:
+      - docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md
+      - docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md
   - id: SSOT-Q4
     name: Line S Design Basis
+    source: docs/Q3_Q4_Q5/COMPENDIUM.md#q4
+    owner: Tender Review Board
+    status: draft-review
+    linked_artifacts:
+      - docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md
+      - docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md
   - id: SSOT-Q5
     name: Line W Design Basis
+    source: docs/Q3_Q4_Q5/COMPENDIUM.md#q5
+    owner: Tender Review Board
+    status: draft-review
+    linked_artifacts:
+      - docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md
+      - docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md
   - id: SSOT-CG
     name: Contractual Gap Register
+    source: ssot/contractual_gap_register.yaml
+    owner: Tender Review Board
+    status: draft-review
+    linked_artifacts:
+      - docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md

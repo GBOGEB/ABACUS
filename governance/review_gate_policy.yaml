@@ -1,9 +1,21 @@
 review_gates:
   gate_1:
     name: Technical Review
+    entry_criteria:
+      - SSOT links present for Q3/Q4/Q5.
+      - Technical gap resolution paths are defined.
   gate_2:
     name: Contract Review
+    entry_criteria:
+      - Contractual gaps have owners and review status.
+      - Official answers remain marked provisional until approval.
   gate_3:
     name: Procurement Review
+    entry_criteria:
+      - Critical pressure-protection gaps are dispositioned.
+      - Tender package artifacts are complete.
   gate_4:
     name: Publish Approval
+    entry_criteria:
+      - Management review is complete.
+      - Publication flags are explicitly set in the MAIN QA register.
