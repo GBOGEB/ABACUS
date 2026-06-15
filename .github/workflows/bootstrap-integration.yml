@@ -85,7 +85,7 @@ jobs:
       
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bootstrap-test-reports
           path: ${{ env.REPORTS_DIR }}
@@ -128,7 +128,7 @@ jobs:
       
       - name: Upload Integration Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: integration-test-reports
           path: ${{ env.REPORTS_DIR }}
@@ -178,7 +178,7 @@ jobs:
       
       - name: Upload DMAIC Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-comprehensive-reports
           path: |
