@@ -82,6 +82,15 @@ run python3 src/abacus_svg_pid/render_collage.py
 # ---------------------------------------------------------------------------
 run python3 -m abacus_svg_pid.build_viewer
 
+# ---------------------------------------------------------------------------
+# 7. W009 — Commissioning: final v1.0 canonical register + sign-off record.
+#    Consolidates W005 reconciliation + W006 cross-map + reviewer-confirmed
+#    seeds (configs/known_seeds.json). Reviewer triage is promoted via:
+#      python3 -m abacus_svg_pid.ingest_triage triage_decisions.json
+#    then re-run build_w006_crossmap before this step to apply the seeds.
+# ---------------------------------------------------------------------------
+run python3 -m abacus_svg_pid.build_w009_release
+
 echo ""
 echo "=========================================================================="
 echo " Regeneration complete. Derived outputs written to:"
