@@ -1,13 +1,73 @@
 contractual_gaps:
   - id: CG-01
     title: Recovery buffering philosophy undefined
+    related_question: Q3
+    ssot_id: SSOT-Q3
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Clarify whether a gas balloon is prescribed or equivalent buffering solutions are acceptable.
+    review_gate: Contract Review
   - id: CG-02
     title: Purification sizing basis undefined
+    related_question: Q3
+    ssot_id: SSOT-Q3
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Define contamination sources and abnormal/transient purification scenarios.
+    review_gate: Technical Review
   - id: CG-03
     title: Warm-up responsibility boundary undefined
+    related_question: Q4
+    ssot_id: SSOT-Q4
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Confirm user and contractor boundaries for warm-up and thermal conditioning.
+    review_gate: Contract Review
   - id: CG-04
     title: Abnormal-event philosophy undefined
+    related_question: Q4
+    ssot_id: SSOT-Q4
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Define QPS expectations for uncontrolled reheating and insulation-loss events.
+    review_gate: Technical Review
   - id: CG-05
     title: Line S design pressure undefined
+    related_question: Q4
+    ssot_id: SSOT-Q4
+    severity: critical
+    status: open
+    owner: Tender Review Board
+    resolution_path: Provide Line S user-side design pressure and protection philosophy.
+    review_gate: Procurement Review
   - id: CG-06
     title: Line W design pressure undefined
+    related_question: Q5
+    ssot_id: SSOT-Q5
+    severity: critical
+    status: open
+    owner: Tender Review Board
+    resolution_path: Provide Line W user-side design pressure and protection philosophy.
+    review_gate: Procurement Review
+  - id: CG-07
+    title: Flow rejection philosophy undefined
+    related_question: Q4
+    ssot_id: SSOT-Q4
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Define destination and handling of flow rejected by QPS intake.
+    review_gate: Technical Review
+  - id: CG-08
+    title: AH112 scope and duty undefined
+    related_question: Q5
+    ssot_id: SSOT-Q5
+    severity: high
+    status: open
+    owner: Tender Review Board
+    resolution_path: Confirm AH112 contractor scope, function, and sizing parameters.
+    review_gate: Contract Review
