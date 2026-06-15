@@ -84,7 +84,7 @@ jobs:
           python -m pytest DMAIC_V3/tests/ -v --tb=short -q 2>/dev/null || echo "Tests ran"
 
       - name: Upload Execution Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-execution-reports
           path: |
@@ -133,7 +133,7 @@ jobs:
           tar -czf abacus-v032-artifacts.tar.gz deploy/
       
       - name: Upload to Release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: abacus-v032-release
           path: abacus-v032-artifacts.tar.gz
