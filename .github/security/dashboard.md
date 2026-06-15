@@ -1,6 +1,6 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-06-15T16:36:31Z · repo: `GBOGEB/ABACUS`  
-> **2408 open alerts** across 4 tools
+> Auto-generated 2026-06-15T18:21:02Z · repo: `GBOGEB/ABACUS`  
+> **2444 open alerts** across 4 tools
 
 ## Severity Overview
 
@@ -8,13 +8,13 @@
 |----------|------:|
 | Error | 74 |
 | Warning | 278 |
-| Note | 2056 |
+| Note | 2092 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
-| Bandit | 1757 |
+| Bandit | 1793 |
 | CodeQL | 492 |
 | osv-scanner | 94 |
 | Semgrep | 65 |
@@ -24,13 +24,13 @@ _Groups are defined in [security.toml](security.toml)_
 
 | REX Group | Risk | Count | Fix Priority |
 |-----------|------|------:|-------------|
-| 🔴 SEC_SUBPROCESS | HIGH | 92 | Fix now |
+| 🔴 SEC_SUBPROCESS | HIGH | 94 | Fix now |
 | 🔴 SEC_HARDCODED_SECRET | HIGH | 7 | Fix now |
 | 🟠 SEC_WEAK_HASH | MEDIUM | 10 | Fix next sprint |
 | 🟠 SEC_TEMPFILE | MEDIUM | 4 | Fix next sprint |
-| 🟡 SEC_ASSERT | LOW | 1452 | Suppress / defer |
+| 🟡 SEC_ASSERT | LOW | 1483 | Suppress / defer |
 | 🟡 QUAL_DEAD_CODE | LOW | 250 | Suppress / defer |
-| ⚪ OTHER | INFO | 593 | Suppress / defer |
+| ⚪ OTHER | INFO | 596 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
@@ -49,7 +49,7 @@ _Groups are defined in [security.toml](security.toml)_
 
 ## Alert Detail by REX Group
 
-### 🔴 SEC_SUBPROCESS (92 alerts)
+### 🔴 SEC_SUBPROCESS (94 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -62,6 +62,8 @@ _Groups are defined in [security.toml](security.toml)_
 | [2001](https://github.com/GBOGEB/ABACUS/security/code-scanning/2001) | Bandit | `B602` | `run_comprehensive_deployment.py` | 48 | error |
 | [1999](https://github.com/GBOGEB/ABACUS/security/code-scanning/1999) | Bandit | `B602` | `run_cicd_roundtrip_test.py` | 48 | error |
 | [1650](https://github.com/GBOGEB/ABACUS/security/code-scanning/1650) | Bandit | `B602` | `deploy_full_integration.py` | 65 | error |
+| [2579](https://github.com/GBOGEB/ABACUS/security/code-scanning/2579) | Bandit | `B603` | `golden_gate.py` | 44 | note |
+| [2577](https://github.com/GBOGEB/ABACUS/security/code-scanning/2577) | Bandit | `B603` | `golden_gate.py` | 36 | note |
 | [2269](https://github.com/GBOGEB/ABACUS/security/code-scanning/2269) | Bandit | `B603` | `test_github_roundtrip.py` | 117 | note |
 | [2266](https://github.com/GBOGEB/ABACUS/security/code-scanning/2266) | Bandit | `B603` | `test_github_roundtrip.py` | 68 | note |
 | [2263](https://github.com/GBOGEB/ABACUS/security/code-scanning/2263) | Bandit | `B603` | `test_github_roundtrip.py` | 31 | note |
@@ -81,9 +83,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2025](https://github.com/GBOGEB/ABACUS/security/code-scanning/2025) | Bandit | `B603` | `markdown_exec_runner.py` | 29 | note |
 | [2024](https://github.com/GBOGEB/ABACUS/security/code-scanning/2024) | Bandit | `B603` | `markdown_exec_runner.py` | 24 | note |
 | [2018](https://github.com/GBOGEB/ABACUS/security/code-scanning/2018) | Bandit | `B603` | `fetch_workflow_errors.py` | 21 | note |
-| [2014](https://github.com/GBOGEB/ABACUS/security/code-scanning/2014) | Bandit | `B603` | `deploy_v23_github.py` | 39 | note |
-| [2010](https://github.com/GBOGEB/ABACUS/security/code-scanning/2010) | Bandit | `B603` | `code_health_check.py` | 22 | note |
-| … | _62 more — see alerts.yaml_ | | | | |
+| … | _64 more — see alerts.yaml_ | | | | |
 
 ### 🔴 SEC_HARDCODED_SECRET (7 alerts)
 
@@ -121,41 +121,41 @@ _Groups are defined in [security.toml](security.toml)_
 | [1378](https://github.com/GBOGEB/ABACUS/security/code-scanning/1378) | Bandit | `B108` | `test_twelve_cluster_orchestrator.py` | 31 | warning |
 | [1373](https://github.com/GBOGEB/ABACUS/security/code-scanning/1373) | Bandit | `B108` | `test_twelve_cluster_orchestrator.py` | 21 | warning |
 
-### 🟡 SEC_ASSERT (1452 alerts)
+### 🟡 SEC_ASSERT (1483 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
-| [2451](https://github.com/GBOGEB/ABACUS/security/code-scanning/2451) | Bandit | `B101` | `test_sql_and_db.py` | 72 | note |
-| [2450](https://github.com/GBOGEB/ABACUS/security/code-scanning/2450) | Bandit | `B101` | `test_sql_and_db.py` | 52 | note |
-| [2449](https://github.com/GBOGEB/ABACUS/security/code-scanning/2449) | Bandit | `B101` | `test_sql_and_db.py` | 33 | note |
-| [2448](https://github.com/GBOGEB/ABACUS/security/code-scanning/2448) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 513 | note |
-| [2447](https://github.com/GBOGEB/ABACUS/security/code-scanning/2447) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 512 | note |
-| [2446](https://github.com/GBOGEB/ABACUS/security/code-scanning/2446) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 511 | note |
-| [2445](https://github.com/GBOGEB/ABACUS/security/code-scanning/2445) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 510 | note |
-| [2444](https://github.com/GBOGEB/ABACUS/security/code-scanning/2444) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 491 | note |
-| [2443](https://github.com/GBOGEB/ABACUS/security/code-scanning/2443) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 490 | note |
-| [2442](https://github.com/GBOGEB/ABACUS/security/code-scanning/2442) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 466 | note |
-| [2441](https://github.com/GBOGEB/ABACUS/security/code-scanning/2441) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 465 | note |
-| [2440](https://github.com/GBOGEB/ABACUS/security/code-scanning/2440) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 464 | note |
-| [2439](https://github.com/GBOGEB/ABACUS/security/code-scanning/2439) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 463 | note |
-| [2438](https://github.com/GBOGEB/ABACUS/security/code-scanning/2438) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 424 | note |
-| [2437](https://github.com/GBOGEB/ABACUS/security/code-scanning/2437) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 423 | note |
-| [2436](https://github.com/GBOGEB/ABACUS/security/code-scanning/2436) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 422 | note |
-| [2435](https://github.com/GBOGEB/ABACUS/security/code-scanning/2435) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 390 | note |
-| [2434](https://github.com/GBOGEB/ABACUS/security/code-scanning/2434) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 389 | note |
-| [2433](https://github.com/GBOGEB/ABACUS/security/code-scanning/2433) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 388 | note |
-| [2432](https://github.com/GBOGEB/ABACUS/security/code-scanning/2432) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 354 | note |
-| [2431](https://github.com/GBOGEB/ABACUS/security/code-scanning/2431) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 353 | note |
-| [2430](https://github.com/GBOGEB/ABACUS/security/code-scanning/2430) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 350 | note |
-| [2429](https://github.com/GBOGEB/ABACUS/security/code-scanning/2429) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 349 | note |
-| [2428](https://github.com/GBOGEB/ABACUS/security/code-scanning/2428) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 346 | note |
-| [2427](https://github.com/GBOGEB/ABACUS/security/code-scanning/2427) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 345 | note |
-| [2426](https://github.com/GBOGEB/ABACUS/security/code-scanning/2426) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 341 | note |
-| [2425](https://github.com/GBOGEB/ABACUS/security/code-scanning/2425) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 340 | note |
-| [2424](https://github.com/GBOGEB/ABACUS/security/code-scanning/2424) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 282 | note |
-| [2423](https://github.com/GBOGEB/ABACUS/security/code-scanning/2423) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 281 | note |
-| [2422](https://github.com/GBOGEB/ABACUS/security/code-scanning/2422) | Bandit | `B101` | `test_post_deployment_workspace_ingestion.py` | 280 | note |
-| … | _1422 more — see alerts.yaml_ | | | | |
+| [2610](https://github.com/GBOGEB/ABACUS/security/code-scanning/2610) | Bandit | `B101` | `test_review_package_validation.py` | 29 | note |
+| [2609](https://github.com/GBOGEB/ABACUS/security/code-scanning/2609) | Bandit | `B101` | `test_review_package_validation.py` | 23 | note |
+| [2608](https://github.com/GBOGEB/ABACUS/security/code-scanning/2608) | Bandit | `B101` | `test_review_package_validation.py` | 14 | note |
+| [2607](https://github.com/GBOGEB/ABACUS/security/code-scanning/2607) | Bandit | `B101` | `test_w009_commissioning.py` | 181 | note |
+| [2606](https://github.com/GBOGEB/ABACUS/security/code-scanning/2606) | Bandit | `B101` | `test_w009_commissioning.py` | 171 | note |
+| [2605](https://github.com/GBOGEB/ABACUS/security/code-scanning/2605) | Bandit | `B101` | `test_w009_commissioning.py` | 169 | note |
+| [2604](https://github.com/GBOGEB/ABACUS/security/code-scanning/2604) | Bandit | `B101` | `test_w009_commissioning.py` | 160 | note |
+| [2603](https://github.com/GBOGEB/ABACUS/security/code-scanning/2603) | Bandit | `B101` | `test_w009_commissioning.py` | 159 | note |
+| [2602](https://github.com/GBOGEB/ABACUS/security/code-scanning/2602) | Bandit | `B101` | `test_w009_commissioning.py` | 157 | note |
+| [2601](https://github.com/GBOGEB/ABACUS/security/code-scanning/2601) | Bandit | `B101` | `test_w009_commissioning.py` | 144 | note |
+| [2600](https://github.com/GBOGEB/ABACUS/security/code-scanning/2600) | Bandit | `B101` | `test_w009_commissioning.py` | 143 | note |
+| [2599](https://github.com/GBOGEB/ABACUS/security/code-scanning/2599) | Bandit | `B101` | `test_w009_commissioning.py` | 142 | note |
+| [2598](https://github.com/GBOGEB/ABACUS/security/code-scanning/2598) | Bandit | `B101` | `test_w009_commissioning.py` | 141 | note |
+| [2597](https://github.com/GBOGEB/ABACUS/security/code-scanning/2597) | Bandit | `B101` | `test_w009_commissioning.py` | 126 | note |
+| [2596](https://github.com/GBOGEB/ABACUS/security/code-scanning/2596) | Bandit | `B101` | `test_w009_commissioning.py` | 120 | note |
+| [2595](https://github.com/GBOGEB/ABACUS/security/code-scanning/2595) | Bandit | `B101` | `test_w009_commissioning.py` | 114 | note |
+| [2594](https://github.com/GBOGEB/ABACUS/security/code-scanning/2594) | Bandit | `B101` | `test_w009_commissioning.py` | 107 | note |
+| [2593](https://github.com/GBOGEB/ABACUS/security/code-scanning/2593) | Bandit | `B101` | `test_w009_commissioning.py` | 104 | note |
+| [2592](https://github.com/GBOGEB/ABACUS/security/code-scanning/2592) | Bandit | `B101` | `test_w009_commissioning.py` | 93 | note |
+| [2591](https://github.com/GBOGEB/ABACUS/security/code-scanning/2591) | Bandit | `B101` | `test_w009_commissioning.py` | 82 | note |
+| [2590](https://github.com/GBOGEB/ABACUS/security/code-scanning/2590) | Bandit | `B101` | `test_w009_commissioning.py` | 81 | note |
+| [2589](https://github.com/GBOGEB/ABACUS/security/code-scanning/2589) | Bandit | `B101` | `test_w009_commissioning.py` | 80 | note |
+| [2588](https://github.com/GBOGEB/ABACUS/security/code-scanning/2588) | Bandit | `B101` | `test_w009_commissioning.py` | 79 | note |
+| [2587](https://github.com/GBOGEB/ABACUS/security/code-scanning/2587) | Bandit | `B101` | `test_w009_commissioning.py` | 78 | note |
+| [2586](https://github.com/GBOGEB/ABACUS/security/code-scanning/2586) | Bandit | `B101` | `test_w009_commissioning.py` | 72 | note |
+| [2585](https://github.com/GBOGEB/ABACUS/security/code-scanning/2585) | Bandit | `B101` | `test_w009_commissioning.py` | 71 | note |
+| [2584](https://github.com/GBOGEB/ABACUS/security/code-scanning/2584) | Bandit | `B101` | `test_w009_commissioning.py` | 65 | note |
+| [2583](https://github.com/GBOGEB/ABACUS/security/code-scanning/2583) | Bandit | `B101` | `test_w009_commissioning.py` | 64 | note |
+| [2582](https://github.com/GBOGEB/ABACUS/security/code-scanning/2582) | Bandit | `B101` | `test_w009_commissioning.py` | 52 | note |
+| [2581](https://github.com/GBOGEB/ABACUS/security/code-scanning/2581) | Bandit | `B101` | `test_w009_commissioning.py` | 51 | note |
+| … | _1453 more — see alerts.yaml_ | | | | |
 
 ### 🟡 QUAL_DEAD_CODE (250 alerts)
 
@@ -193,7 +193,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [506](https://github.com/GBOGEB/ABACUS/security/code-scanning/506) | CodeQL | `py/unused-local-variable` | `symbols.py` | 651 | note |
 | … | _220 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (593 alerts)
+### ⚪ OTHER (596 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -227,17 +227,17 @@ _Groups are defined in [security.toml](security.toml)_
 | [2493](https://github.com/GBOGEB/ABACUS/security/code-scanning/2493) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `build_atlas_v6.py` | 96 | error |
 | [2492](https://github.com/GBOGEB/ABACUS/security/code-scanning/2492) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `segment_pid.py` | 228 | error |
 | [2491](https://github.com/GBOGEB/ABACUS/security/code-scanning/2491) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `svg_extract.py` | 195 | error |
-| … | _563 more — see alerts.yaml_ | | | | |
+| … | _566 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
 | Priority | REX Group | Est. Alerts | Action |
 |----------|-----------|------------:|--------|
-| 1 | SEC_SUBPROCESS | 92 live / ~40 est. | Add `# noqa: S603` — all calls use list-form args |
+| 1 | SEC_SUBPROCESS | 94 live / ~40 est. | Add `# noqa: S603` — all calls use list-form args |
 | 2 | SEC_PATH_TRAVERSAL | 0 live / ~20 est. | `pathlib.Path(p).resolve(); assert is_relative_to(BASE)` |
 | 3 | SEC_COMPILE_EXEC | 0 live / ~10 est. | Replace `compile+exec` with `ast.parse()` (syntax-only) |
 | 4 | SEC_TEMPFILE | 4 live / ~15 est. | Remove `delete=False` from `NamedTemporaryFile` |
-| 5 | SEC_ASSERT | 1452 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
+| 5 | SEC_ASSERT | 1483 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 250 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-06-15T16:36:31Z_
+_Dashboard last updated: 2026-06-15T18:21:02Z_
