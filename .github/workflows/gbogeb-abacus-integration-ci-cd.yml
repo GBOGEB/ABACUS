@@ -147,7 +147,7 @@ jobs:
       
       - name: Upload test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: integration-test-report-py${{ matrix.python-version }}
           path: |
@@ -192,7 +192,7 @@ jobs:
       
       - name: Upload DOW-only results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dow-only-results
           path: INTEGRATED_OUTPUT/**/*
@@ -241,7 +241,7 @@ jobs:
       
       - name: Upload unified mode results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unified-mode-results
           path: INTEGRATED_OUTPUT/**/*
@@ -411,7 +411,7 @@ jobs:
       
       - name: Upload roundtrip report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: roundtrip-test-report
           path: |
@@ -485,7 +485,7 @@ jobs:
           tar -czf gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz *
       
       - name: Upload deployment package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: integration-deployment-package
           path: deployment/gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz
@@ -534,7 +534,7 @@ jobs:
           cat DEPLOYMENT_REPORT.md
       
       - name: Upload deployment report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-report
           path: DEPLOYMENT_REPORT.md
