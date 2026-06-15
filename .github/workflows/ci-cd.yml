@@ -151,7 +151,7 @@ jobs:
           --phase2-metadata "${{ steps.find_metadata.outputs.metadata_path }}"
     
     - name: Upload DOW reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: dow-reports-${{ github.run_number }}
         path: |
@@ -183,7 +183,7 @@ jobs:
       run: python test_aht_bridge_comprehensive.py
     
     - name: Upload learnings database
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: aht-learnings-${{ github.run_number }}
         path: test_aht_bridge_learnings.json
@@ -213,7 +213,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload security reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: security-reports
         path: |
@@ -245,7 +245,7 @@ jobs:
       run: python deploy.py --env staging
     
     - name: Upload deployment package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: staging-deployment-${{ github.run_number }}
         path: deployment_staging_*/**/*
@@ -283,7 +283,7 @@ jobs:
         git push origin "v$VERSION" || true
     
     - name: Upload deployment package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: production-deployment-${{ github.run_number }}
         path: deployment_production_*/**/*
@@ -318,7 +318,7 @@ jobs:
       run: pytest -m benchmark --benchmark-only --benchmark-json=benchmark-results.json
     
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: benchmark-results
         path: benchmark-results.json
