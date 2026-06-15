@@ -60,7 +60,7 @@ jobs:
           path: rich_padding/junit-*.xml
       
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Test Results Python ${{ matrix.python-version }}
