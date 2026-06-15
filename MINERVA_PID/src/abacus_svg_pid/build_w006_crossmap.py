@@ -141,7 +141,36 @@ LOCATION_KEYWORDS = [
 
 # Engineering-CONFIRMED design <-> as-drawn pairs. Intentionally empty until a
 # reviewer signs off (see honesty note). Format: {design_tag: asdrawn_tag}.
-KNOWN_SEEDS: dict[str, str] = {}
+#
+# As of W009 the seeds are sourced from a *reviewed* file on disk
+# (configs/known_seeds.json), produced by promoting the viewer's
+# triage_decisions.json via `python -m abacus_svg_pid.ingest_triage`. The file
+# is loaded at import time; if it is absent or empty the dict stays empty and
+# no HIGH-confidence pair is fabricated (honesty invariant preserved).
+KNOWN_SEEDS_FILE = os.path.join(CONFIGS_DIR, "known_seeds.json")
+
+
+def load_known_seeds(path: str = KNOWN_SEEDS_FILE) -> "dict[str, str]":
+    """Load engineering-confirmed {design_tag: asdrawn_tag} pairs from disk.
+
+    Returns an empty dict when the file is missing or malformed — the pipeline
+    must degrade gracefully to "no confirmed seeds" rather than crash, so a
+    fresh checkout (with no reviewer sign-off yet) still builds.
+    """
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            doc = json.load(fh)
+    except (json.JSONDecodeError, OSError):
+        return {}
+    seeds = doc.get("seeds", {}) if isinstance(doc, dict) else {}
+    # Keep only well-formed string->string entries.
+    return {str(k): str(v) for k, v in seeds.items()
+            if isinstance(k, str) and isinstance(v, str) and k and v}
+
+
+KNOWN_SEEDS: dict[str, str] = load_known_seeds()
 
 # Scoring weights. Calibrated so that the *unconfirmed structural inference*
 # (TYPE + circuit + parallel-numbering order) tops out at MEDIUM (0.75) — it is
@@ -612,6 +641,10 @@ def write_report(stats, mappings, unmapped, design, asdrawn, recon):
 # --------------------------------------------------------------------------- #
 def main():
     _ensure_dirs()
+    # Re-load reviewed seeds at run time so a freshly-ingested
+    # configs/known_seeds.json is honoured without re-importing the module.
+    global KNOWN_SEEDS
+    KNOWN_SEEDS = load_known_seeds()
     if not (os.path.exists(EXCEL_REGISTER) and os.path.exists(CATALOG_REGISTER)):
         raise SystemExit(
             "ERROR: W005 registers not found. Run build_w005 first (./make.sh)."
