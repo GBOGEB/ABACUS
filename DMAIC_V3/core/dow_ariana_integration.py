@@ -14,12 +14,12 @@ import json
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 
 from ..config import DMAICConfig
 from .state import StateManager
-from .test_system_bridge import TestSystemBridge, TestExecutionResult
+from .test_system_bridge import TestSystemBridge
 
 
 @dataclass
