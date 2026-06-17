@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -43,7 +43,7 @@ jobs:
           python DMAIC_V3/full_pipeline_orchestrator.py || echo "Pipeline execution completed"
 
       - name: Upload execution logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: scheduled-execution-${{ github.run_id }}
           path: |

@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -213,7 +213,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -265,7 +265,7 @@ jobs:
           fi
 
       - name: Upload DMAIC outputs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: |
@@ -285,12 +285,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Download DMAIC outputs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: .
@@ -319,7 +319,7 @@ jobs:
           python scripts/build_handover_from_glob_yaml.py || echo "Manifest ZIP completed"
 
       - name: Upload manifest bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-handover-manifest-${{ github.run_id }}
           path: |
@@ -332,7 +332,7 @@ jobs:
           python scripts/archive_handover.py --spec handover/GLOOB.yaml --name DMAIC_V3_3_HANDOVER_ALL || echo "Archives completed"
 
       - name: Upload universal archives
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-handover-archives-${{ github.run_id }}
           path: |
@@ -353,19 +353,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download manifest bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-handover-manifest-${{ github.run_id }}
           path: release-artifacts/
 
       - name: Download universal archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-handover-archives-${{ github.run_id }}
           path: release-artifacts/
 
       - name: Download DMAIC outputs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: release-artifacts/dmaic-outputs/

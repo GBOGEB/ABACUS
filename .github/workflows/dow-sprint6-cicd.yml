@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 0
       
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -140,7 +140,7 @@ jobs:
           cat baseline_state.json
       
       - name: Upload Baseline Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: baseline-state
           path: baseline_state.json
@@ -161,7 +161,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -233,7 +233,7 @@ jobs:
           echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
       
       - name: Upload Test Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: |
@@ -255,7 +255,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Download Test Results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           name: test-results
           path: ./test-results
@@ -309,7 +309,7 @@ jobs:
           echo "$RECOMMENDATIONS" > recommendations.json
       
       - name: Upload Analysis Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: analysis-results
           path: recommendations.json
@@ -327,7 +327,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -393,7 +393,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Download All Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           path: ./artifacts
       
@@ -521,7 +521,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -542,7 +542,7 @@ jobs:
 
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sprint6-test-reports
           path: TESTING_SUITE/05_TEST_REPORTS/
@@ -550,7 +550,7 @@ jobs:
 
       - name: Upload Integration Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sprint6-demo-reports
           path: demo_workspace/integration_report_*.json
