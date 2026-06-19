@@ -4,7 +4,7 @@ STATUS: DRAFT. merge_allowed = false. Do NOT distribute.
 
 BINDING RULES:
   1. Every number in this document is generated or sourced, not independently typed.
-  2. GATED quantities V_eff and P_limit remain unresolved.
+  2. GATED quantities V_eff, P_limit, P_initial, and recovery power remain unresolved.
   3. Until gated inputs are resolved, the answer is a criterion plus parametric bands.
   4. Section 4 is the centrepiece: required confirmations close the answer.
 -->
@@ -21,14 +21,14 @@ BINDING RULES:
 
 > What pressure build-up is allowed in Line S for recovery of 100-200 g/s, as given in RTM-261 and RTM-292? Is there a flow profile available to indicate how quickly the mass flow from Cryogenic Users will build up?
 
-## 2. Short answer: criterion, not a fixed number
+## 2. Short answer: allowable time, not a fixed pressure
 
-The allowable Line S build-up is not a fixed pressure. It is the margin between the initial Line S pressure and the most restrictive applicable limit, converted into an allowed response time for the recovery and HP-compressor path.
+The Applicant decision variable is the time available before the limiting pressure is reached:
 
 ```text
 Delta_P_allowed = P_limit - P_initial
 
-t_available = Delta_P_allowed / (dP/dt)
+t_available = Delta_P_allowed / dPdt
 
 PASS if:
   t_available >= t_HP_start
@@ -36,13 +36,22 @@ PASS if:
   and integrated helium loss <= 1 percent inventory per RTM-260
 ```
 
-Two controlling inputs, `P_limit` and `V_eff`, are not yet confirmed. Therefore the quantified answer remains parametric over the `V_eff` band and the criterion above governs.
+`P_limit`, `P_initial`, `V_eff`, and recovery-compressor power during LOOP are not yet confirmed. Therefore the quantified answer remains parametric.
+
+The generated headline output is:
+
+```text
+docs/qps_line_s_recovery/generated/t_available_grid.md
+docs/qps_line_s_recovery/generated/t_available_grid.csv
+```
+
+The grid leads with the conservative energy-bound column and keeps the isothermal value as an optimistic sanity ribbon.
 
 ## 3. Recovery regimes
 
 | Regime | Position | Gate |
 |---|---|---|
-| 100 g/s abnormal | Covered by 2 x 50 g/s recovery compressors | Both compressors must be powered and available during LOOP. |
+| 100 g/s abnormal | Covered by 2 x 50 g/s recovery compressors | Only if both compressors are powered and available during LOOP. |
 | 112 g/s pre-HP transient | Bounded pressure-buffer case | Governed by pressure margin, V_eff, and HP start timing. |
 | 200 g/s peak | Spike / excursion, not a sustained plateau | Credited only with HP path running or a proven short buffer excursion. |
 | Shield-maintained mitigation | Preferred lever where credible | Maintaining shield cooling delays release and reduces Line S load. |
@@ -51,32 +60,40 @@ Two controlling inputs, `P_limit` and `V_eff`, are not yet confirmed. Therefore 
 
 | ID | Item | Why it gates the answer | Status |
 |---|---|---|---|
-| V_EFF | Effective connected gas volume during the transient | Pressure rise is inversely proportional to volume. | OPEN_RFI |
-| P_LIMIT | Minimum of design, maximum operating, relief margin, compressor suction, and interface limits | No ceiling means no allowed pressure margin. | OPEN_RFI |
-| RECOVERY_POWER | Backup power status for 2 x 50 g/s recovery compressors during LOOP | If unavailable, recovery capacity is not 100 g/s during LOOP. | OPEN_RFI |
+| ASSUM-VEFF | Effective connected gas volume during the transient | Pressure rise is inversely proportional to volume. | UNRESOLVED |
+| ASSUM-PLIMIT | Minimum of design, maximum operating, relief margin, compressor suction, and interface limits | No ceiling means no allowed pressure margin. | OPEN_RFI |
+| ASSUM-RECOV-PWR | Backup power status for 2 x 50 g/s recovery compressors during LOOP | If unavailable, recovery capacity is not 100 g/s during LOOP. | BLOCKER |
 | HP_CAPACITY | HP-path acceptance flow at Line S suction | Determines whether the 200 g/s case closes to near-zero accumulation. | LOW_CONFIDENCE |
 | MDOT_PRE_HP | Basis for the 112 g/s pre-HP value | Governs the pre-HP transient. | LOW_CONFIDENCE |
 | MARGIN_1_44 | Pedigree of the 1.44 heat-load factor | Preserves corrected 6042 / 7250 / 8700 W lineage. | UNCONFIRMED |
 
 ## 5. Pressure-margin physics
 
-The review change is implemented: the governing first-pass model is an energy-balance / rigid-volume charging model, not only a fixed-temperature mass balance.
-
-The earlier isothermal ribbon remains as a sanity check:
+The current scenario matrix explicitly tags the energy column as:
 
 ```text
-dP/dt_isothermal = mdot_net R_He T / V_eff
+energy_source = gamma_x_ribbon_bound
 ```
 
-For the early charging limit, the energy-balance rate is:
+This means the reported energy value is the early-time adiabatic bound, calculated as gamma times the isothermal sanity ribbon. It is not yet a time-integrated energy curve.
+
+The isothermal sanity ribbon is:
 
 ```text
-dP/dt_energy ~= gamma x dP/dt_isothermal
+dPdt_isothermal = mdot_net R_He T / V_eff
 ```
 
-with helium gamma approximately 1.667. This means the earlier fixed-temperature number can under-predict early pressure rise. If `V_eff` is also overestimated, the combined under-prediction can be material.
+The early-time energy bound is:
 
-The heat-to-flow link is also separated:
+```text
+dPdt_energy_bound ~= gamma x dPdt_isothermal
+```
+
+with helium gamma approximately 1.667.
+
+The time-to-limit grid is a linearized estimate. It is acceptable for screening and Applicant RFI framing, but final closure still requires a time-integrated `P(t), T(t)` curve once `V_eff`, `P_limit`, inflow profile, and recovery-power state are resolved.
+
+The heat-to-flow link is separated:
 
 | Flow type | Meaning |
 |---|---|
@@ -91,20 +108,24 @@ uncertainty-only = true baseline x 1.2 = 8700 x 100 / 120
 D2.1/design point = 8700
 ```
 
-## 6. Scenario matrix
+## 6. Generated outputs
 
-The scenario matrix is generated by `models/qps_line_s/run_scenarios.py` and emitted to:
+The model runner emits:
 
 ```text
 docs/qps_line_s_recovery/generated/scenario_matrix.md
 docs/qps_line_s_recovery/generated/scenario_matrix.csv
+docs/qps_line_s_recovery/generated/t_available_grid.md
+docs/qps_line_s_recovery/generated/t_available_grid.csv
 ```
 
-Until `V_eff` is resolved, generated output shall include the parametric band:
+Until `V_eff` is resolved, generated output includes the parametric band:
 
 ```text
 V_eff in {9, 30, 120, 240} m3
 ```
+
+Until `P_limit` and `P_initial` are resolved, the t_available grid uses candidate placeholders only and shall not be presented as a final pressure allowance.
 
 ## 7. Flow-profile basis
 
@@ -131,7 +152,7 @@ Any case that requires relief opening is not a credited no-loss recovery case fo
 
 ## 9. Assumptions table
 
-The assumptions table is generated from `assumptions_register.yaml`. The release version shall show:
+The release version shall show values from `assumptions_register.yaml` only:
 
 ```text
 id | value | unit | status | source | gate
@@ -144,7 +165,7 @@ No gated value shall be converted into a final answer until marked resolved in t
 Constants currently used in the reduced model:
 
 ```text
-R_He = 2077.1 J/kg/K
+R_He = 2077.2 J/kg/K
 cp = 5193 J/kg/K
 cv = 3115.8 J/kg/K
 gamma = cp/cv ~= 1.667
@@ -155,7 +176,7 @@ Z ~= 1.00 to 1.02 for first-pass pressure range
 The legacy sanity ribbon:
 
 ```text
-dP/dt [bar/min] ~= 0.003116 x mdot_net [g/s]
+dPdt [bar/min] ~= 0.003116 x mdot_net [g/s]
 ```
 
 holds only for the isothermal check at `V_eff = 120 m3` and `T = 300 K`. It is not the final design answer.
@@ -166,6 +187,7 @@ Traceable to:
 
 ```text
 S_line_raw.txt
+REVIEW_AND_CONVERGENCE_PLAN.md
 critical_lineage_scan.md
 assumptions_register.yaml
 index.json
