@@ -2,7 +2,10 @@ import csv
 import json
 from pathlib import Path
 
-from line_s_buffer import GAMMA, dpdt_bar_per_min, time_to_pressure_limit_min
+try:
+    from .line_s_buffer import GAMMA, dpdt_bar_per_min, time_to_pressure_limit_min
+except ImportError:  # script execution from models/qps_line_s
+    from line_s_buffer import GAMMA, dpdt_bar_per_min, time_to_pressure_limit_min
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -70,7 +73,10 @@ def write_outputs(rows):
 def main():
     rows = make_rows(load_config())
     write_outputs(rows)
-    from t_available_grid import main as build_t_available_grid
+    try:
+        from .t_available_grid import main as build_t_available_grid
+    except ImportError:  # script execution from models/qps_line_s
+        from t_available_grid import main as build_t_available_grid
 
     build_t_available_grid()
 
