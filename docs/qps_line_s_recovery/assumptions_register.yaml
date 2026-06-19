@@ -1,0 +1,91 @@
+meta:
+  package: qps_line_s_recovery
+  branch: w001
+  pr: 582
+  lineage_anchor: S_line_raw.txt
+  status: draft
+  merge_allowed: false
+
+assumptions:
+  - id: V_EFF
+    description: Effective connected Line S gas volume during transient
+    value: null
+    unit: m3
+    status: OPEN_RFI
+    gate: true
+    source: Applicant confirmation required
+    note: Generated scenarios use parametric band 9, 30, 120, 240 m3 until resolved.
+
+  - id: P_LIMIT
+    description: Most restrictive Line S pressure limit
+    value: null
+    unit: bar
+    status: OPEN_RFI
+    gate: true
+    source: Applicant confirmation required
+    note: Minimum of design, maximum operating, relief margin, compressor suction, and interface limits.
+
+  - id: T_GAS
+    description: Effective gas temperature for first-pass pressure-rise sensitivity
+    value: 300
+    unit: K
+    status: ASSUMED
+    gate: false
+    source: reduced model baseline
+
+  - id: R_HE
+    description: Helium specific gas constant
+    value: 2077.1
+    unit: J/kg/K
+    status: ENGINEERING_CONSTANT
+    gate: false
+    source: reduced model baseline
+
+  - id: GAMMA_HE
+    description: Helium heat-capacity ratio used for early charging energy-balance factor
+    value: 1.667
+    unit: dimensionless
+    status: ENGINEERING_CONSTANT
+    gate: false
+    source: cp/cv model constant
+
+  - id: RECOVERY_CAPACITY_NOMINAL
+    description: Nominal recovery capacity with two 50 g/s recovery compressors
+    value: 100
+    unit: g/s
+    status: CONDITIONAL
+    gate: true
+    source: user-provided recovery compressor basis
+    note: Requires confirmation that both compressors are powered and available during LOOP.
+
+  - id: MDOT_PRE_HP
+    description: Pre-HP maximum inflow value used for transient case
+    value: 112
+    unit: g/s
+    status: LOW_CONFIDENCE
+    gate: true
+    source: user-provided basis; Applicant confirmation required
+
+  - id: DESIGN_HEAT_LOAD
+    description: D2.1 design heat-load point
+    value: 8700
+    unit: W
+    status: ACTIVE
+    gate: false
+    source: D2.1 / user correction
+
+  - id: TRUE_BASELINE_HEAT_LOAD
+    description: True nominal baseline heat load inferred from design point divided by 1.44
+    value: 6041.6667
+    unit: W
+    status: DERIVED
+    gate: false
+    source: 8700 / 1.44
+
+  - id: UNCERTAINTY_ONLY_HEAT_LOAD
+    description: True baseline multiplied by 1.2
+    value: 7250
+    unit: W
+    status: DERIVED
+    gate: false
+    source: 8700 * 100 / 120
