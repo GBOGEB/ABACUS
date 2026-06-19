@@ -1,25 +1,25 @@
-V_eff_m3,case,m_in_g_s,m_rec_g_s,m_HP_g_s,m_net_g_s,dPdt_ribbon_bar_min,dPdt_energy_est_bar_min,t_plus_1bar_ribbon_min,position
-9,A_balanced_abnormal,100,100,0,0,0.0,0.0,,Covered if 2x50 g/s available
-9,B_pre_HP_transient,112,100,0,12,0.49852799999999997,0.83088,2.005905385454779,Bounded buffer; HP start timing governs
-9,C_intermediate,150,100,0,50,2.0772,3.462,0.48141729250914694,Requires pressure margin or additional recovery
-9,D_peak_without_HP,200,100,0,100,4.1544,6.924,0.24070864625457347,Not sustained unless margin and duration proven
-9,E_peak_with_HP,200,100,100,0,0.0,0.0,,Creditable if HP path running
-9,F_shield_mitigated,30,50,0,-20,0.0,0.0,,Recovery exceeds mitigated release
-30,A_balanced_abnormal,100,100,0,0,0.0,0.0,,Covered if 2x50 g/s available
-30,B_pre_HP_transient,112,100,0,12,0.14955839999999998,0.24926399999999999,6.686351284849263,Bounded buffer; HP start timing governs
-30,C_intermediate,150,100,0,50,0.6231599999999999,1.0386,1.6047243083638232,Requires pressure margin or additional recovery
-30,D_peak_without_HP,200,100,0,100,1.2463199999999999,2.0772,0.8023621541819116,Not sustained unless margin and duration proven
-30,E_peak_with_HP,200,100,100,0,0.0,0.0,,Creditable if HP path running
-30,F_shield_mitigated,30,50,0,-20,0.0,0.0,,Recovery exceeds mitigated release
-120,A_balanced_abnormal,100,100,0,0,0.0,0.0,,Covered if 2x50 g/s available
-120,B_pre_HP_transient,112,100,0,12,0.037389599999999995,0.062315999999999996,26.745405139397054,Bounded buffer; HP start timing governs
-120,C_intermediate,150,100,0,50,0.15578999999999998,0.25965,6.418897233455293,Requires pressure margin or additional recovery
-120,D_peak_without_HP,200,100,0,100,0.31157999999999997,0.5193,3.2094486167276464,Not sustained unless margin and duration proven
-120,E_peak_with_HP,200,100,100,0,0.0,0.0,,Creditable if HP path running
-120,F_shield_mitigated,30,50,0,-20,0.0,0.0,,Recovery exceeds mitigated release
-240,A_balanced_abnormal,100,100,0,0,0.0,0.0,,Covered if 2x50 g/s available
-240,B_pre_HP_transient,112,100,0,12,0.018694799999999998,0.031157999999999998,53.49081027879411,Bounded buffer; HP start timing governs
-240,C_intermediate,150,100,0,50,0.07789499999999999,0.129825,12.837794466910585,Requires pressure margin or additional recovery
-240,D_peak_without_HP,200,100,0,100,0.15578999999999998,0.25965,6.418897233455293,Not sustained unless margin and duration proven
-240,E_peak_with_HP,200,100,100,0,0.0,0.0,,Creditable if HP path running
-240,F_shield_mitigated,30,50,0,-20,0.0,0.0,,Recovery exceeds mitigated release
+V_eff_m3,case,m_in_g_s,m_rec_g_s,m_HP_g_s,m_net_g_s,dPdt_isothermal_bar_min,dPdt_energy_bar_min,energy_source,t_plus_1bar_isothermal_min,position
+9,A_balanced_abnormal,100,100,0,0,0.0,0.0,gamma_x_ribbon_bound,,Covered if 2x50 g/s available
+9,B_pre_HP_transient,112,100,0,12,0.49852799999999997,0.83088,gamma_x_ribbon_bound,2.005905385454779,Bounded buffer; HP start timing governs
+9,C_intermediate,150,100,0,50,2.0772,3.4619999999999997,gamma_x_ribbon_bound,0.48141729250914694,Requires pressure margin or additional recovery
+9,D_peak_without_HP,200,100,0,100,4.1544,6.9239999999999995,gamma_x_ribbon_bound,0.24070864625457347,Not sustained unless margin and duration proven
+9,E_peak_with_HP,200,100,100,0,0.0,0.0,gamma_x_ribbon_bound,,Creditable if HP path running
+9,F_shield_mitigated,30,50,0,-20,0.0,0.0,gamma_x_ribbon_bound,,Recovery exceeds mitigated release
+30,A_balanced_abnormal,100,100,0,0,0.0,0.0,gamma_x_ribbon_bound,,Covered if 2x50 g/s available
+30,B_pre_HP_transient,112,100,0,12,0.14955839999999998,0.24926399999999999,gamma_x_ribbon_bound,6.686351284849263,Bounded buffer; HP start timing governs
+30,C_intermediate,150,100,0,50,0.6231599999999999,1.0386,gamma_x_ribbon_bound,1.6047243083638232,Requires pressure margin or additional recovery
+30,D_peak_without_HP,200,100,0,100,1.2463199999999999,2.0772,gamma_x_ribbon_bound,0.8023621541819116,Not sustained unless margin and duration proven
+30,E_peak_with_HP,200,100,100,0,0.0,0.0,gamma_x_ribbon_bound,,Creditable if HP path running
+30,F_shield_mitigated,30,50,0,-20,0.0,0.0,gamma_x_ribbon_bound,,Recovery exceeds mitigated release
+120,A_balanced_abnormal,100,100,0,0,0.0,0.0,gamma_x_ribbon_bound,,Covered if 2x50 g/s available
+120,B_pre_HP_transient,112,100,0,12,0.037389599999999995,0.062315999999999996,gamma_x_ribbon_bound,26.745405139397054,Bounded buffer; HP start timing governs
+120,C_intermediate,150,100,0,50,0.15578999999999998,0.25965,gamma_x_ribbon_bound,6.418897233455293,Requires pressure margin or additional recovery
+120,D_peak_without_HP,200,100,0,100,0.31157999999999997,0.5193,gamma_x_ribbon_bound,3.2094486167276464,Not sustained unless margin and duration proven
+120,E_peak_with_HP,200,100,100,0,0.0,0.0,gamma_x_ribbon_bound,,Creditable if HP path running
+120,F_shield_mitigated,30,50,0,-20,0.0,0.0,gamma_x_ribbon_bound,,Recovery exceeds mitigated release
+240,A_balanced_abnormal,100,100,0,0,0.0,0.0,gamma_x_ribbon_bound,,Covered if 2x50 g/s available
+240,B_pre_HP_transient,112,100,0,12,0.018694799999999998,0.031157999999999998,gamma_x_ribbon_bound,53.49081027879411,Bounded buffer; HP start timing governs
+240,C_intermediate,150,100,0,50,0.07789499999999999,0.129825,gamma_x_ribbon_bound,12.837794466910585,Requires pressure margin or additional recovery
+240,D_peak_without_HP,200,100,0,100,0.15578999999999998,0.25965,gamma_x_ribbon_bound,6.418897233455293,Not sustained unless margin and duration proven
+240,E_peak_with_HP,200,100,100,0,0.0,0.0,gamma_x_ribbon_bound,,Creditable if HP path running
+240,F_shield_mitigated,30,50,0,-20,0.0,0.0,gamma_x_ribbon_bound,,Recovery exceeds mitigated release
