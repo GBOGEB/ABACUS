@@ -1,7 +1,7 @@
 # QPS Line S Recovery - Assumptions and Provenance Register
 # Wave 0 spine. Every published number must trace to a row here.
-# status: one of {RESOLVED, UNRESOLVED, OPEN_RFI, CALIBRATION_PENDING}
-# Nothing downstream may use a default for an UNRESOLVED quantity.
+# status: one of {RESOLVED, UNRESOLVED, OPEN_RFI, CALIBRATION_PENDING, BLOCKER}
+# Nothing downstream may use a default for an UNRESOLVED or BLOCKER quantity.
 
 meta:
   build: qps_line_s_recovery
@@ -9,6 +9,7 @@ meta:
   pr: GBOGEB/ABACUS#582
   branch: w001
   merge_allowed: false
+  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR]
   lineage_anchor:
     chatgpt_share_url: TODO_PASTE_EXPORT_URL
     first_prompt: "120 m3 vessel, 1 to 15 barg He, 300 K: mass plus fill-rate sensitivity"
@@ -24,11 +25,12 @@ meta:
       - Agent A issue 583, Agent B issue 584, CODEX helper issue 237
 
 blockers:
-  - id: V_EFF
+  - id: ASSUM-VEFF
     quantity: effective connected gas volume during the transient
     value: null
     unit: m3
     status: UNRESOLVED
+    gate: true
     confidence: none
     why_it_matters: >
       dP/dt scales as 1/V_eff. The 120 m3 value used earlier was inherited
@@ -41,11 +43,12 @@ blockers:
     depends_on: [VALVE_STATE_8_4]
     interim_handling: report answer parametrically in V_eff over [9, 30, 120, 240] m3
 
-  - id: P_LIMIT
+  - id: ASSUM-PLIMIT
     quantity: most restrictive applicable Line S pressure ceiling
     value: null
     unit: bar
     status: OPEN_RFI
+    gate: true
     formula: min(design, max_operating, relief_set_minus_margin, recovery_suction_max, hp_suction_max, interface_max)
     components:
       design_pressure: {value: null, status: OPEN_RFI}
@@ -56,14 +59,25 @@ blockers:
       interface_max: {value: null, status: OPEN_RFI}
     why_it_matters: t_available = (P_limit - P_initial)/(dP/dt); no ceiling means no final answer.
 
-  - id: RECOVERY_POWER_DURING_LOOP
+  - id: ASSUM-RECOV-PWR
+    title: Recovery power available during LOOP
     quantity: are 2 x 50 g/s recovery compressors powered during loss of utility
-    value: null
-    status: OPEN_RFI
+    value: UNRESOLVED
+    unit: W
+    status: BLOCKER
+    gate: true
+    severity: high
     confidence: none
-    why_it_matters: >
-      If not on credited backup, recovery during LOOP is not 100 g/s. The
-      balanced 100 g/s case then becomes invalid for LOOP.
+    rationale: >
+      Governs whether the buffer charges or recovers during LOOP. If the
+      recovery compressors are not on credited backup power, recovery during
+      LOOP is not 100 g/s and the balanced 100 g/s case is invalid for LOOP.
+    depends_on: [ASSUM-VEFF, ASSUM-PLIMIT]
+    resolution_options:
+      - measure_during_LOOP_test
+      - accept_bounding_value_as_RFI
+      - provide_backup_power_design_basis
+    rfi: true
     source: D2.1 5.6.5 diesel backup concept
 
 asserted_inputs:
@@ -102,10 +116,11 @@ physics_findings:
   - id: H1_energy_balance
     statement: >
       Fixed-temperature mass balance under-predicts the early pressure rise by
-      gamma = 5/3 in the ideal charging limit. This is now represented in the
-      energy-balance spine and test plan.
-    status: RESOLVED_IN_CODE
+      gamma = 5/3 in the ideal charging limit. The scenario matrix currently
+      reports this as an early-time bound with energy_source=gamma_x_ribbon_bound.
+    status: PARTIAL_BOUND_ONLY
     test: tests/test_line_s_buffer.py::test_energy_balance_is_gamma_times_ribbon
+    open_task: add time-integrated energy curve after flow profiles and thermal inputs are implemented.
 
   - id: H2_heat_to_flow
     statement: >
