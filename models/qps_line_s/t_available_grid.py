@@ -37,6 +37,13 @@ def load_rows(path: Path) -> list[dict[str, str]]:
 
 
 def t_available_min(p_limit: float, p_initial: float, dpdt: float) -> float:
+    """Return linearized time-to-limit in minutes.
+
+    If the candidate pressure limit is not above the initial pressure, the
+    scenario is invalid and returns NaN rather than a misleading negative time.
+    """
+    if p_limit <= p_initial:
+        return math.nan
     if dpdt <= 0:
         return math.inf
     return (p_limit - p_initial) / dpdt
@@ -66,6 +73,8 @@ def build_grid(rows: list[dict[str, str]]) -> list[dict[str, float | str]]:
 
 def fmt(value: float | str) -> str:
     if isinstance(value, float):
+        if math.isnan(value):
+            return "nan"
         if math.isinf(value):
             return "inf"
         return f"{value:.3f}"
