@@ -1,0 +1,45 @@
+{
+  "package": "qps_line_s_recovery",
+  "version": "0.1.0-w001",
+  "status": "active_draft",
+  "repository": "GBOGEB/ABACUS",
+  "branch": "w001",
+  "pull_request": 582,
+  "tracking_issue": 581,
+  "purpose": "Reduced transient model and traceability package for QPS Line S helium recovery under LOOP / loss-of-utility conditions.",
+  "source_basis": [
+    "D2.1 Section 5.6.5 Loss of utility",
+    "D2.1 Section 5.6.6 Cryoplant trip",
+    "D2.1 Appendix 8.2 General PFD",
+    "D2.1 Appendix 8.3 SIMCRYOGENICS model",
+    "D2.1 Appendix 8.4 Modes"
+  ],
+  "artifacts": [
+    {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/source_register.md", "type": "source_register", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/session_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/roles_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/index.json", "type": "index", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/glossary.yaml", "type": "glossary", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/progress_21_point.md", "type": "progress", "status": "active"},
+    {"path": "models/qps_line_s/line_s_buffer.py", "type": "model", "status": "active"}
+  ],
+  "helper_issues": [
+    {"repo": "GBOGEB/ABACUS", "issue": 583, "role": "Agent A", "focus": "documentation_traceability"},
+    {"repo": "GBOGEB/ABACUS", "issue": 584, "role": "Agent B", "focus": "python_model_validation"},
+    {"repo": "GBOGEB/CODEX", "issue": 237, "role": "CODEX helper", "focus": "reusable_index_glossary_workflow"}
+  ],
+  "current_model": {
+    "method": "ideal_gas_first_order",
+    "volume_m3": 120.0,
+    "temperature_k": 300.0,
+    "pressure_factor_bar_per_min_per_g_s": 0.003116,
+    "heat_loads_w": {
+      "true_nominal_baseline": 6041.6667,
+      "uncertainty_only": 7250.0,
+      "design_point": 8700.0,
+      "previous_high_side_stress": 10440.0
+    }
+  }
+}
