@@ -1,6 +1,6 @@
 {
   "package": "qps_line_s_recovery",
-  "version": "0.2.1-w001",
+  "version": "0.2.2-w001",
   "status": "active_draft_mda_spine",
   "repository": "GBOGEB/ABACUS",
   "branch": "w001",
@@ -15,7 +15,8 @@
     "D2.1 Appendix 8.4 Modes",
     "S_line_raw.txt raw prompt-output conversation pairs",
     "REVIEW_AND_CONVERGENCE_PLAN.md",
-    "applicant_response_package.md skeleton"
+    "applicant_response_package.md skeleton",
+    "feedback packet CR-1 CR-2 CR-3"
   ],
   "artifacts": [
     {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
@@ -34,9 +35,12 @@
     {"path": "docs/qps_line_s_recovery/critical_lineage_scan.md", "type": "lineage_scan", "status": "active"},
     {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.md", "type": "generated_matrix", "status": "active"},
     {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.csv", "type": "generated_csv", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/generated/t_available_grid.md", "type": "generated_time_to_limit", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/generated/t_available_grid.csv", "type": "generated_time_to_limit_csv", "status": "active"},
     {"path": "models/qps_line_s/line_s_buffer.py", "type": "model_spine", "status": "active"},
     {"path": "models/qps_line_s/scenarios.json", "type": "scenario_input", "status": "active"},
     {"path": "models/qps_line_s/run_scenarios.py", "type": "runner", "status": "active"},
+    {"path": "models/qps_line_s/t_available_grid.py", "type": "post_processor", "status": "active"},
     {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
     {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"}
   ],
@@ -45,8 +49,14 @@
     {"repo": "GBOGEB/ABACUS", "issue": 584, "role": "Agent B", "focus": "python_model_validation"},
     {"repo": "GBOGEB/CODEX", "issue": 237, "role": "CODEX helper", "focus": "reusable_index_glossary_workflow"}
   ],
+  "open_gates": [
+    "ASSUM-VEFF",
+    "ASSUM-PLIMIT",
+    "ASSUM-RECOV-PWR"
+  ],
   "current_model": {
-    "method": "wave0_energy_balance_spine_plus_isothermal_sanity_ribbon",
+    "method": "wave0_energy_bound_plus_isothermal_sanity_ribbon",
+    "energy_source": "gamma_x_ribbon_bound",
     "volume_m3": "UNRESOLVED; use parametric band [9,30,120,240]",
     "temperature_k": "CALIBRATION_PENDING; 300 K only sanity/default sweep input",
     "heat_loads_w": {
@@ -57,7 +67,7 @@
     }
   },
   "validation": {
-    "local_pytest": "7 passed in local buildout",
+    "local_pytest": "7 passed in prior local buildout; CI now also verifies t_available outputs",
     "zero_test_guard": "workflow includes collect-only check"
   },
   "convergence_rule": "Complete the MDA Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
