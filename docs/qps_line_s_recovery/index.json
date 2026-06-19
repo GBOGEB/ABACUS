@@ -1,6 +1,6 @@
 {
   "package": "qps_line_s_recovery",
-  "version": "0.1.0-w001",
+  "version": "0.1.1-w001",
   "status": "active_draft",
   "repository": "GBOGEB/ABACUS",
   "branch": "w001",
@@ -12,7 +12,8 @@
     "D2.1 Section 5.6.6 Cryoplant trip",
     "D2.1 Appendix 8.2 General PFD",
     "D2.1 Appendix 8.3 SIMCRYOGENICS model",
-    "D2.1 Appendix 8.4 Modes"
+    "D2.1 Appendix 8.4 Modes",
+    "S_line_raw.txt raw prompt-output conversation pairs"
   ],
   "artifacts": [
     {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
@@ -21,8 +22,10 @@
     {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/roles_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/index.json", "type": "index", "status": "active"},
-    {"path": "docs/qps_line_s_recovery/glossary.yaml", "type": "glossary", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/glossary.md", "type": "glossary", "status": "active"},
     {"path": "docs/qps_line_s_recovery/progress_21_point.md", "type": "progress", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/agent_workplan.md", "type": "workplan", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/critical_lineage_scan.md", "type": "lineage_scan", "status": "active"},
     {"path": "models/qps_line_s/line_s_buffer.py", "type": "model", "status": "active"}
   ],
   "helper_issues": [
@@ -41,5 +44,6 @@
       "design_point": 8700.0,
       "previous_high_side_stress": 10440.0
     }
-  }
+  },
+  "convergence_rule": "Create the final Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
 }
