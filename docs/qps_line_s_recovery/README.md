@@ -46,17 +46,30 @@ For helium at 300 K and V_eff = 120 m3:
 dP/dt [bar/min] = 0.003116 x m_net [g/s]
 ```
 
-## First heat-load sensitivity
+## Corrected heat-load sensitivity
 
-Use 8700 W as the base thermal-shield heat-load point and compare:
+8700 W is treated as the D2.1/design point, not the true nominal baseline.
 
-- 1.0x = 8700 W
-- 1.2x = 10440 W
+The corrected lineage is:
 
-For a 40 K to 60 K shield loop, calibrated from D2.1 values around 8505 W and 81 g/s, this gives approximately:
+```text
+true baseline x 1.44 = 8700 W
+true baseline = 8700 / 1.44 = 6042 W
+uncertainty-only case = true baseline x 1.2 = 7250 W
+```
 
-- 83 g/s at 8700 W
-- 99 g/s at 10440 W
+Equivalently:
+
+```text
+8700 x 100 / 120 = 7250 W
+```
+
+For a 40 K to 60 K shield loop, calibrated from D2.1 values around 8505 W and 81 g/s:
+
+- true nominal baseline: 6042 W -> 57.5 g/s
+- uncertainty-only case: 7250 W -> 69.0 g/s
+- D2.1/design point: 8700 W -> 82.9 g/s
+- previous high-side stress case: 10440 W -> 99.4 g/s
 
 ## First scenarios
 
