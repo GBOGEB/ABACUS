@@ -1,0 +1,117 @@
+# QPS Line S Recovery - Program Wave Status and Definition of Done
+
+Status date: 2026-06-19
+Repo: GBOGEB/ABACUS
+Branch: w001
+PR: #582
+State: draft, merge blocked by open MDA gates
+
+## Executive status
+
+The program is in MDA Wave 0 / Wave 1 boundary condition. The reduced model spine exists, the gated-register discipline exists, and the Applicant answer package exists in draft. Do not move to full SIMCRYOGENICS reproduction until the MDA gates are resolved or explicitly carried as RFIs in an approved Applicant package.
+
+## Overall objective
+
+Produce a defensible Applicant-facing answer for RTM-261 / RTM-292 and then evolve the model into a reusable ABACUS/CODEX cryogenic recovery modelling package.
+
+## End-state definition of done
+
+The full program is done when all of the following are true:
+
+1. Applicant answer package is released or formally frozen as RFI-dependent.
+2. Every published number traces to the assumptions register and source register.
+3. V_eff, P_LIMIT, and recovery power are either resolved or explicitly carried as named open gates.
+4. Scenario matrix and t_available grid are generated, not hand-edited.
+5. Reduced model tests and CI are green.
+6. Appendix 8.4 valve/mode extraction defines which recovery path is physically open in each abnormal state.
+7. Energy-balance P(t), T(t) curve is implemented for final closure.
+8. RTM traceability covers RTM-260, RTM-261, RTM-262, RTM-292, and OFFER-22.
+9. Programme-stage SIMCRYOGENICS reproduction is deferred until MDA has been closed.
+10. PR #582 is either merged as the MDA baseline or superseded by an explicitly named successor PR.
+
+## Wave table
+
+| Wave | Name | Track | Purpose | Status | Completion |
+|---|---|---|---|---|---:|
+| W000 | Conversation-to-source lineage | Governance | Preserve raw prompt/output lineage and critical scan | complete | 100% |
+| W001 | MDA spine | MDA | Reduced Line S model, gates, registers, draft answer, scenario and t_available outputs | active | 75% |
+| W002 | MDA closure | MDA | Close or formalize RFIs, RTM traceability, final Applicant response package | next | 35% |
+| W003 | Dynamic transient upgrade | MDA / modelling | Replace gamma-bound-only output with integrated P(t), T(t) curves and flow profiles | not started | 10% |
+| W004 | Appendix 8.4 mode and valve-state extraction | Programme precursor | Map modes to valve states and available recovery paths | not started | 5% |
+| W005 | Property and CoolProp upgrade | Programme | Add real-gas/property path behind flag and compare to ideal gas | deferred | 0% |
+| W006 | SIMCRYOGENICS reduced reproduction | Programme | Reproduce reduced subsystem blocks after MDA closure | deferred | 0% |
+| W007 | FMECA and control-state integration | Programme | Link valve states, failure modes, recovery paths, and no-loss compliance | deferred | 0% |
+| W008 | Release and governance hardening | Governance | CI, golden outputs, workbook renderer, release gate, CODEX reusable tooling | started | 20% |
+
+## Current wave W001 definition of done
+
+W001 is done when:
+
+- assumptions_register.yaml contains the three named open gates;
+- index.json lists all active generated and source artifacts;
+- line_s_buffer.py has no silent V_eff default;
+- scenario_matrix and t_available_grid exist and are generated artifacts;
+- applicant_response_package.md leads with t_available, not a fixed pressure;
+- CI checks tests plus generated outputs;
+- PR remains draft while ASSUM-VEFF, ASSUM-PLIMIT, and ASSUM-RECOV-PWR are open.
+
+W001 current status: nearly complete. Remaining work is primarily consistency cleanup and one PR-body update.
+
+## W002 definition of done
+
+W002 is done when:
+
+- RTM traceability is complete enough for Applicant response;
+- P_LIMIT register is either resolved or formally left as RFI;
+- V_eff is either resolved or the answer is explicitly parametric;
+- recovery power during LOOP is either confirmed or treated as blocking condition;
+- Applicant response package has a release-ready section order;
+- MDA victory checklist is reviewed by human owner;
+- PR #582 is either ready for review or intentionally remains draft pending Applicant data.
+
+## W003 definition of done
+
+W003 is done when:
+
+- flow_profiles.py contains baseline LOOP, early 1.2 bar / 4.4 K, and shield-maintained profiles;
+- time-integrated energy model emits P(t), T(t), m(t), and inventory-loss outputs;
+- the scenario matrix identifies whether each energy value is gamma-bound or solver-integrated;
+- test suite includes early-time gamma validation and later-time divergence/nonlinear behaviour where appropriate;
+- no-loss check is calculated from integrated relief/vent mass.
+
+## W004 definition of done
+
+W004 is done when:
+
+- Appendix 8.4 modes are listed;
+- each mode has valve states: open, closed, fail-open, fail-closed, unknown;
+- available recovery path is determined per mode;
+- V_eff decomposition is updated based on open/closed volume;
+- FMECA precursor table exists.
+
+## 21-point progress rollup
+
+| Point group | Items | Status | Completion |
+|---|---|---|---:|
+| Applicant answer and scope | 1, 2, 18, 20 | mostly complete | 85% |
+| Source and RTM traceability | 3, 4, 16, 21 | started | 55% |
+| Reduced pressure model and sensitivities | 5, 6, 7, 8, 9, 10, 11 | strong but gated | 65% |
+| Appendix topology and modes | 12, 13, 14 | deferred / not started | 10% |
+| Implementation artefacts | 15, 16, 17 | started | 45% |
+| CODEX reusable tooling | 19 | deferred | 10% |
+
+## Recommended next action
+
+Complete W001 cleanup, then immediately execute W002 MDA closure. Do not start W004-W006 as active development until W002 is either complete or explicitly blocked by external Applicant data.
+
+## Current open gates
+
+1. ASSUM-VEFF - effective connected Line S volume.
+2. ASSUM-PLIMIT - governing pressure limit.
+3. ASSUM-RECOV-PWR - recovery power availability during LOOP.
+
+## Decision logic
+
+- If the three gates are resolved: proceed to W002 final Applicant answer and move PR #582 to ready-for-review after CI passes.
+- If the gates remain unresolved: issue a controlled Applicant RFI package and keep PR #582 draft.
+- If the Applicant asks for deeper transient evidence: start W003 but keep it separate from full SIMCRYOGENICS reproduction.
