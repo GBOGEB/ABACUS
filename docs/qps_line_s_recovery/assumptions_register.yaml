@@ -1,6 +1,6 @@
 # QPS Line S Recovery - Assumptions and Provenance Register
 # Wave 0 spine. Every published number must trace to a row here.
-# status: one of {RESOLVED, UNRESOLVED, OPEN_RFI, CALIBRATION_PENDING, BLOCKER}
+# status: one of {RESOLVED, UNRESOLVED, OPEN_RFI, CALIBRATION_PENDING, BLOCKER, OPEN, ACCEPTED}
 # Nothing downstream may use a default for an UNRESOLVED or BLOCKER quantity.
 
 meta:
@@ -9,7 +9,7 @@ meta:
   pr: GBOGEB/ABACUS#582
   branch: w001
   merge_allowed: false
-  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR]
+  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR, ASSUM-ENERGY-MODEL]
   lineage_anchor:
     chatgpt_share_url: TODO_PASTE_EXPORT_URL
     first_prompt: "120 m3 vessel, 1 to 15 barg He, 300 K: mass plus fill-rate sensitivity"
@@ -79,6 +79,21 @@ blockers:
       - provide_backup_power_design_basis
     rfi: true
     source: D2.1 5.6.5 diesel backup concept
+
+  - id: ASSUM-ENERGY-MODEL
+    title: Charging pressure model fidelity
+    quantity: whether gamma_x_ribbon_bound is acceptable for MDA closure
+    value: gamma_x_ribbon_bound
+    status: OPEN
+    gate: true
+    severity: medium
+    rationale: >
+      Energy column is gamma times isothermal, an early-time adiabatic bound,
+      not a solved integrated balance. MDA closure must explicitly accept the
+      bound with justification, or open the integrated-balance work.
+    resolution_options:
+      - accept_bound_as_sufficient_with_rationale
+      - implement_integrated_energy_balance
 
 asserted_inputs:
   - id: MDOT_IN_PRE_HP_MAX
