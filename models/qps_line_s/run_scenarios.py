@@ -2,7 +2,7 @@ import csv
 import json
 from pathlib import Path
 
-from line_s_buffer import net_accumulation_g_s, pressure_rise_bar_per_min, time_to_margin_min
+from line_s_buffer import dpdt_bar_per_min, time_to_pressure_limit_min
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -18,9 +18,10 @@ def make_rows(config):
     temp = config.get("temperature_k", 300.0)
     for volume in config["volume_band_m3"]:
         for item in config["cases"]:
-            net = net_accumulation_g_s(item["m_in_g_s"], item["m_rec_g_s"], item.get("m_hp_g_s", 0.0))
+            net = item["m_in_g_s"] - item["m_rec_g_s"] - item.get("m_hp_g_s", 0.0)
             accumulation = max(net, 0.0)
-            rate = pressure_rise_bar_per_min(accumulation, volume_m3=volume, temperature_k=temp)
+            ribbon_rate = dpdt_bar_per_min(accumulation, volume, temp)
+            energy_rate_est = ribbon_rate * (5.0 / 3.0)
             rows.append({
                 "V_eff_m3": volume,
                 "case": item["case"],
@@ -28,8 +29,9 @@ def make_rows(config):
                 "m_rec_g_s": item["m_rec_g_s"],
                 "m_HP_g_s": item.get("m_hp_g_s", 0.0),
                 "m_net_g_s": net,
-                "dPdt_energy_bar_min": rate,
-                "t_plus_1bar_min": "" if rate <= 0 else time_to_margin_min(1.0, accumulation, volume_m3=volume, temperature_k=temp),
+                "dPdt_ribbon_bar_min": ribbon_rate,
+                "dPdt_energy_est_bar_min": energy_rate_est,
+                "t_plus_1bar_ribbon_min": "" if ribbon_rate <= 0 else time_to_pressure_limit_min(1.0, accumulation, volume, temp),
                 "position": item["position"],
             })
     return rows
