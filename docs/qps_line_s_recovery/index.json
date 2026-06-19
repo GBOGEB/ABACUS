@@ -1,7 +1,7 @@
 {
   "package": "qps_line_s_recovery",
-  "version": "0.2.2-w001",
-  "status": "active_draft_mda_spine",
+  "version": "0.2.3-w001",
+  "status": "active_draft_mda_spine_runtime",
   "repository": "GBOGEB/ABACUS",
   "branch": "w001",
   "pull_request": 582,
@@ -16,7 +16,8 @@
     "S_line_raw.txt raw prompt-output conversation pairs",
     "REVIEW_AND_CONVERGENCE_PLAN.md",
     "applicant_response_package.md skeleton",
-    "feedback packet CR-1 CR-2 CR-3"
+    "feedback packet CR-1 CR-2 CR-3",
+    "runtime verdict glue"
   ],
   "artifacts": [
     {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
@@ -25,6 +26,7 @@
     {"path": "docs/qps_line_s_recovery/p_limit_register.md", "type": "pressure_limit_register", "status": "open_rfi"},
     {"path": "docs/qps_line_s_recovery/rtm_traceability.md", "type": "rtm_traceability", "status": "started"},
     {"path": "docs/qps_line_s_recovery/applicant_response_package.md", "type": "controlled_release_document", "status": "draft_merge_blocked"},
+    {"path": "docs/qps_line_s_recovery/program_wave_status.md", "type": "program_status", "status": "active"},
     {"path": "docs/qps_line_s_recovery/session_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/roles_manifest.md", "type": "manifest", "status": "active"},
@@ -37,11 +39,14 @@
     {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.csv", "type": "generated_csv", "status": "active"},
     {"path": "docs/qps_line_s_recovery/generated/t_available_grid.md", "type": "generated_time_to_limit", "status": "active"},
     {"path": "docs/qps_line_s_recovery/generated/t_available_grid.csv", "type": "generated_time_to_limit_csv", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/generated/runtime_status.json", "type": "runtime_verdict", "status": "generated_by_ci"},
     {"path": "models/qps_line_s/line_s_buffer.py", "type": "model_spine", "status": "active"},
     {"path": "models/qps_line_s/scenarios.json", "type": "scenario_input", "status": "active"},
     {"path": "models/qps_line_s/run_scenarios.py", "type": "runner", "status": "active"},
     {"path": "models/qps_line_s/t_available_grid.py", "type": "post_processor", "status": "active"},
+    {"path": "models/qps_line_s/runtime.py", "type": "runtime_verdict", "status": "active"},
     {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
+    {"path": "tests/test_runtime.py", "type": "test", "status": "active"},
     {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"}
   ],
   "helper_issues": [
@@ -54,6 +59,11 @@
     "ASSUM-PLIMIT",
     "ASSUM-RECOV-PWR"
   ],
+  "runtime_decision": {
+    "draft_mode_expected_verdict": "ISSUE_RFI",
+    "w002_gate_mode": "python -m models.qps_line_s.runtime --gate",
+    "energy_model": "bound"
+  },
   "current_model": {
     "method": "wave0_energy_bound_plus_isothermal_sanity_ribbon",
     "energy_source": "gamma_x_ribbon_bound",
@@ -67,7 +77,7 @@
     }
   },
   "validation": {
-    "local_pytest": "7 passed in prior local buildout; CI now also verifies t_available outputs",
+    "local_pytest": "7 passed in prior local buildout; runtime tests added; CI now runs model and runtime tests",
     "zero_test_guard": "workflow includes collect-only check"
   },
   "convergence_rule": "Complete the MDA Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
