@@ -21,7 +21,7 @@ jobs:
         run: python -m pip install pytest
       - name: Run model tests
         run: python -m pytest -q tests/test_line_s_buffer.py
-      - name: Generate scenario matrix
+      - name: Generate scenario and t_available grids
         run: |
           cd models/qps_line_s
           python run_scenarios.py
@@ -29,6 +29,8 @@ jobs:
         run: |
           test -s docs/qps_line_s_recovery/generated/scenario_matrix.md
           test -s docs/qps_line_s_recovery/generated/scenario_matrix.csv
+          test -s docs/qps_line_s_recovery/generated/t_available_grid.md
+          test -s docs/qps_line_s_recovery/generated/t_available_grid.csv
       - name: Zero-test guard
         run: |
           python -m pytest --collect-only -q tests/test_line_s_buffer.py | tee /tmp/collect.txt
