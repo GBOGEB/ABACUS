@@ -1,6 +1,6 @@
 {
   "package": "qps_line_s_recovery",
-  "version": "0.2.0-w001",
+  "version": "0.2.1-w001",
   "status": "active_draft_mda_spine",
   "repository": "GBOGEB/ABACUS",
   "branch": "w001",
@@ -21,6 +21,8 @@
     {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
     {"path": "docs/qps_line_s_recovery/source_register.md", "type": "source_register", "status": "active"},
     {"path": "docs/qps_line_s_recovery/assumptions_register.yaml", "type": "assumptions_register", "status": "active_ssot"},
+    {"path": "docs/qps_line_s_recovery/p_limit_register.md", "type": "pressure_limit_register", "status": "open_rfi"},
+    {"path": "docs/qps_line_s_recovery/rtm_traceability.md", "type": "rtm_traceability", "status": "started"},
     {"path": "docs/qps_line_s_recovery/applicant_response_package.md", "type": "controlled_release_document", "status": "draft_merge_blocked"},
     {"path": "docs/qps_line_s_recovery/session_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
@@ -35,7 +37,8 @@
     {"path": "models/qps_line_s/line_s_buffer.py", "type": "model_spine", "status": "active"},
     {"path": "models/qps_line_s/scenarios.json", "type": "scenario_input", "status": "active"},
     {"path": "models/qps_line_s/run_scenarios.py", "type": "runner", "status": "active"},
-    {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"}
+    {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
+    {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"}
   ],
   "helper_issues": [
     {"repo": "GBOGEB/ABACUS", "issue": 583, "role": "Agent A", "focus": "documentation_traceability"},
@@ -52,6 +55,10 @@
       "design_point": 8700.0,
       "previous_high_side_stress": 10440.0
     }
+  },
+  "validation": {
+    "local_pytest": "7 passed in local buildout",
+    "zero_test_guard": "workflow includes collect-only check"
   },
   "convergence_rule": "Complete the MDA Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
 }
