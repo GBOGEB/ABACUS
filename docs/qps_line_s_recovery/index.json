@@ -1,7 +1,7 @@
 {
   "package": "qps_line_s_recovery",
-  "version": "0.1.1-w001",
-  "status": "active_draft",
+  "version": "0.2.0-w001",
+  "status": "active_draft_mda_spine",
   "repository": "GBOGEB/ABACUS",
   "branch": "w001",
   "pull_request": 582,
@@ -13,11 +13,15 @@
     "D2.1 Appendix 8.2 General PFD",
     "D2.1 Appendix 8.3 SIMCRYOGENICS model",
     "D2.1 Appendix 8.4 Modes",
-    "S_line_raw.txt raw prompt-output conversation pairs"
+    "S_line_raw.txt raw prompt-output conversation pairs",
+    "REVIEW_AND_CONVERGENCE_PLAN.md",
+    "applicant_response_package.md skeleton"
   ],
   "artifacts": [
     {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
     {"path": "docs/qps_line_s_recovery/source_register.md", "type": "source_register", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/assumptions_register.yaml", "type": "assumptions_register", "status": "active_ssot"},
+    {"path": "docs/qps_line_s_recovery/applicant_response_package.md", "type": "controlled_release_document", "status": "draft_merge_blocked"},
     {"path": "docs/qps_line_s_recovery/session_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
     {"path": "docs/qps_line_s_recovery/roles_manifest.md", "type": "manifest", "status": "active"},
@@ -26,7 +30,12 @@
     {"path": "docs/qps_line_s_recovery/progress_21_point.md", "type": "progress", "status": "active"},
     {"path": "docs/qps_line_s_recovery/agent_workplan.md", "type": "workplan", "status": "active"},
     {"path": "docs/qps_line_s_recovery/critical_lineage_scan.md", "type": "lineage_scan", "status": "active"},
-    {"path": "models/qps_line_s/line_s_buffer.py", "type": "model", "status": "active"}
+    {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.md", "type": "generated_matrix", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.csv", "type": "generated_csv", "status": "active"},
+    {"path": "models/qps_line_s/line_s_buffer.py", "type": "model_spine", "status": "active"},
+    {"path": "models/qps_line_s/scenarios.json", "type": "scenario_input", "status": "active"},
+    {"path": "models/qps_line_s/run_scenarios.py", "type": "runner", "status": "active"},
+    {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"}
   ],
   "helper_issues": [
     {"repo": "GBOGEB/ABACUS", "issue": 583, "role": "Agent A", "focus": "documentation_traceability"},
@@ -34,10 +43,9 @@
     {"repo": "GBOGEB/CODEX", "issue": 237, "role": "CODEX helper", "focus": "reusable_index_glossary_workflow"}
   ],
   "current_model": {
-    "method": "ideal_gas_first_order",
-    "volume_m3": 120.0,
-    "temperature_k": 300.0,
-    "pressure_factor_bar_per_min_per_g_s": 0.003116,
+    "method": "wave0_energy_balance_spine_plus_isothermal_sanity_ribbon",
+    "volume_m3": "UNRESOLVED; use parametric band [9,30,120,240]",
+    "temperature_k": "CALIBRATION_PENDING; 300 K only sanity/default sweep input",
     "heat_loads_w": {
       "true_nominal_baseline": 6041.6667,
       "uncertainty_only": 7250.0,
@@ -45,5 +53,5 @@
       "previous_high_side_stress": 10440.0
     }
   },
-  "convergence_rule": "Create the final Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
+  "convergence_rule": "Complete the MDA Applicant answer package before expanding into full SIMCRYOGENICS reproduction."
 }
