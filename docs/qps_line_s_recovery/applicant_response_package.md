@@ -4,8 +4,8 @@ STATUS: DRAFT. merge_allowed = false. Do NOT distribute.
 
 BINDING RULES:
   1. Every number in this document is generated or sourced, not independently typed.
-  2. GATED quantities V_eff, P_limit, P_initial, and recovery power remain unresolved.
-  3. Until gated inputs are resolved, the answer is a criterion plus parametric bands.
+  2. GATED quantities V_eff, P_limit, P_initial, recovery power, and energy-model fidelity remain unresolved.
+  3. Until gated inputs are resolved or accepted, the answer is a criterion plus parametric bands.
   4. Section 4 is the centrepiece: required confirmations close the answer.
 -->
 
@@ -36,9 +36,9 @@ PASS if:
   and integrated helium loss <= 1 percent inventory per RTM-260
 ```
 
-`P_limit`, `P_initial`, `V_eff`, and recovery-compressor power during LOOP are not yet confirmed. Therefore the quantified answer remains parametric.
+`P_limit`, `P_initial`, `V_eff`, recovery-compressor power during LOOP, and energy-model fidelity are not yet confirmed. Therefore the quantified answer remains parametric and gated.
 
-The generated headline output is:
+The generated headline output is expected, not tracked source:
 
 ```text
 docs/qps_line_s_recovery/generated/t_available_grid.md
@@ -63,6 +63,7 @@ The grid leads with the conservative energy-bound column and keeps the isotherma
 | ASSUM-VEFF | Effective connected gas volume during the transient | Pressure rise is inversely proportional to volume. | UNRESOLVED |
 | ASSUM-PLIMIT | Minimum of design, maximum operating, relief margin, compressor suction, and interface limits | No ceiling means no allowed pressure margin. | OPEN_RFI |
 | ASSUM-RECOV-PWR | Backup power status for 2 x 50 g/s recovery compressors during LOOP | If unavailable, recovery capacity is not 100 g/s during LOOP. | BLOCKER |
+| ASSUM-ENERGY-MODEL | Whether the gamma_x_ribbon_bound is acceptable for MDA closure | Prevents the early-time bound from being misrepresented as an integrated energy-balance result. | OPEN |
 | HP_CAPACITY | HP-path acceptance flow at Line S suction | Determines whether the 200 g/s case closes to near-zero accumulation. | LOW_CONFIDENCE |
 | MDOT_PRE_HP | Basis for the 112 g/s pre-HP value | Governs the pre-HP transient. | LOW_CONFIDENCE |
 | MARGIN_1_44 | Pedigree of the 1.44 heat-load factor | Preserves corrected 6042 / 7250 / 8700 W lineage. | UNCONFIRMED |
@@ -91,7 +92,7 @@ dPdt_energy_bound ~= gamma x dPdt_isothermal
 
 with helium gamma approximately 1.667.
 
-The time-to-limit grid is a linearized estimate. It is acceptable for screening and Applicant RFI framing, but final closure still requires a time-integrated `P(t), T(t)` curve once `V_eff`, `P_limit`, inflow profile, and recovery-power state are resolved.
+The time-to-limit grid is a linearized estimate. It is acceptable for screening and Applicant RFI framing only if `ASSUM-ENERGY-MODEL` is explicitly accepted for MDA closure. Otherwise, final closure requires a time-integrated `P(t), T(t)` curve once `V_eff`, `P_limit`, inflow profile, and recovery-power state are resolved.
 
 The heat-to-flow link is separated:
 
@@ -108,16 +109,19 @@ uncertainty-only = true baseline x 1.2 = 8700 x 100 / 120
 D2.1/design point = 8700
 ```
 
-## 6. Generated outputs
+## 6. Expected generated outputs
 
-The model runner emits:
+The model runner emits ignored render artefacts:
 
 ```text
 docs/qps_line_s_recovery/generated/scenario_matrix.md
 docs/qps_line_s_recovery/generated/scenario_matrix.csv
 docs/qps_line_s_recovery/generated/t_available_grid.md
 docs/qps_line_s_recovery/generated/t_available_grid.csv
+docs/qps_line_s_recovery/generated/runtime_status.json
 ```
+
+These files are expected outputs, not tracked source of record. The source of record is the model code, assumptions register, and index metadata.
 
 Until `V_eff` is resolved, generated output includes the parametric band:
 
@@ -158,7 +162,7 @@ The release version shall show values from `assumptions_register.yaml` only:
 id | value | unit | status | source | gate
 ```
 
-No gated value shall be converted into a final answer until marked resolved in the register.
+No gated value shall be converted into a final answer until marked resolved or accepted in the register.
 
 ## 10. Model appendix
 
