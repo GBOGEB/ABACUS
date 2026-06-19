@@ -1,5 +1,5 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-06-19T17:00:39Z · repo: `GBOGEB/ABACUS`  
+> Auto-generated 2026-06-19T18:09:50Z · repo: `GBOGEB/ABACUS`  
 > **2444 open alerts** across 4 tools
 
 ## Severity Overview
@@ -240,4 +240,4 @@ _Groups are defined in [security.toml](security.toml)_
 | 5 | SEC_ASSERT | 1483 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 250 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-06-19T17:00:39Z_
+_Dashboard last updated: 2026-06-19T18:09:50Z_
