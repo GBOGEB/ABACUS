@@ -91,7 +91,7 @@ def test_rfi_package_filters_open_gates():
     assert [item["id"] for item in items] == ["ASSUM-VEFF", "ASSUM-ENERGY-MODEL"]
 
 
-def test_rfi_package_renders_open_gate_count_and_sections():
+def test_rfi_package_renders_open_gate_count_sections_and_provenance():
     items = [
         {
             "id": "ASSUM-VEFF",
@@ -103,7 +103,24 @@ def test_rfi_package_renders_open_gate_count_and_sections():
         }
     ]
     text = rfi_package.render_rfi(items)
+    assert "Generated:" in text
+    assert "Source register: docs/qps_line_s_recovery/assumptions_register.yaml" in text
+    assert "Register SHA256:" in text
+    assert "Git commit:" in text
+    assert "Renderer: models/qps_line_s/rfi_package.py" in text
+    assert "Do not hand-edit this rendered file" in text
     assert "Open gate count: 1" in text
     assert "## RFI-1: ASSUM-VEFF - Effective volume" in text
     assert "Need connected gas volume." in text
     assert "- provide volume" in text
+
+
+def test_provenance_header_accepts_deterministic_values():
+    header = rfi_package.provenance_header(
+        generated_at="2026-06-20T00:00:00+00:00",
+        register_hash="abc123",
+        commit="deadbeef",
+    )
+    assert "Generated: 2026-06-20T00:00:00+00:00" in header
+    assert "Register SHA256: abc123" in header
+    assert "Git commit: deadbeef" in header
