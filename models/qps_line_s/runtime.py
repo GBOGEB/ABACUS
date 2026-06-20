@@ -15,7 +15,7 @@ from typing import Any
 
 import yaml
 
-from . import run_scenarios
+from . import rfi_package, run_scenarios
 
 ROOT = Path(__file__).resolve().parents[2]
 GEN = ROOT / "docs" / "qps_line_s_recovery" / "generated"
@@ -28,12 +28,14 @@ REQUIRED_ARTEFACTS = [
     GEN / "scenario_matrix.md",
     GEN / "t_available_grid.csv",
     GEN / "t_available_grid.md",
+    GEN / "applicant_rfi.md",
 ]
 RESOLVED_STATES = {"RESOLVED", "ACCEPTED"}
 
 
 def run_generators() -> None:
     run_scenarios.main()
+    rfi_package.main()
 
 
 def missing_artefacts() -> list[str]:
