@@ -7,6 +7,9 @@ folder. Generated output is ignored by git.
 
 from __future__ import annotations
 
+import hashlib
+import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +18,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 REGISTER = ROOT / "docs" / "qps_line_s_recovery" / "assumptions_register.yaml"
 OUT = ROOT / "docs" / "qps_line_s_recovery" / "generated" / "applicant_rfi.md"
+REGISTER_REL = "docs/qps_line_s_recovery/assumptions_register.yaml"
+RENDERER_REL = "models/qps_line_s/rfi_package.py"
 RESOLVED_STATES = {"RESOLVED", "ACCEPTED"}
 
 
@@ -43,6 +48,34 @@ def open_gate_items(data: dict[str, Any]) -> list[dict[str, Any]]:
     return open_items
 
 
+def register_sha256(path: Path = REGISTER) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_commit() -> str:
+    cmd = ["git", "rev-parse", "HEAD"]
+    result = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        return "UNKNOWN"
+    return result.stdout.strip() or "UNKNOWN"
+
+
+def provenance_header(generated_at: str | None = None, register_hash: str | None = None, commit: str | None = None) -> str:
+    timestamp = generated_at or datetime.now(UTC).isoformat()
+    digest = register_hash or register_sha256()
+    revision = commit or git_commit()
+    return (
+        "<!--\n"
+        f"Generated: {timestamp}\n"
+        f"Source register: {REGISTER_REL}\n"
+        f"Register SHA256: {digest}\n"
+        f"Git commit: {revision}\n"
+        f"Renderer: {RENDERER_REL}\n"
+        "Do not hand-edit this rendered file; update the register instead.\n"
+        "-->\n"
+    )
+
+
 def _as_lines(value: Any) -> list[str]:
     if value is None:
         return ["UNRESOLVED"]
@@ -53,6 +86,8 @@ def _as_lines(value: Any) -> list[str]:
 
 def render_rfi(items: list[dict[str, Any]]) -> str:
     lines = [
+        provenance_header().rstrip(),
+        "",
         "# QPS Line S - Applicant RFI package",
         "",
         "Generated from `docs/qps_line_s_recovery/assumptions_register.yaml`.",
