@@ -1,0 +1,39 @@
+# QPS Line S recovery model reference registry
+# Branch: w002-recovery-model
+# Purpose: pin property-oracle versions and record independent reference sources.
+
+property_backends:
+  coolprop:
+    package: CoolProp
+    version: 7.2.0
+    pin: CoolProp==7.2.0
+    role: runtime_property_backend
+    status: active_pinned
+    source: PyPI CoolProp 7.2.0
+    note: >
+      CoolProp is the runtime property oracle for the lumped recovery model.
+      It is pinned exactly because helium property values are model inputs and
+      version drift can change numerical results.
+
+  hepak:
+    package: HEPAK
+    role: independent_frozen_reference_oracle
+    status: offline_reference_required
+    csv: docs/qps_line_s_recovery/he_reference_hepak.csv
+    note: >
+      HEPAK is licensed/offline and is not installed in CI. The intended
+      pattern is to commit a frozen CSV generated once by an engineer from
+      HEPAK Excel/DLL, including HEPAK version, date, and engineer provenance.
+      The differential property test shall compare CoolProp against that
+      committed static table. Until the table is populated from HEPAK, the
+      independent oracle is not complete.
+
+out_of_scope:
+  refprop:
+    status: explicitly_excluded
+    rationale: >
+      REFPROP is not used as the independent helium cross-check in this wave.
+      For helium, CoolProp uses the REFPROP 10 Ortiz-Vega EOS lineage, making
+      CoolProp-vs-REFPROP non-independent for the intended oracle purpose.
+      HEPAK is retained as the independent reference, including sub-lambda
+      coverage.
