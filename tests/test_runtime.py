@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from models.qps_line_s import runtime
+from models.qps_line_s import rfi_package, runtime
 from models.qps_line_s.t_available_grid import t_available_min
 
 
@@ -27,11 +27,17 @@ def test_open_gates_supports_current_blocker_structure():
             {"id": "ASSUM-VEFF", "gate": True, "status": "UNRESOLVED"},
             {"id": "ASSUM-PLIMIT", "gate": True, "status": "OPEN_RFI"},
             {"id": "ASSUM-RECOV-PWR", "gate": True, "status": "BLOCKER", "severity": "high"},
+            {"id": "ASSUM-ENERGY-MODEL", "gate": True, "status": "OPEN", "severity": "medium"},
             {"id": "DONE", "gate": True, "status": "RESOLVED"},
         ]
     }
     gates = runtime.open_gates(data)
-    assert [gate["id"] for gate in gates] == ["ASSUM-VEFF", "ASSUM-PLIMIT", "ASSUM-RECOV-PWR"]
+    assert [gate["id"] for gate in gates] == [
+        "ASSUM-VEFF",
+        "ASSUM-PLIMIT",
+        "ASSUM-RECOV-PWR",
+        "ASSUM-ENERGY-MODEL",
+    ]
 
 
 def test_energy_provenance_detects_bound(tmp_path: Path):
@@ -65,3 +71,39 @@ def test_runtime_enforce_exits_when_gates_open(monkeypatch):
     with pytest.raises(SystemExit) as exc:
         runtime.runtime(regenerate=True, enforce=True)
     assert exc.value.code == 1
+
+
+def test_rfi_package_filters_open_gates():
+    data = {
+        "blockers": [
+            {"id": "ASSUM-VEFF", "gate": True, "status": "UNRESOLVED", "why_it_matters": "volume matters"},
+            {"id": "ASSUM-PLIMIT", "gate": True, "status": "ACCEPTED"},
+            {
+                "id": "ASSUM-ENERGY-MODEL",
+                "gate": True,
+                "status": "OPEN",
+                "rationale": "bound only",
+                "resolution_options": ["accept", "integrate"],
+            },
+        ]
+    }
+    items = rfi_package.open_gate_items(data)
+    assert [item["id"] for item in items] == ["ASSUM-VEFF", "ASSUM-ENERGY-MODEL"]
+
+
+def test_rfi_package_renders_open_gate_count_and_sections():
+    items = [
+        {
+            "id": "ASSUM-VEFF",
+            "title": "Effective volume",
+            "status": "UNRESOLVED",
+            "severity": "high",
+            "rationale": "Need connected gas volume.",
+            "resolution_options": ["provide volume"],
+        }
+    ]
+    text = rfi_package.render_rfi(items)
+    assert "Open gate count: 1" in text
+    assert "## RFI-1: ASSUM-VEFF - Effective volume" in text
+    assert "Need connected gas volume." in text
+    assert "- provide volume" in text
