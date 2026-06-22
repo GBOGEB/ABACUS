@@ -96,7 +96,7 @@ jobs:
           python run_dmaic_5_iterations.py || echo "DMAIC test completed with warnings"
       
       - name: Upload Test Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         if: ${{ !inputs.skip_tests }}
         with:
           files: ./coverage.xml
