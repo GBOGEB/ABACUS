@@ -1,0 +1,51 @@
+{
+  "release_id": "REL-20260624-v2.0.0",
+  "package_id": "PKG-RFO-ADR-OCD-20260624",
+  "version": "2.0.0",
+  "label": "v2.0.0-DMAIC-2026-06-24",
+  "date": "2026-06-24",
+  "status": "proposed-controlled-baseline",
+  "scope": [
+    "RFO structured content governance",
+    "ADR structured content governance",
+    "OCD structured content governance",
+    "lineage and traceability framework",
+    "repository handoff model"
+  ],
+  "outputs_planned": [
+    "json",
+    "jsonl",
+    "markdown",
+    "docx",
+    "pdf",
+    "html",
+    "sqlite",
+    "rtm",
+    "dtm",
+    "lineage"
+  ],
+  "quality_gates": {
+    "schema_valid": false,
+    "numbering_valid": false,
+    "rtm_valid": false,
+    "dtm_valid": false,
+    "lineage_valid": false,
+    "changelog_updated": true,
+    "definition_of_done_defined": true
+  },
+  "linked_repositories": [
+    "GBOGEB/CODEX",
+    "GBOGEB/ABACUS",
+    "GBOGEB/DOCX_RTM_Automation"
+  ],
+  "active_branch": "codex/adr-ocd-canvas-lineage-dmaic",
+  "next_waves": [
+    "W001 schemas",
+    "W002 canonical objects",
+    "W003 traceability",
+    "W004 parser",
+    "W005 rendering",
+    "W006 governance automation",
+    "W007 dashboard"
+  ]
+}
