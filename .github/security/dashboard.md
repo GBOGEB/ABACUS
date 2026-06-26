@@ -1,6 +1,6 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-06-26T10:09:24Z · repo: `GBOGEB/ABACUS`  
-> **2494 open alerts** across 4 tools
+> Auto-generated 2026-06-26T10:10:08Z · repo: `GBOGEB/ABACUS`  
+> **2495 open alerts** across 4 tools
 
 ## Severity Overview
 
@@ -8,14 +8,14 @@
 |----------|------:|
 | Error | 74 |
 | Warning | 278 |
-| Note | 2142 |
+| Note | 2143 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
 | Bandit | 1843 |
-| CodeQL | 492 |
+| CodeQL | 493 |
 | osv-scanner | 94 |
 | Semgrep | 65 |
 
@@ -29,7 +29,7 @@ _Groups are defined in [security.toml](security.toml)_
 | 🟠 SEC_WEAK_HASH | MEDIUM | 10 | Fix next sprint |
 | 🟠 SEC_TEMPFILE | MEDIUM | 4 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 1531 | Suppress / defer |
-| 🟡 QUAL_DEAD_CODE | LOW | 250 | Suppress / defer |
+| 🟡 QUAL_DEAD_CODE | LOW | 251 | Suppress / defer |
 | ⚪ OTHER | INFO | 597 | Suppress / defer |
 
 ## Hottest Files (most alerts)
@@ -157,10 +157,11 @@ _Groups are defined in [security.toml](security.toml)_
 | [2631](https://github.com/GBOGEB/ABACUS/security/code-scanning/2631) | Bandit | `B101` | `test_runtime.py` | 73 | note |
 | … | _1501 more — see alerts.yaml_ | | | | |
 
-### 🟡 QUAL_DEAD_CODE (250 alerts)
+### 🟡 QUAL_DEAD_CODE (251 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
+| [2651](https://github.com/GBOGEB/ABACUS/security/code-scanning/2651) | CodeQL | `py/unused-import` | `populate_package.py` | 16 | note |
 | [2568](https://github.com/GBOGEB/ABACUS/security/code-scanning/2568) | CodeQL | `py/unused-local-variable` | `test_pipeline_execution_modes.py` | 182 | note |
 | [2567](https://github.com/GBOGEB/ABACUS/security/code-scanning/2567) | CodeQL | `py/unused-local-variable` | `test_pipeline_execution_modes.py` | 181 | note |
 | [2566](https://github.com/GBOGEB/ABACUS/security/code-scanning/2566) | CodeQL | `py/unused-import` | `workflow_analyzer.py` | 19 | note |
@@ -190,8 +191,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [543](https://github.com/GBOGEB/ABACUS/security/code-scanning/543) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 28 | note |
 | [542](https://github.com/GBOGEB/ABACUS/security/code-scanning/542) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 27 | note |
 | [507](https://github.com/GBOGEB/ABACUS/security/code-scanning/507) | CodeQL | `py/unused-local-variable` | `test_w003_w004.py` | 36 | note |
-| [506](https://github.com/GBOGEB/ABACUS/security/code-scanning/506) | CodeQL | `py/unused-local-variable` | `symbols.py` | 651 | note |
-| … | _220 more — see alerts.yaml_ | | | | |
+| … | _221 more — see alerts.yaml_ | | | | |
 
 ### ⚪ OTHER (597 alerts)
 
@@ -238,6 +238,6 @@ _Groups are defined in [security.toml](security.toml)_
 | 3 | SEC_COMPILE_EXEC | 0 live / ~10 est. | Replace `compile+exec` with `ast.parse()` (syntax-only) |
 | 4 | SEC_TEMPFILE | 4 live / ~15 est. | Remove `delete=False` from `NamedTemporaryFile` |
 | 5 | SEC_ASSERT | 1531 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
-| 6 | QUAL_DEAD_CODE | 250 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
+| 6 | QUAL_DEAD_CODE | 251 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-06-26T10:09:24Z_
+_Dashboard last updated: 2026-06-26T10:10:08Z_
