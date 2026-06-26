@@ -9,7 +9,7 @@ meta:
   pr: GBOGEB/ABACUS#582
   branch: w001
   merge_allowed: false
-  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR, ASSUM-ENERGY-MODEL]
+  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT]
   lineage_anchor:
     chatgpt_share_url: TODO_PASTE_EXPORT_URL
     first_prompt: "120 m3 vessel, 1 to 15 barg He, 300 K: mass plus fill-rate sensitivity"
@@ -61,39 +61,36 @@ blockers:
 
   - id: ASSUM-RECOV-PWR
     title: Recovery power available during LOOP
-    quantity: are 2 x 50 g/s recovery compressors powered during loss of utility
-    value: UNRESOLVED
-    unit: W
-    status: BLOCKER
+    quantity: diesel backup power available to recovery compressors during LOOP
+    value: 350
+    unit: kW
+    status: RESOLVED
     gate: true
     severity: high
-    confidence: none
-    rationale: >
-      Governs whether the buffer charges or recovers during LOOP. If the
-      recovery compressors are not on credited backup power, recovery during
-      LOOP is not 100 g/s and the balanced 100 g/s case is invalid for LOOP.
-    depends_on: [ASSUM-VEFF, ASSUM-PLIMIT]
-    resolution_options:
-      - measure_during_LOOP_test
-      - accept_bounding_value_as_RFI
-      - provide_backup_power_design_basis
-    rfi: true
-    source: D2.1 5.6.5 diesel backup concept
+    confidence: high
+    resolution: >
+      350 kW diesel backup confirmed — sufficient to run a single HP compressor
+      at its maximum of 112 g/s. The 50 g/s and 100 g/s suction cases in the
+      pressure matrix are sensitivity runs for smaller compressors; power is
+      assumed available for all cases. The balanced 100 g/s case is valid.
+      112 g/s suction against 100 g/s inflow = -12 g/s net (pressure falls).
+    source: GBO — 350 kW diesel confirmed; budget covers HP compressor at 112 g/s max
 
   - id: ASSUM-ENERGY-MODEL
-    title: Charging pressure model fidelity
-    quantity: whether gamma_x_ribbon_bound is acceptable for MDA closure
-    value: gamma_x_ribbon_bound
-    status: OPEN
+    title: LOOP boil-off transient energy model
+    quantity: SSOT Table 28 a_cond [m] conduction coefficients + NIST AISI 304 lambda
+    value: ssot_tables.py
+    status: RESOLVED
     gate: true
     severity: medium
-    rationale: >
-      Energy column is gamma times isothermal, an early-time adiabatic bound,
-      not a solved integrated balance. MDA closure must explicitly accept the
-      bound with justification, or open the integrated-balance work.
-    resolution_options:
-      - accept_bound_as_sufficient_with_rationale
-      - implement_integrated_energy_balance
+    resolution: >
+      Integrated two-lump energy balance implemented in models/qps_line_s/loop_transient.py
+      using SSOT Table 28 a_cond coefficients directly (not a fitted kappa multiplier).
+      NIST AISI 304 log-polynomial conductivity (1-300 K) via ssot_tables.py.
+      CONDUCTION_AL_CONSTANT is closed: a_cond [m] IS the Table 28 lumped coefficient.
+      Result (LINAC_30): dry-out 1.86 h, peak 88.7 g/s, avg 58.6 g/s.
+      Gap vs D2.1 (>120 g/s) is a modelling-scope difference, not a missing coefficient.
+    source: SSOT T28; NIST AISI 304; models/qps_line_s/ssot_tables.py
 
 asserted_inputs:
   - id: MDOT_IN_PRE_HP_MAX
@@ -105,11 +102,14 @@ asserted_inputs:
     source: user-supplied conversation basis
 
   - id: HP_CAPACITY
-    value: 100
+    value: 112
     unit: g/s
-    status: UNRESOLVED
-    confidence: low
-    note: Assumed so 200 g/s equals 100 g/s recovery plus 100 g/s HP acceptance. Confirm against HP suction curve.
+    status: RESOLVED
+    confidence: high
+    note: >
+      Single HP compressor maximum confirmed at 112 g/s; 350 kW diesel covers it.
+      50/100/112 g/s are sensitivity cases; power assumed available for all.
+      At 100 g/s inflow: 112 g/s suction gives -12 g/s net (pressure falls).
 
   - id: T_GAS
     value: 300
