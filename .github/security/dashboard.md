@@ -1,22 +1,21 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-06-26T10:10:08Z · repo: `GBOGEB/ABACUS`  
-> **2495 open alerts** across 4 tools
+> Auto-generated 2026-06-26T11:56:42Z · repo: `GBOGEB/ABACUS`  
+> **2393 open alerts** across 3 tools
 
 ## Severity Overview
 
 | Severity | Count |
 |----------|------:|
 | Error | 74 |
-| Warning | 278 |
-| Note | 2143 |
+| Warning | 184 |
+| Note | 2135 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
 | Bandit | 1843 |
-| CodeQL | 493 |
-| osv-scanner | 94 |
+| CodeQL | 485 |
 | Semgrep | 65 |
 
 ## REX Group Summary
@@ -29,8 +28,8 @@ _Groups are defined in [security.toml](security.toml)_
 | 🟠 SEC_WEAK_HASH | MEDIUM | 10 | Fix next sprint |
 | 🟠 SEC_TEMPFILE | MEDIUM | 4 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 1531 | Suppress / defer |
-| 🟡 QUAL_DEAD_CODE | LOW | 251 | Suppress / defer |
-| ⚪ OTHER | INFO | 597 | Suppress / defer |
+| 🟡 QUAL_DEAD_CODE | LOW | 243 | Suppress / defer |
+| ⚪ OTHER | INFO | 503 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
@@ -41,11 +40,11 @@ _Groups are defined in [security.toml](security.toml)_
 | `MINERVA_PID/tests/test_w005_reconciliation.py` | 52 |
 | `DMAIC_V3/tests/test_post_deployment_workspace_ingestion.py` | 51 |
 | `tests/test_release_gate.py` | 45 |
-| `requirements.txt` | 44 |
 | `qplant/handover_dashboard/tests/test_api.py` | 44 |
 | `DMAIC_V3/tests/test_phase1_define.py` | 43 |
 | `MINERVA_PID/tests/test_w006_crossmap.py` | 41 |
 | `DMAIC_V3/tests/test_phase4_improve.py` | 41 |
+| `DMAIC_V3/tests/test_bridges_bidirectional.py` | 40 |
 
 ## Alert Detail by REX Group
 
@@ -73,10 +72,10 @@ _Groups are defined in [security.toml](security.toml)_
 | [2248](https://github.com/GBOGEB/ABACUS/security/code-scanning/2248) | Bandit | `B603` | `test_docker_images.py` | 27 | note |
 | [2170](https://github.com/GBOGEB/ABACUS/security/code-scanning/2170) | Bandit | `B603` | `git_manager.py` | 64 | note |
 | [2169](https://github.com/GBOGEB/ABACUS/security/code-scanning/2169) | Bandit | `B603` | `git_manager.py` | 41 | note |
-| [2167](https://github.com/GBOGEB/ABACUS/security/code-scanning/2167) | Bandit | `B603` | `full_pipeline_orchestrator.py` | 454 | note |
-| [2165](https://github.com/GBOGEB/ABACUS/security/code-scanning/2165) | Bandit | `B603` | `full_pipeline_orchestrator.py` | 452 | note |
-| [2163](https://github.com/GBOGEB/ABACUS/security/code-scanning/2163) | Bandit | `B603` | `dow_integration_executor.py` | 191 | note |
-| [2162](https://github.com/GBOGEB/ABACUS/security/code-scanning/2162) | Bandit | `B603` | `dow_integration_executor.py` | 153 | note |
+| [2167](https://github.com/GBOGEB/ABACUS/security/code-scanning/2167) | Bandit | `B603` | `full_pipeline_orchestrator.py` | 453 | note |
+| [2165](https://github.com/GBOGEB/ABACUS/security/code-scanning/2165) | Bandit | `B603` | `full_pipeline_orchestrator.py` | 451 | note |
+| [2163](https://github.com/GBOGEB/ABACUS/security/code-scanning/2163) | Bandit | `B603` | `dow_integration_executor.py` | 190 | note |
+| [2162](https://github.com/GBOGEB/ABACUS/security/code-scanning/2162) | Bandit | `B603` | `dow_integration_executor.py` | 152 | note |
 | [2161](https://github.com/GBOGEB/ABACUS/security/code-scanning/2161) | Bandit | `B603` | `test_system_bridge.py` | 228 | note |
 | [2155](https://github.com/GBOGEB/ABACUS/security/code-scanning/2155) | Bandit | `B603` | `workflow_analyzer.py` | 333 | note |
 | [2153](https://github.com/GBOGEB/ABACUS/security/code-scanning/2153) | Bandit | `B603` | `workflow_analyzer.py` | 288 | note |
@@ -157,7 +156,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2631](https://github.com/GBOGEB/ABACUS/security/code-scanning/2631) | Bandit | `B101` | `test_runtime.py` | 73 | note |
 | … | _1501 more — see alerts.yaml_ | | | | |
 
-### 🟡 QUAL_DEAD_CODE (251 alerts)
+### 🟡 QUAL_DEAD_CODE (243 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -191,9 +190,9 @@ _Groups are defined in [security.toml](security.toml)_
 | [543](https://github.com/GBOGEB/ABACUS/security/code-scanning/543) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 28 | note |
 | [542](https://github.com/GBOGEB/ABACUS/security/code-scanning/542) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 27 | note |
 | [507](https://github.com/GBOGEB/ABACUS/security/code-scanning/507) | CodeQL | `py/unused-local-variable` | `test_w003_w004.py` | 36 | note |
-| … | _221 more — see alerts.yaml_ | | | | |
+| … | _213 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (597 alerts)
+### ⚪ OTHER (503 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -227,7 +226,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2493](https://github.com/GBOGEB/ABACUS/security/code-scanning/2493) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `build_atlas_v6.py` | 96 | error |
 | [2492](https://github.com/GBOGEB/ABACUS/security/code-scanning/2492) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `segment_pid.py` | 228 | error |
 | [2491](https://github.com/GBOGEB/ABACUS/security/code-scanning/2491) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `svg_extract.py` | 195 | error |
-| … | _567 more — see alerts.yaml_ | | | | |
+| … | _473 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
@@ -238,6 +237,6 @@ _Groups are defined in [security.toml](security.toml)_
 | 3 | SEC_COMPILE_EXEC | 0 live / ~10 est. | Replace `compile+exec` with `ast.parse()` (syntax-only) |
 | 4 | SEC_TEMPFILE | 4 live / ~15 est. | Remove `delete=False` from `NamedTemporaryFile` |
 | 5 | SEC_ASSERT | 1531 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
-| 6 | QUAL_DEAD_CODE | 251 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
+| 6 | QUAL_DEAD_CODE | 243 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-06-26T10:10:08Z_
+_Dashboard last updated: 2026-06-26T11:56:42Z_

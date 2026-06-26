@@ -1,23 +1,22 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-06-26T10:10:08Z
+# generated: 2026-06-26T11:56:42Z
 
-generated_at:"2026-06-26T10:10:08Z"
+generated_at:"2026-06-26T11:56:42Z"
 repo:GBOGEB/ABACUS
-total_open:2495
+total_open:2393
 by_severity:
-  note: 2143
-  warning: 278
+  note: 2135
+  warning: 184
   error: 74
 by_tool:
   Bandit: 1843
-  CodeQL: 493
-  osv-scanner: 94
+  CodeQL: 485
   Semgrep: 65
 by_rex_group:
   SEC_ASSERT: 1531
-  QUAL_DEAD_CODE: 251
+  QUAL_DEAD_CODE: 243
+  OTHER: 503
   SEC_SUBPROCESS: 95
-  OTHER: 597
   SEC_WEAK_HASH: 10
   SEC_HARDCODED_SECRET: 7
   SEC_TEMPFILE: 4
@@ -32,8 +31,6 @@ hot_files:
     count: 51
   - file: tests/test_release_gate.py
     count: 45
-  - file: requirements.txt
-    count: 44
   - file: qplant/handover_dashboard/tests/test_api.py
     count: 44
   - file: DMAIC_V3/tests/test_phase1_define.py
@@ -42,6 +39,8 @@ hot_files:
     count: 41
   - file: DMAIC_V3/tests/test_phase4_improve.py
     count: 41
+  - file: DMAIC_V3/tests/test_bridges_bidirectional.py
+    count: 40
 
 groups:
   SEC_ASSERT:
@@ -10150,12 +10149,6 @@ groups:
       severity: note
       file: "DMAIC_V3/phases/phase0_init.py"
       line: 89
-    - number: 316
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/performance_tracker.py"
-      line: 9
     - number: 315
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -10216,12 +10209,6 @@ groups:
       severity: note
       file: "DMAIC_V3/convergence/iterative_controller.py"
       line: 8
-    - number: 305
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/iteration_tracker.py"
-      line: 9
     - number: 304
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -10300,24 +10287,6 @@ groups:
       severity: note
       file: "scripts/generate_global_index.py"
       line: 13
-    - number: 285
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 41
-    - number: 284
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 33
-    - number: 283
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 30
     - number: 282
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -10372,12 +10341,6 @@ groups:
       severity: note
       file: "DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py"
       line: 12
-    - number: 273
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 11
     - number: 265
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -10462,18 +10425,6 @@ groups:
       severity: note
       file: "demo_integrated_system.py"
       line: 18
-    - number: 251
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/debug_pipeline.py"
-      line: 20
-    - number: 250
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/debug_pipeline.py"
-      line: 17
     - number: 249
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -10738,577 +10689,6 @@ groups:
       severity: note
       file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
       line: 12
-  SEC_SUBPROCESS:
-    - number: 2476
-      tool: Semgrep
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_streamlined_deployment.py"
-      line: 27
-    - number: 2475
-      tool: Semgrep
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_comprehensive_deployment.py"
-      line: 48
-    - number: 2474
-      tool: Semgrep
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_cicd_roundtrip_test.py"
-      line: 48
-    - number: 2473
-      tool: Semgrep
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "deploy_full_integration.py"
-      line: 65
-    - number: 2012
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "scripts/cold_start_doctor.py"
-      line: 19
-    - number: 2003
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_streamlined_deployment.py"
-      line: 27
-    - number: 2001
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_comprehensive_deployment.py"
-      line: 48
-    - number: 1999
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_cicd_roundtrip_test.py"
-      line: 48
-    - number: 1650
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "deploy_full_integration.py"
-      line: 65
-    - number: 2638
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "models/qps_line_s/rfi_package.py"
-      line: 57
-    - number: 2579
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "MINERVA_PID/ci/golden_gate.py"
-      line: 44
-    - number: 2577
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "MINERVA_PID/ci/golden_gate.py"
-      line: 36
-    - number: 2269
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 117
-    - number: 2266
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 68
-    - number: 2263
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 31
-    - number: 2255
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 61
-    - number: 2252
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 42
-    - number: 2248
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 27
-    - number: 2170
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/integrations/git_manager.py"
-      line: 64
-    - number: 2169
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/integrations/git_manager.py"
-      line: 41
-    - number: 2167
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 454
-    - number: 2165
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 452
-    - number: 2163
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 191
-    - number: 2162
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 153
-    - number: 2161
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/core/test_system_bridge.py"
-      line: 228
-    - number: 2155
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 333
-    - number: 2153
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 288
-    - number: 2151
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 26
-    - number: 2025
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/markdown_exec_runner.py"
-      line: 29
-    - number: 2024
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/markdown_exec_runner.py"
-      line: 24
-    - number: 2018
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/fetch_workflow_errors.py"
-      line: 21
-    - number: 2014
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/deploy_v23_github.py"
-      line: 39
-    - number: 2010
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/code_health_check.py"
-      line: 22
-    - number: 2007
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 105
-    - number: 2006
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 83
-    - number: 2005
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 58
-    - number: 1997
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/generate_lineage.py"
-      line: 176
-    - number: 1996
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/generate_lineage.py"
-      line: 41
-    - number: 1991
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/classify_artifacts.py"
-      line: 56
-    - number: 1987
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/analyze_repo.py"
-      line: 85
-    - number: 1981
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/vulnerability_scan.py"
-      line: 24
-    - number: 1979
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 105
-    - number: 1977
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 45
-    - number: 1976
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 30
-    - number: 1917
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/monitoring_dashboard/collect_metrics.py"
-      line: 70
-    - number: 1916
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/monitoring_dashboard/collect_metrics.py"
-      line: 55
-    - number: 1902
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/load_testing/load_test_scenarios.py"
-      line: 100
-    - number: 1798
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/handover_dashboard/api/main.py"
-      line: 547
-    - number: 1662
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 479
-    - number: 1660
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 430
-    - number: 1658
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 27
-    - number: 1655
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_azure_deployment_helper.py"
-      line: 41
-    - number: 1647
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "clone_based_validator.py"
-      line: 62
-    - number: 1644
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 387
-    - number: 1642
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 362
-    - number: 1640
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 354
-    - number: 1638
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 351
-    - number: 1636
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 326
-    - number: 1628
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 360
-    - number: 1626
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 39
-    - number: 1624
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 26
-    - number: 1621
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 218
-    - number: 1618
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 171
-    - number: 1616
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 25
-    - number: 1614
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "abacus_v21_session_tuple_analyzer.py"
-      line: 502
-    - number: 1214
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
-      line: 44
-    - number: 783
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/quick_error_fix.py"
-      line: 45
-    - number: 781
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/quick_error_fix.py"
-      line: 30
-    - number: 771
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 233
-    - number: 769
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 174
-    - number: 766
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
-      line: 195
-    - number: 756
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_real_execution.py"
-      line: 52
-    - number: 755
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_real_execution.py"
-      line: 43
-    - number: 753
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_integration_pipeline.py"
-      line: 105
-    - number: 752
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_integration_pipeline.py"
-      line: 47
-    - number: 750
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 431
-    - number: 748
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 422
-    - number: 746
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 241
-    - number: 745
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 213
-    - number: 744
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 183
-    - number: 732
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 225
-    - number: 725
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/core/test_system_bridge.py"
-      line: 148
-    - number: 712
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 87
-    - number: 710
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 70
-    - number: 708
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 54
-    - number: 706
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 38
-    - number: 704
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 24
-    - number: 701
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 97
-    - number: 698
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 85
-    - number: 696
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 54
-    - number: 694
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 53
-    - number: 692
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 50
-    - number: 690
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 35
-    - number: 687
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 254
-    - number: 685
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 224
   OTHER:
     - number: 2569
       tool: CodeQL
@@ -11639,7 +11019,7 @@ groups:
       rule_id: "py/call/wrong-number-class-arguments"
       severity: error
       file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 279
+      line: 278
     - number: 119
       tool: CodeQL
       rule_id: "actions/cache-poisoning/poisonable-step"
@@ -11670,36 +11050,12 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
-    - number: 2574
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
+    - number: 2650
+      tool: Semgrep
+      rule_id: "yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout"
       severity: warning
-      file: "DMAIC_V3/generators/requirements.txt"
-      line: 1
-    - number: 2573
-      tool: osv-scanner
-      rule_id: "CVE-2025-47273"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 2572
-      tool: osv-scanner
-      rule_id: "CVE-2024-6345"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 2571
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
-      severity: warning
-      file: "DMAIC_V3/generators/requirements.txt"
-      line: 1
-    - number: 2570
-      tool: osv-scanner
-      rule_id: "CVE-2025-47273"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
+      file: ".github/workflows/ci-failure-debug-rerun.yml"
+      line: 18
     - number: 2538
       tool: CodeQL
       rule_id: "py/unreachable-statement"
@@ -11730,12 +11086,6 @@ groups:
       severity: warning
       file: "qplant/deployment/k8s/deployment-api-server.yaml"
       line: 47
-    - number: 2522
-      tool: Semgrep
-      rule_id: "yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout"
-      severity: warning
-      file: ".github/workflows/ci-failure-debug-rerun.yml"
-      line: 18
     - number: 2498
       tool: Semgrep
       rule_id: "generic.nginx.security.request-host-used.request-host-used"
@@ -11946,540 +11296,6 @@ groups:
       severity: warning
       file: "DMAIC_V3/tests/test_mathml_renderer.py"
       line: 20
-    - number: 679
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 678
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 664
-      tool: osv-scanner
-      rule_id: "CVE-2020-28493"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 663
-      tool: osv-scanner
-      rule_id: "CVE-2020-28493"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 662
-      tool: osv-scanner
-      rule_id: "CVE-2020-14343"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 661
-      tool: osv-scanner
-      rule_id: "CVE-2020-14343"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 660
-      tool: osv-scanner
-      rule_id: "CVE-2021-32559"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 659
-      tool: osv-scanner
-      rule_id: "CVE-2021-32559"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 656
-      tool: osv-scanner
-      rule_id: "CVE-2020-13091"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 655
-      tool: osv-scanner
-      rule_id: "CVE-2020-13091"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 654
-      tool: osv-scanner
-      rule_id: "CVE-2016-10745"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 653
-      tool: osv-scanner
-      rule_id: "CVE-2016-10745"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 652
-      tool: osv-scanner
-      rule_id: "CVE-2019-10906"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 651
-      tool: osv-scanner
-      rule_id: "CVE-2019-10906"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 646
-      tool: osv-scanner
-      rule_id: "CVE-2017-18342"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 645
-      tool: osv-scanner
-      rule_id: "CVE-2017-18342"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 636
-      tool: osv-scanner
-      rule_id: "CVE-2016-10075"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 635
-      tool: osv-scanner
-      rule_id: "CVE-2016-10075"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 630
-      tool: osv-scanner
-      rule_id: "CVE-2014-0012"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 629
-      tool: osv-scanner
-      rule_id: "CVE-2014-0012"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 628
-      tool: osv-scanner
-      rule_id: "CVE-2014-1402"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 627
-      tool: osv-scanner
-      rule_id: "CVE-2014-1402"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 624
-      tool: osv-scanner
-      rule_id: "CVE-2017-18342"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 623
-      tool: osv-scanner
-      rule_id: "CVE-2017-18342"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 621
-      tool: osv-scanner
-      rule_id: "CVE-2024-56326"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 620
-      tool: osv-scanner
-      rule_id: "CVE-2024-56326"
-      severity: warning
-      file: "repo_analysis_toolkit/requirements.txt"
-      line: 1
-    - number: 619
-      tool: osv-scanner
-      rule_id: "CVE-2024-56326"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 617
-      tool: osv-scanner
-      rule_id: "CVE-2021-32559"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 616
-      tool: osv-scanner
-      rule_id: "CVE-2021-32559"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 615
-      tool: osv-scanner
-      rule_id: "CVE-2016-10745"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 614
-      tool: osv-scanner
-      rule_id: "CVE-2016-10745"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 613
-      tool: osv-scanner
-      rule_id: "CVE-2024-34064"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 612
-      tool: osv-scanner
-      rule_id: "CVE-2024-34064"
-      severity: warning
-      file: "repo_analysis_toolkit/requirements.txt"
-      line: 1
-    - number: 611
-      tool: osv-scanner
-      rule_id: "CVE-2024-34064"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 610
-      tool: osv-scanner
-      rule_id: "CVE-2024-22195"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 609
-      tool: osv-scanner
-      rule_id: "CVE-2024-22195"
-      severity: warning
-      file: "repo_analysis_toolkit/requirements.txt"
-      line: 1
-    - number: 608
-      tool: osv-scanner
-      rule_id: "CVE-2024-22195"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 607
-      tool: osv-scanner
-      rule_id: "CVE-2024-56201"
-      severity: warning
-      file: "repo_analysis_toolkit/requirements.txt"
-      line: 1
-    - number: 606
-      tool: osv-scanner
-      rule_id: "CVE-2020-28493"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 605
-      tool: osv-scanner
-      rule_id: "CVE-2020-28493"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 604
-      tool: osv-scanner
-      rule_id: "CVE-2017-12852"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 603
-      tool: osv-scanner
-      rule_id: "CVE-2017-12852"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 602
-      tool: osv-scanner
-      rule_id: "CVE-2017-12852"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 601
-      tool: osv-scanner
-      rule_id: "CVE-2017-12852"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 600
-      tool: osv-scanner
-      rule_id: "CVE-2014-0012"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 599
-      tool: osv-scanner
-      rule_id: "CVE-2014-0012"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 597
-      tool: osv-scanner
-      rule_id: "CVE-2021-34141"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 595
-      tool: osv-scanner
-      rule_id: "CVE-2021-34141"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 594
-      tool: osv-scanner
-      rule_id: "CVE-2024-21503"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 593
-      tool: osv-scanner
-      rule_id: "CVE-2024-21503"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 592
-      tool: osv-scanner
-      rule_id: "CVE-2024-21503"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 591
-      tool: osv-scanner
-      rule_id: "CVE-2024-21503"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 590
-      tool: osv-scanner
-      rule_id: "CVE-2021-41496"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 589
-      tool: osv-scanner
-      rule_id: "CVE-2021-41496"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 588
-      tool: osv-scanner
-      rule_id: "CVE-2021-41496"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 587
-      tool: osv-scanner
-      rule_id: "CVE-2021-41496"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 586
-      tool: osv-scanner
-      rule_id: "CVE-2014-1858"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 585
-      tool: osv-scanner
-      rule_id: "CVE-2014-1858"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 584
-      tool: osv-scanner
-      rule_id: "CVE-2014-1858"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 583
-      tool: osv-scanner
-      rule_id: "CVE-2014-1858"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 582
-      tool: osv-scanner
-      rule_id: "CVE-2025-27516"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 581
-      tool: osv-scanner
-      rule_id: "CVE-2025-27516"
-      severity: warning
-      file: "repo_analysis_toolkit/requirements.txt"
-      line: 1
-    - number: 580
-      tool: osv-scanner
-      rule_id: "CVE-2025-27516"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 578
-      tool: osv-scanner
-      rule_id: "CVE-2019-6446"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 577
-      tool: osv-scanner
-      rule_id: "CVE-2019-6446"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 576
-      tool: osv-scanner
-      rule_id: "CVE-2019-6446"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 575
-      tool: osv-scanner
-      rule_id: "CVE-2019-6446"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 574
-      tool: osv-scanner
-      rule_id: "CVE-2014-1402"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 573
-      tool: osv-scanner
-      rule_id: "CVE-2014-1402"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 572
-      tool: osv-scanner
-      rule_id: "CVE-2020-14343"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 571
-      tool: osv-scanner
-      rule_id: "CVE-2020-14343"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 570
-      tool: osv-scanner
-      rule_id: "CVE-2025-71176"
-      severity: warning
-      file: "rtm_integration/automation/requirements.txt"
-      line: 1
-    - number: 569
-      tool: osv-scanner
-      rule_id: "CVE-2025-71176"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 568
-      tool: osv-scanner
-      rule_id: "CVE-2025-71176"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 566
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 565
-      tool: osv-scanner
-      rule_id: "CVE-2025-69534"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 564
-      tool: osv-scanner
-      rule_id: "CVE-2021-41495"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 563
-      tool: osv-scanner
-      rule_id: "CVE-2021-41495"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 562
-      tool: osv-scanner
-      rule_id: "CVE-2021-41495"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 561
-      tool: osv-scanner
-      rule_id: "CVE-2021-41495"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 560
-      tool: osv-scanner
-      rule_id: "CVE-2023-36464"
-      severity: warning
-      file: "DMAIC_V3/generators/requirements.txt"
-      line: 1
-    - number: 559
-      tool: osv-scanner
-      rule_id: "CVE-2019-10906"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 558
-      tool: osv-scanner
-      rule_id: "CVE-2019-10906"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 556
-      tool: osv-scanner
-      rule_id: "CVE-2026-32274"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 554
-      tool: osv-scanner
-      rule_id: "CVE-2026-32274"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 553
-      tool: osv-scanner
-      rule_id: "CVE-2014-1859"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 552
-      tool: osv-scanner
-      rule_id: "CVE-2014-1859"
-      severity: warning
-      file: "requirements.txt"
-      line: 1
-    - number: 551
-      tool: osv-scanner
-      rule_id: "CVE-2014-1859"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
-    - number: 550
-      tool: osv-scanner
-      rule_id: "CVE-2014-1859"
-      severity: warning
-      file: "DMAIC_V3/requirements.txt"
-      line: 1
     - number: 529
       tool: CodeQL
       rule_id: "py/file-not-closed"
@@ -13517,13 +12333,13 @@ groups:
       rule_id: "B607"
       severity: note
       file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 454
+      line: 453
     - number: 2164
       tool: Bandit
       rule_id: "B607"
       severity: note
       file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 452
+      line: 451
     - number: 2154
       tool: Bandit
       rule_id: "B607"
@@ -14243,37 +13059,37 @@ groups:
       rule_id: "B607"
       severity: note
       file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 431
+      line: 432
     - number: 747
       tool: Bandit
       rule_id: "B607"
       severity: note
       file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 422
+      line: 423
     - number: 743
       tool: Bandit
       rule_id: "B404"
       severity: note
       file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 11
+      line: 12
     - number: 733
       tool: Bandit
       rule_id: "B404"
       severity: note
       file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 34
+      line: 33
     - number: 729
       tool: Bandit
       rule_id: "B110"
       severity: note
       file: "DMAIC_V3/dow_integration_executor.py"
-      line: 21
+      line: 20
     - number: 728
       tool: Bandit
       rule_id: "B404"
       severity: note
       file: "DMAIC_V3/dow_integration_executor.py"
-      line: 13
+      line: 12
     - number: 727
       tool: Bandit
       rule_id: "B110"
@@ -14609,7 +13425,7 @@ groups:
       rule_id: "py/empty-except"
       severity: note
       file: "DMAIC_V3/dow_integration_executor.py"
-      line: 21
+      line: 20
     - number: 185
       tool: CodeQL
       rule_id: "py/empty-except"
@@ -14813,7 +13629,7 @@ groups:
       rule_id: "py/catch-base-exception"
       severity: note
       file: "DMAIC_V3/dow_integration_executor.py"
-      line: 21
+      line: 20
     - number: 151
       tool: CodeQL
       rule_id: "py/catch-base-exception"
@@ -14892,6 +13708,577 @@ groups:
       severity: note
       file: "abacus_v21_backup_recovery.py"
       line: 499
+  SEC_SUBPROCESS:
+    - number: 2476
+      tool: Semgrep
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_streamlined_deployment.py"
+      line: 27
+    - number: 2475
+      tool: Semgrep
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_comprehensive_deployment.py"
+      line: 48
+    - number: 2474
+      tool: Semgrep
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_cicd_roundtrip_test.py"
+      line: 48
+    - number: 2473
+      tool: Semgrep
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "deploy_full_integration.py"
+      line: 65
+    - number: 2012
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "scripts/cold_start_doctor.py"
+      line: 19
+    - number: 2003
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_streamlined_deployment.py"
+      line: 27
+    - number: 2001
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_comprehensive_deployment.py"
+      line: 48
+    - number: 1999
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_cicd_roundtrip_test.py"
+      line: 48
+    - number: 1650
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "deploy_full_integration.py"
+      line: 65
+    - number: 2638
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "models/qps_line_s/rfi_package.py"
+      line: 57
+    - number: 2579
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "MINERVA_PID/ci/golden_gate.py"
+      line: 44
+    - number: 2577
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "MINERVA_PID/ci/golden_gate.py"
+      line: 36
+    - number: 2269
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 117
+    - number: 2266
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 68
+    - number: 2263
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 31
+    - number: 2255
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 61
+    - number: 2252
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 42
+    - number: 2248
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 27
+    - number: 2170
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/integrations/git_manager.py"
+      line: 64
+    - number: 2169
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/integrations/git_manager.py"
+      line: 41
+    - number: 2167
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/full_pipeline_orchestrator.py"
+      line: 453
+    - number: 2165
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/full_pipeline_orchestrator.py"
+      line: 451
+    - number: 2163
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 190
+    - number: 2162
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 152
+    - number: 2161
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/core/test_system_bridge.py"
+      line: 228
+    - number: 2155
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 333
+    - number: 2153
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 288
+    - number: 2151
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 26
+    - number: 2025
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/markdown_exec_runner.py"
+      line: 29
+    - number: 2024
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/markdown_exec_runner.py"
+      line: 24
+    - number: 2018
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/fetch_workflow_errors.py"
+      line: 21
+    - number: 2014
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/deploy_v23_github.py"
+      line: 39
+    - number: 2010
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/code_health_check.py"
+      line: 22
+    - number: 2007
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 105
+    - number: 2006
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 83
+    - number: 2005
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 58
+    - number: 1997
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/generate_lineage.py"
+      line: 176
+    - number: 1996
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/generate_lineage.py"
+      line: 41
+    - number: 1991
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/classify_artifacts.py"
+      line: 56
+    - number: 1987
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/analyze_repo.py"
+      line: 85
+    - number: 1981
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/vulnerability_scan.py"
+      line: 24
+    - number: 1979
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 105
+    - number: 1977
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 45
+    - number: 1976
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 30
+    - number: 1917
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/monitoring_dashboard/collect_metrics.py"
+      line: 70
+    - number: 1916
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/monitoring_dashboard/collect_metrics.py"
+      line: 55
+    - number: 1902
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/load_testing/load_test_scenarios.py"
+      line: 100
+    - number: 1798
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/handover_dashboard/api/main.py"
+      line: 547
+    - number: 1662
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 479
+    - number: 1660
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 430
+    - number: 1658
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 27
+    - number: 1655
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_azure_deployment_helper.py"
+      line: 41
+    - number: 1647
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "clone_based_validator.py"
+      line: 62
+    - number: 1644
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 387
+    - number: 1642
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 362
+    - number: 1640
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 354
+    - number: 1638
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 351
+    - number: 1636
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 326
+    - number: 1628
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 360
+    - number: 1626
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 39
+    - number: 1624
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 26
+    - number: 1621
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 218
+    - number: 1618
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 171
+    - number: 1616
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 25
+    - number: 1614
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "abacus_v21_session_tuple_analyzer.py"
+      line: 502
+    - number: 1214
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
+      line: 44
+    - number: 783
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/quick_error_fix.py"
+      line: 45
+    - number: 781
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/quick_error_fix.py"
+      line: 30
+    - number: 771
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/phase0_init.py"
+      line: 233
+    - number: 769
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/phase0_init.py"
+      line: 174
+    - number: 766
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
+      line: 195
+    - number: 756
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_real_execution.py"
+      line: 52
+    - number: 755
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_real_execution.py"
+      line: 43
+    - number: 753
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_integration_pipeline.py"
+      line: 105
+    - number: 752
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_integration_pipeline.py"
+      line: 47
+    - number: 750
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 432
+    - number: 748
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 423
+    - number: 746
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 242
+    - number: 745
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 214
+    - number: 744
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 184
+    - number: 732
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 224
+    - number: 725
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/core/test_system_bridge.py"
+      line: 148
+    - number: 712
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 87
+    - number: 710
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 70
+    - number: 708
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 54
+    - number: 706
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 38
+    - number: 704
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 24
+    - number: 701
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 97
+    - number: 698
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 85
+    - number: 696
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 54
+    - number: 694
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 53
+    - number: 692
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 50
+    - number: 690
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 35
+    - number: 687
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 254
+    - number: 685
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 224
   SEC_WEAK_HASH:
     - number: 1992
       tool: Bandit
