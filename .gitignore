@@ -79,6 +79,11 @@ reports/*
 !rtm/trace_matrix.json
 !tracking_v2.3/tasks/tasks.json
 
+# QPS Line S generated render outputs
+# Regenerate with: python -m models.qps_line_s.runtime
+# These are expected outputs, not source of record.
+docs/qps_line_s_recovery/generated/
+
 # Temporary files
 *.tmp
 *.bak

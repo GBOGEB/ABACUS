@@ -1,0 +1,94 @@
+{
+  "package": "qps_line_s_recovery",
+  "version": "0.2.5-w001-rfi",
+  "status": "active_draft_mda_spine_runtime_rfi",
+  "repository": "GBOGEB/ABACUS",
+  "branch": "w001",
+  "pull_request": 582,
+  "tracking_issue": 581,
+  "purpose": "Reduced transient model and traceability package for QPS Line S helium recovery under LOOP / loss-of-utility conditions.",
+  "source_basis": [
+    "D2.1 Section 5.6.5 Loss of utility",
+    "D2.1 Section 5.6.6 Cryoplant trip",
+    "D2.1 Appendix 8.2 General PFD",
+    "D2.1 Appendix 8.3 SIMCRYOGENICS model",
+    "D2.1 Appendix 8.4 Modes",
+    "S_line_raw.txt raw prompt-output conversation pairs",
+    "REVIEW_AND_CONVERGENCE_PLAN.md",
+    "applicant_response_package.md skeleton",
+    "feedback packet CR-1 CR-2 CR-3",
+    "runtime verdict glue",
+    "W001 cleanup: generated artefacts ignored and energy model gate added",
+    "register-derived Applicant RFI renderer"
+  ],
+  "artifacts": [
+    {"path": "docs/qps_line_s_recovery/README.md", "type": "readme", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/source_register.md", "type": "source_register", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/assumptions_register.yaml", "type": "assumptions_register", "status": "active_ssot"},
+    {"path": "docs/qps_line_s_recovery/p_limit_register.md", "type": "pressure_limit_register", "status": "open_rfi"},
+    {"path": "docs/qps_line_s_recovery/rtm_traceability.md", "type": "rtm_traceability", "status": "started"},
+    {"path": "docs/qps_line_s_recovery/applicant_response_package.md", "type": "controlled_release_document", "status": "draft_merge_blocked"},
+    {"path": "docs/qps_line_s_recovery/program_wave_status.md", "type": "program_status", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/session_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/intent_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/roles_manifest.md", "type": "manifest", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/index.json", "type": "index", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/glossary.md", "type": "glossary", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/progress_21_point.md", "type": "progress", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/agent_workplan.md", "type": "workplan", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/critical_lineage_scan.md", "type": "lineage_scan", "status": "active"},
+    {"path": "models/qps_line_s/line_s_buffer.py", "type": "model_spine", "status": "active"},
+    {"path": "models/qps_line_s/scenarios.json", "type": "scenario_input", "status": "active"},
+    {"path": "models/qps_line_s/run_scenarios.py", "type": "runner", "status": "active"},
+    {"path": "models/qps_line_s/t_available_grid.py", "type": "post_processor", "status": "active"},
+    {"path": "models/qps_line_s/rfi_package.py", "type": "rfi_renderer", "status": "active"},
+    {"path": "models/qps_line_s/runtime.py", "type": "runtime_verdict", "status": "active"},
+    {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
+    {"path": "tests/test_runtime.py", "type": "test", "status": "active"},
+    {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"},
+    {"path": ".gitignore", "type": "source_control_policy", "status": "active"}
+  ],
+  "expected_outputs": [
+    {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.md", "producer": "models/qps_line_s/run_scenarios.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/scenario_matrix.csv", "producer": "models/qps_line_s/run_scenarios.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/t_available_grid.md", "producer": "models/qps_line_s/t_available_grid.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/t_available_grid.csv", "producer": "models/qps_line_s/t_available_grid.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/applicant_rfi.md", "producer": "models/qps_line_s/rfi_package.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/runtime_status.json", "producer": "models/qps_line_s/runtime.py", "tracked": false}
+  ],
+  "helper_issues": [
+    {"repo": "GBOGEB/ABACUS", "issue": 583, "role": "Agent A", "focus": "documentation_traceability"},
+    {"repo": "GBOGEB/ABACUS", "issue": 584, "role": "Agent B", "focus": "python_model_validation"},
+    {"repo": "GBOGEB/CODEX", "issue": 237, "role": "CODEX helper", "focus": "reusable_index_glossary_workflow"}
+  ],
+  "open_gates": [
+    "ASSUM-VEFF",
+    "ASSUM-PLIMIT",
+    "ASSUM-RECOV-PWR",
+    "ASSUM-ENERGY-MODEL"
+  ],
+  "runtime_decision": {
+    "draft_mode_expected_verdict": "ISSUE_RFI",
+    "w002_gate_mode": "python -m models.qps_line_s.runtime --gate",
+    "energy_model": "bound",
+    "open_gate_count": 4
+  },
+  "current_model": {
+    "method": "wave0_energy_bound_plus_isothermal_sanity_ribbon",
+    "energy_source": "gamma_x_ribbon_bound",
+    "volume_m3": "UNRESOLVED; use parametric band [9,30,120,240]",
+    "temperature_k": "CALIBRATION_PENDING; 300 K only sanity/default sweep input",
+    "heat_loads_w": {
+      "true_nominal_baseline": 6041.6667,
+      "uncertainty_only": 7250.0,
+      "design_point": 8700.0,
+      "previous_high_side_stress": 10440.0
+    }
+  },
+  "validation": {
+    "ci_runtime_owner": "explicit generation, explicit RFI render, followed by python -m models.qps_line_s.runtime --no-regen",
+    "local_pytest": "7 passed in prior local buildout; runtime and RFI tests added; CI now runs model, runtime, and RFI tests",
+    "zero_test_guard": "workflow includes collect-only check"
+  },
+  "convergence_rule": "Complete the Applicant RFI package before attempting W002 MDA closure."
+}

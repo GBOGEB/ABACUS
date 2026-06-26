@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "package": "qps_line_s_recovery",
+    "status": "draft",
+    "model": "energy_balance_first_pass",
+    "note": "V_eff and P_limit are gated; run over V_eff band until resolved."
+  },
+  "volume_band_m3": [9, 30, 120, 240],
+  "temperature_k": 300,
+  "cases": [
+    {"case": "A_balanced_abnormal", "m_in_g_s": 100, "m_rec_g_s": 100, "m_hp_g_s": 0, "position": "Covered if 2x50 g/s available"},
+    {"case": "B_pre_HP_transient", "m_in_g_s": 112, "m_rec_g_s": 100, "m_hp_g_s": 0, "position": "Bounded buffer; HP start timing governs"},
+    {"case": "C_intermediate", "m_in_g_s": 150, "m_rec_g_s": 100, "m_hp_g_s": 0, "position": "Requires pressure margin or additional recovery"},
+    {"case": "D_peak_without_HP", "m_in_g_s": 200, "m_rec_g_s": 100, "m_hp_g_s": 0, "position": "Not sustained unless margin and duration proven"},
+    {"case": "E_peak_with_HP", "m_in_g_s": 200, "m_rec_g_s": 100, "m_hp_g_s": 100, "position": "Creditable if HP path running"},
+    {"case": "F_shield_mitigated", "m_in_g_s": 30, "m_rec_g_s": 50, "m_hp_g_s": 0, "position": "Recovery exceeds mitigated release"}
+  ]
+}

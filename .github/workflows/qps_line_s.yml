@@ -1,0 +1,42 @@
+name: qps-line-s-validation
+
+on:
+  pull_request:
+    paths:
+      - 'models/qps_line_s/**'
+      - 'docs/qps_line_s_recovery/**'
+      - 'tests/test_line_s_buffer.py'
+      - 'tests/test_runtime.py'
+      - '.github/workflows/qps_line_s.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: python -m pip install pytest pyyaml
+      - name: Run model and runtime tests
+        run: python -m pytest -q tests/test_line_s_buffer.py tests/test_runtime.py
+      - name: Generate scenario and t_available grids
+        run: python -m models.qps_line_s.run_scenarios
+      - name: Generate Applicant RFI package
+        run: python -m models.qps_line_s.rfi_package
+      - name: Runtime verdict informational on draft
+        run: python -m models.qps_line_s.runtime --no-regen
+      - name: Verify generated outputs exist
+        run: |
+          test -s docs/qps_line_s_recovery/generated/scenario_matrix.md
+          test -s docs/qps_line_s_recovery/generated/scenario_matrix.csv
+          test -s docs/qps_line_s_recovery/generated/t_available_grid.md
+          test -s docs/qps_line_s_recovery/generated/t_available_grid.csv
+          test -s docs/qps_line_s_recovery/generated/applicant_rfi.md
+          test -s docs/qps_line_s_recovery/generated/runtime_status.json
+      - name: Zero-test guard
+        run: |
+          python -m pytest --collect-only -q tests/test_line_s_buffer.py tests/test_runtime.py | tee /tmp/collect.txt
+          grep -q "test_" /tmp/collect.txt
