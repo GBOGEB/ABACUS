@@ -91,7 +91,7 @@ jobs:
             -n auto
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           files: ${{ env.DMAIC_ROOT }}/coverage.xml
           flags: unit-tests
