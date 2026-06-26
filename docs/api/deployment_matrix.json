@@ -1,0 +1,401 @@
+{
+  "generated_at": "2026-06-26T11:39:32.146544",
+  "dashboard_count": 79,
+  "dashboards": [
+    {
+      "path": "docs/final_status_v4.4.0.html",
+      "size_bytes": 16092,
+      "name": "final_status_v4.4.0"
+    },
+    {
+      "path": "docs/deep_analysis_dashboard.html",
+      "size_bytes": 24302,
+      "name": "deep_analysis_dashboard"
+    },
+    {
+      "path": "docs/metrics.html",
+      "size_bytes": 28039,
+      "name": "metrics"
+    },
+    {
+      "path": "docs/file_review_tracker.html",
+      "size_bytes": 21888,
+      "name": "file_review_tracker"
+    },
+    {
+      "path": "docs/dashboard.html",
+      "size_bytes": 7267,
+      "name": "dashboard"
+    },
+    {
+      "path": "docs/runtime.html",
+      "size_bytes": 3839,
+      "name": "runtime"
+    },
+    {
+      "path": "docs/index.html",
+      "size_bytes": 22699,
+      "name": "index"
+    },
+    {
+      "path": "docs/repository_structure.html",
+      "size_bytes": 17840,
+      "name": "repository_structure"
+    },
+    {
+      "path": "docs/handover_book.html",
+      "size_bytes": 77248,
+      "name": "handover_book"
+    },
+    {
+      "path": "docs/progress_tracker.html",
+      "size_bytes": 21993,
+      "name": "progress_tracker"
+    },
+    {
+      "path": "docs/FINAL_HANDOVER.html",
+      "size_bytes": 6253,
+      "name": "FINAL_HANDOVER"
+    },
+    {
+      "path": "docs/dmaic-metrics.html",
+      "size_bytes": 18989,
+      "name": "dmaic-metrics"
+    },
+    {
+      "path": "docs/myrrha_handover/truth.html",
+      "size_bytes": 9469,
+      "name": "truth"
+    },
+    {
+      "path": "docs/myrrha_handover/artifact-index.html",
+      "size_bytes": 21539,
+      "name": "artifact-index"
+    },
+    {
+      "path": "docs/myrrha_handover/bt-scatter.html",
+      "size_bytes": 10222,
+      "name": "bt-scatter"
+    },
+    {
+      "path": "docs/myrrha_handover/mobile-fixes-changelog.html",
+      "size_bytes": 6667,
+      "name": "mobile-fixes-changelog"
+    },
+    {
+      "path": "docs/myrrha_handover/qa-test-suite.html",
+      "size_bytes": 15357,
+      "name": "qa-test-suite"
+    },
+    {
+      "path": "docs/myrrha_handover/pvps.html",
+      "size_bytes": 5724,
+      "name": "pvps"
+    },
+    {
+      "path": "docs/myrrha_handover/slide-editor.html",
+      "size_bytes": 12454,
+      "name": "slide-editor"
+    },
+    {
+      "path": "docs/myrrha_handover/review-dmaic.html",
+      "size_bytes": 19628,
+      "name": "review-dmaic"
+    },
+    {
+      "path": "docs/myrrha_handover/status.html",
+      "size_bytes": 10231,
+      "name": "status"
+    },
+    {
+      "path": "docs/myrrha_handover/ci-cd-pipeline.html",
+      "size_bytes": 20802,
+      "name": "ci-cd-pipeline"
+    },
+    {
+      "path": "docs/myrrha_handover/reports.html",
+      "size_bytes": 18043,
+      "name": "reports"
+    },
+    {
+      "path": "docs/myrrha_handover/missed-opportunities.html",
+      "size_bytes": 13412,
+      "name": "missed-opportunities"
+    },
+    {
+      "path": "docs/myrrha_handover/mt-12-pvps-technical-requirements.html",
+      "size_bytes": 25322,
+      "name": "mt-12-pvps-technical-requirements"
+    },
+    {
+      "path": "docs/myrrha_handover/graphs.html",
+      "size_bytes": 8134,
+      "name": "graphs"
+    },
+    {
+      "path": "docs/myrrha_handover/hx-sizing.html",
+      "size_bytes": 23408,
+      "name": "hx-sizing"
+    },
+    {
+      "path": "docs/myrrha_handover/thermo-analysis.html",
+      "size_bytes": 21391,
+      "name": "thermo-analysis"
+    },
+    {
+      "path": "docs/myrrha_handover/artifact-tracker.html",
+      "size_bytes": 35957,
+      "name": "artifact-tracker"
+    },
+    {
+      "path": "docs/myrrha_handover/qa-interactive.html",
+      "size_bytes": 23790,
+      "name": "qa-interactive"
+    },
+    {
+      "path": "docs/myrrha_handover/mt-11-kaeser-technical-requirements.html",
+      "size_bytes": 23683,
+      "name": "mt-11-kaeser-technical-requirements"
+    },
+    {
+      "path": "docs/myrrha_handover/diff-tracker.html",
+      "size_bytes": 15061,
+      "name": "diff-tracker"
+    },
+    {
+      "path": "docs/myrrha_handover/bt-artifacts.html",
+      "size_bytes": 20749,
+      "name": "bt-artifacts"
+    },
+    {
+      "path": "docs/myrrha_handover/responsive-review.html",
+      "size_bytes": 10022,
+      "name": "responsive-review"
+    },
+    {
+      "path": "docs/myrrha_handover/mt-13-report.html",
+      "size_bytes": 47134,
+      "name": "mt-13-report"
+    },
+    {
+      "path": "docs/myrrha_handover/search-index.html",
+      "size_bytes": 9421,
+      "name": "search-index"
+    },
+    {
+      "path": "docs/myrrha_handover/utilities.html",
+      "size_bytes": 14203,
+      "name": "utilities"
+    },
+    {
+      "path": "docs/myrrha_handover/code-quality.html",
+      "size_bytes": 11275,
+      "name": "code-quality"
+    },
+    {
+      "path": "docs/myrrha_handover/operations.html",
+      "size_bytes": 7134,
+      "name": "operations"
+    },
+    {
+      "path": "docs/myrrha_handover/verification-checklist.html",
+      "size_bytes": 8533,
+      "name": "verification-checklist"
+    },
+    {
+      "path": "docs/myrrha_handover/stats-proofs.html",
+      "size_bytes": 14672,
+      "name": "stats-proofs"
+    },
+    {
+      "path": "docs/myrrha_handover/index.html",
+      "size_bytes": 12421,
+      "name": "index"
+    },
+    {
+      "path": "docs/myrrha_handover/handover.html",
+      "size_bytes": 8520,
+      "name": "handover"
+    },
+    {
+      "path": "docs/myrrha_handover/accessibility-audit-report.html",
+      "size_bytes": 9572,
+      "name": "accessibility-audit-report"
+    },
+    {
+      "path": "docs/myrrha_handover/vendor-kaeser.html",
+      "size_bytes": 44540,
+      "name": "vendor-kaeser"
+    },
+    {
+      "path": "docs/myrrha_handover/action-tracker.html",
+      "size_bytes": 31989,
+      "name": "action-tracker"
+    },
+    {
+      "path": "docs/myrrha_handover/slides.html",
+      "size_bytes": 16040,
+      "name": "slides"
+    },
+    {
+      "path": "docs/myrrha_handover/bt-ranking.html",
+      "size_bytes": 27911,
+      "name": "bt-ranking"
+    },
+    {
+      "path": "docs/myrrha_handover/bt-validation.html",
+      "size_bytes": 10659,
+      "name": "bt-validation"
+    },
+    {
+      "path": "docs/myrrha_handover/qa-checklist.html",
+      "size_bytes": 9350,
+      "name": "qa-checklist"
+    },
+    {
+      "path": "docs/myrrha_handover/tables.html",
+      "size_bytes": 11943,
+      "name": "tables"
+    },
+    {
+      "path": "docs/myrrha_handover/dmaic-statistical.html",
+      "size_bytes": 10932,
+      "name": "dmaic-statistical"
+    },
+    {
+      "path": "docs/myrrha_handover/weighted-priority.html",
+      "size_bytes": 20502,
+      "name": "weighted-priority"
+    },
+    {
+      "path": "docs/myrrha_handover/testing-strategy.html",
+      "size_bytes": 12589,
+      "name": "testing-strategy"
+    },
+    {
+      "path": "docs/myrrha_handover/xref-matrix.html",
+      "size_bytes": 11189,
+      "name": "xref-matrix"
+    },
+    {
+      "path": "docs/myrrha_handover/changelog-dev.html",
+      "size_bytes": 16372,
+      "name": "changelog-dev"
+    },
+    {
+      "path": "docs/myrrha_handover/interaction-analysis.html",
+      "size_bytes": 15369,
+      "name": "interaction-analysis"
+    },
+    {
+      "path": "docs/myrrha_handover/slides/hierarchy.html",
+      "size_bytes": 2688,
+      "name": "hierarchy"
+    },
+    {
+      "path": "docs/myrrha_handover/slides/roadmap.html",
+      "size_bytes": 2059,
+      "name": "roadmap"
+    },
+    {
+      "path": "docs/myrrha_handover/slides/baseline.html",
+      "size_bytes": 2015,
+      "name": "baseline"
+    },
+    {
+      "path": "docs/myrrha_handover/slides/exec-summary.html",
+      "size_bytes": 2354,
+      "name": "exec-summary"
+    },
+    {
+      "path": "docs/myrrha_handover/slides/cover.html",
+      "size_bytes": 2145,
+      "name": "cover"
+    },
+    {
+      "path": "docs/api/dmaic_metrics_chart.html",
+      "size_bytes": 3122,
+      "name": "dmaic_metrics_chart"
+    },
+    {
+      "path": "docs/versions/index.html",
+      "size_bytes": 8200,
+      "name": "index"
+    },
+    {
+      "path": "docs/12-cluster/index.html",
+      "size_bytes": 7332,
+      "name": "index"
+    },
+    {
+      "path": "docs/dow/index.html",
+      "size_bytes": 7042,
+      "name": "index"
+    },
+    {
+      "path": "docs/Q3_Q4_Q5/review_deck.html",
+      "size_bytes": 327,
+      "name": "review_deck"
+    },
+    {
+      "path": "docs/cryo_dashboard_v0_3_0/index.html",
+      "size_bytes": 34824,
+      "name": "index"
+    },
+    {
+      "path": "docs/qplant/canonical_master/CONTRACT_Baseline_full.html",
+      "size_bytes": 269789,
+      "name": "CONTRACT_Baseline_full"
+    },
+    {
+      "path": "docs/qplant/canonical_master/MASTER_Input_full.html",
+      "size_bytes": 378573,
+      "name": "MASTER_Input_full"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/flows_only.html",
+      "size_bytes": 4661,
+      "name": "flows_only"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/equations_library.html",
+      "size_bytes": 11489,
+      "name": "equations_library"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/heat_loads.html",
+      "size_bytes": 10089,
+      "name": "heat_loads"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/operational_scenarios.html",
+      "size_bytes": 10412,
+      "name": "operational_scenarios"
+    },
+    {
+      "path": "docs/qplant/phase3_physics_validation/filled_examples.html",
+      "size_bytes": 4395,
+      "name": "filled_examples"
+    },
+    {
+      "path": "docs/qplant/monitoring_dashboard/index.html",
+      "size_bytes": 25231,
+      "name": "index"
+    },
+    {
+      "path": "docs/testing/index.html",
+      "size_bytes": 5758,
+      "name": "index"
+    },
+    {
+      "path": "docs/cryo/index.html",
+      "size_bytes": 4912,
+      "name": "index"
+    },
+    {
+      "path": "docs/tools/index.html",
+      "size_bytes": 7393,
+      "name": "index"
+    }
+  ]
+}
