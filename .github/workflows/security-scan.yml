@@ -18,13 +18,43 @@ permissions:
   security-events: write
 
 jobs:
+  bandit:
+    name: Bandit SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Install Bandit
+        run: pip install bandit[toml]
+
+      - name: Run Bandit
+        # Config governed by .github/security/security.toml [bandit] section
+        run: |
+          bandit -r DMAIC_V3 \
+            --exclude DMAIC_V3/tests,DMAIC_V3/generators/test_integration_pipeline.py \
+            --skip B101,B603 \
+            --severity-level medium \
+            --confidence-level medium \
+            -f sarif \
+            -o bandit-results.sarif || true
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: bandit-results.sarif
+          category: bandit
+
   ruff-security:
     name: Ruff Security Rules
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
@@ -40,3 +70,26 @@ jobs:
             --exclude "*_corrupted.py,*_fixed.py,*_clean.py" \
             --output-format github || true
 
+  osv-scan:
+    name: OSV Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run OSV Scanner
+        # v1.1+ uses Node 20-compatible actions internally
+        uses: google/osv-scanner-action@v2.3.8
+        with:
+          scan-args: |-
+            --lockfile=requirements.txt
+            --format=sarif
+            --output=osv-results.sarif
+        continue-on-error: true
+
+      - name: Upload OSV SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: osv-results.sarif
+          category: osv-scanner
+  # Semgrep runs in its own workflow: .github/workflows/semgrep.yml
