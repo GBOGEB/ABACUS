@@ -1,4 +1,9 @@
-name: Security Scan — Bandit + Ruff + OSV + Semgrep
+name: Security Scan — Ruff
+
+# Bandit  → bandit.yml
+# OSV     → osv-scanner.yml
+# Semgrep → semgrep.yml
+# This workflow runs Ruff security rules (S-series) which have no dedicated file.
 
 on:
   push:
@@ -6,7 +11,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 6 * * 1'   # weekly Monday 06:00 UTC (dashboard runs at 08:00)
+    - cron: '0 6 * * 1'
 
 permissions:
   contents: read
