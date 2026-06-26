@@ -16,7 +16,7 @@ class ContextManagerAgent:
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-        self.context_file = workspace_root / "DMAIC_V3_OUTPUT" / "context.json"
+        self.context_file = Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "context.json"
 
     def save_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Save context"""

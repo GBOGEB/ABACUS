@@ -9,8 +9,10 @@ on:
   workflow_run:
     workflows:
       - "DELTA_1 CodeQL"
-      - "Security Scan — Bandit + Ruff + OSV + Semgrep"
+      - "Bandit"
+      - "OSV-Scanner"
       - "Semgrep"
+      - "Security Scan — Ruff"
     types: [completed]
   schedule:
     - cron: '0 8 * * 1'   # Monday 08:00 UTC (after scanners at 06:00/07:00)

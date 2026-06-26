@@ -6,7 +6,7 @@ Tracks metrics and progress across iterations
 __version__ = "3.3.0"
 
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 from datetime import datetime
 import json
 
@@ -17,7 +17,7 @@ class IterationTrackerAgent:
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-        self.metrics_file = workspace_root / "DMAIC_V3_OUTPUT" / "iteration_metrics.json"
+        self.metrics_file = Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "iteration_metrics.json"
 
     def track_iteration(self, iteration: int, metrics: Dict[str, Any]) -> Dict[str, Any]:
         """Track metrics for an iteration"""
