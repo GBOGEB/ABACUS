@@ -1,22 +1,22 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-06-26T09:49:12Z
+# generated: 2026-06-26T10:09:24Z
 
-generated_at:"2026-06-26T09:49:12Z"
+generated_at:"2026-06-26T10:09:24Z"
 repo:GBOGEB/ABACUS
-total_open:2444
+total_open:2494
 by_severity:
-  note: 2092
+  note: 2142
   warning: 278
   error: 74
 by_tool:
-  Bandit: 1793
+  Bandit: 1843
   osv-scanner: 94
   CodeQL: 492
   Semgrep: 65
 by_rex_group:
-  SEC_ASSERT: 1483
-  SEC_SUBPROCESS: 94
-  OTHER: 596
+  SEC_ASSERT: 1531
+  SEC_SUBPROCESS: 95
+  OTHER: 597
   QUAL_DEAD_CODE: 250
   SEC_WEAK_HASH: 10
   SEC_HARDCODED_SECRET: 7
@@ -45,6 +45,294 @@ hot_files:
 
 groups:
   SEC_ASSERT:
+    - number: 2666
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 99
+    - number: 2665
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 91
+    - number: 2664
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 83
+    - number: 2663
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 75
+    - number: 2662
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 65
+    - number: 2661
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 59
+    - number: 2660
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 53
+    - number: 2659
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 52
+    - number: 2658
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 51
+    - number: 2657
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 43
+    - number: 2656
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 37
+    - number: 2655
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 33
+    - number: 2654
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 26
+    - number: 2653
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 20
+    - number: 2652
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_loop_transient.py"
+      line: 15
+    - number: 2649
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 126
+    - number: 2648
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 125
+    - number: 2647
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 124
+    - number: 2646
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 115
+    - number: 2645
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 114
+    - number: 2644
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 111
+    - number: 2643
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 110
+    - number: 2642
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 109
+    - number: 2641
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 108
+    - number: 2640
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 107
+    - number: 2639
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 106
+    - number: 2634
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 113
+    - number: 2633
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 112
+    - number: 2632
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 91
+    - number: 2631
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 73
+    - number: 2630
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 35
+    - number: 2628
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 62
+    - number: 2627
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 58
+    - number: 2626
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 49
+    - number: 2624
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 21
+    - number: 2623
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 17
+    - number: 2622
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_runtime.py"
+      line: 12
+    - number: 2621
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 66
+    - number: 2620
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 65
+    - number: 2619
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 47
+    - number: 2618
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 34
+    - number: 2617
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 33
+    - number: 2616
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 28
+    - number: 2615
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 27
+    - number: 2614
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 22
+    - number: 2613
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 21
+    - number: 2612
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 17
+    - number: 2611
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "tests/test_line_s_buffer.py"
+      line: 16
     - number: 2610
       tool: Bandit
       rule_id: "B101"
@@ -8998,6 +9286,12 @@ groups:
       severity: error
       file: "deploy_full_integration.py"
       line: 65
+    - number: 2638
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "models/qps_line_s/rfi_package.py"
+      line: 57
     - number: 2579
       tool: Bandit
       rule_id: "B603"
@@ -11483,6 +11777,12 @@ groups:
       severity: warning
       file: ".github/workflows/cd-unified.yml"
       line: 20
+    - number: 2637
+      tool: Bandit
+      rule_id: "B404"
+      severity: note
+      file: "models/qps_line_s/rfi_package.py"
+      line: 11
     - number: 2578
       tool: Bandit
       rule_id: "B607"
