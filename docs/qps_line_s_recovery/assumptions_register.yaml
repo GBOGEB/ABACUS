@@ -8,7 +8,7 @@ meta:
   track: MDA
   pr: GBOGEB/ABACUS#582
   branch: w001
-  merge_allowed: false
+  merge_allowed: true
   open_gates: []
   lineage_anchor:
     chatgpt_share_url: TODO_PASTE_EXPORT_URL
