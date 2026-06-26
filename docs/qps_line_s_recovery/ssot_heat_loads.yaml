@@ -1,0 +1,129 @@
+# QPS Line S Recovery — SSOT heat-load & LOOP transient data (Agent A / docs).
+# AUTHORITATIVE source set, transcribed from the contract mirror. Every row cites
+# its origin. D2.1 = CEA DSBT-TN-24-37 (conceptual design); SSOT tables = QPS
+# Addendum II mirror. Where the contract is older than the SSOT, the SSOT wins and
+# the discrepancy is recorded under `discrepancies`.
+
+meta:
+  binds_to: assumptions_register.yaml
+  config: LINAC_30
+  sources:
+    D2.1_5_6_5: "loss-of-utility scenario + Figs 15-18 (release timing/peaks)"
+    SSOT_T27: "lumped cold-mass composition"
+    SSOT_T28: "static heat-load equations (radiation + conduction coeffs)"
+    SSOT_T29: "specific enthalpy 1-300 K (cold mass + TS mass)"
+    He_line_safety: "QRB.S pressure ceilings, design 200 g/s, PN6"
+    RTM_292: "Line S flow-condition envelope (the requirement)"
+
+# --- masses (Table 27, LINAC_30) ---
+masses_kg:
+  cold_mass: {value: 12356, source: SSOT_T27}
+  ts_mass:   {value: 10753, source: SSOT_T27}
+
+# --- LHe inventory that evaporates during LOOP (D2.1 §5.6.5: 90% x 100 L/QCELL) ---
+lhe_inventory:
+  volume_l:    {value: 2700, source: D2.1_5_6_5}
+  density_kg_l: {value: 0.145, source: "LOOP model, 2 K ~31 mbar"}
+  mass_kg:     {value: 391.5, source: "2700 * 0.145"}
+  h_fg_2k_j_kg: {value: 23300, source: "LOOP model L_v(2 K)"}
+  energy_to_dryout_mj: {value: 9.12, source: "391.5 * 23300"}
+
+# --- static heat-load equations (Table 28, LINAC_30) ---
+# Q_rad = a_rad * (T_hot^4 - T_cold^4)            [W]
+# Q_cond = a_cond * INT(lambda_SS dT)             [W]   <-- conduction integral OPEN
+heat_loads:
+  q1_ts_to_cold:                       # parasitic TS(50K) -> 2K bath; drives boil-off
+    a_rad:  {value: 2.24e-5, source: SSOT_T28}
+    a_cond: {value: -3.60,   source: SSOT_T28}
+  q2_ambient_to_ts:                    # 300K -> TS; drives TS warming
+    a_rad:  {value: 6.58e-7, source: SSOT_T28}
+    a_cond: {value: -1.38,   source: SSOT_T28}
+  # CONDUCTION_AL_CONSTANT is RESOLVED. a_cond [m] IS the Table 28 coefficient.
+  # Equation: Q_cond = a_cond * INT(lambda_SS dT) using NIST AISI 304 fit (1-300 K).
+  # a_cond is negative by SSOT convention (T_source -> T_receiver integration order)
+  # so Q_cond is positive (heat flows hot->cold). Temperature-dependent: grows as T_TS
+  # warms. Implemented in models/qps_line_s/ssot_tables.py.
+  # D2.1 scalar anchors below are SUPERSEDED — retained for traceability only.
+  conduction_anchor_w_SUPERSEDED:
+    q2_cond_at_start: {value: 3700, source: "D2.1 sim note — superseded by SSOT Table 28"}
+    q1_cond_at_start: {value: 1200, source: "D2.1 sim note — superseded by SSOT Table 28"}
+    status: SUPERSEDED_BY_SSOT_TABLE_28
+
+# --- specific enthalpy J/kg (Table 29) — TS mass column used for dH/dT(T) ---
+enthalpy_ts_j_kg:   # T_K: H
+  source: SSOT_T29
+  table:
+    1: 0.1
+    2: 0.1
+    4: 0.4
+    10: 4.9
+    20: 46.5
+    30: 218.5
+    40: 670.7
+    50: 1518.9
+    60: 2810.3
+    70: 4547.0
+    77: 6017.7
+    80: 6710.4
+    90: 9248.1
+    100: 12096.5
+    120: 18566.3
+    140: 25911.4
+    160: 33951.3
+    180: 42530.5
+    200: 51512.2
+    300: 99870.3
+
+# --- D2.1 LOOP cases (now fully sourced; timescales in HOURS, not seconds) ---
+loop_cases:
+  baseline:
+    onset_h: 1.0          # safety valve (1.5 bar) opens ~1 h after event
+    evap_window_h: 1.0    # bath empties in the following ~1 h
+    avg_g_s: 120          # ">120 g/s average"
+    peak_g_s: 150         # ">150 g/s peak"
+    spike_g_s: 200        # "200 g/s spike" (Fig 15 caption)
+    source: D2.1_5_6_5
+  early_1p2bar_4p4k:
+    onset_h: 0.33         # release starts ~20 min (1/4 h)
+    inventory_gone_h: 1.5
+    source: D2.1_5_6_5
+  shield_cooled_50k:
+    onset_h: 3.5          # release > 3 h
+    plateau_g_s: 20
+    spike_g_s: 30
+    requires_ts_flow_g_s: 80   # + partial cold-box operation
+    source: D2.1_5_6_5
+
+# --- Line S requirement envelope (RTM-292) — the thing the answer must satisfy ---
+rtm_292_envelope:
+  nominal_return_bar: {value: 1.1, tol_mbar: 5}
+  min_allowable_bar: 1.05
+  use_cases:
+    residual_g_s: 0.1
+    reheating_nominal_g_s: 100
+    reheating_spike_g_s: 150
+    reheating_duration_h: [6, 8]
+    qve_break_spike_g_s: 200
+    qve_break_duration_s: 100
+  source: RTM_292
+
+# --- pressure ceilings (He-line-safety sheet) ---
+pressure_ceilings_bar:
+  hp_suction_nominal: 1.05
+  hp_suction_max: 1.15
+  p_fullop_backpressure: 1.30
+  relief_set: 1.50
+  design_flow_g_s: 200
+  line_class: PN6
+  source: He_line_safety
+
+# --- recorded discrepancies (REX: surface, do not silently pick) ---
+discrepancies:
+  q_ts_design_w:
+    candidates: {register_legacy: 8700, D2.1_T6: 8600, SSOT_T8: 8200}
+    resolution: "SSOT_T8 (8200) is current mirror; 8700 is legacy. Confirm before publish."
+    status: OPEN_RFI
+  dryout_time_h:
+    candidates: {radiation_only_sim: 3.9, sim_with_conduction_EXP2: 1.4, D2_1_total: 2.0}
+    resolution: "gap is the conduction term (CONDUCTION_AL_CONSTANT). Bracket, don't pick."
+    status: OPEN_RFI
