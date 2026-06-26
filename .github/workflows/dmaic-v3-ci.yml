@@ -29,7 +29,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -69,7 +69,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -91,7 +91,7 @@ jobs:
             -n auto
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           files: ${{ env.DMAIC_ROOT }}/coverage.xml
           flags: unit-tests
@@ -116,7 +116,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -153,7 +153,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -206,7 +206,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -241,7 +241,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -276,7 +276,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python
         uses: actions/setup-python@v6

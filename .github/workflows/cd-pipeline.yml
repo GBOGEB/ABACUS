@@ -48,7 +48,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       
@@ -96,7 +96,7 @@ jobs:
           python run_dmaic_5_iterations.py || echo "DMAIC test completed with warnings"
       
       - name: Upload Test Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         if: ${{ !inputs.skip_tests }}
         with:
           files: ./coverage.xml
@@ -148,7 +148,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -293,7 +293,7 @@ jobs:
       
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             dmaic-pipeline-*.tar.gz

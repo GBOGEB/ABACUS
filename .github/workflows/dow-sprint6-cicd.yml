@@ -42,7 +42,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       
@@ -52,7 +52,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       
       - name: Cache Python Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -158,7 +158,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6
@@ -252,7 +252,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Download Test Results
         uses: actions/download-artifact@v8
@@ -324,7 +324,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6
@@ -390,7 +390,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Download All Artifacts
         uses: actions/download-artifact@v8
@@ -492,7 +492,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Validate Docker Configuration
         run: |
@@ -518,7 +518,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6
