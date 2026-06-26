@@ -6,7 +6,7 @@ Tracks performance metrics across iterations
 __version__ = "3.3.0"
 
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 from datetime import datetime
 import json
 import time
@@ -18,7 +18,7 @@ class PerformanceTrackerAgent:
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-        self.perf_file = workspace_root / "DMAIC_V3_OUTPUT" / "performance.json"
+        self.perf_file = Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "performance.json"
         self.start_time = None
 
     def start_tracking(self):

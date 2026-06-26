@@ -5,6 +5,7 @@ DMAIC V3 - GitHub Quality Check & Cleanup
 Prepares repository for GitHub with quality checks, cleanup, and CI/CD validation
 """
 
+import ast
 import sys
 import json
 import shutil
@@ -161,7 +162,7 @@ class GitHubQualityCheck:
             # Check if valid Python syntax
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
-                    compile(f.read(), str(file_path), 'exec')
+                    ast.parse(f.read())  # syntax check only — result never executed
                 print(f"[VALID] {core_file}")
                 self.report["kept_files"].append(core_file)
                 valid_count += 1

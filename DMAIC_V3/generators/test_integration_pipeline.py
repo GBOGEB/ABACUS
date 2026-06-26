@@ -181,8 +181,8 @@ except Exception as e:
 # Test 3: Export status (I/O operation)
 tests_run += 1
 try:
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-        temp_file = Path(f.name)
+    fd, tmp = tempfile.mkstemp(suffix='.json'); os.close(fd)
+    temp_file = Path(tmp)
     status = manager.export_status(str(temp_file))
     if temp_file.exists():
         io_operations += 1
@@ -222,9 +222,9 @@ except Exception as e:
 # Test 2: Register canonical source (I/O operation)
 tests_run += 1
 try:
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
-        f.write("Test canonical source")
-        temp_file = Path(f.name)
+    fd, tmp = tempfile.mkstemp(suffix='.txt'); os.close(fd)
+    temp_file = Path(tmp)
+    temp_file.write_text("Test canonical source")
 
     manager.register_canonical_source(str(temp_file), "test_source")
     io_operations += 1
@@ -274,9 +274,9 @@ tests_run += 1
 try:
     doc = Document()
     doc.add_paragraph("Test document")
-    with tempfile.NamedTemporaryFile(mode='wb', suffix='.docx', delete=False) as f:
-        temp_file = Path(f.name)
-        doc.save(str(temp_file))
+    fd, tmp = tempfile.mkstemp(suffix='.docx'); os.close(fd)
+    temp_file = Path(tmp)
+    doc.save(str(temp_file))
 
     fingerprint = extractor.extract_fingerprint(str(temp_file))
     io_operations += 1
@@ -289,9 +289,8 @@ except Exception as e:
 # Test 3: Save fingerprint (I/O operation)
 tests_run += 1
 try:
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-        temp_file = Path(f.name)
-
+    fd, tmp = tempfile.mkstemp(suffix='.json'); os.close(fd)
+    temp_file = Path(tmp)
     extractor.save_fingerprint(fingerprint, str(temp_file))
     if temp_file.exists():
         io_operations += 1
@@ -348,9 +347,8 @@ except Exception as e:
 # Test 4: Export history (I/O operation)
 tests_run += 1
 try:
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-        temp_file = Path(f.name)
-
+    fd, tmp = tempfile.mkstemp(suffix='.json'); os.close(fd)
+    temp_file = Path(tmp)
     tracker.export_history(str(temp_file))
     if temp_file.exists():
         io_operations += 1

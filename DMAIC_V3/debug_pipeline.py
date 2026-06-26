@@ -12,12 +12,12 @@ Comprehensive debugging and recovery for pipeline failures:
 ==============================================
 """
 
+import ast
 import sys
 import json
-import traceback
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -182,7 +182,7 @@ class PipelineDebugger:
                 # Try to compile the file
                 with open(phase_file, 'r', encoding='utf-8') as f:
                     code = f.read()
-                compile(code, str(phase_file), 'exec')
+                ast.parse(code)  # syntax check only — result never executed
             except SyntaxError as e:
                 error_msg = f"{phase_file.name}: Syntax error at line {e.lineno}"
                 result['errors'].append(error_msg)

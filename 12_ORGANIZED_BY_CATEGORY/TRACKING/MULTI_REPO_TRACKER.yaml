@@ -1,0 +1,1443 @@
+# ==================================================================================
+# MULTI-REPO TRACKER
+# ==================================================================================
+# Project: GLOOB Integration with GBOGEB Organization
+# Version: 1.1.0
+# Date: 2026-06-26
+# Purpose: Track status, findings, and integration across all repositories.
+#          v1.1.0 adds rex_repo_map/v0 + rex_repo_wireframe/v0 reconciliation
+#          for ABACUS, CODEX, and Master_Input (source: C:\repos\rex-mapping\).
+# ==================================================================================
+
+meta:
+  organization: "GBOGEB"
+  project: "GLOOB Integration"
+  last_updated: "2026-06-26T00:00:00Z"
+  total_repos: 7
+  completed_repos: 3
+  in_progress_repos: 0
+  pending_repos: 0
+  deferred_repos: 2
+  integration_approach: "Progressive Multi-Repo Analysis"
+  strategy: "Option A - Focus on 2 important repos now, defer others"
+  phase_1b_status: "COMPLETE"
+  # v1.1.0 additions
+  rex_scan_date: "2026-06-21"
+  rex_scan_sources:
+    - "C:\\repos\\rex-mapping\\repo_map.yaml    (schema rex_repo_map/v0)"
+    - "C:\\repos\\rex-mapping\\repo_wireframe.yaml (schema rex_repo_wireframe/v0)"
+  integrate_me_backlogs:
+    ABACUS: "C:\\repos\\rex-mapping\\_abacus_im_paths.txt  (831 entries, 4 reason codes)"
+    CODEX:  "C:\\repos\\rex-mapping\\_codex_im_paths.txt   (404 entries, 4 reason codes)"
+
+# ==================================================================================
+# REPOSITORY 1: GBOGEB/ABACUS (PRIMARY)
+# ==================================================================================
+
+GBOGEB_ABACUS:
+  meta:
+    url: "https://github.com/GBOGEB/ABACUS"
+    description: "Primary DMAIC orchestration and agent framework"
+    priority: "PRIMARY"
+    status: "PHASE_1_COMPLETE"
+    progress_percentage: 100
+    analysis_date: "2025-11-19"
+    analysis_duration: "46 minutes"
+    local_clone: "/home/ubuntu/github_repos/ABACUS"
+
+  # ---- rex_repo_map/v0 data (source: repo_map.yaml, scan 2026-06-21) ----
+  repo_map_data:
+    module_count: 438
+    parse_error_count: 5
+    parse_errors:
+      - path: "DMAIC_V3/generators/execution_tracker.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+      - path: "DMAIC_V3/generators/master_reconciliation.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+      - path: "DMAIC_V3/infrastructure/docker_manager.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+      - path: "scripts/dmaic_metrics_dump.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+      - path: "scripts/handover_generator.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+
+  # ---- rex_repo_wireframe/v0 data (source: repo_wireframe.yaml, scan 2026-06-21) ----
+  repo_wireframe_data:
+    folder_count: 355
+    file_count: 2318
+    subrepo_count: 2
+    subrepos:
+      - path: "MINERVA_PID"
+        marker: "pyproject.toml"
+        depth: 1
+      - path: "deepagent-handover-package/implementation/deepagent"
+        marker: "package.json"
+        depth: 3
+    integrate_me_count: 831
+    integrate_me_by_reason:
+      markdown_in_codeless_folder: 367
+      loose_markdown_root: 304
+      loose_script_no_package: 160
+      orphan_single_file_folder: 41
+    integrate_me_backlog: "C:\\repos\\rex-mapping\\_abacus_im_paths.txt"
+
+  statistics:
+    total_files: 896
+    python_files: 171
+    config_files: 113
+    markdown_files: 45
+    yaml_files: 67
+    json_files: 32
+    total_commits: 384
+    active_period: "Sep-Nov 2025"
+    latest_version: "v0.4.0"
+    repository_size: "~50 MB"
+    lines_of_code: "~85,000 lines"
+
+  concept_references:
+    DOW: 2162
+    KEB: 19674
+    GBOGEB: 1556
+    DMAIC: 24980
+    RTM: 1064
+    total_references: 49436
+
+  architecture:
+    agents:
+      total: 9
+      list:
+        - name: "AnalyzerAgent"
+          dmaic_score: 92.5
+          phases: [2, 3]
+          role: "Pattern Detection & Complexity Analysis"
+
+        - name: "BuilderAgent"
+          dmaic_score: 88.0
+          phases: [4, 7]
+          role: "Artifact Creation & Code Generation"
+
+        - name: "ValidatorAgent"
+          dmaic_score: 95.0
+          phases: [5, 7, 8]
+          role: "Quality Assurance & Compliance"
+
+        - name: "KnowledgeAgent"
+          dmaic_score: 90.0
+          phases: [6, 8]
+          role: "Learning Extraction & Preservation"
+
+        - name: "IntegrationAgent"
+          dmaic_score: 87.5
+          phases: [7]
+          role: "System Integration & Coherence"
+
+        - name: "ReportingAgent"
+          dmaic_score: 85.0
+          phases: [8]
+          role: "Documentation & Reporting"
+
+        - name: "agent_orchestrator_v3.0"
+          dmaic_score: null
+          phases: []
+          role: "Agent Orchestration"
+
+        - name: "self_improvement_agent"
+          dmaic_score: null
+          phases: []
+          role: "Self-Improvement"
+
+        - name: "agent_manager"
+          dmaic_score: null
+          phases: []
+          role: "Agent Management"
+
+    orchestrators:
+      total: 4
+      list:
+        - name: "MasterOrchestrator"
+          level: "L1_Master"
+          dmaic_score: 98.0
+          phases: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+          domains: ["orchestration", "metrics", "visualisation", "coordination"]
+          mapped_cog: "COG.GBOGEB"
+
+        - name: "PhaseOrchestrator"
+          level: "L2_Domain"
+          dmaic_score: 94.0
+          phases: [1, 2, 3, 4, 5]
+          domains: ["process_improvement", "pipelines", "phases", "convergence"]
+          mapped_cog: "COG.DMAIC_ENGINE"
+
+        - name: "KnowledgeOrchestrator"
+          level: "L2_Domain"
+          dmaic_score: 92.0
+          phases: [6, 8]
+          domains: ["knowledge_management", "learning", "indexing"]
+          mapped_cog: "COG.KNOWLEDGE"
+
+        - name: "IntegrationOrchestrator"
+          level: "L2_Domain"
+          dmaic_score: 90.0
+          phases: [7]
+          domains: ["integration", "coherence", "validation", "convergence"]
+          mapped_cog: "COG.INTEGRATION"
+
+    dmaic_phases:
+      total: 10
+      phases: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      phase_0: "Initialization"
+      phase_1: "Define"
+      phase_2: "Measure"
+      phase_3: "Analyze"
+      phase_4: "Improve"
+      phase_5: "Control"
+      phase_6: "Knowledge"
+      phase_7: "Integration"
+      phase_8: "Reporting"
+      phase_9: "Finalization"
+
+    special_features:
+      - "12-cluster parallel architecture"
+      - "Temporal metadata engine"
+      - "Sophisticated ranking engine"
+      - "Convergence detection system"
+      - "Self-ranking and self-improvement"
+      - "Comprehensive CI/CD workflows (35+ workflows)"
+
+  gloob_mapping:
+    god_level:
+      component: "DOW (Day Of Work)"
+      file: "staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py"
+      config: "staging/UNIFIED_GLOB_CONFIG.yaml"
+      role: "Single source of truth, coordinates all COGs"
+
+    cog_level:
+      total: 6
+      cogs:
+        COG_GBOGEB:
+          orchestrator: "MasterOrchestrator"
+          level: "L1_Master"
+          role: "Master orchestration"
+
+        COG_DMAIC_ENGINE:
+          orchestrator: "PhaseOrchestrator"
+          level: "L2_Domain"
+          role: "DMAIC/SPRINT pipelines"
+          file: "DMAIC_V3/full_pipeline_orchestrator.py"
+
+        COG_REFRACTOR:
+          engine: "ranking_engine"
+          file: "DMAIC_V3/core/ranking_engine.py"
+          role: "Ranking and indexing"
+
+        COG_KNOWLEDGE:
+          orchestrator: "KnowledgeOrchestrator"
+          level: "L2_Domain"
+          role: "Knowledge management"
+
+        COG_INTEGRATION:
+          orchestrator: "IntegrationOrchestrator"
+          level: "L2_Domain"
+          role: "System integration"
+
+        COG_DOC_MGMT:
+          distributed: true
+          agents: ["BuilderAgent", "ReportingAgent"]
+          role: "Document management"
+
+    minion_level:
+      existing: 9
+      new_gloob: 6
+      total: 15
+
+  key_findings:
+    strengths:
+      - "Solid foundation with 9 agents and 4 orchestrators"
+      - "Well-structured DMAIC implementation (phases 0-9)"
+      - "Advanced features: temporal tracking, ranking, convergence"
+      - "Comprehensive CI/CD (35+ workflows)"
+      - "Good practices: extensive documentation, RTM, idempotent execution"
+
+    gaps:
+      - "EPIC/TOPIC taxonomy not yet implemented"
+      - "Golden thread extraction partial only"
+      - "MASTER.doc integration conceptual but not implemented"
+      - "USER_LIBRARY RAG not implemented"
+      - "Change impact analysis not implemented"
+
+    opportunities:
+      - "Extend temporal_metadata_engine with EPIC/TOPIC support"
+      - "Extend ranking_engine with Top 30 / Bottom 30"
+      - "Implement golden_thread_extractor"
+      - "Implement master_doc_manager"
+      - "Implement user_library_rag"
+
+  integration_priorities:
+    phase_2:
+      - title: "Implement epic_topic_indexer.py"
+        estimated_effort: "1 week"
+        dependencies: []
+
+      - title: "Implement golden_thread_extractor.py"
+        estimated_effort: "1 week"
+        dependencies: ["epic_topic_indexer"]
+
+      - title: "Extend ranking_engine.py with GLOOB features"
+        estimated_effort: "1 week"
+        dependencies: ["epic_topic_indexer", "golden_thread_extractor"]
+
+      - title: "Implement master_doc_manager.py"
+        estimated_effort: "1 week"
+        dependencies: ["epic_topic_indexer"]
+
+      - title: "Implement user_library_rag.py"
+        estimated_effort: "1 week"
+        dependencies: ["epic_topic_indexer"]
+
+      - title: "Extend temporal_metadata_engine.py with EPIC/TOPIC"
+        estimated_effort: "3-5 days"
+        dependencies: ["epic_topic_indexer"]
+
+    phase_3:
+      - title: "Integrate with DOW pipeline"
+        estimated_effort: "1 week"
+        dependencies: ["all Phase 2 components"]
+
+      - title: "Add CI/CD workflow extensions"
+        estimated_effort: "3-5 days"
+        dependencies: ["DOW pipeline integration"]
+
+      - title: "Create comprehensive integration tests"
+        estimated_effort: "1 week"
+        dependencies: ["DOW pipeline integration", "CI/CD extensions"]
+
+  deliverables:
+    analysis_files:
+      - "repo_analysis.md (14.5 KB)"
+      - "concept_mapping.yaml (12.8 KB)"
+      - "architecture_map.yaml (6.8 KB)"
+      - "artefact_index.yaml (18.8 KB)"
+      - "temporal_timeline.yaml (8.3 KB)"
+      - "existing_agents.json (9.6 KB)"
+      - "integration_recommendations.md (14.8 KB)"
+
+    integration_files:
+      - "gloob.yaml (30.1 KB)"
+      - "handover.md (36.7 KB)"
+      - "handover.pdf (118 KB)"
+      - "integration_bridge.py (23.9 KB)"
+      - "smoke_test.py (26.1 KB)"
+      - "IMPLEMENTATION_GUIDE.md (35.9 KB)"
+
+    package_files:
+      - "README.md (16.2 KB)"
+      - "COMPLETION_SUMMARY.md (13.7 KB)"
+      - "COMPLETION_SUMMARY.pdf (65 KB)"
+      - "PACKAGE_MANIFEST.md (9.5 KB)"
+      - "gloob_integration_package.tar.gz"
+
+    meta_files:
+      - "CONVERSATION_TUPLE_SUMMARY.md"
+      - "OPEN_ITEMS_TRACKER.yaml"
+      - "PROCESS_JOURNAL.md"
+      - "HANDOVER_CONTEXT.md"
+      - "MULTI_REPO_TRACKER.yaml (this file)"
+      - "CONVERSATION_MANAGEMENT_GUIDE.md (pending)"
+
+  # Updated by rex reconciliation v1.1.0 (2026-06-26)
+  blocking_items:
+    count: 5
+    list:
+      - id: "ABACUS-PARSE-001"
+        path: "DMAIC_V3/generators/execution_tracker.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+        note: "Syntax-level parse failure; fix before module-count is meaningful"
+      - id: "ABACUS-PARSE-002"
+        path: "DMAIC_V3/generators/master_reconciliation.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+      - id: "ABACUS-PARSE-003"
+        path: "DMAIC_V3/infrastructure/docker_manager.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+      - id: "ABACUS-PARSE-004"
+        path: "scripts/dmaic_metrics_dump.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+      - id: "ABACUS-PARSE-005"
+        path: "scripts/handover_generator.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+
+  open_items:
+    count: 3
+    list:
+      - id: "ABACUS-IM-BACKLOG"
+        type: "integrate_me_backlog"
+        status: "OPEN"
+        integrate_me_count: 831
+        backlog_file: "C:\\repos\\rex-mapping\\_abacus_im_paths.txt"
+        breakdown:
+          markdown_in_codeless_folder: 367
+          loose_markdown_root: 304
+          loose_script_no_package: 160
+          orphan_single_file_folder: 41
+        note: "831 paths flagged for integration triage. Not inlined here; see backlog file."
+      - id: "ABACUS-SUBREPO-001"
+        type: "subrepo"
+        path: "MINERVA_PID"
+        marker: "pyproject.toml"
+        depth: 1
+        status: "OPEN"
+        source: "repo_wireframe.yaml/subrepos"
+        note: "Nested package root; confirm ownership and integration intent"
+      - id: "ABACUS-SUBREPO-002"
+        type: "subrepo"
+        path: "deepagent-handover-package/implementation/deepagent"
+        marker: "package.json"
+        depth: 3
+        status: "OPEN"
+        source: "repo_wireframe.yaml/subrepos"
+        note: "Nested JS package root at depth 3; confirm ownership and integration intent"
+
+  next_milestone: "Phase 2: Core Implementation"
+  estimated_completion: "Weeks 2-3"
+
+# ==================================================================================
+# REPOSITORY 2: GBOGEB/DOCX_RTM_Automation (HIGH PRIORITY)
+# ==================================================================================
+
+GBOGEB_DOCX_RTM_Automation:
+  meta:
+    url: "https://github.com/GBOGEB/DOCX_RTM_Automation"
+    description: "Requirements Traceability Matrix automation with document processing"
+    priority: "HIGH"
+    status: "PHASE_1B_COMPLETE"
+    progress_percentage: 100
+    analysis_date: "2025-11-19"
+    analysis_duration: "2 hours"
+    local_clone: "/home/ubuntu/github_repos/DOCX_RTM_Automation"
+    importance_reason: "RTM is core to MASTER.doc traceability and GLOOB integration"
+
+  statistics:
+    total_files: 743
+    python_files: 436
+    config_files: 27
+    documentation_files: 84
+    total_commits: 66
+    last_commit: "2025-09-24"
+    repository_size: "~35 MB"
+
+  concept_references:
+    DOW: 3
+    KEB: 1
+    GBOGEB: 26
+    DMAIC: 22
+    RTM: 955
+    COG: 1
+    MINION: 0
+    EPIC: 0
+    TOPIC: 0
+    Golden_Thread: 0
+    Temporal: 0
+    total_references: 1008
+
+  architecture:
+    agents:
+      total: 6
+      list:
+        - name: "AgentOrchestrator"
+          role: "Central hub for agent communication"
+          file: "agents/agent_orchestrator.py"
+          capabilities: ["orchestration", "message_routing", "agent_lifecycle"]
+          mapped_minion: "MINION.rtm_orchestrator"
+          parent_cog: "COG.DOC_MGMT"
+
+        - name: "CopilotAgent"
+          role: "Code generation and analysis"
+          file: "agents/copilot_agent.py"
+          capabilities: ["code_generation", "code_analysis", "document_parsing"]
+          mapped_minion: "MINION.copilot_assistant"
+          parent_cog: "COG.REFRACTOR"
+
+        - name: "DMAICCICDAgent"
+          role: "CI/CD automation for DMAIC"
+          file: "agents/dmaic_cicd_agent.py"
+          capabilities: ["ci_cd_orchestration", "pipeline_metrics"]
+          mapped_minion: "MINION.dmaic_cicd"
+          parent_cog: "COG.DMAIC_ENGINE"
+
+        - name: "GitAgent"
+          role: "Version control operations"
+          file: "agents/git_agent.py"
+          capabilities: ["git_operations", "branch_management", "pr_creation"]
+          mapped_minion: "MINION.git_operations"
+          parent_cog: "COG.INTEGRATION"
+
+        - name: "RequirementAnalysisAgent"
+          role: "Requirements analysis"
+          file: "agents/requirement_analyzer.py"
+          capabilities: ["requirement_extraction", "traceability_analysis"]
+          mapped_minion: "MINION.requirement_analyzer"
+          parent_cog: "COG.DOC_MGMT"
+
+        - name: "TraceabilityAnalysisAgent"
+          role: "Traceability analysis"
+          file: "agents/requirement_analyzer.py"
+          capabilities: ["traceability_mapping", "bidirectional_analysis"]
+          mapped_minion: "MINION.traceability_analyzer"
+          parent_cog: "COG.DOC_MGMT"
+
+    key_features:
+      - "Enterprise-grade RTM automation (955 RTM references)"
+      - "Message-based agent communication"
+      - "Multi-format document support (DOCX, DOC, PDF, TXT)"
+      - "TypeScript orchestration server"
+      - "GitHub integration (PR creation, branch management)"
+      - "Multi-channel notifications (Email, Slack, webhooks)"
+      - "Professional visualizations"
+      - "DMAIC pipeline integration"
+
+    integration_value:
+      - "Provides comprehensive RTM extraction for ABACUS artifacts"
+      - "Agent orchestration patterns align with ABACUS MINION architecture"
+      - "CI/CD automation enhances ABACUS DMAIC phases"
+      - "GitHub integration complements ABACUS workflows"
+
+  integration_priorities:
+    immediate_phase_2:
+      - title: "Create DOCX_RTM adapter (staging/adapters/docx_rtm_adapter.py)"
+        estimated_effort: "2-3 days"
+        dependencies: []
+        status: "PENDING"
+
+      - title: "Create RTM bridge (staging/bridges/rtm_bridge.py)"
+        estimated_effort: "3-4 days"
+        dependencies: ["DOCX_RTM adapter"]
+        status: "PENDING"
+
+      - title: "Create DMAIC bridge (staging/bridges/dmaic_bridge.py)"
+        estimated_effort: "3-4 days"
+        dependencies: ["DOCX_RTM adapter"]
+        status: "PENDING"
+
+      - title: "Map agents to ABACUS MINION hierarchy"
+        estimated_effort: "1-2 weeks"
+        dependencies: ["adapters", "bridges"]
+        status: "PENDING"
+
+      - title: "Integrate CI/CD agent with ABACUS DMAIC phases"
+        estimated_effort: "3-4 weeks"
+        dependencies: ["agent mapping"]
+        status: "PENDING"
+
+  deliverables:
+    analysis_files:
+      - "priority_repos_analysis.md (comprehensive - includes DOCX_RTM section)"
+      - "priority_repos_concept_mapping.yaml (includes DOCX_RTM concepts)"
+      - "priority_repos_architecture.yaml (includes DOCX_RTM agent mappings)"
+      - "three_repo_comparison.yaml (ABACUS vs DOCX_RTM vs CODESPACES)"
+      - "priority_repos_integration_recommendations.md (detailed integration plan)"
+
+  dependencies:
+    upstream:
+      - "GBOGEB/ABACUS (completed)"
+
+    downstream:
+      - "GBOGEB/CODESPACES_jyperter (completed - parallel analysis)"
+
+    integration_dependencies:
+      - "ABACUS adapter framework"
+      - "ABACUS bridge implementation"
+      - "Unified agent registry"
+
+  key_findings:
+    strengths:
+      - "Mature RTM extraction capability (955 references)"
+      - "Well-designed agent orchestration system"
+      - "Strong DMAIC integration (22 references)"
+      - "CI/CD automation for DMAIC phases"
+      - "GitHub integration (PR, branches, workflows)"
+      - "TypeScript orchestration server for enterprise deployment"
+
+    gaps:
+      - "No GOD/COG/MINION architecture (needs mapping)"
+      - "Limited GBOGEB concept awareness (26 references)"
+      - "No temporal indexing or golden thread"
+      - "No KEB interface"
+      - "No EPIC/TOPIC organization"
+
+    opportunities:
+      - "Map agents to ABACUS MINION hierarchy"
+      - "Use RTM extraction to enhance ABACUS artifact traceability"
+      - "Integrate CI/CD agent for automated phase transitions"
+      - "Leverage GitHub integration for ABACUS workflows"
+      - "Use TypeScript server for ABACUS API endpoints"
+
+  open_items:
+    count: 0
+    list: []
+
+  blocking_items:
+    count: 0
+    list: []
+
+  next_milestone: "Phase 2: Integration Implementation"
+  estimated_completion: "3-4 weeks"
+
+# ==================================================================================
+# REPOSITORY 3: GBOGEB/CODESPACES_jyperter (HIGH PRIORITY)
+# ==================================================================================
+
+GBOGEB_CODESPACES_jyperter:
+  meta:
+    url: "https://github.com/GBOGEB/CODESPACES_jyperter"
+    description: "Pipeline orchestration with KEB interface and multi-format parsers"
+    priority: "HIGH"
+    status: "PHASE_1B_COMPLETE"
+    progress_percentage: 100
+    analysis_date: "2025-11-19"
+    analysis_duration: "2 hours"
+    local_clone: "/home/ubuntu/github_repos/CODESPACES_jyperter"
+    importance_reason: "KEB interface is strategic for ABACUS knowledge extraction"
+
+  statistics:
+    total_files: 152
+    python_files: 54
+    config_files: 28
+    documentation_files: 33
+    notebook_files: 4
+    total_commits: 95
+    last_commit: "2025-09-29"
+    repository_size: "~15 MB"
+
+  concept_references:
+    DOW: 5
+    KEB: 18
+    GBOGEB: 0
+    DMAIC: 21
+    RTM: 16
+    COG: 0
+    MINION: 0
+    EPIC: 0
+    TOPIC: 0
+    Golden_Thread: 0
+    Temporal: 0
+    Orchestrator: 9
+    total_references: 69
+
+  architecture:
+    agents:
+      total: 5
+      list:
+        - name: "master_orchestrator"
+          role: "Top-level pipeline coordination"
+          file: "configs/agents.json"
+          capabilities: ["pipeline_orchestration", "agent_coordination"]
+          mapped_minion: "MINION.pipeline_orchestrator"
+          parent_cog: "COG.KNOWLEDGE"
+
+        - name: "ingest_agent"
+          role: "Document ingestion"
+          file: "configs/agents.json"
+          capabilities: ["multi_format_parsing", "text_extraction"]
+          mapped_minion: "MINION.document_ingest"
+          parent_cog: "COG.KNOWLEDGE"
+
+        - name: "normalizer_agent"
+          role: "ETL and data normalization"
+          file: "configs/agents.json"
+          capabilities: ["etl_processing", "data_normalization"]
+          mapped_minion: "MINION.data_normalizer"
+          parent_cog: "COG.KNOWLEDGE"
+
+        - name: "analysis_agent"
+          role: "Metrics computation"
+          file: "configs/agents.json"
+          capabilities: ["metrics_computation", "kpi_calculation"]
+          mapped_minion: "MINION.metrics_analyzer"
+          parent_cog: "COG.DMAIC_ENGINE"
+
+        - name: "report_agent"
+          role: "Report generation"
+          file: "configs/agents.json"
+          capabilities: ["report_generation", "documentation_creation"]
+          mapped_minion: "MINION.report_generator"
+          parent_cog: "COG.DOC_MGMT"
+
+    keb_interface:
+      component: "KEBProcessor"
+      file: "src/measure_phase/keb_interface.py"
+      classes:
+        - "KEBInputOutput"
+        - "KEBProcessor (abstract base)"
+        - "ArtifactKEBProcessor"
+      strategic_value: "CRITICAL - provides canonical KEB interface for ABACUS"
+      mapped_minion: "MINION.keb_processor"
+      parent_cog: "COG.KNOWLEDGE"
+
+    parsers:
+      total: 6
+      location: "src/measure_phase/parser/"
+      list:
+        - "word_parser.py (DOCX support)"
+        - "pdf_parser.py (PDF support)"
+        - "powerpoint_parser.py (PPTX support)"
+        - "visio_parser.py (VSD support)"
+        - "zip_parser.py (ZIP support)"
+        - "markdown_parser.py (MD support)"
+      strategic_value: "HIGH - extends ABACUS document processing capabilities"
+
+    key_features:
+      - "KEB interface implementation (18 KEB references)"
+      - "Multi-format document parsers (6 types)"
+      - "Pipeline orchestration with hierarchical agents"
+      - "DMAIC Measure phase implementation (21 DMAIC references)"
+      - "Pipeline GUI for management"
+      - "NDJSON structured logging"
+      - "Debug support via debugpy"
+      - "Jupyter notebook integration"
+
+    integration_value:
+      - "Provides canonical KEB layer for ABACUS knowledge extraction"
+      - "Extends ABACUS document processing to 6+ formats"
+      - "Implements DMAIC Phase 2 (Measure) functionality"
+      - "Pipeline orchestration complements ABACUS agents"
+
+  integration_priorities:
+    phase_1b:
+      - title: "Clone and analyze repository"
+        estimated_effort: "30 minutes"
+        dependencies: []
+
+      - title: "Comprehensive code analysis"
+        estimated_effort: "1 hour"
+        dependencies: ["clone"]
+
+      - title: "Codespaces/Jupyter component mapping"
+        estimated_effort: "30 minutes"
+        dependencies: ["code analysis"]
+
+      - title: "GLOOB hierarchy mapping"
+        estimated_effort: "30 minutes"
+        dependencies: ["component mapping"]
+
+      - title: "Integration recommendations"
+        estimated_effort: "30 minutes"
+        dependencies: ["hierarchy mapping"]
+
+      - title: "Update GLOOB manifest"
+        estimated_effort: "30 minutes"
+        dependencies: ["integration recommendations"]
+
+  expected_deliverables:
+    - "repo_analysis_CODESPACES.md"
+    - "concept_mapping_CODESPACES.yaml"
+    - "notebook_index.yaml"
+    - "integration_recommendations_CODESPACES.md"
+    - "Updated gloob.yaml (multi-repo)"
+
+  dependencies:
+    upstream:
+      - "GBOGEB/ABACUS (completed)"
+
+    downstream:
+      - "GBOGEB/DOCX_RTM_Automation (parallel)"
+
+    integration_dependencies:
+      - "DOW pipeline understanding"
+      - "DMAIC phase execution requirements"
+      - "Knowledge extraction patterns"
+
+  open_items:
+    count: 1
+    list:
+      - id: "OQ-001"
+        question: "Should we analyze this repo now (Option A) or defer?"
+        status: "User selected Option A - analyze now"
+        priority: "HIGH"
+
+  blocking_items:
+    count: 0
+    list: []
+
+  next_milestone: "Phase 1B: Repository Analysis"
+  estimated_completion: "2-3 hours"
+
+# ==================================================================================
+# REPOSITORY 4: GBOGEB/pipeline-automation-hub (DEFERRED)
+# ==================================================================================
+
+GBOGEB_pipeline_automation_hub:
+  meta:
+    url: "https://github.com/GBOGEB/pipeline-automation-hub"
+    description: "Pipeline automation patterns and CI/CD templates"
+    priority: "MEDIUM"
+    status: "DEFERRED"
+    progress_percentage: 0
+    analysis_date: null
+    analysis_duration: null
+    local_clone: null
+    deferral_reason: "User selected Option A - focus on 2 important repos first"
+
+  expected_components:
+    - "CI/CD pipeline patterns"
+    - "GitHub Actions workflows"
+    - "Automation templates"
+    - "Pipeline orchestration"
+    - "Best practices documentation"
+
+  expected_integration_points:
+    - "GLOOB CI/CD workflow (.github/workflows/gloob-pipeline.yml)"
+    - "Automation patterns for golden thread extraction"
+    - "Pipeline templates for EPIC/TOPIC indexing"
+    - "Integration with DMAIC CI/CD"
+
+  preliminary_questions:
+    - "What pipeline patterns exist?"
+    - "Are there DMAIC-specific pipelines?"
+    - "How do pipelines integrate with ABACUS?"
+    - "Are there automation best practices to follow?"
+
+  integration_priorities:
+    phase_1b_later:
+      - title: "Clone and analyze repository"
+        estimated_effort: "30 minutes"
+        dependencies: ["DOCX_RTM_Automation", "CODESPACES_jyperter"]
+
+      - title: "Pipeline pattern analysis"
+        estimated_effort: "1 hour"
+        dependencies: ["clone"]
+
+      - title: "GLOOB pipeline design"
+        estimated_effort: "1 hour"
+        dependencies: ["pattern analysis"]
+
+      - title: "Integration recommendations"
+        estimated_effort: "30 minutes"
+        dependencies: ["pipeline design"]
+
+  expected_deliverables:
+    - "repo_analysis_PIPELINE.md"
+    - "pipeline_pattern_index.yaml"
+    - "gloob_pipeline_design.md"
+    - "integration_recommendations_PIPELINE.md"
+
+  dependencies:
+    upstream:
+      - "GBOGEB/ABACUS (completed)"
+      - "GBOGEB/DOCX_RTM_Automation (high priority)"
+      - "GBOGEB/CODESPACES_jyperter (high priority)"
+
+    downstream: []
+
+    integration_dependencies:
+      - "Understanding of ABACUS CI/CD patterns"
+      - "GLOOB component implementation (Phase 2)"
+
+  open_items:
+    count: 0
+    list: []
+
+  blocking_items:
+    count: 0
+    list: []
+
+  deferred_items:
+    count: 1
+    list:
+      - id: "DI-001"
+        title: "Analyze GBOGEB/pipeline-automation-hub"
+        target_phase: "Phase 1B (later)"
+
+  next_milestone: "Phase 1B (later): Repository Analysis"
+  estimated_completion: "TBD (after high priority repos)"
+
+# ==================================================================================
+# REPOSITORY 5: GBOGEB/document-organization-system_GBOGEB (DEFERRED)
+# ==================================================================================
+
+GBOGEB_document_organization_system:
+  meta:
+    url: "https://github.com/GBOGEB/document-organization-system_GBOGEB"
+    description: "Document organization patterns and artefact management"
+    priority: "MEDIUM"
+    status: "DEFERRED"
+    progress_percentage: 0
+    analysis_date: null
+    analysis_duration: null
+    local_clone: null
+    deferral_reason: "User selected Option A - focus on 2 important repos first"
+
+  expected_components:
+    - "Document organization patterns"
+    - "Artefact management system"
+    - "Knowledge indexing"
+    - "Document classification"
+    - "Taxonomy and tagging"
+
+  expected_integration_points:
+    - "EPIC/TOPIC taxonomy implementation"
+    - "Artefact indexing patterns"
+    - "Document classification for golden thread"
+    - "Integration with COG.DOC_MGMT"
+
+  preliminary_questions:
+    - "What document organization patterns exist?"
+    - "Is there existing taxonomy/tagging system?"
+    - "How are documents indexed?"
+    - "How does this relate to EPIC/TOPIC?"
+
+  integration_priorities:
+    phase_1b_later:
+      - title: "Clone and analyze repository"
+        estimated_effort: "30 minutes"
+        dependencies: ["DOCX_RTM_Automation", "CODESPACES_jyperter"]
+
+      - title: "Document organization pattern analysis"
+        estimated_effort: "1 hour"
+        dependencies: ["clone"]
+
+      - title: "EPIC/TOPIC taxonomy mapping"
+        estimated_effort: "1 hour"
+        dependencies: ["pattern analysis"]
+
+      - title: "Integration recommendations"
+        estimated_effort: "30 minutes"
+        dependencies: ["taxonomy mapping"]
+
+  expected_deliverables:
+    - "repo_analysis_DOCS.md"
+    - "document_pattern_index.yaml"
+    - "taxonomy_mapping.yaml"
+    - "integration_recommendations_DOCS.md"
+
+  dependencies:
+    upstream:
+      - "GBOGEB/ABACUS (completed)"
+      - "GBOGEB/DOCX_RTM_Automation (high priority)"
+      - "GBOGEB/CODESPACES_jyperter (high priority)"
+
+    downstream: []
+
+    integration_dependencies:
+      - "EPIC/TOPIC taxonomy design (from ABACUS)"
+      - "Understanding of document management patterns"
+
+  open_items:
+    count: 0
+    list: []
+
+  blocking_items:
+    count: 0
+    list: []
+
+  deferred_items:
+    count: 1
+    list:
+      - id: "DI-002"
+        title: "Analyze GBOGEB/document-organization-system_GBOGEB"
+        target_phase: "Phase 1B (later)"
+
+  next_milestone: "Phase 1B (later): Repository Analysis"
+  estimated_completion: "TBD (after high priority repos)"
+
+# ==================================================================================
+# REPOSITORY 6: GBOGEB/CODEX  (new — added v1.1.0)
+# ==================================================================================
+
+GBOGEB_CODEX:
+  meta:
+    url: "https://github.com/GBOGEB/CODEX"
+    description: "CODEX repo — GISTAU models, CI pipeline, visualization"
+    priority: "OPEN"        # V_eff: no priority source in rex YAMLs
+    status: "OPEN"          # V_eff: no prior analysis in tracker
+    progress_percentage: 0
+    analysis_date: null
+    rex_scan_date: "2026-06-21"
+    local_clone: "OPEN"     # V_eff: not recorded in source YAMLs
+
+  # ---- rex_repo_map/v0 data (source: repo_map.yaml) ----
+  repo_map_data:
+    module_count: 320
+    parse_error_count: 2
+    parse_errors:
+      - path: "src/gistau_ch15/visualization/pages_artifact_refresh.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+      - path: "visuals/convergence_surface_3d.py"
+        severity: BLOCKER
+        note: "Syntax-level parse failure; module excluded from module_count"
+
+  # ---- rex_repo_wireframe/v0 data (source: repo_wireframe.yaml) ----
+  repo_wireframe_data:
+    folder_count: "OPEN"    # V_eff: not present in wireframe for CODEX
+    file_count: "OPEN"      # V_eff: not present in wireframe for CODEX
+    subrepo_count: 0
+    subrepos: []
+    integrate_me_count: 404
+    integrate_me_by_reason:
+      markdown_in_codeless_folder: 198
+      loose_script_no_package: 188
+      orphan_single_file_folder: 59
+      loose_markdown_root: 18
+    integrate_me_backlog: "C:\\repos\\rex-mapping\\_codex_im_paths.txt"
+
+  blocking_items:
+    count: 2
+    list:
+      - id: "CODEX-PARSE-001"
+        path: "src/gistau_ch15/visualization/pages_artifact_refresh.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+      - id: "CODEX-PARSE-002"
+        path: "visuals/convergence_surface_3d.py"
+        type: "parse_error"
+        severity: "BLOCKER"
+        status: "OPEN"
+        source: "repo_map.yaml/parse_errors"
+
+  open_items:
+    count: 1
+    list:
+      - id: "CODEX-IM-BACKLOG"
+        type: "integrate_me_backlog"
+        status: "OPEN"
+        integrate_me_count: 404
+        backlog_file: "C:\\repos\\rex-mapping\\_codex_im_paths.txt"
+        breakdown:
+          markdown_in_codeless_folder: 198
+          loose_script_no_package: 188
+          orphan_single_file_folder: 59
+          loose_markdown_root: 18
+        note: "404 paths flagged for integration triage. Not inlined here; see backlog file."
+
+  next_milestone: "OPEN — no prior analysis milestone set"
+  estimated_completion: "OPEN"
+
+# ==================================================================================
+# REPOSITORY 7: Master_Input  (new — added v1.1.0, structural OPEN_RFI only)
+# ==================================================================================
+
+Master_Input:
+  meta:
+    description: >
+      C:\Users\gbonthuy\OneDrive - Studiecentrum voor Kernenergie\Master_Input.
+      Agent sandbox / scratch space — NOT a clean human working copy.
+    priority: "OPEN_RFI"
+    status: "OPEN_RFI"
+    owner: "human"
+    rex_scan_date: "2026-06-21"
+
+  # ---- rex_repo_wireframe/v0 data (structural summary only per reconciliation rules) ----
+  repo_wireframe_data:
+    subrepo_count: 747
+    integrate_me_count: 11145
+    note: >
+      Counts recorded for completeness; NOT triaged here.
+      Master_Input is an agent sandbox; its 747 nested repos/project-roots
+      are an expected artefact of agent activity, not an integration backlog.
+
+  # ---- rex_repo_map/v0 data ----
+  repo_map_data:
+    module_count: 432
+    parse_error_count: 5
+    note: >
+      parse_errors are the same 5 files as ABACUS (transitive scan overlap).
+      Not separately actionable here — fix in ABACUS source first.
+
+  open_items:
+    count: 1
+    list:
+      - id: "MI-RFI-001"
+        type: "OPEN_RFI"
+        status: "OPEN"
+        owner: "human"
+        finding: >
+          Master_Input contains 747 nested repos/project-roots.
+          It is an agent sandbox, not a clean working copy.
+          Recommend migrating human working copies to C:\repos\
+          (ABACUS already done).
+        action: "Human decision required: confirm migration path or explicitly accept sandbox state"
+
+  blocking_items:
+    count: 0
+    list: []
+
+# ==================================================================================
+# CROSS-REPO INTEGRATION
+# ==================================================================================
+
+cross_repo_integration:
+  integration_strategy:
+    name: "Progressive Multi-Repo Integration"
+    approach: "Analyze primary repo deeply, then progressively add high-priority repos"
+    phases:
+      - phase: "Phase 1"
+        repos: ["GBOGEB/ABACUS"]
+        status: "COMPLETE"
+
+      - phase: "Phase 1B"
+        repos: ["GBOGEB/DOCX_RTM_Automation", "GBOGEB/CODESPACES_jyperter"]
+        status: "PENDING"
+
+      - phase: "Phase 1B (later)"
+        repos: ["GBOGEB/pipeline-automation-hub", "GBOGEB/document-organization-system_GBOGEB"]
+        status: "DEFERRED"
+
+  integration_points:
+    rtm_to_abacus:
+      description: "RTM automation integrates with ABACUS for requirements traceability"
+      direction: "RTM → ABACUS"
+      components:
+        - "MASTER.doc traceability"
+        - "External ID linkage"
+        - "Requirements mapping"
+      priority: "HIGH"
+
+    codespaces_to_abacus:
+      description: "Codespaces provides execution environment for ABACUS DOW pipeline"
+      direction: "Codespaces → ABACUS"
+      components:
+        - "Development environment"
+        - "Jupyter notebook execution"
+        - "Knowledge extraction"
+      priority: "HIGH"
+
+    pipeline_to_abacus:
+      description: "Pipeline patterns provide CI/CD templates for ABACUS"
+      direction: "Pipeline Hub → ABACUS"
+      components:
+        - "CI/CD workflows"
+        - "Automation patterns"
+        - "GLOOB pipeline design"
+      priority: "MEDIUM"
+
+    docs_to_abacus:
+      description: "Document organization patterns inform ABACUS EPIC/TOPIC taxonomy"
+      direction: "Doc System → ABACUS"
+      components:
+        - "Document organization"
+        - "Taxonomy patterns"
+        - "Artefact indexing"
+      priority: "MEDIUM"
+
+  unified_gloob_manifest:
+    status: "PENDING"
+    description: "Extend gloob.yaml to support multi-repo configuration"
+    requirements:
+      - "Per-repo EPIC/TOPIC namespacing"
+      - "Cross-repo golden thread extraction"
+      - "Unified artefact ranking across repos"
+      - "Multi-repo MASTER.doc traceability"
+    target_file: "/home/ubuntu/gloob_integration/gloob_multi_repo.yaml"
+    estimated_effort: "1-2 hours"
+    dependencies: ["Analysis of DOCX_RTM_Automation", "Analysis of CODESPACES_jyperter"]
+
+  unified_integration_package:
+    status: "PENDING"
+    description: "Consolidate multi-repo analysis into single integration package"
+    requirements:
+      - "Multi-repo README"
+      - "Cross-repo integration guide"
+      - "Unified smoke tests"
+      - "Multi-repo deployment package"
+    target_file: "/home/ubuntu/gloob_multi_repo_integration_package.tar.gz"
+    estimated_effort: "1-2 hours"
+    dependencies: ["Unified GLOOB manifest"]
+
+# ==================================================================================
+# PROGRESS SUMMARY
+# ==================================================================================
+
+progress_summary:
+  overall:
+    total_repos: 7
+    completed: 3
+    in_progress: 0
+    pending: 0
+    deferred: 2
+    new_open_rfi: 2    # CODEX (analysis pending) + Master_Input (structural RFI)
+    overall_progress_percentage: 43  # 3 of 7 completed
+
+  by_phase:
+    phase_1:
+      name: "Primary Repo Analysis (ABACUS)"
+      status: "COMPLETE"
+      progress: 100
+      repos: ["GBOGEB/ABACUS"]
+
+    phase_1a:
+      name: "Meta-Deliverables"
+      status: "COMPLETE"
+      progress: 100
+      completed: 6
+      total: 6
+
+    phase_1b:
+      name: "High Priority Repos (RTM, Codespaces)"
+      status: "COMPLETE"
+      progress: 100
+      repos: ["GBOGEB/DOCX_RTM_Automation", "GBOGEB/CODESPACES_jyperter"]
+      deliverables:
+        - "priority_repos_analysis.md"
+        - "priority_repos_concept_mapping.yaml"
+        - "priority_repos_architecture.yaml"
+        - "three_repo_comparison.yaml"
+        - "priority_repos_integration_recommendations.md"
+
+    phase_1b_later:
+      name: "Deferred Repos (Pipeline, Docs)"
+      status: "DEFERRED"
+      progress: 0
+      repos: ["GBOGEB/pipeline-automation-hub", "GBOGEB/document-organization-system_GBOGEB"]
+
+    rex_reconciliation:
+      name: "Rex scan reconciliation (ABACUS + CODEX + Master_Input)"
+      status: "COMPLETE"
+      progress: 100
+      scan_date: "2026-06-21"
+      blockers_raised: 7    # 5 ABACUS + 2 CODEX
+      open_rfis_raised: 2   # ABACUS subrepos+IM backlog + Master_Input structural
+
+  estimated_timeline:
+    phase_1: "46 minutes (COMPLETE)"
+    phase_1a: "~3 hours (COMPLETE)"
+    phase_1b: "~4 hours (COMPLETE)"
+    phase_1b_later: "4-6 hours (DEFERRED)"
+    rex_reconciliation: "session 2026-06-21 (COMPLETE)"
+    total_completed: "~7.75 hours + rex reconciliation"
+    total_estimated: "12-15 hours"
+    remaining: "4-6 hours (deferred repos, if requested)"
+
+# ==================================================================================
+# NEXT ACTIONS
+# ==================================================================================
+
+next_actions:
+  immediate:
+    - action: "Fix 5 ABACUS parse errors (ABACUS-PARSE-001 through 005)"
+      repo: "GBOGEB/ABACUS"
+      estimated_effort: "OPEN"
+      dependencies: []
+      priority: "BLOCKER"
+
+    - action: "Fix 2 CODEX parse errors (CODEX-PARSE-001, CODEX-PARSE-002)"
+      repo: "GBOGEB/CODEX"
+      estimated_effort: "OPEN"
+      dependencies: []
+      priority: "BLOCKER"
+
+    - action: "Human decision on Master_Input migration (MI-RFI-001)"
+      repo: "Master_Input"
+      estimated_effort: "Human decision"
+      dependencies: []
+      priority: "OPEN_RFI"
+      owner: "human"
+
+    - action: "Complete CONVERSATION_MANAGEMENT_GUIDE.md"
+      repo: "N/A"
+      estimated_effort: "30 minutes"
+      dependencies: []
+      priority: "HIGH"
+
+    - action: "Review and validate all meta-deliverables with user"
+      repo: "N/A"
+      estimated_effort: "1 hour"
+      dependencies: ["CONVERSATION_MANAGEMENT_GUIDE.md"]
+      priority: "HIGH"
+
+  short_term:
+    - action: "Triage ABACUS integrate_me backlog (831 entries)"
+      repo: "GBOGEB/ABACUS"
+      backlog_file: "C:\\repos\\rex-mapping\\_abacus_im_paths.txt"
+      estimated_effort: "OPEN"
+      dependencies: []
+      priority: "MEDIUM"
+
+    - action: "Triage CODEX integrate_me backlog (404 entries)"
+      repo: "GBOGEB/CODEX"
+      backlog_file: "C:\\repos\\rex-mapping\\_codex_im_paths.txt"
+      estimated_effort: "OPEN"
+      dependencies: []
+      priority: "MEDIUM"
+
+    - action: "Confirm/resolve ABACUS subrepos (MINERVA_PID, deepagent)"
+      repo: "GBOGEB/ABACUS"
+      estimated_effort: "OPEN"
+      dependencies: []
+      priority: "MEDIUM"
+
+    - action: "Clone GBOGEB/DOCX_RTM_Automation"
+      repo: "GBOGEB/DOCX_RTM_Automation"
+      estimated_effort: "5 minutes"
+      dependencies: ["User confirmation"]
+      priority: "HIGH"
+
+    - action: "Clone GBOGEB/CODESPACES_jyperter"
+      repo: "GBOGEB/CODESPACES_jyperter"
+      estimated_effort: "5 minutes"
+      dependencies: ["User confirmation"]
+      priority: "HIGH"
+
+    - action: "Create unified multi-repo GLOOB manifest"
+      repo: "N/A"
+      estimated_effort: "1-2 hours"
+      dependencies: ["RTM analysis", "Codespaces analysis"]
+      priority: "MEDIUM"
+
+  medium_term:
+    - action: "Analyze GBOGEB/pipeline-automation-hub (if requested)"
+      repo: "GBOGEB/pipeline-automation-hub"
+      estimated_effort: "2-3 hours"
+      dependencies: ["RTM analysis", "Codespaces analysis", "User request"]
+      priority: "MEDIUM"
+
+    - action: "Analyze GBOGEB/document-organization-system_GBOGEB (if requested)"
+      repo: "GBOGEB/document-organization-system_GBOGEB"
+      estimated_effort: "2-3 hours"
+      dependencies: ["RTM analysis", "Codespaces analysis", "User request"]
+      priority: "MEDIUM"
+
+# ==================================================================================
+# DECISION LOG
+# ==================================================================================
+
+decision_log:
+  - date: "2025-11-19"
+    decision: "Progressive Multi-Repo Analysis Strategy"
+    rationale: "User selected Option A (focus on 2 important repos now). Prevents scope creep and enables deep analysis."
+    impact: "DOCX_RTM_Automation and CODESPACES_jyperter prioritized. Pipeline and Docs repos deferred."
+    status: "ACTIVE"
+
+  - date: "2025-11-19"
+    decision: "Create MULTI_REPO_TRACKER.yaml for tracking"
+    rationale: "Need structured tracking of status across all 5 repos"
+    impact: "Clear visibility into progress, dependencies, and next steps"
+    status: "ACTIVE"
+
+  - date: "2025-11-19"
+    decision: "Defer pipeline-automation-hub and document-organization-system"
+    rationale: "Lower priority, dependencies on high-priority repos, user preference"
+    impact: "Focus resources on RTM and Codespaces analysis first"
+    status: "ACTIVE"
+
+  - date: "2026-06-21"
+    decision: "Rex reconciliation: do not inline 1876 integrate_me items"
+    rationale: "Inline list would make tracker unreadable. External backlog files with reason-code grouping are triageable."
+    impact: "831 ABACUS + 404 CODEX items referenced by file, counted by reason code."
+    status: "ACTIVE"
+
+  - date: "2026-06-21"
+    decision: "Master_Input: record structural OPEN_RFI only, not item backlog"
+    rationale: "Master_Input is an agent sandbox. Its 747 subrepos and 11145 integrate_me entries are expected agent artefacts, not an actionable triage backlog. One structural finding is sufficient."
+    impact: "MI-RFI-001 recorded; human decision required on migration."
+    status: "ACTIVE"
+
+  - date: "2026-06-21"
+    decision: "V_eff rule enforced throughout reconciliation"
+    rationale: "Fields with no source in repo_map.yaml or repo_wireframe.yaml are marked OPEN, never speculated."
+    impact: "Several CODEX fields (priority, status, local_clone, folder_count, file_count) left OPEN."
+    status: "ACTIVE"
+
+# ==================================================================================
+# UPDATE HISTORY
+# ==================================================================================
+
+update_history:
+  - date: "2025-11-19T16:45:00Z"
+    version: "1.0.0"
+    author: "DeepAgent"
+    changes:
+      - "Initial creation of MULTI_REPO_TRACKER.yaml"
+      - "Documented complete analysis for GBOGEB/ABACUS (primary repo)"
+      - "Created placeholder entries for 4 additional repos"
+      - "Defined cross-repo integration points"
+      - "Created progress summary and next actions"
+      - "Documented decision log"
+    notes: "Comprehensive multi-repo tracking system for GLOOB integration"
+
+  - date: "2026-06-26T00:00:00Z"
+    version: "1.1.0"
+    author: "Claude Code (ABACUS Team)"
+    changes:
+      - "Added repo_map_data and repo_wireframe_data blocks to GBOGEB_ABACUS"
+      - "Raised 5 ABACUS parse_error BLOCKERs (ABACUS-PARSE-001..005)"
+      - "Raised ABACUS-IM-BACKLOG open item (831 paths, ref _abacus_im_paths.txt)"
+      - "Raised ABACUS subrepo open items: MINERVA_PID, deepagent-handover-package"
+      - "Added new GBOGEB_CODEX section from rex scan"
+      - "Raised 2 CODEX parse_error BLOCKERs (CODEX-PARSE-001..002)"
+      - "Raised CODEX-IM-BACKLOG open item (404 paths, ref _codex_im_paths.txt)"
+      - "Added new Master_Input section (structural OPEN_RFI only, MI-RFI-001)"
+      - "Updated meta: version 1.1.0, total_repos 7, rex_scan_sources"
+      - "V_eff: all CODEX fields without source left OPEN"
+    notes: >
+      Source: C:\repos\rex-mapping\repo_map.yaml (rex_repo_map/v0) +
+              C:\repos\rex-mapping\repo_wireframe.yaml (rex_repo_wireframe/v0).
+      Backlog files written: _abacus_im_paths.txt (831), _codex_im_paths.txt (404).
+      Written to C:\repos\rex-mapping\MULTI_REPO_TRACKER.yaml (outside OneDrive);
+      human copies canonical version into repo location.
+
+# ==================================================================================
+# USAGE NOTES
+# ==================================================================================
+
+usage_notes: |
+  This MULTI_REPO_TRACKER.yaml provides structured tracking of all 7 GBOGEB
+  repositories in the GLOOB integration project.
+
+  **How to Use:**
+  1. Check per-repo status sections for detailed information
+  2. Review cross-repo integration points for dependencies
+  3. Monitor progress_summary for overall project status
+  4. Use next_actions for task prioritization
+  5. Update as repos are analyzed and integrated
+
+  **Repo Priority Levels:**
+  - PRIMARY: Core repo, highest importance (GBOGEB/ABACUS)
+  - HIGH: Important repos, analyze next (RTM, Codespaces)
+  - MEDIUM: Valuable repos, analyze later (Pipeline, Docs)
+  - OPEN_RFI: Structural finding requires human decision (Master_Input)
+
+  **Status Values:**
+  - PHASE_1_COMPLETE: Full analysis and deliverables created
+  - PENDING_ANALYSIS: Identified but not yet analyzed
+  - DEFERRED: Postponed to later phase
+  - OPEN_RFI: Requires human decision before further triage
+
+  **V_eff Rule:**
+  Fields marked OPEN have no source in the rex scan YAMLs.
+  Do not fill them speculatively — verify from repo or ask owner.
+
+  **Integrate_me Backlogs:**
+  Not inlined here. Reference files contain full path lists grouped by reason code:
+    ABACUS: C:\repos\rex-mapping\_abacus_im_paths.txt  (831 entries)
+    CODEX:  C:\repos\rex-mapping\_codex_im_paths.txt   (404 entries)
+
+  **Update Frequency:**
+  - Update after each repo analysis
+  - Update when cross-repo integration points identified
+  - Update when dependencies resolved
+  - Update when priorities change
+
+# ==================================================================================
+# END OF MULTI_REPO_TRACKER.yaml
+# ==================================================================================
