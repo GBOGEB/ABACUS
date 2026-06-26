@@ -1,0 +1,7 @@
+{
+  "verdict": "PROCEED_MDA",
+  "n_open_gates": 0,
+  "open_gates": [],
+  "energy_model": "bound",
+  "missing_artefacts": []
+}
