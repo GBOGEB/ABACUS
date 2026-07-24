@@ -1,24 +1,6 @@
-references:
-  - name: CoolProp
-    source_url: https://github.com/CoolProp/CoolProp
-    mechanism: runtime_property_library
-    pin: "7.2.0"
-    package_pin: "CoolProp==7.2.0"
-    purpose: Helium property calls for the lumped QPS Line S recovery model.
-    drift_policy: exact_pin_required
-    notes: Property-oracle version drift can change thermodynamic outputs.
+# DEPRECATED: This file has been superseded by docs/qps_line_s_recovery/reference-registry.yaml
+# which is the single SSOT for property-oracle decisions for the QPS Line S recovery package.
+# This file is retained as a pointer only and should not be updated directly.
+# See docs/qps_line_s_recovery/reference-registry.yaml for the authoritative content.
 
-  - name: HEPAK
-    source_url: licensed_offline_reference
-    mechanism: frozen_golden_csv
-    pin: offline_version_recorded_in_csv_header
-    purpose: Independent helium property oracle for frozen golden anchor checks.
-    ci_policy: CI compares CoolProp outputs against committed HEPAK CSV; CI does not run HEPAK.
-    notes: HEPAK is the independent oracle; REFPROP is intentionally not used as the helium cross-check.
-
-  - name: REFPROP
-    source_url: https://www.nist.gov/srd/refprop
-    mechanism: out_of_scope_for_helium_cross_check
-    pin: not_applicable
-    purpose: Explicitly excluded as independent helium cross-check for this wave.
-    notes: For helium, CoolProp uses the REFPROP 10 Ortiz-Vega equation basis, so CoolProp-vs-REFPROP is not independent.
+references: []  # Moved to docs/qps_line_s_recovery/reference-registry.yaml

@@ -43,7 +43,7 @@ class Config:
 
 def require_coolprop() -> None:
     if PropsSI is None:
-        raise RuntimeError("missing dependency: pip install CoolProp")
+        raise RuntimeError("missing dependency: pip install CoolProp==7.2.0")
 
 
 def sat_pressure(T: float) -> float:
@@ -105,7 +105,7 @@ def simulate(peak_kgs: float, cfg: Config | None = None, blocked_in: bool = Fals
         gen = boiloff(t, peak_kgs, cfg)
         comp = comp_cap if (t >= cfg.comp_start_s and P >= p_suction) else 0.0
         net = gen - comp
-        m_liq -= gen * cfg.dt_s
+        m_liq = max(0.0, m_liq - gen * cfg.dt_s)
         m_recovered += comp * cfg.dt_s
 
         if P >= cfg.p_open_bar * BAR:

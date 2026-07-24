@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("CoolProp.CoolProp")
+
 from models.qps_line_s.recovery_model import Config, simulate
 
 
