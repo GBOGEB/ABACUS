@@ -19,5 +19,5 @@ cairosvg==2.9.0          # SVG -> PNG/PDF rasterisation (atlas v6, collage)
 # --- Auxiliary deck / preview generators (generator/, standards/) -------------
 # Not exercised by make.sh, but imported by the slide-deck and HTML-viewer
 # tooling. Kept pinned so the publish/ deliverables are reproducible too.
-Pillow==12.2.0           # raster compositing for preview collages & PPTX images
+Pillow==12.3.0           # raster compositing for preview collages & PPTX images
 python-pptx==1.0.2       # dissection slide-deck (build_dissection_*.py)
