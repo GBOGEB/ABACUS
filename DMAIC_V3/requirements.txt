@@ -14,7 +14,7 @@ pathlib2>=2.3.7; python_version < '3.4'
 dataclasses>=0.6; python_version < '3.7'
 
 # Type hints
-typing-extensions>=4.0.0
+typing-extensions>=4.15.0
 
 # ============================================================================
 # DATA PROCESSING
