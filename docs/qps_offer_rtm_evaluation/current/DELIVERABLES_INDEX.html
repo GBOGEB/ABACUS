@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPS OFFER Evaluation — Deliverables Index</title>
+<style>
+  :root{
+    --navy:#17365D; --teal:#0F6B78; --hdr:#1F4E78; --band:#F2F6FA;
+    --purple:#441F63; --purplebg:#EFE5F5; --border:#C9D6E3; --body:#222222; --muted:#666666;
+    --good:#2E7D32; --goodbg:#E8F5E9; --warn:#B26A00; --warnbg:#FFF3E0; --stale:#B00020; --stalebg:#FDEAEC;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Aptos","Calibri","Segoe UI",Arial,sans-serif;margin:0;background:#fafbfc;color:var(--body);}
+  header.top{background:var(--navy);color:#fff;padding:22px 30px;}
+  header.top h1{margin:0 0 6px;font-size:22px;}
+  header.top p{margin:0;font-size:13.5px;opacity:.9;max-width:900px;line-height:1.5;}
+  main{max-width:1180px;margin:0 auto;padding:26px 30px 60px;}
+  h2{color:var(--navy);border-bottom:2px solid var(--border);padding-bottom:6px;margin-top:44px;}
+  h3{color:var(--navy);margin-top:0;}
+  p.subtitle{color:var(--muted);font-size:13.5px;margin-top:-4px;line-height:1.55;}
+  .callout{background:var(--purplebg);border-left:4px solid var(--purple);padding:12px 16px;border-radius:4px;font-size:13.5px;margin:16px 0;line-height:1.55;}
+  .callout b{color:var(--purple);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;margin-top:18px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h3{font-size:16px;margin-bottom:4px;}
+  .card .fname{font-family:Consolas,Menlo,monospace;font-size:12px;color:var(--teal);background:var(--band);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:10px;word-break:break-all;}
+  .card .audience{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px;}
+  .card p{font-size:13.5px;line-height:1.55;margin:8px 0;}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+  .badge.current{background:var(--goodbg);color:var(--good);}
+  .badge.watch{background:var(--warnbg);color:var(--warn);}
+  .badge.stale{background:var(--stalebg);color:var(--stale);}
+  table{border-collapse:collapse;width:100%;margin-top:14px;font-size:13px;}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:var(--hdr);color:#fff;font-weight:700;}
+  tr:nth-child(even) td{background:var(--band);}
+  code{font-family:Consolas,Menlo,monospace;font-size:12px;background:var(--band);padding:1px 5px;border-radius:3px;}
+  .toc{background:var(--band);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-top:18px;}
+  .toc a{color:var(--teal);text-decoration:none;font-weight:600;font-size:13.5px;}
+  .toc a:hover{text-decoration:underline;}
+  .toc ul{margin:6px 0 0;padding-left:20px;columns:2;}
+  .toc li{margin-bottom:4px;}
+  footer.bottom{background:var(--purplebg);color:#555;font-size:11.5px;padding:14px 30px;text-align:center;margin-top:40px;}
+  .not-outward{opacity:.75;}
+  .not-outward .fname{color:var(--muted);}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>QPS OFFER Evaluation — Deliverables Index</h1>
+  <p>One page answering "what do I actually hand to someone, and why." Every file below is generated from a single SSOT workbook — nothing here is hand-typed separately from it, so none of these can silently drift out of sync with each other. Internal working files (build scripts, QA harnesses, session logs) are listed separately at the bottom for completeness, not because anyone outside this project needs them.</p>
+</header>
+<main>
+
+<div class="toc">
+  <b>On this page</b>
+  <ul>
+    <li><a href="#outward">1. Outward-facing deliverables</a></li>
+    <li><a href="#howtheyrelate">2. How they relate to each other</a></li>
+    <li><a href="#audience">3. Which one for which audience</a></li>
+    <li><a href="#status">4. Version / status at a glance</a></li>
+    <li><a href="#internal">5. Internal / working artifacts (not for outside distribution)</a></li>
+  </ul>
+</div>
+
+<h2 id="outward">1. Outward-facing deliverables</h2>
+<p class="subtitle">These six are what actually leave the project — everything else in the working folder exists to build or QA one of these.</p>
+
+<div class="cards">
+
+  <div class="card">
+    <h3>Full evaluation workbook <span class="badge current">SSOT</span></h3>
+    <div class="fname">QPS_OFFER_Evaluation_FULL_v23.xlsx</div>
+    <div class="audience">Audience: contract/engineering team — the working file</div>
+    <p>The single source of truth. Scores all 50 OFFER items against all 722 RTM requirements using the 7-dimension weighted BT ranking method (Safety/Legal, Reliability, Performance, Functional, Quality/Verifiability, Lifecycle, Cost). Every other file on this page is a trim, export, or presentation slice of this one workbook — nothing is maintained separately.</p>
+    <p>27 sheets, including internal audit/handover/method-control tabs (CHANGELOG, DMAIC_AUDIT, WEIGHTS_METHOD, CODING_HANDOVER) that the LITE trim below deliberately drops.</p>
+  </div>
+
+  <div class="card">
+    <h3>Reviewer workbook <span class="badge current">trim</span></h3>
+    <div class="fname">QPS_OFFER_Evaluation_LITE_v23.xlsx</div>
+    <div class="audience">Audience: external reviewers, board, anyone without full project context</div>
+    <p>A 19-sheet trim of the FULL workbook: ranking, crosswalk, workspace, quality checks, lookup tools, filter dashboard, cluster and taxonomy tabs — everything a reviewer needs to evaluate the ranking, none of the internal audit/method-reproduction scaffolding. Kept in lockstep with FULL every round; same 722 RTMs, same numbers, no separate maintenance.</p>
+  </div>
+
+  <div class="card">
+    <h3>HTML Navigator <span class="badge current">read-only browser</span></h3>
+    <div class="fname">QPS_RTM_BT_Navigator_v21.html</div>
+    <div class="audience">Audience: anyone who wants to browse without opening Excel</div>
+    <p>Single self-contained HTML file — no server, no install, works offline in any browser. Mirrors the FULL workbook's ranking, lookup, filter dashboard, domain/cluster heatmaps, document outline and taxonomy views. Data is spliced in at build time from a JSON export of the live workbook, never hand-typed, so it cannot drift from the SSOT independently. Read-only by design: edits happen in the workbook, then this page is regenerated from it.</p>
+  </div>
+
+  <div class="card">
+    <h3>BT-method presentation deck</h3>
+    <div class="fname">BT_Method_Evaluation_v12.pptx</div>
+    <div class="audience">Audience: presenting the ranking methodology itself</div>
+    <p>Explains the 7-dimension weighted Bradley-Terry-style ranking method used across the whole evaluation — how the weights work, why gate items get precedence, what a "Weighted S" score means. This is the deck for explaining <i>how</i> the ranking was built, not for presenting individual RTM/OFFER results. v12 added an explicit "honest ranking" slide (official gate-first rank vs pure weighted-S rank, side by side, gate colouring kept) plus a weight-scenario comparison and a granular OFFER cross-reference slide.</p>
+    <p><span class="badge watch">watch</span> v7/v8 still have no saved build script (binary-only). v9/v11 changes ARE documented in SESSION_SSOT.yaml prose even where no script was saved; v6, v10, and v12 have real saved/re-runnable scripts. Partial improvement, not fully closed.</p>
+  </div>
+
+  <div class="card">
+    <h3>MTBF / DMAIC reliability deck</h3>
+    <div class="fname">QPS_MTBF_WCS_DMAIC_v7.pptx</div>
+    <div class="audience">Audience: reliability / DMAIC review</div>
+    <p>MTBF (Mean Time Between Failures) design-considerations and DMAIC (Define-Measure-Analyze-Improve-Control) framing deck, separate lineage from the BT-method deck above — covers reliability engineering content, not the OFFER ranking methodology. 38 slides, RTM citations spot-checked against the current register and confirmed still valid.</p>
+    <p><span class="badge watch">watch</span> Untouched this session (last content change v6) while every other deliverable iterated -- not broken, just behind. No saved build script for the v6->v7 edit. GBO explicitly set deeper reconciliation as LOW priority earlier in the session; not dropped, just not yet scheduled.</p>
+  </div>
+
+  <div class="card">
+    <h3>Taxonomy / Domain Summary PDF</h3>
+    <div class="fname">QPS_Taxonomy_and_Domain_Summary.pdf</div>
+    <div class="audience">Audience: quick-print reference, no-device sharing</div>
+    <p>Static PDF snapshot of the Requirement Type / lifecycle / domain taxonomy — the one deliverable here that isn't rebuilt every round.</p>
+    <p><span class="badge current">current</span> Refreshed against FULL_v23 this round -- data source promoted from a hardcoded path to a CLI arg, and the PDF render+merge step (previously undocumented/inline) is now a saved script (merge_taxonomy_pdf.py). Verified via direct page-render inspection.</p>
+  </div>
+
+</div>
+
+<h2 id="howtheyrelate">2. How they relate to each other</h2>
+<div class="callout">
+  <b>Read together:</b> the FULL workbook is the only place data is ever entered or changed. The LITE workbook and the HTML Navigator are both generated <i>from</i> FULL — never edited independently, and both regenerate cleanly any time FULL changes (LITE via a Python build script that drops internal-only sheets; the Navigator via a JSON data export spliced into a reusable HTML template). The two PowerPoint decks are separate lineages with their own narrative content, not auto-generated from the workbook, which is why they're the two items flagged "watch" above — they need a human to carry forward whatever changed, not just a script re-run. The Taxonomy PDF is the odd one out: a point-in-time export that nobody has re-run since v7, which is why it's flagged stale rather than watch — the risk there isn't "undocumented," it's "possibly outdated."
+</div>
+
+<h2 id="audience">3. Which one for which audience</h2>
+<table>
+  <tr><th>If you are...</th><th>Start with</th><th>Why</th></tr>
+  <tr><td>Working the evaluation day-to-day</td><td><code>FULL_v23.xlsx</code></td><td>Only place with all 27 sheets, live formulas, and full audit trail.</td></tr>
+  <tr><td>An external reviewer or board member</td><td><code>LITE_v23.xlsx</code></td><td>Same numbers, none of the internal scaffolding to wade through.</td></tr>
+  <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code>Navigator_v21.html</code></td><td>Opens in any browser, no install, same data.</td></tr>
+  <tr><td>Explaining <i>how</i> the ranking method works</td><td><code>BT_Method_Evaluation_v12.pptx</code></td><td>The methodology deck, not the results themselves.</td></tr>
+  <tr><td>Reviewing reliability / DMAIC content</td><td><code>QPS_MTBF_WCS_DMAIC_v7.pptx</code></td><td>Separate subject from the OFFER ranking entirely.</td></tr>
+  <tr><td>Need a quick printed taxonomy reference</td><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>But confirm against the live workbook first — this one is stale.</td></tr>
+</table>
+
+<h2 id="status">4. Version / status at a glance</h2>
+<table>
+  <tr><th>File</th><th>Current version</th><th>Status</th><th>Last substantive change</th></tr>
+  <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v23</td><td><span class="badge current">current</span></td><td>AD_07/AD_08 added to DELIVERABLES_DOSSIER (34 entries, was 32); openpyxl merged-cell/insert_rows bug found+fixed</td></tr>
+  <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v23</td><td><span class="badge current">current</span></td><td>Kept in lockstep with FULL v23</td></tr>
+  <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v21</td><td><span class="badge current">current</span></td><td>Re-synced to FULL_v23 (AD_07/08 now in the Taxonomy tab's Deliverables tree); template-splice step promoted to a saved script (splice_navigator.py)</td></tr>
+  <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v12</td><td><span class="badge current">current</span></td><td>Deliverables Dossier slide rebuilt for v23 data; added honest gate-vs-pure-score ranking, weight-scenario, and granular cross-reference slides</td></tr>
+  <tr><td><code>QPS_MTBF_WCS_DMAIC_*.pptx</code></td><td>v7</td><td><span class="badge watch">watch — untouched this session</span></td><td>Last content change v6; no saved build script for v6->v7. Not stale in the sense of wrong data (RTM citations spot-checked, still valid) -- just behind the rest of the project's cadence.</td></tr>
+  <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Refreshed against FULL_v23; render+merge step now a saved script (merge_taxonomy_pdf.py)</td></tr>
+</table>
+
+<h2 id="internal">5. Internal / working artifacts (not for outside distribution)</h2>
+<p class="subtitle">Listed for completeness and traceability — these are how the six deliverables above get built and checked, not something to hand to a reviewer.</p>
+<div class="cards">
+  <div class="card not-outward">
+    <h3>Engineering handover</h3>
+    <div class="fname">ENGINEERING_HANDOVER_SESSION.md</div>
+    <p>Narrative handover for whoever picks up this project next: what it is, how to regenerate anything, known bugs fixed, known gaps, session status.</p>
+  </div>
+  <div class="card not-outward">
+    <h3>Structured session SSOT</h3>
+    <div class="fname">SESSION_SSOT.yaml</div>
+    <p>Machine-readable decision log, build-chain provenance, and done/pending/missing status — the source the handover markdown is written from.</p>
+  </div>
+  <div class="card not-outward">
+    <h3>Artifact registry</h3>
+    <div class="fname">ARTIFACT_REGISTRY.json</div>
+    <p>Auto-generated inventory of every file in the working folder, grouped by version family. Regenerate with <code>generate_artifact_registry.py</code> — never hand-edited, so it can't go stale relative to what's actually on disk.</p>
+  </div>
+  <div class="card not-outward">
+    <h3>Build scripts</h3>
+    <div class="fname">build_workbook_v23.py · build_workbook_slim_v23.py · export_nav_data.py · classify_all_rtms.py · infer_clusters.py · t0_taxonomy.py · fix_mtbf_rtm_numbers.py</div>
+    <p>The reproducible pipeline: each script's declared input version must match the prior script's output, chaining FULL_v(N-1) → FULL_vN → LITE_vN → Navigator_vN.</p>
+  </div>
+  <div class="card not-outward">
+    <h3>QA harnesses</h3>
+    <div class="fname">qa_nav_v8*.py and similar</div>
+    <p>Playwright/LibreOffice/raw-XML QA scripts run before anything above ships — zero formula errors, zero console errors, zero dangling relationships, zero dimension/autofilter mismatches is the bar.</p>
+  </div>
+</div>
+
+</main>
+<footer class="bottom">QPS OFFER Evaluation project — Deliverables Index · Generated to accompany workbook v23 / Navigator v21 · Regenerate this page any time the version table above changes</footer>
+</body>
+</html>

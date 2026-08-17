@@ -1,0 +1,172 @@
+# style.yaml
+# Design-token record for QPS_MTBF_WCS_DMAIC_v4.pptx (Phase 4 / "GBO style pass").
+# This documents WHAT build_deck4.py enforces and WHY, decoupled from the
+# actual slide content (see content.yaml). Treat this as the source of truth
+# if the deck needs another styling pass later, or if the rules need to be
+# ported to a different base file.
+
+deck:
+  base_theme_name: sckcen
+  slide_size: "13.333 in x 7.5 in (widescreen 16:9)"
+  slide_count: 38
+  source_of_this_pass: uploaded_v3_review.pptx  # GBO's hand-edited v3 review copy, not final3.pptx
+
+fonts:
+  rule: >
+    Two-font system. Title placeholders/shapes (name == "Title 1", or the banner
+    "Rectangle 1"/"Rectangle 2" shapes used as titles on Slides 1-3 and the
+    Appendix/narrative banner slides) and all text on Slides 1-3 keep Segoe UI
+    (the deck's original theme font). Every other text run on Slides 4-38 is
+    set to Aptos.
+  title_font: "Segoe UI"
+  first_three_slides_font: "Segoe UI"
+  body_font_slides_4_to_38: "Aptos"
+  caveat: >
+    Aptos has no metric-compatible LibreOffice substitute in this sandbox, so
+    QA renders here approximate real PowerPoint layout for Aptos text (the
+    pptx skill flags Aptos as "QA-unreliable" for this reason). The
+    auto-fit band below was calibrated with a generous safety margin (74% fit
+    threshold, i.e. sized to use at most ~3/4 of the estimated available box
+    height) specifically to absorb this uncertainty. If any line wraps
+    differently than expected when you open the real file in PowerPoint,
+    nudge that shape's font down 0.5-1pt rather than distrusting the whole
+    pass -- it will be an isolated case, not systemic.
+  result_counts: {aptos_runs: 417, segoe_ui_runs: 77}
+
+body_text_autofit:
+  goal: "14-16pt heavy fill per GBO's request, without overflowing any box."
+  method: >
+    Content-aware, per-shape auto-fit -- NOT PowerPoint's normAutofit (which
+    python-pptx cannot compute and which LibreOffice does not reliably honor
+    on render either). For every in-scope text box/placeholder, estimate the
+    rendered height of its paragraphs at a candidate font size, and pick the
+    largest size in [lo, hi] whose estimate clears the box's usable height
+    (with headroom). Falls back to a lower band, then an absolute floor, for
+    the handful of very dense shapes that don't fit even at the low end.
+  band: {hi: 16.0, lo: 11.5, floor: 9.5, step: 0.5}
+  fit_threshold: 0.74   # only claim 74% of estimated usable height -- the margin absorbs Aptos QA uncertainty
+  fallback_threshold: 0.98  # looser threshold used only once already below `lo`
+  line_spacing: 1.45
+  paragraph_space_after_pt: 8
+  paragraph_space_before_pt: 0
+  calibration_constants:
+    char_width_factor: 0.58   # avg glyph width ~= font_pt * 0.58 * 12700 EMU, tuned against real LibreOffice renders
+    notes: >
+      Tuned iteratively against rendered PNGs, not trusted from python-pptx's
+      declared metrics alone -- python-pptx/OOXML have no font-metrics API, so
+      this is an empirical fit, re-verified slide-by-slide via render QA.
+  scope:
+    included: "TEXT_BOX and PLACEHOLDER shapes with body content"
+    excluded:
+      - "Title shapes (sized independently, see title_subtitle below)"
+      - "Subtitle placeholder ('Text Placeholder 2') -- repositioned only, not resized"
+      - "DMAIC tag text ('DEFINE'/'MEASURE'/etc.) -- sized by the tag rebuild, see dmaic_tags"
+      - "Shapes whose current runs are already < 10pt (captions/fine print/footnotes) -- left alone in STEP 3"
+  small_caption_rescue:
+    applies_to: "The < 10pt shapes STEP 3 deliberately skips"
+    problem: >
+      A few of these (pre-existing user annotation/callout boxes, often with
+      several manual line breaks) had a stale box height too small for their
+      text even before this pass.
+    fix: >
+      Grow the box height only (never touch font size) up to the nearer of
+      the footer safe-zone or the next shape below it. If even that capped
+      height can't hold all the text (rare -- one case: Slide 35's
+      thumbnail-callout box, which is capped by a pasted screenshot sitting
+      right below it), bring the caption to the front of the shape z-order so
+      the overflow still draws legibly instead of being hidden behind the
+      picture.
+    result_counts: {boxes_grown: 12, boxes_brought_to_front: 6}
+  result_counts: {runs_autofit: 211, footnote_scale_shapes_left_alone: 44}
+
+title_subtitle:
+  position:
+    rule: >
+      Titles and subtitles move left and slightly upward from a fully-cornered
+      position, per GBO's request -- not flush into the corner.
+    title_left_emu: 457200      # 0.5 in
+    title_top_emu: 420000       # ~0.46 in
+    subtitle_left_emu: 457200
+  width_cap: >
+    Title width is capped clear of the DMAIC tag's left edge (TITLE_MAX_W),
+    so a long title can never run underneath the enlarged tag.
+  autofit: >
+    Title font auto-shrinks (floor 20pt) to keep to one line where possible;
+    if even the floor doesn't fit on one line, the title box grows to two
+    lines and the subtitle is pushed down to match, rather than letting the
+    title visually collide with anything.
+  result_counts: {shapes_repositioned: 48}
+
+dmaic_tags:
+  goal: >
+    Bigger, and clearly distinguishable by DMAIC letter/phase via colour fill
+    (GBO: "based on the DMAIC letter (colour - some fill)"), replacing the
+    small flat-text tags.
+  shape: "Rounded rectangle pill (corner radius = 50% of height)"
+  text_style: "White, bold, centered, letter-spacing +80 (tight caps tracking)"
+  sizing:
+    banner_slides: {width_emu: 1404000, height_emu: 460000, font_pt: 12.5}   # Slides 1-3, 29-38 (dark banner titles)
+    layout_slides: {width_emu: 2000000, height_emu: 460000, font_pt: 13.5}   # all other content slides
+  placement:
+    banner_slides: "Right of the title banner, offset by a fixed gap (BANNER_RIGHT + 60000 EMU)"
+    layout_slides: "Right-aligned to a fixed slide margin (SLIDE_W - 645465 EMU)"
+  colours:
+    DEFINE:  {hex: "562873", note: "theme accent (purple) -- unchanged from v3"}
+    MEASURE: {hex: "984A9C", note: "theme accent (magenta) -- unchanged from v3"}
+    ANALYZE: {hex: "034694", note: "theme accent (blue) -- unchanged from v3"}
+    IMPROVE: {hex: "B5622A", note: "NEW non-theme amber -- theme only had ~4 usable distinct accents"}
+    CONTROL: {hex: "1D7A5F", note: "NEW non-theme teal -- theme only had ~4 usable distinct accents"}
+  rationale: >
+    The theme only supplies ~4 clearly-distinct usable accent colours, but
+    DMAIC has 5 phases -- IMPROVE and CONTROL got new non-theme RGB values
+    chosen to (a) stay in the same saturation/value family as the theme's
+    existing accents so they read as "part of the same palette," and (b) be
+    unambiguously distinct from DEFINE/MEASURE/ANALYZE and from each other.
+  result_counts: {tags_rebuilt: 37}
+
+hidden_slide:
+  finding: >
+    Slide 28 (Appendix I) carried a pre-existing show="0" attribute in GBO's
+    uploaded review file -- present before this pass touched anything. Since
+    Appendix I is cross-referenced by name/number from Slides 20, 25, 26 and
+    31, and it is the only appendix that was hidden, it was un-hidden so the
+    deck's own internal references resolve to a visible slide.
+  result_counts: {slides_unhidden: 1}
+
+cross_reference_fixes:
+  cause: >
+    GBO physically reordered Slides 19-21 (Failure Classification, Reliability
+    Targets by Failure Class, Operational Philosophy) in the uploaded review
+    file. 7 in-text references to "Slide 19/20/21" elsewhere in the deck were
+    still pointing at the pre-reorder numbers.
+  result_counts: {edits_applied: 7}
+
+pre_existing_content_notes_not_touched:
+  - slide: 12
+    shape: "TextBox 9"
+    finding: >
+      A stray "¨{RTM-0237-0252 pass}" artifact (odd leading glyph + brace
+      syntax) inside the "CIS / MCS exchange" body text. Left as-is -- looks
+      like a leftover placeholder/edit-marker from GBO's own content pass,
+      not something to silently rewrite.
+  - slide: 15
+    finding: >
+      A duplicated sentence and a garbled word ("INTERCONNECGà") in the
+      hub-and-spoke diagram relabeling. Pre-existing in GBO's edit, left
+      as-is for the same reason.
+  - slide: 20
+    finding: >
+      Inconsistent bullet indentation between two adjacent paragraphs.
+      Pre-existing formatting inconsistency in GBO's edit, left as-is.
+  - slides: [6, 31, 32]
+    finding: >
+      Salmon highlight (RGB FF9999) on specific phrases -- confirmed
+      consistent across all three instances, matching Slide 6's explicit
+      "Open baseline question ... not yet decided" framing. Read as GBO's own
+      "flagged / open item" marking convention and deliberately preserved,
+      not treated as a formatting error.
+
+validation:
+  tool: "scripts/office/validate.py --original QPS_MTBF_WCS.pptx"
+  status: "All validations PASSED (re-verified after every edit pass, including the z-order fix)"
+  render_qa: "38/38 slides rendered via LibreOffice + pdftoppm and visually inspected at 100dpi; 0 outstanding overflow/overlap/collision issues"

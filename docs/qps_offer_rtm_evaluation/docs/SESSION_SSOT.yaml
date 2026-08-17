@@ -1,0 +1,456 @@
+%YAML 1.1
+---
+# SESSION_SSOT.yaml -- single source of truth for the QPS OFFER Evaluation
+# project state (workbook + BT-method decks + HTML Navigator + MTBF/DMAIC deck).
+#
+# Split deliberately from ARTIFACT_REGISTRY.json:
+#   - ARTIFACT_REGISTRY.json is 100% auto-generated (generate_artifact_registry.py
+#     scans the working directory -- file names, sizes, mtimes, "latest per
+#     family"). Re-run it, never hand-edit it. It cannot drift because it
+#     doesn't record opinions, only what's actually on disk.
+#   - THIS file is the narrative/decision layer that a directory listing can't
+#     capture: why each version exists, what's still open, what's known-missing,
+#     and lessons that should change how future rounds get built. Hand/agent
+#     maintained -- update it at the end of any round that ships a new version
+#     or closes/opens a TODO. Re-read it (memory_read-style: read before write)
+#     at the start of any new session picking this project back up.
+#
+# Idempotency contract: regenerating any deliverable from its build script with
+# unchanged inputs reproduces the same output byte-for-byte (no timestamps, no
+# randomness baked into any build_*.py). See build_chain below for the exact
+# script->output edges; run in listed order.
+
+meta:
+  project: QPS OFFER Evaluation -- RTM/OFFER BT-ranking workbook, decks, HTML Navigator
+  owner: GBO
+  session_span: "2026-08-12 through 2026-08-17 (this container)"
+  last_updated: "2026-08-17, after Navigator v12 + Excel v20 + BT deck v9 + git commits + DMAIC metric-history backfill"
+  working_dir: /home/claude/work
+  companion_file: ARTIFACT_REGISTRY.json   # run generate_artifact_registry.py to refresh
+  git_repository:
+    status: "local-only, per GBO's explicit choice (2026-08-17 AskUserQuestion: 'Local git only for now') -- no GitHub remote configured, no credentials given to or requested by this session; GBO pulls/pushes to GitHub themselves"
+    branch: master
+    commits_this_session:
+      - {hash: f3b6245, summary: "Initial commit: baseline (workbook v19, Navigator v10, decks, handover/SSOT, all build scripts) -- ~2578 files"}
+      - {hash: 13a86e5, summary: "Excel v20: 9-section build from GBO's uploaded annotation file"}
+      - {hash: 272c9ae, summary: "BT deck v9: PCA and Sum-vs-Average domain-quadrant slides"}
+      - {hash: b76e966, summary: "Navigator v11-v12: Code/Standard dropdown, Taxonomy relation types & Deliverables Dossier"}
+      - {hash: 13ce732, summary: "DMAIC metric-history log: backfilled v5-v20"}
+    note: "Working tree clean as of last_updated -- every delivered artifact from this session is committed. Commit messages are the intended 'major changelog details, traceable in intent' GBO asked for -- read via `git log` for the narrative history; this SSOT stays the living/decision layer, git history is the immutable log."
+
+# ------------------------------------------------------------------ deliverable families
+# One entry per thing GBO actually opens/uses. `canonical` = what to hand them
+# today. `builder_chain` = ordered script list to reproduce it from scratch
+# (IN/OUT verified from each script's own IN/OUT constants where the script
+# still exists on disk -- see gaps.missing_build_scripts for the versions
+# whose script was NOT preserved).
+families:
+  workbook_full:
+    canonical: QPS_OFFER_Evaluation_FULL_v23.xlsx
+    purpose: >
+      The SSOT workbook -- RTM_RANKING (722 reqs), OFFER_RANKING (50 items),
+      BT/weighted-S scoring, gate precedence, taxonomy, cluster grouping,
+      review queue, and every audit/method/legend sheet. Everything else
+      (LITE workbook, Navigator, PDFs) derives FROM this file, never the
+      reverse.
+    sheet_count: 32
+    builder_chain:
+      - {script: build_workbook_full_v5.py, in: GBO's hand-edited base + QPS_RTM_BT_Standalone.xlsx, out: QPS_OFFER_Evaluation_FULL_v5.xlsx}
+      - {script: build_workbook_v6.py,  in: FULL_v5,  out: FULL_v6,  summary: "taxonomy, C1-C8 clusters, RTM_LOOKUP page, OFFER disposition cols, Z_comment formula, filterable dashboard"}
+      - {script: build_workbook_v7.py,  in: FULL_v6,  out: FULL_v7,  summary: "Requirement Type/Category extended 43-->722 RTMs (rule-based, disclosed); inferred cluster for 429 unlinked RTMs (confidence-tagged)"}
+      - {script: build_workbook_v8.py,  in: FULL_v7,  out: FULL_v8,  summary: "DELIVERABLES!F de-genericised: real RTM cross-ref + EPIC-keyed evidence-type descriptor"}
+      - {script: build_workbook_v9.py,  in: FULL_v8,  out: FULL_v9,  summary: "soft C1-C8 cluster colour palette; 'safe to edit' cream fill on manual-entry EVALUATION_WORKSPACE columns"}
+      - {script: "MISSING (v10-v15, see gaps.missing_build_scripts)", in: FULL_v9, out: FULL_v15, summary: "classify_all_rtms.py / infer_clusters.py / fix_mtbf_rtm_numbers.py / t0_taxonomy.py were run in this span but the per-version orchestration scripts that called them were not preserved under discoverable v10..v15 names"}
+      - {script: build_workbook_v16.py, in: FULL_v15, out: FULL_v16, summary: "DASHBOARD chart-7 spike explanation callout; Gate-column red fill reuse (EVALUATION_WORKSPACE/OFFER_RANKING/RTM_RANKING)"}
+      - {script: build_workbook_v17.py, in: FULL_v16, out: FULL_v17, summary: "7-dim weight ColorScaleRule heatmaps on OFFER_RANKING/RTM_RANKING; live Base/Cost-heavy scenario toggle (WEIGHTS_METHOD); CATEGORY_FOCUS hidden-champions sheet; README + CHANGELOG sheets"}
+      - {script: build_workbook_v18.py, in: FULL_v17, out: FULL_v18, summary: "RTM_RANKING col J-N width/height rebalance (verbatim-text visibility); RTM_CROSSWALK!J white-on-white CF font fix; START_HERE colour legend + stale version-string fix"}
+      - {script: build_workbook_v19.py, in: FULL_v18, out: FULL_v19, summary: "RTM_RANKING!O:AG full layout overhaul (title bars extended to real width, legacy dataBar CF removed, dimension columns normalised, AC:AF widened + folded into row-height calc); TAXONOMY 3 missing-border tables fixed; QUALITY_CHECKS OPEN/CHECK status colours + border grid added; nav-button 3D-bevel border applied workbook-wide (198 cells/25 sheets); DASHBOARD_2 gained 5 RTM-side charts + an RTM<->OFFER crosswalk coverage panel; DOMAIN_SUMMARY's stale AutoFilter (A5:L27 vs real A1:L41 data extent) found and fixed -- prime suspect for the Excel 'Repaired' prompt GBO reported on LITE_v18, confirmed via full relationship/autofilter/content-types XML audit (all else clean)."}
+      - {script: build_workbook_v20.py, in: FULL_v19, out: FULL_v20, summary: "9-section build direct from GBO's uploaded annotation file: TAXONOMY Relation Types table (real RTM_CROSSWALK!J bucketed counts); COMPLIANCE_LEGEND Primary/Supporting RTM + Review flag formal definitions; Review flag standardised 5 free-text values -> 5 canonical + dropdown + colour CF across 3 sheets; REVIEW_FOCUS new sheet (9 flagged OFFER items); RTM_PHASE_EXPANSION new sheet (722 RTMs -> 2,169 (RTM,phase) rows, phase vocabulary rebuilt after a wrong-assumed-format bug); DELIVERABLES_DOSSIER new sheet (32 real contract AD entries from the mirror PDF's own Table 2, cross-referenced against every RTM's text); DASHBOARD_2 review-completion rollup (0/289 decided -- genuine finding, not a bug); CONFLICT_CANDIDATES heuristic requirement-conflict first-pass (65 candidate pairs, explicitly disclosed unverified); comment-column consistency pass (QUALITY_CHECKS gained one, 2 existing ones got the cream 'safe to edit' fill). See decisions_log.v20_banded_fill_bug and decisions_log.v20_phase_string_mismatch for the 2 bugs found+fixed during this build."}
+      - {script: fix_pdf_page_numbers.py, in: FULL_v20, out: FULL_v21, summary: "RTM_RANKING!J (PDF page) corrected against the real 137-page source PDF (every RTM-### is literally printed in the text, giving a 722/722 ground truth): only 247/722 (34%) of stored values matched, 475 rows (66%) were wrong (avg drift 1.40 pages, max 35) -- fixed all 475. Triggered by GBO's RTM-693 screenshot showing the real page 127 vs. workbook's stored 129."}
+      - {script: build_workbook_v22.py, in: FULL_v21, out: FULL_v22, summary: "DASHBOARD_2 chart C ('Average Weighted S by Domain') data-range bug fixed -- was pulling DOMAIN_SUMMARY rows 5-41 (36 rows) when the real domain table is only rows 6-27 (22 domains); rows 28-41 belong to an unrelated 'Cluster breakdown' table lower on the same sheet, causing the mismatched/blank category ticks GBO spotted in a Google Drive chart-preview screenshot. Range trimmed to the real 22-domain extent."}
+      - {script: build_workbook_v23.py, in: FULL_v22, out: FULL_v23, summary: "DELIVERABLES_DOSSIER gained AD_07 (QPS Cybersecurity Policy Framework) and AD_08 (QPLANT Abnormal Scenarios / Line S) from GBO's Master_Input working folder -- distinct from AD_01-06's contract-Table-2 provenance, disclosed as such (no SCKCEN ref# fabricated). Links taken from each document's own self-declared RTM anchor (AD_07->RTM-322, AD_08->RTM-260/261/292/294), not a fuzzy text scan. 34 AD entries total now (was 32). Found+fixed a real openpyxl bug during this build: insert_rows() does not shift merged-cell ranges, which was silently blanking the new AD_08 row's B:F columns -- explicit unmerge/re-merge added around the insert."}
+    known_data_caveat: >
+      RTM-BT ranking values integrated in v5 are a static snapshot (130
+      formulas / 34,838 cells = 0.4% density) using a 4-dimension (L/R/P/F)
+      scheme, not the canonical 7-dimension (L/R/P/F/Q/LC/C) model used
+      everywhere else in this workbook from v6 onward. Usable for review,
+      will not recompute if canonical weights change. Disclosed on the
+      sheet itself; not re-derived (out of scope, flagged as bigger/riskier
+      than this pass warranted).
+
+  workbook_lite:
+    canonical: QPS_OFFER_Evaluation_LITE_v23.xlsx
+    purpose: >
+      Reviewer-shareable subset of workbook_full -- KEEP-list derived (not a
+      DROP list) so new FULL sheets are excluded by default until explicitly
+      added. Currently 23 sheets kept; internal/audit/method-reproduction
+      sheets (STANDARDS, DELIVERABLES, AUDIT_NOTES, DMAIC_AUDIT,
+      EVALUATION_INPUT, NAVIGATION_MAP, CODING_HANDOVER, WEIGHTS_METHOD,
+      CHANGELOG) stay FULL-only.
+    builder_chain:
+      - {script: build_workbook_slim_v5.py through build_workbook_slim_v18.py, note: "one per FULL version, always IN=matching FULL_vN, OUT=LITE_vN; KEEP list is the single array to edit if the kept/dropped split should change"}
+      - {script: build_workbook_slim_v20.py, in: FULL_v20, out: LITE_v20, summary: "KEEP list gains REVIEW_FOCUS, RTM_PHASE_EXPANSION, DELIVERABLES_DOSSIER, CONFLICT_CANDIDATES -- all 4 reviewer-facing tools (worklist/analytical view/reference/heuristic flag list), same promotion logic as earlier rounds' RTM_LOOKUP/DASHBOARD_2/CLUSTERS/TAXONOMY additions"}
+      - {script: build_workbook_slim_v21.py, in: FULL_v21, out: LITE_v21, summary: "same KEEP list, re-run to pick up the PDF-page-number fix"}
+      - {script: build_workbook_slim_v22.py, in: FULL_v22, out: LITE_v22, summary: "same KEEP list, re-run to pick up the DASHBOARD_2 chart-range fix"}
+    invariants_enforced_by_script:
+      - "pre-flight regex scan: no kept-sheet formula (excluding HYPERLINK) may depend on a dropped sheet"
+      - "dead =HYPERLINK(\"#Sheet!...\") formulas pointing at dropped sheets are neutralised to plain grey italic text, not left to throw on click"
+      - "LISTS sheet kept but hidden (dropdown data source for STATUS/Depth/Negotiation columns)"
+
+  html_navigator:
+    canonical: QPS_RTM_BT_Navigator_v21.html
+    purpose: >
+      Single-file, read-only HTML companion to workbook_full -- browse
+      RTM/OFFER rankings, filter dashboard, domain/cluster heatmaps,
+      document outline, taxonomy, without opening Excel. Data is spliced in
+      at build time from a JSON export of the live workbook (never
+      hand-typed), so it cannot silently drift from the SSOT.
+    builder_chain:
+      - {script: export_nav_data.py, in: "workbook_full canonical (or any FULL_vN)", out: "/tmp/nav_data_vN.json", note: "re-run whenever RTM_RANKING/OFFER_RANKING/RTM_REVIEW_QUEUE/CLUSTERS/DOMAIN_SUMMARY/TAXONOMY change; safe/no-op to re-run when only formatting changed (v18's JSON is byte-identical to v17's)"}
+      - {script: splice_navigator.py, in: "nav_data_vN.json + navigator_template.html", out: "QPS_RTM_BT_Navigator_vN.html", note: "PROMOTED FROM INLINE PYTHON this round -- verified byte-identical output vs. the inline splice it replaces before being trusted as canonical. Standing gap closed."}
+      - {script: "export_nav_data.py v23 + splice_navigator.py", in: FULL_v23, out: Navigator_v21, summary: "re-sync after AD_07/AD_08 landed in DELIVERABLES_DOSSIER (34 entries) -- Navigator was 1 workbook version stale; full 12-tab Playwright QA sweep, zero errors/overflow."}
+    qa_process: >
+      Playwright headless Chromium sweep: zero console errors, zero
+      pageerror events, zero horizontal overflow (scrollWidth-clientWidth),
+      across tab clicks and dropdown/measure-toggle interactions, plus a
+      targeted screenshot of any newly-changed control.
+    version_history_this_session:
+      v6: "dataset-switchable (RTM/OFFER) Filter Dashboard: Category/Domain group selector, Cluster selector, Code/Standard free-text search, live top-40 result list"
+      v7: "Domain x Cluster heatmap gets a Measure toggle (count/avgS/sumS) with rows re-sorted by the same measure being coloured, not just recoloured in fixed order"
+      v8: "Pareto cumulative-% dot suppressed for the Average-Weighted-S measure (non-additive, was rendering a meaningless near-linear staircase) across all 4 call sites; explanatory note shown instead. Also fixed a real scoping bug found during this round's own QA: renderParetoInto() was nested inside buildDomains() and unreachable from buildOutline(), which would have crashed the Outline tab's chart outright -- hoisted to top-level scope."
+      v9: "Domain x Cluster heatmap + Domain-summary chart section recoloured teal/orange -> purple family; 2 new 'Read together, for a presenter' interpretive callout banners."
+      v10: "Reusable colour-key legend component (colourKeyCallout()) auto-inserted on every tab that colour-codes Tier and/or Cluster."
+      v11: "Filter Dashboard Code/Standard free-text box replaced with a real dropdown (81 real values, same UX pattern as Cluster) -- GBO reported the free-text box 'doesn't seem to work'; root cause was most codeStd cells holding a placeholder string, not a broken filter."
+      v12: "Taxonomy tab exposes the 2 new v20 Excel sheets: RTM<->OFFER Relation Types table (reuses OFFER Lookup's own .linktype badge colours) and the 32-entry Deliverables Dossier, with clickable RTM cross-links (new jumpToRtm() helper) that jump to RTM Lookup and populate that record -- completing the AD->RTM->OFFER chain GBO asked to confirm."
+      v13: "Clusters tab brought to the same depth as Domains/Domain Summary (GBO: 'clusters are not receiving the same treatment, visuals, breadth'). Added: enhanced summary table, click-to-detail panel per cluster (Domain/Tier/Requirement-Type composition + OFFER membership), a Cluster x Domain heatmap (transpose of the existing Domain x Cluster heatmap), RTM/OFFER value-concentration Paretos with divergence callouts, Focus Score rankings. Required hoisting 6 helper functions (metricsByGroup, buildMeasureParetoSection, renderDivergence, buildFocusScoreSection, etc.) from nested-in-buildDomains() to top-level so buildClusters() could reuse them instead of duplicating ~150 lines -- verified no regression on Domains/Domain Summary/Taxonomy via Playwright."
+      v14: "RTM-<N> input locked to a fixed 'RTM-' prefix badge + numeric spinner (type=\"number\", min/max from a real idMax() computed off live data, not a guessed range) -- eliminates the zero-pad-skip bug where typing 'RTM-70' missed the zero-padded 'RTM-070' row. Phase (L0-L8) filter added to the Filter Dashboard (export_nav_data.py gained the missing offerRanking.phases field in the same round). GBO-CONFIRMED WORKING (screenshot, this round): typing a bare 1-3 digit number (e.g. '359') resolves correctly with no zero-padding required on entry -- GBO explicitly closed this as 'mechanics - solved,' no further action needed."
+      v15: "RTM<->OFFER cross-references now clickable (jumpToRtm()/jumpToOffer(), jumpToRtm's internal signature had to change to strip the 'RTM-' prefix once the Lookup input became type=\"number\" -- caught proactively before it broke the existing Deliverables Dossier cross-link, re-verified via Playwright). Domain/Cluster/Primary-Dimension now render as the same colour-chip pattern (chip()/domainColor()/dimColor()) Tier already used, on both Lookup detail cards. New radial 'link map' SVG in OFFER Lookup -- nodes evenly spaced by linked-item count, coloured by relation type (Direct/Supporting/Broad/Contextual) since the crosswalk has no true forward/backward direction; that substitution is disclosed in-page rather than fabricated, per GBO's own low-priority framing of this ask."
+      v16: "OFFER Lookup dropdown gets per-option cluster colouring (reuses OFFER_CLUSTER_MAP/CLUSTER_COLORS) plus an always-visible cluster colour-key legend. New back-navigation breadcrumb (NAV_HISTORY stack + renderBackBar()) so a cross-link jump can be undone -- jumpToRtm/jumpToOffer gained an isBack param. RTM Lookup gained a 'Related RTMs -- same contract section' card using real existing RTM IDs (GBO: 'core is the link, not a new number')."
+      v17-v18: "Document Outline: floating sticky legend, row background switched from flat-opacity teal to a proportional-width gradient bar (barBackground()), new 'SCK CEN -- contracting authority' root node (93 verified mentions; GBO's suggested project-parent names MYRRHA/MINERVA/QYS were searched for and found 0 occurrences -- disclosed, not guessed). Cluster colour-key swatch contrast strengthened (border/size/box-shadow) after GBO re-flagged legibility. Re-spliced against nav_data_v21.json once the PDF-page-number fix (below) landed."
+      v19: "'Full verbatim requirement' card added to RTM Lookup -- RTM_RANKING column 14 (complete bulleted shall-text, previously captured in the workbook but never exported) now shown alongside the condensed one-line shall statement, resolving GBO's repeated ask for the full/verbatim RTM text."
+      v20: "STATUS/Compliance legend (real COMPLIANCE_LEGEND colours) now LEADS the Taxonomy tab, per GBO's explicit request. New live 'Lifecycle phase coverage' bar visual (L0-L6 + PAC/Warranty/FAC, coloured by Lifecycle supergroup) -- also the first live metric tying supergroups to real counts (previously pure reference text, confirmed zero live usage anywhere). New Subsystems-domain drill-down (202 RTMs, matches GBO's count exactly; grouped by the 45 real sectionTitle values since subcategory is blank for all of them -- cluster mix + avg/composite Weighted S + top-ranked RTM per group). New collapsible tree view for the 32-entry Deliverables Dossier (6 top-level + 26 sub-items), alongside the existing flat table. export_nav_data.py gained the statusLegend/statusLegendNote fields (from COMPLIANCE_LEGEND!A6:F13)."
+
+  bt_method_deck:
+    canonical: BT_Method_Evaluation_v12.pptx
+    purpose: "BT scoring methodology deck (weight dimensions, gate precedence, rank charts)."
+    builder_chain:
+      - {script: build_bt_deck_v5.py, in: "GBO's uploaded BT_Method_Evaluation_v3_6.pptx", out: BT_Method_Evaluation_v5.pptx, summary: "Aptos font unification, content-aware text-size bump, navy/blue-grey -> purple/lavender palette blend, 2 real slide-9 overlap bugs found+fixed"}
+      - {script: build_bt_deck_v6.py, in: v5, out: v6, summary: "6 new slides (14-19): CHART-S00 master grid + CHART-S01..05 each chart blown up 1x1 with reused board-read captions"}
+      - {script: "MISSING (v7, v8)", in: v6, out: v8, note: "content of v7/v8 not reconstructable from a saved script -- see gaps.missing_build_scripts"}
+      - {script: "inline python (no saved build_bt_deck_v9.py)", in: v8, out: BT_Method_Evaluation_v9.pptx, summary: "2 new slides: EVAL-S08 real PCA on all 722 RTMs' 7 BT dimensions (PC1=30.6% var, PC2=16.5%, 5 PCs needed for 84.5% cumulative); EVAL-S09 Sum-vs-Average-Weighted-S domain quadrant bubble chart explaining why Section 4's volume doesn't dominate Average. Both replicate the deck's exact visual style (purple header bar, EMU positions, fonts) inspected directly from an existing slide's shape properties. See gaps.missing_build_scripts -- this v9 step should also be formalised as a saved script next round."}
+      - {script: build_bt_deck_v10.py, in: v9, out: BT_Method_Evaluation_v10.pptx, summary: "1 new slide (24), EVAL-S10: Deliverables Dossier / Applicable Documentation relevance -- 6 top-level AD group table (sub-item + citing-RTM counts), a relevance/importance callout, and an open-items note that the actual AD source documents haven't been ingested yet (GBO offered a local folder). Content pulled directly from nav_data_v22.json's deliverablesDossier field, not estimated."}
+      - {script: "inline python (no saved build script -- retroactively logged, was missing from this chain)", in: v10, out: BT_Method_Evaluation_v11.pptx, summary: "Fixed a real duplicate badge-code bug found via raw XML grep across all 24 slides: EVAL-S08 was used on both slide 21 and slide 22 (inherited from the unsaved v9 build step). Renumbered slide 22 EVAL-S08->S10, slide 23 EVAL-S09->S11, slide 24 (the new Dossier slide) EVAL-S10->S12."}
+      - {script: build_bt_deck_v12.py, in: v11, out: BT_Method_Evaluation_v12.pptx, summary: "Control-phase + task #59 round. REBUILT EVAL-S12 (Deliverables Dossier) in place against nav_data_v23.json -- was stale at 32 entries/6 groups, now 34/8 (AD_07/08 added). Deleted+re-appended via python-pptx XML surgery (no in-place slide-edit API exists); verified safe since nothing in this deck references slides by position, only by badge code. Appended 3 new slides: EVAL-S13 'Honest ranking: official (gate-first) vs pure weighted-S' (direct response to GBO's 'do not want to warp picture' ask -- gate coloring kept, pure-score column added as disclosure, not a replacement rank; all 6 gate items drop an avg of 11.3 places under pure scoring, confirming gate status and score are genuinely independent); EVAL-S14 weight-scenario side-by-side (Base/Equal/Cost=70%, message banner, real Spearman findings from backlog Section 19); EVAL-S15 granular OFFER cross-reference (Code/Standard, Explicit deliverable, Phase summary, Primary/Supporting RTM counts for top-10 by rank, all fields pulled directly from OFFER_RANKING). 2 layout bugs found+fixed pre-ship: EVAL-S13 table column widths summed wider than the slide (overflow, caught via LibreOffice-PDF render); EVAL-S15's naive phase-string truncation made every row look identical (all start 'L0 Tender / Offer') -- replaced with a phase_summary() helper (count + first-to-last range) that actually shows the real per-row variation. Verified: zip/XML integrity, 27/27 slides load, badge-uniqueness re-confirmed via XML grep (EVAL-S13/14/15 each appear on exactly 1 slide)."}
+
+  mtbf_dmaic_deck:
+    canonical: QPS_MTBF_WCS_DMAIC_v7.pptx
+    purpose: "MTBF/reliability DMAIC master deck, separate lineage from the BT-method deck (different source content, different slide count -- 38 slides per content.yaml)."
+    builder_chain:
+      - {script: build_deck.py .. build_deck5.py, note: "phase 1-5 iterative slide builders against QPS_MTBF_WCS.pptx; energy-mix donut chart added v5 via make_energy_pie.py"}
+      - {script: fix_mtbf_rtm_numbers.py, in: QPS_MTBF_WCS_DMAIC_v5.pptx, out: v6, summary: "reconciled obsolete RTM-### citations in Appendix D/F/G/H/I against the canonical RTM-001..722 register; found and fixed multiple mismatched citations"}
+      - {script: "MISSING (v7)", in: v6, out: v7, note: "no saved script for the v6->v7 edit -- see gaps.missing_build_scripts"}
+
+  pdf_exports:
+    canonical: QPS_Taxonomy_and_Domain_Summary.pdf
+    purpose: "Print-friendly mixed-orientation PDF (Taxonomy=portrait, Domain Summary=landscape), figures computed directly from the same nav_data_vN.json the Navigator uses -- cannot drift from either."
+    builder_chain:
+      - {script: build_pdf_export.py, in: nav_data_v7.json, out: QPS_Taxonomy_and_Domain_Summary.pdf, note: "original build, now stale"}
+      - {script: "build_pdf_export.py (parametrised) + merge_taxonomy_pdf.py (NEW, closes a standing render+merge gap)", in: nav_data_v23.json, out: QPS_Taxonomy_and_Domain_Summary.pdf, summary: "Control-phase refresh -- data source was hardcoded to nav_data_v7.json, promoted to a CLI arg; the PDF render+merge step the docstring always described but never saved as a script now exists (merge_taxonomy_pdf.py, Playwright print-to-PDF + pypdf merge). Verified 5-page mixed-orientation output (1 portrait cover+taxonomy, 4 landscape domain-summary pages) against current v23 data via direct page render."}
+    staleness_note: "REFRESHED this round -- now current against FULL_v23 / nav_data_v23.json. Re-run build_pdf_export.py + merge_taxonomy_pdf.py any time nav_data changes materially."
+
+  dmaic_metric_history:
+    canonical: METRIC_HISTORY.json
+    purpose: >
+      The "STATS DMAIC metric -- the missing link" gap GBO explicitly named
+      (also identified independently in KNOWLEDGE_TAXONOMY_MAPPING.md node
+      04). Point-in-time stats always existed (DOMAIN_SUMMARY, QUALITY_CHECKS,
+      Navigator Focus Score); this is the SAME metrics tracked ACROSS build
+      versions -- rtm_count, tier/domain/gate distribution, sum/avg Weighted
+      S, crosswalk-linked count, OFFER review-flag distribution,
+      review-queue decided-count, sheet_count -- keyed by version, so
+      progress over time is visible, not just current state.
+    builder_chain:
+      - {script: compute_metrics_snapshot.py, in: "any FULL_vN.xlsx, or --backfill against every FULL_v*.xlsx on disk", out: METRIC_HISTORY.json, note: "idempotent -- re-running against an unchanged file overwrites that version's entry with the same values, never duplicates. Every future FULL_vN build should end with a call to this script."}
+    backfill_findings: >
+      Backfilled v5-v20 in an earlier pass, then re-run 2026-08-17 (Control-
+      phase refresh) to extend through v21/v22/v23 -- now 19 versions
+      tracked, zero gap. Confirmed idempotent as designed: re-running against
+      already-tracked versions did not change their existing entries. RTM count
+      (722) and Sum/Avg Weighted S (21,667.7 / 30.01) are IDENTICAL across
+      every version -- the BT scoring itself has been DMAIC-stable since v5,
+      only structure/tooling around it evolved (matches GBO's own
+      'fixed and static content' framing for the scored data). Crosswalk
+      linkage jumped 0% (v5) -> 100% (v8 onward) -- a real, dateable
+      milestone (the Cluster field wasn't populated on every row until v8).
+      OFFER review-flag counts held constant v5-v19, then v20 shows the
+      exact same counts under the new canonical labels -- confirms the v20
+      Review-flag standardisation (Section 3) took effect correctly without
+      silently changing any underlying value.
+
+# ------------------------------------------------------------------------- gaps
+gaps:
+  missing_build_scripts:
+    description: >
+      Several intermediate versions exist as output files with NO
+      corresponding saved build script, breaking the "any deliverable can be
+      regenerated from its script + inputs" chain this registry otherwise
+      guarantees. These were almost certainly built via ad-hoc/heredoc edits
+      that were run once and not persisted as a named .py file.
+    affected:
+      - "workbook_full v10 through v15 (6 versions)"
+      - "bt_method_deck v7, v8 (2 versions)"
+      - "mtbf_dmaic_deck v7 (1 version)"
+      - "the HTML Navigator's data-splice step (works, just inline python each time rather than a saved splice_navigator.py)"
+    impact: "low for content (every shipped file passed its QA gate at the time), high for future reproducibility/auditability -- if any of these files needs a small further edit, the only path is diffing the xlsx/pptx XML directly rather than re-running a documented script."
+    recommendation: "next time any of these families needs a change, first save a small splice_navigator.py (formalising the inline python already being used) and treat any future one-off build as build_workbook_vN.py from the start, not as an afterthought."
+    progress_this_round: "workbook_full v20 followed the recommendation correctly -- build_workbook_v20.py and build_workbook_slim_v20.py both saved and committed to git. bt_method_deck v9 did NOT (still inline python, not yet formalised) -- the gap is narrowing but not closed."
+
+  investigation_not_relayed:
+    description: >
+      GBO asked (message e, earlier session) how Primary/Supporting RTM
+      linkage, the Review flag, "explicit deliverable in the contract PDF"
+      wording, and multi-phase deliverable tagging (P&ID at L0/L0neg1/.../
+      As-built) actually work under the hood. A sub-agent fully investigated
+      this and found concrete answers (see decisions_log.primary_supporting_review_flag_investigation
+      below); the findings sat un-relayed for a while, but GBO then confirmed
+      each open point directly (in the uploaded annotation .txt) and asked
+      for it to be formally documented, not just explained -- which v20 does.
+    status: >
+      RESOLVED in v20: Primary RTM(s)/Supporting RTM(s)/Review flag now have
+      formal definitions in COMPLIANCE_LEGEND (matching the taxonomy/legend
+      GBO asked for); Review flag converted from free text to a
+      dropdown-constrained, colour-coded 5-value list; the multi-phase
+      deliverable schema gap now has RTM_PHASE_EXPANSION as a first
+      concrete step (one row per (RTM, phase), 2,169 rows) -- explicitly
+      NOT yet full per-phase evidence/status tracking, flagged as a further
+      next step in that sheet's own note, not silently assumed done.
+
+  deck_slides_requested_not_built:
+    description: >
+      Two slide asks were raised but not yet built: (1) a deck slide for
+      the Domain x Cluster heatmap concentration visual (message o), (2) an
+      RTM-equivalent deck slide grouped by Domain/Cluster plus a BT-method/
+      DMAIC-next-steps recommendations slide (raised earlier, repeated
+      across the conversation, never directly built).
+    status: OPEN, unclear priority given rapid topic-switching since raised.
+
+  unanswered_standing_questions:
+    - "Aptos vs Carlito font-consistency question (raised early in the project) -- never answered by GBO, still open."
+    - "Whether a 'repaired' Excel-file-corruption warning GBO may have seen applies to the latest versions -- never confirmed/denied, still open."
+    - "SYSTEM requirement-type subcategories clarification -- asked, never answered, still open."
+    - "Full cross-workbook font-size/heading-size audit (message l asked broadly; only RTM_CROSSWALK was spot-checked and found consistent) -- remains open if GBO wants the full sweep."
+
+  large_message_asks_not_yet_built:
+    description: >
+      GBO's large uploaded-annotation-file message (2026-08-17) contained
+      several asks beyond the v20 Excel/Navigator work already delivered.
+      GBO explicitly chose priority via AskUserQuestion this round: "Quick
+      wins" + "Master Developer Dashboard" built now; "Investigations" and
+      "DMAIC fix-log write-up" explicitly demoted to LOW priority
+      ("remember items not yet pursued... keep in mind or list these items
+      to revisit") rather than dropped.
+    items_done_this_round:
+      - "ASCII workflow/pipeline diagram -- built: PIPELINE_DIAGRAM.md (all 6 deliverable-family entry/exit edges, sourced from this file's own builder_chain data, missing-script gaps marked inline not hidden)."
+      - "Skills inventory -- built: SKILLS_INVENTORY.md (every build script grouped by capability, maintenance structure, naming convention, how to add a new version, how the 3 living docs -- ARTIFACT_REGISTRY/SSOT/this file -- divide responsibility)."
+      - "Master (User) Developer Dashboard -- built: MASTER_DEVELOPER_DASHBOARD.html. 5-category tabbed navigation (Start Here / Index / Ranking / Importance / Relevance) per GBO's clarified meaning ('4 categories framework' = classification scheme, resolved via AskUserQuestion). Index tab supersedes the now-stale DELIVERABLES_INDEX.html with current v20/v15/v9/v7 versions. Importance tab surfaces the new T0-vs-Weighted-S independence finding; Relevance tab surfaces the CROSSWALK codes-referenced count."
+      - "CROSSWALK 'total code generated' -- resolved via AskUserQuestion as 'total distinct codes/standards referenced project-wide': 81 distinct short code/standard tokens across RTM_RANKING+OFFER_RANKING combined, confirmed to match the Navigator's 81-value Code/Standard dropdown exactly (same source data) -- now formally cross-referenced in MASTER_DEVELOPER_DASHBOARD.html's Relevance tab rather than living only in the dropdown's option count."
+      - "'4 categories' framework -- resolved via AskUserQuestion as a classification scheme (not a nav-only label): used as the Dashboard's primary tab structure (Start Here/Index/Ranking/Importance/Relevance), doubling as both navigation AND the categorization lens the Ranking/Importance/Relevance tabs each apply to RTM/OFFER items."
+      - "T0-Gate-vs-Weighted-S independence -- GBO asked 'T0 items default to top ranked, but spread over with independent (non-failing of criteria)' -- checked directly: T0 Gate is NOT the top-scoring tier (T1 Primary has the highest avg 47.46 and max 76.67; T0 avg is only 31.60, range 20.00-62.67 overlapping T2's). Written up in DMAIC_BT_TECHNICAL_REPORT.md/.html section 3.4 and surfaced again on the Dashboard's Importance tab."
+      - "Related-items-by-section (parent/child clarifying question) -- GBO asked about parent/child or related-but-separate RTMs sharing a contract subsection. Checked directly: RTM_RANKING!section already provides this (190 distinct sections, up to 22 RTMs sharing one section, e.g. 4.6.8) -- a real, cheap 'related items' grouping that does NOT require resolving the sub-numbered-RTM investigation first. UI surfacing (a 'related RTMs, same section' list on RTM Lookup) not yet built -- see NEXT_ITERATION_BACKLOG.md item 2a."
+    items_low_priority_revisit_later:
+      - "'Relic' field scan: re-scan EVALUATION_WORKSPACE/OFFER_CANONICAL for data fields that look like a manually-copied carryover from an earlier document-development pass ('this is a relic'), and redo/re-map + update taxonomy where found. GBO explicitly set this LOW priority this round -- not dropped, revisit later."
+      - "Detailed changelog/lineage sampling across deck versions ('deck 40 slides, 3 decks, 1 deck, reason for merge') -- GBO explicitly set this LOW priority this round -- not dropped, revisit later. Needs inspecting bt_method_deck and mtbf_dmaic_deck's actual version histories."
+      - "'Expand on fix -- part of testing, QA, DMAIC?': DMAIC-framed write-up of the project's bug-fix log (banded() colour-overwrite bug x4, PHASE_ORDER string-mismatch bug, etc.) -- GBO explicitly set this LOW priority this round -- not dropped, revisit later. Raw material exists in ENGINEERING_HANDOVER_SESSION.md, not yet written up. (Note: DMAIC_BT_TECHNICAL_REPORT.md/.html built this round is a DIFFERENT DMAIC writeup -- the PCA/ranking-structure analysis, not the bug-fix log.)"
+    see_also: "NEXT_ITERATION_BACKLOG.md is now the canonical, more detailed backlog file (items 1-9 including 2a/2b/2c) -- this SSOT entry is the condensed cross-reference, updated same round."
+
+# ------------------------------------------------------------------ decisions_log
+# Condensed rationale for choices that could plausibly be second-guessed or
+# re-litigated later -- kept here so nobody re-derives them from scratch.
+decisions_log:
+  gate_precedence_vs_pure_score_rank:
+    decision: "OFFER_RANKING's official rank = gate items first (regardless of S), then remaining items ranked by Weighted S. The v17 live scenario toggle deliberately uses PURE score rank (no gate precedence), even though this means the toggle set to 'Base' does not exactly reproduce the official rank order."
+    why: "First implementation added gate-precedence to the toggle's rank formula to make 'Base' match the official rank exactly -- this defeated the toggle's whole illustrative purpose (gate items stayed pinned at ranks 1-6 even under the Cost-heavy scenario, hiding the 'gate items fall ~15 places' insight that was the reason for building the toggle). Reverted; disclosure text added instead explaining the expected Base/official divergence."
+  hyperlink_convention:
+    decision: "All new cross-sheet navigation links use =HYPERLINK(\"#Sheet!A1\",\"label\") formula strings, never openpyxl's native .hyperlink attribute."
+    why: "The LITE-workbook slim-builder's dead-link neutralisation only regex-matches the HYPERLINK() formula string convention. README initially used .hyperlink and its dead links to dropped sheets survived un-neutralised into LITE. Fixed once, now the enforced convention project-wide."
+  isolated_sheet_qa_false_positives:
+    decision: "When visually QA-ing one sheet via a stripped-down copy (all other sheets deleted for a clean PDF render), any dependency sheet a formula references must be RETAINED in that copy, or it will show #NAME? errors that are QA-harness artefacts, not real bugs."
+    why: "Caught this exact false alarm mid-session; confirmed via the always-passing full-workbook LibreOffice recalculation pass, which is the actual formula-integrity gate, not the isolated-sheet visual QA."
+  primary_supporting_review_flag_investigation:
+    finding: >
+      Primary/Supporting RTM split and the Review flag are both hand-curated
+      per-item annotations (documented in ENGINEERING_HANDOVER_OFFER_BT_v3_6.md),
+      not rule/formula-derived -- no code branch sets either. OFFER-level
+      "explicit deliverable" text is a generated f"Offer response: {title}"
+      template, NOT a verbatim contract-PDF quote (contrast: RTM-level
+      deliverable text for the 43 hand-authored T0 Gate rows IS grounded in
+      a real section title). "Applicable phase(s)" is a single generic
+      combined-phase string per row -- no mechanism exists for one
+      deliverable type appearing as separate phase-tagged row instances
+      (e.g. P&ID at L0/L0neg1/L0neg2/L1/L2/L4/L5/As-built as 8 rows).
+    status: "investigated, not yet relayed to GBO -- see gaps.investigation_not_relayed"
+  excel_repaired_file_investigation:
+    finding: >
+      GBO reported Excel opening QPS_OFFER_Evaluation_LITE_v18.xlsx with a
+      "Repaired" title-bar warning (screenshot evidence) -- this had been a
+      standing open question earlier in the project, never previously
+      confirmed. Investigated via raw XML audit (relationship-target
+      integrity across every .rels part, Content_Types override coverage,
+      and every sheet's <dimension> vs <autoFilter> extent) since this
+      class of defect can survive both an openpyxl save AND a LibreOffice
+      recalculation pass without ever showing up as a formula error --
+      LibreOffice's own converter rewrites the file from scratch, which can
+      silently launder an XML-level defect that real Excel's stricter
+      loader would flag. Found one genuine, confirmed defect: DOMAIN_SUMMARY's
+      AutoFilter was stale (A5:L27, i.e. sized for the ~22 domains that
+      existed when the filter was first applied) while the sheet's real
+      data now runs to row 41 (36 domains) -- fixed in v19 by re-applying
+      the filter to the sheet's actual extent. Relationships and
+      Content_Types were otherwise clean; charts all reference in-workbook
+      ranges correctly.
+    caveat: >
+      This is the strongest confirmed lead, not a certainty -- there is no
+      real Excel available in this environment to reproduce the "Repaired"
+      dialog directly, only LibreOffice (which does not reproduce Excel's
+      stricter validation) and manual XML auditing. If v19 still shows
+      "Repaired" when GBO opens it, the next diagnostic step is the repair
+      log Excel itself offers to display after repairing (Excel writes what
+      it changed to a small log/dialog) -- that pinpoints the exact broken
+      part far faster than continued blind XML auditing.
+    status: "fixed the one confirmed defect found; awaiting GBO confirmation that v19 opens clean in real Excel"
+  isolated_qa_harness_NAME_error_recurrence:
+    finding: >
+      Re-confirmed the same QA-harness artifact documented under
+      isolated_sheet_qa_false_positives: this round's visual-QA copy for
+      QUALITY_CHECKS (trimmed to 6 sheets for a clean PDF render) showed
+      #NAME? on every row whose formula references EVALUATION_WORKSPACE,
+      OFFER_CANONICAL, OFFER_RANKING or RTM_CROSSWALK -- all 4 were
+      excluded from that trimmed copy. Confirmed as harness-only (not a
+      real defect) via the always-passing full-workbook LibreOffice
+      recalculation pass (0 errors, every sheet present). Recording the
+      recurrence here since it's now happened twice -- worth remembering
+      QUALITY_CHECKS specifically pulls from 4 other sheets before trimming
+      a QA copy that includes it.
+  pareto_avgS_dot_suppression:
+    decision: "Cumulative-% dot on any Pareto bar chart is shown ONLY for additive measures (RTM count, Sum of Weighted S). When the Average-Weighted-S measure is selected, no dot is drawn; an explanatory note replaces the usual purple-dot legend caption."
+    why: "An average is not additive -- summing per-row averages and dividing by their sum computes a number but not a meaningful 'share of a real total', so a cumulative line drawn from it is not a valid 80/20 read. Producing it anyway (mathematically possible) would be presenting a fabricated-looking trend as real. Chose to disclose the limitation rather than fake the visualization, consistent with this project's standing convention (e.g. the Outline tab's own 'what this tab is NOT' disclosure box)."
+  sprawling_request_triage_via_askuserquestion:
+    decision: "When GBO's message combined dozens of asks spanning wildly different abstraction levels (concrete chart polish through an abstract personal-knowledge-taxonomy proposal, SKILL_user_ADD 00-10), triaged in prose into 'already covered' / 'concrete, one decision needed' / 'needs real scoping', then used AskUserQuestion rather than guessing at priority or building the most abstract items speculatively."
+    why: "This session's own documented session_improvement lesson is that unscoped structural asks waste effort if guessed at. GBO answered: build the Deliverables Index HTML + a Knowledge Taxonomy mapping doc next; limit the purple-recolour/'read together' banner treatment to just the Domain/Cluster measure toggles (not every chart in the workbook/deck)."
+    status: "All three delivered this round: Navigator v9 (purple recolour + callouts), DELIVERABLES_INDEX.html, KNOWLEDGE_TAXONOMY_MAPPING.md."
+  knowledge_taxonomy_mapping:
+    decision: "Interpreted GBO's SKILL_user_ADD 00-10 as a general-purpose taxonomy proposal that should be MAPPED onto this project's existing artifacts, not built as new infrastructure -- produced KNOWLEDGE_TAXONOMY_MAPPING.md scoring each node covered/partial/gap against real sheets and scripts, rather than attempting to construct the abstract framework itself."
+    why: "The taxonomy as GBO described it is explicitly reusable across projects, not QPS-specific -- designing it for real would be its own scoping conversation, not something to guess at inside this session. Mapping it onto what already exists is honest, useful now, and doesn't foreclose a real design conversation later."
+    finding: "7 of 11 nodes already covered by existing artifacts (00 Content, 01 Content Parsing, 02 Memory/KO, 03 Knowledge Renditions, 05 Graphs/Math/Trends, 08 Document Navigation, 09 Coding Space Navigation, 10 WIP). 4 genuine gaps: PNA/DMAIC phase-per-item (03.1-03.5), STATS iteration/wave history (04), requirement conflict/interference detection (06, the 'interferences' half only), project-level review-completion rollup (07, item-level status already covered). None of the 4 gaps were in GBO's priority pick -- not built."
+    status: "3 of 4 gaps closed in v20 -- RTM_PHASE_EXPANSION (03), METRIC_HISTORY.json (04), DASHBOARD_2 review-completion rollup (07). CONFLICT_CANDIDATES (06) built as an explicitly-disclosed heuristic first pass, not a solved detector -- most rows will be false positives by design, never presented as confirmed."
+  hidden_excel_layer_investigation:
+    finding: >
+      GBO asked whether an 'advanced full excel (hidden by password)' layer
+      exists beyond what's normally visible. Checked directly rather than
+      guessing: wb.sheetnames (28 sheets in FULL_v19, all accounted for),
+      every worksheet's sheet_state (all 'visible'), every worksheet's
+      protection.sheet/.password (all None), workbook-level wb.security
+      (None), and a zip namelist scan (no vbaProject.bin, no macros, no
+      unexpected extra parts beyond the 28 sheets' own tables/charts/
+      comments).
+    status: "CONFIRMED NEGATIVE -- no hidden or password-protected layer exists. Reported plainly as a negative finding, not left ambiguous. Full detail in PCA_DMAIC_BT_ANALYSIS.md Section 0."
+  v20_banded_fill_bug:
+    finding: >
+      build_workbook_v20.py's shared banded(ws, row, ncols, start_col=1)
+      row-striping helper unconditionally applies a fill to every cell in
+      its column range on even rows, with no awareness that a specific
+      column in that range already carries a deliberate, meaning-bearing
+      colour (relation-type badge, review-flag status colour, phase-type
+      colour, AD top-level-group accent). Recurred in 4 new v20 sheets
+      (TAXONOMY relation-types table, REVIEW_FOCUS, RTM_PHASE_EXPANSION,
+      DELIVERABLES_DOSSIER) -- same root cause each time.
+    why_it_kept_happening: "banded() was reused unmodified from earlier rounds where no competing colour existed in the striped range -- v20 was the first round where every new table ALSO carried its own per-row colour coding, and the helper was never updated to check for that."
+    fix: "narrowed the banded column range to skip the pre-coloured column in each case (start_col offsets, or splitting into two calls that skip the coloured column, or making the call conditional on row type) -- verified via direct cell.fill.fgColor.rgb inspection after each fix, not just a re-render screenshot."
+    control_action: "any future banded() call on a table with its own colour-coded column must explicitly exclude that column -- noted as a standing implementation note wherever banded() is called in build_workbook_v20.py."
+  v20_phase_string_mismatch_bug:
+    finding: >
+      RTM_PHASE_EXPANSION's initial PHASE_ORDER/PHASE_COLORS dicts were
+      built from an assumed phase-string format ('L0 Tender/Offer', no
+      spaces, 7 phases) copied from a single earlier-session example row,
+      rather than a direct scan of the live data. The real live format uses
+      spaces around '/' ('L0 Tender / Offer') and includes 3 additional real
+      phase values never accounted for (FAC -- 17 RTMs, PAC / Handover -- 30
+      RTMs, Warranty -- 20 RTMs).
+    fix: "rebuilt both dicts from a direct scan of every distinct value actually present in RTM_RANKING!'Applicable phase(s)' across all 722 rows (now 10 phase values, correctly ordered/coloured), with an inline code comment warning against assuming a string format without checking live data first."
+    control_action: "standing lesson, not project-specific: any lookup dict keyed on a data-derived string (phase names, category labels, status values) must be built or verified from a live scan of the actual column, never carried forward from a remembered example row."
+
+# ------------------------------------------------------------------------- status
+status:
+  done_this_session:
+    - "workbook_full v15 -> v18 (Technical Depth colour-coding through START_HERE legend + RTM_RANKING column-width fixes + RTM_CROSSWALK white-text fix)"
+    - "workbook_lite v15 -> v18 (kept in lockstep with FULL each round)"
+    - "html_navigator v6 -> v8 (Filter Dashboard RTM/OFFER toggle, Domain x Cluster heatmap measure toggle + ranking, Pareto avgS-dot fix + scoping bug fix)"
+    - "DASHBOARD item-7 spike explained with an on-sheet callout box (root-caused via raw chart XML, not guessed)"
+    - "Gate column red-fill reuse across EVALUATION_WORKSPACE/OFFER_RANKING/RTM_RANKING"
+    - "STANDARDS sheet value assessed (kept -- real cross-reference data, 59% of rows had lazy boilerplate description, same remediation pattern as two earlier fixes)"
+    - "7-dimension (L/R/P/F/Q/LC/C) weight heatmaps + legend on OFFER_RANKING/RTM_RANKING"
+    - "Live Base/Cost-heavy weight-scenario toggle (WEIGHTS_METHOD dropdown, SUMPRODUCT/INDEX-driven, live RANK())"
+    - "CATEGORY_FOCUS sheet: hidden-champion detection + per-category ranking + Category x Cluster density heat maps"
+    - "'Verbatim RTM' request resolved -- data already existed in RTM_RANKING!N, gap was column width/row height, not missing content"
+    - "RTM_CROSSWALK!J illegible white-on-white text -- confirmed real bug (font white, no fill ever set) and fixed"
+    - "START_HERE colour legend added (pale green/yellow/blue box meanings + pointers to the other 4 dedicated legends)"
+    - "RTM_RANKING column J/K/L/M/N width+height rebalance (PDF-page column was 68 wide for 2-digit numbers; Section/Section-title/Shall/Verbatim were all cramped)"
+    - "Navigator: Domain x Cluster heatmap measure toggle (count/avgS/sumS) with rows re-sorted by the active measure"
+    - "Navigator: Pareto chart avgS-dot suppression + explanatory note, plus a real pre-ship scoping bug (renderParetoInto trapped inside buildDomains()) found and fixed in this round's own QA"
+    - "workbook_full/lite v19: RTM_RANKING!O:AG full layout overhaul (title bars, legacy dataBar removal, column widths, content-aware row heights across 6 columns); TAXONOMY border-consistency fix (3 tables); QUALITY_CHECKS OPEN/CHECK status colours + borders; workbook-wide nav-button 3D-bevel affordance (198 cells/25 sheets); DASHBOARD_2 gained 5 RTM-side charts + an RTM<->OFFER crosswalk coverage panel (293/429 linked/not-linked, tier breakdown, T0-Gate-specific risk callout); DOMAIN_SUMMARY stale-AutoFilter fix (likely 'Repaired'-prompt root cause)"
+    - "html_navigator v8 -> v9: Domain x Cluster heatmap + Domain-summary chart section recoloured from teal/orange to the existing --purple family (matches callout/BT-deck identity); two new 'Read together, for a presenter' interpretive callouts added (heatmap Concentration-vs-Importance divergence read; Count/Sum-S/Average-S prioritisation read). Data re-spliced from FULL_v19. QA clean: 0 console errors, 0 pageerrors, 0 horizontal overflow, both callouts + purple cells confirmed present via Playwright."
+    - "DELIVERABLES_INDEX.html: new self-contained page listing all 6 outward-facing deliverables (both workbooks, Navigator, both decks, taxonomy PDF) with audience/purpose/version-status per item, plus a short internal-artifacts section. Playwright QA clean. Persisted as a desktop Cowork artifact (revisit-by-nature reference page)."
+    - "KNOWLEDGE_TAXONOMY_MAPPING.md: mapped GBO's SKILL_user_ADD 00-10 taxonomy proposal onto real project artifacts -- 7/11 nodes covered, 4 genuine gaps identified (see decisions_log.knowledge_taxonomy_mapping). No new infrastructure built -- explicitly scoped as a mapping exercise, not a taxonomy build."
+    - "PCA_DMAIC_BT_ANALYSIS.md: confirmed via direct XML/zip audit that no hidden or password-protected sheet exists in FULL_v19 (28 sheets, all visible, no sheet/workbook protection, no macros); computed real Section/Domain Sum-vs-Average Weighted S numbers explaining the divergence GBO asked about (Section 4 = 82% of all RTMs, dominates Sum by volume, unremarkable on Average); ran a real 7-dimension PCA (sklearn) on all 722 RTMs' L/R/P/F/Q/LC/C scores -- no dominant single factor (needs 5 of 7 PCs for 84.5% variance), Cost nearly orthogonal (PC3 loads 0.880 on C alone); split bulk (76%) vs distinctive (24%) items by PC1-PC2 distance from center; wrote a scoped (not-built) proposal for a wide-but-shallow BT-method extension to other populations (OFFER/STANDARDS/DELIVERABLES) with depth reachable via PCA-nearest-neighbor links rather than deep-scoring everything by default."
+    - "html_navigator v9 -> v10: added a reusable colour-key legend component (colourKeyCallout(), same purple .callout house style as the Taxonomy disposition-vocabulary box) auto-inserted on every tab that colour-codes Tier and/or Cluster (RTM Ranking, OFFER Ranking, Review Queue, Filter Dashboard) -- addresses GBO's 'apply the same colour palette/legend uniformly, for all user-facing content' request. Confirmed via code audit that table styling (navy header/banded rows) was ALREADY global CSS applying to every table on the page, and that tier/cluster colour was already always paired with visible text (not colour-only encoding) -- the actual gap was a missing explicit legend, not missing colour-text pairing. Clusters tab itself left alone (its own table already IS a colour+ID+name legend, adding another would be redundant). QA clean across all tabs."
+    - "Real numbers for the Sum-vs-Average Weighted S divergence + full 7-dimension PCA on all 722 RTMs + hidden-Excel-layer investigation (confirmed negative) -- written up in PCA_DMAIC_BT_ANALYSIS.md."
+    - "workbook_full/lite v20: 9-section build (Relation Types table, COMPLIANCE_LEGEND formal definitions, Review-flag dropdown standardisation, REVIEW_FOCUS, RTM_PHASE_EXPANSION, DELIVERABLES_DOSSIER, DASHBOARD_2 review-completion rollup, CONFLICT_CANDIDATES, comment-column consistency). 2 bugs found+fixed (banded() colour-overwrite x4, PHASE_ORDER string mismatch) -- see decisions_log."
+    - "bt_method_deck v9: EVAL-S08 (PCA slide) + EVAL-S09 (Sum-vs-Average domain quadrant slide), matching the deck's exact existing visual style."
+    - "html_navigator v11: Code/Standard free-text box replaced with a real dropdown (81 real values)."
+    - "html_navigator v12: Taxonomy tab exposes v20's Relation Types table + Deliverables Dossier (32 AD entries), with clickable RTM cross-links that jump to RTM Lookup -- QA clean, cross-link verified end-to-end via Playwright."
+    - "compute_metrics_snapshot.py written + run: METRIC_HISTORY.json backfilled across all 16 historical FULL_vN.xlsx files still on disk (v5-v20) -- closes the 'STATS DMAIC metric, the missing link' gap GBO named explicitly. See families.dmaic_metric_history.backfill_findings for the real trend found."
+    - "git repository: local-only (GBO's explicit choice), 5 commits this session covering baseline + Excel v20 + BT deck v9 + Navigator v11/v12 + metric-history backfill, working tree clean. See meta.git_repository."
+    - "SESSION_SSOT.yaml (this file) refreshed to reflect all of the above -- canonical pointers, new families, resolved gaps, new decisions_log entries for both v20 bugs and the hidden-layer investigation."
+  still_pending_this_session:
+    - "See gaps.large_message_asks_not_yet_built for the full current list: relic-field scan, Master User Developer Dashboard, ASCII pipeline diagram, skills inventory, deck-lineage/changelog sampling, the '4 categories' framework, DMAIC-framed fix/QA write-up, and the CROSSWALK total-code-generated expansion."
+    - "Domain x Cluster heatmap concentration visual as a deck slide"
+    - "RTM-equivalent deck slide grouped by Domain/Cluster"
+    - "BT-method/DMAIC next-steps recommendations slide"
+    - "Full cross-workbook font/heading-size consistency audit (only RTM_CROSSWALK spot-checked so far)"
+    - "GBO asked about cluster-level ranking and whether the BT method is 'expanded/refined/applied to force action or DMAIC improvement' -- CLUSTERS sheet currently states clusters deliberately do NOT rank (per the engineering handover); this needs a scoping decision before building anything, not a default guess"
+    - "Confirm with GBO whether v19/v20 open without the 'Repaired' warning in real Excel (see decisions_log.excel_repaired_file_investigation) -- the one confirmed defect found (DOMAIN_SUMMARY stale AutoFilter) is fixed, but not independently verified against real Excel from this environment"
+  not_done_or_missing:
+    - "bt_method_deck v7/v8 have no saved build script; v9 was also built via inline python, not yet formalised as build_bt_deck_v9.py -- content changes are documented in this file/git commit message but not independently re-runnable from a saved script (see gaps.missing_build_scripts)"
+    - "workbook_full v10-v15 has no saved per-version orchestration script (the underlying classify/infer/fix scripts exist, but not the glue that sequenced them into v10..v15)"
+    - "pdf_exports (Taxonomy/Domain Summary PDF) not refreshed since nav_data_v7.json -- workbook is now at v20"
+    - "No standalone splice_navigator.py -- the JSON-into-template step is currently inline python run ad hoc each round (v12 was spliced this way again)"
+  open_standing_questions:
+    - "Aptos vs Carlito font consistency across the whole project"
+    - "Status of an earlier 'repaired file' corruption warning against the latest versions"
+    - "SYSTEM requirement-type subcategories clarification"
+
+# ------------------------------------------------------------- session_improvement
+# GBO's own request: "session improvement - better prompts quick to end goal."
+# Concrete, non-judgmental suggestions based on this session's actual pattern.
+session_improvement:
+  observed_pattern: >
+    Messages arrive as dense, single-paragraph, multi-ask bundles (often 3-6
+    distinct requests in one message, sometimes with screenshots, frequently
+    with typos/shorthand that are still decipherable from context). This
+    works and every ask has been getting addressed, but two costs show up:
+    (1) some asks get partially deferred/lost when 5 more arrive before the
+    first is fully closed out (see gaps.investigation_not_relayed as the
+    concrete example), and (2) a few build scripts didn't get saved under
+    discoverable names because the round moved fast (see
+    gaps.missing_build_scripts).
+  suggestions:
+    - "One-ask-per-line still works as a single message -- doesn't need to be split into multiple turns, just visually separated (blank line or dash per ask) so nothing silently gets merged into the request before/after it."
+    - "When an ask is 'explain X' / 'investigate Y' (not 'build/fix Z'), say so explicitly (e.g. prefix with 'question:' or 'explain:') -- this session treated a couple of investigation-only asks as build asks by default and the plain-English answer sometimes lagged behind the file delivery."
+    - "For visual/layout complaints (illegible text, cramped columns, truncation), a screenshot + the sheet/tab name is the single highest-leverage thing to include -- every screenshot-backed bug report this session was found and fixed on the first pass; the ones without a screenshot took longer to root-cause."
+    - "If a request depends on a prior answer GBO hasn't seen yet (e.g. asking for more toggles/analysis 'the new way' before confirming the previous toggle/analysis landed correctly), flagging that dependency explicitly avoids compounding a design choice that might get revised anyway."
+    - "For '<X> but idempotent/reproducible/documented' asks specifically (this message's own genre): naming the exact target format up front (YAML vs JSON vs Markdown, one file vs several) saves a round of guessing which this response had to make explicitly."
+  meta_note: >
+    This suggestions list is itself a hypothesis about this session's
+    pattern, not a critique of how GBO should communicate -- the bundled,
+    stream-of-consciousness style has correctly gotten every substantive ask
+    addressed so far. These are offered as optional levers, not requirements.
