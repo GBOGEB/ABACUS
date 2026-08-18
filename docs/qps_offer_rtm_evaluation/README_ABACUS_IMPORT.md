@@ -7,7 +7,8 @@ project. Start at `CONTINUATION.md`, then `docs/ENGINEERING_HANDOVER_SESSION.md`
 then `docs/SESSION_SSOT.yaml` — do not re-derive anything already answered
 there (see `CONTINUATION.md`'s own instructions to that effect).
 
-**Canonical workbook:** `current/QPS_OFFER_Evaluation_FULL_v23.xlsx` (32 sheets).
+**Canonical workbook:** `current/QPS_OFFER_Evaluation_FULL_v23.xlsx` (32 sheets
+as imported, 33 after the 2026-08-18 correction added `RECOMPUTE_LOG`).
 Everything else under `current/` derives from it via the scripts in `scripts/`.
 
 ## Why this directory exists / what it replaces
@@ -33,33 +34,97 @@ independently re-scored in the v23 lineage (see `docs/SESSION_SSOT.yaml`'s
 re-derives from the same keyword-verify problem and fixes it via a much more
 thorough process (rule-based extension, hand-curated Primary/Supporting
 review, disclosed evidence-basis per row, and eventually gate flags on RTM
-items too, not just OFFER items). Comparing the two independent correction
-passes on the same 8 rows:
+items too, not just OFFER items).
 
-| Item | v3.6-pass fix (retired) | v23 (canonical) | Agreement |
+## Full re-judgment (2026-08-18)
+
+GBO asked for a second, deeper pass: re-read each of the 7 previously-flagged
+RTM rows' full verbatim requirement text *and* any thematically-related OFFER
+item's full bulleted text (via `RTM_CROSSWALK`/`OFFER_CANONICAL`, plus a
+keyword sweep across all 50 OFFER items since none of the 7 turned out to
+carry a formal crosswalk link), then decide — for each dimension where the
+retired v3.6-pass and canonical v23 disagreed — which read the actual
+contract text better supports. Outcome:
+
+| RTM | Disagreement | Verdict | Why |
 |---|---|---|---|
-| RTM-599 | P 3→0, L→3 | P=0, L=3, Gate=Yes/T0 | matches |
-| RTM-603 | P stays 0, F=2 | P=0, F=2, Gate=Yes/T0 | matches |
-| RTM-482 | R/Q/F raised | R=3, Q=3, F=3, T1 | same direction |
-| RTM-328, 320, 018 | P/F raised | P/F raised similarly; R/L differ | partial |
-| RTM-718 | Q lowered, Cost kept 0 | Q=3, **Cost=3** | **diverges** |
-| OFFER-25 | zero → Q/LC/L scored, S=17.0 | zero → pure Functional, S=16 | same conclusion |
+| RTM-599 | none material | v23 correct | fail-safe interlock wiring — L/F high, P=0 right |
+| RTM-603 | none material | v23 correct | personnel-safety PPE clause — matches |
+| RTM-482 | R(2→3), F(2→3), LC(1→0) | **v23 correct** | text explicitly names "thermal stability and **mechanical reliability**" (R) and "**interface control logic** validation" (F); no maintainability content (LC) |
+| RTM-328 | L(1→0), R(2→0) | **v23 correct** | v3.6-pass inferred an unstated reliability/legal angle from the clause's *purpose*; v23's stricter score-only-what's-named discipline is more textually honest |
+| RTM-018 | R/L/Q inferences | **v23 correct** | same over-inference pattern as RTM-328 |
+| RTM-718 | Q(3 vs 1), LC(3 vs 2), C(3 vs 0) | **v23 correct** | checked the adjacent OFFER-50 ("Warranty Extension Commercial Terms", §10.2) for context — it links to RTM-708–710, *not* RTM-718, confirming RTM-718 is genuinely un-linked but confirming the neighbourhood is commercial/warranty in nature; the clause's entire content is a financial-compensation denial tied to the final-acceptance milestone — v23's Q=3/LC=3/C=3 all textually justified, the retired pass under-scored all three |
+| **RTM-320** | **P(1 vs 0)** | **v3.6-pass correct — corrected in v23** | text explicitly states "All links ... **shall support 1 Gbit/s bandwidth**" — a concrete capacity figure v23's own scoring missed. R=3/F=3 both independently re-confirmed correct. |
 
-**Open QA note for the next v23→v24 round (not applied here):** RTM-718 is
-a warranty-extension liability clause ("automatically extended, without any
-right to compensation... for the Contractor"). The retired v3.6-pass read
-this as purely legal/lifecycle content and left Cost at 0. v23 scores it
-Cost=3. v23's read is plausibly the better one — the clause is literally a
-financial-liability term — but this is flagged here as a genuine, disclosed
-disagreement between two independent scoring passes, not silently resolved
-either way. Worth a second look before the next rebuild; not changed in this
-import since editing `FULL_v23.xlsx` outside its own `scripts/build_workbook_v24.py`
-chain would violate this project's own "everything derives from ONE workbook,
-nothing else hand-edited" rule.
+**One real correction found: RTM-320's Performance dimension, 0→1.** Applied
+via `scripts/recompute_rtm_ranking.py` (see below), not a hand-edited cell —
+`RTM_RANKING` is a *static* snapshot (literal values, not live formulas), so
+changing one dimension without recomputing Rank/Tier/BT-Win%/BT-λ for the
+whole 722-row sheet would have left it internally inconsistent. That script
+was written for exactly this: it re-derives the sheet's own formulas from
+first principles, validates them against all 722 existing rows before
+trusting them (S: 0/722 mismatches; gate-aware rank ordering: 0/722; BT
+Win%: 0/722; BT λ via regularised Zermelo/MM, 320 iterations: Pearson
+r=0.999999999999 vs. stored), then applies the one dimension change and
+**physically re-sorts all 722 rows** to match (this sheet's row order *is*
+its documented sort order — rank was literally `row − 5` for every row,
+verified before touching anything). Result: RTM-320 moves from rank 189 to
+**rank 132** (S 38.0 → 44.67), still Tier T1 Primary; 68 other rows shift by
+exactly one position each as a side effect (all still T1, no tier boundary
+crossed). Full before/after and the run's audit trail: `RECOMPUTE_LOG` sheet
+in both workbooks, and `current/RTM_RANKING_RECOMPUTE_LOG.json`.
+
+**`recompute_rtm_ranking.py` is a rerunnable tool, not a one-off patch.** Any
+future dimension-score correction should go through it: edit the
+`OVERRIDES`/`RUN_NOTE` block at the top, re-run against `current/`, both
+workbooks stay in sync. Every run appends a numbered, dated entry to
+`RECOMPUTE_LOG` (in-workbook) and to the JSON log (before/after values, rank/
+tier side effects, who triggered it) — same "append, never overwrite"
+convention as the project's own `METRIC_HISTORY.json`. This is deliberately
+**outside** the original `build_workbook_v5.py..v23.py` chain (those remain
+the source of truth for anything beyond RTM_RANKING's 5 derived columns);
+it exists because a hand-verified dimension correction needed a safe way to
+land without waiting for a full v24 orchestration script.
+
+**Governance note:** per `WEIGHTS_METHOD`'s own guardrail ("do not change the
+weighting … unless the panel formally approves a controlled rerun"), this
+correction was made only because GBO — the project's creator, developer, and
+data/system owner — is that panel and directed it explicitly, on the same
+system-owner authority that already governs every other change in this
+package. Nothing about the frozen *weights* (0.20/0.22/0.20/0.16/0.12/0.07/
+0.03) changed — only one item's dimension *input* score.
 
 The retired v3.6 zip (`files_Claude_RTM.zip` / `files_Claude_RTM_updated.zip`,
 Master_Input working folder, never git-tracked) is superseded by this import
 and can be deleted; left in place for now in case GBO wants to diff against it.
+
+## Excel integrity audit (2026-08-18)
+
+Mirrored the project's own "Repaired file" investigation method
+(`decisions_log.excel_repaired_file_investigation` in `SESSION_SSOT.yaml`) —
+raw OPC/XML audit of both workbooks post-correction: Content_Types coverage
+of every part, relationship-target resolution across every `.rels` file,
+`workbook.xml` ↔ `workbook.xml.rels` sheet mapping, and `<dimension>`/
+`<autoFilter>` vs. real data extent per sheet (the exact defect class that
+caused the DOMAIN_SUMMARY "Repaired" warning in LITE_v18). **Both
+`FULL_v23.xlsx` and `LITE_v23.xlsx` come back clean on all checks** — no
+stale autoFilter/dimension ranges, no broken relationship targets, no
+macros, no sheet/workbook protection. This doesn't *prove* real Excel won't
+show a "Repaired" dialog (no real Excel available in this environment
+either, same limitation the original investigation noted) but it rules out
+every XML-level defect class their own prior investigation catalogued.
+
+## CI status (informational, low priority)
+
+This import was PR #622. CI ran 213 checks; 14 failed. Every failure
+investigated traces to pre-existing repository infrastructure, unrelated to
+this import's content (missing test files, missing `pyyaml`/`pkg_resources`
+in CI images, a `bandit -f sarif` flag the installed bandit doesn't support,
+a dangling `git add` on a deleted `ABACUS-v032/output/` path confirmed
+broken on `main` since 2026-07-24, and a GitHub Copilot bot infra hiccup).
+None reference anything under `docs/qps_offer_rtm_evaluation/`. Left as a
+lower-priority backlog item for whoever owns ABACUS CI — not blocking this
+import.
 
 ## Provenance of this import
 
