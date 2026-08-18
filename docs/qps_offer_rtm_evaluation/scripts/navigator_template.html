@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPS OFFER Evaluation — HTML Navigator</title>
+<style>
+  :root{
+    --navy:#17365D; --teal:#0F6B78; --hdr:#1F4E78; --band:#F2F6FA;
+    --input:#FFF6C9; --inputtxt:#7A5B00; --accent:#0B3D5C; --purple:#441F63;
+    --purplebg:#EFE5F5; --border:#C9D6E3; --body:#222222; --muted:#666666;
+    --t0:#C0392B; --t1:#1E8449; --t2:#2874A6; --t3:#7F8C8D;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Aptos","Calibri","Segoe UI",Arial,sans-serif;margin:0;background:#fafbfc;color:var(--body);}
+  header.top{background:var(--navy);color:#fff;padding:18px 26px;}
+  header.top h1{margin:0;font-size:22px;}
+  header.top p{margin:4px 0 0;font-size:13px;color:#cfe0ee;}
+  nav.tabs{display:flex;flex-wrap:wrap;background:var(--teal);position:sticky;top:0;z-index:50;}
+  nav.tabs button{background:transparent;border:none;color:#fff;padding:12px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+  nav.tabs button:hover{background:rgba(255,255,255,0.15);}
+  nav.tabs button.active{background:var(--navy);}
+  main{padding:22px 26px 60px;max-width:1400px;margin:0 auto;}
+  section.tab{display:none;}
+  section.tab.active{display:block;}
+  h2{color:var(--navy);border-bottom:2px solid var(--border);padding-bottom:6px;}
+  .subtitle{color:var(--muted);font-size:13px;margin-top:-6px;margin-bottom:16px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:800px){.grid2{grid-template-columns:1fr;}}
+  label{font-weight:600;font-size:13px;display:block;margin-bottom:4px;color:var(--navy);}
+  input[type=text], input[type=number], select{
+    background:var(--input);color:var(--inputtxt);border:1px solid #e0c96a;border-radius:4px;
+    padding:8px 10px;font-size:14px;font-weight:600;width:100%;
+  }
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px;}
+  .toolbar > div{min-width:180px;}
+  /* Fixed-prefix ID entry (RTM Lookup): "RTM-"/"OFFER-" rendered as a
+     permanent badge fused to the input, so the prefix can never be
+     mistyped, duplicated, or omitted -- the user only ever types digits. */
+  .id-input-wrap{display:flex;align-items:stretch;width:100%;}
+  .id-input-prefix{
+    background:var(--navy);color:#fff;font-weight:700;font-size:14px;
+    padding:8px 10px;border-radius:4px 0 0 4px;display:flex;align-items:center;
+    border:1px solid var(--navy);white-space:nowrap;
+  }
+  .id-input-wrap input[type=number]{border-radius:0 4px 4px 0;border-left:none;}
+  /* Chrome/Safari/Edge spinner arrows -- keep them, they double as an
+     unambiguous "this is a bounded number, not free text" affordance. */
+  .id-input-wrap input[type=number]::-webkit-inner-spin-button{opacity:1;}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;background:#fff;}
+  th{background:var(--hdr);color:#fff;text-align:left;padding:8px 8px;position:sticky;top:0;cursor:pointer;user-select:none;}
+  th:hover{background:var(--navy);}
+  td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:nth-child(even) td{background:var(--band);}
+  .tablewrap{max-height:640px;overflow:auto;border:1px solid var(--border);border-radius:4px;}
+  .pager{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;}
+  .pager button{padding:5px 10px;border:1px solid var(--border);background:#fff;border-radius:4px;cursor:pointer;}
+  .pager button:disabled{opacity:0.4;cursor:default;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;color:#fff;}
+  .pill.t0{background:var(--t0);} .pill.t1{background:var(--t1);} .pill.t2{background:var(--t2);} .pill.t3{background:var(--t3);}
+  .badge-req{font-weight:700;}
+  /* Generic colour chip -- same small-rounded-banner shape as .pill, but
+     background is set inline per call (Domain/Cluster/Primary Dimension
+     colours are computed, not a small fixed CSS set like Tier's 4 values).
+     GBO: reuse the Tier colour-banner treatment for these other mappings too. */
+  .chip{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11.5px;font-weight:700;color:#fff;margin-right:4px;}
+  .xlink{color:var(--teal);cursor:pointer;text-decoration:underline;}
+  .xlink:hover{color:var(--navy);}
+  /* Back-navigation breadcrumb: shown only after arriving via a jumpToRtm/
+     jumpToOffer cross-link (GBO: clicking a link stranded you with no way
+     back). Hidden by default, filled in by renderBackBar(). */
+  .backbar{background:var(--band);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:5px;padding:8px 14px;font-size:13px;font-weight:700;margin:-6px 0 14px;}
+  .backbar .xlink{font-weight:700;}
+  .stat-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px;}
+  .tile{background:var(--band);border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center;}
+  .tile .n{font-size:26px;font-weight:800;color:var(--navy);}
+  .tile .lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+  .callout{background:var(--purplebg);border-left:4px solid var(--purple);padding:10px 14px;border-radius:4px;font-size:13px;margin-top:10px;}
+  .callout b{color:var(--purple);}
+  /* -- colour-key legend: same house style as the callout box (purple accent
+     bar, purple-tinted background) so a colour swatch and its meaning are
+     never more than a glance away, on every tab that uses colour to carry
+     information -- not just the tabs that happened to get one first. */
+  .legend-key{background:var(--purplebg);border-left:4px solid var(--purple);padding:8px 14px;border-radius:4px;font-size:12.5px;margin:10px 0;display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+  .legend-key .lk-title{color:var(--purple);font-weight:700;margin-right:2px;}
+  .legend-key .lk-item{display:inline-flex;align-items:center;gap:5px;}
+  /* GBO: cluster swatches (pale CLUSTER_COLORS, matching the OFFER dropdown
+     options they key) were nearly invisible against the legend's own pale
+     purple background -- a 15%-black hairline border disappears when the
+     swatch fill and the box background are both light. Stronger border +
+     a white ring so every swatch reads as a distinct chip regardless of
+     how pale its own fill colour is. */
+  .legend-key .lk-sw{width:15px;height:15px;border-radius:3px;flex-shrink:0;border:1.5px solid rgba(0,0,0,0.45);box-shadow:0 0 0 1px rgba(255,255,255,0.9);display:inline-block;}
+  .legend-key .lk-sw.pill-sw{border-radius:9px;width:24px;height:15px;}
+  .note{background:#FDF6E3;border-left:4px solid #B7950B;padding:10px 14px;border-radius:4px;font-size:12.5px;color:#5c4a00;margin-top:10px;}
+  .empty{color:var(--muted);font-style:italic;padding:20px;text-align:center;}
+  .detail-field{display:grid;grid-template-columns:220px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .detail-field .k{font-weight:700;color:var(--navy);font-size:12.5px;}
+  .detail-field .v{font-size:13.5px;}
+  .search-hits{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .taxo-table td:first-child{font-weight:700;white-space:nowrap;}
+  a.navlink{color:var(--teal);}
+  .step-list{padding-left:18px;}
+  .step-list li{margin-bottom:6px;}
+  footer.bottom{background:var(--purplebg);color:#555;font-size:11.5px;padding:12px 26px;text-align:center;margin-top:30px;}
+
+  /* -- relative-value inline bars (in-table) -------------------------- */
+  .relbar-cell{position:relative;min-width:90px;}
+  .relbar-track{position:absolute;left:0;top:2px;bottom:2px;background:#E4EEF4;border-radius:2px;z-index:0;width:100%;}
+  .relbar-fill{position:absolute;left:0;top:2px;bottom:2px;background:#9FC3D6;border-radius:2px;z-index:0;}
+  .relbar-val{position:relative;z-index:1;padding-left:4px;font-weight:600;}
+
+  /* -- Top-N by group panel -------------------------------------------- */
+  .topn-toolbar{display:flex;gap:12px;align-items:end;margin-bottom:14px;flex-wrap:wrap;}
+  .topn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px;}
+  .topn-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:12px;}
+  .topn-card h4{margin:0 0 8px;color:var(--navy);font-size:13px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+  .topn-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px dotted #eee;}
+  .topn-row .id{font-weight:700;color:var(--teal);}
+  .topn-row .val{color:var(--muted);}
+
+  /* -- Pareto / bar chart (hand-rolled SVG, no deps) -------------------- */
+  .chart-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px;}
+  .chart-toolbar{display:flex;gap:16px;align-items:center;margin-bottom:10px;font-size:13px;flex-wrap:wrap;}
+  .chart-toolbar label{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--navy);}
+  .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+  .bar-label{width:170px;font-size:12px;text-align:right;flex-shrink:0;}
+  .bar-outer{flex:1;background:#eef2f6;border-radius:3px;height:16px;position:relative;overflow:visible;}
+  .bar-inner{background:var(--teal);height:100%;border-radius:3px;}
+  .bar-cum-dot{position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--purple);transform:translateX(-4px);}
+  .bar-count{width:46px;font-size:12px;font-weight:700;text-align:right;flex-shrink:0;}
+
+  /* -- Domains tab: node list + heatmap ---------------------------------- */
+  .domain-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;}
+  @media (max-width:900px){.domain-layout{grid-template-columns:1fr;}}
+  .domain-list{background:#fff;border:1px solid var(--border);border-radius:6px;max-height:640px;overflow:auto;}
+  .domain-list button{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #f0f0f0;padding:10px 12px;cursor:pointer;font-size:12.5px;}
+  .domain-list button:hover{background:var(--band);}
+  .domain-list button.active{background:var(--navy);color:#fff;}
+  .domain-list button .cnt{float:right;color:var(--muted);font-weight:700;}
+  .domain-list button.active .cnt{color:#cfe0ee;}
+  .heatmap{border-collapse:collapse;font-size:11px;}
+  .heatmap th{background:var(--hdr);color:#fff;padding:5px 7px;}
+  .heatmap td{text-align:center;padding:5px 7px;border:1px solid #fff;}
+  .heatmap td.rowlabel{background:var(--band);text-align:left;font-weight:700;color:var(--navy);white-space:nowrap;}
+
+  /* -- donut / pie (conic-gradient, no deps) ----------------------------- */
+  .pie-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;}
+  .pie-donut{width:300px;height:300px;border-radius:50%;flex-shrink:0;border:1px solid #d8d8d8;}
+  .pie-donut.zoom{width:170px;height:170px;}
+  .pie-legend{font-size:13px;}
+  .pie-legend .row{display:flex;align-items:center;gap:8px;padding:4px 0;}
+  .pie-legend .row.dim{opacity:0.55;}
+  .pie-legend .sw{width:14px;height:14px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,0.15);}
+  .pie-block{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .pie-block .cap{font-size:11.5px;color:var(--muted);text-align:center;max-width:180px;}
+
+  /* -- link-evidence badges (OFFER Lookup) -------------------------------- */
+  .linktype{display:inline-block;padding:2px 7px;border-radius:9px;font-size:10.5px;font-weight:700;color:#fff;margin-right:4px;}
+  .linktype.direct{background:#1E8449;}
+  .linktype.supporting{background:#2874A6;}
+  .linktype.broad{background:#B7791F;}
+  .linktype.contextual{background:#7F8C8D;}
+  .link-row{display:grid;grid-template-columns:90px 100px 1fr 90px;gap:10px;padding:6px 0;border-bottom:1px dotted #eee;align-items:center;font-size:12.5px;}
+  .link-row .rid{font-weight:700;color:var(--teal);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>QPS OFFER Evaluation — HTML Navigator</h1>
+  <p>Same content, same SSOT data as QPS_OFFER_Evaluation_FULL_v19.xlsx — read-only companion for browsing without opening Excel. Generated from the live workbook export, not hand-typed.</p>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main id="main"></main>
+
+<footer class="bottom">
+  QPS OFFER Evaluation Workbook — v22 · HTML Navigator companion v20 · Data snapshot from QPS_OFFER_Evaluation_FULL_v22.xlsx · Read-only — edit the workbook itself, not this page
+</footer>
+
+<script id="nav-data" type="application/json">__NAV_DATA_JSON__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('nav-data').textContent);
+
+// ---------------------------------------------------------------- helpers
+function el(tag, attrs, children){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    if (k === 'text') e.textContent = attrs[k];
+    else if (k === 'html') e.innerHTML = attrs[k];
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+// Reusable colour-key legend, same visual language everywhere it appears
+// (purple accent bar/background, matching .callout) so a colour used to
+// carry information on any tab is never more than a glance from its meaning
+// -- consistent swatch shapes too: a rounded pill-shaped swatch for anything
+// rendered as a <span class="pill">, a plain square swatch for anything
+// rendered as a cell background. items: [{label, color, pill:bool}]
+function colourKeyCallout(title, items){
+  const box = el('div',{class:'legend-key'});
+  box.appendChild(el('span',{class:'lk-title', text:title+':'}));
+  items.forEach(it => {
+    const row = el('span',{class:'lk-item', title: it.hint||''});
+    row.appendChild(el('span',{class:'lk-sw'+(it.pill?' pill-sw':''), style:`background:${it.color};`}));
+    row.appendChild(el('span',{text:it.label}));
+    box.appendChild(row);
+  });
+  return box;
+}
+const TIER_LEGEND_ITEMS = [
+  {label:'T0 Gate', color:'var(--t0)', pill:true, hint:'Gate item -- ranked first regardless of score'},
+  {label:'T1', color:'var(--t1)', pill:true},
+  {label:'T2', color:'var(--t2)', pill:true},
+  {label:'T3', color:'var(--t3)', pill:true},
+];
+function clusterLegendItems(){
+  return ALL_CLUSTER_KEYS_SAFE().map(k => ({
+    label:k, color: CLUSTER_COLORS[k]||'#fff', pill:false,
+    hint: k==='Not linked' ? 'No OFFER crosswalk link' : (CLUSTER_NAMES[k]||''),
+  }));
+}
+// ALL_CLUSTER_KEYS is declared later in the file (Domains section); this
+// legend can render before that point runs, so fall back to a literal list
+// with the same keys rather than depending on load order.
+function ALL_CLUSTER_KEYS_SAFE(){
+  return (typeof ALL_CLUSTER_KEYS !== 'undefined') ? ALL_CLUSTER_KEYS
+    : ['C1','C2','C3','C4','C5','C6','C7','C8','Not linked'];
+}
+function tierClass(t){
+  if(!t) return '';
+  if(t.indexOf('T0')>=0) return 't0';
+  if(t.indexOf('T1')>=0) return 't1';
+  if(t.indexOf('T2')>=0) return 't2';
+  if(t.indexOf('T3')>=0) return 't3';
+  return '';
+}
+function uniqueSorted(arr, key){
+  const s = new Set();
+  arr.forEach(r => { if (r[key]) s.add(r[key]); });
+  return Array.from(s).sort();
+}
+function fmtNum(v){
+  if (v === null || v === undefined || v === '') return '';
+  const n = Number(v);
+  if (isNaN(n)) return v;
+  return (Math.round(n*100)/100).toString();
+}
+
+// ---------------------------------------------------------------- tabs
+const TABS = [
+  {id:'start', label:'Start'},
+  {id:'lookup', label:'RTM Lookup'},
+  {id:'offerlookup', label:'OFFER Lookup'},
+  {id:'filter', label:'Filter Dashboard'},
+  {id:'ranking', label:'RTM Ranking'},
+  {id:'offer', label:'OFFER Ranking'},
+  {id:'queue', label:'Review Queue'},
+  {id:'clusters', label:'Clusters'},
+  {id:'domainnav', label:'Domains'},
+  {id:'domains', label:'Domain Summary'},
+  {id:'outline', label:'Document Outline'},
+  {id:'taxonomy', label:'Taxonomy'},
+];
+
+// cluster values are strings like "C7 — Quality, Testing & Risk" (direct),
+// "Inferred: C4 — Software & Control (medium conf.)" (inferred), or
+// "Not linked to an OFFER item" -- this pulls out just the "C1".."C8" key
+// (or "Not linked") so grouping/filtering treats direct and inferred the
+// same for aggregate counts, while still preserving the full string for
+// per-row display elsewhere.
+function clusterKey(c){
+  if (!c) return 'Not linked';
+  const m = /C[1-8]/.exec(c);
+  return m ? m[0] : 'Not linked';
+}
+const CLUSTER_NAMES = {
+  C1:'Performance', C2:'Process Design', C3:'Mechanical & Equipment', C4:'Software & Control',
+  C5:'Infrastructure & Integration', C6:'Reliability & Maintenance', C7:'Quality, Testing & Risk',
+  C8:'Commercial & Execution',
+};
+// Same soft palette as the workbook's CLUSTERS sheet / RTM_RANKING conditional
+// formatting (Phase 9) -- identical hex values, so a cluster reads as the same
+// colour whether you're looking at the xlsx or this page. Kept out of the
+// red/orange/yellow/green/pink hues already used by tier pills and STATUS.
+const CLUSTER_COLORS = {
+  C1:'#D6E9F8', C2:'#D6F0EA', C3:'#E2E6ED', C4:'#E6DFF6',
+  C5:'#F0E0EE', C6:'#DCEAE6', C7:'#D9E4F0', C8:'#EDE6DC',
+  'Not linked': '#EDEDED',
+};
+// OFFER items only carry a cluster membership indirectly, via CLUSTERS!C
+// ("OFFER items in cluster" -- a "OFFER-04; OFFER-06; ..." list per C1-C8).
+// Built once into a direct id->cluster lookup so OFFER-side grouping by
+// Cluster is as cheap as RTM-side grouping (which has 'cluster' on the row).
+const OFFER_CLUSTER_MAP = {};
+(DATA.clusters || []).forEach(c => {
+  (c.items || '').split(';').forEach(tok => {
+    const id = tok.trim();
+    if (id) OFFER_CLUSTER_MAP[id] = c.id;
+  });
+});
+function offerClusterKey(offerId){
+  return OFFER_CLUSTER_MAP[offerId] || 'Not linked';
+}
+// Mid-tone version of the same palette, for use where the pastel is too
+// washed out against a light track (bar-chart fills) -- same hue family,
+// just more saturated so it reads at a glance.
+const CLUSTER_COLORS_STRONG = {
+  C1:'#7EB6E0', C2:'#7FCDBA', C3:'#A9B4C7', C4:'#B4A4E0',
+  C5:'#D9A8CB', C6:'#8FC2B7', C7:'#93AAD1', C8:'#CBB89A',
+  'Not linked': '#B0B0B0',
+};
+// Evenly-spaced hue generator -- top-level (was buried inside buildDomains)
+// so it can back a stable colour-chip system reused across Domain and
+// Primary Dimension too, not just the one pie chart it was written for.
+function hslColor(i, n){ return `hsl(${Math.round(i*360/n)}, 50%, 52%)`; }
+// Domain doesn't have a fixed palette the way Tier/Cluster do (22 domains,
+// no natural small palette) -- assign each domain a STABLE index into an
+// evenly-spaced hue wheel, ordered by real RTM count (biggest domain first)
+// so the same domain always gets the same colour everywhere on this page,
+// not a colour that shifts depending on which subset happens to be on
+// screen. Computed once from the full live rtmRanking export.
+const ALL_DOMAINS_ORDERED = (() => {
+  const counts = {};
+  (DATA.rtmRanking||[]).forEach(r => { const d = r.domain || '(blank)'; counts[d] = (counts[d]||0)+1; });
+  return Object.keys(counts).sort((a,b) => counts[b]-counts[a]);
+})();
+function domainColor(name){
+  const i = ALL_DOMAINS_ORDERED.indexOf(name);
+  return i>=0 ? hslColor(i, ALL_DOMAINS_ORDERED.length) : '#999';
+}
+// Primary Dimension: the 7 canonical BT dimensions get a FIXED categorical
+// palette (not tier/reltype red-green-blue-grey, to avoid implying an
+// ordinal "good/bad" scale that doesn't apply here -- these are just 7
+// different kinds of requirement, none "better" than another).
+const BT_DIMENSIONS = ['Safety / Legal','Reliability','Performance','Functional','Quality / Verifiability','Lifecycle','Cost'];
+const DIM_COLORS = {
+  'Safety / Legal':'#C0392B', 'Reliability':'#2874A6', 'Performance':'#1E8449',
+  'Functional':'#8E44AD', 'Quality / Verifiability':'#B7791F', 'Lifecycle':'#17A2A2', 'Cost':'#6C6C6C',
+};
+// A row's primaryDim can be a combined string (e.g. "Safety / Legal / Performance",
+// or -- rarely -- all 9 words when no single dimension wins a genuine tie).
+// Colour by the FIRST recognised single dimension named in the string; fall
+// back to neutral grey rather than guessing for the all-9-words tie case.
+function dimColor(name){
+  if (!name) return '#999';
+  if (DIM_COLORS[name]) return DIM_COLORS[name];
+  const hit = BT_DIMENSIONS.find(d => name.indexOf(d) === 0 || name === d);
+  return hit ? DIM_COLORS[hit] : '#999';
+}
+function chip(color, text){ return `<span class="chip" style="background:${color};">${text}</span>`; }
+
+// ---- radial link map (OFFER Lookup) ----------------------------------
+// GBO: "plot the circle with perimeter equally spaced by number of items
+// and lines drawn to interconnect... add colour for direction forward/
+// backwards. Current implementation not very clever -- low priority."
+// Reading: replace the plain text list of linked RTMs with a real small
+// network view -- every linked RTM placed evenly around a circle's
+// perimeter (count-driven spacing, not by rank/domain), with a line back
+// to the OFFER item at the centre. Honest scoping note: the crosswalk
+// doesn't carry a genuine forward/backward direction -- an RTM and an
+// OFFER item are linked, not sequenced -- so relation type (Direct/
+// Supporting/Broad/Contextual, the one real categorical distinction this
+// data has) stands in for "direction" via line colour + weight, disclosed
+// in the caption rather than inventing a directionality that isn't there.
+const RELTYPE_LINE_COLORS = {direct:'#1E8449', supporting:'#2874A6', broad:'#B7791F', contextual:'#7F8C8D'};
+function renderLinkWheel(offerId, linked){
+  const N = linked.length;
+  if (!N) return '';
+  const size = 380, cx = size/2, cy = size/2, r = size/2 - 46;
+  let svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="max-width:100%;">`;
+  linked.forEach((l,i) => {
+    const ang = (i/N) * 2*Math.PI - Math.PI/2;
+    const x = (cx + r*Math.cos(ang)).toFixed(1), y = (cy + r*Math.sin(ang)).toFixed(1);
+    const cls = linkTypeClass(l.type);
+    const col = RELTYPE_LINE_COLORS[cls] || '#999';
+    const w = cls==='direct' ? 2.2 : 1;
+    svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${col}" stroke-width="${w}" opacity="0.7"></line>`;
+  });
+  svg += `<circle cx="${cx}" cy="${cy}" r="11" fill="#441F63"></circle>`;
+  svg += `<text x="${cx}" y="${cy+28}" text-anchor="middle" font-size="11" font-weight="700" fill="#441F63">${offerId}</text>`;
+  linked.forEach((l,i) => {
+    const ang = (i/N) * 2*Math.PI - Math.PI/2;
+    const x = (cx + r*Math.cos(ang)).toFixed(1), y = (cy + r*Math.sin(ang)).toFixed(1);
+    const dcol = domainColor(l.rtm.domain);
+    svg += `<circle cx="${x}" cy="${y}" r="5.5" fill="${dcol}" stroke="#fff" stroke-width="1" style="cursor:pointer;" onclick="jumpToRtm('${l.rtm.id}')"><title>${l.rtm.id} — ${l.rtm.domain||''} — ${l.type} — Weighted S ${fmtNum(l.rtm.weightedS)}</title></circle>`;
+  });
+  svg += `</svg>`;
+  return svg;
+}
+// RTM_RANKING.linkedOffer is a string like "OFFER-49 (Supporting)" or, for
+// multi-link rows, "OFFER-01 (Supporting); OFFER-02 (Direct)" -- this parses
+// it into [{offerId, type}], and normalises "Broad/contextual — ..." down to
+// a single badge key so it doesn't collide with the CSS badge classes.
+function parseLinkedOffer(str){
+  if (!str || str === 'Not linked to an OFFER item') return [];
+  return str.split(';').map(part => {
+    const m = /^\s*(OFFER-\d+)\s*\(([^)]+)\)/.exec(part.trim());
+    if (!m) return null;
+    return {offerId: m[1], type: m[2].trim()};
+  }).filter(Boolean);
+}
+function linkTypeClass(type){
+  const t = (type||'').toLowerCase();
+  if (t.indexOf('direct')>=0) return 'direct';
+  if (t.indexOf('supporting')>=0) return 'supporting';
+  if (t.indexOf('broad')>=0) return 'broad';
+  return 'contextual';
+}
+const tabsNav = document.getElementById('tabs');
+const main = document.getElementById('main');
+const sections = {};
+
+TABS.forEach(t => {
+  const btn = el('button', {text:t.label, onclick:() => activateTab(t.id)});
+  btn.dataset.tab = t.id;
+  tabsNav.appendChild(btn);
+  const sec = el('section', {class:'tab', id:'tab-'+t.id});
+  main.appendChild(sec);
+  sections[t.id] = sec;
+});
+
+function activateTab(id){
+  TABS.forEach(t => {
+    sections[t.id].classList.toggle('active', t.id===id);
+    tabsNav.querySelector(`button[data-tab="${t.id}"]`).classList.toggle('active', t.id===id);
+  });
+  window.scrollTo({top:0, behavior:'instant'});
+}
+// Cross-link back-navigation: GBO's own framing -- "core is the link, not a
+// new number, since this is functionally to lookup a single [item] and see
+// links." Every jumpToRtm/jumpToOffer call REPLACES the current lookup view,
+// which stranded the user with no way back to where they clicked from. This
+// is a simple breadcrumb stack (not real browser history, since tabs are
+// just show/hide divs, not separate pages): before an ordinary jump, push
+// whatever lookup item was showing; after landing, render a single "<- Back
+// to X" affordance sourced from the top of that stack. Going back pops the
+// stack and re-jumps without pushing a new entry, so a chain of several
+// clicked links can be walked back one hop at a time, same as a browser.
+let NAV_HISTORY = [];
+function captureLookupState(){
+  if (sections.lookup && sections.lookup.classList.contains('active')){
+    const inp = document.getElementById('lookupInput');
+    if (inp && inp.value) return {kind:'rtm', value: inp.value};
+  }
+  if (sections.offerlookup && sections.offerlookup.classList.contains('active')){
+    const sel = document.getElementById('offerLookupInput');
+    if (sel && sel.value) return {kind:'offer', value: sel.value};
+  }
+  return null;
+}
+function renderBackBar(tabId){
+  const bar = document.getElementById(tabId==='lookup' ? 'lookupBackBar' : 'offerLookupBackBar');
+  if (!bar) return;
+  const top = NAV_HISTORY[NAV_HISTORY.length-1];
+  if (!top){ bar.style.display='none'; bar.innerHTML=''; return; }
+  const label = top.kind==='rtm' ? ('RTM-'+String(top.value).replace(/\D/g,'').padStart(3,'0')) : top.value;
+  bar.style.display='block';
+  bar.innerHTML = `<span class="xlink" onclick="goBack()">&larr; Back to ${label}</span>`;
+}
+function goBack(){
+  const st = NAV_HISTORY.pop();
+  if (!st) return;
+  if (st.kind === 'rtm') jumpToRtm('RTM-'+String(st.value).replace(/\D/g,''), true);
+  else jumpToOffer(st.value, true);
+}
+// Cross-link helper: jump to RTM Lookup and run the lookup for a specific
+// RTM ID, from anywhere else in the page (e.g. a Deliverables Dossier row's
+// linked-RTM list). Sets the input then fires a real 'input' event so the
+// existing doLookup() listener (defined inside buildLookup) does the work,
+// rather than duplicating lookup logic here. isBack=true (from goBack()
+// only) skips pushing a new history entry, since going back shouldn't
+// create a forward-again entry.
+function jumpToRtm(id, isBack){
+  if (!isBack){ const st = captureLookupState(); if (st) NAV_HISTORY.push(st); }
+  activateTab('lookup');
+  const inp = document.getElementById('lookupInput');
+  if (inp){
+    inp.value = id.replace(/^RTM-0*/,'');
+    inp.dispatchEvent(new Event('input'));
+  }
+  renderBackBar('lookup');
+}
+// Mirror of jumpToRtm() for the other direction -- jump to OFFER Lookup and
+// select a specific OFFER item, from anywhere else on the page (e.g. RTM
+// Lookup's own "Linked OFFER items" field). GBO: "why can't OFFER-12 here
+// have a direct link" -- this is that link, made real instead of plain text.
+function jumpToOffer(id, isBack){
+  if (!isBack){ const st = captureLookupState(); if (st) NAV_HISTORY.push(st); }
+  activateTab('offerlookup');
+  const sel = document.getElementById('offerLookupInput');
+  if (sel){
+    sel.value = id;
+    sel.dispatchEvent(new Event('change'));
+  }
+  renderBackBar('offerlookup');
+}
+
+// ================================================================ START
+function buildStart(){
+  const s = sections.start;
+  s.appendChild(el('h2',{text:'Start here'}));
+  s.appendChild(el('p',{class:'subtitle', text:'This page mirrors QPS_OFFER_Evaluation_FULL_v19.xlsx — same 722 RTMs, same 50 OFFER items, same taxonomy, classification and disposition data. It is read-only: make edits in the workbook, then regenerate this page from it.'}));
+  const card = el('card' , {});
+  const wrap = el('div',{class:'card'});
+  wrap.appendChild(el('div',{html:`
+    <p><b>What's here:</b></p>
+    <ul class="step-list">
+      <li><b>RTM Lookup</b> — type any RTM ID (e.g. RTM-693) and see every field for it in one place, exactly like the workbook's RTM_LOOKUP sheet.</li>
+      <li><b>OFFER Lookup</b> — the reverse: pick an OFFER item and see every RTM linked to it, grouped by link type (Direct/Supporting/Broad/Contextual), so you can judge how well-evidenced that item actually is.</li>
+      <li><b>Filter Dashboard</b> — pick a Domain and/or Cluster and get live counts by tier, mirroring DASHBOARD_2.</li>
+      <li><b>RTM Ranking</b> — all 722 RTMs, sortable and searchable, same columns as RTM_RANKING (rank, tier, domain, requirement type, cluster, weighted score, evidence, deliverable...), plus a Top-5-by-group panel underneath.</li>
+      <li><b>OFFER Ranking</b> — all 50 OFFER items with their static BT ranking, plus a Top-5-by-group panel.</li>
+      <li><b>Review Queue</b> — the 289-row priority subset (all T0/T1 plus deliverable-heavy items) with the Disposition field, same as RTM_REVIEW_QUEUE, plus a Top-5-by-group panel.</li>
+      <li><b>Clusters</b> — the C1–C8 thematic grouping of OFFER items (filter aid only, not a ranking).</li>
+      <li><b>Domains</b> — a clickable domain "start node" with per-domain composition, plus a full Domain × Cluster heatmap.</li>
+      <li><b>Domain Summary</b> — RTM counts and importance by contract domain, plus Pareto/log-scale volume charts, an 80:20 zoom, and a Subsystems-only cluster breakdown.</li>
+      <li><b>Taxonomy</b> — Requirement Type (SYSTEM/PROJECT/SAFETY) definitions, lifecycle supergroups, the OFFER disposition vocabulary, and the classification-coverage methodology note.</li>
+    </ul>
+  `}));
+  s.appendChild(wrap);
+  const stats = el('div',{class:'stat-tiles'});
+  const tiles = [
+    ['722', 'RTM requirements'],
+    ['50', 'OFFER items'],
+    ['43', 'T0 Gate RTMs (hand-reviewed)'],
+    ['679', 'Rule-classified RTMs (disclosed)'],
+    ['8', 'OFFER clusters (C1–C8)'],
+    ['289', 'Review-queue priority subset'],
+  ];
+  tiles.forEach(([n,lbl]) => stats.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:n}),el('div',{class:'lbl',text:lbl})])));
+  s.appendChild(stats);
+}
+
+// ============================================================== LOOKUP
+// Real canonical numeric range, read from live data rather than a
+// remembered/guessed number (same lesson as the v20 PHASE_ORDER bug --
+// never hardcode a range that could drift) -- RTM IDs run 1..722
+// contiguous as of v20, but this recomputes from whatever's actually
+// spliced in, so it can never go stale.
+function idMax(dataArr){
+  let max = 0;
+  (dataArr||[]).forEach(r => { const n = Number(String(r.id).replace(/\D/g,'')); if (n>max) max=n; });
+  return max;
+}
+// A fixed-prefix numeric entry control: "RTM-"/"OFFER-" is a permanent
+// badge, not something the user can mistype, delete, or duplicate --
+// the actual <input> only ever accepts the digits. This is the direct
+// fix for GBO's screenshot: typing "RTM-70" (prefix included) used to
+// silently skip the zero-pad normalisation step (only bare "70" got
+// padded), so "RTM-70" looked up as a literal miss against the real
+// "RTM-070". With the prefix locked out of the typed value entirely,
+// that whole class of mismatch can't happen again.
+function idInputControl(prefix, maxN, placeholder){
+  const wrap = el('div',{class:'id-input-wrap'});
+  wrap.appendChild(el('span',{class:'id-input-prefix', text:prefix+'-'}));
+  const input = el('input',{type:'number', class:'id-input-num', min:'1', max:String(maxN), inputmode:'numeric', placeholder:placeholder});
+  wrap.appendChild(input);
+  return {wrap, input};
+}
+function buildLookup(){
+  const s = sections.lookup;
+  const RTM_MAX = idMax(DATA.rtmRanking);
+  s.appendChild(el('h2',{text:'RTM Lookup — enter any RTM ID'}));
+  s.appendChild(el('p',{class:'subtitle',text:`"RTM-" is fixed — just type the number (1–${RTM_MAX}). Every field for that requirement pulls in below, across ranking, review-queue disposition, and crosswalk.`}));
+  const toolbar = el('div',{class:'toolbar'});
+  const {wrap, input} = idInputControl('RTM', RTM_MAX, '693');
+  input.id = 'lookupInput';
+  toolbar.appendChild(el('div',{},[el('label',{text:`RTM number (1–${RTM_MAX})`}), wrap]));
+  s.appendChild(toolbar);
+  s.appendChild(el('div',{id:'lookupBackBar', class:'backbar', style:'display:none;'}));
+  const result = el('div',{id:'lookupResult'});
+  s.appendChild(result);
+
+  function doLookup(){
+    const raw = String(input.value||'').trim();
+    if (!raw){ result.innerHTML=''; return; }
+    const numMatch = raw.match(/\d+/);
+    if (!numMatch){ result.innerHTML = `<div class="card"><p class="empty">Numbers only — type the RTM number without the "RTM-" prefix (it's fixed for you).</p></div>`; return; }
+    const q = 'RTM-' + numMatch[0].replace(/^0+(?=\d)/,'').padStart(3,'0');
+    const row = DATA.rtmRanking.find(r => r.id === q);
+    if (!row){
+      result.innerHTML = `<div class="card"><p class="empty">${q} not found — valid range is RTM-001 through RTM-${String(RTM_MAX).padStart(3,'0')}.</p></div>`;
+      return;
+    }
+    const qrow = DATA.reviewQueue.find(r => r.id === q);
+    const fields = [
+      ['Rank (of 722)', row.rank], ['Gate (T0?)', row.gate], ['Tier', row.tier],
+      ['Domain', row.domain], ['Requirement Type', row.reqType], ['Category', row.category],
+      ['Subcategory', row.subcategory], ['Cluster', row.cluster], ['PDF page', row.pdfPage],
+      ['Section', row.section], ['Section title', row.sectionTitle], ['Shall statement', row.shall],
+      ['Weighted S', fmtNum(row.weightedS)], ['BT win %', fmtNum(row.btWin)],
+      ['Primary dimension', row.primaryDim], ['Actual explicit code / standard', row.codeStd],
+      ['Evidence / measurability', row.evidence], ['Explicit deliverable / proof', row.deliverable],
+      ['Applicable phase(s)', row.phases],
+    ];
+    let html = `<div class="card"><h3 style="color:var(--navy);margin-top:0;">${row.id} <span class="pill ${tierClass(row.tier)}">${row.tier||''}</span></h3>`;
+    // Reuse the Tier colour-banner idea for the other categorical fields
+    // GBO asked to extend it to: Domain (stable hue per domain), Cluster
+    // (same palette CLUSTERS/Filter Dashboard already use), Primary
+    // dimension (fixed 7-colour BT-dimension palette).
+    fields.forEach(([k,v]) => {
+      let vHtml;
+      if (k==='Domain' && v) vHtml = chip(domainColor(v), v);
+      else if (k==='Cluster' && v) vHtml = chip(CLUSTER_COLORS_STRONG[clusterKey(v)]||'#999', v);
+      else if (k==='Primary dimension' && v) vHtml = chip(dimColor(v), v);
+      else vHtml = (v===null||v===undefined||v==='') ? '—' : v;
+      html += `<div class="detail-field"><div class="k">${k}</div><div class="v">${vHtml}</div></div>`;
+    });
+    // Linked OFFER items -- real clickable cross-links now (GBO: "why can't
+    // OFFER-12 here have a direct link"), one badge per linked OFFER item,
+    // coloured by the same .linktype relation-type classes the OFFER
+    // Lookup tab and Taxonomy's Relation Types table already use.
+    const linkedOffers = parseLinkedOffer(row.linkedOffer);
+    const linkedHtml = linkedOffers.length
+      ? linkedOffers.map(l => `<span class="xlink" onclick="jumpToOffer('${l.offerId}')">${l.offerId}</span> <span class="linktype ${linkTypeClass(l.type)}">${l.type}</span>`).join('<br>')
+      : 'Not linked to an OFFER item';
+    html += `<div class="detail-field"><div class="k">Linked OFFER items (crosswalk)</div><div class="v">${linkedHtml}</div></div>`;
+    html += `</div>`;
+    // Full verbatim requirement -- GBO: "since a requirement is the full
+    // shall statement, is there a FULL verbatim text or snippet that can be
+    // generated on request?" This data already existed in the workbook
+    // (RTM_RANKING col N) but was never exported to the Navigator -- the
+    // "Shall statement" field above is a condensed one-liner; this is the
+    // complete source-PDF text INCLUDING every bulleted/numbered sub-item.
+    // Only shown as its own card when it actually adds something beyond the
+    // condensed version (bullets/newlines present, or meaningfully longer)
+    // -- for the many single-sentence RTMs the two are the same text and a
+    // second copy would just be noise.
+    const fv = row.fullVerbatim ? String(row.fullVerbatim) : '';
+    const fvAddsSomething = fv && (fv.indexOf('\n')>=0 || fv.indexOf('•')>=0 || fv.length > (String(row.shall||'').length + 40));
+    if (fvAddsSomething){
+      html += `<div class="card"><h3 style="color:var(--navy);margin-top:0;">Full verbatim requirement (all bullets/sub-items, straight from the source PDF)</h3>`;
+      html += `<p class="subtitle" style="margin-top:-6px;">Complete text as it appears on PDF page ${row.pdfPage||'?'} of the contract mirror — the "Shall statement" field above is a condensed one-liner cross-referenced against this.</p>`;
+      html += `<div style="white-space:pre-line;font-size:13px;line-height:1.6;background:var(--band);border-radius:5px;padding:12px 16px;">${fv.replace(/</g,'&lt;')}</div>`;
+      html += `</div>`;
+    }
+    // Related RTMs -- same contract section (GBO: "parent/child or related --
+    // same level and topic, separate requirements but related, e.g. same RTM
+    // within a subsection of the contract PDF mirror"). No new numbering
+    // scheme -- every related item is its own real RTM-NNN, reached via the
+    // same jumpToRtm() link everything else on this page uses. Capped to a
+    // sane on-screen count for very large sections (still says how many more).
+    if (row.section){
+      const related = DATA.rtmRanking.filter(r => r.id !== row.id && r.section === row.section);
+      if (related.length){
+        const shown = related.slice(0, 12);
+        html += `<div class="card"><h3 style="color:var(--navy);margin-top:0;">Related RTMs — same contract section (§${row.section})</h3>`;
+        html += `<p class="subtitle" style="margin-top:-6px;">Separate requirements, not this one's parent/child — grouped only because they share the same contract PDF subsection. Click any to open it (use the "Back to ${row.id}" link that appears there to return here).</p>`;
+        shown.forEach(r => {
+          html += `<div class="link-row">
+            <span class="rid xlink" onclick="jumpToRtm('${r.id}')">${r.id}</span>
+            <span>${chip(domainColor(r.domain), r.domain||'')} <span class="pill ${tierClass(r.tier)}">${r.tier||''}</span></span>
+            <span>${r.shall ? String(r.shall).slice(0,120) + (String(r.shall).length>120?'…':'') : ''}</span>
+            <span style="text-align:right;font-weight:700;">${fmtNum(r.weightedS)}</span>
+          </div>`;
+        });
+        if (related.length > shown.length){
+          html += `<p class="subtitle">…and ${related.length - shown.length} more in this section (see Document Outline for the full section tree).</p>`;
+        }
+        html += `</div>`;
+      }
+    }
+    html += `<div class="card"><h3 style="color:var(--navy);margin-top:0;">Reviewer disposition (from Review Queue, if in priority subset)</h3>`;
+    if (qrow){
+      html += `<div class="detail-field"><div class="k">Disposition</div><div class="v">${qrow.disposition||'TBD'}</div></div>`;
+      html += `<div class="detail-field"><div class="k">Basis / review</div><div class="v">${qrow.basis||'—'}</div></div>`;
+    } else {
+      html += `<p class="empty">Not in the priority review-queue subset (that's the 289 T0/T1/deliverable-heavy rows — see the full RTM Ranking tab for this item's data).</p>`;
+    }
+    html += `</div>`;
+    result.innerHTML = html;
+  }
+  input.addEventListener('input', doLookup);
+  input.addEventListener('keyup', e => { if(e.key==='Enter') doLookup(); });
+}
+
+// ============================================================== OFFER LOOKUP
+// Mirrors RTM Lookup, but the other direction: pick an OFFER item and see
+// every RTM linked to it (via RTM_CROSSWALK, as recorded on the RTM side),
+// broken out by link type (Direct / Supporting / Broad-contextual). This is
+// the "how well evidenced is this OFFER item" view GBO asked for: an OFFER
+// item with only Supporting/Broad links and no Direct one is thinner
+// evidence than one anchored by a Direct RTM, and reviewers can use the
+// counts + linked-RTM ranks here to decide whether a link needs firming up.
+function buildOfferLookup(){
+  const s = sections.offerlookup;
+  s.appendChild(el('h2',{text:'OFFER Lookup — pick an OFFER item'}));
+  s.appendChild(el('p',{class:'subtitle',text:'The reverse of RTM Lookup: choose an OFFER item and see every RTM linked to it (from RTM_CROSSWALK), grouped by link type, so you can judge how directly evidenced this OFFER item actually is and which links are thin (Supporting/Broad/Contextual only, no Direct anchor) and worth a review pass.'}));
+  const toolbar = el('div',{class:'toolbar'});
+  const sel = el('select',{id:'offerLookupInput'});
+  sel.appendChild(el('option',{value:'', text:'— choose an OFFER item —'}));
+  // Cluster colour per option -- OFFER items carry cluster membership
+  // indirectly via CLUSTERS!C (offerClusterKey()/OFFER_CLUSTER_MAP, built
+  // above from the live workbook, not inferred). The select's own closed-box
+  // background stays the house "yellow" editable-input fill (unchanged --
+  // GBO: treat that as the base state); each OPTION inside the opened list
+  // gets tinted with the same pastel CLUSTER_COLORS used everywhere else on
+  // this page, so the same colour always means the same cluster, and the
+  // Cluster colour key below is always visible, not gated behind a toggle.
+  DATA.offerRanking.slice().sort((a,b)=>{
+    const an = Number(String(a.id).replace(/\D/g,'')), bn = Number(String(b.id).replace(/\D/g,''));
+    return an-bn;
+  }).forEach(o => {
+    const ck = offerClusterKey(o.id);
+    const opt = el('option',{value:o.id, text:`${o.id} — ${o.title}`});
+    opt.style.background = CLUSTER_COLORS[ck] || CLUSTER_COLORS['Not linked'];
+    opt.title = ck === 'Not linked' ? 'Not linked to a cluster' : `${ck} — ${CLUSTER_NAMES[ck]||''}`;
+    sel.appendChild(opt);
+  });
+  toolbar.appendChild(el('div',{style:'min-width:340px;'},[el('label',{text:'OFFER item'}), sel]));
+  // "sieve" between Direct/Supporting/Broad/Contextual -- same 4 relation
+  // types as RTM_CROSSWALK, same colour classes as the badges below.
+  const typeSel = el('select',{id:'offerLookupType'});
+  [['','All relation types'],['direct','Direct only'],['supporting','Supporting only'],['broad','Broad only'],['contextual','Contextual only']]
+    .forEach(([v,l]) => typeSel.appendChild(el('option',{value:v,text:l})));
+  toolbar.appendChild(el('div',{style:'min-width:220px;'},[el('label',{text:'Relation type'}), typeSel]));
+  s.appendChild(toolbar);
+  // Always visible, no toggle -- each OFFER option above is tinted with the
+  // matching colour from this same key, so the legend and the dropdown stay
+  // readable together rather than requiring a click to reveal what a colour means.
+  s.appendChild(colourKeyCallout('Cluster colour key (matches each OFFER item’s colour in the dropdown above)', clusterLegendItems()));
+  s.appendChild(el('div',{id:'offerLookupBackBar', class:'backbar', style:'display:none;'}));
+  const result = el('div',{id:'offerLookupResult'});
+  s.appendChild(result);
+
+  function doLookup(){
+    const q = sel.value;
+    if (!q){ result.innerHTML=''; return; }
+    const offer = DATA.offerRanking.find(o => o.id === q);
+    if (!offer){ result.innerHTML = ''; return; }
+
+    // scan every RTM row for a link to this OFFER id
+    let linked = [];
+    DATA.rtmRanking.forEach(r => {
+      parseLinkedOffer(r.linkedOffer).forEach(l => {
+        if (l.offerId === q) linked.push({rtm: r, type: l.type});
+      });
+    });
+    const typeFilter = typeSel.value;
+    if (typeFilter) linked = linked.filter(l => linkTypeClass(l.type) === typeFilter);
+    linked.sort((a,b) => (Number(b.rtm.weightedS)||0) - (Number(a.rtm.weightedS)||0));
+    const nDirect = linked.filter(l => linkTypeClass(l.type)==='direct').length;
+    const nOther = linked.length - nDirect;
+
+    let html = `<div class="card"><h3 style="color:var(--navy);margin-top:0;">${offer.id} — ${offer.title}</h3>`;
+    const fields = [
+      ['Rank (of 50)', offer.rank], ['Gate (T0?)', offer.gate], ['Tier', offer.tier],
+      ['Category', offer.category], ['Section', offer.section], ['Weighted S', fmtNum(offer.weightedS)],
+      ['BT win %', fmtNum(offer.btWin)], ['Primary dimension', offer.primaryDim],
+      ['Explicit code / standard', offer.codeStd], ['Interpretation', offer.interpretation],
+      ['Applicable phase(s)', offer.phases],
+    ];
+    fields.forEach(([k,v]) => {
+      const vHtml = (k==='Primary dimension' && v) ? chip(dimColor(v), v) : ((v===null||v===undefined||v==='')?'—':v);
+      html += `<div class="detail-field"><div class="k">${k}</div><div class="v">${vHtml}</div></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="stat-tiles" style="margin-top:0;margin-bottom:16px;">`;
+    html += `<div class="tile"><div class="n">${linked.length}</div><div class="lbl">RTMs linked (any type)</div></div>`;
+    html += `<div class="tile"><div class="n">${nDirect}</div><div class="lbl">Direct-linked RTMs</div></div>`;
+    html += `<div class="tile"><div class="n">${nOther}</div><div class="lbl">Supporting/Broad/Contextual only</div></div>`;
+    html += `</div>`;
+
+    if (!linked.length){
+      html += `<div class="card"><p class="empty">No RTM in the crosswalk cites this OFFER item directly. It may only be evidenced narratively in the OFFER text itself — treat this as a gap worth a manual check, not a hard "no requirements apply".</p></div>`;
+    } else {
+      if (!nDirect){
+        html += `<div class="callout"><b>Thin evidence:</b> every linked RTM here is Supporting/Broad/Contextual — none is a Direct crosswalk hit. Worth a review pass to confirm this OFFER item's compliance basis, or to add/confirm a Direct link if one exists.</div>`;
+      }
+      html += `<div class="card"><h3 style="color:var(--navy);margin-top:0;">Linked RTMs, ranked by Weighted S</h3>`;
+      linked.forEach(l => {
+        html += `<div class="link-row">
+          <span class="rid xlink" onclick="jumpToRtm('${l.rtm.id}')">${l.rtm.id}</span>
+          <span>${chip(domainColor(l.rtm.domain), l.rtm.domain||'')} <span class="linktype ${linkTypeClass(l.type)}">${l.type}</span></span>
+          <span>${l.rtm.shall ? String(l.rtm.shall).slice(0,140) + (String(l.rtm.shall).length>140?'…':'') : ''}</span>
+          <span style="text-align:right;font-weight:700;">${fmtNum(l.rtm.weightedS)}</span>
+        </div>`;
+      });
+      html += `</div>`;
+      html += `<div class="card"><h3 style="color:var(--navy);margin-top:0;">Link map</h3>`;
+      html += `<p class="subtitle" style="margin-top:-6px;">Every linked RTM placed evenly around the circle (spacing is purely by count, not by rank/domain), with a line back to ${offer.id} at the centre. Line colour = relation type (Direct/Supporting/Broad/Contextual) — the crosswalk doesn't carry a real forward/backward direction (an RTM and an OFFER item are linked, not sequenced), so relation type stands in for "direction" here, the one real categorical distinction the data has. Dot colour = the RTM's Domain (same palette as the Domain field above). Click any dot to jump to that RTM.</p>`;
+      html += `<div style="display:flex;justify-content:center;">${renderLinkWheel(offer.id, linked)}</div>`;
+      html += `</div>`;
+    }
+    result.innerHTML = html;
+  }
+  sel.addEventListener('change', doLookup);
+}
+
+// ============================================================== FILTER DASHBOARD
+// Dataset-switchable (RTM or OFFER), with Domain/Category + Cluster picks, a
+// free-text Code/Standard search (both datasets carry a codeStd field), and
+// an actual scrollable result list (id + text + Weighted S) alongside the
+// count tiles -- not just a count with a "go look elsewhere" pointer.
+function buildFilter(){
+  const s = sections.filter;
+  s.appendChild(el('h2',{text:'Filter view — by Domain/Category, Cluster, or Code/Standard'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Pick a dataset first (RTM or OFFER), then narrow by Domain/Category and/or Cluster, or search for a Code/Standard reference. Counts and the list below update live. This is a filter aid, not a ranking.'}));
+
+  const toolbar = el('div',{class:'toolbar'});
+  const dsSel = el('select',{id:'filtDataset'});
+  [['rtm','RTM Requirements (722)'],['offer','OFFER Items (50)']].forEach(([v,t]) => dsSel.appendChild(el('option',{value:v,text:t})));
+  const groupSel = el('select',{id:'filtGroup'});
+  const clSel = el('select',{id:'filtCluster'});
+  // Code/Standard: a real browsable dropdown, same pattern as Cluster, not
+  // just a free-text box -- built from every distinct explicit code/standard
+  // actually present in the live data (both RTM and OFFER codeStd fields,
+  // split on ';' since a cell can carry several, "None explicitly named..."
+  // placeholder text excluded). GBO: "does not seem to work" turned out to
+  // be that most codeStd cells are the placeholder -- a free-text box makes
+  // that look broken; a dropdown of the real values doesn't.
+  const codeSel = el('select',{id:'filtCodeSelect'});
+  const codeInput = el('input',{type:'text', id:'filtCode', placeholder:'...or type any partial match'});
+  function allCodeStdValues(){
+    const set = new Set();
+    (DATA.rtmRanking||[]).concat(DATA.offerRanking||[]).forEach(r => {
+      const v = r.codeStd || '';
+      if (!v || /^none explicitly|^no individual/i.test(v.trim())) return;
+      v.split(';').forEach(part => { const p = part.trim(); if (p) set.add(p); });
+    });
+    return Array.from(set).sort((a,b) => a.localeCompare(b));
+  }
+  codeSel.appendChild(el('option',{value:'',text:'(ALL)'}));
+  allCodeStdValues().forEach(v => codeSel.appendChild(el('option',{value:v,text:v})));
+  codeSel.addEventListener('change', () => { codeInput.value = codeSel.value; recompute(); });
+
+  // Phase: same dropdown-not-free-text treatment as Code/Standard and
+  // Cluster (GBO: "make typing easier" -- L0..L6 plus FAC/PAC-Handover/
+  // Warranty are exact, easy-to-mistype strings, not something anyone
+  // should have to hand-type to filter by). Built from every distinct
+  // phase token actually present in the live data (both datasets' phases
+  // field, split on ';' since a row can carry several), sorted by real
+  // lifecycle order where recognised, alphabetically for anything not.
+  const PHASE_ORDER_HINT = ['L0 Tender / Offer','L1 Conceptual Design','L2 Detailed Design',
+    'L3 Procurement & Manufacturing / FAT','FAC','L4 Installation','L5 Standalone Commissioning',
+    'L6 Site Acceptance Testing','PAC / Handover','Warranty'];
+  const phaseSel = el('select',{id:'filtPhase'});
+  function allPhaseValues(){
+    const set = new Set();
+    (DATA.rtmRanking||[]).concat(DATA.offerRanking||[]).forEach(r => {
+      (r.phases||'').split(';').forEach(part => { const p = part.trim(); if (p) set.add(p); });
+    });
+    return Array.from(set).sort((a,b) => {
+      const ia = PHASE_ORDER_HINT.indexOf(a), ib = PHASE_ORDER_HINT.indexOf(b);
+      if (ia>=0 && ib>=0) return ia-ib;
+      if (ia>=0) return -1;
+      if (ib>=0) return 1;
+      return a.localeCompare(b);
+    });
+  }
+  phaseSel.appendChild(el('option',{value:'',text:'(ALL)'}));
+  allPhaseValues().forEach(v => phaseSel.appendChild(el('option',{value:v,text:v})));
+  phaseSel.addEventListener('change', recompute);
+
+  const groupLabel = el('label',{text:'Domain'});
+  toolbar.appendChild(el('div',{},[el('label',{text:'Data set'}), dsSel]));
+  toolbar.appendChild(el('div',{},[groupLabel, groupSel]));
+  toolbar.appendChild(el('div',{},[el('label',{text:'Cluster'}), clSel]));
+  toolbar.appendChild(el('div',{style:'min-width:220px;'},[el('label',{text:`Phase (${allPhaseValues().length} known)`}), phaseSel]));
+  toolbar.appendChild(el('div',{style:'min-width:240px;'},[el('label',{text:`Code / Standard (${allCodeStdValues().length} known)`}), codeSel]));
+  toolbar.appendChild(el('div',{style:'min-width:200px;'},[el('label',{text:'...or search contains'}), codeInput]));
+  s.appendChild(toolbar);
+  const stats = el('div',{class:'stat-tiles', id:'filtStats'});
+  s.appendChild(stats);
+  s.appendChild(colourKeyCallout('Tier colour key', TIER_LEGEND_ITEMS));
+  const noteBox = el('div',{class:'callout', id:'filtNote'});
+  s.appendChild(noteBox);
+  const listCard = el('div',{class:'card'});
+  listCard.appendChild(el('h3',{text:'Matching items', style:'color:var(--navy);margin-top:0;'}));
+  const listBody = el('div',{id:'filtList'});
+  listCard.appendChild(listBody);
+  s.appendChild(listCard);
+  s.appendChild(el('p',{class:'subtitle',html:'Deliverables and Codes/Standards text (DELIVERABLES / STANDARDS sheets) live per-OFFER-item as narrative columns, not as their own filterable row set — the Code/Standard box above searches the codeStd field already captured on every RTM/OFFER row; the OFFER Lookup tab shows the full deliverable text for a picked item.'}));
+
+  function populateGroupAndCluster(){
+    const isRtm = dsSel.value === 'rtm';
+    const data = isRtm ? DATA.rtmRanking : DATA.offerRanking;
+    groupLabel.textContent = isRtm ? 'Domain' : 'Category';
+    groupSel.innerHTML = '';
+    const groups = ['(ALL)'].concat(uniqueSorted(data, isRtm ? 'domain' : 'category'));
+    groups.forEach(g => groupSel.appendChild(el('option',{value:g,text:g})));
+    clSel.innerHTML = '';
+    let clusterVals;
+    if (isRtm){
+      const set = new Set(); data.forEach(r => { if (r.cluster) set.add(r.cluster); });
+      clusterVals = ['(ALL)'].concat(Array.from(set).sort());
+    } else {
+      const set = new Set(); data.forEach(r => set.add(offerClusterKey(r.id)));
+      clusterVals = ['(ALL)'].concat(Array.from(set).sort());
+    }
+    clusterVals.forEach(c => clSel.appendChild(el('option',{value:c,text:c})));
+  }
+
+  function recompute(){
+    const isRtm = dsSel.value === 'rtm';
+    const data = isRtm ? DATA.rtmRanking : DATA.offerRanking;
+    const gv = groupSel.value, cv = clSel.value, codeQ = codeInput.value.trim().toLowerCase(), pv = phaseSel.value;
+    const matches = data.filter(r => {
+      if (gv!=='(ALL)' && (isRtm ? r.domain : r.category) !== gv) return false;
+      if (cv!=='(ALL)'){
+        const rc = isRtm ? r.cluster : offerClusterKey(r.id);
+        if (rc !== cv) return false;
+      }
+      if (pv){
+        const tokens = (r.phases||'').split(';').map(p=>p.trim());
+        if (tokens.indexOf(pv) < 0) return false;
+      }
+      if (codeQ && !(String(r.codeStd||'').toLowerCase().indexOf(codeQ) >= 0)) return false;
+      return true;
+    });
+    const t0 = matches.filter(r=>(r.tier||'').indexOf('T0')>=0).length;
+    const t1 = matches.filter(r=>(r.tier||'').indexOf('T1')>=0).length;
+    const t2 = matches.filter(r=>(r.tier||'').indexOf('T2')>=0).length;
+    const t3 = matches.filter(r=>(r.tier||'').indexOf('T3')>=0).length;
+    const sVals = matches.map(r=>Number(r.weightedS)).filter(n=>!isNaN(n));
+    const avgS = sVals.length ? (sVals.reduce((a,b)=>a+b,0)/sVals.length) : null;
+    stats.innerHTML = '';
+    const tiles = [
+      [matches.length, `Matching ${isRtm?'RTMs':'OFFER items'}`], [t0,'of which T0 Gate'], [t1,'of which T1 Primary'],
+      [t2,'of which T2 Secondary'], [t3,'of which T3 Contextual'],
+      [avgS===null?'n/a':fmtNum(avgS), 'Average Weighted S'],
+    ];
+    tiles.forEach(([n,lbl]) => stats.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:String(n)}),el('div',{class:'lbl',text:lbl})])));
+
+    noteBox.innerHTML = `<b>Row-level detail:</b> switch to the ${isRtm?'RTM Ranking':'OFFER Ranking'} tab and use its search/filter with the same picks for the full column set — the list below shows the top 40 by Weighted S for a quick look without switching tabs.`;
+
+    const sorted = matches.slice().sort((a,b) => (Number(b.weightedS)||0) - (Number(a.weightedS)||0));
+    const shown = sorted.slice(0, 40);
+    listBody.innerHTML = '';
+    if (!shown.length){
+      listBody.appendChild(el('div',{class:'subtitle',text:'No matches for this combination.'}));
+    } else {
+      shown.forEach(r => {
+        const text = isRtm ? (r.shall||'') : (r.title||'');
+        listBody.appendChild(el('div',{class:'link-row'},[
+          el('span',{class:'rid',text:r.id}),
+          el('span',{},[el('span',{class:'pill '+tierClass(r.tier),text:r.tier||''})]),
+          el('span',{text: text.length>140 ? text.slice(0,140)+'…' : text}),
+          el('span',{style:'text-align:right;font-weight:700;',text:fmtNum(r.weightedS)}),
+        ]));
+      });
+      if (sorted.length > 40){
+        listBody.appendChild(el('div',{class:'subtitle',text:`…and ${sorted.length-40} more (see the Ranking tab for the full list, sorted the same way).`}));
+      }
+    }
+  }
+
+  dsSel.addEventListener('change', () => { populateGroupAndCluster(); recompute(); });
+  groupSel.addEventListener('change', recompute);
+  clSel.addEventListener('change', recompute);
+  codeInput.addEventListener('input', recompute);
+  populateGroupAndCluster();
+  recompute();
+}
+
+// ============================================================== generic sortable/filterable table builder
+function buildTableTab(tabId, opts){
+  // opts: {title, subtitle, data, columns:[{key,label,width}], filters:[{key,label}], pageSize}
+  const s = sections[tabId];
+  s.appendChild(el('h2',{text:opts.title}));
+  if (opts.subtitle) s.appendChild(el('p',{class:'subtitle',text:opts.subtitle}));
+  // Colour-key legend: auto-detected from which columns this table actually
+  // shows, so Tier/Cluster colour meaning is never more than a glance away
+  // on any ranking/queue tab, same house style as the Taxonomy tab's
+  // disposition-vocabulary callout.
+  const colKeys = opts.columns.map(c => c.key);
+  if (colKeys.indexOf('tier') >= 0) s.appendChild(colourKeyCallout('Tier colour key', TIER_LEGEND_ITEMS));
+  if (colKeys.indexOf('cluster') >= 0) s.appendChild(colourKeyCallout('Cluster colour key', clusterLegendItems()));
+  const toolbar = el('div',{class:'toolbar'});
+  const searchInput = el('input',{type:'text', placeholder:'Search all columns...'});
+  toolbar.appendChild(el('div',{style:'min-width:260px;'},[el('label',{text:'Search'}), searchInput]));
+  const filterSelects = {};
+  (opts.filters||[]).forEach(f => {
+    const values = ['(ALL)'].concat(uniqueSorted(opts.data, f.key));
+    const sel = el('select',{});
+    values.forEach(v => sel.appendChild(el('option',{value:v,text:v})));
+    filterSelects[f.key] = sel;
+    toolbar.appendChild(el('div',{},[el('label',{text:f.label}), sel]));
+  });
+  s.appendChild(toolbar);
+  const hits = el('div',{class:'search-hits'});
+  s.appendChild(hits);
+  const tablewrap = el('div',{class:'tablewrap'});
+  const table = el('table',{});
+  const thead = el('thead',{});
+  const headRow = el('tr',{});
+  let sortKey = null, sortDir = 1;
+  opts.columns.forEach(col => {
+    const th = el('th',{text:col.label, onclick:() => {
+      if (sortKey===col.key) sortDir = -sortDir; else { sortKey=col.key; sortDir=1; }
+      render();
+    }});
+    if (col.width) th.style.width = col.width;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+  const tbody = el('tbody',{});
+  table.appendChild(tbody);
+  tablewrap.appendChild(table);
+  s.appendChild(tablewrap);
+  const pager = el('div',{class:'pager'});
+  s.appendChild(pager);
+
+  const pageSize = opts.pageSize || 25;
+  let page = 0;
+
+  function getFiltered(){
+    let rows = opts.data;
+    (opts.filters||[]).forEach(f => {
+      const v = filterSelects[f.key].value;
+      if (v && v !== '(ALL)') rows = rows.filter(r => r[f.key] === v);
+    });
+    const q = searchInput.value.trim().toLowerCase();
+    if (q){
+      rows = rows.filter(r => opts.columns.some(c => String(r[c.key]||'').toLowerCase().indexOf(q) >= 0));
+    }
+    if (sortKey){
+      rows = rows.slice().sort((a,b) => {
+        let av = a[sortKey], bv = b[sortKey];
+        const an = Number(av), bn = Number(bv);
+        if (!isNaN(an) && !isNaN(bn) && av!=='' && bv!=='') return (an-bn)*sortDir;
+        return String(av||'').localeCompare(String(bv||''))*sortDir;
+      });
+    }
+    return rows;
+  }
+
+  function render(){
+    const rows = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(rows.length/pageSize));
+    if (page >= totalPages) page = totalPages-1;
+    if (page < 0) page = 0;
+    const pageRows = rows.slice(page*pageSize, page*pageSize+pageSize);
+    hits.textContent = `${rows.length} row${rows.length===1?'':'s'} match` + (rows.length!==opts.data.length ? ` (of ${opts.data.length} total)` : '');
+    tbody.innerHTML = '';
+    if (!pageRows.length){
+      const tr = el('tr',{});
+      const td = el('td',{text:'No matching rows.'});
+      td.colSpan = opts.columns.length;
+      td.className = 'empty';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+    const relbarMax = {};
+    opts.columns.forEach(col => {
+      if (col.relbar){
+        const vals = opts.data.map(r => Number(r[col.key])).filter(n => !isNaN(n));
+        relbarMax[col.key] = vals.length ? Math.max(...vals) : 0;
+      }
+    });
+    pageRows.forEach(r => {
+      const tr = el('tr',{});
+      opts.columns.forEach(col => {
+        let v = r[col.key];
+        if (col.numeric) v = fmtNum(v);
+        const td = el('td',{});
+        if (col.relbar){
+          const raw = Number(r[col.key]);
+          td.className = 'relbar-cell';
+          const max = relbarMax[col.key] || 1;
+          const pct = isNaN(raw) ? 0 : Math.max(0, Math.min(100, (raw/max)*100));
+          td.appendChild(el('div',{class:'relbar-track'}));
+          const fill = el('div',{class:'relbar-fill'}); fill.style.width = pct.toFixed(1)+'%';
+          td.appendChild(fill);
+          td.appendChild(el('span',{class:'relbar-val', text: isNaN(raw)?'':fmtNum(raw)}));
+        } else if (col.key === 'tier' && v){
+          td.appendChild(el('span',{class:'pill '+tierClass(v), text:v}));
+        } else if (col.key === 'reqType' && v){
+          td.appendChild(el('span',{class:'badge-req', text:v}));
+        } else if (col.key === 'cluster' && v){
+          const ck = clusterKey(v);
+          td.style.background = CLUSTER_COLORS[ck] || '';
+          td.textContent = v;
+        } else {
+          td.textContent = (v===null||v===undefined)?'':v;
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    pager.innerHTML = '';
+    pager.appendChild(el('button',{text:'‹ Prev', disabled: page===0?'true':null, onclick:()=>{page--;render();}}));
+    pager.appendChild(el('span',{text:`Page ${page+1} of ${totalPages}`}));
+    pager.appendChild(el('button',{text:'Next ›', disabled: page>=totalPages-1?'true':null, onclick:()=>{page++;render();}}));
+  }
+  searchInput.addEventListener('input', () => { page=0; render(); });
+  Object.values(filterSelects).forEach(sel => sel.addEventListener('change', () => { page=0; render(); }));
+  render();
+}
+
+// ============================================================== TOP-N BY GROUP
+function buildTopNPanel(tabId, data, groupOptions, idKey, labelKey){
+  const s = sections[tabId];
+  s.appendChild(el('h2',{text:'Top rated, by group', style:'margin-top:30px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Pick a grouping (cluster, domain, requirement type, tier...) and see the top 5 by Weighted S inside each group — a quick way to spot the strongest item in a category without scanning the whole table.'}));
+  const wrap = el('div',{class:'card'});
+  wrap.appendChild(el('h3',{text:'Top 5 by group', style:'margin-top:0;color:var(--navy);'}));
+  const toolbar = el('div',{class:'topn-toolbar'});
+  const groupSel = el('select',{});
+  groupOptions.forEach(g => groupSel.appendChild(el('option',{value:g.key,text:g.label})));
+  toolbar.appendChild(el('div',{},[el('label',{text:'Group by'}), groupSel]));
+  wrap.appendChild(toolbar);
+  const grid = el('div',{class:'topn-grid'});
+  wrap.appendChild(grid);
+
+  function render(){
+    const gkey = groupSel.value;
+    const groups = {};
+    data.forEach(r => {
+      let g = r[gkey];
+      if (gkey === 'cluster') g = clusterKey(g) === 'Not linked' ? 'Not linked' : clusterKey(g) + ' — ' + (CLUSTER_NAMES[clusterKey(g)]||'');
+      if (!g) g = '(blank)';
+      (groups[g] = groups[g] || []).push(r);
+    });
+    grid.innerHTML = '';
+    Object.keys(groups).sort().forEach(g => {
+      const rows = groups[g].slice().sort((a,b) => (Number(b.weightedS)||0) - (Number(a.weightedS)||0)).slice(0,5);
+      const card = el('div',{class:'topn-card'});
+      card.appendChild(el('h4',{text:`${g} (${groups[g].length})`}));
+      rows.forEach(r => {
+        const row = el('div',{class:'topn-row'});
+        row.appendChild(el('span',{class:'id',text:r[idKey]}));
+        row.appendChild(el('span',{class:'val',text:fmtNum(r.weightedS)}));
+        card.appendChild(row);
+      });
+      grid.appendChild(card);
+    });
+  }
+  groupSel.addEventListener('change', render);
+  render();
+  s.appendChild(wrap);
+  return wrap;
+}
+
+// ============================================================== CLUSTERS
+// Shared cluster label helper (used across Clusters, Domain Summary, Taxonomy).
+const clusterLabel = k => k==='Not linked' ? 'Not linked' : `${k} — ${CLUSTER_NAMES[k]||''}`;
+
+// ============================================================== CLUSTERS
+// Brought up to the same analytical depth as the Domains / Domain Summary
+// tabs (GBO: "clusters are not receiving the same treatment, visuals,
+// breadth"): an enhanced summary table (real OFFER membership + computed
+// RTM-side stats), a clickable start-node/detail panel per cluster (same
+// pattern as the Domains tab), a Cluster x Domain heatmap (the transpose of
+// the Domains tab's own Domain x Cluster heatmap), RTM/OFFER value-
+// concentration Paretos with divergence callouts, and Focus Score rankings
+// -- all via the same top-level helpers Domain Summary uses
+// (metricsByGroup/buildMeasureParetoSection/renderDivergence/
+// buildFocusScoreSection), not a separately-maintained thinner version.
+function buildClusters(){
+  const s = sections.clusters;
+  s.appendChild(el('h2',{text:'OFFER item clusters (C1–C8)'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Thematic grouping of the 50 OFFER items — and, via each RTM\'s own Cluster field (direct crosswalk + inferred), all 722 RTMs too. A navigation/filter aid, not a ranking: clusters deliberately carry no official rank column (per the engineering handover) — but that\'s a different thing from having no analysis. This tab gives clusters the same composition/heatmap/Pareto/Focus-Score depth the Domains tabs get.'}));
+
+  // ---- 1. enhanced summary table --------------------------------------
+  const clusterRtmAgg = metricsByGroup(r => clusterKey(r.cluster));
+  const table = el('table',{});
+  const thead = el('thead',{},[el('tr',{},[
+    el('th',{text:'Cluster ID'}),el('th',{text:'Cluster Name'}),
+    el('th',{text:'OFFER items in cluster'}),el('th',{text:'OFFER count'}),
+    el('th',{text:'RTM count (direct+inferred)'}),el('th',{text:'RTM Avg Weighted S'}),
+  ])]);
+  table.appendChild(thead);
+  const tbody = el('tbody',{});
+  DATA.clusters.forEach(c => {
+    const tr = el('tr',{});
+    tr.appendChild(el('td',{text:c.id, style:`background:${CLUSTER_COLORS[c.id]||'#fff'};font-weight:700;`}));
+    tr.appendChild(el('td',{text:c.name}));
+    tr.appendChild(el('td',{text:c.items}));
+    tr.appendChild(el('td',{text:c.count}));
+    const ra = clusterRtmAgg[c.id];
+    tr.appendChild(el('td',{text: ra ? String(ra.count) : '0'}));
+    tr.appendChild(el('td',{text: ra && ra.count ? fmtNum(ra.avgS) : 'n/a'}));
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  const wrap = el('div',{class:'tablewrap'});
+  wrap.appendChild(table);
+  s.appendChild(wrap);
+
+  // ---- 2. start-node / detail panel ------------------------------------
+  // Same interaction pattern as the Domains tab: click a cluster, see its
+  // RTM composition (by Domain / Tier / Requirement Type) plus its real
+  // OFFER-item membership list, in one detail card.
+  s.appendChild(el('h3',{text:'Cluster detail — pick a cluster', style:'margin-top:26px;color:var(--navy);'}));
+  const clusterDetailAgg = {};   // per cluster: count, domain{}, tier{}, reqType{}, sSum, sN
+  const clusterDomainAgg = {};   // clusterDomainAgg[cluster][domain] = {count, sumS} -- feeds the heatmap below
+  DATA.rtmRanking.forEach(r => {
+    const ck = clusterKey(r.cluster);
+    if (!clusterDetailAgg[ck]) clusterDetailAgg[ck] = {count:0, domain:{}, tier:{}, reqType:{}, sSum:0, sN:0};
+    const a = clusterDetailAgg[ck];
+    a.count++;
+    const d = r.domain || '(blank)'; a.domain[d] = (a.domain[d]||0)+1;
+    const t = r.tier || '(blank)'; a.tier[t] = (a.tier[t]||0)+1;
+    const rt = r.reqType || '(unclassified)'; a.reqType[rt] = (a.reqType[rt]||0)+1;
+    const sv = Number(r.weightedS);
+    if (!isNaN(sv)){ a.sSum += sv; a.sN++; }
+    if (!clusterDomainAgg[ck]) clusterDomainAgg[ck] = {};
+    if (!clusterDomainAgg[ck][d]) clusterDomainAgg[ck][d] = {count:0, sumS:0};
+    clusterDomainAgg[ck][d].count++;
+    if (!isNaN(sv)) clusterDomainAgg[ck][d].sumS += sv;
+  });
+
+  const layout = el('div',{class:'domain-layout'});
+  const list = el('div',{class:'domain-list'});
+  const detail = el('div',{});
+  layout.appendChild(list); layout.appendChild(detail);
+  s.appendChild(layout);
+
+  function miniBars(container, title, obj){
+    container.appendChild(el('h4',{text:title,style:'color:var(--navy);margin-bottom:6px;'}));
+    const vals = Object.values(obj);
+    const max = vals.length ? Math.max(...vals) : 1;
+    Object.keys(obj).sort((x,y)=>obj[y]-obj[x]).forEach(k => {
+      const row = el('div',{style:'display:flex;align-items:center;gap:8px;margin-bottom:4px;'});
+      row.appendChild(el('div',{style:'width:190px;font-size:12px;', text:k}));
+      const outer = el('div',{style:'flex:1;background:#eef2f6;border-radius:3px;height:14px;'});
+      const inner = el('div',{style:`width:${(obj[k]/max*100).toFixed(1)}%;background:var(--teal);height:100%;border-radius:3px;`});
+      outer.appendChild(inner); row.appendChild(outer);
+      row.appendChild(el('div',{style:'width:34px;text-align:right;font-size:12px;font-weight:700;', text:String(obj[k])}));
+      container.appendChild(row);
+    });
+  }
+
+  function renderClusterDetail(cid){
+    Array.from(list.children).forEach(b => b.classList.toggle('active', b.dataset.cluster===cid));
+    const a = clusterDetailAgg[cid] || {count:0, domain:{}, tier:{}, reqType:{}, sSum:0, sN:0};
+    const offerRow = DATA.clusters.find(c => c.id === cid);
+    detail.innerHTML = '';
+    const card = el('div',{class:'card'});
+    card.appendChild(el('h3',{text: clusterLabel(cid), style:'margin-top:0;color:var(--navy);'}));
+    const tiles = el('div',{class:'stat-tiles', style:'margin-top:0;'});
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:String(a.count)}),el('div',{class:'lbl',text:'RTMs in cluster'})]));
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:a.sN?fmtNum(a.sSum/a.sN):'n/a'}),el('div',{class:'lbl',text:'Average Weighted S'})]));
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text: offerRow?String(offerRow.count):'0'}),el('div',{class:'lbl',text:'OFFER items in cluster'})]));
+    card.appendChild(tiles);
+    miniBars(card, 'By Domain', a.domain);
+    miniBars(card, 'By Tier', a.tier);
+    miniBars(card, 'By Requirement Type', a.reqType);
+    if (offerRow && offerRow.items){
+      card.appendChild(el('h4',{text:'OFFER items in this cluster', style:'color:var(--navy);margin-bottom:6px;margin-top:14px;'}));
+      card.appendChild(el('div',{style:'font-size:12.5px;line-height:1.7;', text:offerRow.items}));
+    }
+    detail.appendChild(card);
+  }
+
+  ALL_CLUSTER_KEYS.forEach(cid => {
+    const btn = el('button',{});
+    btn.dataset.cluster = cid;
+    btn.appendChild(el('span',{text: clusterLabel(cid)}));
+    btn.appendChild(el('span',{class:'cnt', text:String((clusterDetailAgg[cid]||{count:0}).count)}));
+    btn.addEventListener('click', () => renderClusterDetail(cid));
+    list.appendChild(btn);
+  });
+  renderClusterDetail('C1');
+
+  // ---- 3. Cluster x Domain heatmap -------------------------------------
+  // The transpose of the Domains tab's Domain x Cluster heatmap -- same
+  // crosstab, Cluster as the primary row here instead of Domain.
+  s.appendChild(el('h3',{text:'Cluster × Domain heatmap', style:'margin-top:26px;color:var(--navy);'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Same underlying crosstab as the Domains tab\'s Domain × Cluster heatmap, transposed so Cluster is the primary row here. Toggle Concentration (count) vs. Importance (Weighted S) the same way — a cell that\'s dark in one lens and pale in the other is the finding, not either view alone.'}));
+  const domainTotals = {};
+  DATA.rtmRanking.forEach(r => { const d = r.domain || '(blank)'; domainTotals[d] = (domainTotals[d]||0)+1; });
+  const domainsList = Object.keys(domainTotals).sort((a,b)=>domainTotals[b]-domainTotals[a]);
+  const chmToolbar = el('div',{class:'toolbar', style:'margin-bottom:8px;'});
+  const chmSel = el('select',{id:'clusterHeatmapMeasure'});
+  [['count','Concentration (RTM count)'],['avgS','Importance (avg Weighted S)'],['sumS','Importance (total Weighted S)']].forEach(([v,t]) => chmSel.appendChild(el('option',{value:v,text:t})));
+  chmToolbar.appendChild(el('div',{},[el('label',{text:'Colour by'}), chmSel]));
+  s.appendChild(chmToolbar);
+  const chmWrap = el('div',{class:'tablewrap', style:'max-height:420px;'});
+  s.appendChild(chmWrap);
+  s.appendChild(el('div',{class:'callout', html:
+    '<b>Read together, for a presenter:</b> a cluster that stays dark across most of its Domain row is thematically concentrated in one or two domains — expect its OFFER items to sit close together in the contract too. A cluster spread pale-but-wide across many domain columns is a cross-cutting theme (e.g. Quality/Testing touches nearly every domain a little, rather than owning one domain a lot) — that\'s a structural difference worth naming out loud, not a weaker cluster.'}));
+  function chmCellValue(cid, d, measure){
+    const cell = (clusterDomainAgg[cid]||{})[d];
+    if (!cell) return 0;
+    if (measure === 'count') return cell.count;
+    return measure === 'avgS' ? (cell.count ? cell.sumS/cell.count : 0) : cell.sumS;
+  }
+  const CHM_COLOR = {count:'68,31,99', avgS:'139,58,98', sumS:'139,58,98'};
+  function renderClusterHeatmap(){
+    const measure = chmSel.value;
+    let globalMax = 0;
+    ALL_CLUSTER_KEYS.forEach(cid => domainsList.forEach(d => { const v = chmCellValue(cid,d,measure); if (v>globalMax) globalMax=v; }));
+    const hm = el('table',{class:'heatmap'});
+    const hHead = el('tr',{},[el('th',{text:'Cluster'})].concat(domainsList.map(d => el('th',{text:d}))));
+    hm.appendChild(el('thead',{},[hHead]));
+    const hBody = el('tbody',{});
+    const rowTotal = cid => domainsList.reduce((sum,d) => sum + chmCellValue(cid,d,measure), 0);
+    const orderedClusters = ALL_CLUSTER_KEYS.slice().sort((a,b) => rowTotal(b) - rowTotal(a));
+    orderedClusters.forEach(cid => {
+      const row = el('tr',{});
+      row.appendChild(el('td',{class:'rowlabel', text:clusterLabel(cid)}));
+      domainsList.forEach(d => {
+        const v = chmCellValue(cid,d,measure);
+        const pct = globalMax ? v/globalMax : 0;
+        const bg = v===0 ? '#fff' : `rgba(${CHM_COLOR[measure]},${(0.12+pct*0.75).toFixed(2)})`;
+        const label = v===0 ? '' : (measure==='count' ? String(v) : fmtNum(v));
+        row.appendChild(el('td',{text: label, style:`background:${bg};` + (pct>0.55?'color:#fff;font-weight:700;':'')}));
+      });
+      hBody.appendChild(row);
+    });
+    hm.appendChild(hBody);
+    chmWrap.innerHTML = '';
+    chmWrap.appendChild(hm);
+  }
+  chmSel.addEventListener('change', renderClusterHeatmap);
+  renderClusterHeatmap();
+
+  // ---- 4. RTM value concentration by Cluster (Pareto + divergence) -----
+  buildMeasureParetoSection(s, {
+    title: 'RTM value concentration — by Cluster',
+    subtitle: 'All 722 RTMs regrouped by their C1–C8 thematic cluster (direct + inferred, "Not linked" as the honest remainder). Switch Measure to Sum Weighted S to see where review weight concentrates by cluster, not just row-count.',
+    dataArr: DATA.rtmRanking,
+    keyFn: r => clusterKey(r.cluster),
+    labelFn: clusterLabel,
+    colorFn: r => CLUSTER_COLORS_STRONG[/C[1-8]/.exec(r.label) ? /C[1-8]/.exec(r.label)[0] : 'Not linked'],
+  });
+  const rtmClusterDiv = el('div',{class:'chart-card'});
+  s.appendChild(rtmClusterDiv);
+  renderDivergence(rtmClusterDiv, clusterRtmAgg, clusterLabel);
+
+  // ---- 5. OFFER value concentration by Cluster (Pareto + divergence) ---
+  buildMeasureParetoSection(s, {
+    title: 'OFFER value concentration — by Cluster',
+    subtitle: 'The 50 OFFER items (the bidder-response line items actually being judged), regrouped by cluster via the CLUSTERS sheet. The 722-RTM register and the 50-OFFER judged subset don\'t have to concentrate in the same clusters, and mostly don\'t exactly — the same lens as Domain Summary\'s version, given its own home here.',
+    dataArr: DATA.offerRanking,
+    keyFn: r => offerClusterKey(r.id),
+    labelFn: clusterLabel,
+    colorFn: r => CLUSTER_COLORS_STRONG[/C[1-8]/.exec(r.label) ? /C[1-8]/.exec(r.label)[0] : 'Not linked'],
+  });
+  const offerClusterAgg = metricsByGroup(r => offerClusterKey(r.id), DATA.offerRanking);
+  const offerClusterDiv = el('div',{class:'chart-card'});
+  s.appendChild(offerClusterDiv);
+  renderDivergence(offerClusterDiv, offerClusterAgg, clusterLabel);
+
+  // ---- 6. Focus Score -- RTM and OFFER, by Cluster ----------------------
+  buildFocusScoreSection(s, 'Focus Score — RTM, by Cluster', 'Where to concentrate RTM review effort first, by thematic cluster.', clusterRtmAgg, clusterLabel);
+  buildFocusScoreSection(s, 'Focus Score — OFFER, by Cluster', 'The 50-item judged subset, same composite, by thematic cluster.', offerClusterAgg, clusterLabel);
+}
+
+// ============================================================== DOMAINS (start node + interface graph)
+// A clickable "start node" list of Domains (left) driving a detail panel
+// (right) with that domain's Requirement Type / Cluster / Tier composition,
+// plus a full Domain x Cluster heatmap underneath -- the "domains as a
+// dropdown or list or start (node with spreads and interfacing graphs)"
+// request. This is a client-side crosstab over DATA.rtmRanking, not a new
+// data export, so it always stays in sync with whatever ranking data is
+// spliced into the page.
+const ALL_CLUSTER_KEYS = ['C1','C2','C3','C4','C5','C6','C7','C8','Not linked'];
+function buildDomainsNav(){
+  const s = sections.domainnav;
+  s.appendChild(el('h2',{text:'Domains — start node & Domain × Cluster interface'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Pick a Domain to see its Requirement Type / Tier / Cluster composition. The heatmap below shows every Domain against every Cluster (C1–C8, plus "Not linked") in one view — a quick way to spot which domains feed which clusters, and which are still concentrated in "Not linked".'}));
+
+  const domainAgg = {};
+  DATA.rtmRanking.forEach(r => {
+    const d = r.domain || '(blank)';
+    if (!domainAgg[d]) domainAgg[d] = {count:0, reqType:{}, tier:{}, cluster:{}, sSum:0, sN:0, clusterS:{}};
+    const a = domainAgg[d];
+    a.count++;
+    const rt = r.reqType || '(unclassified)'; a.reqType[rt] = (a.reqType[rt]||0)+1;
+    const t = r.tier || '(blank)'; a.tier[t] = (a.tier[t]||0)+1;
+    const ck = clusterKey(r.cluster); a.cluster[ck] = (a.cluster[ck]||0)+1;
+    const sv = Number(r.weightedS);
+    if (!isNaN(sv)){
+      a.sSum += sv; a.sN++;
+      if (!a.clusterS[ck]) a.clusterS[ck] = {sum:0, n:0};
+      a.clusterS[ck].sum += sv; a.clusterS[ck].n++;
+    }
+  });
+  const domains = Object.keys(domainAgg).sort((a,b) => domainAgg[b].count - domainAgg[a].count);
+
+  const layout = el('div',{class:'domain-layout'});
+  const list = el('div',{class:'domain-list'});
+  const detail = el('div',{});
+  layout.appendChild(list); layout.appendChild(detail);
+  s.appendChild(layout);
+
+  function renderDetail(d){
+    Array.from(list.children).forEach(b => b.classList.toggle('active', b.dataset.domain===d));
+    const a = domainAgg[d];
+    detail.innerHTML = '';
+    const card = el('div',{class:'card'});
+    card.appendChild(el('h3',{text:d, style:'margin-top:0;color:var(--navy);'}));
+    const tiles = el('div',{class:'stat-tiles', style:'margin-top:0;'});
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:String(a.count)}),el('div',{class:'lbl',text:'RTMs in domain'})]));
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:a.sN?fmtNum(a.sSum/a.sN):'n/a'}),el('div',{class:'lbl',text:'Average Weighted S'})]));
+    const directCount = a.count - (a.cluster['Not linked']||0);
+    tiles.appendChild(el('div',{class:'tile'},[el('div',{class:'n',text:String(directCount)}),el('div',{class:'lbl',text:'With a cluster (direct or inferred)'})]));
+    card.appendChild(tiles);
+
+    function miniBars(title, obj){
+      card.appendChild(el('h4',{text:title,style:'color:var(--navy);margin-bottom:6px;'}));
+      const max = Math.max(...Object.values(obj));
+      Object.keys(obj).sort((x,y)=>obj[y]-obj[x]).forEach(k => {
+        const row = el('div',{style:'display:flex;align-items:center;gap:8px;margin-bottom:4px;'});
+        row.appendChild(el('div',{style:'width:190px;font-size:12px;', text:k}));
+        const outer = el('div',{style:'flex:1;background:#eef2f6;border-radius:3px;height:14px;'});
+        const inner = el('div',{style:`width:${(obj[k]/max*100).toFixed(1)}%;background:var(--teal);height:100%;border-radius:3px;`});
+        outer.appendChild(inner); row.appendChild(outer);
+        row.appendChild(el('div',{style:'width:34px;text-align:right;font-size:12px;font-weight:700;', text:String(obj[k])}));
+        card.appendChild(row);
+      });
+    }
+    miniBars('By Requirement Type', a.reqType);
+    miniBars('By Tier', a.tier);
+    miniBars('By Cluster (direct + inferred, keyed)', a.cluster);
+    detail.appendChild(card);
+  }
+
+  domains.forEach(d => {
+    const btn = el('button',{});
+    btn.dataset.domain = d;
+    btn.appendChild(el('span',{text:d}));
+    btn.appendChild(el('span',{class:'cnt', text:String(domainAgg[d].count)}));
+    btn.addEventListener('click', () => renderDetail(d));
+    list.appendChild(btn);
+  });
+  if (domains.length) renderDetail(domains[0]);
+
+  s.appendChild(el('h3',{text:'Domain × Cluster heatmap', style:'margin-top:26px;color:var(--navy);'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Two lenses on the same grid: "Concentration" (count) shows where volume sits; "Importance" (Weighted S) shows where VALUE sits, using the same colour scale approach so the two are visually comparable. A cell can be high in one lens and low in the other -- that divergence is itself the finding.'}));
+  const hmToolbar = el('div',{class:'toolbar', style:'margin-bottom:8px;'});
+  const hmSel = el('select',{id:'heatmapMeasure'});
+  [['count','Concentration (RTM count)'],['avgS','Importance (avg Weighted S)'],['sumS','Importance (total Weighted S)']].forEach(([v,t]) => hmSel.appendChild(el('option',{value:v,text:t})));
+  hmToolbar.appendChild(el('div',{},[el('label',{text:'Colour by'}), hmSel]));
+  s.appendChild(hmToolbar);
+  const hmWrap = el('div',{class:'tablewrap', style:'max-height:520px;'});
+  s.appendChild(hmWrap);
+  s.appendChild(el('div',{class:'callout', html:
+    '<b>Read together, for a presenter:</b> switch the toggle above between Concentration and Importance, not just the colour -- the MESSAGE is in what changes when you switch, not in either view alone. A domain that stays dark in both lenses is unambiguously a priority (lots of requirements AND high stakes per requirement). A domain that\'s dark under Concentration but pale under Importance is high-VOLUME, low-STAKES work -- real, but delegable, not where a reviewer\'s limited attention should concentrate. The reverse (pale count, dark Importance) is the one worth calling out explicitly in a review meeting: a handful of items that punch far above their count, easy to miss on a simple row-count scan. That asymmetry -- not the darkest cell on either single view -- is usually the actual finding.'}));
+
+  function cellValue(d, c, measure){
+    if (measure === 'count') return domainAgg[d].cluster[c] || 0;
+    const cs = domainAgg[d].clusterS[c];
+    if (!cs || !cs.n) return 0;
+    return measure === 'avgS' ? (cs.sum / cs.n) : cs.sum;
+  }
+  // Purple family throughout (matches --purple / the BT_Method deck's purple-lavender
+  // identity, and the callout-box accent already used across this page), rather than
+  // the earlier teal-vs-orange pairing -- keeps this analytical/"pivot" section visually
+  // part of the same design language instead of introducing a third unrelated hue.
+  // Concentration stays the deeper, more saturated purple; both Importance lenses share
+  // a warmer plum so the colour alone still signals "count" vs "value" at a glance.
+  const HM_COLOR = {count:'68,31,99', avgS:'139,58,98', sumS:'139,58,98'};
+
+  function renderHeatmap(){
+    const measure = hmSel.value;
+    const cellVals = {};
+    let globalMax = 0;
+    domains.forEach(d => { ALL_CLUSTER_KEYS.forEach(c => {
+      const v = cellValue(d, c, measure);
+      cellVals[d+'|'+c] = v;
+      if (v > globalMax) globalMax = v;
+    }); });
+    const hm = el('table',{class:'heatmap'});
+    const hHead = el('tr',{},[el('th',{text:'Domain'})].concat(ALL_CLUSTER_KEYS.map(c => el('th',{text:c}))));
+    hm.appendChild(el('thead',{},[hHead]));
+    const hBody = el('tbody',{});
+    // "ranking applied": rows themselves are ordered by the SAME measure being coloured,
+    // not always by raw count -- so switching to an S-based lens also re-sorts which
+    // domains float to the top, not just recolours the same fixed row order.
+    const rowTotal = d => ALL_CLUSTER_KEYS.reduce((sum,c) => sum + cellValue(d,c,measure), 0);
+    const orderedDomains = domains.slice().sort((a,b) => rowTotal(b) - rowTotal(a));
+    orderedDomains.forEach(d => {
+      const row = el('tr',{});
+      row.appendChild(el('td',{class:'rowlabel', text:d}));
+      ALL_CLUSTER_KEYS.forEach(c => {
+        const v = cellVals[d+'|'+c];
+        const pct = globalMax ? v/globalMax : 0;
+        const bg = v===0 ? '#fff' : `rgba(${HM_COLOR[measure]},${(0.12+pct*0.75).toFixed(2)})`;
+        const label = v===0 ? '' : (measure==='count' ? String(v) : fmtNum(v));
+        const td = el('td',{text: label, style:`background:${bg};` + (pct>0.55?'color:#fff;font-weight:700;':'')});
+        row.appendChild(td);
+      });
+      hBody.appendChild(row);
+    });
+    hm.appendChild(hBody);
+    hmWrap.innerHTML = '';
+    hmWrap.appendChild(hm);
+  }
+  hmSel.addEventListener('change', renderHeatmap);
+  renderHeatmap();
+}
+
+// ---- shared Pareto-row renderer: sorted bars + a cumulative-% dot placed
+// along each row's own track (so the dot positions trace a left-to-right
+// "running total" line down the list without needing an SVG line chart).
+// `measure` (optional: 'count'|'sumS'|'avgS') controls whether the running
+// cumulative-% dot is shown at all. Cumulative-% only means something for
+// an ADDITIVE quantity -- count and Sum Weighted S both add up to a real
+// total, so "this many bars cover 80% of it" is a valid Pareto read. An
+// AVERAGE is not additive: summing averages across sections and dividing
+// by their sum produces a number, but not a meaningful "cumulative share
+// of a whole" -- with several sections clustered in a narrow S range this
+// renders as a near-straight-line staircase that LOOKS like a broken/lost
+// Pareto rather than a real 80/20 curve. So for 'avgS' the dot is hidden
+// and the caption explains why, instead of drawing a misleading one.
+// Top-level (not nested in buildDomains) so buildOutline() and any other
+// tab builder can call it too -- it only touches its own params plus the
+// global el()/fmtNum() helpers, no buildDomains closure state.
+function renderParetoInto(container, rows, useLog, colorFn, measure){
+  container.innerHTML = '';
+  if (!rows.length){ container.appendChild(el('p',{class:'empty',text:'Nothing to show.'})); return; }
+  const showCum = measure !== 'avgS';
+  const total = rows.reduce((a,r)=>a+r.value,0);
+  const maxVal = Math.max(...rows.map(r=>r.value));
+  let cum = 0;
+  rows.forEach(r => {
+    cum += r.value;
+    const cumPct = total ? (cum/total*100) : 0;
+    const barPct = useLog ? (Math.log10(r.value+1)/Math.log10(maxVal+1)*100) : (r.value/maxVal*100);
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label', text:r.label}));
+    const outer = el('div',{class:'bar-outer'});
+    const inner = el('div',{class:'bar-inner'}); inner.style.width = barPct.toFixed(1)+'%';
+    if (colorFn){ const c = colorFn(r); if (c) inner.style.background = c; }
+    outer.appendChild(inner);
+    if (showCum){
+      const dot = el('div',{class:'bar-cum-dot', title:`Cumulative through here: ${cumPct.toFixed(1)}%`});
+      dot.style.left = cumPct.toFixed(1)+'%';
+      outer.appendChild(dot);
+    }
+    row.appendChild(outer);
+    row.appendChild(el('div',{class:'bar-count', text:fmtNum(r.value)}));
+    container.appendChild(row);
+  });
+  if (showCum){
+    container.appendChild(el('div',{style:'font-size:11px;color:var(--muted);margin-top:8px;', html:
+      '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--purple);margin-right:4px;"></span> purple dot = running cumulative % (of the total across all rows shown), positioned along that row\'s own bar track'}));
+  } else {
+    container.appendChild(el('div',{style:'font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;', text:
+      'No cumulative-% dot for Average — an average isn\'t additive across rows, so a running "share of total" line here would be misleading, not a real 80/20 read. Switch to RTM count or Sum of Weighted S for a true Pareto curve; this view is still valid for spotting which rows individually run highest/lowest on average.'}));
+  }
+}
+
+// ---- shared count/value-concentration helpers -- hoisted to top-level (not
+// nested in buildDomains) so buildClusters() can give Clusters the exact
+// same analytical depth (Pareto + divergence + Focus Score) as Domains/
+// Domain Summary already get, instead of duplicating ~150 lines per tab.
+// Each group (domain, category, or cluster) gets three possible bar
+// measures: plain RTM count, the SUM of Weighted S across its RTMs (where
+// the review "weight"/importance actually piles up -- a group can be small
+// in count but carry a lot of weight, or vice versa), and the AVERAGE
+// Weighted S (typical importance per item, independent of how many items
+// there are). A big gap between the count-ranking and the sum-S-ranking of
+// the same group is itself a signal worth a look.
+function metricsByGroup(keyFn, dataArr){
+  const agg = {};
+  (dataArr || DATA.rtmRanking).forEach(r => {
+    const k = keyFn(r);
+    if (!agg[k]) agg[k] = {count:0, sumS:0};
+    agg[k].count++;
+    const sv = Number(r.weightedS);
+    if (!isNaN(sv)) agg[k].sumS += sv;
+  });
+  Object.values(agg).forEach(a => { a.avgS = a.count ? a.sumS/a.count : 0; });
+  return agg;
+}
+const MEASURES = [
+  {key:'count', label:'RTM count'},
+  {key:'sumS', label:'Sum of Weighted S (where the weight piles up)'},
+  {key:'avgS', label:'Average Weighted S (typical importance per item)'},
+];
+function rowsForMeasure(agg, labelFn, measure){
+  return Object.keys(agg).map(k => ({
+    label: labelFn(k),
+    value: measure==='count' ? agg[k].count : (measure==='sumS' ? Math.round(agg[k].sumS*100)/100 : Math.round(agg[k].avgS*100)/100),
+  })).sort((a,b) => b.value-a.value);
+}
+// Generic "Measure toggle" Pareto section builder -- used for every
+// count-vs-value-concentration view (RTM by Domain/Category/Cluster, OFFER
+// by Category/Cluster) so the same interaction pattern (switch Measure to
+// see where quantity and where *value* diverge) is consistent everywhere
+// instead of one-off per grouping. `target` is the tab <section> to append
+// into -- passed explicitly (not closed over) so any tab builder can call this.
+function buildMeasureParetoSection(target, opts){
+  // opts: {title, subtitle, dataArr, keyFn, labelFn, colorFn}
+  target.appendChild(el('h2',{text:opts.title, style:'margin-top:30px;'}));
+  target.appendChild(el('p',{class:'subtitle',text:opts.subtitle}));
+  const agg = metricsByGroup(opts.keyFn, opts.dataArr);
+  const card = el('div',{class:'chart-card'});
+  const toolbar = el('div',{class:'chart-toolbar'});
+  const sel = el('select',{});
+  MEASURES.forEach(m => sel.appendChild(el('option',{value:m.key,text:m.label})));
+  const log = el('input',{type:'checkbox'});
+  toolbar.appendChild(el('label',{},[el('span',{text:'Measure:'}), sel]));
+  toolbar.appendChild(el('label',{},[log, el('span',{text:'Log scale (compress dominant bars)'})]));
+  card.appendChild(toolbar);
+  const body = el('div',{});
+  card.appendChild(body);
+  target.appendChild(card);
+  function update(){
+    const rows = rowsForMeasure(agg, opts.labelFn || (k=>k), sel.value);
+    renderParetoInto(body, rows, log.checked, opts.colorFn, sel.value);
+  }
+  sel.addEventListener('change', update);
+  log.addEventListener('change', update);
+  update();
+  return agg;
+}
+// The direct answer to "does count concentration match value concentration":
+// rank every group two ways (by count, by Sum Weighted S) and flag the ones
+// that move by 3+ places -- a small-count group riding high on the value
+// ranking (or vice versa) is exactly the kind of thing a Pareto-by-count-only
+// view hides.
+function renderDivergence(container, agg, labelFn){
+  const byCount = Object.keys(agg).map(k=>({k,v:agg[k].count})).sort((a,b)=>b.v-a.v);
+  const bySum = Object.keys(agg).map(k=>({k,v:agg[k].sumS})).sort((a,b)=>b.v-a.v);
+  const rankCount = {}; byCount.forEach((r,i)=>rankCount[r.k]=i+1);
+  const rankSum = {}; bySum.forEach((r,i)=>rankSum[r.k]=i+1);
+  const moves = Object.keys(agg).map(k => ({
+    k, label: labelFn(k), count: agg[k].count, sumS: Math.round(agg[k].sumS*10)/10,
+    rc: rankCount[k], rs: rankSum[k], delta: rankCount[k]-rankSum[k],
+  })).filter(m => Math.abs(m.delta) >= 3).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  container.innerHTML = '';
+  if (!moves.length){
+    container.appendChild(el('p',{class:'subtitle', style:'margin:0;', text:'No group’s value-rank and count-rank diverge by 3 or more places here -- quantity and importance concentrate roughly together.'}));
+    return;
+  }
+  container.appendChild(el('p',{class:'subtitle', style:'margin-top:0;', text:'Groups where the "by value" rank and the "by count" rank disagree by 3+ places (i.e. count alone would mislead you about where the importance is):'}));
+  moves.forEach(m => {
+    const dir = m.delta > 0 ? `ranks ${m.rc}→${m.rs} — punches above its count` : `ranks ${m.rc}→${m.rs} — high count, lower relative value`;
+    container.appendChild(el('div',{class:'bar-row', style:'justify-content:space-between;'},[
+      el('div',{text:`${m.label} — ${m.count} items, Σ S = ${m.sumS}`}),
+      el('div',{style:'font-size:11.5px;color:var(--muted);flex-shrink:0;', text: dir}),
+    ]));
+  });
+}
+// Focus Score -- a single composite ranking that combines HOW MANY items
+// sit in a group with HOW MUCH importance (Sum Weighted S) they carry, so
+// review effort can be pointed at groups that are big on *both* axes
+// instead of reading two separate Paretos and eyeballing the overlap.
+// Formula (disclosed, not a black box):
+//   FocusScore = 100 x sqrt( (count / max count) x (sumS / max sumS) )
+// Geometric mean of the two normalised measures -- a group only scores high
+// if it is relatively strong on BOTH count and value; being huge on one
+// axis and negligible on the other pulls the score back down (unlike a
+// plain average, which a single dominant axis could carry alone).
+function buildFocusScoreSection(target, title, subtitle, agg, labelFn){
+  target.appendChild(el('h2',{text:title, style:'margin-top:30px;'}));
+  target.appendChild(el('p',{class:'subtitle',text:subtitle + ' Focus Score = 100 × √[(count ÷ max count) × (Σ Weighted S ÷ max Σ Weighted S)] — high only when a group is relatively strong on BOTH quantity and value; strong on just one axis pulls it back down. This is a navigation aid for where to point limited review effort first, not a replacement for either raw measure.'}));
+  const keys = Object.keys(agg);
+  const maxCount = Math.max(...keys.map(k=>agg[k].count), 1);
+  const maxSum = Math.max(...keys.map(k=>agg[k].sumS), 1e-9);
+  const rows = keys.map(k => {
+    const score = 100*Math.sqrt((agg[k].count/maxCount) * (agg[k].sumS/maxSum));
+    return {label:`${labelFn(k)} (n=${agg[k].count}, ΣS=${Math.round(agg[k].sumS)})`, value: Math.round(score*10)/10};
+  }).sort((a,b)=>b.value-a.value);
+  const card = el('div',{class:'chart-card'});
+  target.appendChild(card);
+  renderParetoInto(card, rows, false);
+}
+
+// ============================================================== DOMAIN SUMMARY
+function buildDomains(){
+  const s = sections.domains;
+  s.appendChild(el('h2',{text:'RTM domain summary'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Counts and average importance by contract domain, for review allocation.'}));
+  const cols = [
+    ['domain','Domain'],['rtmCount','RTM count'],['gateCount','Gate count'],
+    ['t1','T1 count'],['t2','T2 count'],['t3','T3 count'],
+    ['avgS','Average Weighted S'],['maxS','Maximum Weighted S'],['topRtm','Top RTM'],
+    ['topStatement','Top RTM statement'],['stds','Explicit standards'],['delivs','Explicit deliverables'],
+  ];
+  const table = el('table',{});
+  const headRow = el('tr',{});
+  cols.forEach(([k,l]) => headRow.appendChild(el('th',{text:l})));
+  table.appendChild(el('thead',{},[headRow]));
+  const tbody = el('tbody',{});
+  DATA.domainSummary.forEach(d => {
+    const tr = el('tr',{});
+    cols.forEach(([k]) => tr.appendChild(el('td',{text: (typeof d[k]==='number')? fmtNum(d[k]) : (d[k]||'')})));
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  const wrap = el('div',{class:'tablewrap'});
+  wrap.appendChild(table);
+  s.appendChild(wrap);
+
+  // Builds a conic-gradient donut from [key,count] pairs using the STRONG
+  // (higher-contrast) cluster palette -- the pastel CLUSTER_COLORS read fine
+  // as small table/legend swatches but wash out on a big wedge, so donuts
+  // use the mid-tone set instead.
+  function donutGradient(keys, counts, total){
+    let acc = 0;
+    return keys.map((k) => {
+      const pct = counts[k]/total*100;
+      const start = acc; acc += pct;
+      return `${CLUSTER_COLORS_STRONG[k]||'#999'} ${start.toFixed(2)}% ${acc.toFixed(2)}%`;
+    }).join(', ');
+  }
+
+  function renderSubsystemsPie(container){
+    container.innerHTML = '';
+    const rows = DATA.rtmRanking.filter(r => r.domain === 'Subsystems');
+    container.appendChild(el('h3',{text:`Subsystems domain (${rows.length} RTMs) — its own Cluster breakdown`, style:'margin-top:0;color:var(--navy);'}));
+    container.appendChild(el('p',{class:'subtitle', style:'margin-top:-4px;', text:'Subsystems is excluded from the bars above because at ~28% of the whole register on its own it swamps a linear scale — this is what it looks like on its own instead.'}));
+    const counts = {};
+    rows.forEach(r => { const k = clusterKey(r.cluster); counts[k] = (counts[k]||0)+1; });
+    const keys = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+    const total = rows.length || 1;
+
+    const wrap = el('div',{class:'pie-wrap'});
+
+    // -- main donut: full mix, big + high-contrast, so the dominant slice's
+    // real size is obvious at a glance --------------------------------
+    const mainBlock = el('div',{class:'pie-block'});
+    const donut = el('div',{class:'pie-donut'});
+    donut.style.background = `conic-gradient(${donutGradient(keys, counts, total)})`;
+    mainBlock.appendChild(donut);
+    mainBlock.appendChild(el('div',{class:'cap', text:`All clusters — ${keys[0]} alone is ${(counts[keys[0]]/total*100).toFixed(0)}% of this domain`}));
+    wrap.appendChild(mainBlock);
+
+    const legend = el('div',{class:'pie-legend'});
+    keys.forEach((k) => {
+      const row = el('div',{class:'row'});
+      row.appendChild(el('div',{class:'sw', style:`background:${CLUSTER_COLORS_STRONG[k]||'#999'};`}));
+      row.appendChild(el('span',{text:`${k}${CLUSTER_NAMES[k]?(' — '+CLUSTER_NAMES[k]):''}: ${counts[k]} (${(counts[k]/total*100).toFixed(1)}%)`}));
+      legend.appendChild(row);
+    });
+    wrap.appendChild(legend);
+
+    // -- zoom donut: same data with the dominant slice dropped and the rest
+    // re-normalised to 100%, so the small slices are actually readable
+    // instead of slivers next to a huge wedge -------------------------
+    if (keys.length > 2){
+      const restKeys = keys.slice(1);
+      const restTotal = restKeys.reduce((a,k) => a + counts[k], 0);
+      if (restTotal > 0){
+        const zoomBlock = el('div',{class:'pie-block'});
+        const zoomDonut = el('div',{class:'pie-donut zoom'});
+        zoomDonut.style.background = `conic-gradient(${donutGradient(restKeys, counts, restTotal)})`;
+        zoomBlock.appendChild(zoomDonut);
+        zoomBlock.appendChild(el('div',{class:'cap', text:`Zoomed: everything except ${keys[0]} (${restTotal} RTMs), rescaled to 100%`}));
+        wrap.appendChild(zoomBlock);
+      }
+    }
+    container.appendChild(wrap);
+  }
+
+  // ---- Domain volume Pareto ------------------------------------------------
+  // metricsByGroup/MEASURES/rowsForMeasure/buildMeasureParetoSection/
+  // renderDivergence/buildFocusScoreSection are all top-level now (hoisted
+  // just above buildDomains) so buildClusters() can reuse them too -- see
+  // the comment block there for why.
+  s.appendChild(el('h2',{text:'Domain volume — Pareto', style:'margin-top:30px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'RTM count per domain, largest to smallest, with a running cumulative-% marker. Switch the measure to Sum/Average Weighted S to see where review weight actually concentrates, which is not always the same domains as the plain count. Subsystems (202 RTMs) dominates a plain linear scale — use the toggles below to compress it (log scale) or set it aside and see its own Cluster composition on the right instead.'}));
+  const domainAgg = metricsByGroup(r => r.domain || '(blank)');
+  const chartCard = el('div',{class:'chart-card'});
+  const chartToolbar = el('div',{class:'chart-toolbar'});
+  const measureSel = el('select',{});
+  MEASURES.forEach(m => measureSel.appendChild(el('option',{value:m.key,text:m.label})));
+  const logChk = el('input',{type:'checkbox'});
+  const exclChk = el('input',{type:'checkbox'});
+  chartToolbar.appendChild(el('label',{},[el('span',{text:'Measure:'}), measureSel]));
+  chartToolbar.appendChild(el('label',{},[logChk, el('span',{text:'Log scale (compress dominant bars)'})]));
+  chartToolbar.appendChild(el('label',{},[exclChk, el('span',{text:'Exclude Subsystems (show its own breakdown alongside)'})]));
+  chartCard.appendChild(chartToolbar);
+  const chartGrid = el('div',{class:'grid2'});
+  const chartBody = el('div',{});
+  const pieBody = el('div',{style:'display:none;'});
+  chartGrid.appendChild(chartBody);
+  chartGrid.appendChild(pieBody);
+  chartCard.appendChild(chartGrid);
+  s.appendChild(chartCard);
+
+  const zoomCard = el('div',{class:'chart-card'});
+  zoomCard.appendChild(el('h3',{text:'80:20 zoom — the domains that alone drive 80% of the total (by the chosen measure)', style:'margin-top:0;color:var(--navy);'}));
+  const zoomBody = el('div',{});
+  zoomCard.appendChild(zoomBody);
+  s.appendChild(zoomCard);
+
+  // ---- full 22-domain pie (not just Subsystems) ---------------------------
+  // Domains don't have a fixed colour convention the way Clusters do (that's
+  // a deliberate 8-bucket palette matching the workbook), so this generates
+  // 22 evenly-spaced hues on the fly rather than hardcoding a 22-colour list.
+  // hslColor is top-level now (also backs domainColor() for the Lookup-tab
+  // colour chips) -- reused here unchanged.
+  const domainPieCard = el('div',{class:'chart-card'});
+  domainPieCard.appendChild(el('h3',{text:'All 22 domains — full pie (same Measure as above)', style:'margin-top:0;color:var(--navy);'}));
+  domainPieCard.appendChild(el('p',{class:'subtitle', style:'margin-top:-4px;', text:'Every domain, one wedge each, sized by whichever Measure is selected above (count, Sum Weighted S, or Average Weighted S) — the count and the Sum-S pies are usually shaped differently, since the value is not just proportional to headcount.'}));
+  const domainPieBody = el('div',{});
+  domainPieCard.appendChild(domainPieBody);
+  s.appendChild(domainPieCard);
+  function updateDomainPie(rows){
+    domainPieBody.innerHTML = '';
+    const total = rows.reduce((a,r)=>a+Math.max(r.value,0),0) || 1;
+    let acc = 0;
+    const stops = rows.map((r,i) => {
+      const pct = Math.max(r.value,0)/total*100;
+      const start = acc; acc += pct;
+      return `${hslColor(i, rows.length)} ${start.toFixed(2)}% ${acc.toFixed(2)}%`;
+    }).join(', ');
+    const wrap = el('div',{class:'pie-wrap'});
+    const block = el('div',{class:'pie-block'});
+    const donut = el('div',{class:'pie-donut'});
+    donut.style.background = `conic-gradient(${stops})`;
+    block.appendChild(donut);
+    block.appendChild(el('div',{class:'cap', text:`${rows[0]?.label||''} is the largest wedge`}));
+    wrap.appendChild(block);
+    const legend = el('div',{class:'pie-legend'});
+    rows.forEach((r,i) => {
+      const row = el('div',{class:'row'});
+      row.appendChild(el('div',{class:'sw', style:`background:${hslColor(i, rows.length)};`}));
+      row.appendChild(el('span',{text:`${r.label}: ${r.value} (${(Math.max(r.value,0)/total*100).toFixed(1)}%)`}));
+      legend.appendChild(row);
+    });
+    wrap.appendChild(legend);
+    domainPieBody.appendChild(wrap);
+  }
+
+  function updateDomainChart(){
+    const excl = exclChk.checked;
+    const measure = measureSel.value;
+    let rows = rowsForMeasure(domainAgg, k=>k, measure);
+    updateDomainPie(rows);
+    if (excl) rows = rows.filter(r => r.label !== 'Subsystems');
+    chartGrid.style.gridTemplateColumns = excl ? '1fr 1fr' : '1fr';
+    renderParetoInto(chartBody, rows, logChk.checked, null, measure);
+    pieBody.style.display = excl ? '' : 'none';
+    if (excl) renderSubsystemsPie(pieBody);
+    zoomBody.innerHTML = '';
+    if (measure === 'avgS'){
+      // "top N account for 80% of the total" is an additive-quantity claim --
+      // doesn't apply to an average (see renderParetoInto's own note). Show
+      // the top few by average instead, without a bogus 80%-of-total framing.
+      const topN = rows.slice(0, Math.min(5, rows.length));
+      zoomBody.appendChild(el('p',{class:'subtitle', style:'margin-top:0;',
+        text:`No "80% of total" cutoff for Average (not additive — see note below the chart above). Highest ${topN.length} domains by ${MEASURES.find(m=>m.key===measure).label}${excl?' (Subsystems excluded)':''}:`}));
+      const zoomInner = el('div',{});
+      zoomBody.appendChild(zoomInner);
+      renderParetoInto(zoomInner, topN, false, null, measure);
+    } else {
+      const total = rows.reduce((a,r)=>a+r.value,0);
+      let cum = 0; const vital = [];
+      for (const r of rows){ cum += r.value; vital.push(r); if (total && cum/total >= 0.8) break; }
+      zoomBody.appendChild(el('p',{class:'subtitle', style:'margin-top:0;',
+        text:`${vital.length} of ${rows.length} domains shown${excl?' (Subsystems excluded)':''} already account for ≥80% of their total (${MEASURES.find(m=>m.key===measure).label}):`}));
+      const zoomInner = el('div',{});
+      zoomBody.appendChild(zoomInner);
+      renderParetoInto(zoomInner, vital, false, null, measure);
+    }
+  }
+  measureSel.addEventListener('change', updateDomainChart);
+  logChk.addEventListener('change', updateDomainChart);
+  exclChk.addEventListener('change', updateDomainChart);
+  updateDomainChart();
+  s.appendChild(el('div',{class:'callout', html:
+    '<b>Read together, for a presenter:</b> Count tells you where the REVIEW WORKLOAD is; Sum Weighted S tells you where the CONTRACTUAL VALUE is; Average Weighted S tells you which domain\'s requirements are individually the highest-stakes, independent of how many there are. A domain topping the Count chart but not the Sum-S chart is high-effort, lower-value work. A domain topping Average but barely visible on Count is a small, easy-to-overlook set of requirements that each carry outsized risk if missed. When picking where a scarce senior reviewer\'s hours go, Average and Sum-S usually outrank Count -- raw volume is what you delegate.'}));
+
+  // ---- Cluster distribution Pareto (all 722, incl. "Not linked") ---------
+  s.appendChild(el('h2',{text:'Cluster breakdown (C1–C8) — thematic, not ranking', style:'margin-top:30px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'All 722 RTMs, regrouped by Cluster (direct crosswalk + inferred, combined — see Taxonomy for the inference methodology). "Not linked" is the honestly-unclassified remainder. Switch the measure the same way as above to see weight vs. count.'}));
+  const clusterAgg = metricsByGroup(r => clusterKey(r.cluster));
+  const clusterChartCard = el('div',{class:'chart-card'});
+  const clusterToolbar = el('div',{class:'chart-toolbar'});
+  const measureSel2 = el('select',{});
+  MEASURES.forEach(m => measureSel2.appendChild(el('option',{value:m.key,text:m.label})));
+  const logChk2 = el('input',{type:'checkbox'});
+  clusterToolbar.appendChild(el('label',{},[el('span',{text:'Measure:'}), measureSel2]));
+  clusterToolbar.appendChild(el('label',{},[logChk2, el('span',{text:'Log scale (compress dominant bars)'})]));
+  clusterChartCard.appendChild(clusterToolbar);
+  const clusterChartBody = el('div',{});
+  clusterChartCard.appendChild(clusterChartBody);
+  s.appendChild(clusterChartCard);
+  function updateClusterChart(){
+    const rows = rowsForMeasure(clusterAgg, clusterLabel, measureSel2.value);
+    renderParetoInto(clusterChartBody, rows, logChk2.checked, r => CLUSTER_COLORS_STRONG[clusterKey(r.label)], measureSel2.value);
+  }
+  measureSel2.addEventListener('change', updateClusterChart);
+  logChk2.addEventListener('change', updateClusterChart);
+  updateClusterChart();
+
+  // ---- quantity-vs-value divergence callout --------------------------------
+  // renderDivergence/buildFocusScoreSection are top-level now -- see the
+  // hoisted block just above buildDomains.
+
+  // ==================================================================
+  // RTM value concentration -- by Category (the field the user asked
+  // whether it's "the same thing" as Domain/Primary Dimension: it isn't --
+  // see Taxonomy -- so it earns its own Pareto here rather than only
+  // showing up as a Top-N filter option).
+  // ==================================================================
+  buildMeasureParetoSection(s, {
+    title: 'RTM value concentration — by Category',
+    subtitle: 'All 722 RTMs regrouped by Category rather than Domain. Switch Measure to Sum Weighted S to see where the review weight concentrates by category, not just where the row-count concentrates.',
+    dataArr: DATA.rtmRanking,
+    keyFn: r => r.category || '(blank)',
+  });
+  const rtmCatAgg = metricsByGroup(r => r.category || '(blank)', DATA.rtmRanking);
+  const rtmCatDiv = el('div',{class:'chart-card'});
+  s.appendChild(rtmCatDiv);
+  renderDivergence(rtmCatDiv, rtmCatAgg, k=>k);
+
+  // ==================================================================
+  // OFFER value concentration -- the 50-item mirror of the above. OFFER
+  // items don't carry their own Domain, but they do carry Category
+  // directly, and Cluster via the CLUSTERS crosswalk (offerClusterKey).
+  // This is "the same for the ranked items" the RTM-side Domain/Category/
+  // Cluster Paretos above already give you.
+  // ==================================================================
+  buildMeasureParetoSection(s, {
+    title: 'OFFER value concentration — by Category',
+    subtitle: 'All 50 OFFER items (the bidder-response line items actually being judged), regrouped by Category. Same Measure toggle: switch to Sum Weighted S to see which categories carry the most judged importance, not just the most line items.',
+    dataArr: DATA.offerRanking,
+    keyFn: r => r.category || '(blank)',
+  });
+  const offerCatAgg = metricsByGroup(r => r.category || '(blank)', DATA.offerRanking);
+  const offerCatDiv = el('div',{class:'chart-card'});
+  s.appendChild(offerCatDiv);
+  renderDivergence(offerCatDiv, offerCatAgg, k=>k);
+
+  buildMeasureParetoSection(s, {
+    title: 'OFFER value concentration — by Cluster (C1–C8)',
+    subtitle: 'The same 50 OFFER items regrouped by their C1–C8 thematic cluster (CLUSTERS sheet). Compare against the RTM Cluster breakdown above: the 722-RTM register and the 50-OFFER judged subset don’t have to concentrate in the same clusters, and mostly don’t exactly. See the Clusters tab for this same lens with Cluster as the primary navigation, not just a grouping here.',
+    dataArr: DATA.offerRanking,
+    keyFn: r => offerClusterKey(r.id),
+    labelFn: k => k==='Not linked' ? 'Not linked' : `${k} — ${CLUSTER_NAMES[k]||''}`,
+    colorFn: r => CLUSTER_COLORS_STRONG[/C[1-8]/.exec(r.label) ? /C[1-8]/.exec(r.label)[0] : 'Not linked'],
+  });
+
+  // ==================================================================
+  // Focus Score -- a single composite ranking that combines HOW MANY
+  // items sit in a group with HOW MUCH importance (Sum Weighted S) they
+  // carry, so review effort can be pointed at groups that are big on
+  // *both* axes instead of reading two separate Paretos and eyeballing
+  // the overlap. See the hoisted buildFocusScoreSection() above for the
+  // formula.
+  // ==================================================================
+  buildFocusScoreSection(s, 'Focus Score — RTM, by Domain', 'Where to concentrate RTM review effort first, by Domain.', domainAgg, k=>k);
+  buildFocusScoreSection(s, 'Focus Score — RTM, by Category', 'Same composite, by Category.', rtmCatAgg, k=>k);
+  buildFocusScoreSection(s, 'Focus Score — RTM, by Cluster (C1–C8)', 'Same composite, by thematic Cluster.', clusterAgg, clusterLabel);
+  buildFocusScoreSection(s, 'Focus Score — OFFER, by Category', 'The 50-item judged subset, same composite, by Category.', offerCatAgg, k=>k);
+  const offerClusterAgg = metricsByGroup(r => offerClusterKey(r.id), DATA.offerRanking);
+  buildFocusScoreSection(s, 'Focus Score — OFFER, by Cluster (C1–C8)', 'The 50-item judged subset, same composite, by thematic Cluster.', offerClusterAgg, k => k==='Not linked' ? 'Not linked' : `${k} — ${CLUSTER_NAMES[k]||''}`);
+}
+
+// ============================================================== TAXONOMY
+function buildTaxonomy(){
+  const s = sections.taxonomy;
+  s.appendChild(el('h2',{text:'Requirement taxonomy & definitions'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Reference material: Requirement Type, lifecycle supergroups, the OFFER disposition vocabulary, RTM↔OFFER relation types, and the contract Deliverables Dossier — cross-linked to RTM Lookup.'}));
+
+  // v22 addition -- GBO asked that STATUS lead this tab (near top, with real
+  // colours), not sit buried as a text callout after the OFFER disposition
+  // table further down. Pulled straight from COMPLIANCE_LEGEND's own 8-row
+  // table + real fill colours (export_nav_data.py's new statusLegend field)
+  // so nothing here is approximated.
+  renderStatusLegend(s);
+  // v22 addition -- GBO asked for a visual of the phase ladder (his "L0-L8,
+  // active L1-L6, L7-8 out of scope" framing) plus a direct answer to "where
+  // are supergroups used / any metric" -- see renderPhaseCoverage's note for
+  // the finding (supergroups had zero live metric anywhere before this).
+  renderPhaseCoverage(s);
+
+  s.appendChild(el('h3',{text:'Requirement Type', style:'color:var(--navy);margin-top:26px;'}));
+  const t1 = el('table',{class:'taxo-table'});
+  t1.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Type'}),el('th',{text:'Definition'}),el('th',{text:'Subcategories'}),el('th',{text:'Example (T0 Gate)'})])]));
+  const tb1 = el('tbody',{});
+  DATA.taxonomy.requirementTypes.forEach(r => {
+    tb1.appendChild(el('tr',{},[el('td',{text:r.type}),el('td',{text:r.definition}),el('td',{text:r.subcategories}),el('td',{text:r.example})]));
+  });
+  t1.appendChild(tb1);
+  const w1 = el('div',{class:'tablewrap'}); w1.appendChild(t1); s.appendChild(w1);
+  s.appendChild(el('div',{class:'note',text:DATA.taxonomy.requirementTypeNote}));
+
+  s.appendChild(el('h3',{text:'Lifecycle supergroups', style:'color:var(--navy);margin-top:26px;'}));
+  const t2 = el('table',{class:'taxo-table'});
+  t2.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Supergroup'}),el('th',{text:'Applicable phase(s) it covers'}),el('th',{text:'What evidence looks like at this stage'})])]));
+  const tb2 = el('tbody',{});
+  DATA.taxonomy.supergroups.forEach(r => {
+    tb2.appendChild(el('tr',{},[el('td',{text:r.name}),el('td',{text:r.phases}),el('td',{text:r.evidence})]));
+  });
+  t2.appendChild(tb2);
+  const w2 = el('div',{class:'tablewrap'}); w2.appendChild(t2); s.appendChild(w2);
+  s.appendChild(el('div',{class:'note',text:DATA.taxonomy.supergroupNote}));
+
+  // v22 addition -- GBO: "I still want subsystems to be developed as one
+  // level deeper and have the granularity of the 202 items -- also
+  // clusters, and ranking and composite or S ranking." Confirmed the
+  // Subsystems domain is exactly 202 RTMs (matches his count) and its
+  // subcategory field is blank for all of them, BUT sectionTitle already
+  // carries 45 real physical subsystem names (Temperature sensors,
+  // Turbines, Cold Compressors, etc.) that were never surfaced as their own
+  // view -- this is the "one level deeper" using data that already exists,
+  // not a new taxonomy invented for this.
+  renderSubsystemsDrilldown(s);
+
+  s.appendChild(el('h3',{text:'OFFER disposition vocabulary', style:'color:var(--navy);margin-top:26px;'}));
+  const t3 = el('table',{class:'taxo-table'});
+  t3.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Disposition'}),el('th',{text:'Definition'})])]));
+  const tb3 = el('tbody',{});
+  DATA.taxonomy.disposition.forEach(r => {
+    tb3.appendChild(el('tr',{},[el('td',{text:r.disposition}),el('td',{text:r.definition})]));
+  });
+  t3.appendChild(tb3);
+  const w3 = el('div',{class:'tablewrap'}); w3.appendChild(t3); s.appendChild(w3);
+  s.appendChild(el('div',{class:'callout',text:DATA.taxonomy.dispositionNote}));
+
+  // v20 addition -- RTM<->OFFER Relation Types: the formal definition of the
+  // Direct/Supporting/Broad-contextual/Contextual badges the OFFER Lookup
+  // tab's link-type colour coding already uses (same hex values, .linktype
+  // CSS classes reused here so a colour means the same thing everywhere in
+  // this page). Answers "what does each relation type mean and how/why is
+  // it used" against the Navigator's own colour-coded badges.
+  s.appendChild(el('h3',{text:'RTM ↔ OFFER Relation Types (crosswalk)', style:'color:var(--navy);margin-top:26px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Live vocabulary from the crosswalk, bucketed into 4 families -- counts computed directly from the current data, not estimated. See these same badges on the OFFER Lookup tab, next to every linked RTM.'}));
+  const t4 = el('table',{class:'taxo-table'});
+  t4.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Relation type'}),el('th',{text:'Count'}),el('th',{text:'Share'}),el('th',{text:'Definition'}),el('th',{text:"How/why it's used"}),el('th',{text:'Live example'})])]));
+  const tb4 = el('tbody',{});
+  (DATA.taxonomy.relationTypes||[]).forEach(r => {
+    const badge = el('span',{class:'linktype '+linkTypeClass(r.type), text:r.type});
+    const tdType = el('td',{}); tdType.appendChild(badge);
+    tb4.appendChild(el('tr',{},[tdType, el('td',{text:String(r.count)}), el('td',{text:r.share}), el('td',{text:r.definition}), el('td',{text:r.usage}), el('td',{text:r.example})]));
+  });
+  t4.appendChild(tb4);
+  const w4 = el('div',{class:'tablewrap'}); w4.appendChild(t4); s.appendChild(w4);
+  if (DATA.taxonomy.relationTypesNote) s.appendChild(el('div',{class:'note',text:DATA.taxonomy.relationTypesNote}));
+
+  // v20 addition -- Deliverables Dossier: the real contract "Table 2.
+  // Applicable Documentation (AD)" structure (32 entries, extracted from the
+  // mirror PDF's own text, not inferred), cross-referenced against every
+  // RTM's full text for an AD_## mention. Linked RTM IDs are clickable and
+  // jump straight to RTM Lookup -- the concrete cross-link to RTM (and, via
+  // that RTM's own linked-OFFER field, on to OFFER) GBO asked for.
+  s.appendChild(el('h3',{text:'Deliverables Dossier — contract Applicable Documentation (AD) groups', style:'color:var(--navy);margin-top:26px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'6 top-level document groups (bold rows below) plus sub-items, each with its own SCK CEN reference number, from the contract mirror\'s own Table 2. "Linked RTM count" is computed by scanning every RTM\'s full text for that AD_## code -- click an RTM ID to jump to it in RTM Lookup, where its own Linked OFFER items field carries the crosswalk on to OFFER.'}));
+  const t5 = el('table',{class:'taxo-table'});
+  t5.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'AD ID'}),el('th',{text:'Document name'}),el('th',{text:'Reference'}),el('th',{text:'Linked RTM count'}),el('th',{text:'Linked RTM IDs'})])]));
+  const tb5 = el('tbody',{});
+  (DATA.deliverablesDossier||[]).forEach(d => {
+    const tr = el('tr',{});
+    if (d.isTopLevel) tr.style.background = '#F0E6F8';
+    const tdId = el('td',{text:d.id, style: d.isTopLevel?'font-weight:700;color:var(--purple);':''});
+    const tdName = el('td',{text:d.name, style: d.isTopLevel?'font-weight:700;':''});
+    const tdRef = el('td',{text:d.reference});
+    const tdCount = el('td',{text:String(d.linkedCount)});
+    const tdLinked = el('td',{});
+    if (d.linkedRtmIds && d.linkedRtmIds.length){
+      d.linkedRtmIds.forEach((rid,i) => {
+        if (i>0) tdLinked.appendChild(document.createTextNode(', '));
+        tdLinked.appendChild(el('a',{class:'navlink', text:rid, href:'#', style:'cursor:pointer;', onclick:(e)=>{e.preventDefault(); jumpToRtm(rid);}}));
+      });
+    } else {
+      tdLinked.textContent = '(none found)';
+    }
+    tr.appendChild(tdId); tr.appendChild(tdName); tr.appendChild(tdRef); tr.appendChild(tdCount); tr.appendChild(tdLinked);
+    tb5.appendChild(tr);
+  });
+  t5.appendChild(tb5);
+  const w5 = el('div',{class:'tablewrap'}); w5.appendChild(t5); s.appendChild(w5);
+  if (DATA.deliverablesDossierNote) s.appendChild(el('div',{class:'note',text:DATA.deliverablesDossierNote}));
+
+  // v22 addition -- GBO: "maybe some hierarchy, tree, or dependency" for the
+  // 6 top-level / 26 sub-item AD structure. The flat table above keeps every
+  // row visible at once (useful for scanning); this collapsible tree makes
+  // the actual parent/child structure legible at a glance, each top-level
+  // group defaulting open with its real sub-items nested underneath.
+  s.appendChild(el('h4',{text:'Same 32 entries, as a tree', style:'color:var(--navy);margin-top:18px;font-size:14px;'}));
+  s.appendChild(renderAdTree());
+}
+
+function renderAdTree(){
+  const wrap = el('div',{});
+  const items = DATA.deliverablesDossier || [];
+  const topLevels = items.filter(d => d.isTopLevel);
+  topLevels.forEach(top => {
+    const kids = items.filter(d => !d.isTopLevel && d.id.indexOf(top.id+'.') === 0);
+    const linkedKids = kids.filter(k => k.linkedCount > 0).length;
+    const det = el('details',{style:'background:#F0E6F8;border:1px solid var(--border);border-radius:4px;margin:3px 0;padding:2px 8px;'});
+    det.open = false;
+    const label = `${top.id} — ${top.name}  —  ${kids.length} sub-item${kids.length===1?'':'s'}, ${linkedKids} linked to a citing RTM` + (top.linkedCount ? `; top-level itself cited by ${top.linkedCount} RTM(s)` : '');
+    det.appendChild(el('summary',{text:label, style:'cursor:pointer;font-size:12.5px;font-weight:700;padding:4px 2px;'}));
+    if (top.linkedRtmIds && top.linkedRtmIds.length){
+      const p = el('div',{style:'font-size:12px;padding:2px 4px 4px 4px;'});
+      p.appendChild(document.createTextNode(top.id+' itself linked to: '));
+      top.linkedRtmIds.forEach((rid,i) => {
+        if (i>0) p.appendChild(document.createTextNode(', '));
+        p.appendChild(el('a',{class:'navlink', text:rid, href:'#', style:'cursor:pointer;', onclick:(e)=>{e.preventDefault(); jumpToRtm(rid);}}));
+      });
+      det.appendChild(p);
+    }
+    if (kids.length){
+      const kidsWrap = el('div',{style:'background:#fff;color:var(--body);border-radius:4px;padding:2px 4px;'});
+      kids.forEach(k => {
+        const row = el('div',{style:'display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 4px;border-bottom:1px solid var(--border);'});
+        row.appendChild(el('span',{style:'font-weight:600;width:80px;flex-shrink:0;', text:k.id}));
+        row.appendChild(el('span',{style:'flex:1;', text:k.name}));
+        row.appendChild(el('span',{style:'color:var(--muted);width:120px;flex-shrink:0;font-size:11px;', text:k.reference||''}));
+        const linkCell = el('span',{style:'width:170px;flex-shrink:0;font-size:11.5px;'});
+        if (k.linkedRtmIds && k.linkedRtmIds.length){
+          k.linkedRtmIds.forEach((rid,i) => {
+            if (i>0) linkCell.appendChild(document.createTextNode(', '));
+            linkCell.appendChild(el('a',{class:'navlink', text:rid, href:'#', style:'cursor:pointer;', onclick:(e)=>{e.preventDefault(); jumpToRtm(rid);}}));
+          });
+        } else {
+          linkCell.appendChild(document.createTextNode('(none found)'));
+          linkCell.style.color = 'var(--muted)';
+        }
+        row.appendChild(linkCell);
+        kidsWrap.appendChild(row);
+      });
+      det.appendChild(kidsWrap);
+    }
+    wrap.appendChild(det);
+  });
+  return wrap;
+}
+
+// ---------------------------------------------------------- STATUS legend
+// (v22) Real STATUS colours, straight from COMPLIANCE_LEGEND!A6:F13 via
+// export_nav_data.py's statusLegend field -- swatches are the literal same
+// hex values a reviewer sees in EVALUATION_WORKSPACE's STATUS dropdown.
+function renderStatusLegend(s){
+  s.appendChild(el('h3',{text:'STATUS — compliance-review legend', style:'color:var(--navy);'}));
+  s.appendChild(el('p',{class:'subtitle',text:"The document-review triage state used per-bidder in EVALUATION_WORKSPACE. Leads this tab per GBO's request. Note: STATUS and the OFFER disposition vocabulary further down track two different things (workspace-level triage vs. per-requirement compliance finding) -- see the note at the end of this table."}));
+  const t0 = el('table',{class:'taxo-table'});
+  t0.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Status'}),el('th',{text:'Definition'}),el('th',{text:'Example'}),el('th',{text:'Deviation'}),el('th',{text:'Next steps'}),el('th',{text:'Who resolves'})])]));
+  const tb0 = el('tbody',{});
+  (DATA.statusLegend||[]).forEach(r => {
+    const tr = el('tr',{});
+    const tdStatus = el('td',{style:'font-weight:700;white-space:nowrap;'});
+    tdStatus.appendChild(el('span',{style:`display:inline-block;width:13px;height:13px;border-radius:3px;border:1.5px solid rgba(0,0,0,0.4);margin-right:7px;vertical-align:-2px;background:${r.color};`}));
+    tdStatus.appendChild(document.createTextNode(r.status));
+    tr.appendChild(tdStatus);
+    tr.appendChild(el('td',{text:r.definition}));
+    tr.appendChild(el('td',{text:r.example||'—'}));
+    tr.appendChild(el('td',{text:r.deviation||'—'}));
+    tr.appendChild(el('td',{text:r.nextSteps||'—'}));
+    tr.appendChild(el('td',{text:r.whoResolves||'—'}));
+    tb0.appendChild(tr);
+  });
+  t0.appendChild(tb0);
+  const w0 = el('div',{class:'tablewrap'}); w0.appendChild(t0); s.appendChild(w0);
+  if (DATA.statusLegendNote) s.appendChild(el('div',{class:'note',text:'Where this appears live in the workbook: '+DATA.statusLegendNote}));
+}
+
+// ---------------------------------------------------------- Phase coverage
+// (v22) GBO's phase-ladder visual, using the RTM_RANKING!phases field
+// already exported for every row. Canonical labels/order and the L0-L6 +
+// PAC/Warranty/FAC set are the literal strings found in the data (checked
+// directly -- "L7"/"L8" do not appear anywhere in the workbook; Warranty and
+// FAC are the two labels that sit past L6/PAC, matching GBO's "out of
+// scope" framing without inventing numbering the source doesn't use).
+const PHASE_ORDER = [
+  {label:'L0 Tender / Offer', supergroup:'Design'},
+  {label:'L1 Conceptual Design', supergroup:'Design'},
+  {label:'L2 Detailed Design', supergroup:'Design'},
+  {label:'L3 Procurement & Manufacturing / FAT', supergroup:'Build'},
+  {label:'L4 Installation', supergroup:'Field'},
+  {label:'L5 Standalone Commissioning', supergroup:'Field'},
+  {label:'L6 Site Acceptance Testing', supergroup:'Closeout'},
+  {label:'PAC / Handover', supergroup:'Closeout'},
+  {label:'Warranty', supergroup:null},
+  {label:'FAC', supergroup:null},
+];
+const SUPERGROUP_COLORS = {Design:'#2E6E8E', Build:'#0F6B78', Field:'#5C8A3A', Closeout:'#7A4FA0', 'null':'#B0B0B0'};
+function renderPhaseCoverage(s){
+  s.appendChild(el('h3',{text:'Lifecycle phase coverage — live', style:'color:var(--navy);margin-top:22px;'}));
+  const total = DATA.rtmRanking.length;
+  s.appendChild(el('p',{class:'subtitle',text:`Share of all ${total} RTMs whose Applicable phase(s) field touches each phase (a requirement can span several, so bars don't sum to 100%). Bar colour = which Lifecycle supergroup that phase rolls into, below. Warranty and FAC are real phase labels in the data but map to NO supergroup -- outside the Design → Build → Field → Closeout scope this workbook actively tracks.`}));
+  const wrap = el('div',{style:'margin:10px 0 6px;'});
+  PHASE_ORDER.forEach(p => {
+    const n = DATA.rtmRanking.filter(r => String(r.phases||'').indexOf(p.label) >= 0).length;
+    const pct = total ? (100*n/total) : 0;
+    const row = el('div',{style:'display:flex;align-items:center;gap:10px;margin:3px 0;'});
+    row.appendChild(el('div',{style:'width:220px;font-size:12px;font-weight:600;text-align:right;flex-shrink:0;', text:p.label}));
+    const barOuter = el('div',{style:'flex:1;background:var(--band);border-radius:3px;overflow:hidden;height:16px;'});
+    const barInner = el('div',{style:`width:${Math.max(pct,1.2).toFixed(1)}%;background:${SUPERGROUP_COLORS[p.supergroup||'null']};height:100%;`});
+    barOuter.appendChild(barInner);
+    row.appendChild(barOuter);
+    row.appendChild(el('div',{style:'width:130px;font-size:11.5px;color:var(--muted);flex-shrink:0;', text:`${n} RTMs (${pct.toFixed(1)}%)`}));
+    wrap.appendChild(row);
+  });
+  s.appendChild(wrap);
+  s.appendChild(colourKeyCallout('Phase colour = Lifecycle supergroup', [
+    {label:'Design (L0–L2)', color:SUPERGROUP_COLORS.Design},
+    {label:'Build (L3)', color:SUPERGROUP_COLORS.Build},
+    {label:'Field (L4–L5)', color:SUPERGROUP_COLORS.Field},
+    {label:'Closeout (L6, PAC/Handover)', color:SUPERGROUP_COLORS.Closeout},
+    {label:'Not mapped to a supergroup (Warranty, FAC)', color:SUPERGROUP_COLORS['null']},
+  ]));
+  s.appendChild(el('div',{class:'note',text:'Answering "where are supergroups used / any metric": before this chart, Design/Build/Field/Closeout existed only as reference text in this tab and the PDF export -- no RTM/OFFER row was tagged with its supergroup and nothing counted RTMs per supergroup anywhere in the workbook or Navigator. This chart is the first live tie-in, computed directly from each RTM\'s own Applicable phase(s) field, not a separately-maintained mapping.'}));
+}
+
+// ------------------------------------------------------ Subsystems drill-down
+// (v22) GBO asked for the Subsystems domain (confirmed: exactly 202 RTMs) to
+// be developed one level deeper, with cluster + ranking/composite-S
+// granularity. subcategory is blank for all 202 of these rows, but
+// sectionTitle already carries 45 real physical subsystem names -- that's
+// the "one level deeper" used here, not a newly-invented taxonomy.
+function renderSubsystemsDrilldown(s){
+  const rows = (DATA.rtmRanking||[]).filter(r => r.domain === 'Subsystems');
+  s.appendChild(el('h3',{text:`Subsystems domain — one level deeper (${rows.length} RTMs, live)`, style:'color:var(--navy);margin-top:22px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'"Subsystems" is a single Domain bucket with no subcategory tagging in the source workbook -- but every row\'s own Section title already names the real physical subsystem it belongs to (Temperature sensors, Turbines, Cold Compressors, etc.). Grouped by that field below, with cluster mix and Weighted S rolled up per group -- click any Top RTM to jump to it.'}));
+  const groups = {};
+  rows.forEach(r => {
+    const key = r.sectionTitle || '(no section title)';
+    if (!groups[key]) groups[key] = {rtms:[], sumS:0, clusterCounts:{}};
+    const g = groups[key];
+    g.rtms.push(r);
+    const sv = Number(r.weightedS);
+    if (!isNaN(sv)) g.sumS += sv;
+    const ck = clusterKey(r.cluster);
+    g.clusterCounts[ck] = (g.clusterCounts[ck]||0) + 1;
+  });
+  const keys = Object.keys(groups).sort((a,b) => groups[b].rtms.length - groups[a].rtms.length);
+  const t = el('table',{class:'taxo-table'});
+  t.appendChild(el('thead',{},[el('tr',{},[el('th',{text:'Subsystem (section title)'}),el('th',{text:'RTM count'}),el('th',{text:'Dominant cluster(s)'}),el('th',{text:'Avg Weighted S'}),el('th',{text:'Composite (Sum) Weighted S'}),el('th',{text:'Top-ranked RTM'})])]));
+  const tb = el('tbody',{});
+  keys.forEach(key => {
+    const g = groups[key];
+    const n = g.rtms.length;
+    const avgS = n ? g.sumS/n : 0;
+    const topClusters = Object.keys(g.clusterCounts).sort((a,b)=>g.clusterCounts[b]-g.clusterCounts[a]).slice(0,2)
+      .map(k => `${k} (${g.clusterCounts[k]})`).join(', ');
+    const sorted = g.rtms.slice().sort((a,b) => (Number(b.weightedS)||0) - (Number(a.weightedS)||0));
+    const top = sorted[0];
+    const tr = el('tr',{});
+    tr.appendChild(el('td',{text:key, style:'font-weight:600;'}));
+    tr.appendChild(el('td',{text:String(n)}));
+    tr.appendChild(el('td',{text:topClusters||'—'}));
+    tr.appendChild(el('td',{text:avgS.toFixed(2)}));
+    tr.appendChild(el('td',{text:g.sumS.toFixed(1)}));
+    const tdTop = el('td',{});
+    if (top){
+      tdTop.appendChild(el('a',{class:'navlink', text:`${top.id} (S=${(Number(top.weightedS)||0).toFixed(2)}, rank ${top.rank})`, href:'#', style:'cursor:pointer;', onclick:(e)=>{e.preventDefault(); jumpToRtm(top.id);}}));
+    }
+    tr.appendChild(tdTop);
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+  const w = el('div',{class:'tablewrap'}); w.appendChild(t); s.appendChild(w);
+  s.appendChild(el('div',{class:'note',text:`${keys.length} distinct subsystem groups found this way across the ${rows.length} Subsystems-domain RTMs. Cluster mix uses the same C1-C8 keys as everywhere else in this page (Inferred/low-confidence links normalised down to their base cluster). Composite Weighted S = plain sum of that group's RTM-level Weighted S values, not re-weighted -- comparable to the ΣS convention used on the Document Outline tab.`}));
+}
+
+// ============================================================ DOCUMENT OUTLINE
+// A genuine parent/child tree -- NOT inferred, built directly from the
+// Addendum's own dotted-decimal section numbers already captured per row
+// (RTM_RANKING!K / OFFER_RANKING!G, e.g. "4.13.3.3.1"). This is the
+// "outline headings already captured in Excel" as another grouping/value
+// lens, alongside Domain/Category/Cluster -- rolled up so a parent node
+// shows the combined count and Sum Weighted S of everything beneath it.
+function parseSectionPath(raw){
+  if (!raw) return [];
+  const clean = String(raw).replace(/^§\s*/,'').trim();
+  if (!clean) return [];
+  const parts = clean.split('.').map(p=>p.trim()).filter(Boolean);
+  const path = [];
+  let acc = '';
+  parts.forEach(p => { acc = acc ? acc+'.'+p : p; path.push(acc); });
+  return path;
+}
+function segCompare(a, b){
+  const pa = a.split('.').map(Number), pb = b.split('.').map(Number);
+  for (let i=0;i<Math.max(pa.length,pb.length);i++){
+    const va = pa[i]===undefined?-1:pa[i], vb = pb[i]===undefined?-1:pb[i];
+    if (va!==vb) return va-vb;
+  }
+  return 0;
+}
+function buildOutline(){
+  const s = sections.outline;
+  s.appendChild(el('h2',{text:'Document outline — parent / child section tree'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Built directly from the Addendum\'s own section numbers already recorded per RTM/OFFER row (e.g. "4.13.3.3.1") — not inferred. Each node rolls up the count and Sum Weighted S of everything beneath it, so you can see which parts of the source document carry the most requirements and the most weight, independent of the Domain/Category/Cluster tabs. Click a row to expand.'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Hierarchy within OFFER items: checked directly — OFFER items carry their own section field (43 distinct sections across the 50 items) and already merge into this exact same tree alongside RTMs (shown as the "OFFER n=.." part of any row that has one) — there is no separate OFFER-only hierarchy beyond the one document-section tree below.'}));
+
+  const tree = {};
+  function ensure(path, seg){
+    if (!tree[path]) tree[path] = {seg, title:'', rtmCount:0, rtmSumS:0, offerCount:0, offerSumS:0, children:new Set()};
+    return tree[path];
+  }
+  function linkParent(path){
+    const idx = path.lastIndexOf('.');
+    if (idx > 0){
+      const parent = path.slice(0, idx);
+      ensure(parent, parent.split('.').pop());
+      tree[parent].children.add(path);
+    }
+  }
+  DATA.rtmRanking.forEach(r => {
+    const path = parseSectionPath(r.section);
+    if (!path.length) return;
+    const sv = Number(r.weightedS); const svOk = !isNaN(sv);
+    path.forEach((p,i) => {
+      const node = ensure(p, p.split('.').pop());
+      node.rtmCount++;
+      if (svOk) node.rtmSumS += sv;
+      if (i === path.length-1 && r.sectionTitle && !node.title) node.title = r.sectionTitle;
+      linkParent(p);
+    });
+  });
+  DATA.offerRanking.forEach(r => {
+    const path = parseSectionPath(r.section);
+    if (!path.length) return;
+    const sv = Number(r.weightedS); const svOk = !isNaN(sv);
+    path.forEach(p => {
+      const node = ensure(p, p.split('.').pop());
+      node.offerCount++;
+      if (svOk) node.offerSumS += sv;
+      linkParent(p);
+    });
+  });
+
+  const allPaths = Object.keys(tree);
+  const rootPaths = allPaths.filter(p => p.indexOf('.') === -1).sort(segCompare);
+  const maxSumS = Math.max(...allPaths.map(p => tree[p].rtmSumS), 1e-9);
+
+  function teal(alpha){ return `rgba(15,107,120,${alpha.toFixed(3)})`; }
+  // GBO: "use the cell width to indicate the numbers visual" -- a flat
+  // background tint (the old approach) only conveys magnitude through
+  // opacity, which is hard to compare row-to-row at a glance. A left-aligned
+  // gradient bar, width = this node's share of the heaviest section's Sum
+  // Weighted S, turns every row into its own inline bar chart -- readable
+  // by eye without reading the ΣS number at all.
+  function barBackground(frac){
+    const pct = Math.max(2, Math.min(100, frac*100)).toFixed(1);
+    return `linear-gradient(to right, ${teal(0.32)} 0%, ${teal(0.32)} ${pct}%, ${teal(0.035)} ${pct}%, ${teal(0.035)} 100%)`;
+  }
+
+  function renderNode(path, depth){
+    const node = tree[path];
+    const kids = Array.from(node.children).sort(segCompare);
+    const frac = node.rtmSumS/maxSumS;
+    // Light-weight sections resolve to a near-white bar (by design -- that's
+    // the point of the width encoding), which without a boundary can blur
+    // into the page background between rows. A constant, magnitude-
+    // independent border keeps every row's edge visible regardless of how
+    // pale its bar is.
+    const det = el('details',{style:`background:${barBackground(frac)};border:1px solid var(--border);border-radius:4px;margin:2px 0 2px ${depth*14}px;padding:2px 6px;`});
+    det.open = depth < 1;
+    const label = `§${node.seg}${node.title?(' — '+node.title):''}  —  RTM n=${node.rtmCount}, ΣS=${Math.round(node.rtmSumS)}${node.offerCount?`; OFFER n=${node.offerCount}, ΣS=${Math.round(node.offerSumS)}`:''}`;
+    const sum = el('summary',{text:label, style:'cursor:pointer;font-size:12.5px;padding:4px 2px;'});
+    det.appendChild(sum);
+    if (kids.length){
+      const kidsWrap = el('div',{});
+      kids.forEach(k => kidsWrap.appendChild(renderNode(k, depth+1)));
+      det.appendChild(kidsWrap);
+    }
+    return det;
+  }
+
+  // Floating (sticky) legend explaining the bar -- GBO asked for this
+  // explicitly, since the shading/width convention wasn't explained
+  // anywhere on the page before. Stuck just below the tab bar (measured at
+  // runtime, not hardcoded, so it still lines up if the tab bar's own
+  // height ever changes) so it stays visible while scrolling a long tree.
+  const legendBox = el('div',{class:'legend-key', id:'outlineLegend'});
+  legendBox.appendChild(el('span',{class:'lk-title', text:'Bar width = this section\'s share of the heaviest section\'s Sum Weighted S:'}));
+  [[0.12,'light'], [0.5,'moderate'], [1.0,'heaviest section (§4.4/§4 — Subsystems)']].forEach(([f,l]) => {
+    const row = el('span',{class:'lk-item'});
+    row.appendChild(el('span',{class:'lk-sw', style:`background:${barBackground(f)};`}));
+    row.appendChild(el('span',{text:l}));
+    legendBox.appendChild(row);
+  });
+  s.appendChild(legendBox);
+
+  // Stakeholder / source-document root -- GBO asked for "parent/child or
+  // origin/source/stakeholder parent with RTM flowing from this." Checked
+  // directly rather than guessing a project name: "SCK CEN" (the
+  // contracting authority) appears 93 times across RTM shall-statement
+  // text -- a real, verified root. "MYRRHA"/"MINERVA"/"QYS" do NOT appear
+  // anywhere in the RTM/OFFER text (checked) -- not used as a label here;
+  // if this contract does roll up under one of those programmes, that's a
+  // fact only GBO can confirm, not something to invent from the data.
+  const totalRtmSumS = DATA.rtmRanking.reduce((a,r)=>a+(Number(r.weightedS)||0),0);
+  const totalOfferSumS = DATA.offerRanking.reduce((a,r)=>a+(Number(r.weightedS)||0),0);
+  const rootDet = el('details',{style:'background:var(--navy);color:#fff;border-radius:5px;margin-bottom:6px;padding:2px 8px;'});
+  rootDet.open = true;
+  rootDet.appendChild(el('summary',{style:'cursor:pointer;font-weight:700;font-size:13.5px;padding:6px 2px;',
+    text:`SCK CEN — contracting authority (verified: 93 shall-statement mentions) — every RTM/OFFER below flows from this one source document — RTM n=${DATA.rtmRanking.length}, ΣS=${Math.round(totalRtmSumS)}; OFFER n=${DATA.offerRanking.length}, ΣS=${Math.round(totalOfferSumS)}`}));
+  // color:var(--body) resets the root's white (navy-banner) text colour --
+  // without this, every nested row's summary text silently inherits white,
+  // which is invisible against the pale/near-white bars the lighter
+  // sections render (found via direct inspection, not by eye -- the
+  // "ghosted" rows were 100%-opacity white text on a near-white background,
+  // not a transparency bug).
+  const rootKidsWrap = el('div',{style:'background:#fff;color:var(--body);border-radius:4px;padding:4px;'});
+  rootPaths.forEach(p => rootKidsWrap.appendChild(renderNode(p, 0)));
+  rootDet.appendChild(rootKidsWrap);
+
+  const treeCard = el('div',{class:'chart-card'});
+  treeCard.appendChild(rootDet);
+  s.appendChild(treeCard);
+
+  // Sticky-position the legend just under the tab bar once both are in the
+  // DOM (measuring at runtime, not hardcoding a pixel offset).
+  requestAnimationFrame(() => {
+    const navBar = document.querySelector('nav.tabs');
+    if (navBar){ legendBox.style.position = 'sticky'; legendBox.style.top = navBar.offsetHeight + 'px'; legendBox.style.zIndex = '40'; }
+  });
+
+  // ---- top-level section Pareto (same Measure-toggle pattern as Domain/
+  // Category/Cluster above, for consistency) --------------------------------
+  const topAgg = {};
+  rootPaths.forEach(p => { topAgg[p] = {count: tree[p].rtmCount, sumS: tree[p].rtmSumS}; });
+  Object.values(topAgg).forEach(a => a.avgS = a.count ? a.sumS/a.count : 0);
+  s.appendChild(el('h2',{text:'Top-level section volume — Pareto', style:'margin-top:30px;'}));
+  s.appendChild(el('p',{class:'subtitle',text:'Same rolled-up counts as the tree above, collapsed to just the top-level sections, with the same Measure toggle used throughout this workbook.'}));
+  const measures = [
+    {key:'count', label:'RTM count'},
+    {key:'sumS', label:'Sum of Weighted S'},
+    {key:'avgS', label:'Average Weighted S'},
+  ];
+  const card = el('div',{class:'chart-card'});
+  const toolbar = el('div',{class:'chart-toolbar'});
+  const sel = el('select',{});
+  measures.forEach(m => sel.appendChild(el('option',{value:m.key,text:m.label})));
+  toolbar.appendChild(el('label',{},[el('span',{text:'Measure:'}), sel]));
+  card.appendChild(toolbar);
+  const body = el('div',{});
+  card.appendChild(body);
+  s.appendChild(card);
+  function updateTop(){
+    const measure = sel.value;
+    const rows = rootPaths.map(p => ({label:`§${p}`, value: measure==='count'?topAgg[p].count:(measure==='sumS'?Math.round(topAgg[p].sumS*100)/100:Math.round(topAgg[p].avgS*100)/100)}))
+      .sort((a,b)=>b.value-a.value);
+    renderParetoInto(body, rows, false, null, measure);
+  }
+  sel.addEventListener('change', updateTop);
+  updateTop();
+
+  // ---- honest scope note on "advanced BT" / semantic parent-child --------
+  s.appendChild(el('div',{class:'note', style:'margin-top:22px;', text:
+    'What this tab is NOT: a semantic "these two requirements are similar but not the same" relationship engine between individual RTM/OFFER items. The only item-to-item relationships currently defined anywhere in this workbook are the explicit RTM_CROSSWALK links (OFFER→RTM, typed Direct/Supporting/Broad/Contextual — see OFFER Lookup / RTM Lookup) and this document-outline tree (both items sharing or nesting under the same source-document section). Building free-text similarity across 722 RTM statements would need an agreed method (e.g. shared Standards/Deliverables, shared section, or actual text-similarity scoring) before it is trustworthy rather than a plausible-looking guess — flagging this rather than inventing one.'}));
+}
+
+// ============================================================== build everything
+buildStart();
+buildLookup();
+buildOfferLookup();
+buildFilter();
+buildTableTab('ranking', {
+  title:'RTM static BT ranking — 722 requirements',
+  subtitle:'Sorted by gate precedence and frozen-weight composite. Search or filter, click a column header to sort.',
+  data: DATA.rtmRanking,
+  filters:[{key:'domain',label:'Domain'},{key:'tier',label:'Tier'},{key:'reqType',label:'Requirement Type'},{key:'cluster',label:'Cluster'}],
+  pageSize: 30,
+  columns:[
+    {key:'rank',label:'Rank',width:'60px'},{key:'id',label:'RTM ID',width:'80px'},{key:'tier',label:'Tier',width:'90px'},
+    {key:'domain',label:'Domain'},{key:'reqType',label:'Req. Type',width:'90px'},{key:'category',label:'Category'},
+    {key:'cluster',label:'Cluster'},{key:'weightedS',label:'Weighted S',numeric:true,width:'110px',relbar:true},
+    {key:'btWin',label:'BT win %',numeric:true,width:'80px'},{key:'section',label:'§',width:'70px'},
+    {key:'shall',label:'Shall statement'},
+  ],
+});
+buildTopNPanel('ranking', DATA.rtmRanking, [
+  {key:'cluster',label:'Cluster'},{key:'domain',label:'Domain'},{key:'reqType',label:'Requirement Type'},{key:'tier',label:'Tier'},
+], 'id','id');
+buildTableTab('offer', {
+  title:'OFFER static BT ranking — 50 items',
+  subtitle:'Search or filter, click a column header to sort.',
+  data: DATA.offerRanking,
+  filters:[{key:'tier',label:'Tier'},{key:'category',label:'Category'}],
+  pageSize: 30,
+  columns:[
+    {key:'rank',label:'Rank',width:'60px'},{key:'id',label:'OFFER ID',width:'90px'},{key:'tier',label:'Tier',width:'90px'},
+    {key:'title',label:'Title'},{key:'category',label:'Category'},{key:'section',label:'§',width:'70px'},
+    {key:'weightedS',label:'Weighted S',numeric:true,width:'110px',relbar:true},{key:'btWin',label:'BT win %',numeric:true,width:'80px'},
+    {key:'primaryDim',label:'Primary dimension'},{key:'interpretation',label:'Interpretation'},
+  ],
+});
+buildTopNPanel('offer', DATA.offerRanking, [
+  {key:'category',label:'Category'},{key:'tier',label:'Tier'},{key:'primaryDim',label:'Primary dimension'},
+], 'id','id');
+buildTableTab('queue', {
+  title:'RTM review queue — priority subset (289 rows)',
+  subtitle:'All T0/T1 RTMs plus deliverable-heavy requirements. Disposition is reviewer input from the workbook — this page mirrors it, edits happen in Excel.',
+  data: DATA.reviewQueue,
+  filters:[{key:'domain',label:'Domain'},{key:'tier',label:'Tier'},{key:'reqType',label:'Requirement Type'},{key:'disposition',label:'Disposition'}],
+  pageSize: 30,
+  columns:[
+    {key:'rank',label:'Rank',width:'60px'},{key:'id',label:'RTM ID',width:'80px'},{key:'reqType',label:'Req. Type',width:'90px'},
+    {key:'category',label:'Category'},{key:'domain',label:'Domain'},{key:'cluster',label:'Cluster'},{key:'tier',label:'Tier',width:'90px'},
+    {key:'weightedS',label:'Weighted S',numeric:true,width:'110px',relbar:true},{key:'shall',label:'Shall statement'},
+    {key:'evidence',label:'Evidence / measurability'},{key:'disposition',label:'Disposition',width:'100px'},
+  ],
+});
+buildTopNPanel('queue', DATA.reviewQueue, [
+  {key:'cluster',label:'Cluster'},{key:'domain',label:'Domain'},{key:'reqType',label:'Requirement Type'},{key:'disposition',label:'Disposition'},
+], 'id','id');
+buildClusters();
+buildDomainsNav();
+buildDomains();
+buildOutline();
+buildTaxonomy();
+
+activateTab('start');
+</script>
+</body>
+</html>

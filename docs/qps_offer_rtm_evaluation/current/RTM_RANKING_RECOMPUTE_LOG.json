@@ -1,0 +1,638 @@
+{
+  "runs": [
+    {
+      "run_number": 1,
+      "run_date": "2026-08-18",
+      "triggered_by": "GBO (system owner / data owner / responsible), via Claude Code",
+      "overrides": {
+        "RTM-320": {
+          "17": 1
+        }
+      },
+      "note": "RTM-320 (Network Infrastructure, SS4.6.4.4): Performance dimension corrected 0 -> 1. The requirement explicitly states 'All links within the aggregation network ... shall support 1 Gbit/s bandwidth' -- a concrete capacity/throughput figure the Performance dimension (heat loads/capacity/transients) is defined to capture, which the existing score missed. Reliability(3)/Functional(3) unchanged -- both remain well supported by the redundancy-manager, failover, and fault-recovery language. Requested by GBO (system owner) after independent re-read of the full RTM text against the 7-dimension rubric; part of a full re-judgment of all 7 previously-flagged rows (RTM-328/482/603/718/599/018/320) -- see README_ABACUS_IMPORT.md for the other 6, which held up unchanged on review.",
+      "rank_tier_side_effects": [
+        {
+          "rtm_id": "RTM-108",
+          "old_rank": 132,
+          "new_rank": 133,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44.3333,
+          "new_S": 44.333333
+        },
+        {
+          "rtm_id": "RTM-022",
+          "old_rank": 133,
+          "new_rank": 134,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-024",
+          "old_rank": 134,
+          "new_rank": 135,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-027",
+          "old_rank": 135,
+          "new_rank": 136,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-078",
+          "old_rank": 136,
+          "new_rank": 137,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-209",
+          "old_rank": 137,
+          "new_rank": 138,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-389",
+          "old_rank": 138,
+          "new_rank": 139,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-545",
+          "old_rank": 139,
+          "new_rank": 140,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 44,
+          "new_S": 44.0
+        },
+        {
+          "rtm_id": "RTM-433",
+          "old_rank": 140,
+          "new_rank": 141,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 43.3333,
+          "new_S": 43.333333
+        },
+        {
+          "rtm_id": "RTM-015",
+          "old_rank": 141,
+          "new_rank": 142,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 43.3333,
+          "new_S": 43.333333
+        },
+        {
+          "rtm_id": "RTM-333",
+          "old_rank": 142,
+          "new_rank": 143,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 43.3333,
+          "new_S": 43.333333
+        },
+        {
+          "rtm_id": "RTM-109",
+          "old_rank": 143,
+          "new_rank": 144,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42.6667,
+          "new_S": 42.666667
+        },
+        {
+          "rtm_id": "RTM-092",
+          "old_rank": 144,
+          "new_rank": 145,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42.6667,
+          "new_S": 42.666667
+        },
+        {
+          "rtm_id": "RTM-313",
+          "old_rank": 145,
+          "new_rank": 146,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42.6667,
+          "new_S": 42.666667
+        },
+        {
+          "rtm_id": "RTM-042",
+          "old_rank": 146,
+          "new_rank": 147,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-052",
+          "old_rank": 147,
+          "new_rank": 148,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-226",
+          "old_rank": 148,
+          "new_rank": 149,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-484",
+          "old_rank": 149,
+          "new_rank": 150,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-511",
+          "old_rank": 150,
+          "new_rank": 151,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-513",
+          "old_rank": 151,
+          "new_rank": 152,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 42,
+          "new_S": 42.0
+        },
+        {
+          "rtm_id": "RTM-036",
+          "old_rank": 152,
+          "new_rank": 153,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-198",
+          "old_rank": 153,
+          "new_rank": 154,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-312",
+          "old_rank": 154,
+          "new_rank": 155,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-322",
+          "old_rank": 155,
+          "new_rank": 156,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-324",
+          "old_rank": 156,
+          "new_rank": 157,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-642",
+          "old_rank": 157,
+          "new_rank": 158,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-660",
+          "old_rank": 158,
+          "new_rank": 159,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41.3333,
+          "new_S": 41.333333
+        },
+        {
+          "rtm_id": "RTM-068",
+          "old_rank": 159,
+          "new_rank": 160,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 41,
+          "new_S": 41.0
+        },
+        {
+          "rtm_id": "RTM-550",
+          "old_rank": 160,
+          "new_rank": 161,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40.6667,
+          "new_S": 40.666667
+        },
+        {
+          "rtm_id": "RTM-578",
+          "old_rank": 161,
+          "new_rank": 162,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40.6667,
+          "new_S": 40.666667
+        },
+        {
+          "rtm_id": "RTM-470",
+          "old_rank": 162,
+          "new_rank": 163,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40.6667,
+          "new_S": 40.666667
+        },
+        {
+          "rtm_id": "RTM-020",
+          "old_rank": 163,
+          "new_rank": 164,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40,
+          "new_S": 40.0
+        },
+        {
+          "rtm_id": "RTM-021",
+          "old_rank": 164,
+          "new_rank": 165,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40,
+          "new_S": 40.0
+        },
+        {
+          "rtm_id": "RTM-328",
+          "old_rank": 165,
+          "new_rank": 166,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 40,
+          "new_S": 40.0
+        },
+        {
+          "rtm_id": "RTM-256",
+          "old_rank": 166,
+          "new_rank": 167,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 39.3333,
+          "new_S": 39.333333
+        },
+        {
+          "rtm_id": "RTM-432",
+          "old_rank": 167,
+          "new_rank": 168,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 39.3333,
+          "new_S": 39.333333
+        },
+        {
+          "rtm_id": "RTM-066",
+          "old_rank": 168,
+          "new_rank": 169,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 39,
+          "new_S": 39.0
+        },
+        {
+          "rtm_id": "RTM-168",
+          "old_rank": 169,
+          "new_rank": 170,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-174",
+          "old_rank": 170,
+          "new_rank": 171,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-180",
+          "old_rank": 171,
+          "new_rank": 172,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-210",
+          "old_rank": 172,
+          "new_rank": 173,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-216",
+          "old_rank": 173,
+          "new_rank": 174,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-218",
+          "old_rank": 174,
+          "new_rank": 175,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-440",
+          "old_rank": 175,
+          "new_rank": 176,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-465",
+          "old_rank": 176,
+          "new_rank": 177,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-504",
+          "old_rank": 177,
+          "new_rank": 178,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-526",
+          "old_rank": 178,
+          "new_rank": 179,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-527",
+          "old_rank": 179,
+          "new_rank": 180,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-528",
+          "old_rank": 180,
+          "new_rank": 181,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-529",
+          "old_rank": 181,
+          "new_rank": 182,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-534",
+          "old_rank": 182,
+          "new_rank": 183,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-535",
+          "old_rank": 183,
+          "new_rank": 184,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-539",
+          "old_rank": 184,
+          "new_rank": 185,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-540",
+          "old_rank": 185,
+          "new_rank": 186,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-543",
+          "old_rank": 186,
+          "new_rank": 187,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-565",
+          "old_rank": 187,
+          "new_rank": 188,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-346",
+          "old_rank": 188,
+          "new_rank": 189,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38.6667,
+          "new_S": 38.666667
+        },
+        {
+          "rtm_id": "RTM-320",
+          "old_rank": 189,
+          "new_rank": 132,
+          "old_tier": "T1 Primary",
+          "new_tier": "T1 Primary",
+          "old_S": 38,
+          "new_S": 44.666667
+        },
+        {
+          "rtm_id": "RTM-518",
+          "old_rank": 285,
+          "new_rank": 286,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 32,
+          "new_S": 32.0
+        },
+        {
+          "rtm_id": "RTM-519",
+          "old_rank": 286,
+          "new_rank": 287,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 32,
+          "new_S": 32.0
+        },
+        {
+          "rtm_id": "RTM-521",
+          "old_rank": 287,
+          "new_rank": 288,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 32,
+          "new_S": 32.0
+        },
+        {
+          "rtm_id": "RTM-650",
+          "old_rank": 288,
+          "new_rank": 285,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 32,
+          "new_S": 32.0
+        },
+        {
+          "rtm_id": "RTM-309",
+          "old_rank": 367,
+          "new_rank": 370,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-348",
+          "old_rank": 368,
+          "new_rank": 371,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-368",
+          "old_rank": 369,
+          "new_rank": 372,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-383",
+          "old_rank": 370,
+          "new_rank": 373,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-412",
+          "old_rank": 371,
+          "new_rank": 367,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-430",
+          "old_rank": 372,
+          "new_rank": 368,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        },
+        {
+          "rtm_id": "RTM-435",
+          "old_rank": 373,
+          "new_rank": 369,
+          "old_tier": "T2 Secondary",
+          "new_tier": "T2 Secondary",
+          "old_S": 28,
+          "new_S": 28.0
+        }
+      ]
+    }
+  ]
+}
