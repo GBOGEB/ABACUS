@@ -1,0 +1,553 @@
+{
+  "5": {
+    "file": "QPS_OFFER_Evaluation_FULL_v5.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 0,
+    "rtm_crosswalk_linked_pct": 0.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 0,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": null,
+    "sheet_count": 21
+  },
+  "6": {
+    "file": "QPS_OFFER_Evaluation_FULL_v6.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "7": {
+    "file": "QPS_OFFER_Evaluation_FULL_v7.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "8": {
+    "file": "QPS_OFFER_Evaluation_FULL_v8.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "9": {
+    "file": "QPS_OFFER_Evaluation_FULL_v9.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "10": {
+    "file": "QPS_OFFER_Evaluation_FULL_v10.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "11": {
+    "file": "QPS_OFFER_Evaluation_FULL_v11.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "12": {
+    "file": "QPS_OFFER_Evaluation_FULL_v12.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "13": {
+    "file": "QPS_OFFER_Evaluation_FULL_v13.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "14": {
+    "file": "QPS_OFFER_Evaluation_FULL_v14.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "15": {
+    "file": "QPS_OFFER_Evaluation_FULL_v15.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "16": {
+    "file": "QPS_OFFER_Evaluation_FULL_v16.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 25
+  },
+  "17": {
+    "file": "QPS_OFFER_Evaluation_FULL_v17.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 28
+  },
+  "18": {
+    "file": "QPS_OFFER_Evaluation_FULL_v18.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 28
+  },
+  "19": {
+    "file": "QPS_OFFER_Evaluation_FULL_v19.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK; Review breadth": 5,
+      "Review/accept context": 2,
+      "Review breadth": 1,
+      "OK with non-RTM source note": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 28
+  },
+  "20": {
+    "file": "QPS_OFFER_Evaluation_FULL_v20.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK \u2014 Review breadth": 5,
+      "Review \u2014 accept context": 2,
+      "Review \u2014 breadth": 1,
+      "OK \u2014 non-RTM source": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 32
+  },
+  "21": {
+    "file": "QPS_OFFER_Evaluation_FULL_v21.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK \u2014 Review breadth": 5,
+      "Review \u2014 accept context": 2,
+      "Review \u2014 breadth": 1,
+      "OK \u2014 non-RTM source": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 32
+  },
+  "22": {
+    "file": "QPS_OFFER_Evaluation_FULL_v22.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK \u2014 Review breadth": 5,
+      "Review \u2014 accept context": 2,
+      "Review \u2014 breadth": 1,
+      "OK \u2014 non-RTM source": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 32
+  },
+  "23": {
+    "file": "QPS_OFFER_Evaluation_FULL_v23.xlsx",
+    "rtm_count": 722,
+    "rtm_tier_distribution": {
+      "T0 Gate": 43,
+      "T1 Primary": 156,
+      "T2 Secondary": 244,
+      "T3 Contextual": 279
+    },
+    "rtm_domain_count": 22,
+    "rtm_gate_count": 43,
+    "rtm_sum_weighted_s": 21667.7,
+    "rtm_avg_weighted_s": 30.01,
+    "rtm_crosswalk_linked_count": 722,
+    "rtm_crosswalk_linked_pct": 100.0,
+    "offer_count": 50,
+    "offer_review_flag_distribution": {
+      "OK": 41,
+      "OK \u2014 Review breadth": 5,
+      "Review \u2014 accept context": 2,
+      "Review \u2014 breadth": 1,
+      "OK \u2014 non-RTM source": 1
+    },
+    "offer_review_ok_pct": 94.0,
+    "review_queue_count": 289,
+    "review_queue_decided_count": 0,
+    "review_queue_decided_pct": 0.0,
+    "sheet_count": 32
+  }
+}

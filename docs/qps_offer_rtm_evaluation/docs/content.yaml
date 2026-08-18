@@ -1,0 +1,1691 @@
+source_file: final4.pptx
+slide_count: 38
+slides:
+- index: 1
+  elements:
+  - shape: Text Placeholder 1
+    type: text
+    text: MTBF Policy · Flow Assumptions · Acceptance + CIS/MCS Integration
+  - shape: Title 2
+    type: text
+    text: Cryoplant MTBF and System Design
+- index: 2
+  elements:
+  - shape: Title 1
+    type: text
+    text: DMAIC Roadmap (1/3) — Define & Measure
+  - shape: Text Placeholder 2
+    type: text
+    text: How to read this master deck, part 1 — scope, requirements, and baseline data | Without LOOKING
+      at OFFERS
+  - shape: Text Placeholder 3
+    type: text
+    text: 'DEFINE  (Slides 5–7, 13, 20–21)
+
+      What the system must achieve: scope, RTM obligations, the operating-state hierarchy, and failure-class
+      definitions with their MTBF targets.
+
+      MEASURE  (Slides 8–12, 16–18)
+
+      What the fleet can actually deliver: OEM flow data, N−1 capability, unit energy economics, acceptance-test
+      criteria, and liquid-buffer coverage time.
+
+      This is a MASTER slide set — each third of this roadmap can be lifted into its own briefing.'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: '307 g/s
+
+      24 QM target flow
+
+      (design envelope 320–350 g/s)'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: 'N − 1
+
+      sizing rule: fleet must
+
+      survive one unit down'
+  - shape: Rounded Rectangle 6
+    type: text
+    text: 'A>5y · B>10y · C>15y
+
+      MTBF targets by
+
+      failure-consequence class'
+  - shape: Rounded Rectangle 7
+    type: text
+    text: '350 kW
+
+      installed power per HP
+
+      compressor (validated Slide 10)'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: 'SAMPLE CALC  N−1 check, FSD 575: 3 × 112.5 g/s @ 72 Hz = 337.5 g/s ≥ 307 g/s target → passes
+      with +30 g/s margin (Slide 9).'
+  - shape: Slide Number Placeholder 10
+    type: text
+    text: '2'
+  dmaic_phase: DEFINE
+- index: 3
+  elements:
+  - shape: Title 1
+    type: text
+    text: DMAIC Roadmap (2/3) — Analyze
+  - shape: Text Placeholder 2
+    type: text
+    text: How to read this master deck, part 2 — why the numbers behave the way they do
+  - shape: Text Placeholder 3
+    type: text
+    text: 'ANALYZE  (Slides 22–28)
+
+      This is the deck''s math core: the Poisson/exponential campaign-success model, the 94–95% reliability
+      ceiling, the Wrong / Better / Chosen architecture trade-off, and the Weibull wear-out relation that
+      eventually limits any MTBF-only argument.
+
+      This section is intentionally chart-heavy — the technical-blue banner marks it as the deck''s quantitative
+      narrative, distinct from the definitional purple sections either side.
+
+      This is a MASTER slide set — the Analyze section alone can be lifted into a standalone reliability-math
+      briefing.'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: SAMPLE CALC — Poisson  MTBF = 5 y → λ = 1/5 = 0.200 / y. P(zero trips, 90 d) = e^(−λt) = e^(−0.200
+      × 0.246) ≈ 95.3%  →  the origin of the deck's ~95% campaign figure (Slides 22–23, 25).
+  - shape: Rounded Rectangle 5
+    type: text
+    text: SAMPLE CALC — Weibull  β = 2.5, η = 114,400 h (cold compressor). P(fail in next 90 d | age =
+      5 y) is ≈ 235× the same-window probability right after a good-as-new overhaul (Slide 28) — the mechanism
+      that IMPROVE (part 3) responds to.
+  - shape: Rounded Rectangle 6
+    type: text
+    text: '94–95%
+
+      90-day campaign
+
+      success ceiling (single-train)'
+  - shape: Rounded Rectangle 7
+    type: text
+    text: 'β > 1
+
+      hazard rises with age →
+
+      MTBF alone understates risk'
+  - shape: Slide Number Placeholder 9
+    type: text
+    text: '3'
+  dmaic_phase: ANALYZE
+- index: 4
+  elements:
+  - shape: Title 1
+    type: text
+    text: DMAIC Roadmap (3/3) — Improve & Control
+  - shape: Text Placeholder 2
+    type: text
+    text: How to read this master deck, part 3 — from prediction to a maintenance policy
+  - shape: Text Placeholder 3
+    type: text
+    text: 'IMPROVE  (Slides 29–34)
+
+      Why MTBF matters, when it stops being trustworthy, and the component evidence (compressors, PVPS,
+      turbines) that proves it.
+
+      CONTROL  (Slides 35–38)
+
+      Predictable, usage-based service replacement; the reset-to-new renewal principle; and the governance
+      loop that keeps the system inside the assumptions MTBF requires.
+
+      This is a MASTER slide set — Improve + Control together form a standalone maintenance-policy pack.'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: SAMPLE CALC  Same β=2.5, η=114,400 h cold-compressor pair as part 2 → replace at ≈ 0.65×η (≈
+      74,000 h) instead of running to MTBF-implied end of life — the deadline is set before the hazard
+      curve turns upward, not after (Slide 36).
+  - shape: Oval 5
+    type: text
+    text: '1'
+  - shape: TextBox 6
+    type: text
+    text: MEASURE exposure
+  - shape: Oval 7
+    type: text
+    text: '2'
+  - shape: TextBox 8
+    type: text
+    text: TRACK age vs. η
+  - shape: Oval 9
+    type: text
+    text: '3'
+  - shape: TextBox 10
+    type: text
+    text: REPLACE before wear-out
+  - shape: Oval 11
+    type: text
+    text: '4'
+  - shape: TextBox 12
+    type: text
+    text: RESET & feed back
+  - shape: Slide Number Placeholder 14
+    type: text
+    text: '4'
+  dmaic_phase: CONTROL
+- index: 5
+  elements:
+  - shape: Title 1
+    type: text
+    text: Objectives & Scope
+  - shape: Text Placeholder 2
+    type: text
+    text: MTBF Policy · Flow Assumptions · Acceptance + CIS/MCS Integration
+  - shape: TextBox 3
+    type: text
+    text: 'Fleet baseline
+
+      Consolidate compressor fleet assumptions — ≥ 3 units minimum, Option A baseline = 4 × FSD 575.
+
+      RTM alignment
+
+      Align with Addendum II canonical RTMs, incl. ''To be offered…'' statements.
+
+      Acceptance & integration
+
+      Define acceptance tests (24×2 K SB & 24×2 K OP) and CIS/MCS integration checkpoints (Slides 12,
+      14).
+
+      Operating scope
+
+      24 QM with FFT operating mode — below the 307 g/s nominal design target.
+
+      Design envelope
+
+      320–350 g/s total flow — the envelope every capability check in this deck is measured against (Slide
+      9).'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: '307 g/s
+
+      24 QM nominal
+
+      target flow'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: '320–350
+
+      g/s design
+
+      envelope (Slide 9)'
+  - shape: Rounded Rectangle 6
+    type: text
+    text: SCOPE IN ONE LINE  Everything from here to the closing governance loop exists to keep the fleet
+      inside this envelope, provably.
+  - shape: Slide Number Placeholder 8
+    type: text
+    text: '5'
+  dmaic_phase: DEFINE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - Consolidate compressor fleet assumptions (≥ 3 units min., Option A baseline = 4 × FSD 575)
+
+    - Align with Addendum II canonical RTMs (incl. ''To be offered…'' statements)
+
+    - Define acceptance tests (24×2 K SB & 24×2 K OP), integration checkpoints (CIS/MCS)
+
+    - Scope: 24 QM with FFT operating mode (< design 307 g/s nominal)
+
+    - Design envelope: 320 – 350 g/s (total flow)'
+- index: 6
+  elements:
+  - shape: Title 1
+    type: text
+    text: Configuration Baseline (Option A – 4× HSD Combi)
+  - shape: Text Placeholder 2
+    type: text
+    text: Fleet Sizing and Utilities Envelope
+  - shape: TextBox 3
+    type: text
+    text: 'Fleet power
+
+      4 × 350 kW HP compressors ≈ 1.4 MW total installed.
+
+      Cooling water
+
+      27→ 37°C supply/return (ΔT 10 K) nominal; up to 42°C return (ΔT 15 K) for PS01 at reduced flow.
+
+      Piping
+
+      Shared header, looped feed/return.
+
+      4th-unit deferral
+
+      Fully stubbed install position — enforceable by SCK CEN at grant or EoCD.
+
+      Pressure control
+
+      ≈ 14 bar discharge maintained; VFD trims flow (feeds the Unit Economics model, Slide 10).
+
+      Applicant shall
+
+      Deliver layout & piping stubs if the 4th unit is deferred.'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: '1.4 MW
+
+      installed
+
+      (4×350 kW)'
+  - shape: Rounded Rectangle 6
+    type: text
+    text: '14 bar
+
+      discharge
+
+      pressure'
+  - shape: Rounded Rectangle 7
+    type: text
+    text: '10–15 K
+
+      cooling
+
+      ΔT range'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: WHY IT MATTERS  This power/water/pressure envelope is the input to the Unit Economics energy-cost
+      model (Slide 10) and the Utilities hub-and-spoke diagram (Slide 15).
+  - shape: Slide Number Placeholder 10
+    type: text
+    text: '6'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: 'KEY TAKEAWAY  Open baseline question: pressure-constant vs. pressure-swing control — not yet
+      decided.'
+  dmaic_phase: DEFINE
+  speaker_notes: "Full baseline bullet text (verbatim), condensed on-slide for readability:\n\n- 4× 350\
+    \ kW HP compressors (≈ 1.4 MW total installed)\n- Cooling water: 27 °C supply · 37 °C return (Δ T\
+    \ 10 K) → up to 42 °C return with reduced flow (15 K Δ T for PS01)\n- Shared header (looped feed/return)\n\
+    - Install deferral option (4th position fully stubbed – enforceable by SCK CEN at grant or EoCD)\v\
+    \vThis is up to them – pressure constant or pressure swing?\n- Maintain ≈ 14 bar discharge pressure;\
+    \ VFD does flow trimming\n- Applicant shall: deliver layout & piping stubs (if 4th unit deferred)"
+- index: 7
+  elements:
+  - shape: Title 1
+    type: text
+    text: Frequency and Upset Policy
+  - shape: Text Placeholder 2
+    type: text
+    text: Operating Limits and Logging Requirements
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Nominal: ≤ 65 Hz, sustainable continuous operation.
+
+      Transient / upset up to 72 Hz, ≤ 8 h per event (covers service or trip recovery, 8 h MTTR).
+
+      Cumulative > 72 Hz: ≤ 24 h / compressor / month — logged, triggers monthly RAMI review if exceeded.
+
+      Recovery: return to ≤ 60 Hz to re-stabilize after a repair.
+
+      Applicant shall quantify sustained MTBF vs. frequency band (≤ 60 Hz, 60–68 Hz, ≥ 68 Hz).'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '7'
+  dmaic_phase: DEFINE
+  speaker_notes: "Full baseline bullet text (verbatim), condensed on-slide for readability:\n\n- Nominal\
+    \ Operation: ≤ 65 Hz (sustainable continuous)\n- Transient / Upset: up to 72 Hz, ≤ 8 h per event (cover\
+    \ service or trip recovery, 8 h MTTR)\n- Cumulative > 72 Hz: ≤ 24 h / compressor / month (logged,\
+    \ monthly RAMI trigger if exceeded)\n- Logging: Mandatory (Start/Stop · Duration · Cause) stored in\
+    \ CIS + RAMI DB\n- Recovery: Return ≤ 60 Hz to re-stabilize post-repair\v\vIn the Offer the Applicant\
+    \ shall:\n- Applicant shall quantify sustained MTBF vs frequency band (≤ 60 Hz, 60‑68 Hz, ≥ 68 Hz)"
+- index: 8
+  elements:
+  - shape: Title 1
+    type: text
+    text: Compressor Flow Capability
+  - shape: Text Placeholder 2
+    type: text
+    text: OEM Performance Figures
+  - shape: Text Placeholder 3
+    type: text
+    text: 'OEM reference figures at 60 Hz and 72 Hz for the three candidate compressor types.
+
+      FSD 575 gives the largest per-unit margin — carries directly into the N−1 case (Slide 9).
+
+      HSD Combi figures are Option A basis, flagged in the baseline as an estimate (''guess'').
+
+      Controls principle: hold discharge pressure, use VFD turndown; avoid > 60 Hz except upsets.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '8'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - FSD 475: Flow @ 72 Hz ≈ 96 g/s | Flow @ 60 Hz ≈ 82 – 86 g/s (Kaeser OEM figures)
+
+    - FSD 575: Flow @ 72 Hz ≈ 112.5 g/s | Flow @ 60 Hz ≈ 95 – 101 g/s (OEM Higher-capacity)
+
+    - HSD Combi: ≈ 87.5 g/s / comp (175 /combi) @ 72 Hz | ≈ 75 – 80 g/s @ 60 Hz (Option A basis) - guess
+
+    - Scaling: 4 × FSD‑475 → ≈ 65.6 Hz to hit 87.5 g/s each
+
+    - Controls principle: hold pressure → apply VFD turndown; avoid > 60 Hz except upsets'
+- index: 9
+  elements:
+  - shape: Title 1
+    type: text
+    text: Total Flow and N−1 Snapshots
+  - shape: Text Placeholder 2
+    type: text
+    text: Fleet Comparison for 307 g/s Target
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Target: 307 g/s total flow (24 QM, FFT operating mode).
+
+      FSD 575 is the only type whose N−1 case clears the target outright (+30 g/s margin).
+
+      FSD 475''s N−1 shortfall (≈19 g/s) is covered by a 5 m³ liquid buffer (≈12 h repair window, Slide
+      18).
+
+      HSD Combi N−1 is marginal — usable only as a short-term check mode.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '9'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - FSD 475: 4 × @ 72 Hz = 384 g/s | N−1 (3 @ 72 Hz) = 288 g/s | ❌ short ≈ 19 g/s
+
+    - FSD 575: 4 × @ 72 Hz = 450 g/s | N−1 (3 @ 72 Hz) = 337.5 g/s | ✅ OK (+ 30 g/s margin)
+
+    - HSD Combi (2 Combis = 4 comp): 4 × @ 72 Hz = 350 g/s | N−1 = 262.5 g/s | ⚠ short for 307 g/s
+
+    - FSD‑475 N−1 insufficient → use liquid buffer (5 m³ tank, 0.4 m³/h descent rate = ≈ 12 h repair window)
+
+    - FSD‑575 N−1 covers 24 QM operation (≈ 307 g/s)'
+- index: 10
+  elements:
+  - shape: Title 1
+    type: text
+    text: Unit Economics — Single HP Compressor
+  - shape: Text Placeholder 2
+    type: text
+    text: Isothermal Compression Power & Energy Cost (new — not in baseline)
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Model
+
+      Isothermal compression, Ẇ = ṁ·R·T·ln(P₂/P₁) — the thermodynamic best case for a water-cooled, intercooled
+      screw compressor.
+
+      Assumptions (flagged)
+
+      T=300 K inlet · P₂=14 bar(a) (Slide 6) · P₁≈1.1 bar(a) LP suction (assumed, not in RTMs) · η_isothermal=50%
+      · helium, R=2077 J/(kg·K)
+
+      Flow point used
+
+      112.5 g/s = FSD 575 @ 72 Hz (Slide 8) — same per-unit number as the N−1 and Hz-requirement charts.
+
+      VFD & cooling note
+
+      Water-cooling keeps compression near-isothermal; VFD scales power ~linearly with flow, not cubically.'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: KEY TAKEAWAY  The 50%-isothermal model, with a plausible 1.1 bar suction assumption, reproduces
+      the deck's own 350 kW nameplate rating to within 2% — a useful sanity check on both numbers.
+  - shape: Slide Number Placeholder 7
+    type: text
+    text: '10'
+  dmaic_phase: MEASURE
+  speaker_notes: 'This slide is new — it is not derived from a baseline slide. It fills a gap the deck''s
+    compressor sizing sections did not cover: what a single HP compressor actually costs to run. Isothermal
+    compression is the correct idealisation for a water-cooled, intercooled screw machine (it is the thermodynamic
+    lower bound on required work; real machines sit between isothermal and adiabatic depending on cooling
+    effectiveness). The 50% isothermal efficiency figure is a reasonable planning assumption for this
+    class of machine but should be confirmed against the OEM''s actual performance curve. The suction
+    pressure (1.1 bar) is not stated anywhere in the RTMs excerpted in this deck and is flagged as an
+    assumption — sensitivity: 1.05-1.5 bar suction brackets 313-363 kW, i.e. the 350 kW nameplate sits
+    comfortably inside that range. The energy-cost figures use illustrative tariff bands (€0.12-0.20/kWh);
+    replace with the actual SCK CEN industrial electricity contract rate before using this for a budget
+    submission. This slide''s real purpose is to make the case, in Euros, for why the CONTROL section''s
+    predictable-replacement policy matters: running cost this large dwarfs a single overhaul, so keeping
+    the compressor in its efficient operating window is itself worth money, independent of the reliability
+    argument.'
+- index: 11
+  elements:
+  - shape: Title 1
+    type: text
+    text: 3-Only Envelope (Service / MTTR)
+  - shape: Text Placeholder 2
+    type: text
+    text: Flow vs Frequency, 3 Compressors Only
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Same N−1 question as Slide 9, reframed as the live 3-compressor operating envelope.
+
+      FSD 575 clears 307 g/s at 72 Hz; FSD 475 does not.
+
+      At ≤ 65 Hz, 3-unit flow is marginal for both types but may meet target with buffer support.
+
+      Descent-rate check: 3-of-4 flow ≈ 0.4 m³/h → a 5 m³ buffer gives ≈ 12 h repair window (Slide 18).
+
+      Applicant shall simulate 2/3 and 3/4 flow cases (FRM/DBE loop analysis) and report restart capability.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '11'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - At 3 × FSD‑475 @ 72 Hz → 288 g/s (< target)
+
+    - At 3 × FSD‑575 @ 72 Hz → 337.5 g/s (≥ target)
+
+    - At 3 × ≤ 65 Hz → ≈ 270‑285 g/s → marginal but may meet with buffer
+
+    - Descent rate check: 3/4 flow → ≈ 0.4 m³/h; 5 m³ liquid gives ≈ 12 h repair window
+
+    - Applicant shall: simulate 2/3 and 3/4 flow cases (Fred/DBE loop analysis) and report restart capability'
+- index: 12
+  elements:
+  - shape: Title 1
+    type: text
+    text: Acceptance & Test System
+  - shape: Text Placeholder 2
+    type: text
+    text: Test Objectives and Criteria
+  - shape: Text Placeholder 3
+    type: text
+    text: Four gated checks, run in sequence, before the plant is accepted for 24×2 K operation (SB and
+      OP variants). Each step must pass before the next is credited.
+  - shape: Oval 4
+    type: text
+    text: '1'
+  - shape: TextBox 5
+    type: text
+    text: '72 Hz stress (per unit)
+
+      ≥ 2 h continuous, no derate. Vibration / oil-temp / ΔT logged.'
+  - shape: Oval 6
+    type: text
+    text: '2'
+  - shape: TextBox 7
+    type: text
+    text: '3-only envelope check
+
+      MTTR 8 h coverage; maintain 24 QM w/ FFT; flow + pressure trend recorded.'
+  - shape: Oval 8
+    type: text
+    text: '3'
+  - shape: TextBox 9
+    type: text
+    text: 'CIS / MCS exchange
+
+      Autonomy & data sync; ¨{RTM-0237–0252 pass}; event logs + MTBF fields verified.'
+  - shape: Oval 10
+    type: text
+    text: '4'
+  - shape: TextBox 11
+    type: text
+    text: 'Recovery
+
+      Back to ≤ 60 Hz within ≤ 15 min post-upset; control loop verified.'
+  - shape: Slide Number Placeholder 13
+    type: text
+    text: '12'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Applicant shall implement parametric scripts to estimate descent-rate and restart criteria
+    with liquid inventory.
+
+
+    Full baseline text:
+
+    - 72 Hz Stress (per unit): Stability / no derate | ≥ 2 h continuous | Vibration, oil temp, ΔT log
+
+    - 3‑Only Envelope Check: MTTR 8 h coverage | Maintain 24 QM w/ FFT | Flow + P trend record
+
+    - CIS/MCS Exchange: Autonomy · data sync | RTM‑0237…0252 pass | Event logs + MTBF fields – to check
+    and confirm since new numbers
+
+    - Recovery: Back to ≤ 60 Hz | ≤ 15 min post‑upset | Verified control loop
+
+    - Applicant shall implement parametric scripts to estimate descent‑rate and restart criteria with
+    liquid inventory'
+- index: 13
+  elements:
+  - shape: Title 1
+    type: text
+    text: Reliability Targets and RAMI
+  - shape: Text Placeholder 2
+    type: text
+    text: MTBF Expectations and Maintenance Policy
+  - shape: Text Placeholder 3
+    type: text
+    text: 'MTBF targets scale with the consequence of the failure — Class A / B / C (defined Slide 19).
+
+      Planning assumption: rotary screw compressors run ≈ 40,000–80,000 h between major overhauls.
+
+      These targets are the input to the Poisson campaign-success model built in Slides 22–28.
+
+      Same three numbers are restated per failure-class in Slide 20 — same chart, different lens.
+
+      Applicant shall submit a RAMI dossier with component MTBFs, frequency bins, maintenance policy,
+      and MTBF impact for ≥ 68 Hz operation.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '13'
+  dmaic_phase: DEFINE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - Unplanned transition out of 2 K: Target MTBF > 5 years (, minor recovery events)
+
+    - Transition to 4.5 K standby: Target MTBF > 10 years (, refrigerator‑backed)
+
+    - Warm‑up > 4.5 K: Target MTBF > 15 years (critical system event)
+
+    - Planning assumption: rotary screw compressors ≈ 40 000 – 80 000 h between major overhauls
+
+    - Applicant shall: submit RAMI dossier with component MTBFs, frequency bins, maintenance policy, and
+    MTBF impact for ≥ 68 Hz operation'
+- index: 14
+  elements:
+  - shape: Title 1
+    type: text
+    text: CIS Autonomy & MCS Exchange
+  - shape: Text Placeholder 2
+    type: text
+    text: Integration Requirements and Obligations
+  - shape: Text Placeholder 3
+    type: text
+    text: 'RTM 0237–0252
+
+      CIS Autonomy / MCS Exchange obligation (Addendum II verbatim extract).
+
+      Applicant shall
+
+      Implement real-time linking of event IDs, Hz-band hours, and MTBF tracking per compressor.
+
+      Cross-references
+
+      Fig. 9, Addendum II §3.5.4, RTM-047 (VFD target ≤ 65 Hz nominal).'
+  - shape: Rounded Rectangle 4
+    type: text
+    text: 'QPLANT
+
+      compressors'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: CIS
+  - shape: Rounded Rectangle 6
+    type: text
+    text: MCS
+  - shape: TextBox 11
+    type: text
+    text: event IDs · Hz-band hours · MTBF tracking, exchanged continuously in both directions
+  - shape: Rounded Rectangle 12
+    type: text
+    text: WHY IT MATTERS  This live link is what makes Slide 13's MTBF dossier and the CONTROL section's
+      governance loop possible — the data must flow before it can be tracked.
+  - shape: Slide Number Placeholder 14
+    type: text
+    text: '14'
+  dmaic_phase: DEFINE
+  speaker_notes: 'Full baseline text:
+
+    - RTM 0237‑0252: CIS Autonomy / MCS Exchange (to check actual numbers again)
+
+    - ''In the offer …'' Obligation: Verbatim text from Addendum II extracts
+
+    - Applicant Shall Elaboration: Implement real‑time linking of event IDs, Hz‑band hours, and MTBF tracking
+    per compressor
+
+    - Cross‑References: Fig. 9, Addendum II § 3.5.4, RTM‑047 (VFD operation target nominal operation  ≤
+    65 Hz)'
+- index: 15
+  elements:
+  - shape: Title 1
+    type: text
+    text: Utilities & Interfaces
+  - shape: Text Placeholder 2
+    type: text
+    text: System Integration Points
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Four utility interfaces size and constrain the compressor fleet''s operating envelope used
+      throughout this deck (Slides 8–18). Applicant shall design the mechanical & process tie-in kit.
+
+
+
+      Control of PAB12 and HV06 flows and link to operational need of QPLANT (HCC specific) compressor
+      fleet''s operating envelope used throughout this deck (Slides 8–18). Applicant shall design the
+      mechanical & process tie-in kit.'
+  - shape: Oval 4
+    type: text
+    text: QPLANT
+  - shape: Rounded Rectangle 5
+    type: text
+    text: 'Electrical
+
+      4 × 350 kW
+
+      metered + aggregated log'
+  - shape: Rounded Rectangle 7
+    type: text
+    text: 'Cooling Water
+
+      27→37°C (ΔT 10K)
+
+      42°C max (ΔT 15K, PS01)'
+  - shape: Rounded Rectangle 9
+    type: text
+    text: 'Process Headers (INTERCONNECGà
+
+      14 bar supply setpoint
+
+      VFD + trim valves'
+  - shape: Rounded Rectangle 11
+    type: text
+    text: "Future QDB \n4.5K/2K Tie-in\nQRB provision\npilot valve pads + IO stubs"
+  - shape: Rounded Rectangle 7
+    type: text
+    text: "PAB12 \t& HV06"
+  - shape: Rounded Rectangle 7
+    type: text
+    text: Back-up (350 kW) and VFD HARMONICS
+  - shape: Rounded Rectangle 11
+    type: text
+    text: "Future WPS \nS, U, W\nQRB provision\npilot valve pads + IO stubs"
+  - shape: Rounded Rectangle 11
+    type: text
+    text: 'LHE USER + Return
+
+      Dewar+GHE recovery'
+  - shape: Rounded Rectangle 7
+    type: text
+    text: WCS, WSH
+  - shape: Slide Number Placeholder 24
+    type: text
+    text: '15'
+  dmaic_phase: DEFINE
+  speaker_notes: 'Full baseline text:
+
+    - Electrical: 4 × 350 kW (metered + aggregated log feed)
+
+    - Cooling Water: 27 → 37 °C (Δ 10 K) | 42 °C max return (Δ 15 K for PS01) | Single loop header
+
+    - Process Headers: Maintain 14 bar supply setpoint | Controls via VFD + Trim valves
+
+    - Future 4.5 K / 2 K Vessel tie‑in: QRB provision | Pilot valve pads + IO stubs
+
+    - Applicant shall design mechanical & process tie‑in kit'
+- index: 16
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix A — Canonical Scenarios
+  - shape: Text Placeholder 2
+    type: text
+    text: Cross-check Addendum II Table 3 and Fig. 6
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Five canonical WCS HP-flow scenarios, cross-checked against Addendum II Table 3 / Fig. 6.
+
+      24 QM Operation (307 g/s) is the real operations target used throughout this deck.
+
+      30 QM Operation (344 g/s) is the design point — the margin above real operations.
+
+      Standby scenarios (both QM counts) size the fleet''s low-flow / warm-standby envelope.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '16'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - 2 K Op 30 QM (margin): 900 W @ 2 K + 8600 W @ 40/60 K | 344 g/s |  Design Pt
+
+    - 2 K Stdby 30 QM: 420 W @ 2 K + 6215 W @ 40/60 K | 239 g/s | Standby
+
+    - 2 K Op 24 QM (margin): 720 W @ 2 K + 7025 W @ 40/60 K | 307 g/s | Real Ops Target
+
+    - 2 K Stdby 24 QM: 340 W @ 2 K + 5100 W @ 40/60 K | 215 g/s |  Mini‑Design
+
+    - 4.5 K Stdby 24 QM: 340 W @ 4.5 K + 5100 W @ 40/60 K | 160 g/s | | Warm Standby'
+- index: 17
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix B — N−1 Hz Requirement
+  - shape: Text Placeholder 2
+    type: text
+    text: 'Hz to reach 307 g/s (N−1: 3 units)'
+  - shape: Text Placeholder 3
+    type: text
+    text: 'Same N−1 question as Slides 9 and 11, now expressed as required frequency, not flow.
+
+      FSD 575 needs only ≈ 65–66 Hz — comfortably inside the ≤ 72 Hz upset ceiling (Slide 7).
+
+      FSD 475 needs ≈ 75 Hz — exceeds the limit outright; requires the liquid buffer or a 4th unit.
+
+      HSD Combi sits right at the 72 Hz edge — usable only as a short-term check mode.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '17'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - FSD‑475: Hz > 72 Hz (≈ 75 Hz est.) | ⚠ Exceeds limit | Requires buffer or extra unit
+
+    - FSD‑575: Hz ≈ 65–66 Hz | ✅ OK | Within limits · meets target
+
+    - HSD Combi (4 comp): Hz ≈ 72 Hz | ⚠ Limit edge | Use as short term check mode'
+- index: 18
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix C — Liquid Buffer Coverage
+  - shape: Text Placeholder 2
+    type: text
+    text: Coverage Time Analysis
+  - shape: Text Placeholder 3
+    type: text
+    text: '5 m³ liquid buffer converts an N−1 flow shortfall into a bounded repair window.
+
+      ¾ nominal flow (the FSD 475 N−1 case, Slides 9/11): ≈ 12 h coverage before buffer depletion.
+
+      ⅔ and ½ flow cases are progressively less forgiving — down to ≈ 5 h at half flow.
+
+      This coverage time is what sizes the acceptable MTTR in the acceptance-test criteria (Slide 12).
+
+      Applicant shall validate these loops (2/3, 3/4 nominal) and demonstrate restart criteria after flow
+      recovery.'
+  - shape: Slide Number Placeholder 6
+    type: text
+    text: '18'
+  dmaic_phase: MEASURE
+  speaker_notes: 'Full baseline bullet text (verbatim), condensed on-slide for readability:
+
+
+    - ¾ flow (≈ 0.75× nom.): Descent‑Rate 0.4 m³/h | Buffer Volume 5 m³ | Coverage Time ≈ 12 h
+
+    - ⅔ flow: Descent‑Rate ≈ 0.6 m³/h (est.) | Buffer Volume 5 m³ | Coverage Time ≈ 8 h
+
+    - ½ flow (check): Descent‑Rate ≈ 0.9 m³/h (est.) | Buffer Volume 5 m³ | Coverage Time ≈ 5 h
+
+    - In the Offer the Applicant Shall:
+
+    - Applicant shall quantify and validate these loops (2/3 · 3/4 nominal) and submit as part of acceptance
+    data package
+
+    - Demonstrate restart criteria after flow recovery and update control logic parameters'
+- index: 19
+  elements:
+  - shape: Rectangle 1
+    type: text
+    text: Failure Classification
+  - shape: Slide Number Placeholder 15
+    type: text
+    text: '19'
+  - shape: Rectangle 3
+    type: text
+    text: RTM-034 to RTM-036 — three consequence-based classes
+  - shape: Table 2
+    type: table
+    rows:
+    - - Class
+      - Consequence
+    - - A
+      - Exit from 2 K, recoverable ≤ 24 h
+    - - B
+      - Transition to 4.5 K / TS standby
+    - - C
+      - Warm-up > 4.5 K or > 24 h recovery
+  - shape: TextBox 16
+    type: text
+    text: Every unplanned transition out of 2 K is classified by how far it falls and how long recovery
+      takes — the classification alone doesn't set a number, it decides which MTBF target applies (Slide
+      20).
+  - shape: Rounded Rectangle 17
+    type: text
+    text: WHY IT MATTERS  Class is assigned by consequence, not cause — a Class C warm-up from a sensor
+      fault counts the same as one from a compressor failure. This keeps the MTBF budget honest.
+  dmaic_phase: DEFINE
+  speaker_notes: 'BSLN Slide 16 combined this table with the Reliability Targets content below it on one
+    crowded slide (plus an unrelated leftover textbox duplicated from the Operational Philosophy slide,
+    removed here as dead content). Split for readability — targets now on Slide 21.
+
+
+    Full baseline table:
+
+    - Class A: Exit from 2 K, recoverable ≤ 24 h
+
+    - Class B: Transition to 4.5 K / TS standby
+
+    - Class C: Warm-up > 4.5 K or > 24 h recovery'
+- index: 20
+  elements:
+  - shape: Rectangle 1
+    type: text
+    text: Reliability Targets by Failure Class
+  - shape: Slide Number Placeholder 15
+    type: text
+    text: '20'
+  - shape: Rectangle 1
+    type: text
+    text: 'MTBF requirements scale with severity of consequence
+
+      Applies to aggregated QPLANT contribution
+
+      Prevents trading rare catastrophic events against frequent minor ones'
+  - shape: TextBox 17
+    type: text
+    text: Target values (> 5 / > 10 / > 15 years) are read directly off the chart, right →
+  - shape: TextBox 19
+    type: text
+    text: Same chart, different lens — first shown on Slide 13
+  - shape: Rounded Rectangle 20
+    type: text
+    text: CROSS-CHECK  These are the same three numbers Slide 13 feeds into the Poisson campaign-success
+      model (Slides 22–28) — defined once here, used twice.
+  - shape: TextBox 16
+    type: text
+    text: Same three classes as Slide 19 — MTBF target per consequence tier
+  dmaic_phase: DEFINE
+  speaker_notes: 'Second half of BSLN Slide 16 (see Slide 20''s notes for the split rationale).
+
+
+    Full baseline text:
+
+    - MTBF requirements scale with severity of consequence
+
+    - Applies to aggregated QPLANT contribution
+
+    - Prevents trading rare catastrophic events against frequent minor ones
+
+    - Class A: > 5 years
+
+    - Class B: > 10 years
+
+    - Class C: > 15 years'
+- index: 21
+  elements:
+  - shape: Rectangle 1
+    type: text
+    text: 'Operational Philosophy: Cold ≠ Off'
+  - shape: Slide Number Placeholder 15
+    type: text
+    text: '21'
+  - shape: TextBox 16
+    type: text
+    text: 'QPLANT is expected to operate continuously — nominal and standby modes are both valid operating
+      states.
+
+      Standby ≠ unavailability. Warm Stop is the last resort, not a routine state.'
+  - shape: Pentagon 17
+    type: text
+    text: '2K-OP
+
+      Nominal'
+  - shape: Chevron 18
+    type: text
+    text: '2K-SB
+
+      Standby, valid'
+  - shape: Chevron 19
+    type: text
+    text: '4.5K-SB
+
+      Reduced avail.'
+  - shape: Chevron 20
+    type: text
+    text: 'TS-SB
+
+      Warm standby'
+  - shape: Pentagon 21
+    type: text
+    text: 'WS
+
+      Last resort'
+  - shape: Rounded Rectangle 22
+    type: text
+    text: READING THIS DIAGRAM  Preferred hierarchy runs left → right. Every step right of 2K-OP is a
+      deliberate, monitored trade-down — not a failure — until Warm Stop, which is.
+  dmaic_phase: DEFINE
+- index: 22
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix D (1/2) — Poisson Reliability Model
+  - shape: Text Placeholder 2
+    type: text
+    text: Methodology behind every campaign-success number in this compendium
+  - shape: TextBox 4
+    type: text
+    text: 'The model
+
+      Failures are modeled as a Poisson process with constant rate λ (events/year) — equivalent to assuming
+      a constant hazard rate, i.e., MTBF = 1/λ.
+
+      What the chart shows
+
+      P₀ = probability of zero trips within a time window, as MTBF varies. Three windows are plotted:
+      the 90-day campaign (the operational requirement), 1 year, and 5 years (long-term intuition check).
+
+      Formula
+
+      P(N=0) = e^(−λt),  with  t in years and  λ = 1 / MTBF.'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: WHERE THIS GETS USED  Appendix D (2/2) applies this to three specific cases; Appendix F uses
+      it to derive RTM-05's 0.26 events/year limit; Appendix I applies the same logic with a Weibull (age-dependent)
+      hazard instead of a constant one.
+  - shape: Slide Number Placeholder 8
+    type: text
+    text: '22'
+  dmaic_phase: ANALYZE
+  speaker_notes: 'This slide replaces 5 near-identical Poisson-curve screenshots from the original working
+    deck (all plotting the same P0=e^-lambda*t relationship with progressively more annotation layered
+    on) with one clean chart and the underlying formula stated once. Full original chart axis/curve legend:
+    X-axis = trips per year (lambda), the Poisson event rate, equivalent to MTBF = 1/lambda. Y-axis =
+    probability of zero trips over a given time window. Curves = 90-day campaign (physics continuity requirement),
+    1 year (operational intuition), 5 years (long-term cold-operation intuition). All curves follow P(N=0)
+    = exp(-lambda*t).'
+- index: 23
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix D (2/2) — Worked Examples
+  - shape: Text Placeholder 2
+    type: text
+    text: Three specific readings of the same P(N=0) = e^(−λt) relationship
+  - shape: TextBox 4
+    type: text
+    text: 'Why three examples
+
+      The same curve answers three different questions this compendium must settle: what does the fleet
+      realistically deliver, what does the contract require, and where does a naive reading of the requirement
+      break down.'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: "1 — REALISTIC CASE  \nCC + PVPS single-train, λ ≈ 0.25/yr (MTBF ≈ 4 y): 90-day P₀ ≈ 94%, 1-year\
+      \ ≈ 78%, 5-year ≈ 29%. Consistent with MTBF ≈ 4 y and “good but not magical” reliability — see Appendix\
+      \ I for where this number comes from."
+  - shape: Rounded Rectangle 6
+    type: text
+    text: "2 — CONTRACTUAL CASE  \nClass-A target MTBF = 5 y (λ = 0.20/yr): 90-day P₀ ≈ 95% (RTM-031 compliant),\
+      \ 1-year ≈ 82%, 5-year ≈ 37%. This is the number RTM-\"05 (Appendix F) is built on."
+  - shape: Rounded Rectangle 7
+    type: text
+    text: "3 — A COMMON MISREADING  \nReading “≥99% success” as a literal requirement over the full mission\
+      \ window (not per 90-day campaign) implies MTBF ≈ 387 years — impossible for a single-train cryoplant.\
+      \ This is why RTM-05 is written as an annual event-rate limit, not a lifetime success probability."
+  - shape: Slide Number Placeholder 9
+    type: text
+    text: '23'
+  dmaic_phase: ANALYZE
+  speaker_notes: 'Consolidates three separate worked-example screenshots from the original working deck
+    (the CC+PVPS realistic case, the contractual Class-A case, and the ''100 occurrences'' / ''99% over
+    90 days'' literal-reading walkthrough) into three compact takeaway boxes. Full original derivation
+    for example 3: mission time ~46.7 months = ~34,090 hours; setting P(>=1 failure) = 1% over that window
+    and solving for MTBF gives ~3.39 million hours (~387 years) -- confirming that a literal 99%-over-full-window
+    reading is not the intended requirement, which is why RTM-05 (Appendix F) instead caps the annual
+    SAE rate.'
+- index: 24
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix E — Maintenance Activity Matrix
+  - shape: Text Placeholder 2
+    type: text
+    text: What's permitted in each operating state (states defined on Slide 21)
+  - shape: TextBox 4
+    type: text
+    text: Same five states as the Slide 21 chevron diagram and the Slide 19 failure-consequence classes
+      — this table is what makes those states operationally concrete.
+  - shape: Table 5
+    type: table
+    rows:
+    - - Maintenance activity
+      - 2K-OP
+      - 2K-SB
+      - 4.5K-SB
+      - TS-SB
+      - WS
+      - Notes
+    - - Monitoring / diagnostics
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - No operational impact
+    - - Software / control updates (non-intrusive)
+      - ⚠
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - With rollback + MOC
+    - - Instrument checks (non-isolating)
+      - ⚠
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - No venting or isolation
+    - - Helium inventory adjustment
+      - ⚠
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - No pressure excursion
+    - - Partial valve tests
+      - ⚠
+      - ✓
+      - ✓
+      - ✓
+      - ✓
+      - Proven transient envelope
+    - - Rotating machinery minor service
+      - ✕
+      - ⚠
+      - ✓
+      - ✓
+      - ✓
+      - Depends on redundancy
+    - - Cold compressor interventions
+      - ✕
+      - ✕
+      - ⚠
+      - ✕
+      - ✓
+      - Below TS temperature
+    - - Cryogenic valve intrusive work
+      - ✕
+      - ✕
+      - ⚠
+      - ✕
+      - ✓
+      - Boundary opening
+    - - Safety valve / pressure tests
+      - ✕
+      - ✕
+      - ✕
+      - ✕
+      - ✓
+      - Warm Stop only
+    - - Cryostat / cold box opening
+      - ✕
+      - ✕
+      - ✕
+      - ✕
+      - ✓
+      - Warm Stop only
+  - shape: TextBox 6
+    type: text
+    text: ✓ permitted    ⚠ conditional    ✕ not permitted
+  - shape: Slide Number Placeholder 8
+    type: text
+    text: '24'
+  dmaic_phase: ANALYZE
+  speaker_notes: 'Recreated as an editable table from the original screenshot (same data, unchanged).
+    Legend: check = permitted, triangle = conditional (see Notes column), cross = not permitted. Columns
+    are the same five operating states as the Slide 19 diagram: 2K-OP (nominal), 2K-SB (standby, valid),
+    4.5K-SB (reduced availability), TS-SB (warm standby), WS (Warm Stop, last resort).'
+- index: 25
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix F — Deriving the SAE Frequency Limit
+  - shape: Text Placeholder 2
+    type: text
+    text: How the 90-day continuity requirement becomes RTM-05's annual rate cap
+  - shape: TextBox 4
+    type: text
+    text: '1. Continuity requirement
+
+      QPLANT shall support ≥ 90 consecutive days at 2 K, with no unplanned operational-state transition
+      — the user-relevant continuity metric.
+
+      2. Model it as Poisson
+
+      Class-A Service-Affecting Events (SAE) are modeled as a Poisson process, constant rate λ. For a
+      90-day window, t = 90/365 = 0.2466 y, and P(zero SAE) = e^(−λt) (Appendix D).
+
+      3. Invert for the rate cap
+
+      Requiring P(zero SAE) ≥ 0.95 over 90 days gives λ ≤ −ln(0.95)/0.2466 ≈ 0.208 SAE/year, i.e. MTBF_A
+      ≥ 4.8 years — not an unrealistic number, once read correctly.
+
+      4. Duty-factor conversion
+
+      SAE statistics are gathered during active 2 K time. For the nominal duty factor d = 9/14, calendar
+      time = active 2 K time / d — this is how a per-active-time rate becomes a calendar-year rate.'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: A COMMON MISREADING  Reading the success target as ≤1% failure probability over the entire multi-year
+      mission (not per 90-day campaign) implies MTBF ≈ 387 years — see Appendix D (2/2), example 3. RTM-05
+      is deliberately written as an annual rate, not a lifetime probability.
+  - shape: Rounded Rectangle 6
+    type: text
+    text: RTM-05 (NORMATIVE)  The QPLANT design shall limit the frequency of Service-Affecting Events
+      (SAE) attributable to QPLANT — unplanned transitions out of 2 K Operation — to λ_SAE ≤ 0.26 events
+      per calendar year, averaged over representative operating periods. ≈ one SAE every 46.7 calendar
+      months.
+  - shape: Rounded Rectangle 7
+    type: text
+    text: 'ANNEX X — METHOD  Compliance is assessed with the same Poisson event-rate model (Appendix D),
+      applied to the declared operational duty cycle. Worked check: λ ≈ 12/46.7 ≈ 0.257 SAE/yr → P(N=0,
+      90 d) ≈ e^(−0.257×0.2466) ≈ 0.94 — satisfies RTM-05a.'
+  - shape: Slide Number Placeholder 9
+    type: text
+    text: '25'
+  dmaic_phase: ANALYZE
+  speaker_notes: 'Condenses 6 screenshot-heavy slides from the original working deck (the ''100 occurrences''
+    scratch derivation, the ''Wrong'' literal-reading demonstration, the ''Better'' consistency-rule derivation,
+    the RTM-05 text -- repeated 3 times in the original -- and Annex X) into one slide with the logical
+    chain plus the two normative end-states. No numbers were changed: RTM-05''s 0.26 events/calendar-year
+    cap, the ~4.8-year equivalent MTBF, the 9/14 duty factor, and the Annex X worked check (lambda ~0.257/yr,
+    P0~94%) all match the original document verbatim.'
+- index: 26
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix G — Component Reliability Reference
+  - shape: Text Placeholder 2
+    type: text
+    text: MTBF / MTTR by component, from CERN feedback and published literature
+  - shape: Table 4
+    type: table
+    rows:
+    - - Equipment
+      - MTBF (h)
+      - Source
+      - Warm-up (h)
+      - MTTR (h)
+      - Recover (h)
+      - MDT (h)
+      - MTTR comment
+    - - Oil screw compressors
+      - 333,450
+      - CERN + other projects
+      - '0'
+      - '20'
+      - '6'
+      - '26'
+      - Bare compressor available
+    - - Turbines
+      - 150,000
+      - REx AL-AT
+      - '0'
+      - '8'
+      - '3'
+      - '11'
+      - Spare cartridge available
+    - - Cold compressors
+      - 105,000
+      - REx AL-AT
+      - '0'
+      - '8'
+      - '3'
+      - '11'
+      - Spare cartridge available
+    - - Control / on-off valves
+      - 824,487
+      - '[1] CERN'
+      - '0'
+      - '3'
+      - '3'
+      - '6'
+      - Spare part kits available
+    - - Cryovalves (positioner only)
+      - 2,298,333
+      - '[1] CERN'
+      - '0'
+      - '3'
+      - '3'
+      - '6'
+      - Spare part kits available
+    - - Cryovalves (tightness + positioner)
+      - 482,927
+      - '[1] CERN'
+      - '12'
+      - '3'
+      - '12'
+      - '27'
+      - Spare part kits available
+    - - Pressure sensors
+      - 2,035,667
+      - '[1] CERN'
+      - '0'
+      - '2'
+      - '2'
+      - '4'
+      - Spare transmitters available
+    - - Temperature sensors
+      - 1,250,000
+      - EIReDA 98, p.239
+      - '0'
+      - '2'
+      - '2'
+      - '4'
+      - Spare transmitter available
+  - shape: TextBox 5
+    type: text
+    text: '[1] CERN — "First assessment of reliability data for the LHC accelerator and detector cryogenic
+      system components", Perinić et al. Impurities analyzers and the vacuum system are not listed: not
+      impacting cryo availability.'
+  - shape: Rounded Rectangle 6
+    type: text
+    text: WHERE THESE NUMBERS FEED IN  Oil screw compressor MTBF drives the Case File on Slide 32; cold
+      compressor MTBF drives the cold-compressor-train calculation on Appendix I; turbine MTBF is cross-checked
+      against OEM data on Appendix H.
+  - shape: Slide Number Placeholder 8
+    type: text
+    text: '26'
+  dmaic_phase: ANALYZE
+  speaker_notes: Recreated as an editable table from a screenshot of the original source table (all values
+    unchanged). This is the base reference table — component MTBF/MTTR figures used everywhere else in
+    this compendium trace back to this table.
+- index: 27
+  elements:
+  - shape: Title 1
+    type: text
+    text: Appendix H — Turbine OEM & Contractor Data
+  - shape: Text Placeholder 2
+    type: text
+    text: Linde Kryotechnik TED-series field data, and a check against Contractor A's claim
+  - shape: TextBox 4
+    type: text
+    text: Linde Kryotechnik AG field data, TED-series turbines in operation 2009–2019 (improved-design
+      cartridges only) — cross-checks the 150,000-h turbine planning figure used on Appendix G.
+  - shape: Table 5
+    type: table
+    rows:
+    - - Turbine type
+      - In service since 2009
+      - Operating hours
+      - Damages (turbine-related)
+      - MTBF (h)
+    - - TED16
+      - '182'
+      - 3,876,000
+      - '11'
+      - 352,364
+    - - TED22
+      - '94'
+      - 1,797,000
+      - '6'
+      - 299,500
+    - - TED32
+      - '23'
+      - 1,050,000
+      - '2'
+      - 525,000
+    - - TED45
+      - '21'
+      - 833,000
+      - '1'
+      - 833,000
+  - shape: TextBox 6
+    type: text
+    text: 'MTTR by spare-cartridge exchange: 2–3 h. By express repair at manufacturer site: 2 weeks. By
+      standard repair at manufacturer site: 4 weeks (all four types).'
+  - shape: TextBox 7
+    type: text
+    text: 'Contractor A''s claim
+
+      ≥96% availability with maintenance intervals after 8,400 operating hours (1 year). Planned time
+      8,400 h/yr ⇒ allowed unavailability = 4% = 336 h/yr ≈ 14 days/yr.
+
+      This deck''s RTM-032
+
+      If read as 99% over 8,000 h: allowed unavailability = 1% = 80 h/yr ≈ 3.3 days/yr — about 4× stricter
+      than Contractor A''s figure, and stricter still against a full 8,760 h year.'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: READING THIS RIGHT  The gap isn't a contradiction — it means RTM-032 should be read either with
+      a lower annual % target, a reduced planned-time basis, or (the best fit with what users feel) moderate
+      annual availability paired with a stringent 2 K campaign-success requirement (Appendix F).
+  - shape: Slide Number Placeholder 10
+    type: text
+    text: '27'
+  dmaic_phase: ANALYZE
+  speaker_notes: Recreated as editable tables/text from Linde Kryotechnik AG document screenshots and
+    the original 'Contrast with Contractor A' analysis (all figures unchanged). The comparison is presented
+    as a reading-clarification, not a contradiction, per instruction to not let appendix content contradict
+    the rest of the deck.
+- index: 28
+  elements:
+  - shape: Title 1
+    type: text
+    text: 'Appendix I — RCM/Weibull Applied: Cold-Compressor Train'
+  - shape: Text Placeholder 2
+    type: text
+    text: The worked example behind Slide 31's wear-out argument and Roadmap 2/3's sample calc
+  - shape: TextBox 4
+    type: text
+    text: 'The system
+
+      3 cold compressors in series, no redundancy — losing one means the plant cannot maintain 27 mbar.
+      A pure series system: λ_train = 3 × λ_stage.
+
+      Train MTBF
+
+      Single-stage MTBF = 105,000 h (Appendix G) ⇒ MTBF_train = 105,000 / 3 ≈ 35,000 h ≈ 4.0 years — the
+      number used for Class A failure frequency and RTM-030/031 aggregation.
+
+      Why Weibull, not just MTBF
+
+      Slide 31 explains the general relation h(t) = (β/η)·(t/η)^(β−1): whenever β > 1, hazard rises with
+      age. The table (right) applies it to real components instead of restating the formula.'
+  - shape: Rounded Rectangle 5
+    type: text
+    text: MTBF_CC-TRAIN ≈ 35,000 h ≈ 4.0 y  This is the correct number for Class A failure frequency,
+      RTM-030 aggregation, and the RTM-031 90-day campaign probability — not the single-compressor 105,000
+      h figure.
+  - shape: Table 6
+    type: table
+    rows:
+    - - Equipment
+      - Weibull (β, η)
+      - P(fail 90d) good-as-new
+      - P(fail 90d) at age 5y
+      - Increase
+    - - Oil screw compressor
+      - β=2.5, η≈363,300 h
+      - 2.7×10⁻⁶ (0.00027%)
+      - 6.45×10⁻⁴ (0.0645%)
+      - ×237
+    - - Turbine
+      - β=2.0, η≈169,300 h
+      - 1.63×10⁻⁴ (0.0163%)
+      - 6.74×10⁻³ (0.674%)
+      - ×41
+    - - Cold compressor
+      - β=2.5, η≈114,400 h
+      - 4.90×10⁻⁵ (0.0049%)
+      - 1.15×10⁻² (1.153%)
+      - ×235
+  - shape: Slide Number Placeholder 9
+    type: text
+    text: '28'
+  dmaic_phase: ANALYZE
+  speaker_notes: 'Consolidates two slides from the original working deck (the cold-compressor-train series
+    calculation and the Weibull ''fresh vs 5-years-old'' results table, which was duplicated across two
+    slides in the original) into one. All figures unchanged. Interpretation unchanged: if the 90-day 2
+    K run starts right after a good-as-new overhaul, the wear-out contribution is tiny; if it starts at
+    the end of the 5-year interval, the risk is dramatically higher, especially for beta=2.5 assets.'
+- index: 29
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '29'
+  - shape: Rectangle 2
+    type: text
+    text: Why MTBF Matters
+  - shape: Text Placeholder 2
+    type: text
+    text: 'Every number in this deck — the 5-year Class A target, the N−1 margins, the 94–95% campaign
+      ceiling — reduces to one shared quantity: Mean Time Between Failures.
+
+      The BCR013 derivation opposite shows that budget in its rawest form: the accelerator''s own 250
+      h MTBF caps how much unreliability QCELL/QPS/NF may add.'
+  - shape: TextBox 16
+    type: text
+    text: KEY TAKEAWAY  MTBF is a shared 0.35-events/year budget, not a component property — every claim
+      later in this deck draws on the same account.
+  dmaic_phase: IMPROVE
+- index: 30
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '30'
+  - shape: Rectangle 2
+    type: text
+    text: The Hidden Assumption
+  - shape: TextBox 7
+    type: text
+    text: 'MTBF only means what we want it to mean if failures arrive at random, at a constant rate —
+      the Poisson/exponential assumption used throughout the ANALYZE section (Slides 22–28). Under that
+      assumption, a component with MTBF = 5 years is exactly as likely to fail in month one as in month
+      fifty.
+
+      That is a convenient mathematical fiction, not a description of real machinery. It holds well for
+      random, external trips — it says nothing about wear. The chart opposite is the same Poisson relationship,
+      one more time, as a reminder that everything to its left was built on a flat hazard rate.'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: KEY TAKEAWAY  A single MTBF number silently assumes “no aging.” The next slides show why that
+      assumption has an expiry date.
+  dmaic_phase: IMPROVE
+- index: 31
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '31'
+  - shape: Rectangle 2
+    type: text
+    text: When MTBF Lies — the Wear-Out Boundary
+  - shape: Text Placeholder 2
+    type: text
+    text: Assumptions
+  - shape: TextBox 10
+    type: text
+    text: 'Appendix I''s (Slide 28) RCM/Weibull relation, h(t) = (β/η)·(t/η)^(β−1), makes the limit explicit:
+      whenever β > 1, hazard rate rises with age, and a single constant MTBF understates real short-term
+      risk near end-of-life. Appendix I''s worked example shows the effect is not small: for a β = 2.5
+      asset (oil screw / cold compressor), the chance of failing in the next 90 days after 5 years in
+      service is 200–240× higher than the same 90 days right after a good-as-new overhaul.'
+  - shape: Rounded Rectangle 11
+    type: text
+    text: KEY TAKEAWAY  MTBF governs the plant's average reliability budget. Weibull shape (β) governs
+      whether any one unit is quietly approaching a cliff.
+  dmaic_phase: IMPROVE
+- index: 32
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '32'
+  - shape: Rectangle 2
+    type: text
+    text: 'Case File: HP Compressors'
+  - shape: TextBox 5
+    type: text
+    text: "The HP screw compressors carry an assumed 350,000 h MTBF\n— long enough that, under the Poisson\
+      \ model, a bare 3-of-3 no-redundancy train still clears 90 days with 98.2% probability. That number\
+      \ is comforting only while the compressors stay inside their flat-hazard useful-life window.\nScrew\
+      \ compressors wear through bearings, seals and rotor packages on a calendar/duty-cycle clock that\
+      \ the Poisson model on the page knows nothing about. \nThe 3+1 redundancy case (right) does not\
+      \ just buy short-window margin — it buys the time needed to pull a unit for scheduled service before\
+      \ it enters its own wear-out region."
+  - shape: Rounded Rectangle 6
+    type: text
+    text: KEY TAKEAWAY  Redundancy here is not only insurance against random failure — it is the maintenance
+      window that makes predictable replacement possible.
+  dmaic_phase: IMPROVE
+- index: 33
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '33'
+  - shape: Rectangle 2
+    type: text
+    text: 'Case File: PVPS'
+  - shape: TextBox 6
+    type: text
+    text: "PVPS multiplies the same logic across (up to) nine parallel units. At 9-of-9 with no spare,\
+      \ the 5-year probability of at least one trip is 67.6% \n— not because any single pump is unreliable,\
+      \ but because unreliability compounds as fleet size grows.\nN+1 and N+2 sparing claw back the 90-day\
+      \ and 1-year numbers dramatically, but the 5-year figure stays stubborn (13–33%): \nover long horizons,\
+      \ “more components” re-introduces the wear-out problem this section is about. Sparing buys statistical\
+      \ margin against random failure — it does not buy the fleet time out of its wear-out clock."
+  - shape: Rounded Rectangle 7
+    type: text
+    text: KEY TAKEAWAY  For a 9-unit fleet, the honest 5-year reliability number is a scheduling problem,
+      not just a redundancy problem.
+  dmaic_phase: IMPROVE
+- index: 34
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '34'
+  - shape: Rectangle 2
+    type: text
+    text: 'Case File: Turbines — Nowhere to Hide'
+  - shape: TextBox 6
+    type: text
+    text: 'MTBF values indicative – since different values for type of turbine
+
+
+      Spare, redundant NOT possible – since position of trips dictates the cooling – where would the spare
+      be?
+
+
+      >80 K stage – 2 to 3 turbines
+
+      < 80 K stage – 4-5 turbines'
+  - shape: TextBox 7
+    type: text
+    text: 'Turbines are the clearest case in this compendium for why MTBF-only thinking runs out. There
+      is no credible spare position: cooling topology fixes each turbine''s location in the cold-box train,
+      so a “redundant” unit is not interchangeable the way a compressor is.
+
+      With 7-of-7 required and a 105,000 h assumed MTBF, the 5-year no-trip probability is already down
+      to 94.6%; adding an 8th unit barely moves it. A fleet this exposed cannot be managed by waiting
+      for an MTBF-driven alarm — it has to be managed by knowing, ahead of time, which unit is closest
+      to end of usable life.'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: KEY TAKEAWAY  No spare position + no redundancy = the fleet where predictable, age-based replacement
+      matters most, not least.
+  dmaic_phase: IMPROVE
+- index: 35
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '35'
+  - shape: Rectangle 2
+    type: text
+    text: 'The Turn: From Predicting Failure to Preventing It'
+  - shape: TextBox 9
+    type: text
+    text: 'Every slide so far has used MTBF exactly as designed: to predict how often a well-behaved,
+      randomly-failing fleet will trip. That is the right tool for budget-setting, architecture trade-offs,
+      and acceptance testing.
+
+      It is the wrong tool for one aging turbine, compressor or PVPS unit that has quietly moved from
+      the flat part of the bathtub curve onto the rising one. Once wear-out dominates — as the three case
+      files above all confirm it eventually does — the right question stops being “what''s the MTBF” and
+      becomes “how much usable life is left, and when do we act.” That is the shift from reliability prediction
+      to reliability control.'
+  - shape: Rounded Rectangle 10
+    type: text
+    text: KEY TAKEAWAY  MTBF tells you the odds. It does not tell you when to intervene — the remaining
+      slides answer that question.
+  - shape: TextBox 6
+    type: text
+    text: 'MTBF values indicative – since different values for type of turbine
+
+
+      Spare, redundant NOT really possible – since position of trips dictates the cooling – where would
+      the spare be?
+
+
+      >80 K stage – 2 to 3 turbines
+
+      < 80 K stage – 4-5 turbines'
+  dmaic_phase: CONTROL
+- index: 36
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '36'
+  - shape: Rectangle 2
+    type: text
+    text: Predictable Service Replacement
+  - shape: TextBox 7
+    type: text
+    text: 'The control response to a rising hazard rate is not a better MTBF estimate — it is a scheduled
+      intervention set before the wear-out region is reached, sized from each component''s Weibull characteristic
+      life (η) rather than its long-run MTBF.
+
+      In practice: set overhaul/replacement intervals at a fraction of η (tightened further for Class
+      B/C consequence items); track operating hours and Hz-band exposure per unit — data this deck already
+      mandates the Applicant to log; and treat “still running at 340,000 hours” as a maintenance trigger,
+      not a reliability success story.'
+  - shape: Rounded Rectangle 8
+    type: text
+    text: KEY TAKEAWAY  A predictable replacement interval is a Weibull-based deadline set before the
+      hazard curve turns upward — not a reaction to it.
+  dmaic_phase: CONTROL
+- index: 37
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '37'
+  - shape: Rectangle 2
+    type: text
+    text: Reset to New
+  - shape: TextBox 9
+    type: text
+    text: A full overhaul or unit exchange does more than avoid one failure — it resets the clock. A good-as-new
+      replacement returns the component to t = 0 on its Weibull curve, restoring the low, flat hazard
+      rate that every Poisson/MTBF probability in this compendium (Slides 22–28) depends on.
+  - shape: Rounded Rectangle 10
+    type: text
+    text: KEY TAKEAWAY  “Reset to new” is what keeps the rest of this deck's mathematics honest — skip
+      it, and every MTBF-based probability quoted earlier quietly becomes optimistic.
+  dmaic_phase: CONTROL
+- index: 38
+  elements:
+  - shape: Slide Number Placeholder 1
+    type: text
+    text: '38'
+  - shape: Rectangle 2
+    type: text
+    text: Reliability Governance — Closing the Loop
+  - shape: TextBox 5
+    type: text
+    text: 'This compendium opened with a budget (Slide 29: 0.35 events/year) and closes with the mechanism
+      that keeps the plant inside it: a continuous RAMI governance loop.'
+  - shape: Oval 6
+    type: text
+    text: '1'
+  - shape: TextBox 7
+    type: text
+    text: 'MEASURE exposure
+
+      Log operating hours and Hz-band time per unit (already mandated, Slide 7).'
+  - shape: Oval 8
+    type: text
+    text: '2'
+  - shape: TextBox 9
+    type: text
+    text: 'TRACK age vs. η
+
+      Compare accumulated life to each component''s Weibull characteristic life.'
+  - shape: Oval 10
+    type: text
+    text: '3'
+  - shape: TextBox 11
+    type: text
+    text: 'REPLACE before wear-out
+
+      Trigger overhaul/exchange at a fraction of η — not at first symptom.'
+  - shape: Oval 12
+    type: text
+    text: '4'
+  - shape: TextBox 13
+    type: text
+    text: 'RESET & feed back
+
+      Log the renewal and roll it into next year''s RAMI dossier (Slide 13).'
+  - shape: Rounded Rectangle 14
+    type: text
+    text: KEY TAKEAWAY  MTBF opened the story; predictable, logged, reset-to-new replacement is how the
+      plant keeps living up to it.
+  dmaic_phase: CONTROL
