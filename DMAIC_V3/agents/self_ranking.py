@@ -6,8 +6,7 @@ Performs recursive self-ranking of artifacts
 __version__ = "3.3.0"
 
 from pathlib import Path
-from typing import Dict, List, Any
-from datetime import datetime
+from typing import Dict, List
 
 
 class SelfRankingAgent:

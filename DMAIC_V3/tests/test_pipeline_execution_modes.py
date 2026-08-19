@@ -4,10 +4,7 @@ Tests full pipeline execution with various modes and configurations
 """
 
 import pytest
-import tempfile
-import shutil
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 
 # Check if orchestrator is available

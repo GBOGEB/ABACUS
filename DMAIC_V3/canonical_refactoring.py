@@ -5,7 +5,7 @@ Uses temporal engine for time-aware knowledge management
 """
 
 from pathlib import Path
-from typing import Dict, List, Any, Set
+from typing import Dict, List, Any
 from datetime import datetime
 from collections import defaultdict
 import json

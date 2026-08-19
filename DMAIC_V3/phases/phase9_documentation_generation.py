@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Any, Tuple
 
 class Phase9_DocumentationGeneration:
     """Phase 9: Generate documentation books post-execution"""

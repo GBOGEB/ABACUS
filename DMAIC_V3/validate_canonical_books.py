@@ -9,10 +9,9 @@ Validates claims made in canonical knowledge books:
 """
 
 import json
-import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict
 from datetime import datetime
 
 class CanonicalBooksValidator:
