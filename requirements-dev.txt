@@ -6,6 +6,7 @@ pytest-cov>=3.0.0,<4.0.0
 pytest-xdist>=3.3.0
 pytest-json-report>=1.5
 pytest-timeout>=2.1.0
+CoolProp==7.2.0
 black>=23.0.0
 isort>=5.12.0
 flake8>=6.0.0

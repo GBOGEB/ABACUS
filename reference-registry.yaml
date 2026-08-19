@@ -1,0 +1,6 @@
+# DEPRECATED: This file has been superseded by docs/qps_line_s_recovery/reference-registry.yaml
+# which is the single SSOT for property-oracle decisions for the QPS Line S recovery package.
+# This file is retained as a pointer only and should not be updated directly.
+# See docs/qps_line_s_recovery/reference-registry.yaml for the authoritative content.
+
+references: []  # Moved to docs/qps_line_s_recovery/reference-registry.yaml
