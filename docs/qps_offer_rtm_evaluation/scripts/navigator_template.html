@@ -95,6 +95,7 @@
   .legend-key .lk-sw.pill-sw{border-radius:9px;width:24px;height:15px;}
   .note{background:#FDF6E3;border-left:4px solid #B7950B;padding:10px 14px;border-radius:4px;font-size:12.5px;color:#5c4a00;margin-top:10px;}
   .empty{color:var(--muted);font-style:italic;padding:20px;text-align:center;}
+  .ascii-diagram{background:#0F1C1C;color:#DCEFF0;font-family:"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;font-size:11.5px;line-height:1.5;padding:16px 18px;border-radius:6px;overflow-x:auto;white-space:pre;}
   .detail-field{display:grid;grid-template-columns:220px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
   .detail-field .k{font-weight:700;color:var(--navy);font-size:12.5px;}
   .detail-field .v{font-size:13.5px;}
@@ -267,6 +268,7 @@ const TABS = [
   {id:'domains', label:'Domain Summary'},
   {id:'outline', label:'Document Outline'},
   {id:'taxonomy', label:'Taxonomy'},
+  {id:'pca', label:'PCA / Structure'},
 ];
 
 // cluster values are strings like "C7 — Quality, Testing & Risk" (direct),
@@ -596,6 +598,12 @@ function buildLookup(){
       ['Subcategory', row.subcategory], ['Cluster', row.cluster], ['PDF page', row.pdfPage],
       ['Section', row.section], ['Section title', row.sectionTitle], ['Shall statement', row.shall],
       ['Weighted S', fmtNum(row.weightedS)], ['BT win %', fmtNum(row.btWin)],
+      // BT lambda index existed in the workbook (RTM_RANKING col X) but was
+      // never surfaced anywhere in the Navigator -- NEXT_ITERATION_BACKLOG.md
+      // item 10's own real gap. Useful only for RELATIVE separation (lambda=80
+      // vs. lambda=40 means about twice the fitted relative strength, not an
+      // 80%/40% compliance reading) -- said inline, not just in a tooltip.
+      ['BT λ index (relative strength, NOT % compliance)', fmtNum(row.btLambda)],
       ['Primary dimension', row.primaryDim], ['Actual explicit code / standard', row.codeStd],
       ['Evidence / measurability', row.evidence], ['Explicit deliverable / proof', row.deliverable],
       ['Applicable phase(s)', row.phases],
@@ -753,7 +761,9 @@ function buildOfferLookup(){
     const fields = [
       ['Rank (of 50)', offer.rank], ['Gate (T0?)', offer.gate], ['Tier', offer.tier],
       ['Category', offer.category], ['Section', offer.section], ['Weighted S', fmtNum(offer.weightedS)],
-      ['BT win %', fmtNum(offer.btWin)], ['Primary dimension', offer.primaryDim],
+      ['BT win %', fmtNum(offer.btWin)],
+      ['BT λ index (relative strength, NOT % compliance)', fmtNum(offer.btLambda)],
+      ['Primary dimension', offer.primaryDim],
       ['Explicit code / standard', offer.codeStd], ['Interpretation', offer.interpretation],
       ['Applicable phase(s)', offer.phases],
     ];
@@ -2436,6 +2446,187 @@ function buildOutline(){
     'What this tab is NOT: a semantic "these two requirements are similar but not the same" relationship engine between individual RTM/OFFER items. The only item-to-item relationships currently defined anywhere in this workbook are the explicit RTM_CROSSWALK links (OFFER→RTM, typed Direct/Supporting/Broad/Contextual — see OFFER Lookup / RTM Lookup) and this document-outline tree (both items sharing or nesting under the same source-document section). Building free-text similarity across 722 RTM statements would need an agreed method (e.g. shared Standards/Deliverables, shared section, or actual text-similarity scoring) before it is trustworthy rather than a plausible-looking guess — flagging this rather than inventing one.'}));
 }
 
+// ================================================================= PCA / Structure tab
+// Proposal A (PC1xPC2 scatter, colour-coded by domain) and Proposal B (domain
+// quadrant: avg Weighted S vs RTM count, log-scale) from
+// docs/DMAIC_BT_TECHNICAL_REPORT.md Section 4.1-4.2 -- backlog item 2c's own
+// recommendation was a dedicated tab (not a dropdown option inside another
+// chart), holding both proposals together, same pattern Clusters/Domains
+// already use. Data comes straight from DATA.pca (compute_pca.py's own
+// output, re-run whenever RTM_RANKING changes) -- nothing computed inline.
+function buildPca(){
+  const s = sections.pca;
+  const pca = DATA.pca;
+  if (!pca || !pca.variance_table){
+    s.appendChild(el('p',{class:'empty',text:'No PCA data in this export -- run compute_pca.py and re-export nav_data before splicing.'}));
+    return;
+  }
+  s.appendChild(el('h2',{text:'PCA / Structure -- how the 7 BT scoring dimensions relate to each other'}));
+  s.appendChild(el('p',{class:'subtitle',text:
+    `Standard PCA (z-score standardized), run against all ${pca.n_items} RTMs' raw 0-3 dimension scores (L/R/P/F/Q/LC/C). `+
+    'This answers "how correlated are the 7 dimensions with each other" -- a DIFFERENT question from the Clusters tab’s '+
+    'item-level KMeans clustering (which groups RTM ITEMS by profile, not dimensions by correlation). The two are kept '+
+    'deliberately separate everywhere in this project; conflating them was flagged as a real risk in NEXT_ITERATION_BACKLOG.md.'}));
+
+  // ---- explained variance --------------------------------------------------
+  s.appendChild(el('h3',{text:'Explained variance'}));
+  const varWrap = el('div',{class:'card'});
+  renderParetoInto(varWrap, pca.variance_table.map(v => ({label:v.pc, value:v.variance_pct})), false, null, 'variance');
+  s.appendChild(varWrap);
+  s.appendChild(el('p',{class:'note',text:
+    `7 components needed to reach 100% (${pca.variance_table[6].cumulative_pct}% cumulative) -- no 1-2 factor collapse. `+
+    'Validates keeping all 7 weighted dimensions in the ranking formula rather than a simpler score: if two or three '+
+    'dimensions were noisy proxies for the same thing, PCA would show one or two components eating 70-80%+ of the variance. It does not.'}));
+
+  // ---- loadings table -------------------------------------------------------
+  s.appendChild(el('h3',{text:'Loadings (PC1-PC3) -- how each dimension contributes'}));
+  let ltHtml = '<table class="data-table"><thead><tr><th>Dim</th><th>Full name</th><th>PC1</th><th>PC2</th><th>PC3</th></tr></thead><tbody>';
+  pca.loadings_table.forEach(row => {
+    ltHtml += `<tr><td>${row.dimension}</td><td>${row.dimension_name}</td><td>${row.PC1}</td><td>${row.PC2}</td><td>${row.PC3}</td></tr>`;
+  });
+  ltHtml += '</tbody></table>';
+  s.appendChild(el('div',{class:'card',html:ltHtml}));
+  s.appendChild(el('p',{class:'note',text:
+    'PC1 (compliance/quality vs. engineering-performance emphasis) is the closest thing to a dominant axis but only explains '+
+    `${pca.variance_table[0].variance_pct}% alone. PC2 loads almost entirely on Reliability+Lifecycle. PC3 is a near-pure `+
+    'Cost axis (0.88 loading) -- Cost is structurally independent of the other 6 dimensions, confirming it needs its own '+
+    'weight rather than being inferable from the rest.'}));
+
+  // ---- Proposal A: PC1xPC2 scatter, 722 items, coloured by domain ----------
+  s.appendChild(el('h3',{text:'Proposal A -- PC1 × PC2 scatter, all ' + pca.per_rtm_scores.length + ' RTMs'}));
+  const bulk = pca.bulk_vs_distinctive;
+  s.appendChild(el('p',{class:'subtitle',text:
+    `${bulk.n_bulk} items (${Math.round(bulk.n_bulk/pca.n_items*100)}%) sit in the central "bulk" zone -- a typical blend of `+
+    `all 7 dimensions. ${bulk.n_distinctive} items (${Math.round(bulk.n_distinctive/pca.n_items*100)}%, further from the `+
+    'centre) lean unusually hard into one or two dimensions -- worth studying on their own since a population-average view washes them out.'}));
+  s.appendChild(buildScatterSvg(
+    pca.per_rtm_scores.map(p => ({x:p.pc1, y:p.pc2, color:domainColor(p.domain), label:`${p.rtmId} (${p.domain})`})),
+    'PC1 (compliance/quality ←→ engineering performance)', 'PC2 (reliability + lifecycle)', 620, 420, 2.6
+  ));
+
+  // ---- Proposal B: domain quadrant view -------------------------------------
+  s.appendChild(el('h3',{text:'Proposal B -- domain quadrant view'}));
+  s.appendChild(el('p',{class:'subtitle',text:
+    'Average Weighted S (x-axis) vs. RTM count (y-axis, log-scale given the 202-vs-3 spread across domains) -- turns the '+
+    'Sum-vs-Average divergence (Domain Summary tab) into one glance instead of two separate charts to cross-reference.'}));
+  const domainAvgS = {};
+  (DATA.domainSummary||[]).forEach(d => { domainAvgS[d.domain] = d; });
+  const quadPoints = pca.domain_table.map(d => {
+    const ds = domainAvgS[d.domain] || {};
+    return {x: Number(ds.avgS ?? 0), y: Math.log10(d.n+1), color:domainColor(d.domain), label:`${d.domain} (n=${d.n})`, r:5};
+  }).filter(p => p.x > 0);
+  if (quadPoints.length){
+    s.appendChild(buildScatterSvg(quadPoints, 'Average Weighted S', 'RTM count (log scale)', 620, 380, 6, true));
+  } else {
+    s.appendChild(el('p',{class:'empty',text:'Average Weighted S not found in domainSummary export -- check export_nav_data.py field names.'}));
+  }
+
+  // ---- ASCII method panel ----------------------------------------------------
+  s.appendChild(el('h3',{text:'Method, in ASCII -- how a score becomes a rank becomes a component'}));
+  s.appendChild(el('pre',{class:'ascii-diagram',text:
+`BT SCORING (per RTM / OFFER item)
+==================================
+  raw 0-3 relevance score, one per dimension
+  L R P F Q LC C
+  | | | | |  |  |
+  v v v v v  v  v
+  x frozen weight (.20 .22 .20 .16 .12 .07 .03)   <- guardrail-locked, never re-tuned per item
+  |
+  v
+  sum(weight * relevance) / 3  x 100  =  WEIGHTED S   <- the primary transparent importance score
+  |
+  +--> RANK (gate items first, then Weighted S descending)   <- official rank, used everywhere
+  |
+  +--> BT WIN %  = 100 * (N - rank) / (N - 1)                <- static, linear in rank, NOT iterative
+  |
+  +--> BT LAMBDA = regularized MLE fit, normalized max=100    <- decays ~exponentially with rank;
+                                                                  ratios matter (lambda 80 vs 40 =~
+                                                                  2x relative strength), not a % reading
+
+PCA (across the population, not per item)
+==========================================
+  722 RTMs x 7 raw dimension scores
+  |
+  v
+  z-score standardize (per dimension, since LC/C means ~0.1-0.3 vs F's ~1.6)
+  |
+  v
+  PCA (sklearn.decomposition.PCA, 7 components = 7 dimensions, none dropped)
+  |
+  +--> explained variance per component (PC1 30.6% ... PC7 6.6%, sums to 100%)
+  |
+  +--> loadings per component (which raw dimensions drive PC1 / PC2 / PC3)
+  |
+  +--> per-item PC1/PC2/PC3 SCORES  ---->  Proposal A scatter (this tab, above)
+  |
+  +--> per-domain MEAN PC1/PC2      ---->  Proposal B quadrant view (this tab, above)`
+  }));
+
+  // ---- related: weight-sensitivity scenario 4 --------------------------------
+  const scen4 = DATA.weightScenario4;
+  if (scen4 && scen4.items){
+    s.appendChild(el('h3',{text:'Related -- weight-sensitivity scenario 4 (Cost=70%, others proportional)'}));
+    s.appendChild(el('p',{class:'subtitle',text:
+      'Not PCA, but the same "how sensitive is the ranking to method choice" question. WEIGHTS_METHOD’s own toggle '+
+      '(Excel) already had Base and Cost=70%-flat (other 6 dims split 5% each); this variant instead keeps the other 6 '+
+      'dimensions’ existing relative ratios and rescales them to fill the remaining 30%.'}));
+    const rho = scen4.spearman_base_vs_scenario4;
+    s.appendChild(el('div',{class:'callout', html:
+      `<b>Real, counterintuitive finding:</b> both Cost=70% variants give Cost the identical 70% weight, but they do NOT `+
+      `rank similarly to each other. Spearman(Base, Cost-heavy-flat) = 0.994 (WEIGHTS_METHOD, Excel) vs. `+
+      `Spearman(Base, Cost-heavy-proportional) = <b>${rho.toFixed(3)}</b> (this scenario) -- <i>how</i> the remaining 30% `+
+      `is distributed across the other 6 dimensions matters almost as much as the headline Cost weight itself for rank stability.`
+    }));
+    const movers = [...scen4.items].sort((a,b)=>Math.abs(b.rankDelta)-Math.abs(a.rankDelta)).slice(0,10)
+      .sort((a,b)=>b.rankDelta-a.rankDelta);
+    let s4Html = '<table class="data-table"><thead><tr><th>OFFER</th><th>Title</th><th>Base rank</th><th>Scenario 4 rank</th><th>Delta</th></tr></thead><tbody>';
+    movers.forEach(m => {
+      s4Html += `<tr><td><span class="xlink" onclick="jumpToOffer('${m.offerId}')">${m.offerId}</span></td><td>${m.title}</td>`+
+                `<td>${m.baseRank}</td><td>${m.scenario4Rank}</td><td style="font-weight:700;color:${m.rankDelta>0?'#1E8449':'#C0392B'}">${m.rankDelta>0?'+':''}${m.rankDelta}</td></tr>`;
+    });
+    s4Html += '</tbody></table>';
+    s.appendChild(el('div',{class:'card',html:s4Html}));
+    s.appendChild(el('p',{class:'note',text:'Top 10 movers by |delta|, either direction. Full 50-item ranking: weight_scenario4_v23.json.'}));
+  }
+
+  s.appendChild(el('p',{class:'note',style:'margin-top:18px;',text:
+    'Source: scripts/compute_pca.py + scripts/compute_weight_scenario4.py, both named/discoverable (not one-off /tmp '+
+    'scratch scripts) -- re-run either any time RTM_RANKING or OFFER_RANKING’s scores change, then re-run '+
+    'export_nav_data.py and re-splice. See docs/DMAIC_BT_TECHNICAL_REPORT.md Sections 2-4 for the full write-up this tab summarises.'}));
+}
+// Minimal, self-contained SVG scatter -- no external charting library (this
+// project's own artifact convention: fully self-contained HTML). Linear scale
+// on both axes; caller passes already-log-transformed y for log-scale charts
+// (see Proposal B call site) since a shared helper can't know which axis need it.
+function buildScatterSvg(points, xLabel, yLabel, w, h, r, showLabels){
+  const pad = {l:56, r:20, t:16, b:44};
+  const xs = points.map(p=>p.x), ys = points.map(p=>p.y);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xSpan = (xMax-xMin)||1, ySpan = (yMax-yMin)||1;
+  const sx = x => pad.l + (x-xMin)/xSpan * (w-pad.l-pad.r);
+  const sy = y => h-pad.b - (y-yMin)/ySpan * (h-pad.t-pad.b);
+  let svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="max-width:100%;background:#fff;border-radius:6px;">`;
+  // zero-lines if the axis crosses 0 (helps read PC1/PC2 sign)
+  if (xMin < 0 && xMax > 0) svg += `<line x1="${sx(0)}" y1="${pad.t}" x2="${sx(0)}" y2="${h-pad.b}" stroke="var(--border)" stroke-dasharray="3,3"/>`;
+  if (yMin < 0 && yMax > 0) svg += `<line x1="${pad.l}" y1="${sy(0)}" x2="${w-pad.r}" y2="${sy(0)}" stroke="var(--border)" stroke-dasharray="3,3"/>`;
+  svg += `<line x1="${pad.l}" y1="${h-pad.b}" x2="${w-pad.r}" y2="${h-pad.b}" stroke="var(--muted)"/>`;
+  svg += `<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${h-pad.b}" stroke="var(--muted)"/>`;
+  points.forEach(p => {
+    const cx = sx(p.x).toFixed(1), cy = sy(p.y).toFixed(1);
+    svg += `<circle cx="${cx}" cy="${cy}" r="${p.r||r}" fill="${p.color}" fill-opacity="0.75" stroke="#fff" stroke-width="0.5"><title>${(p.label||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}: (${p.x.toFixed(2)}, ${p.y.toFixed(2)})</title></circle>`;
+  });
+  if (showLabels){
+    points.forEach(p => {
+      svg += `<text x="${sx(p.x).toFixed(1)}" y="${(sy(p.y)-8).toFixed(1)}" font-size="9" fill="var(--body)" text-anchor="middle">${(p.label||'').split(' (')[0]}</text>`;
+    });
+  }
+  svg += `<text x="${(w/2).toFixed(0)}" y="${h-8}" font-size="11" fill="var(--muted)" text-anchor="middle">${xLabel}</text>`;
+  svg += `<text x="14" y="${(h/2).toFixed(0)}" font-size="11" fill="var(--muted)" text-anchor="middle" transform="rotate(-90 14 ${(h/2).toFixed(0)})">${yLabel}</text>`;
+  svg += `</svg>`;
+  return el('div',{class:'card',html:svg,style:'overflow-x:auto;'});
+}
+
 // ============================================================== build everything
 buildStart();
 buildLookup();
@@ -2495,6 +2686,7 @@ buildDomainsNav();
 buildDomains();
 buildOutline();
 buildTaxonomy();
+buildPca();
 
 activateTab('start');
 </script>

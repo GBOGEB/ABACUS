@@ -71,7 +71,7 @@
 
 <header>
   <h1>QPS OFFER Evaluation — Project DMAIC KPI Dashboard</h1>
-  <div class="sub">Delivery-process metrics, not the engineering DMAIC (that's the separate MTBF/DMAIC deck) — generated 2026-08-17 · SSOT: QPS_OFFER_Evaluation_FULL_v23.xlsx</div>
+  <div class="sub">Delivery-process metrics, not the engineering DMAIC (that's the separate MTBF/DMAIC deck) — generated 2026-08-19 · SSOT: QPS_OFFER_Evaluation_FULL_v24.xlsx</div>
 </header>
 
 <div class="tabs" id="tabs">
@@ -112,7 +112,7 @@
         <div class="label">SSOT sync rate</div>
         <div class="value">100%</div>
         <div class="barwrap"><div class="bar" style="width:100%;background:#C0392B"></div></div>
-        <div class="note">6/6 derived artefacts fully in sync with QPS_OFFER_Evaluation_FULL_v23.xlsx right now</div>
+        <div class="note">6/6 derived artefacts fully in sync with QPS_OFFER_Evaluation_FULL_v24.xlsx right now</div>
       </div>
       <div class="card">
         <div class="label">Lineage / idempotency</div>
@@ -136,10 +136,11 @@
 
     <h2>Width of artefact types tracked</h2>
     <div class="cards">
-      <div class="card"><div class="label">Total artefact families</div><div class="value">76</div><div class="note">Distinct file lineages, per ARTIFACT_REGISTRY.json</div></div>
-      <div class="card"><div class="label">Total files on disk</div><div class="value">175</div><div class="note">Across all versions of all families</div></div>
-      <div class="card"><div class="label">Git commits (local repo)</div><div class="value">25</div><div class="note">Local-only, per GBO's stated preference — no GitHub remote</div></div>
-      <div class="card"><div class="label">Backlog findings logged</div><div class="value">27</div><div class="note">Dated sections in NEXT_ITERATION_BACKLOG.md</div></div>
+      <div class="card"><div class="label">Total artefact families</div><div class="value">15</div><div class="note">Distinct file lineages, per ARTIFACT_REGISTRY.json</div></div>
+      <div class="card"><div class="label">Total files on disk</div><div class="value">18</div><div class="note">Across all versions of all families</div></div>
+      <div class="card"><div class="label">Committed changes, this project's own path</div><div class="value">2</div><div class="note">git log scoped to docs/qps_offer_rtm_evaluation/ only (was unscoped -- pulled all 2129 commits across the whole shared repo before this round's fix). A GitHub remote does exist (github.com/GBOGEB/ABACUS.git) -- nothing from this project has been pushed there yet.</div></div>
+      <div class="card"><div class="label">Uncommitted changes right now</div><div class="value">26</div><div class="note">Modified/untracked files in this project's own path, not yet committed to the worktree branch -- includes this round's own work</div></div>
+      <div class="card"><div class="label">Backlog findings logged</div><div class="value">33</div><div class="note">Dated sections in NEXT_ITERATION_BACKLOG.md, counted live via regex, not hand-typed</div></div>
     </div>
   </div>
 
@@ -153,9 +154,9 @@
         <li>Disclose rather than fabricate on every inferred value</li>
       </ul></div>
       <div class="dmaic-box"><h4>Measure</h4><ul>
-        <li>175 files / 76 families tracked</li>
+        <li>18 files / 15 families tracked</li>
         <li>60 tasks logged, 87% complete</li>
-        <li>25 commits, 27 backlog findings</li>
+        <li>2 commits, 33 backlog findings</li>
       </ul></div>
       <div class="dmaic-box"><h4>Analyze</h4><ul>
         <li>SSOT sync: only 100% of derived artefacts current right now</li>
@@ -232,56 +233,56 @@
       <tr><th>Family</th><th>Latest</th><th>Versions</th><th>Type</th><th>Lineage note</th></tr>
       <tr>
       <td>Master workbook (SSOT)</td>
-      <td class="mono small">QPS_OFFER_Evaluation_FULL_v23.xlsx</td>
-      <td style="text-align:center">19</td>
+      <td class="mono small">QPS_OFFER_Evaluation_FULL_v24.xlsx</td>
+      <td style="text-align:center">2</td>
       <td style="text-align:center"><span class="kindtag">xlsx</span></td>
       <td class="small">12/18 transitions scripted (67%)</td>
     </tr><tr>
       <td>Reviewer workbook</td>
-      <td class="mono small">QPS_OFFER_Evaluation_LITE_v23.xlsx</td>
-      <td style="text-align:center">18</td>
+      <td class="mono small">QPS_OFFER_Evaluation_LITE_v24.xlsx</td>
+      <td style="text-align:center">2</td>
       <td style="text-align:center"><span class="kindtag">xlsx</span></td>
       <td class="small">Derived 1:1 from FULL each round (slim-builder script)</td>
     </tr><tr>
       <td>HTML Navigator</td>
-      <td class="mono small">QPS_RTM_BT_Navigator_v20.html</td>
-      <td style="text-align:center">20</td>
+      <td class="mono small">QPS_RTM_BT_Navigator_v22.html</td>
+      <td style="text-align:center">2</td>
       <td style="text-align:center"><span class="kindtag">html</span></td>
       <td class="small">Data-export script saved; template-splice step still inline Python (standing gap)</td>
     </tr><tr>
       <td>BT methodology deck</td>
-      <td class="mono small">BT_Method_Evaluation_v11.pptx</td>
-      <td style="text-align:center">7</td>
+      <td class="mono small">BT_Method_Evaluation_v12.pptx</td>
+      <td style="text-align:center">1</td>
       <td style="text-align:center"><span class="kindtag">pptx</span></td>
       <td class="small">3/7 transitions scripted (43%)</td>
     </tr><tr>
       <td>MTBF/DMAIC deck</td>
       <td class="mono small">QPS_MTBF_WCS_DMAIC_v7.pptx</td>
-      <td style="text-align:center">7</td>
+      <td style="text-align:center">1</td>
       <td style="text-align:center"><span class="kindtag">pptx</span></td>
       <td class="small">Separate lineage; untouched this round</td>
     </tr>
     </table>
 
     <h2>SSOT sync status (right now)</h2>
-    <p class="desc">Which derived artefacts actually reflect the current canonical workbook (QPS_OFFER_Evaluation_FULL_v23.xlsx) at this moment — not whether they were correct when built.</p>
+    <p class="desc">Which derived artefacts actually reflect the current canonical workbook (QPS_OFFER_Evaluation_FULL_v24.xlsx) at this moment — not whether they were correct when built.</p>
     <table>
       <tr><th>Artefact</th><th>Latest file</th><th>Sync status</th><th>Drift</th><th>Note</th></tr>
       <tr>
       <td>Reviewer workbook (LITE)</td>
-      <td class="mono">QPS_OFFER_Evaluation_LITE_v23.xlsx</td>
+      <td class="mono">QPS_OFFER_Evaluation_LITE_v24.xlsx</td>
       <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
       <td class="small">0 version(s) behind</td>
       <td class="small">Rebuilt directly from FULL_v23 this round.</td>
     </tr><tr>
       <td>HTML Navigator</td>
-      <td class="mono">QPS_RTM_BT_Navigator_v20.html</td>
+      <td class="mono">QPS_RTM_BT_Navigator_v22.html</td>
       <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
       <td class="small">0 version(s) behind</td>
       <td class="small">Re-exported + re-spliced against FULL_v23 this round (splice_navigator.py, NEW saved script). Was 1 version stale.</td>
     </tr><tr>
       <td>BT methodology deck (Dossier content)</td>
-      <td class="mono">BT_Method_Evaluation_v11.pptx</td>
+      <td class="mono">BT_Method_Evaluation_v12.pptx</td>
       <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
       <td class="small">0 version(s) behind</td>
       <td class="small">EVAL-S12 rebuilt against nav_data_v23.json this round (34 entries, was 32). Was 1 version stale.</td>
@@ -326,82 +327,13 @@
 
   <div class="panel" id="panel-changelog">
     <h2>Main change log</h2>
-    <p class="desc">Full local git history, newest first (25 commits).</p>
+    <p class="desc">Full local git history, newest first (2 commits).</p>
     <div class="commit">
-      <div class="commit-meta"><span class="mono">9b22ae9</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Refresh DELIVERABLES_INDEX.html to v23/v21/v12 (was 4 workbook versions stale at v19, Navigator at v9, BT deck at v8)</div>
+      <div class="commit-meta"><span class="mono">41f398da</span> <span class="small">2026-08-18</span></div>
+      <div class="commit-msg">Re-judge 7 flagged RTM rows against full text; correct RTM-320 Performance dimension</div>
     </div><div class="commit">
-      <div class="commit-meta"><span class="mono">a4b7d92</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">BT deck v12: rebuild Deliverables Dossier (v23 data), add honest gate-vs- pure-score ranking + weight-scenario + granular cross-reference slides</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">4012e85</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">DMAIC Control-phase remediation: re-sync stale artefacts against FULL_v23</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">8db939a</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Backlog: log DMAIC KPI dashboard build + headline findings (Section 27)</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">dd998ea</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Add DMAIC KPI Dashboard: composite + individual delivery metrics, artefact lineage/idempotency, SSOT sync status, task hygiene cleanup, changelog, TODO</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">6808def</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Full handover refresh: START HERE section, v23-current deliverables table, chronological task/subtask progress report, and honest outstanding/gap-check</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">5cd02b0</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Add SESSION_ARTEFACT_AND_TASK_INDEX.md -- GBO&#x27;s requested full task/subtask + artefact/folder/path index</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">23977c9</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">v23: ingest AD_07/AD_08 into DELIVERABLES_DOSSIER; PCA-clustered Pareto analysis for P1 cutoff</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">dfb4f7c</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Backlog: Master_Input folder access granted, AD_07/AD_08 + real SVG figure found; large scratchpad of further asks logged</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">41171f8</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">BT deck v11: fix duplicate EVAL-S08 slide-code collision; log MYRRHA/MINERVA correction + weight-scenario analysis</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">e6c641c</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Fix DOMAIN_SUMMARY chart range bug; Taxonomy STATUS legend/phase visual/Subsystems drill-down/AD tree; BT deck AD relevance slide</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">c2b9342</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Backlog: BT win%/lambda/Pearson findings, evidence field resolved, GBO&#x27;s cost-estimation roadmap captured</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">ddd5159</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Excel v21: PDF-page-number fix (475 rows corrected) + Navigator v17-v19 (Document Outline polish, full verbatim text, contrast fix)</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">a4674f2</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Navigator v16: OFFER dropdown cluster colours, related-RTMs-by-section, back-navigation breadcrumb</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">9cb3837</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">SSOT: GBO confirmed the RTM ID input fix works as intended, closing that mechanic</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">e59bf9f</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Master Developer Dashboard + pipeline diagram + skills inventory (GBO&#x27;s prioritized picks)</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">9faee46</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Navigator v14-v15 (typing-ease + cross-links/chips/link-map), DMAIC/PCA technical report, next-iteration backlog</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">d794d08</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">SSOT: bump Navigator canonical to v13, log the Clusters-depth round</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">4026b47</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Navigator v13: Clusters tab brought to Domains/Domain Summary depth</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">90868d9</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Handover refresh: SSOT/registry/handover updated for v20+v9+v12+git+metrics</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">13ce732</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">DMAIC metric-history log: backfilled v5-v20 (the &quot;missing link&quot; gap)</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">b76e966</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Navigator v11-v12: Code/Standard dropdown, Taxonomy relation types &amp; Deliverables Dossier</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">272c9ae</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">BT deck v9: PCA and Sum-vs-Average domain-quadrant slides</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">13a86e5</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Excel v20: 9-section build from GBO&#x27;s uploaded annotation file</div>
-    </div><div class="commit">
-      <div class="commit-meta"><span class="mono">f3b6245</span> <span class="small">2026-08-17</span></div>
-      <div class="commit-msg">Initial commit: QPS OFFER Evaluation project baseline (workbook v19, Navigator v10, decks, handover/SSOT, all build scripts)</div>
+      <div class="commit-meta"><span class="mono">5b6b9bec</span> <span class="small">2026-08-17</span></div>
+      <div class="commit-msg">Import QPS OFFER/RTM v23 evaluation package as canonical SSOT</div>
     </div>
   </div>
 

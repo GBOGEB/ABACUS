@@ -17,13 +17,26 @@ saved as a script).
 
 Usage: python3 build_pdf_export.py [/tmp/nav_data_vN.json]
 """
-import json, re, sys, warnings
+import json, re, sys, tempfile, warnings
+from pathlib import Path
 warnings.filterwarnings("ignore")
 
 NAV_DATA_PATH = sys.argv[1] if len(sys.argv) > 1 else "/tmp/nav_data_v7.json"
-DATA = json.load(open(NAV_DATA_PATH))
-_m = re.search(r"v(\d+)", NAV_DATA_PATH)
+DATA = json.load(open(NAV_DATA_PATH, encoding="utf-8"))
+_m = re.search(r"v(\d+)", Path(NAV_DATA_PATH).name)
 WB_VERSION = f"v{_m.group(1)}" if _m else "v7"
+
+# Output dir for the two intermediate print-HTML files: was hardcoded to
+# POSIX /tmp, which does not resolve to a real, writable location for
+# Chromium's file:// URL loader on Windows (Python's own open("/tmp/...")
+# silently drive-relatives it to <cwd drive>:\tmp, but a browser's file://
+# resolver does not do the same remapping -- see merge_taxonomy_pdf.py,
+# which failed on this exact mismatch). Use the OS temp dir via pathlib so
+# both this script's writes and merge_taxonomy_pdf.py's reads agree on the
+# same real path on any platform, not just the original Linux sandbox.
+TMP_DIR = Path(tempfile.gettempdir())
+TAXONOMY_HTML_PATH = TMP_DIR / "print_taxonomy.html"
+DOMAIN_SUMMARY_HTML_PATH = TMP_DIR / "print_domain_summary.html"
 
 CLUSTER_NAMES = {
     "C1": "Performance", "C2": "Process Design", "C3": "Mechanical & Equipment",
@@ -248,6 +261,6 @@ def build_domain_summary_html():
     <div class="footer-note">QPS OFFER Evaluation Workbook — {WB_VERSION} · Domain Summary (landscape section) · read-only — edit the workbook itself, not this page</div>
     </body></html>"""
 
-open("/tmp/print_taxonomy.html", "w", encoding="utf-8").write(build_taxonomy_html())
-open("/tmp/print_domain_summary.html", "w", encoding="utf-8").write(build_domain_summary_html())
-print("wrote /tmp/print_taxonomy.html and /tmp/print_domain_summary.html")
+TAXONOMY_HTML_PATH.write_text(build_taxonomy_html(), encoding="utf-8")
+DOMAIN_SUMMARY_HTML_PATH.write_text(build_domain_summary_html(), encoding="utf-8")
+print(f"wrote {TAXONOMY_HTML_PATH} and {DOMAIN_SUMMARY_HTML_PATH}")

@@ -31,6 +31,8 @@
   .badge.current{background:var(--goodbg);color:var(--good);}
   .badge.watch{background:var(--warnbg);color:var(--warn);}
   .badge.stale{background:var(--stalebg);color:var(--stale);}
+  .table-wrap{overflow-x:auto;margin-top:14px;}
+  .table-wrap table{margin-top:0;}
   table{border-collapse:collapse;width:100%;margin-top:14px;font-size:13px;}
   th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
   th{background:var(--hdr);color:#fff;font-weight:700;}
@@ -50,6 +52,7 @@
 <header class="top">
   <h1>QPS OFFER Evaluation — Deliverables Index</h1>
   <p>One page answering "what do I actually hand to someone, and why." Every file below is generated from a single SSOT workbook — nothing here is hand-typed separately from it, so none of these can silently drift out of sync with each other. Internal working files (build scripts, QA harnesses, session logs) are listed separately at the bottom for completeness, not because anyone outside this project needs them.</p>
+  <p><b>This page is the single entry point for every deliverable in this project</b> — Navigator, both dashboards, both workbooks, both decks, and the PDF export are all one click away below. Every filename and heading in Section&nbsp;1 is a live link; nothing here is a description you then have to go find the file for separately.</p>
 </header>
 <main>
 
@@ -65,87 +68,113 @@
 </div>
 
 <h2 id="outward">1. Outward-facing deliverables</h2>
-<p class="subtitle">These six are what actually leave the project — everything else in the working folder exists to build or QA one of these.</p>
+<p class="subtitle">These eight are what actually leave the project — everything else in the working folder exists to build or QA one of these. Every heading and filename below is a working link to the real file, opened relative to this page.</p>
 
 <div class="cards">
 
   <div class="card">
-    <h3>Full evaluation workbook <span class="badge current">SSOT</span></h3>
-    <div class="fname">QPS_OFFER_Evaluation_FULL_v23.xlsx</div>
+    <h3><a href="QPS_OFFER_Evaluation_FULL_v24.xlsx">Full evaluation workbook</a> <span class="badge current">SSOT</span></h3>
+    <div class="fname"><a href="QPS_OFFER_Evaluation_FULL_v24.xlsx">QPS_OFFER_Evaluation_FULL_v24.xlsx</a></div>
     <div class="audience">Audience: contract/engineering team — the working file</div>
     <p>The single source of truth. Scores all 50 OFFER items against all 722 RTM requirements using the 7-dimension weighted BT ranking method (Safety/Legal, Reliability, Performance, Functional, Quality/Verifiability, Lifecycle, Cost). Every other file on this page is a trim, export, or presentation slice of this one workbook — nothing is maintained separately.</p>
-    <p>27 sheets, including internal audit/handover/method-control tabs (CHANGELOG, DMAIC_AUDIT, WEIGHTS_METHOD, CODING_HANDOVER) that the LITE trim below deliberately drops.</p>
+    <p>34 sheets, including internal audit/handover/method-control tabs (CHANGELOG, DMAIC_AUDIT, WEIGHTS_METHOD, CODING_HANDOVER) that the LITE trim below deliberately drops. New this round: <b>PCA_ANALYSIS</b> (explained-variance, loadings, and domain-position tables for the 7 scoring dimensions) and a 3rd weight-toggle scenario on WEIGHTS_METHOD ("Cost-heavy-proportional", cell B56).</p>
   </div>
 
   <div class="card">
-    <h3>Reviewer workbook <span class="badge current">trim</span></h3>
-    <div class="fname">QPS_OFFER_Evaluation_LITE_v23.xlsx</div>
+    <h3><a href="QPS_OFFER_Evaluation_LITE_v24.xlsx">Reviewer workbook</a> <span class="badge current">trim</span></h3>
+    <div class="fname"><a href="QPS_OFFER_Evaluation_LITE_v24.xlsx">QPS_OFFER_Evaluation_LITE_v24.xlsx</a></div>
     <div class="audience">Audience: external reviewers, board, anyone without full project context</div>
-    <p>A 19-sheet trim of the FULL workbook: ranking, crosswalk, workspace, quality checks, lookup tools, filter dashboard, cluster and taxonomy tabs — everything a reviewer needs to evaluate the ranking, none of the internal audit/method-reproduction scaffolding. Kept in lockstep with FULL every round; same 722 RTMs, same numbers, no separate maintenance.</p>
+    <p>A 24-sheet trim of the FULL workbook: ranking, crosswalk, workspace, quality checks, lookup tools, filter dashboard, cluster, taxonomy and PCA-findings tabs — everything a reviewer needs to evaluate the ranking, none of the internal audit/method-reproduction scaffolding. Kept in lockstep with FULL every round; same 722 RTMs, same numbers, no separate maintenance.</p>
+    <p><span class="badge current">current</span> Re-synced to FULL_v24 this round (was 1 version behind). PCA_ANALYSIS newly promoted to "keep" (reviewer-facing findings sheet, same inclusion criterion as CLUSTERS/TAXONOMY); WEIGHTS_METHOD's live 3-way toggle stays dropped (method-reproduction mechanism, not a findings view — reviewers see the same numbers via the kept tabs and the Navigator). Reload-verified: zip/XML integrity OK, zero formula-error-string cells, no live cross-sheet formula depends on a dropped sheet.</p>
   </div>
 
   <div class="card">
-    <h3>HTML Navigator <span class="badge current">read-only browser</span></h3>
-    <div class="fname">QPS_RTM_BT_Navigator_v21.html</div>
+    <h3><a href="QPS_RTM_BT_Navigator_v22.html">HTML Navigator</a> <span class="badge current">read-only browser</span></h3>
+    <div class="fname"><a href="QPS_RTM_BT_Navigator_v22.html">QPS_RTM_BT_Navigator_v22.html</a></div>
     <div class="audience">Audience: anyone who wants to browse without opening Excel</div>
-    <p>Single self-contained HTML file — no server, no install, works offline in any browser. Mirrors the FULL workbook's ranking, lookup, filter dashboard, domain/cluster heatmaps, document outline and taxonomy views. Data is spliced in at build time from a JSON export of the live workbook, never hand-typed, so it cannot drift from the SSOT independently. Read-only by design: edits happen in the workbook, then this page is regenerated from it.</p>
+    <p>Single self-contained HTML file — no server, no install, works offline in any browser. Mirrors the FULL workbook's ranking, lookup, filter dashboard, domain/cluster heatmaps, document outline and taxonomy views. Data is spliced in at build time from a JSON export of the live workbook, never hand-typed, so it cannot drift from the SSOT independently. Read-only by design: edits happen in the workbook, then this page is regenerated from it. New this round: 13th tab, <b>PCA / Structure</b> (dimension-structure scatter plots + weight-scenario-4 table), and a BT λ (lambda) field on the RTM/OFFER Lookup cards.</p>
   </div>
 
   <div class="card">
-    <h3>BT-method presentation deck</h3>
-    <div class="fname">BT_Method_Evaluation_v12.pptx</div>
+    <h3><a href="BT_Method_Evaluation_v12.pptx">BT-method presentation deck</a></h3>
+    <div class="fname"><a href="BT_Method_Evaluation_v12.pptx">BT_Method_Evaluation_v12.pptx</a></div>
     <div class="audience">Audience: presenting the ranking methodology itself</div>
-    <p>Explains the 7-dimension weighted Bradley-Terry-style ranking method used across the whole evaluation — how the weights work, why gate items get precedence, what a "Weighted S" score means. This is the deck for explaining <i>how</i> the ranking was built, not for presenting individual RTM/OFFER results. v12 added an explicit "honest ranking" slide (official gate-first rank vs pure weighted-S rank, side by side, gate colouring kept) plus a weight-scenario comparison and a granular OFFER cross-reference slide.</p>
-    <p><span class="badge watch">watch</span> v7/v8 still have no saved build script (binary-only). v9/v11 changes ARE documented in SESSION_SSOT.yaml prose even where no script was saved; v6, v10, and v12 have real saved/re-runnable scripts. Partial improvement, not fully closed.</p>
+    <p>Explains the 7-dimension weighted Bradley-Terry-style ranking method used across the whole evaluation — how the weights work, why gate items get precedence, what a "Weighted S" score means. This is the deck for explaining <i>how</i> the ranking was built, not for presenting individual RTM/OFFER results. 27 slides. v12 added an explicit "honest ranking" slide (official gate-first rank vs pure weighted-S rank, side by side, gate colouring kept) plus a weight-scenario comparison and a granular OFFER cross-reference slide.</p>
+    <p><span class="badge watch">watch / stale relative to this round</span> Built against v23 data — does <b>not</b> yet include this round's PCA findings (explained variance, loadings, Cost-as-independent-axis finding) or the 4th weight scenario ("Cost-heavy-proportional"). Adding those slides is open backlog item 28d, explicitly not attempted this round (separate, larger design task). v7/v8 still have no saved build script (binary-only); v9/v11 changes are documented in SESSION_SSOT.yaml prose even where no script was saved; v6, v10, and v12 have real saved/re-runnable scripts.</p>
   </div>
 
   <div class="card">
-    <h3>MTBF / DMAIC reliability deck</h3>
-    <div class="fname">QPS_MTBF_WCS_DMAIC_v7.pptx</div>
+    <h3><a href="QPS_MTBF_WCS_DMAIC_v7.pptx">MTBF / DMAIC reliability deck</a></h3>
+    <div class="fname"><a href="QPS_MTBF_WCS_DMAIC_v7.pptx">QPS_MTBF_WCS_DMAIC_v7.pptx</a></div>
     <div class="audience">Audience: reliability / DMAIC review</div>
     <p>MTBF (Mean Time Between Failures) design-considerations and DMAIC (Define-Measure-Analyze-Improve-Control) framing deck, separate lineage from the BT-method deck above — covers reliability engineering content, not the OFFER ranking methodology. 38 slides, RTM citations spot-checked against the current register and confirmed still valid.</p>
-    <p><span class="badge watch">watch</span> Untouched this session (last content change v6) while every other deliverable iterated -- not broken, just behind. No saved build script for the v6->v7 edit. GBO explicitly set deeper reconciliation as LOW priority earlier in the session; not dropped, just not yet scheduled.</p>
+    <p><span class="badge watch">watch</span> Untouched this round and prior rounds (last content change v6) while other deliverables iterated -- not broken, just behind. No saved build script for the v6->v7 edit. Deeper reconciliation explicitly set as LOW priority earlier in the session; not dropped, just not yet scheduled. Content/data untouched by this round's work by design (out of scope).</p>
   </div>
 
   <div class="card">
-    <h3>Taxonomy / Domain Summary PDF</h3>
-    <div class="fname">QPS_Taxonomy_and_Domain_Summary.pdf</div>
+    <h3><a href="QPS_Taxonomy_and_Domain_Summary.pdf">Taxonomy / Domain Summary PDF export</a></h3>
+    <div class="fname"><a href="QPS_Taxonomy_and_Domain_Summary.pdf">QPS_Taxonomy_and_Domain_Summary.pdf</a></div>
     <div class="audience">Audience: quick-print reference, no-device sharing</div>
-    <p>Static PDF snapshot of the Requirement Type / lifecycle / domain taxonomy — the one deliverable here that isn't rebuilt every round.</p>
-    <p><span class="badge current">current</span> Refreshed against FULL_v23 this round -- data source promoted from a hardcoded path to a CLI arg, and the PDF render+merge step (previously undocumented/inline) is now a saved script (merge_taxonomy_pdf.py). Verified via direct page-render inspection.</p>
+    <p>Static, mixed-orientation PDF snapshot of the Requirement Type / lifecycle / domain taxonomy (portrait) and the RTM domain-volume Pareto breakdown (landscape) — the one deliverable here that isn't rebuilt every round by default.</p>
+    <p><span class="badge current">current</span> Re-pointed at and rebuilt from <code>nav_data_v24.json</code> this round (5 pages). Verified via direct PDF-text extraction: every version token in the rendered content reads "v24", zero "v7"/"v23" labels remain. Note: an earlier project doc (CONTINUATION.md's "not yet re-synced" list) described this file as "built against v7 data" going into this round — that description does not match what was actually rebuilt and verified here; flagged as a documentation-drift finding, see this round's session-log entry.</p>
+  </div>
+
+  <div class="card">
+    <h3><a href="MASTER_DEVELOPER_DASHBOARD.html">Master Developer Dashboard</a></h3>
+    <div class="fname"><a href="MASTER_DEVELOPER_DASHBOARD.html">MASTER_DEVELOPER_DASHBOARD.html</a></div>
+    <div class="audience">Audience: whoever picks up this project's engineering/build side next</div>
+    <p>5-tab landing page for the project's build side: Start Here, Index, and the three lenses the BT method reasons through — Ranking (the score), Importance (the tier/gate), Relevance (domain/cluster/phase context). Newly linked from this page this round — previously built but orphaned (not reachable from any other deliverable), per backlog item 28b.</p>
+    <p><span class="badge current">current (hand-patched)</span> Found 4+ workbook versions stale (version strip read "Workbook v20 · Navigator v15 · BT deck v9") during this round's own QA pass; corrected in place — version strip, "pick your path" table, Index tab's version/status table, and footer now read v24/v22/v12/v7 correctly. This page has no regeneration script (unlike the Navigator/LITE/PDF export), so the fix is a verified hand-patch, not a script re-run — flagged so its update mechanism is understood, not because the content is in doubt. Also corrected an inherited wrong claim on this page: it previously said it "supersedes DELIVERABLES_INDEX.html" — backwards; this page (DELIVERABLES_INDEX.html) is the regenerated, verified-current one.</p>
+  </div>
+
+  <div class="card">
+    <h3><a href="QPS_DMAIC_KPI_Dashboard.html">Project DMAIC KPI Dashboard</a></h3>
+    <div class="fname"><a href="QPS_DMAIC_KPI_Dashboard.html">QPS_DMAIC_KPI_Dashboard.html</a></div>
+    <div class="audience">Audience: whoever wants delivery-process metrics for this project (not the engineering MTBF/DMAIC content)</div>
+    <p>6-tab dashboard of this project's own delivery-process metrics — Overview, DMAIC (of the project itself), Artefacts &amp; Lineage, Tasks, Changelog, TODO/Outstanding. A different kind of artefact from everything else on this page: it measures how this project was built, not the QPS evaluation results. Newly linked from this page this round — previously built but orphaned, per backlog item 28b.</p>
+    <p><span class="badge current">current</span> Regenerated end-to-end this round via its real build scripts (<code>gen_kpi_dashboard.py</code> → <code>build_kpi_dashboard_html.py</code>), which had 2 real bugs fixed in the process: a `git log` call with no pathspec was pulling all ~2129 commits from the entire shared repo instead of this project's own history, and a hardcoded environment-specific cwd (<code>/home/claude/work</code>) that broke the script outright here. Now correctly shows SSOT <code>FULL_v24.xlsx</code>, real project-scoped commit/uncommitted-change counts, and a live-counted backlog-section total (was a stale hand-typed number).</p>
   </div>
 
 </div>
 
 <h2 id="howtheyrelate">2. How they relate to each other</h2>
 <div class="callout">
-  <b>Read together:</b> the FULL workbook is the only place data is ever entered or changed. The LITE workbook and the HTML Navigator are both generated <i>from</i> FULL — never edited independently, and both regenerate cleanly any time FULL changes (LITE via a Python build script that drops internal-only sheets; the Navigator via a JSON data export spliced into a reusable HTML template). The two PowerPoint decks are separate lineages with their own narrative content, not auto-generated from the workbook, which is why they're the two items flagged "watch" above — they need a human to carry forward whatever changed, not just a script re-run. The Taxonomy PDF is the odd one out: a point-in-time export that nobody has re-run since v7, which is why it's flagged stale rather than watch — the risk there isn't "undocumented," it's "possibly outdated."
+  <b>Read together:</b> the FULL workbook is the only place data is ever entered or changed. The LITE workbook and the HTML Navigator are both generated <i>from</i> FULL — never edited independently, and both regenerate cleanly any time FULL changes (LITE via a Python build script that drops internal-only sheets; the Navigator via a JSON data export spliced into a reusable HTML template — this round's PCA_ANALYSIS sheet and the Navigator's new "PCA / Structure" tab are generated from the same two source computations, <code>compute_pca.py</code> and <code>compute_weight_scenario4.py</code>, so they can't drift from each other either). The Taxonomy PDF export is a third downstream artefact of the same workbook, rebuilt from the Navigator's own JSON data export. The two PowerPoint decks are separate lineages with their own narrative content, not auto-generated from the workbook, which is why they're flagged "watch" above — they need a human to carry forward whatever changed, not just a script re-run; the BT deck specifically has NOT yet absorbed this round's PCA/weight-scenario-4 findings (open backlog item 28d). The two dashboards (Master Developer, KPI) are also hand-built HTML rather than a single push-button script the way the Navigator is — both are now linked from this page for the first time; both had genuinely stale in-page version strips found during this round's own QA pass and both were corrected to v24/v22/v12 (the KPI dashboard via its real build scripts, after fixing two real bugs in them; the Master Developer Dashboard via a disclosed hand-patch, since it has no regeneration script yet) — see their cards above for the full detail.
 </div>
 
 <h2 id="audience">3. Which one for which audience</h2>
+<div class="table-wrap">
 <table>
   <tr><th>If you are...</th><th>Start with</th><th>Why</th></tr>
-  <tr><td>Working the evaluation day-to-day</td><td><code>FULL_v23.xlsx</code></td><td>Only place with all 27 sheets, live formulas, and full audit trail.</td></tr>
-  <tr><td>An external reviewer or board member</td><td><code>LITE_v23.xlsx</code></td><td>Same numbers, none of the internal scaffolding to wade through.</td></tr>
-  <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code>Navigator_v21.html</code></td><td>Opens in any browser, no install, same data.</td></tr>
-  <tr><td>Explaining <i>how</i> the ranking method works</td><td><code>BT_Method_Evaluation_v12.pptx</code></td><td>The methodology deck, not the results themselves.</td></tr>
-  <tr><td>Reviewing reliability / DMAIC content</td><td><code>QPS_MTBF_WCS_DMAIC_v7.pptx</code></td><td>Separate subject from the OFFER ranking entirely.</td></tr>
-  <tr><td>Need a quick printed taxonomy reference</td><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>But confirm against the live workbook first — this one is stale.</td></tr>
+  <tr><td>Working the evaluation day-to-day</td><td><code><a href="QPS_OFFER_Evaluation_FULL_v24.xlsx">FULL_v24.xlsx</a></code></td><td>Only place with all 34 sheets, live formulas, and full audit trail.</td></tr>
+  <tr><td>An external reviewer or board member</td><td><code><a href="QPS_OFFER_Evaluation_LITE_v24.xlsx">LITE_v24.xlsx</a></code></td><td>Same numbers, none of the internal scaffolding to wade through.</td></tr>
+  <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code><a href="QPS_RTM_BT_Navigator_v22.html">Navigator_v22.html</a></code></td><td>Opens in any browser, no install, same data, 13 tabs incl. PCA / Structure.</td></tr>
+  <tr><td>Explaining <i>how</i> the ranking method works</td><td><code><a href="BT_Method_Evaluation_v12.pptx">BT_Method_Evaluation_v12.pptx</a></code></td><td>The methodology deck, not the results themselves — but not yet PCA-updated (watch).</td></tr>
+  <tr><td>Reviewing reliability / DMAIC content</td><td><code><a href="QPS_MTBF_WCS_DMAIC_v7.pptx">QPS_MTBF_WCS_DMAIC_v7.pptx</a></code></td><td>Separate subject from the OFFER ranking entirely.</td></tr>
+  <tr><td>Need a quick printed taxonomy reference</td><td><code><a href="QPS_Taxonomy_and_Domain_Summary.pdf">QPS_Taxonomy_and_Domain_Summary.pdf</a></code></td><td>Rebuilt from v24 data this round — verified current.</td></tr>
+  <tr><td>Want project build/delivery status, not evaluation results</td><td><code><a href="MASTER_DEVELOPER_DASHBOARD.html">MASTER_DEVELOPER_DASHBOARD.html</a></code> or <code><a href="QPS_DMAIC_KPI_Dashboard.html">QPS_DMAIC_KPI_Dashboard.html</a></code></td><td>Engineering/build lens vs. delivery-process-metrics lens — both corrected to v24/v22/v12 this round (one script-regenerated, one verified hand-patch — see their cards above).</td></tr>
 </table>
+</div>
 
 <h2 id="status">4. Version / status at a glance</h2>
+<div class="table-wrap">
 <table>
   <tr><th>File</th><th>Current version</th><th>Status</th><th>Last substantive change</th></tr>
-  <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v23</td><td><span class="badge current">current</span></td><td>AD_07/AD_08 added to DELIVERABLES_DOSSIER (34 entries, was 32); openpyxl merged-cell/insert_rows bug found+fixed</td></tr>
-  <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v23</td><td><span class="badge current">current</span></td><td>Kept in lockstep with FULL v23</td></tr>
-  <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v21</td><td><span class="badge current">current</span></td><td>Re-synced to FULL_v23 (AD_07/08 now in the Taxonomy tab's Deliverables tree); template-splice step promoted to a saved script (splice_navigator.py)</td></tr>
-  <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v12</td><td><span class="badge current">current</span></td><td>Deliverables Dossier slide rebuilt for v23 data; added honest gate-vs-pure-score ranking, weight-scenario, and granular cross-reference slides</td></tr>
+  <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>PCA_ANALYSIS sheet added (34 sheets, was 33); 4th weight-toggle scenario ("Cost-heavy-proportional") added to WEIGHTS_METHOD</td></tr>
+  <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>Re-synced to FULL v24 this round (was 1 version behind); PCA_ANALYSIS promoted to "keep"; reload-verified (zip/XML integrity, zero formula-error cells)</td></tr>
+  <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v22</td><td><span class="badge current">current</span></td><td>Re-synced to FULL_v24 (new PCA / Structure tab, BT λ field); Playwright QA (<code>qa_nav_v24.py</code>) passing — see QA note below</td></tr>
+  <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v12</td><td><span class="badge watch">watch / stale relative to this round</span></td><td>Built against v23 data. Does <b>not</b> yet include this round's PCA findings or the 4th weight scenario — open backlog item 28d, not attempted this round (explicitly out of scope, needs human content judgment).</td></tr>
   <tr><td><code>QPS_MTBF_WCS_DMAIC_*.pptx</code></td><td>v7</td><td><span class="badge watch">watch — untouched this session</span></td><td>Last content change v6; no saved build script for v6->v7. Not stale in the sense of wrong data (RTM citations spot-checked, still valid) -- just behind the rest of the project's cadence.</td></tr>
-  <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Refreshed against FULL_v23; render+merge step now a saved script (merge_taxonomy_pdf.py)</td></tr>
+  <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a (rebuilt from v24 data)</td><td><span class="badge current">current</span></td><td>Rebuilt this round from <code>nav_data_v24.json</code>; verified via direct PDF-text extraction (only "v24" tokens present). See its card above for a documentation-drift note against an earlier project doc's "built against v7" description.</td></tr>
+  <tr><td><code>MASTER_DEVELOPER_DASHBOARD.html</code></td><td>n/a</td><td><span class="badge current">current (hand-patched)</span></td><td>Newly linked from this page (was orphaned). Own in-page version strip was 4+ workbook versions stale (v20/v15/v9); verified and hand-patched to v24/v22/v12/v7 this round — no regeneration script exists for this page, disclosed as a patch not a rebuild.</td></tr>
+  <tr><td><code>QPS_DMAIC_KPI_Dashboard.html</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Newly linked from this page (was orphaned). Regenerated end-to-end this round via its real build scripts after fixing 2 real bugs (unscoped <code>git log</code> pulling the whole shared repo's history; hardcoded environment-specific cwd). Now correctly shows SSOT FULL_v24.</td></tr>
+  <tr><td><code>ARTIFACT_REGISTRY.json</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Regenerated this round; root path fixed to point at <code>current/</code> (was a stale sandbox path from an earlier environment) — now correctly lists v24/v22/v12 as latest.</td></tr>
 </table>
+</div>
+<p class="subtitle">QA this round: Playwright headless sweep of this page (zero console/page errors, zero horizontal overflow, target viewports incl. 375/768/1400/1920px, all 8 outward-facing hrefs resolve) and of the Navigator's PCA tab (<code>qa_nav_v24.py</code>); the same Playwright sweep re-run against both newly-linked dashboards after their version-strip fixes (zero console/page errors, zero horizontal overflow on both); LITE_v24 reload-and-verify (zip/XML integrity, formula-error-string scan, cross-sheet dependency pre-flight); PDF export verified via direct text-extraction inspection. Not run this round: LibreOffice headless recalculation pass (LibreOffice is not installed in this working environment) — the xlsx checks above are real but narrower than the project's full stated bar; disclosed rather than silently substituted.</p>
 
 <h2 id="internal">5. Internal / working artifacts (not for outside distribution)</h2>
-<p class="subtitle">Listed for completeness and traceability — these are how the six deliverables above get built and checked, not something to hand to a reviewer.</p>
+<p class="subtitle">Listed for completeness and traceability — these are how the eight deliverables above get built and checked, not something to hand to a reviewer.</p>
 <div class="cards">
   <div class="card not-outward">
     <h3>Engineering handover</h3>
@@ -164,17 +193,17 @@
   </div>
   <div class="card not-outward">
     <h3>Build scripts</h3>
-    <div class="fname">build_workbook_v23.py · build_workbook_slim_v23.py · export_nav_data.py · classify_all_rtms.py · infer_clusters.py · t0_taxonomy.py · fix_mtbf_rtm_numbers.py</div>
-    <p>The reproducible pipeline: each script's declared input version must match the prior script's output, chaining FULL_v(N-1) → FULL_vN → LITE_vN → Navigator_vN.</p>
+    <div class="fname">build_workbook_v23.py · build_workbook_v24.py (new) · build_workbook_slim_v23.py · build_workbook_slim_v24.py (new) · export_nav_data.py · splice_navigator.py · compute_pca.py (new) · compute_weight_scenario4.py (new) · build_pdf_export.py · merge_taxonomy_pdf.py · generate_artifact_registry.py · classify_all_rtms.py · infer_clusters.py · t0_taxonomy.py · fix_mtbf_rtm_numbers.py</div>
+    <p>The reproducible pipeline: each script's declared input version must match the prior script's output, chaining FULL_v(N-1) → FULL_vN → LITE_vN → Navigator_vN. Older per-version scripts are kept, not overwritten, to preserve build lineage — see <code>docs/PIPELINE_DIAGRAM.md</code> for the full current diagram and <code>docs/SESSION_SSOT.yaml</code> <code>families.*.builder_chain</code> for provenance of every version.</p>
   </div>
   <div class="card not-outward">
     <h3>QA harnesses</h3>
-    <div class="fname">qa_nav_v8*.py and similar</div>
-    <p>Playwright/LibreOffice/raw-XML QA scripts run before anything above ships — zero formula errors, zero console errors, zero dangling relationships, zero dimension/autofilter mismatches is the bar.</p>
+    <div class="fname">qa_nav_v8*.py · qa_nav_v24.py (new) and similar</div>
+    <p>Playwright/LibreOffice/raw-XML QA scripts run before anything above ships — zero formula errors, zero console errors, zero dangling relationships, zero dimension/autofilter mismatches is the bar. This round's LibreOffice-recalculation pass could not be run (not installed in this working environment); see the QA note in Section 4.</p>
   </div>
 </div>
 
 </main>
-<footer class="bottom">QPS OFFER Evaluation project — Deliverables Index · Generated to accompany workbook v23 / Navigator v21 · Regenerate this page any time the version table above changes</footer>
+<footer class="bottom">QPS OFFER Evaluation project — Deliverables Index · Generated to accompany workbook v24 / Navigator v22 / BT deck v12 · Regenerate this page any time the version table above changes</footer>
 </body>
 </html>

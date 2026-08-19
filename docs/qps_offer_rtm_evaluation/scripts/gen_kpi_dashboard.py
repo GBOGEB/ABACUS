@@ -17,8 +17,16 @@ All numbers below are computed directly from ARTIFACT_REGISTRY.json, the
 live task list (fetched via TaskList before this script was written), and
 a direct file-count/git-log scan -- nothing is estimated.
 """
-import json, subprocess, warnings
+import datetime, json, os, re, subprocess, warnings
 warnings.filterwarnings("ignore")
+
+# Real repo root, not a hardcoded environment-specific path (was
+# "/home/claude/work" -- broke outright on any other machine/session; same
+# class of bug generate_artifact_registry.py's own docstring already
+# flagged and fixed once for its "root" field). Any directory inside the
+# worktree works for `git log` -- it isn't pathspec-scoped, so it always
+# returns the whole repo's history regardless of cwd within it.
+REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 
 reg = json.load(open("ARTIFACT_REGISTRY.json"))
 fams = reg.get("families", reg)
@@ -91,12 +99,33 @@ BUGS_TOTAL = len(bugs)
 BUGS_FIXED = sum(1 for b in bugs if b[2].startswith("Fixed"))
 
 # ---- Git changelog ----
-log = subprocess.run(["git", "log", "--format=%h|%ad|%s", "--date=short"],
-                      capture_output=True, text=True, cwd="/home/claude/work").stdout.strip().split("\n")
-commits = [l.split("|", 2) for l in log]
+# Real bug found this round: no pathspec meant this pulled the WHOLE
+# Master_Input repo's history (2129 commits, every unrelated project sharing
+# this git root) into a "project changelog" -- 97% bloat, and not even this
+# project's own history. Scoped to this project's own subdirectory (relative
+# to the worktree root, two levels above scripts/). Also surfaces a real,
+# honest finding worth keeping visible rather than hidden by the old
+# unscoped count: almost none of this round's own work is committed yet
+# (see "commits_are_partial" below) -- most of what this dashboard reports
+# is live-computed from the working tree, not from git history.
+PROJECT_PATHSPEC = os.path.join(REPO_DIR, "..")  # docs/qps_offer_rtm_evaluation/
+log = subprocess.run(["git", "log", "--format=%h|%ad|%s", "--date=short",
+                       "--", PROJECT_PATHSPEC],
+                      capture_output=True, text=True, cwd=REPO_DIR).stdout.strip()
+commits = [l.split("|", 2) for l in log.split("\n")] if log else []
 COMMIT_COUNT = len(commits)
+uncommitted = subprocess.run(["git", "status", "--porcelain", "--", PROJECT_PATHSPEC],
+                              capture_output=True, text=True, cwd=REPO_DIR).stdout.strip().split("\n")
+UNCOMMITTED_COUNT = len([l for l in uncommitted if l.strip()])
 
-BACKLOG_SECTIONS = 27  # NEXT_ITERATION_BACKLOG.md, counted via grep '^## Section'
+# Counted live against the actual file every run -- was a hand-typed magic
+# number (27) that silently went stale the moment a new Section got added
+# (Section 28 landed the same round this bug was found, via a different
+# build). "## N. ..." (no leading "Section") headings count too, e.g. "## 1."
+_backlog_path = os.path.join(REPO_DIR, "..", "docs", "NEXT_ITERATION_BACKLOG.md")
+with open(_backlog_path, encoding="utf-8") as _f:
+    _backlog_text = _f.read()
+BACKLOG_SECTIONS = len(re.findall(r"^## (?:Section \d+|\d+[a-z]?)[\. —-]", _backlog_text, re.MULTILINE))
 
 # ---- Composite scores ----
 task_completion_pct = round(TASKS_COMPLETED / TASKS_TOTAL * 100)
@@ -195,7 +224,7 @@ TODO_DETAIL = [
 ]
 
 data = {
-    "generated": "2026-08-17",
+    "generated": datetime.date.today().isoformat(),  # was a hand-typed literal, went stale the next day this ran
     "wb_latest": wb_latest, "wb_versions": wb_versions,
     "lite_latest": lite_latest, "lite_versions": lite_versions,
     "nav_latest": nav_latest, "nav_versions": nav_versions,
@@ -212,6 +241,7 @@ data = {
     "bugs": bugs, "bugs_total": BUGS_TOTAL, "bugs_fixed": BUGS_FIXED, "bug_closure_pct": bug_closure_pct,
     "qa_gate_types": qa_gate_types_active, "qa_gate_pct": QA_GATE_PCT,
     "commits": commits, "commit_count": COMMIT_COUNT,
+    "uncommitted_count": UNCOMMITTED_COUNT,
     "backlog_sections": BACKLOG_SECTIONS,
     "composite": composite,
     "todo_detail": TODO_DETAIL,

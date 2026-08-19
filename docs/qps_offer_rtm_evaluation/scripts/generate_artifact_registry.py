@@ -18,7 +18,15 @@ grouping/latest-flag output.
 """
 import json, os, re, sys
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+# ROOT resolves to current/ (the deliverables directory), not this script's
+# own scripts/ directory -- the project was reorganised into current/,
+# scripts/, docs/ subfolders after this script was last run against a flat
+# working directory (which is why the registry's old "root" field pointed at
+# a stale sandbox path, /home/claude/work, and its version lists were missing
+# v24/v22/v12). Resolved via pathlib-style parents[], relative to this
+# script's own location, never cwd -- matches the project's own path-
+# resolution convention (see CLAUDE.md).
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "current")
 EXTS = {".xlsx", ".pptx", ".pdf", ".html", ".py", ".md", ".json", ".yaml", ".yml"}
 VERSION_RE = re.compile(r"^(.*?)_(v\d+[a-z]?|v\d+_\d+)(\.[A-Za-z0-9]+)$")
 SKIP_DIRS = {"__pycache__", "_f4check", "_rvcheck", "_theme_check", "charts", "extract",
