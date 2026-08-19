@@ -10,13 +10,11 @@ Phase 2a: Baseline Measurement
 - 12-Cluster integration for distributed processing
 """
 
-import os
 import json
 import ast
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Tuple
 from datetime import datetime
-from collections import defaultdict
 
 from ..core.state import StateManager
 from ..core.utils import ensure_directory, safe_write_json

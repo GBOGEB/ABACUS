@@ -11,7 +11,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.integrations.version_manager import VersionManager, BumpType, VersionInfo
+from DMAIC_V3.integrations.version_manager import VersionManager, VersionInfo
 
 
 class TestVersionManager(unittest.TestCase):
