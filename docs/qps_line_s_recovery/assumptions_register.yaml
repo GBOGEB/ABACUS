@@ -1,0 +1,172 @@
+# QPS Line S Recovery - Assumptions and Provenance Register
+# Wave 0 spine. Every published number must trace to a row here.
+# status: one of {RESOLVED, UNRESOLVED, OPEN_RFI, CALIBRATION_PENDING, BLOCKER, OPEN, ACCEPTED}
+# Nothing downstream may use a default for an UNRESOLVED or BLOCKER quantity.
+
+meta:
+  build: qps_line_s_recovery
+  track: MDA
+  pr: GBOGEB/ABACUS#582
+  branch: w001
+  merge_allowed: true
+  open_gates: []
+  lineage_anchor:
+    chatgpt_share_url: TODO_PASTE_EXPORT_URL
+    first_prompt: "120 m3 vessel, 1 to 15 barg He, 300 K: mass plus fill-rate sensitivity"
+    raw_file: S_line_raw.txt
+    chain:
+      - initial helium mass and filling model
+      - Line S pressure-buffer framing for RTM-261 and RTM-292
+      - D2.1 pages 34 to 37 LOOP source basis
+      - Appendix 8.2, 8.3, 8.4 integration
+      - native DOCX parsing
+      - corrected 8700 W heat-load sensitivity
+      - ABACUS PR 582
+      - Agent A issue 583, Agent B issue 584, CODEX helper issue 237
+
+blockers:
+  - id: ASSUM-VEFF
+    quantity: effective connected gas volume during the transient
+    value: 3.12
+    unit: m3
+    status: RESOLVED
+    gate: true
+    confidence: medium
+    decompose:
+      bath_vapour_space:  {value: 0.289, unit: m3, note: "C30 liquid 2600 L at 90% fill → ~10% vapour space"}
+      v2_cold_line_90m:   {value: 1.590, unit: m3, note: "DN150 cold section, heater-to-300K end (A=0.01767 m²)"}
+      v3_warm_line_60m:   {value: 1.060, unit: m3, note: "DN150 warm section, 300 K to QRB.S handover"}
+      qve_user_volume:    {value: 0.185, unit: m3, note: "QVE 185 L"}
+    resolution: >
+      3.12 m3 from DN150 geometry (A = pi/4 * 0.150^2 = 0.01767 m2). Method
+      is sound and converging; not yet verified against an isometric drawing.
+      Legacy 120 m3 value is RETIRED (38x too large — inherited from an
+      unrelated storage-vessel prompt). At 3.12 m3 the line holds almost no
+      buffer: 100 g/s with zero suction reaches 1.30 bar in ~1 s on the warm
+      section; cold section gives ~1-2 min. Suction-vs-inflow balance governs.
+    confidence_note: Accepted as reasonable; isometric cross-check deferred.
+    why_it_matters: dP/dt scales as 1/V_eff; 38x error in legacy value made answer meaningless.
+
+  - id: ASSUM-PLIMIT
+    quantity: most restrictive applicable Line S pressure ceiling
+    value: 1.30
+    unit: bar
+    status: RESOLVED
+    gate: true
+    confidence: high
+    binding_component: p_fullop_backpressure
+    components:
+      nominal_return:         {value: 1.10, status: RESOLVED, source: RTM-292}
+      min_allowable:          {value: 1.05, status: RESOLVED, source: RTM-292}
+      hp_suction_max:         {value: 1.15, status: RESOLVED, source: He_line_safety, note: HP compressor operational limit — above this HP cannot accept flow, but Line S itself can hold to 1.30}
+      p_fullop_backpressure:  {value: 1.30, status: RESOLVED, source: He_line_safety, note: BINDING — Line S pipe must never exceed this}
+      relief_set:             {value: 1.50, status: EXCLUDED,  source: He_line_safety, note: Applies to closed isochoric liquid vessel only; NOT a Line S limit}
+    resolution: >
+      Binding ceiling for Line S is 1.30 bar (full-open backpressure limit).
+      The 1.50 bar relief set applies to the closed isochoric liquid vessel —
+      it is excluded from the Line S pressure analysis. The 1.15 bar HP suction
+      max is an operational constraint on the compressor, not a Line S structural
+      limit. Allowed dP from nominal (1.10 bar) is 0.20 bar.
+      t_available = 0.20 / (dP/dt).
+    why_it_matters: t_available = (P_limit - P_initial)/(dP/dt); ceiling = 1.30 bar confirmed.
+
+  - id: ASSUM-RECOV-PWR
+    title: Recovery power available during LOOP
+    quantity: diesel backup power available to recovery compressors during LOOP
+    value: 350
+    unit: kW
+    status: RESOLVED
+    gate: true
+    severity: high
+    confidence: high
+    resolution: >
+      350 kW diesel backup confirmed — sufficient to run a single HP compressor
+      at its maximum of 112 g/s. The 50 g/s and 100 g/s suction cases in the
+      pressure matrix are sensitivity runs for smaller compressors; power is
+      assumed available for all cases. The balanced 100 g/s case is valid.
+      112 g/s suction against 100 g/s inflow = -12 g/s net (pressure falls).
+    source: GBO — 350 kW diesel confirmed; budget covers HP compressor at 112 g/s max
+
+  - id: ASSUM-ENERGY-MODEL
+    title: LOOP boil-off transient energy model
+    quantity: SSOT Table 28 a_cond [m] conduction coefficients + NIST AISI 304 lambda
+    value: ssot_tables.py
+    status: RESOLVED
+    gate: true
+    severity: medium
+    resolution: >
+      Integrated two-lump energy balance implemented in models/qps_line_s/loop_transient.py
+      using SSOT Table 28 a_cond coefficients directly (not a fitted kappa multiplier).
+      NIST AISI 304 log-polynomial conductivity (1-300 K) via ssot_tables.py.
+      CONDUCTION_AL_CONSTANT is closed: a_cond [m] IS the Table 28 lumped coefficient.
+      Result (LINAC_30): dry-out 1.86 h, peak 88.7 g/s, avg 58.6 g/s.
+      Gap vs D2.1 (>120 g/s) is a modelling-scope difference, not a missing coefficient.
+    source: SSOT T28; NIST AISI 304; models/qps_line_s/ssot_tables.py
+
+asserted_inputs:
+  - id: MDOT_IN_PRE_HP_MAX
+    value: 112
+    unit: g/s
+    status: UNRESOLVED
+    confidence: low
+    note: Governing pre-HP inflow. Origin still requires Applicant trace.
+    source: user-supplied conversation basis
+
+  - id: HP_CAPACITY
+    value: 112
+    unit: g/s
+    status: RESOLVED
+    confidence: high
+    note: >
+      Single HP compressor maximum confirmed at 112 g/s; 350 kW diesel covers it.
+      50/100/112 g/s are sensitivity cases; power assumed available for all.
+      At 100 g/s inflow: 112 g/s suction gives -12 g/s net (pressure falls).
+
+  - id: T_GAS
+    value: 300
+    unit: K
+    status: CALIBRATION_PENDING
+    confidence: low
+    note: Line S range is mixed 2 to 292 K. Fixed-T is only a sanity ribbon; energy balance is governing.
+
+heat_load:
+  design_point: {value: 8700, unit: W, status: RESOLVED, note: D2.1 design or loaded point}
+  true_nominal_baseline: {value: 6042, unit: W, status: RESOLVED, formula: 8700 / 1.44}
+  uncertainty_case: {value: 7250, unit: W, status: RESOLVED, formula: 8700 * 100 / 120}
+  margin_factor_1_44:
+    value: 1.44
+    status: UNRESOLVED
+    note: Pedigree undocumented. Confirm whether it is 1.2 x 1.2, code factor, or contingency.
+
+physics_findings:
+  - id: H1_energy_balance
+    statement: >
+      Fixed-temperature mass balance under-predicts the early pressure rise by
+      gamma = 5/3 in the ideal charging limit. The scenario matrix currently
+      reports this as an early-time bound with energy_source=gamma_x_ribbon_bound.
+    status: PARTIAL_BOUND_ONLY
+    test: tests/test_line_s_buffer.py::test_energy_balance_is_gamma_times_ribbon
+    open_task: add time-integrated energy curve after flow profiles and thermal inputs are implemented.
+
+  - id: H2_heat_to_flow
+    statement: >
+      8700 W drives 4 K bath boil-off into Line S, not the shield-coolant supply.
+      Pure 4 K latent heat would imply approximately 420 g/s, so the D2.1
+      100 to 150 g/s relief is an integrated bath response requiring calibration.
+    status: CALIBRATION_PENDING
+    owner: Agent A and Agent B
+
+constants:
+  R_He: {value: 2077.2, unit: J/kg/K}
+  cp_He: {value: 5193.0, unit: J/kg/K}
+  cv_He: {value: 3115.8, unit: J/kg/K}
+  gamma: {value: 1.6667}
+  h_fg_He_4K: {value: 20700, unit: J/kg, note: anchor for boiloff link}
+  Z_He: {value: "1.00-1.02", note: ideal-gas default acceptable for first-pass range}
+
+rtm_refs:
+  RTM-260: helium loss <= 1 percent inventory
+  RTM-261: accept 200 g/s normal and 100 g/s abnormal return without loss
+  RTM-262: recover normal circulation post-event
+  RTM-292: Line S and recovery interface pressure build-up
+  OFFER-22: Applicant recovery strategy, storage, and maximum accepted flow

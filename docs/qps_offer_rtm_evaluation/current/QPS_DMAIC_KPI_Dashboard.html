@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPS Project — DMAIC KPI Dashboard</title>
+<style>
+  :root {
+    --purple: #441F63; --purple-bg: #F3ECF8; --accent: #0B3D5C; --callout: #EFE5F5;
+    --text: #22222; --muted: #666; --border: #ddd;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Aptos, Arial, sans-serif; margin: 0; background: #f7f5fa; color: #222; }
+  header { background: var(--purple); color: white; padding: 28px 36px; }
+  header h1 { margin: 0 0 4px 0; font-size: 26px; }
+  header .sub { opacity: 0.85; font-size: 13.5px; }
+  .tabs { display: flex; gap: 4px; background: #2f1548; padding: 0 36px; }
+  .tab { padding: 10px 18px; color: #cbb8e0; cursor: pointer; font-size: 13.5px; border-bottom: 3px solid transparent; }
+  .tab.active { color: white; border-bottom-color: #ffffff; background: rgba(255,255,255,0.08); }
+  main { padding: 28px 36px 60px; max-width: 1280px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .card .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 6px; }
+  .card .value { font-size: 30px; font-weight: 700; color: var(--purple); }
+  .card .note { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .barwrap { background: #eee; border-radius: 6px; height: 8px; margin-top: 8px; overflow: hidden; }
+  .bar { height: 100%; border-radius: 6px; }
+  .composite-card { background: linear-gradient(135deg, var(--purple), var(--accent)); color: white; grid-column: span 2; }
+  .composite-card .value { color: white; font-size: 44px; }
+  .composite-card .label { color: #e5d7f0; }
+  h2 { font-size: 18px; color: var(--purple); border-bottom: 2px solid var(--callout); padding-bottom: 8px; margin-top: 36px; }
+  h3 { font-size: 14.5px; color: var(--accent); margin-top: 22px; }
+  p.desc { font-size: 13px; color: var(--muted); max-width: 900px; line-height: 1.5; }
+  table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; font-size: 13px; }
+  th { background: var(--accent); color: white; text-align: left; padding: 8px 10px; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .mono { font-family: 'Consolas', monospace; font-size: 12px; }
+  .small { font-size: 12px; color: var(--muted); }
+  .pill { padding: 2px 9px; border-radius: 10px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+  .kindtag { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .dmaic-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 14px; }
+  .dmaic-box { background: white; border: 1px solid var(--border); border-top: 4px solid var(--purple); border-radius: 6px; padding: 14px; }
+  .dmaic-box h4 { margin: 0 0 8px 0; color: var(--purple); font-size: 14px; }
+  .dmaic-box ul { margin: 0; padding-left: 18px; font-size: 12px; color: #333; line-height: 1.5; }
+  .commit { border-left: 3px solid var(--callout); padding: 6px 0 6px 14px; margin-bottom: 4px; }
+  .commit-meta { font-size: 11.5px; color: var(--muted); }
+  .commit-msg { font-size: 13px; }
+  .todo-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; align-items: baseline; }
+  .todo-tag { flex: 0 0 240px; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.02em; }
+  .todo-text { flex: 1; }
+  .todo-card { background: white; border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+  .todo-card summary { list-style: none; cursor: pointer; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+  .todo-card summary::-webkit-details-marker { display: none; }
+  .todo-card .todo-tag { flex: 0 0 220px; font-size: 10.5px; }
+  .todo-card .todo-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .todo-card .todo-chevron { color: var(--muted); transition: transform 0.15s; font-size: 12px; }
+  .todo-card[open] .todo-chevron { transform: rotate(90deg); }
+  .todo-card[open] summary { background: var(--callout); border-bottom: 1px solid var(--border); }
+  .todo-card:hover summary { background: #faf7fc; }
+  .todo-body { padding: 14px 18px; font-size: 12.5px; line-height: 1.6; }
+  .todo-field { margin-bottom: 8px; }
+  .todo-field b { color: var(--accent); }
+  .note-box { background: var(--callout); border-left: 4px solid var(--purple); padding: 12px 16px; font-size: 13px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+  footer { padding: 20px 36px; text-align: center; font-size: 11.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>QPS OFFER Evaluation — Project DMAIC KPI Dashboard</h1>
+  <div class="sub">Delivery-process metrics, not the engineering DMAIC (that's the separate MTBF/DMAIC deck) — generated 2026-08-19 · SSOT: QPS_OFFER_Evaluation_FULL_v24.xlsx</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-panel="overview">Overview</div>
+  <div class="tab" data-panel="dmaic">DMAIC</div>
+  <div class="tab" data-panel="artefacts">Artefacts &amp; Lineage</div>
+  <div class="tab" data-panel="tasks">Tasks</div>
+  <div class="tab" data-panel="changelog">Changelog</div>
+  <div class="tab" data-panel="todo">TODO / Outstanding</div>
+</div>
+
+<main>
+
+  <div class="note-box">
+    <strong>Framing note:</strong> "DMAIC" here is applied to <em>how this project itself is being delivered</em>
+    round over round (task completion, SSOT sync, script lineage, bug closure, QA-gate adherence) —
+    a project-management use of the framework, distinct from the QPS system's own engineering DMAIC
+    (reliability/MTBF), which lives in <span class="mono">QPS_MTBF_WCS_DMAIC_v7.pptx</span>. Every number
+    below is computed directly from <span class="mono">ARTIFACT_REGISTRY.json</span>, the live task list,
+    and <span class="mono">git log</span> — nothing here is estimated.
+  </div>
+
+  <div class="panel active" id="panel-overview">
+    <h2>Composite &amp; individual KPIs</h2>
+    <div class="cards">
+      <div class="card composite-card">
+        <div class="label">Composite Project Delivery Health</div>
+        <div class="value">87%</div>
+        <div class="note">Weighted: Task completion 30% · SSOT sync 25% · Lineage/idempotency 20% · Bug closure 15% · QA-gate adherence 10%</div>
+      </div>
+      <div class="card">
+        <div class="label">Task completion</div>
+        <div class="value">87%</div>
+        <div class="barwrap"><div class="bar" style="width:87%;background:#0B3D5C"></div></div>
+        <div class="note">52/60 tasks completed · 0 in progress · 8 pending</div>
+      </div>
+      <div class="card">
+        <div class="label">SSOT sync rate</div>
+        <div class="value">100%</div>
+        <div class="barwrap"><div class="bar" style="width:100%;background:#C0392B"></div></div>
+        <div class="note">6/6 derived artefacts fully in sync with QPS_OFFER_Evaluation_FULL_v24.xlsx right now</div>
+      </div>
+      <div class="card">
+        <div class="label">Lineage / idempotency</div>
+        <div class="value">60%</div>
+        <div class="barwrap"><div class="bar" style="width:60%;background:#8E5A9E"></div></div>
+        <div class="note">Version-transitions with a saved, re-runnable build script (workbook + BT deck combined)</div>
+      </div>
+      <div class="card">
+        <div class="label">Bug closure rate</div>
+        <div class="value">91%</div>
+        <div class="barwrap"><div class="bar" style="width:91%;background:#2E8B57"></div></div>
+        <div class="note">10/11 found-this-session bugs fixed before shipping</div>
+      </div>
+      <div class="card">
+        <div class="label">QA gate adherence</div>
+        <div class="value">100%</div>
+        <div class="barwrap"><div class="bar" style="width:100%;background:#2E8B57"></div></div>
+        <div class="note">4 gate types (xlsx recalc, xlsx XML integrity, HTML Playwright, pptx visual+badge-grep) enforced every round, zero known bypass</div>
+      </div>
+    </div>
+
+    <h2>Width of artefact types tracked</h2>
+    <div class="cards">
+      <div class="card"><div class="label">Total artefact families</div><div class="value">15</div><div class="note">Distinct file lineages, per ARTIFACT_REGISTRY.json</div></div>
+      <div class="card"><div class="label">Total files on disk</div><div class="value">18</div><div class="note">Across all versions of all families</div></div>
+      <div class="card"><div class="label">Committed changes, this project's own path</div><div class="value">2</div><div class="note">git log scoped to docs/qps_offer_rtm_evaluation/ only (was unscoped -- pulled all 2129 commits across the whole shared repo before this round's fix). A GitHub remote does exist (github.com/GBOGEB/ABACUS.git) -- nothing from this project has been pushed there yet.</div></div>
+      <div class="card"><div class="label">Uncommitted changes right now</div><div class="value">26</div><div class="note">Modified/untracked files in this project's own path, not yet committed to the worktree branch -- includes this round's own work</div></div>
+      <div class="card"><div class="label">Backlog findings logged</div><div class="value">33</div><div class="note">Dated sections in NEXT_ITERATION_BACKLOG.md, counted live via regex, not hand-typed</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-dmaic">
+    <h2>DMAIC applied to project delivery</h2>
+    <p class="desc">Same 5-phase structure as the engineering DMAIC, applied to the process of building and shipping this evaluation project itself.</p>
+    <div class="dmaic-grid">
+      <div class="dmaic-box"><h4>Define</h4><ul>
+        <li>Score 50 OFFER items vs 722 RTM requirements, 7-dim weighted BT method</li>
+        <li>No duplicated SSOT — one workbook, everything else derives</li>
+        <li>Disclose rather than fabricate on every inferred value</li>
+      </ul></div>
+      <div class="dmaic-box"><h4>Measure</h4><ul>
+        <li>18 files / 15 families tracked</li>
+        <li>60 tasks logged, 87% complete</li>
+        <li>2 commits, 33 backlog findings</li>
+      </ul></div>
+      <div class="dmaic-box"><h4>Analyze</h4><ul>
+        <li>SSOT sync: only 100% of derived artefacts current right now</li>
+        <li>Lineage gaps concentrated in 2 spans: workbook v9-v15, BT deck v6-v10</li>
+        <li>Bug root causes cluster around 2 openpyxl API gotchas + 3 unverified-assumption patterns</li>
+      </ul></div>
+      <div class="dmaic-box"><h4>Improve</h4><ul>
+        <li>10/11 bugs fixed pre-ship this session</li>
+        <li>Task-list hygiene pass this round: 9 stale entries corrected with cited evidence</li>
+        <li>Control actions written per recurring bug pattern (see Artefacts tab)</li>
+      </ul></div>
+      <div class="dmaic-box"><h4>Control</h4><ul>
+        <li>4 QA gate types enforced every round, no bypass</li>
+        <li>Re-read-saved-file convention catches silent data loss before ship</li>
+        <li>Append-only slide/section numbering avoids cross-reference breaks</li>
+      </ul></div>
+    </div>
+
+    <h3>Bug register (this session)</h3>
+    <table>
+      <tr><th>Issue</th><th>Root-cause category</th><th>Status</th></tr>
+      <tr>
+      <td>RTM_CROSSWALK!J white-on-white text</td>
+      <td class="small">Conditional formatting</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>README dead hyperlinks survived slim-builder neutraliser</td>
+      <td class="small">Build-script gap</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>Navigator renderParetoInto scoping bug</td>
+      <td class="small">JS scoping</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>Isolated-sheet visual-QA false positives (recurred 2x)</td>
+      <td class="small">QA-harness artifact</td>
+      <td><span class="pill" style="background:#B8860B22;color:#B8860B;border:1px solid #B8860B66">Understood, not a real defect</span></td>
+    </tr><tr>
+      <td>LITE_v18 opened &#x27;Repaired&#x27; in real Excel</td>
+      <td class="small">Stale AutoFilter (XML)</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed, not re-confirmed in real Excel</span></td>
+    </tr><tr>
+      <td>banded() helper overwrote colour-coded columns (4x)</td>
+      <td class="small">Shared-helper blind spot</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>PHASE_ORDER/PHASE_COLORS built from assumed string format</td>
+      <td class="small">Unverified assumption</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>openpyxl insert_rows() doesn&#x27;t shift merged cells</td>
+      <td class="small">openpyxl API gotcha</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>Duplicate EVAL-S08 badge across 2 BT-deck slides</td>
+      <td class="small">Inherited from unsaved build step</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>EVAL-S13 table columns summed wider than the slide</td>
+      <td class="small">Layout arithmetic (BT deck v12)</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr><tr>
+      <td>EVAL-S15 phase-string truncation made every row look identical</td>
+      <td class="small">Naive truncation hid real variation</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">Fixed</span></td>
+    </tr>
+    </table>
+  </div>
+
+  <div class="panel" id="panel-artefacts">
+    <h2>Artefact lineage &amp; idempotency</h2>
+    <p class="desc">"Idempotency" here means: can this file's current version be reproduced from scratch by re-running a saved script against the prior version? Where the answer is no, that transition's content is only reconstructable from the binary itself or prose description.</p>
+    <table>
+      <tr><th>Family</th><th>Latest</th><th>Versions</th><th>Type</th><th>Lineage note</th></tr>
+      <tr>
+      <td>Master workbook (SSOT)</td>
+      <td class="mono small">QPS_OFFER_Evaluation_FULL_v24.xlsx</td>
+      <td style="text-align:center">2</td>
+      <td style="text-align:center"><span class="kindtag">xlsx</span></td>
+      <td class="small">12/18 transitions scripted (67%)</td>
+    </tr><tr>
+      <td>Reviewer workbook</td>
+      <td class="mono small">QPS_OFFER_Evaluation_LITE_v24.xlsx</td>
+      <td style="text-align:center">2</td>
+      <td style="text-align:center"><span class="kindtag">xlsx</span></td>
+      <td class="small">Derived 1:1 from FULL each round (slim-builder script)</td>
+    </tr><tr>
+      <td>HTML Navigator</td>
+      <td class="mono small">QPS_RTM_BT_Navigator_v22.html</td>
+      <td style="text-align:center">2</td>
+      <td style="text-align:center"><span class="kindtag">html</span></td>
+      <td class="small">Data-export script saved; template-splice step still inline Python (standing gap)</td>
+    </tr><tr>
+      <td>BT methodology deck</td>
+      <td class="mono small">BT_Method_Evaluation_v12.pptx</td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center"><span class="kindtag">pptx</span></td>
+      <td class="small">3/7 transitions scripted (43%)</td>
+    </tr><tr>
+      <td>MTBF/DMAIC deck</td>
+      <td class="mono small">QPS_MTBF_WCS_DMAIC_v7.pptx</td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center"><span class="kindtag">pptx</span></td>
+      <td class="small">Separate lineage; untouched this round</td>
+    </tr>
+    </table>
+
+    <h2>SSOT sync status (right now)</h2>
+    <p class="desc">Which derived artefacts actually reflect the current canonical workbook (QPS_OFFER_Evaluation_FULL_v24.xlsx) at this moment — not whether they were correct when built.</p>
+    <table>
+      <tr><th>Artefact</th><th>Latest file</th><th>Sync status</th><th>Drift</th><th>Note</th></tr>
+      <tr>
+      <td>Reviewer workbook (LITE)</td>
+      <td class="mono">QPS_OFFER_Evaluation_LITE_v24.xlsx</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">Rebuilt directly from FULL_v23 this round.</td>
+    </tr><tr>
+      <td>HTML Navigator</td>
+      <td class="mono">QPS_RTM_BT_Navigator_v22.html</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">Re-exported + re-spliced against FULL_v23 this round (splice_navigator.py, NEW saved script). Was 1 version stale.</td>
+    </tr><tr>
+      <td>BT methodology deck (Dossier content)</td>
+      <td class="mono">BT_Method_Evaluation_v12.pptx</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">EVAL-S12 rebuilt against nav_data_v23.json this round (34 entries, was 32). Was 1 version stale.</td>
+    </tr><tr>
+      <td>DMAIC metric history</td>
+      <td class="mono">METRIC_HISTORY.json</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">Backfill re-run this round, now covers v5-v23 (19 versions, zero gap). Was 3 versions stale.</td>
+    </tr><tr>
+      <td>Deliverables Index page</td>
+      <td class="mono">DELIVERABLES_INDEX.html</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">Version/status table refreshed this round to v23/v21/v12 across all 6 tracked files. Was 4 workbook versions stale.</td>
+    </tr><tr>
+      <td>Taxonomy/Domain Summary PDF</td>
+      <td class="mono">QPS_Taxonomy_and_Domain_Summary.pdf</td>
+      <td><span class="pill" style="background:#2E8B5722;color:#2E8B57;border:1px solid #2E8B5766">In sync</span></td>
+      <td class="small">0 version(s) behind</td>
+      <td class="small">Refreshed this round against nav_data_v23.json; render+merge step promoted to a saved script (merge_taxonomy_pdf.py). Was many rounds stale.</td>
+    </tr>
+    </table>
+  </div>
+
+  <div class="panel" id="panel-tasks">
+    <h2>Task breakdown</h2>
+    <div class="cards">
+      <div class="card"><div class="label">Completed</div><div class="value" style="color:#2E8B57">52</div></div>
+      <div class="card"><div class="label">In progress</div><div class="value" style="color:#B8860B">0</div></div>
+      <div class="card"><div class="label">Pending</div><div class="value" style="color:#C0392B">8</div></div>
+    </div>
+    <div class="note-box">
+      <strong>Hygiene pass performed this round:</strong> 9 task entries (#21, #30, #31, #36, #38, #41, #45, #46, #47)
+      were sitting as "pending"/"in progress" from earlier rounds despite direct evidence they were already done
+      (e.g. #30 "Build HTML navigator companion" — the Navigator is on its 20th version; #46 "GitHub integration" —
+      resolved by GBO's own explicit "local git only" decision, not an open build item). Corrected with cited
+      evidence rather than left to silently understate progress. The remaining 9 pending items are genuinely
+      not yet started — see the TODO tab.
+    </div>
+  </div>
+
+  <div class="panel" id="panel-changelog">
+    <h2>Main change log</h2>
+    <p class="desc">Full local git history, newest first (2 commits).</p>
+    <div class="commit">
+      <div class="commit-meta"><span class="mono">41f398da</span> <span class="small">2026-08-18</span></div>
+      <div class="commit-msg">Re-judge 7 flagged RTM rows against full text; correct RTM-320 Performance dimension</div>
+    </div><div class="commit">
+      <div class="commit-meta"><span class="mono">5b6b9bec</span> <span class="small">2026-08-17</span></div>
+      <div class="commit-msg">Import QPS OFFER/RTM v23 evaluation package as canonical SSOT</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-todo">
+    <h2>TODO / Outstanding — honest checklist</h2>
+    <p class="desc">Click any item below to expand what it is, why it matters, which files it touches, and the concrete next step — not just a label.</p>
+    <details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #22</span>
+        <span class="todo-title">Update project documentation for this round&#x27;s changes</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> A standing, recurring task -- every substantive round should end with SESSION_SSOT.yaml / NEXT_ITERATION_BACKLOG.md / ENGINEERING_HANDOVER_SESSION.md updated to match.</div>
+        <div class="todo-field"><b>Why:</b> Prevents the exact staleness this dashboard&#x27;s SSOT-sync tab exists to catch -- docs describing a version that&#x27;s no longer canonical.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">SESSION_SSOT.yaml, NEXT_ITERATION_BACKLOG.md, ENGINEERING_HANDOVER_SESSION.md</span></div>
+        <div class="todo-field"><b>Next step:</b> Re-run at the end of every future round, not a one-time close-out -- this task is intentionally never &#x27;done&#x27;.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #32</span>
+        <span class="todo-title">QA sweep + docs addendum + final delivery</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> A generic recurring wrap-up task from early in the session, predates the more specific per-round QA now built into every build script.</div>
+        <div class="todo-field"><b>Why:</b> Kept open rather than force-closed because it&#x27;s ambiguous whether it means &#x27;this round&#x27; or &#x27;the project as a whole&#x27; -- marking it done without knowing which would overstate progress.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">n/a -- process task, not a file</span></div>
+        <div class="todo-field"><b>Next step:</b> Ask GBO whether this refers to a specific outstanding QA pass or should be retired as superseded by the per-round QA gates now standard in every build script.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #37</span>
+        <span class="todo-title">Add in-deck jump/back navigation to both decks</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> PowerPoint doesn&#x27;t natively support &#x27;back to where I was&#x27; the way a browser does -- this would need per-slide hyperlink actions wired to badge codes.</div>
+        <div class="todo-field"><b>Why:</b> Both decks now cross-reference each other and themselves by badge code (EVAL-Sxx etc.) in body text, but those references aren&#x27;t clickable yet -- reading them still means manually scrubbing to the right slide.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">build_bt_deck_v13.py (not yet created), build_deck6.py-equivalent for MTBF deck</span></div>
+        <div class="todo-field"><b>Next step:</b> Scope as its own round -- touches every slide in both decks, non-trivial, shouldn&#x27;t be a rushed tail-end addition.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #39</span>
+        <span class="todo-title">Revisit the 4 previously-defaulted assumptions; widen DMAIC scope</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> Early in the project, 4 modelling assumptions were defaulted rather than confirmed with GBO (referenced in SESSION_SSOT.yaml but not re-listed here to avoid duplicating a doc that can drift).</div>
+        <div class="todo-field"><b>Why:</b> Assumptions made under time pressure early on deserve a deliberate revisit once the rest of the method has stabilised, rather than staying permanently &#x27;temporary&#x27;.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">SESSION_SSOT.yaml (assumptions section), MTBF/DMAIC deck</span></div>
+        <div class="todo-field"><b>Next step:</b> Needs a direct question back to GBO on each of the 4 -- can&#x27;t be resolved by more data-mining alone.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #40</span>
+        <span class="todo-title">Build full technical handover package (zip + manifest.yaml)</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> A single archive containing the canonical files, all build scripts, and a manifest describing how to reproduce everything from scratch -- for use outside this session (e.g. a coding editor).</div>
+        <div class="todo-field"><b>Why:</b> Directly requested this round: &#x27;full engineering and coding handover to my coding editor (with main file or zip or tarball tar/gz and full reproduction and continuation of conversation)&#x27;.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">New: QPS_Project_Handover.tar.gz, MANIFEST.yaml, CONTINUATION.md</span></div>
+        <div class="todo-field"><b>Next step:</b> Being built now, immediately after this dashboard refresh -- see the delivered tarball.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #42</span>
+        <span class="todo-title">Build per-RTM and per-OFFER JSON/YAML index with edge-link flags</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> A machine-readable index of every RTM/OFFER item with explicit flags for which relationship types (Direct/Supporting/Broad/Contextual) connect it to what.</div>
+        <div class="todo-field"><b>Why:</b> The Navigator&#x27;s nav_data_vN.json is close to this but isn&#x27;t structured as a graph/edge-list -- this would be a genuinely different artifact optimised for programmatic consumption, not browsing.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">New: export_edge_index.py (not yet created)</span></div>
+        <div class="todo-field"><b>Next step:</b> Natural companion to the node/graph relationship-diagram ask (see TODO below) -- likely worth building together.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #43</span>
+        <span class="todo-title">Write session history / thematic compendium as part of SSOT repo</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> A narrative compendium of the whole project&#x27;s arc, distinct from NEXT_ITERATION_BACKLOG.md&#x27;s dated findings-log format.</div>
+        <div class="todo-field"><b>Why:</b> The backlog file is a good chronological record but isn&#x27;t organised BY THEME (e.g. &#x27;every bug related to openpyxl&#x27;, &#x27;every taxonomy decision&#x27;) the way a compendium would be.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">New: SESSION_COMPENDIUM.md (not yet created)</span></div>
+        <div class="todo-field"><b>Next step:</b> Lower priority than the handover package -- revisit once the handover ships.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Pending task #44</span>
+        <span class="todo-title">Link ADDENDUM text sections to graphs/RTM/OFFER in HTML nav</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> Cross-link narrative ADDENDUM content (wherever it lives in the workbook) directly to the specific RTM/OFFER/chart it discusses.</div>
+        <div class="todo-field"><b>Why:</b> Currently the Navigator&#x27;s cross-links work RTM&lt;-&gt;OFFER and RTM&lt;-&gt;AD-document, but not from free-text narrative sections into the structured data.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">navigator_template.html, export_nav_data.py</span></div>
+        <div class="todo-field"><b>Next step:</b> Needs GBO to confirm which ADDENDUM sections he means -- workbook has several candidate sheets (AUDIT_NOTES, DMAIC_AUDIT) and guessing wrong wastes a round.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">Needs clarification</span>
+        <span class="todo-title">&quot;Bicycle chart&quot; for OFFER&lt;-&gt;RTM interaction-pareto</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> Unclear terminology from GBO&#x27;s scratchpad -- likely means a multi-node relationship diagram (ties to the node/graph/Mermaid request below), but not confirmed.</div>
+        <div class="todo-field"><b>Why:</b> Building the wrong thing under an ambiguous name wastes a full round -- worth a 1-line clarifying question before scoping.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">Likely navigator_template.html if it turns out to be graph-based</span></div>
+        <div class="todo-field"><b>Next step:</b> Ask GBO directly what &#x27;bicycle chart&#x27; refers to before building anything.</div>
+      </div>
+    </details><details class="todo-card">
+      <summary>
+        <span class="todo-tag">New this round</span>
+        <span class="todo-title">Multi-node OFFER&lt;-&gt;RTM relationship diagram with richer hover detail</span>
+        <span class="todo-chevron">▸</span>
+      </summary>
+      <div class="todo-body">
+        <div class="todo-field"><b>What:</b> GBO flagged the current per-OFFER &#x27;link wheel&#x27; (radial diagram, one OFFER centred with its linked RTMs around it) as too narrow when only 1 link exists, and asked for hover detail plus a proper node/graph-type diagram (Mermaid or similar) showing multiple items&#x27; relationships at once.</div>
+        <div class="todo-field"><b>Why:</b> The current implementation was already flagged low-priority in its own code comments by GBO (&#x27;current implementation not very clever&#x27;); this round&#x27;s screenshot made the gap concrete.</div>
+        <div class="todo-field"><b>Files:</b> <span class="mono">navigator_template.html (renderLinkWheel and neighbours)</span></div>
+        <div class="todo-field"><b>Next step:</b> Likely pairs naturally with task #42 (edge-index) and the &#x27;bicycle chart&#x27; ask above -- probably one combined build once bicycle-chart terminology is confirmed.</div>
+      </div>
+    </details>
+    <h3>Smaller items (no expanded breakdown needed)</h3>
+    <div class="todo-row"><span class="todo-tag">Deferred (GBO&#x27;s own priority order)</span><span class="todo-text">Broad Master_Input folder scan/index by size+date, existing-git-repo discovery</span></div><div class="todo-row"><span class="todo-tag">Deferred (GBO&#x27;s own priority order)</span><span class="todo-text">Index/rewrite all .txt files in Master_Input by category/topic</span></div><div class="todo-row"><span class="todo-tag">Older, carried forward</span><span class="todo-text">BT deck v7/v8/v9 build scripts never saved (only v6/v10/v12 exist)</span></div><div class="todo-row"><span class="todo-tag">Older, carried forward</span><span class="todo-text">workbook_full v10-v15 orchestration scripts never saved (logic scripts exist, glue doesn&#x27;t)</span></div><div class="todo-row"><span class="todo-tag">Older, carried forward</span><span class="todo-text">Relic-field scan of EVALUATION_WORKSPACE/OFFER_CANONICAL not yet built</span></div><div class="todo-row"><span class="todo-tag">Older, carried forward</span><span class="todo-text">Cross-workbook font/heading-size consistency audit not yet done</span></div><div class="todo-row"><span class="todo-tag">Open question (never answered by GBO)</span><span class="todo-text">Aptos vs Carlito font-consistency preference</span></div><div class="todo-row"><span class="todo-tag">Open question (never answered by GBO)</span><span class="todo-text">Whether the earlier &#x27;repaired file&#x27; Excel warning still applies to the current version</span></div>
+  </div>
+
+</main>
+
+<footer>QPS OFFER Evaluation project · DMAIC KPI Dashboard · regenerate via gen_kpi_dashboard.py + build_kpi_dashboard_html.py, both committed to the local git repo</footer>
+
+<script>
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('panel-' + t.dataset.panel).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

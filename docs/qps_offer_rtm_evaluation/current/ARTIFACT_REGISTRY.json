@@ -1,0 +1,280 @@
+{
+  "generated_by": "generate_artifact_registry.py (idempotent, scans cwd)",
+  "root": "C:\\Users\\gbonthuy\\OneDrive - Studiecentrum voor Kernenergie\\Master_Input\\.claude\\worktrees\\qps-offer-rtm-eval\\docs\\qps_offer_rtm_evaluation\\current",
+  "file_count": 18,
+  "family_count": 15,
+  "families": {
+    "ARTIFACT_REGISTRY.json": {
+      "latest": "ARTIFACT_REGISTRY.json",
+      "version_count": 1,
+      "versions": [
+        "ARTIFACT_REGISTRY.json"
+      ]
+    },
+    "BT_Method_Evaluation.pptx": {
+      "latest": "BT_Method_Evaluation_v12.pptx",
+      "version_count": 1,
+      "versions": [
+        "BT_Method_Evaluation_v12.pptx"
+      ]
+    },
+    "DELIVERABLES_INDEX.html": {
+      "latest": "DELIVERABLES_INDEX.html",
+      "version_count": 1,
+      "versions": [
+        "DELIVERABLES_INDEX.html"
+      ]
+    },
+    "MASTER_DEVELOPER_DASHBOARD.html": {
+      "latest": "MASTER_DEVELOPER_DASHBOARD.html",
+      "version_count": 1,
+      "versions": [
+        "MASTER_DEVELOPER_DASHBOARD.html"
+      ]
+    },
+    "METRIC_HISTORY.json": {
+      "latest": "METRIC_HISTORY.json",
+      "version_count": 1,
+      "versions": [
+        "METRIC_HISTORY.json"
+      ]
+    },
+    "QPS_DMAIC_KPI_Dashboard.html": {
+      "latest": "QPS_DMAIC_KPI_Dashboard.html",
+      "version_count": 1,
+      "versions": [
+        "QPS_DMAIC_KPI_Dashboard.html"
+      ]
+    },
+    "QPS_MTBF_WCS_DMAIC.pptx": {
+      "latest": "QPS_MTBF_WCS_DMAIC_v7.pptx",
+      "version_count": 1,
+      "versions": [
+        "QPS_MTBF_WCS_DMAIC_v7.pptx"
+      ]
+    },
+    "QPS_OFFER_Evaluation_FULL.xlsx": {
+      "latest": "QPS_OFFER_Evaluation_FULL_v24.xlsx",
+      "version_count": 2,
+      "versions": [
+        "QPS_OFFER_Evaluation_FULL_v23.xlsx",
+        "QPS_OFFER_Evaluation_FULL_v24.xlsx"
+      ]
+    },
+    "QPS_OFFER_Evaluation_LITE.xlsx": {
+      "latest": "QPS_OFFER_Evaluation_LITE_v24.xlsx",
+      "version_count": 2,
+      "versions": [
+        "QPS_OFFER_Evaluation_LITE_v23.xlsx",
+        "QPS_OFFER_Evaluation_LITE_v24.xlsx"
+      ]
+    },
+    "QPS_RTM_BT_Navigator.html": {
+      "latest": "QPS_RTM_BT_Navigator_v22.html",
+      "version_count": 2,
+      "versions": [
+        "QPS_RTM_BT_Navigator_v21.html",
+        "QPS_RTM_BT_Navigator_v22.html"
+      ]
+    },
+    "QPS_Taxonomy_and_Domain_Summary.pdf": {
+      "latest": "QPS_Taxonomy_and_Domain_Summary.pdf",
+      "version_count": 1,
+      "versions": [
+        "QPS_Taxonomy_and_Domain_Summary.pdf"
+      ]
+    },
+    "RTM_RANKING_RECOMPUTE_LOG.json": {
+      "latest": "RTM_RANKING_RECOMPUTE_LOG.json",
+      "version_count": 1,
+      "versions": [
+        "RTM_RANKING_RECOMPUTE_LOG.json"
+      ]
+    },
+    "nav_data.json": {
+      "latest": "nav_data_v24.json",
+      "version_count": 1,
+      "versions": [
+        "nav_data_v24.json"
+      ]
+    },
+    "pca_results.json": {
+      "latest": "pca_results_v23.json",
+      "version_count": 1,
+      "versions": [
+        "pca_results_v23.json"
+      ]
+    },
+    "weight_scenario4.json": {
+      "latest": "weight_scenario4_v23.json",
+      "version_count": 1,
+      "versions": [
+        "weight_scenario4_v23.json"
+      ]
+    }
+  },
+  "all_files": [
+    {
+      "file": "ARTIFACT_REGISTRY.json",
+      "family": "ARTIFACT_REGISTRY.json",
+      "version": null,
+      "ext": ".json",
+      "bytes": 7316,
+      "mtime": 1787069382.4798837,
+      "is_latest": true
+    },
+    {
+      "file": "BT_Method_Evaluation_v12.pptx",
+      "family": "BT_Method_Evaluation.pptx",
+      "version": "v12",
+      "ext": ".pptx",
+      "bytes": 2841564,
+      "mtime": 1786978388.4668446,
+      "is_latest": true
+    },
+    {
+      "file": "DELIVERABLES_INDEX.html",
+      "family": "DELIVERABLES_INDEX.html",
+      "version": null,
+      "ext": ".html",
+      "bytes": 15213,
+      "mtime": 1786978617.2918348,
+      "is_latest": true
+    },
+    {
+      "file": "MASTER_DEVELOPER_DASHBOARD.html",
+      "family": "MASTER_DEVELOPER_DASHBOARD.html",
+      "version": null,
+      "ext": ".html",
+      "bytes": 21541,
+      "mtime": 1786967769.1778646,
+      "is_latest": true
+    },
+    {
+      "file": "METRIC_HISTORY.json",
+      "family": "METRIC_HISTORY.json",
+      "version": null,
+      "ext": ".json",
+      "bytes": 15293,
+      "mtime": 1786977665.7928557,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_DMAIC_KPI_Dashboard.html",
+      "family": "QPS_DMAIC_KPI_Dashboard.html",
+      "version": null,
+      "ext": ".html",
+      "bytes": 40524,
+      "mtime": 1786978857.7468724,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_MTBF_WCS_DMAIC_v7.pptx",
+      "family": "QPS_MTBF_WCS_DMAIC.pptx",
+      "version": "v7",
+      "ext": ".pptx",
+      "bytes": 6337683,
+      "mtime": 1786715203.7179775,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_FULL_v23.xlsx",
+      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
+      "version": "v23",
+      "ext": ".xlsx",
+      "bytes": 626042,
+      "mtime": 1787050110.5508182,
+      "is_latest": false
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_FULL_v24.xlsx",
+      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
+      "version": "v24",
+      "ext": ".xlsx",
+      "bytes": 631479,
+      "mtime": 1787064235.0828972,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_LITE_v23.xlsx",
+      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
+      "version": "v23",
+      "ext": ".xlsx",
+      "bytes": 581935,
+      "mtime": 1787050153.1149654,
+      "is_latest": false
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_LITE_v24.xlsx",
+      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
+      "version": "v24",
+      "ext": ".xlsx",
+      "bytes": 584375,
+      "mtime": 1787069471.7268257,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_RTM_BT_Navigator_v21.html",
+      "family": "QPS_RTM_BT_Navigator.html",
+      "version": "v21",
+      "ext": ".html",
+      "bytes": 1412929,
+      "mtime": 1786977570.2739384,
+      "is_latest": false
+    },
+    {
+      "file": "QPS_RTM_BT_Navigator_v22.html",
+      "family": "QPS_RTM_BT_Navigator.html",
+      "version": "v22",
+      "ext": ".html",
+      "bytes": 1527525,
+      "mtime": 1787065013.8952756,
+      "is_latest": true
+    },
+    {
+      "file": "QPS_Taxonomy_and_Domain_Summary.pdf",
+      "family": "QPS_Taxonomy_and_Domain_Summary.pdf",
+      "version": null,
+      "ext": ".pdf",
+      "bytes": 138446,
+      "mtime": 1787070276.5370522,
+      "is_latest": true
+    },
+    {
+      "file": "RTM_RANKING_RECOMPUTE_LOG.json",
+      "family": "RTM_RANKING_RECOMPUTE_LOG.json",
+      "version": null,
+      "ext": ".json",
+      "bytes": 17690,
+      "mtime": 1787050153.1169705,
+      "is_latest": true
+    },
+    {
+      "file": "nav_data_v24.json",
+      "family": "nav_data.json",
+      "version": "v24",
+      "ext": ".json",
+      "bytes": 1360918,
+      "mtime": 1787064649.9025297,
+      "is_latest": true
+    },
+    {
+      "file": "pca_results_v23.json",
+      "family": "pca_results.json",
+      "version": "v23",
+      "ext": ".json",
+      "bytes": 108395,
+      "mtime": 1787053249.556052,
+      "is_latest": true
+    },
+    {
+      "file": "weight_scenario4_v23.json",
+      "family": "weight_scenario4.json",
+      "version": "v23",
+      "ext": ".json",
+      "bytes": 12596,
+      "mtime": 1787053287.4627912,
+      "is_latest": true
+    }
+  ]
+}

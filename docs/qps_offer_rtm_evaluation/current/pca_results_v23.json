@@ -1,0 +1,5288 @@
+{
+  "source_workbook": "current/QPS_OFFER_Evaluation_FULL_v23.xlsx",
+  "n_items": 722,
+  "method": "z-score standardized, sklearn.decomposition.PCA, 7 raw 0-3 dimension scores (L/R/P/F/Q/LC/C)",
+  "variance_table": [
+    {
+      "pc": "PC1",
+      "variance_pct": 30.6,
+      "cumulative_pct": 30.6
+    },
+    {
+      "pc": "PC2",
+      "variance_pct": 16.5,
+      "cumulative_pct": 47.1
+    },
+    {
+      "pc": "PC3",
+      "variance_pct": 13.8,
+      "cumulative_pct": 60.9
+    },
+    {
+      "pc": "PC4",
+      "variance_pct": 12.4,
+      "cumulative_pct": 73.2
+    },
+    {
+      "pc": "PC5",
+      "variance_pct": 11.3,
+      "cumulative_pct": 84.5
+    },
+    {
+      "pc": "PC6",
+      "variance_pct": 8.9,
+      "cumulative_pct": 93.4
+    },
+    {
+      "pc": "PC7",
+      "variance_pct": 6.6,
+      "cumulative_pct": 100.0
+    }
+  ],
+  "loadings_table": [
+    {
+      "dimension": "L",
+      "dimension_name": "Safety / Legal",
+      "PC1": 0.523,
+      "PC2": -0.109,
+      "PC3": -0.204
+    },
+    {
+      "dimension": "R",
+      "dimension_name": "Reliability",
+      "PC1": -0.039,
+      "PC2": 0.762,
+      "PC3": 0.077
+    },
+    {
+      "dimension": "P",
+      "dimension_name": "Performance",
+      "PC1": -0.392,
+      "PC2": -0.248,
+      "PC3": 0.387
+    },
+    {
+      "dimension": "F",
+      "dimension_name": "Functional",
+      "PC1": -0.465,
+      "PC2": 0.146,
+      "PC3": -0.105
+    },
+    {
+      "dimension": "Q",
+      "dimension_name": "Quality / Verifiability",
+      "PC1": 0.425,
+      "PC2": -0.265,
+      "PC3": -0.044
+    },
+    {
+      "dimension": "LC",
+      "dimension_name": "Lifecycle",
+      "PC1": 0.358,
+      "PC2": 0.502,
+      "PC3": 0.118
+    },
+    {
+      "dimension": "C",
+      "dimension_name": "Cost",
+      "PC1": 0.215,
+      "PC2": -0.046,
+      "PC3": 0.881
+    }
+  ],
+  "domain_table": [
+    {
+      "domain": "Subsystems",
+      "n": 202,
+      "pc1_mean": -1.04,
+      "pc2_mean": 0.06
+    },
+    {
+      "domain": "Control & Interlock",
+      "n": 86,
+      "pc1_mean": -0.74,
+      "pc2_mean": 0.39
+    },
+    {
+      "domain": "Acceptance Testing",
+      "n": 66,
+      "pc1_mean": 1.22,
+      "pc2_mean": -0.67
+    },
+    {
+      "domain": "Buildings & Utilities",
+      "n": 53,
+      "pc1_mean": -1.27,
+      "pc2_mean": 0.31
+    },
+    {
+      "domain": "Process & Functional",
+      "n": 49,
+      "pc1_mean": -1.28,
+      "pc2_mean": -0.65
+    },
+    {
+      "domain": "Quality Assurance & Control",
+      "n": 45,
+      "pc1_mean": 2.24,
+      "pc2_mean": -0.83
+    },
+    {
+      "domain": "Design & Fabrication",
+      "n": 35,
+      "pc1_mean": 0.13,
+      "pc2_mean": -0.42
+    },
+    {
+      "domain": "Technical Documentation",
+      "n": 28,
+      "pc1_mean": 2.06,
+      "pc2_mean": 0.62
+    },
+    {
+      "domain": "Global Design Criteria",
+      "n": 24,
+      "pc1_mean": 0.64,
+      "pc2_mean": 0.66
+    },
+    {
+      "domain": "Contract Performance",
+      "n": 21,
+      "pc1_mean": 0.66,
+      "pc2_mean": -0.37
+    },
+    {
+      "domain": "Safety & Protection",
+      "n": 20,
+      "pc1_mean": 1.31,
+      "pc2_mean": -0.25
+    },
+    {
+      "domain": "Codes & Standards",
+      "n": 19,
+      "pc1_mean": 1.71,
+      "pc2_mean": -0.25
+    },
+    {
+      "domain": "Acceptance & Warranty",
+      "n": 17,
+      "pc1_mean": 3.24,
+      "pc2_mean": 1.52
+    },
+    {
+      "domain": "Cryogenic Interfaces",
+      "n": 17,
+      "pc1_mean": -1.02,
+      "pc2_mean": -0.24
+    },
+    {
+      "domain": "Training",
+      "n": 8,
+      "pc1_mean": 1.17,
+      "pc2_mean": 2.01
+    },
+    {
+      "domain": "Schedule",
+      "n": 7,
+      "pc1_mean": 0.87,
+      "pc2_mean": -0.43
+    },
+    {
+      "domain": "Other Deliverables",
+      "n": 6,
+      "pc1_mean": 1.03,
+      "pc2_mean": 1.56
+    },
+    {
+      "domain": "General / Compliance",
+      "n": 5,
+      "pc1_mean": 1.46,
+      "pc2_mean": -0.58
+    },
+    {
+      "domain": "Commissioning",
+      "n": 4,
+      "pc1_mean": -0.36,
+      "pc2_mean": 0.18
+    },
+    {
+      "domain": "Installation",
+      "n": 4,
+      "pc1_mean": -0.16,
+      "pc2_mean": -0.25
+    },
+    {
+      "domain": "After-Sales",
+      "n": 3,
+      "pc1_mean": 1.93,
+      "pc2_mean": 3.63
+    },
+    {
+      "domain": "Transport & Logistics",
+      "n": 3,
+      "pc1_mean": 0.73,
+      "pc2_mean": -0.67
+    }
+  ],
+  "per_rtm_scores": [
+    {
+      "rtmId": "RTM-693",
+      "domain": "Codes & Standards",
+      "pc1": 1.352,
+      "pc2": 0.606,
+      "pc3": -1.104
+    },
+    {
+      "rtmId": "RTM-595",
+      "domain": "Safety & Protection",
+      "pc1": 1.031,
+      "pc2": 0.806,
+      "pc3": -1.071
+    },
+    {
+      "rtmId": "RTM-687",
+      "domain": "Codes & Standards",
+      "pc1": 1.708,
+      "pc2": 3.058,
+      "pc3": -0.568
+    },
+    {
+      "rtmId": "RTM-700",
+      "domain": "Codes & Standards",
+      "pc1": 1.091,
+      "pc2": -1.029,
+      "pc3": -0.918
+    },
+    {
+      "rtmId": "RTM-608",
+      "domain": "Safety & Protection",
+      "pc1": 1.983,
+      "pc2": 0.617,
+      "pc3": -0.923
+    },
+    {
+      "rtmId": "RTM-327",
+      "domain": "Control & Interlock",
+      "pc1": 1.425,
+      "pc2": -0.818,
+      "pc3": -1.247
+    },
+    {
+      "rtmId": "RTM-514",
+      "domain": "Acceptance Testing",
+      "pc1": 1.425,
+      "pc2": -0.818,
+      "pc3": -1.247
+    },
+    {
+      "rtmId": "RTM-613",
+      "domain": "Safety & Protection",
+      "pc1": 1.425,
+      "pc2": -0.818,
+      "pc3": -1.247
+    },
+    {
+      "rtmId": "RTM-075",
+      "domain": "Global Design Criteria",
+      "pc1": 2.204,
+      "pc2": -1.56,
+      "pc3": 6.351
+    },
+    {
+      "rtmId": "RTM-600",
+      "domain": "Safety & Protection",
+      "pc1": 1.575,
+      "pc2": 1.534,
+      "pc3": -0.657
+    },
+    {
+      "rtmId": "RTM-002",
+      "domain": "General / Compliance",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-596",
+      "domain": "Safety & Protection",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-597",
+      "domain": "Safety & Protection",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-598",
+      "domain": "Safety & Protection",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-599",
+      "domain": "Safety & Protection",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-612",
+      "domain": "Safety & Protection",
+      "pc1": 0.463,
+      "pc2": -0.219,
+      "pc3": -1.148
+    },
+    {
+      "rtmId": "RTM-686",
+      "domain": "Quality Assurance & Control",
+      "pc1": 4.168,
+      "pc2": -1.525,
+      "pc3": 5.263
+    },
+    {
+      "rtmId": "RTM-605",
+      "domain": "Safety & Protection",
+      "pc1": 2.646,
+      "pc2": -1.201,
+      "pc3": -0.972
+    },
+    {
+      "rtmId": "RTM-689",
+      "domain": "Codes & Standards",
+      "pc1": 2.646,
+      "pc2": -1.201,
+      "pc3": -0.972
+    },
+    {
+      "rtmId": "RTM-691",
+      "domain": "Codes & Standards",
+      "pc1": 2.646,
+      "pc2": -1.201,
+      "pc3": -0.972
+    },
+    {
+      "rtmId": "RTM-695",
+      "domain": "Codes & Standards",
+      "pc1": 2.646,
+      "pc2": -1.201,
+      "pc3": -0.972
+    },
+    {
+      "rtmId": "RTM-603",
+      "domain": "Safety & Protection",
+      "pc1": 0.87,
+      "pc2": -0.346,
+      "pc3": -1.056
+    },
+    {
+      "rtmId": "RTM-604",
+      "domain": "Safety & Protection",
+      "pc1": 0.87,
+      "pc2": -0.346,
+      "pc3": -1.056
+    },
+    {
+      "rtmId": "RTM-609",
+      "domain": "Safety & Protection",
+      "pc1": 1.648,
+      "pc2": 0.11,
+      "pc3": -0.8
+    },
+    {
+      "rtmId": "RTM-001",
+      "domain": "General / Compliance",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-003",
+      "domain": "General / Compliance",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-004",
+      "domain": "General / Compliance",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-594",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-601",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-602",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-606",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-607",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-610",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-611",
+      "domain": "Safety & Protection",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-688",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-690",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-692",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-694",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-696",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-702",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-703",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-704",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-705",
+      "domain": "Codes & Standards",
+      "pc1": 1.684,
+      "pc2": -0.602,
+      "pc3": -0.872
+    },
+    {
+      "rtmId": "RTM-482",
+      "domain": "Commissioning",
+      "pc1": 0.116,
+      "pc2": 1.006,
+      "pc3": -0.166
+    },
+    {
+      "rtmId": "RTM-522",
+      "domain": "Acceptance Testing",
+      "pc1": 1.003,
+      "pc2": 0.412,
+      "pc3": 0.44
+    },
+    {
+      "rtmId": "RTM-523",
+      "domain": "Acceptance Testing",
+      "pc1": 1.003,
+      "pc2": 0.412,
+      "pc3": 0.44
+    },
+    {
+      "rtmId": "RTM-524",
+      "domain": "Acceptance Testing",
+      "pc1": 1.003,
+      "pc2": 0.412,
+      "pc3": 0.44
+    },
+    {
+      "rtmId": "RTM-525",
+      "domain": "Acceptance Testing",
+      "pc1": 1.003,
+      "pc2": 0.412,
+      "pc3": 0.44
+    },
+    {
+      "rtmId": "RTM-300",
+      "domain": "Control & Interlock",
+      "pc1": 1.781,
+      "pc2": 3.481,
+      "pc3": -0.355
+    },
+    {
+      "rtmId": "RTM-161",
+      "domain": "Subsystems",
+      "pc1": 1.118,
+      "pc2": 1.601,
+      "pc3": 0.179
+    },
+    {
+      "rtmId": "RTM-239",
+      "domain": "Subsystems",
+      "pc1": -0.875,
+      "pc2": 0.889,
+      "pc3": 0.671
+    },
+    {
+      "rtmId": "RTM-280",
+      "domain": "Subsystems",
+      "pc1": -0.875,
+      "pc2": 0.889,
+      "pc3": 0.671
+    },
+    {
+      "rtmId": "RTM-351",
+      "domain": "Control & Interlock",
+      "pc1": -0.846,
+      "pc2": 1.605,
+      "pc3": -0.066
+    },
+    {
+      "rtmId": "RTM-517",
+      "domain": "Acceptance Testing",
+      "pc1": 0.783,
+      "pc2": 1.429,
+      "pc3": -0.825
+    },
+    {
+      "rtmId": "RTM-478",
+      "domain": "Installation",
+      "pc1": 0.189,
+      "pc2": -0.418,
+      "pc3": -0.309
+    },
+    {
+      "rtmId": "RTM-026",
+      "domain": "Process & Functional",
+      "pc1": -0.109,
+      "pc2": -1.341,
+      "pc3": -0.051
+    },
+    {
+      "rtmId": "RTM-029",
+      "domain": "Process & Functional",
+      "pc1": -0.109,
+      "pc2": -1.341,
+      "pc3": -0.051
+    },
+    {
+      "rtmId": "RTM-537",
+      "domain": "Acceptance Testing",
+      "pc1": 1.337,
+      "pc2": 0.623,
+      "pc3": 0.11
+    },
+    {
+      "rtmId": "RTM-014",
+      "domain": "Process & Functional",
+      "pc1": -2.244,
+      "pc2": 1.616,
+      "pc3": 0.679
+    },
+    {
+      "rtmId": "RTM-043",
+      "domain": "Process & Functional",
+      "pc1": -2.244,
+      "pc2": 1.616,
+      "pc3": 0.679
+    },
+    {
+      "rtmId": "RTM-271",
+      "domain": "Subsystems",
+      "pc1": 1.191,
+      "pc2": 1.301,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-276",
+      "domain": "Subsystems",
+      "pc1": 1.191,
+      "pc2": 1.301,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-416",
+      "domain": "Buildings & Utilities",
+      "pc1": -0.541,
+      "pc2": 1.1,
+      "pc3": 0.341
+    },
+    {
+      "rtmId": "RTM-644",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.546,
+      "pc2": 2.442,
+      "pc3": -0.368
+    },
+    {
+      "rtmId": "RTM-274",
+      "domain": "Subsystems",
+      "pc1": -1.516,
+      "pc2": 1.288,
+      "pc3": 0.737
+    },
+    {
+      "rtmId": "RTM-498",
+      "domain": "Acceptance Testing",
+      "pc1": 1.239,
+      "pc2": -1.346,
+      "pc3": 3.775
+    },
+    {
+      "rtmId": "RTM-512",
+      "domain": "Acceptance Testing",
+      "pc1": 0.252,
+      "pc2": 1.54,
+      "pc3": -0.617
+    },
+    {
+      "rtmId": "RTM-549",
+      "domain": "Acceptance Testing",
+      "pc1": 0.252,
+      "pc2": 1.54,
+      "pc3": -0.617
+    },
+    {
+      "rtmId": "RTM-462",
+      "domain": "Design & Fabrication",
+      "pc1": 0.299,
+      "pc2": -1.469,
+      "pc3": 0.041
+    },
+    {
+      "rtmId": "RTM-267",
+      "domain": "Subsystems",
+      "pc1": 0.142,
+      "pc2": 1.828,
+      "pc3": -0.758
+    },
+    {
+      "rtmId": "RTM-481",
+      "domain": "Commissioning",
+      "pc1": -0.343,
+      "pc2": -0.307,
+      "pc3": -0.102
+    },
+    {
+      "rtmId": "RTM-515",
+      "domain": "Acceptance Testing",
+      "pc1": 0.225,
+      "pc2": -1.13,
+      "pc3": -0.381
+    },
+    {
+      "rtmId": "RTM-516",
+      "domain": "Acceptance Testing",
+      "pc1": 0.225,
+      "pc2": -1.13,
+      "pc3": -0.381
+    },
+    {
+      "rtmId": "RTM-520",
+      "domain": "Acceptance Testing",
+      "pc1": -0.64,
+      "pc2": -1.23,
+      "pc3": 0.156
+    },
+    {
+      "rtmId": "RTM-197",
+      "domain": "Subsystems",
+      "pc1": 1.017,
+      "pc2": 0.064,
+      "pc3": 6.504
+    },
+    {
+      "rtmId": "RTM-493",
+      "domain": "Acceptance Testing",
+      "pc1": 1.374,
+      "pc2": -0.089,
+      "pc3": 0.038
+    },
+    {
+      "rtmId": "RTM-186",
+      "domain": "Subsystems",
+      "pc1": -1.837,
+      "pc2": 1.488,
+      "pc3": 0.771
+    },
+    {
+      "rtmId": "RTM-264",
+      "domain": "Subsystems",
+      "pc1": -1.837,
+      "pc2": 1.488,
+      "pc3": 0.771
+    },
+    {
+      "rtmId": "RTM-269",
+      "domain": "Subsystems",
+      "pc1": -1.837,
+      "pc2": 1.488,
+      "pc3": 0.771
+    },
+    {
+      "rtmId": "RTM-270",
+      "domain": "Subsystems",
+      "pc1": -1.837,
+      "pc2": 1.488,
+      "pc3": 0.771
+    },
+    {
+      "rtmId": "RTM-279",
+      "domain": "Subsystems",
+      "pc1": -1.837,
+      "pc2": 1.488,
+      "pc3": 0.771
+    },
+    {
+      "rtmId": "RTM-118",
+      "domain": "Subsystems",
+      "pc1": 2.154,
+      "pc2": -1.581,
+      "pc3": 5.945
+    },
+    {
+      "rtmId": "RTM-573",
+      "domain": "Technical Documentation",
+      "pc1": 2.018,
+      "pc2": 2.18,
+      "pc3": 0.279
+    },
+    {
+      "rtmId": "RTM-564",
+      "domain": "After-Sales",
+      "pc1": 0.608,
+      "pc2": 3.991,
+      "pc3": -0.081
+    },
+    {
+      "rtmId": "RTM-273",
+      "domain": "Subsystems",
+      "pc1": -0.179,
+      "pc2": 2.028,
+      "pc3": -0.725
+    },
+    {
+      "rtmId": "RTM-402",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.91,
+      "pc2": 1.827,
+      "pc3": 0.349
+    },
+    {
+      "rtmId": "RTM-424",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.91,
+      "pc2": 1.827,
+      "pc3": 0.349
+    },
+    {
+      "rtmId": "RTM-546",
+      "domain": "Acceptance Testing",
+      "pc1": 0.659,
+      "pc2": 1.412,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-547",
+      "domain": "Acceptance Testing",
+      "pc1": 0.659,
+      "pc2": 1.412,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-107",
+      "domain": "Subsystems",
+      "pc1": -0.624,
+      "pc2": 2.934,
+      "pc3": 0.732
+    },
+    {
+      "rtmId": "RTM-227",
+      "domain": "Subsystems",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-401",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-417",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-420",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-428",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-436",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.182,
+      "pc2": 1.5,
+      "pc3": 0.408
+    },
+    {
+      "rtmId": "RTM-590",
+      "domain": "Technical Documentation",
+      "pc1": 0.847,
+      "pc2": 2.263,
+      "pc3": -0.365
+    },
+    {
+      "rtmId": "RTM-112",
+      "domain": "Subsystems",
+      "pc1": 0.173,
+      "pc2": 2.64,
+      "pc3": 0.773
+    },
+    {
+      "rtmId": "RTM-039",
+      "domain": "Process & Functional",
+      "pc1": -1.071,
+      "pc2": -0.742,
+      "pc3": 0.049
+    },
+    {
+      "rtmId": "RTM-101",
+      "domain": "Subsystems",
+      "pc1": -1.071,
+      "pc2": -0.742,
+      "pc3": 0.049
+    },
+    {
+      "rtmId": "RTM-111",
+      "domain": "Subsystems",
+      "pc1": 0.632,
+      "pc2": -1.257,
+      "pc3": -0.289
+    },
+    {
+      "rtmId": "RTM-224",
+      "domain": "Subsystems",
+      "pc1": -1.071,
+      "pc2": -0.742,
+      "pc3": 0.049
+    },
+    {
+      "rtmId": "RTM-487",
+      "domain": "Training",
+      "pc1": 0.169,
+      "pc2": 3.374,
+      "pc3": -0.226
+    },
+    {
+      "rtmId": "RTM-488",
+      "domain": "Training",
+      "pc1": 1.574,
+      "pc2": 1.935,
+      "pc3": -0.306
+    },
+    {
+      "rtmId": "RTM-576",
+      "domain": "Technical Documentation",
+      "pc1": 1.574,
+      "pc2": 1.935,
+      "pc3": -0.306
+    },
+    {
+      "rtmId": "RTM-370",
+      "domain": "Control & Interlock",
+      "pc1": 2.212,
+      "pc2": 1.145,
+      "pc3": -0.603
+    },
+    {
+      "rtmId": "RTM-017",
+      "domain": "Process & Functional",
+      "pc1": -1.172,
+      "pc2": -1.119,
+      "pc3": 0.364
+    },
+    {
+      "rtmId": "RTM-070",
+      "domain": "Global Design Criteria",
+      "pc1": 1.552,
+      "pc2": -1.107,
+      "pc3": 0.37
+    },
+    {
+      "rtmId": "RTM-079",
+      "domain": "Subsystems",
+      "pc1": 1.648,
+      "pc2": 1.199,
+      "pc3": 5.916
+    },
+    {
+      "rtmId": "RTM-714",
+      "domain": "Acceptance & Warranty",
+      "pc1": 3.36,
+      "pc2": 2.186,
+      "pc3": -0.184
+    },
+    {
+      "rtmId": "RTM-169",
+      "domain": "Subsystems",
+      "pc1": -0.825,
+      "pc2": 0.588,
+      "pc3": 0.303
+    },
+    {
+      "rtmId": "RTM-170",
+      "domain": "Subsystems",
+      "pc1": -0.825,
+      "pc2": 0.588,
+      "pc3": 0.303
+    },
+    {
+      "rtmId": "RTM-191",
+      "domain": "Subsystems",
+      "pc1": -0.825,
+      "pc2": 0.588,
+      "pc3": 0.303
+    },
+    {
+      "rtmId": "RTM-172",
+      "domain": "Subsystems",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-194",
+      "domain": "Subsystems",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-242",
+      "domain": "Subsystems",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-275",
+      "domain": "Subsystems",
+      "pc1": 0.228,
+      "pc2": 1.9,
+      "pc3": -0.633
+    },
+    {
+      "rtmId": "RTM-278",
+      "domain": "Subsystems",
+      "pc1": 0.228,
+      "pc2": 1.9,
+      "pc3": -0.633
+    },
+    {
+      "rtmId": "RTM-409",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-414",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-421",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-422",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-423",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-425",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-426",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-427",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.503,
+      "pc2": 1.699,
+      "pc3": 0.441
+    },
+    {
+      "rtmId": "RTM-685",
+      "domain": "Quality Assurance & Control",
+      "pc1": 1.41,
+      "pc2": -0.801,
+      "pc3": -0.033
+    },
+    {
+      "rtmId": "RTM-208",
+      "domain": "Subsystems",
+      "pc1": -1.8,
+      "pc2": 0.776,
+      "pc3": 0.699
+    },
+    {
+      "rtmId": "RTM-542",
+      "domain": "Acceptance Testing",
+      "pc1": 1.113,
+      "pc2": -1.724,
+      "pc3": 0.225
+    },
+    {
+      "rtmId": "RTM-656",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.921,
+      "pc2": 1.569,
+      "pc3": -0.33
+    },
+    {
+      "rtmId": "RTM-059",
+      "domain": "Global Design Criteria",
+      "pc1": 0.127,
+      "pc2": 1.523,
+      "pc3": -0.318
+    },
+    {
+      "rtmId": "RTM-320",
+      "domain": "Control & Interlock",
+      "pc1": -1.576,
+      "pc2": 2.038,
+      "pc3": 0.02
+    },
+    {
+      "rtmId": "RTM-108",
+      "domain": "Subsystems",
+      "pc1": 0.989,
+      "pc2": 1.194,
+      "pc3": 0.248
+    },
+    {
+      "rtmId": "RTM-022",
+      "domain": "Process & Functional",
+      "pc1": -1.493,
+      "pc2": -0.92,
+      "pc3": 0.397
+    },
+    {
+      "rtmId": "RTM-024",
+      "domain": "Process & Functional",
+      "pc1": -1.493,
+      "pc2": -0.92,
+      "pc3": 0.397
+    },
+    {
+      "rtmId": "RTM-027",
+      "domain": "Process & Functional",
+      "pc1": -1.493,
+      "pc2": -0.92,
+      "pc3": 0.397
+    },
+    {
+      "rtmId": "RTM-078",
+      "domain": "Global Design Criteria",
+      "pc1": -1.493,
+      "pc2": -0.92,
+      "pc3": 0.397
+    },
+    {
+      "rtmId": "RTM-209",
+      "domain": "Subsystems",
+      "pc1": -0.664,
+      "pc2": -0.87,
+      "pc3": 0.141
+    },
+    {
+      "rtmId": "RTM-389",
+      "domain": "Buildings & Utilities",
+      "pc1": -0.17,
+      "pc2": 0.6,
+      "pc3": -0.06
+    },
+    {
+      "rtmId": "RTM-545",
+      "domain": "Acceptance Testing",
+      "pc1": 0.695,
+      "pc2": 0.7,
+      "pc3": -0.597
+    },
+    {
+      "rtmId": "RTM-433",
+      "domain": "Buildings & Utilities",
+      "pc1": -0.848,
+      "pc2": 1.711,
+      "pc3": 0.078
+    },
+    {
+      "rtmId": "RTM-015",
+      "domain": "Process & Functional",
+      "pc1": -2.171,
+      "pc2": 0.192,
+      "pc3": 0.535
+    },
+    {
+      "rtmId": "RTM-333",
+      "domain": "Control & Interlock",
+      "pc1": 0.315,
+      "pc2": 2.373,
+      "pc3": -0.157
+    },
+    {
+      "rtmId": "RTM-109",
+      "domain": "Subsystems",
+      "pc1": -0.765,
+      "pc2": -1.247,
+      "pc3": 0.456
+    },
+    {
+      "rtmId": "RTM-092",
+      "domain": "Subsystems",
+      "pc1": -0.737,
+      "pc2": -0.531,
+      "pc3": -0.281
+    },
+    {
+      "rtmId": "RTM-313",
+      "domain": "Control & Interlock",
+      "pc1": -0.244,
+      "pc2": 0.939,
+      "pc3": -0.481
+    },
+    {
+      "rtmId": "RTM-042",
+      "domain": "Process & Functional",
+      "pc1": -1.023,
+      "pc2": 1.233,
+      "pc3": 0.955
+    },
+    {
+      "rtmId": "RTM-052",
+      "domain": "Process & Functional",
+      "pc1": -1.023,
+      "pc2": 1.233,
+      "pc3": 0.955
+    },
+    {
+      "rtmId": "RTM-226",
+      "domain": "Subsystems",
+      "pc1": -1.443,
+      "pc2": -0.136,
+      "pc3": 0.594
+    },
+    {
+      "rtmId": "RTM-484",
+      "domain": "Training",
+      "pc1": 0.205,
+      "pc2": 2.662,
+      "pc3": -0.298
+    },
+    {
+      "rtmId": "RTM-511",
+      "domain": "Acceptance Testing",
+      "pc1": 0.325,
+      "pc2": 0.116,
+      "pc3": -0.761
+    },
+    {
+      "rtmId": "RTM-513",
+      "domain": "Acceptance Testing",
+      "pc1": 0.325,
+      "pc2": 0.116,
+      "pc3": -0.761
+    },
+    {
+      "rtmId": "RTM-036",
+      "domain": "Process & Functional",
+      "pc1": 0.792,
+      "pc2": -1.524,
+      "pc3": 0.258
+    },
+    {
+      "rtmId": "RTM-198",
+      "domain": "Subsystems",
+      "pc1": -0.838,
+      "pc2": -0.908,
+      "pc3": 0.034
+    },
+    {
+      "rtmId": "RTM-312",
+      "domain": "Control & Interlock",
+      "pc1": 0.893,
+      "pc2": -0.707,
+      "pc3": -1.04
+    },
+    {
+      "rtmId": "RTM-322",
+      "domain": "Control & Interlock",
+      "pc1": 0.893,
+      "pc2": -0.707,
+      "pc3": -1.04
+    },
+    {
+      "rtmId": "RTM-324",
+      "domain": "Control & Interlock",
+      "pc1": 0.893,
+      "pc2": -0.707,
+      "pc3": -1.04
+    },
+    {
+      "rtmId": "RTM-642",
+      "domain": "Quality Assurance & Control",
+      "pc1": 0.893,
+      "pc2": -0.707,
+      "pc3": -1.04
+    },
+    {
+      "rtmId": "RTM-660",
+      "domain": "Quality Assurance & Control",
+      "pc1": 0.893,
+      "pc2": -0.707,
+      "pc3": -1.04
+    },
+    {
+      "rtmId": "RTM-068",
+      "domain": "Global Design Criteria",
+      "pc1": 2.26,
+      "pc2": 3.12,
+      "pc3": 0.303
+    },
+    {
+      "rtmId": "RTM-550",
+      "domain": "Acceptance Testing",
+      "pc1": 1.473,
+      "pc2": 1.157,
+      "pc3": -0.341
+    },
+    {
+      "rtmId": "RTM-578",
+      "domain": "Technical Documentation",
+      "pc1": 1.314,
+      "pc2": 0.3,
+      "pc3": -0.12
+    },
+    {
+      "rtmId": "RTM-470",
+      "domain": "Design & Fabrication",
+      "pc1": -0.194,
+      "pc2": 1.723,
+      "pc3": -0.285
+    },
+    {
+      "rtmId": "RTM-020",
+      "domain": "Process & Functional",
+      "pc1": -1.814,
+      "pc2": -0.72,
+      "pc3": 0.43
+    },
+    {
+      "rtmId": "RTM-021",
+      "domain": "Process & Functional",
+      "pc1": -1.814,
+      "pc2": -0.72,
+      "pc3": 0.43
+    },
+    {
+      "rtmId": "RTM-328",
+      "domain": "Control & Interlock",
+      "pc1": -1.814,
+      "pc2": -0.72,
+      "pc3": 0.43
+    },
+    {
+      "rtmId": "RTM-256",
+      "domain": "Subsystems",
+      "pc1": -1.169,
+      "pc2": 1.911,
+      "pc3": 0.112
+    },
+    {
+      "rtmId": "RTM-432",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.169,
+      "pc2": 1.911,
+      "pc3": 0.112
+    },
+    {
+      "rtmId": "RTM-066",
+      "domain": "Global Design Criteria",
+      "pc1": 2.719,
+      "pc2": 2.586,
+      "pc3": -0.117
+    },
+    {
+      "rtmId": "RTM-168",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-174",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-180",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-210",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-216",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-218",
+      "domain": "Subsystems",
+      "pc1": -1.466,
+      "pc2": 0.987,
+      "pc3": 0.369
+    },
+    {
+      "rtmId": "RTM-440",
+      "domain": "Design & Fabrication",
+      "pc1": 0.646,
+      "pc2": -0.846,
+      "pc3": -0.585
+    },
+    {
+      "rtmId": "RTM-465",
+      "domain": "Design & Fabrication",
+      "pc1": 1.511,
+      "pc2": -0.746,
+      "pc3": -1.122
+    },
+    {
+      "rtmId": "RTM-504",
+      "domain": "Acceptance Testing",
+      "pc1": 1.447,
+      "pc2": -1.513,
+      "pc3": -0.105
+    },
+    {
+      "rtmId": "RTM-526",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-527",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-528",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-529",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-534",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-535",
+      "domain": "Acceptance Testing",
+      "pc1": 1.447,
+      "pc2": -1.513,
+      "pc3": -0.105
+    },
+    {
+      "rtmId": "RTM-539",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-540",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-543",
+      "domain": "Acceptance Testing",
+      "pc1": 0.581,
+      "pc2": -1.613,
+      "pc3": 0.432
+    },
+    {
+      "rtmId": "RTM-565",
+      "domain": "After-Sales",
+      "pc1": 3.351,
+      "pc2": 3.284,
+      "pc3": 6.429
+    },
+    {
+      "rtmId": "RTM-346",
+      "domain": "Control & Interlock",
+      "pc1": -0.564,
+      "pc2": 1.139,
+      "pc3": -0.448
+    },
+    {
+      "rtmId": "RTM-352",
+      "domain": "Control & Interlock",
+      "pc1": -1.242,
+      "pc2": 2.25,
+      "pc3": -0.31
+    },
+    {
+      "rtmId": "RTM-375",
+      "domain": "Control & Interlock",
+      "pc1": -1.242,
+      "pc2": 2.25,
+      "pc3": -0.31
+    },
+    {
+      "rtmId": "RTM-339",
+      "domain": "Control & Interlock",
+      "pc1": 0.113,
+      "pc2": 3.39,
+      "pc3": 0.055
+    },
+    {
+      "rtmId": "RTM-086",
+      "domain": "Subsystems",
+      "pc1": 0.163,
+      "pc2": 0.811,
+      "pc3": -0.389
+    },
+    {
+      "rtmId": "RTM-087",
+      "domain": "Subsystems",
+      "pc1": 0.163,
+      "pc2": 0.811,
+      "pc3": -0.389
+    },
+    {
+      "rtmId": "RTM-088",
+      "domain": "Subsystems",
+      "pc1": 0.163,
+      "pc2": 0.811,
+      "pc3": -0.389
+    },
+    {
+      "rtmId": "RTM-114",
+      "domain": "Subsystems",
+      "pc1": -0.33,
+      "pc2": -0.658,
+      "pc3": -0.189
+    },
+    {
+      "rtmId": "RTM-140",
+      "domain": "Subsystems",
+      "pc1": -0.33,
+      "pc2": -0.658,
+      "pc3": -0.189
+    },
+    {
+      "rtmId": "RTM-152",
+      "domain": "Subsystems",
+      "pc1": -0.33,
+      "pc2": -0.658,
+      "pc3": -0.189
+    },
+    {
+      "rtmId": "RTM-559",
+      "domain": "Other Deliverables",
+      "pc1": -0.674,
+      "pc2": 1.427,
+      "pc3": -0.589
+    },
+    {
+      "rtmId": "RTM-582",
+      "domain": "Technical Documentation",
+      "pc1": 2.957,
+      "pc2": 0.857,
+      "pc3": -0.401
+    },
+    {
+      "rtmId": "RTM-261",
+      "domain": "Subsystems",
+      "pc1": -0.515,
+      "pc2": 1.922,
+      "pc3": -0.251
+    },
+    {
+      "rtmId": "RTM-490",
+      "domain": "Training",
+      "pc1": 0.612,
+      "pc2": 2.534,
+      "pc3": -0.206
+    },
+    {
+      "rtmId": "RTM-369",
+      "domain": "Control & Interlock",
+      "pc1": 1.25,
+      "pc2": 1.744,
+      "pc3": -0.503
+    },
+    {
+      "rtmId": "RTM-012",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-013",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-016",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-018",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-019",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-023",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-025",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-028",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-030",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-031",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-032",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-033",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-034",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-041",
+      "domain": "Process & Functional",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-113",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-146",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-147",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-166",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-177",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-184",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-213",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-214",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-230",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-243",
+      "domain": "Subsystems",
+      "pc1": -0.431,
+      "pc2": -1.036,
+      "pc3": 0.126
+    },
+    {
+      "rtmId": "RTM-411",
+      "domain": "Buildings & Utilities",
+      "pc1": -2.134,
+      "pc2": -0.52,
+      "pc3": 0.464
+    },
+    {
+      "rtmId": "RTM-464",
+      "domain": "Design & Fabrication",
+      "pc1": 1.3,
+      "pc2": -0.835,
+      "pc3": -0.948
+    },
+    {
+      "rtmId": "RTM-679",
+      "domain": "Quality Assurance & Control",
+      "pc1": 1.3,
+      "pc2": -0.835,
+      "pc3": -0.948
+    },
+    {
+      "rtmId": "RTM-680",
+      "domain": "Quality Assurance & Control",
+      "pc1": 1.3,
+      "pc2": -0.835,
+      "pc3": -0.948
+    },
+    {
+      "rtmId": "RTM-563",
+      "domain": "After-Sales",
+      "pc1": 1.83,
+      "pc2": 3.608,
+      "pc3": 0.195
+    },
+    {
+      "rtmId": "RTM-195",
+      "domain": "Subsystems",
+      "pc1": -1.109,
+      "pc2": 0.076,
+      "pc3": 0.264
+    },
+    {
+      "rtmId": "RTM-587",
+      "domain": "Technical Documentation",
+      "pc1": 0.92,
+      "pc2": 0.839,
+      "pc3": -0.508
+    },
+    {
+      "rtmId": "RTM-588",
+      "domain": "Technical Documentation",
+      "pc1": 0.92,
+      "pc2": 0.839,
+      "pc3": -0.508
+    },
+    {
+      "rtmId": "RTM-710",
+      "domain": "Acceptance & Warranty",
+      "pc1": 4.954,
+      "pc2": 0.438,
+      "pc3": 5.907
+    },
+    {
+      "rtmId": "RTM-713",
+      "domain": "Acceptance & Warranty",
+      "pc1": 4.954,
+      "pc2": 0.438,
+      "pc3": 5.907
+    },
+    {
+      "rtmId": "RTM-718",
+      "domain": "Acceptance & Warranty",
+      "pc1": 4.954,
+      "pc2": 0.438,
+      "pc3": 5.907
+    },
+    {
+      "rtmId": "RTM-720",
+      "domain": "Acceptance & Warranty",
+      "pc1": 4.954,
+      "pc2": 0.438,
+      "pc3": 5.907
+    },
+    {
+      "rtmId": "RTM-633",
+      "domain": "Contract Performance",
+      "pc1": 1.857,
+      "pc2": -0.159,
+      "pc3": 1.327
+    },
+    {
+      "rtmId": "RTM-697",
+      "domain": "Codes & Standards",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-709",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-712",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-715",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-716",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-722",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.398,
+      "pc2": 2.785,
+      "pc3": -0.084
+    },
+    {
+      "rtmId": "RTM-149",
+      "domain": "Subsystems",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-187",
+      "domain": "Subsystems",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-206",
+      "domain": "Subsystems",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-228",
+      "domain": "Subsystems",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-289",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-292",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-296",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.407,
+      "pc2": -0.848,
+      "pc3": 0.522
+    },
+    {
+      "rtmId": "RTM-475",
+      "domain": "Installation",
+      "pc1": 0.361,
+      "pc2": -0.596,
+      "pc3": -0.832
+    },
+    {
+      "rtmId": "RTM-510",
+      "domain": "Acceptance Testing",
+      "pc1": 0.361,
+      "pc2": -0.596,
+      "pc3": -0.832
+    },
+    {
+      "rtmId": "RTM-552",
+      "domain": "Acceptance Testing",
+      "pc1": 0.361,
+      "pc2": -0.596,
+      "pc3": -0.832
+    },
+    {
+      "rtmId": "RTM-556",
+      "domain": "Acceptance Testing",
+      "pc1": 0.361,
+      "pc2": -0.596,
+      "pc3": -0.832
+    },
+    {
+      "rtmId": "RTM-129",
+      "domain": "Subsystems",
+      "pc1": -0.312,
+      "pc2": -0.218,
+      "pc3": 0.305
+    },
+    {
+      "rtmId": "RTM-451",
+      "domain": "Design & Fabrication",
+      "pc1": 1.419,
+      "pc2": -0.017,
+      "pc3": -0.769
+    },
+    {
+      "rtmId": "RTM-057",
+      "domain": "Global Design Criteria",
+      "pc1": 0.941,
+      "pc2": 1.268,
+      "pc3": -0.134
+    },
+    {
+      "rtmId": "RTM-486",
+      "domain": "Training",
+      "pc1": 0.81,
+      "pc2": 1.127,
+      "pc3": -0.649
+    },
+    {
+      "rtmId": "RTM-065",
+      "domain": "Global Design Criteria",
+      "pc1": 2.296,
+      "pc2": 2.408,
+      "pc3": 0.231
+    },
+    {
+      "rtmId": "RTM-096",
+      "domain": "Subsystems",
+      "pc1": -0.99,
+      "pc2": 0.893,
+      "pc3": 0.443
+    },
+    {
+      "rtmId": "RTM-483",
+      "domain": "Training",
+      "pc1": 1.39,
+      "pc2": 2.991,
+      "pc3": 0.049
+    },
+    {
+      "rtmId": "RTM-551",
+      "domain": "Acceptance Testing",
+      "pc1": 1.51,
+      "pc2": 0.445,
+      "pc3": -0.413
+    },
+    {
+      "rtmId": "RTM-044",
+      "domain": "Process & Functional",
+      "pc1": -1.288,
+      "pc2": -0.031,
+      "pc3": 0.701
+    },
+    {
+      "rtmId": "RTM-252",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-253",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-254",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-255",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-257",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-258",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-259",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-260",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-262",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-263",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-265",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-266",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-277",
+      "domain": "Subsystems",
+      "pc1": -0.835,
+      "pc2": 2.122,
+      "pc3": -0.218
+    },
+    {
+      "rtmId": "RTM-707",
+      "domain": "Acceptance & Warranty",
+      "pc1": 3.433,
+      "pc2": 0.762,
+      "pc3": -0.327
+    },
+    {
+      "rtmId": "RTM-719",
+      "domain": "Acceptance & Warranty",
+      "pc1": 3.433,
+      "pc2": 0.762,
+      "pc3": -0.327
+    },
+    {
+      "rtmId": "RTM-007",
+      "domain": "Process & Functional",
+      "pc1": 0.049,
+      "pc2": -1.502,
+      "pc3": 0.64
+    },
+    {
+      "rtmId": "RTM-035",
+      "domain": "Process & Functional",
+      "pc1": 0.049,
+      "pc2": -1.502,
+      "pc3": 0.64
+    },
+    {
+      "rtmId": "RTM-071",
+      "domain": "Global Design Criteria",
+      "pc1": 0.049,
+      "pc2": -1.502,
+      "pc3": 0.64
+    },
+    {
+      "rtmId": "RTM-650",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.646,
+      "pc2": -1.201,
+      "pc3": -0.972
+    },
+    {
+      "rtmId": "RTM-518",
+      "domain": "Acceptance Testing",
+      "pc1": 0.915,
+      "pc2": -1.402,
+      "pc3": 0.103
+    },
+    {
+      "rtmId": "RTM-519",
+      "domain": "Acceptance Testing",
+      "pc1": 0.915,
+      "pc2": -1.402,
+      "pc3": 0.103
+    },
+    {
+      "rtmId": "RTM-521",
+      "domain": "Acceptance Testing",
+      "pc1": 0.915,
+      "pc2": -1.402,
+      "pc3": 0.103
+    },
+    {
+      "rtmId": "RTM-100",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-110",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-116",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-135",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-137",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-158",
+      "domain": "Subsystems",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-294",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.133,
+      "pc2": 1.199,
+      "pc3": 0.04
+    },
+    {
+      "rtmId": "RTM-297",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.133,
+      "pc2": 1.199,
+      "pc3": 0.04
+    },
+    {
+      "rtmId": "RTM-407",
+      "domain": "Buildings & Utilities",
+      "pc1": -0.752,
+      "pc2": -0.836,
+      "pc3": 0.159
+    },
+    {
+      "rtmId": "RTM-620",
+      "domain": "Schedule",
+      "pc1": 2.214,
+      "pc2": -1.07,
+      "pc3": 1.222
+    },
+    {
+      "rtmId": "RTM-104",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-105",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-119",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-120",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-123",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-124",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-127",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-133",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-164",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-173",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-178",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-211",
+      "domain": "Subsystems",
+      "pc1": -1.43,
+      "pc2": 0.275,
+      "pc3": 0.298
+    },
+    {
+      "rtmId": "RTM-308",
+      "domain": "Control & Interlock",
+      "pc1": -0.528,
+      "pc2": 0.427,
+      "pc3": -0.52
+    },
+    {
+      "rtmId": "RTM-338",
+      "domain": "Control & Interlock",
+      "pc1": -0.528,
+      "pc2": 0.427,
+      "pc3": -0.52
+    },
+    {
+      "rtmId": "RTM-343",
+      "domain": "Control & Interlock",
+      "pc1": -0.528,
+      "pc2": 0.427,
+      "pc3": -0.52
+    },
+    {
+      "rtmId": "RTM-056",
+      "domain": "Global Design Criteria",
+      "pc1": 0.727,
+      "pc2": 0.749,
+      "pc3": 1.143
+    },
+    {
+      "rtmId": "RTM-102",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-203",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-212",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-215",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-219",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-221",
+      "domain": "Subsystems",
+      "pc1": -1.727,
+      "pc2": -0.648,
+      "pc3": 0.556
+    },
+    {
+      "rtmId": "RTM-307",
+      "domain": "Control & Interlock",
+      "pc1": -1.206,
+      "pc2": 1.538,
+      "pc3": -0.382
+    },
+    {
+      "rtmId": "RTM-336",
+      "domain": "Control & Interlock",
+      "pc1": -1.206,
+      "pc2": 1.538,
+      "pc3": -0.382
+    },
+    {
+      "rtmId": "RTM-489",
+      "domain": "Training",
+      "pc1": 2.425,
+      "pc2": 0.968,
+      "pc3": -0.194
+    },
+    {
+      "rtmId": "RTM-058",
+      "domain": "Global Design Criteria",
+      "pc1": 0.62,
+      "pc2": 1.467,
+      "pc3": -0.101
+    },
+    {
+      "rtmId": "RTM-060",
+      "domain": "Global Design Criteria",
+      "pc1": 0.62,
+      "pc2": 1.467,
+      "pc3": -0.101
+    },
+    {
+      "rtmId": "RTM-575",
+      "domain": "Technical Documentation",
+      "pc1": 1.327,
+      "pc2": 0.711,
+      "pc3": -0.416
+    },
+    {
+      "rtmId": "RTM-649",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.994,
+      "pc2": 0.145,
+      "pc3": -0.473
+    },
+    {
+      "rtmId": "RTM-653",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.994,
+      "pc2": 0.145,
+      "pc3": -0.473
+    },
+    {
+      "rtmId": "RTM-657",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.994,
+      "pc2": 0.145,
+      "pc3": -0.473
+    },
+    {
+      "rtmId": "RTM-658",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.994,
+      "pc2": 0.145,
+      "pc3": -0.473
+    },
+    {
+      "rtmId": "RTM-220",
+      "domain": "Subsystems",
+      "pc1": -1.8,
+      "pc2": -0.309,
+      "pc3": 0.134
+    },
+    {
+      "rtmId": "RTM-237",
+      "domain": "Subsystems",
+      "pc1": -1.8,
+      "pc2": -0.309,
+      "pc3": 0.134
+    },
+    {
+      "rtmId": "RTM-283",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -0.097,
+      "pc2": -0.824,
+      "pc3": -0.203
+    },
+    {
+      "rtmId": "RTM-317",
+      "domain": "Control & Interlock",
+      "pc1": -0.069,
+      "pc2": -0.108,
+      "pc3": -0.94
+    },
+    {
+      "rtmId": "RTM-319",
+      "domain": "Control & Interlock",
+      "pc1": -0.069,
+      "pc2": -0.108,
+      "pc3": -0.94
+    },
+    {
+      "rtmId": "RTM-326",
+      "domain": "Control & Interlock",
+      "pc1": -0.069,
+      "pc2": -0.108,
+      "pc3": -0.94
+    },
+    {
+      "rtmId": "RTM-334",
+      "domain": "Control & Interlock",
+      "pc1": -0.069,
+      "pc2": -0.108,
+      "pc3": -0.94
+    },
+    {
+      "rtmId": "RTM-361",
+      "domain": "Control & Interlock",
+      "pc1": -0.069,
+      "pc2": -0.108,
+      "pc3": -0.94
+    },
+    {
+      "rtmId": "RTM-413",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.8,
+      "pc2": -0.309,
+      "pc3": 0.134
+    },
+    {
+      "rtmId": "RTM-443",
+      "domain": "Design & Fabrication",
+      "pc1": -0.097,
+      "pc2": -0.824,
+      "pc3": -0.203
+    },
+    {
+      "rtmId": "RTM-536",
+      "domain": "Acceptance Testing",
+      "pc1": 0.768,
+      "pc2": -0.724,
+      "pc3": -0.74
+    },
+    {
+      "rtmId": "RTM-554",
+      "domain": "Acceptance Testing",
+      "pc1": 0.768,
+      "pc2": -0.724,
+      "pc3": -0.74
+    },
+    {
+      "rtmId": "RTM-064",
+      "domain": "Global Design Criteria",
+      "pc1": 1.298,
+      "pc2": 3.719,
+      "pc3": 0.403
+    },
+    {
+      "rtmId": "RTM-560",
+      "domain": "Other Deliverables",
+      "pc1": 1.866,
+      "pc2": 2.896,
+      "pc3": 0.123
+    },
+    {
+      "rtmId": "RTM-561",
+      "domain": "Other Deliverables",
+      "pc1": 1.866,
+      "pc2": 2.896,
+      "pc3": 0.123
+    },
+    {
+      "rtmId": "RTM-562",
+      "domain": "Other Deliverables",
+      "pc1": 1.866,
+      "pc2": 2.896,
+      "pc3": 0.123
+    },
+    {
+      "rtmId": "RTM-708",
+      "domain": "Acceptance & Warranty",
+      "pc1": 3.113,
+      "pc2": 0.962,
+      "pc3": -0.294
+    },
+    {
+      "rtmId": "RTM-662",
+      "domain": "Quality Assurance & Control",
+      "pc1": 3.636,
+      "pc2": -1.414,
+      "pc3": 5.47
+    },
+    {
+      "rtmId": "RTM-677",
+      "domain": "Quality Assurance & Control",
+      "pc1": 3.636,
+      "pc2": -1.414,
+      "pc3": 5.47
+    },
+    {
+      "rtmId": "RTM-010",
+      "domain": "Process & Functional",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-011",
+      "domain": "Process & Functional",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-040",
+      "domain": "Process & Functional",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-072",
+      "domain": "Global Design Criteria",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-076",
+      "domain": "Global Design Criteria",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-077",
+      "domain": "Global Design Criteria",
+      "pc1": -0.272,
+      "pc2": -1.303,
+      "pc3": 0.673
+    },
+    {
+      "rtmId": "RTM-094",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-106",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-115",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-122",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-134",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-167",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-201",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-205",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-223",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-232",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-241",
+      "domain": "Subsystems",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-412",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-430",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-435",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.073,
+      "pc2": -0.636,
+      "pc3": 0.193
+    },
+    {
+      "rtmId": "RTM-309",
+      "domain": "Control & Interlock",
+      "pc1": -0.171,
+      "pc2": -0.485,
+      "pc3": -0.625
+    },
+    {
+      "rtmId": "RTM-348",
+      "domain": "Control & Interlock",
+      "pc1": -0.171,
+      "pc2": -0.485,
+      "pc3": -0.625
+    },
+    {
+      "rtmId": "RTM-368",
+      "domain": "Control & Interlock",
+      "pc1": -0.171,
+      "pc2": -0.485,
+      "pc3": -0.625
+    },
+    {
+      "rtmId": "RTM-383",
+      "domain": "Control & Interlock",
+      "pc1": -0.171,
+      "pc2": -0.485,
+      "pc3": -0.625
+    },
+    {
+      "rtmId": "RTM-499",
+      "domain": "Acceptance Testing",
+      "pc1": 2.554,
+      "pc2": -0.473,
+      "pc3": -0.619
+    },
+    {
+      "rtmId": "RTM-363",
+      "domain": "Control & Interlock",
+      "pc1": -0.849,
+      "pc2": 0.626,
+      "pc3": -0.487
+    },
+    {
+      "rtmId": "RTM-699",
+      "domain": "Codes & Standards",
+      "pc1": 0.485,
+      "pc2": -0.914,
+      "pc3": -0.005
+    },
+    {
+      "rtmId": "RTM-061",
+      "domain": "Global Design Criteria",
+      "pc1": 0.3,
+      "pc2": 1.667,
+      "pc3": -0.067
+    },
+    {
+      "rtmId": "RTM-062",
+      "domain": "Global Design Criteria",
+      "pc1": 0.3,
+      "pc2": 1.667,
+      "pc3": -0.067
+    },
+    {
+      "rtmId": "RTM-148",
+      "domain": "Subsystems",
+      "pc1": -0.379,
+      "pc2": -0.653,
+      "pc3": 4.382
+    },
+    {
+      "rtmId": "RTM-532",
+      "domain": "Acceptance Testing",
+      "pc1": 1.546,
+      "pc2": -0.267,
+      "pc3": -0.485
+    },
+    {
+      "rtmId": "RTM-555",
+      "domain": "Acceptance Testing",
+      "pc1": 1.546,
+      "pc2": -0.267,
+      "pc3": -0.485
+    },
+    {
+      "rtmId": "RTM-089",
+      "domain": "Subsystems",
+      "pc1": -0.799,
+      "pc2": 1.41,
+      "pc3": -0.29
+    },
+    {
+      "rtmId": "RTM-290",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -0.418,
+      "pc2": -0.625,
+      "pc3": -0.17
+    },
+    {
+      "rtmId": "RTM-385",
+      "domain": "Buildings & Utilities",
+      "pc1": -0.418,
+      "pc2": -0.625,
+      "pc3": -0.17
+    },
+    {
+      "rtmId": "RTM-441",
+      "domain": "Design & Fabrication",
+      "pc1": -0.418,
+      "pc2": -0.625,
+      "pc3": -0.17
+    },
+    {
+      "rtmId": "RTM-491",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-492",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-494",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-495",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-496",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-497",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-500",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-501",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-502",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-503",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-505",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-506",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-507",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-508",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-509",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-541",
+      "domain": "Acceptance Testing",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-643",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-645",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-646",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-647",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-648",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-651",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-652",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-654",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-655",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-659",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-661",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-663",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-664",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-665",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-666",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-667",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-668",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-669",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-670",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-671",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-672",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-673",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-674",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-675",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-676",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-678",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-681",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-682",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-683",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-684",
+      "domain": "Quality Assurance & Control",
+      "pc1": 2.115,
+      "pc2": -1.09,
+      "pc3": -0.764
+    },
+    {
+      "rtmId": "RTM-442",
+      "domain": "Design & Fabrication",
+      "pc1": 0.676,
+      "pc2": 0.005,
+      "pc3": -0.387
+    },
+    {
+      "rtmId": "RTM-638",
+      "domain": "Contract Performance",
+      "pc1": 1.683,
+      "pc2": -0.959,
+      "pc3": 1.43
+    },
+    {
+      "rtmId": "RTM-008",
+      "domain": "Process & Functional",
+      "pc1": -0.592,
+      "pc2": -1.103,
+      "pc3": 0.706
+    },
+    {
+      "rtmId": "RTM-051",
+      "domain": "Process & Functional",
+      "pc1": -0.592,
+      "pc2": -1.103,
+      "pc3": 0.706
+    },
+    {
+      "rtmId": "RTM-073",
+      "domain": "Global Design Criteria",
+      "pc1": -0.592,
+      "pc2": -1.103,
+      "pc3": 0.706
+    },
+    {
+      "rtmId": "RTM-093",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-095",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-097",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-098",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-099",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-103",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-117",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-121",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-125",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-126",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-128",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-130",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-131",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-132",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-136",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-138",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-139",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-141",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-142",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-143",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-144",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-145",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-150",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-151",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-153",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-154",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-155",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-156",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-157",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-159",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-160",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-162",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-163",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-165",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-171",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-175",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-176",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-179",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-181",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-182",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-183",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-185",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-188",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-189",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-190",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-192",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-193",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-196",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-199",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-200",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-202",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-204",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-207",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-217",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-222",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-225",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-229",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-231",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-233",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-234",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-235",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-236",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-238",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-240",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-244",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-245",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-246",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-247",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-248",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-249",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-250",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-251",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-268",
+      "domain": "Subsystems",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-306",
+      "domain": "Control & Interlock",
+      "pc1": -0.491,
+      "pc2": -0.285,
+      "pc3": -0.592
+    },
+    {
+      "rtmId": "RTM-323",
+      "domain": "Control & Interlock",
+      "pc1": -0.491,
+      "pc2": -0.285,
+      "pc3": -0.592
+    },
+    {
+      "rtmId": "RTM-344",
+      "domain": "Control & Interlock",
+      "pc1": -0.491,
+      "pc2": -0.285,
+      "pc3": -0.592
+    },
+    {
+      "rtmId": "RTM-347",
+      "domain": "Control & Interlock",
+      "pc1": -0.491,
+      "pc2": -0.285,
+      "pc3": -0.592
+    },
+    {
+      "rtmId": "RTM-391",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-395",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-396",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-397",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-398",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-399",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-400",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-403",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-404",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-405",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-406",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-408",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-410",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-415",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-418",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-419",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-434",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.393,
+      "pc2": -0.437,
+      "pc3": 0.226
+    },
+    {
+      "rtmId": "RTM-617",
+      "domain": "Schedule",
+      "pc1": 0.744,
+      "pc2": -0.721,
+      "pc3": 1.545
+    },
+    {
+      "rtmId": "RTM-302",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-314",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-325",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-330",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-332",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-350",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-356",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-357",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-359",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-360",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-371",
+      "domain": "Control & Interlock",
+      "pc1": -1.169,
+      "pc2": 0.826,
+      "pc3": -0.453
+    },
+    {
+      "rtmId": "RTM-566",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-580",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-581",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-583",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-584",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-585",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-586",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-589",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-591",
+      "domain": "Technical Documentation",
+      "pc1": 2.462,
+      "pc2": 0.256,
+      "pc3": -0.265
+    },
+    {
+      "rtmId": "RTM-453",
+      "domain": "Design & Fabrication",
+      "pc1": 0.237,
+      "pc2": -0.613,
+      "pc3": -0.533
+    },
+    {
+      "rtmId": "RTM-458",
+      "domain": "Design & Fabrication",
+      "pc1": 0.237,
+      "pc2": -0.613,
+      "pc3": -0.533
+    },
+    {
+      "rtmId": "RTM-460",
+      "domain": "Design & Fabrication",
+      "pc1": 0.237,
+      "pc2": -0.613,
+      "pc3": -0.533
+    },
+    {
+      "rtmId": "RTM-463",
+      "domain": "Design & Fabrication",
+      "pc1": 0.237,
+      "pc2": -0.613,
+      "pc3": -0.533
+    },
+    {
+      "rtmId": "RTM-476",
+      "domain": "Installation",
+      "pc1": -0.601,
+      "pc2": 0.003,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-477",
+      "domain": "Installation",
+      "pc1": -0.601,
+      "pc2": 0.003,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-479",
+      "domain": "Commissioning",
+      "pc1": -0.601,
+      "pc2": 0.003,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-480",
+      "domain": "Commissioning",
+      "pc1": -0.601,
+      "pc2": 0.003,
+      "pc3": -0.733
+    },
+    {
+      "rtmId": "RTM-069",
+      "domain": "Global Design Criteria",
+      "pc1": 0.101,
+      "pc2": -1.119,
+      "pc3": 4.896
+    },
+    {
+      "rtmId": "RTM-063",
+      "domain": "Global Design Criteria",
+      "pc1": -0.021,
+      "pc2": 1.867,
+      "pc3": -0.034
+    },
+    {
+      "rtmId": "RTM-067",
+      "domain": "Global Design Criteria",
+      "pc1": 1.334,
+      "pc2": 3.007,
+      "pc3": 0.331
+    },
+    {
+      "rtmId": "RTM-619",
+      "domain": "Schedule",
+      "pc1": 0.253,
+      "pc2": 1.241,
+      "pc3": 1.844
+    },
+    {
+      "rtmId": "RTM-005",
+      "domain": "General / Compliance",
+      "pc1": 1.794,
+      "pc2": -0.89,
+      "pc3": -0.731
+    },
+    {
+      "rtmId": "RTM-285",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -0.739,
+      "pc2": -0.425,
+      "pc3": -0.137
+    },
+    {
+      "rtmId": "RTM-437",
+      "domain": "Design & Fabrication",
+      "pc1": 0.355,
+      "pc2": 0.204,
+      "pc3": -0.354
+    },
+    {
+      "rtmId": "RTM-635",
+      "domain": "Contract Performance",
+      "pc1": 1.362,
+      "pc2": -0.76,
+      "pc3": 1.463
+    },
+    {
+      "rtmId": "RTM-701",
+      "domain": "Codes & Standards",
+      "pc1": 1.116,
+      "pc2": 0.221,
+      "pc3": -0.593
+    },
+    {
+      "rtmId": "RTM-706",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.471,
+      "pc2": 1.361,
+      "pc3": -0.228
+    },
+    {
+      "rtmId": "RTM-711",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.471,
+      "pc2": 1.361,
+      "pc3": -0.228
+    },
+    {
+      "rtmId": "RTM-717",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.471,
+      "pc2": 1.361,
+      "pc3": -0.228
+    },
+    {
+      "rtmId": "RTM-721",
+      "domain": "Acceptance & Warranty",
+      "pc1": 2.471,
+      "pc2": 1.361,
+      "pc3": -0.228
+    },
+    {
+      "rtmId": "RTM-006",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-009",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-037",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-038",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-045",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-046",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-047",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-048",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-049",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-050",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-053",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-054",
+      "domain": "Process & Functional",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-074",
+      "domain": "Global Design Criteria",
+      "pc1": -0.913,
+      "pc2": -0.903,
+      "pc3": 0.739
+    },
+    {
+      "rtmId": "RTM-367",
+      "domain": "Control & Interlock",
+      "pc1": -0.812,
+      "pc2": -0.086,
+      "pc3": -0.558
+    },
+    {
+      "rtmId": "RTM-629",
+      "domain": "Contract Performance",
+      "pc1": 0.855,
+      "pc2": -0.652,
+      "pc3": -0.615
+    },
+    {
+      "rtmId": "RTM-630",
+      "domain": "Contract Performance",
+      "pc1": 0.855,
+      "pc2": -0.652,
+      "pc3": -0.615
+    },
+    {
+      "rtmId": "RTM-631",
+      "domain": "Contract Performance",
+      "pc1": 0.855,
+      "pc2": -0.652,
+      "pc3": -0.615
+    },
+    {
+      "rtmId": "RTM-632",
+      "domain": "Contract Performance",
+      "pc1": 0.855,
+      "pc2": -0.652,
+      "pc3": -0.615
+    },
+    {
+      "rtmId": "RTM-616",
+      "domain": "Schedule",
+      "pc1": 0.423,
+      "pc2": -0.521,
+      "pc3": 1.578
+    },
+    {
+      "rtmId": "RTM-485",
+      "domain": "Training",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-567",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-568",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-569",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-570",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-571",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-572",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-574",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-577",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-579",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-592",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-593",
+      "domain": "Technical Documentation",
+      "pc1": 2.141,
+      "pc2": 0.455,
+      "pc3": -0.232
+    },
+    {
+      "rtmId": "RTM-621",
+      "domain": "Contract Performance",
+      "pc1": 0.177,
+      "pc2": 0.46,
+      "pc3": -0.477
+    },
+    {
+      "rtmId": "RTM-438",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-439",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-444",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-445",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-446",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-447",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-448",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-449",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-450",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-452",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-454",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-455",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-456",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-457",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-459",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-461",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-466",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-467",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-468",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-469",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-471",
+      "domain": "Design & Fabrication",
+      "pc1": -0.084,
+      "pc2": -0.413,
+      "pc3": -0.5
+    },
+    {
+      "rtmId": "RTM-530",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-531",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-533",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-538",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-544",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-548",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-553",
+      "domain": "Acceptance Testing",
+      "pc1": 1.583,
+      "pc2": -0.979,
+      "pc3": -0.557
+    },
+    {
+      "rtmId": "RTM-624",
+      "domain": "Contract Performance",
+      "pc1": 0.745,
+      "pc2": -0.363,
+      "pc3": -0.756
+    },
+    {
+      "rtmId": "RTM-615",
+      "domain": "Schedule",
+      "pc1": 1.151,
+      "pc2": -0.849,
+      "pc3": 1.637
+    },
+    {
+      "rtmId": "RTM-618",
+      "domain": "Schedule",
+      "pc1": 1.151,
+      "pc2": -0.849,
+      "pc3": 1.637
+    },
+    {
+      "rtmId": "RTM-083",
+      "domain": "Subsystems",
+      "pc1": -0.762,
+      "pc2": 0.698,
+      "pc3": -0.361
+    },
+    {
+      "rtmId": "RTM-281",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-282",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-284",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-286",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-287",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-288",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-291",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-293",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-295",
+      "domain": "Cryogenic Interfaces",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-384",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-386",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-387",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-388",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-390",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-392",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-393",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-394",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-429",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-431",
+      "domain": "Buildings & Utilities",
+      "pc1": -1.059,
+      "pc2": -0.225,
+      "pc3": -0.104
+    },
+    {
+      "rtmId": "RTM-090",
+      "domain": "Subsystems",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-091",
+      "domain": "Subsystems",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-298",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-299",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-301",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-303",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-304",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-305",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-310",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-311",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-315",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-316",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-318",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-321",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-329",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-331",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-335",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-337",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-340",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-341",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-342",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-345",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-349",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-353",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-354",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-355",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-358",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-362",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-364",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-365",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-366",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-372",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-373",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-374",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-376",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-377",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-378",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-379",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-380",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-381",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-382",
+      "domain": "Control & Interlock",
+      "pc1": -1.133,
+      "pc2": 0.114,
+      "pc3": -0.525
+    },
+    {
+      "rtmId": "RTM-698",
+      "domain": "Codes & Standards",
+      "pc1": 1.152,
+      "pc2": -0.491,
+      "pc3": -0.664
+    },
+    {
+      "rtmId": "RTM-634",
+      "domain": "Contract Performance",
+      "pc1": 0.72,
+      "pc2": -0.36,
+      "pc3": 1.529
+    },
+    {
+      "rtmId": "RTM-636",
+      "domain": "Contract Performance",
+      "pc1": 0.72,
+      "pc2": -0.36,
+      "pc3": 1.529
+    },
+    {
+      "rtmId": "RTM-637",
+      "domain": "Contract Performance",
+      "pc1": 0.72,
+      "pc2": -0.36,
+      "pc3": 1.529
+    },
+    {
+      "rtmId": "RTM-639",
+      "domain": "Contract Performance",
+      "pc1": 0.72,
+      "pc2": -0.36,
+      "pc3": 1.529
+    },
+    {
+      "rtmId": "RTM-472",
+      "domain": "Transport & Logistics",
+      "pc1": 1.051,
+      "pc2": -0.868,
+      "pc3": -0.349
+    },
+    {
+      "rtmId": "RTM-474",
+      "domain": "Transport & Logistics",
+      "pc1": 1.051,
+      "pc2": -0.868,
+      "pc3": -0.349
+    },
+    {
+      "rtmId": "RTM-622",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-623",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-625",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-626",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-627",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-628",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-640",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-641",
+      "domain": "Contract Performance",
+      "pc1": 0.213,
+      "pc2": -0.252,
+      "pc3": -0.549
+    },
+    {
+      "rtmId": "RTM-055",
+      "domain": "Global Design Criteria",
+      "pc1": 1.728,
+      "pc2": 1.383,
+      "pc3": 0.154
+    },
+    {
+      "rtmId": "RTM-080",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-081",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-082",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-084",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-085",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-272",
+      "domain": "Subsystems",
+      "pc1": -0.726,
+      "pc2": -0.014,
+      "pc3": -0.433
+    },
+    {
+      "rtmId": "RTM-557",
+      "domain": "Other Deliverables",
+      "pc1": 0.621,
+      "pc2": -0.38,
+      "pc3": -0.457
+    },
+    {
+      "rtmId": "RTM-558",
+      "domain": "Other Deliverables",
+      "pc1": 0.621,
+      "pc2": -0.38,
+      "pc3": -0.457
+    },
+    {
+      "rtmId": "RTM-614",
+      "domain": "Schedule",
+      "pc1": 0.189,
+      "pc2": -0.25,
+      "pc3": 1.737
+    },
+    {
+      "rtmId": "RTM-473",
+      "domain": "Transport & Logistics",
+      "pc1": 0.089,
+      "pc2": -0.269,
+      "pc3": -0.249
+    }
+  ],
+  "bulk_vs_distinctive": {
+    "distinctive_pct_definition": "distance from PC1/PC2 population center, top ~24% by distance",
+    "n_distinctive": 174,
+    "n_bulk": 548
+  }
+}
