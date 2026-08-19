@@ -1,22 +1,22 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-19T13:57:27Z
+# generated: 2026-08-19T13:59:33Z
 
-generated_at:"2026-08-19T13:57:27Z"
+generated_at:"2026-08-19T13:59:33Z"
 repo:GBOGEB/ABACUS
-total_open:2453
+total_open:2456
 by_severity:
-  note: 2161
-  warning: 218
+  note: 2170
+  warning: 212
   error: 74
 by_tool:
-  Bandit: 1903
+  Bandit: 1906
   CodeQL: 485
   Semgrep: 65
 by_rex_group:
-  SEC_ASSERT: 1545
-  SEC_TEMPFILE: 38
-  SEC_SUBPROCESS: 97
-  OTHER: 513
+  SEC_ASSERT: 1552
+  SEC_SUBPROCESS: 98
+  OTHER: 514
+  SEC_TEMPFILE: 32
   SEC_HARDCODED_SECRET: 7
   SEC_WEAK_HASH: 10
   QUAL_DEAD_CODE: 243
@@ -44,6 +44,48 @@ hot_files:
 
 groups:
   SEC_ASSERT:
+    - number: 4582
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 66
+    - number: 4581
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 50
+    - number: 4580
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 46
+    - number: 4579
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 44
+    - number: 4578
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 36
+    - number: 4577
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 30
+    - number: 4576
+      tool: Bandit
+      rule_id: "B101"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py"
+      line: 25
     - number: 4569
       tool: Bandit
       rule_id: "B101"
@@ -9314,235 +9356,6 @@ groups:
       severity: note
       file: "DMAIC_V3/tests/test_agents_apis.py"
       line: 29
-  SEC_TEMPFILE:
-    - number: 4568
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/pca_pareto_cluster.py"
-      line: 179
-    - number: 4567
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/merge_taxonomy_pdf.py"
-      line: 40
-    - number: 4566
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/merge_taxonomy_pdf.py"
-      line: 40
-    - number: 4565
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/merge_taxonomy_pdf.py"
-      line: 33
-    - number: 4564
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/merge_taxonomy_pdf.py"
-      line: 26
-    - number: 4562
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/infer_clusters.py"
-      line: 120
-    - number: 4561
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/infer_clusters.py"
-      line: 28
-    - number: 4560
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
-      line: 219
-    - number: 4554
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/export_nav_data.py"
-      line: 14
-    - number: 4553
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/classify_all_rtms.py"
-      line: 170
-    - number: 4552
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v7.py"
-      line: 19
-    - number: 4551
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v7.py"
-      line: 18
-    - number: 4550
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 729
-    - number: 4549
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 652
-    - number: 4548
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 611
-    - number: 4547
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 521
-    - number: 4546
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 480
-    - number: 4545
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 448
-    - number: 4544
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 318
-    - number: 4543
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 249
-    - number: 4542
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 245
-    - number: 4541
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
-      line: 99
-    - number: 4537
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v20.py"
-      line: 563
-    - number: 4536
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_pdf_export.py"
-      line: 252
-    - number: 4535
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_pdf_export.py"
-      line: 251
-    - number: 4534
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_pdf_export.py"
-      line: 23
-    - number: 4533
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_kpi_dashboard_html.py"
-      line: 3
-    - number: 4529
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_handover_package.py"
-      line: 23
-    - number: 4520
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
-      line: 216
-    - number: 4519
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
-      line: 204
-    - number: 4518
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
-      line: 169
-    - number: 4517
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
-      line: 157
-    - number: 4512
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v12.py"
-      line: 48
-    - number: 4510
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v10.py"
-      line: 31
-    - number: 4223
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "qplant/monitoring_dashboard/predictive.py"
-      line: 536
-    - number: 3675
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "MINERVA_PID/generator/build_temp_gradient_pdf.py"
-      line: 140
-    - number: 3645
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "DMAIC_V3/tests/test_twelve_cluster_orchestrator.py"
-      line: 31
-    - number: 3640
-      tool: Bandit
-      rule_id: "B108"
-      severity: warning
-      file: "DMAIC_V3/tests/test_twelve_cluster_orchestrator.py"
-      line: 21
   SEC_SUBPROCESS:
     - number: 4316
       tool: Bandit
@@ -9598,12 +9411,18 @@ groups:
       severity: error
       file: "deploy_full_integration.py"
       line: 65
-    - number: 4559
+    - number: 4575
       tool: Bandit
       rule_id: "B603"
       severity: note
       file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
-      line: 94
+      line: 117
+    - number: 4573
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
+      line: 112
     - number: 4532
       tool: Bandit
       rule_id: "B603"
@@ -11537,13 +11356,19 @@ groups:
       severity: warning
       file: ".github/workflows/cd-unified.yml"
       line: 20
-    - number: 4558
+    - number: 4574
       tool: Bandit
       rule_id: "B607"
       severity: note
       file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
-      line: 94
-    - number: 4557
+      line: 117
+    - number: 4572
+      tool: Bandit
+      rule_id: "B607"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
+      line: 112
+    - number: 4571
       tool: Bandit
       rule_id: "B404"
       severity: note
@@ -11554,7 +11379,7 @@ groups:
       rule_id: "B110"
       severity: note
       file: "docs/qps_offer_rtm_evaluation/scripts/export_nav_data.py"
-      line: 182
+      line: 201
     - number: 4538
       tool: Bandit
       rule_id: "B110"
@@ -13205,6 +13030,199 @@ groups:
       severity: note
       file: "abacus_v21_backup_recovery.py"
       line: 499
+  SEC_TEMPFILE:
+    - number: 4570
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/export_nav_data.py"
+      line: 14
+    - number: 4568
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/pca_pareto_cluster.py"
+      line: 179
+    - number: 4562
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/infer_clusters.py"
+      line: 120
+    - number: 4561
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/infer_clusters.py"
+      line: 28
+    - number: 4560
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
+      line: 249
+    - number: 4553
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/classify_all_rtms.py"
+      line: 170
+    - number: 4552
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v7.py"
+      line: 19
+    - number: 4551
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v7.py"
+      line: 18
+    - number: 4550
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 729
+    - number: 4549
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 652
+    - number: 4548
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 611
+    - number: 4547
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 521
+    - number: 4546
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 480
+    - number: 4545
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 448
+    - number: 4544
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 318
+    - number: 4543
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 249
+    - number: 4542
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 245
+    - number: 4541
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v6.py"
+      line: 99
+    - number: 4537
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_workbook_v20.py"
+      line: 563
+    - number: 4534
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_pdf_export.py"
+      line: 24
+    - number: 4533
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_kpi_dashboard_html.py"
+      line: 3
+    - number: 4529
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_handover_package.py"
+      line: 23
+    - number: 4520
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
+      line: 216
+    - number: 4519
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
+      line: 204
+    - number: 4518
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
+      line: 169
+    - number: 4517
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v6.py"
+      line: 157
+    - number: 4512
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v12.py"
+      line: 48
+    - number: 4510
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_bt_deck_v10.py"
+      line: 31
+    - number: 4223
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "qplant/monitoring_dashboard/predictive.py"
+      line: 536
+    - number: 3675
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "MINERVA_PID/generator/build_temp_gradient_pdf.py"
+      line: 140
+    - number: 3645
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "DMAIC_V3/tests/test_twelve_cluster_orchestrator.py"
+      line: 31
+    - number: 3640
+      tool: Bandit
+      rule_id: "B108"
+      severity: warning
+      file: "DMAIC_V3/tests/test_twelve_cluster_orchestrator.py"
+      line: 21
   SEC_HARDCODED_SECRET:
     - number: 4297
       tool: Bandit
