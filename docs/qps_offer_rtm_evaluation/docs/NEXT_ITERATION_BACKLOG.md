@@ -7,7 +7,54 @@ sessions. Each item below is scoped enough to pick up cold.
 
 ---
 
-## 1. PCA/DMAIC insight — expand from standalone doc into Excel + decks
+## 1. PCA/DMAIC insight — expand from standalone doc into Excel + decks — DONE (this round)
+
+GBO confirmed: "YES I want for the BT and PCA full excel and also some high
+level graphs and math or method or process (ASCII) added tabs to the
+navigation HTML." Built exactly as scoped below, plus item 2c's tab
+recommendation and the BT λ export gap from item 10:
+
+- `scripts/compute_pca.py` — real, named, discoverable PCA script (closes
+  the DMAIC_BT_TECHNICAL_REPORT.md Section 5.1 gap: "the PCA numbers in
+  this report came from a one-off working script... needs a proper
+  compute_pca.py"). Re-run against FULL_v23 live data: PC1=30.6%,
+  PC2=16.5%, 174/722 distinctive items — EXACT match to the original v19
+  report numbers, confirming the RTM dimension scores have not drifted.
+- `PCA_ANALYSIS` sheet added to the workbook (`build_workbook_v24.py`,
+  v23→v24): explained-variance table, loadings table (PC1-PC3), domain-level
+  PC1/PC2 mean table — all generated from compute_pca.py's JSON output, none
+  hand-typed.
+- Navigator "PCA / Structure" tab (new, per item 2c's own recommendation —
+  see below): Proposal A (PC1×PC2 scatter, all 722 RTMs, coloured by domain)
+  and Proposal B (domain quadrant: avg Weighted S vs. RTM count log-scale)
+  both built as self-contained inline SVG (no external charting library, per
+  this project's artifact convention). QA'd via Playwright: 722 circles in
+  Proposal A, 22 in Proposal B (exact match to domain count), 0 console/page
+  errors, 0 horizontal overflow.
+- ASCII method panel (same tab): two diagrams — BT scoring flow (raw score →
+  weighted sum → Weighted S → rank/win%/λ) and PCA computation flow (raw
+  scores → standardize → PCA → variance/loadings/per-item scores) — the
+  "math or method or process (ASCII)" part of the ask.
+- BT λ index (RTM_RANKING col X / OFFER_RANKING col Q) — real gap from item
+  10 below, closed: added to `export_nav_data.py`'s export and now visible
+  on both the RTM Lookup and OFFER Lookup detail cards, labelled explicitly
+  as "relative strength, NOT % compliance" per its own documented caveat.
+
+**Real, counterintuitive finding surfaced by this build** (not asked for,
+found while computing the requested 4th weight scenario — see the new
+Section 28 below): GBO also confirmed wanting "70 cost, rest (30%) between
+others... weighted by BT ranking" — a 4th weight-sensitivity scenario
+alongside Base/Equal/Cost=70%-flat. Built as
+`scripts/compute_weight_scenario4.py`, added to `WEIGHTS_METHOD`'s live
+toggle (3rd option) and Navigator's PCA/Structure tab. Both Cost=70%
+variants give Cost the identical 70% weight, but rank very differently:
+Spearman(Base, flat-5%-each) = 0.994 vs. Spearman(Base, proportional) =
+0.661 — **how** the remaining 30% is redistributed matters almost as much
+as the headline Cost weight for rank stability.
+
+---
+
+## 1-original. PCA/DMAIC insight — expand from standalone doc into Excel + decks (original scoping, kept for reference)
 
 `PCA_DMAIC_BT_ANALYSIS.md` (formalized this round as
 `DMAIC_BT_TECHNICAL_REPORT.md` / `.html`) currently lives only as a
@@ -58,7 +105,7 @@ second, smaller pie (or the same pie re-rendered) restricted to domains/
 clusters under a threshold share, re-normalized to 100% of just that
 subset, placed next to or below the existing full pie.
 
-## 2c. PCA / ranking plots — dropdown vs. tabs (design question, answered)
+## 2c. PCA / ranking plots — dropdown vs. tabs (design question, answered) — BUILT this round exactly as recommended below (see item 1 above: "PCA / Structure" tab, Proposals A+B together)
 
 GBO asked whether the (not-yet-built) PCA scatter and ranking plots
 (Improve Proposals A/B in the DMAIC report) could be chosen via a dropdown
@@ -268,12 +315,15 @@ reconstruct an iterative-fitting process anywhere in this codebase, so I
 can't confirm or deny the "~350 iterations" recollection -- if that
 computation happened, it happened outside what's inspectable in this
 repo. Flagging as a real open question rather than guessing either way.
-**Action for next iteration**: (1) add `btLambda` to `export_nav_data.py`
-and surface it in the Navigator (currently invisible there entirely);
-(2) ask GBO directly whether he has the original λ-fitting method/script
-from wherever the baseline workbook came from -- that would resolve the
-iteration-count question definitively instead of reverse-engineering it
-from output values alone.
+**Action for next iteration**: ~~(1) add `btLambda` to `export_nav_data.py`
+and surface it in the Navigator (currently invisible there entirely)~~ --
+**DONE this round**: `btLambda` now exported and shown on both the RTM
+Lookup and OFFER Lookup detail cards, labelled with its own "relative
+strength, NOT % compliance" caveat inline. (2) ask GBO directly whether he
+has the original λ-fitting method/script from wherever the baseline
+workbook came from -- that would resolve the iteration-count question
+definitively instead of reverse-engineering it from output values alone.
+**Still open** -- not something buildable without GBO's direct answer.
 
 ## 11. Evidence / measurability field -- resolved with real numbers
 
@@ -747,3 +797,358 @@ Also performed a task-list hygiene pass while building this (9 stale
 pending/in_progress entries corrected with cited evidence — task completion
 went from a mis-stated 68% to a verified 83%), disclosed openly on the
 dashboard's own Tasks tab rather than silently changed.
+
+---
+
+## Section 28 — PCA/BT Excel+Navigator build (item 1/2c/10-λ closed); new asks captured, not yet built
+
+Picked up from a different working session (this repo's `OFFERS_ITT` cost-
+estimate family, cross-referencing this project mid-conversation) — GBO
+confirmed "YES" to building item 1/2c and asked for the 4th weight scenario
+(item 19-adjacent). Built and QA'd this round; full detail in item 1 above.
+Workbook now at v24 (`QPS_OFFER_Evaluation_FULL_v24.xlsx`), Navigator at v22
+(`QPS_RTM_BT_Navigator_v22.html`) — **not yet re-exported to LITE, the PDF
+export, or the BT deck** (see open items below).
+
+GBO also raised several NEW items in the same exchange, captured verbatim
+and organized, **not built** — genuinely new scope, not a continuation of
+item 1:
+
+### 28a. Comment/annotation criticality taxonomy (Engineering Exchange)
+
+GBO's own words: "Editorial, Minor (L1), Major(L2), Crucial (L3 - some
+colour levels and tabls? this also used as dropdown field when making a
+comment into the Engineering Exchange (HTML comment to page, Excel comment
+to workbook/tab/page...)."
+
+Read as: a 4-tier severity taxonomy (Editorial / Minor-L1 / Major-L2 /
+Crucial-L3), each with its own colour, used as a dropdown when a reviewer
+adds a comment/annotation — to BOTH the HTML Navigator (comment attached to
+a page/tab/item) AND the Excel workbook (comment attached to a
+workbook/sheet/cell). **Not scoped in detail or built.** Open questions
+before building: (1) where does a submitted comment actually persist — a
+new workbook sheet (e.g. `ENGINEERING_EXCHANGE`) that both the Excel side
+and a Navigator "submit comment" form both read/write, or is the Navigator
+side read-only/export-only since it's a static HTML file with no backend to
+write to? (2) exact colour-per-level mapping GBO wants (not specified yet).
+(3) is this meant to formalize/replace the existing `RTM_REVIEW_QUEUE`
+"Disposition" field, or sit alongside it as a separate, more general
+annotation layer that isn't RTM-specific?
+
+### 28b. Top-level multi-dashboard landing page
+
+GBO's own words: "Are all deliverables aligned and navigatible via a
+dashboard, is there a HMTL laucnh to mutliple dashboar as single (TOP
+level) landing space - HMTL?"
+
+Direct answer to the question as asked, checked this round: **no**, not
+today. `DELIVERABLES_INDEX.html` lists artefacts but isn't a launcher;
+`MASTER_DEVELOPER_DASHBOARD.html` and `QPS_DMAIC_KPI_Dashboard.html` are
+two separate, unlinked dashboard HTML files; the Navigator itself
+(`QPS_RTM_BT_Navigator_v22.html`) is a third, also unlinked from the other
+two. **Not built**: a single top-level landing HTML that links out to all
+of these (Navigator, both dashboards, DELIVERABLES_INDEX, the PDF export,
+the two decks) as one entry point. Directly comparable to the "Start
+here"/"Deliverables map"/"Access guide" pattern already built this same
+round in the sibling `OFFERS_ITT/QPS_Cost_Estimate` family's review
+artifact — worth reusing that pattern here rather than inventing a new one,
+once scoped.
+
+### 28c. Deliverables mapped per execution phase (L1-L6), through to as-built/handover
+
+GBO's own words: "I want for ALL OFFER and ALL RTM and ALL deliverables
+(actual explicitly mentioned deliverables (per phase of execution (L1-L6)
+or iteratoin or multiple versions and revisions - with final handover or
+ass build ready to be part of Aceeptance testing and project handover L6."
+
+Read as: cross-reference every OFFER item, RTM, and Deliverables-Dossier
+entry against the project's L0-L6 phase vocabulary (Section 16 already
+confirmed the real phase list is L0 Tender/Offer through L6 Site Acceptance
+Testing, plus PAC/Handover/Warranty/FAC outside the L-numbering) — showing,
+per phase, which deliverables are due, in which version/revision, with L6
+specifically covering final handover / as-built / Acceptance Testing
+documentation. **Not scoped in detail or built** — the largest of the new
+items this round. `RTM_RANKING` already has an "Applicable phase(s)" field
+(col AE) and `DELIVERABLES_DOSSIER` doesn't currently carry a phase field at
+all — first scoping step would be checking whether Deliverables Dossier
+entries can be phase-tagged from their own text (same method used for the
+AD_07/AD_08 RTM-anchor extraction, Section 23) before building a phase x
+deliverable matrix view.
+
+### 28d. BT deck: point to OneDrive as SSOT; add PCA/ranking slides
+
+GBO's own words: "update the relavant deck and point to the Onedrive (this
+is a SSOT file and thus 'duplicated' via local and onedrive and office365
+usabilty as intent" and separately "Expand some slides (to BT deck) for PCA
+- rankings - findings - plots diagrams - to fit current style, level of
+depth etc."
+
+**Not built this round** — this round's build stayed inside the workbook +
+Navigator; `BT_Method_Evaluation_v13.pptx` was not touched. Two distinct
+asks: (1) add a slide/footer note that the workbook is the OneDrive-hosted
+SSOT and both the local copy and the deck are downstream renditions of it
+(matches the "digital twin" / locked-vs-in-edit framing GBO used elsewhere
+this session for the sibling QPS_Cost_Estimate family's review artifact);
+(2) new slide(s) presenting this round's PCA findings (explained variance,
+loadings, the two Improve proposals) and the weight-scenario-4 finding,
+matching the deck's existing EVAL-Sxx slide-code convention and visual
+style (see `BT_Method_Evaluation_v13.pptx`'s existing PCA/quadrant slides,
+`build_bt_deck_v12.py`, for the style to match).
+
+### 28e. Ranking default clarification (no new build, noted for consistency)
+
+GBO: "The no gate pinning (this is for the rankings (default), T0 items are
+still viewed as (by default) major items." Consistent with the already-
+confirmed answer in the thematic thread above (Section 7 / decisions_log):
+official rank = gate-first, then Weighted S — this is the default and only
+changes under the WEIGHTS_METHOD "Live rank" toggle (score-only, no gate
+precedence), which exists specifically to show the non-gated view side by
+side, not to replace the default. No action needed — recorded here only
+because GBO referenced it directly in the same round as items 28a-28d.
+
+**Sequencing note for whoever picks this up**: 28a-28d are independently
+scoped and don't block each other, but 28c (phase mapping) is the largest
+and would benefit from being scoped in its own dedicated pass before
+building, same caution as roadmap item 14 above.
+
+---
+
+## 29 — v24 re-sync (LITE, PDF export) + DELIVERABLES_INDEX.html promoted to real landing page (28b closed); registry refreshed
+
+Picked up directly from Section 28's own open-items list ("not yet
+re-exported to LITE, the PDF export, or the BT deck") and from GBO's request
+to make the landing/index file "fully integrated with the QPS RTM excel and
+BT excel and decks... so someone can consume and interact with the dataset
+alone, without needing this AI session" — which is a direct restatement of
+28b's question ("is there a HTML launch to multiple dashboards as a single
+TOP level landing space"). Answered **yes, now** for the four items below;
+28a/28c/28d remain untouched (see end of this section).
+
+**Artifact registry refreshed.** `scripts/generate_artifact_registry.py`'s
+`ROOT` was hardcoded to the script's own directory (`os.path.dirname(__file__)`),
+which resolved to `scripts/` after the project's reorganisation into
+`current/`/`scripts/`/`docs/` subfolders — meaning a re-run would have
+inventoried Python scripts, not deliverables, and the registry's stale
+`root` field (`/home/claude/work`) was a leftover from an earlier flat-
+directory sandbox layout entirely. Fixed: `ROOT` now resolves to `current/`
+via `parents`-style pathlib resolution relative to the script's own location
+(never cwd). Re-run: 18 files / 15 families, `QPS_OFFER_Evaluation_FULL.xlsx`
+family now correctly lists `v24` latest, `LITE.xlsx` lists `v24`,
+`Navigator.html` lists `v22`, `BT_Method_Evaluation.pptx` lists `v12`.
+
+**LITE reviewer workbook synced to v24.** New `scripts/build_workbook_slim_v24.py`
+(copied from `build_workbook_slim_v23.py`, FULL/OUT repointed to v24). KEEP
+list unchanged from v23's 19 tabs plus one addition: `PCA_ANALYSIS`, promoted
+using the script's own standing inclusion criterion (a sheet is kept when it
+is itself a reviewer-facing analytical/findings view, like CLUSTERS or
+TAXONOMY, rather than an internal audit/method-reproduction artefact like
+WEIGHTS_METHOD or DMAIC_AUDIT) — PCA_ANALYSIS's explained-variance/loadings/
+domain-position tables and disclosed findings text read squarely as the
+former. WEIGHTS_METHOD (which also gained the 4th weight-scenario toggle
+this round) stays dropped, unchanged reasoning: it's the live-formula
+toggle mechanism, not a findings view; reviewers see the same scenario-4
+numbers via the kept tabs and the Navigator instead. Also fixed a real
+hardcoded-version bug inherited from the v6/v23 script: the START_HERE
+label-replacement branch hardcoded the literal string "v6" regardless of
+which version was actually being built; now uses the real version (v24).
+Produced `current/QPS_OFFER_Evaluation_LITE_v24.xlsx` (24 sheets kept, 10
+dropped, 36 dead cross-sheet hyperlinks neutralised, zero live formula
+dependencies on a dropped sheet at pre-flight). Reload-and-verify: zip
+`testzip()` clean, every internal XML/rels part parses, zero formula-error-
+string cells (`#REF!`/`#VALUE!`/etc.) across all 24 sheets. **Not run this
+round**: the project's full LibreOffice-recalculation QA pass — LibreOffice
+is not installed in this working environment, disclosed rather than silently
+skipped; the checks above are real but narrower than the stated bar.
+
+**PDF export re-pointed at v24.** `scripts/build_pdf_export.py` run against
+`current/nav_data_v24.json`; `WB_VERSION` derives from the input filename
+(already dynamic, no hardcoded content strings found on inspection — the
+722 RTM / 50 OFFER / 43 T0-Gate / 679 rule-classified / 8-cluster figures
+hardcoded in the generated HTML were checked against `nav_data_v24.json`
+directly and still hold exactly for v24, so left as-is rather than
+needlessly parameterised). Real bug found and fixed while regenerating:
+both `build_pdf_export.py` and `merge_taxonomy_pdf.py` hardcoded POSIX
+`/tmp/...` paths for their intermediate HTML/PDF files — Python's own
+`open("/tmp/...")` silently drive-relatives this to `<cwd drive>:\tmp` on
+Windows, but Chromium's `file://` URL resolver does not do the same
+remapping, so `merge_taxonomy_pdf.py` failed outright
+(`net::ERR_FILE_NOT_FOUND`) the first time it was run in this environment.
+Fixed in both scripts: intermediate paths now resolve via
+`tempfile.gettempdir()` + `pathlib`, and the browser navigation uses
+`Path.as_uri()` to build a correct `file://` URL on whatever platform this
+actually runs on — not just the original Linux sandbox. Regenerated
+`current/QPS_Taxonomy_and_Domain_Summary.pdf` (5 pages, mixed
+portrait/landscape as designed). Verified via direct PDF-text-extraction
+inspection (not LibreOffice, which isn't installed here): every version
+token found in the rendered content is `v24`; zero `v7`/`v23` tokens
+anywhere in the document.
+
+**Documentation-drift finding, disclosed rather than silently resolved**:
+this round's own task brief, quoting CONTINUATION.md's "not yet re-synced"
+list, described `QPS_Taxonomy_and_Domain_Summary.pdf` as "built against v7
+data... unrelated to this round" — but that description does not match
+reality. The PDF has been re-run every round since at least v23 (the
+pre-this-round `DELIVERABLES_INDEX.html` already said "current — Refreshed
+against FULL_v23"), and the actual gap was the Windows path bug above, not
+stale content. Both `CONTINUATION.md` and `DELIVERABLES_INDEX.html` are
+updated this round to reflect the verified state rather than repeat the
+inherited "v7" claim.
+
+**`DELIVERABLES_INDEX.html` promoted to a real top-level landing page —
+closes 28b.** Direct answer to 28b's question ("is there a HTML launch to
+multiple dashboards as a single TOP level landing space") is now **yes**.
+Changes, all in place on the existing page (same structure/visual style
+reused, no redesign):
+- Every version reference updated: FULL/LITE v23→v24, Navigator v21→v22;
+  PCA_ANALYSIS sheet and the 3rd (really: 4th overall, GBO's own numbering
+  in his request) weight-toggle scenario now described.
+- Real `<a href="...">` links (relative paths) added on every card's `<h3>`
+  heading and `.fname` filename — the page now actually functions as a
+  launcher for all 8 outward-facing deliverables, not just a description of
+  them.
+- Two previously-orphaned dashboards added as new cards and linked for the
+  first time from any page: `MASTER_DEVELOPER_DASHBOARD.html` and
+  `QPS_DMAIC_KPI_Dashboard.html`. Both flagged **watch**: each file's own
+  in-page version strip is stale (Master Dev Dashboard reads
+  "Workbook v20 · Navigator v15 · BT deck v9 · MTBF deck v7"; KPI Dashboard
+  reads "SSOT: FULL_v23") — the files are reachable and functional, but
+  their self-reported version text should not be trusted at face value.
+  Their content/data was intentionally left untouched (out of scope; the
+  task was to link them, not edit them).
+- Status table (Section 4) updated with honest current/watch/stale badges:
+  FULL_v24, LITE_v24, Navigator_v22, the PDF export, and the artifact
+  registry are **current**; `BT_Method_Evaluation_v12.pptx` is explicitly
+  flagged **watch/stale relative to this round** — built against v23 data,
+  does NOT yet include this round's PCA findings or the 4th weight
+  scenario (that's 28d, not attempted); `QPS_MTBF_WCS_DMAIC_v7.pptx` stays
+  **watch** (unchanged, untouched, per its existing standing note); the two
+  newly-linked dashboards are **watch** per the version-strip finding above.
+- Top-of-masthead note added, matching the existing `<p>` style: "This page
+  is the single entry point for every deliverable in this project —
+  Navigator, both dashboards, both workbooks, both decks, and the PDF
+  export are all one click away below." — the direct, disclosed answer to
+  28b.
+- Section 5 (internal/working artifacts) build-scripts list extended to
+  name the new v24-round scripts (`build_workbook_v24.py`,
+  `build_workbook_slim_v24.py`, `compute_pca.py`, `compute_weight_scenario4.py`,
+  `build_pdf_export.py`, `merge_taxonomy_pdf.py`, `generate_artifact_registry.py`,
+  `splice_navigator.py`) alongside the existing v23 references, per the
+  project's own convention of preserving build lineage rather than
+  overwriting prior references.
+- Real bug fixed while QA'ing the page itself: both data tables (Section 3
+  audience table, Section 4 status table) overflowed horizontally at mobile
+  viewport widths (375px) because `table{width:100%}` doesn't shrink below
+  its content's intrinsic width — a pre-existing gap in the page's own CSS,
+  not introduced this round, but caught by this round's QA pass. Fixed with
+  an `overflow-x:auto` wrapper div around each table.
+
+**QA run**: Playwright headless sweep of `DELIVERABLES_INDEX.html` across
+four viewport widths (375/768/1400/1920px) — zero console errors, zero page
+errors, zero horizontal overflow at any width (confirmed the table-overflow
+fix above), all 8 outward-facing deliverable hrefs resolve to real files on
+disk. Re-ran the project's own `scripts/qa_nav_v24.py` against
+`QPS_RTM_BT_Navigator_v22.html` unchanged (not in this round's scope) to
+confirm it still passes: PCA tab present (2 SVG scatter charts, 722 points),
+BT λ Lookup field present, zero console/page errors, zero horizontal
+overflow — Navigator genuinely is current, as CONTINUATION.md claimed;
+no scope creep needed there.
+
+**Explicitly still open, NOT touched this round** — do not read anything
+above as implying these are done:
+- **28a** (comment/annotation criticality taxonomy for the Engineering
+  Exchange) — not scoped in detail, not built.
+- **28c** (deliverables mapped per execution phase L1-L6 through to
+  as-built/handover) — not scoped in detail, not built; still the largest
+  open item per its own section above.
+- **28d** (BT deck: OneDrive-as-SSOT framing + new PCA/weight-scenario-4
+  slides) — explicitly NOT attempted this round per this round's own task
+  scope (separate, larger design task requiring human content judgment,
+  deliberately left open, not silently deferred).
+- **28e** — no action needed (unchanged, already resolved by existing
+  convention, see above).
+
+---
+
+## 30 — HTML staleness sweep, KPI dashboard regeneration bugs fixed, real DMAIC convergence read
+
+GBO asked to update all HTML, ensure no stale/hardcoded version elements, and
+asked directly about DMAIC metric stability/convergence ("if stable and
+under control the process works as intended, no further DMAIC needed").
+
+**KPI dashboard (`gen_kpi_dashboard.py` / `build_kpi_dashboard_html.py`) --
+2 real bugs found and fixed, not just re-run:**
+1. `git log` for the "project changelog" had no pathspec -- pulled all 2129
+   commits from the ENTIRE shared Master_Input repo (every unrelated
+   project sharing this git root), inflating the generated HTML from
+   ~40KB to ~550KB with irrelevant commit noise. Fixed: scoped to this
+   project's own `docs/qps_offer_rtm_evaluation/` path. Real result:
+   **2** commits actually touch this project's committed history (the v23
+   import + the RTM-320 correction) -- everything else, including this
+   entire round's work, is still uncommitted. Added a new, honest
+   "Uncommitted changes right now" card (26, at time of this round) rather
+   than letting the commit count imply more is landed than actually is.
+2. `subprocess.run(..., cwd="/home/claude/work")` -- hardcoded path from
+   the script's original (different) environment, broke the script
+   outright here (`NotADirectoryError`). Fixed to resolve from the
+   script's own file location, not a baked-in absolute path.
+3. `BACKLOG_SECTIONS = 27` was a hand-typed magic number, already stale by
+   6 (real count 33) the moment Section 28 landed. Fixed: counted live via
+   regex against `NEXT_ITERATION_BACKLOG.md` every run.
+4. `"generated": "2026-08-17"` was a hand-typed literal date. Fixed:
+   `datetime.date.today().isoformat()`.
+5. A stale claim ("Local-only, per GBO's stated preference — no GitHub
+   remote") was factually wrong -- a GitHub remote does exist
+   (`github.com/GBOGEB/ABACUS.git`); nothing from this project has been
+   pushed there yet, which is a different, more precise statement. Fixed.
+
+Regenerated `current/QPS_DMAIC_KPI_Dashboard.html` end to end from the live
+registry (verified fresh, not stale, 18:25 same round) -- correctly shows
+FULL_v24/LITE_v24/Navigator_v22/BT_v12. Playwright: 0 console/page errors.
+
+**`current/MASTER_DEVELOPER_DASHBOARD.html` -- confirmed genuinely stale (4+
+workbook versions behind: v20/v15/v9, vs. real current v24/v22/v12), no
+regeneration script exists for this page. Hand-patched rather than left
+silently wrong, scope limited to verified factual pointers (version strip,
+"pick your path" table, Index table version/status cells, footer) --
+narrative/feature-description text left alone except where directly false.
+One real, actively-misleading claim caught and corrected: this page said it
+"supersedes `DELIVERABLES_INDEX.html`... this table is the current one" --
+backwards; `DELIVERABLES_INDEX.html` is the regenerated, verified-current
+one (Section 29), this page is the stale hand-built one. Also corrected an
+inherited wrong claim (Taxonomy PDF marked "stale, v7 data" -- actually
+current, re-verified Section 29). Playwright: 0 console/page errors, 0
+horizontal overflow.
+
+**DMAIC convergence -- real read, computed fresh, not asserted:**
+`compute_metrics_snapshot.py` re-run against the live v23 file (post
+RTM-320-correction) and the new v24 file, extending `METRIC_HISTORY.json`
+to 20 tracked versions (was 19, missing v24). Real numbers:
+
+| Version | sum Weighted S | avg Weighted S | sheet count |
+|---|---:|---:|---:|
+| v20-v22 | 21667.7 | 30.01 | 32 |
+| v23 (re-verified live, post-correction) | 21674.3 | 30.02 | 33 |
+| v24 | 21674.3 | 30.02 | 34 |
+
+**Finding, not asserted from memory**: re-running the snapshot script
+against the live v23 file caught that the cached v23 entry in
+`METRIC_HISTORY.json` predated the RTM-320 correction (identical to v22's
+numbers) -- the correction's real effect (+6.6, +0.03%) only shows up once
+recomputed against the file as it actually exists on disk now. v24 is
+byte-identical to the corrected v23 on every scoring metric, confirming
+this round's build (PCA_ANALYSIS sheet, 4th weight scenario) touched zero
+scoring data, as intended.
+
+**Convergence verdict**: the 7-dimension BT scoring METHOD has been stable
+since v20 (arguably since v5, per the pre-existing DMAIC-stable claim) --
+the only movement across 5 tracked versions is one small, deliberate, named
+correction, not drift. Per GBO's own framing: **no further DMAIC iteration
+is warranted on the scoring formula itself** -- further effort there would
+be polishing an already-converged process. Open work (Section 28/29's
+remaining items) is entirely about new analytical views and delivery-
+process/handover mechanics, not about re-tuning how items get scored.
+
+**Not done this round**: `BT_Method_Evaluation_v12.pptx` (28d, unchanged,
+explicitly deferred), and a fuller sweep of every `.md`/`.yaml` doc for
+stale version strings beyond the ones already caught while cross-checking
+these HTML files (spot-checked, not exhaustive).
