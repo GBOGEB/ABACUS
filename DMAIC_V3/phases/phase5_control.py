@@ -8,8 +8,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 from datetime import datetime
 
-from ..core.state import StateManager
-from ..config import DMAICConfig
 
 try:
     import sys
@@ -22,8 +20,6 @@ except ImportError:
     GBOGEB_AVAILABLE = False
     print("Warning: GBOGEB not available, observability disabled")
 
-from ..config import DMAICConfig
-from ..core.state import StateManager
 
 
 class Phase5Control:

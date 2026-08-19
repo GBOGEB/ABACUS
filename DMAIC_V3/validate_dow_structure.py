@@ -7,7 +7,7 @@ Validates that all JSON files have proper DOW structure
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 
 def validate_dow_structure(file_path: Path) -> Tuple[bool, Dict[str, bool]]:

@@ -4,8 +4,6 @@ DMAIC V3 Test Suite - Phase 9: Documentation Generation Tests
 
 import pytest
 import json
-import tempfile
-import shutil
 from pathlib import Path
 
 from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration

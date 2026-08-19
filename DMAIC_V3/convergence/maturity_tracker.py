@@ -21,9 +21,8 @@ Features:
 """
 
 import json
-import yaml
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import List, Any, Optional
 from datetime import datetime
 from dataclasses import dataclass, asdict, field
 

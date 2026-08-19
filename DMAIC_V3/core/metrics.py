@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from collections import defaultdict
-from dataclasses import asdict
 
 from .models import Metric, PhaseMetrics, MetricType, PhaseStatus
 

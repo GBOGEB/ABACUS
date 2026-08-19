@@ -9,8 +9,7 @@ import json
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List
-import subprocess
+from typing import Dict, Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

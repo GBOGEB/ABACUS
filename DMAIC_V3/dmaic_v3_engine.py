@@ -1,4 +1,3 @@
-from typing import Any
 """
 DMAIC V3.3 Engine - Main Execution Controller
 Updated: 2025-11-12
@@ -10,19 +9,12 @@ Orchestrates DMAIC phases with:
 - Maturity assessment
 """
 
-import sys
 import argparse
 import json
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
 
-from .config import DMAICConfig, ExecutionMode, VERSION
+from .config import DMAICConfig
 from .core.state import StateManager
-from .core.metrics import MetricsAggregator
-from .core.handover_bridge import HandoverBridge, IdempotentPhase
-from .convergence.iterative_controller import IterativeController
 try:
     from .phases.phase2_measure import Phase2Measure
     from .phases.phase3_analyze import Phase3Analyze

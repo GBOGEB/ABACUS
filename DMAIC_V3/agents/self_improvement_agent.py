@@ -9,7 +9,7 @@ import json
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 import argparse
 
 # Fix path for direct execution

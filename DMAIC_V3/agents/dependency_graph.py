@@ -6,7 +6,7 @@ Builds and analyzes dependency graphs
 __version__ = "3.3.0"
 
 from pathlib import Path
-from typing import Dict, List, Any, Set
+from typing import Dict, List
 import ast
 
 

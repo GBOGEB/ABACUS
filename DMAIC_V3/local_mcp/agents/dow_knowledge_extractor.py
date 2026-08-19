@@ -9,7 +9,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any
 import sys
-import re
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR / "src"))

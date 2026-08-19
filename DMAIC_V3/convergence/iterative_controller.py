@@ -5,7 +5,7 @@ Manages iterative execution with convergence detection
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Tuple, Any
 from datetime import datetime
 import json
 

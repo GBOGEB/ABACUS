@@ -5,7 +5,6 @@ Detects errors during pipeline execution and provides quick fixes
 """
 
 import sys
-import json
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Tuple

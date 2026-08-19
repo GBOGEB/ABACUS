@@ -5,7 +5,6 @@ from pathlib import Path
 import json
 import sys
 
-from ..core.models import PhaseMetrics
 from ..core.state import StateManager
 from ..config import DMAICConfig
 

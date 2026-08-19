@@ -12,7 +12,7 @@ across markdown and Python files for uniform language validation.
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 from collections import Counter
 import re
 import json
