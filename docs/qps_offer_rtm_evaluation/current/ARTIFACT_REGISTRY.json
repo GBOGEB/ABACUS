@@ -1,8 +1,8 @@
 {
   "generated_by": "generate_artifact_registry.py (idempotent, scans cwd)",
-  "root": "/home/claude/work",
-  "file_count": 175,
-  "family_count": 76,
+  "root": "C:\\Users\\gbonthuy\\OneDrive - Studiecentrum voor Kernenergie\\Master_Input\\.claude\\worktrees\\qps-offer-rtm-eval\\docs\\qps_offer_rtm_evaluation\\current",
+  "file_count": 18,
+  "family_count": 15,
   "families": {
     "ARTIFACT_REGISTRY.json": {
       "latest": "ARTIFACT_REGISTRY.json",
@@ -11,24 +11,11 @@
         "ARTIFACT_REGISTRY.json"
       ]
     },
-    "BT_Method_Evaluation.pdf": {
-      "latest": "BT_Method_Evaluation_v5.pdf",
+    "BT_Method_Evaluation.pptx": {
+      "latest": "BT_Method_Evaluation_v12.pptx",
       "version_count": 1,
       "versions": [
-        "BT_Method_Evaluation_v5.pdf"
-      ]
-    },
-    "BT_Method_Evaluation.pptx": {
-      "latest": "BT_Method_Evaluation_v11.pptx",
-      "version_count": 7,
-      "versions": [
-        "BT_Method_Evaluation_v5.pptx",
-        "BT_Method_Evaluation_v6.pptx",
-        "BT_Method_Evaluation_v7.pptx",
-        "BT_Method_Evaluation_v8.pptx",
-        "BT_Method_Evaluation_v9.pptx",
-        "BT_Method_Evaluation_v10.pptx",
-        "BT_Method_Evaluation_v11.pptx"
+        "BT_Method_Evaluation_v12.pptx"
       ]
     },
     "DELIVERABLES_INDEX.html": {
@@ -36,41 +23,6 @@
       "version_count": 1,
       "versions": [
         "DELIVERABLES_INDEX.html"
-      ]
-    },
-    "DMAIC_BT_TECHNICAL_REPORT.html": {
-      "latest": "DMAIC_BT_TECHNICAL_REPORT.html",
-      "version_count": 1,
-      "versions": [
-        "DMAIC_BT_TECHNICAL_REPORT.html"
-      ]
-    },
-    "DMAIC_BT_TECHNICAL_REPORT.md": {
-      "latest": "DMAIC_BT_TECHNICAL_REPORT.md",
-      "version_count": 1,
-      "versions": [
-        "DMAIC_BT_TECHNICAL_REPORT.md"
-      ]
-    },
-    "DMAIC_update_changelog.md": {
-      "latest": "DMAIC_update_changelog.md",
-      "version_count": 1,
-      "versions": [
-        "DMAIC_update_changelog.md"
-      ]
-    },
-    "ENGINEERING_HANDOVER_SESSION.md": {
-      "latest": "ENGINEERING_HANDOVER_SESSION.md",
-      "version_count": 1,
-      "versions": [
-        "ENGINEERING_HANDOVER_SESSION.md"
-      ]
-    },
-    "KNOWLEDGE_TAXONOMY_MAPPING.md": {
-      "latest": "KNOWLEDGE_TAXONOMY_MAPPING.md",
-      "version_count": 1,
-      "versions": [
-        "KNOWLEDGE_TAXONOMY_MAPPING.md"
       ]
     },
     "MASTER_DEVELOPER_DASHBOARD.html": {
@@ -87,134 +39,42 @@
         "METRIC_HISTORY.json"
       ]
     },
-    "NEXT_ITERATION_BACKLOG.md": {
-      "latest": "NEXT_ITERATION_BACKLOG.md",
+    "QPS_DMAIC_KPI_Dashboard.html": {
+      "latest": "QPS_DMAIC_KPI_Dashboard.html",
       "version_count": 1,
       "versions": [
-        "NEXT_ITERATION_BACKLOG.md"
-      ]
-    },
-    "PCA_DMAIC_BT_ANALYSIS.md": {
-      "latest": "PCA_DMAIC_BT_ANALYSIS.md",
-      "version_count": 1,
-      "versions": [
-        "PCA_DMAIC_BT_ANALYSIS.md"
-      ]
-    },
-    "PIPELINE_DIAGRAM.md": {
-      "latest": "PIPELINE_DIAGRAM.md",
-      "version_count": 1,
-      "versions": [
-        "PIPELINE_DIAGRAM.md"
-      ]
-    },
-    "QPS_MTBF_WCS.pdf": {
-      "latest": "QPS_MTBF_WCS.pdf",
-      "version_count": 1,
-      "versions": [
-        "QPS_MTBF_WCS.pdf"
-      ]
-    },
-    "QPS_MTBF_WCS.pptx": {
-      "latest": "QPS_MTBF_WCS.pptx",
-      "version_count": 1,
-      "versions": [
-        "QPS_MTBF_WCS.pptx"
+        "QPS_DMAIC_KPI_Dashboard.html"
       ]
     },
     "QPS_MTBF_WCS_DMAIC.pptx": {
       "latest": "QPS_MTBF_WCS_DMAIC_v7.pptx",
-      "version_count": 7,
+      "version_count": 1,
       "versions": [
-        "QPS_MTBF_WCS_DMAIC.pptx",
-        "QPS_MTBF_WCS_DMAIC_v2.pptx",
-        "QPS_MTBF_WCS_DMAIC_v3.pptx",
-        "QPS_MTBF_WCS_DMAIC_v4.pptx",
-        "QPS_MTBF_WCS_DMAIC_v5.pptx",
-        "QPS_MTBF_WCS_DMAIC_v6.pptx",
         "QPS_MTBF_WCS_DMAIC_v7.pptx"
       ]
     },
     "QPS_OFFER_Evaluation_FULL.xlsx": {
-      "latest": "QPS_OFFER_Evaluation_FULL_v23.xlsx",
-      "version_count": 19,
+      "latest": "QPS_OFFER_Evaluation_FULL_v24.xlsx",
+      "version_count": 2,
       "versions": [
-        "QPS_OFFER_Evaluation_FULL_v5.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v6.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v7.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v8.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v9.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v10.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v11.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v12.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v13.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v14.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v15.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v16.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v17.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v18.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v19.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v20.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v21.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v22.xlsx",
-        "QPS_OFFER_Evaluation_FULL_v23.xlsx"
-      ]
-    },
-    "QPS_OFFER_Evaluation_FULL_v5_qa.xlsx": {
-      "latest": "QPS_OFFER_Evaluation_FULL_v5_qa.xlsx",
-      "version_count": 1,
-      "versions": [
-        "QPS_OFFER_Evaluation_FULL_v5_qa.xlsx"
+        "QPS_OFFER_Evaluation_FULL_v23.xlsx",
+        "QPS_OFFER_Evaluation_FULL_v24.xlsx"
       ]
     },
     "QPS_OFFER_Evaluation_LITE.xlsx": {
-      "latest": "QPS_OFFER_Evaluation_LITE_v23.xlsx",
-      "version_count": 18,
+      "latest": "QPS_OFFER_Evaluation_LITE_v24.xlsx",
+      "version_count": 2,
       "versions": [
-        "QPS_OFFER_Evaluation_LITE_v5.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v6.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v7.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v8.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v9.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v11.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v12.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v13.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v14.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v15.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v16.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v17.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v18.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v19.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v20.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v21.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v22.xlsx",
-        "QPS_OFFER_Evaluation_LITE_v23.xlsx"
+        "QPS_OFFER_Evaluation_LITE_v23.xlsx",
+        "QPS_OFFER_Evaluation_LITE_v24.xlsx"
       ]
     },
     "QPS_RTM_BT_Navigator.html": {
-      "latest": "QPS_RTM_BT_Navigator_v20.html",
-      "version_count": 20,
+      "latest": "QPS_RTM_BT_Navigator_v22.html",
+      "version_count": 2,
       "versions": [
-        "QPS_RTM_BT_Navigator.html",
-        "QPS_RTM_BT_Navigator_v2.html",
-        "QPS_RTM_BT_Navigator_v3.html",
-        "QPS_RTM_BT_Navigator_v4.html",
-        "QPS_RTM_BT_Navigator_v5.html",
-        "QPS_RTM_BT_Navigator_v6.html",
-        "QPS_RTM_BT_Navigator_v7.html",
-        "QPS_RTM_BT_Navigator_v8.html",
-        "QPS_RTM_BT_Navigator_v9.html",
-        "QPS_RTM_BT_Navigator_v10.html",
-        "QPS_RTM_BT_Navigator_v11.html",
-        "QPS_RTM_BT_Navigator_v12.html",
-        "QPS_RTM_BT_Navigator_v13.html",
-        "QPS_RTM_BT_Navigator_v14.html",
-        "QPS_RTM_BT_Navigator_v15.html",
-        "QPS_RTM_BT_Navigator_v16.html",
-        "QPS_RTM_BT_Navigator_v17.html",
-        "QPS_RTM_BT_Navigator_v18.html",
-        "QPS_RTM_BT_Navigator_v19.html",
-        "QPS_RTM_BT_Navigator_v20.html"
+        "QPS_RTM_BT_Navigator_v21.html",
+        "QPS_RTM_BT_Navigator_v22.html"
       ]
     },
     "QPS_Taxonomy_and_Domain_Summary.pdf": {
@@ -224,415 +84,32 @@
         "QPS_Taxonomy_and_Domain_Summary.pdf"
       ]
     },
-    "README.md": {
-      "latest": "README_v5.md",
-      "version_count": 2,
-      "versions": [
-        "README_v4.md",
-        "README_v5.md"
-      ]
-    },
-    "SESSION_SSOT.yaml": {
-      "latest": "SESSION_SSOT.yaml",
+    "RTM_RANKING_RECOMPUTE_LOG.json": {
+      "latest": "RTM_RANKING_RECOMPUTE_LOG.json",
       "version_count": 1,
       "versions": [
-        "SESSION_SSOT.yaml"
+        "RTM_RANKING_RECOMPUTE_LOG.json"
       ]
     },
-    "SKILLS_INVENTORY.md": {
-      "latest": "SKILLS_INVENTORY.md",
+    "nav_data.json": {
+      "latest": "nav_data_v24.json",
       "version_count": 1,
       "versions": [
-        "SKILLS_INVENTORY.md"
+        "nav_data_v24.json"
       ]
     },
-    "bt_deck.pptx": {
-      "latest": "bt_deck_v0.pptx",
+    "pca_results.json": {
+      "latest": "pca_results_v23.json",
       "version_count": 1,
       "versions": [
-        "bt_deck_v0.pptx"
+        "pca_results_v23.json"
       ]
     },
-    "bt_deck_v1_fix.pptx": {
-      "latest": "bt_deck_v1_fix.pptx",
+    "weight_scenario4.json": {
+      "latest": "weight_scenario4_v23.json",
       "version_count": 1,
       "versions": [
-        "bt_deck_v1_fix.pptx"
-      ]
-    },
-    "build_bt_deck.py": {
-      "latest": "build_bt_deck_v10.py",
-      "version_count": 3,
-      "versions": [
-        "build_bt_deck_v5.py",
-        "build_bt_deck_v6.py",
-        "build_bt_deck_v10.py"
-      ]
-    },
-    "build_deck.py": {
-      "latest": "build_deck.py",
-      "version_count": 1,
-      "versions": [
-        "build_deck.py"
-      ]
-    },
-    "build_deck2.py": {
-      "latest": "build_deck2.py",
-      "version_count": 1,
-      "versions": [
-        "build_deck2.py"
-      ]
-    },
-    "build_deck3.py": {
-      "latest": "build_deck3.py",
-      "version_count": 1,
-      "versions": [
-        "build_deck3.py"
-      ]
-    },
-    "build_deck4.py": {
-      "latest": "build_deck4.py",
-      "version_count": 1,
-      "versions": [
-        "build_deck4.py"
-      ]
-    },
-    "build_deck5.py": {
-      "latest": "build_deck5.py",
-      "version_count": 1,
-      "versions": [
-        "build_deck5.py"
-      ]
-    },
-    "build_pdf_export.py": {
-      "latest": "build_pdf_export.py",
-      "version_count": 1,
-      "versions": [
-        "build_pdf_export.py"
-      ]
-    },
-    "build_workbook.py": {
-      "latest": "build_workbook_v23.py",
-      "version_count": 11,
-      "versions": [
-        "build_workbook_v6.py",
-        "build_workbook_v7.py",
-        "build_workbook_v8.py",
-        "build_workbook_v9.py",
-        "build_workbook_v16.py",
-        "build_workbook_v17.py",
-        "build_workbook_v18.py",
-        "build_workbook_v19.py",
-        "build_workbook_v20.py",
-        "build_workbook_v22.py",
-        "build_workbook_v23.py"
-      ]
-    },
-    "build_workbook_full.py": {
-      "latest": "build_workbook_full_v5.py",
-      "version_count": 1,
-      "versions": [
-        "build_workbook_full_v5.py"
-      ]
-    },
-    "build_workbook_slim.py": {
-      "latest": "build_workbook_slim_v23.py",
-      "version_count": 18,
-      "versions": [
-        "build_workbook_slim_v5.py",
-        "build_workbook_slim_v6.py",
-        "build_workbook_slim_v7.py",
-        "build_workbook_slim_v8.py",
-        "build_workbook_slim_v9.py",
-        "build_workbook_slim_v11.py",
-        "build_workbook_slim_v12.py",
-        "build_workbook_slim_v13.py",
-        "build_workbook_slim_v14.py",
-        "build_workbook_slim_v15.py",
-        "build_workbook_slim_v16.py",
-        "build_workbook_slim_v17.py",
-        "build_workbook_slim_v18.py",
-        "build_workbook_slim_v19.py",
-        "build_workbook_slim_v20.py",
-        "build_workbook_slim_v21.py",
-        "build_workbook_slim_v22.py",
-        "build_workbook_slim_v23.py"
-      ]
-    },
-    "classify_all_rtms.py": {
-      "latest": "classify_all_rtms.py",
-      "version_count": 1,
-      "versions": [
-        "classify_all_rtms.py"
-      ]
-    },
-    "compute_metrics_snapshot.py": {
-      "latest": "compute_metrics_snapshot.py",
-      "version_count": 1,
-      "versions": [
-        "compute_metrics_snapshot.py"
-      ]
-    },
-    "content.yaml": {
-      "latest": "content.yaml",
-      "version_count": 1,
-      "versions": [
-        "content.yaml"
-      ]
-    },
-    "export_nav_data.py": {
-      "latest": "export_nav_data.py",
-      "version_count": 1,
-      "versions": [
-        "export_nav_data.py"
-      ]
-    },
-    "extract_content.py": {
-      "latest": "extract_content.py",
-      "version_count": 1,
-      "versions": [
-        "extract_content.py"
-      ]
-    },
-    "final.pdf": {
-      "latest": "final.pdf",
-      "version_count": 1,
-      "versions": [
-        "final.pdf"
-      ]
-    },
-    "final.pptx": {
-      "latest": "final.pptx",
-      "version_count": 1,
-      "versions": [
-        "final.pptx"
-      ]
-    },
-    "final2.pptx": {
-      "latest": "final2.pptx",
-      "version_count": 1,
-      "versions": [
-        "final2.pptx"
-      ]
-    },
-    "final2_dump.md": {
-      "latest": "final2_dump.md",
-      "version_count": 1,
-      "versions": [
-        "final2_dump.md"
-      ]
-    },
-    "final3.md": {
-      "latest": "final3.md",
-      "version_count": 1,
-      "versions": [
-        "final3.md"
-      ]
-    },
-    "final3.pdf": {
-      "latest": "final3.pdf",
-      "version_count": 1,
-      "versions": [
-        "final3.pdf"
-      ]
-    },
-    "final3.pptx": {
-      "latest": "final3.pptx",
-      "version_count": 1,
-      "versions": [
-        "final3.pptx"
-      ]
-    },
-    "final4.pdf": {
-      "latest": "final4.pdf",
-      "version_count": 1,
-      "versions": [
-        "final4.pdf"
-      ]
-    },
-    "final4.pptx": {
-      "latest": "final4.pptx",
-      "version_count": 1,
-      "versions": [
-        "final4.pptx"
-      ]
-    },
-    "fix_mtbf_rtm_numbers.py": {
-      "latest": "fix_mtbf_rtm_numbers.py",
-      "version_count": 1,
-      "versions": [
-        "fix_mtbf_rtm_numbers.py"
-      ]
-    },
-    "fix_pdf_page_numbers.py": {
-      "latest": "fix_pdf_page_numbers.py",
-      "version_count": 1,
-      "versions": [
-        "fix_pdf_page_numbers.py"
-      ]
-    },
-    "generate_artifact_registry.py": {
-      "latest": "generate_artifact_registry.py",
-      "version_count": 1,
-      "versions": [
-        "generate_artifact_registry.py"
-      ]
-    },
-    "infer_clusters.py": {
-      "latest": "infer_clusters.py",
-      "version_count": 1,
-      "versions": [
-        "infer_clusters.py"
-      ]
-    },
-    "lite_start_here_qa.xlsx": {
-      "latest": "lite_start_here_qa.xlsx",
-      "version_count": 1,
-      "versions": [
-        "lite_start_here_qa.xlsx"
-      ]
-    },
-    "make_charts.py": {
-      "latest": "make_charts.py",
-      "version_count": 1,
-      "versions": [
-        "make_charts.py"
-      ]
-    },
-    "make_energy_pie.py": {
-      "latest": "make_energy_pie.py",
-      "version_count": 1,
-      "versions": [
-        "make_energy_pie.py"
-      ]
-    },
-    "navigator_template.html": {
-      "latest": "navigator_template.html",
-      "version_count": 1,
-      "versions": [
-        "navigator_template.html"
-      ]
-    },
-    "pca_pareto_cluster.py": {
-      "latest": "pca_pareto_cluster.py",
-      "version_count": 1,
-      "versions": [
-        "pca_pareto_cluster.py"
-      ]
-    },
-    "presenter_narrative_notes.md": {
-      "latest": "presenter_narrative_notes.md",
-      "version_count": 1,
-      "versions": [
-        "presenter_narrative_notes.md"
-      ]
-    },
-    "qa3_partial.pdf": {
-      "latest": "qa3_partial.pdf",
-      "version_count": 1,
-      "versions": [
-        "qa3_partial.pdf"
-      ]
-    },
-    "qa3_partial.pptx": {
-      "latest": "qa3_partial.pptx",
-      "version_count": 1,
-      "versions": [
-        "qa3_partial.pptx"
-      ]
-    },
-    "qa_nav.py": {
-      "latest": "qa_nav_v8d.py",
-      "version_count": 4,
-      "versions": [
-        "qa_nav_v8.py",
-        "qa_nav_v8b.py",
-        "qa_nav_v8c.py",
-        "qa_nav_v8d.py"
-      ]
-    },
-    "qa_partial.pdf": {
-      "latest": "qa_partial.pdf",
-      "version_count": 1,
-      "versions": [
-        "qa_partial.pdf"
-      ]
-    },
-    "qa_partial.pptx": {
-      "latest": "qa_partial.pptx",
-      "version_count": 1,
-      "versions": [
-        "qa_partial.pptx"
-      ]
-    },
-    "qa_rtm_ranking_wide.xlsx": {
-      "latest": "qa_rtm_ranking_wide.xlsx",
-      "version_count": 1,
-      "versions": [
-        "qa_rtm_ranking_wide.xlsx"
-      ]
-    },
-    "qa_visual.xlsx": {
-      "latest": "qa_visual_v19.xlsx",
-      "version_count": 1,
-      "versions": [
-        "qa_visual_v19.xlsx"
-      ]
-    },
-    "step1.pptx": {
-      "latest": "step1.pptx",
-      "version_count": 1,
-      "versions": [
-        "step1.pptx"
-      ]
-    },
-    "step2.pptx": {
-      "latest": "step2.pptx",
-      "version_count": 1,
-      "versions": [
-        "step2.pptx"
-      ]
-    },
-    "style.yaml": {
-      "latest": "style.yaml",
-      "version_count": 1,
-      "versions": [
-        "style.yaml"
-      ]
-    },
-    "t0_taxonomy.py": {
-      "latest": "t0_taxonomy.py",
-      "version_count": 1,
-      "versions": [
-        "t0_taxonomy.py"
-      ]
-    },
-    "test_grow.pptx": {
-      "latest": "test_grow.pptx",
-      "version_count": 1,
-      "versions": [
-        "test_grow.pptx"
-      ]
-    },
-    "uploaded.pptx": {
-      "latest": "uploaded_v2.pptx",
-      "version_count": 1,
-      "versions": [
-        "uploaded_v2.pptx"
-      ]
-    },
-    "uploaded_v3_review.pptx": {
-      "latest": "uploaded_v3_review.pptx",
-      "version_count": 1,
-      "versions": [
-        "uploaded_v3_review.pptx"
-      ]
-    },
-    "xlsx_copy_helpers.py": {
-      "latest": "xlsx_copy_helpers.py",
-      "version_count": 1,
-      "versions": [
-        "xlsx_copy_helpers.py"
+        "weight_scenario4_v23.json"
       ]
     }
   },
@@ -642,80 +119,17 @@
       "family": "ARTIFACT_REGISTRY.json",
       "version": null,
       "ext": ".json",
-      "bytes": 54569,
-      "mtime": 1786976056.8387058,
+      "bytes": 7316,
+      "mtime": 1787069382.4798837,
       "is_latest": true
     },
     {
-      "file": "BT_Method_Evaluation_v5.pdf",
-      "family": "BT_Method_Evaluation.pdf",
-      "version": "v5",
-      "ext": ".pdf",
-      "bytes": 1404295,
-      "mtime": 1786703318.7183433,
-      "is_latest": true
-    },
-    {
-      "file": "BT_Method_Evaluation_v5.pptx",
+      "file": "BT_Method_Evaluation_v12.pptx",
       "family": "BT_Method_Evaluation.pptx",
-      "version": "v5",
+      "version": "v12",
       "ext": ".pptx",
-      "bytes": 1679920,
-      "mtime": 1786703622.1391947,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v6.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v6",
-      "ext": ".pptx",
-      "bytes": 1690519,
-      "mtime": 1786706772.1883152,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v7.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v7",
-      "ext": ".pptx",
-      "bytes": 1690762,
-      "mtime": 1786716110.0860314,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v8.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v8",
-      "ext": ".pptx",
-      "bytes": 2494685,
-      "mtime": 1786717090.0540895,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v9.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v9",
-      "ext": ".pptx",
-      "bytes": 2830533,
-      "mtime": 1786957855.153387,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v10.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v10",
-      "ext": ".pptx",
-      "bytes": 2833616,
-      "mtime": 1786971081.5180614,
-      "is_latest": false
-    },
-    {
-      "file": "BT_Method_Evaluation_v11.pptx",
-      "family": "BT_Method_Evaluation.pptx",
-      "version": "v11",
-      "ext": ".pptx",
-      "bytes": 2833620,
-      "mtime": 1786972744.714509,
+      "bytes": 2841564,
+      "mtime": 1786978388.4668446,
       "is_latest": true
     },
     {
@@ -723,53 +137,8 @@
       "family": "DELIVERABLES_INDEX.html",
       "version": null,
       "ext": ".html",
-      "bytes": 14299,
-      "mtime": 1786954165.2471783,
-      "is_latest": true
-    },
-    {
-      "file": "DMAIC_BT_TECHNICAL_REPORT.html",
-      "family": "DMAIC_BT_TECHNICAL_REPORT.html",
-      "version": null,
-      "ext": ".html",
-      "bytes": 28221,
-      "mtime": 1786967225.6996276,
-      "is_latest": true
-    },
-    {
-      "file": "DMAIC_BT_TECHNICAL_REPORT.md",
-      "family": "DMAIC_BT_TECHNICAL_REPORT.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 17767,
-      "mtime": 1786967213.0858314,
-      "is_latest": true
-    },
-    {
-      "file": "DMAIC_update_changelog.md",
-      "family": "DMAIC_update_changelog.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 43557,
-      "mtime": 1786703745.9911919,
-      "is_latest": true
-    },
-    {
-      "file": "ENGINEERING_HANDOVER_SESSION.md",
-      "family": "ENGINEERING_HANDOVER_SESSION.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 15545,
-      "mtime": 1786959263.3694708,
-      "is_latest": true
-    },
-    {
-      "file": "KNOWLEDGE_TAXONOMY_MAPPING.md",
-      "family": "KNOWLEDGE_TAXONOMY_MAPPING.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 10374,
-      "mtime": 1786954252.7031834,
+      "bytes": 15213,
+      "mtime": 1786978617.2918348,
       "is_latest": true
     },
     {
@@ -786,108 +155,18 @@
       "family": "METRIC_HISTORY.json",
       "version": null,
       "ext": ".json",
-      "bytes": 12836,
-      "mtime": 1786958878.8454478,
+      "bytes": 15293,
+      "mtime": 1786977665.7928557,
       "is_latest": true
     },
     {
-      "file": "NEXT_ITERATION_BACKLOG.md",
-      "family": "NEXT_ITERATION_BACKLOG.md",
+      "file": "QPS_DMAIC_KPI_Dashboard.html",
+      "family": "QPS_DMAIC_KPI_Dashboard.html",
       "version": null,
-      "ext": ".md",
-      "bytes": 36115,
-      "mtime": 1786975674.4866831,
+      "ext": ".html",
+      "bytes": 40524,
+      "mtime": 1786978857.7468724,
       "is_latest": true
-    },
-    {
-      "file": "PCA_DMAIC_BT_ANALYSIS.md",
-      "family": "PCA_DMAIC_BT_ANALYSIS.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 14546,
-      "mtime": 1786955237.479242,
-      "is_latest": true
-    },
-    {
-      "file": "PIPELINE_DIAGRAM.md",
-      "family": "PIPELINE_DIAGRAM.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 6578,
-      "mtime": 1786967641.585857,
-      "is_latest": true
-    },
-    {
-      "file": "QPS_MTBF_WCS.pdf",
-      "family": "QPS_MTBF_WCS.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 2492498,
-      "mtime": 1786525401.2117531,
-      "is_latest": true
-    },
-    {
-      "file": "QPS_MTBF_WCS.pptx",
-      "family": "QPS_MTBF_WCS.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 7216128,
-      "mtime": 1786525360.2917507,
-      "is_latest": true
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6851578,
-      "mtime": 1786526608.6386724,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC_v2.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": "v2",
-      "ext": ".pptx",
-      "bytes": 7393496,
-      "mtime": 1786530859.4690402,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC_v3.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": "v3",
-      "ext": ".pptx",
-      "bytes": 6258833,
-      "mtime": 1786552251.7665865,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC_v4.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": "v4",
-      "ext": ".pptx",
-      "bytes": 6270942,
-      "mtime": 1786640847.7560136,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC_v5.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": "v5",
-      "ext": ".pptx",
-      "bytes": 6337612,
-      "mtime": 1786702175.1952279,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_MTBF_WCS_DMAIC_v6.pptx",
-      "family": "QPS_MTBF_WCS_DMAIC.pptx",
-      "version": "v6",
-      "ext": ".pptx",
-      "bytes": 6337673,
-      "mtime": 1786711165.0737374,
-      "is_latest": false
     },
     {
       "file": "QPS_MTBF_WCS_DMAIC_v7.pptx",
@@ -899,525 +178,57 @@
       "is_latest": true
     },
     {
-      "file": "QPS_OFFER_Evaluation_FULL_v5.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v5",
-      "ext": ".xlsx",
-      "bytes": 420311,
-      "mtime": 1786702694.999216,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v6.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v6",
-      "ext": ".xlsx",
-      "bytes": 472492,
-      "mtime": 1786706552.75232,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v7.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v7",
-      "ext": ".xlsx",
-      "bytes": 483492,
-      "mtime": 1786711713.46977,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v8.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v8",
-      "ext": ".xlsx",
-      "bytes": 485202,
-      "mtime": 1786713003.6618466,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v9.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v9",
-      "ext": ".xlsx",
-      "bytes": 488466,
-      "mtime": 1786713667.0738862,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v10.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v10",
-      "ext": ".xlsx",
-      "bytes": 488926,
-      "mtime": 1786717208.0820966,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v11.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v11",
-      "ext": ".xlsx",
-      "bytes": 491517,
-      "mtime": 1786717317.042103,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v12.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v12",
-      "ext": ".xlsx",
-      "bytes": 491907,
-      "mtime": 1786717402.7381082,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v13.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v13",
-      "ext": ".xlsx",
-      "bytes": 492853,
-      "mtime": 1786717648.2901227,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v14.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v14",
-      "ext": ".xlsx",
-      "bytes": 494810,
-      "mtime": 1786718144.0341523,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v15.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v15",
-      "ext": ".xlsx",
-      "bytes": 495098,
-      "mtime": 1786718243.546158,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v16.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v16",
-      "ext": ".xlsx",
-      "bytes": 495776,
-      "mtime": 1786718765.5421891,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v17.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v17",
-      "ext": ".xlsx",
-      "bytes": 515712,
-      "mtime": 1786719978.4502614,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v18.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v18",
-      "ext": ".xlsx",
-      "bytes": 517177,
-      "mtime": 1786720557.6582956,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v19.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v19",
-      "ext": ".xlsx",
-      "bytes": 522736,
-      "mtime": 1786722322.6944005,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v20.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v20",
-      "ext": ".xlsx",
-      "bytes": 624431,
-      "mtime": 1786958340.981416,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v21.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v21",
-      "ext": ".xlsx",
-      "bytes": 624261,
-      "mtime": 1786969315.7099564,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v22.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
-      "version": "v22",
-      "ext": ".xlsx",
-      "bytes": 624259,
-      "mtime": 1786970416.1780217,
-      "is_latest": false
-    },
-    {
       "file": "QPS_OFFER_Evaluation_FULL_v23.xlsx",
       "family": "QPS_OFFER_Evaluation_FULL.xlsx",
       "version": "v23",
       "ext": ".xlsx",
-      "bytes": 624673,
-      "mtime": 1786976033.8187046,
+      "bytes": 626042,
+      "mtime": 1787050110.5508182,
+      "is_latest": false
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_FULL_v24.xlsx",
+      "family": "QPS_OFFER_Evaluation_FULL.xlsx",
+      "version": "v24",
+      "ext": ".xlsx",
+      "bytes": 631479,
+      "mtime": 1787064235.0828972,
       "is_latest": true
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_FULL_v5_qa.xlsx",
-      "family": "QPS_OFFER_Evaluation_FULL_v5_qa.xlsx",
-      "version": null,
-      "ext": ".xlsx",
-      "bytes": 354520,
-      "mtime": 1786702460.0712214,
-      "is_latest": true
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v5.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v5",
-      "ext": ".xlsx",
-      "bytes": 333719,
-      "mtime": 1786702696.263216,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v6.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v6",
-      "ext": ".xlsx",
-      "bytes": 439019,
-      "mtime": 1786706556.44032,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v7.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v7",
-      "ext": ".xlsx",
-      "bytes": 450144,
-      "mtime": 1786711733.009771,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v8.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v8",
-      "ext": ".xlsx",
-      "bytes": 450876,
-      "mtime": 1786713021.8818479,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v9.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v9",
-      "ext": ".xlsx",
-      "bytes": 454176,
-      "mtime": 1786713668.4258862,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v11.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v11",
-      "ext": ".xlsx",
-      "bytes": 457221,
-      "mtime": 1786717329.6461039,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v12.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v12",
-      "ext": ".xlsx",
-      "bytes": 457510,
-      "mtime": 1786717411.6621087,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v13.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v13",
-      "ext": ".xlsx",
-      "bytes": 457696,
-      "mtime": 1786717654.1781232,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v14.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v14",
-      "ext": ".xlsx",
-      "bytes": 458015,
-      "mtime": 1786718079.7461483,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v15.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v15",
-      "ext": ".xlsx",
-      "bytes": 458301,
-      "mtime": 1786718494.342173,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v16.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v16",
-      "ext": ".xlsx",
-      "bytes": 458993,
-      "mtime": 1786718809.8301919,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v17.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v17",
-      "ext": ".xlsx",
-      "bytes": 471407,
-      "mtime": 1786719993.4302623,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v18.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v18",
-      "ext": ".xlsx",
-      "bytes": 473241,
-      "mtime": 1786720619.4102993,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v19.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v19",
-      "ext": ".xlsx",
-      "bytes": 478645,
-      "mtime": 1786722335.4184015,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v20.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v20",
-      "ext": ".xlsx",
-      "bytes": 580565,
-      "mtime": 1786969323.3419569,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v21.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v21",
-      "ext": ".xlsx",
-      "bytes": 580558,
-      "mtime": 1786969348.4619584,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_OFFER_Evaluation_LITE_v22.xlsx",
-      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
-      "version": "v22",
-      "ext": ".xlsx",
-      "bytes": 580555,
-      "mtime": 1786970764.6380424,
-      "is_latest": false
     },
     {
       "file": "QPS_OFFER_Evaluation_LITE_v23.xlsx",
       "family": "QPS_OFFER_Evaluation_LITE.xlsx",
       "version": "v23",
       "ext": ".xlsx",
-      "bytes": 580955,
-      "mtime": 1786976089.8467078,
+      "bytes": 581935,
+      "mtime": 1787050153.1149654,
+      "is_latest": false
+    },
+    {
+      "file": "QPS_OFFER_Evaluation_LITE_v24.xlsx",
+      "family": "QPS_OFFER_Evaluation_LITE.xlsx",
+      "version": "v24",
+      "ext": ".xlsx",
+      "bytes": 584375,
+      "mtime": 1787069471.7268257,
       "is_latest": true
     },
     {
-      "file": "QPS_RTM_BT_Navigator.html",
+      "file": "QPS_RTM_BT_Navigator_v21.html",
       "family": "QPS_RTM_BT_Navigator.html",
-      "version": null,
+      "version": "v21",
       "ext": ".html",
-      "bytes": 1023273,
-      "mtime": 1786706988.6603103,
+      "bytes": 1412929,
+      "mtime": 1786977570.2739384,
       "is_latest": false
     },
     {
-      "file": "QPS_RTM_BT_Navigator_v2.html",
+      "file": "QPS_RTM_BT_Navigator_v22.html",
       "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v2",
+      "version": "v22",
       "ext": ".html",
-      "bytes": 1056931,
-      "mtime": 1786712401.658847,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v3.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v3",
-      "ext": ".html",
-      "bytes": 1042008,
-      "mtime": 1786714601.3659418,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v4.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v4",
-      "ext": ".html",
-      "bytes": 1061586,
-      "mtime": 1786716126.8761706,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v5.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v5",
-      "ext": ".html",
-      "bytes": 1062241,
-      "mtime": 1786717498.8541138,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v6.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v6",
-      "ext": ".html",
-      "bytes": 1065975,
-      "mtime": 1786718915.8722427,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v7.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v7",
-      "ext": ".html",
-      "bytes": 1068048,
-      "mtime": 1786720071.716417,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v8.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v8",
-      "ext": ".html",
-      "bytes": 1069453,
-      "mtime": 1786721099.8725126,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v9.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v9",
-      "ext": ".html",
-      "bytes": 1071277,
-      "mtime": 1786953986.2151678,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v10.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v10",
-      "ext": ".html",
-      "bytes": 1074506,
-      "mtime": 1786955422.5832531,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v11.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v11",
-      "ext": ".html",
-      "bytes": 1075867,
-      "mtime": 1786957888.385389,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v12.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v12",
-      "ext": ".html",
-      "bytes": 1089197,
-      "mtime": 1786958840.2734456,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v13.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v13",
-      "ext": ".html",
-      "bytes": 1102177,
-      "mtime": 1786959790.461502,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v14.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v14",
-      "ext": ".html",
-      "bytes": 1110915,
-      "mtime": 1786966279.205776,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v15.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v15",
-      "ext": ".html",
-      "bytes": 1119118,
-      "mtime": 1786966684.3497999,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v16.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v16",
-      "ext": ".html",
-      "bytes": 1125109,
-      "mtime": 1786968357.6578994,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v17.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v17",
-      "ext": ".html",
-      "bytes": 1130133,
-      "mtime": 1786969166.9240465,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v18.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v18",
-      "ext": ".html",
-      "bytes": 1130131,
-      "mtime": 1786969465.4943569,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v19.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v19",
-      "ext": ".html",
-      "bytes": 1396154,
-      "mtime": 1786969752.2804892,
-      "is_latest": false
-    },
-    {
-      "file": "QPS_RTM_BT_Navigator_v20.html",
-      "family": "QPS_RTM_BT_Navigator.html",
-      "version": "v20",
-      "ext": ".html",
-      "bytes": 1412045,
-      "mtime": 1786970762.9266462,
+      "bytes": 1527525,
+      "mtime": 1787065013.8952756,
       "is_latest": true
     },
     {
@@ -1425,791 +236,44 @@
       "family": "QPS_Taxonomy_and_Domain_Summary.pdf",
       "version": null,
       "ext": ".pdf",
-      "bytes": 191593,
-      "mtime": 1786712638.4671798,
+      "bytes": 138446,
+      "mtime": 1787070276.5370522,
       "is_latest": true
     },
     {
-      "file": "README_v4.md",
-      "family": "README.md",
-      "version": "v4",
-      "ext": ".md",
-      "bytes": 6231,
-      "mtime": 1786640842.8431118,
-      "is_latest": false
-    },
-    {
-      "file": "README_v5.md",
-      "family": "README.md",
-      "version": "v5",
-      "ext": ".md",
-      "bytes": 3871,
-      "mtime": 1786703764.8791914,
-      "is_latest": true
-    },
-    {
-      "file": "SESSION_SSOT.yaml",
-      "family": "SESSION_SSOT.yaml",
+      "file": "RTM_RANKING_RECOMPUTE_LOG.json",
+      "family": "RTM_RANKING_RECOMPUTE_LOG.json",
       "version": null,
-      "ext": ".yaml",
-      "bytes": 56463,
-      "mtime": 1786972983.4111292,
+      "ext": ".json",
+      "bytes": 17690,
+      "mtime": 1787050153.1169705,
       "is_latest": true
     },
     {
-      "file": "SKILLS_INVENTORY.md",
-      "family": "SKILLS_INVENTORY.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 7806,
-      "mtime": 1786967680.269859,
+      "file": "nav_data_v24.json",
+      "family": "nav_data.json",
+      "version": "v24",
+      "ext": ".json",
+      "bytes": 1360918,
+      "mtime": 1787064649.9025297,
       "is_latest": true
     },
     {
-      "file": "bt_deck_v0.pptx",
-      "family": "bt_deck.pptx",
-      "version": "v0",
-      "ext": ".pptx",
-      "bytes": 1796707,
-      "mtime": 1786702722.458311,
-      "is_latest": true
-    },
-    {
-      "file": "bt_deck_v1_fix.pptx",
-      "family": "bt_deck_v1_fix.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 1679866,
-      "mtime": 1786702800.5232136,
-      "is_latest": true
-    },
-    {
-      "file": "build_bt_deck_v5.py",
-      "family": "build_bt_deck.py",
-      "version": "v5",
-      "ext": ".py",
-      "bytes": 13084,
-      "mtime": 1786703618.7391949,
-      "is_latest": false
-    },
-    {
-      "file": "build_bt_deck_v6.py",
-      "family": "build_bt_deck.py",
-      "version": "v6",
-      "ext": ".py",
-      "bytes": 9712,
-      "mtime": 1786706769.3003151,
-      "is_latest": false
-    },
-    {
-      "file": "build_bt_deck_v10.py",
-      "family": "build_bt_deck.py",
-      "version": "v10",
-      "ext": ".py",
-      "bytes": 8928,
-      "mtime": 1786971073.942061,
-      "is_latest": true
-    },
-    {
-      "file": "build_deck.py",
-      "family": "build_deck.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 24445,
-      "mtime": 1786526532.8104172,
-      "is_latest": true
-    },
-    {
-      "file": "build_deck2.py",
-      "family": "build_deck2.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 54868,
-      "mtime": 1786530815.9810398,
-      "is_latest": true
-    },
-    {
-      "file": "build_deck3.py",
-      "family": "build_deck3.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 35070,
-      "mtime": 1786552143.058589,
-      "is_latest": true
-    },
-    {
-      "file": "build_deck4.py",
-      "family": "build_deck4.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 19181,
-      "mtime": 1786640479.63912,
-      "is_latest": true
-    },
-    {
-      "file": "build_deck5.py",
-      "family": "build_deck5.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 3287,
-      "mtime": 1786702165.683228,
-      "is_latest": true
-    },
-    {
-      "file": "build_pdf_export.py",
-      "family": "build_pdf_export.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 12448,
-      "mtime": 1786712632.3578246,
-      "is_latest": true
-    },
-    {
-      "file": "build_workbook_v6.py",
-      "family": "build_workbook.py",
-      "version": "v6",
-      "ext": ".py",
-      "bytes": 40308,
-      "mtime": 1786706540.2043204,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v7.py",
-      "family": "build_workbook.py",
-      "version": "v7",
-      "ext": ".py",
-      "bytes": 5719,
-      "mtime": 1786711708.2617698,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v8.py",
-      "family": "build_workbook.py",
-      "version": "v8",
-      "ext": ".py",
-      "bytes": 8020,
-      "mtime": 1786712999.6738465,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v9.py",
-      "family": "build_workbook.py",
-      "version": "v9",
-      "ext": ".py",
-      "bytes": 14115,
-      "mtime": 1786713662.9858859,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v16.py",
-      "family": "build_workbook.py",
-      "version": "v16",
-      "ext": ".py",
-      "bytes": 4650,
-      "mtime": 1786718762.2821891,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v17.py",
-      "family": "build_workbook.py",
-      "version": "v17",
-      "ext": ".py",
-      "bytes": 34990,
-      "mtime": 1786719967.2942607,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v18.py",
-      "family": "build_workbook.py",
-      "version": "v18",
-      "ext": ".py",
-      "bytes": 9848,
-      "mtime": 1786720543.5542948,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v19.py",
-      "family": "build_workbook.py",
-      "version": "v19",
-      "ext": ".py",
-      "bytes": 19859,
-      "mtime": 1786722276.486398,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v20.py",
-      "family": "build_workbook.py",
-      "version": "v20",
-      "ext": ".py",
-      "bytes": 43815,
-      "mtime": 1786958331.5294154,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v22.py",
-      "family": "build_workbook.py",
-      "version": "v22",
-      "ext": ".py",
-      "bytes": 2943,
-      "mtime": 1786970407.9060214,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_v23.py",
-      "family": "build_workbook.py",
+      "file": "pca_results_v23.json",
+      "family": "pca_results.json",
       "version": "v23",
-      "ext": ".py",
-      "bytes": 5669,
-      "mtime": 1786976023.570704,
+      "ext": ".json",
+      "bytes": 108395,
+      "mtime": 1787053249.556052,
       "is_latest": true
     },
     {
-      "file": "build_workbook_full_v5.py",
-      "family": "build_workbook_full.py",
-      "version": "v5",
-      "ext": ".py",
-      "bytes": 7409,
-      "mtime": 1786702682.5512164,
-      "is_latest": true
-    },
-    {
-      "file": "build_workbook_slim_v5.py",
-      "family": "build_workbook_slim.py",
-      "version": "v5",
-      "ext": ".py",
-      "bytes": 4936,
-      "mtime": 1786702654.595217,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v6.py",
-      "family": "build_workbook_slim.py",
-      "version": "v6",
-      "ext": ".py",
-      "bytes": 4357,
-      "mtime": 1786705910.0283349,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v7.py",
-      "family": "build_workbook_slim.py",
-      "version": "v7",
-      "ext": ".py",
-      "bytes": 4357,
-      "mtime": 1786711731.829771,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v8.py",
-      "family": "build_workbook_slim.py",
-      "version": "v8",
-      "ext": ".py",
-      "bytes": 4357,
-      "mtime": 1786713014.28046,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v9.py",
-      "family": "build_workbook_slim.py",
-      "version": "v9",
-      "ext": ".py",
-      "bytes": 4357,
-      "mtime": 1786713379.3151114,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v11.py",
-      "family": "build_workbook_slim.py",
-      "version": "v11",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786717321.778726,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v12.py",
-      "family": "build_workbook_slim.py",
-      "version": "v12",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786717410.3181086,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v13.py",
-      "family": "build_workbook_slim.py",
-      "version": "v13",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786717652.9566844,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v14.py",
-      "family": "build_workbook_slim.py",
-      "version": "v14",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786718078.4981484,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v15.py",
-      "family": "build_workbook_slim.py",
-      "version": "v15",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786718493.0941374,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v16.py",
-      "family": "build_workbook_slim.py",
-      "version": "v16",
-      "ext": ".py",
-      "bytes": 4360,
-      "mtime": 1786718808.5393426,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v17.py",
-      "family": "build_workbook_slim.py",
-      "version": "v17",
-      "ext": ".py",
-      "bytes": 4388,
-      "mtime": 1786719942.6502593,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v18.py",
-      "family": "build_workbook_slim.py",
-      "version": "v18",
-      "ext": ".py",
-      "bytes": 4388,
-      "mtime": 1786720618.0107756,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v19.py",
-      "family": "build_workbook_slim.py",
-      "version": "v19",
-      "ext": ".py",
-      "bytes": 4388,
-      "mtime": 1786722129.3903892,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v20.py",
-      "family": "build_workbook_slim.py",
-      "version": "v20",
-      "ext": ".py",
-      "bytes": 4700,
-      "mtime": 1786958388.7574189,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v21.py",
-      "family": "build_workbook_slim.py",
-      "version": "v21",
-      "ext": ".py",
-      "bytes": 4700,
-      "mtime": 1786969346.7404757,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v22.py",
-      "family": "build_workbook_slim.py",
-      "version": "v22",
-      "ext": ".py",
-      "bytes": 4700,
-      "mtime": 1786970762.9331741,
-      "is_latest": false
-    },
-    {
-      "file": "build_workbook_slim_v23.py",
-      "family": "build_workbook_slim.py",
+      "file": "weight_scenario4_v23.json",
+      "family": "weight_scenario4.json",
       "version": "v23",
-      "ext": ".py",
-      "bytes": 4700,
-      "mtime": 1786976088.2359724,
-      "is_latest": true
-    },
-    {
-      "file": "classify_all_rtms.py",
-      "family": "classify_all_rtms.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 8743,
-      "mtime": 1786711460.165755,
-      "is_latest": true
-    },
-    {
-      "file": "compute_metrics_snapshot.py",
-      "family": "compute_metrics_snapshot.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 7003,
-      "mtime": 1786957429.6293619,
-      "is_latest": true
-    },
-    {
-      "file": "content.yaml",
-      "family": "content.yaml",
-      "version": null,
-      "ext": ".yaml",
-      "bytes": 60584,
-      "mtime": 1786640590.0231175,
-      "is_latest": true
-    },
-    {
-      "file": "export_nav_data.py",
-      "family": "export_nav_data.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 10840,
-      "mtime": 1786970468.130025,
-      "is_latest": true
-    },
-    {
-      "file": "extract_content.py",
-      "family": "extract_content.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 2107,
-      "mtime": 1786640585.8711176,
-      "is_latest": true
-    },
-    {
-      "file": "final.pdf",
-      "family": "final.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 2577233,
-      "mtime": 1786526548.7158213,
-      "is_latest": true
-    },
-    {
-      "file": "final.pptx",
-      "family": "final.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6851578,
-      "mtime": 1786526533.6558204,
-      "is_latest": true
-    },
-    {
-      "file": "final2.pptx",
-      "family": "final2.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 7393496,
-      "mtime": 1786530820.6690397,
-      "is_latest": true
-    },
-    {
-      "file": "final2_dump.md",
-      "family": "final2_dump.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 33514,
-      "mtime": 1786530841.33704,
-      "is_latest": true
-    },
-    {
-      "file": "final3.md",
-      "family": "final3.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 43937,
-      "mtime": 1786552183.170588,
-      "is_latest": true
-    },
-    {
-      "file": "final3.pdf",
-      "family": "final3.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 3399151,
-      "mtime": 1786552166.745172,
-      "is_latest": true
-    },
-    {
-      "file": "final3.pptx",
-      "family": "final3.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6258833,
-      "mtime": 1786552147.4585888,
-      "is_latest": true
-    },
-    {
-      "file": "final4.pdf",
-      "family": "final4.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 3376396,
-      "mtime": 1786639834.111135,
-      "is_latest": true
-    },
-    {
-      "file": "final4.pptx",
-      "family": "final4.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6270942,
-      "mtime": 1786640483.27912,
-      "is_latest": true
-    },
-    {
-      "file": "fix_mtbf_rtm_numbers.py",
-      "family": "fix_mtbf_rtm_numbers.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 8987,
-      "mtime": 1786711160.4617372,
-      "is_latest": true
-    },
-    {
-      "file": "fix_pdf_page_numbers.py",
-      "family": "fix_pdf_page_numbers.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 2929,
-      "mtime": 1786969309.273956,
-      "is_latest": true
-    },
-    {
-      "file": "generate_artifact_registry.py",
-      "family": "generate_artifact_registry.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 3325,
-      "mtime": 1786721253.754337,
-      "is_latest": true
-    },
-    {
-      "file": "infer_clusters.py",
-      "family": "infer_clusters.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 4980,
-      "mtime": 1786711525.4137588,
-      "is_latest": true
-    },
-    {
-      "file": "lite_start_here_qa.xlsx",
-      "family": "lite_start_here_qa.xlsx",
-      "version": null,
-      "ext": ".xlsx",
-      "bytes": 7592,
-      "mtime": 1786702632.4712174,
-      "is_latest": true
-    },
-    {
-      "file": "make_charts.py",
-      "family": "make_charts.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 13751,
-      "mtime": 1786551044.370614,
-      "is_latest": true
-    },
-    {
-      "file": "make_energy_pie.py",
-      "family": "make_energy_pie.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 1571,
-      "mtime": 1786702052.8472307,
-      "is_latest": true
-    },
-    {
-      "file": "navigator_template.html",
-      "family": "navigator_template.html",
-      "version": null,
-      "ext": ".html",
-      "bytes": 150935,
-      "mtime": 1786970755.534121,
-      "is_latest": true
-    },
-    {
-      "file": "pca_pareto_cluster.py",
-      "family": "pca_pareto_cluster.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 8442,
-      "mtime": 1786976485.5547314,
-      "is_latest": true
-    },
-    {
-      "file": "presenter_narrative_notes.md",
-      "family": "presenter_narrative_notes.md",
-      "version": null,
-      "ext": ".md",
-      "bytes": 23735,
-      "mtime": 1786640765.1951137,
-      "is_latest": true
-    },
-    {
-      "file": "qa3_partial.pdf",
-      "family": "qa3_partial.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 3398902,
-      "mtime": 1786551364.3026068,
-      "is_latest": true
-    },
-    {
-      "file": "qa3_partial.pptx",
-      "family": "qa3_partial.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6258852,
-      "mtime": 1786551341.9826074,
-      "is_latest": true
-    },
-    {
-      "file": "qa_nav_v8.py",
-      "family": "qa_nav.py",
-      "version": "v8",
-      "ext": ".py",
-      "bytes": 4084,
-      "mtime": 1786721029.9777257,
-      "is_latest": false
-    },
-    {
-      "file": "qa_nav_v8b.py",
-      "family": "qa_nav.py",
-      "version": "v8b",
-      "ext": ".py",
-      "bytes": 1399,
-      "mtime": 1786721110.3083434,
-      "is_latest": false
-    },
-    {
-      "file": "qa_nav_v8c.py",
-      "family": "qa_nav.py",
-      "version": "v8c",
-      "ext": ".py",
-      "bytes": 2526,
-      "mtime": 1786721123.0563064,
-      "is_latest": false
-    },
-    {
-      "file": "qa_nav_v8d.py",
-      "family": "qa_nav.py",
-      "version": "v8d",
-      "ext": ".py",
-      "bytes": 1563,
-      "mtime": 1786721136.7232552,
-      "is_latest": true
-    },
-    {
-      "file": "qa_partial.pdf",
-      "family": "qa_partial.pdf",
-      "version": null,
-      "ext": ".pdf",
-      "bytes": 3929860,
-      "mtime": 1786530763.8890393,
-      "is_latest": true
-    },
-    {
-      "file": "qa_partial.pptx",
-      "family": "qa_partial.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 7393496,
-      "mtime": 1786530742.297039,
-      "is_latest": true
-    },
-    {
-      "file": "qa_rtm_ranking_wide.xlsx",
-      "family": "qa_rtm_ranking_wide.xlsx",
-      "version": null,
-      "ext": ".xlsx",
-      "bytes": 244054,
-      "mtime": 1786722204.3543937,
-      "is_latest": true
-    },
-    {
-      "file": "qa_visual_v19.xlsx",
-      "family": "qa_visual.xlsx",
-      "version": "v19",
-      "ext": ".xlsx",
-      "bytes": 269272,
-      "mtime": 1786722154.9943907,
-      "is_latest": true
-    },
-    {
-      "file": "step1.pptx",
-      "family": "step1.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6832087,
-      "mtime": 1786526108.7037952,
-      "is_latest": true
-    },
-    {
-      "file": "step2.pptx",
-      "family": "step2.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6855741,
-      "mtime": 1786528533.2245524,
-      "is_latest": true
-    },
-    {
-      "file": "style.yaml",
-      "family": "style.yaml",
-      "version": null,
-      "ext": ".yaml",
-      "bytes": 9094,
-      "mtime": 1786640640.5991166,
-      "is_latest": true
-    },
-    {
-      "file": "t0_taxonomy.py",
-      "family": "t0_taxonomy.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 20668,
-      "mtime": 1786705469.200345,
-      "is_latest": true
-    },
-    {
-      "file": "test_grow.pptx",
-      "family": "test_grow.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6270930,
-      "mtime": 1786640372.4231226,
-      "is_latest": true
-    },
-    {
-      "file": "uploaded_v2.pptx",
-      "family": "uploaded.pptx",
-      "version": "v2",
-      "ext": ".pptx",
-      "bytes": 7857091,
-      "mtime": 1786550571.266625,
-      "is_latest": true
-    },
-    {
-      "file": "uploaded_v3_review.pptx",
-      "family": "uploaded_v3_review.pptx",
-      "version": null,
-      "ext": ".pptx",
-      "bytes": 6693457,
-      "mtime": 1786637823.0637846,
-      "is_latest": true
-    },
-    {
-      "file": "xlsx_copy_helpers.py",
-      "family": "xlsx_copy_helpers.py",
-      "version": null,
-      "ext": ".py",
-      "bytes": 2495,
-      "mtime": 1786702385.751223,
+      "ext": ".json",
+      "bytes": 12596,
+      "mtime": 1787053287.4627912,
       "is_latest": true
     }
   ]

@@ -63,7 +63,7 @@
 <header class="top">
   <h1>QPS OFFER Evaluation — Master Developer Dashboard</h1>
   <p>One landing page for the whole project: where to start, what every file is, and the three lenses the BT method reasons through — Ranking (the score), Importance (the tier/gate), and Relevance (domain/cluster/phase context). Nothing on this page is a new data source: every fact below is generated from, or points directly at, the same FULL workbook everything else in this project derives from.</p>
-  <div class="verstrip">Workbook v20 &middot; Navigator v15 &middot; BT deck v9 &middot; MTBF deck v7 &middot; Last refreshed: this round (see Index tab for full version table)</div>
+  <div class="verstrip">Workbook v24 &middot; Navigator v22 &middot; BT deck v12 &middot; MTBF deck v7 &middot; Page last refreshed 2026-08-19 (was stuck at v20/v15/v9 for 4+ workbook versions -- caught and fixed this round; this page has no regeneration script yet, patched by hand against verified current values, see Index tab)</div>
 </header>
 
 <nav class="cattabs">
@@ -86,10 +86,10 @@
   <h3>Pick your path</h3>
   <table>
     <tr><th>If you are...</th><th>Go to</th><th>Why</th></tr>
-    <tr><td>Working the evaluation day-to-day</td><td><code>QPS_OFFER_Evaluation_FULL_v20.xlsx</code></td><td>The only place with all sheets, live formulas, full audit trail.</td></tr>
-    <tr><td>An external reviewer or board member</td><td><code>QPS_OFFER_Evaluation_LITE_v20.xlsx</code></td><td>Same numbers, none of the internal build/audit scaffolding.</td></tr>
-    <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code>QPS_RTM_BT_Navigator_v15.html</code></td><td>Opens in any browser, no install, same live data.</td></tr>
-    <tr><td>Explaining <i>how</i> the ranking method works</td><td><code>BT_Method_Evaluation_v9.pptx</code></td><td>The methodology deck — weights, gate precedence, PCA structure.</td></tr>
+    <tr><td>Working the evaluation day-to-day</td><td><code>QPS_OFFER_Evaluation_FULL_v24.xlsx</code></td><td>The only place with all sheets, live formulas, full audit trail. New in v24: <code>PCA_ANALYSIS</code> sheet, 4th weight-sensitivity scenario.</td></tr>
+    <tr><td>An external reviewer or board member</td><td><code>QPS_OFFER_Evaluation_LITE_v24.xlsx</code></td><td>Same numbers, none of the internal build/audit scaffolding.</td></tr>
+    <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code>QPS_RTM_BT_Navigator_v22.html</code></td><td>Opens in any browser, no install, same live data. New in v22: "PCA / Structure" tab (13th tab).</td></tr>
+    <tr><td>Explaining <i>how</i> the ranking method works</td><td><code>BT_Method_Evaluation_v12.pptx</code></td><td>The methodology deck — weights, gate precedence, PCA structure. Not yet updated with this round's PCA/weight-scenario-4 findings (open, NEXT_ITERATION_BACKLOG.md 28d).</td></tr>
     <tr><td>Want the statistical "why" behind the ranking</td><td><code>DMAIC_BT_TECHNICAL_REPORT.html</code></td><td>Outline-numbered DMAIC report: PCA structure, Sum-vs-Average divergence, T0-vs-score independence.</td></tr>
     <tr><td>Picking up this project cold, need the full history</td><td><code>ENGINEERING_HANDOVER_SESSION.md</code></td><td>Narrative handover: what's built, what's fixed, what's still open.</td></tr>
     <tr><td>Need to know what's still queued / not yet built</td><td><code>NEXT_ITERATION_BACKLOG.md</code></td><td>Every open ask, scoped, none silently dropped.</td></tr>
@@ -106,8 +106,8 @@
 
   <h3>Quick links</h3>
   <div class="qlinks">
-    <a href="#" onclick="return false;">QPS_OFFER_Evaluation_FULL_v20.xlsx</a>
-    <a href="#" onclick="return false;">QPS_RTM_BT_Navigator_v15.html</a>
+    <a href="#" onclick="return false;">QPS_OFFER_Evaluation_FULL_v24.xlsx</a>
+    <a href="#" onclick="return false;">QPS_RTM_BT_Navigator_v22.html</a>
     <a href="#" onclick="return false;">DMAIC_BT_TECHNICAL_REPORT.html</a>
     <a href="#" onclick="return false;">PIPELINE_DIAGRAM.md</a>
     <a href="#" onclick="return false;">SKILLS_INVENTORY.md</a>
@@ -119,17 +119,17 @@
 <!-- ===================== 2. INDEX ===================== -->
 <section class="cat" id="cat-index">
   <h2>2. Index — every deliverable, doc-controlled</h2>
-  <p class="subtitle">Periodic external doc-control: current version, freshness, and last substantive change for everything that leaves this project. Supersedes <code>DELIVERABLES_INDEX.html</code> (that page still exists but references older versions — this table is the current one).</p>
+  <p class="subtitle"><b>Correction, 2026-08-19:</b> this table previously claimed to supersede <code>DELIVERABLES_INDEX.html</code> as "the current one" — backwards relative to reality. <code>DELIVERABLES_INDEX.html</code> is regenerated from live data each round and was current as of this morning (v24/v22/v12); <em>this</em> page has no regeneration script and had drifted 4 workbook versions stale before this patch. Treat <code>DELIVERABLES_INDEX.html</code> as the authoritative doc-control table; this one is a hand-patched mirror, corrected on a best-effort basis.</p>
 
   <h3>Outward-facing deliverables</h3>
   <table>
     <tr><th>File</th><th>Version</th><th>Status</th><th>Last substantive change</th></tr>
-    <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v20</td><td><span class="badge current">current</span></td><td>9-section build from GBO's uploaded annotation file: Relation Types table, COMPLIANCE_LEGEND, Review-flag standardisation, REVIEW_FOCUS, RTM_PHASE_EXPANSION, DELIVERABLES_DOSSIER, CONFLICT_CANDIDATES</td></tr>
-    <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v20</td><td><span class="badge current">current</span></td><td>Kept in lockstep with FULL v20; gained REVIEW_FOCUS/RTM_PHASE_EXPANSION/DELIVERABLES_DOSSIER/CONFLICT_CANDIDATES</td></tr>
-    <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v15</td><td><span class="badge current">current</span></td><td>RTM&lt;-&gt;OFFER clickable cross-links, Domain/Cluster/Primary-Dimension colour chips, radial link-map diagram</td></tr>
-    <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v9</td><td><span class="badge watch">watch — undocumented v7/v8, v9 inline</span></td><td>Real PCA slide (7-dim, 722 RTMs) + Sum-vs-Average domain quadrant slide</td></tr>
+    <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>New <code>PCA_ANALYSIS</code> sheet + 4th weight-sensitivity scenario (compute_pca.py, compute_weight_scenario4.py). v20's own original change note, kept for history: 9-section build from GBO's uploaded annotation file (Relation Types table, COMPLIANCE_LEGEND, Review-flag standardisation, REVIEW_FOCUS, RTM_PHASE_EXPANSION, DELIVERABLES_DOSSIER, CONFLICT_CANDIDATES).</td></tr>
+    <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>Kept in lockstep with FULL v24; gained <code>PCA_ANALYSIS</code> in the reviewer KEEP-list.</td></tr>
+    <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v22</td><td><span class="badge current">current</span></td><td>New 13th tab "PCA / Structure" (PC1xPC2 scatter + domain quadrant + ASCII method panel); BT lambda index now shown on both Lookup cards.</td></tr>
+    <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v12</td><td><span class="badge watch">watch — has not absorbed this round's PCA/weight-scenario-4 findings</span></td><td>Real PCA slide (7-dim, 722 RTMs) + Sum-vs-Average domain quadrant slide (as of v9-v12; unchanged this round)</td></tr>
     <tr><td><code>QPS_MTBF_WCS_DMAIC_*.pptx</code></td><td>v7</td><td><span class="badge watch">watch — undocumented since v6</span></td><td>Unknown — no build script for v6&rarr;v7</td></tr>
-    <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a</td><td><span class="badge stale">stale</span></td><td>Data snapshot from workbook v7; workbook now at v20</td></tr>
+    <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Correction, 2026-08-19: this row previously claimed "stale, v7 data" -- checked directly this round and that was itself stale documentation, not the PDF's actual state. The PDF has been re-run every round since at least v23; verified via direct PDF-text extraction that every version token in the current file reads v24, zero v7/v23 tokens anywhere.</td></tr>
     <tr><td><code>DMAIC_BT_TECHNICAL_REPORT.md</code> / <code>.html</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>PCA analysis formalised as outline-numbered DMAIC report + T0-vs-Weighted-S finding</td></tr>
     <tr><td><code>MASTER_DEVELOPER_DASHBOARD.html</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>This page</td></tr>
     <tr><td><code>PIPELINE_DIAGRAM.md</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>ASCII entry/exit build-pipeline diagram</td></tr>
@@ -158,7 +158,7 @@
     <div class="card">
       <h3>Metric history</h3>
       <div class="fname">METRIC_HISTORY.json</div>
-      <p>Version-over-version tracked stats (v5&ndash;v20) — confirms BT scores have been DMAIC-stable since v5.</p>
+      <p>Version-over-version tracked stats (v5&ndash;v24) — confirms BT scores have been essentially DMAIC-stable since v5. One real, small, disclosed movement: sum-Weighted-S ticked from 21667.7 (v20-v22) to 21674.3 (v23-v24, +0.03%) after a deliberate correction to RTM-320's Performance dimension (re-judged against its full text) -- not drift, a single named fix. Convergence read: the scoring METHOD itself needs no further DMAIC iteration; open work is new analytical views (PCA, phase mapping) and delivery-process items, not re-tuning the formula.</p>
     </div>
   </div>
 </section>
@@ -237,7 +237,7 @@
 
 </main>
 <footer class="bottom">
-  QPS OFFER Evaluation project &middot; Master Developer Dashboard &middot; generated to accompany workbook v20 / Navigator v15 &middot; see <code>PIPELINE_DIAGRAM.md</code> for how everything on this page gets built, <code>SKILLS_INVENTORY.md</code> for what each build script does, <code>NEXT_ITERATION_BACKLOG.md</code> for what's still open
+  QPS OFFER Evaluation project &middot; Master Developer Dashboard &middot; hand-patched to reflect workbook v24 / Navigator v22 as of 2026-08-19 (no regeneration script for this page yet) &middot; see <code>PIPELINE_DIAGRAM.md</code> for how everything on this page gets built, <code>SKILLS_INVENTORY.md</code> for what each build script does, <code>NEXT_ITERATION_BACKLOG.md</code> for what's still open
 </footer>
 
 <script>

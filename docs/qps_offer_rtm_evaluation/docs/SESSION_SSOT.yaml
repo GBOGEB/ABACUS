@@ -46,14 +46,14 @@ meta:
 # whose script was NOT preserved).
 families:
   workbook_full:
-    canonical: QPS_OFFER_Evaluation_FULL_v23.xlsx
+    canonical: QPS_OFFER_Evaluation_FULL_v24.xlsx
     purpose: >
       The SSOT workbook -- RTM_RANKING (722 reqs), OFFER_RANKING (50 items),
       BT/weighted-S scoring, gate precedence, taxonomy, cluster grouping,
       review queue, and every audit/method/legend sheet. Everything else
       (LITE workbook, Navigator, PDFs) derives FROM this file, never the
       reverse.
-    sheet_count: 32
+    sheet_count: 33
     builder_chain:
       - {script: build_workbook_full_v5.py, in: GBO's hand-edited base + QPS_RTM_BT_Standalone.xlsx, out: QPS_OFFER_Evaluation_FULL_v5.xlsx}
       - {script: build_workbook_v6.py,  in: FULL_v5,  out: FULL_v6,  summary: "taxonomy, C1-C8 clusters, RTM_LOOKUP page, OFFER disposition cols, Z_comment formula, filterable dashboard"}
@@ -69,6 +69,7 @@ families:
       - {script: fix_pdf_page_numbers.py, in: FULL_v20, out: FULL_v21, summary: "RTM_RANKING!J (PDF page) corrected against the real 137-page source PDF (every RTM-### is literally printed in the text, giving a 722/722 ground truth): only 247/722 (34%) of stored values matched, 475 rows (66%) were wrong (avg drift 1.40 pages, max 35) -- fixed all 475. Triggered by GBO's RTM-693 screenshot showing the real page 127 vs. workbook's stored 129."}
       - {script: build_workbook_v22.py, in: FULL_v21, out: FULL_v22, summary: "DASHBOARD_2 chart C ('Average Weighted S by Domain') data-range bug fixed -- was pulling DOMAIN_SUMMARY rows 5-41 (36 rows) when the real domain table is only rows 6-27 (22 domains); rows 28-41 belong to an unrelated 'Cluster breakdown' table lower on the same sheet, causing the mismatched/blank category ticks GBO spotted in a Google Drive chart-preview screenshot. Range trimmed to the real 22-domain extent."}
       - {script: build_workbook_v23.py, in: FULL_v22, out: FULL_v23, summary: "DELIVERABLES_DOSSIER gained AD_07 (QPS Cybersecurity Policy Framework) and AD_08 (QPLANT Abnormal Scenarios / Line S) from GBO's Master_Input working folder -- distinct from AD_01-06's contract-Table-2 provenance, disclosed as such (no SCKCEN ref# fabricated). Links taken from each document's own self-declared RTM anchor (AD_07->RTM-322, AD_08->RTM-260/261/292/294), not a fuzzy text scan. 34 AD entries total now (was 32). Found+fixed a real openpyxl bug during this build: insert_rows() does not shift merged-cell ranges, which was silently blanking the new AD_08 row's B:F columns -- explicit unmerge/re-merge added around the insert."}
+      - {script: build_workbook_v24.py, in: FULL_v23, out: FULL_v24, summary: "New PCA_ANALYSIS sheet (explained-variance/loadings/domain-position tables, from the newly-named scripts/compute_pca.py -- closes DMAIC_BT_TECHNICAL_REPORT.md Section 5.1's reproducibility gap; re-run against live v23 data reproduced the original report's numbers EXACTLY, PC1=30.6%/PC2=16.5%/174 distinctive items, confirming no drift). WEIGHTS_METHOD gained a 3rd live-toggle scenario ('Cost-heavy-proportional', row 62) and a static comparison table -- GBO-requested variant of the existing Cost=70% scenario that keeps the other 6 dimensions' relative ratios instead of splitting flat 5% each (scripts/compute_weight_scenario4.py). Real finding: both variants give Cost the same 70% weight but rank very differently (Spearman vs Base: 0.994 flat vs. 0.661 proportional). B56's data-validation dropdown values changed from descriptive strings to short labels ('Base'/'Cost-heavy'/'Cost-heavy-proportional') to support 3-way INDEX/MATCH instead of a 2-way IF() -- disclosed inline at WEIGHTS_METHOD row 50. Verified via openpyxl reload (structure/formulas/merges intact); Excel COM verification was attempted but blocked by an environment-level issue unrelated to this edit (even the pristine, unmodified v23 file fails to open via COM on this machine -- see gaps below)."}
     known_data_caveat: >
       RTM-BT ranking values integrated in v5 are a static snapshot (130
       formulas / 34,838 cells = 0.4% density) using a 4-dimension (L/R/P/F)
@@ -80,6 +81,12 @@ families:
 
   workbook_lite:
     canonical: QPS_OFFER_Evaluation_LITE_v23.xlsx
+    stale_note: >
+      1 workbook version behind FULL_v24 as of this SSOT update (FULL gained
+      PCA_ANALYSIS + the 4th weight scenario, not yet re-sliced into LITE).
+      build_workbook_slim_v24.py not yet written -- straightforward, same
+      pattern as v20-v22 (see builder_chain below), just needs PCA_ANALYSIS
+      added to the KEEP list if it should be reviewer-facing.
     purpose: >
       Reviewer-shareable subset of workbook_full -- KEEP-list derived (not a
       DROP list) so new FULL sheets are excluded by default until explicitly
@@ -98,7 +105,7 @@ families:
       - "LISTS sheet kept but hidden (dropdown data source for STATUS/Depth/Negotiation columns)"
 
   html_navigator:
-    canonical: QPS_RTM_BT_Navigator_v21.html
+    canonical: QPS_RTM_BT_Navigator_v22.html
     purpose: >
       Single-file, read-only HTML companion to workbook_full -- browse
       RTM/OFFER rankings, filter dashboard, domain/cluster heatmaps,
@@ -109,6 +116,7 @@ families:
       - {script: export_nav_data.py, in: "workbook_full canonical (or any FULL_vN)", out: "/tmp/nav_data_vN.json", note: "re-run whenever RTM_RANKING/OFFER_RANKING/RTM_REVIEW_QUEUE/CLUSTERS/DOMAIN_SUMMARY/TAXONOMY change; safe/no-op to re-run when only formatting changed (v18's JSON is byte-identical to v17's)"}
       - {script: splice_navigator.py, in: "nav_data_vN.json + navigator_template.html", out: "QPS_RTM_BT_Navigator_vN.html", note: "PROMOTED FROM INLINE PYTHON this round -- verified byte-identical output vs. the inline splice it replaces before being trusted as canonical. Standing gap closed."}
       - {script: "export_nav_data.py v23 + splice_navigator.py", in: FULL_v23, out: Navigator_v21, summary: "re-sync after AD_07/AD_08 landed in DELIVERABLES_DOSSIER (34 entries) -- Navigator was 1 workbook version stale; full 12-tab Playwright QA sweep, zero errors/overflow."}
+      - {script: "export_nav_data.py v24 + splice_navigator.py", in: FULL_v24, out: Navigator_v22, summary: "New 'PCA / Structure' tab (13th tab) -- Proposal A (PC1xPC2 scatter, 722 RTMs, self-contained inline SVG, coloured by domainColor()) and Proposal B (domain quadrant, 22 domains) from DMAIC_BT_TECHNICAL_REPORT.md Section 4.1-4.2; an ASCII method panel (BT scoring flow + PCA computation flow); the new 4th weight-scenario table. btLambda (RTM_RANKING col X / OFFER_RANKING col Q) exported and surfaced on both Lookup detail cards for the first time -- was in the workbook since at least v19 but never in the Navigator (NEXT_ITERATION_BACKLOG.md item 10's own named gap). export_nav_data.py also gained auto-discovery of pca_results_v*.json / weight_scenario4_v*.json next to the input workbook (glob-latest, omitted gracefully if absent) rather than hardcoding one version. Playwright QA: 13 tabs, 722+22 scatter points verified by exact count, ascii-diagram text content verified, 0 console/page errors, 0 horizontal overflow."}
     qa_process: >
       Playwright headless Chromium sweep: zero console errors, zero
       pageerror events, zero horizontal overflow (scrollWidth-clientWidth),
@@ -129,6 +137,7 @@ families:
       v17-v18: "Document Outline: floating sticky legend, row background switched from flat-opacity teal to a proportional-width gradient bar (barBackground()), new 'SCK CEN -- contracting authority' root node (93 verified mentions; GBO's suggested project-parent names MYRRHA/MINERVA/QYS were searched for and found 0 occurrences -- disclosed, not guessed). Cluster colour-key swatch contrast strengthened (border/size/box-shadow) after GBO re-flagged legibility. Re-spliced against nav_data_v21.json once the PDF-page-number fix (below) landed."
       v19: "'Full verbatim requirement' card added to RTM Lookup -- RTM_RANKING column 14 (complete bulleted shall-text, previously captured in the workbook but never exported) now shown alongside the condensed one-line shall statement, resolving GBO's repeated ask for the full/verbatim RTM text."
       v20: "STATUS/Compliance legend (real COMPLIANCE_LEGEND colours) now LEADS the Taxonomy tab, per GBO's explicit request. New live 'Lifecycle phase coverage' bar visual (L0-L6 + PAC/Warranty/FAC, coloured by Lifecycle supergroup) -- also the first live metric tying supergroups to real counts (previously pure reference text, confirmed zero live usage anywhere). New Subsystems-domain drill-down (202 RTMs, matches GBO's count exactly; grouped by the 45 real sectionTitle values since subcategory is blank for all of them -- cluster mix + avg/composite Weighted S + top-ranked RTM per group). New collapsible tree view for the 32-entry Deliverables Dossier (6 top-level + 26 sub-items), alongside the existing flat table. export_nav_data.py gained the statusLegend/statusLegendNote fields (from COMPLIANCE_LEGEND!A6:F13)."
+      v22: "13th tab, 'PCA / Structure' -- see html_navigator.builder_chain's v24 entry above for full detail. First Navigator tab built entirely with self-contained inline SVG scatter charts (buildScatterSvg() helper, new top-level function) rather than the div-bar Pareto pattern every other tab uses -- chosen because a 2D scatter genuinely needs 2 independent axes, which div-bars can't represent. btLambda surfaced on both Lookup cards. (v21 was the AD_07/08 re-sync, already logged above; there was no separate v21 Navigator feature round beyond that re-sync.)"
 
   bt_method_deck:
     canonical: BT_Method_Evaluation_v12.pptx
@@ -318,6 +327,27 @@ decisions_log:
       it changed to a small log/dialog) -- that pinpoints the exact broken
       part far faster than continued blind XML auditing.
     status: "fixed the one confirmed defect found; awaiting GBO confirmation that v19 opens clean in real Excel"
+    new_lead_v24_round: >
+      Different session, real Excel WAS available this time (unlike the
+      caveat above) -- but Excel COM automation (win32com, Workbooks.Open())
+      failed to open ANY version of this workbook, including the pristine,
+      completely unmodified FULL_v23.xlsx, with a generic "Open method of
+      Workbooks class failed" COM error. Tried: fresh dedicated Excel
+      instance (DispatchEx, not a possibly-stale cached one), copying the
+      file to a different (non-worktree) folder, AutomationSecurity=Low,
+      explicit CorruptLoad=xlRepairFile. All failed identically. Creating a
+      brand-new blank workbook via the same COM session worked fine, so COM
+      itself is not broken -- the failure is specific to opening these
+      existing files. NOT the same symptom as a "Repaired" title-bar warning
+      (that requires the file to open, just with a warning) -- this is a
+      harder failure, Open() itself never completes. Still an open lead, not
+      a confirmed cause: could be this specific machine/session's Excel
+      Trust Center blocking automation from this path outright (untested:
+      whether a normal interactive double-click-to-open works fine, only
+      COM automation was tried), unrelated to file content at all. Verified
+      this round's own edits via openpyxl reload-and-verify + a Playwright
+      QA sweep on the Navigator instead (see workbook_full.builder_chain
+      v24 entry and html_navigator.builder_chain v24 entry).
   isolated_qa_harness_NAME_error_recurrence:
     finding: >
       Re-confirmed the same QA-harness artifact documented under

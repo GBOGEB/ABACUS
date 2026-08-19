@@ -236,8 +236,9 @@ html_out = f"""<!DOCTYPE html>
     <div class="cards">
       <div class="card"><div class="label">Total artefact families</div><div class="value">{d['total_families']}</div><div class="note">Distinct file lineages, per ARTIFACT_REGISTRY.json</div></div>
       <div class="card"><div class="label">Total files on disk</div><div class="value">{d['total_files']}</div><div class="note">Across all versions of all families</div></div>
-      <div class="card"><div class="label">Git commits (local repo)</div><div class="value">{d['commit_count']}</div><div class="note">Local-only, per GBO's stated preference — no GitHub remote</div></div>
-      <div class="card"><div class="label">Backlog findings logged</div><div class="value">{d['backlog_sections']}</div><div class="note">Dated sections in NEXT_ITERATION_BACKLOG.md</div></div>
+      <div class="card"><div class="label">Committed changes, this project's own path</div><div class="value">{d['commit_count']}</div><div class="note">git log scoped to docs/qps_offer_rtm_evaluation/ only (was unscoped -- pulled all 2129 commits across the whole shared repo before this round's fix). A GitHub remote does exist (github.com/GBOGEB/ABACUS.git) -- nothing from this project has been pushed there yet.</div></div>
+      <div class="card"><div class="label">Uncommitted changes right now</div><div class="value">{d['uncommitted_count']}</div><div class="note">Modified/untracked files in this project's own path, not yet committed to the worktree branch -- includes this round's own work</div></div>
+      <div class="card"><div class="label">Backlog findings logged</div><div class="value">{d['backlog_sections']}</div><div class="note">Dated sections in NEXT_ITERATION_BACKLOG.md, counted live via regex, not hand-typed</div></div>
     </div>
   </div>
 
