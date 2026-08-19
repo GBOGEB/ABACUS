@@ -11,7 +11,7 @@ Centralized configuration for all DMAIC phases with support for:
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 from enum import Enum
 
 VERSION = "3.3.0"

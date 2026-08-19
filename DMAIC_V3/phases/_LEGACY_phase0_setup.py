@@ -9,7 +9,7 @@ import os
 import subprocess
 import shutil
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime
 

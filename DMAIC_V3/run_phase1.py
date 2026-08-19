@@ -1,7 +1,6 @@
 __version__ = "3.3.0"
 
 import sys
-import os
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))

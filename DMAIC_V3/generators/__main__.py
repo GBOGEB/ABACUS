@@ -22,13 +22,12 @@ Victory Conditions:
 import sys
 import argparse
 from pathlib import Path
-from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from DMAIC_V3.generators.execution_tracker import ExecutionTracker
 from DMAIC_V3.generators.documentation_aligner import DocumentationAligner
-from DMAIC_V3.generators import VERSION_INFO, check_victory_conditions
+from DMAIC_V3.generators import VERSION_INFO
 
 
 def cmd_execute(args):

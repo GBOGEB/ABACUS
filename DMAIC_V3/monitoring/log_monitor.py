@@ -3,8 +3,6 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
-from collections import defaultdict, Counter
-import json
 
 class LogMonitor:
     
