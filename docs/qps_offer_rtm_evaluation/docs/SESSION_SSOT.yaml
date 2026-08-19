@@ -454,6 +454,36 @@ status:
     - "workbook_full v10-v15 has no saved per-version orchestration script (the underlying classify/infer/fix scripts exist, but not the glue that sequenced them into v10..v15)"
     - "pdf_exports (Taxonomy/Domain Summary PDF) not refreshed since nav_data_v7.json -- workbook is now at v20"
     - "No standalone splice_navigator.py -- the JSON-into-template step is currently inline python run ad hoc each round (v12 was spliced this way again)"
+  status_2026_08_19_update: >
+    QA finding (ABACUS-side session, sweeping every doc for stale version
+    claims per NEXT_ITERATION_BACKLOG.md's own "not done this round" note):
+    everything above this line in `status:` was last refreshed 2026-08-17
+    (v20-era, see meta.last_updated) and was never bumped through v21-v24 --
+    several bullets now directly contradict the `families:` section a few
+    hundred lines up, which HAS been kept current. Not rewritten in place
+    (preserves the dated historical record); corrections instead:
+      - "DMAIC-framed fix/QA write-up" (still_pending_this_session, listed
+        under gaps.large_message_asks_not_yet_built) -- DONE 2026-08-19, see
+        docs/DMAIC_BUGFIX_LOG.md and this file's own
+        items_low_priority_revisit_later entry above (already marked CLOSED).
+      - "pdf_exports... not refreshed since nav_data_v7.json -- workbook is
+        now at v20" (not_done_or_missing) -- WRONG as of v23: see
+        families.pdf_exports.staleness_note ("REFRESHED this round -- now
+        current against FULL_v23"), further unchanged through v24.
+      - "git repository: local-only... working tree clean, 5 commits"
+        (status.done_this_session, meta.git_repository) -- superseded: this
+        project has since been pushed to `github.com/GBOGEB/ABACUS` and
+        merged to `main` via PR #622 (v23 import + RTM-320 correction), #623
+        (v24 import), #624 (this DMAIC write-up) -- no longer local-only.
+      - Genuinely still open, reaffirmed (not stale): "BT-method/DMAIC
+        next-steps recommendations slide", the cluster-level-ranking scoping
+        question (needs GBO's content judgment, not more engineering), font
+        consistency, and the real-Excel open/COM-failure lead (see
+        decisions_log.excel_repaired_file_investigation.new_lead_v24_round
+        for the 2026-08-19 update to that specific question).
+    meta.last_updated/session_span below this point are similarly frozen at
+    2026-08-17 -- treat `families:`, `decisions_log:`, and this note as the
+    living truth; treat everything else in `status:` as a dated snapshot.
   open_standing_questions:
     - "Aptos vs Carlito font consistency across the whole project"
     - "Status of an earlier 'repaired file' corruption warning against the latest versions"
