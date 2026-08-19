@@ -104,6 +104,11 @@ secrets/
 # Generated PowerPoint files (always regenerate from templates using the generator scripts)
 # Example: python slides/qplant_sckcen_template.py
 *.pptx
+# Exception: docs/qps_offer_rtm_evaluation/current/ is a canonical deliverables
+# directory (per its own MANIFEST.yaml/README) where the built decks are
+# committed alongside their sibling xlsx/html deliverables and generator
+# scripts, not regenerate-on-demand scratch output.
+!docs/qps_offer_rtm_evaluation/current/*.pptx
 
 # Large data files
 *.csv
