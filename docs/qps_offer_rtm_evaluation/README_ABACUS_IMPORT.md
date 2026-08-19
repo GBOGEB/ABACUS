@@ -7,9 +7,52 @@ project. Start at `CONTINUATION.md`, then `docs/ENGINEERING_HANDOVER_SESSION.md`
 then `docs/SESSION_SSOT.yaml` — do not re-derive anything already answered
 there (see `CONTINUATION.md`'s own instructions to that effect).
 
-**Canonical workbook:** `current/QPS_OFFER_Evaluation_FULL_v23.xlsx` (32 sheets
-as imported, 33 after the 2026-08-18 correction added `RECOMPUTE_LOG`).
+**Canonical workbook:** `current/QPS_OFFER_Evaluation_FULL_v24.xlsx` (34
+sheets: the 32 imported + `RECOMPUTE_LOG` added 2026-08-18 by this repo's own
+correction pass + `PCA_ANALYSIS` added upstream in v24).
 Everything else under `current/` derives from it via the scripts in `scripts/`.
+
+## v24 update (2026-08-19)
+
+The upstream (local-only) session kept building after the v23 import landed
+here — its build read `FULL_v23.xlsx` *after* this repo's RTM-320 correction
+was already saved to it, so **the fix is carried forward intact** (verified:
+RTM-320 P=1, rank 132, identical to the corrected v23 — re-checked after this
+v24 import). New in v24, per upstream's own `docs/SESSION_SSOT.yaml`:
+
+- **`PCA_ANALYSIS` sheet** (new) — explained-variance/loadings/domain-position
+  tables from `scripts/compute_pca.py`; re-running it against live v23 data
+  reproduced `DMAIC_BT_TECHNICAL_REPORT.md`'s original numbers exactly
+  (PC1=30.6%, PC2=16.5%, 174 distinctive items) — no drift since that report
+  was written.
+- **3rd weight-sensitivity scenario** ("Cost-heavy-proportional") on
+  `WEIGHTS_METHOD` — keeps the other 6 dimensions' relative ratios instead of
+  splitting the remaining 30% flat 5% each. Real finding disclosed inline:
+  both variants give Cost the same 70% weight but rank very differently
+  (Spearman vs. Base: 0.994 flat vs. 0.661 proportional) — *how* the rest of
+  the weight is redistributed matters as much as the headline number.
+- **`QPS_RTM_BT_Navigator_v22.html`** — 13th tab ("PCA / Structure": a PC1×PC2
+  scatter of all 722 RTMs + a 22-domain quadrant view, both self-contained
+  inline SVG); BT λ surfaced on RTM/OFFER Lookup cards for the first time.
+- `LITE_v24`, refreshed `DASHBOARD`/KPI/deliverables-index/metric-history/PDF
+  export artifacts, all re-derived from `FULL_v24` via the matching scripts.
+
+**Independent cross-confirmation on their open Excel-COM lead:** upstream's
+SSOT records a new finding — real Excel COM automation failed to *open*
+`FULL_v23.xlsx` outright on their machine (not the softer "Repaired" warning
+from the v19-era investigation), suspected environmental (Trust Center/
+automation security) rather than file corruption, since a brand-new blank
+workbook opened fine via the same COM session. This repo's own XML/OPC audit
+(re-run on `FULL_v24`/`LITE_v24` after this import, same method as before)
+came back clean on every check — no stale relationships, no Content_Types
+gaps, no autoFilter/dimension mismatches, no macros. That doesn't prove the
+COM failure is environmental, but it rules out the file-corruption
+explanation from the same defect class their v19 investigation catalogued,
+which is independent evidence pointing the same direction.
+
+Verified before this import: structural invariants (722 RTMs, 50 OFFER items,
+no gaps/duplicates), zero formula-error cells, RTM-320 fix intact, on both
+`FULL_v24.xlsx` and `LITE_v24.xlsx`.
 
 ## Why this directory exists / what it replaces
 
