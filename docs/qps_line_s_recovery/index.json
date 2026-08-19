@@ -43,8 +43,11 @@
     {"path": "models/qps_line_s/t_available_grid.py", "type": "post_processor", "status": "active"},
     {"path": "models/qps_line_s/rfi_package.py", "type": "rfi_renderer", "status": "active"},
     {"path": "models/qps_line_s/runtime.py", "type": "runtime_verdict", "status": "active"},
+    {"path": "models/qps_line_s/recovery_model.py", "type": "model_recovery", "status": "active"},
     {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
     {"path": "tests/test_runtime.py", "type": "test", "status": "active"},
+    {"path": "tests/test_recovery_model.py", "type": "test", "status": "active"},
+    {"path": "docs/qps_line_s_recovery/reference-registry.yaml", "type": "reference_registry", "status": "active"},
     {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"},
     {"path": ".gitignore", "type": "source_control_policy", "status": "active"}
   ],
@@ -54,7 +57,9 @@
     {"path": "docs/qps_line_s_recovery/generated/t_available_grid.md", "producer": "models/qps_line_s/t_available_grid.py", "tracked": false},
     {"path": "docs/qps_line_s_recovery/generated/t_available_grid.csv", "producer": "models/qps_line_s/t_available_grid.py", "tracked": false},
     {"path": "docs/qps_line_s_recovery/generated/applicant_rfi.md", "producer": "models/qps_line_s/rfi_package.py", "tracked": false},
-    {"path": "docs/qps_line_s_recovery/generated/runtime_status.json", "producer": "models/qps_line_s/runtime.py", "tracked": false}
+    {"path": "docs/qps_line_s_recovery/generated/runtime_status.json", "producer": "models/qps_line_s/runtime.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/recovery_matrix.md", "producer": "models/qps_line_s/recovery_model.py", "tracked": false},
+    {"path": "docs/qps_line_s_recovery/generated/recovery_matrix.csv", "producer": "models/qps_line_s/recovery_model.py", "tracked": false}
   ],
   "helper_issues": [
     {"repo": "GBOGEB/ABACUS", "issue": 583, "role": "Agent A", "focus": "documentation_traceability"},

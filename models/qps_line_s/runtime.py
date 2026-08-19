@@ -1,8 +1,8 @@
 """QPS Line S recovery runtime verdict.
 
-This file adds no new modelling. It regenerates existing outputs, reads the
-assumptions register, counts open gates, reads energy provenance, and writes a
-machine-readable status file.
+This file regenerates expected render outputs, reads the assumptions register,
+counts open gates, reads energy provenance, and writes a machine-readable
+status file.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from typing import Any
 
 import yaml
 
-from . import rfi_package, run_scenarios
+from . import recovery_model, rfi_package, run_scenarios
 
 ROOT = Path(__file__).resolve().parents[2]
 GEN = ROOT / "docs" / "qps_line_s_recovery" / "generated"
@@ -29,6 +29,8 @@ REQUIRED_ARTEFACTS = [
     GEN / "t_available_grid.csv",
     GEN / "t_available_grid.md",
     GEN / "applicant_rfi.md",
+    GEN / "recovery_matrix.csv",
+    GEN / "recovery_matrix.md",
 ]
 RESOLVED_STATES = {"RESOLVED", "ACCEPTED"}
 
@@ -36,6 +38,7 @@ RESOLVED_STATES = {"RESOLVED", "ACCEPTED"}
 def run_generators() -> None:
     run_scenarios.main()
     rfi_package.main()
+    recovery_model.write_outputs(recovery_model.default_rows())
 
 
 def missing_artefacts() -> list[str]:
