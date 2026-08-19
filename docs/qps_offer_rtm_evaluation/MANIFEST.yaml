@@ -1,0 +1,78 @@
+# QPS OFFER Evaluation -- Handover Package Manifest
+# Generated 2026-08-17 for GBO's coding-editor handover request.
+# This is a CURATED package, not a raw directory dump -- see CONTINUATION.md
+# for why, and for what was deliberately left out.
+
+package:
+  name: QPS_Project_Handover_2026-08-17
+  project: "QPS OFFER Evaluation -- SCK CEN MYRRHA/QPS procurement evaluation"
+  generated_by: build_handover_package.py
+
+current/:
+  description: "Every canonical deliverable, current as of this package's generation."
+  files:
+    - {name: QPS_OFFER_Evaluation_FULL_v23.xlsx, role: "SSOT workbook -- 32 sheets, 722 RTMs x 50 OFFER items, 7-dim weighted BT scoring"}
+    - {name: QPS_OFFER_Evaluation_LITE_v23.xlsx, role: "23-sheet reviewer trim of FULL, no internal audit/method sheets"}
+    - {name: QPS_RTM_BT_Navigator_v21.html, role: "Self-contained read-only HTML browser, data spliced from FULL at build time"}
+    - {name: BT_Method_Evaluation_v12.pptx, role: "27-slide BT scoring methodology deck"}
+    - {name: QPS_MTBF_WCS_DMAIC_v7.pptx, role: "38-slide MTBF/reliability DMAIC deck -- separate lineage, separate subject"}
+    - {name: QPS_Taxonomy_and_Domain_Summary.pdf, role: "5-page mixed-orientation print reference"}
+    - {name: DELIVERABLES_INDEX.html, role: "One-page index of all outward-facing deliverables with audience/status"}
+    - {name: MASTER_DEVELOPER_DASHBOARD.html, role: "5-tab developer landing page (content/status focused)"}
+    - {name: QPS_DMAIC_KPI_Dashboard.html, role: "6-tab delivery-process metrics dashboard (this package's own kind of artefact)"}
+    - {name: METRIC_HISTORY.json, role: "Version-over-version stats, v5 through v23, zero gap"}
+    - {name: ARTIFACT_REGISTRY.json, role: "Auto-generated file inventory -- 175 files / 76 families as of this package"}
+
+scripts/:
+  description: >
+    Every Python build/utility script from the working directory (63
+    files). These are the actual reproducible pipeline -- SESSION_SSOT.yaml's
+    builder_chain entries under docs/ tell you which script produced which
+    canonical version and in what order. Known gaps (some intermediate
+    versions have no saved script) are disclosed there too, not hidden.
+  entry_points:
+    - {script: build_workbook_v23.py, produces: "QPS_OFFER_Evaluation_FULL_v23.xlsx from v22"}
+    - {script: build_workbook_slim_v23.py, produces: "QPS_OFFER_Evaluation_LITE_v23.xlsx from FULL_v23"}
+    - {script: export_nav_data.py, produces: "/tmp/nav_data_vN.json from any FULL_vN.xlsx (takes IN/OUT as argv)"}
+    - {script: splice_navigator.py, produces: "QPS_RTM_BT_Navigator_vN.html from nav_data + navigator_template.html"}
+    - {script: build_bt_deck_v12.py, produces: "BT_Method_Evaluation_v12.pptx from v11"}
+    - {script: build_pdf_export.py, produces: "/tmp/print_taxonomy.html + /tmp/print_domain_summary.html from nav_data (takes path as argv)"}
+    - {script: merge_taxonomy_pdf.py, produces: "QPS_Taxonomy_and_Domain_Summary.pdf from the two print_*.html files"}
+    - {script: compute_metrics_snapshot.py, produces: "METRIC_HISTORY.json (--backfill scans every FULL_v*.xlsx on disk)"}
+    - {script: generate_artifact_registry.py, produces: "ARTIFACT_REGISTRY.json (no args, auto-scans the working dir)"}
+    - {script: gen_kpi_dashboard.py, produces: "/tmp/kpi_data.json (real numbers from registry/task-list/git log)"}
+    - {script: build_kpi_dashboard_html.py, produces: "QPS_DMAIC_KPI_Dashboard.html from kpi_data.json"}
+    - {script: pca_pareto_cluster.py, produces: "/tmp/pca_cluster_results.json -- standalone analysis, reads FULL_v23 directly"}
+
+docs/:
+  description: "Everything explaining WHY, not just what -- read these before touching scripts/."
+  read_order:
+    - {file: ENGINEERING_HANDOVER_SESSION.md, why: "START HERE. Full project intent, chronological progress, known bugs, honest gap-check."}
+    - {file: SESSION_ARTEFACT_AND_TASK_INDEX.md, why: "Compact snapshot of every canonical file, folder, local path, and task."}
+    - {file: SESSION_SSOT.yaml, why: "Machine-parseable canonical-version pointers + full builder_chain lineage + decisions_log."}
+    - {file: NEXT_ITERATION_BACKLOG.md, why: "27 dated sections -- every finding, fix, and open question, in the order they happened."}
+    - {file: KNOWLEDGE_TAXONOMY_MAPPING.md, why: "Maps GBO's own SKILL_user_ADD taxonomy onto real project artefacts."}
+    - {file: PIPELINE_DIAGRAM.md, why: "ASCII pipeline diagram of the whole build chain."}
+    - {file: DMAIC_BT_TECHNICAL_REPORT.md, why: "PCA + Sum-vs-Average divergence technical writeup."}
+    - {file: PCA_DMAIC_BT_ANALYSIS.md, why: "Underlying PCA/DMAIC analysis this report is built from."}
+    - {file: SKILLS_INVENTORY.md, why: "What Anthropic/user skills were available and used this session."}
+    - {file: content.yaml, why: "Structured content extraction from the BT deck -- style/content separation experiment."}
+    - {file: style.yaml, why: "Style schema paired with content.yaml."}
+
+git_history.txt:
+  description: >
+    Full `git log --stat` output (26 commits) -- NOT the .git directory
+    itself. The actual .git history is ~175MB (accumulated binary blobs
+    from ~20 superseded workbook/deck/Navigator versions plus scratch/QA
+    files that were committed along the way) and isn't useful pasted into
+    an editor -- this text log gives the full narrative and file-level
+    diffs-by-name without the weight. If the real .git history is wanted
+    (e.g. to `git log -p` a specific past version), ask and it can be
+    packaged separately.
+
+deliberately_excluded:
+  - "~20 superseded workbook versions (FULL_v5 through v22, LITE_v5 through v22) -- current versions are in current/, full lineage documented in docs/SESSION_SSOT.yaml"
+  - "~18 superseded Navigator versions (v2-v20) -- same reasoning"
+  - "~6 superseded BT deck versions (v5-v11) -- same reasoning"
+  - "Scratch/QA files (final*.pptx, step*.pptx, qa_*.xlsx, uploaded_*.pptx, test_grow.pptx, lite_start_here_qa.xlsx) -- these were intermediate working files, never deliverables"
+  - "The raw .git directory (175MB) -- see git_history.txt note above"

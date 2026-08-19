@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-17T18:50:20.715800Z",
-  "trigger": "push",
+  "timestamp": "2026-08-19T17:35:18.530585Z",
+  "trigger": "workflow_run",
   "ref": "main",
-  "sha": "a80445b6269f",
-  "quality_score": 77.0,
-  "total_commits": 1963,
-  "recent_commits": 1312,
-  "python_files": 438,
-  "test_files": 94,
-  "total_loc": 110644,
-  "html_docs": 79,
-  "markdown_docs": 795,
-  "workflows": 80,
+  "sha": "a2d7ff1e17ec",
+  "quality_score": 96.0,
+  "total_commits": 2162,
+  "recent_commits": 86,
+  "python_files": 521,
+  "test_files": 98,
+  "total_loc": 125900,
+  "html_docs": 85,
+  "markdown_docs": 827,
+  "workflows": 81,
   "phase_scores": {
     "define": {
       "files": 17,
@@ -34,8 +34,8 @@
       "weight": 20
     },
     "control": {
-      "files": 1,
-      "score": 5,
+      "files": 69,
+      "score": 100,
       "weight": 20
     }
   },

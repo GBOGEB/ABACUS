@@ -16,7 +16,7 @@ __version__ = "3.3.1"
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple
 import hashlib
 
 from ..core.state import StateManager

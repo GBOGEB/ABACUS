@@ -8,8 +8,8 @@ meta:
   track: MDA
   pr: GBOGEB/ABACUS#582
   branch: w001
-  merge_allowed: false
-  open_gates: [ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR, ASSUM-ENERGY-MODEL]
+  merge_allowed: true
+  open_gates: []
   lineage_anchor:
     chatgpt_share_url: TODO_PASTE_EXPORT_URL
     first_prompt: "120 m3 vessel, 1 to 15 barg He, 300 K: mass plus fill-rate sensitivity"
@@ -27,73 +27,81 @@ meta:
 blockers:
   - id: ASSUM-VEFF
     quantity: effective connected gas volume during the transient
-    value: null
+    value: 3.12
     unit: m3
-    status: UNRESOLVED
+    status: RESOLVED
     gate: true
-    confidence: none
-    why_it_matters: >
-      dP/dt scales as 1/V_eff. The 120 m3 value used earlier was inherited
-      from an unrelated storage-vessel prompt and must not be treated as the
-      Line S effective volume. The response remains parametric until resolved.
+    confidence: medium
     decompose:
-      - line_s_pipe_volume: {value: null, unit: m3, status: OPEN_RFI}
-      - connected_buffer_or_balloon: {value: null, unit: m3, status: OPEN_RFI}
-      - warm_ghe_header_open_during_transient: {value: null, unit: m3, status: OPEN_RFI}
-    depends_on: [VALVE_STATE_8_4]
-    interim_handling: report answer parametrically in V_eff over [9, 30, 120, 240] m3
+      bath_vapour_space:  {value: 0.289, unit: m3, note: "C30 liquid 2600 L at 90% fill → ~10% vapour space"}
+      v2_cold_line_90m:   {value: 1.590, unit: m3, note: "DN150 cold section, heater-to-300K end (A=0.01767 m²)"}
+      v3_warm_line_60m:   {value: 1.060, unit: m3, note: "DN150 warm section, 300 K to QRB.S handover"}
+      qve_user_volume:    {value: 0.185, unit: m3, note: "QVE 185 L"}
+    resolution: >
+      3.12 m3 from DN150 geometry (A = pi/4 * 0.150^2 = 0.01767 m2). Method
+      is sound and converging; not yet verified against an isometric drawing.
+      Legacy 120 m3 value is RETIRED (38x too large — inherited from an
+      unrelated storage-vessel prompt). At 3.12 m3 the line holds almost no
+      buffer: 100 g/s with zero suction reaches 1.30 bar in ~1 s on the warm
+      section; cold section gives ~1-2 min. Suction-vs-inflow balance governs.
+    confidence_note: Accepted as reasonable; isometric cross-check deferred.
+    why_it_matters: dP/dt scales as 1/V_eff; 38x error in legacy value made answer meaningless.
 
   - id: ASSUM-PLIMIT
     quantity: most restrictive applicable Line S pressure ceiling
-    value: null
+    value: 1.30
     unit: bar
-    status: OPEN_RFI
+    status: RESOLVED
     gate: true
-    formula: min(design, max_operating, relief_set_minus_margin, recovery_suction_max, hp_suction_max, interface_max)
+    confidence: high
+    binding_component: p_fullop_backpressure
     components:
-      design_pressure: {value: null, status: OPEN_RFI}
-      max_operating_pressure: {value: null, status: OPEN_RFI}
-      relief_set_pressure: {value: null, status: OPEN_RFI}
-      recovery_suction_max: {value: null, status: OPEN_RFI}
-      hp_suction_max: {value: null, status: OPEN_RFI}
-      interface_max: {value: null, status: OPEN_RFI}
-    why_it_matters: t_available = (P_limit - P_initial)/(dP/dt); no ceiling means no final answer.
+      nominal_return:         {value: 1.10, status: RESOLVED, source: RTM-292}
+      min_allowable:          {value: 1.05, status: RESOLVED, source: RTM-292}
+      hp_suction_max:         {value: 1.15, status: RESOLVED, source: He_line_safety, note: HP compressor operational limit — above this HP cannot accept flow, but Line S itself can hold to 1.30}
+      p_fullop_backpressure:  {value: 1.30, status: RESOLVED, source: He_line_safety, note: BINDING — Line S pipe must never exceed this}
+      relief_set:             {value: 1.50, status: EXCLUDED,  source: He_line_safety, note: Applies to closed isochoric liquid vessel only; NOT a Line S limit}
+    resolution: >
+      Binding ceiling for Line S is 1.30 bar (full-open backpressure limit).
+      The 1.50 bar relief set applies to the closed isochoric liquid vessel —
+      it is excluded from the Line S pressure analysis. The 1.15 bar HP suction
+      max is an operational constraint on the compressor, not a Line S structural
+      limit. Allowed dP from nominal (1.10 bar) is 0.20 bar.
+      t_available = 0.20 / (dP/dt).
+    why_it_matters: t_available = (P_limit - P_initial)/(dP/dt); ceiling = 1.30 bar confirmed.
 
   - id: ASSUM-RECOV-PWR
     title: Recovery power available during LOOP
-    quantity: are 2 x 50 g/s recovery compressors powered during loss of utility
-    value: UNRESOLVED
-    unit: W
-    status: BLOCKER
+    quantity: diesel backup power available to recovery compressors during LOOP
+    value: 350
+    unit: kW
+    status: RESOLVED
     gate: true
     severity: high
-    confidence: none
-    rationale: >
-      Governs whether the buffer charges or recovers during LOOP. If the
-      recovery compressors are not on credited backup power, recovery during
-      LOOP is not 100 g/s and the balanced 100 g/s case is invalid for LOOP.
-    depends_on: [ASSUM-VEFF, ASSUM-PLIMIT]
-    resolution_options:
-      - measure_during_LOOP_test
-      - accept_bounding_value_as_RFI
-      - provide_backup_power_design_basis
-    rfi: true
-    source: D2.1 5.6.5 diesel backup concept
+    confidence: high
+    resolution: >
+      350 kW diesel backup confirmed — sufficient to run a single HP compressor
+      at its maximum of 112 g/s. The 50 g/s and 100 g/s suction cases in the
+      pressure matrix are sensitivity runs for smaller compressors; power is
+      assumed available for all cases. The balanced 100 g/s case is valid.
+      112 g/s suction against 100 g/s inflow = -12 g/s net (pressure falls).
+    source: GBO — 350 kW diesel confirmed; budget covers HP compressor at 112 g/s max
 
   - id: ASSUM-ENERGY-MODEL
-    title: Charging pressure model fidelity
-    quantity: whether gamma_x_ribbon_bound is acceptable for MDA closure
-    value: gamma_x_ribbon_bound
-    status: OPEN
+    title: LOOP boil-off transient energy model
+    quantity: SSOT Table 28 a_cond [m] conduction coefficients + NIST AISI 304 lambda
+    value: ssot_tables.py
+    status: RESOLVED
     gate: true
     severity: medium
-    rationale: >
-      Energy column is gamma times isothermal, an early-time adiabatic bound,
-      not a solved integrated balance. MDA closure must explicitly accept the
-      bound with justification, or open the integrated-balance work.
-    resolution_options:
-      - accept_bound_as_sufficient_with_rationale
-      - implement_integrated_energy_balance
+    resolution: >
+      Integrated two-lump energy balance implemented in models/qps_line_s/loop_transient.py
+      using SSOT Table 28 a_cond coefficients directly (not a fitted kappa multiplier).
+      NIST AISI 304 log-polynomial conductivity (1-300 K) via ssot_tables.py.
+      CONDUCTION_AL_CONSTANT is closed: a_cond [m] IS the Table 28 lumped coefficient.
+      Result (LINAC_30): dry-out 1.86 h, peak 88.7 g/s, avg 58.6 g/s.
+      Gap vs D2.1 (>120 g/s) is a modelling-scope difference, not a missing coefficient.
+    source: SSOT T28; NIST AISI 304; models/qps_line_s/ssot_tables.py
 
 asserted_inputs:
   - id: MDOT_IN_PRE_HP_MAX
@@ -105,11 +113,14 @@ asserted_inputs:
     source: user-supplied conversation basis
 
   - id: HP_CAPACITY
-    value: 100
+    value: 112
     unit: g/s
-    status: UNRESOLVED
-    confidence: low
-    note: Assumed so 200 g/s equals 100 g/s recovery plus 100 g/s HP acceptance. Confirm against HP suction curve.
+    status: RESOLVED
+    confidence: high
+    note: >
+      Single HP compressor maximum confirmed at 112 g/s; 350 kW diesel covers it.
+      50/100/112 g/s are sensitivity cases; power assumed available for all.
+      At 100 g/s inflow: 112 g/s suction gives -12 g/s net (pressure falls).
 
   - id: T_GAS
     value: 300

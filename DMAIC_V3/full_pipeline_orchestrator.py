@@ -27,10 +27,9 @@ Features:
 
 import sys
 import json
-import time
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple
 import subprocess
 
 # Add parent directory to path
@@ -38,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
-from DMAIC_V3.core.idempotency_wrapper import enable_idempotency, GLOBAL_IDEMPOTENCY
+from DMAIC_V3.core.idempotency_wrapper import enable_idempotency
 from DMAIC_V3.core.planning_matrix_tracker import PlanningMatrixTracker
 from DMAIC_V3.convergence.background_change_detector import BackgroundChangeDetector
 from DMAIC_V3.phases.phase0_init import Phase0Init

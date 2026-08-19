@@ -11,12 +11,10 @@ Phase 3: ANALYZE - Root cause analysis and pattern detection
 
 __version__ = "3.3.0"
 
-import os
 import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from datetime import datetime
-from collections import defaultdict, Counter
 
 from ..core.state import StateManager
 from ..core.utils import ensure_directory, safe_write_json

@@ -62,12 +62,12 @@ def test_t_available_rejects_invalid_pressure_margin():
     assert math.isnan(t_available_min(1.0, 1.2, 0.1))
 
 
-def test_runtime_enforce_exits_when_gates_open(monkeypatch):
+def test_runtime_enforce_exits_when_gates_open(monkeypatch, tmp_path):
     monkeypatch.setattr(runtime, "run_generators", lambda: None)
     monkeypatch.setattr(runtime, "missing_artefacts", lambda: [])
     monkeypatch.setattr(runtime, "open_gates", lambda: [{"id": "ASSUM-RECOV-PWR"}])
     monkeypatch.setattr(runtime, "energy_provenance", lambda: "bound")
-    monkeypatch.setattr(runtime.STATUS_OUT, "write_text", lambda text: None)
+    monkeypatch.setattr(runtime, "STATUS_OUT", tmp_path / "runtime_status.json")
     with pytest.raises(SystemExit) as exc:
         runtime.runtime(regenerate=True, enforce=True)
     assert exc.value.code == 1

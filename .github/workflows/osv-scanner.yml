@@ -1,48 +1,46 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# A sample workflow which sets up periodic OSV-Scanner scanning for vulnerabilities,
-# in addition to a PR check which fails if new vulnerabilities are introduced.
-#
-# For more examples and options, including how to ignore specific vulnerabilities,
-# see https://google.github.io/osv-scanner/github-action/
-
 name: OSV-Scanner
 
 on:
-  pull_request:
-    branches: [ "main" ]
-  merge_group:
-    branches: [ "main" ]
-  schedule:
-    - cron: '35 11 * * 5'
   push:
-    branches: [ "main" ]
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'   # Monday 06:00 UTC
 
 permissions:
-  # Require writing security events to upload SARIF file to security tab
   security-events: write
-  # Read commit contents
   contents: read
+  actions: read
 
 jobs:
   scan-scheduled:
+    name: OSV Scan (push / schedule)
     if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
-    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@1f1242919d8a60496dd1874b24b62b2370ed4c78" # v1.7.1
+    # Reusable workflow — handles SARIF upload internally
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@8deb546fdb875b9996d27d4950be7312dac076a1" # v2.5.0
     with:
-      # Example of specifying custom arguments
       scan-args: |-
         -r
         --skip-git
         ./
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+
   scan-pr:
+    name: OSV Scan (PR — blocks on new vulns)
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
-    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@9a498708959aeaef5ef730655706c5a1df1edbc2" # v2.3.8
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@8deb546fdb875b9996d27d4950be7312dac076a1" # v2.5.0
     with:
-      # Example of specifying custom arguments
       scan-args: |-
         -r
         --skip-git
         ./
+    permissions:
+      security-events: write
+      contents: read
+      actions: read

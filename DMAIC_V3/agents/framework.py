@@ -6,8 +6,7 @@ Manages framework detection and integration
 __version__ = "3.3.0"
 
 from pathlib import Path
-from typing import Dict, List, Any
-import json
+from typing import Dict, Any
 
 
 class FrameworkAgent:

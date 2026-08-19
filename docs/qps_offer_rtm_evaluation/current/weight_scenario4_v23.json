@@ -1,0 +1,467 @@
+{
+  "source_workbook": "current/QPS_OFFER_Evaluation_FULL_v23.xlsx",
+  "scenario_name": "Cost=70%, remaining 30% proportional to existing frozen ratios",
+  "weights": {
+    "L": 0.06186,
+    "R": 0.06804,
+    "P": 0.06186,
+    "F": 0.04948,
+    "Q": 0.03711,
+    "LC": 0.02165,
+    "C": 0.7
+  },
+  "n_items": 50,
+  "spearman_base_vs_scenario4": 0.6608,
+  "items": [
+    {
+      "offerId": "OFFER-09",
+      "title": "LN2 Techno-Economic Evaluation (CAPEX/OPEX)",
+      "baseRank": 7,
+      "baseWeightedS": 55.6667,
+      "scenario4WeightedS": 86.2887,
+      "scenario4Rank": 1,
+      "rankDelta": 6
+    },
+    {
+      "offerId": "OFFER-41",
+      "title": "Spare Parts & Critical Components Strategy",
+      "baseRank": 16,
+      "baseWeightedS": 38.6667,
+      "scenario4WeightedS": 81.031,
+      "scenario4Rank": 2,
+      "rankDelta": 14
+    },
+    {
+      "offerId": "OFFER-50",
+      "title": "Warranty Extension Commercial Terms",
+      "baseRank": 33,
+      "baseWeightedS": 23.3333,
+      "scenario4WeightedS": 76.289,
+      "scenario4Rank": 3,
+      "rankDelta": 30
+    },
+    {
+      "offerId": "OFFER-38",
+      "title": "Training Program & Competency Definition",
+      "baseRank": 47,
+      "baseWeightedS": 14.3333,
+      "scenario4WeightedS": 73.5053,
+      "scenario4Rank": 4,
+      "rankDelta": 43
+    },
+    {
+      "offerId": "OFFER-45",
+      "title": "Project Dashboard & Management Processes",
+      "baseRank": 24,
+      "baseWeightedS": 31.6667,
+      "scenario4WeightedS": 32.8177,
+      "scenario4Rank": 5,
+      "rankDelta": 19
+    },
+    {
+      "offerId": "OFFER-44",
+      "title": "Project Schedule & Milestone Definition",
+      "baseRank": 50,
+      "baseWeightedS": 6.3333,
+      "scenario4WeightedS": 24.9827,
+      "scenario4Rank": 6,
+      "rankDelta": 44
+    },
+    {
+      "offerId": "OFFER-02",
+      "title": "Assumptions, Deviations & Additions Register",
+      "baseRank": 1,
+      "baseWeightedS": 54,
+      "scenario4WeightedS": 16.701,
+      "scenario4Rank": 7,
+      "rankDelta": -6
+    },
+    {
+      "offerId": "OFFER-42",
+      "title": "After-Sales Service Organization & Pricing",
+      "baseRank": 8,
+      "baseWeightedS": 46.3333,
+      "scenario4WeightedS": 14.3297,
+      "scenario4Rank": 8,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-20",
+      "title": "Helium Leak Detection & Loss Management",
+      "baseRank": 9,
+      "baseWeightedS": 46,
+      "scenario4WeightedS": 14.2267,
+      "scenario4Rank": 9,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-34",
+      "title": "Cooling Water System Requirements",
+      "baseRank": 10,
+      "baseWeightedS": 46,
+      "scenario4WeightedS": 14.2267,
+      "scenario4Rank": 10,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-29",
+      "title": "Control System Obsolescence Strategy",
+      "baseRank": 11,
+      "baseWeightedS": 45,
+      "scenario4WeightedS": 13.917,
+      "scenario4Rank": 11,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-04",
+      "title": "Cooldown & Thermal Performance Modelling",
+      "baseRank": 12,
+      "baseWeightedS": 44,
+      "scenario4WeightedS": 13.608,
+      "scenario4Rank": 12,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-05",
+      "title": "Operational Procedure Strategy (Auto vs Manual)",
+      "baseRank": 13,
+      "baseWeightedS": 44,
+      "scenario4WeightedS": 13.608,
+      "scenario4Rank": 13,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-48",
+      "title": "Detailed Quality Control Procedures",
+      "baseRank": 2,
+      "baseWeightedS": 42.6667,
+      "scenario4WeightedS": 13.1957,
+      "scenario4Rank": 14,
+      "rankDelta": -12
+    },
+    {
+      "offerId": "OFFER-27",
+      "title": "Programming Standards & Language Strategy",
+      "baseRank": 14,
+      "baseWeightedS": 41.3333,
+      "scenario4WeightedS": 12.783,
+      "scenario4Rank": 15,
+      "rankDelta": -1
+    },
+    {
+      "offerId": "OFFER-33",
+      "title": "Electrical System Design & Load Analysis",
+      "baseRank": 15,
+      "baseWeightedS": 38.6667,
+      "scenario4WeightedS": 11.9587,
+      "scenario4Rank": 16,
+      "rankDelta": -1
+    },
+    {
+      "offerId": "OFFER-06",
+      "title": "LHe Filling & Emptying Performance",
+      "baseRank": 17,
+      "baseWeightedS": 36,
+      "scenario4WeightedS": 11.134,
+      "scenario4Rank": 17,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-37",
+      "title": "Digital Twin / Simulation Strategy",
+      "baseRank": 18,
+      "baseWeightedS": 36,
+      "scenario4WeightedS": 11.1333,
+      "scenario4Rank": 18,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-43",
+      "title": "Maintenance Effort & Intervention Estimation",
+      "baseRank": 19,
+      "baseWeightedS": 35.6667,
+      "scenario4WeightedS": 11.031,
+      "scenario4Rank": 19,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-21",
+      "title": "LOOP Strategy & Critical Load Management",
+      "baseRank": 20,
+      "baseWeightedS": 32.6667,
+      "scenario4WeightedS": 10.1027,
+      "scenario4Rank": 20,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-22",
+      "title": "Helium Recovery System Design",
+      "baseRank": 21,
+      "baseWeightedS": 32.6667,
+      "scenario4WeightedS": 10.1027,
+      "scenario4Rank": 21,
+      "rankDelta": 0
+    },
+    {
+      "offerId": "OFFER-01",
+      "title": "Tender Compliance Confirmation",
+      "baseRank": 3,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.897,
+      "scenario4Rank": 22,
+      "rankDelta": -19
+    },
+    {
+      "offerId": "OFFER-03",
+      "title": "Integrated Technical Proposal & Execution Strategy",
+      "baseRank": 4,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.897,
+      "scenario4Rank": 23,
+      "rankDelta": -19
+    },
+    {
+      "offerId": "OFFER-47",
+      "title": "Quality Assurance Program (QAP) Definition",
+      "baseRank": 5,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.897,
+      "scenario4Rank": 24,
+      "rankDelta": -19
+    },
+    {
+      "offerId": "OFFER-49",
+      "title": "Codes, Standards & Compliance Framework",
+      "baseRank": 6,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.897,
+      "scenario4Rank": 25,
+      "rankDelta": -19
+    },
+    {
+      "offerId": "OFFER-10",
+      "title": "LN2 System Functional & Interface Design",
+      "baseRank": 22,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.897,
+      "scenario4Rank": 26,
+      "rankDelta": -4
+    },
+    {
+      "offerId": "OFFER-17",
+      "title": "Preliminary 3D Plant Layout Model",
+      "baseRank": 23,
+      "baseWeightedS": 32,
+      "scenario4WeightedS": 9.8967,
+      "scenario4Rank": 27,
+      "rankDelta": -4
+    },
+    {
+      "offerId": "OFFER-39",
+      "title": "FAT/SAT Testing Strategy & Procedures",
+      "baseRank": 25,
+      "baseWeightedS": 29.3333,
+      "scenario4WeightedS": 9.0717,
+      "scenario4Rank": 28,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-11",
+      "title": "Reliability, MTBF & Recovery Strategy",
+      "baseRank": 26,
+      "baseWeightedS": 26.6667,
+      "scenario4WeightedS": 8.2473,
+      "scenario4Rank": 29,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-15",
+      "title": "Compressor Noise Emission Specification",
+      "baseRank": 27,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 30,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-16",
+      "title": "Compressor Configuration & Operating Limits",
+      "baseRank": 28,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 31,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-18",
+      "title": "MPHX Technology Selection",
+      "baseRank": 29,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 32,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-19",
+      "title": "Warm Storage Heater (WSH) Design & Layout",
+      "baseRank": 30,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 33,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-24",
+      "title": "Helium Purity Acceptance Criteria",
+      "baseRank": 31,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 34,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-35",
+      "title": "Heat Rejection & HVAC Interface Design",
+      "baseRank": 32,
+      "baseWeightedS": 24,
+      "scenario4WeightedS": 7.4227,
+      "scenario4Rank": 35,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-14",
+      "title": "Expansion Joint Design & Risk Justification",
+      "baseRank": 34,
+      "baseWeightedS": 22.6667,
+      "scenario4WeightedS": 7.0097,
+      "scenario4Rank": 36,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-07",
+      "title": "Header Design Pressure & Temperature Definition",
+      "baseRank": 35,
+      "baseWeightedS": 20,
+      "scenario4WeightedS": 6.186,
+      "scenario4Rank": 37,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-08",
+      "title": "LN2 Precooling Design Decision",
+      "baseRank": 36,
+      "baseWeightedS": 20,
+      "scenario4WeightedS": 6.186,
+      "scenario4Rank": 38,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-12",
+      "title": "Performance Efficiency (invCOP) Declaration",
+      "baseRank": 37,
+      "baseWeightedS": 20,
+      "scenario4WeightedS": 6.186,
+      "scenario4Rank": 39,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-23",
+      "title": "User Configuration Filling Performance",
+      "baseRank": 38,
+      "baseWeightedS": 20,
+      "scenario4WeightedS": 6.185,
+      "scenario4Rank": 40,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-40",
+      "title": "Electrical Power Measurement Methodology",
+      "baseRank": 40,
+      "baseWeightedS": 18.6667,
+      "scenario4WeightedS": 5.773,
+      "scenario4Rank": 41,
+      "rankDelta": -1
+    },
+    {
+      "offerId": "OFFER-36",
+      "title": "3D Model Platform & CAD Delivery",
+      "baseRank": 39,
+      "baseWeightedS": 18.6667,
+      "scenario4WeightedS": 5.7727,
+      "scenario4Rank": 42,
+      "rankDelta": -3
+    },
+    {
+      "offerId": "OFFER-31",
+      "title": "Cold Box Environmental Requirements",
+      "baseRank": 41,
+      "baseWeightedS": 17.3333,
+      "scenario4WeightedS": 5.3607,
+      "scenario4Rank": 43,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-32",
+      "title": "Equipment Transport & Installation Constraints",
+      "baseRank": 42,
+      "baseWeightedS": 17.3333,
+      "scenario4WeightedS": 5.3607,
+      "scenario4Rank": 44,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-25",
+      "title": "Supplier Experience & Reference Justification",
+      "baseRank": 43,
+      "baseWeightedS": 16,
+      "scenario4WeightedS": 4.948,
+      "scenario4Rank": 45,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-26",
+      "title": "Software Architecture & Development Scope",
+      "baseRank": 44,
+      "baseWeightedS": 16,
+      "scenario4WeightedS": 4.948,
+      "scenario4Rank": 46,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-28",
+      "title": "Functional Analysis & Control Sequences",
+      "baseRank": 45,
+      "baseWeightedS": 16,
+      "scenario4WeightedS": 4.948,
+      "scenario4Rank": 47,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-30",
+      "title": "Software Change Management Process",
+      "baseRank": 46,
+      "baseWeightedS": 16,
+      "scenario4WeightedS": 4.948,
+      "scenario4Rank": 48,
+      "rankDelta": -2
+    },
+    {
+      "offerId": "OFFER-46",
+      "title": "Risk Assessment & Mitigation Strategy",
+      "baseRank": 48,
+      "baseWeightedS": 12,
+      "scenario4WeightedS": 3.7113,
+      "scenario4Rank": 49,
+      "rankDelta": -1
+    },
+    {
+      "offerId": "OFFER-13",
+      "title": "Main Equipment Technical Specifications",
+      "baseRank": 49,
+      "baseWeightedS": 10.6667,
+      "scenario4WeightedS": 3.2987,
+      "scenario4Rank": 50,
+      "rankDelta": -1
+    }
+  ]
+}

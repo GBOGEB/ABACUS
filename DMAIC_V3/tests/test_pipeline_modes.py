@@ -11,7 +11,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.config import DMAICConfig, ExecutionMode
+from DMAIC_V3.config import DMAICConfig
 
 
 @pytest.fixture
