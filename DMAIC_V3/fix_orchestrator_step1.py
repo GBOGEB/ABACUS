@@ -1,4 +1,3 @@
-import sys
 
 # Read the clean file
 with open('full_pipeline_orchestrator_clean.py', 'r', encoding='utf-8') as f:

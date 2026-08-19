@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPS OFFER Evaluation — Master Developer Dashboard</title>
+<style>
+  :root{
+    --navy:#17365D; --teal:#0F6B78; --hdr:#1F4E78; --band:#F2F6FA;
+    --purple:#441F63; --purplebg:#EFE5F5; --border:#C9D6E3; --body:#222222; --muted:#666666;
+    --good:#2E7D32; --goodbg:#E8F5E9; --warn:#B26A00; --warnbg:#FFF3E0; --stale:#B00020; --stalebg:#FDEAEC;
+    --gold:#B7950B; --goldbg:#FDF6E3;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:"Aptos","Calibri","Segoe UI",Arial,sans-serif;margin:0;background:#fafbfc;color:var(--body);}
+  header.top{background:var(--navy);color:#fff;padding:24px 30px;}
+  header.top h1{margin:0 0 6px;font-size:23px;}
+  header.top p{margin:0;font-size:13.5px;opacity:.92;max-width:960px;line-height:1.55;}
+  header.top .verstrip{margin-top:12px;font-size:11.5px;opacity:.85;}
+  nav.cattabs{background:var(--hdr);display:flex;flex-wrap:wrap;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  nav.cattabs button{flex:1;min-width:150px;background:transparent;border:none;color:#dbe6f0;padding:13px 10px;font-size:13.5px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;}
+  nav.cattabs button:hover{background:rgba(255,255,255,.08);}
+  nav.cattabs button.active{background:#fff;color:var(--navy);border-bottom:3px solid var(--teal);}
+  main{max-width:1180px;margin:0 auto;padding:26px 30px 60px;}
+  section.cat{display:none;}
+  section.cat.active{display:block;}
+  h2{color:var(--navy);border-bottom:2px solid var(--border);padding-bottom:6px;margin-top:38px;}
+  h2:first-child{margin-top:6px;}
+  h3{color:var(--navy);margin-top:26px;}
+  p.subtitle{color:var(--muted);font-size:13.5px;margin-top:-4px;line-height:1.55;}
+  .callout{background:var(--purplebg);border-left:4px solid var(--purple);padding:12px 16px;border-radius:4px;font-size:13.5px;margin:16px 0;line-height:1.55;}
+  .callout b{color:var(--purple);}
+  .note{background:var(--goldbg);border-left:4px solid var(--gold);padding:12px 16px;border-radius:4px;font-size:13.5px;margin:16px 0;line-height:1.55;color:#5c4a00;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:18px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h3{font-size:15.5px;margin:0 0 4px;}
+  .card .fname{font-family:Consolas,Menlo,monospace;font-size:11.5px;color:var(--teal);background:var(--band);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:9px;word-break:break-all;}
+  .card .audience{font-size:11.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.03em;margin-bottom:7px;}
+  .card p{font-size:13px;line-height:1.55;margin:7px 0;}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+  .badge.current{background:var(--goodbg);color:var(--good);}
+  .badge.watch{background:var(--warnbg);color:var(--warn);}
+  .badge.stale{background:var(--stalebg);color:var(--stale);}
+  .badge.new{background:#E3F2FD;color:#0D47A1;}
+  table{border-collapse:collapse;width:100%;margin-top:12px;font-size:12.5px;}
+  th,td{border:1px solid var(--border);padding:7px 9px;text-align:left;vertical-align:top;}
+  th{background:var(--hdr);color:#fff;font-weight:700;}
+  tr:nth-child(even) td{background:var(--band);}
+  code{font-family:Consolas,Menlo,monospace;font-size:11.5px;background:var(--band);padding:1px 5px;border-radius:3px;}
+  .tile-row{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap;}
+  .tile{flex:1;min-width:130px;background:#F2F6FA;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center;}
+  .tile .n{font-size:20px;font-weight:800;color:var(--navy);}
+  .tile .lbl{font-size:10.5px;color:var(--muted);margin-top:3px;}
+  .pill{display:inline-block;padding:3px 11px;border-radius:11px;font-size:11.5px;font-weight:700;color:#fff;margin:2px 4px 2px 0;}
+  footer.bottom{background:var(--purplebg);color:#555;font-size:11.5px;padding:16px 30px;text-align:center;margin-top:44px;}
+  footer.bottom a{color:var(--purple);}
+  .qlinks{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;}
+  .qlinks a{background:var(--band);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12.5px;color:var(--navy);text-decoration:none;font-weight:600;}
+  .qlinks a:hover{background:#e4ecf3;}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>QPS OFFER Evaluation — Master Developer Dashboard</h1>
+  <p>One landing page for the whole project: where to start, what every file is, and the three lenses the BT method reasons through — Ranking (the score), Importance (the tier/gate), and Relevance (domain/cluster/phase context). Nothing on this page is a new data source: every fact below is generated from, or points directly at, the same FULL workbook everything else in this project derives from.</p>
+  <div class="verstrip">Workbook v24 &middot; Navigator v22 &middot; BT deck v12 &middot; MTBF deck v7 &middot; Page last refreshed 2026-08-19 (was stuck at v20/v15/v9 for 4+ workbook versions -- caught and fixed this round; this page has no regeneration script yet, patched by hand against verified current values, see Index tab)</div>
+</header>
+
+<nav class="cattabs">
+  <button class="active" data-cat="start">1 &middot; Start Here</button>
+  <button data-cat="index">2 &middot; Index</button>
+  <button data-cat="ranking">3 &middot; Ranking</button>
+  <button data-cat="importance">4 &middot; Importance</button>
+  <button data-cat="relevance">5 &middot; Relevance</button>
+</nav>
+
+<main>
+
+<!-- ===================== 1. START HERE ===================== -->
+<section class="cat active" id="cat-start">
+  <h2>1. Start here</h2>
+  <p class="subtitle">If you have five minutes and one question — "what is this and where do I go" — this section answers it.</p>
+
+  <div class="callout"><b>What this project is:</b> a full evaluation of 50 vendor OFFER responses against 722 contract RTM requirements, scored on a 7-dimension weighted method (Safety/Legal, Reliability, Performance, Functional, Quality/Verifiability, Lifecycle, Cost — "BT" scoring). One workbook is the single source of truth; every other file (reviewer trim, HTML browser, decks, PDFs, this dashboard) is generated from it.</p>
+
+  <h3>Pick your path</h3>
+  <table>
+    <tr><th>If you are...</th><th>Go to</th><th>Why</th></tr>
+    <tr><td>Working the evaluation day-to-day</td><td><code>QPS_OFFER_Evaluation_FULL_v24.xlsx</code></td><td>The only place with all sheets, live formulas, full audit trail. New in v24: <code>PCA_ANALYSIS</code> sheet, 4th weight-sensitivity scenario.</td></tr>
+    <tr><td>An external reviewer or board member</td><td><code>QPS_OFFER_Evaluation_LITE_v24.xlsx</code></td><td>Same numbers, none of the internal build/audit scaffolding.</td></tr>
+    <tr><td>Browsing on a phone/tablet, or don't have Excel</td><td><code>QPS_RTM_BT_Navigator_v22.html</code></td><td>Opens in any browser, no install, same live data. New in v22: "PCA / Structure" tab (13th tab).</td></tr>
+    <tr><td>Explaining <i>how</i> the ranking method works</td><td><code>BT_Method_Evaluation_v12.pptx</code></td><td>The methodology deck — weights, gate precedence, PCA structure. Not yet updated with this round's PCA/weight-scenario-4 findings (open, NEXT_ITERATION_BACKLOG.md 28d).</td></tr>
+    <tr><td>Want the statistical "why" behind the ranking</td><td><code>DMAIC_BT_TECHNICAL_REPORT.html</code></td><td>Outline-numbered DMAIC report: PCA structure, Sum-vs-Average divergence, T0-vs-score independence.</td></tr>
+    <tr><td>Picking up this project cold, need the full history</td><td><code>ENGINEERING_HANDOVER_SESSION.md</code></td><td>Narrative handover: what's built, what's fixed, what's still open.</td></tr>
+    <tr><td>Need to know what's still queued / not yet built</td><td><code>NEXT_ITERATION_BACKLOG.md</code></td><td>Every open ask, scoped, none silently dropped.</td></tr>
+  </table>
+
+  <h3>The three lenses (why tabs 3–5 exist)</h3>
+  <p>Every RTM/OFFER item in this project can be read through three independent lenses, and this dashboard's own navigation is built around them rather than around file names:</p>
+  <div class="tile-row">
+    <div class="tile"><div class="n">Ranking</div><div class="lbl">the score itself — Weighted S, Sum vs. Average</div></div>
+    <div class="tile"><div class="n">Importance</div><div class="lbl">the tier/gate flag — T0/T1/T2/T3</div></div>
+    <div class="tile"><div class="n">Relevance</div><div class="lbl">context — Domain, Cluster, Phase, Codes &amp; Standards</div></div>
+  </div>
+  <p>The DMAIC report's central finding is that these three lenses are <b>independent of each other</b> — a high Weighted S item is not necessarily T0, and a T0 item is not necessarily high-scoring (see the Importance tab). Reading only one lens at a time is the single most common way to mis-prioritize this dataset.</p>
+
+  <h3>Quick links</h3>
+  <div class="qlinks">
+    <a href="#" onclick="return false;">QPS_OFFER_Evaluation_FULL_v24.xlsx</a>
+    <a href="#" onclick="return false;">QPS_RTM_BT_Navigator_v22.html</a>
+    <a href="#" onclick="return false;">DMAIC_BT_TECHNICAL_REPORT.html</a>
+    <a href="#" onclick="return false;">PIPELINE_DIAGRAM.md</a>
+    <a href="#" onclick="return false;">SKILLS_INVENTORY.md</a>
+    <a href="#" onclick="return false;">NEXT_ITERATION_BACKLOG.md</a>
+  </div>
+  <p class="subtitle">(Links are file names, not live hrefs — every file here was delivered alongside this dashboard in the same conversation/session. Open them from there.)</p>
+</section>
+
+<!-- ===================== 2. INDEX ===================== -->
+<section class="cat" id="cat-index">
+  <h2>2. Index — every deliverable, doc-controlled</h2>
+  <p class="subtitle"><b>Correction, 2026-08-19:</b> this table previously claimed to supersede <code>DELIVERABLES_INDEX.html</code> as "the current one" — backwards relative to reality. <code>DELIVERABLES_INDEX.html</code> is regenerated from live data each round and was current as of this morning (v24/v22/v12); <em>this</em> page has no regeneration script and had drifted 4 workbook versions stale before this patch. Treat <code>DELIVERABLES_INDEX.html</code> as the authoritative doc-control table; this one is a hand-patched mirror, corrected on a best-effort basis.</p>
+
+  <h3>Outward-facing deliverables</h3>
+  <table>
+    <tr><th>File</th><th>Version</th><th>Status</th><th>Last substantive change</th></tr>
+    <tr><td><code>QPS_OFFER_Evaluation_FULL_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>New <code>PCA_ANALYSIS</code> sheet + 4th weight-sensitivity scenario (compute_pca.py, compute_weight_scenario4.py). v20's own original change note, kept for history: 9-section build from GBO's uploaded annotation file (Relation Types table, COMPLIANCE_LEGEND, Review-flag standardisation, REVIEW_FOCUS, RTM_PHASE_EXPANSION, DELIVERABLES_DOSSIER, CONFLICT_CANDIDATES).</td></tr>
+    <tr><td><code>QPS_OFFER_Evaluation_LITE_*.xlsx</code></td><td>v24</td><td><span class="badge current">current</span></td><td>Kept in lockstep with FULL v24; gained <code>PCA_ANALYSIS</code> in the reviewer KEEP-list.</td></tr>
+    <tr><td><code>QPS_RTM_BT_Navigator_*.html</code></td><td>v22</td><td><span class="badge current">current</span></td><td>New 13th tab "PCA / Structure" (PC1xPC2 scatter + domain quadrant + ASCII method panel); BT lambda index now shown on both Lookup cards.</td></tr>
+    <tr><td><code>BT_Method_Evaluation_*.pptx</code></td><td>v12</td><td><span class="badge watch">watch — has not absorbed this round's PCA/weight-scenario-4 findings</span></td><td>Real PCA slide (7-dim, 722 RTMs) + Sum-vs-Average domain quadrant slide (as of v9-v12; unchanged this round)</td></tr>
+    <tr><td><code>QPS_MTBF_WCS_DMAIC_*.pptx</code></td><td>v7</td><td><span class="badge watch">watch — undocumented since v6</span></td><td>Unknown — no build script for v6&rarr;v7</td></tr>
+    <tr><td><code>QPS_Taxonomy_and_Domain_Summary.pdf</code></td><td>n/a</td><td><span class="badge current">current</span></td><td>Correction, 2026-08-19: this row previously claimed "stale, v7 data" -- checked directly this round and that was itself stale documentation, not the PDF's actual state. The PDF has been re-run every round since at least v23; verified via direct PDF-text extraction that every version token in the current file reads v24, zero v7/v23 tokens anywhere.</td></tr>
+    <tr><td><code>DMAIC_BT_TECHNICAL_REPORT.md</code> / <code>.html</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>PCA analysis formalised as outline-numbered DMAIC report + T0-vs-Weighted-S finding</td></tr>
+    <tr><td><code>MASTER_DEVELOPER_DASHBOARD.html</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>This page</td></tr>
+    <tr><td><code>PIPELINE_DIAGRAM.md</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>ASCII entry/exit build-pipeline diagram</td></tr>
+    <tr><td><code>SKILLS_INVENTORY.md</code></td><td>new</td><td><span class="badge new">new this round</span></td><td>Build-script capability inventory + maintenance structure</td></tr>
+    <tr><td><code>NEXT_ITERATION_BACKLOG.md</code></td><td>living</td><td><span class="badge current">current</span></td><td>All open, scoped-not-built asks</td></tr>
+  </table>
+
+  <h3>Internal / working artifacts</h3>
+  <p class="subtitle">How the deliverables above get built and checked — not something to hand to a reviewer.</p>
+  <div class="cards">
+    <div class="card">
+      <h3>Engineering handover</h3>
+      <div class="fname">ENGINEERING_HANDOVER_SESSION.md</div>
+      <p>Narrative handover: what this is, how to regenerate anything, known bugs fixed, known gaps.</p>
+    </div>
+    <div class="card">
+      <h3>Structured session SSOT</h3>
+      <div class="fname">SESSION_SSOT.yaml</div>
+      <p>Machine-readable decision log, build-chain provenance, done/pending/missing status.</p>
+    </div>
+    <div class="card">
+      <h3>Artifact registry</h3>
+      <div class="fname">ARTIFACT_REGISTRY.json</div>
+      <p>Auto-generated file inventory. Regenerate with <code>generate_artifact_registry.py</code> — never hand-edited.</p>
+    </div>
+    <div class="card">
+      <h3>Metric history</h3>
+      <div class="fname">METRIC_HISTORY.json</div>
+      <p>Version-over-version tracked stats (v5&ndash;v24) — confirms BT scores have been essentially DMAIC-stable since v5. One real, small, disclosed movement: sum-Weighted-S ticked from 21667.7 (v20-v22) to 21674.3 (v23-v24, +0.03%) after a deliberate correction to RTM-320's Performance dimension (re-judged against its full text) -- not drift, a single named fix. Convergence read: the scoring METHOD itself needs no further DMAIC iteration; open work is new analytical views (PCA, phase mapping) and delivery-process items, not re-tuning the formula.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. RANKING ===================== -->
+<section class="cat" id="cat-ranking">
+  <h2>3. Ranking — the score itself</h2>
+  <p class="subtitle">"Ranking" in this project means <b>Weighted S</b>: the 7-dimension weighted sum (L/R/P/F/Q/LC/C) computed per RTM/OFFER item. Two aggregate readings of it diverge on purpose — this section exists so that divergence reads as expected, not as a bug.</p>
+
+  <div class="tile-row">
+    <div class="tile"><div class="n">722</div><div class="lbl">RTM requirements ranked</div></div>
+    <div class="tile"><div class="n">50</div><div class="lbl">OFFER items ranked</div></div>
+    <div class="tile"><div class="n">7</div><div class="lbl">weighted dimensions (L/R/P/F/Q/LC/C)</div></div>
+    <div class="tile"><div class="n">30.01</div><div class="lbl">population average Weighted S</div></div>
+  </div>
+
+  <h3>Sum vs. Average — read together, not separately</h3>
+  <table>
+    <tr><th>Domain</th><th>Count</th><th>Sum Weighted S</th><th>Average Weighted S</th><th>Rank by Sum</th><th>Rank by Average</th></tr>
+    <tr><td><b>Subsystems</b></td><td>202</td><td>6,455.7</td><td>31.96</td><td>#1</td><td>#7</td></tr>
+    <tr><td>Acceptance Testing</td><td>66</td><td>2,439.7</td><td>36.96</td><td>#2</td><td>#3</td></tr>
+    <tr><td>Control &amp; Interlock</td><td>86</td><td>2,142.0</td><td>24.91</td><td>#3</td><td>#15</td></tr>
+    <tr><td>Commissioning</td><td>4</td><td>177.3</td><td><b>44.33</b></td><td>#16</td><td><b>#1</b></td></tr>
+    <tr><td>After-Sales</td><td>3</td><td>126.0</td><td>42.00</td><td>#17</td><td>#2</td></tr>
+  </table>
+  <div class="callout"><b>Read together, for a presenter:</b> Sum answers "where is the volume/total exposure" — Subsystems wins because it has 202 items, not because each item is unusually high-stakes. Average answers "which items are individually highest-stakes" — Commissioning wins there with just 4 items, every one scoring high. A domain scoring high on one and mid-pack on the other is the two lenses doing their separate jobs, not a data problem. Full numbers and the PCA structure behind this: <code>DMAIC_BT_TECHNICAL_REPORT.html</code> &sect;2.1&ndash;2.2.</div>
+
+  <h3>Where to browse it live</h3>
+  <p>Workbook: <code>RTM_RANKING</code> / <code>OFFER_RANKING</code> sheets. Navigator: the <b>Ranking</b> and <b>Outline</b> tabs, plus the Domain Summary Pareto charts (Sum and Average shown as two separate chart types on purpose — see the same "read together" callout reused there).</p>
+</section>
+
+<!-- ===================== 4. IMPORTANCE ===================== -->
+<section class="cat" id="cat-importance">
+  <h2>4. Importance — tier and gate status</h2>
+  <p class="subtitle">"Importance" means <b>Tier</b>: T0 Gate / T1 Primary / T2 Secondary / T3 Contextual. This is a categorical, hand-flagged compliance status (<code>gate = Yes/No</code>) — <b>not</b> derived from the Weighted S score. Confirmed with live data this round.</p>
+
+  <table>
+    <tr><th>Tier</th><th>n</th><th>Min Weighted S</th><th>Max Weighted S</th><th>Avg Weighted S</th></tr>
+    <tr><td><span class="pill" style="background:#C0392B;">T0 Gate</span></td><td>43</td><td>20.00</td><td>62.67</td><td>31.60</td></tr>
+    <tr><td><span class="pill" style="background:#1E8449;">T1 Primary</span></td><td>156</td><td>37.33</td><td><b>76.67</b></td><td><b>47.46</b></td></tr>
+    <tr><td><span class="pill" style="background:#2874A6;">T2 Secondary</span></td><td>244</td><td>24.00</td><td>37.33</td><td>30.24</td></tr>
+    <tr><td><span class="pill" style="background:#7F8C8D;">T3 Contextual</span></td><td>279</td><td>0.00</td><td>24.00</td><td>19.81</td></tr>
+  </table>
+
+  <div class="note"><b>Read this one carefully:</b> T0 Gate is <i>not</i> the top-scoring tier — T1 Primary has both the highest average (47.46) and the single highest score (76.67) in the entire RTM. T0's own score range (20.00&ndash;62.67) overlaps T2's, and 19 of the 43 T0 items sit at exactly 20.00, the population floor. <b>T0 should be read as "must not fail," not "ranks highest."</b> A reviewer sorting by Weighted S alone will systematically under-prioritize several T0 items — sort or filter by Tier for compliance triage, by Weighted S for intensity triage, and don't assume one implies the other. Full writeup: <code>DMAIC_BT_TECHNICAL_REPORT.html</code> &sect;3.4.</div>
+
+  <h3>Where to browse it live</h3>
+  <p>Workbook: <code>RTM_REVIEW_QUEUE</code> (all T0/T1 RTMs plus deliverable-heavy items), <code>COMPLIANCE_LEGEND</code> (formal Tier/Review-flag definitions). Navigator: <b>Review Queue</b> tab's Tier colour key and filter dropdown.</p>
+</section>
+
+<!-- ===================== 5. RELEVANCE ===================== -->
+<section class="cat" id="cat-relevance">
+  <h2>5. Relevance — context: domain, cluster, phase, codes &amp; standards</h2>
+  <p class="subtitle">"Relevance" means the contextual facets that group items without ranking them: which technical <b>Domain</b> an item belongs to, which <b>Cluster</b> (C1&ndash;C8) it maps to, which project <b>Phase</b> (L0&ndash;L8) it applies in, and which <b>Code/Standard</b> it cites. None of these are ordinal — a domain isn't "better" than another, it's just a different lens to filter or group by.</p>
+
+  <div class="tile-row">
+    <div class="tile"><div class="n">22</div><div class="lbl">domains</div></div>
+    <div class="tile"><div class="n">8</div><div class="lbl">clusters (C1&ndash;C8)</div></div>
+    <div class="tile"><div class="n">10</div><div class="lbl">lifecycle phases (L0&ndash;L8 + variants)</div></div>
+    <div class="tile"><div class="n">81</div><div class="lbl">distinct codes/standards referenced project-wide</div></div>
+  </div>
+
+  <div class="callout"><b>Codes &amp; Standards count, cross-referenced:</b> 81 distinct explicit code/standard tokens (e.g. IEC 60300-3-3, EN 13445, ASME VIII-1, API 520/521) are cited across RTM_RANKING and OFFER_RANKING combined &mdash; the same number and same source data as the Navigator's Code/Standard filter dropdown, now formally connected back to this dashboard rather than living only in the dropdown's option count.</div>
+
+  <h3>Where to browse it live</h3>
+  <table>
+    <tr><th>Facet</th><th>Workbook sheet</th><th>Navigator tab</th></tr>
+    <tr><td>Domain</td><td><code>DOMAIN_SUMMARY</code></td><td>Domain Summary, Domains (nav)</td></tr>
+    <tr><td>Cluster</td><td><code>CLUSTERS</code>, <code>RTM_CROSSWALK</code></td><td>Clusters (Domain&times;Cluster heatmap, Focus Score)</td></tr>
+    <tr><td>Phase (L0&ndash;L8)</td><td><code>RTM_PHASE_EXPANSION</code> (2,169 RTM&times;phase rows)</td><td>Filter Dashboard &mdash; Phase dropdown (new this round)</td></tr>
+    <tr><td>Codes &amp; Standards</td><td><code>STANDARDS</code></td><td>Filter Dashboard &mdash; Code/Standard dropdown (81 values)</td></tr>
+  </table>
+
+  <p class="subtitle">Individual-item drill-down views that combine several of these facets side by side (parent/child, deliverables, and parallel Domain/Cluster/Phase views on one RTM/OFFER record) are scoped but not yet built &mdash; see <code>NEXT_ITERATION_BACKLOG.md</code> item 2.</p>
+</section>
+
+</main>
+<footer class="bottom">
+  QPS OFFER Evaluation project &middot; Master Developer Dashboard &middot; hand-patched to reflect workbook v24 / Navigator v22 as of 2026-08-19 (no regeneration script for this page yet) &middot; see <code>PIPELINE_DIAGRAM.md</code> for how everything on this page gets built, <code>SKILLS_INVENTORY.md</code> for what each build script does, <code>NEXT_ITERATION_BACKLOG.md</code> for what's still open
+</footer>
+
+<script>
+document.querySelectorAll('nav.cattabs button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('nav.cattabs button').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('section.cat').forEach(function(s){ s.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('cat-' + btn.dataset.cat).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
