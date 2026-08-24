@@ -1,21 +1,21 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-08-19T21:13:58Z · repo: `GBOGEB/ABACUS`  
-> **3865 open alerts** across 3 tools
+> Auto-generated 2026-08-24T06:12:22Z · repo: `GBOGEB/ABACUS`  
+> **3873 open alerts** across 3 tools
 
 ## Severity Overview
 
 | Severity | Count |
 |----------|------:|
-| Error | 74 |
-| Warning | 212 |
-| Note | 3579 |
+| Error | 75 |
+| Warning | 218 |
+| Note | 3580 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
 | Bandit | 3315 |
-| CodeQL | 485 |
+| CodeQL | 493 |
 | Semgrep | 65 |
 
 ## REX Group Summary
@@ -29,22 +29,22 @@ _Groups are defined in [security.toml](security.toml)_
 | 🟠 SEC_WEAK_HASH | MEDIUM | 10 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 2911 | Suppress / defer |
 | 🟡 QUAL_DEAD_CODE | LOW | 243 | Suppress / defer |
-| ⚪ OTHER | INFO | 532 | Suppress / defer |
+| ⚪ OTHER | INFO | 540 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
 | File | Alert Count |
 |------|------------:|
-| `tests/test_bootstrap_eval.py` | 78 |
-| `tests/test_dmaic_orchestration.py` | 77 |
-| `tests/test_user_library_rag.py` | 75 |
-| `tests/test_phase_0_to_9_integration.py` | 74 |
-| `tests/test_dow_keb_master_orchestrator.py` | 72 |
-| `tests/test_docker_integration.py` | 72 |
-| `tests/test_action_tracker.py` | 70 |
-| `tests/test_master_doc_manager.py` | 66 |
+| `tests/test_dmaic_orchestration.py` | 82 |
+| `tests/test_docker_integration.py` | 79 |
+| `tests/test_bootstrap_eval.py` | 79 |
+| `tests/test_user_library_rag.py` | 77 |
+| `tests/test_phase_0_to_9_integration.py` | 77 |
+| `tests/test_dow_keb_master_orchestrator.py` | 73 |
+| `tests/test_action_tracker.py` | 72 |
+| `tests/test_master_doc_manager.py` | 69 |
+| `tests/test_advanced_security.py` | 61 |
 | `DMAIC_V3/tests/test_log_monitor.py` | 60 |
-| `tests/test_advanced_security.py` | 58 |
 
 ## Alert Detail by REX Group
 
@@ -201,42 +201,43 @@ _Groups are defined in [security.toml](security.toml)_
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
-| [2651](https://github.com/GBOGEB/ABACUS/security/code-scanning/2651) | CodeQL | `py/unused-import` | `populate_package.py` | 16 | note |
-| [2568](https://github.com/GBOGEB/ABACUS/security/code-scanning/2568) | CodeQL | `py/unused-local-variable` | `test_pipeline_execution_modes.py` | 182 | note |
-| [2567](https://github.com/GBOGEB/ABACUS/security/code-scanning/2567) | CodeQL | `py/unused-local-variable` | `test_pipeline_execution_modes.py` | 181 | note |
-| [2566](https://github.com/GBOGEB/ABACUS/security/code-scanning/2566) | CodeQL | `py/unused-import` | `workflow_analyzer.py` | 19 | note |
-| [2565](https://github.com/GBOGEB/ABACUS/security/code-scanning/2565) | CodeQL | `py/unused-import` | `test_post_deployment_workspace_ingestion.py` | 9 | note |
-| [2564](https://github.com/GBOGEB/ABACUS/security/code-scanning/2564) | CodeQL | `py/unused-import` | `test_post_deployment_workspace_ingestion.py` | 8 | note |
-| [2563](https://github.com/GBOGEB/ABACUS/security/code-scanning/2563) | CodeQL | `py/unused-import` | `test_post_deployment_workspace_ingestion.py` | 7 | note |
-| [2562](https://github.com/GBOGEB/ABACUS/security/code-scanning/2562) | CodeQL | `py/unused-import` | `test_pipeline_modes.py` | 14 | note |
-| [2561](https://github.com/GBOGEB/ABACUS/security/code-scanning/2561) | CodeQL | `py/unused-import` | `test_pipeline_execution_modes.py` | 15 | note |
-| [2560](https://github.com/GBOGEB/ABACUS/security/code-scanning/2560) | CodeQL | `py/unused-import` | `test_pipeline_execution_modes.py` | 10 | note |
-| [2559](https://github.com/GBOGEB/ABACUS/security/code-scanning/2559) | CodeQL | `py/unused-import` | `test_pipeline_execution_modes.py` | 9 | note |
-| [2558](https://github.com/GBOGEB/ABACUS/security/code-scanning/2558) | CodeQL | `py/unused-import` | `test_pipeline_execution_modes.py` | 8 | note |
-| [2557](https://github.com/GBOGEB/ABACUS/security/code-scanning/2557) | CodeQL | `py/unused-import` | `test_pipeline_execution_modes.py` | 7 | note |
-| [2556](https://github.com/GBOGEB/ABACUS/security/code-scanning/2556) | CodeQL | `py/unused-import` | `test_environment_setup.py` | 3 | note |
-| [2555](https://github.com/GBOGEB/ABACUS/security/code-scanning/2555) | CodeQL | `py/unused-import` | `test_bridges_bidirectional.py` | 15 | note |
-| [2554](https://github.com/GBOGEB/ABACUS/security/code-scanning/2554) | CodeQL | `py/unused-import` | `log_monitor.py` | 7 | note |
-| [2553](https://github.com/GBOGEB/ABACUS/security/code-scanning/2553) | CodeQL | `py/unused-import` | `handover_bridge.py` | 18 | note |
-| [2552](https://github.com/GBOGEB/ABACUS/security/code-scanning/2552) | CodeQL | `py/unused-import` | `handover_bridge.py` | 12 | note |
-| [2551](https://github.com/GBOGEB/ABACUS/security/code-scanning/2551) | CodeQL | `py/unused-import` | `github_tracking_manager.py` | 21 | note |
-| [2550](https://github.com/GBOGEB/ABACUS/security/code-scanning/2550) | CodeQL | `py/unused-import` | `dow_engine.py` | 17 | note |
-| [2549](https://github.com/GBOGEB/ABACUS/security/code-scanning/2549) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 30 | note |
-| [2548](https://github.com/GBOGEB/ABACUS/security/code-scanning/2548) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 25 | note |
-| [2547](https://github.com/GBOGEB/ABACUS/security/code-scanning/2547) | CodeQL | `py/unused-import` | `dmaic_postdeploy.py` | 14 | note |
-| [2546](https://github.com/GBOGEB/ABACUS/security/code-scanning/2546) | CodeQL | `py/unused-import` | `ci_monitor_local.py` | 17 | note |
-| [2545](https://github.com/GBOGEB/ABACUS/security/code-scanning/2545) | CodeQL | `py/unused-import` | `agent_orchestrator_v3.0.py` | 18 | note |
-| [2544](https://github.com/GBOGEB/ABACUS/security/code-scanning/2544) | CodeQL | `py/unused-import` | `agent_orchestrator_v3.0.py` | 14 | note |
-| [544](https://github.com/GBOGEB/ABACUS/security/code-scanning/544) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 29 | note |
-| [543](https://github.com/GBOGEB/ABACUS/security/code-scanning/543) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 28 | note |
-| [542](https://github.com/GBOGEB/ABACUS/security/code-scanning/542) | CodeQL | `py/unused-import` | `dmaic_v3_engine.py` | 27 | note |
-| [507](https://github.com/GBOGEB/ABACUS/security/code-scanning/507) | CodeQL | `py/unused-local-variable` | `test_w003_w004.py` | 36 | note |
+| [4668](https://github.com/GBOGEB/ABACUS/security/code-scanning/4668) | CodeQL | `py/unused-import` | `test_yaml_validation.py` | 11 | note |
+| [4667](https://github.com/GBOGEB/ABACUS/security/code-scanning/4667) | CodeQL | `py/unused-import` | `test_yaml_validation.py` | 10 | note |
+| [4666](https://github.com/GBOGEB/ABACUS/security/code-scanning/4666) | CodeQL | `py/unused-import` | `test_week3_integration.py` | 11 | note |
+| [4665](https://github.com/GBOGEB/ABACUS/security/code-scanning/4665) | CodeQL | `py/unused-import` | `test_user_library_rag.py` | 14 | note |
+| [4664](https://github.com/GBOGEB/ABACUS/security/code-scanning/4664) | CodeQL | `py/unused-import` | `test_user_library_rag.py` | 12 | note |
+| [4663](https://github.com/GBOGEB/ABACUS/security/code-scanning/4663) | CodeQL | `py/unused-import` | `test_self_improvement.py` | 17 | note |
+| [4662](https://github.com/GBOGEB/ABACUS/security/code-scanning/4662) | CodeQL | `py/unused-import` | `test_self_improvement.py` | 13 | note |
+| [4661](https://github.com/GBOGEB/ABACUS/security/code-scanning/4661) | CodeQL | `py/unused-import` | `test_refactoring_engine_protocols.py` | 21 | note |
+| [4660](https://github.com/GBOGEB/ABACUS/security/code-scanning/4660) | CodeQL | `py/unused-import` | `test_refactoring_engine_protocols.py` | 16 | note |
+| [4659](https://github.com/GBOGEB/ABACUS/security/code-scanning/4659) | CodeQL | `py/unused-import` | `test_reader_engine.py` | 24 | note |
+| [4658](https://github.com/GBOGEB/ABACUS/security/code-scanning/4658) | CodeQL | `py/unused-import` | `test_reader_engine.py` | 19 | note |
+| [4657](https://github.com/GBOGEB/ABACUS/security/code-scanning/4657) | CodeQL | `py/unused-import` | `test_phase_0_to_9_integration.py` | 12 | note |
+| [4656](https://github.com/GBOGEB/ABACUS/security/code-scanning/4656) | CodeQL | `py/unused-import` | `test_phase_0_to_9_integration.py` | 11 | note |
+| [4655](https://github.com/GBOGEB/ABACUS/security/code-scanning/4655) | CodeQL | `py/unused-import` | `test_parallel_execution.py` | 16 | note |
+| [4654](https://github.com/GBOGEB/ABACUS/security/code-scanning/4654) | CodeQL | `py/unused-import` | `test_master_doc_manager.py` | 15 | note |
+| [4653](https://github.com/GBOGEB/ABACUS/security/code-scanning/4653) | CodeQL | `py/unused-import` | `test_master_doc_manager.py` | 14 | note |
+| [4652](https://github.com/GBOGEB/ABACUS/security/code-scanning/4652) | CodeQL | `py/unused-import` | `test_master_doc_manager.py` | 12 | note |
+| [4651](https://github.com/GBOGEB/ABACUS/security/code-scanning/4651) | CodeQL | `py/unused-import` | `test_legacy_integration.py` | 10 | note |
+| [4650](https://github.com/GBOGEB/ABACUS/security/code-scanning/4650) | CodeQL | `py/unused-import` | `test_legacy_integration.py` | 9 | note |
+| [4649](https://github.com/GBOGEB/ABACUS/security/code-scanning/4649) | CodeQL | `py/unused-import` | `test_legacy_integration.py` | 8 | note |
+| [4648](https://github.com/GBOGEB/ABACUS/security/code-scanning/4648) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 15 | note |
+| [4647](https://github.com/GBOGEB/ABACUS/security/code-scanning/4647) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 13 | note |
+| [4646](https://github.com/GBOGEB/ABACUS/security/code-scanning/4646) | CodeQL | `py/unused-import` | `test_integration_patch.py` | 10 | note |
+| [4645](https://github.com/GBOGEB/ABACUS/security/code-scanning/4645) | CodeQL | `py/unused-import` | `test_integration_patch.py` | 9 | note |
+| [4644](https://github.com/GBOGEB/ABACUS/security/code-scanning/4644) | CodeQL | `py/unused-import` | `test_integration_bootstrap_bridges.py` | 32 | note |
+| [4643](https://github.com/GBOGEB/ABACUS/security/code-scanning/4643) | CodeQL | `py/unused-import` | `test_historical_sessions.py` | 15 | note |
+| [4642](https://github.com/GBOGEB/ABACUS/security/code-scanning/4642) | CodeQL | `py/unused-import` | `test_historical_sessions.py` | 14 | note |
+| [4641](https://github.com/GBOGEB/ABACUS/security/code-scanning/4641) | CodeQL | `py/unused-import` | `test_historical_sessions.py` | 13 | note |
+| [4640](https://github.com/GBOGEB/ABACUS/security/code-scanning/4640) | CodeQL | `py/unused-import` | `test_github_roundtrip_full.py` | 12 | note |
+| [4639](https://github.com/GBOGEB/ABACUS/security/code-scanning/4639) | CodeQL | `py/unused-import` | `test_github_integration.py` | 10 | note |
 | … | _213 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (532 alerts)
+### ⚪ OTHER (540 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
+| [4669](https://github.com/GBOGEB/ABACUS/security/code-scanning/4669) | CodeQL | `py/syntax-error` | `test_rtm_core.py` | 6 | error |
 | [2569](https://github.com/GBOGEB/ABACUS/security/code-scanning/2569) | CodeQL | `py/call/wrong-named-argument` | `test_dmaic_contract_core.py` | 38 | error |
 | [2543](https://github.com/GBOGEB/ABACUS/security/code-scanning/2543) | CodeQL | `py/syntax-error` | `docker_manager.py` | 1 | error |
 | [2521](https://github.com/GBOGEB/ABACUS/security/code-scanning/2521) | Semgrep | `yaml.github-actions.security.github-script-injection.github-script-injection` | `dmaic-commit-metrics.yml` | 273 | error |
@@ -266,8 +267,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2494](https://github.com/GBOGEB/ABACUS/security/code-scanning/2494) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `geometry.py` | 204 | error |
 | [2493](https://github.com/GBOGEB/ABACUS/security/code-scanning/2493) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `build_atlas_v6.py` | 96 | error |
 | [2492](https://github.com/GBOGEB/ABACUS/security/code-scanning/2492) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `segment_pid.py` | 228 | error |
-| [2491](https://github.com/GBOGEB/ABACUS/security/code-scanning/2491) | Semgrep | `python.lang.security.use-defused-xml-parse.use-defused-xml-parse` | `svg_extract.py` | 195 | error |
-| … | _502 more — see alerts.yaml_ | | | | |
+| … | _510 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
@@ -280,4 +280,4 @@ _Groups are defined in [security.toml](security.toml)_
 | 5 | SEC_ASSERT | 2911 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 243 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-08-19T21:13:58Z_
+_Dashboard last updated: 2026-08-24T06:12:22Z_

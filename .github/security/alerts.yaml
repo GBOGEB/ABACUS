@@ -1,46 +1,46 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-19T21:13:58Z
+# generated: 2026-08-24T06:12:22Z
 
-generated_at:"2026-08-19T21:13:58Z"
+generated_at:"2026-08-24T06:12:22Z"
 repo:GBOGEB/ABACUS
-total_open:3865
+total_open:3873
 by_severity:
-  note: 3579
-  warning: 212
-  error: 74
+  note: 3580
+  warning: 218
+  error: 75
 by_tool:
   Bandit: 3315
-  CodeQL: 485
+  CodeQL: 493
   Semgrep: 65
 by_rex_group:
   SEC_ASSERT: 2911
   SEC_HARDCODED_SECRET: 21
   SEC_SUBPROCESS: 116
-  OTHER: 532
+  OTHER: 540
+  QUAL_DEAD_CODE: 243
   SEC_TEMPFILE: 32
   SEC_WEAK_HASH: 10
-  QUAL_DEAD_CODE: 243
 hot_files:
-  - file: tests/test_bootstrap_eval.py
-    count: 78
   - file: tests/test_dmaic_orchestration.py
-    count: 77
-  - file: tests/test_user_library_rag.py
-    count: 75
-  - file: tests/test_phase_0_to_9_integration.py
-    count: 74
-  - file: tests/test_dow_keb_master_orchestrator.py
-    count: 72
+    count: 82
   - file: tests/test_docker_integration.py
-    count: 72
+    count: 79
+  - file: tests/test_bootstrap_eval.py
+    count: 79
+  - file: tests/test_user_library_rag.py
+    count: 77
+  - file: tests/test_phase_0_to_9_integration.py
+    count: 77
+  - file: tests/test_dow_keb_master_orchestrator.py
+    count: 73
   - file: tests/test_action_tracker.py
-    count: 70
+    count: 72
   - file: tests/test_master_doc_manager.py
-    count: 66
+    count: 69
+  - file: tests/test_advanced_security.py
+    count: 61
   - file: DMAIC_V3/tests/test_log_monitor.py
     count: 60
-  - file: tests/test_advanced_security.py
-    count: 58
 
 groups:
   SEC_ASSERT:
@@ -18335,6 +18335,12 @@ groups:
       file: "ABACUS-v032/validate_cicd_deployment.py"
       line: 224
   OTHER:
+    - number: 4669
+      tool: CodeQL
+      rule_id: "py/syntax-error"
+      severity: error
+      file: "tests/test_rtm_core.py"
+      line: 6
     - number: 2569
       tool: CodeQL
       rule_id: "py/call/wrong-named-argument"
@@ -18695,6 +18701,42 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
+    - number: 4671
+      tool: CodeQL
+      rule_id: "py/unreachable-statement"
+      severity: warning
+      file: "tests/test_phase_0_to_9_integration.py"
+      line: 393
+    - number: 4611
+      tool: CodeQL
+      rule_id: "py/multiple-definition"
+      severity: warning
+      file: "tests/test_week3_integration.py"
+      line: 257
+    - number: 4610
+      tool: CodeQL
+      rule_id: "py/multiple-definition"
+      severity: warning
+      file: "tests/test_week3_integration.py"
+      line: 215
+    - number: 4609
+      tool: CodeQL
+      rule_id: "py/multiple-definition"
+      severity: warning
+      file: "tests/test_week3_integration.py"
+      line: 178
+    - number: 4608
+      tool: CodeQL
+      rule_id: "py/multiple-definition"
+      severity: warning
+      file: "tests/test_week3_integration.py"
+      line: 149
+    - number: 4607
+      tool: CodeQL
+      rule_id: "py/multiple-definition"
+      severity: warning
+      file: "tests/test_dmaic_orchestration.py"
+      line: 511
     - number: 3956
       tool: Bandit
       rule_id: "B103"
@@ -19240,7 +19282,7 @@ groups:
       rule_id: "py/multiple-definition"
       severity: warning
       file: "DMAIC_V3/phases/phase5_control.py"
-      line: 98
+      line: 94
     - number: 448
       tool: CodeQL
       rule_id: "py/multiple-definition"
@@ -19282,13 +19324,13 @@ groups:
       rule_id: "py/unnecessary-pass"
       severity: warning
       file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 88
+      line: 80
     - number: 197
       tool: CodeQL
       rule_id: "py/unnecessary-pass"
       severity: warning
       file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 75
+      line: 67
     - number: 196
       tool: CodeQL
       rule_id: "py/use-of-exit-or-quit"
@@ -19883,6 +19925,18 @@ groups:
       severity: note
       file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
       line: 9
+    - number: 4672
+      tool: CodeQL
+      rule_id: "py/catch-base-exception"
+      severity: note
+      file: "tests/test_self_improvement.py"
+      line: 315
+    - number: 4670
+      tool: CodeQL
+      rule_id: "py/print-during-import"
+      severity: note
+      file: "DMAIC_V3/phases/phase5_control.py"
+      line: 21
     - number: 4574
       tool: Bandit
       rule_id: "B607"
@@ -21166,31 +21220,25 @@ groups:
       rule_id: "py/mixed-returns"
       severity: note
       file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 38
+      line: 30
     - number: 375
       tool: CodeQL
       rule_id: "py/repeated-import"
       severity: note
       file: "abacus_v21_smoke_tests.py"
       line: 55
-    - number: 201
-      tool: CodeQL
-      rule_id: "py/print-during-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 23
     - number: 200
       tool: CodeQL
       rule_id: "py/print-during-import"
       severity: note
       file: "DMAIC_V3/phases/phase2_measure.py"
-      line: 39
+      line: 37
     - number: 199
       tool: CodeQL
       rule_id: "py/print-during-import"
       severity: note
       file: "DMAIC_V3/phases/phase2_measure.py"
-      line: 32
+      line: 30
     - number: 194
       tool: CodeQL
       rule_id: "py/empty-except"
@@ -21208,7 +21256,7 @@ groups:
       rule_id: "py/empty-except"
       severity: note
       file: "DMAIC_V3/quick_output_analysis.py"
-      line: 50
+      line: 49
     - number: 191
       tool: CodeQL
       rule_id: "py/empty-except"
@@ -21394,7 +21442,7 @@ groups:
       rule_id: "py/catch-base-exception"
       severity: note
       file: "DMAIC_V3/quick_output_analysis.py"
-      line: 50
+      line: 49
     - number: 160
       tool: CodeQL
       rule_id: "py/catch-base-exception"
@@ -21412,13 +21460,13 @@ groups:
       rule_id: "py/catch-base-exception"
       severity: note
       file: "DMAIC_V3/phases/phase0_init.py"
-      line: 176
+      line: 173
     - number: 157
       tool: CodeQL
       rule_id: "py/catch-base-exception"
       severity: note
       file: "DMAIC_V3/convergence/maturity_tracker.py"
-      line: 320
+      line: 319
     - number: 156
       tool: CodeQL
       rule_id: "py/catch-base-exception"
@@ -21527,6 +21575,1465 @@ groups:
       severity: note
       file: "abacus_v21_backup_recovery.py"
       line: 499
+  QUAL_DEAD_CODE:
+    - number: 4668
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_yaml_validation.py"
+      line: 11
+    - number: 4667
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_yaml_validation.py"
+      line: 10
+    - number: 4666
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 11
+    - number: 4665
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_user_library_rag.py"
+      line: 14
+    - number: 4664
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_user_library_rag.py"
+      line: 12
+    - number: 4663
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_self_improvement.py"
+      line: 17
+    - number: 4662
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_self_improvement.py"
+      line: 13
+    - number: 4661
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_refactoring_engine_protocols.py"
+      line: 21
+    - number: 4660
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_refactoring_engine_protocols.py"
+      line: 16
+    - number: 4659
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_reader_engine.py"
+      line: 24
+    - number: 4658
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_reader_engine.py"
+      line: 19
+    - number: 4657
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_phase_0_to_9_integration.py"
+      line: 12
+    - number: 4656
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_phase_0_to_9_integration.py"
+      line: 11
+    - number: 4655
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_parallel_execution.py"
+      line: 16
+    - number: 4654
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_master_doc_manager.py"
+      line: 15
+    - number: 4653
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_master_doc_manager.py"
+      line: 14
+    - number: 4652
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_master_doc_manager.py"
+      line: 12
+    - number: 4651
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_legacy_integration.py"
+      line: 10
+    - number: 4650
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_legacy_integration.py"
+      line: 9
+    - number: 4649
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_legacy_integration.py"
+      line: 8
+    - number: 4648
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_keb_bridge.py"
+      line: 15
+    - number: 4647
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_keb_bridge.py"
+      line: 13
+    - number: 4646
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_integration_patch.py"
+      line: 10
+    - number: 4645
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_integration_patch.py"
+      line: 9
+    - number: 4644
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_integration_bootstrap_bridges.py"
+      line: 32
+    - number: 4643
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_historical_sessions.py"
+      line: 15
+    - number: 4642
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_historical_sessions.py"
+      line: 14
+    - number: 4641
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_historical_sessions.py"
+      line: 13
+    - number: 4640
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_github_roundtrip_full.py"
+      line: 12
+    - number: 4639
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_github_integration.py"
+      line: 10
+    - number: 4638
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dow_keb_master_orchestrator.py"
+      line: 15
+    - number: 4637
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dow_integration.py"
+      line: 13
+    - number: 4636
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dormant_file_management.py"
+      line: 15
+    - number: 4635
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dormant_file_management.py"
+      line: 14
+    - number: 4634
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 18
+    - number: 4633
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 17
+    - number: 4632
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 16
+    - number: 4631
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 14
+    - number: 4630
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 12
+    - number: 4629
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 8
+    - number: 4628
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 18
+    - number: 4627
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 14
+    - number: 4626
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 13
+    - number: 4625
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_integration_layer.py"
+      line: 19
+    - number: 4624
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_core_utilities.py"
+      line: 17
+    - number: 4623
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 19
+    - number: 4622
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 15
+    - number: 4621
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_bootstrap_eval.py"
+      line: 35
+    - number: 4620
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_architecture_validation.py"
+      line: 14
+    - number: 4619
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_aht_bridge.py"
+      line: 7
+    - number: 4618
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_advanced_security.py"
+      line: 17
+    - number: 4617
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_advanced_security.py"
+      line: 14
+    - number: 4616
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_advanced_security.py"
+      line: 13
+    - number: 4615
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_advanced_reporting.py"
+      line: 14
+    - number: 4614
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_action_tracker.py"
+      line: 15
+    - number: 4613
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_action_tracker.py"
+      line: 12
+    - number: 4612
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/conftest.py"
+      line: 5
+    - number: 4606
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_yaml_validation.py"
+      line: 223
+    - number: 4605
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 332
+    - number: 4604
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 304
+    - number: 4603
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 290
+    - number: 4602
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 250
+    - number: 4601
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 240
+    - number: 4600
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 203
+    - number: 4599
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 167
+    - number: 4598
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 139
+    - number: 4597
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 116
+    - number: 4596
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_week3_integration.py"
+      line: 93
+    - number: 4595
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 182
+    - number: 4594
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 182
+    - number: 4593
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 182
+    - number: 4592
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 50
+    - number: 4591
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 50
+    - number: 4590
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 50
+    - number: 4589
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 39
+    - number: 4588
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 39
+    - number: 4587
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_integration.py"
+      line: 39
+    - number: 4586
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_github_roundtrip_full.py"
+      line: 80
+    - number: 4585
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 202
+    - number: 4584
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_dormant_file_management.py"
+      line: 151
+    - number: 4583
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 144
+    - number: 2651
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "rextools/populate_package.py"
+      line: 16
+    - number: 2568
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
+      line: 179
+    - number: 2567
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
+      line: 178
+    - number: 2566
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 19
+    - number: 2561
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
+      line: 12
+    - number: 2551
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 21
+    - number: 2549
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/dmaic_v3_engine.py"
+      line: 22
+    - number: 2546
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 17
+    - number: 2545
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "local_mcp/agent_orchestrator_v3.0.py"
+      line: 18
+    - number: 2544
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "local_mcp/agent_orchestrator_v3.0.py"
+      line: 14
+    - number: 544
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/dmaic_v3_engine.py"
+      line: 21
+    - number: 543
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/dmaic_v3_engine.py"
+      line: 20
+    - number: 542
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/dmaic_v3_engine.py"
+      line: 19
+    - number: 507
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/tests/test_w003_w004.py"
+      line: 36
+    - number: 506
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/symbols.py"
+      line: 651
+    - number: 505
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/symbols.py"
+      line: 618
+    - number: 504
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/symbols.py"
+      line: 612
+    - number: 503
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/symbols.py"
+      line: 605
+    - number: 502
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/symbols.py"
+      line: 567
+    - number: 501
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/src/abacus_svg_pid/geometry.py"
+      line: 104
+    - number: 500
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v5.py"
+      line: 1481
+    - number: 499
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v5.py"
+      line: 1227
+    - number: 498
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v4.py"
+      line: 1253
+    - number: 497
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v5.py"
+      line: 593
+    - number: 496
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v4.py"
+      line: 1010
+    - number: 495
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v4.py"
+      line: 541
+    - number: 494
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v3.py"
+      line: 982
+    - number: 493
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v3.py"
+      line: 814
+    - number: 492
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid_v3.py"
+      line: 522
+    - number: 491
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid.py"
+      line: 428
+    - number: 490
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "MINERVA_PID/generator/build_pid.py"
+      line: 357
+    - number: 489
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "MINERVA_PID/tests/test_w003_w004.py"
+      line: 16
+    - number: 488
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "MINERVA_PID/generator/svg_extract.py"
+      line: 20
+    - number: 487
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "MINERVA_PID/generator/build_dissection_v5.py"
+      line: 27
+    - number: 486
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "MINERVA_PID/src/abacus_svg_pid/build_catalog.py"
+      line: 25
+    - number: 433
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
+      line: 100
+    - number: 432
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
+      line: 100
+    - number: 431
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
+      line: 94
+    - number: 430
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
+      line: 94
+    - number: 429
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
+      line: 103
+    - number: 428
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
+      line: 103
+    - number: 427
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
+      line: 97
+    - number: 426
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
+      line: 97
+    - number: 425
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase4_improve.py"
+      line: 202
+    - number: 424
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase4_improve.py"
+      line: 202
+    - number: 423
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase4_improve.py"
+      line: 167
+    - number: 422
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase4_improve.py"
+      line: 167
+    - number: 421
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase5_control.py"
+      line: 122
+    - number: 420
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/tests/test_phase5_control.py"
+      line: 122
+    - number: 419
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "staging/test_integration_bridge.py"
+      line: 143
+    - number: 418
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "self_optimization/self_test.py"
+      line: 38
+    - number: 417
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v031/run_direct_improvements.py"
+      line: 196
+    - number: 416
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/core/planning_matrix_tracker.py"
+      line: 199
+    - number: 415
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/preview_diff.py"
+      line: 48
+    - number: 414
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase7_action_tracking.py"
+      line: 222
+    - number: 413
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase6_knowledge.py"
+      line: 246
+    - number: 412
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase6_knowledge.py"
+      line: 67
+    - number: 411
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase5_control.py"
+      line: 155
+    - number: 410
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase5_control.py"
+      line: 100
+    - number: 409
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/phases/phase2_measure.py"
+      line: 298
+    - number: 408
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/convergence/maturity_tracker.py"
+      line: 424
+    - number: 407
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 70
+    - number: 406
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 54
+    - number: 405
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "local_mcp/knowledge_integration_v2.3.py"
+      line: 314
+    - number: 404
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "rtm_integration/automation/scripts/automation/improved_rtm_generator.py"
+      line: 129
+    - number: 403
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 35
+    - number: 402
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/generate_metrics_charts.py"
+      line: 159
+    - number: 401
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/generate_metrics_charts.py"
+      line: 157
+    - number: 400
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/generate_metrics_charts.py"
+      line: 156
+    - number: 399
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 1433
+    - number: 398
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 1249
+    - number: 397
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 589
+    - number: 396
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/fetch_workflow_errors.py"
+      line: 152
+    - number: 395
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/fix_v033_alignment.py"
+      line: 19
+    - number: 394
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/fix_v033_alignment.py"
+      line: 12
+    - number: 393
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "fast_metrics_collector.py"
+      line: 158
+    - number: 392
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "scripts/deploy_v23_github.py"
+      line: 461
+    - number: 391
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "deploy_full_integration.py"
+      line: 289
+    - number: 390
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "deploy_full_integration.py"
+      line: 289
+    - number: 389
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 578
+    - number: 388
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/bulk_resolve_github_issues.py"
+      line: 383
+    - number: 387
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "ABACUS-v032/bulk_resolve_github_issues.py"
+      line: 383
+    - number: 386
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "abacus_v21_dry_run_tests.py"
+      line: 55
+    - number: 385
+      tool: CodeQL
+      rule_id: "py/unused-local-variable"
+      severity: note
+      file: "DMAIC_V3/generators/__main__.py"
+      line: 46
+    - number: 368
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/verify_alignment.py"
+      line: 10
+    - number: 366
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 16
+    - number: 365
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 12
+    - number: 361
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_release_gate.py"
+      line: 6
+    - number: 357
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "staging/test_integration_bridge.py"
+      line: 15
+    - number: 354
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tools_v2.3/task_tracker_v2.3_20251111.py"
+      line: 10
+    - number: 350
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "self_optimization/self_test.py"
+      line: 10
+    - number: 345
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v031/run_direct_improvements.py"
+      line: 10
+    - number: 344
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v031/run_direct_improvements.py"
+      line: 9
+    - number: 343
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "run_cicd_roundtrip_test.py"
+      line: 23
+    - number: 342
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "run_cicd_roundtrip_test.py"
+      line: 18
+    - number: 341
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "run_cicd_roundtrip_test.py"
+      line: 17
+    - number: 340
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "run_cicd_roundtrip_test.py"
+      line: 15
+    - number: 339
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "refactoring_executor.py"
+      line: 20
+    - number: 338
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py"
+      line: 12
+    - number: 315
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/open_github_issues.py"
+      line: 15
+    - number: 311
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/markdown_exec_runner.py"
+      line: 11
+    - number: 310
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 9
+    - number: 309
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 4
+    - number: 307
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "core/keb/keb.py"
+      line: 19
+    - number: 304
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "rtm_integration/automation/scripts/automation/improved_rtm_generator.py"
+      line: 7
+    - number: 303
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/initialize_knowledge_packages.py"
+      line: 18
+    - number: 302
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/hash_update.py"
+      line: 12
+    - number: 298
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 9
+    - number: 297
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 4
+    - number: 296
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 3
+    - number: 295
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "github_azure_deployment_helper.py"
+      line: 19
+    - number: 294
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "github_azure_deployment_helper.py"
+      line: 14
+    - number: 293
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "rtm_integration/automation/scripts/automation/generate_rtm.py"
+      line: 7
+    - number: 292
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/generate_iteration_report.py"
+      line: 22
+    - number: 291
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/generate_global_index.py"
+      line: 19
+    - number: 290
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/generate_global_index.py"
+      line: 15
+    - number: 289
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/generate_global_index.py"
+      line: 13
+    - number: 279
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/fetch_workflow_errors.py"
+      line: 12
+    - number: 278
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "src/dmaic/federation.py"
+      line: 17
+    - number: 277
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 63
+    - number: 276
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 62
+    - number: 275
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+      line: 61
+    - number: 257
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "deploy_full_integration.py"
+      line: 32
+    - number: 256
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "deploy_full_integration.py"
+      line: 24
+    - number: 254
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "demo_integrated_system.py"
+      line: 24
+    - number: 253
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "demo_integrated_system.py"
+      line: 19
+    - number: 252
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "demo_integrated_system.py"
+      line: 18
+    - number: 249
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/create_github_issues.py"
+      line: 13
+    - number: 246
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "clone_based_validator.py"
+      line: 21
+    - number: 245
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "clone_based_validator.py"
+      line: 20
+    - number: 244
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/check_convergence.py"
+      line: 19
+    - number: 243
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/check_convergence.py"
+      line: 13
+    - number: 242
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 33
+    - number: 239
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "ABACUS-v032/bulk_resolve_github_issues.py"
+      line: 16
+    - number: 236
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_session_tuple_analyzer.py"
+      line: 35
+    - number: 235
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_session_tuple_analyzer.py"
+      line: 32
+    - number: 234
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_session_tuple_analyzer.py"
+      line: 30
+    - number: 233
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_security_hardening.py"
+      line: 18
+    - number: 232
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_security_hardening.py"
+      line: 17
+    - number: 231
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_security_hardening.py"
+      line: 15
+    - number: 230
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_production_deployment.py"
+      line: 21
+    - number: 229
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_production_deployment.py"
+      line: 18
+    - number: 228
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_production_deployment.py"
+      line: 16
+    - number: 227
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_postdeployment_validation.py"
+      line: 21
+    - number: 226
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_postdeployment_validation.py"
+      line: 18
+    - number: 225
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_postdeployment_validation.py"
+      line: 16
+    - number: 224
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_postcd_summary.py"
+      line: 13
+    - number: 223
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_monitoring_integration.py"
+      line: 15
+    - number: 222
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_migration_test_comprehensive.py"
+      line: 35
+    - number: 221
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_migration_test_comprehensive.py"
+      line: 34
+    - number: 220
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_migration_test_comprehensive.py"
+      line: 33
+    - number: 219
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_migration_test_comprehensive.py"
+      line: 27
+    - number: 218
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_knowledge_preservation.py"
+      line: 21
+    - number: 217
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_environment_preparation.py"
+      line: 18
+    - number: 216
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_environment_preparation.py"
+      line: 15
+    - number: 215
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_dry_run_tests.py"
+      line: 21
+    - number: 214
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_deployment_execution.py"
+      line: 31
+    - number: 213
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_deployment_execution.py"
+      line: 28
+    - number: 212
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_deployment_execution.py"
+      line: 27
+    - number: 211
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_deployment_execution.py"
+      line: 25
+    - number: 210
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_bridge_validation_tests.py"
+      line: 24
+    - number: 209
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "abacus_v21_backup_recovery.py"
+      line: 18
   SEC_TEMPFILE:
     - number: 4570
       tool: Bandit
@@ -21781,1462 +23288,3 @@ groups:
       severity: warning
       file: "repo_analysis_toolkit/classify_artifacts.py"
       line: 68
-  QUAL_DEAD_CODE:
-    - number: 2651
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "rextools/populate_package.py"
-      line: 16
-    - number: 2568
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 182
-    - number: 2567
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 181
-    - number: 2566
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 19
-    - number: 2565
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_post_deployment_workspace_ingestion.py"
-      line: 9
-    - number: 2564
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_post_deployment_workspace_ingestion.py"
-      line: 8
-    - number: 2563
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_post_deployment_workspace_ingestion.py"
-      line: 7
-    - number: 2562
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_modes.py"
-      line: 14
-    - number: 2561
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 15
-    - number: 2560
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 10
-    - number: 2559
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 9
-    - number: 2558
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 8
-    - number: 2557
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_pipeline_execution_modes.py"
-      line: 7
-    - number: 2556
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_environment_setup.py"
-      line: 3
-    - number: 2555
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_bridges_bidirectional.py"
-      line: 15
-    - number: 2554
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/monitoring/log_monitor.py"
-      line: 7
-    - number: 2553
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/handover_bridge.py"
-      line: 18
-    - number: 2552
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/handover_bridge.py"
-      line: 12
-    - number: 2551
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 21
-    - number: 2550
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tools/dow_engine.py"
-      line: 17
-    - number: 2549
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 30
-    - number: 2548
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 25
-    - number: 2547
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/orchestrators/dmaic_postdeploy.py"
-      line: 14
-    - number: 2546
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 17
-    - number: 2545
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "local_mcp/agent_orchestrator_v3.0.py"
-      line: 18
-    - number: 2544
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "local_mcp/agent_orchestrator_v3.0.py"
-      line: 14
-    - number: 544
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 29
-    - number: 543
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 28
-    - number: 542
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 27
-    - number: 507
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/tests/test_w003_w004.py"
-      line: 36
-    - number: 506
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/symbols.py"
-      line: 651
-    - number: 505
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/symbols.py"
-      line: 618
-    - number: 504
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/symbols.py"
-      line: 612
-    - number: 503
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/symbols.py"
-      line: 605
-    - number: 502
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/symbols.py"
-      line: 567
-    - number: 501
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/src/abacus_svg_pid/geometry.py"
-      line: 104
-    - number: 500
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v5.py"
-      line: 1481
-    - number: 499
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v5.py"
-      line: 1227
-    - number: 498
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v4.py"
-      line: 1253
-    - number: 497
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v5.py"
-      line: 593
-    - number: 496
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v4.py"
-      line: 1010
-    - number: 495
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v4.py"
-      line: 541
-    - number: 494
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v3.py"
-      line: 982
-    - number: 493
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v3.py"
-      line: 814
-    - number: 492
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid_v3.py"
-      line: 522
-    - number: 491
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid.py"
-      line: 428
-    - number: 490
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "MINERVA_PID/generator/build_pid.py"
-      line: 357
-    - number: 489
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "MINERVA_PID/tests/test_w003_w004.py"
-      line: 16
-    - number: 488
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "MINERVA_PID/generator/svg_extract.py"
-      line: 20
-    - number: 487
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "MINERVA_PID/generator/build_dissection_v5.py"
-      line: 27
-    - number: 486
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "MINERVA_PID/src/abacus_svg_pid/build_catalog.py"
-      line: 25
-    - number: 433
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
-      line: 101
-    - number: 432
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
-      line: 101
-    - number: 431
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
-      line: 95
-    - number: 430
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
-      line: 95
-    - number: 429
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
-      line: 103
-    - number: 428
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
-      line: 103
-    - number: 427
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
-      line: 97
-    - number: 426
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase7_action_tracking.py"
-      line: 97
-    - number: 425
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase4_improve.py"
-      line: 202
-    - number: 424
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase4_improve.py"
-      line: 202
-    - number: 423
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase4_improve.py"
-      line: 167
-    - number: 422
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase4_improve.py"
-      line: 167
-    - number: 421
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase5_control.py"
-      line: 122
-    - number: 420
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase5_control.py"
-      line: 122
-    - number: 419
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "staging/test_integration_bridge.py"
-      line: 143
-    - number: 418
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "self_optimization/self_test.py"
-      line: 38
-    - number: 417
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v031/run_direct_improvements.py"
-      line: 196
-    - number: 416
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/core/planning_matrix_tracker.py"
-      line: 199
-    - number: 415
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/preview_diff.py"
-      line: 48
-    - number: 414
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase7_action_tracking.py"
-      line: 222
-    - number: 413
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase6_knowledge.py"
-      line: 247
-    - number: 412
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase6_knowledge.py"
-      line: 68
-    - number: 411
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 159
-    - number: 410
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 104
-    - number: 409
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/phases/phase2_measure.py"
-      line: 300
-    - number: 408
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/convergence/maturity_tracker.py"
-      line: 425
-    - number: 407
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 70
-    - number: 406
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 54
-    - number: 405
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "local_mcp/knowledge_integration_v2.3.py"
-      line: 314
-    - number: 404
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "rtm_integration/automation/scripts/automation/improved_rtm_generator.py"
-      line: 129
-    - number: 403
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 35
-    - number: 402
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/generate_metrics_charts.py"
-      line: 159
-    - number: 401
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/generate_metrics_charts.py"
-      line: 157
-    - number: 400
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/generate_metrics_charts.py"
-      line: 156
-    - number: 399
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 1433
-    - number: 398
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 1249
-    - number: 397
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 589
-    - number: 396
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/fetch_workflow_errors.py"
-      line: 152
-    - number: 395
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/fix_v033_alignment.py"
-      line: 19
-    - number: 394
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/fix_v033_alignment.py"
-      line: 12
-    - number: 393
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "fast_metrics_collector.py"
-      line: 158
-    - number: 392
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "scripts/deploy_v23_github.py"
-      line: 461
-    - number: 391
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "deploy_full_integration.py"
-      line: 289
-    - number: 390
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "deploy_full_integration.py"
-      line: 289
-    - number: 389
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 578
-    - number: 388
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/bulk_resolve_github_issues.py"
-      line: 383
-    - number: 387
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "ABACUS-v032/bulk_resolve_github_issues.py"
-      line: 383
-    - number: 386
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "abacus_v21_dry_run_tests.py"
-      line: 55
-    - number: 385
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "DMAIC_V3/generators/__main__.py"
-      line: 47
-    - number: 369
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/integrations/version_manager.py"
-      line: 16
-    - number: 368
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/verify_alignment.py"
-      line: 10
-    - number: 367
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/validate_dow_structure.py"
-      line: 10
-    - number: 366
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 16
-    - number: 365
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 12
-    - number: 364
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/validate_canonical_books.py"
-      line: 15
-    - number: 363
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/validate_canonical_books.py"
-      line: 12
-    - number: 362
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_version_manager.py"
-      line: 14
-    - number: 361
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_release_gate.py"
-      line: 6
-    - number: 360
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase9_documentation_generation.py"
-      line: 8
-    - number: 359
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase9_documentation_generation.py"
-      line: 7
-    - number: 358
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/tests/test_phase8_todo_management.py"
-      line: 6
-    - number: 357
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "staging/test_integration_bridge.py"
-      line: 15
-    - number: 356
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/test_and_document.py"
-      line: 13
-    - number: 355
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/test_and_document.py"
-      line: 12
-    - number: 354
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tools_v2.3/task_tracker_v2.3_20251111.py"
-      line: 10
-    - number: 353
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/state.py"
-      line: 17
-    - number: 352
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/stability_monitor.py"
-      line: 18
-    - number: 351
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/stability_monitor.py"
-      line: 17
-    - number: 350
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "self_optimization/self_test.py"
-      line: 10
-    - number: 349
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/self_ranking.py"
-      line: 10
-    - number: 348
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/self_ranking.py"
-      line: 9
-    - number: 347
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/self_improvement_agent.py"
-      line: 12
-    - number: 346
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/run_phase1.py"
-      line: 4
-    - number: 345
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v031/run_direct_improvements.py"
-      line: 10
-    - number: 344
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v031/run_direct_improvements.py"
-      line: 9
-    - number: 343
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "run_cicd_roundtrip_test.py"
-      line: 23
-    - number: 342
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "run_cicd_roundtrip_test.py"
-      line: 18
-    - number: 341
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "run_cicd_roundtrip_test.py"
-      line: 17
-    - number: 340
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "run_cicd_roundtrip_test.py"
-      line: 15
-    - number: 339
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "refactoring_executor.py"
-      line: 20
-    - number: 338
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py"
-      line: 12
-    - number: 337
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/ranking_engine.py"
-      line: 21
-    - number: 336
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/ranking_engine.py"
-      line: 19
-    - number: 335
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/quick_output_analysis.py"
-      line: 11
-    - number: 334
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/quick_output_analysis.py"
-      line: 10
-    - number: 333
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/quick_error_fix.py"
-      line: 8
-    - number: 332
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/planning_matrix_tracker.py"
-      line: 21
-    - number: 331
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/planning_matrix_tracker.py"
-      line: 19
-    - number: 330
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase9_documentation_generation.py"
-      line: 11
-    - number: 329
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase8_todo_management.py"
-      line: 21
-    - number: 328
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase7_action_tracking.py"
-      line: 19
-    - number: 327
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase6_knowledge.py"
-      line: 8
-    - number: 326
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 26
-    - number: 325
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 25
-    - number: 324
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 12
-    - number: 323
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase5_control.py"
-      line: 11
-    - number: 322
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase2_measure.py"
-      line: 17
-    - number: 321
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase2_measure.py"
-      line: 13
-    - number: 320
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase3_analyze.py"
-      line: 14
-    - number: 319
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 94
-    - number: 318
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 91
-    - number: 317
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 89
-    - number: 315
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/open_github_issues.py"
-      line: 15
-    - number: 314
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/metrics.py"
-      line: 17
-    - number: 313
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/maturity_tracker.py"
-      line: 26
-    - number: 312
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/maturity_tracker.py"
-      line: 24
-    - number: 311
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/markdown_exec_runner.py"
-      line: 11
-    - number: 310
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 9
-    - number: 309
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 4
-    - number: 308
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/link_tracker.py"
-      line: 15
-    - number: 307
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "core/keb/keb.py"
-      line: 19
-    - number: 306
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/iterative_controller.py"
-      line: 8
-    - number: 304
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "rtm_integration/automation/scripts/automation/improved_rtm_generator.py"
-      line: 7
-    - number: 303
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/initialize_knowledge_packages.py"
-      line: 18
-    - number: 302
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/hash_update.py"
-      line: 12
-    - number: 298
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 9
-    - number: 297
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 4
-    - number: 296
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 3
-    - number: 295
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "github_azure_deployment_helper.py"
-      line: 19
-    - number: 294
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "github_azure_deployment_helper.py"
-      line: 14
-    - number: 293
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "rtm_integration/automation/scripts/automation/generate_rtm.py"
-      line: 7
-    - number: 292
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/generate_iteration_report.py"
-      line: 22
-    - number: 291
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/generate_global_index.py"
-      line: 19
-    - number: 290
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/generate_global_index.py"
-      line: 15
-    - number: 289
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/generate_global_index.py"
-      line: 13
-    - number: 282
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/framework.py"
-      line: 10
-    - number: 281
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/framework.py"
-      line: 9
-    - number: 280
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/fix_orchestrator_step1.py"
-      line: 1
-    - number: 279
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/fetch_workflow_errors.py"
-      line: 12
-    - number: 278
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "src/dmaic/federation.py"
-      line: 17
-    - number: 277
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 63
-    - number: 276
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 62
-    - number: 275
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
-      line: 61
-    - number: 274
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py"
-      line: 12
-    - number: 265
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 24
-    - number: 264
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 23
-    - number: 263
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 21
-    - number: 262
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 19
-    - number: 261
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 18
-    - number: 260
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 16
-    - number: 259
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 13
-    - number: 258
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/dmaic_v3_engine.py"
-      line: 1
-    - number: 257
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "deploy_full_integration.py"
-      line: 32
-    - number: 256
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "deploy_full_integration.py"
-      line: 24
-    - number: 255
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/agents/dependency_graph.py"
-      line: 9
-    - number: 254
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "demo_integrated_system.py"
-      line: 24
-    - number: 253
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "demo_integrated_system.py"
-      line: 19
-    - number: 252
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "demo_integrated_system.py"
-      line: 18
-    - number: 249
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/create_github_issues.py"
-      line: 13
-    - number: 248
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/convergence_analyzer.py"
-      line: 2
-    - number: 247
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/config.py"
-      line: 14
-    - number: 246
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "clone_based_validator.py"
-      line: 21
-    - number: 245
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "clone_based_validator.py"
-      line: 20
-    - number: 244
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/check_convergence.py"
-      line: 19
-    - number: 243
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "scripts/check_convergence.py"
-      line: 13
-    - number: 242
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 33
-    - number: 241
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/convergence/change_detector.py"
-      line: 16
-    - number: 240
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/canonical_refactoring.py"
-      line: 8
-    - number: 239
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "ABACUS-v032/bulk_resolve_github_issues.py"
-      line: 16
-    - number: 238
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/analyze_recent_files.py"
-      line: 1
-    - number: 237
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/core/agent_manager.py"
-      line: 15
-    - number: 236
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_session_tuple_analyzer.py"
-      line: 35
-    - number: 235
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_session_tuple_analyzer.py"
-      line: 32
-    - number: 234
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_session_tuple_analyzer.py"
-      line: 30
-    - number: 233
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_security_hardening.py"
-      line: 18
-    - number: 232
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_security_hardening.py"
-      line: 17
-    - number: 231
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_security_hardening.py"
-      line: 15
-    - number: 230
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_production_deployment.py"
-      line: 21
-    - number: 229
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_production_deployment.py"
-      line: 18
-    - number: 228
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_production_deployment.py"
-      line: 16
-    - number: 227
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_postdeployment_validation.py"
-      line: 21
-    - number: 226
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_postdeployment_validation.py"
-      line: 18
-    - number: 225
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_postdeployment_validation.py"
-      line: 16
-    - number: 224
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_postcd_summary.py"
-      line: 13
-    - number: 223
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_monitoring_integration.py"
-      line: 15
-    - number: 222
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_migration_test_comprehensive.py"
-      line: 35
-    - number: 221
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_migration_test_comprehensive.py"
-      line: 34
-    - number: 220
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_migration_test_comprehensive.py"
-      line: 33
-    - number: 219
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_migration_test_comprehensive.py"
-      line: 27
-    - number: 218
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_knowledge_preservation.py"
-      line: 21
-    - number: 217
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_environment_preparation.py"
-      line: 18
-    - number: 216
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_environment_preparation.py"
-      line: 15
-    - number: 215
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_dry_run_tests.py"
-      line: 21
-    - number: 214
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_deployment_execution.py"
-      line: 31
-    - number: 213
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_deployment_execution.py"
-      line: 28
-    - number: 212
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_deployment_execution.py"
-      line: 27
-    - number: 211
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_deployment_execution.py"
-      line: 25
-    - number: 210
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_bridge_validation_tests.py"
-      line: 24
-    - number: 209
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "abacus_v21_backup_recovery.py"
-      line: 18
-    - number: 208
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/generators/__main__.py"
-      line: 31
-    - number: 207
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/generators/__main__.py"
-      line: 25
-    - number: 206
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
-      line: 12
