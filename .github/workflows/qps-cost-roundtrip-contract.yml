@@ -1,0 +1,58 @@
+name: QPS cost roundtrip contract
+
+on:
+  pull_request:
+    paths:
+      - 'analytics/qps_cost_estimate_roundtrip/**'
+      - '.github/workflows/qps-cost-roundtrip-contract.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'analytics/qps_cost_estimate_roundtrip/**'
+      - '.github/workflows/qps-cost-roundtrip-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce text-only canonical path
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find analytics/qps_cost_estimate_roundtrip -type f | grep -Ei '\.(xlsx|xlsm|xlsb|docx|pptx|pdf|png|jpg|jpeg|gif|zip|tar|gz|7z|rar)$'; then
+            echo 'Forbidden binary found in canonical QPS analytics path.' >&2
+            exit 1
+          fi
+
+      - name: Validate release contract controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          f=analytics/qps_cost_estimate_roundtrip/config/release_contract.yaml
+          test -f "$f"
+          grep -q 'canonical_repository: GBOGEB/ABACUS' "$f"
+          grep -q 'source_tree_sha256' "$f"
+          grep -q 'evidence_sha256' "$f"
+          grep -q 'semantic_output_sha256' "$f"
+          grep -q 'artifact_sha256' "$f"
+          grep -q 'release_folders_are_immutable: true' "$f"
+          grep -q 'office_review_is_separate_copy: true' "$f"
+          grep -q 'approved_changes_require_ssot_assimilation: true' "$f"
+
+      - name: Validate public-safe SSOT boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          f=analytics/qps_cost_estimate_roundtrip/ssot/README.md
+          test -f "$f"
+          grep -q 'confidential bidder data' "$f"
+          grep -q 'generated Office/PDF/image/archive binaries' "$f"
+          grep -q 'Project-specific values belong in the private overlay repository' "$f"

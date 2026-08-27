@@ -1,0 +1,80 @@
+schema_version: 1
+control_id: GOV-001
+module: qps_cost_estimate_roundtrip
+canonical_repository: GBOGEB/ABACUS
+
+repository_roles:
+  abacus:
+    repository: GBOGEB/ABACUS
+    role: canonical_qps_analytics
+    public_safe_only: true
+  codex:
+    repository: GBOGEB/CODEX
+    role: reusable_governance_and_release_tooling
+    public_safe_only: true
+  docx_rtm_automation:
+    repository: GBOGEB/DOCX_RTM_Automation
+    role: generic_document_generation_adapters
+    public_safe_only: true
+  private_overlay:
+    repository: GBOGEB/cryoplant-project
+    role: confidential_project_text_overlay
+    public_safe_only: false
+
+local_layout:
+  repo_root: 'C:\DEV\REPOS'
+  workspace_root: 'C:\DEV\WORKSPACES\qps-cost'
+  evidence_env: QPS_EVIDENCE_ROOT
+  release_env: QPS_RELEASE_ROOT
+
+release_layout:
+  evidence: 00_EVIDENCE
+  immutable_releases: 10_RELEASES
+  office_review: 20_WORKING_REVIEW
+  archive: 90_ARCHIVE
+
+forbidden_git_extensions:
+  - .xlsx
+  - .xlsm
+  - .docx
+  - .pptx
+  - .pdf
+  - .png
+  - .jpg
+  - .jpeg
+  - .zip
+  - .tar
+  - .gz
+
+required_hashes:
+  - source_tree_sha256
+  - evidence_sha256
+  - semantic_output_sha256
+  - artifact_sha256
+
+required_release_files:
+  - BUILD_META.json
+  - MANIFEST.sha256
+  - RELEASE_NOTES.md
+  - QA_REPORT.md
+
+build_gates:
+  - clean_clone
+  - locked_dependencies
+  - evidence_registry_valid
+  - evidence_hashes_match
+  - ssot_schema_valid
+  - workbook_formula_validation
+  - document_render_validation
+  - slide_render_validation
+  - pdf_render_validation
+  - html_asset_validation
+  - semantic_manifest_created
+  - artifact_manifest_created
+  - destination_hash_match
+
+publication_rules:
+  release_folders_are_immutable: true
+  office_review_is_separate_copy: true
+  review_binaries_are_not_git_inputs: true
+  approved_changes_require_ssot_assimilation: true
