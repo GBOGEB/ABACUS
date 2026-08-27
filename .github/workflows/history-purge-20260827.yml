@@ -1,0 +1,183 @@
+name: ABACUS public binary history purge
+
+on:
+  push:
+    branches:
+      - security/history-purge-20260827
+    paths:
+      - .github/workflows/history-purge-20260827.yml
+
+permissions:
+  contents: write
+
+env:
+  CLEAN_BASELINE: 0caff36e653f7270908e7879db2c0178129c51ab
+  FROZEN_SOURCE_COMMIT: 0291d43990d73a45058ad19fe5ce6ed97e92e178
+  KNOWN_HISTORIC_PATH: docs/qps_offer_rtm_evaluation/current/QPS_OFFER_Evaluation_FULL_v24.xlsx
+
+jobs:
+  purge-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Install git-filter-repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check git-filter-repo
+          git filter-repo --version
+
+      - name: Mirror clone and capture live public main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${GITHUB_WORKSPACE}/evidence"
+          git clone --mirror "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "${RUNNER_TEMP}/ABACUS.git"
+          cd "${RUNNER_TEMP}/ABACUS.git"
+
+          live_main="$(git rev-parse refs/heads/main)"
+          echo "${live_main}" | tee "${GITHUB_WORKSPACE}/evidence/pre_main.txt"
+          echo "PRE_MAIN=${live_main}" >> "${GITHUB_ENV}"
+
+          git merge-base --is-ancestor "${CLEAN_BASELINE}" "${live_main}"
+          git show-ref | sort > "${GITHUB_WORKSPACE}/evidence/pre_refs.txt"
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/pre_heads_tags.tsv"
+          git count-objects -vH > "${GITHUB_WORKSPACE}/evidence/pre_object_stats.txt"
+
+          git cat-file -e "${FROZEN_SOURCE_COMMIT}:${KNOWN_HISTORIC_PATH}"
+          echo "known_historic_binary_present_before_rewrite=true" > "${GITHUB_WORKSPACE}/evidence/known_historic_probe.txt"
+
+      - name: Rewrite all mirrored history
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/ABACUS.git"
+          git filter-repo --force \
+            --path-glob '*.pptx' --invert-paths \
+            --path-glob '*.pptm' --invert-paths \
+            --path-glob '*.xlsx' --invert-paths \
+            --path-glob '*.xlsm' --invert-paths \
+            --path-glob '*.docx' --invert-paths \
+            --path-glob '*.docm' --invert-paths \
+            --path-glob '*.pdf' --invert-paths \
+            --path-glob '*.zip' --invert-paths \
+            --path-glob '*.7z' --invert-paths \
+            --path-glob '*.rar' --invert-paths \
+            --path-glob '*.tar' --invert-paths \
+            --path-glob '*.gz' --invert-paths \
+            --path-glob '*.tgz' --invert-paths \
+            --path-glob '*.bz2' --invert-paths \
+            --path-glob '*.xz' --invert-paths \
+            --path-glob '*.png' --invert-paths \
+            --path-glob '*.jpg' --invert-paths \
+            --path-glob '*.jpeg' --invert-paths \
+            --path-glob '*.gif' --invert-paths \
+            --path-glob '*.webp' --invert-paths \
+            --path-glob '*.bmp' --invert-paths \
+            --path-glob '*.ico' --invert-paths \
+            --path-glob '*.tif' --invert-paths \
+            --path-glob '*.tiff' --invert-paths \
+            --path-glob '*.parquet' --invert-paths \
+            --path-glob '*.h5' --invert-paths \
+            --path-glob '*.hdf5' --invert-paths \
+            --path-glob '*.db' --invert-paths \
+            --path-glob '*.sqlite' --invert-paths \
+            --path-glob '*.sqlite3' --invert-paths \
+            --path-glob '*.so' --invert-paths \
+            --path-glob '*.dll' --invert-paths \
+            --path-glob '*.exe' --invert-paths \
+            --path-glob '*.bin' --invert-paths
+
+      - name: Validate rewritten refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/ABACUS.git"
+          git show-ref | sort > "${GITHUB_WORKSPACE}/evidence/post_refs.txt"
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/post_heads_tags.tsv"
+          git count-objects -vH > "${GITHUB_WORKSPACE}/evidence/post_object_stats.txt"
+          git rev-parse refs/heads/main | tee "${GITHUB_WORKSPACE}/evidence/post_main.txt"
+
+          python - <<'PY'
+          from pathlib import Path
+          import os, subprocess
+          forbidden={'.pptx','.pptm','.xlsx','.xlsm','.docx','.docm','.pdf','.zip','.7z','.rar','.tar','.gz','.tgz','.bz2','.xz','.png','.jpg','.jpeg','.gif','.webp','.bmp','.ico','.tif','.tiff','.parquet','.h5','.hdf5','.db','.sqlite','.sqlite3','.so','.dll','.exe','.bin'}
+          out=subprocess.check_output(['git','log','--all','--name-only','--pretty=format:'],text=True,errors='replace')
+          bad=sorted({p.strip() for p in out.splitlines() if p.strip() and Path(p.strip()).suffix.lower() in forbidden})
+          ev=Path(os.environ['GITHUB_WORKSPACE'])/'evidence'
+          (ev/'reachable_forbidden_paths_after.txt').write_text('\n'.join(bad)+('\n' if bad else ''),encoding='utf-8')
+          if bad:
+              raise SystemExit(f'{len(bad)} forbidden paths remain reachable')
+          def refs(p):
+              d={}
+              for line in Path(p).read_text(encoding='utf-8').splitlines():
+                  if line.strip():
+                      ref,sha=line.split(None,1)
+                      d[ref]=sha
+              return d
+          pre=refs(ev/'pre_heads_tags.tsv'); post=refs(ev/'post_heads_tags.tsv')
+          rows=['ref\tpre_sha\tpost_sha']+[f'{r}\t{pre.get(r,"")}\t{post.get(r,"")}' for r in sorted(set(pre)|set(post))]
+          (ev/'ref_changes.tsv').write_text('\n'.join(rows)+'\n',encoding='utf-8')
+          PY
+
+          if git cat-file -e "${FROZEN_SOURCE_COMMIT}:${KNOWN_HISTORIC_PATH}" 2>/dev/null; then
+            echo "known_historic_binary_present_after_rewrite=true" >> "${GITHUB_WORKSPACE}/evidence/known_historic_probe.txt"
+            exit 1
+          else
+            echo "known_historic_binary_present_after_rewrite=false" >> "${GITHUB_WORKSPACE}/evidence/known_historic_probe.txt"
+          fi
+          (cd "${GITHUB_WORKSPACE}/evidence" && sha256sum * | sort > EVIDENCE_SHA256.txt)
+
+      - name: Upload pre/post evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: abacus-history-purge-evidence-${{ github.run_id }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Race guard and force-update public heads and tags
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          current="$(git ls-remote "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')"
+          echo "captured_pre_main=${PRE_MAIN}"
+          echo "current_remote_main=${current}"
+          test "${current}" = "${PRE_MAIN}"
+
+          cd "${RUNNER_TEMP}/ABACUS.git"
+          git remote remove origin 2>/dev/null || true
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force --prune origin 'refs/heads/*:refs/heads/*'
+          git push --force --prune origin 'refs/tags/*:refs/tags/*'
+
+          rewritten_main="$(git rev-parse refs/heads/main)"
+          remote_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          echo "rewritten_main=${rewritten_main}"
+          echo "remote_main=${remote_main}"
+          test "${rewritten_main}" = "${remote_main}"
+
+      - name: Probe known old public object URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${FROZEN_SOURCE_COMMIT}/${KNOWN_HISTORIC_PATH}"
+          status="$(curl -L -sS -o /dev/null -w '%{http_code}' "${url}" || true)"
+          echo "old_url_http_status=${status}" | tee "${GITHUB_WORKSPACE}/evidence/old_url_probe.txt"
+          if [ "${status}" = "200" ]; then
+            echo "Old object still retrievable; GitHub Support cache/unreachable-object cleanup remains required." | tee -a "${GITHUB_WORKSPACE}/evidence/old_url_probe.txt"
+          fi
+
+      - name: Remove maintenance trigger branch
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" --delete security/history-purge-20260827
