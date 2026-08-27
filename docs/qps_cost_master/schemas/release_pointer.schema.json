@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/qps-cost-master/release-pointer.schema.json",
+  "type": "object",
+  "required": ["schema", "release_id", "schema_version", "private_source_semantic_sha256", "qa_passed", "qa_total", "release_manifest_sha256", "artifact_registry_sha256", "onedrive_relative_path"],
+  "properties": {
+    "schema": {"const": "qps-cost-master.release-pointer.v1"},
+    "release_id": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "string"},
+    "private_source_semantic_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "qa_passed": {"type": "integer", "minimum": 0},
+    "qa_total": {"type": "integer", "minimum": 0},
+    "release_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "artifact_registry_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "onedrive_relative_path": {"type": "string"},
+    "confidentiality": {"type": "string"}
+  },
+  "additionalProperties": false
+}
