@@ -1,0 +1,49 @@
+schema_version: 1
+control_id: GOV-001
+name: qps_publication_state
+
+required_fields:
+  - release_id
+  - source_commits
+  - evidence_registry_sha256
+  - local_artifact_manifest_sha256
+  - destination_artifact_manifest_sha256
+  - release_path
+  - review_copy_path
+  - publication_status
+  - published_utc
+
+publication_status_values:
+  - PREPARED
+  - PUBLISHED_VERIFIED
+  - FAILED
+
+rules:
+  immutable_release_required: true
+  separate_review_copy_required: true
+  local_destination_hash_identity_required: true
+  overwrite_existing_release_forbidden: true
+  office_review_must_not_point_to_release_path: true
+  html_assets_must_resolve_from_review_copy: true
+
+source_commits:
+  required_repositories:
+    - GBOGEB/ABACUS
+    - GBOGEB/CODEX
+    - GBOGEB/cryoplant-project
+
+artifacts:
+  required:
+    - QPS_COST_Master.xlsx
+    - QPS_Cost_Engineering_Handover.docx
+    - QPS_Cost_Management_Deck.pptx
+    - QPS_Cost_Engineering_Handover.pdf
+    - index.html
+    - QA_REPORT.md
+    - RELEASE_NOTES.md
+    - BUILD_META.json
+    - MANIFEST.sha256
+
+notes:
+  - Exact artifact hashes prove integrity of a specific published release.
+  - Reproducibility across future rebuilds is evaluated using semantic/structural manifests as well as exact hashes.
