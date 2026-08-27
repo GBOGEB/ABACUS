@@ -1,0 +1,14 @@
+current/
+published/
+private/
+*.pptx
+*.xlsx
+*.xlsm
+*.docx
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.zip
+*.tar.gz
+*.git.bundle
