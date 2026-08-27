@@ -108,7 +108,6 @@ secrets/
 # directory (per its own MANIFEST.yaml/README) where the built decks are
 # committed alongside their sibling xlsx/html deliverables and generator
 # scripts, not regenerate-on-demand scratch output.
-!docs/qps_offer_rtm_evaluation/current/*.pptx
 
 # Large data files
 *.csv
@@ -158,3 +157,41 @@ backup/
 !DEPLOY_NOW.md
 !GITHUB_SETUP_GUIDE.md
 maturity_assessment.json
+
+# PUBLIC SOURCE-ONLY BINARY POLICY (2026-08-27)
+# Binary bytes belong in private release assets or controlled local/publication storage.
+*.pptx
+*.pptm
+*.xlsx
+*.xlsm
+*.docx
+*.docm
+*.pdf
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.ico
+*.tif
+*.tiff
+*.parquet
+*.h5
+*.hdf5
+*.db
+*.sqlite
+*.sqlite3
+*.so
+*.dll
+*.exe
+*.bin

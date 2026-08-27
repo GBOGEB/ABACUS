@@ -1,0 +1,331 @@
+name: Remove archived binary files from public ABACUS tree
+
+on:
+  push:
+    branches:
+      - security/remove-public-binaries-20260827
+    paths:
+      - .github/workflows/remove-public-binaries.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: remove-public-binaries-20260827
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FROZEN_SOURCE_COMMIT: 0291d43990d73a45058ad19fe5ce6ed97e92e178
+      PRIVATE_VAULT_REPO: GBOGEB/github_Documents
+      QPS_RELEASE_TAG: qps-public-binaries-20260827-0291d439
+      FULL_RELEASE_TAG: abacus-public-binaries-full-20260827-0291d439
+      FULL_ARCHIVE_SHA256: b1caa5200afd79e2250ec642648585ef88ba98eea598bc5454efe093f252b987
+      FULL_MANIFEST_SHA256: ff6cb7fca80b642958445553309e6e7c6b68414a8923ed79436564743d6c8c55
+      EXPECTED_BINARY_COUNT: "295"
+      EXPECTED_BINARY_BYTES: "176749148"
+
+    steps:
+      - name: Check out cleanup branch with full history
+        uses: actions/checkout@v4
+        with:
+          ref: security/remove-public-binaries-20260827
+          fetch-depth: 0
+
+      - name: Prove current binary tree equals archived snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          binary_suffixes = {
+              ".pptx", ".pptm", ".xlsx", ".xlsm", ".docx", ".docm", ".pdf",
+              ".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2", ".xz",
+              ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".ico",
+              ".tif", ".tiff", ".parquet", ".h5", ".hdf5", ".db", ".sqlite",
+              ".sqlite3", ".so", ".dll", ".exe", ".bin"
+          }
+
+          def inventory(ref):
+              text = subprocess.check_output(
+                  ["git", "ls-tree", "-r", "-l", "--full-tree", ref],
+                  text=True,
+              )
+              result = {}
+              for line in text.splitlines():
+                  meta, path = line.split("\t", 1)
+                  mode, kind, blob_sha, size = meta.split()
+                  if pathlib.Path(path).suffix.lower() not in binary_suffixes:
+                      continue
+                  result[path] = {
+                      "source_git_blob_sha1": blob_sha,
+                      "bytes": int(size),
+                  }
+              return result
+
+          frozen_ref = os.environ["FROZEN_SOURCE_COMMIT"]
+          frozen = inventory(frozen_ref)
+          current = inventory("HEAD")
+
+          added = sorted(set(current) - set(frozen))
+          removed = sorted(set(frozen) - set(current))
+          changed = sorted(
+              path for path in set(current) & set(frozen)
+              if current[path] != frozen[path]
+          )
+
+          comparison = {
+              "frozen_commit": frozen_ref,
+              "current_commit": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "frozen_binary_count": len(frozen),
+              "current_binary_count": len(current),
+              "frozen_binary_bytes": sum(item["bytes"] for item in frozen.values()),
+              "current_binary_bytes": sum(item["bytes"] for item in current.values()),
+              "added_paths": added,
+              "removed_paths": removed,
+              "changed_paths": changed,
+              "exact_match": not added and not removed and not changed,
+          }
+          pathlib.Path("binary_tree_comparison.json").write_text(
+              json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(comparison, indent=2, sort_keys=True))
+
+          if len(frozen) != int(os.environ["EXPECTED_BINARY_COUNT"]):
+              raise SystemExit(
+                  f"Frozen count mismatch: expected {os.environ['EXPECTED_BINARY_COUNT']}, got {len(frozen)}"
+              )
+          frozen_bytes = sum(item["bytes"] for item in frozen.values())
+          if frozen_bytes != int(os.environ["EXPECTED_BINARY_BYTES"]):
+              raise SystemExit(
+                  f"Frozen byte count mismatch: expected {os.environ['EXPECTED_BINARY_BYTES']}, got {frozen_bytes}"
+              )
+          if not comparison["exact_match"]:
+              raise SystemExit(
+                  "Current tracked binary tree differs from the archived snapshot; refusing cleanup"
+              )
+          PY
+
+      - name: Generate public pointer, reference audit and deletion ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/binary_migration
+
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          comparison = json.loads(
+              pathlib.Path("binary_tree_comparison.json").read_text(encoding="utf-8")
+          )
+          binary_suffixes = {
+              ".pptx", ".pptm", ".xlsx", ".xlsm", ".docx", ".docm", ".pdf",
+              ".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2", ".xz",
+              ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".ico",
+              ".tif", ".tiff", ".parquet", ".h5", ".hdf5", ".db", ".sqlite",
+              ".sqlite3", ".so", ".dll", ".exe", ".bin"
+          }
+
+          tree = subprocess.check_output(
+              ["git", "ls-tree", "-r", "-l", "--full-tree", "HEAD"],
+              text=True,
+          )
+          rows = []
+          removed_basenames = set()
+          for line in tree.splitlines():
+              meta, path = line.split("\t", 1)
+              mode, kind, blob_sha, size = meta.split()
+              if pathlib.Path(path).suffix.lower() not in binary_suffixes:
+                  continue
+              rows.append((path, blob_sha, int(size)))
+              removed_basenames.add(pathlib.Path(path).name)
+          rows.sort(key=lambda row: row[0].casefold())
+
+          ledger = [
+              "source_path\tsource_git_blob_sha1\tbytes",
+              *[f"{path}\t{blob}\t{size}" for path, blob, size in rows],
+          ]
+          pathlib.Path("docs/binary_migration/REMOVED_BINARY_PATHS.tsv").write_text(
+              "\n".join(ledger) + "\n", encoding="utf-8"
+          )
+
+          tracked = subprocess.check_output(
+              ["git", "ls-files", "-z"],
+          ).split(b"\0")
+          references = []
+          for raw in tracked:
+              if not raw:
+                  continue
+              path = pathlib.Path(raw.decode("utf-8", errors="surrogateescape"))
+              if path.suffix.lower() in binary_suffixes:
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (UnicodeDecodeError, OSError):
+                  continue
+              for lineno, line in enumerate(text.splitlines(), 1):
+                  if any(name in line for name in removed_basenames):
+                      references.append(f"{path}:{lineno}:{line[:1000]}")
+          pathlib.Path("docs/binary_migration/BINARY_REFERENCE_AUDIT.txt").write_text(
+              "\n".join(references) + ("\n" if references else ""),
+              encoding="utf-8",
+          )
+
+          pointer = f"""# Binary artefacts moved to controlled private storage
+
+          The public ABACUS tree no longer carries Office, PDF, image, archive or database binaries.
+
+          ## Frozen source and proof
+
+          - Archived source commit: `{os.environ['FROZEN_SOURCE_COMMIT']}`
+          - Removed current-tree binaries: **{len(rows)} files / {sum(size for _, _, size in rows):,} bytes**
+          - Private vault repository: `{os.environ['PRIVATE_VAULT_REPO']}`
+          - QPS Office release tag: `{os.environ['QPS_RELEASE_TAG']}`
+          - Complete archive release tag: `{os.environ['FULL_RELEASE_TAG']}`
+          - Complete archive SHA-256: `{os.environ['FULL_ARCHIVE_SHA256']}`
+          - Complete manifest SHA-256: `{os.environ['FULL_MANIFEST_SHA256']}`
+
+          Repository-relative paths, source Git blob SHA-1 values, source byte sizes and per-file SHA-256 values are retained in the private manifests.
+
+          ## Public-repository policy
+
+          GitHub contains source, text SSOT, schemas, scripts and reproducibility controls. Generated and source binaries are built or restored locally, and publication copies belong in controlled OneDrive/SharePoint or the private release vault.
+
+          ## Historic commits
+
+          This current-tree cleanup does not purge binary blobs from earlier public commits. Historic purge is a separate controlled history-rewrite task requiring mirror backup, branch/tag assessment, force-update planning and fresh-clone verification.
+          """
+          pointer = "\n".join(line.strip() for line in pointer.splitlines()).strip() + "\n"
+          pathlib.Path("docs/BINARY_VAULT_POINTER.md").write_text(pointer, encoding="utf-8")
+
+          pathlib.Path("docs/binary_migration/BINARY_TREE_COMPARISON.json").write_text(
+              json.dumps(comparison, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Tighten public binary ignore policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib
+
+          path = pathlib.Path(".gitignore")
+          text = path.read_text(encoding="utf-8")
+          lines = [
+              line for line in text.splitlines()
+              if line.strip() != "!docs/qps_offer_rtm_evaluation/current/*.pptx"
+          ]
+          marker = "# PUBLIC SOURCE-ONLY BINARY POLICY (2026-08-27)"
+          if marker not in lines:
+              lines.extend([
+                  "",
+                  marker,
+                  "# Binary bytes belong in private release assets or controlled local/publication storage.",
+                  "*.pptx",
+                  "*.pptm",
+                  "*.xlsx",
+                  "*.xlsm",
+                  "*.docx",
+                  "*.docm",
+                  "*.pdf",
+                  "*.zip",
+                  "*.7z",
+                  "*.rar",
+                  "*.tar",
+                  "*.tar.gz",
+                  "*.tgz",
+                  "*.gz",
+                  "*.bz2",
+                  "*.xz",
+                  "*.png",
+                  "*.jpg",
+                  "*.jpeg",
+                  "*.gif",
+                  "*.webp",
+                  "*.bmp",
+                  "*.ico",
+                  "*.tif",
+                  "*.tiff",
+                  "*.parquet",
+                  "*.h5",
+                  "*.hdf5",
+                  "*.db",
+                  "*.sqlite",
+                  "*.sqlite3",
+                  "*.so",
+                  "*.dll",
+                  "*.exe",
+                  "*.bin",
+              ])
+          path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+          PY
+
+      - name: Remove all verified tracked binaries from current branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+
+          binary_suffixes = {
+              ".pptx", ".pptm", ".xlsx", ".xlsm", ".docx", ".docm", ".pdf",
+              ".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2", ".xz",
+              ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".ico",
+              ".tif", ".tiff", ".parquet", ".h5", ".hdf5", ".db", ".sqlite",
+              ".sqlite3", ".so", ".dll", ".exe", ".bin"
+          }
+          paths = [
+              raw.decode("utf-8", errors="surrogateescape")
+              for raw in subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+              if raw and pathlib.Path(
+                  raw.decode("utf-8", errors="surrogateescape")
+              ).suffix.lower() in binary_suffixes
+          ]
+          if len(paths) != int("295"):
+              raise SystemExit(f"Expected 295 tracked binaries before deletion, found {len(paths)}")
+          for start in range(0, len(paths), 50):
+              subprocess.run(
+                  ["git", "rm", "--", *paths[start:start + 50]],
+                  check=True,
+              )
+          PY
+
+      - name: Validate clean public-tree policy and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add .gitignore docs/BINARY_VAULT_POINTER.md docs/binary_migration
+
+          if git ls-files | grep -E '\.(pptx|pptm|xlsx|xlsm|docx|docm|pdf|zip|7z|rar|tar|gz|tgz|bz2|xz|png|jpe?g|gif|webp|bmp|ico|tiff?|parquet|hdf5?|db|sqlite3?|so|dll|exe|bin)$'; then
+            echo "Binary cleanup failed: tracked binary files remain" >&2
+            exit 1
+          fi
+
+          if git diff --cached --name-only --diff-filter=AM | grep -E '\.(pptx|pptm|xlsx|xlsm|docx|docm|pdf|zip|7z|rar|tar|gz|tgz|bz2|xz|png|jpe?g|gif|webp|bmp|ico|tiff?|parquet|hdf5?|db|sqlite3?|so|dll|exe|bin)$'; then
+            echo "Binary guard failed: a binary addition/modification is staged" >&2
+            exit 1
+          fi
+
+          REMOVED_COUNT=$(git diff --cached --name-only --diff-filter=D | wc -l | tr -d ' ')
+          test "${REMOVED_COUNT}" = "295"
+
+          git config user.name "ABACUS Binary Cleanup Bot"
+          git config user.email "abacus-binary-cleanup@users.noreply.github.com"
+          git commit -m "security(repo): remove archived binaries from public tree"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
