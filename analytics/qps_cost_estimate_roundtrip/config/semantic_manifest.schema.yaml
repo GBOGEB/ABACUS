@@ -1,0 +1,63 @@
+schema_version: 1
+control_id: GOV-001
+name: qps_semantic_manifest
+
+purpose: >-
+  Compare meaning-bearing workbook/document/deck/html structure across clean rebuilds
+  without claiming that raw OOXML ZIP bytes must remain identical.
+
+required_outputs:
+  workbook:
+    - sheet_order
+    - sheet_names
+    - defined_names
+    - normalized_formula_map
+    - normalized_value_map_for_controlled_cells
+    - table_names_and_ranges
+    - chart_data_source_ranges
+  document:
+    - heading_sequence
+    - paragraph_text_hashes
+    - table_shape_and_text_hashes
+    - internal_link_targets
+  presentation:
+    - slide_order
+    - slide_titles
+    - normalized_text_hashes
+    - object_count_by_slide
+    - chart_data_hashes
+    - notes_text_hashes
+  html:
+    - route_or_section_ids
+    - heading_sequence
+    - local_asset_paths
+    - normalized_text_hashes
+    - embedded_data_hashes
+
+comparison_policy:
+  exact_match_required:
+    - canonical sheet/slide/section order unless release notes declare an intentional change
+    - controlled formulas
+    - controlled source identifiers
+    - required output structure
+  allowed_to_vary:
+    - OOXML ZIP entry timestamps
+    - document modified timestamps
+    - relationship IDs when semantically equivalent
+    - generated package metadata that does not alter rendered or controlled content
+
+normalization_rules:
+  - Exclude volatile package timestamps from semantic comparison.
+  - Sort unordered metadata collections before hashing.
+  - Preserve ordered collections where order carries meaning.
+  - Normalize line endings and Unicode to NFC for text hashes.
+  - Do not exclude formula, table-range, chart-source or linked-evidence changes as 'volatile'.
+
+release_gate:
+  clean_clone_semantic_comparison_required: true
+  mismatch_requires_release_note_or_failure: true
+  raw_artifact_hash_still_required_for_published_release_integrity: true
+
+warning: >-
+  A semantic manifest is not a substitute for visual QA. Rendering, overlap,
+  clipping and formula evaluation remain separate release gates.

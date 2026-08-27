@@ -1,0 +1,63 @@
+schema_version: 1
+control_id: GOV-001
+name: qps_review_change
+
+required_fields:
+  - change_id
+  - source_release_id
+  - review_file
+  - review_location
+  - reviewer
+  - requested_utc
+  - change_class
+  - rationale
+  - disposition
+
+change_class_values:
+  - DATA
+  - CALCULATION_LOGIC
+  - NARRATIVE
+  - FORMATTING
+
+disposition_values:
+  - OPEN
+  - ACCEPTED
+  - REJECTED
+  - SUPERSEDED
+  - IMPLEMENTED
+
+assimilation_targets:
+  DATA:
+    - private YAML
+    - private CSV
+    - normalized configuration
+  CALCULATION_LOGIC:
+    - ABACUS source code
+    - calculation configuration
+  NARRATIVE:
+    - Markdown
+    - narrative YAML
+    - controlled text source
+  FORMATTING:
+    - workbook template
+    - document template
+    - slide template
+    - HTML theme/configuration
+
+rules:
+  direct_review_binary_to_git_forbidden: true
+  contradictory_changes_must_be_resolved_before_assimilation: true
+  accepted_changes_require_source_commit: true
+  implemented_changes_require_new_release_id: true
+  prior_release_must_remain_immutable: true
+  source_release_id_must_be_recorded: true
+  target_release_id_required_on_implemented: true
+
+traceability:
+  recommended_fields:
+    - target_release_id
+    - source_commit
+    - evidence_id
+    - approver
+    - implemented_utc
+    - supersedes_change_id
