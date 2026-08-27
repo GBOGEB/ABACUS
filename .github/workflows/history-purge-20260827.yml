@@ -44,7 +44,7 @@ jobs:
 
           git merge-base --is-ancestor "${CLEAN_BASELINE}" "${live_main}"
           git show-ref | sort > "${GITHUB_WORKSPACE}/evidence/pre_refs.txt"
-          git for-each-ref --format='%(refname)\t%(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/pre_heads_tags.tsv"
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/pre_heads_tags.tsv"
           git count-objects -vH > "${GITHUB_WORKSPACE}/evidence/pre_object_stats.txt"
 
           git cat-file -e "${FROZEN_SOURCE_COMMIT}:${KNOWN_HISTORIC_PATH}"
@@ -97,7 +97,7 @@ jobs:
           set -euo pipefail
           cd "${RUNNER_TEMP}/ABACUS.git"
           git show-ref | sort > "${GITHUB_WORKSPACE}/evidence/post_refs.txt"
-          git for-each-ref --format='%(refname)\t%(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/post_heads_tags.tsv"
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/tags | sort > "${GITHUB_WORKSPACE}/evidence/post_heads_tags.tsv"
           git count-objects -vH > "${GITHUB_WORKSPACE}/evidence/post_object_stats.txt"
           git rev-parse refs/heads/main | tee "${GITHUB_WORKSPACE}/evidence/post_main.txt"
 
@@ -109,12 +109,14 @@ jobs:
           bad=sorted({p.strip() for p in out.splitlines() if p.strip() and Path(p.strip()).suffix.lower() in forbidden})
           ev=Path(os.environ['GITHUB_WORKSPACE'])/'evidence'
           (ev/'reachable_forbidden_paths_after.txt').write_text('\n'.join(bad)+('\n' if bad else ''),encoding='utf-8')
-          if bad: raise SystemExit(f'{len(bad)} forbidden paths remain reachable')
+          if bad:
+              raise SystemExit(f'{len(bad)} forbidden paths remain reachable')
           def refs(p):
               d={}
               for line in Path(p).read_text(encoding='utf-8').splitlines():
                   if line.strip():
-                      ref,sha=line.split('\t',1); d[ref]=sha
+                      ref,sha=line.split(None,1)
+                      d[ref]=sha
               return d
           pre=refs(ev/'pre_heads_tags.tsv'); post=refs(ev/'post_heads_tags.tsv')
           rows=['ref\tpre_sha\tpost_sha']+[f'{r}\t{pre.get(r,"")}\t{post.get(r,"")}' for r in sorted(set(pre)|set(post))]
