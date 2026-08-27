@@ -1,0 +1,116 @@
+schema_version: 1
+control_id: GOV-001
+profile_id: qps_cost_v4_2
+status: ACTIVE_WAVE2
+
+repositories:
+  canonical_analytics: GBOGEB/ABACUS
+  governance_tooling: GBOGEB/CODEX
+  private_overlay: GBOGEB/cryoplant-project
+  document_adapter: GBOGEB/DOCX_RTM_Automation
+
+local_execution:
+  repo_root: 'C:\DEV\REPOS'
+  workspace_root: 'C:\DEV\WORKSPACES\qps-cost'
+  build_outside_git_worktrees: true
+  evidence_root_env: QPS_EVIDENCE_ROOT
+  release_root_env: QPS_RELEASE_ROOT
+
+required_evidence_ids:
+  - COST_SSOT_V2_1_OPEX_HEAT_RECOVERY
+  - REVIEW_RTM_COST_PROMINENT
+  - LKT_PRESTUDY_2023
+  - ALAT_PRESTUDY_2023
+  - ALAT_OFFER_1
+  - LKT_OFFER_1
+  - ALAT_SBS_SCOPE_OF_SUPPLY
+  - QPS_PRIORITY_BACKBONE_V4
+
+evidence_gate:
+  registry_repository: GBOGEB/cryoplant-project
+  registry_path: qps_cost_overlay/evidence_registry.yaml
+  require_registry_status: VERIFIED
+  require_sha256: true
+  require_size_bytes: true
+  fail_on_missing: true
+  fail_on_hash_mismatch: true
+  fail_on_pending_size: true
+
+outputs:
+  workbook:
+    filename: QPS_COST_Master.xlsx
+    kind: xlsx
+    required: true
+  engineering_handover:
+    filename: QPS_Cost_Engineering_Handover.docx
+    kind: docx
+    required: true
+  management_deck:
+    filename: QPS_Cost_Management_Deck.pptx
+    kind: pptx
+    required: true
+  rendered_handover:
+    filename: QPS_Cost_Engineering_Handover.pdf
+    kind: pdf
+    required: true
+  html_navigator:
+    filename: index.html
+    kind: html
+    required: true
+  qa_report:
+    filename: QA_REPORT.md
+    kind: markdown
+    required: true
+  release_notes:
+    filename: RELEASE_NOTES.md
+    kind: markdown
+    required: true
+  build_meta:
+    filename: BUILD_META.json
+    kind: json
+    required: true
+  artifact_manifest:
+    filename: MANIFEST.sha256
+    kind: text
+    required: true
+
+qa_gates:
+  - evidence_registry_valid
+  - evidence_hashes_match
+  - clean_git_trees
+  - workbook_formula_validation
+  - workbook_structure_validation
+  - document_render_validation
+  - slide_render_validation
+  - pdf_render_validation
+  - html_asset_validation
+  - recursive_artifact_manifest
+  - build_meta_consistency
+  - clean_verification_clone
+  - semantic_output_comparison
+
+semantic_comparison:
+  required: true
+  exact_binary_identity_required: false
+  compare:
+    - normalized_workbook_formula_and_value_model
+    - workbook_sheet_order_and_named_ranges
+    - normalized_document_narrative
+    - normalized_slide_manifest_and_content
+    - canonical_machine_readable_exports
+  rationale: >-
+    Office OOXML package metadata and ZIP ordering may differ across builds even when
+    the model state is equivalent. Exact artifact hashes bind a specific published
+    release; semantic hashes prove clean-clone model reproducibility.
+
+publication:
+  immutable_release_folder: true
+  separate_office_review_copy: true
+  overwrite_existing_release: false
+  verify_destination_hashes: true
+
+prohibitions:
+  commit_evidence_binaries: false
+  commit_generated_release_binaries: false
+  use_office_review_binary_as_direct_ssot: false
+  publish_before_clean_clone_verification: false
