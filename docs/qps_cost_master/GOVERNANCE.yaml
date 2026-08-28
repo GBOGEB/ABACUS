@@ -1,0 +1,8 @@
+schema: qps-cost-master.abacus-governance.v1
+public_role: release governance, lineage, validation and sanitized status
+rules:
+  - no generated binary artifact in this subfolder
+  - no current offer or private SSOT data
+  - release pointer must identify semantic source hash and QA result
+  - OneDrive is the publication store for user-facing binaries
+  - local artifact Git is the immutable private release history

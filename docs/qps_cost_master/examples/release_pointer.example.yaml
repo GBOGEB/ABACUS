@@ -1,0 +1,10 @@
+schema: qps-cost-master.release-pointer.v1
+release_id: EXAMPLE_ONLY
+schema_version: '2.1'
+private_source_semantic_sha256: '0123456789abcdef0123456789ABCDEF0123456789abcdef0123456789ABCDEF'
+qa_passed: 0
+qa_total: 0
+release_manifest_sha256: 'ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcdef0123456789'
+artifact_registry_sha256: 'fedcba9876543210FEDCBA9876543210fedcba9876543210FEDCBA9876543210'
+onedrive_relative_path: 'QPS COST_Master/Published/<release-id>'
+confidentiality: private data and binaries are not present in this public repository
