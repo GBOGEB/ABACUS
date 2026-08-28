@@ -35,6 +35,25 @@ The exact historical FULL v24 binary is now provenance-bound in `V24_BINARY_PROV
 
 Repository-side historical/recompute ranking material may be used only after its lineage to v24 is explicitly established. Presence of ranking values in a log or navigator is not, by itself, proof that the values are governed v24 outputs.
 
+### Reconciliation finding RF-V24-001 — rank/tier export lineage not established
+
+A Library and repository sweep located v24 pointers plus ranking-bearing HTML, patch, navigator and recompute artifacts, but no export whose own metadata explicitly binds its RTM rank/tier values to the provenance-bound FULL v24 binary above. Therefore no repository or Library ranking artifact is promoted as a v24 substitute in the current review state.
+
+`RF-V24-001` may be closed only by one of the following governed evidence routes:
+
+1. direct read/materialisation of `QPS_OFFER_Evaluation_FULL_v24.xlsx`; or
+2. an explicitly governed v24-derived export that records, at minimum:
+   - source workbook `QPS_OFFER_Evaluation_FULL_v24.xlsx`;
+   - lineage to Git blob SHA-1 `bccab3a8ccf539db7c4a9636f1f2abee86885494` or an independently verified raw-file SHA-256 mapping to that exact binary;
+   - export generation date/tool or reproducible generator reference;
+   - RTM ID;
+   - v24 rank;
+   - v24 tier;
+   - any BT/PCA score fields promoted into the review;
+   - an explicit statement that bidder evidence/compliance did not participate in the rank/tier derivation.
+
+Until that evidence exists, `V24_LOOKUP_REQUIRED` is the correct governed value. This is a metadata reconciliation HOLD only; it does not reopen the completed item-level requirement review ranges and does not affect the canonical requirement/OFFER crosswalk.
+
 ## OFFER boundary summary
 
 - RTM-012..024: direct canonical OFFER interface only for RTM-019..022 → OFFER-04.
