@@ -4,7 +4,7 @@ Status: **REVIEW / DERIVED EVIDENCE ONLY — NO REQUIREMENT CLOSURE**
 
 ## Controlling source chain
 
-This review uses only the current 722/50 source chain:
+This review uses only the current governed 722/50 source chain:
 
 1. **SCK CEN/90508872 Addendum II Technical Requirements** — authoritative contract source.
 2. **Canonical RTM/OFFER workbook** — `QPS_OFFER_Cluster_v3_3_Canonical_RTM_722.xlsx`:
@@ -12,16 +12,35 @@ This review uses only the current 722/50 source chain:
    - OFFER-01..OFFER-50 only;
    - PDF controls RTM/OFFER numbering and page anchors;
    - DOCX controls clean verbatim paragraph/bullet text.
-3. **Current QPS evaluation/evidence SSOT lineage** — the source-locked 50-row OFFER and 722-row RTM evidence datasets used by the review outputs and QA gate.
+3. **RTM/OFFER BT/PCA SSOT** — `QPS_OFFER_Evaluation_FULL_v23.xlsx`:
+   - current governed evaluation/prioritisation SSOT for the fixed RTM/OFFER universe;
+   - bidder-independent ranking, tiering and BT/PCA outputs;
+   - used only for review order, prioritisation and derived analytical fields;
+   - does not override Addendum II or the canonical RTM/OFFER projection.
+4. **Bidder-evidence/compliance SSOT** — `03_DATA_SSOT/offer_evidence_full.json` and `03_DATA_SSOT/rtm_evidence_full.json`:
+   - downstream evidence layer only;
+   - fixed cardinality of 50 OFFER and 722 RTM records;
+   - applicant/bidder status, notes and evidence remain outside the authority layer.
 
-The previous 735-row extraction is **superseded** and is not used as canonical input, content source, numbering source, ranking source, or traceability source for this review.
+The previous 735-row extraction is **superseded** and is not used as canonical input, content source, numbering source, ranking source, traceability source or fallback source for this review.
+
+## Source roles — do not cross these boundaries
+
+| Source | Role | May define requirement? | May define review priority? | May carry bidder evidence? |
+|---|---|---:|---:|---:|
+| Addendum II PDF/DOCX | Contract authority | Yes | No | No |
+| Canonical 722/50 workbook | Governed numbered projection / crosswalk | Projection only | No | No |
+| `QPS_OFFER_Evaluation_FULL_v23.xlsx` | BT/PCA SSOT | No | Yes | No — ranking is bidder-independent |
+| `offer_evidence_full.json` / `rtm_evidence_full.json` | Evidence/compliance SSOT | No | No | Yes |
+
+No lower layer may silently promote content into a higher layer.
 
 ## Authority boundary
 
 - Contract / Addendum II remains authoritative.
 - RTM remains the governed numbered projection.
 - OFFER links remain request/evidence interfaces only and never substitute for RTM compliance.
-- No applicant reply, bidder evaluation, negotiation response, compliance disposition, or bidder score is assimilated into the requirement layer.
+- No applicant reply, bidder evaluation, negotiation response, compliance disposition or bidder score is assimilated into the requirement layer.
 - Range allocation is work ordering only and does not claim individual requirement closure.
 - DOW / KEB / PCA / BT outputs remain derived/proposed evidence until governed promotion.
 
@@ -55,9 +74,11 @@ Before any derived evidence is promoted for an item in this batch:
 
 - RTM ID and full verbatim requirement must match the canonical 722-row workbook;
 - OFFER ID, where present, must match the canonical 50-item workbook relation;
-- the corresponding RTM/OFFER evidence record must exist in the current source-locked SSOT dataset;
-- bidder/evaluation fields remain evidence-layer fields, never requirement-layer fields;
-- BT/PCA rank/tier may order review but must not be written back as compliance, closure or contractual status.
+- rank/tier/BT/PCA fields must originate from `QPS_OFFER_Evaluation_FULL_v23.xlsx`, or an explicitly governed successor;
+- bidder evidence/status must originate from the downstream 722/50 evidence SSOT and remain evidence-layer data;
+- bidder/evaluation fields must never be written into canonical requirement wording;
+- BT/PCA rank/tier may order review but must not be written back as compliance, closure or contractual status;
+- disagreement between layers is a reconciliation finding, not permission to choose whichever value is convenient.
 
 ## Item-level review questions
 
@@ -77,4 +98,4 @@ After this governed batch:
 2. RTM-281..309
 3. RTM-236..280
 
-The order follows the existing BT/PCA prioritisation model. No generic-infrastructure expansion is inserted into this sequence.
+The order follows the existing BT/PCA prioritisation model in the governed RTM/OFFER SSOT. No generic-infrastructure expansion is inserted into this sequence.
