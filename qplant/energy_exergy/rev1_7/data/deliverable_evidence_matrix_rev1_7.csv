@@ -1,0 +1,12 @@
+deliverable_id,deliverable,current_interpretation,availability_status,closure_priority
+DEL-PFD-001,Process Flow Diagram,LKT: promised with BL/tie-ins and process data at battery limits; ALAT: PFD but without flow/P/T in PFD,current availability partial,P0
+DEL-PID-001,P&ID,Both current offers promise/project deliverable; level/timing differ,not fully available in offer pack,P0/P1
+DEL-TS-001,T-s diagrams,Historic studies contain/expect; ALAT Process Note promises T-s diagrams,not complete for current offer closure,P0
+DEL-STATE-001,Full stream/state table,Needed for every major internal QRB stream,not provided as complete table,P0
+DEL-UTIL-001,Utility list,LKT/ALAT current offers include utilities sections; historic LKT expected utility lists,partly available,P0
+DEL-ICD-001,Interface control register / terminal points,Historic BL/interface lists and current interface sections support need,not unified,P0
+DEL-SLD-001,Single line diagram,LKT index identifies Single Line Diagram TAX17 VSDX rendered within PDF,page preview extracted; no embedded source file,P1
+DEL-CSA-001,Control system architecture,LKT index identifies control system architecture TAX18 VSDX rendered within PDF; ALAT has control sections,page preview extracted; no embedded source file,P1
+DEL-SPARES-001,Spare parts list,LKT index identifies option spare parts list; ALAT has spare parts categories/proposal,partial extraction only,P0/P1
+DEL-MAINT-001,Maintenance plan,LKT index identifies typical maintenance plan; ALAT has maintenance strategies,partial extraction only,P1
+DEL-SBS-001,Scope of supply/work matrix,ALAT SBS PDF image-only; OCR draft generated,not machine reliable,P0 manual QA
