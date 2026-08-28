@@ -47,7 +47,9 @@ No lower layer may silently promote content into a higher layer.
 
 ## Canonical batch — RTM-012..024
 
-| RTM | PDF page | Section | Canonical requirement projection | OFFER interface | Disposition |
+The table below is a **controlled review synopsis**. It does not replace canonical verbatim requirement text; full verbatim remains governed by Addendum II and the canonical 722-row workbook.
+
+| RTM | PDF page | Section | Controlled synopsis | OFFER interface | Disposition |
 |---|---:|---|---|---|---|
 | RTM-012 | 27 | §4.2.2 | The Contractor shall define and implement all necessary QPS operational scenarios and transitions, including at minimum those specified in §4.2.2; intermediate operational steps may be introduced where required by the design. | None expected | Review only; no closure. |
 | RTM-013 | 27 | §4.2.2 | All QPS operational scenarios and transitions shall be integrated into the QPS design and control system, including controlled execution and QPS:CIS scenario/sub-step/readiness/hold-abort status. | None expected | Review only; no closure. |
