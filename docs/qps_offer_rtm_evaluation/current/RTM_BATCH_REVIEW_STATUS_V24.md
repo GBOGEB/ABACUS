@@ -33,6 +33,25 @@ These placeholders shall be replaced only when exact rank/tier/BT/PCA values are
 
 Repository-side historical/recompute ranking material may be used only after its lineage to v24 is explicitly established. Presence of ranking values in a log or navigator is not, by itself, proof that the values are governed v24 outputs.
 
+### Reconciliation finding RF-V24-001 — rank/tier export lineage not established
+
+A Library sweep located v24 pointers plus ranking-bearing HTML/patch/recompute artifacts, but no CSV/JSON/HTML export whose own metadata explicitly binds its RTM rank/tier values to `QPS_OFFER_Evaluation_FULL_v24.xlsx`. Therefore no repository or Library ranking artifact is promoted as a v24 substitute in this review state.
+
+`RF-V24-001` may be closed only by one of the following governed evidence routes:
+
+1. direct read/materialisation of `QPS_OFFER_Evaluation_FULL_v24.xlsx`; or
+2. an explicitly governed v24-derived export that records, at minimum:
+   - source workbook: `QPS_OFFER_Evaluation_FULL_v24.xlsx`;
+   - source version/revision and preferably SHA-256 or another immutable source identity;
+   - export generation date/tool or reproducible generator reference;
+   - RTM ID;
+   - v24 rank;
+   - v24 tier;
+   - any BT/PCA score fields promoted into the review;
+   - an explicit statement that bidder evidence/compliance did not participate in the rank/tier derivation.
+
+Until that evidence exists, `V24_LOOKUP_REQUIRED` is the correct governed value. This is a metadata reconciliation HOLD only; it does not reopen the completed item-level requirement review ranges and does not affect the canonical requirement/OFFER crosswalk.
+
 ## OFFER boundary summary
 
 - RTM-012..024: direct canonical OFFER interface only for RTM-019..022 → OFFER-04.
