@@ -1,0 +1,43 @@
+schema_version: 1
+ssot_id: QPS-WCS-QRB-ENERGY-REV1-7
+status: AMBER
+release: rev1.7
+source_release_manifest_sha256: 274c0538c3dcd45b5702429c85f13b3a3e5227ad2675a00e6f3661a500783a19
+source_full_ssot_sha256: badda30ac7b35f1d14d9e7bf01de85af2fac36198df2cc05627c3b450bc36ff3
+canonical_data:
+  hierarchy: data/project_ssot_hierarchy_rev1_7.csv
+  sources: data/source_inventory_rev1_7.csv
+  interfaces: data/interface_icd_register_rev1_7.csv
+  operating_states: data/operating_utility_scenarios_24_30_rev1_7.csv
+  deliverables: data/deliverable_evidence_matrix_rev1_7.csv
+  rfi_gaps: data/RFI_register_rev1_7.csv
+  dmaic_metrics: data/DMAIC_KPI_metrics_rev1_7.csv
+  not_for_use: data/not_for_use_rev1_7.csv
+project_hierarchy:
+  - 01_REQUIREMENTS
+  - 02_SYSTEM_ARCHITECTURE
+  - 03_EQUIPMENT
+  - 04_INTERFACES
+  - 05_OPERATING_STATES
+  - 06_THERMODYNAMIC_STATES
+  - 07_ENERGY_EXERGY
+  - 08_UTILITIES
+  - 09_COST
+  - 10_EVIDENCE
+  - 11_DELIVERABLES
+  - 12_RFI_GAPS
+  - 13_LINEAGE
+historic_evidence_policy: Historic 2023 studies remain in EVIDENCE and values may be promoted only with explicit evidence/provenance links.
+not_for_use_until_promoted:
+  - complete_offer_extraction
+  - complete_compliance
+  - final_bidder_comparison
+  - closed_exergy_balance
+  - verified_full_price_decomposition
+  - fresh_clone_ci_cd_proof
+  - proof_all_workbooks_pdfs_mutually_consistent
+  - proof_no_stale_references
+codex_bridge:
+  repository: GBOGEB/CODEX
+  evidence_registry: 07_ops/qps_roundtrip/evidence_registry.qps_wcs_qrb_rev1_7.yaml
+  role: automation_roundtrip_ci_release_receipts
