@@ -1,0 +1,16 @@
+schema_version: 1
+bridge_id: QPS-WCS-QRB-ENERGY-REV1-7
+status: AMBER
+technical_owner: ABACUS
+automation_owner: CODEX
+release: rev1.7
+release_manifest_sha256: 274c0538c3dcd45b5702429c85f13b3a3e5227ad2675a00e6f3661a500783a19
+ssot_snapshot_sha256: badda30ac7b35f1d14d9e7bf01de85af2fac36198df2cc05627c3b450bc36ff3
+codex_registry_path: 07_ops/qps_roundtrip/evidence_registry.qps_wcs_qrb_rev1_7.yaml
+status_promotion_requires:
+  - P0_evidence_and_RFI_closure_as_applicable
+  - real_local_binary_hash_verification
+  - clean_clone_rebuild
+  - CI_pass_both_repositories
+  - recursive_manifest_and_semantic_match
+  - no_unexplained_stale_references
