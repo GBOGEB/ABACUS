@@ -12,11 +12,12 @@ This review uses only the current governed 722/50 source chain:
    - OFFER-01..OFFER-50 only;
    - PDF controls RTM/OFFER numbering and page anchors;
    - DOCX controls clean verbatim paragraph/bullet text.
-3. **RTM/OFFER BT/PCA SSOT** — `QPS_OFFER_Evaluation_FULL_v23.xlsx`:
-   - current governed evaluation/prioritisation SSOT for the fixed RTM/OFFER universe;
+3. **RTM/OFFER technical-evaluation BT/PCA SSOT** — `QPS_OFFER_Evaluation_FULL_v24.xlsx`:
+   - canonical current technical-evaluation SSOT for the fixed 50 OFFER × 722 RTM universe;
    - bidder-independent ranking, tiering and BT/PCA outputs;
    - used only for review order, prioritisation and derived analytical fields;
-   - does not override Addendum II or the canonical RTM/OFFER projection.
+   - does not override Addendum II or the canonical RTM/OFFER projection;
+   - supersedes v23 for this role.
 4. **Bidder-evidence/compliance SSOT** — `03_DATA_SSOT/offer_evidence_full.json` and `03_DATA_SSOT/rtm_evidence_full.json`:
    - downstream evidence layer only;
    - fixed cardinality of 50 OFFER and 722 RTM records;
@@ -30,7 +31,7 @@ The previous 735-row extraction is **superseded** and is not used as canonical i
 |---|---|---:|---:|---:|
 | Addendum II PDF/DOCX | Contract authority | Yes | No | No |
 | Canonical 722/50 workbook | Governed numbered projection / crosswalk | Projection only | No | No |
-| `QPS_OFFER_Evaluation_FULL_v23.xlsx` | BT/PCA SSOT | No | Yes | No — ranking is bidder-independent |
+| `QPS_OFFER_Evaluation_FULL_v24.xlsx` | Technical-evaluation BT/PCA SSOT | No | Yes | No — ranking is bidder-independent |
 | `offer_evidence_full.json` / `rtm_evidence_full.json` | Evidence/compliance SSOT | No | No | Yes |
 
 No lower layer may silently promote content into a higher layer.
@@ -74,7 +75,7 @@ Before any derived evidence is promoted for an item in this batch:
 
 - RTM ID and full verbatim requirement must match the canonical 722-row workbook;
 - OFFER ID, where present, must match the canonical 50-item workbook relation;
-- rank/tier/BT/PCA fields must originate from `QPS_OFFER_Evaluation_FULL_v23.xlsx`, or an explicitly governed successor;
+- rank/tier/BT/PCA fields must originate from `QPS_OFFER_Evaluation_FULL_v24.xlsx`, or an explicitly governed successor;
 - bidder evidence/status must originate from the downstream 722/50 evidence SSOT and remain evidence-layer data;
 - bidder/evaluation fields must never be written into canonical requirement wording;
 - BT/PCA rank/tier may order review but must not be written back as compliance, closure or contractual status;
