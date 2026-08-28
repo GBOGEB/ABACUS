@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 FORBIDDEN_EXTENSIONS = {
@@ -12,10 +13,10 @@ FORBIDDEN_EXTENSIONS = {
     ".zip", ".tar", ".gz", ".tgz", ".7z", ".rar", ".bundle",
     ".db", ".sqlite", ".parquet", ".h5", ".hdf5",
 }
-PRIVATE_MARKERS = [
-    "50.79163567", "29.243", "21.54863567",
-    "LKT - Offer 1", "ALAT - Offer 1",
-]
+PRIVATE_MARKERS = {
+    "high_precision_decimal": re.compile(r"\b\d{1,3}\.\d{3,}\b"),
+    "offer_identifier": re.compile(r"\b[A-Z]{2,10}\s*-\s*Offer\s+\d+\b"),
+}
 TEXT_EXTENSIONS = {
     ".md", ".txt", ".json", ".yaml", ".yml", ".py", ".js", ".ts",
     ".html", ".css", ".svg", ".toml", ".ini", ".cfg", ".sh", ".ps1",
@@ -44,9 +45,9 @@ def main() -> int:
             continue
         if ext in TEXT_EXTENSIONS and path.stat().st_size < 2_000_000:
             text = path.read_text(encoding="utf-8", errors="ignore")
-            for marker in PRIVATE_MARKERS:
-                if marker in text:
-                    findings.append({"path": rel, "rule": "private_data_marker", "marker": marker})
+            for marker_name, marker_pattern in PRIVATE_MARKERS.items():
+                if marker_pattern.search(text):
+                    findings.append({"path": rel, "rule": "private_data_marker", "marker": marker_name})
 
     result = {
         "schema": "qps-cost-master.public-source-policy.v1",
