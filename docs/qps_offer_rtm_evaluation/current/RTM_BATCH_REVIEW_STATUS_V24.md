@@ -31,6 +31,8 @@ The only current `V24_LOOKUP_REQUIRED` placeholders in these planned batch files
 
 These placeholders shall be replaced only when exact rank/tier/BT/PCA values are read from `QPS_OFFER_Evaluation_FULL_v24.xlsx` or from an explicitly governed v24-derived export. Older workbook values shall not be promoted as v24 values.
 
+The exact historical FULL v24 binary is now provenance-bound in `V24_BINARY_PROVENANCE_BRIDGE.md` to Git blob SHA-1 `bccab3a8ccf539db7c4a9636f1f2abee86885494` with recorded size `641318` bytes, using `docs/binary_migration/REMOVED_BINARY_PATHS.tsv` as the migration record. Any future v24-derived rank/tier export must bind to that binary identity (or an unambiguous independently verified raw-file SHA-256 mapping to it) before replacing lookup placeholders.
+
 Repository-side historical/recompute ranking material may be used only after its lineage to v24 is explicitly established. Presence of ranking values in a log or navigator is not, by itself, proof that the values are governed v24 outputs.
 
 ## OFFER boundary summary
