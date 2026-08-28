@@ -1,0 +1,11 @@
+phase,kpi,metric,actual,target,status,comment
+Define,Scope completeness,13 SSOT hierarchy nodes present,13,13,GREEN,Complete hierarchy defined
+Define,Not-for-use controls,Explicit control statements present,8,8,GREEN,Controls retained until maturity improves
+Measure,Source inventory,Uploaded binary sources hashed,6,6,GREEN,All uploaded binaries in source inventory
+Measure,Binary preview extraction,Rendered page previews and OCR records,53,25+,GREEN-YELLOW,Selected extraction complete; not exhaustive native object extraction
+Measure,ICD register,Two-sided TP1/TP2 interface cards,10,10+,GREEN-YELLOW,Key services included; terminal details still require bidder closure
+Analyze,RFI topics,Numbered P0 contractor questions,20,20,GREEN,Negotiation question register built
+Analyze,PCA diagnostic,Utility/interface PCA run,1,1,GREEN-YELLOW,"Diagnostic only, not causal proof"
+Improve,Rendered outputs,PDF/HTML/PPTX/XLSX/MD generated,5,5,PENDING_QA,To be validated after render tests
+Control,Manifest,Recursive SHA-256 manifest,1,1,PENDING_QA,Generated after final artifact build
+Control,Fresh clone / CI,Git clean clone and CI pass,0,1,RED,Not yet promoted; GitHub integration roundtrip in progress

@@ -1,0 +1,9 @@
+not_for_use_id,clear_statement,evidence_reason
+NFU-001,Do not use as proof that every current-offer section has been extracted,Current binary extraction is page-preview/OCR draft plus selected object registration; not full native-object extraction.
+NFU-002,Do not use as a complete compliance determination,"Evidence expectation, compliance response and actual proof are separate SSOT fields."
+NFU-003,Do not use as a final bidder comparison,"Current analysis is screening/negotiation support, not final award decision."
+NFU-004,Do not use as a closed exergy balance,Complete QRB state tables and real-fluid h/s data are not yet available.
+NFU-005,Do not use as verified full-price decomposition,Cost waterfall items remain allocated or inferred unless bidder-disclosed.
+NFU-006,Do not use as evidence of fresh-clone or CI/CD pass,Status remains AMBER until both repository CI and a real local clean-clone/evidence receipt pass are linked.
+NFU-007,Do not use as proof uploaded workbooks and PDFs are mutually consistent,Crosswalk is being built; workbook repair/staleness risks remain open.
+NFU-008,Do not use as confirmation no stale references remain,Stale-child triggers are defined but full stale-reference scan is not complete.

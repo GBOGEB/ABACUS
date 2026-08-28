@@ -1,0 +1,10 @@
+scenario,mode,hp_flow_g_s,hp_kwe,pvps_kwe,cc_kwe,total_kwe_wcs_qrb_selected,hp_cw_kwth,pvps_cw_kwth,hp_room_heat_kwth,total_cw_kwth
+30-QCELL / 30 QM design,2K-OP,326,814,83,5,897,733,75,50,808
+30-QCELL / 30 QM design,2K-SB min,175,473,67,1,541,426,60,30,486
+30-QCELL / 30 QM design,2K-SB max,256,656,73,2,731,590,66,40,656
+24-QCELL / 24 QM sensitivity,2K-OP,304,760,78,5,843,684,70,47,754
+24-QCELL / 24 QM sensitivity,2K-SB min,160,430,62,1,493,387,56,27,443
+24-QCELL / 24 QM sensitivity,2K-SB max,230,590,68,2,660,531,61,36,592
+System standby,4K-SB max,246,634,0,0,634,570,0,39,570
+System standby,10K-SB max,175,473,0,0,473,426,0,29,426
+System standby,TS-SB max,90,280,0,0,280,252,0,17,252

@@ -1,0 +1,14 @@
+ssot_node,scope,rev1_7_action
+01_REQUIREMENTS,RTM / OFFER / acceptance,"Requirement expectation, compliance response, and evidence proof kept separate"
+02_SYSTEM_ARCHITECTURE,SBS / WCS / QRB / WSH / CIS,Functional hierarchy and subsystem relationships
+03_EQUIPMENT,equipment cards / BOM / quantities,"Cards include SBS tag, sub-category, quantity, scale and evidence class"
+04_INTERFACES,relationship register / terminal points / ICD,Two-sided TP1/TP2 model: requestor/consumer and provider/service terminal points
+05_OPERATING_STATES,30QM / 24QM / 2K-OP / 2K-SB / 4K-SB,Design and operational scenarios
+06_THERMODYNAMIC_STATES,stream IDs / P / T / m / h / s / quality,P0 closure register for independent cycle reproduction
+07_ENERGY_EXERGY,electrical / heat / work / exergy / invCOP,"Energy, exergy and efficiency calculations with provenance class"
+08_UTILITIES,electric / CW / HVAC / air / heat recovery,Facility and package support services
+09_COST,CAPEX / spares / OPEX / replacement / RAMS,Cost and lifecycle projection; source-bound only
+10_EVIDENCE,current offer / historic / calculated / inferred,Historic studies live here; values promoted only through evidence links
+11_DELIVERABLES,PFD / P&ID / T-s / datasheets / ICD / FAT/SAT,Deliverable promise vs current availability vs model closure sufficiency
+12_RFI_GAPS,numbered closure actions,Negotiation/compliance/understanding questions
+13_LINEAGE,source -> SSOT -> calculations -> figures -> PDF/PPT/HTML,Stale-child tracking and hashes
