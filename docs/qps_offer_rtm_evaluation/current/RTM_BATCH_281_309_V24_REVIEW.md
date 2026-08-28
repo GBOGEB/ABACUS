@@ -32,9 +32,11 @@ The v24 binary is the governing prioritisation SSOT, but its exact binary is not
 
 ## Engineering grouping
 
+The tables below are **controlled review synopses**. They do not replace canonical verbatim requirement text; full verbatim remains governed by Addendum II and the canonical 722-row workbook.
+
 ### A. QDB / WPS interface control — RTM-281..297
 
-| RTM | Section | Canonical requirement projection | Evidence/review focus | v24 priority |
+| RTM | Section | Controlled synopsis | Evidence/review focus | v24 priority |
 |---|---|---|---|---|
 | RTM-281 | §4.5.1 | QPS mechanically interfaces with QDB at the QRB–QLM connection; interface definition and site connection execution are led/performed by SCK CEN via the QDB Contractor. | Interface ownership, physical boundary, responsibility split. | V24_LOOKUP_REQUIRED |
 | RTM-282 | §4.5.1 | Contractor supports definition of the QRB–QLM interface, including QRB-side constraints such as geometry, space envelope, accessibility and allowable loads. | ICD/interface data completeness. | V24_LOOKUP_REQUIRED |
@@ -56,7 +58,7 @@ The v24 binary is the governing prioritisation SSOT, but its exact binary is not
 
 ### B. QPS:CIS general controls — RTM-298..309
 
-| RTM | Section | Canonical requirement projection | Evidence/review focus | v24 priority |
+| RTM | Section | Controlled synopsis | Evidence/review focus | v24 priority |
 |---|---|---|---|---|
 | RTM-298 | §4.6.3 | Contractor designs QPS:CIS in accordance with Controls, Interlocks and IT Documentation in [AD_05]. | Controlled external-reference applicability and design traceability. | V24_LOOKUP_REQUIRED |
 | RTM-299 | §4.6.3 | QPS:CIS includes all Figure-11 green components plus any additional systems/subsystems needed for QPS performance, function and safety. | Architecture completeness and scope closure. | V24_LOOKUP_REQUIRED |
