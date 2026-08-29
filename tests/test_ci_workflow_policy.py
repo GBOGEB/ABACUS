@@ -1,4 +1,6 @@
+import contextlib
 import importlib.util
+import io
 import json
 import sys
 import tempfile
@@ -38,6 +40,29 @@ class WorkflowPolicyTests(unittest.TestCase):
         for cluster, data in self.policy["clusters"].items():
             if cluster != "legacy":
                 self.assertTrue(data["canonical"], cluster)
+
+    def test_check_mode_rejects_stale_markdown_without_overwriting_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            report_path = Path(tmp) / "report.md"
+            report_path.write_text("stale report\n", encoding="utf-8")
+            original_argv = sys.argv
+            sys.argv = [
+                "audit_ci_workflows.py",
+                "--policy",
+                str(ROOT / "ci/governance/workflow_policy.json"),
+                "--workflow-dir",
+                str(ROOT / ".github/workflows"),
+                "--markdown-output",
+                str(report_path),
+                "--check",
+            ]
+            try:
+                with contextlib.redirect_stderr(io.StringIO()):
+                    result = MODULE.main()
+            finally:
+                sys.argv = original_argv
+            self.assertEqual(1, result)
+            self.assertEqual("stale report\n", report_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
