@@ -1,0 +1,95 @@
+{
+  "schema": "qps-rtm-coverage-graph/v1",
+  "authority": "Contract/Addendum II -> canonical RTM 722/50 -> Owner disposition",
+  "purpose": "Continuous RTM<->OFFER<->RTM review propagation. Graph coverage is not requirement closure.",
+  "metrics": {
+    "canonical_rtm_total": 722,
+    "canonical_offer_total": 50,
+    "selector_governed_reviewed": 146,
+    "granular_live_states_on_main": 23,
+    "dedicated_t0_backfill": 43,
+    "minimum_distinct_governed_or_touched": 169,
+    "minimum_distinct_coverage_pct": 23.41,
+    "formal_requirement_closure_claimed": 0
+  },
+  "review_expansion_rule": [
+    "ranked RTM seed",
+    "canonical RTM->OFFER direct/supporting edges",
+    "all RTMs linked to those OFFER nodes",
+    "canonical same-family / parent-child RTMs",
+    "derived engineering dependencies, labelled separately",
+    "both bidder evidence lanes",
+    "Owner disposition per individual RTM"
+  ],
+  "edge_classes": {
+    "canonical_direct": "Canonical primary/exact-contract OFFER<->RTM relationship",
+    "canonical_supporting": "Canonical supporting/contextual OFFER<->RTM relationship",
+    "derived_dependency": "Engineering dependency proposed by review; never contractual authority until governed promotion"
+  },
+  "t0_backfill": [
+    {"rtm":"RTM-693","rank":1,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-595","rank":2,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-687","rank":3,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_direct"}]},
+    {"rtm":"RTM-700","rank":4,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-608","rank":5,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-327","rank":6,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-25","edge":"canonical_direct"}]},
+    {"rtm":"RTM-514","rank":7,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-39","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-613","rank":8,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-075","rank":9,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-12","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-600","rank":10,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-002","rank":11,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-03","edge":"canonical_direct"},{"id":"OFFER-01","edge":"canonical_supporting"},{"id":"OFFER-02","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-596","rank":12,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-597","rank":13,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-598","rank":14,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-599","rank":15,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-612","rank":16,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-686","rank":17,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-605","rank":18,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-689","rank":19,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-691","rank":20,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-695","rank":21,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-603","rank":22,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-604","rank":23,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-609","rank":24,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-001","rank":25,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-01","edge":"canonical_direct"},{"id":"OFFER-02","edge":"canonical_supporting"},{"id":"OFFER-03","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-003","rank":26,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-01","edge":"canonical_direct"},{"id":"OFFER-02","edge":"canonical_supporting"},{"id":"OFFER-03","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-004","rank":27,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-02","edge":"canonical_direct"},{"id":"OFFER-01","edge":"canonical_supporting"},{"id":"OFFER-03","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-594","rank":28,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-601","rank":29,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-602","rank":30,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-606","rank":31,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-607","rank":32,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-610","rank":33,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-611","rank":34,"status":"GOVERNED_REVIEW_BACKFILL","offers":[]},
+    {"rtm":"RTM-688","rank":35,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_direct"}]},
+    {"rtm":"RTM-690","rank":36,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-692","rank":37,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-694","rank":38,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-696","rank":39,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-702","rank":40,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-703","rank":41,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-704","rank":42,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]},
+    {"rtm":"RTM-705","rank":43,"status":"GOVERNED_REVIEW_BACKFILL","offers":[{"id":"OFFER-49","edge":"canonical_supporting"}]}
+  ],
+  "offer_neighbourhoods": {
+    "OFFER-49": {
+      "governed_t0": ["RTM-687","RTM-688","RTM-689","RTM-690","RTM-691","RTM-692","RTM-693","RTM-694","RTM-695","RTM-696","RTM-700","RTM-702","RTM-703","RTM-704","RTM-705"],
+      "canonical_lower_rank_neighbours_pending_individual_disposition": ["RTM-697","RTM-698","RTM-699","RTM-701"],
+      "rule": "Review the full standards/compliance neighbourhood when any OFFER-49 seed is entered."
+    },
+    "OFFER-39": {
+      "governed_or_live": ["RTM-498","RTM-512","RTM-514","RTM-515","RTM-516","RTM-517","RTM-520","RTM-522","RTM-523","RTM-524","RTM-525","RTM-537","RTM-549"],
+      "rule": "FAT/SAT umbrella: expand ranked seeds to all canonically linked FAT/SAT RTMs before manual disposition."
+    },
+    "OFFER-25": {"governed_t0":["RTM-327"],"rule":"Expand through the canonical cybersecurity section and related digital-product obligations."},
+    "OFFER-12": {"governed_t0":["RTM-075"],"rule":"Expand through invCOP parent/child calculations and evidence requirements."},
+    "OFFER-01/02/03": {"governed_t0":["RTM-001","RTM-002","RTM-003","RTM-004"],"rule":"Treat responsibility, assumptions, deviations and derived requirements as one governance neighbourhood."}
+  },
+  "controls": {
+    "dependency_coverage_is_not_closure": true,
+    "individual_disposition_required_for_closure": true,
+    "offer_response_cannot_redefine_rtm": true,
+    "derived_edges_must_be_labelled": true,
+    "accepted_release_hold": "UNCHANGED_INDEPENDENT"
+  }
+}
