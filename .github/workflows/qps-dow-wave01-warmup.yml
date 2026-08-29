@@ -1,0 +1,128 @@
+name: QPS DOW Wave 01 Warm-up
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CORRELATION_ID: QPS-FED-W01
+  TARGET_DIR: federation/qps/wave-01/input
+
+jobs:
+  dow-warmup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install DOW dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then pip install -r DMAIC_V3/requirements.txt; fi
+
+      - name: Stage 0 - show execution architecture
+        run: |
+          echo "QPS CHILD SSOT"
+          echo "      |"
+          echo "      v"
+          echo "ABACUS DOW: metadata -> hooks -> convergence -> knowledge -> ranking -> validation"
+          echo "      |"
+          echo "      v"
+          echo "RETURN ARTIFACT -> QPS CHILD DISPOSITION"
+          echo "correlation_id=${CORRELATION_ID}"
+
+      - name: Run canonical DOW integration executor
+        id: dow
+        continue-on-error: true
+        run: |
+          set +e
+          python DMAIC_V3/dow_integration_executor.py --iteration 1 --target "${TARGET_DIR}" --verbose 2>&1 | tee federation/qps/wave-01/dow_run.log
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build visible stage receipt
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          correlation = "QPS-FED-W01"
+          log_path = Path("federation/qps/wave-01/dow_run.log")
+          log = log_path.read_text(encoding="utf-8", errors="replace") if log_path.exists() else ""
+          stages = [
+              ("metadata_injection", "STAGE 1: Metadata Injection"),
+              ("recursive_hooks", "STAGE 2: Recursive Hooks Injection"),
+              ("convergence", "STAGE 3: Convergence Calculation"),
+              ("knowledge_extraction", "STAGE 4: Knowledge Extraction"),
+              ("recursive_self_ranking", "STAGE 5: Recursive Self-Ranking"),
+              ("validation", "STAGE 6: Validation"),
+          ]
+          stage_status = []
+          for name, marker in stages:
+              seen = marker in log
+              stage_status.append({"stage": name, "visible": seen, "status": "OBSERVED" if seen else "NOT_OBSERVED"})
+          fixture = Path("federation/qps/wave-01/input/qps_federation_fixture.json")
+          input_sha = hashlib.sha256(fixture.read_bytes()).hexdigest() if fixture.exists() else None
+          result_file = Path("dow_integration_results_iteration_1.json")
+          result = json.loads(result_file.read_text(encoding="utf-8")) if result_file.exists() else {"status": "missing_result"}
+          receipt = {
+              "schema": "abacus-dow-wave-receipt/v1",
+              "correlation_id": correlation,
+              "engine": "DMAIC_V3/dow_integration_executor.py",
+              "input_sha256": input_sha,
+              "engine_status": result.get("status", "unknown"),
+              "stages": stage_status,
+              "result_artifact": str(result_file),
+              "child_disposition": None,
+              "authority_rule": "Parent output cannot self-approve QPS engineering decisions"
+          }
+          out = Path("federation/qps/wave-01/dow_wave_receipt.json")
+          out.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Publish visible stage summary
+        run: |
+          echo "## DOW Wave 01 — ${CORRELATION_ID}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          echo 'QPS CHILD SSOT' >> "$GITHUB_STEP_SUMMARY"
+          echo '      |' >> "$GITHUB_STEP_SUMMARY"
+          echo '      v' >> "$GITHUB_STEP_SUMMARY"
+          echo 'ABACUS DOW' >> "$GITHUB_STEP_SUMMARY"
+          echo '  1 metadata' >> "$GITHUB_STEP_SUMMARY"
+          echo '  2 recursive hooks' >> "$GITHUB_STEP_SUMMARY"
+          echo '  3 convergence' >> "$GITHUB_STEP_SUMMARY"
+          echo '  4 knowledge extraction' >> "$GITHUB_STEP_SUMMARY"
+          echo '  5 self-ranking' >> "$GITHUB_STEP_SUMMARY"
+          echo '  6 validation' >> "$GITHUB_STEP_SUMMARY"
+          echo '      |' >> "$GITHUB_STEP_SUMMARY"
+          echo '      v' >> "$GITHUB_STEP_SUMMARY"
+          echo 'RETURN -> CHILD DISPOSITION' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          cat federation/qps/wave-01/dow_wave_receipt.json >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload DOW warm-up artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-dow-wave01-${{ github.run_id }}
+          path: |
+            federation/qps/wave-01/dow_run.log
+            federation/qps/wave-01/dow_wave_receipt.json
+            federation/qps/wave-01/input/qps_federation_fixture.json
+            dow_integration_results_iteration_1.json
+          if-no-files-found: warn
+
+      - name: Fail if canonical executor failed
+        if: steps.dow.outputs.exit_code != '0'
+        run: |
+          echo "Canonical DOW executor returned exit code ${{ steps.dow.outputs.exit_code }}. Artifacts were preserved for diagnosis."
+          exit 1
