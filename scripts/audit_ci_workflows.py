@@ -70,7 +70,7 @@ def parse_workflow(path: Path) -> Workflow:
     in_run = False
     run_indent = 0
     for line in lines:
-        match = re.match(r"^(\s*)run:\s*(.*)$", line)
+        match = re.match(r"^(\s*)(?:-\s+)?run:\s*(.*)$", line)
         if match:
             in_run = True
             run_indent = len(match.group(1))
@@ -260,11 +260,20 @@ def main() -> int:
     if args.json_output:
         args.json_output.parent.mkdir(parents=True, exist_ok=True)
         args.json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    if args.markdown_output:
-        args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
-        args.markdown_output.write_text(markdown, encoding="utf-8")
-
     errors = []
+    if args.markdown_output:
+        if args.check:
+            if not args.markdown_output.exists():
+                errors.append(f"generated report is missing: {args.markdown_output}")
+            elif args.markdown_output.read_text(encoding="utf-8") != markdown:
+                errors.append(
+                    f"generated report is stale: {args.markdown_output}; "
+                    "rerun without --check to refresh it"
+                )
+        else:
+            args.markdown_output.parent.mkdir(parents=True, exist_ok=True)
+            args.markdown_output.write_text(markdown, encoding="utf-8")
+
     if report["unclassified"]:
         errors.append(f"unclassified workflows: {', '.join(report['unclassified'])}")
     if policy["quality_gates"]["allow_multiple_rule_matches"] is False and report["multiple_matches"]:
