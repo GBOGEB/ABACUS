@@ -30,7 +30,7 @@ jobs:
           FROZEN='0291d43990d73a45058ad19fe5ce6ed97e92e178'
           PATH_IN_REPO='docs/qps_offer_rtm_evaluation/current/QPS_OFFER_Evaluation_FULL_v24.xlsx'
           EXPECTED_BLOB='bccab3a8ccf539db7c4a9636f1f2abee86885494'
-          EXPECTED_SHA256='3e84a3ca2052d6fb56d4a86d4c96364e8c6b8d673dea327353175578916a7118'
+          EXPECTED_SHA256='3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118'
           EXPECTED_SIZE='641318'
 
           if ! git cat-file -e "${FROZEN}^{commit}" 2>/dev/null; then
@@ -65,7 +65,7 @@ jobs:
           path = '/tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx'
           frozen = '0291d43990d73a45058ad19fe5ce6ed97e92e178'
           blob = 'bccab3a8ccf539db7c4a9636f1f2abee86885494'
-          sha256 = '3e84a3ca2052d6fb56d4a86d4c96364e8c6b8d673dea327353175578916a7118'
+          sha256 = '3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118'
           size = 641318
           targets = {f'RTM-{i:03d}' for i in list(range(48,64)) + list(range(281,310))}
           keep_re = re.compile(r'(?:^|[^a-z])(rtm|rank|tier|priority|bradley|terry|\bbt\b|pca|score|lambda|weight|dimension|gate)(?:[^a-z]|$)', re.I)
