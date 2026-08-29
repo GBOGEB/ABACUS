@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "iteration": 1,
+    "phase": "federation_warmup",
+    "version": "1.0.0",
+    "correlation_id": "QPS-FED-W01",
+    "source_repository": "GBOGEB/cryoplant-project",
+    "authority": "CHILD_SSOT_DERIVED_FIXTURE",
+    "confidential": false
+  },
+  "system_under_test": {
+    "name": "QPS OCD ADR federation",
+    "scope": ["OCD", "ADR", "RTM", "TODO", "reliability-budget"],
+    "authority_rule": "Contract/Addendum II remains primary authority; parent findings are advisory or derived until child disposition"
+  },
+  "claims": [
+    {
+      "id": "W01-C01",
+      "text": "Cold-compressor single-stage loss removes full 2 K operation while a colder standby state may remain available.",
+      "status": "derived",
+      "trace": "ADR-QPS-010"
+    },
+    {
+      "id": "W01-C02",
+      "text": "Verified Table-10 allocation requires non-overlapping contributor consequence and reliability evidence.",
+      "status": "derived",
+      "trace": "TODO-009"
+    },
+    {
+      "id": "W01-C03",
+      "text": "DOW and KEB findings require child-owned disposition before SSOT promotion.",
+      "status": "governance",
+      "trace": "QPS_DOW_KEB_EXECUTION_ARCHITECTURE_SSOT_v0.1"
+    }
+  ],
+  "recursive_hooks": {
+    "consumed_from": ["cryoplant-project/OCD", "cryoplant-project/ADR", "cryoplant-project/TODO"],
+    "feeds_into": ["QPS child disposition", "DMAIC/PCA/BT priority", "anonymized parent regression learning"]
+  },
+  "convergence_metrics": {
+    "quality_score": 0.68,
+    "convergence_status": "improving",
+    "improvement_from_previous": 0.0
+  },
+  "requested_return": {
+    "finding_fields": ["finding_id", "source_reference", "target_ocd_or_adr", "finding_type", "confidence", "proposed_action", "authority_level", "input_hash", "output_hash"],
+    "child_disposition": null
+  }
+}
