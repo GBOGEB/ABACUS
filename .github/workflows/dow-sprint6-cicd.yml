@@ -7,8 +7,6 @@ on:
       - 'rich_padding/**'
       - '13_CORE_SYSTEMS/DMAIC/**'
       - '.github/workflows/dow-sprint6-cicd.yml'
-  pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
     inputs:
       iteration_type:

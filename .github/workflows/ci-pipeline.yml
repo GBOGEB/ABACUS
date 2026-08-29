@@ -3,8 +3,6 @@ name: Continuous Integration Pipeline
 on:
   push:
     branches: [ main, master, develop, feature/* ]
-  pull_request:
-    branches: [ main, master, develop ]
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC
   workflow_dispatch:

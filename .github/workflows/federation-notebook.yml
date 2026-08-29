@@ -10,8 +10,6 @@ on:
       - 'src/dmaic/federation.py'
       - 'DMAIC_V3/tests/test_smoke_federation_jupyter.py'
       - '.github/workflows/federation-notebook.yml'
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
 
 permissions:

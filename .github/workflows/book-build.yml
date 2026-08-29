@@ -7,12 +7,6 @@ on:
       - '**.md'
       - 'book.yaml'
       - 'scripts/build_book.py'
-  pull_request:
-    branches: [main]
-    paths:
-      - '**.md'
-      - 'book.yaml'
-      - 'scripts/build_book.py'
   workflow_dispatch:
 
 jobs:
