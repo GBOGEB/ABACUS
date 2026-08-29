@@ -64,6 +64,11 @@ class WorkflowPolicyTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertEqual("stale report\n", report_path.read_text(encoding="utf-8"))
 
+    def test_governance_runs_when_generated_inventory_changes(self):
+        workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(encoding="utf-8")
+        governed_path = '- "docs/ci/WORKFLOW_RATIONALIZATION.md"'
+        self.assertEqual(2, workflow.count(governed_path))
+
 
 if __name__ == "__main__":
     unittest.main()
