@@ -1,7 +1,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `de3ece7fc2e88d5b97ff9c890472525c600d0fcf815c9d91af7294ce13a62f3a`
+Policy SHA-256: `c5cd75b1e144951270b2db0d9a3b19f3fdb934e8959e4e87e73755d2aeefac8b`
 
 ## Outcome
 
@@ -31,17 +31,17 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 10 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 12 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 7 | Ruff security, Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 8 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 7 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 1 | This policy, inventory, overlap and staleness gate. |
-| `legacy` | — | 3 | Superseded workflows kept temporarily for manual comparison before deletion. |
+| `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
 ## Immediate consolidation decisions
 
-- `security-scan.yml` is the PR/push security owner; standalone `bandit.yml` becomes manual comparison only.
+- `security-scan.yml` is the Ruff PR/push security owner; `bandit.yml` retains scheduled/manual Bandit SARIF evidence.
 - `bridge-ci.yml` is the bridge owner; legacy `ci.yml` becomes manual comparison only.
 - `ci-codex.yml` is retired from automatic ABACUS execution. Cross-repo truth travels only through a versioned manifest/hash contract.
 - Full regression, bootstrap/statistics, bridge and DMAIC suites use path-scoped PR triggers; `ci-abacus.yml` remains the fast general gate.
@@ -53,7 +53,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `security-scan.yml`, `semgrep.yml` |
+| PR write exceptions | `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -111,7 +111,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `security` | `osv-scanner.yml` | push, pull_request, merge_group, schedule | 2 | `keep` | — |
 | 20 | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `security` | `security-dashboard.yml` | workflow_run, schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 2 | `keep` | — |
+| 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `qps-cost-roundtrip-contract.yml` | pull_request, push | 1 | `keep` | — |
@@ -144,7 +144,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | — |
 | 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
-| 50 | `legacy` | `bandit.yml` | schedule, workflow_dispatch | 1 | `consolidate` | `security-scan.yml` |
+| 40 | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 50 | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
 | 90 | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
 
@@ -153,13 +153,10 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`, `validation.yml`
 - `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
 - `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
-- `-o bandit-results.sarif || true` — `bandit.yml`, `security-scan.yml`
 - `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
-- `bandit -r DMAIC_V3 \` — `bandit.yml`, `security-scan.yml`
 - `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120` — `ci.yml`, `reusable-ci.yml`
 - `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
-- `pip install bandit[toml]` — `dow-integration-ci-cd.yml`, `security-scan.yml`
 - `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
 - `pip install pre-commit pytest pytest-cov` — `ci-abacus.yml`, `ci-codex.yml`
@@ -170,6 +167,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pyyaml pytest` — `dow-integration-ci-cd.yml`, `governance.yml`
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
+- `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
+- `python -m pytest tests -v` — `governance.yml`, `validation.yml`
 
 ## Control rule
 
