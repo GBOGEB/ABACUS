@@ -1,0 +1,28 @@
+name: OSV-Scanner Scheduled
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'   # Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  scan-scheduled:
+    name: OSV Scan (push / schedule)
+    # Reusable workflow handles SARIF upload internally.
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@6e4298ebc4db23e847df9b2e2de2939d6f066c67" # v2.5.1
+    with:
+      scan-args: |-
+        -r
+        --skip-git
+        ./
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
