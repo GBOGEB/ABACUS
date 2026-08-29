@@ -49,7 +49,7 @@ jobs:
           ws = wb['RTM_RANKING']
           headers = [ws.cell(5,c).value for c in range(1, ws.max_column+1)]
           idx = {str(v).strip(): i+1 for i,v in enumerate(headers) if v is not None}
-          wanted = ['Rank','RTM ID','Tier','Gate','Weighted S','BT Win %','BT λ Index','Primary Dimension']
+          wanted = ['Rank','RTM ID','Tier','Gate','Weighted S','BT Win %','BT λ index','Primary dimension']
           missing = [x for x in wanted if x not in idx]
           if missing:
               raise SystemExit(f'missing headers: {missing}; headers={headers}')
@@ -72,8 +72,8 @@ jobs:
                   'gate':ws.cell(r,idx['Gate']).value,
                   'weighted_s':ws.cell(r,idx['Weighted S']).value,
                   'bt_win_pct':ws.cell(r,idx['BT Win %']).value,
-                  'bt_lambda_index':ws.cell(r,idx['BT λ Index']).value,
-                  'primary_dimension':ws.cell(r,idx['Primary Dimension']).value,
+                  'bt_lambda_index':ws.cell(r,idx['BT λ index']).value,
+                  'primary_dimension':ws.cell(r,idx['Primary dimension']).value,
               })
           rows.sort(key=lambda x:(x['rank'],x['rtm_id']))
           if len({x['rtm_id'] for x in rows}) != len(rows):
