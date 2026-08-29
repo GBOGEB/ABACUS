@@ -1,7 +1,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `a9db0485481ea6f5270f89c092fdf092d5c3001f02a2fbc1afc87815bd187cc4`
+Policy SHA-256: `235a4febf6761335b1fbbeddf7642eac961bbd6e27270f6669879547f997a1d4`
 
 ## Outcome
 
@@ -53,7 +53,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `auto-merge-prs.yml`, `branch-analysis.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `security-scan.yml`, `semgrep.yml` |
+| PR write exceptions | `branch-analysis.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `security-scan.yml`, `semgrep.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -136,7 +136,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `documentation` | `pages.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 30 | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | — |
 | 30 | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
-| 40 | `automation` | `auto-merge-prs.yml` | pull_request, check_suite, workflow_dispatch | 3 | `keep` | — |
+| 40 | `automation` | `auto-merge-prs.yml` | workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `branch-analysis.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | — |
