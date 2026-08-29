@@ -6,6 +6,13 @@ on:
     branches: [main]
     paths:
       - 'DMAIC_V3/dow_integration_executor.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_metadata_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py'
+      - 'DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
+      - 'local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
       - 'federation/qps/wave-01/**'
       - '.github/workflows/qps-dow-wave01-warmup.yml'
 
