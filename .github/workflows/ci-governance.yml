@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Validate workflow policy
-        run: python -m unittest ci/governance/tests/test_workflow_policy.py -v
+        run: python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v
       - name: Generate governed inventory
         run: |
           python scripts/audit_ci_workflows.py \
