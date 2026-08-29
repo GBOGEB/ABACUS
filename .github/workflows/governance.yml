@@ -2,7 +2,7 @@ name: Execution Spine Governance
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
