@@ -84,7 +84,6 @@
       "dependency-review.yml",
       "osv-scanner.yml",
       "post-merge-pr-summary.yml",
-      "security-scan.yml",
       "semgrep.yml"
     ],
     "pull_request_target_write_allowed": []
@@ -97,7 +96,7 @@
     "dmaic": {"canonical": "dmaic-enterprise-ci.yml", "intent": "DMAIC phase, convergence and maturity execution."},
     "dow": {"canonical": "dow-integration.yml", "intent": "DOW parent mechanics, integration, monitoring and warm-up."},
     "runtime_governance": {"canonical": "governance.yml", "intent": "Runtime evidence, governance, review artifacts and schema validation."},
-    "security": {"canonical": "security-scan.yml", "intent": "Ruff security, Bandit, CodeQL, dependency and supply-chain scanning."},
+    "security": {"canonical": "security-scan.yml", "intent": "Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning."},
     "delivery": {"canonical": "cd-pipeline.yml", "intent": "Build, release, deployment and publication."},
     "documentation": {"canonical": "docs-build.yml", "intent": "Documentation validation, rendering, export and Pages."},
     "automation": {"canonical": "post-merge-pr-summary.yml", "intent": "Repository maintenance, reporting, branch and PR automation."},
@@ -109,7 +108,7 @@
     {"pattern": "^ci-governance\\.yml$", "cluster": "ci_governance", "lifecycle": "pr_fast", "disposition": "canonical"},
     {"pattern": "^ci-codex\\.yml$", "cluster": "legacy", "lifecycle": "retire", "disposition": "retire", "replacement": "CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch"},
     {"pattern": "^ci\\.yml$", "cluster": "legacy", "lifecycle": "manual", "disposition": "consolidate", "replacement": "bridge-ci.yml"},
-    {"pattern": "^bandit\\.yml$", "cluster": "legacy", "lifecycle": "manual", "disposition": "consolidate", "replacement": "security-scan.yml"},
+    {"pattern": "^bandit\\.yml$", "cluster": "security", "lifecycle": "scheduled", "disposition": "keep"},
     {"pattern": "^(ci-abacus|ci-enhanced|ci-pipeline|main|abacus-cicd|ariana-cicd|tooling-ci|format-check|pytest-config-validation|smoke-test)\\.yml$", "cluster": "core_test", "lifecycle": "pr_fast", "disposition": "keep"},
     {"pattern": "^ci-cd-tests\\.yml$", "cluster": "full_regression", "lifecycle": "pr_domain", "disposition": "canonical"},
     {"pattern": "^(ci-cd|bootstrap-integration)\\.yml$", "cluster": "statistics", "lifecycle": "pr_domain", "disposition": "keep"},

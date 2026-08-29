@@ -206,7 +206,7 @@ def render_markdown(report: dict, policy: dict) -> str:
         "",
         "## Immediate consolidation decisions",
         "",
-        "- `security-scan.yml` is the PR/push security owner; standalone `bandit.yml` becomes manual comparison only.",
+        "- `security-scan.yml` is the Ruff PR/push security owner; `bandit.yml` retains scheduled/manual Bandit SARIF evidence.",
         "- `bridge-ci.yml` is the bridge owner; legacy `ci.yml` becomes manual comparison only.",
         "- `ci-codex.yml` is retired from automatic ABACUS execution. Cross-repo truth travels only through a versioned manifest/hash contract.",
         "- Full regression, bootstrap/statistics, bridge and DMAIC suites use path-scoped PR triggers; `ci-abacus.yml` remains the fast general gate.",
