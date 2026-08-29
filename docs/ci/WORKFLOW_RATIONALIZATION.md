@@ -1,11 +1,13 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy file SHA-256: `a03e9803550db55842c2efb2d467d2423ced71a07f05e291c9c764d6e6a3aef7`
+Policy SHA-256: `9b124b63bcc27084ee7ebd36b6597cc52bf1401be36d4949d478ff7e1acc63e5`
 
 ## Outcome
 
-The proposed state contains **87 workflow definitions** (86 existing plus this governance workflow). Every definition is assigned to one primary functional cluster, lifecycle stage and disposition. The pre-change baseline was PR #681 with 119 check runs (111 queued, 8 skipped) and ABACUS main with 122 check runs.
+The repository currently contains **87 workflow definitions**. All **87** are assigned to one primary functional cluster and lifecycle stage.
+
+The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
 ## Execution order
 
@@ -39,11 +41,11 @@ The proposed state contains **87 workflow definitions** (86 existing plus this g
 
 ## Immediate consolidation decisions
 
-- `security-scan.yml` is the automatic security owner; standalone `bandit.yml` becomes manual comparison only.
+- `security-scan.yml` is the PR/push security owner; standalone `bandit.yml` becomes manual comparison only.
 - `bridge-ci.yml` is the bridge owner; legacy `ci.yml` becomes manual comparison only.
-- `ci-codex.yml` is retired from automatic ABACUS execution. Cross-repo truth moves only through a versioned manifest/hash contract.
+- `ci-codex.yml` is retired from automatic ABACUS execution. Cross-repo truth travels only through a versioned manifest/hash contract.
 - Full regression, bootstrap/statistics, bridge and DMAIC suites use path-scoped PR triggers; `ci-abacus.yml` remains the fast general gate.
-- Auto-merge, branch analysis and reporting remain separate because their permissions, events and side effects differ.
+- Auto-merge, branch analysis and reporting remain separate because they have different permissions, events and side effects.
 
 ## Workflow inventory
 
@@ -91,8 +93,8 @@ The proposed state contains **87 workflow definitions** (86 existing plus this g
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-smoke.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-verification.yml` | workflow_dispatch, workflow_run | 1 | `keep` | — |
-| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validation.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
@@ -103,14 +105,14 @@ The proposed state contains **87 workflow definitions** (86 existing plus this g
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 2 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
-| 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `qps-cost-roundtrip-contract.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `specialised` | `session_tuple_ci.yml` | push, pull_request, workflow_dispatch | 3 | `keep` | — |
 | 20 | `specialised` | `v23-cicd.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
-| 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule | 8 | `keep` | — |
+| 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
 | 30 | `delivery` | `cd-pipeline.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 30 | `delivery` | `cd-unified.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
 | 30 | `delivery` | `cd.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
@@ -128,16 +130,38 @@ The proposed state contains **87 workflow definitions** (86 existing plus this g
 | 40 | `automation` | `auto-merge-prs.yml` | pull_request, check_suite, workflow_dispatch | 3 | `keep` | — |
 | 40 | `automation` | `branch-analysis.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | — |
-| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, pull_request, deployment_status | 3 | `keep` | — |
 | 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | — |
+| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, pull_request, deployment_status | 3 | `keep` | — |
 | 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | — |
 | 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
-| 50 | `legacy` | `bandit.yml` | push, pull_request, schedule | 1 | `consolidate` | `security-scan.yml` |
-| 50 | `legacy` | `ci.yml` | push, pull_request | 3 | `consolidate` | `bridge-ci.yml` |
-| 90 | `legacy` | `ci-codex.yml` | push, pull_request, workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
+| 50 | `legacy` | `bandit.yml` | schedule, workflow_dispatch | 1 | `consolidate` | `security-scan.yml` |
+| 50 | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
+| 90 | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
+
+## Repeated quality/test commands
+
+- `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`, `validation.yml`
+- `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
+- `pip install bandit[toml]` — `bandit.yml`, `dow-integration-ci-cd.yml`, `security-scan.yml`
+- `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
+- `-o bandit-results.sarif || true` — `bandit.yml`, `security-scan.yml`
+- `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
+- `bandit -r DMAIC_V3 \` — `bandit.yml`, `security-scan.yml`
+- `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120` — `ci.yml`, `reusable-ci.yml`
+- `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
+- `pip install pre-commit pytest pytest-cov` — `ci-abacus.yml`, `ci-codex.yml`
+- `pip install pytest pytest-benchmark` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
+- `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
+- `pip install pytest pyyaml` — `codespace-federation.yml`, `dow-sprint6-cicd.yml`
+- `pip install pyyaml pytest` — `dow-integration-ci-cd.yml`, `governance.yml`
+- `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
+- `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 
 ## Control rule
 
-A workflow change fails CI governance when a definition is unclassified, matches more than one policy rule, or a canonical owner is missing. This report is derived; `ci/governance/workflow_policy.json` is the SSOT.
-
+A workflow change fails CI governance when a definition is unclassified, a canonical owner is missing, or the generated report no longer matches the policy. This report is derived; `ci/governance/workflow_policy.json` is the SSOT.
