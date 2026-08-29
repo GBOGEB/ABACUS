@@ -7,6 +7,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 POLICY = ROOT / "ci/governance/workflow_policy.json"
 WORKFLOWS = ROOT / ".github/workflows"
+WRITE_SCOPES = (
+    "actions: write",
+    "checks: write",
+    "contents: write",
+    "deployments: write",
+    "issues: write",
+    "packages: write",
+    "pages: write",
+    "pull-requests: write",
+    "security-events: write",
+)
 
 
 class ExecutionTierTests(unittest.TestCase):
@@ -42,6 +53,24 @@ class ExecutionTierTests(unittest.TestCase):
         for filename in self.policy["branch_push_controls"]["main_only"]:
             source = (WORKFLOWS / filename).read_text(encoding="utf-8")
             self.assertRegex(source, pattern, filename)
+
+    def test_pr_write_permissions_are_explicitly_approved(self):
+        allowed = set(self.policy["permission_controls"]["pr_write_allowed"])
+        actual = set()
+        for path in WORKFLOWS.glob("*.yml"):
+            source = path.read_text(encoding="utf-8")
+            if "pull_request:" in source and any(scope in source for scope in WRITE_SCOPES):
+                actual.add(path.name)
+        self.assertEqual(allowed, actual)
+
+    def test_pull_request_target_write_permissions_are_not_enabled(self):
+        allowed = set(self.policy["permission_controls"]["pull_request_target_write_allowed"])
+        actual = set()
+        for path in WORKFLOWS.glob("*.yml"):
+            source = path.read_text(encoding="utf-8")
+            if "pull_request_target:" in source and any(scope in source for scope in WRITE_SCOPES):
+                actual.add(path.name)
+        self.assertEqual(allowed, actual)
 
 
 if __name__ == "__main__":

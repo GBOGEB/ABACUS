@@ -78,6 +78,20 @@
       "docs-build.yml"
     ]
   },
+  "permission_controls": {
+    "intent": "Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.",
+    "pr_write_allowed": [
+      "auto-merge-prs.yml",
+      "branch-analysis.yml",
+      "codeql.yml",
+      "dependency-review.yml",
+      "osv-scanner.yml",
+      "post-merge-pr-summary.yml",
+      "security-scan.yml",
+      "semgrep.yml"
+    ],
+    "pull_request_target_write_allowed": []
+  },
   "clusters": {
     "core_test": {"canonical": "ci-abacus.yml", "intent": "Fast cross-version unit, pre-commit and smoke evidence."},
     "full_regression": {"canonical": "ci-cd-tests.yml", "intent": "Broad OS/version/integration/coverage regression for code changes."},

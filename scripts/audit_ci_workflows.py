@@ -212,6 +212,22 @@ def render_markdown(report: dict, policy: dict) -> str:
         "- Full regression, bootstrap/statistics, bridge and DMAIC suites use path-scoped PR triggers; `ci-abacus.yml` remains the fast general gate.",
         "- Auto-merge, branch analysis and reporting remain separate because they have different permissions, events and side effects.",
         "",
+        "## Permission controls",
+        "",
+        policy["permission_controls"]["intent"],
+        "",
+        "| Control | Workflows |",
+        "|---|---|",
+        "| PR write exceptions | "
+        + ", ".join(f"`{name}`" for name in policy["permission_controls"]["pr_write_allowed"])
+        + " |",
+        "| `pull_request_target` write exceptions | "
+        + (
+            ", ".join(f"`{name}`" for name in policy["permission_controls"]["pull_request_target_write_allowed"])
+            or "none"
+        )
+        + " |",
+        "",
         "## Workflow inventory",
         "",
         "| Order | Cluster | Workflow | Events | Jobs | Decision | Replacement |",
