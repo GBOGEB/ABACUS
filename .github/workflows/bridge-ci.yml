@@ -10,6 +10,11 @@ on:
       - '.github/workflows/bridge-ci.yml'
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/tests/test_bridge_integration.py'
+      - 'run_deployment_test_system.py'
+      - '.github/workflows/bridge-ci.yml'
   workflow_dispatch:
     inputs:
       test_suite:
