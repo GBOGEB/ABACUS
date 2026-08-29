@@ -1,71 +1,19 @@
 {
-  "schema": "qps-rtm-live-state/v1",
-  "snapshot_utc": "2026-08-29T11:50:00Z",
-  "snapshot_main_sha": "39319d398134e7352733f39abebbcc44c5772267",
-  "authority_order": [
-    "Contract/Addendum II",
-    "canonical RTM 722/50 projection",
-    "Owner acceptance definition",
-    "Contractor returned position/evidence",
-    "delta/deviation",
-    "Owner disposition",
-    "verification evidence",
-    "requirement closure"
-  ],
-  "scope": ["RTM-482", "RTM-522", "RTM-523", "RTM-524", "RTM-525"],
-  "selector": {
-    "source": "exact FULL v24 bidder-independent prioritisation",
-    "reviewed_ids": 146,
-    "remaining_at_selection": 576,
-    "bidder_evidence_used_for_rank": false
-  },
+  "schema": "qps-rtm-live-state/v2",
+  "snapshot_utc": "2026-08-29T12:05:00Z",
+  "snapshot_main_sha": "1949bcbf2e15a7d65dbc839965bb937b6fa65616",
+  "authority_order": ["Contract/Addendum II","canonical RTM 722/50 projection","Owner acceptance definition","Contractor returned position/evidence","delta/deviation","Owner disposition","verification evidence","requirement closure"],
+  "scope": ["RTM-482","RTM-522","RTM-523","RTM-524","RTM-525","RTM-161","RTM-351","RTM-517"],
+  "selector": {"source":"exact FULL v24 bidder-independent prioritisation","reviewed_ids_at_selector":146,"bidder_evidence_used_for_rank":false},
   "states": [
-    {
-      "rtm": "RTM-482", "rank": 44, "tier": "T1 Primary", "dimension": "Reliability", "offer_boundary": "No OFFER link expected",
-      "owner_baseline": "Commissioning validation before SAT includes >=24 h WCS compressor operation, cycle-gas purity, oil-removal performance, dryer-capacity validation, vibration spectral analysis and QPS:CIS interface/control-logic validation.",
-      "owner_state": "BASELINE_DEFINED_OPEN",
-      "alat": {"state": "D", "severity": "material", "summary": "Visual oil check proposed; dryer-capacity validation and vibration spectral analysis omitted/reduced; Contractor technical proposal used as limiting SAT/commissioning scope.", "owner_disposition": "REJECT_BASELINE_CHANGE_OR_REVIEW_EXPLICIT_EQ"},
-      "lkt": {"state": "NO_EXCEPTION_ON_FILE", "exception_rows": 0, "compliance_inference_allowed": false, "summary": "LKT exception-only register has no matching exception row. This does not prove compliance; exact positive commitment/evidence remains required."},
-      "closure": "OPEN"
-    },
-    {
-      "rtm": "RTM-522", "rank": 45, "tier": "T1 Primary", "dimension": "Reliability", "offer_boundary": "OFFER-39 supporting/contextual only",
-      "owner_baseline": "TS-SB SAT: 4K-SB POINT_A to TS-SB POINT_B, VLP compressors not operating, >=24 h steady operation at B, return to A, no discontinuity, contractual performance achieved.",
-      "owner_state": "BASELINE_DEFINED_OPEN",
-      "alat": {"state": "D", "severity": "material", "summary": "Required execution, transition, >=24 h run and return sequence are not preserved under proposal-only SAT limitation.", "owner_disposition": "REJECT_REDUCED_SCOPE_OR_REVIEW_EXPLICIT_EQ"},
-      "lkt": {"state": "NO_EXCEPTION_ON_FILE", "exception_rows": 0, "compliance_inference_allowed": false, "summary": "No LKT exception row; positive evidence of full sequence and duration still required."},
-      "closure": "OPEN"
-    },
-    {
-      "rtm": "RTM-523", "rank": 46, "tier": "T1 Primary", "dimension": "Reliability", "offer_boundary": "OFFER-39 supporting/contextual only",
-      "owner_baseline": "10K-SB SAT: A=4K-SB; B and C=controlled 10K-SB predefined points; VLP compressors off; >=12 h at B and >=12 h at C; transitions/return; no discontinuity; contractual performance achieved.",
-      "owner_state": "BASELINE_DEFINED_OPEN",
-      "alat": {"state": "D_CL", "severity": "material", "summary": "B/C point mapping requires clarification and test execution/durations are reduced/not explicitly committed under proposal-only SAT limitation.", "owner_disposition": "CLARIFY_POINTS_AND_REJECT_DURATION_REDUCTION_UNLESS_EQ"},
-      "lkt": {"state": "NO_EXCEPTION_ON_FILE", "exception_rows": 0, "compliance_inference_allowed": false, "summary": "No LKT exception row; positive evidence for B/C definitions, both >=12 h periods and transitions remains required."},
-      "closure": "OPEN"
-    },
-    {
-      "rtm": "RTM-524", "rank": 47, "tier": "T1 Primary", "dimension": "Reliability", "offer_boundary": "OFFER-39 supporting/contextual only",
-      "owner_baseline": "4K-SB SAT: minimum LHe levels; >=48 h at predefined 4K-SB POINT_A with sub-atmospheric compressors off; transition to Standby POINT_B including compressor start-up; no discontinuity; contractual performance achieved.",
-      "owner_state": "BASELINE_DEFINED_OPEN",
-      "alat": {"state": "D", "severity": "material", "summary": ">=48 h run and transition/start-up demonstration are not preserved under proposal-only SAT limitation.", "owner_disposition": "REJECT_REDUCED_DURATION_TRANSITION_OR_REVIEW_EQ"},
-      "lkt": {"state": "NO_EXCEPTION_ON_FILE", "exception_rows": 0, "compliance_inference_allowed": false, "summary": "No LKT exception row; positive evidence for 48 h run and compressor transition remains required."},
-      "closure": "OPEN"
-    },
-    {
-      "rtm": "RTM-525", "rank": 48, "tier": "T1 Primary", "dimension": "Reliability", "offer_boundary": "OFFER-39 supporting/contextual only",
-      "owner_baseline": "2 K SAT: Standby, predefined 2K-OP and Design Point; three back-to-back runs each >=48 h; no discontinuity; contractual performance achieved. Minimum sustained run time 144 h excluding preparation/transitions.",
-      "owner_state": "BASELINE_DEFINED_OPEN",
-      "alat": {"state": "D_MATERIAL", "severity": "high", "summary": "Operating points, three-run structure, all three >=48 h durations and acceptance elements are marked as deviations/suggestions under proposal-only SAT limitation.", "owner_disposition": "REJECT_REDUCED_2K_CAMPAIGN_OR_REVIEW_FORMAL_EQ"},
-      "lkt": {"state": "NO_EXCEPTION_ON_FILE", "exception_rows": 0, "compliance_inference_allowed": false, "summary": "No LKT exception row; positive evidence of the complete 3 x >=48 h campaign remains required."},
-      "closure": "OPEN"
-    }
+    {"rtm":"RTM-482","rank":44,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"No OFFER link expected","owner_baseline":"Commissioning validation before SAT includes >=24 h WCS compressor operation, cycle-gas purity, oil-removal performance, dryer-capacity validation, vibration spectral analysis and QPS:CIS interface/control-logic validation.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D","severity":"material","summary":"Visual oil check proposed; dryer-capacity validation and vibration spectral analysis omitted/reduced.","owner_disposition":"REJECT_BASELINE_CHANGE_OR_REVIEW_EXPLICIT_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"No LKT exception row; positive commitment/evidence remains required."},"closure":"OPEN"},
+    {"rtm":"RTM-522","rank":45,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-39 supporting/contextual only","owner_baseline":"TS-SB SAT: 4K-SB POINT_A to TS-SB POINT_B, VLP compressors not operating, >=24 h steady operation at B, return to A, no discontinuity, contractual performance achieved.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D","severity":"material","summary":"Required execution, transition, >=24 h run and return sequence are not preserved under proposal-only SAT limitation.","owner_disposition":"REJECT_REDUCED_SCOPE_OR_REVIEW_EXPLICIT_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Positive evidence of full sequence and duration still required."},"closure":"OPEN"},
+    {"rtm":"RTM-523","rank":46,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-39 supporting/contextual only","owner_baseline":"10K-SB SAT: A=4K-SB; B and C=controlled 10K-SB predefined points; VLP compressors off; >=12 h at B and >=12 h at C; transitions/return; no discontinuity; contractual performance achieved.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D_CL","severity":"material","summary":"B/C point mapping requires clarification and test execution/durations are reduced/not explicitly committed.","owner_disposition":"CLARIFY_POINTS_AND_REJECT_DURATION_REDUCTION_UNLESS_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Positive evidence for B/C definitions, both >=12 h periods and transitions remains required."},"closure":"OPEN"},
+    {"rtm":"RTM-524","rank":47,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-39 supporting/contextual only","owner_baseline":"4K-SB SAT: minimum LHe levels; >=48 h at predefined 4K-SB POINT_A with sub-atmospheric compressors off; transition to Standby POINT_B including compressor start-up; no discontinuity; contractual performance achieved.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D","severity":"material","summary":">=48 h run and transition/start-up demonstration are not preserved.","owner_disposition":"REJECT_REDUCED_DURATION_TRANSITION_OR_REVIEW_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Positive evidence for 48 h run and compressor transition remains required."},"closure":"OPEN"},
+    {"rtm":"RTM-525","rank":48,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-39 supporting/contextual only","owner_baseline":"2 K SAT: Standby, predefined 2K-OP and Design Point; three back-to-back runs each >=48 h; no discontinuity; contractual performance achieved. Minimum sustained run time 144 h excluding preparation/transitions.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D_MATERIAL","severity":"high","summary":"Operating points, three-run structure, all three >=48 h durations and acceptance elements are deviated/reduced.","owner_disposition":"REJECT_REDUCED_2K_CAMPAIGN_OR_REVIEW_FORMAL_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Positive evidence of the complete 3 x >=48 h campaign remains required."},"closure":"OPEN"},
+    {"rtm":"RTM-161","rank":50,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"No OFFER link expected","owner_baseline":"O&M manual shall include detailed oil preparation, dehydration and filtration procedures; routine oil-analysis sampling frequency; and specifications/acceptance limits for particle count, water content and acid number.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D","severity":"material","summary":"ALAT proposes removing the minimum-language and states oil preparation will be done by ALAT with no associated procedure included.","owner_disposition":"REJECT_DOCUMENTATION_OMISSION_OR_REVIEW_GOVERNED_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Exception-only absence is not compliance; positive O&M-manual commitment required."},"closure":"OPEN"},
+    {"rtm":"RTM-351","rank":53,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-29 direct — exact contract section","owner_baseline":"All operator stations/HMI panels/industrial touch PCs shall use industrial-grade hardware suitable for continuous QPS operation under temperature, dust and vibration conditions and comply with relevant industrial standards.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"NE","severity":"evidence_required","summary":"No granular ALAT exception recovered for this RTM; absence of a flag is not positive compliance evidence.","owner_disposition":"BIND_POSITIVE_HARDWARE_AND_ENVIRONMENTAL_COMPLIANCE_EVIDENCE"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"0 LKT exception rows; proposed hardware, ratings and standards evidence still required."},"closure":"OPEN"},
+    {"rtm":"RTM-517","rank":54,"tier":"T1 Primary","dimension":"Reliability","offer_boundary":"OFFER-39 supporting/contextual only","owner_baseline":"Abnormal-event SAT from QPLANT Design Point includes QPS:CIS failure; partial/total loss of electrical power, cooling water, instrument air and insulation vacuum; plus five SCK CEN-selected events from a Contractor list of at least 20 credible critical testable events, with contractual execution and acceptance sequence.","owner_state":"BASELINE_DEFINED_OPEN","alat":{"state":"D_MATERIAL","severity":"high","summary":"ALAT states for cost reasons it will not test the ten abnormal cases listed in RTM-517 and will only perform its technical-proposal subset; it also removes 'at minimum'.","owner_disposition":"REJECT_REDUCED_ABNORMAL_EVENT_SCOPE_OR_REVIEW_FORMAL_EQ"},"lkt":{"state":"NO_EXCEPTION_ON_FILE","exception_rows":0,"compliance_inference_allowed":false,"summary":"Exception-only absence is not compliance; positive abnormal-event SAT commitment required."},"closure":"OPEN"}
   ],
-  "controls": {
-    "no_requirement_closure_from_ranking": true,
-    "no_requirement_closure_from_offer_response": true,
-    "no_compliance_inference_from_missing_exception": true,
-    "dow_keb_state": "DERIVED_PROPOSED_UNTIL_GOVERNED_PROMOTION",
-    "accepted_release_hold": "UNCHANGED_INDEPENDENT"
-  }
+  "controls": {"no_requirement_closure_from_ranking":true,"no_requirement_closure_from_offer_response":true,"no_compliance_inference_from_missing_exception":true,"dow_keb_state":"DERIVED_PROPOSED_UNTIL_GOVERNED_PROMOTION","accepted_release_hold":"UNCHANGED_INDEPENDENT"}
 }
