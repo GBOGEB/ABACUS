@@ -1,6 +1,7 @@
 name: export-docs
 on:
   push:
+    branches: [main]
     paths: ["docs/**", "GLOBAL_index.json"]
   workflow_dispatch:
 jobs:
@@ -24,4 +25,3 @@ jobs:
         with:
           name: exported-docs
           path: out/
-
