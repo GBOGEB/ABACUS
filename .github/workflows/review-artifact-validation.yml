@@ -1,6 +1,7 @@
 name: Review Artifact Validation
 on:
   push:
+    branches: [main]
     paths:
       - 'docs/**'
       - 'ssot/**'
