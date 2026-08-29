@@ -9,7 +9,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", ROOT / "scripts/audit_ci_workflows.py")
+AUDIT_SCRIPT = ROOT / "ci/governance/audit_ci_workflows.py"
+SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", AUDIT_SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 sys.modules[SPEC.name] = MODULE
@@ -68,6 +69,10 @@ class WorkflowPolicyTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(encoding="utf-8")
         governed_path = '- "docs/ci/WORKFLOW_RATIONALIZATION.md"'
         self.assertEqual(2, workflow.count(governed_path))
+
+    def test_governance_audit_script_is_not_in_generic_scripts_tree(self):
+        self.assertTrue(AUDIT_SCRIPT.exists())
+        self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
     def test_full_regression_excludes_governance_only_python(self):
         workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(encoding="utf-8")

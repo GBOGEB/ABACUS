@@ -9,7 +9,7 @@ ordering, consolidation and retirement decisions.
 - `../../docs/ci/WORKFLOW_RATIONALIZATION.md` is a generated, version-bound view.
 - `tests/test_workflow_policy.py` protects classification, parsing, report freshness and
   trigger isolation.
-- `../../scripts/audit_ci_workflows.py` generates and validates the inventory.
+- `audit_ci_workflows.py` generates and validates the inventory.
 
 PCA and Bradley–Terry results are analytical evidence, not workflow-policy authority.
 CODEX and ABACUS exchange governed evidence through versioned manifests and hashes;
@@ -28,7 +28,7 @@ neither repository duplicates the other's canonical source.
 
 ```bash
 python -m unittest ci/governance/tests/test_workflow_policy.py -v
-python scripts/audit_ci_workflows.py \
+python ci/governance/audit_ci_workflows.py \
   --check \
   --json-output ci-governance-report.json \
   --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md
