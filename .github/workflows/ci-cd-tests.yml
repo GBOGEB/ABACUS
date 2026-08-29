@@ -2,9 +2,25 @@ name: CI/CD Test Suite
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [main, develop]
+    paths:
+      - '**/*.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'tox.ini'
+      - 'Dockerfile*'
+      - '.github/workflows/ci-cd-tests.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - '**/*.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'tox.ini'
+      - 'Dockerfile*'
+      - '.github/workflows/ci-cd-tests.yml'
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:

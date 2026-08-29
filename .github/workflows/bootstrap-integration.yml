@@ -1,7 +1,7 @@
 name: Bootstrap Statistics Integration CI/CD
 on:
   push:
-    branches: [ main, develop, sprint-6 ]
+    branches: [main, develop, sprint-6]
     paths:
       - 'bootstrap_eval.py'
       - 'tests/test_bootstrap_eval.py'
@@ -13,7 +13,17 @@ on:
       - 'pytest.ini'
       - '.github/workflows/bootstrap-integration.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - 'bootstrap_eval.py'
+      - 'tests/test_bootstrap_eval.py'
+      - 'tests/bootstrap_bridge.py'
+      - 'tests/test_integration_bootstrap_bridges.py'
+      - 'run_integrated_tests.py'
+      - 'comprehensive_bridge_test_suite.py'
+      - 'tests/conftest.py'
+      - 'pytest.ini'
+      - '.github/workflows/bootstrap-integration.yml'
   workflow_dispatch:
     inputs:
       test_mode:
