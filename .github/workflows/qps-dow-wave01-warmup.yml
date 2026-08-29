@@ -2,6 +2,11 @@ name: QPS DOW Wave 01 Warm-up
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'federation/qps/wave-01/**'
+      - '.github/workflows/qps-dow-wave01-warmup.yml'
 
 permissions:
   contents: read
@@ -53,7 +58,6 @@ jobs:
           python - <<'PY'
           import hashlib, json
           from pathlib import Path
-
           correlation = "QPS-FED-W01"
           log_path = Path("federation/qps/wave-01/dow_run.log")
           log = log_path.read_text(encoding="utf-8", errors="replace") if log_path.exists() else ""
@@ -65,10 +69,7 @@ jobs:
               ("recursive_self_ranking", "STAGE 5: Recursive Self-Ranking"),
               ("validation", "STAGE 6: Validation"),
           ]
-          stage_status = []
-          for name, marker in stages:
-              seen = marker in log
-              stage_status.append({"stage": name, "visible": seen, "status": "OBSERVED" if seen else "NOT_OBSERVED"})
+          stage_status = [{"stage": n, "visible": m in log, "status": "OBSERVED" if m in log else "NOT_OBSERVED"} for n, m in stages]
           fixture = Path("federation/qps/wave-01/input/qps_federation_fixture.json")
           input_sha = hashlib.sha256(fixture.read_bytes()).hexdigest() if fixture.exists() else None
           result_file = Path("dow_integration_results_iteration_1.json")
@@ -84,31 +85,18 @@ jobs:
               "child_disposition": None,
               "authority_rule": "Parent output cannot self-approve QPS engineering decisions"
           }
-          out = Path("federation/qps/wave-01/dow_wave_receipt.json")
-          out.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          Path("federation/qps/wave-01/dow_wave_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
           PY
 
       - name: Publish visible stage summary
         run: |
           echo "## DOW Wave 01 — ${CORRELATION_ID}" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          echo 'QPS CHILD SSOT' >> "$GITHUB_STEP_SUMMARY"
-          echo '      |' >> "$GITHUB_STEP_SUMMARY"
-          echo '      v' >> "$GITHUB_STEP_SUMMARY"
-          echo 'ABACUS DOW' >> "$GITHUB_STEP_SUMMARY"
-          echo '  1 metadata' >> "$GITHUB_STEP_SUMMARY"
-          echo '  2 recursive hooks' >> "$GITHUB_STEP_SUMMARY"
-          echo '  3 convergence' >> "$GITHUB_STEP_SUMMARY"
-          echo '  4 knowledge extraction' >> "$GITHUB_STEP_SUMMARY"
-          echo '  5 self-ranking' >> "$GITHUB_STEP_SUMMARY"
-          echo '  6 validation' >> "$GITHUB_STEP_SUMMARY"
-          echo '      |' >> "$GITHUB_STEP_SUMMARY"
-          echo '      v' >> "$GITHUB_STEP_SUMMARY"
-          echo 'RETURN -> CHILD DISPOSITION' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'QPS CHILD SSOT' '      |' '      v' 'ABACUS DOW' '  1 metadata' '  2 recursive hooks' '  3 convergence' '  4 knowledge extraction' '  5 self-ranking' '  6 validation' '      |' '      v' 'RETURN -> CHILD DISPOSITION' >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat federation/qps/wave-01/dow_wave_receipt.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload DOW warm-up artifacts
         uses: actions/upload-artifact@v4
