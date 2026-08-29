@@ -1,11 +1,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `c5cd75b1e144951270b2db0d9a3b19f3fdb934e8959e4e87e73755d2aeefac8b`
+Policy SHA-256: `98c3a6aca1b10789ddd4850b7208153672aadb707252803a3a177adcfb8d98ce`
 
 ## Outcome
 
-The repository currently contains **87 workflow definitions**. All **87** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **88 workflow definitions**. All **88** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -31,7 +31,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 10 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 12 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 8 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
@@ -108,7 +108,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
-| 20 | `security` | `osv-scanner.yml` | push, pull_request, merge_group, schedule | 2 | `keep` | — |
+| 20 | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
+| 20 | `security` | `osv-scheduled.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `security` | `security-dashboard.yml` | workflow_run, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
