@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'DMAIC_V3/dow_integration_executor.py'
       - 'federation/qps/wave-01/**'
       - '.github/workflows/qps-dow-wave01-warmup.yml'
 
@@ -53,34 +54,37 @@ jobs:
           echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Build visible stage receipt
+      - name: Build execution-truth receipt
         run: |
           python - <<'PY'
           import hashlib, json
           from pathlib import Path
-          correlation = "QPS-FED-W01"
-          log_path = Path("federation/qps/wave-01/dow_run.log")
-          log = log_path.read_text(encoding="utf-8", errors="replace") if log_path.exists() else ""
-          stages = [
-              ("metadata_injection", "STAGE 1: Metadata Injection"),
-              ("recursive_hooks", "STAGE 2: Recursive Hooks Injection"),
-              ("convergence", "STAGE 3: Convergence Calculation"),
-              ("knowledge_extraction", "STAGE 4: Knowledge Extraction"),
-              ("recursive_self_ranking", "STAGE 5: Recursive Self-Ranking"),
-              ("validation", "STAGE 6: Validation"),
-          ]
-          stage_status = [{"stage": n, "visible": m in log, "status": "OBSERVED" if m in log else "NOT_OBSERVED"} for n, m in stages]
           fixture = Path("federation/qps/wave-01/input/qps_federation_fixture.json")
           input_sha = hashlib.sha256(fixture.read_bytes()).hexdigest() if fixture.exists() else None
           result_file = Path("dow_integration_results_iteration_1.json")
-          result = json.loads(result_file.read_text(encoding="utf-8")) if result_file.exists() else {"status": "missing_result"}
+          result = json.loads(result_file.read_text(encoding="utf-8")) if result_file.exists() else {"status": "missing_result", "results": []}
+          expected = {1:"metadata_injection",2:"recursive_hooks",3:"convergence",4:"knowledge_extraction",5:"recursive_self_ranking",6:"validation"}
+          by_stage = {int(item.get("stage")): item for item in result.get("results", []) if item.get("stage") is not None}
+          stages = []
+          for number, name in expected.items():
+              item = by_stage.get(number)
+              stages.append({
+                  "stage_number": number,
+                  "stage": name,
+                  "status": item.get("status") if item else "NOT_REACHED",
+                  "agent": item.get("agent") if item else None,
+                  "mechanic_path": item.get("path") if item else None,
+                  "reason": (item.get("reason") or item.get("error")) if item else None,
+                  "executed": bool(item and item.get("status") == "success"),
+              })
           receipt = {
-              "schema": "abacus-dow-wave-receipt/v1",
-              "correlation_id": correlation,
+              "schema": "abacus-dow-wave-receipt/v2",
+              "correlation_id": "QPS-FED-W01",
               "engine": "DMAIC_V3/dow_integration_executor.py",
               "input_sha256": input_sha,
               "engine_status": result.get("status", "unknown"),
-              "stages": stage_status,
+              "all_required_stages_pass": all(s["executed"] for s in stages),
+              "stages": stages,
               "result_artifact": str(result_file),
               "child_disposition": None,
               "authority_rule": "Parent output cannot self-approve QPS engineering decisions"
@@ -109,8 +113,8 @@ jobs:
             dow_integration_results_iteration_1.json
           if-no-files-found: warn
 
-      - name: Fail if canonical executor failed
+      - name: Fail if any required canonical stage did not execute
         if: steps.dow.outputs.exit_code != '0'
         run: |
-          echo "Canonical DOW executor returned exit code ${{ steps.dow.outputs.exit_code }}. Artifacts were preserved for diagnosis."
+          echo "Canonical DOW executor returned exit code ${{ steps.dow.outputs.exit_code }}. Receipt identifies the blocked parent mechanic; artifacts are preserved for diagnosis."
           exit 1
