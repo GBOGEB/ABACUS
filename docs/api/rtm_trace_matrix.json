@@ -67,7 +67,7 @@
       "requirement_title": "Federation runtime registry is consumed"
     },
     {
-      "available": false,
+      "available": true,
       "evidence_artifact": "reports/dmaic_snapshot.json",
       "evidence_domain": "dmaic",
       "evidence_id": "dmaic_snapshot",
@@ -75,7 +75,7 @@
       "requirement_title": "DMAIC governance snapshots are generated"
     },
     {
-      "available": false,
+      "available": true,
       "evidence_artifact": "reports/governance_snapshot.json",
       "evidence_domain": "governance",
       "evidence_id": "governance_snapshot",
