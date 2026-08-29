@@ -1,7 +1,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `3ce2993749b3c10cbf222aa291fa3dfeb1cb9637115a5711746666e5b4a9fdef`
+Policy SHA-256: `a9db0485481ea6f5270f89c092fdf092d5c3001f02a2fbc1afc87815bd187cc4`
 
 ## Outcome
 
@@ -46,6 +46,15 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 - `ci-codex.yml` is retired from automatic ABACUS execution. Cross-repo truth travels only through a versioned manifest/hash contract.
 - Full regression, bootstrap/statistics, bridge and DMAIC suites use path-scoped PR triggers; `ci-abacus.yml` remains the fast general gate.
 - Auto-merge, branch analysis and reporting remain separate because they have different permissions, events and side effects.
+
+## Permission controls
+
+Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.
+
+| Control | Workflows |
+|---|---|
+| PR write exceptions | `auto-merge-prs.yml`, `branch-analysis.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `security-scan.yml`, `semgrep.yml` |
+| `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
 
@@ -143,7 +152,6 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`, `validation.yml`
 - `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
-- `pip install bandit[toml]` — `bandit.yml`, `dow-integration-ci-cd.yml`, `security-scan.yml`
 - `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
 - `-o bandit-results.sarif || true` — `bandit.yml`, `security-scan.yml`
 - `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
@@ -151,6 +159,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 - `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120` — `ci.yml`, `reusable-ci.yml`
 - `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install bandit[toml]` — `dow-integration-ci-cd.yml`, `security-scan.yml`
 - `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
 - `pip install pre-commit pytest pytest-cov` — `ci-abacus.yml`, `ci-codex.yml`
