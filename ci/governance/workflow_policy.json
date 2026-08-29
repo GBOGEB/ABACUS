@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "ABACUS-CI-SSOT-001",
+  "purpose": "Single source of truth for GitHub Actions grouping, lifecycle ordering, canonical ownership and consolidation decisions.",
+  "baseline_snapshot": {
+    "captured_at_utc": "2026-08-29T13:40:00Z",
+    "workflow_definitions": 86,
+    "pr_681_check_runs": 119,
+    "pr_681_queued": 111,
+    "pr_681_skipped": 8,
+    "main_check_runs": 122,
+    "note": "Counts are an observed baseline, not a permanent target. The audit regenerates current definition metrics."
+  },
+  "lifecycle_order": {
+    "pr_fast": 10,
+    "pr_domain": 20,
+    "post_merge": 30,
+    "scheduled": 40,
+    "manual": 50,
+    "retire": 90
+  },
+  "clusters": {
+    "core_test": {"canonical": "ci-abacus.yml", "intent": "Fast cross-version unit, pre-commit and smoke evidence."},
+    "full_regression": {"canonical": "ci-cd-tests.yml", "intent": "Broad OS/version/integration/coverage regression for code changes."},
+    "statistics": {"canonical": "ci-cd.yml", "intent": "Bootstrap, AHT, performance and statistical validation."},
+    "bridge_federation": {"canonical": "bridge-ci.yml", "intent": "CODEX/ABACUS bridge contract and federation smoke evidence."},
+    "dmaic": {"canonical": "dmaic-enterprise-ci.yml", "intent": "DMAIC phase, convergence and maturity execution."},
+    "dow": {"canonical": "dow-integration.yml", "intent": "DOW parent mechanics, integration, monitoring and warm-up."},
+    "runtime_governance": {"canonical": "governance.yml", "intent": "Runtime evidence, governance, review artifacts and schema validation."},
+    "security": {"canonical": "security-scan.yml", "intent": "Ruff security, Bandit, CodeQL, dependency and supply-chain scanning."},
+    "delivery": {"canonical": "cd-pipeline.yml", "intent": "Build, release, deployment and publication."},
+    "documentation": {"canonical": "docs-build.yml", "intent": "Documentation validation, rendering, export and Pages."},
+    "automation": {"canonical": "post-merge-pr-summary.yml", "intent": "Repository maintenance, reporting, branch and PR automation."},
+    "specialised": {"canonical": "qps-cost-roundtrip-contract.yml", "intent": "Bounded product or historical pipelines retained outside core CI."},
+    "ci_governance": {"canonical": "ci-governance.yml", "intent": "This policy, inventory, overlap and staleness gate."},
+    "legacy": {"canonical": null, "intent": "Superseded workflows kept temporarily for manual comparison before deletion."}
+  },
+  "rules": [
+    {"pattern": "^ci-governance\\.yml$", "cluster": "ci_governance", "lifecycle": "pr_fast", "disposition": "canonical"},
+    {"pattern": "^ci-codex\\.yml$", "cluster": "legacy", "lifecycle": "retire", "disposition": "retire", "replacement": "CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch"},
+    {"pattern": "^ci\\.yml$", "cluster": "legacy", "lifecycle": "manual", "disposition": "consolidate", "replacement": "bridge-ci.yml"},
+    {"pattern": "^bandit\\.yml$", "cluster": "legacy", "lifecycle": "manual", "disposition": "consolidate", "replacement": "security-scan.yml"},
+    {"pattern": "^(ci-abacus|ci-enhanced|ci-pipeline|main|abacus-cicd|ariana-cicd|tooling-ci|format-check|pytest-config-validation|smoke-test)\\.yml$", "cluster": "core_test", "lifecycle": "pr_fast", "disposition": "keep"},
+    {"pattern": "^ci-cd-tests\\.yml$", "cluster": "full_regression", "lifecycle": "pr_domain", "disposition": "canonical"},
+    {"pattern": "^(ci-cd|bootstrap-integration)\\.yml$", "cluster": "statistics", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(bridge-ci|codespace-federation|federation-notebook|gbogeb-abacus-integration-ci-cd)\\.yml$", "cluster": "bridge_federation", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(dmaic-commit-metrics|dmaic-enterprise-ci|dmaic-phase-execution|dmaic-v3-cd|dmaic-v3-ci|dmaic-v3-cognitive-cicd|book-build|recursive-build)\\.yml$", "cluster": "dmaic", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|background_orchestrator|sprint-trigger)\\.yml$", "cluster": "dow", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(governance-drift-detection|governance|review-artifact-validation|runtime-governance|runtime-smoke|runtime-verification|validation|validate-setup|validate_docs|yaml-validation|inventory|deployment-enforcement)\\.yml$", "cluster": "runtime_governance", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(codeql|dependency-review|osv-scanner|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$", "cluster": "security", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(cd-pipeline|cd-unified|cd|release|delta-1-deploy|delta-1-release|history-purge-20260827|remove-public-binaries)\\.yml$", "cluster": "delivery", "lifecycle": "post_merge", "disposition": "keep"},
+    {"pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$", "cluster": "documentation", "lifecycle": "post_merge", "disposition": "keep"},
+    {"pattern": "^(auto-merge-prs|branch-analysis|branch-pruner|ci-failure-debug-rerun|ci_monitor_and_issue_creator|copilot-pr-creator|dashboard-health|post-merge-pr-summary)\\.yml$", "cluster": "automation", "lifecycle": "scheduled", "disposition": "keep"},
+    {"pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd)\\.yml$", "cluster": "specialised", "lifecycle": "pr_domain", "disposition": "keep"}
+  ],
+  "quality_gates": {
+    "allow_unclassified": 0,
+    "allow_multiple_rule_matches": false,
+    "require_existing_canonical": true,
+    "required_report": "docs/ci/WORKFLOW_RATIONALIZATION.md"
+  }
+}

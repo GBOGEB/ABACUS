@@ -2,9 +2,21 @@ name: DMAIC V3 Enterprise CI
 
 on:
   push:
-    branches: [ main, develop, feature/*, release/* ]
+    branches: [main, develop, feature/*, release/*]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'requirements*.txt'
+      - 'requirements-dev.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/dmaic-enterprise-ci.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'requirements*.txt'
+      - 'requirements-dev.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/dmaic-enterprise-ci.yml'
   workflow_dispatch:
 
 env:

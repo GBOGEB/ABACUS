@@ -2,11 +2,32 @@ name: Bootstrap Statistics CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, staging ]
+    branches: [main, develop, staging]
+    paths:
+      - 'bootstrap_eval.py'
+      - 'dow_phase2_statistics.py'
+      - 'dow_phase3_reporting.py'
+      - 'aht_statistics_bridge.py'
+      - 'tests/test_bootstrap_eval.py'
+      - 'tests/test_aht_bridge.py'
+      - 'tests/test_integration.py'
+      - 'requirements*.txt'
+      - '.github/workflows/ci-cd.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - 'bootstrap_eval.py'
+      - 'dow_phase2_statistics.py'
+      - 'dow_phase3_reporting.py'
+      - 'aht_statistics_bridge.py'
+      - 'tests/test_bootstrap_eval.py'
+      - 'tests/test_aht_bridge.py'
+      - 'tests/test_integration.py'
+      - 'requirements*.txt'
+      - '.github/workflows/ci-cd.yml'
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.12'

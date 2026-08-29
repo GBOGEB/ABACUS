@@ -1,0 +1,44 @@
+import importlib.util
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", ROOT / "scripts/audit_ci_workflows.py")
+MODULE = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader is not None
+sys.modules[SPEC.name] = MODULE
+SPEC.loader.exec_module(MODULE)
+
+
+class WorkflowPolicyTests(unittest.TestCase):
+    def setUp(self):
+        self.policy = json.loads((ROOT / "ci/governance/workflow_policy.json").read_text())
+
+    def test_repository_workflows_are_classified_once(self):
+        report = MODULE.audit(ROOT / ".github/workflows", self.policy)
+        self.assertEqual([], report["unclassified"])
+        self.assertEqual({}, report["multiple_matches"])
+        self.assertEqual([], report["missing_canonical"])
+
+    def test_parser_extracts_top_level_jobs_and_events(self):
+        source = """name: Example\non:\n  push:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest -q\n  lint:\n    runs-on: ubuntu-latest\n"""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "example.yml"
+            path.write_text(source)
+            workflow = MODULE.parse_workflow(path)
+        self.assertEqual(("push", "pull_request"), workflow.events)
+        self.assertEqual(("test", "lint"), workflow.jobs)
+        self.assertIn("pytest -q", workflow.commands)
+
+    def test_policy_has_one_canonical_per_nonlegacy_cluster(self):
+        for cluster, data in self.policy["clusters"].items():
+            if cluster != "legacy":
+                self.assertTrue(data["canonical"], cluster)
+
+
+if __name__ == "__main__":
+    unittest.main()
