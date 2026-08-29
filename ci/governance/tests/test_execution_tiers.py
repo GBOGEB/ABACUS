@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -10,7 +11,8 @@ WORKFLOWS = ROOT / ".github/workflows"
 
 class ExecutionTierTests(unittest.TestCase):
     def setUp(self):
-        self.tiers = json.loads(POLICY.read_text(encoding="utf-8"))["execution_tiers"]
+        self.policy = json.loads(POLICY.read_text(encoding="utf-8"))
+        self.tiers = self.policy["execution_tiers"]
 
     def test_tier_members_exist_and_do_not_overlap(self):
         slim = set(self.tiers["slim_pr"]["workflows"])
@@ -34,6 +36,12 @@ class ExecutionTierTests(unittest.TestCase):
         source = (WORKFLOWS / "ci_monitor_and_issue_creator.yml").read_text(encoding="utf-8")
         condition = "github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'"
         self.assertIn(condition, source)
+
+    def test_controlled_push_workflows_are_main_only(self):
+        pattern = re.compile(r"(?m)^  push:\n    branches: \[main\]")
+        for filename in self.policy["branch_push_controls"]["main_only"]:
+            source = (WORKFLOWS / filename).read_text(encoding="utf-8")
+            self.assertRegex(source, pattern, filename)
 
 
 if __name__ == "__main__":
