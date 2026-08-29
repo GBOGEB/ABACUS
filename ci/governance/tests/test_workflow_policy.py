@@ -73,6 +73,11 @@ class WorkflowPolicyTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(encoding="utf-8")
         self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
 
+    def test_control_surface_declares_policy_authority(self):
+        control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")
+        self.assertIn("`workflow_policy.json` is the workflow-policy SSOT", control_surface)
+        self.assertIn("Queued checks are not counted as pass evidence", control_surface)
+
 
 if __name__ == "__main__":
     unittest.main()
