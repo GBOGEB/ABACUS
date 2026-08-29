@@ -3,8 +3,6 @@ name: Session Tuple CI/CD
 on:
   push:
     branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:

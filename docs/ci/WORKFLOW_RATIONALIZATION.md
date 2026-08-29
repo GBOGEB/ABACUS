@@ -1,7 +1,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `9b124b63bcc27084ee7ebd36b6597cc52bf1401be36d4949d478ff7e1acc63e5`
+Policy SHA-256: `7d799b74fc3ce6b9f8b3e421a9d232864f32e17706f63345d7296cf4a0b928be`
 
 ## Outcome
 
@@ -52,50 +52,50 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | Order | Cluster | Workflow | Events | Jobs | Decision | Replacement |
 |---:|---|---|---|---:|---|---|
 | 10 | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | — |
-| 10 | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
-| 10 | `core_test` | `ariana-cicd.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
+| 10 | `core_test` | `abacus-cicd.yml` | push, workflow_dispatch | 6 | `keep` | — |
+| 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 10 | `core_test` | `ci-abacus.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
-| 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | — |
-| 10 | `core_test` | `ci-pipeline.yml` | push, pull_request, schedule, workflow_dispatch | 4 | `keep` | — |
+| 10 | `core_test` | `ci-enhanced.yml` | push, workflow_dispatch | 7 | `keep` | — |
+| 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
-| 10 | `core_test` | `main.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | — |
+| 10 | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
 | 10 | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | — |
 | 10 | `core_test` | `smoke-test.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `tooling-ci.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | — |
 | 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
-| 20 | `bridge_federation` | `federation-notebook.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
-| 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, pull_request, workflow_dispatch | 10 | `keep` | — |
-| 20 | `dmaic` | `book-build.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
+| 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dmaic` | `dmaic-commit-metrics.yml` | push, workflow_run, workflow_dispatch | 3 | `keep` | — |
 | 20 | `dmaic` | `dmaic-enterprise-ci.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dmaic` | `dmaic-phase-execution.yml` | none | 1 | `keep` | — |
 | 20 | `dmaic` | `dmaic-v3-cd.yml` | push, release, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dmaic` | `dmaic-v3-ci.yml` | push, pull_request, schedule, workflow_dispatch | 9 | `keep` | — |
-| 20 | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, pull_request, workflow_dispatch | 9 | `keep` | — |
+| 20 | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 9 | `keep` | — |
 | 20 | `dmaic` | `recursive-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `background_orchestrator.yml` | schedule, workflow_dispatch | 2 | `keep` | — |
-| 20 | `dow` | `dow-integration-ci-cd.yml` | push, pull_request, workflow_dispatch | 8 | `keep` | — |
-| 20 | `dow` | `dow-integration.yml` | push, pull_request, workflow_dispatch, schedule | 4 | `keep` | — |
-| 20 | `dow` | `dow-main-cicd.yml` | pull_request, push, schedule | 1 | `keep` | — |
+| 20 | `dow` | `dow-integration-ci-cd.yml` | push, workflow_dispatch | 8 | `keep` | — |
+| 20 | `dow` | `dow-integration.yml` | push, workflow_dispatch, schedule | 4 | `keep` | — |
+| 20 | `dow` | `dow-main-cicd.yml` | push, schedule | 1 | `keep` | — |
 | 20 | `dow` | `dow-monitoring.yml` | none | 1 | `keep` | — |
 | 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `dow` | `dow-sprint6-cicd.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | — |
+| 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `runtime_governance` | `governance.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `governance.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
-| 20 | `runtime_governance` | `runtime-smoke.yml` | push, pull_request | 1 | `keep` | — |
+| 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-verification.yml` | workflow_dispatch, workflow_run | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request | 1 | `keep` | — |
-| 20 | `runtime_governance` | `validation.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validation.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
@@ -109,13 +109,13 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | 20 | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | — |
-| 20 | `specialised` | `session_tuple_ci.yml` | push, pull_request, workflow_dispatch | 3 | `keep` | — |
-| 20 | `specialised` | `v23-cicd.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `session_tuple_ci.yml` | push, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `v23-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 20 | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
-| 30 | `delivery` | `cd-pipeline.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
-| 30 | `delivery` | `cd-unified.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
-| 30 | `delivery` | `cd.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
+| 30 | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | — |
+| 30 | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | — |
+| 30 | `delivery` | `cd.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | — |
@@ -131,7 +131,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | 40 | `automation` | `branch-analysis.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | — |
-| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, pull_request, deployment_status | 3 | `keep` | — |
+| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, deployment_status | 3 | `keep` | — |
 | 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | — |
 | 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |

@@ -8,8 +8,6 @@ on:
       - 'test_integration_bridge.py'
       - 'UNIFIED_GLOB_CONFIG.yaml'
       - '.github/workflows/gbogeb-abacus-integration-ci-cd.yml'
-  pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
     inputs:
       integration_mode:

@@ -3,8 +3,6 @@ name: V2.3 Agent CI/CD Pipeline
 on:
   push:
     branches: ["main", "develop", "feature/dow-integration"]
-  pull_request:
-    branches: ["main"]
   workflow_dispatch:
 
 env:

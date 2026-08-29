@@ -19,6 +19,52 @@
     "manual": 50,
     "retire": 90
   },
+  "execution_tiers": {
+    "slim_pr": {
+      "intent": "Small default pull-request assurance lane: governance, core smoke, security and syntax evidence.",
+      "workflows": [
+        "ci-governance.yml",
+        "ci-abacus.yml",
+        "smoke-test.yml",
+        "security-scan.yml",
+        "dependency-review.yml",
+        "codeql.yml",
+        "semgrep.yml",
+        "osv-scanner.yml",
+        "format-check.yml",
+        "yaml-validation.yml",
+        "validate_docs.yml",
+        "branch-analysis.yml"
+      ]
+    },
+    "full": {
+      "intent": "Broad validation retained on main push, schedule, workflow dispatch or lifecycle events instead of every pull request.",
+      "workflows": [
+        "abacus-cicd.yml",
+        "book-build.yml",
+        "gbogeb-abacus-integration-ci-cd.yml",
+        "dmaic-v3-cognitive-cicd.yml",
+        "federation-notebook.yml",
+        "ci-enhanced.yml",
+        "cd-pipeline.yml",
+        "dow-main-cicd.yml",
+        "ariana-cicd.yml",
+        "ci_monitor_and_issue_creator.yml",
+        "governance.yml",
+        "cd.yml",
+        "main.yml",
+        "cd-unified.yml",
+        "dow-integration-ci-cd.yml",
+        "dow-sprint6-cicd.yml",
+        "session_tuple_ci.yml",
+        "runtime-smoke.yml",
+        "v23-cicd.yml",
+        "ci-pipeline.yml",
+        "dow-integration.yml",
+        "validation.yml"
+      ]
+    }
+  },
   "clusters": {
     "core_test": {"canonical": "ci-abacus.yml", "intent": "Fast cross-version unit, pre-commit and smoke evidence."},
     "full_regression": {"canonical": "ci-cd-tests.yml", "intent": "Broad OS/version/integration/coverage regression for code changes."},

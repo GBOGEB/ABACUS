@@ -7,8 +7,6 @@ on:
       - 'DMAIC_V3/**'
       - 'orchestrator_config.yaml'
       - 'ranking.yaml'
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
