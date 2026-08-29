@@ -1,0 +1,107 @@
+name: QPS v24 next priority extract
+
+on:
+  push:
+    branches: [qps-v24-next-priority-extract]
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install openpyxl==3.1.5
+      - name: Recover, verify, and rank exact FULL v24
+        shell: bash
+        run: |
+          set -euo pipefail
+          FROZEN=0291d43990d73a45058ad19fe5ce6ed97e92e178
+          PATH_IN_REPO=docs/qps_offer_rtm_evaluation/current/QPS_OFFER_Evaluation_FULL_v24.xlsx
+          EXPECTED_BLOB=bccab3a8ccf539db7c4a9636f1f2abee86885494
+          EXPECTED_SHA256=3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118
+          EXPECTED_SIZE=641318
+          if ! git cat-file -e "${FROZEN}^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$FROZEN"
+          fi
+          RESOLVED="$(git rev-parse "${FROZEN}:${PATH_IN_REPO}")"
+          test "$RESOLVED" = "$EXPECTED_BLOB"
+          git cat-file blob "$EXPECTED_BLOB" > /tmp/v24.xlsx
+          test "$(wc -c < /tmp/v24.xlsx | tr -d ' ')" = "$EXPECTED_SIZE"
+          test "$(sha256sum /tmp/v24.xlsx | awk '{print $1}')" = "$EXPECTED_SHA256"
+          test "$(git hash-object /tmp/v24.xlsx)" = "$EXPECTED_BLOB"
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from openpyxl import load_workbook
+
+          reviewed = set()
+          for a,b in [(12,24),(48,63),(236,309)]:
+              reviewed.update(f"RTM-{n:03d}" for n in range(a,b+1))
+
+          wb = load_workbook('/tmp/v24.xlsx', read_only=True, data_only=True)
+          ws = wb['RTM_RANKING']
+          headers = [ws.cell(5,c).value for c in range(1, ws.max_column+1)]
+          idx = {str(v).strip(): i+1 for i,v in enumerate(headers) if v is not None}
+          wanted = ['Rank','RTM ID','Tier','Gate','Weighted S','BT Win %','BT λ Index','Primary Dimension']
+          missing = [x for x in wanted if x not in idx]
+          if missing:
+              raise SystemExit(f'missing headers: {missing}; headers={headers}')
+
+          rows=[]
+          for r in range(6, ws.max_row+1):
+              rid=ws.cell(r,idx['RTM ID']).value
+              if not rid:
+                  continue
+              rid=str(rid).strip()
+              if rid in reviewed:
+                  continue
+              rank=ws.cell(r,idx['Rank']).value
+              if rank is None:
+                  continue
+              rows.append({
+                  'rtm_id':rid,
+                  'rank':int(rank),
+                  'tier':ws.cell(r,idx['Tier']).value,
+                  'gate':ws.cell(r,idx['Gate']).value,
+                  'weighted_s':ws.cell(r,idx['Weighted S']).value,
+                  'bt_win_pct':ws.cell(r,idx['BT Win %']).value,
+                  'bt_lambda_index':ws.cell(r,idx['BT λ Index']).value,
+                  'primary_dimension':ws.cell(r,idx['Primary Dimension']).value,
+              })
+          rows.sort(key=lambda x:(x['rank'],x['rtm_id']))
+          if len({x['rtm_id'] for x in rows}) != len(rows):
+              raise SystemExit('duplicate unreviewed RTM IDs')
+          out={
+            'schema':'qps-v24-next-priority/v1',
+            'source':{
+              'workbook':'QPS_OFFER_Evaluation_FULL_v24.xlsx',
+              'frozen_commit':'0291d43990d73a45058ad19fe5ce6ed97e92e178',
+              'git_blob_sha1':'bccab3a8ccf539db7c4a9636f1f2abee86885494',
+              'raw_sha256':'3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118',
+              'size_bytes':641318,
+              'sheet':'RTM_RANKING',
+              'bidder_evidence_used_in_derivation':False,
+            },
+            'exclusion':{
+              'already_reviewed':['RTM-012..024','RTM-048..063','RTM-236..280','RTM-281..309'],
+              'rule':'Sort remaining RTM rows by exact v24 Rank ascending; no contiguous-range inference.'
+            },
+            'generated_at_utc':datetime.now(timezone.utc).isoformat(),
+            'next_50':rows[:50]
+          }
+          with open('v24_next_priority.json','w') as f:
+              json.dump(out,f,indent=2)
+          print(json.dumps(rows[:20],indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qps-v24-next-priority
+          path: v24_next_priority.json
+          retention-days: 7
