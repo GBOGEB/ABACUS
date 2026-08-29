@@ -39,13 +39,22 @@ jobs:
           from openpyxl import load_workbook
 
           root = Path('docs/qps_offer_rtm_evaluation/current')
-          review_files = sorted(p for p in root.glob('*.md') if ('REVIEW' in p.name or 'review' in p.name.lower()))
+          governed_patterns = ('RTM_BATCH_*.md', 'RTM_TOP_GATES_*.md', 'RTM_NEXT_GATES_*.md')
+          candidates = set()
+          for pattern in governed_patterns:
+              candidates.update(root.glob(pattern))
+          review_files = sorted(
+              p for p in candidates
+              if '_STATUS_' not in p.name and not p.name.endswith('_STATUS.md')
+          )
+
           reviewed = set()
           sources = {}
           for p in review_files:
               text = p.read_text(encoding='utf-8')
-              # Count IDs only from governed review artefacts; prose references to other RTMs
-              # are deliberately not sufficient. Table rows and item headings are review declarations.
+              # A requirement is treated as reviewed only when the governed artefact
+              # declares it as a table row or item heading. Mere prose references do
+              # not remove an RTM from the unresolved queue.
               ids = set(re.findall(r'(?m)^\|\s*(RTM-\d{3})\s*\|', text))
               ids |= set(re.findall(r'(?m)^#{2,6}\s+(RTM-\d{3})(?:\s|—|-)', text))
               if ids:
@@ -74,8 +83,14 @@ jobs:
                   'primary_dimension':row[headers['Primary dimension']]
               })
           ranked.sort(key=lambda x:(x['rank'],x['rtm_id']))
+
+          # Regression guard: the canonical first governed batch must never reappear.
+          first_batch = {f'RTM-{n:03d}' for n in range(12,25)}
+          assert first_batch <= reviewed, sorted(first_batch-reviewed)
+          assert not (first_batch & {x['rtm_id'] for x in ranked}), 'reviewed RTM-012..024 leaked into unresolved queue'
+
           out={
-            'schema':'qps-v24-refreshed-unresolved/v1',
+            'schema':'qps-v24-refreshed-unresolved/v2',
             'source':{
               'workbook':'QPS_OFFER_Evaluation_FULL_v24.xlsx',
               'frozen_commit':'0291d43990d73a45058ad19fe5ce6ed97e92e178',
@@ -83,7 +98,7 @@ jobs:
               'raw_sha256':'3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118',
               'size_bytes':641318, 'sheet':'RTM_RANKING', 'bidder_evidence':False},
             'review_detection':{
-              'rule':'RTM IDs declared as markdown table rows or item headings in governed review files on branch base/main',
+              'rule':'RTM IDs declared as markdown table rows or item headings in governed RTM_BATCH / RTM_TOP_GATES / RTM_NEXT_GATES files; status/index files excluded',
               'review_file_count':len(sources), 'reviewed_id_count':len(reviewed), 'files':sources},
             'remaining_count':len(ranked),
             'next_100':ranked[:100]
