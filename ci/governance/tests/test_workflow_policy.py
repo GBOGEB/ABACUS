@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", ROOT / "scripts/audit_ci_workflows.py")
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
