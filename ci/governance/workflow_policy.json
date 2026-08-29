@@ -65,6 +65,19 @@
       ]
     }
   },
+  "branch_push_controls": {
+    "intent": "Avoid duplicate feature-branch push fan-out; retain these push workflows on main while PR or manual coverage remains separate.",
+    "main_only": [
+      "review-artifact-validation.yml",
+      "validation.yml",
+      "export-docs.yml",
+      "runtime-smoke.yml",
+      "governance.yml",
+      "yaml-validation.yml",
+      "recursive-build.yml",
+      "docs-build.yml"
+    ]
+  },
   "clusters": {
     "core_test": {"canonical": "ci-abacus.yml", "intent": "Fast cross-version unit, pre-commit and smoke evidence."},
     "full_regression": {"canonical": "ci-cd-tests.yml", "intent": "Broad OS/version/integration/coverage regression for code changes."},
