@@ -12,7 +12,8 @@ on:
       - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
       - 'DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py'
       - 'DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
-      - 'local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
+      - 'src/dmaic/contract.py'
+      - 'src/dmaic/idempotency.py'
       - 'federation/qps/wave-01/**'
       - '.github/workflows/qps-dow-wave01-warmup.yml'
 
