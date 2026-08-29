@@ -1,0 +1,19 @@
+{
+  "schema": "qps-rtm-linked-backlog/v1",
+  "basis": "RTM-197 graph harvest plus canonical OFFER family crosswalk",
+  "authority_note": "Review-control artifact only; Contract/Addendum II and canonical RTM remain authoritative; linked coverage is not closure.",
+  "families": [
+    {"offer":"OFFER-15","rtms":["RTM-141","RTM-142","RTM-143","RTM-144","RTM-145","RTM-146","RTM-147"],"governed":["RTM-142","RTM-146","RTM-147"],"pending":["RTM-141","RTM-143","RTM-144","RTM-145"]},
+    {"offer":"OFFER-16","rtms":["RTM-148","RTM-149","RTM-150","RTM-151","RTM-152"],"governed":["RTM-148","RTM-149","RTM-150","RTM-152"],"pending":["RTM-151"]},
+    {"offer":"OFFER-17","rtms":["RTM-193","RTM-194","RTM-195","RTM-196","RTM-197"],"governed":["RTM-194","RTM-195","RTM-197"],"pending":["RTM-193","RTM-196"]},
+    {"offer":"OFFER-19","rtms":["RTM-239","RTM-240","RTM-241","RTM-242","RTM-243","RTM-244","RTM-245","RTM-246","RTM-247","RTM-248"],"governed":["RTM-239","RTM-240","RTM-247"],"pending":["RTM-241","RTM-242","RTM-243","RTM-244","RTM-245","RTM-246","RTM-248"]},
+    {"offer":"OFFER-20","rtms":["RTM-252","RTM-253","RTM-254","RTM-255","RTM-256","RTM-257"],"governed":["RTM-252","RTM-253","RTM-254","RTM-255"],"pending":["RTM-256","RTM-257"]}
+  ],
+  "metrics": {"linked_family_count":5,"linked_rtm_union":33,"individually_governed":17,"pending_individual_disposition":16,"governed_pct":51.5},
+  "backlog": {
+    "B1_linked_positive_evidence_conversion": ["RTM-141","RTM-143","RTM-144","RTM-145","RTM-151","RTM-193","RTM-196","RTM-241","RTM-242","RTM-243","RTM-244","RTM-245","RTM-246","RTM-248","RTM-256","RTM-257"],
+    "B2_graph_evidence_recovery_count": 11,
+    "B3_next_exact_v24_seed": "SELECT_AFTER_B1_FAMILY_CONVERSION"
+  },
+  "controls": {"no_closure_from_linkage":true,"no_compliance_from_exception_silence":true,"family_evidence_must_be_separated_from_row_specific_evidence":true,"accepted_release_hold":"UNCHANGED_INDEPENDENT"}
+}
