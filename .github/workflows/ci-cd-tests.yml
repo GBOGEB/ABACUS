@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '!ci/governance/**'
       - 'requirements*.txt'
       - 'pyproject.toml'
       - 'setup.cfg'
@@ -15,6 +16,7 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '!ci/governance/**'
       - 'requirements*.txt'
       - 'pyproject.toml'
       - 'setup.cfg'

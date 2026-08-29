@@ -69,6 +69,10 @@ class WorkflowPolicyTests(unittest.TestCase):
         governed_path = '- "docs/ci/WORKFLOW_RATIONALIZATION.md"'
         self.assertEqual(2, workflow.count(governed_path))
 
+    def test_full_regression_excludes_governance_only_python(self):
+        workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(encoding="utf-8")
+        self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
+
 
 if __name__ == "__main__":
     unittest.main()
