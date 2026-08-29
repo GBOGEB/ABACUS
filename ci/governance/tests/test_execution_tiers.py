@@ -30,6 +30,11 @@ class ExecutionTierTests(unittest.TestCase):
             source = (WORKFLOWS / filename).read_text(encoding="utf-8")
             self.assertTrue(any(trigger in source for trigger in allowed), filename)
 
+    def test_failure_issue_job_ignores_deployment_events(self):
+        source = (WORKFLOWS / "ci_monitor_and_issue_creator.yml").read_text(encoding="utf-8")
+        condition = "github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'"
+        self.assertIn(condition, source)
+
 
 if __name__ == "__main__":
     unittest.main()
