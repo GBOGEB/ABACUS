@@ -33,19 +33,25 @@ jobs:
           EXPECTED_SHA256='3e84a3ca2052d6fb56d4a86d4c96364e8c6b8d673dea327353175578916a7118'
           EXPECTED_SIZE='641318'
 
-          # The frozen commit is no longer reachable from current branch/tag refs after
-          # binary cleanup, so a normal fetch-depth: 0 checkout does not guarantee the
-          # object is present locally. Fetch that exact historical commit explicitly.
           if ! git cat-file -e "${FROZEN}^{commit}" 2>/dev/null; then
             git fetch --no-tags origin "$FROZEN"
           fi
 
           PATH_BLOB="$(git rev-parse "${FROZEN}:${PATH_IN_REPO}")"
+          echo "resolved_blob=$PATH_BLOB"
           test "$PATH_BLOB" = "$EXPECTED_BLOB"
+
           git cat-file blob "$EXPECTED_BLOB" > /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx
-          test "$(wc -c < /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx | tr -d ' ')" = "$EXPECTED_SIZE"
-          test "$(sha256sum /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx | awk '{print $1}')" = "$EXPECTED_SHA256"
-          test "$(git hash-object /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx)" = "$EXPECTED_BLOB"
+          ACTUAL_SIZE="$(wc -c < /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx | tr -d ' ')"
+          ACTUAL_SHA256="$(sha256sum /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx | awk '{print $1}')"
+          ACTUAL_BLOB="$(git hash-object /tmp/QPS_OFFER_Evaluation_FULL_v24.xlsx)"
+          echo "actual_size=$ACTUAL_SIZE"
+          echo "actual_sha256=$ACTUAL_SHA256"
+          echo "actual_blob=$ACTUAL_BLOB"
+
+          test "$ACTUAL_SIZE" = "$EXPECTED_SIZE"
+          test "$ACTUAL_SHA256" = "$EXPECTED_SHA256"
+          test "$ACTUAL_BLOB" = "$EXPECTED_BLOB"
 
       - name: Extract governed RTM prioritisation metadata only
         shell: bash
