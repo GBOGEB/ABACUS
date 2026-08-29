@@ -6,7 +6,7 @@ on:
       - ".github/workflows/**"
       - "ci/governance/**"
       - "scripts/audit_ci_workflows.py"
-      - "tests/test_ci_workflow_policy.py"
+      - "ci/governance/tests/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
   push:
     branches: [main]
@@ -14,7 +14,7 @@ on:
       - ".github/workflows/**"
       - "ci/governance/**"
       - "scripts/audit_ci_workflows.py"
-      - "tests/test_ci_workflow_policy.py"
+      - "ci/governance/tests/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
   workflow_dispatch:
 
@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Validate workflow policy
-        run: python -m unittest tests/test_ci_workflow_policy.py -v
+        run: python -m unittest ci/governance/tests/test_workflow_policy.py -v
       - name: Generate governed inventory
         run: |
           python scripts/audit_ci_workflows.py \
