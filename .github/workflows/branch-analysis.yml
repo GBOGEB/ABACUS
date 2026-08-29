@@ -1,12 +1,8 @@
 name: Branch Analysis & Auto-Review
 
-# Triggered in two ways:
-#   1. Automatically on every PR opened/synchronised (posts a review comment)
-#   2. Manually via workflow_dispatch to analyse a specific branch or all unmerged branches
+# Trigger manually via workflow_dispatch to analyse a specific branch or all unmerged branches.
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       branch_pattern:

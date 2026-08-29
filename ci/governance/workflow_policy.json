@@ -33,8 +33,7 @@
         "osv-scanner.yml",
         "format-check.yml",
         "yaml-validation.yml",
-        "validate_docs.yml",
-        "branch-analysis.yml"
+        "validate_docs.yml"
       ]
     },
     "full": {
@@ -81,7 +80,6 @@
   "permission_controls": {
     "intent": "Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.",
     "pr_write_allowed": [
-      "branch-analysis.yml",
       "codeql.yml",
       "dependency-review.yml",
       "osv-scanner.yml",
