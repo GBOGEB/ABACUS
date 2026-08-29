@@ -1,0 +1,115 @@
+name: QPS v24 refreshed unresolved selector
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [qps-v24-refresh-unresolved-selector]
+    paths:
+      - '.github/workflows/qps-v24-refresh-unresolved-selector.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install 'openpyxl==3.1.5'
+
+      - name: Recover exact FULL v24 and select unresolved rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin 0291d43990d73a45058ad19fe5ce6ed97e92e178
+          git show 0291d43990d73a45058ad19fe5ce6ed97e92e178:docs/qps_offer_rtm_evaluation/current/QPS_OFFER_Evaluation_FULL_v24.xlsx > /tmp/v24.xlsx
+          test "$(stat -c%s /tmp/v24.xlsx)" = '641318'
+          test "$(sha256sum /tmp/v24.xlsx | cut -d' ' -f1)" = '3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118'
+          test "$(git hash-object /tmp/v24.xlsx)" = 'bccab3a8ccf539db7c4a9636f1f2abee86885494'
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          from openpyxl import load_workbook
+
+          root = Path('docs/qps_offer_rtm_evaluation/current')
+          governed_patterns = ('RTM_BATCH_*.md', 'RTM_TOP_GATES_*.md', 'RTM_NEXT_GATES_*.md')
+          candidates = set()
+          for pattern in governed_patterns:
+              candidates.update(root.glob(pattern))
+          review_files = sorted(
+              p for p in candidates
+              if '_STATUS_' not in p.name and not p.name.endswith('_STATUS.md')
+          )
+
+          reviewed = set()
+          sources = {}
+          for p in review_files:
+              text = p.read_text(encoding='utf-8')
+              # A requirement is treated as reviewed only when the governed artefact
+              # declares it as a table row or item heading. Mere prose references do
+              # not remove an RTM from the unresolved queue.
+              ids = set(re.findall(r'(?m)^\|\s*(RTM-\d{3})\s*\|', text))
+              ids |= set(re.findall(r'(?m)^#{2,6}\s+(RTM-\d{3})(?:\s|—|-)', text))
+              if ids:
+                  sources[p.name] = sorted(ids)
+                  reviewed |= ids
+
+          wb = load_workbook('/tmp/v24.xlsx', read_only=False, data_only=True)
+          ws = wb['RTM_RANKING']
+          rows = list(ws.iter_rows(values_only=True))
+          headers = {str(v).strip(): i for i, v in enumerate(rows[4]) if v is not None}
+          required = ['Rank','RTM ID','Gate','Tier','Weighted S','BT Win %','BT λ index','Primary dimension']
+          missing = [h for h in required if h not in headers]
+          assert not missing, missing
+
+          ranked=[]
+          for row in rows[5:]:
+              rid=row[headers['RTM ID']]
+              if not isinstance(rid,str) or not re.fullmatch(r'RTM-\d{3}',rid): continue
+              if rid in reviewed: continue
+              rank=row[headers['Rank']]
+              if rank is None: continue
+              ranked.append({
+                  'rtm_id':rid, 'rank':int(rank), 'gate':row[headers['Gate']],
+                  'tier':row[headers['Tier']], 'weighted_s':row[headers['Weighted S']],
+                  'bt_win_pct':row[headers['BT Win %']], 'bt_lambda_index':row[headers['BT λ index']],
+                  'primary_dimension':row[headers['Primary dimension']]
+              })
+          ranked.sort(key=lambda x:(x['rank'],x['rtm_id']))
+
+          # Regression guard: the canonical first governed batch must never reappear.
+          first_batch = {f'RTM-{n:03d}' for n in range(12,25)}
+          assert first_batch <= reviewed, sorted(first_batch-reviewed)
+          assert not (first_batch & {x['rtm_id'] for x in ranked}), 'reviewed RTM-012..024 leaked into unresolved queue'
+
+          out={
+            'schema':'qps-v24-refreshed-unresolved/v2',
+            'source':{
+              'workbook':'QPS_OFFER_Evaluation_FULL_v24.xlsx',
+              'frozen_commit':'0291d43990d73a45058ad19fe5ce6ed97e92e178',
+              'git_blob_sha1':'bccab3a8ccf539db7c4a9636f1f2abee86885494',
+              'raw_sha256':'3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118',
+              'size_bytes':641318, 'sheet':'RTM_RANKING', 'bidder_evidence':False},
+            'review_detection':{
+              'rule':'RTM IDs declared as markdown table rows or item headings in governed RTM_BATCH / RTM_TOP_GATES / RTM_NEXT_GATES files; status/index files excluded',
+              'review_file_count':len(sources), 'reviewed_id_count':len(reviewed), 'files':sources},
+            'remaining_count':len(ranked),
+            'next_100':ranked[:100]
+          }
+          Path('v24_refreshed_unresolved.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          print('reviewed',len(reviewed),'remaining',len(ranked))
+          print('next20',[(x['rtm_id'],x['rank'],x['tier'],x['gate']) for x in ranked[:20]])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qps-v24-refreshed-unresolved
+          path: v24_refreshed_unresolved.json
+          if-no-files-found: error
