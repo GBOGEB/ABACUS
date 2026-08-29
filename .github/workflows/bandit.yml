@@ -22,7 +22,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install Bandit
-        run: pip install bandit[toml]
+        run: pip install bandit[toml] bandit-sarif-formatter
 
       - name: Run Bandit
         # Scope and skip rules governed by .github/security/security.toml [bandit]
