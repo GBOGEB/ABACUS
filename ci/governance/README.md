@@ -40,6 +40,9 @@ Governance-only changes belong under `ci/governance/**`. They are intentionally 
 from the full product regression Python filter and remain covered by
 `policy-and-inventory`.
 
+Auto-merge is manual-only; ordinary PRs should not attach auto-merge, auto-approve or
+auto-update checks as pass evidence.
+
 The comparison baseline is PR #685: 71 checks, comprising 65 queued checks and six
 conditional skips at the observation point. A governance-only PR is the acceptance probe
 for the reduced fan-out. Queued checks are not counted as pass evidence.

@@ -1,6 +1,7 @@
 name: recursive-build
 on:
   push:
+    branches: [main]
     paths: ["docs/**", "scripts/**", "GLOBAL_index.json", "metrics/**"]
   workflow_dispatch:
 jobs:
@@ -26,4 +27,3 @@ jobs:
           git add -A
           git commit -m "ci: recursive build + preview-diff" || echo "no changes"
           git push || true
-
