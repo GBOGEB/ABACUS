@@ -5,6 +5,7 @@ correlation_id: QPS-FED-W04-T10-SAFE-CTRL
 child_repo: GBOGEB/cryoplant-project
 child_prs: [141, 142, 143]
 parent_pr: 722
+runtime_trigger_wave: W04-runtime-retrigger-20260830
 purpose: >-
   Capture parent-side ABACUS QA/DevOps actions exposed by the QPS W04 exchange. This keeps parent hardening
   separate from child QPS engineering authority while making returned DOW evidence machine-checkable.
