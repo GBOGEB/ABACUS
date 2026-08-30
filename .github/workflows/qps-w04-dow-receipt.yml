@@ -19,25 +19,80 @@ jobs:
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
       - run: python tools/validate_qps_w04_dow_receipt.py tests/fixtures/qps_w04_dow_receipt_fixture.yaml
-  execute-w04-dow-runtime:
+
+  execute-w04-dow-sanitized-snapshot-runtime:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS parent
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install --disable-pip-version-check PyYAML
+      - name: Produce sanitized-snapshot W04 DOW runtime receipt
+        run: python tools/run_qps_w04_dow_return.py --snapshot federation/qps/snapshots/QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT_v0.2.yaml --child-sha "$QPS_W04_CHILD_SHA"
+      - name: Validate sanitized-snapshot W04 DOW runtime receipt
+        run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
+      - name: Upload sanitized-snapshot W04 DOW runtime receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-w04-dow-sanitized-snapshot-receipt-${{ github.run_id }}
+          path: federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
+          if-no-files-found: error
+
+  execute-w04-dow-private-child-runtime:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ABACUS parent
         uses: actions/checkout@v4
         with: {path: parent}
+      - name: Check private child credential
+        id: credential
+        shell: bash
+        env:
+          QPS_REPO_READ_TOKEN: ${{ secrets.QPS_REPO_READ_TOKEN }}
+        run: |
+          if [ -n "$QPS_REPO_READ_TOKEN" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+      - name: Checkout request-bound QPS child SSOT
+        if: steps.credential.outputs.available == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: GBOGEB/cryoplant-project
+          ref: ${{ env.QPS_W04_CHILD_SHA }}
+          token: ${{ secrets.QPS_REPO_READ_TOKEN }}
+          persist-credentials: false
+          path: qps
       - uses: actions/setup-python@v5
+        if: steps.credential.outputs.available == 'true'
         with: {python-version: '3.12'}
-      - run: python -m pip install --disable-pip-version-check PyYAML
-      - name: Produce governed W04 DOW runtime receipt
+      - name: Install runtime dependency
+        if: steps.credential.outputs.available == 'true'
+        run: python -m pip install --disable-pip-version-check PyYAML
+      - name: Verify exact request-bound QPS child SHA
+        if: steps.credential.outputs.available == 'true'
+        id: child
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual=$(git -C qps rev-parse HEAD)
+          test "$actual" = "$QPS_W04_CHILD_SHA"
+          echo "sha=$actual" >> "$GITHUB_OUTPUT"
+      - name: Produce private-child W04 DOW runtime receipt
+        if: steps.credential.outputs.available == 'true'
         working-directory: parent
-        run: python tools/run_qps_w04_dow_return.py --child-sha "$QPS_W04_CHILD_SHA"
-      - name: Validate produced W04 DOW runtime receipt
+        run: python tools/run_qps_w04_dow_return.py --child-root ../qps --child-sha '${{ steps.child.outputs.sha }}'
+      - name: Validate private-child W04 DOW runtime receipt
+        if: steps.credential.outputs.available == 'true'
         working-directory: parent
         run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
-      - name: Upload W04 DOW runtime receipt
+      - name: Upload private-child W04 DOW runtime receipt
+        if: steps.credential.outputs.available == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: qps-w04-dow-runtime-receipt-${{ github.run_id }}
+          name: qps-w04-dow-private-child-receipt-${{ github.run_id }}
           path: parent/federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
           if-no-files-found: error
+      - name: Record unavailable higher-authority lane
+        if: steps.credential.outputs.available != 'true'
+        run: echo 'Private-child receipt lane unavailable; sanitized snapshot lane remains the governed fallback.'
