@@ -40,7 +40,7 @@ jobs:
         run: python tools/validate_qps_w04_dow_receipt.py tests/fixtures/qps_w04_dow_receipt_fixture.yaml
 
   execute-w04-dow-runtime:
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Require private child read credential
@@ -69,8 +69,12 @@ jobs:
         id: child
         shell: bash
         run: |
+          set -euo pipefail
           actual=$(git -C qps rev-parse HEAD)
-          test "$actual" = "$QPS_W04_CHILD_SHA" || { echo "child SHA mismatch: $actual"; exit 1; }
+          if [ "$actual" != "$QPS_W04_CHILD_SHA" ]; then
+            echo "QPS child SHA mismatch: expected=$QPS_W04_CHILD_SHA actual=$actual" >&2
+            exit 1
+          fi
           echo "sha=$actual" >> "$GITHUB_OUTPUT"
       - name: Produce source-bound W04 DOW runtime receipt
         working-directory: parent
