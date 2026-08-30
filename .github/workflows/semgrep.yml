@@ -3,37 +3,46 @@ name: Semgrep
 on:
   push:
     branches: [main, develop]
+    paths: &semgrep_paths
+      - '**/*.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'setup.cfg'
+      - 'setup.py'
+      - '.github/security/**'
+      - '.github/workflows/semgrep.yml'
   pull_request:
     branches: [main]
+    paths: *semgrep_paths
   schedule:
-    - cron: '30 6 * * 1'   # Monday 06:30 UTC (after CodeQL at 06:00)
+    - cron: '30 6 * * 1'
   workflow_dispatch:
+
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
   security-events: write
-  actions: read            # required for upload-sarif on private repos
+  actions: read
 
 jobs:
   semgrep:
     name: Semgrep SAST
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-
       - name: Setup Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-
       - name: Install Semgrep
         run: |
           python -m pip install --upgrade pip
           pip install semgrep
-
       - name: Run Semgrep
-        # Rulesets governed by .github/security/security.toml [semgrep].
-        # continue-on-error: findings go to Security tab, not build failure.
         run: |
           semgrep scan \
             --config p/python \
@@ -42,12 +51,8 @@ jobs:
             --sarif \
             --output semgrep.sarif
         env:
-          # Optional: links results to Semgrep Cloud dashboard.
-          # Add SEMGREP_APP_TOKEN in repo Settings → Secrets → Actions.
-          # Absent = fully offline run; SARIF still uploads fine.
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
         continue-on-error: true
-
       - name: Upload SARIF to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4.37.4
         if: always() && hashFiles('semgrep.sarif') != ''
