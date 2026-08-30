@@ -39,6 +39,10 @@ REQUIRED_FEDERATION_METHODS = {
     "PCA_REVERSED_P5_TO_P1",
     "BT_PRIORITY",
 }
+REQUIRED_BLOCKING_CONCLUSIONS = {"failure", "timed_out", "action_required"}
+REQUIRED_MANUAL_REVIEW_CONCLUSIONS = {"cancelled"}
+REQUIRED_PENDING_STATUSES = {"queued", "in_progress", "requested", "waiting", "pending"}
+REQUIRED_REPAIR_PRS = {"GBOGEB/ABACUS": 754, "GBOGEB/CODEX": 298}
 
 
 def load_manifest(path: Path) -> Dict[str, Any]:
@@ -103,6 +107,7 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
         "federation wave must block credit without child disposition",
         errors,
     )
+    _validate_handoff_check_policy(wave, errors)
 
     probes = manifest.get("awake_probes", [])
     _require(bool(probes), "awake_probes must not be empty", errors)
@@ -113,6 +118,25 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
             _require(isinstance(probe["weight"], int) and probe["weight"] > 0, f"probe weight must be positive: {probe}", errors)
 
     return errors
+
+
+def _validate_handoff_check_policy(wave: Dict[str, Any], errors: List[str]) -> None:
+    policy = wave.get("handoff_check_policy", {})
+    _require(policy.get("linked_repair_prs") == REQUIRED_REPAIR_PRS, "handoff check policy must link ABACUS #754 and CODEX #298", errors)
+    blocking = _string_set(policy.get("blocking_conclusions", []), "federation_wave.handoff_check_policy.blocking_conclusions", errors)
+    manual = _string_set(policy.get("manual_review_conclusions", []), "federation_wave.handoff_check_policy.manual_review_conclusions", errors)
+    pending = _string_set(policy.get("pending_statuses", []), "federation_wave.handoff_check_policy.pending_statuses", errors)
+    missing_blocking = REQUIRED_BLOCKING_CONCLUSIONS - blocking
+    missing_manual = REQUIRED_MANUAL_REVIEW_CONCLUSIONS - manual
+    missing_pending = REQUIRED_PENDING_STATUSES - pending
+    _require(not missing_blocking, f"missing blocking conclusion(s): {_format_missing(missing_blocking)}", errors)
+    _require(not missing_manual, f"missing manual-review conclusion(s): {_format_missing(missing_manual)}", errors)
+    _require(not missing_pending, f"missing pending status(es): {_format_missing(missing_pending)}", errors)
+    all_clear_rule = policy.get("all_clear_rule", "")
+    _require(isinstance(all_clear_rule, str) and "no pending required checks" in all_clear_rule, "handoff all-clear rule must block pending required checks", errors)
+    feedback = policy.get("repository_feedback", {})
+    _require("CODEX" in feedback.get("from_codex", ""), "handoff policy must capture feedback from CODEX", errors)
+    _require("ABACUS" in feedback.get("to_codex", ""), "handoff policy must capture feedback to CODEX", errors)
 
 
 def score_awake_probes(manifest: Dict[str, Any], root: Path = ROOT) -> Dict[str, Any]:
