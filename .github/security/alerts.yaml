@@ -1,7 +1,7 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-30T10:14:08Z
+# generated: 2026-08-30T10:30:52Z
 
-generated_at:"2026-08-30T10:14:08Z"
+generated_at:"2026-08-30T10:30:52Z"
 repo:GBOGEB/ABACUS
 total_open:3874
 by_severity:
@@ -11,7 +11,8 @@ by_severity:
 by_tool:
   CodeQL: 494
   Bandit: 3315
-  Semgrep: 65
+  Semgrep OSS: 61
+  Semgrep: 4
 by_rex_group:
   OTHER: 540
   QUAL_DEAD_CODE: 244
@@ -63,25 +64,25 @@ groups:
       file: "DMAIC_V3/infrastructure/docker_manager.py"
       line: 1
     - number: 2521
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-script-injection.github-script-injection"
       severity: error
       file: "workflows-to-install/dmaic-commit-metrics.yml"
       line: 273
     - number: 2520
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-script-injection.github-script-injection"
       severity: error
       file: "docs/workflows/dmaic-commit-metrics.yml"
       line: 273
     - number: 2519
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-script-injection.github-script-injection"
       severity: error
       file: ".github/workflows-pending/dmaic-commit-metrics.yml"
       line: 273
     - number: 2518
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-script-injection.github-script-injection"
       severity: error
       file: ".github/workflows/dmaic-commit-metrics.yml"
@@ -93,73 +94,73 @@ groups:
       file: "ABACUS-v032/Dockerfile"
       line: 56
     - number: 2516
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: "workflows-to-install/release.yml"
       line: 35
     - number: 2515
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: "workflows-to-install/dmaic-commit-metrics.yml"
       line: 46
     - number: 2514
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: "docs/workflows/release.yml"
       line: 35
     - number: 2513
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: "docs/workflows/dmaic-commit-metrics.yml"
       line: 46
     - number: 2512
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: "DMAIC_V3/.github/workflows/release.yml"
       line: 49
     - number: 2511
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows-pending/release.yml"
       line: 35
     - number: 2510
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows-pending/dmaic-commit-metrics.yml"
       line: 46
     - number: 2509
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/sprint-trigger.yml"
       line: 28
     - number: 2508
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/sprint-trigger.yml"
       line: 25
     - number: 2507
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/release.yml"
       line: 35
     - number: 2506
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/main.yml"
       line: 175
     - number: 2505
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/main.yml"
@@ -177,7 +178,7 @@ groups:
       file: ".github/workflows/gbogeb-abacus-integration-ci-cd.yml"
       line: 367
     - number: 2502
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-integration.yml"
@@ -189,109 +190,109 @@ groups:
       file: ".github/workflows/dmaic-phase-execution.yml"
       line: 12
     - number: 2500
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dmaic-commit-metrics.yml"
       line: 46
     - number: 2499
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/codespace-federation.yml"
       line: 138
     - number: 2495
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/src/abacus_svg_pid/parser.py"
       line: 206
     - number: 2494
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/src/abacus_svg_pid/geometry.py"
       line: 204
     - number: 2493
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/src/abacus_svg_pid/build_atlas_v6.py"
       line: 96
     - number: 2492
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/segmentation/segment_pid.py"
       line: 228
     - number: 2491
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/generator/svg_extract.py"
       line: 195
     - number: 2490
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.use-defused-xml-parse.use-defused-xml-parse"
       severity: error
       file: "MINERVA_PID/analyze_svg.py"
       line: 15
     - number: 2471
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-sut-pipeline.yml"
       line: 242
     - number: 2470
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-sut-pipeline.yml"
       line: 157
     - number: 2469
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-sut-pipeline.yml"
       line: 69
     - number: 2468
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-sprint6-cicd.yml"
       line: 401
     - number: 2467
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dow-sprint6-cicd.yml"
       line: 124
     - number: 2466
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dmaic-v3-cognitive-cicd.yml"
       line: 431
     - number: 2465
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dmaic-v3-cd.yml"
       line: 343
     - number: 2464
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/dmaic-v3-cd.yml"
       line: 146
     - number: 2462
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/background_orchestrator.yml"
       line: 92
     - number: 2461
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
       severity: error
       file: ".github/workflows/background_orchestrator.yml"
@@ -591,7 +592,7 @@ groups:
       file: ".github/scripts/security_dashboard.py"
       line: 85
     - number: 2650
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout"
       severity: warning
       file: ".github/workflows/ci-failure-debug-rerun.yml"
@@ -603,97 +604,97 @@ groups:
       file: "DMAIC_V3/tests/test_pipeline_modes.py"
       line: 163
     - number: 2526
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.kubernetes.security.allow-privilege-escalation-no-securitycontext.allow-privilege-escalation-no-securitycontext"
       severity: warning
       file: "qplant/deployment/k8s/ssot-validation-init-container.yaml"
       line: 103
     - number: 2525
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.kubernetes.security.allow-privilege-escalation-no-securitycontext.allow-privilege-escalation-no-securitycontext"
       severity: warning
       file: "qplant/deployment/k8s/deployment-with-ssot.yaml"
       line: 80
     - number: 2524
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.kubernetes.security.allow-privilege-escalation-no-securitycontext.allow-privilege-escalation-no-securitycontext"
       severity: warning
       file: "qplant/deployment/k8s/deployment-with-ssot.yaml"
       line: 47
     - number: 2523
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "yaml.kubernetes.security.allow-privilege-escalation-no-securitycontext.allow-privilege-escalation-no-securitycontext"
       severity: warning
       file: "qplant/deployment/k8s/deployment-api-server.yaml"
       line: 47
     - number: 2498
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "generic.nginx.security.request-host-used.request-host-used"
       severity: warning
       file: "qplant/deployment/nginx.conf"
       line: 25
     - number: 2497
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "generic.nginx.security.request-host-used.request-host-used"
       severity: warning
       file: "qplant/deployment/nginx.conf"
       line: 16
     - number: 2496
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.fastapi.security.wildcard-cors.wildcard-cors"
       severity: warning
       file: "qplant/config_service/api.py"
       line: 44
     - number: 2485
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.insecure-file-permissions.insecure-file-permissions"
       severity: warning
       file: "github_azure_deployment_helper.py"
       line: 413
     - number: 2484
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.insecure-file-permissions.insecure-file-permissions"
       severity: warning
       file: "abacus_v21_cicd_pipeline_setup.py"
       line: 319
     - number: 2483
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.insecure-file-permissions.insecure-file-permissions"
       severity: warning
       file: "abacus_v21_backup_recovery.py"
       line: 498
     - number: 2482
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.insecure-file-permissions.insecure-file-permissions"
       severity: warning
       file: "abacus_v21_backup_recovery.py"
       line: 497
     - number: 2481
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure"
       severity: warning
       file: "qplant/authentication/api_key_manager.py"
       line: 167
     - number: 2480
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure"
       severity: warning
       file: "qplant/authentication/api_key_manager.py"
       line: 145
     - number: 2479
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure"
       severity: warning
       file: "qplant/authentication/api_key_manager.py"
       line: 120
     - number: 2478
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure"
       severity: warning
       file: "qplant/authentication/api_key_manager.py"
       line: 115
     - number: 2477
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.logging.logger-credential-leak.python-logger-credential-disclosure"
       severity: warning
       file: "qplant/authentication/api_key_manager.py"
@@ -22375,25 +22376,25 @@ groups:
       file: "deploy_full_integration.py"
       line: 63
     - number: 2476
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
       severity: error
       file: "run_streamlined_deployment.py"
       line: 27
     - number: 2475
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
       severity: error
       file: "run_comprehensive_deployment.py"
       line: 48
     - number: 2474
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
       severity: error
       file: "run_cicd_roundtrip_test.py"
       line: 48
     - number: 2473
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
       severity: error
       file: "deploy_full_integration.py"
@@ -23265,31 +23266,31 @@ groups:
       file: "DMAIC_V3/canonical_refactoring.py"
       line: 159
     - number: 2489
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5"
       severity: warning
       file: "fast_metrics_collector.py"
       line: 72
     - number: 2488
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5"
       severity: warning
       file: "DMAIC_V3/phases/phase8_todo_management.py"
       line: 40
     - number: 2487
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5"
       severity: warning
       file: "DMAIC_V3/phases/phase7_action_tracking.py"
       line: 37
     - number: 2486
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5"
       severity: warning
       file: "DMAIC_V3/canonical_refactoring.py"
       line: 159
     - number: 2472
-      tool: Semgrep
+      tool: Semgrep OSS
       rule_id: "python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1"
       severity: warning
       file: "repo_analysis_toolkit/classify_artifacts.py"
