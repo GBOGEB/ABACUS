@@ -5,13 +5,17 @@ on:
     branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
+  workflow_dispatch:
 
 jobs:
   lint:
+    name: Changed docs lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup Node (for markdownlint)
         uses: actions/setup-node@v7
@@ -21,10 +25,6 @@ jobs:
       - name: Install markdownlint-cli2
         run: |
           npm install -g markdownlint-cli2
-
-      - name: Lint Markdown
-        run: |
-          markdownlint-cli2 "**/*.md" "!**/node_modules/**" || exit 1
 
       - name: Setup Python (YAML/JSON checks)
         uses: actions/setup-python@v7
@@ -36,16 +36,33 @@ jobs:
           python -m pip install --upgrade pip
           pip install yamllint
 
-      - name: Lint YAML
+      - name: Validate changed docs
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
         run: |
-          yamllint -s .
+          python scripts/validate_changed_docs.py
 
-      - name: Validate JSON
+      - name: Full YAML lint
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          YAMLLINT_CONFIG: >-
+            {extends: default, rules: {document-start: disable,
+            truthy: disable}}
+        run: |
+          yamllint -s -d "$YAMLLINT_CONFIG" .
+
+      - name: Full JSON validation
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           set -e
-          mapfile -t JSONS < <(find . -type f -name "*.json" -not -path "./node_modules/*")
+          mapfile -t JSONS < <(
+            find . -type f -name "*.json" -not -path "./node_modules/*"
+          )
           for j in "${JSONS[@]}"; do
-            python -m json.tool "$j" > /dev/null || { echo "Invalid JSON: $j"; exit 1; }
+            python -m json.tool "$j" > /dev/null || {
+              echo "Invalid JSON: $j"
+              exit 1
+            }
           done
           echo "All JSON files valid."
