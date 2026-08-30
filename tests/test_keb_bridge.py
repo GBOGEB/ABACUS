@@ -10,9 +10,12 @@ Tests workspace setup, state persistence, knowledge transfer, and sync operation
 
 import pytest
 import json
+import time
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
+
+from core.keb.keb import KEB
 
 
 @pytest.fixture
@@ -222,6 +225,35 @@ class TestBidirectionalSync:
         
         assert conflict_file.exists()
         assert conflict_log['conflicts_detected'] == conflict_log['conflicts_resolved']
+
+
+class TestKEBRuntimeBridge:
+    """Test KEB runtime execution used by the DOW bridge."""
+
+    def test_keb_runtime_executes_scheduled_bridge_tasks(self):
+        """Test start/stop lifecycle and scheduled bridge task execution."""
+        keb = KEB(max_workers=1, max_memory_mb=128)
+        executed = []
+
+        def record_bridge_event(label):
+            executed.append(label)
+
+        keb.schedule_task("dow_to_keb_runtime", record_bridge_event, priority=2, args=("dow_to_keb",))
+        keb.schedule_task("keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",))
+
+        keb.start()
+        try:
+            deadline = time.time() + 5
+            while keb.get_metrics()["tasks_executed"] < 2 and time.time() < deadline:
+                time.sleep(0.05)
+        finally:
+            keb.stop()
+
+        metrics = keb.get_metrics()
+        assert executed == ["keb_to_dow", "dow_to_keb"]
+        assert metrics["tasks_submitted"] == 2
+        assert metrics["tasks_executed"] == 2
+        assert metrics["tasks_failed"] == 0
 
 
 if __name__ == '__main__':
