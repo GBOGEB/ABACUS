@@ -36,25 +36,64 @@ def _run(args: Sequence[str], *, check: bool = True) -> subprocess.CompletedProc
     )
 
 
-def _github_diff_range() -> List[str]:
+def _is_real_sha(value: str) -> bool:
+    return bool(value and value.strip("0"))
+
+
+def _commit_exists(ref: str) -> bool:
+    result = _run(["git", "cat-file", "-e", f"{ref}^{{commit}}"], check=False)
+    return result.returncode == 0
+
+
+def _fetch_ref(ref: str) -> None:
+    _run(["git", "fetch", "--no-tags", "--depth=1", "origin", ref], check=False)
+
+
+def _github_diff_ranges() -> List[List[str]]:
     event_name = os.environ.get("GITHUB_EVENT_NAME", "")
     base_ref = os.environ.get("GITHUB_BASE_REF", "")
-    before = os.environ.get("GITHUB_EVENT_BEFORE", "") or os.environ.get("GITHUB_SHA_BEFORE", "")
+    base_sha = os.environ.get("GITHUB_BASE_SHA", "")
+    before = os.environ.get("GITHUB_EVENT_BEFORE", "") or os.environ.get(
+        "GITHUB_SHA_BEFORE", ""
+    )
     sha = os.environ.get("GITHUB_SHA", "HEAD")
+    ranges: List[List[str]] = []
+
+    for candidate in (base_sha, before):
+        if not _is_real_sha(candidate):
+            continue
+        if not _commit_exists(candidate):
+            _fetch_ref(candidate)
+        if _commit_exists(candidate):
+            ranges.append([f"{candidate}..{sha}"])
 
     if event_name == "pull_request" and base_ref:
-        _run(["git", "fetch", "--no-tags", "--depth=1", "origin", base_ref], check=False)
-        return [f"origin/{base_ref}...HEAD"]
+        _fetch_ref(base_ref)
+        if _commit_exists(f"origin/{base_ref}"):
+            ranges.append([f"origin/{base_ref}..HEAD"])
+            ranges.append([f"origin/{base_ref}...HEAD"])
 
-    if before and before.strip("0"):
-        return [f"{before}..{sha}"]
+    if _commit_exists("HEAD~1"):
+        ranges.append(["HEAD~1..HEAD"])
 
-    return ["HEAD~1..HEAD"]
+    return ranges or [["HEAD~1..HEAD"]]
 
 
 def changed_files() -> List[Path]:
-    diff_range = _github_diff_range()
-    result = _run(["git", "diff", "--name-only", "--diff-filter=ACMRT", *diff_range])
+    result: subprocess.CompletedProcess[str] | None = None
+    failed_ranges: List[str] = []
+    for diff_range in _github_diff_ranges():
+        result = _run(
+            ["git", "diff", "--name-only", "--diff-filter=ACMRT", *diff_range],
+            check=False,
+        )
+        if result.returncode == 0:
+            break
+        failed_ranges.append(" ".join(diff_range))
+    else:
+        print("Unable to determine changed files. Tried: " + ", ".join(failed_ranges))
+        return []
+
     paths: List[Path] = []
     for line in result.stdout.splitlines():
         path = REPO_ROOT / line

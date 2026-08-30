@@ -38,6 +38,7 @@ jobs:
 
       - name: Validate changed docs
         env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_EVENT_BEFORE: ${{ github.event.before }}
         run: |
           python scripts/validate_changed_docs.py
