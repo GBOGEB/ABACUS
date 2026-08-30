@@ -51,6 +51,18 @@ def _require(condition: bool, message: str, errors: List[str]) -> None:
         errors.append(message)
 
 
+def _string_set(value: Any, field_name: str, errors: List[str]) -> set[str]:
+    """Validate a manifest contract field that must be a list of strings."""
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        errors.append(f"{field_name} must be a list of strings")
+        return set()
+    return set(value)
+
+
+def _format_missing(values: set[str]) -> str:
+    return ", ".join(sorted(values))
+
+
 def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
     errors: List[str] = []
     _require(bool(manifest.get("version")), "version is required", errors)
@@ -59,7 +71,7 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
 
     scope = manifest.get("scope", {})
     _require(scope.get("primary_repo") == "GBOGEB/ABACUS", "primary_repo must be GBOGEB/ABACUS", errors)
-    bridge_repos = set(scope.get("bridge_repos", []))
+    bridge_repos = _string_set(scope.get("bridge_repos", []), "scope.bridge_repos", errors)
     _require("GBOGEB/CODEX" in bridge_repos, "CODEX bridge repo is required", errors)
     _require("controlled-evidence-repo" in bridge_repos, "controlled evidence bridge repo is required", errors)
 
@@ -70,19 +82,22 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
 
     artifacts = manifest.get("artifact_contract", {})
     missing_artifacts = REQUIRED_ARTIFACTS - set(artifacts)
-    _require(not missing_artifacts, f"missing artifact contract(s): {sorted(missing_artifacts)}", errors)
-    html_gates = set(artifacts.get("html", []))
+    _require(not missing_artifacts, f"missing artifact contract(s): {_format_missing(missing_artifacts)}", errors)
+    html_gates = _string_set(artifacts.get("html", []), "artifact_contract.html", errors)
     missing_html_gates = REQUIRED_HTML_GATES - html_gates
-    _require(not missing_html_gates, f"missing required HTML QA gate(s): {sorted(missing_html_gates)}", errors)
+    _require(not missing_html_gates, f"missing required HTML QA gate(s): {_format_missing(missing_html_gates)}", errors)
 
     wave = manifest.get("federation_wave", {})
     _require(wave.get("id") == "SSOT-STYLE-W04", "federation_wave id must be SSOT-STYLE-W04", errors)
-    missing_repos = REQUIRED_FEDERATION_REPOS - set(wave.get("repos", []))
-    _require(not missing_repos, f"missing federation repo(s): {sorted(missing_repos)}", errors)
-    missing_lanes = REQUIRED_FEDERATION_LANES - set(wave.get("artifact_lanes", []))
-    _require(not missing_lanes, f"missing federation artifact lane(s): {sorted(missing_lanes)}", errors)
-    missing_methods = REQUIRED_FEDERATION_METHODS - set(wave.get("methods", []))
-    _require(not missing_methods, f"missing federation method(s): {sorted(missing_methods)}", errors)
+    repos = _string_set(wave.get("repos", []), "federation_wave.repos", errors)
+    missing_repos = REQUIRED_FEDERATION_REPOS - repos
+    _require(not missing_repos, f"missing federation repo(s): {_format_missing(missing_repos)}", errors)
+    lanes = _string_set(wave.get("artifact_lanes", []), "federation_wave.artifact_lanes", errors)
+    missing_lanes = REQUIRED_FEDERATION_LANES - lanes
+    _require(not missing_lanes, f"missing federation artifact lane(s): {_format_missing(missing_lanes)}", errors)
+    methods = _string_set(wave.get("methods", []), "federation_wave.methods", errors)
+    missing_methods = REQUIRED_FEDERATION_METHODS - methods
+    _require(not missing_methods, f"missing federation method(s): {_format_missing(missing_methods)}", errors)
     _require(
         wave.get("no_credit_without_child_disposition") is True,
         "federation wave must block credit without child disposition",
