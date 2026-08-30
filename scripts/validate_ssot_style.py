@@ -154,8 +154,9 @@ def _probe_depth(kind: str, path: Path) -> Tuple[int, int, List[str]]:
     elif kind in {"dow", "keb"}:
         for label, patterns in {
             "tests": ("def test_", "unittest", "pytest"),
-            "bidirectional": ("bidirectional", "cross_sut", "schedule_task"),
-            "runtime": ("async", "start(", "stop("),
+            "bidirectional": ("bidirectional", "cross_sut", "schedule_task", "DOW_TO_KEB", "KEB_TO_DOW"),
+            "runtime": ("async", "start(", "stop(", "get_metrics"),
+            "queue_feedback": ("queue_size", "tasks_executed", "feedback_loop"),
         }.items():
             if any(pattern in text for pattern in patterns):
                 depth += 1
