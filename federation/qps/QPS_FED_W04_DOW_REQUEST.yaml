@@ -1,0 +1,58 @@
+schema_version: "0.1"
+correlation_id: QPS-FED-W04-T10-SAFE-CTRL
+lane: ABACUS_DOW
+status: REQUESTED
+child:
+  repository: GBOGEB/cryoplant-project
+  pull_request: 141
+  authority: child_owns_engineering_SSOT_and_disposition
+purpose: >-
+  Run the reusable ABACUS DOW analysis lane in parallel with CODEX KEB for the QPS Table-10/support-system,
+  Safety, controls, C24/C30, N+1/degraded, RCM/spares/lifecycle-cost wave. Return analysis findings only;
+  do not promote QPS engineering decisions.
+input_contract:
+  source_ref: cryoplant-project_PR_141_head
+  child_artifacts:
+    - QPS_TABLE10_SUPPORT_SYSTEM_COMPANION_v0.1.yaml
+    - QPS_SAFETY_EVIDENCE_RTM_OFFER_CROSSWALK_v0.1.yaml
+  sanitized_feature_groups:
+    - operational_scenario_and_state
+    - C24_C30_configuration
+    - support_system_permissives_and_loss_impact
+    - N_plus_1_and_degraded_capability
+    - Table10_failure_consequence
+    - RAMS_and_safety_barriers
+    - RCM_spares_service_and_lifecycle_cost
+    - code_standard_lifecycle_evidence
+    - controls_and_interface_dependencies
+requested_DOW_operations:
+  - decompose_support_system_dependency_graph
+  - identify_missing_or_weak_atoms
+  - identify_cross_domain_common_cause_paths
+  - analyze_C24_C30_configuration_tradeoffs
+  - analyze_N_plus_1_vs_degraded_vs_warehouse_spare_semantics
+  - identify_irreversible_lifecycle_evidence_gaps
+  - produce_PCA_ready_feature_observation_recommendations
+  - produce_reverse_catchup_candidates
+  - produce_BT_dependency_unlock_candidates
+required_return:
+  - stable_finding_id
+  - source_correlation_id
+  - finding_type
+  - affected_child_atom_or_domain
+  - evidence_basis
+  - confidence_or_status
+  - recommended_child_action
+  - reusable_parent_pattern_candidate
+  - input_and_output_hash_lineage
+prohibited:
+  - bidder_confidential_values
+  - parent_generated_QPS_compliance
+  - parent_generated_Table10_credit
+  - parent_self_promotion_into_child_SSOT
+child_disposition_required: [ACCEPT, REJECT_WITH_REASON, DEFER_PENDING_EVIDENCE, DUPLICATE]
+bidirectional_feedback:
+  accepted: send_sanitized_reusable_pattern_and_closure_yield_to_ABACUS
+  rejected: send_false_positive_reason_and_missing_context_to_ABACUS
+  deferred: send_evidence_dependency_or_authority_boundary_to_ABACUS
+closure_test: returned_DOW_receipt_plus_child_disposition_plus_feedback_receipt
