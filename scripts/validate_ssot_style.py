@@ -19,6 +19,26 @@ REQUIRED_HTML_GATES = {
     "no_console_errors",
     "internal_links_resolve",
 }
+REQUIRED_FEDERATION_REPOS = {
+    "GBOGEB/ABACUS",
+    "GBOGEB/CODEX",
+    "GBOGEB/cryoplant-project",
+}
+REQUIRED_FEDERATION_LANES = {
+    "excel",
+    "pptx",
+    "pdf",
+    "html",
+    "graphs",
+    "ci",
+    "dow",
+    "keb",
+}
+REQUIRED_FEDERATION_METHODS = {
+    "DMAIC",
+    "PCA_REVERSED_P5_TO_P1",
+    "BT_PRIORITY",
+}
 
 
 def load_manifest(path: Path) -> Dict[str, Any]:
@@ -54,6 +74,20 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
     html_gates = set(artifacts.get("html", []))
     missing_html_gates = REQUIRED_HTML_GATES - html_gates
     _require(not missing_html_gates, f"missing required HTML QA gate(s): {sorted(missing_html_gates)}", errors)
+
+    wave = manifest.get("federation_wave", {})
+    _require(wave.get("id") == "SSOT-STYLE-W04", "federation_wave id must be SSOT-STYLE-W04", errors)
+    missing_repos = REQUIRED_FEDERATION_REPOS - set(wave.get("repos", []))
+    _require(not missing_repos, f"missing federation repo(s): {sorted(missing_repos)}", errors)
+    missing_lanes = REQUIRED_FEDERATION_LANES - set(wave.get("artifact_lanes", []))
+    _require(not missing_lanes, f"missing federation artifact lane(s): {sorted(missing_lanes)}", errors)
+    missing_methods = REQUIRED_FEDERATION_METHODS - set(wave.get("methods", []))
+    _require(not missing_methods, f"missing federation method(s): {sorted(missing_methods)}", errors)
+    _require(
+        wave.get("no_credit_without_child_disposition") is True,
+        "federation wave must block credit without child disposition",
+        errors,
+    )
 
     probes = manifest.get("awake_probes", [])
     _require(bool(probes), "awake_probes must not be empty", errors)
@@ -245,6 +279,7 @@ def build_report(manifest_path: Path = DEFAULT_MANIFEST, root: Path = ROOT) -> D
         "penetration": penetration,
         "pca_focus_axes": manifest.get("scoring", {}).get("pca_focus_axes", []),
         "bt_priority_rule": manifest.get("scoring", {}).get("bt_priority_rule", ""),
+        "federation_wave": manifest.get("federation_wave", {}),
     }
 
 
