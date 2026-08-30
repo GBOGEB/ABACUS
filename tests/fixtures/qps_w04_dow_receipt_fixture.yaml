@@ -1,0 +1,60 @@
+schema_version: "0.1"
+fixture_id: qps_w04_dow_receipt_fixture
+correlation_id: QPS-FED-W04-T10-SAFE-CTRL
+purpose: >-
+  Non-confidential CI fixture for validating ABACUS W04 DOW receipt shape before runtime findings are treated as returned evidence.
+
+receipt_required_fields:
+  - run_id
+  - artifact_id
+  - parent_commit_sha
+  - correlation_id
+  - input_hash
+  - output_hash
+  - executed_stages
+  - stage_status
+  - fail_closed_status
+  - typed_findings
+  - authority_boundary
+
+example_valid_receipt:
+  run_id: ABACUS-W04-RUN-TBD
+  artifact_id: ABACUS-W04-ARTIFACT-TBD
+  parent_commit_sha: TBD_PARENT_SHA
+  correlation_id: QPS-FED-W04-T10-SAFE-CTRL
+  input_hash: TBD_INPUT_HASH
+  output_hash: TBD_OUTPUT_HASH
+  executed_stages:
+    - dependency_graph
+    - missing_atom_scan
+    - common_cause_scan
+    - C24_C30_tradeoff_scan
+    - N_plus_1_degraded_spares_semantics_scan
+    - PCA_BT_candidate_generation
+  stage_status:
+    dependency_graph: not_run_fixture_only
+    missing_atom_scan: not_run_fixture_only
+    common_cause_scan: not_run_fixture_only
+    C24_C30_tradeoff_scan: not_run_fixture_only
+    N_plus_1_degraded_spares_semantics_scan: not_run_fixture_only
+    PCA_BT_candidate_generation: not_run_fixture_only
+  fail_closed_status: required_if_any_stage_missing_or_not_run
+  typed_findings: []
+  authority_boundary: ABACUS_returns_DOW_findings_only_QPS_child_disposes
+
+validation_rules:
+  - id: ABACUS-W04-CI-001
+    rule: receipt_must_include_correlation_id_equal_QPS_FED_W04_T10_SAFE_CTRL
+  - id: ABACUS-W04-CI-002
+    rule: receipt_must_include_input_and_output_hashes_before_QPS_can_bind_as_runtime_evidence
+  - id: ABACUS-W04-CI-003
+    rule: every_required_stage_must_have_stage_status
+  - id: ABACUS-W04-CI-004
+    rule: missing_or_not_run_stage_requires_fail_closed_status
+  - id: ABACUS-W04-CI-005
+    rule: typed_findings_must_not_claim_QPS_authority_or_completion
+
+expected_CI_next_step:
+  implement_validator: TBD
+  validator_scope: schema_and_authority_boundary_only
+  completion_effect: none_for_QPS_until_runtime_receipt_and_child_disposition
