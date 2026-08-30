@@ -1,0 +1,171 @@
+{
+  "version": "0.1.0",
+  "status": "draft_control",
+  "owner": "GBO",
+  "purpose": "Single source of truth for artifact style, readability, render QA, and cross-repo release presentation controls.",
+  "scope": {
+    "primary_repo": "GBOGEB/ABACUS",
+    "bridge_repos": [
+      "GBOGEB/CODEX",
+      "controlled-evidence-repo"
+    ],
+    "artifact_families": [
+      "excel",
+      "pptx",
+      "pdf",
+      "html",
+      "markdown",
+      "graphs"
+    ]
+  },
+  "repo_roles": {
+    "GBOGEB/ABACUS": "Dashboards, navigators, presenter HTML, DOW/KEB integration, runtime evidence and user-facing artifact QA.",
+    "GBOGEB/CODEX": "Schemas, assumptions, model/PCA, federation validators, render governance, release manifests and reusable CI patterns.",
+    "controlled-evidence-repo": "Non-public controlled evidence, canonical records, release packs and cost roundtrip execution."
+  },
+  "palette": {
+    "name": "qps_purple_control",
+    "tokens": {
+      "define": "#562873",
+      "measure": "#984A9C",
+      "analyze": "#034694",
+      "improve": "#B5622A",
+      "control": "#1D7A5F",
+      "critical": "#B42318",
+      "warning": "#B5622A",
+      "ok": "#1D7A5F",
+      "surface": "#FFFFFF",
+      "text": "#1F1F29"
+    },
+    "user_subset_notes": [
+      "Preserve GBO purple styling for QPS outward artifacts unless a local subset declares a more specific palette.",
+      "Preserve existing salmon/open-item marks when they are explicit review signals, not styling drift."
+    ]
+  },
+  "typography": {
+    "body": "Aptos",
+    "code": "Consolas",
+    "fallback_body": "Arial",
+    "minimum_body_pt": 11,
+    "preferred_body_pt": [
+      14,
+      16
+    ],
+    "line_spacing_min": 1.15
+  },
+  "artifact_contract": {
+    "excel": [
+      "zip_xml_integrity",
+      "formula_error_scan",
+      "controlled_totals",
+      "scenario_values_labelled",
+      "recalculation_or_open_save_evidence"
+    ],
+    "pptx": [
+      "deck_content_yaml_bound",
+      "theme_yaml_bound",
+      "slide_render_count",
+      "overlap_out_of_bounds_scan",
+      "notes_sources_present",
+      "slide_number_and_reference"
+    ],
+    "pdf": [
+      "all_pages_render",
+      "no_blank_pages",
+      "clipping_or_glyph_scan",
+      "page_number_and_reference"
+    ],
+    "html": [
+      "playwright_navigation",
+      "no_console_errors",
+      "no_horizontal_overflow",
+      "internal_links_resolve",
+      "ssot_hash_visible",
+      "stale_banner_visible_when_needed"
+    ],
+    "markdown": [
+      "changed_docs_lint",
+      "crosswalk_links_resolve",
+      "evidence_class_visible"
+    ],
+    "graphs": [
+      "source_data_bound",
+      "nodes_edges_nonzero",
+      "runtime_status_reported",
+      "stale_or_dormant_nodes_flagged"
+    ]
+  },
+  "awake_probes": [
+    {
+      "id": "qps_style_manifest",
+      "path": "docs/qps_offer_rtm_evaluation/docs/style.yaml",
+      "kind": "style",
+      "weight": 5
+    },
+    {
+      "id": "qps_html_navigator",
+      "path": "docs/qps_offer_rtm_evaluation/current/QPS_RTM_BT_Navigator_v22.html",
+      "kind": "html",
+      "weight": 5
+    },
+    {
+      "id": "qps_playwright_nav_qa",
+      "path": "docs/qps_offer_rtm_evaluation/scripts/qa_nav_v24.py",
+      "kind": "playwright",
+      "weight": 5
+    },
+    {
+      "id": "runtime_provenance_graph",
+      "path": "runtime/manifests/provenance-graph.yaml",
+      "kind": "graph",
+      "weight": 4
+    },
+    {
+      "id": "runtime_orchestration_graph",
+      "path": "runtime/manifests/orchestration-state-graph.yaml",
+      "kind": "graph",
+      "weight": 4
+    },
+    {
+      "id": "dow_latest_log",
+      "path": "DOW_LOGS/latest.json",
+      "kind": "dow",
+      "weight": 4
+    },
+    {
+      "id": "dow_tests",
+      "path": "tests/test_dow_integration.py",
+      "kind": "dow",
+      "weight": 3
+    },
+    {
+      "id": "keb_engine",
+      "path": "core/keb/keb.py",
+      "kind": "keb",
+      "weight": 3
+    },
+    {
+      "id": "keb_tests",
+      "path": "tests/test_keb_bridge.py",
+      "kind": "keb",
+      "weight": 3
+    }
+  ],
+  "scoring": {
+    "dmaic_phase_weights": {
+      "define": 0.16,
+      "measure": 0.20,
+      "analyze": 0.18,
+      "improve": 0.22,
+      "control": 0.24
+    },
+    "pca_focus_axes": [
+      "style_authority",
+      "render_evidence",
+      "artifact_linkage",
+      "graph_awake_state",
+      "ci_control"
+    ],
+    "bt_priority_rule": "Prioritize high impact, low coupling controls that wake dormant evidence nodes or prevent stale outward artifacts."
+  }
+}
