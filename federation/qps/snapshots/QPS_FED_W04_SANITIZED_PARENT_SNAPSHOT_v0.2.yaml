@@ -1,0 +1,84 @@
+schema_version: "0.2"
+document_id: QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT
+correlation_id: QPS-FED-W04-T10-SAFE-CTRL
+status: CANDIDATE_PARENT_INPUT
+source_identity:
+  repository: GBOGEB/cryoplant-project
+  pull_request: 141
+  authoritative_child_sha: ec12b09873a8e0668176d8212f8d09ecdbe18bad
+  authority: QPS_child_retains_engineering_SSOT_compliance_and_disposition
+snapshot_scope:
+  purpose: >-
+    Provide the minimum non-confidential, source-pinned W04 exchange surface needed by ABACUS DOW and
+    CODEX KEB when authenticated private-repository checkout is unavailable. This snapshot is an exchange
+    projection, not a replacement engineering SSOT.
+  sanitized_domains:
+    - operational_scenario_and_state
+    - C24_C30_configuration_semantics
+    - support_system_permissive_and_loss_impact
+    - N_plus_1_degraded_and_warehouse_spare_semantics
+    - Table10_failure_consequence_and_preserved_state
+    - RAMS_RCM_Inspectability_and_Safety_gate_terms
+    - lifecycle_L1_L8_terms
+    - QPS_CIS_MIS_MIT_MCS_interface_terms
+  excluded:
+    - bidder_confidential_values
+    - commercial_values
+    - proprietary_offer_text
+    - credentials_or_secrets
+    - parent_generated_QPS_compliance
+    - parent_generated_Table10_credit
+    - maturity_or_completion_credit
+canonical_semantics:
+  Table10:
+    A: loss_2K_OP_2K_SB_possible_restore_within_24h
+    B: loss_sustained_2K_4K_SB_or_TS_SB_possible_recover_within_5d
+    C: loss_sustained_cryo_forcing_RT_SB_or_WSTOP
+    rule: highest_consequence_class_applies_and_rate_ceiling_is_not_contractual_MTBF
+  Safety:
+    role: non_compensating_RAMS_dimension
+    rule: Safety_noncompliance_cannot_be_hidden_by_BT_PCA_cost_or_completion
+  Inspectability:
+    role: cross_cutting_RCM_and_lifecycle_property_not_fifth_RAMS_peer
+  disposition:
+    governed_values: [ACCEPT, REJECT, DEFER]
+    reason_is_separate_field: true
+    duplicate_is_metadata_or_reason_not_disposition: true
+  lifecycle:
+    L1: conceptual
+    L2: detailed
+    L3: BUILD
+    L4: installation_site_integration
+    L5: standalone_commissioning
+    L6: QPS_project_stop_handover_readiness_not_final_user_acceptance
+    L7: SAT
+    L8: QCELL_user_integration_interface_acceptance
+  controls:
+    authority: QPS_CIS_autonomous_process_local_protection_SCADA_historian
+    remote_interlock_threshold_write: prohibited
+  2K_abnormal:
+    PVPS_zero: no_sustained_CC_operation
+    PVPS_only_intermediate: not_nominal_2K_OP
+    B_pressure_above_31_mbar: not_2K
+    CC_two_of_three_degraded_operation: not_assumed_without_proof
+    CC_trip_default: unplanned_2K_SB_until_proven_otherwise
+parent_operation_contract:
+  ABACUS_DOW:
+    allowed: decomposition_gap_common_cause_configuration_PCA_reverse_catchup_BT_candidates
+    forbidden: engineering_promotion_or_compliance_credit
+  CODEX_KEB:
+    allowed: glossary_semantic_schema_reference_lifecycle_maturity_telemetry_lineage_checks
+    forbidden: engineering_promotion_or_compliance_credit
+receipt_requirements:
+  - correlation_id
+  - parent_commit_sha
+  - authoritative_child_sha
+  - input_snapshot_hash
+  - output_hash
+  - typed_findings
+  - finding_disposition_unset
+landing_contract:
+  QPS_child_disposition: [ACCEPT, REJECT, DEFER]
+  reason_is_separate_field: true
+  only_ACCEPT_may_be_assimilated: true
+  no_automatic_DMAIC_PCA_BT_or_completion_uplift: true
