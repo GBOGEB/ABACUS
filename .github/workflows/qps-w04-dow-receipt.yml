@@ -65,7 +65,7 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependency
         run: python -m pip install --disable-pip-version-check PyYAML
-      - name: Verify exact QPS child SHA
+      - name: Verify exact request-bound QPS child SHA
         id: child
         shell: bash
         run: |
