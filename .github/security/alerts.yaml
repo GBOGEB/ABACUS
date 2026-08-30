@@ -1,20 +1,20 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-30T14:49:20Z
+# generated: 2026-08-30T17:10:31Z
 
-generated_at:"2026-08-30T14:49:20Z"
+generated_at:"2026-08-30T17:10:31Z"
 repo:GBOGEB/ABACUS
-total_open:4595
+total_open:4601
 by_severity:
+  warning: 942
   note: 3582
-  warning: 936
   error: 77
 by_tool:
+  Semgrep OSS: 786
   CodeQL: 496
-  Semgrep OSS: 780
   Bandit: 3315
   Semgrep: 4
 by_rex_group:
-  OTHER: 1260
+  OTHER: 1266
   QUAL_DEAD_CODE: 245
   SEC_ASSERT: 2911
   SEC_HARDCODED_SECRET: 21
@@ -423,6 +423,42 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
+    - number: 6820
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 60
+    - number: 6819
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 47
+    - number: 6818
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 85
+    - number: 6817
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 66
+    - number: 6812
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 34
+    - number: 6811
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 33
     - number: 6808
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -7606,6 +7642,18 @@ groups:
       file: "abacus_v21_backup_recovery.py"
       line: 499
   QUAL_DEAD_CODE:
+    - number: 6814
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_keb_bridge.py"
+      line: 16
+    - number: 6813
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_keb_bridge.py"
+      line: 14
     - number: 6809
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -7738,18 +7786,6 @@ groups:
       severity: note
       file: "tests/test_legacy_integration.py"
       line: 8
-    - number: 4648
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_keb_bridge.py"
-      line: 15
-    - number: 4647
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_keb_bridge.py"
-      line: 13
     - number: 4646
       tool: CodeQL
       rule_id: "py/unused-import"
