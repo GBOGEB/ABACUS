@@ -1,16 +1,23 @@
 name: QPS W04 DOW receipt contract
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'tests/fixtures/qps_w04_dow_receipt_fixture.yaml'
       - 'tools/validate_qps_w04_dow_receipt.py'
+      - 'tools/run_qps_w04_dow_return.py'
+      - 'federation/qps/QPS_FED_W04_DOW_REQUEST.yaml'
+      - 'ssot/qps_w04_dow_qa_actions.yaml'
       - '.github/workflows/qps-w04-dow-receipt.yml'
   push:
     branches: [main]
     paths:
       - 'tests/fixtures/qps_w04_dow_receipt_fixture.yaml'
       - 'tools/validate_qps_w04_dow_receipt.py'
+      - 'tools/run_qps_w04_dow_return.py'
+      - 'federation/qps/QPS_FED_W04_DOW_REQUEST.yaml'
+      - 'ssot/qps_w04_dow_qa_actions.yaml'
       - '.github/workflows/qps-w04-dow-receipt.yml'
 
 permissions:
@@ -28,3 +35,39 @@ jobs:
         run: python -m pip install --disable-pip-version-check PyYAML
       - name: Validate non-confidential W04 DOW receipt fixture
         run: python tools/validate_qps_w04_dow_receipt.py tests/fixtures/qps_w04_dow_receipt_fixture.yaml
+
+  execute-w04-dow-runtime:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS parent
+        uses: actions/checkout@v4
+        with:
+          path: parent
+      - name: Checkout QPS child SSOT
+        uses: actions/checkout@v4
+        with:
+          repository: GBOGEB/cryoplant-project
+          ref: main
+          path: qps
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime dependency
+        run: python -m pip install --disable-pip-version-check PyYAML
+      - name: Resolve exact QPS child SHA
+        id: child
+        shell: bash
+        run: echo "sha=$(git -C qps rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Produce source-bound W04 DOW runtime receipt
+        working-directory: parent
+        run: python tools/run_qps_w04_dow_return.py --child-root ../qps --child-sha '${{ steps.child.outputs.sha }}'
+      - name: Validate produced W04 DOW runtime receipt
+        working-directory: parent
+        run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
+      - name: Upload W04 DOW runtime receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-w04-dow-runtime-receipt-${{ github.run_id }}
+          path: parent/federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
+          if-no-files-found: error
