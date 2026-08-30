@@ -1,7 +1,7 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-30T17:10:31Z
+# generated: 2026-08-30T17:14:03Z
 
-generated_at:"2026-08-30T17:10:31Z"
+generated_at:"2026-08-30T17:14:03Z"
 repo:GBOGEB/ABACUS
 total_open:4601
 by_severity:
@@ -423,30 +423,30 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
+    - number: 6821
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 52
     - number: 6820
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 60
-    - number: 6819
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 47
+      line: 56
     - number: 6818
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 85
+      line: 82
     - number: 6817
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 66
+      line: 63
     - number: 6812
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
