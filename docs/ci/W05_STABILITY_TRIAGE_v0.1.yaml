@@ -1,0 +1,94 @@
+schema_version: "0.1"
+document_id: W05_STABILITY_TRIAGE
+status: ACTIVE_DIAGNOSTIC_CONTROL
+authority: operational_non_evidence
+snapshot:
+  observed_at: "2026-08-31T01:41:00+02:00"
+  ABACUS:
+    queued: 131
+    active: 0
+    queue_active_ratio: null
+    interpretation: backlog_remains_but_no_active_slot_observed
+  CODEX:
+    queued: 0
+    active: 0
+    interpretation: backlog_drained_stable_idle_candidate
+  combined_queued: 131
+  original_experiment_baseline_queued: 1010
+  queue_reduction_from_baseline: 879
+  queue_reduction_fraction: 0.8702970297
+failure_triage:
+  - repository: GBOGEB/ABACUS
+    workflow: Execution Spine Validation
+    run_id: 33338403521
+    failed_step: Run_QPLANT_presentation_engine_tests
+    root_cause: numpy_missing_from_workflow_test_dependencies
+    repair: install_pyyaml_numpy_pytest_once_in_dependency_step
+    retest_required: true
+  - repository: GBOGEB/ABACUS
+    workflow: Post-Merge PR Summary
+    run_id: 33338403413
+    status: needs_separate_job_log_diagnostic
+helper_capacity_experiment:
+  allowed_counts: [0, 2, 4, 8]
+  maximum_helpers_per_parent: 8
+  combined_maximum_if_both_parents_need_capacity: 16
+  current_recommendation:
+    ABACUS: 8
+    CODEX: 0
+    rationale: ABACUS_has_remaining_backlog_while_CODEX_is_drained
+  activation_rules:
+    - helpers_are_only_for_workflows_that_can_target_the_dedicated_runner_labels
+    - do_not_assume_self_hosted_helpers_consume_existing_ubuntu_latest_backlog
+    - prefer_new_W05_priority_work_over_retroactive_backlog
+    - measure_2_then_4_then_8_when_time_allows_but_plus8_is_permitted_for_bounded_burst
+  rollback_rules:
+    - marginal_efficiency_drop_gt_30_percent
+    - queue_drain_improvement_lt_10_percent
+    - error_rate_increases
+    - adverse_cross_repo_or_W05_evidence_impact
+statistics:
+  sample_each_pulse:
+    - queued_count
+    - active_count
+    - completed_success_count
+    - completed_failure_count
+    - queue_delta
+    - queue_delta_vs_recent_mean
+    - service_time_median
+    - service_time_p95
+    - jobs_per_worker_minute
+    - failure_rate
+    - retry_success_rate
+    - W05_parent_cycle_time
+PCA_factor_candidates:
+  - hosted_capacity_starvation
+  - dedicated_helper_capacity
+  - service_time_heavy_tail
+  - workflow_arrival_fanout
+  - stale_backlog
+  - dependency_or_test_failure
+  - artifact_render_IO
+  - MCP_latency_or_error
+PCA_control:
+  minimum_repeated_observations_before_formal_loadings: 5
+  current_use: diagnostic_factor_tracking_only
+  do_not_publish_eigenvalues_without_repeated_standardized_samples: true
+BT_interventions:
+  - targeted_W05_priority_dispatch
+  - ABACUS_plus8_bounded_helpers
+  - ABACUS_plus4_helpers
+  - ABACUS_plus2_helpers
+  - natural_drain
+  - CODEX_helpers_only_if_backlog_reappears
+  - further_producer_pruning_only_if_new_dominant_producer_is_observed
+DMAIC:
+  define: remaining_ABACUS_backlog_and_test_failures_block_stable_base
+  measure: queue_failure_service_time_and_helper_efficiency
+  analyse: separate_capacity_starvation_from_code_failure_and_fanout
+  improve: repair_deterministic_failures_then_apply_bounded_helpers_to_targetable_W05_work
+  control: require_repeated_stable_low_queue_and_green_retests_before_declaring_base_stable
+governance:
+  operational_metrics_create_QPS_engineering_credit: false
+  parent_graph_growth_creates_completion_credit: false
+  W05_return_requires_child_disposition: true
