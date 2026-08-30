@@ -43,25 +43,22 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - name: Require private child read credential
+        shell: bash
+        env:
+          QPS_REPO_READ_TOKEN: ${{ secrets.QPS_REPO_READ_TOKEN }}
+        run: test -n "$QPS_REPO_READ_TOKEN" || { echo 'QPS_REPO_READ_TOKEN is required for the private QPS child repository'; exit 1; }
       - name: Checkout ABACUS parent
         uses: actions/checkout@v4
         with:
           path: parent
-      - name: Require private-child read credential
-        shell: bash
-        env:
-          QPS_FEDERATION_READ_TOKEN: ${{ secrets.QPS_FEDERATION_READ_TOKEN }}
-        run: |
-          if [ -z "$QPS_FEDERATION_READ_TOKEN" ]; then
-            echo "QPS_FEDERATION_READ_TOKEN is required for the private QPS child checkout" >&2
-            exit 1
-          fi
-      - name: Checkout request-pinned QPS child SSOT
+      - name: Checkout request-bound QPS child SSOT
         uses: actions/checkout@v4
         with:
           repository: GBOGEB/cryoplant-project
           ref: ${{ env.QPS_W04_CHILD_SHA }}
-          token: ${{ secrets.QPS_FEDERATION_READ_TOKEN }}
+          token: ${{ secrets.QPS_REPO_READ_TOKEN }}
+          persist-credentials: false
           path: qps
       - uses: actions/setup-python@v5
         with:
@@ -73,7 +70,7 @@ jobs:
         shell: bash
         run: |
           actual=$(git -C qps rev-parse HEAD)
-          test "$actual" = "$QPS_W04_CHILD_SHA"
+          test "$actual" = "$QPS_W04_CHILD_SHA" || { echo "child SHA mismatch: $actual"; exit 1; }
           echo "sha=$actual" >> "$GITHUB_OUTPUT"
       - name: Produce source-bound W04 DOW runtime receipt
         working-directory: parent
