@@ -1,7 +1,7 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-30T17:14:03Z
+# generated: 2026-08-30T17:38:09Z
 
-generated_at:"2026-08-30T17:14:03Z"
+generated_at:"2026-08-30T17:38:09Z"
 repo:GBOGEB/ABACUS
 total_open:4601
 by_severity:
@@ -440,7 +440,7 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 82
+      line: 86
     - number: 6817
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
