@@ -1,0 +1,90 @@
+schema_version: "0.1"
+document_id: ABACUS_QPS_W04_DOW_QA_ACTIONS
+status: parent_QA_action_contract
+correlation_id: QPS-FED-W04-T10-SAFE-CTRL
+child_repo: GBOGEB/cryoplant-project
+child_prs: [141, 142, 143]
+parent_pr: 722
+purpose: >-
+  Capture parent-side ABACUS QA/DevOps actions exposed by the QPS W04 exchange. This keeps parent hardening
+  separate from child QPS engineering authority while making returned DOW evidence machine-checkable.
+
+authority_boundary:
+  ABACUS_role: parent_DOW_analysis_and_decomposition_lane
+  child_authority: QPS owns engineering SSOT, Table-10 interpretation, Safety acceptance, compliance and completion.
+  prohibition: ABACUS findings cannot self-promote into QPS maturity or compliance.
+
+receipt_contract:
+  required_fields:
+    - correlation_id
+    - child_source_ref
+    - parent_commit_sha
+    - run_id
+    - artifact_id
+    - input_hash
+    - output_hash
+    - requested_analysis_scope
+    - executed_analysis_scope
+    - stage_status
+    - typed_findings
+    - child_disposition_placeholder
+  required_stage_status_fields:
+    - stage_id
+    - mechanic_path
+    - executed
+    - status
+    - reason
+
+QA_actions:
+  - id: ABACUS-W04-QA-001
+    title: enforce W04 receipt schema
+    action: add schema/check so DOW W04 receipts include correlation, hashes, run/artifact identity and typed findings
+    status: proposed
+  - id: ABACUS-W04-QA-002
+    title: typed DOW findings
+    action: expose dependency, common-cause, PCA, reverse-catchup and BT observations as typed records, not prose-only output
+    status: proposed
+  - id: ABACUS-W04-QA-003
+    title: fail-closed stage truth
+    action: ensure each required DOW mechanic has explicit executed/status/reason fields
+    status: proposed
+  - id: ABACUS-W04-QA-004
+    title: W04 nonconfidential fixture
+    action: add a small fixture for QPS support-system/Table-10/Safety semantics without confidential bidder or cost values
+    status: proposed
+  - id: ABACUS-W04-QA-005
+    title: parent feedback intake
+    action: accept child ACCEPT/REJECT/DEFER feedback as parent learning without claiming QPS authority
+    status: proposed
+
+finding_types_expected:
+  - missing_atom
+  - dependency_gap
+  - common_cause_gap
+  - C24_C30_tradeoff_gap
+  - N_plus_1_or_spares_semantics_gap
+  - PCA_feature_gap
+  - reverse_PCA_catchup_candidate
+  - BT_dependency_unlock_candidate
+
+CI_or_DevOps_expectations:
+  - receipt_schema_validation
+  - fixture_hash_check
+  - correlation_id_check
+  - no_confidential_payload_check
+  - all_required_stages_pass_or_fail_closed
+  - typed_findings_lint
+
+child_return_contract:
+  expected_child_dispositions: [ACCEPT, REJECT, DEFER]
+  parent_learning_fields:
+    - disposition_summary
+    - accepted_parent_improvement
+    - rejected_reason
+    - deferred_reason
+    - future_fixture_update
+
+completion_effect:
+  ABACUS_parent_maturity_delta: 0
+  QPS_child_completion_delta: 0
+  reason: parent_QA_contract_only_until CI_and_receipts_exist
