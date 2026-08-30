@@ -25,11 +25,53 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
     def test_federation_wave_requires_all_three_repos(self) -> None:
         manifest = copy.deepcopy(self.manifest)
-        manifest["federation_wave"]["repos"].remove("GBOGEB/cryoplant-project")
+        manifest["federation_wave"]["repos"] = [
+            repo for repo in manifest["federation_wave"]["repos"] if repo != "GBOGEB/cryoplant-project"
+        ]
 
         errors = style.validate_manifest(manifest)
 
         self.assertTrue(any("missing federation repo" in error for error in errors))
+
+    def test_federation_wave_rejects_wrong_id(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["id"] = "SSOT-STYLE-W03"
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("federation_wave id must be SSOT-STYLE-W04", errors)
+
+    def test_federation_wave_rejects_missing_artifact_lane(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["artifact_lanes"] = [
+            lane for lane in manifest["federation_wave"]["artifact_lanes"] if lane != "keb"
+        ]
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("missing federation artifact lane(s): keb", errors)
+
+    def test_federation_wave_rejects_missing_priority_method(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["methods"] = [
+            method for method in manifest["federation_wave"]["methods"] if method != "BT_PRIORITY"
+        ]
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("missing federation method(s): BT_PRIORITY", errors)
+
+    def test_federation_wave_rejects_non_list_contract_fields(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["repos"] = "GBOGEB/ABACUS"
+        manifest["federation_wave"]["artifact_lanes"] = {"html": True}
+        manifest["federation_wave"]["methods"] = "DMAIC"
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("federation_wave.repos must be a list of strings", errors)
+        self.assertIn("federation_wave.artifact_lanes must be a list of strings", errors)
+        self.assertIn("federation_wave.methods must be a list of strings", errors)
 
     def test_federation_wave_blocks_credit_without_child_disposition(self) -> None:
         manifest = copy.deepcopy(self.manifest)
