@@ -58,6 +58,24 @@ An awake score can be high while penetration is still incomplete. That is expect
 presence is the first gate; rendered evidence, stale banners, screenshots, hashes and
 roundtrip logs are the next wave.
 
+## W04 Federation Wave
+
+`federation_wave` in `ssot/ssot_style.json` binds the current three-repo improvement
+wave across `GBOGEB/ABACUS`, `GBOGEB/CODEX` and `GBOGEB/cryoplant-project`.
+
+The wave scores eight lanes together: Excel, PPTX, PDF, HTML, graphs, CI, DOW and
+KEB. The priority method is:
+
+1. Use DMAIC to keep the question, evidence and stop condition explicit.
+2. Use reversed PCA loading order from P5 to P1 so weak rendered-output, graph,
+   DOW and KEB lanes are lifted before already-stable controls.
+3. Use BT priority as a tie-break: low score, high release impact and low coupling
+   wins the next pulse.
+
+This is a planning-to-execution contract only. It does not promote any DOW or KEB
+runtime receipt into engineering, Safety, Table-10, compliance or completion credit
+until the child repo accepts and dispositions the typed finding.
+
 ## Commands
 
 ```bash

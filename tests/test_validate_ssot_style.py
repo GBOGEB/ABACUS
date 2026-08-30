@@ -23,6 +23,22 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         self.assertTrue(any("missing required HTML QA gate" in error for error in errors))
 
+    def test_federation_wave_requires_all_three_repos(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["repos"].remove("GBOGEB/cryoplant-project")
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertTrue(any("missing federation repo" in error for error in errors))
+
+    def test_federation_wave_blocks_credit_without_child_disposition(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["no_credit_without_child_disposition"] = False
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("federation wave must block credit without child disposition", errors)
+
     def test_awake_probe_score_counts_existing_paths(self) -> None:
         manifest = {
             "awake_probes": [

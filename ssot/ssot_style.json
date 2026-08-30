@@ -173,5 +173,37 @@
       "ci_control"
     ],
     "bt_priority_rule": "Prioritize high impact, low coupling controls that wake dormant evidence nodes or prevent stale outward artifacts."
+  },
+  "federation_wave": {
+    "id": "SSOT-STYLE-W04",
+    "status": "planning_to_execution",
+    "repos": [
+      "GBOGEB/ABACUS",
+      "GBOGEB/CODEX",
+      "GBOGEB/cryoplant-project"
+    ],
+    "artifact_lanes": [
+      "excel",
+      "pptx",
+      "pdf",
+      "html",
+      "graphs",
+      "ci",
+      "dow",
+      "keb"
+    ],
+    "methods": [
+      "DMAIC",
+      "PCA_REVERSED_P5_TO_P1",
+      "BT_PRIORITY"
+    ],
+    "control_rules": [
+      "ABACUS owns outward artifact and scenario-I/O readiness.",
+      "CODEX owns reusable bridge validators and CI governance meaning.",
+      "cryoplant-project emits only status, hashes, counts and evidence references for controlled evidence.",
+      "No rendered artifact is current unless its SSOT version/hash and footer/reference are bound.",
+      "No DOW or KEB runtime receipt grants engineering, Safety, Table-10, compliance or completion credit until child disposition accepts it."
+    ],
+    "no_credit_without_child_disposition": true
   }
 }
