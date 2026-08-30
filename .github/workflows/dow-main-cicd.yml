@@ -2,44 +2,57 @@ name: DOW Main CI/CD Pipeline
 
 on:
   push:
-    branches:
-    - main
-    - develop
-    - feat/*
+    branches: [main, develop]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'TESTING_SUITE/**'
+      - 'demo_integrated_system.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/dow-main-cicd.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'TESTING_SUITE/**'
+      - 'demo_integrated_system.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/dow-main-cicd.yml'
   schedule:
-  - cron: 0 */6 * * *
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: dow-main-cicd-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: pip install -r requirements.txt || echo 'No requirements.txt'
-    
-    - name: Run Test Suite
-      run: python TESTING_SUITE/RUN_ALL_TESTS.py
-    
-    - name: Run 5-Iteration DMAIC+DOW Integration
-      run: python demo_integrated_system.py
-    
-    - name: Upload Test Reports
-      if: always()
-      uses: actions/upload-artifact@v7
-      with:
-        name: test-reports
-        path: TESTING_SUITE/05_TEST_REPORTS/
-    
-    - name: Upload Integration Reports
-      if: always()
-      uses: actions/upload-artifact@v7
-      with:
-        name: integration-reports
-        path: demo_workspace/integration_report_*.json
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt || echo 'No requirements.txt'
+      - name: Run Test Suite
+        run: python TESTING_SUITE/RUN_ALL_TESTS.py
+      - name: Run 5-Iteration DMAIC+DOW Integration
+        run: python demo_integrated_system.py
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: TESTING_SUITE/05_TEST_REPORTS/
+      - name: Upload Integration Reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-reports
+          path: demo_workspace/integration_report_*.json
