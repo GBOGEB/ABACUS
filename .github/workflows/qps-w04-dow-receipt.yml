@@ -23,6 +23,9 @@ on:
 permissions:
   contents: read
 
+env:
+  QPS_W04_CHILD_SHA: ec12b09873a8e0668176d8212f8d09ecdbe18bad
+
 jobs:
   validate-w04-dow-receipt:
     runs-on: ubuntu-latest
@@ -40,25 +43,35 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - name: Require private child read credential
+        shell: bash
+        env:
+          QPS_REPO_READ_TOKEN: ${{ secrets.QPS_REPO_READ_TOKEN }}
+        run: test -n "$QPS_REPO_READ_TOKEN" || { echo 'QPS_REPO_READ_TOKEN is required for the private QPS child repository'; exit 1; }
       - name: Checkout ABACUS parent
         uses: actions/checkout@v4
         with:
           path: parent
-      - name: Checkout QPS child SSOT
+      - name: Checkout request-bound QPS child SSOT
         uses: actions/checkout@v4
         with:
           repository: GBOGEB/cryoplant-project
-          ref: main
+          ref: ${{ env.QPS_W04_CHILD_SHA }}
+          token: ${{ secrets.QPS_REPO_READ_TOKEN }}
+          persist-credentials: false
           path: qps
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install runtime dependency
         run: python -m pip install --disable-pip-version-check PyYAML
-      - name: Resolve exact QPS child SHA
+      - name: Verify exact QPS child SHA
         id: child
         shell: bash
-        run: echo "sha=$(git -C qps rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          actual=$(git -C qps rev-parse HEAD)
+          test "$actual" = "$QPS_W04_CHILD_SHA" || { echo "child SHA mismatch: $actual"; exit 1; }
+          echo "sha=$actual" >> "$GITHUB_OUTPUT"
       - name: Produce source-bound W04 DOW runtime receipt
         working-directory: parent
         run: python tools/run_qps_w04_dow_return.py --child-root ../qps --child-sha '${{ steps.child.outputs.sha }}'
