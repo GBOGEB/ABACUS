@@ -81,6 +81,39 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         self.assertIn("federation wave must block credit without child disposition", errors)
 
+    def test_handoff_check_policy_requires_repair_pr_links(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]["GBOGEB/CODEX"] = 274
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("handoff check policy must link ABACUS #754 and CODEX #298", errors)
+
+    def test_handoff_check_policy_blocks_known_failure_states(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        policy = manifest["federation_wave"]["handoff_check_policy"]
+        policy["blocking_conclusions"].remove("timed_out")
+        policy["manual_review_conclusions"] = []
+        policy["pending_statuses"].remove("in_progress")
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("missing blocking conclusion(s): timed_out", errors)
+        self.assertIn("missing manual-review conclusion(s): cancelled", errors)
+        self.assertIn("missing pending status(es): in_progress", errors)
+
+    def test_handoff_check_policy_requires_bidirectional_feedback(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["handoff_check_policy"]["repository_feedback"] = {
+            "from_codex": "validation meaning",
+            "to_codex": "artifact readiness",
+        }
+
+        errors = style.validate_manifest(manifest)
+
+        self.assertIn("handoff policy must capture feedback from CODEX", errors)
+        self.assertIn("handoff policy must capture feedback to CODEX", errors)
+
     def test_awake_probe_score_counts_existing_paths(self) -> None:
         manifest = {
             "awake_probes": [

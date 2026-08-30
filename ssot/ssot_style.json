@@ -204,6 +204,32 @@
       "No rendered artifact is current unless its SSOT version/hash and footer/reference are bound.",
       "No DOW or KEB runtime receipt grants engineering, Safety, Table-10, compliance or completion credit until child disposition accepts it."
     ],
-    "no_credit_without_child_disposition": true
+    "no_credit_without_child_disposition": true,
+    "handoff_check_policy": {
+      "linked_repair_prs": {
+        "GBOGEB/ABACUS": 754,
+        "GBOGEB/CODEX": 298
+      },
+      "blocking_conclusions": [
+        "failure",
+        "timed_out",
+        "action_required"
+      ],
+      "manual_review_conclusions": [
+        "cancelled"
+      ],
+      "pending_statuses": [
+        "queued",
+        "in_progress",
+        "requested",
+        "waiting",
+        "pending"
+      ],
+      "all_clear_rule": "A DMAIC/PCA/BT handoff all-clear may be recorded only when CODEX and ABACUS head and merge checks have no blocking conclusions, no unwaived cancelled checks, and no pending required checks.",
+      "repository_feedback": {
+        "from_codex": "CODEX provides reusable validation meaning, check-disposition taxonomy and release-manifest expectations to ABACUS.",
+        "to_codex": "ABACUS returns user-facing artifact readiness, runtime receipt and scenario-I/O status to CODEX bridge governance."
+      }
+    }
   }
 }
