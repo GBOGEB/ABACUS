@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 MD060 -->
 # QPS COST_Master DMAIC / KPI / PCA / Bradley-Terry Control
 
 Control: GOV-001  
