@@ -5,7 +5,7 @@ This directory contains only public-safe schemas, synthetic fixtures and semanti
 It must not contain:
 
 - bidder offer text or commercial values;
-- confidential evidence extracts;
+- confidential bidder data or confidential evidence extracts;
 - supplier documents;
 - generated Office/PDF/image/archive binaries;
 - user-specific OneDrive paths;
