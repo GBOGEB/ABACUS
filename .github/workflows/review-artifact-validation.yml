@@ -16,8 +16,9 @@ on:
       - 'scripts/validate_review_package.py'
       - '.github/workflows/review-artifact-validation.yml'
 jobs:
-  validate:
+  review-artifact-package:
+    name: Review artifact package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: python scripts/validate_runtime_foundation.py
+      - run: python scripts/validate_review_package.py
