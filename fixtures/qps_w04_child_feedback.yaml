@@ -1,0 +1,22 @@
+schema_version: "0.1"
+document_id: QPS_W04_CHILD_FEEDBACK_FOR_DOW
+authority: sanitized_child_feedback_non_engineering
+source_child: GBOGEB/cryoplant-project
+source_disposition_commit: f65d06e8f4e9ffc7644d45a7f577d51c3d30fce5
+return_metrics: {typed: 13, accepted: 11, deferred: 2, rejected: 0, acceptance_rate: 0.8461538462}
+learned_constraints:
+- dependency_findings_should_emit_typed_edges_support_permissive_equipment_preserved_state_evidence
+- common_cause_is_first_class_cross_domain_dimension
+- C24_and_C30_are_controlled_configuration_dimensions
+- online_N_plus_1_degraded_operation_and_warehouse_spare_are_distinct
+- lifecycle_checkpoints_L4_L7_L8_have_distinct_evidence_meanings
+- zero_missing_atom_cues_is_negative_observation_not_proof_of_completeness
+- PCA_reverse_catchup_and_BT_are_diagnostic_until_child_assimilation
+next_return_requirements:
+- source_cue
+- candidate_graph_edge
+- confidence
+- novelty_or_duplicate_against_prior_feedback
+- unresolved_gap_burndown
+- cycle_id_and_parent_child_parent_elapsed_time
+no_credit_rule: this fixture improves DOW search/decomposition only and grants no QPS authority or completion credit.
