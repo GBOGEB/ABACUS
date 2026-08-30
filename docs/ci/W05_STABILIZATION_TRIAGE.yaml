@@ -1,0 +1,89 @@
+schema_version: "0.1"
+control_id: W05-STABILIZATION-TRIAGE
+status: ACTIVE_DIAGNOSTIC_CONTROL
+authority: operational_non_evidence
+snapshot:
+  observed_at: "2026-08-30T23:36:00Z"
+  ABACUS:
+    queued: 131
+    active: 0
+    note: queue_remaining_with_no_active_jobs_at_snapshot
+  CODEX:
+    queued: 0
+    active: 0
+    note: backlog_drained
+  original_combined_baseline_queued: 1010
+  current_combined_queued: 131
+  queue_reduction_fraction: 0.8702970297
+failure_triage:
+  - repository: GBOGEB/ABACUS
+    workflow: Execution Spine Validation
+    run_id: 33338403521
+    failed_step: Run QPLANT presentation engine tests
+    root_cause: pytest_collection_imports_numpy_but_workflow_did_not_install_numpy
+    repair: install_numpy_and_pytest_in_dependency_step
+    retest_required: true
+helper_capacity:
+  allowed_worker_counts: [0, 2, 4, 8]
+  max_burst_workers_per_repo: 8
+  combined_max_if_both_repos_need_help: 16
+  policy:
+    - do_not_add_workers_to_a_repo_with_zero_backlog_for_queue_recovery
+    - prefer_ABACUS_helpers_while_ABACUS_backlog_exists_and_CODEX_is_drained
+    - use_CODEX_helpers_only_for_new_governed_KEB_or_W05_work_or_if_backlog_reappears
+    - measure_each_dose_before_escalating
+    - stop_or_scale_down_if_marginal_efficiency_drops_over_30_percent
+    - stop_or_scale_down_if_queue_drain_gain_is_under_10_percent
+    - stop_on_error_rate_or_cross_repo_regression_increase
+statistics:
+  record_each_pulse:
+    - timestamp
+    - repo
+    - helper_count
+    - queued_start
+    - queued_end
+    - active_start
+    - active_end
+    - completed_jobs
+    - failed_jobs
+    - queue_slope_jobs_per_minute
+    - throughput_jobs_per_worker_minute
+    - median_service_time
+    - p95_service_time
+    - error_rate
+    - W05_priority_wait_time
+PCA_factor_candidates:
+  - hosted_runner_availability
+  - helper_count
+  - queue_age
+  - service_time
+  - workflow_fanout
+  - failure_rework
+  - artifact_render_IO
+  - priority_starvation
+  - cross_repo_contention
+PCA_rules:
+  - do_not_publish_formal_loadings_until_repeated_standardized_pulses_exist
+  - use_reverse_loading_to_target_underdeveloped_or_high_residual_factors
+BT_interventions:
+  - natural_drain
+  - plus_2_helpers
+  - plus_4_helpers
+  - plus_8_helpers
+  - local_MCP_preflight
+  - targeted_failure_repair
+  - priority_W05_execution
+BT_rules:
+  - rank_by_observed_queue_drain_cycle_time_error_and_W05_priority_effect
+  - do_not_assign_engineering_or_completion_credit
+DMAIC:
+  Define: stable_base_for_focused_W05_and_cross_repo_execution
+  Measure: queue_throughput_service_time_errors_and_priority_wait
+  Analyze: PCA_factor_candidates_and_failure_root_causes
+  Improve: bounded_helper_doses_plus_targeted_repairs
+  Control: retain_only_interventions_with_repeated_measured_benefit
+W05_guardrails:
+  - preserve_QPS_child_authority
+  - parent_outputs_candidate_only
+  - no_Safety_Table10_completion_PCA_or_BT_credit_from_operational_capacity
+  - do_not_allow_queue_recovery_to_starve_governed_W05_receipts
