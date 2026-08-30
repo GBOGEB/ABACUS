@@ -1,0 +1,110 @@
+# yamllint disable rule:line-length
+schema_version: 1
+control_id: GOV-001
+release_disposition: HOLD
+measurement_boundary:
+  separate_control_readiness_from_physical_execution: true
+  phase_2:
+    prepared_controls_complete: 11
+    physical_execution_gates_open: 10
+  phase_3:
+    prepared_controls_complete: 6
+    physical_execution_gates_open: 9
+  phase_4:
+    prepared_controls_complete: 5
+    physical_execution_gates_open: 12
+  phase_5:
+    source_side_status: CLOSED_COMPLETE
+kpis:
+  evidence_verification_ratio: {target: 1.0, numerator_target: 8, denominator: 8}
+  evidence_hash_mismatch_count: {target: 0}
+  evidence_size_pending_count: {target: 0}
+  clean_build_success_ratio: {target: 1.0, numerator_target: 2, denominator: 2}
+  semantic_parity_ratio: {target: 1.0, numerator_target: 4, denominator: 4}
+  qa_pass_ratio: {target: 1.0}
+  formula_error_count: {target: 0}
+  stale_reference_count: {target: 0}
+  release_artifact_parity_ratio: {target: 1.0}
+  unexpected_release_file_count: {target: 0}
+  review_isolation_ratio: {target: 1.0}
+  review_assimilation_closure_ratio: {target: 1.0}
+  hold_escape_violations: {target: 0}
+operating_metrics:
+  - successful_run_count
+  - failed_run_count
+  - consecutive_success_streak
+  - last_successful_build_id
+  - last_successful_build_timestamp
+  - time_since_last_success
+  - backlog_count_by_phase
+  - backlog_count_by_change_class
+  - backlog_age_p50
+  - backlog_age_p90
+  - backlog_age_max
+  - catchup_delta_vs_trailing_mean
+  - reverse_load_factor_gap
+pca:
+  purpose: descriptive_priority_compression
+  inferential_claims_allowed: false
+  factor_scale: ordinal_0_to_3
+  factors:
+    - CriticalPath
+    - EvidenceIntegrity
+    - Reproducibility
+    - ReleaseAssurance
+    - ReviewAssimilation
+    - Readiness
+  explained_variance:
+    PC1: 0.6122
+    PC2: 0.1997
+    PC3: 0.1046
+    PC1_to_PC3_cumulative: 0.9165
+  interpretation:
+    PC1: execution_evidence_readiness
+    PC2: release_assurance
+    PC3: reproducibility_review_coupling
+bradley_terry:
+  method: pairwise_logit_from_weighted_utility
+  utility_formula: "0.30*CriticalPath + 0.20*EvidenceIntegrity + 0.20*Reproducibility + 0.15*ReleaseAssurance + 0.05*ReviewAssimilation + 0.10*Readiness"
+  pairwise_probability: "exp(u_i)/(exp(u_i)+exp(u_j))"
+  normalized_share_is_success_probability: false
+  ranking:
+    - {rank: 1, id: A3, action: verify_evidence_hashes_sizes, utility: 2.70, normalized_share: 0.1264}
+    - {rank: 2, id: A6, action: run_full_QA, utility: 2.55, normalized_share: 0.1088}
+    - {rank: 2, id: A7, action: compare_semantic_manifests, utility: 2.55, normalized_share: 0.1088}
+    - {rank: 4, id: A4, action: promote_registry_VERIFIED, utility: 2.50, normalized_share: 0.1035}
+    - {rank: 5, id: A5, action: build_A_B, utility: 2.40, normalized_share: 0.0937}
+    - {rank: 6, id: A2, action: bind_evidence_root, utility: 2.35, normalized_share: 0.0891}
+    - {rank: 7, id: A9, action: verify_onedrive_parity_receipt, utility: 2.25, normalized_share: 0.0806}
+    - {rank: 7, id: A13, action: rebuild_publish_successor, utility: 2.25, normalized_share: 0.0806}
+    - {rank: 9, id: A1, action: clone_fetch_repositories, utility: 2.15, normalized_share: 0.0729}
+    - {rank: 10, id: A8, action: publish_immutable_release, utility: 1.75, normalized_share: 0.0489}
+    - {rank: 11, id: A12, action: assimilate_review_to_source_PR, utility: 1.50, normalized_share: 0.0381}
+    - {rank: 12, id: A10, action: open_separate_review_copy, utility: 1.25, normalized_share: 0.0297}
+    - {rank: 13, id: A11, action: register_classify_review_changes, utility: 0.80, normalized_share: 0.0189}
+dependency_order: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13]
+reverse_loading:
+  current_order:
+    - EvidenceIntegrity
+    - Reproducibility
+    - ReleaseAssurance
+    - ReviewAssimilation
+  formula: "mean(execution_completion_all_factors)-execution_completion_factor"
+  z_score_minimum_snapshots: 5
+todo_state_machine:
+  states: [BLOCKED, READY, RUNNING, FAILED, REPAIRING, RETEST, PASSED, CLOSED]
+  failed_to_closed_without_retest_forbidden: true
+actions:
+  A1: {state: READY, exit: repo_SHAs_and_clean_worktree_receipt}
+  A2: {state: BLOCKED, blocked_by: [A1], exit: governed_evidence_root_bound_privately}
+  A3: {state: BLOCKED, blocked_by: [A2], exit: eight_of_eight_hash_and_size_match}
+  A4: {state: BLOCKED, blocked_by: [A3], exit: private_registry_VERIFIED}
+  A5: {state: BLOCKED, blocked_by: [A4], exit: two_independent_successful_build_receipts}
+  A6: {state: BLOCKED, blocked_by: [A5], exit: all_required_QA_PASS}
+  A7: {state: BLOCKED, blocked_by: [A5], exit: zero_unexplained_semantic_differences}
+  A8: {state: BLOCKED, blocked_by: [A6, A7], exit: immutable_release_manifest}
+  A9: {state: BLOCKED, blocked_by: [A8], exit: full_raw_hash_parity_and_acceptance_receipts}
+  A10: {state: BLOCKED, blocked_by: [A9], exit: separate_review_copy}
+  A11: {state: BLOCKED, blocked_by: [A10], exit: all_review_items_registered_and_classified}
+  A12: {state: BLOCKED, blocked_by: [A11], exit: normalized_source_PR}
+  A13: {state: BLOCKED, blocked_by: [A12], exit: successor_immutable_release}
