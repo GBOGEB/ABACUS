@@ -149,6 +149,12 @@
       "path": "tests/test_keb_bridge.py",
       "kind": "keb",
       "weight": 3
+    },
+    {
+      "id": "keb_runtime_status",
+      "path": "scripts/emit_keb_runtime_status.py",
+      "kind": "keb",
+      "weight": 4
     }
   ],
   "scoring": {
