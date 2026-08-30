@@ -10,7 +10,6 @@ Tests workspace setup, state persistence, knowledge transfer, and sync operation
 
 import pytest
 import json
-import time
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
@@ -242,18 +241,14 @@ class TestKEBRuntimeBridge:
         keb.schedule_task("keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",))
 
         keb.start()
-        try:
-            deadline = time.time() + 5
-            while keb.get_metrics()["tasks_executed"] < 2 and time.time() < deadline:
-                time.sleep(0.05)
-        finally:
-            keb.stop()
+        keb.stop(wait=True, timeout=5)
 
         metrics = keb.get_metrics()
         assert executed == ["keb_to_dow", "dow_to_keb"]
         assert metrics["tasks_submitted"] == 2
         assert metrics["tasks_executed"] == 2
         assert metrics["tasks_failed"] == 0
+        assert metrics["queue_size"] == 0
 
 
 if __name__ == '__main__':
