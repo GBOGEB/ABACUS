@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import re
@@ -284,6 +285,18 @@ def main() -> int:
             if not args.markdown_output.exists():
                 errors.append(f"generated report is missing: {args.markdown_output}")
             elif args.markdown_output.read_text(encoding="utf-8") != markdown:
+                checked_in = args.markdown_output.read_text(encoding="utf-8")
+                print(
+                    "".join(
+                        difflib.unified_diff(
+                            checked_in.splitlines(keepends=True),
+                            markdown.splitlines(keepends=True),
+                            fromfile="checked-in",
+                            tofile="generated",
+                        )
+                    ),
+                    file=sys.stderr,
+                )
                 errors.append(
                     f"generated report is stale: {args.markdown_output}; "
                     "rerun without --check to refresh it"
