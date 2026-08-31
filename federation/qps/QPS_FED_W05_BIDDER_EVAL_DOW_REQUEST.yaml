@@ -1,0 +1,62 @@
+schema_version: "0.3"
+correlation_id: QPS-FED-W05-BIDDER-EVAL
+lane: ABACUS_DOW
+status: REQUESTED
+child:
+  repository: GBOGEB/cryoplant-project
+  baseline_sha: 1960710735177c398123af955c33daa8711ece60
+  authority: child_owns_engineering_SSOT_compliance_and_disposition
+input_contract:
+  source_wave: QPS-BIDDER-EVAL-W03
+  bidders: [BIDDER_A, BIDDER_B]
+  confidentiality: sanitized_feature_graph_only
+  priority_families:
+    - HSE_GOVERNANCE
+    - RISK_RAMS_MSRA
+    - ODH_QPS_CIS
+    - SAT_ACCEPTANCE
+    - HELIUM_LEAK
+    - WELDING_NDT
+    - LIFTING_CRANE
+    - NOISE
+    - ENERGY_INV_COP
+    - PID_CONTROLS
+    - ISO9001_QMS
+    - SCOPE_SUPPLY_CONFIG
+    - DOCUMENT_DELIVERABLES
+    - ADDENDUM_I_C_AND_L
+  proof_levels: [P0,P1,P2,P3,P4,P5,P6]
+  edge_types: [DIRECT,SUPPORTING,EVIDENCE_ONLY,CONTRADICTS,ALLOCATION_SHIFT,MULTI_NODE_EVIDENCE,INTERNAL_CONTRADICTION]
+requested_DOW_operations:
+  - compare_bidders_on_same_controlled_RTM_OFFER_AD02_graph_without_cross_bidder_substitution
+  - measure_priority_family_source_coverage_without_double_counting_multi_node_evidence
+  - propagate_AD02_and_AddendumI_obligations_through_L1_L6_and_operation_maintenance
+  - identify_responsibility_and_scope_shifts_that_can_break_acceptance_or_owner_interfaces
+  - identify_AddendumI_acceptance_payment_leverage_risk_without_receiving_commercial_values
+  - detect_L4_L5_gaps_capable_of_blocking_L6_or_forcing_repair_retest
+  - compare_ISO9001_lifecycle_scope_project_application_and_post_acceptance_continuity
+  - identify_internal_bidder_contradictions_in_noise_scope_acceptance_or_quality_evidence
+  - retest_reverse_load_WELDING_LIFTING_NOISE_PID_against_global_BT_priority
+  - produce_PCA_ready_feature_observation_recommendations_without_engineering_credit
+required_return:
+  - stable_finding_id
+  - source_correlation_id
+  - finding_type
+  - affected_family_and_child_nodes
+  - bidder_scope
+  - evidence_basis_class
+  - structural_confidence
+  - recommended_child_action
+  - reusable_parent_pattern_candidate
+  - input_and_output_hash_lineage
+prohibited:
+  - real_bidder_names
+  - bidder_confidential_text
+  - prices_or_payment_percentages
+  - parent_generated_QPS_compliance
+  - parent_generated_maturity_or_BT_credit
+  - parent_self_promotion_into_child_SSOT
+child_disposition_contract:
+  governed_values: [ACCEPT, REJECT, DEFER]
+  parent_findings_are_candidates: true
+closure_test: returned_DOW_receipt_plus_child_disposition_plus_feedback_receipt
