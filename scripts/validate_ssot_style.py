@@ -39,10 +39,20 @@ REQUIRED_FEDERATION_METHODS = {
     "PCA_REVERSED_P5_TO_P1",
     "BT_PRIORITY",
 }
-REQUIRED_BLOCKING_CONCLUSIONS = {"failure", "timed_out", "action_required"}
+REQUIRED_BLOCKING_CONCLUSIONS = {"failure", "timed_out", "action_required", "startup_failure", "stale"}
 REQUIRED_MANUAL_REVIEW_CONCLUSIONS = {"cancelled"}
 REQUIRED_PENDING_STATUSES = {"queued", "in_progress", "requested", "waiting", "pending"}
-REQUIRED_REPAIR_PRS = {"GBOGEB/ABACUS": 754, "GBOGEB/CODEX": 298}
+REQUIRED_REPAIR_PRS = {"GBOGEB/ABACUS": {754, 756}, "GBOGEB/CODEX": {298, 300}}
+REQUIRED_ALL_CLEAR_REQUIREMENTS = {
+    "no_blocking_conclusions",
+    "no_unwaived_cancelled_checks",
+    "no_pending_required_checks",
+    "no_unresolved_material_reviews",
+    "repaired_sha_retested",
+    "downstream_return_receipt_accepted",
+}
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def load_manifest(path: Path) -> Dict[str, Any]:
@@ -63,8 +73,25 @@ def _string_set(value: Any, field_name: str, errors: List[str]) -> set[str]:
     return set(value)
 
 
-def _format_missing(values: set[str]) -> str:
-    return ", ".join(sorted(values))
+def _format_missing(values: set[Any]) -> str:
+    return ", ".join(str(value) for value in sorted(values))
+
+
+def _mapping(value: Any, field_name: str, errors: List[str]) -> Dict[str, Any]:
+    """Return a mapping or record a deterministic validation error."""
+    if not isinstance(value, dict):
+        errors.append(f"{field_name} must be an object")
+        return {}
+    return value
+
+
+def _repair_pr_set(value: Any, field_name: str, errors: List[str]) -> set[int]:
+    if isinstance(value, int):
+        return {value}
+    if not isinstance(value, list) or not all(isinstance(item, int) for item in value):
+        errors.append(f"{field_name} must be an integer or list of integers")
+        return set()
+    return set(value)
 
 
 def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
@@ -91,7 +118,7 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
     missing_html_gates = REQUIRED_HTML_GATES - html_gates
     _require(not missing_html_gates, f"missing required HTML QA gate(s): {_format_missing(missing_html_gates)}", errors)
 
-    wave = manifest.get("federation_wave", {})
+    wave = _mapping(manifest.get("federation_wave", {}), "federation_wave", errors)
     _require(wave.get("id") == "SSOT-STYLE-W04", "federation_wave id must be SSOT-STYLE-W04", errors)
     repos = _string_set(wave.get("repos", []), "federation_wave.repos", errors)
     missing_repos = REQUIRED_FEDERATION_REPOS - repos
@@ -108,6 +135,7 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
         errors,
     )
     _validate_handoff_check_policy(wave, errors)
+    _validate_lineage_binding(manifest, errors)
 
     probes = manifest.get("awake_probes", [])
     _require(bool(probes), "awake_probes must not be empty", errors)
@@ -121,22 +149,92 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
 
 
 def _validate_handoff_check_policy(wave: Dict[str, Any], errors: List[str]) -> None:
-    policy = wave.get("handoff_check_policy", {})
-    _require(policy.get("linked_repair_prs") == REQUIRED_REPAIR_PRS, "handoff check policy must link ABACUS #754 and CODEX #298", errors)
-    blocking = _string_set(policy.get("blocking_conclusions", []), "federation_wave.handoff_check_policy.blocking_conclusions", errors)
-    manual = _string_set(policy.get("manual_review_conclusions", []), "federation_wave.handoff_check_policy.manual_review_conclusions", errors)
-    pending = _string_set(policy.get("pending_statuses", []), "federation_wave.handoff_check_policy.pending_statuses", errors)
-    missing_blocking = REQUIRED_BLOCKING_CONCLUSIONS - blocking
-    missing_manual = REQUIRED_MANUAL_REVIEW_CONCLUSIONS - manual
-    missing_pending = REQUIRED_PENDING_STATUSES - pending
-    _require(not missing_blocking, f"missing blocking conclusion(s): {_format_missing(missing_blocking)}", errors)
-    _require(not missing_manual, f"missing manual-review conclusion(s): {_format_missing(missing_manual)}", errors)
-    _require(not missing_pending, f"missing pending status(es): {_format_missing(missing_pending)}", errors)
-    all_clear_rule = policy.get("all_clear_rule", "")
-    _require(isinstance(all_clear_rule, str) and "no pending required checks" in all_clear_rule, "handoff all-clear rule must block pending required checks", errors)
-    feedback = policy.get("repository_feedback", {})
-    _require("CODEX" in feedback.get("from_codex", ""), "handoff policy must capture feedback from CODEX", errors)
-    _require("ABACUS" in feedback.get("to_codex", ""), "handoff policy must capture feedback to CODEX", errors)
+    policy = _mapping(
+        wave.get("handoff_check_policy", {}),
+        "federation_wave.handoff_check_policy",
+        errors,
+    )
+    repair_links = _mapping(
+        policy.get("linked_repair_prs", {}),
+        "federation_wave.handoff_check_policy.linked_repair_prs",
+        errors,
+    )
+    for repo, required in REQUIRED_REPAIR_PRS.items():
+        observed = _repair_pr_set(
+            repair_links.get(repo, []),
+            f"federation_wave.handoff_check_policy.linked_repair_prs.{repo}",
+            errors,
+        )
+        missing = required - observed
+        _require(
+            not missing,
+            f"linked repair PR(s) missing for {repo}: {_format_missing(missing)}",
+            errors,
+        )
+
+    blocking = _string_set(
+        policy.get("blocking_conclusions", []),
+        "federation_wave.handoff_check_policy.blocking_conclusions",
+        errors,
+    )
+    manual = _string_set(
+        policy.get("manual_review_conclusions", []),
+        "federation_wave.handoff_check_policy.manual_review_conclusions",
+        errors,
+    )
+    pending = _string_set(
+        policy.get("pending_statuses", []),
+        "federation_wave.handoff_check_policy.pending_statuses",
+        errors,
+    )
+    requirements = _string_set(
+        policy.get("all_clear_requirements", []),
+        "federation_wave.handoff_check_policy.all_clear_requirements",
+        errors,
+    )
+    _require(
+        REQUIRED_BLOCKING_CONCLUSIONS <= blocking,
+        f"missing blocking conclusion(s): {_format_missing(REQUIRED_BLOCKING_CONCLUSIONS - blocking)}",
+        errors,
+    )
+    _require(
+        REQUIRED_MANUAL_REVIEW_CONCLUSIONS <= manual,
+        f"missing manual-review conclusion(s): {_format_missing(REQUIRED_MANUAL_REVIEW_CONCLUSIONS - manual)}",
+        errors,
+    )
+    _require(
+        REQUIRED_PENDING_STATUSES <= pending,
+        f"missing pending status(es): {_format_missing(REQUIRED_PENDING_STATUSES - pending)}",
+        errors,
+    )
+    _require(
+        REQUIRED_ALL_CLEAR_REQUIREMENTS <= requirements,
+        f"missing all-clear requirement(s): {_format_missing(REQUIRED_ALL_CLEAR_REQUIREMENTS - requirements)}",
+        errors,
+    )
+    feedback = _mapping(
+        policy.get("repository_feedback", {}),
+        "federation_wave.handoff_check_policy.repository_feedback",
+        errors,
+    )
+    for field in ("from_codex", "to_codex"):
+        _require(
+            isinstance(feedback.get(field), str) and bool(feedback[field].strip()),
+            f"repository_feedback.{field} must be a non-empty string",
+            errors,
+        )
+
+
+def _validate_lineage_binding(manifest: Dict[str, Any], errors: List[str]) -> None:
+    lineage = _mapping(manifest.get("lineage_binding", {}), "lineage_binding", errors)
+    _require(lineage.get("contract_version") == "0.2.0", "lineage contract_version must be 0.2.0", errors)
+    _require(lineage.get("status") == "pending_retest", "lineage status must be pending_retest", errors)
+    inputs = _mapping(lineage.get("baseline_inputs", {}), "lineage_binding.baseline_inputs", errors)
+    for repo in REQUIRED_FEDERATION_REPOS:
+        binding = _mapping(inputs.get(repo, {}), f"lineage_binding.baseline_inputs.{repo}", errors)
+        _require(bool(SHA_RE.fullmatch(str(binding.get("commit_sha", "")))), f"invalid commit SHA for {repo}", errors)
+        _require(bool(SHA256_RE.fullmatch(str(binding.get("manifest_sha256", "")))), f"invalid manifest SHA256 for {repo}", errors)
+        _require(bool(binding.get("manifest_path")), f"manifest path missing for {repo}", errors)
 
 
 def score_awake_probes(manifest: Dict[str, Any], root: Path = ROOT) -> Dict[str, Any]:

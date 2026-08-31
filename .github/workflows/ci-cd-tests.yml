@@ -120,7 +120,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov coverage
+          pip install pytest pytest-cov coverage numpy
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
       
       - name: Run Tests with Coverage
@@ -163,7 +163,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-asyncio pytest-timeout
+          pip install pytest pytest-asyncio pytest-timeout numpy
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
       
       - name: Run Integration Tests
@@ -196,7 +196,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-asyncio docker
+          pip install pytest pytest-asyncio docker numpy
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
       
       - name: Run Docker Tests
