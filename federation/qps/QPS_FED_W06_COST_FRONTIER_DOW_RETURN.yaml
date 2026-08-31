@@ -11,8 +11,17 @@ authority:
   parent_findings_are_candidates_only: true
 findings:
   - stable_finding_id: DOW-W06-CF-001
-    affected_child_ids: [S3-C02, S3-C03, S3-C04, S3-C06]
-    affected_parent_nodes: [OFFER-35, OFFER-34, OFFER-33, RTM-495, OFFER-39]
+    affected_child_ids:
+      - S3-C02
+      - S3-C03
+      - S3-C04
+      - S3-C06
+    affected_parent_nodes:
+      - OFFER-35
+      - OFFER-34
+      - OFFER-33
+      - RTM-495
+      - OFFER-39
     finding_type: COMMON_CAUSE_UTILITY_ACCEPTANCE_CLUSTER
     dependency_or_common_cause_edges:
       - S3-C02_to_S3-C03_COMMON_UTILITY_BOUNDARY
@@ -26,12 +35,19 @@ findings:
       OFFER-35 and OFFER-34 rise strongly in the cost lane, so utility interfaces and
       acceptance resources should be bound as one cost-control cluster rather than as
       independent local questions.
-    recommended_child_action: ACCEPT_CLUSTER_AND_BIND_SHARED_UTILITY_COST_BOUNDARIES
-    reusable_parent_pattern_candidate: UTILITY_ACCEPTANCE_COMMON_CAUSE_CLUSTER
+    recommended_child_action: >-
+      ACCEPT_CLUSTER_AND_BIND_SHARED_UTILITY_COST_BOUNDARIES
+    reusable_parent_pattern_candidate: >-
+      UTILITY_ACCEPTANCE_COMMON_CAUSE_CLUSTER
 
   - stable_finding_id: DOW-W06-CF-002
-    affected_child_ids: [S3-C05, S3-C07]
-    affected_parent_nodes: [OFFER-32, RTM-605, RTM-608]
+    affected_child_ids:
+      - S3-C05
+      - S3-C07
+    affected_parent_nodes:
+      - OFFER-32
+      - RTM-605
+      - RTM-608
     finding_type: INSTALLATION_HSE_COUPLING
     dependency_or_common_cause_edges:
       - S3-C05_to_S3-C07_EXECUTION_HSE_DEPENDENCY
@@ -43,11 +59,19 @@ findings:
       non-compensating gate; installation logistics cannot be optimized independently
       of method statements, lifting controls and certification allowances.
     recommended_child_action: ACCEPT_DEPENDENCY_DEFER_COMMERCIAL_CLOSURE
-    reusable_parent_pattern_candidate: COST_CATCHUP_WITH_NONCOMPENSATING_HSE_GATE
+    reusable_parent_pattern_candidate: >-
+      COST_CATCHUP_WITH_NONCOMPENSATING_HSE_GATE
 
   - stable_finding_id: DOW-W06-CF-003
-    affected_child_ids: [S3-C08, S3-C06]
-    affected_parent_nodes: [RTM-146, RTM-147, OFFER-15, RTM-495, OFFER-39]
+    affected_child_ids:
+      - S3-C08
+      - S3-C06
+    affected_parent_nodes:
+      - RTM-146
+      - RTM-147
+      - OFFER-15
+      - RTM-495
+      - OFFER-39
     finding_type: TEST_EVIDENCE_RETEST_COUPLING
     dependency_or_common_cause_edges:
       - S3-C08_to_S3-C06_ACCEPTANCE_EVIDENCE_DEPENDENCY
@@ -58,12 +82,21 @@ findings:
       Noise and vibration remain low in the technical cost screen but can create SAT
       repetition and mitigation cost if measurement criteria and retest responsibility
       are not bound before execution.
-    recommended_child_action: ACCEPT_DEPENDENCY_DEFER_COST_UNTIL_TEST_RESERVATIONS_BOUND
-    reusable_parent_pattern_candidate: ACCEPTANCE_EVIDENCE_RETEST_COST_COUPLING
+    recommended_child_action: >-
+      ACCEPT_DEPENDENCY_DEFER_COST_UNTIL_TEST_RESERVATIONS_BOUND
+    reusable_parent_pattern_candidate: >-
+      ACCEPTANCE_EVIDENCE_RETEST_COST_COUPLING
 
   - stable_finding_id: DOW-W06-CF-004
-    affected_child_ids: [S3-C09, S3-C10]
-    affected_parent_nodes: [RTM-560, OFFER-41, RTM-064, OFFER-42, OFFER-43]
+    affected_child_ids:
+      - S3-C09
+      - S3-C10
+    affected_parent_nodes:
+      - RTM-560
+      - OFFER-41
+      - RTM-064
+      - OFFER-42
+      - OFFER-43
     finding_type: LIFECYCLE_SUPPORT_CLUSTER
     dependency_or_common_cause_edges:
       - S3-C09_to_S3-C10_LIFECYCLE_SUPPORT_DEPENDENCY
@@ -73,12 +106,15 @@ findings:
     reverse_load_or_catch_up_observation: >-
       Spares and maintenance/service are jointly causal for lifecycle cost and should
       share lead-time, failure-criticality, intervention-effort and downtime variables.
-    recommended_child_action: ACCEPT_CLUSTER_AND_BUILD_SHARED_LIFECYCLE_FEATURES
+    recommended_child_action: >-
+      ACCEPT_CLUSTER_AND_BUILD_SHARED_LIFECYCLE_FEATURES
     reusable_parent_pattern_candidate: SPARES_SERVICE_SHARED_LIFECYCLE_MODEL
 
   - stable_finding_id: DOW-W06-CF-005
-    affected_child_ids: [S3-C01]
-    affected_parent_nodes: [RTM-433]
+    affected_child_ids:
+      - S3-C01
+    affected_parent_nodes:
+      - RTM-433
     finding_type: COST_PARENT_DECOMPOSITION_VALIDATION
     dependency_or_common_cause_edges: []
     source_support_class: SOURCE_SUPPORTED_CONTRACT
@@ -88,14 +124,26 @@ findings:
       RTM-433 remains the cost-primal RTM parent, but its actionable cost variables are
       receiver/storage/compressor/replenishment/interface quantities rather than the
       parent requirement as one atomic value.
-    recommended_child_action: ACCEPT_DECOMPOSITION_AND_BIND_COMPONENT_VARIABLES
-    reusable_parent_pattern_candidate: DECOMPOSE_COST_PARENT_BEFORE_QUANTITATIVE_BINDING
+    recommended_child_action: >-
+      ACCEPT_DECOMPOSITION_AND_BIND_COMPONENT_VARIABLES
+    reusable_parent_pattern_candidate: >-
+      DECOMPOSE_COST_PARENT_BEFORE_QUANTITATIVE_BINDING
 
 recommended_source_binding_sequence:
-  P1: [S3-C05, S3-C02, S3-C03, S3-C06]
-  P2: [S3-C01, S3-C04]
-  P3: [S3-C09, S3-C10, S3-C08]
-  mandatory_parallel: [S3-C07]
+  P1:
+    - S3-C05
+    - S3-C02
+    - S3-C03
+    - S3-C06
+  P2:
+    - S3-C01
+    - S3-C04
+  P3:
+    - S3-C09
+    - S3-C10
+    - S3-C08
+  mandatory_parallel:
+    - S3-C07
 control:
   no_compliance_credit: true
   no_completion_credit: true
