@@ -1,5 +1,5 @@
 schema_version: "0.1"
-document_id: QPS-FED-W07-ABACUS-QUANTITATIVE-FEEDBACK
+document_id: QPS_FED_W07_ABACUS_QUANTITATIVE_FEEDBACK
 wave_id: W07
 child_disposition:
   repository: GBOGEB/cryoplant-project
@@ -8,6 +8,7 @@ child_disposition:
 source_parent:
   repository: GBOGEB/ABACUS
   pr: 775
+  merge_sha: 8c340b4ccd912a8bcb6b49e32c79ecc09ea64df8
 result: ACCEPT
 acceptance_scope: STRUCTURAL
 reusable_learning:
