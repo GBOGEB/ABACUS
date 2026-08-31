@@ -1,10 +1,13 @@
-schema_version: "0.3"
+# yamllint disable rule:line-length
+schema_version: "0.4"
 correlation_id: QPS-FED-W05-BIDDER-EVAL
 lane: ABACUS_DOW
 status: REQUESTED
 child:
   repository: GBOGEB/cryoplant-project
-  baseline_sha: 1960710735177c398123af955c33daa8711ece60
+  baseline_sha: 53baac108920d36210ec6ba36799a61cc1da8982
+  artifact: ocd-adr/40_implementation/QPS_BIDDER_PARALLEL_EVAL_W03_v0.1.yaml
+  artifact_sha256: b979fa91dc8f4e0a89bde6f7e959f7ec08eaa5b27e63964f4a19acb1c572bc87
   authority: child_owns_engineering_SSOT_compliance_and_disposition
 input_contract:
   source_wave: QPS-BIDDER-EVAL-W03
@@ -25,8 +28,15 @@ input_contract:
     - SCOPE_SUPPLY_CONFIG
     - DOCUMENT_DELIVERABLES
     - ADDENDUM_I_C_AND_L
-  proof_levels: [P0,P1,P2,P3,P4,P5,P6]
-  edge_types: [DIRECT,SUPPORTING,EVIDENCE_ONLY,CONTRADICTS,ALLOCATION_SHIFT,MULTI_NODE_EVIDENCE,INTERNAL_CONTRADICTION]
+  proof_levels: [P0, P1, P2, P3, P4, P5, P6]
+  edge_types:
+    - DIRECT
+    - SUPPORTING
+    - EVIDENCE_ONLY
+    - CONTRADICTS
+    - ALLOCATION_SHIFT
+    - MULTI_NODE_EVIDENCE
+    - INTERNAL_CONTRADICTION
 requested_DOW_operations:
   - compare_bidders_on_same_controlled_RTM_OFFER_AD02_graph_without_cross_bidder_substitution
   - measure_priority_family_source_coverage_without_double_counting_multi_node_evidence
