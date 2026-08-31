@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 name: QPS W05 bidder evaluation DOW receipt
 
 on:
@@ -5,9 +6,7 @@ on:
   pull_request:
     paths:
       - 'federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml'
-      - >-
-        federation/qps/snapshots/
-        QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml
+      - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
       - 'tools/run_qps_w05_bidder_eval_dow.py'
       - 'tools/validate_qps_w05_bidder_eval_dow.py'
       - '.github/workflows/qps-w05-bidder-eval-dow.yml'
@@ -15,9 +14,7 @@ on:
     branches: [main]
     paths:
       - 'federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml'
-      - >-
-        federation/qps/snapshots/
-        QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml
+      - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
       - 'tools/run_qps_w05_bidder_eval_dow.py'
       - 'tools/validate_qps_w05_bidder_eval_dow.py'
       - '.github/workflows/qps-w05-bidder-eval-dow.yml'
@@ -45,7 +42,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: qps-w05-bidder-eval-dow-${{ github.run_id }}
-          path: >-
-            federation/qps/runtime/
-            QPS_FED_W05_BIDDER_EVAL_DOW_RECEIPT.yaml
+          path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RECEIPT.yaml
           if-no-files-found: error
