@@ -94,7 +94,7 @@ release_products:
     user_facing: true
     required: true
     role: cost_lifecycle_review
-    source_authority: domain_declared_only
+    source_authority: false
     domain_authority_rule: >-
       Cost values are authoritative only where the governing COST SSOT declares ownership;
       imported RTM/OFFER/OCD/ADR/RAMS values remain reference-only.
