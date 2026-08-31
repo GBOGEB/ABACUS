@@ -99,10 +99,17 @@ def validate_inputs(request: dict[str, Any], snapshot: dict[str, Any]) -> tuple[
     source = snapshot.get("source_child", {})
     if child.get("repository") != source.get("repository"):
         raise SystemExit("request/snapshot child repository mismatch")
-    if child.get("baseline_sha") != source.get("source_merge_sha"):
+    baseline_sha = str(child.get("baseline_sha", ""))
+    if baseline_sha != str(source.get("source_merge_sha", "")):
         raise SystemExit("request/snapshot child baseline mismatch")
-    if not re.fullmatch(r"[0-9a-f]{40}", str(child.get("baseline_sha", ""))):
+    if not re.fullmatch(r"[0-9a-f]{40}", baseline_sha):
         raise SystemExit("invalid child baseline SHA")
+    artifact = child.get("artifact")
+    if not isinstance(artifact, str) or not artifact:
+        raise SystemExit("child artifact path missing")
+    artifact_sha256 = str(child.get("artifact_sha256", ""))
+    if not re.fullmatch(r"[0-9a-f]{64}", artifact_sha256):
+        raise SystemExit("invalid child artifact SHA-256")
     confidentiality = snapshot.get("confidentiality", {})
     required_redactions = (
         "bidder_names_removed",
