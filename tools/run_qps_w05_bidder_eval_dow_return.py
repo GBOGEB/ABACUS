@@ -30,7 +30,10 @@ def digest(paths: list[Path]) -> str:
 
 
 def git_sha() -> str:
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    value = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    if len(value) != 40 or any(c not in "0123456789abcdef" for c in value.lower()):
+        raise SystemExit("unable to resolve parent git SHA")
+    return value
 
 
 def main() -> int:
