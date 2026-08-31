@@ -1,24 +1,24 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-08-30T17:41:08Z
+# generated: 2026-08-31T08:08:40Z
 
-generated_at:"2026-08-30T17:41:08Z"
+generated_at:"2026-08-31T08:08:40Z"
 repo:GBOGEB/ABACUS
-total_open:4601
+total_open:4603
 by_severity:
-  warning: 942
-  note: 3582
-  error: 77
+  warning: 936
+  error: 82
+  note: 3585
 by_tool:
-  Semgrep OSS: 786
-  CodeQL: 496
+  Semgrep OSS: 781
+  CodeQL: 503
   Bandit: 3315
   Semgrep: 4
 by_rex_group:
-  OTHER: 1266
-  QUAL_DEAD_CODE: 245
+  OTHER: 1264
+  QUAL_DEAD_CODE: 247
+  SEC_SUBPROCESS: 118
   SEC_ASSERT: 2911
   SEC_HARDCODED_SECRET: 21
-  SEC_SUBPROCESS: 116
   SEC_TEMPFILE: 32
   SEC_WEAK_HASH: 10
 hot_files:
@@ -45,6 +45,24 @@ hot_files:
 
 groups:
   OTHER:
+    - number: 6866
+      tool: CodeQL
+      rule_id: "py/uninitialized-local-variable"
+      severity: error
+      file: "integration/cryoplant_project/tests/test_smoke_federation.py"
+      line: 86
+    - number: 6865
+      tool: CodeQL
+      rule_id: "py/uninitialized-local-variable"
+      severity: error
+      file: "integration/cryoplant_project/tests/test_smoke_federation.py"
+      line: 70
+    - number: 6864
+      tool: CodeQL
+      rule_id: "py/uninitialized-local-variable"
+      severity: error
+      file: "integration/cryoplant_project/tests/test_smoke_federation.py"
+      line: 57
     - number: 6669
       tool: Semgrep OSS
       rule_id: "dockerfile.security.missing-user.missing-user"
@@ -423,42 +441,234 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
-    - number: 6821
+    - number: 6869
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
+      line: 42
+    - number: 6868
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
+      line: 30
+    - number: 6867
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
+      line: 29
+    - number: 6862
+      tool: CodeQL
+      rule_id: "py/file-not-closed"
+      severity: warning
+      file: "scripts/t0_deep_diagnostics.py"
+      line: 20
+    - number: 6857
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/security-dashboard.yml"
+      line: 29
+    - number: 6856
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/security-dashboard.yml"
+      line: 25
+    - number: 6855
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/dow-main-cicd.yml"
+      line: 55
+    - number: 6854
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/dow-main-cicd.yml"
+      line: 49
+    - number: 6853
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/dow-main-cicd.yml"
+      line: 38
+    - number: 6852
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/dow-main-cicd.yml"
+      line: 36
+    - number: 6851
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 147
+    - number: 6850
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 146
+    - number: 6849
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 130
+    - number: 6848
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 129
+    - number: 6847
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 110
+    - number: 6846
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 90
+    - number: 6845
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 68
+    - number: 6844
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 66
+    - number: 6843
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 65
+    - number: 6842
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 37
+    - number: 6841
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 35
+    - number: 6840
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci-enhanced.yml"
+      line: 34
+    - number: 6839
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/cd.yml"
+      line: 28
+    - number: 6838
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/cd.yml"
+      line: 26
+    - number: 6837
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/semgrep.yml"
+      line: 38
+    - number: 6836
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/semgrep.yml"
+      line: 36
+    - number: 6835
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
+      line: 35
+    - number: 6834
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
+      line: 31
+    - number: 6833
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/dow-monitoring.yml"
+      line: 18
+    - number: 6832
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 52
+      line: 66
+    - number: 6831
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 48
+    - number: 6830
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 28
+    - number: 6829
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 91
+    - number: 6827
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 37
+    - number: 6825
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 29
+    - number: 6823
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 18
+    - number: 6822
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 17
     - number: 6820
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 56
-    - number: 6818
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 86
-    - number: 6817
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 63
-    - number: 6812
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 34
-    - number: 6811
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 33
+      line: 59
     - number: 6808
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -1388,7 +1598,7 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/validation.yml"
-      line: 70
+      line: 69
     - number: 6652
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -1430,31 +1640,31 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/v23-cicd.yml"
-      line: 69
+      line: 80
     - number: 6645
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/v23-cicd.yml"
-      line: 57
+      line: 68
     - number: 6644
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/v23-cicd.yml"
-      line: 25
+      line: 36
     - number: 6643
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/v23-cicd.yml"
-      line: 20
+      line: 31
     - number: 6642
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/v23-cicd.yml"
-      line: 17
+      line: 28
     - number: 6641
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -1610,19 +1820,7 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/semgrep.yml"
-      line: 52
-    - number: 6615
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/semgrep.yml"
-      line: 25
-    - number: 6614
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/semgrep.yml"
-      line: 22
+      line: 57
     - number: 6613
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -1635,18 +1833,6 @@ groups:
       severity: warning
       file: ".github/workflows/security-scan.yml"
       line: 24
-    - number: 6611
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/security-dashboard.yml"
-      line: 35
-    - number: 6610
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/security-dashboard.yml"
-      line: 30
     - number: 6609
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -2475,36 +2661,6 @@ groups:
       severity: warning
       file: ".github/workflows/dow-scheduled.yml"
       line: 17
-    - number: 6471
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/dow-monitoring.yml"
-      line: 6
-    - number: 6470
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/dow-main-cicd.yml"
-      line: 42
-    - number: 6469
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/dow-main-cicd.yml"
-      line: 35
-    - number: 6468
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/dow-main-cicd.yml"
-      line: 20
-    - number: 6467
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/dow-main-cicd.yml"
-      line: 17
     - number: 6466
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -3303,78 +3459,12 @@ groups:
       severity: warning
       file: ".github/workflows/codeql.yml"
       line: 32
-    - number: 6333
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 208
-    - number: 6332
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 199
-    - number: 6331
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 178
-    - number: 6330
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 175
-    - number: 6329
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 163
-    - number: 6328
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 142
-    - number: 6327
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 139
-    - number: 6326
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 125
-    - number: 6325
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 76
     - number: 6324
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 39
-    - number: 6323
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 29
-    - number: 6322
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci_monitor_and_issue_creator.yml"
-      line: 24
+      line: 42
     - number: 6321
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -3537,102 +3627,6 @@ groups:
       severity: warning
       file: ".github/workflows/ci-failure-debug-rerun.yml"
       line: 19
-    - number: 6294
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 305
-    - number: 6293
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 302
-    - number: 6292
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 278
-    - number: 6291
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 275
-    - number: 6290
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 261
-    - number: 6289
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 204
-    - number: 6288
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 189
-    - number: 6287
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 130
-    - number: 6286
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 115
-    - number: 6285
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 101
-    - number: 6284
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 81
-    - number: 6283
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 76
-    - number: 6282
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 73
-    - number: 6281
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 29
-    - number: 6280
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 24
-    - number: 6279
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-enhanced.yml"
-      line: 21
     - number: 6278
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -3800,139 +3794,139 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 325
+      line: 323
     - number: 6250
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 319
+      line: 317
     - number: 6249
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 316
+      line: 314
     - number: 6248
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 302
+      line: 300
     - number: 6247
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 284
+      line: 282
     - number: 6246
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 281
+      line: 279
     - number: 6245
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 270
+      line: 268
     - number: 6244
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 264
+      line: 262
     - number: 6243
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 247
+      line: 245
     - number: 6242
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 244
+      line: 242
     - number: 6241
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 233
+      line: 231
     - number: 6240
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 216
+      line: 214
     - number: 6239
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 213
+      line: 211
     - number: 6238
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 191
+      line: 189
     - number: 6237
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 188
+      line: 186
     - number: 6236
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 185
+      line: 183
     - number: 6235
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 158
+      line: 156
     - number: 6234
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 155
+      line: 153
     - number: 6233
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 144
+      line: 142
     - number: 6232
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 136
+      line: 134
     - number: 6231
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 115
+      line: 113
     - number: 6230
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 112
+      line: 110
     - number: 6229
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/ci-cd-tests.yml"
-      line: 100
+      line: 98
     - number: 6228
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -3980,31 +3974,19 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/cd.yml"
-      line: 100
+      line: 79
     - number: 6220
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/cd.yml"
-      line: 87
+      line: 69
     - number: 6219
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/cd.yml"
-      line: 28
-    - number: 6218
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/cd.yml"
-      line: 23
-    - number: 6217
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/cd.yml"
-      line: 20
+      line: 32
     - number: 6216
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -5853,6 +5835,12 @@ groups:
       severity: warning
       file: ".github/workflows/cd-unified.yml"
       line: 20
+    - number: 6863
+      tool: CodeQL
+      rule_id: "py/empty-except"
+      severity: note
+      file: "scripts/t0_deep_diagnostics.py"
+      line: 21
     - number: 6810
       tool: CodeQL
       rule_id: "py/import-and-import-from"
@@ -7642,18 +7630,30 @@ groups:
       file: "abacus_v21_backup_recovery.py"
       line: 499
   QUAL_DEAD_CODE:
+    - number: 6861
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/t0_deep_diagnostics.py"
+      line: 3
+    - number: 6858
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/mcp_capacity_fit.py"
+      line: 6
     - number: 6814
       tool: CodeQL
       rule_id: "py/unused-import"
       severity: note
       file: "tests/test_keb_bridge.py"
-      line: 16
+      line: 15
     - number: 6813
       tool: CodeQL
       rule_id: "py/unused-import"
       severity: note
       file: "tests/test_keb_bridge.py"
-      line: 14
+      line: 13
     - number: 6809
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -9112,6 +9112,715 @@ groups:
       severity: note
       file: "abacus_v21_backup_recovery.py"
       line: 18
+  SEC_SUBPROCESS:
+    - number: 6860
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "scripts/t0_deep_diagnostics.py"
+      line: 10
+    - number: 6859
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "scripts/diagnostic_kpi_probe.py"
+      line: 12
+    - number: 4316
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "scripts/cold_start_doctor.py"
+      line: 19
+    - number: 4307
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_streamlined_deployment.py"
+      line: 27
+    - number: 4305
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_comprehensive_deployment.py"
+      line: 46
+    - number: 4303
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "run_cicd_roundtrip_test.py"
+      line: 46
+    - number: 3950
+      tool: Bandit
+      rule_id: "B602"
+      severity: error
+      file: "deploy_full_integration.py"
+      line: 63
+    - number: 2476
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_streamlined_deployment.py"
+      line: 27
+    - number: 2475
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_comprehensive_deployment.py"
+      line: 48
+    - number: 2474
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "run_cicd_roundtrip_test.py"
+      line: 48
+    - number: 2473
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+      severity: error
+      file: "deploy_full_integration.py"
+      line: 65
+    - number: 5250
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 415
+    - number: 5247
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 405
+    - number: 5244
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 391
+    - number: 5240
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 378
+    - number: 5237
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 366
+    - number: 5227
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 202
+    - number: 5224
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 192
+    - number: 5222
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 191
+    - number: 5220
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 181
+    - number: 5217
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 165
+    - number: 5214
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 154
+    - number: 5109
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 144
+    - number: 4965
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 185
+    - number: 4963
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 162
+    - number: 4961
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 138
+    - number: 4959
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 98
+    - number: 4957
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/test_container_registry.py"
+      line: 52
+    - number: 4676
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "tests/bootstrap_bridge.py"
+      line: 183
+    - number: 4575
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
+      line: 117
+    - number: 4573
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
+      line: 112
+    - number: 4532
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "docs/qps_offer_rtm_evaluation/scripts/build_handover_package.py"
+      line: 98
+    - number: 4508
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 333
+    - number: 4505
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 288
+    - number: 4503
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "workflow_analyzer.py"
+      line: 26
+    - number: 4329
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/markdown_exec_runner.py"
+      line: 29
+    - number: 4328
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/markdown_exec_runner.py"
+      line: 24
+    - number: 4322
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/fetch_workflow_errors.py"
+      line: 21
+    - number: 4318
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/deploy_v23_github.py"
+      line: 39
+    - number: 4314
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/code_health_check.py"
+      line: 22
+    - number: 4311
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 105
+    - number: 4310
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 83
+    - number: 4309
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "scripts/build_book.py"
+      line: 58
+    - number: 4301
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/generate_lineage.py"
+      line: 176
+    - number: 4300
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/generate_lineage.py"
+      line: 41
+    - number: 4295
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/classify_artifacts.py"
+      line: 56
+    - number: 4291
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "repo_analysis_toolkit/analyze_repo.py"
+      line: 85
+    - number: 4284
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/vulnerability_scan.py"
+      line: 24
+    - number: 4282
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 105
+    - number: 4280
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 45
+    - number: 4279
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/sbom/generate_sbom.py"
+      line: 30
+    - number: 4220
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/monitoring_dashboard/collect_metrics.py"
+      line: 70
+    - number: 4219
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/monitoring_dashboard/collect_metrics.py"
+      line: 55
+    - number: 4205
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/load_testing/load_test_scenarios.py"
+      line: 100
+    - number: 4101
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "qplant/handover_dashboard/api/main.py"
+      line: 547
+    - number: 3978
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "models/qps_line_s/rfi_package.py"
+      line: 57
+    - number: 3963
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 479
+    - number: 3960
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 430
+    - number: 3958
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_tracking_manager.py"
+      line: 27
+    - number: 3955
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "github_azure_deployment_helper.py"
+      line: 41
+    - number: 3947
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "clone_based_validator.py"
+      line: 62
+    - number: 3944
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 387
+    - number: 3942
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 362
+    - number: 3940
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 354
+    - number: 3938
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 351
+    - number: 3936
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cicd_github_orchestrator.py"
+      line: 326
+    - number: 3928
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 360
+    - number: 3926
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 39
+    - number: 3924
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ci_monitor_local.py"
+      line: 26
+    - number: 3921
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 218
+    - number: 3918
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 171
+    - number: 3916
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "cd_monitor.py"
+      line: 25
+    - number: 3914
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "abacus_v21_session_tuple_analyzer.py"
+      line: 502
+    - number: 3674
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "MINERVA_PID/ci/golden_gate.py"
+      line: 44
+    - number: 3672
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "MINERVA_PID/ci/golden_gate.py"
+      line: 36
+    - number: 3475
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
+      line: 44
+    - number: 2914
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 117
+    - number: 2911
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 68
+    - number: 2908
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_github_roundtrip.py"
+      line: 31
+    - number: 2896
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 61
+    - number: 2893
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 42
+    - number: 2889
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/tests/test_docker_images.py"
+      line: 27
+    - number: 2767
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/quick_error_fix.py"
+      line: 44
+    - number: 2765
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/quick_error_fix.py"
+      line: 29
+    - number: 2755
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/phase0_init.py"
+      line: 230
+    - number: 2753
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/phase0_init.py"
+      line: 171
+    - number: 2750
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
+      line: 195
+    - number: 2743
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/integrations/git_manager.py"
+      line: 64
+    - number: 2742
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/integrations/git_manager.py"
+      line: 41
+    - number: 2739
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_real_execution.py"
+      line: 52
+    - number: 2738
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_real_execution.py"
+      line: 43
+    - number: 2736
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_integration_pipeline.py"
+      line: 105
+    - number: 2735
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/test_integration_pipeline.py"
+      line: 47
+    - number: 2733
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 432
+    - number: 2731
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 423
+    - number: 2729
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 242
+    - number: 2728
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 214
+    - number: 2727
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/generators/github_quality_check.py"
+      line: 184
+    - number: 2725
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/full_pipeline_orchestrator.py"
+      line: 453
+    - number: 2723
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/full_pipeline_orchestrator.py"
+      line: 451
+    - number: 2720
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 224
+    - number: 2719
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 190
+    - number: 2718
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/dow_integration_executor.py"
+      line: 152
+    - number: 2714
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/core/test_system_bridge.py"
+      line: 228
+    - number: 2713
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "DMAIC_V3/core/test_system_bridge.py"
+      line: 148
+    - number: 2700
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 87
+    - number: 2698
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 70
+    - number: 2696
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 54
+    - number: 2694
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 38
+    - number: 2692
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
+      line: 24
+    - number: 2689
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 97
+    - number: 2686
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 85
+    - number: 2684
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 54
+    - number: 2682
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 53
+    - number: 2680
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 50
+    - number: 2678
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
+      line: 35
+    - number: 2675
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 254
+    - number: 2673
+      tool: Bandit
+      rule_id: "B603"
+      severity: note
+      file: "ABACUS-v032/validate_cicd_deployment.py"
+      line: 224
   SEC_ASSERT:
     - number: 6086
       tool: Bandit
@@ -26706,703 +27415,6 @@ groups:
       severity: note
       file: "DMAIC_V3/monitoring/log_monitor.py"
       line: 26
-  SEC_SUBPROCESS:
-    - number: 4316
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "scripts/cold_start_doctor.py"
-      line: 19
-    - number: 4307
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_streamlined_deployment.py"
-      line: 27
-    - number: 4305
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_comprehensive_deployment.py"
-      line: 46
-    - number: 4303
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "run_cicd_roundtrip_test.py"
-      line: 46
-    - number: 3950
-      tool: Bandit
-      rule_id: "B602"
-      severity: error
-      file: "deploy_full_integration.py"
-      line: 63
-    - number: 2476
-      tool: Semgrep OSS
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_streamlined_deployment.py"
-      line: 27
-    - number: 2475
-      tool: Semgrep OSS
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_comprehensive_deployment.py"
-      line: 48
-    - number: 2474
-      tool: Semgrep OSS
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "run_cicd_roundtrip_test.py"
-      line: 48
-    - number: 2473
-      tool: Semgrep OSS
-      rule_id: "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
-      severity: error
-      file: "deploy_full_integration.py"
-      line: 65
-    - number: 5250
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 415
-    - number: 5247
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 405
-    - number: 5244
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 391
-    - number: 5240
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 378
-    - number: 5237
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 366
-    - number: 5227
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 202
-    - number: 5224
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 192
-    - number: 5222
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 191
-    - number: 5220
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 181
-    - number: 5217
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 165
-    - number: 5214
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 154
-    - number: 5109
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_dmaic_orchestration.py"
-      line: 144
-    - number: 4965
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_container_registry.py"
-      line: 185
-    - number: 4963
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_container_registry.py"
-      line: 162
-    - number: 4961
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_container_registry.py"
-      line: 138
-    - number: 4959
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_container_registry.py"
-      line: 98
-    - number: 4957
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/test_container_registry.py"
-      line: 52
-    - number: 4676
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "tests/bootstrap_bridge.py"
-      line: 183
-    - number: 4575
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
-      line: 117
-    - number: 4573
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py"
-      line: 112
-    - number: 4532
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "docs/qps_offer_rtm_evaluation/scripts/build_handover_package.py"
-      line: 98
-    - number: 4508
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 333
-    - number: 4505
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 288
-    - number: 4503
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "workflow_analyzer.py"
-      line: 26
-    - number: 4329
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/markdown_exec_runner.py"
-      line: 29
-    - number: 4328
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/markdown_exec_runner.py"
-      line: 24
-    - number: 4322
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/fetch_workflow_errors.py"
-      line: 21
-    - number: 4318
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/deploy_v23_github.py"
-      line: 39
-    - number: 4314
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/code_health_check.py"
-      line: 22
-    - number: 4311
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 105
-    - number: 4310
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 83
-    - number: 4309
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "scripts/build_book.py"
-      line: 58
-    - number: 4301
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/generate_lineage.py"
-      line: 176
-    - number: 4300
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/generate_lineage.py"
-      line: 41
-    - number: 4295
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/classify_artifacts.py"
-      line: 56
-    - number: 4291
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "repo_analysis_toolkit/analyze_repo.py"
-      line: 85
-    - number: 4284
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/vulnerability_scan.py"
-      line: 24
-    - number: 4282
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 105
-    - number: 4280
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 45
-    - number: 4279
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/sbom/generate_sbom.py"
-      line: 30
-    - number: 4220
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/monitoring_dashboard/collect_metrics.py"
-      line: 70
-    - number: 4219
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/monitoring_dashboard/collect_metrics.py"
-      line: 55
-    - number: 4205
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/load_testing/load_test_scenarios.py"
-      line: 100
-    - number: 4101
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "qplant/handover_dashboard/api/main.py"
-      line: 547
-    - number: 3978
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "models/qps_line_s/rfi_package.py"
-      line: 57
-    - number: 3963
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 479
-    - number: 3960
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 430
-    - number: 3958
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_tracking_manager.py"
-      line: 27
-    - number: 3955
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "github_azure_deployment_helper.py"
-      line: 41
-    - number: 3947
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "clone_based_validator.py"
-      line: 62
-    - number: 3944
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 387
-    - number: 3942
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 362
-    - number: 3940
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 354
-    - number: 3938
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 351
-    - number: 3936
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cicd_github_orchestrator.py"
-      line: 326
-    - number: 3928
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 360
-    - number: 3926
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 39
-    - number: 3924
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ci_monitor_local.py"
-      line: 26
-    - number: 3921
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 218
-    - number: 3918
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 171
-    - number: 3916
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "cd_monitor.py"
-      line: 25
-    - number: 3914
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "abacus_v21_session_tuple_analyzer.py"
-      line: 502
-    - number: 3674
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "MINERVA_PID/ci/golden_gate.py"
-      line: 44
-    - number: 3672
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "MINERVA_PID/ci/golden_gate.py"
-      line: 36
-    - number: 3475
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
-      line: 44
-    - number: 2914
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 117
-    - number: 2911
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 68
-    - number: 2908
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_github_roundtrip.py"
-      line: 31
-    - number: 2896
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 61
-    - number: 2893
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 42
-    - number: 2889
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/tests/test_docker_images.py"
-      line: 27
-    - number: 2767
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/quick_error_fix.py"
-      line: 44
-    - number: 2765
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/quick_error_fix.py"
-      line: 29
-    - number: 2755
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 230
-    - number: 2753
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/phase0_init.py"
-      line: 171
-    - number: 2750
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/phases/_LEGACY_phase0_setup.py"
-      line: 195
-    - number: 2743
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/integrations/git_manager.py"
-      line: 64
-    - number: 2742
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/integrations/git_manager.py"
-      line: 41
-    - number: 2739
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_real_execution.py"
-      line: 52
-    - number: 2738
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_real_execution.py"
-      line: 43
-    - number: 2736
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_integration_pipeline.py"
-      line: 105
-    - number: 2735
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/test_integration_pipeline.py"
-      line: 47
-    - number: 2733
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 432
-    - number: 2731
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 423
-    - number: 2729
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 242
-    - number: 2728
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 214
-    - number: 2727
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/generators/github_quality_check.py"
-      line: 184
-    - number: 2725
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 453
-    - number: 2723
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/full_pipeline_orchestrator.py"
-      line: 451
-    - number: 2720
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 224
-    - number: 2719
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 190
-    - number: 2718
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/dow_integration_executor.py"
-      line: 152
-    - number: 2714
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/core/test_system_bridge.py"
-      line: 228
-    - number: 2713
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "DMAIC_V3/core/test_system_bridge.py"
-      line: 148
-    - number: 2700
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 87
-    - number: 2698
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 70
-    - number: 2696
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 54
-    - number: 2694
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 38
-    - number: 2692
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/local_deployment_runner.py"
-      line: 24
-    - number: 2689
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 97
-    - number: 2686
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 85
-    - number: 2684
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 54
-    - number: 2682
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 53
-    - number: 2680
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 50
-    - number: 2678
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS_V21_DEPLOYMENT_PACKAGE/github_deployment_orchestrator.py"
-      line: 35
-    - number: 2675
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 254
-    - number: 2673
-      tool: Bandit
-      rule_id: "B603"
-      severity: note
-      file: "ABACUS-v032/validate_cicd_deployment.py"
-      line: 224
   SEC_TEMPFILE:
     - number: 4570
       tool: Bandit
