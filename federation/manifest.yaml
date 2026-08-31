@@ -53,13 +53,15 @@ federation:
       role: interactive_execution_plane
     - name: GBOGEB/cryoplant-project
       plane: auxiliary
-      status: proposed
-      # Self-declared on the cryoplant-project side (see its own
-      # federation/manifest.yaml, branch
-      # federation/delta1-auxiliary-member-20260831). Registered here on
-      # ABACUS's own branch federation/register-cryoplant-project-20260831,
-      # status left as "proposed" (not "active") until both branches merge
-      # and the pairwise smoke check has run for real from both directions.
+      status: active
+      # Flipped proposed -> active 2026-08-31: this repo's PR #761 and
+      # cryoplant-project's PR #170 are both merged to their respective main
+      # branches, and the pairwise smoke check has run for real from both
+      # directions -- integration/cryoplant_project's own test suite (6/6
+      # passing in a clean origin/main worktree) and cryoplant-project's own
+      # scripts/federation_smoke.py (live git ls-remote against this repo,
+      # reachable). See cryoplant-project's own federation/manifest.yaml for
+      # the matching flip on its side.
       role: cryoplant_engineering_auxiliary_plane
 
   dev_snapshots:
