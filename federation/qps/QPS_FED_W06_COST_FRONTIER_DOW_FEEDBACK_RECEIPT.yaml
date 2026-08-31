@@ -4,7 +4,7 @@ lane: ABACUS_DOW_PARENT_FEEDBACK_RECEIPT
 status: CHILD_DISPOSITION_RECEIVED
 source_parent_return:
   pr: 771
-  merge_sha: 7fadff5042142db585d8f7eed50f00cd960a50cc
+  merge_sha: 7bfd91607d508e4a29a1fc2ab0777ff8ad24c56f
 source_child_disposition:
   repository: GBOGEB/cryoplant-project
   pr: 187
