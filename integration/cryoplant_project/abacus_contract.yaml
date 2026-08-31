@@ -1,0 +1,55 @@
+# integration/cryoplant_project/abacus_contract.yaml
+#
+# Integration contract between GBOGEB/cryoplant-project (auxiliary plane)
+# and GBOGEB/ABACUS (runtime plane) within the DELTA_1 federation.
+#
+# Modeled directly on integration/codespace_jyperter/abacus_contract.yaml.
+# Status: DRAFT -- no ABACUS phase currently reads cryoplant-project output,
+# and cryoplant-project does not yet consume any ABACUS artifact. This
+# contract documents the intended shape so a real integration has a target
+# to build against, rather than claiming a live data flow that doesn't
+# exist yet.
+
+contract:
+  version: "0.1.0-draft"
+  consumer: GBOGEB/cryoplant-project
+  provider: GBOGEB/ABACUS
+  federation_moniker: DELTA_1
+  plane: auxiliary
+
+  # ABACUS outputs that cryoplant-project could consume (none wired yet)
+  consumed_from_abacus: []
+
+  # cryoplant-project outputs that ABACUS could consume (none wired yet)
+  produced_for_abacus:
+    - artifact: federation_registry_snapshot
+      description: >
+        federation/registry_snapshot.json, produced by
+        scripts/federation_smoke.py in cryoplant-project. A live git
+        ls-remote connectivity + HEAD snapshot of the DELTA_1 hub and six
+        candidate secondary repos, refreshed on push/PR/weekly schedule.
+      target_phase: phase6_knowledge
+      schema:
+        type: object
+        required: [moniker, generated_at_utc, status, checked]
+        properties:
+          moniker: {type: string}
+          generated_at_utc: {type: string, format: date-time}
+          status: {type: string, enum: [ok, degraded, error]}
+          checked:
+            type: array
+            items:
+              type: object
+              required: [name, relationship, reachable]
+              properties:
+                name: {type: string}
+                relationship: {type: string}
+                reachable: {type: boolean}
+                default_branch: {type: string}
+                head_commit: {type: string}
+      path_pattern: "federation/registry_snapshot.json"
+      required: false
+
+  idempotency:
+    enabled: true
+    cache_key_fields: [manifest_sha256]
