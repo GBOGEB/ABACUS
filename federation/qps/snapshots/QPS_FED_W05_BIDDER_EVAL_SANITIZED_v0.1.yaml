@@ -1,0 +1,203 @@
+schema_version: "0.1"
+correlation_id: QPS-FED-W05-BIDDER-EVAL
+source_wave: QPS-BIDDER-EVAL-W03
+source_child:
+  repository: GBOGEB/cryoplant-project
+  source_pr: 179
+  source_merge_sha: 53baac108920d36210ec6ba36799a61cc1da8982
+  evidence_class: DERIVED_SANITIZED_SNAPSHOT
+confidentiality:
+  bidder_names_removed: true
+  bidder_text_removed: true
+  prices_removed: true
+  payment_percentages_removed: true
+bidders:
+  BIDDER_A:
+    family_edges:
+      HSE_GOVERNANCE:
+        - EVIDENCE_ONLY
+        - ALLOCATION_SHIFT
+      RISK_RAMS_MSRA:
+        - EVIDENCE_ONLY
+      ODH_QPS_CIS:
+        - CONTRADICTS
+      SAT_ACCEPTANCE:
+        - CONTRADICTS
+      HELIUM_LEAK:
+        - MULTI_NODE_EVIDENCE
+        - ALLOCATION_SHIFT
+        - CONTRADICTS
+      WELDING_NDT:
+        - MULTI_NODE_EVIDENCE
+        - CONTRADICTS
+      LIFTING_CRANE:
+        - MULTI_NODE_EVIDENCE
+      NOISE:
+        - DIRECT
+        - EVIDENCE_ONLY
+      ENERGY_INV_COP:
+        - MULTI_NODE_EVIDENCE
+        - ALLOCATION_SHIFT
+      PID_CONTROLS:
+        - MULTI_NODE_EVIDENCE
+        - CONTRADICTS
+      ISO9001_QMS:
+        - DIRECT
+        - EVIDENCE_ONLY
+        - CONTRACT_NARROWING
+      SCOPE_SUPPLY_CONFIG:
+        - MULTI_NODE_EVIDENCE
+        - ALLOCATION_SHIFT
+      DOCUMENT_DELIVERABLES:
+        - MULTI_NODE_EVIDENCE
+        - EVIDENCE_ONLY
+      ADDENDUM_I_C_AND_L:
+        - CONTRADICTS
+        - ACCEPTANCE_RISK
+        - CONTRACT_NARROWING
+    proof_ceiling_offer_stage: P1
+  BIDDER_B:
+    family_edges:
+      HSE_GOVERNANCE:
+        - MULTI_NODE_EVIDENCE
+        - CONTRADICTS
+      RISK_RAMS_MSRA:
+        - CONTRADICTS
+      ODH_QPS_CIS:
+        - DIRECT
+        - INTERNAL_CONTRADICTION
+      SAT_ACCEPTANCE:
+        - CONTRADICTS
+      HELIUM_LEAK:
+        - MULTI_NODE_EVIDENCE
+        - EVIDENCE_ONLY
+      WELDING_NDT:
+        - MULTI_NODE_EVIDENCE
+        - CONTRADICTS
+      LIFTING_CRANE:
+        - MULTI_NODE_EVIDENCE
+      NOISE:
+        - DIRECT
+        - INTERNAL_CONTRADICTION
+      ENERGY_INV_COP:
+        - MULTI_NODE_EVIDENCE
+        - EVIDENCE_ONLY
+      PID_CONTROLS:
+        - MULTI_NODE_EVIDENCE
+        - EVIDENCE_ONLY
+      ISO9001_QMS:
+        - DIRECT
+        - MULTI_NODE_EVIDENCE
+      SCOPE_SUPPLY_CONFIG:
+        - MULTI_NODE_EVIDENCE
+        - ALLOCATION_SHIFT
+      DOCUMENT_DELIVERABLES:
+        - DIRECT
+        - MULTI_NODE_EVIDENCE
+      ADDENDUM_I_C_AND_L:
+        - EVIDENCE_ONLY
+    proof_ceiling_offer_stage: P1
+priority:
+  T0:
+    - node: RTM-595
+      family: RISK_RAMS_MSRA
+      bt_lambda: 98.20810795454626
+    - node: OFFER-49
+      family: HSE_GOVERNANCE
+      bt_lambda: 94.89795918367346
+    - node: RTM-608
+      family: HSE_GOVERNANCE
+      bt_lambda: 93.12300586976711
+    - node: RTM-613
+      family: ODH_QPS_CIS
+      bt_lambda: 89.95656232203494
+    - node: RTM-514
+      family: SAT_ACCEPTANCE
+      bt_lambda: 89.95656232203494
+    - node: RTM-075
+      family: ENERGY_INV_COP
+      bt_lambda: 86.95344629253592
+  primary:
+    - node: OFFER-39
+      family: SAT_ACCEPTANCE
+      bt_lambda: 77.55102040816327
+    - node: OFFER-20
+      family: HELIUM_LEAK
+      bt_lambda: 75.51020408163265
+    - node: OFFER-12
+      family: ENERGY_INV_COP
+      bt_lambda: 63.265306122448976
+  reverse_load:
+    - node: RTM-462
+      family: WELDING_NDT
+      bt_lambda: 38.13316678271809
+    - node: OFFER-15
+      family: NOISE
+      bt_lambda: 24.489795918367346
+    - node: OFFER-32
+      family: LIFTING_CRANE
+      bt_lambda: 12.244897959183673
+lifecycle:
+  L1:
+    - HSE_GOVERNANCE
+    - RISK_RAMS_MSRA
+    - ODH_QPS_CIS
+    - NOISE
+    - ENERGY_INV_COP
+    - PID_CONTROLS
+    - ISO9001_QMS
+    - LIFTING_CRANE
+    - WELDING_NDT
+    - SAT_ACCEPTANCE
+  L2:
+    - HSE_GOVERNANCE
+    - RISK_RAMS_MSRA
+    - ODH_QPS_CIS
+    - NOISE
+    - ENERGY_INV_COP
+    - PID_CONTROLS
+    - ISO9001_QMS
+    - LIFTING_CRANE
+    - WELDING_NDT
+    - SAT_ACCEPTANCE
+  L3:
+    - ISO9001_QMS
+    - WELDING_NDT
+    - HELIUM_LEAK
+    - DOCUMENT_DELIVERABLES
+  L4:
+    - HSE_GOVERNANCE
+    - RISK_RAMS_MSRA
+    - WELDING_NDT
+    - LIFTING_CRANE
+    - PID_CONTROLS
+    - ODH_QPS_CIS
+    - ISO9001_QMS
+  L5:
+    - HSE_GOVERNANCE
+    - RISK_RAMS_MSRA
+    - ODH_QPS_CIS
+    - SAT_ACCEPTANCE
+    - HELIUM_LEAK
+    - NOISE
+    - ENERGY_INV_COP
+    - PID_CONTROLS
+    - ISO9001_QMS
+  L6:
+    - ODH_QPS_CIS
+    - SAT_ACCEPTANCE
+    - NOISE
+    - ENERGY_INV_COP
+    - PID_CONTROLS
+    - ISO9001_QMS
+review_metrics:
+  priority_families: 14
+  bidder_parallel_source_coverage_pct: 100.0
+  review_pca_cumulative_3pc: 0.833711
+  project_obligation_closed: 65
+  project_obligation_total: 90
+rules:
+  - source_coverage_is_not_compliance
+  - proof_ceiling_at_offer_stage_is_not_execution_acceptance
+  - parent_findings_are_candidates_only
+  - one_source_may_support_multiple_nodes_without_duplicate_credit
