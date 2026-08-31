@@ -1,10 +1,12 @@
+---
 schema_version: "0.1"
 correlation_id: QPS-FED-W05-BIDDER-EVAL
 source_wave: QPS-BIDDER-EVAL-W03
 confidentiality: SANITIZED_NO_BIDDER_NAMES_NO_COMMERCIAL_VALUES
 source_identity:
   child_repository: GBOGEB/cryoplant-project
-  child_artifact: ocd-adr/40_implementation/QPS_BIDDER_PARALLEL_EVAL_W03_v0.1.yaml
+  child_artifact: >-
+    ocd-adr/40_implementation/QPS_BIDDER_PARALLEL_EVAL_W03_v0.1.yaml
   child_baseline_sha: 1960710735177c398123af955c33daa8711ece60
 coverage:
   priority_families_total: 14
@@ -13,55 +15,130 @@ coverage:
   source_discovery_backlog: 0
   validation_backlog: OPEN
   execution_proof_backlog: OPEN
-proof_ladder: [P0,P1,P2,P3,P4,P5,P6]
+proof_ladder:
+  - P0
+  - P1
+  - P2
+  - P3
+  - P4
+  - P5
+  - P6
 priority_families:
-  HSE_GOVERNANCE: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  RISK_RAMS_MSRA: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  ODH_QPS_CIS: {phase_span: [L2,L4,L5,L6], review_state: VALIDATION_OPEN}
-  SAT_ACCEPTANCE: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  HELIUM_LEAK: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  WELDING_NDT: {phase_span: [L2,L3,L4], review_state: REVERSE_LOAD_CATCHUP}
-  LIFTING_CRANE: {phase_span: [L1,L2,L4], review_state: REVERSE_LOAD_CATCHUP}
-  NOISE: {phase_span: [L1,L2,L5,L6], review_state: REVERSE_LOAD_CATCHUP}
-  ENERGY_INV_COP: {phase_span: [L1,L2,L5,L6], review_state: VALIDATION_OPEN}
-  PID_CONTROLS: {phase_span: [L1,L2,L4,L5,L6], review_state: REVERSE_LOAD_CATCHUP}
-  ISO9001_QMS: {phase_span: [L1,L2,L3,L4,L5,L6,OPERATION,MAINTENANCE], review_state: VALIDATION_OPEN}
-  SCOPE_SUPPLY_CONFIG: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  DOCUMENT_DELIVERABLES: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
-  ADDENDUM_I_C_AND_L: {phase_span: [L1,L2,L3,L4,L5,L6], review_state: VALIDATION_OPEN}
+  HSE_GOVERNANCE:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  RISK_RAMS_MSRA:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  ODH_QPS_CIS:
+    phase_span: [L2, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  SAT_ACCEPTANCE:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  HELIUM_LEAK:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  WELDING_NDT:
+    phase_span: [L2, L3, L4]
+    review_state: REVERSE_LOAD_CATCHUP
+  LIFTING_CRANE:
+    phase_span: [L1, L2, L4]
+    review_state: REVERSE_LOAD_CATCHUP
+  NOISE:
+    phase_span: [L1, L2, L5, L6]
+    review_state: REVERSE_LOAD_CATCHUP
+  ENERGY_INV_COP:
+    phase_span: [L1, L2, L5, L6]
+    review_state: VALIDATION_OPEN
+  PID_CONTROLS:
+    phase_span: [L1, L2, L4, L5, L6]
+    review_state: REVERSE_LOAD_CATCHUP
+  ISO9001_QMS:
+    phase_span:
+      - L1
+      - L2
+      - L3
+      - L4
+      - L5
+      - L6
+      - OPERATION
+      - MAINTENANCE
+    review_state: VALIDATION_OPEN
+  SCOPE_SUPPLY_CONFIG:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  DOCUMENT_DELIVERABLES:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
+  ADDENDUM_I_C_AND_L:
+    phase_span: [L1, L2, L3, L4, L5, L6]
+    review_state: VALIDATION_OPEN
 structural_observations:
   - id: W05-SAT-HOLDPOINT
-    families: [SAT_ACCEPTANCE,HSE_GOVERNANCE,RISK_RAMS_MSRA]
+    families:
+      - SAT_ACCEPTANCE
+      - HSE_GOVERNANCE
+      - RISK_RAMS_MSRA
     edge: DEPENDENCY
-    observation: L4_L5 evidence and approved acceptance criteria can block L6 witnessed SAT; failed-test repair and retest must remain explicit.
+    observation: >-
+      L4_L5 evidence and approved acceptance criteria can block L6 witnessed
+      SAT; failed-test repair and retest must remain explicit.
   - id: W05-ODH-INTERFACE
-    families: [ODH_QPS_CIS,PID_CONTROLS,SAT_ACCEPTANCE]
+    families:
+      - ODH_QPS_CIS
+      - PID_CONTROLS
+      - SAT_ACCEPTANCE
     edge: INTERFACE_DEPENDENCY
-    observation: ODH hardware, QPS_CIS logic and L5 functional testing must converge before L6 demonstration.
+    observation: >-
+      ODH hardware, QPS_CIS logic and L5 functional testing must converge
+      before L6 demonstration.
   - id: W05-ENERGY-BOUNDARY
-    families: [ENERGY_INV_COP,SCOPE_SUPPLY_CONFIG,SAT_ACCEPTANCE]
+    families:
+      - ENERGY_INV_COP
+      - SCOPE_SUPPLY_CONFIG
+      - SAT_ACCEPTANCE
     edge: ALLOCATION_SHIFT_RISK
-    observation: Measurement-chain ownership and uncertainty boundary must be frozen before invCOP SAT evidence is acceptable.
+    observation: >-
+      Measurement-chain ownership and uncertainty boundary must be frozen
+      before invCOP SAT evidence is acceptable.
   - id: W05-DOC-APPROVAL
-    families: [DOCUMENT_DELIVERABLES,ISO9001_QMS,HSE_GOVERNANCE]
+    families:
+      - DOCUMENT_DELIVERABLES
+      - ISO9001_QMS
+      - HSE_GOVERNANCE
     edge: GOVERNANCE_DEPENDENCY
-    observation: A named deliverable register is evidence of planned output, not evidence of approved contract-file status or hold-point release.
+    observation: >-
+      A named deliverable register is evidence of planned output, not evidence
+      of approved contract-file status or hold-point release.
   - id: W05-REVERSE-WELD
-    families: [WELDING_NDT]
+    families:
+      - WELDING_NDT
     edge: REVERSE_LOAD
-    observation: Low global BT ranking does not remove irreversible L3_L4 fabrication and code-reconciliation risk.
+    observation: >-
+      Low global BT ranking does not remove irreversible L3_L4 fabrication
+      and code-reconciliation risk.
   - id: W05-REVERSE-LIFT
-    families: [LIFTING_CRANE]
+    families:
+      - LIFTING_CRANE
     edge: REVERSE_LOAD
-    observation: Low global BT ranking does not remove owner-interface, access, structural-load and RAMS execution risk.
+    observation: >-
+      Low global BT ranking does not remove owner-interface, access,
+      structural-load and RAMS execution risk.
   - id: W05-REVERSE-NOISE
-    families: [NOISE]
+    families:
+      - NOISE
     edge: INTERNAL_CONTRADICTION_RISK
-    observation: Bidder-internal prediction or scope statements require reconciliation and calibrated L5_L6 measurement.
+    observation: >-
+      Bidder-internal prediction or scope statements require reconciliation
+      and calibrated L5_L6 measurement.
   - id: W05-REVERSE-PID
-    families: [PID_CONTROLS]
+    families:
+      - PID_CONTROLS
     edge: REVERSE_LOAD
-    observation: Tagging, cause-effect, interlock and installed-PID conformity have late integration leverage despite lower global rank.
+    observation: >-
+      Tagging, cause-effect, interlock and installed-PID conformity have late
+      integration leverage despite lower global rank.
 parent_rules:
   no_cross_bidder_substitution: true
   no_double_count_multi_node_evidence: true
