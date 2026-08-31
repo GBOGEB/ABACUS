@@ -1,29 +1,27 @@
-# yamllint disable rule:line-length
-name: QPS W05 bidder evaluation DOW receipt
+---
+name: QPS W05 Bidder Evaluation DOW receipt
 
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - 'federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml'
-      - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
-      - 'tools/run_qps_w05_bidder_eval_dow.py'
-      - 'tools/validate_qps_w05_bidder_eval_dow.py'
+      - 'federation/qps/snapshots/**'
+      - 'tools/run_qps_w05_bidder_eval_dow_return.py'
       - '.github/workflows/qps-w05-bidder-eval-dow.yml'
   push:
     branches: [main]
     paths:
       - 'federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml'
-      - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
-      - 'tools/run_qps_w05_bidder_eval_dow.py'
-      - 'tools/validate_qps_w05_bidder_eval_dow.py'
+      - 'federation/qps/snapshots/**'
+      - 'tools/run_qps_w05_bidder_eval_dow_return.py'
       - '.github/workflows/qps-w05-bidder-eval-dow.yml'
 
 permissions:
   contents: read
 
 jobs:
-  execute-validate:
+  execute-w05-dow-runtime:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,15 +30,31 @@ jobs:
           python-version: '3.12'
       - name: Install dependency
         run: python -m pip install --disable-pip-version-check PyYAML
-      - name: Produce W05 DOW receipt
-        run: python tools/run_qps_w05_bidder_eval_dow.py
-      - name: Validate W05 DOW receipt
-        run: >-
-          python tools/validate_qps_w05_bidder_eval_dow.py
-          federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RECEIPT.yaml
-      - name: Upload W05 DOW receipt
-        uses: actions/upload-artifact@v4
+      - name: Produce runtime receipt
+        run: python tools/run_qps_w05_bidder_eval_dow_return.py
+      - name: Validate receipt contract
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib
+          import yaml
+
+          path = pathlib.Path(
+              'federation/qps/runtime/'
+              'QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml'
+          )
+          data = yaml.safe_load(path.read_text())
+          assert data['correlation_id'] == 'QPS-FED-W05-BIDDER-EVAL'
+          assert data['requested_operations'] == data['executed_operations']
+          assert data['child_disposition_placeholder'] == 'UNSET'
+          assert data['typed_findings']
+          assert len(data['output_hash']) == 64
+          print('W05 DOW receipt PASS', len(data['typed_findings']))
+          PY
+      - uses: actions/upload-artifact@v4
         with:
           name: qps-w05-bidder-eval-dow-${{ github.run_id }}
-          path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RECEIPT.yaml
+          path: >-
+            federation/qps/runtime/
+            QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
           if-no-files-found: error
