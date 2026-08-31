@@ -1,0 +1,153 @@
+schema_version: 1
+control_id: QPS-OUTPUT-PRODUCT-PRIORITY
+status: CONTROL_CANDIDATE
+purpose: >-
+  Make outward artifact generation follow review/cross-walk value rather than file count.
+  This profile consumes the project-specific priority contract and does not own engineering data.
+
+project_priority_source:
+  repository: GBOGEB/cryoplant-project
+  path: ocd-adr/40_implementation/QPS_OUTPUT_CROSSWALK_PRIORITY_v0.1.yaml
+
+reusable_identity_tool:
+  repository: GBOGEB/CODEX
+  path: tools/output_identity.py
+
+release_products:
+  - priority: 1
+    product_id: OUT_MASTER_NAVIGATOR_HTML
+    artifact_type: html
+    user_facing: true
+    required: true
+    role: thematic_navigation_and_review
+    source_authority: false
+    required_behaviour:
+      - current_master_cards
+      - theme_cluster_node_navigation
+      - directed_and_bidirectional_graph_edges
+      - SSOT_origin_links
+      - specialist_review_links
+      - changelog
+      - previous_current_stale_release_state
+      - binary_release_manifest_link
+    qa:
+      - deep_links_resolve
+      - no_console_errors
+      - no_unintended_horizontal_overflow
+      - source_and_release_state_visible
+
+  - priority: 2
+    product_id: OUT_MASTER_REVIEW_XLSX
+    artifact_type: xlsx
+    user_facing: true
+    required: true
+    role: engineering_review_cockpit
+    source_authority: false
+    reference_display:
+      external_SSOT_cell_state: REFERENCE_ONLY_GREY
+      must_link_to_owner: true
+      editable_reference_cells: false
+    required_behaviour:
+      - landing_sheet
+      - theme_navigation
+      - filters_and_frozen_panes
+      - semantic_node_ids
+      - SSOT_owner_column_or_comment
+      - review_status_action_comment
+      - changelog_view
+
+  - priority: 3
+    product_id: OUT_SPECIALIST_REVIEW
+    artifact_type: xlsx_html
+    user_facing: true
+    required: true
+    role: specialist_cross_cutting_review
+    source_authority: false
+    required_fields:
+      - specialist_review_id
+      - theme
+      - cluster
+      - node_id
+      - review_question
+      - contract_RTM_basis
+      - OFFER_evidence
+      - OCD_ADR_implication
+      - external_evidence_status
+      - finding
+      - cost_implication
+      - RAMS_implication
+      - decision_or_RFI
+      - disposition
+      - evidence_links
+
+  - priority: 4
+    product_id: OUT_RTM_OFFER_OCD_ADR_REVIEW
+    artifact_type: xlsx_html
+    user_facing: true
+    required: true
+    role: formal_traceability_review
+    source_authority: false
+
+  - priority: 5
+    product_id: OUT_COST_MASTER
+    artifact_type: xlsx_html
+    user_facing: true
+    required: true
+    role: cost_lifecycle_review
+    source_authority: false
+    domain_authority_rule: >-
+      Cost values are authoritative only where the governing COST SSOT declares ownership;
+      imported RTM/OFFER/OCD/ADR/RAMS values remain reference-only.
+
+  - priority: 6
+    product_id: OUT_MANAGEMENT_REVIEW
+    artifact_type: pptx_pdf
+    user_facing: true
+    required: true
+    role: concise_management_decision_view
+    source_authority: false
+
+  - priority: 7
+    product_id: OUT_RAMS_SPARES_VV
+    artifact_type: xlsx_html
+    user_facing: true
+    required: true
+    role: RAMS_spares_RCM_FAT_SAT_review
+    source_authority: false
+
+  - priority: 8
+    product_id: OUT_RELEASE_HANDOVER
+    artifact_type: zip_targz
+    user_facing: true
+    required: true
+    role: restart_reproducibility_handover
+    source_authority: false
+
+binary_identity:
+  filename_template: "QPS__<THEME>__<ARTEFACT>__<TYPE>__<VERSION>__<UTC_TIMESTAMP>__<SHORTSHA>.<ext>"
+  require:
+    - source_repository
+    - source_commit
+    - source_paths
+    - build_id
+    - input_SSOT_hashes
+    - evidence_receipt
+    - semantic_hash
+    - artifact_sha256
+    - bytes
+    - previous_release
+  generated_binary_destination: OneDrive_immutable_release
+  generated_binary_in_git: false
+
+product_acceptance:
+  - products_built_in_priority_order
+  - all_required_products_have_identity_manifest
+  - all_reference_only_values_show_SSOT_origin
+  - cross_artifact_semantic_IDs_resolve
+  - browser_and_workbook_behaviour_receipts_present
+  - stale_propagation_state_visible
+  - changelog_generated_from_node_edge_and_release_deltas
+
+credit_boundary: >-
+  Product/readability/lineage maturity grants no engineering, compliance, safety,
+  commercial, PCA/BT or project-completion credit.
