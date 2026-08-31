@@ -1,0 +1,16 @@
+schema_version: "0.1"
+contract: QPS_PROGRAM_DOMAIN_COVERAGE_DOW
+child_authority: GBOGEB/cryoplant-project
+child_merge: c8d08eec5c1af54345a29a0baf35e4e99f6936f9
+mode: candidate_findings_only
+domains: [Review,Coverage,Offer_ingestion,ADR_OCD,Cost_CAPEX_OPEX,Reliability_Configuration_RAMS,Interfaces,Support_Buildings_Utilities,ThreeD_Model,SAFETY,Cybersecurity,Control_System,Exclusions,Codes_and_Standards,Deliverables,Lifecycle,Spare_Parts_RCM]
+DOW_tasks:
+  - compute evidence-backed graph penetration per domain
+  - find orphan nodes, missing dependency edges and cross-domain bottlenecks
+  - identify configuration and common-cause coupling across RAMS, controls, support utilities and Safety
+  - map lifecycle L1-L8 gaps and deliverable dependencies
+  - detect interface and exclusion boundary conflicts
+  - treat Safety as standalone non-compensating
+  - return top undercovered domains and highest marginal-unlock candidates
+  - emit novelty, duplicate rate, gap burn-down, cycle time and evidence references
+no_credit: [parent_graph_growth, mention_count, queue_drain, unvalidated_findings]
