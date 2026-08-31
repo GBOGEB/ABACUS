@@ -1,0 +1,40 @@
+schema_version: "0.1"
+wave_id: W05
+node: ABACUS
+status: diagnostic_seed_pending_runtime_refresh
+observations:
+  - timestamp: "2026-08-31T03:00:00Z"
+    factor_or_intervention_id: PCA-STABILITY
+    metric_name: queued_jobs
+    metric_value: 131
+    unit: jobs
+    evidence_reference: github_actions_queue_snapshot
+    authority_class: derived_operational_analysis
+    disposition_state: diagnostic_only
+  - timestamp: "2026-08-31T03:00:00Z"
+    factor_or_intervention_id: PCA-STABILITY
+    metric_name: active_jobs
+    metric_value: 0
+    unit: jobs
+    evidence_reference: github_actions_queue_snapshot
+    authority_class: derived_operational_analysis
+    disposition_state: diagnostic_only
+  - timestamp: "2026-08-31T03:49:00Z"
+    factor_or_intervention_id: PCA-QUALITY
+    metric_name: deterministic_failure_count
+    metric_value: 1
+    unit: failures
+    evidence_reference: ABACUS_PR_758_governance_numpy_dependency_repair
+    authority_class: derived_operational_analysis
+    disposition_state: repair_retest_required
+  - timestamp: "2026-08-31T03:00:00Z"
+    factor_or_intervention_id: BT-P4
+    metric_name: helper_capacity_candidate
+    metric_value: 8
+    unit: workers
+    evidence_reference: ABACUS_W05_stabilization_triage
+    authority_class: diagnostic_only
+    disposition_state: bounded_treatment_candidate
+notes:
+  - Seed values are explicit observations, not PCA loadings or engineering maturity credit.
+  - Runtime refresh should supersede queue values rather than silently overwrite provenance.
