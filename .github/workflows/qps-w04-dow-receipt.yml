@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
       - run: python tools/validate_qps_w04_dow_receipt.py tests/fixtures/qps_w04_dow_receipt_fixture.yaml
@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Checkout ABACUS parent
         uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
       - name: Produce sanitized-snapshot W04 DOW runtime receipt
@@ -63,7 +63,7 @@ jobs:
           token: ${{ secrets.QPS_REPO_READ_TOKEN }}
           persist-credentials: false
           path: qps
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: steps.credential.outputs.available == 'true'
         with: {python-version: '3.12'}
       - name: Install runtime dependency
