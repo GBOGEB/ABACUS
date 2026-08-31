@@ -28,6 +28,14 @@ federation:
         - interactive_analysis
         - artifact_visualization
         - jupyter_based_reporting
+    cryoplant:
+      repository: GBOGEB/cryoplant-project
+      role: auxiliary_plane
+      spec_ref: integration/cryoplant_project/federation/manifest.yaml
+      responsibility:
+        - myrrha_qps_qplant_cryoplant_engineering_analyses
+        - binaries_segregation_policy
+        - bidirectional_smoke_warmup_against_secondary_repo_cluster
 
   member_repos:
     - name: GBOGEB/ABACUS
@@ -43,6 +51,16 @@ federation:
       plane: notebook
       status: active
       role: interactive_execution_plane
+    - name: GBOGEB/cryoplant-project
+      plane: auxiliary
+      status: proposed
+      # Self-declared on the cryoplant-project side (see its own
+      # federation/manifest.yaml, branch
+      # federation/delta1-auxiliary-member-20260831). Registered here on
+      # ABACUS's own branch federation/register-cryoplant-project-20260831,
+      # status left as "proposed" (not "active") until both branches merge
+      # and the pairwise smoke check has run for real from both directions.
+      role: cryoplant_engineering_auxiliary_plane
 
   dev_snapshots:
     # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
