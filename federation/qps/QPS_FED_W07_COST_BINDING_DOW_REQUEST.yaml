@@ -1,0 +1,45 @@
+schema_version: "0.1"
+correlation_id: QPS-FED-W07-COST-BINDING-CATCHUP
+lane: ABACUS_DOW
+status: REQUEST
+source_child:
+  repository: GBOGEB/cryoplant-project
+  pr: 190
+  merge_sha: e9c44087ab27d728d8d0db83d5c99bb11fd6a16e
+  artifact: >-
+    ocd-adr/20_canonical/analysis/
+    QPS_COST_FRONTIER_W07_EVIDENCE_HARVEST_v0.1.yaml
+sanitized_payload:
+  binding_state:
+    fully_bound: 0
+    partial: 8
+    screening_only: 2
+    missing: 0
+  focus_node:
+    id: S3-C03
+    topic: COOLING_WATER_FLOW_AND_HEAT_LOAD
+    state: PARTIAL
+    candidate:
+      variable: FSD575_package_CW_duty_kWth
+      value: 323.0
+      unit: kWth
+      authority: PROVENANCE_PENDING_CANDIDATE
+    derived_sensitivities:
+      flow_at_deltaT_5K_m3_per_h: 55.55
+      flow_at_deltaT_10K_m3_per_h: 27.77
+  linked_nodes:
+    - S3-C02
+    - S3-C04
+    - S3-C06
+requested_return:
+  - validate utility common-cause/dependency consequences of the 323 kW candidate
+  - preserve package-level boundary until equipment/state allocation is source-bound
+  - identify minimum source bindings needed before quantitative promotion
+  - assess reverse-load priority for C02/C03/C04/C06 without creating bidder scores
+controls:
+  candidate_is_not_bidder_price: true
+  derived_flow_is_not_source_evidence: true
+  no_zero_imputation: true
+  no_compliance_or_completion_credit: true
+  mandatory_gates_non_compensating: true
+  child_owns_engineering_and_commercial_disposition: true
