@@ -34,7 +34,7 @@ jobs:
       - name: Validate sanitized-snapshot W04 DOW runtime receipt
         run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
       - name: Upload sanitized-snapshot W04 DOW runtime receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qps-w04-dow-sanitized-snapshot-receipt-${{ github.run_id }}
           path: federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
@@ -88,7 +88,7 @@ jobs:
         run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
       - name: Upload private-child W04 DOW runtime receipt
         if: steps.credential.outputs.available == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qps-w04-dow-private-child-receipt-${{ github.run_id }}
           path: parent/federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
