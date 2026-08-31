@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 ---
 name: QPS W05 Bidder Evaluation DOW receipt
 
@@ -70,7 +71,5 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: qps-w05-bidder-eval-dow-${{ github.run_id }}
-          path: >-
-            federation/qps/runtime/
-            QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
+          path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
           if-no-files-found: error
