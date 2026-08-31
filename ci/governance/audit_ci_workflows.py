@@ -167,6 +167,8 @@ def audit(workflow_dir: Path, policy: dict) -> dict:
 def render_markdown(report: dict, policy: dict) -> str:
     baseline = policy["baseline_snapshot"]
     lines = [
+        "<!-- markdownlint-disable MD013 -->",
+        "",
         "# ABACUS CI workflow rationalisation",
         "",
         f"Policy: `{report['policy_id']}`  ",
