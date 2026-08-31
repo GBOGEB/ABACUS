@@ -1,6 +1,7 @@
 # QPS Cost SSOT Boundary
 
-This directory contains only public-safe schemas, synthetic fixtures and semantic contracts.
+This directory contains only public-safe schemas, synthetic fixtures, and
+semantic contracts.
 
 It must not contain:
 
@@ -11,7 +12,8 @@ It must not contain:
 - user-specific OneDrive paths;
 - credentials or tokens.
 
-Project-specific values belong in the private overlay repository and external evidence vault.
+Project-specific values belong in the private overlay repository and the
+external evidence vault.
 
 ## Intended public-safe contents
 
@@ -31,11 +33,13 @@ semantic_contracts/
 
 ## Assimilation rule
 
-An Office review change is never copied directly into this directory. It is first classified as one of:
+An Office review change is never copied directly into this directory. It is
+first classified as one of:
 
 1. data change;
 2. calculation-logic change;
 3. narrative change;
 4. formatting-only change.
 
-Only approved, normalized text-source changes are committed, followed by a clean rebuild and a new immutable release.
+Only approved, normalized text-source changes are committed. A clean rebuild
+and a new immutable release must then follow.
