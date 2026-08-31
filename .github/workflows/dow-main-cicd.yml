@@ -1,17 +1,9 @@
+---
 name: DOW Main CI/CD Pipeline
 
 on:
   push:
     branches: [main, develop]
-    paths:
-      - 'DMAIC_V3/**'
-      - 'TESTING_SUITE/**'
-      - 'demo_integrated_system.py'
-      - 'requirements*.txt'
-      - 'pyproject.toml'
-      - '.github/workflows/dow-main-cicd.yml'
-  pull_request:
-    branches: [main]
     paths:
       - 'DMAIC_V3/**'
       - 'TESTING_SUITE/**'
