@@ -43,7 +43,7 @@ required_return:
   - source_correlation_id
   - finding_type
   - affected_family_and_child_nodes
-  - bidder_scope: [BIDDER_A,BIDDER_B,BOTH]
+  - bidder_scope
   - evidence_basis_class
   - structural_confidence
   - recommended_child_action
