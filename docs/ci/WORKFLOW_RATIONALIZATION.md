@@ -5,7 +5,7 @@ Policy SHA-256: `98c3a6aca1b10789ddd4850b7208153672aadb707252803a3a177adcfb8d98c
 
 ## Outcome
 
-The repository currently contains **88 workflow definitions**. All **88** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **90 workflow definitions**. All **90** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,7 +29,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `statistics` | `ci-cd.yml` | 2 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 4 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 10 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `dow` | `dow-integration.yml` | 12 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 12 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
@@ -92,6 +92,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 2 | `keep` | — |
+| 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
 | 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
