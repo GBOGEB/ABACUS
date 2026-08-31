@@ -63,7 +63,7 @@ jobs:
           token: ${{ secrets.QPS_REPO_READ_TOKEN }}
           persist-credentials: false
           path: qps
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: steps.credential.outputs.available == 'true'
         with: {python-version: '3.12'}
       - name: Install runtime dependency
