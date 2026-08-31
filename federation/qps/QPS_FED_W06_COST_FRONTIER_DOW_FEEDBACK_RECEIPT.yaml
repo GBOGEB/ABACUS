@@ -9,7 +9,9 @@ source_child_disposition:
   repository: GBOGEB/cryoplant-project
   pr: 187
   merge_sha: cca826de58072c0af595da02ca0e9c1985b4c4c1
-  artifact: ocd-adr/20_canonical/analysis/QPS_COST_FRONTIER_W06_CHILD_DISPOSITION_v0.1.yaml
+  artifact: >-
+    ocd-adr/20_canonical/analysis/
+    QPS_COST_FRONTIER_W06_CHILD_DISPOSITION_v0.1.yaml
 feedback:
   candidate_findings_returned: 5
   findings_accepted_structurally: 5
