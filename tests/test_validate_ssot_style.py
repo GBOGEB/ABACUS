@@ -87,7 +87,7 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         errors = style.validate_manifest(manifest)
 
-        self.assertIn("handoff check policy must link ABACUS #754 and CODEX #298", errors)
+        self.assertIn("linked repair PR(s) missing for GBOGEB/CODEX: 298, 300", errors)
 
     def test_handoff_check_policy_blocks_known_failure_states(self) -> None:
         manifest = copy.deepcopy(self.manifest)
@@ -105,14 +105,14 @@ class ValidateSsotStyleTests(unittest.TestCase):
     def test_handoff_check_policy_requires_bidirectional_feedback(self) -> None:
         manifest = copy.deepcopy(self.manifest)
         manifest["federation_wave"]["handoff_check_policy"]["repository_feedback"] = {
-            "from_codex": "validation meaning",
-            "to_codex": "artifact readiness",
+            "from_codex": "",
+            "to_codex": "",
         }
 
         errors = style.validate_manifest(manifest)
 
-        self.assertIn("handoff policy must capture feedback from CODEX", errors)
-        self.assertIn("handoff policy must capture feedback to CODEX", errors)
+        self.assertIn("repository_feedback.from_codex must be a non-empty string", errors)
+        self.assertIn("repository_feedback.to_codex must be a non-empty string", errors)
 
     def test_awake_probe_score_counts_existing_paths(self) -> None:
         manifest = {
@@ -155,6 +155,34 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         self.assertEqual(report["penetration_score"], 100.0)
         self.assertEqual(report["by_kind"]["graph"], {"depth": 4, "max_depth": 4})
+
+
+    def test_handoff_policy_blocks_startup_failure_and_stale(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        policy = manifest["federation_wave"]["handoff_check_policy"]
+        policy["blocking_conclusions"].remove("startup_failure")
+        policy["blocking_conclusions"].remove("stale")
+        errors = style.validate_manifest(manifest)
+        self.assertIn("missing blocking conclusion(s): stale, startup_failure", errors)
+
+    def test_handoff_policy_requires_structured_all_clear_controls(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["handoff_check_policy"]["all_clear_requirements"].remove(
+            "repaired_sha_retested"
+        )
+        errors = style.validate_manifest(manifest)
+        self.assertIn("missing all-clear requirement(s): repaired_sha_retested", errors)
+
+    def test_handoff_policy_reports_malformed_object(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["handoff_check_policy"] = None
+        errors = style.validate_manifest(manifest)
+        self.assertIn("federation_wave.handoff_check_policy must be an object", errors)
+
+    def test_handoff_policy_allows_additional_repair_links(self) -> None:
+        manifest = copy.deepcopy(self.manifest)
+        manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]["GBOGEB/ABACUS"].append(999)
+        self.assertEqual([], style.validate_manifest(manifest))
 
 
 if __name__ == "__main__":
