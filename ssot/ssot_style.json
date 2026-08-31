@@ -256,17 +256,17 @@
       "GBOGEB/ABACUS": {
         "commit_sha": "39ae07f37a26f7e148d730d31e238716dce8f322",
         "manifest_path": "ssot/ssot_style.json",
-        "manifest_sha256": "3e33be94858dbb7b75434e7e7734c4b0e5325dbe477e21d5fcfc9cec8d2c1134"
+        "manifest_sha256": "8735c00c95c880578148639238ea4dcdcf25779d22e382e0c5dde4d0b39498f5"
       },
       "GBOGEB/CODEX": {
         "commit_sha": "0a8f1e6cd356b13e788a1b365fc2bbb2e58ad8cf",
         "manifest_path": "ssot/ssot_style_bridge.json",
-        "manifest_sha256": "8584cd6e4aa22c97976d5b767e3cf7bcc3d148e98a6d6c36236c7fbe7e0cb504"
+        "manifest_sha256": "b6f2c4451ba9de761c4c97a89978aeb436e51f63d7ce8ab8571697797ae8bbf4"
       },
       "GBOGEB/cryoplant-project": {
         "commit_sha": "4b27f9b8cf11e24e76f61cf96cbff3e25da4283f",
         "manifest_path": "ssot/ssot_style_adapter.json",
-        "manifest_sha256": "b859fa4df405fee820b0f2df3d69c65f40438222e975021a6bb8e38fd37f604e"
+        "manifest_sha256": "1209db158f25f393a7c33963bb149ada5485b29238afd8fd4345af678d04b80f"
       }
     },
     "downstream_receipt": "GBOGEB/cryoplant-project:ssot/ssot_style_return_receipt.v0.2.0.json"
