@@ -1,0 +1,62 @@
+schema_version: "0.1"
+contract: QPS_PCA_BT_OBSERVATION
+canonical_child_reference: GBOGEB/cryoplant-project/ocd-adr/20_canonical/analysis/QPS_PCA_BT_EVIDENCE_TAXONOMY_v0.1.yaml
+producer: ABACUS
+required_fields:
+  - timestamp
+  - wave_id
+  - node
+  - factor_or_intervention_id
+  - metric_name
+  - metric_value
+  - unit
+  - evidence_reference
+  - authority_class
+  - disposition_state
+allowed_factor_ids:
+  - PCA-STABILITY
+  - PCA-QUALITY
+  - PCA-FEDERATION
+  - PCA-ENGINEERING-MATURITY
+allowed_intervention_ids:
+  - BT-P1
+  - BT-P2
+  - BT-P3
+  - BT-P4
+  - BT-P5
+authority_classes:
+  - source_supported
+  - child_controlled
+  - derived_operational_analysis
+  - diagnostic_only
+producer_rules:
+  - observations_are_candidates_only
+  - no_numeric_PCA_loadings_before_five_comparable_observations
+  - no_BT_score_without_observed_effect_or_pairwise_evidence
+  - no_engineering_completion_credit_from_queue_runner_or_parent_metrics
+  - evidence_reference_must_resolve_to_run_artifact_commit_or_source_cue
+W05_preferred_metrics:
+  PCA-STABILITY:
+    - queued_jobs
+    - active_jobs
+    - queue_to_active_ratio
+    - workflow_fan_out
+    - cycle_time_seconds
+  PCA-QUALITY:
+    - first_pass_CI_success_rate
+    - deterministic_failure_count
+    - repair_retest_recurrence_count
+  PCA-FEDERATION:
+    - typed_return_count
+    - novel_finding_rate
+    - duplicate_rate
+    - ACCEPT_rate
+    - DEFER_rate
+    - unresolved_gap_burn_down
+  PCA-ENGINEERING-MATURITY:
+    - source_bound_evidence_count
+    - lifecycle_gap_count
+    - Table10_gap_count
+    - Safety_gap_count
+    - controls_gap_count
+    - unresolved_authority_gap_count
