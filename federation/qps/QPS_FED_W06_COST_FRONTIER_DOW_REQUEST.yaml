@@ -1,0 +1,182 @@
+schema_version: "0.5"
+correlation_id: QPS-FED-W06-COST-FRONTIER-R2
+lane: ABACUS_DOW
+status: REQUESTED
+child:
+  repository: GBOGEB/cryoplant-project
+  baseline_sha: d62819a664ce54325ddf7b4758e8744abf19ea22
+  authority: child_owns_engineering_and_disposition
+lineage:
+  predecessor_child_wave: QPS-BIDDER-EVAL-W03
+  predecessor_abacus_pr: 764
+  predecessor_codex_pr: 305
+  merged_child_prs: [179, 180, 181]
+  merged_control_repairs: [765]
+  source_frontier: >-
+    ocd-adr/20_canonical/analysis/QPS_COST_STAGE3_CHILD_FRONTIER_v0.1.yaml
+  source_cost_method: ocd-adr/metrics/COST_PRIMAL_PCA_BT_METHOD.md
+input_contract:
+  confidentiality: sanitized_feature_graph_only
+  bidder_count: 2
+  no_raw_bidder_prices: true
+  no_payment_percentages: true
+  no_confidential_offer_text: true
+  proof_levels: [P0, P1, P2, P3, P4, P5, P6]
+  stage3_children:
+    - id: S3-C01
+      parents: [RTM-433]
+      topic: LOOP_BACKUP_INSTRUMENT_AIR
+      source_support_class: SOURCE_SUPPORTED_CONTRACT
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L4, L5, L6]
+    - id: S3-C02
+      parents: [OFFER-35, RTM-434, RTM-435]
+      topic: HVAC_HEAT_REJECTION
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L4, L5, L6]
+    - id: S3-C03
+      parents: [OFFER-34, RTM-411, RTM-426, RTM-427]
+      topic: COOLING_WATER_FLOW_AND_HEAT_LOAD
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L4, L5, L6]
+    - id: S3-C04
+      parents: [OFFER-33]
+      topic: ELECTRICAL_LOAD_AND_DISTRIBUTION
+      source_support_class: SOURCE_SUPPORTED_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L4, L5, L6]
+    - id: S3-C05
+      parents: [OFFER-32]
+      topic: TRANSPORT_INSTALLATION_AND_LIFTING
+      source_support_class: SOURCE_SUPPORTED_OFFER
+      quantitative_binding_state: SCREENING_ONLY
+      lifecycle: [L2, L4]
+    - id: S3-C06
+      parents: [RTM-495, OFFER-39]
+      topic: FAT_SAT_TEST_UTILITIES_AND_RESOURCES
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L3, L4, L5, L6]
+    - id: S3-C07
+      parents: [RTM-605, RTM-608]
+      topic: HSE_CERTIFICATION_AND_METHOD_STATEMENTS
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_HSE
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L1, L2, L3, L4, L5, L6]
+      mandatory_gate: true
+    - id: S3-C08
+      parents: [RTM-146, RTM-147, OFFER-15]
+      topic: VIBRATION_AND_NOISE_VERIFICATION
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: SCREENING_ONLY
+      lifecycle: [L2, L5, L6]
+    - id: S3-C09
+      parents: [RTM-560, OFFER-41]
+      topic: STRATEGIC_SPARES
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L2, L3, L6]
+    - id: S3-C10
+      parents: [RTM-064, OFFER-42, OFFER-43]
+      topic: MAINTENANCE_SERVICE_AND_INTERVENTION
+      source_support_class: SOURCE_SUPPORTED_CONTRACT_AND_OFFER
+      quantitative_binding_state: PARTIAL
+      lifecycle: [L1, L2, L6]
+  typed_edges:
+    - from: S3-C02
+      to: S3-C03
+      type: COMMON_UTILITY_BOUNDARY
+      rationale: heat_rejection_and_cooling_water_interdependence
+    - from: S3-C03
+      to: S3-C04
+      type: OPERATING_COST_COUPLING
+      rationale: utility_loads_drive_power_and_lifecycle_cost
+    - from: S3-C05
+      to: S3-C07
+      type: EXECUTION_HSE_DEPENDENCY
+      rationale: lifting_requires_method_statements_and_certification
+    - from: S3-C06
+      to: S3-C03
+      type: ACCEPTANCE_RESOURCE_DEPENDENCY
+      rationale: SAT_requires_controlled_cooling_water
+    - from: S3-C06
+      to: S3-C04
+      type: ACCEPTANCE_RESOURCE_DEPENDENCY
+      rationale: SAT_requires_controlled_electrical_supply
+    - from: S3-C08
+      to: S3-C06
+      type: ACCEPTANCE_EVIDENCE_DEPENDENCY
+      rationale: calibrated_measurement_feeds_SAT
+    - from: S3-C09
+      to: S3-C10
+      type: LIFECYCLE_SUPPORT_DEPENDENCY
+      rationale: spares_and_maintenance_are_joint_cost_drivers
+  catch_up_facts:
+    OFFER-32:
+      technical_rank: 44
+      cost70_rank: 3
+      cost100_rank: 2
+      delta70: 41
+      delta100: 42
+    OFFER-35:
+      technical_rank: 32
+      cost70_rank: 1
+      cost100_rank: 1
+      delta70: 31
+      delta100: 31
+    OFFER-34:
+      technical_rank: 31
+      cost70_rank: 2
+      cost100_rank: 3
+      delta70: 29
+      delta100: 28
+    RTM-433:
+      technical_rank: 5
+      cost70_rank: 1
+      cost100_rank: 1
+      delta70: 4
+      delta100: 4
+    RTM-495:
+      technical_rank: 10
+      cost70_rank: 8
+      cost100_rank: 8
+      delta70: 2
+      delta100: 2
+requested_DOW_operations:
+  - validate_parent_child_decomposition
+  - propagate_stage3_lifecycle_dependencies
+  - validate_typed_edges_and_common_cause_links
+  - identify_reverse_load_cost_catch_up_nodes
+  - test_quantitative_binding_priority_effect
+  - distinguish_source_support_from_cost_binding
+  - identify_private_overlay_blocked_children
+  - preserve_non_compensating_mandatory_gates
+  - recommend_next_source_binding_sequence
+  - return_candidates_for_child_disposition
+required_return:
+  - stable_finding_id
+  - correlation_id
+  - affected_child_ids_and_parent_nodes
+  - dependency_or_common_cause_edges
+  - source_support_class
+  - quantitative_binding_state
+  - structural_confidence
+  - reverse_load_or_catch_up_observation
+  - recommended_child_action
+  - reusable_parent_pattern_candidate
+  - input_and_output_hash_lineage
+prohibited:
+  - real_or_confidential_bidder_identity
+  - bidder_confidential_text
+  - prices_or_payment_percentages
+  - parent_generated_QPS_compliance
+  - parent_generated_bidder_score
+  - parent_generated_maturity_or_completion_credit
+  - zero_imputation_for_missing_commercial_evidence
+child_disposition_contract:
+  governed_values: [ACCEPT, REJECT, DEFER]
+  parent_findings_are_candidates: true
+closure_test: >-
+  returned_DOW_receipt_plus_child_disposition_plus_parent_feedback_receipt
