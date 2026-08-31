@@ -1,0 +1,19 @@
+wave: W07
+child_disposition_pr: 192
+child_merge_sha: bfa36c46f1a2ad6d9e79378f793f7acacab4533a
+source_parent_pr: 775
+result: ACCEPT_STRUCTURAL
+reusable_learning:
+  - C02_C03_C04_C06_utility_common_cause_cluster
+  - package_CW_dependency_propagation
+  - derived_sensitivity_must_not_be_promoted_to_bidder_fact
+numeric_promotion:
+  candidate: 323_kWth_package_CW
+  state: DEFER_PROMOTION
+  unlock: direct_bidder_or_OEM_provenance
+next_DOW_priority:
+  - OFFER-32_installation_lifting_split
+  - HVAC_residual_heat_and_equipment_scope
+  - FAT_SAT_resource_quantity_matrix
+  - direct_C03_provenance
+credit: none_until_child_source_bound_assimilation
