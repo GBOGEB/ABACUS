@@ -181,7 +181,8 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
     def test_handoff_policy_allows_additional_repair_links(self) -> None:
         manifest = copy.deepcopy(self.manifest)
-        manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]["GBOGEB/ABACUS"].append(999)
+        repair_prs = manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]
+        repair_prs["GBOGEB/ABACUS"].append(999)
         self.assertEqual([], style.validate_manifest(manifest))
 
 
