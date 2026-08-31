@@ -195,3 +195,17 @@ maturity_assessment.json
 *.dll
 *.exe
 *.bin
+
+# --- Binaries segregation follow-up (QPS triage, GBO, 2026-08-30) ---
+# Gap found this pass: none of the venv patterns above (venv/, ENV/, env/,
+# .venv) match a venv literally named ".venv_pb", which exists in this
+# checkout and contains ~10 compiled .exe binaries (pytest.exe, ttx.exe,
+# fonttools.exe, numpy-config.exe, f2py.exe, pygmentize.exe, etc.) not
+# excluded by name. Widened to a wildcard so any similarly-named venv is
+# covered. *.msi/*.vsix added alongside the existing *.exe rule above --
+# same install-once category (desktop installers, IDE extension packages).
+# *.xlsx/*.xlsm already covered by the 2026-08-27 policy above.
+.venv*/
+venv*/
+*.msi
+*.vsix
