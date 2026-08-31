@@ -1,11 +1,13 @@
+<!-- markdownlint-disable MD013 MD060 -->
+
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `98c3a6aca1b10789ddd4850b7208153672aadb707252803a3a177adcfb8d98ce`
+Policy SHA-256: `a1af580a797ee940be24328528daaf4fabf4eeb342f0fbe25d882af924846b01`
 
 ## Outcome
 
-The repository currently contains **88 workflow definitions**. All **88** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **90 workflow definitions**. All **90** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,7 +31,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `statistics` | `ci-cd.yml` | 2 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 4 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 10 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `dow` | `dow-integration.yml` | 12 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 12 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
@@ -64,7 +66,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `core_test` | `abacus-cicd.yml` | push, workflow_dispatch | 6 | `keep` | — |
 | 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 10 | `core_test` | `ci-abacus.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
-| 10 | `core_test` | `ci-enhanced.yml` | push, workflow_dispatch | 7 | `keep` | — |
+| 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
 | 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
@@ -86,12 +88,14 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `background_orchestrator.yml` | schedule, workflow_dispatch | 2 | `keep` | — |
 | 20 | `dow` | `dow-integration-ci-cd.yml` | push, workflow_dispatch | 8 | `keep` | — |
 | 20 | `dow` | `dow-integration.yml` | push, workflow_dispatch, schedule | 4 | `keep` | — |
-| 20 | `dow` | `dow-main-cicd.yml` | push, schedule | 1 | `keep` | — |
-| 20 | `dow` | `dow-monitoring.yml` | none | 1 | `keep` | — |
+| 20 | `dow` | `dow-main-cicd.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `dow-monitoring.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | — |
+| 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
 | 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
@@ -103,15 +107,15 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-verification.yml` | workflow_dispatch, workflow_run | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | — |
-| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validation.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
 | 20 | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
-| 20 | `security` | `osv-scheduled.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `security` | `osv-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | — |
-| 20 | `security` | `security-dashboard.yml` | workflow_run, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
@@ -125,7 +129,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
 | 30 | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | — |
 | 30 | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | — |
-| 30 | `delivery` | `cd.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
+| 30 | `delivery` | `cd.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | — |
@@ -141,7 +145,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `automation` | `branch-analysis.yml` | workflow_dispatch | 2 | `keep` | — |
 | 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | — |
-| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, deployment_status | 3 | `keep` | — |
+| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | — |
 | 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
@@ -151,8 +155,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 ## Repeated quality/test commands
 
-- `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`, `validation.yml`
 - `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
+- `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
 - `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
 - `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
 - `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` — `ci-cd-tests.yml`, `ci-cd.yml`
@@ -165,7 +169,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
 - `pip install pytest pyyaml` — `codespace-federation.yml`, `dow-sprint6-cicd.yml`
-- `pip install pyyaml pytest` — `dow-integration-ci-cd.yml`, `governance.yml`
+- `pip install pyyaml numpy pytest` — `governance.yml`, `validation.yml`
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
