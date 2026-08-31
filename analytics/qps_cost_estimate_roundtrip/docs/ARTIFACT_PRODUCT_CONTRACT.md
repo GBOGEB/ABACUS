@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 MD022 MD032 -->
+
 # QPS Artifact Product Contract
 
 Status: Wave B design/functionality uplift
