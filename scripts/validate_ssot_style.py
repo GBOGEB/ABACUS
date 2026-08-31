@@ -224,8 +224,6 @@ def _validate_handoff_check_policy(wave: Dict[str, Any], errors: List[str]) -> N
             errors,
         )
 
-    lineage = _mapping(wave.get("lineage_binding", {}), "federation_wave.lineage_binding", errors)
-
 
 def _validate_lineage_binding(manifest: Dict[str, Any], errors: List[str]) -> None:
     lineage = _mapping(manifest.get("lineage_binding", {}), "lineage_binding", errors)
