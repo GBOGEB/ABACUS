@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema_version: "0.4"
 correlation_id: QPS-FED-W05-BIDDER-EVAL
 lane: ABACUS_DOW
