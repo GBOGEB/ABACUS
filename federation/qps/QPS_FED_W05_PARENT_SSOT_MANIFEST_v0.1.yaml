@@ -1,0 +1,48 @@
+schema_version: "0.1"
+document_id: QPS_FED_W05_ABACUS_PARENT_SSOT_MANIFEST
+status: CONTROLLED_PARENT_EXECUTION_MANIFEST
+authority_order:
+  - layer: CONTROLLED
+    repository: GBOGEB/cryoplant-project
+    path: ocd-adr/40_implementation/QPS_BIDDER_PARALLEL_EVAL_W03_v0.1.yaml
+    merge_sha: 53baac108920d36210ec6ba36799a61cc1da8982
+    sha256: b979fa91dc8f4e0a89bde6f7e959f7ec08eaa5b27e63964f4a19acb1c572bc87
+    role: child-owned ADR/OCD and RTM/OFFER evaluation state
+  - layer: SOURCE-SUPPORTED
+    path: federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml
+    role: governed parent execution request
+  - layer: DERIVED
+    path: federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml
+    role: sanitized bidder-parallel RTM/OFFER/AD02 feature graph
+  - layer: DERIVED
+    path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
+    role: reproducible DOW execution result and gap ledger
+canonical_runtime:
+  path: tools/run_qps_w05_bidder_eval_dow_return.py
+  test: tests/test_qps_w05_bidder_eval_dow_return.py
+  workflow: .github/workflows/qps-w05-bidder-eval-dow.yml
+superseded_runtime_inputs:
+  - path: federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_SNAPSHOT_v0.1.yaml
+    reason: reduced duplicate snapshot without canonical RTM/OFFER priority graph
+  - path: tools/run_qps_w05_bidder_eval_dow.py
+    reason: mechanics consolidated into the workflow-executed canonical runtime
+completion_metrics:
+  executed_operation_yield: executed_operations / requested_operations
+  evidence_family_coverage: unique_families_scanned / requested_priority_families
+  blocking_gap_count: unique_family_bidder_blocking_edge_tuples
+  reverse_load_coverage: evaluated_reverse_load_nodes / declared_reverse_load_nodes
+  pca_feature_coverage: populated_feature_cells / required_feature_cells
+  binary_release_coverage: fresh_hash_bound_outputs / required_outputs
+required_outputs:
+  - Excel
+  - HTML
+  - DOCX
+  - PPTX
+  - PDF
+  - Markdown
+control_rules:
+  - no operation is PASS unless its named mechanic executes
+  - no child baseline or source artifact may drift without a new hash binding
+  - PC loadings are exploratory DERIVED evidence and grant no engineering credit
+  - missing or stale outward binaries keep completion open
+  - parent findings require child ACCEPT REJECT or DEFER disposition
