@@ -30,7 +30,7 @@ federation:
   member_self:
     name: GBOGEB/cryoplant-project
     plane: auxiliary
-    status: proposed
+    status: active
     responsibilities:
       - myrrha_qps_qplant_cryoplant_engineering_analyses
       - binaries_segregation_policy_and_manifest_generator
