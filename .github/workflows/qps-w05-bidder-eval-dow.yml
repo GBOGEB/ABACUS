@@ -68,7 +68,7 @@ jobs:
               assert all(re.fullmatch(r'[0-9a-f]{64}', value) for value in hashes.values())
           print('W05 DOW executed-mechanics receipt PASS', len(data['typed_findings']))
           PY
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@v7
         with:
           name: qps-w05-bidder-eval-dow-${{ github.run_id }}
           path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
