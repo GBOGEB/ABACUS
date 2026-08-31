@@ -50,7 +50,7 @@ required_return:
   - reusable_parent_pattern_candidate
   - input_and_output_hash_lineage
 prohibited:
-  - bidder_names
+  - real_bidder_names
   - bidder_confidential_text
   - prices_or_payment_percentages
   - parent_generated_QPS_compliance
