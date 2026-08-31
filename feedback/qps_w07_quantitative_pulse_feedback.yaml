@@ -1,8 +1,15 @@
-wave: W07
-child_disposition_pr: 192
-child_merge_sha: bfa36c46f1a2ad6d9e79378f793f7acacab4533a
-source_parent_pr: 775
-result: ACCEPT_STRUCTURAL
+schema_version: "0.1"
+document_id: QPS-FED-W07-ABACUS-QUANTITATIVE-FEEDBACK
+wave_id: W07
+child_disposition:
+  repository: GBOGEB/cryoplant-project
+  pr: 192
+  merge_sha: bfa36c46f1a2ad6d9e79378f793f7acacab4533a
+source_parent:
+  repository: GBOGEB/ABACUS
+  pr: 775
+result: ACCEPT
+acceptance_scope: STRUCTURAL
 reusable_learning:
   - C02_C03_C04_C06_utility_common_cause_cluster
   - package_CW_dependency_propagation
