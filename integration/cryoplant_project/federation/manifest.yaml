@@ -1,0 +1,63 @@
+# integration/cryoplant_project/federation/manifest.yaml
+# Federation manifest stub for GBOGEB/cryoplant-project (DELTA_1 auxiliary plane).
+#
+# This file mirrors the manifest GBOGEB/cryoplant-project carries in its own
+# repository under federation/manifest.yaml (see that repo's branch
+# federation/delta1-auxiliary-member-20260831). It is kept here in ABACUS as
+# the authoritative integration record for the DELTA_1 runtime plane, same
+# convention as integration/codespace_jyperter/federation/manifest.yaml.
+#
+# Authoritative federation spec: runtime/federation/codex-abacus-federation.yaml
+
+federation:
+  moniker: DELTA_1
+  version: "1.0"
+
+  planes:
+    governance:
+      repository: GBOGEB/CODEX
+      role: governance_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+    runtime:
+      repository: GBOGEB/ABACUS
+      role: runtime_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+    auxiliary:
+      repository: GBOGEB/cryoplant-project
+      role: auxiliary_plane
+      spec_ref: runtime/federation/codex-abacus-federation.yaml
+
+  member_self:
+    name: GBOGEB/cryoplant-project
+    plane: auxiliary
+    status: proposed
+    responsibilities:
+      - myrrha_qps_qplant_cryoplant_engineering_analyses
+      - binaries_segregation_policy_and_manifest_generator
+      - bidirectional_smoke_warmup_against_secondary_repo_cluster
+
+  # cryoplant-project's own federation/manifest.yaml additionally tracks six
+  # candidate secondary repos (cryo_leak_rate_dashboard,
+  # document-organization-system, Q_engineering_tools, GEMINI,
+  # pipeline-automation-hub, CODESPACES_jyperter) it independently discovered
+  # and smoke-tested via git ls-remote. Those are NOT part of the DELTA_1
+  # federation on ABACUS's authority -- listed here only for cross-reference
+  # so a reader of this file knows they exist. CODESPACES_jyperter is
+  # already a first-class DELTA_1 member above (notebook plane); the other
+  # five are cryoplant-project's own auxiliary candidates, not ABACUS's.
+  cross_reference_candidates_not_in_delta1:
+    - GBOGEB/cryo_leak_rate_dashboard
+    - GBOGEB/document-organization-system
+    - GBOGEB/Q_engineering_tools
+    - GBOGEB/GEMINI
+    - GBOGEB/pipeline-automation-hub
+
+  assimilation_hooks:
+    # Python entry point in cryoplant-project: src/federation.py::assimilate()
+    entry_point: src/federation.py
+    function: assimilate
+    smoke_test: tests/test_smoke_federation.py
+
+  knowledge_basis_refs:
+    - docs/FEDERATION_TOPOLOGY.md
+    - docs/CODEX_ABACUS_FEDERATION_MATRIX.md
