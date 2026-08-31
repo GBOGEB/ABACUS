@@ -29,6 +29,9 @@ kpis:
   review_isolation_ratio: {target: 1.0}
   review_assimilation_closure_ratio: {target: 1.0}
   hold_escape_violations: {target: 0}
+  a1_repository_baseline_ratio: {target: 1.0, numerator_target: 4, denominator: 4}
+  a1_origin_verification_ratio: {target: 1.0, numerator_target: 4, denominator: 4}
+  a1_clean_worktree_ratio: {target: 1.0, numerator_target: 4, denominator: 4}
 operating_metrics:
   - successful_run_count
   - failed_run_count
@@ -43,6 +46,10 @@ operating_metrics:
   - backlog_age_max
   - catchup_delta_vs_trailing_mean
   - reverse_load_factor_gap
+  - a1_receipt_present
+  - a1_verified_repository_count
+  - a1_clean_repository_count
+  - a1_origin_verified_count
 pca:
   purpose: descriptive_priority_compression
   inferential_claims_allowed: false
@@ -91,11 +98,41 @@ reverse_loading:
     - ReviewAssimilation
   formula: "mean(execution_completion_all_factors)-execution_completion_factor"
   z_score_minimum_snapshots: 5
+cross_repo_federation:
+  codex:
+    role: executable_roundtrip_mechanics
+    a1_receipt_schema: qps-cost-master.a1-repo-baseline.v1
+    a1_receipt_filename: A1_REPO_BASELINE_RECEIPT.json
+    a1_receipt_location: external_workspace_logs
+    source_pr: GBOGEB/CODEX#303
+  cryoplant_project:
+    role: private_project_overlay_and_priority_evidence
+    pca_bt_taxonomy_pr: GBOGEB/cryoplant-project#175
+    pca_bt_taxonomy_status: MERGED
+    pca_numeric_minimum_observations: 5
+  abacus:
+    role: control_kpi_priority_ssot
+    action_ids_authoritative: true
+receipt_gates:
+  A1:
+    required_schema: qps-cost-master.a1-repo-baseline.v1
+    required_result: PASS
+    required_repository_count: 4
+    required_clean_repository_count: 4
+    required_origin_verified_count: 4
+    require_named_branch: true
+    require_local_head_equals_upstream: true
+    public_control_must_not_store_local_paths: true
 todo_state_machine:
   states: [BLOCKED, READY, RUNNING, FAILED, REPAIRING, RETEST, PASSED, CLOSED]
   failed_to_closed_without_retest_forbidden: true
 actions:
-  A1: {state: READY, exit: repo_SHAs_and_clean_worktree_receipt}
+  A1:
+    state: READY
+    exit: retained_fail_closed_repository_baseline_receipt
+    receipt_schema: qps-cost-master.a1-repo-baseline.v1
+    receipt_filename: A1_REPO_BASELINE_RECEIPT.json
+    required_repositories: [ABACUS, CODEX, cryoplant-project, DOCX_RTM_Automation]
   A2: {state: BLOCKED, blocked_by: [A1], exit: governed_evidence_root_bound_privately}
   A3: {state: BLOCKED, blocked_by: [A2], exit: eight_of_eight_hash_and_size_match}
   A4: {state: BLOCKED, blocked_by: [A3], exit: private_registry_VERIFIED}
