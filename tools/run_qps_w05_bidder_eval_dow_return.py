@@ -340,7 +340,7 @@ def main() -> int:
         "correlation_id": CORR,
         "source_binding": {
             "child_repository": request["child"]["repository"],
-            "child_artifact": "ocd-adr/40_implementation/QPS_BIDDER_PARALLEL_EVAL_W03_v0.1.yaml",
+            "child_artifact": request["child"]["artifact"],
             "child_merge_sha": request["child"]["baseline_sha"],
             "child_artifact_sha256": request["child"]["artifact_sha256"],
             "snapshot_path": "federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml",
