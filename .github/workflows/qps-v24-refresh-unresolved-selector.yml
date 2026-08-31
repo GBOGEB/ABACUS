@@ -108,7 +108,7 @@ jobs:
           print('next20',[(x['rtm_id'],x['rank'],x['tier'],x['gate']) for x in ranked[:20]])
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: qps-v24-refreshed-unresolved
           path: v24_refreshed_unresolved.json
