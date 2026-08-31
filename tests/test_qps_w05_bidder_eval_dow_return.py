@@ -5,7 +5,6 @@ import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
-from unittest import mock
 
 import yaml
 
@@ -34,10 +33,10 @@ class TestW05DowReturn(unittest.TestCase):
                 yaml.safe_dump(snapshot or self.snapshot, sort_keys=False), encoding="utf-8"
             )
             with (
-                mock.patch.object(runtime, "REQUEST", request_path),
-                mock.patch.object(runtime, "SNAPSHOT", snapshot_path),
-                mock.patch.object(runtime, "OUT", output_path),
-                mock.patch.object(runtime, "git_sha", return_value="a" * 40),
+                unittest.mock.patch.object(runtime, "REQUEST", request_path),
+                unittest.mock.patch.object(runtime, "SNAPSHOT", snapshot_path),
+                unittest.mock.patch.object(runtime, "OUT", output_path),
+                unittest.mock.patch.object(runtime, "git_sha", return_value="a" * 40),
             ):
                 self.assertEqual(runtime.main(), 0)
             return yaml.safe_load(output_path.read_text(encoding="utf-8"))
