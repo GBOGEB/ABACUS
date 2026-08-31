@@ -51,7 +51,7 @@ jobs:
           assert len(data['output_hash']) == 64
           print('W05 DOW receipt PASS', len(data['typed_findings']))
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: qps-w05-bidder-eval-dow-${{ github.run_id }}
           path: >-
