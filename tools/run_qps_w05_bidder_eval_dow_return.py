@@ -38,9 +38,15 @@ def main() -> int:
     snapshot = load(SNAPSHOT)
     if request.get("correlation_id") != CORR or snapshot.get("correlation_id") != CORR:
         raise SystemExit("correlation mismatch")
-    requested = request.get("requested_DOW_operations", [])
+    requested = request.get("requested_DOW_operations")
+    if not isinstance(requested, list) or not all(isinstance(op, str) and op for op in requested):
+        raise SystemExit("requested_DOW_operations must be a non-empty list of operation strings")
     observations = snapshot.get("structural_observations", [])
+    if not isinstance(observations, list):
+        raise SystemExit("structural_observations must be a list")
     families = snapshot.get("priority_families", {})
+    if not isinstance(families, dict):
+        raise SystemExit("priority_families must be a YAML mapping")
     findings = []
     for obs in observations:
         findings.append({
