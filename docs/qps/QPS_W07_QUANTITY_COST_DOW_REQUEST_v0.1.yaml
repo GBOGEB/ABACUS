@@ -1,0 +1,23 @@
+schema_version: "0.1"
+wave_id: W07
+correlation_id: QPS-W07-QUANTITY-COST-TRANSFORM
+authority: QPS_child
+child_merge_sha: 3ca89f5ab0318a11d6beb3b193b04badad17486d
+purpose: validate dependency, common-cause and double-counting risks when source-bound physical quantities are transformed into governed cost-exposure variables.
+targets: [S3-C03, S3-C05, S3-C02, S3-C06]
+required_returns:
+  - cost_dependency_edges
+  - common_cause_edges
+  - double_counting_conflicts
+  - lifecycle_cost_dependency_candidates
+  - missing_governed_coefficients
+  - novel_vs_duplicate_findings
+  - unresolved_gap_burn_down
+  - parent_child_cycle_time
+controls:
+  parent_output_candidate_only: true
+  no_guessed_unit_cost: true
+  no_zero_imputation: true
+  no_cross_bidder_price_substitution: true
+  no_engineering_or_commercial_credit: true
+  pca_bt_rerank_only_after_controlled_numeric_cost_input_change: true

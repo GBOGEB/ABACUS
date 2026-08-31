@@ -1,0 +1,27 @@
+schema_version: "0.1"
+document_id: QPS_FED_W07_ABACUS_QUANTITATIVE_FEEDBACK
+wave_id: W07
+child_disposition:
+  repository: GBOGEB/cryoplant-project
+  pr: 192
+  merge_sha: bfa36c46f1a2ad6d9e79378f793f7acacab4533a
+source_parent:
+  repository: GBOGEB/ABACUS
+  pr: 775
+  merge_sha: 8c340b4ccd912a8bcb6b49e32c79ecc09ea64df8
+result: ACCEPT
+acceptance_scope: STRUCTURAL
+reusable_learning:
+  - C02_C03_C04_C06_utility_common_cause_cluster
+  - package_CW_dependency_propagation
+  - derived_sensitivity_must_not_be_promoted_to_bidder_fact
+numeric_promotion:
+  candidate: 323_kWth_package_CW
+  state: DEFER_PROMOTION
+  unlock: direct_bidder_or_OEM_provenance
+next_DOW_priority:
+  - OFFER-32_installation_lifting_split
+  - HVAC_residual_heat_and_equipment_scope
+  - FAT_SAT_resource_quantity_matrix
+  - direct_C03_provenance
+credit: none_until_child_source_bound_assimilation

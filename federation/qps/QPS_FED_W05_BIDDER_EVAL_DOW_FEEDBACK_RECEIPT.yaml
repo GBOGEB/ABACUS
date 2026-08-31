@@ -1,0 +1,50 @@
+schema_version: "0.1"
+correlation_id: QPS-FED-W05-BIDDER-EVAL
+lane: ABACUS_DOW_PARENT_FEEDBACK_RECEIPT
+status: CHILD_DISPOSITION_RECEIVED
+source_parent_runtime:
+  pr: 768
+  control_repair_pr: 770
+  run_id: 33357553490
+  artifact_id: 9745608233
+  output_hash: ab6933125bd959be5d41b0d3dfd42dc7937980dd1de31584e99d5bdd257d147c
+source_child_disposition:
+  repository: GBOGEB/cryoplant-project
+  pr: 193
+  merge_sha: 169e2b8c1ceba1838da92190c8561a85b85bca8d
+  artifact: ocd-adr/20_canonical/analysis/QPS_BIDDER_EVAL_W05_CHILD_DISPOSITION_v0.1.yaml
+feedback:
+  candidate_findings_returned: 10
+  findings_accepted_structurally: 10
+  findings_rejected: 0
+  findings_deferred: 0
+  downstream_consequence_deferrals: 2
+  engineering_completion_credit: 0
+  accepted_finding_ids:
+    - ABACUS-W05-d623fa4310e7
+    - ABACUS-W05-6c7bf34bbfbc
+    - ABACUS-W05-8ef055c624b7
+    - ABACUS-W05-c343b93a43ef
+    - ABACUS-W05-6011597caf3d
+    - ABACUS-W05-fe9d4fba7763
+    - ABACUS-W05-645fde96661f
+    - ABACUS-W05-fc6b305f8287
+    - ABACUS-W05-bad00bb97450
+    - ABACUS-W05-6e2c78794053
+reusable_patterns_accepted:
+  - same_controlled_graph_no_cross_bidder_substitution
+  - source_coverage_without_duplicate_multi_node_credit
+  - lifecycle_propagation_L1_to_L6_without_semantic_collapse
+  - responsibility_and_scope_shift_as_acceptance_frontier
+  - L4_L5_unresolved_contradiction_or_allocation_shift_blocks_L6_credit
+  - reverse_load_catchup_preserved_beside_global_BT_priority
+  - PCA_feature_candidates_do_not_create_engineering_credit
+child_control_confirmation:
+  parent_ACCEPT_is_not_bidder_compliance_or_acceptance: true
+  Addendum_I_commercial_or_payment_consequence_remains_DEFER: true
+  bidder_specific_flags_require_child_source_validation: true
+  confidential_bidder_evidence_must_not_enter_parent_learning: true
+closure:
+  parent_feedback_receipt_complete: true
+  further_DOW_return_required_for_W05: false
+  next_child_priority: P1_RAMS_HSE_ODH_SAT_contradiction_acceptance_burndown

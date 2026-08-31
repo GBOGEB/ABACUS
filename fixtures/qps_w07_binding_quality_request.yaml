@@ -1,0 +1,52 @@
+schema_version: "0.1"
+wave_id: W07
+correlation_id: QPS-FED-W07-BINDING-QUALITY
+child_authority:
+  repository: GBOGEB/cryoplant-project
+  merge_sha: bbc49d2360e20b1f44e1edccb384bd92dc829dec
+predecessor:
+  W06_child_disposition_pr: 187
+  W06_dow_feedback_merge: f4ce7448996ab8c9909197d2b7bf453a194af14b
+focus: quantitative_binding_catchup_and_quality_convergence
+priority_nodes:
+  - S3-C05
+  - S3-C02
+  - S3-C03
+  - S3-C06
+mandatory_parallel_gate:
+  - S3-C07
+requested_dow_outputs:
+  - source_bound_quantitative_variable_candidates
+  - dependency_edges_for_cost_binding
+  - common_cause_or_shared_resource_coupling
+  - missing_quantitative_evidence_by_node
+  - lifecycle_phase_for_next_binding
+  - novel_vs_W06_classification
+  - duplicate_vs_W06_classification
+  - unresolved_gap_burn_down
+  - parent_cycle_time_seconds
+  - deterministic_failure_and_retest_observation
+pca_bt_observation_requirements:
+  taxonomy: QPS_PCA_BT_EVIDENCE_TAXONOMY_v0.1
+  factors:
+    - PCA-QUALITY
+    - PCA-FEDERATION
+    - PCA-ENGINEERING-MATURITY
+  interventions:
+    - BT-P1
+    - BT-P2
+    - BT-P3
+  required_metrics:
+    - first_pass_CI_success_rate
+    - deterministic_failure_count
+    - repair_retest_recurrence_count
+    - novel_finding_rate
+    - duplicate_rate
+    - unresolved_gap_burn_down
+    - parent_child_parent_cycle_time
+control:
+  parent_findings_are_candidates_only: true
+  child_disposition_required: true
+  missing_values_zero_imputed: false
+  quantitative_binding_is_not_compliance: true
+  mandatory_gates_non_compensating: true

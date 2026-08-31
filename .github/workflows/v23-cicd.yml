@@ -3,7 +3,18 @@ name: V2.3 Agent CI/CD Pipeline
 on:
   push:
     branches: ["main", "develop", "feature/dow-integration"]
+    paths:
+      - "local_mcp/**"
+      - "knowledge_workspace_v2.3/**"
+      - "core/keb/**"
+      - "core/gbogeb/**"
+      - "requirements.txt"
+      - ".github/workflows/v23-cicd.yml"
   workflow_dispatch:
+
+concurrency:
+  group: v23-cicd-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   PYTHON_VERSION: "3.12"

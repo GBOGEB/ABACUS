@@ -1,0 +1,42 @@
+schema_version: "0.1"
+correlation_id: QPS-FED-W06-COST-FRONTIER-R2
+lane: ABACUS_DOW_PARENT_FEEDBACK_RECEIPT
+status: CHILD_DISPOSITION_RECEIVED
+source_parent_return:
+  pr: 771
+  merge_sha: 7bfd91607d508e4a29a1fc2ab0777ff8ad24c56f
+source_child_disposition:
+  repository: GBOGEB/cryoplant-project
+  pr: 187
+  merge_sha: cca826de58072c0af595da02ca0e9c1985b4c4c1
+  artifact: >-
+    ocd-adr/20_canonical/analysis/
+    QPS_COST_FRONTIER_W06_CHILD_DISPOSITION_v0.1.yaml
+feedback:
+  candidate_findings_returned: 5
+  findings_accepted_structurally: 5
+  findings_rejected: 0
+  findings_deferred: 0
+  quantitative_closures_deferred: 5
+  accepted_finding_ids:
+    - DOW-W06-CF-001
+    - DOW-W06-CF-002
+    - DOW-W06-CF-003
+    - DOW-W06-CF-004
+    - DOW-W06-CF-005
+  reusable_patterns_accepted:
+    - UTILITY_ACCEPTANCE_COMMON_CAUSE_CLUSTER
+    - COST_CATCHUP_WITH_NONCOMPENSATING_HSE_GATE
+    - ACCEPTANCE_EVIDENCE_RETEST_COST_COUPLING
+    - SPARES_SERVICE_SHARED_LIFECYCLE_MODEL
+    - DECOMPOSE_COST_PARENT_BEFORE_QUANTITATIVE_BINDING
+child_control_confirmation:
+  structural_acceptance_is_not_compliance_or_completion: true
+  commercial_closure_requires_private_overlay_binding: true
+  no_zero_imputation: true
+  mandatory_gates_non_compensating: true
+  invalid_cross_population_rank_deltas_prohibited: true
+closure:
+  parent_feedback_receipt_complete: true
+  further_DOW_return_required_for_W06: false
+  next_wave: QPS-FED-W07-COST-BINDING-CATCHUP
