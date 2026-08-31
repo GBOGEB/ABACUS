@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema_version: "0.1"
 document_id: QPS_FED_W05_ABACUS_PARENT_SSOT_MANIFEST
 status: CONTROLLED_PARENT_EXECUTION_MANIFEST
