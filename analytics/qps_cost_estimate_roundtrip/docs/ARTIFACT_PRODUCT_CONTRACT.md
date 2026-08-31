@@ -1,7 +1,7 @@
 # QPS Artifact Product Contract
 
 Status: Wave B design/functionality uplift
-Scope: Excel + HTML first; PPTX/PDF/Markdown inherit lineage and style controls
+Scope: Excel, HTML, DOCX, PPTX, PDF and Markdown as peer products from one normalized model
 
 ## Intent
 
@@ -24,12 +24,14 @@ Every release records a graph, not only a flat manifest.
 source/evidence
   -> normalized model inputs
   -> calculation/model layer
-  -> workbook model
-  -> workbook views + charts + controls
-  -> HTML data payload
-  -> HTML navigator/dashboard/scenario UI
-  -> PDF/PPTX/Markdown summaries
-  -> render/browser QA evidence
+  -> normalized artifact model
+       |-> Excel workbook + controls
+       |-> HTML navigator/dashboard
+       |-> DOCX narrative
+       |-> PPTX decision deck
+       |-> PDF controlled report
+       |-> Markdown handover
+  -> structural + semantic + rendered QA evidence
   -> release manifest + lineage graph
 ```
 
@@ -251,6 +253,30 @@ Require repeatable functional tests, recursive lineage checks and stable visual 
 4. cross-artifact semantic crosswalk gaps;
 5. readability/style defects affecting use;
 6. metadata-only enhancements.
+
+## Completion and evidence coverage gate
+
+A release is complete only when all six required peer artifacts (Excel, HTML, DOCX, PPTX, PDF and Markdown) are generated from the same normalized-model build and each carries:
+
+- a content SHA-256 and semantic hash;
+- build/release ID and direct dependency hashes;
+- freshness status;
+- structural, semantic and rendered QA status;
+- evidence-class coverage with an explicit denominator;
+- a cross-artifact semantic-ID parity result.
+
+Peer outputs may not use another outward artifact as their authoritative parent. Excel remains the numerical SSOT, but HTML, DOCX, PPTX, PDF and Markdown branch from the shared normalized model rather than forming a lossy serial conversion chain.
+
+The Control dashboard must expose these separate metrics:
+
+- binary release coverage = fresh, hash-bound, QA-passed formats / 6;
+- RTM/OFFER evidence coverage = evaluated controlled nodes / 772;
+- reviewed crosswalk coverage = approved links / 377;
+- PCA screening coverage = screened RTM + OFFER nodes / 772;
+- retained-PC loading disclosure = disclosed loading vectors / retained PC count;
+- completion yield = releases satisfying every stop condition / releases attempted.
+
+Unknown values remain null/unknown. A merge, schema, render, or partial binary set cannot set completion to PASS.
 
 ## Credit boundary
 
