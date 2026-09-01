@@ -47,11 +47,16 @@ class RefactoringResult:
 @runtime_checkable
 class RefactoringEngine(Protocol):
     name: str
-    def initialize(self, workspace_root: Path, config: dict[str, Any] | None = None) -> bool: ...
-    def execute(self) -> RefactoringResult: ...
-    def validate(self) -> bool: ...
-    def get_status(self) -> dict[str, Any]: ...
-    def cleanup(self) -> None: ...
+    def initialize(self, workspace_root: Path, config: dict[str, Any] | None = None) -> bool:
+        pass
+    def execute(self) -> RefactoringResult:
+        pass
+    def validate(self) -> bool:
+        pass
+    def get_status(self) -> dict[str, Any]:
+        pass
+    def cleanup(self) -> None:
+        pass
 
 
 class BaseRefactoringEngine:
