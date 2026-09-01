@@ -192,6 +192,31 @@ class TestLearningsDatabase:
             assert len(learnings) == 2
 
 
+class TestFailedCheckThreshold:
+    """Test PR-head failed-check threshold embedding."""
+
+    def test_failed_check_threshold_is_persisted_as_aht_learning(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "learnings.json"
+            bridge = AHTStatisticsBridge(learnings_db_path=db_path)
+
+            result = bridge.classify_failed_check_threshold(
+                repository="GBOGEB/ABACUS",
+                pull_request="GBOGEB/ABACUS#795",
+                head_sha="177b3808d365b54b0a12d19bd1f83492f62585cb",
+                successful_checks=10,
+                failed_checks=6,
+                action_required_checks=0,
+                threshold_failed_checks=1,
+            )
+
+            assert result["status"] == "THRESHOLD_BREACHED"
+            assert result["threshold"]["reached"] is True
+            assert result["observed"]["blocker_checks"] == 6
+            assert result["observed"]["total_decisive_checks"] == 16
+            assert bridge.load_learnings()[-1]["pull_request"] == "GBOGEB/ABACUS#795"
+
+
 class TestConfidenceLevels:
     """Test different confidence levels"""
     

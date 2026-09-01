@@ -1,0 +1,91 @@
+schema_version: "0.1"
+document_id: QPS_W08_LIFECYCLE_COVERAGE_GRAPH_REQUEST
+status: parent_candidate_request
+authority: ABACUS_parent_graph_support
+source_child_issue: GBOGEB/cryoplant-project#196
+source_child_pr: GBOGEB/cryoplant-project#219
+return_to_child: GBOGEB/cryoplant-project
+purpose: >-
+  Provide sanitized ABACUS graph/DOW support for the QPS W08 lifecycle
+  coverage baseline. This request must identify graph gaps, stale or duplicate
+  nodes, weak propagation and reverse-load catch-up candidates without granting
+  child compliance, completion, maturity or bidder credit.
+control_boundary:
+  parent_role: candidate_structural_graph_support_only
+  child_authority_required: true
+  confidential_bidder_payload_allowed: false
+  parent_credit_promotion_allowed: false
+  formal_completion_delta: 0
+  bidder_compliance_delta: 0
+  safety_credit_delta: 0
+  pca_bt_rerank_delta: 0
+  missing_values_zero_imputation_allowed: false
+  outward_artifact_update_allowed: false
+workstreams_expected:
+  - W08-REVIEW
+  - W08-COVERAGE
+  - W08-OFFER
+  - W08-ADR-OCD
+  - W08-COST
+  - W08-RAMS
+  - W08-INTERFACES
+  - W08-SUPPORT
+  - W08-3D
+  - W08-SAFETY
+  - W08-CYBER
+  - W08-CONTROLS
+  - W08-EXCLUSIONS
+  - W08-CODES
+  - W08-DELIVERABLES
+  - W08-LIFECYCLE
+  - W08-SPARES-RCM
+mandatory_graph_checks:
+  - check_id: G01_WORKSTREAM_COMPLETENESS
+    description: >-
+      Confirm all 17 W08 workstreams are represented in any graph or
+      dashboard return.
+  - check_id: G02_ZERO_AND_THIN_COVERAGE
+    description: >-
+      Flag zero-coverage and thin-coverage mandatory lanes; do not score as
+      closure.
+  - check_id: G03_RTM_OFFER_ADR_OCD_PROPAGATION
+    description: >-
+      Test whether RTM, OFFER, ADR, OCD and evidence edges propagate across
+      support, controls, safety, lifecycle and spares.
+  - check_id: G04_DUPLICATE_STALE_NODES
+    description: >-
+      Detect duplicate, stale or orphan nodes and report stale age where
+      available.
+  - check_id: G05_CONTRADICTION_ALLOCATION_SHIFT
+    description: >-
+      Surface contradiction, owner or contractor allocation-shift and hidden
+      scope-transfer edges.
+  - check_id: G06_REVERSE_LOAD_CATCHUP
+    description: >-
+      Rank underdeveloped lanes by reverse-load catch-up need relative to graph
+      mean or median.
+  - check_id: G07_DASHBOARD_REVIEW_ONLY
+    description: Dashboard artifacts must be review-only and not the SSOT.
+expected_return_fields:
+  - finding_id
+  - workstream_id
+  - check_id
+  - graph_signal
+  - severity
+  - evidence_class
+  - source_node_refs
+  - affected_edges
+  - stale_age_hint
+  - duplicate_hint
+  - allocation_shift_hint
+  - recommended_child_disposition
+  - no_credit_statement
+return_contract:
+  accepted_states_from_parent:
+    - CANDIDATE_ONLY
+  child_disposition_required:
+    - ACCEPT
+    - REJECT
+    - DEFER
+  no_credit_statement_required: true
+  sanitized_only: true

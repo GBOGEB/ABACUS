@@ -47,7 +47,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt || true
           pip install . || true
-          pip install pre-commit pytest pytest-cov
+          pip install pre-commit pytest pytest-cov pyyaml
 
       - name: Run pre-commit hooks
         run: |
@@ -56,6 +56,10 @@ jobs:
       - name: Run pytest
         run: |
           pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+
+      - name: Test QPS W08 DOW contract (fail closed)
+        if: matrix.python-version == '3.12'
+        run: python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
 
       - name: Phase0 smoke test
         run: |
