@@ -80,12 +80,12 @@ def test_dashboard_and_html_presentation_are_review_only_not_ssot():
 def test_pr_head_aht_snapshot_embeds_failed_check_threshold():
     snapshot = load(PR_HEAD_AHT)
     assert snapshot["pull_request"] == "GBOGEB/ABACUS#795"
-    assert snapshot["head_sha"] == "177b3808d365b54b0a12d19bd1f83492f62585cb"
+    assert snapshot["head_sha"] == "54efca908006295f2ff17a1b0a68f47337c47469"
     assert snapshot["status"] == "THRESHOLD_BREACHED"
     assert snapshot["evidence_class"] == "SOURCE-SUPPORTED"
     assert snapshot["threshold_policy"]["threshold_reached"] is True
     assert snapshot["aht_statistics_bridge"]["method"] == "classify_failed_check_threshold"
-    assert snapshot["measure"]["failed_checks"] == 6
-    assert snapshot["measure"]["blocker_checks"] == 6
+    assert snapshot["measure"]["failed_checks"] == 7
+    assert snapshot["measure"]["blocker_checks"] == 7
     assert snapshot["measure"]["total_decisive_checks"] == 16
     assert snapshot["control"]["completion_credit_allowed"] is False
