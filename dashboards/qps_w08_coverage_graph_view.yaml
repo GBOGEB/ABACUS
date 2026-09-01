@@ -4,29 +4,60 @@ status: review_only_dashboard_contract
 authority: ABACUS_parent_graph_support
 source_request: feedback/qps_w08_lifecycle_coverage_graph_request.yaml
 purpose: >-
-  Define a review-only dashboard surface for W08 lifecycle coverage graph propagation. The dashboard
-  may make weak lanes visible but must not become the child SSOT or promote parent graph findings.
+  Define a review-only dashboard surface for W08 lifecycle coverage graph
+  propagation. The dashboard may make weak lanes visible but must not become
+  the child SSOT or promote parent graph findings.
 views:
   - view_id: W08_GRAPH_MATRIX
     title: Workstream graph coverage matrix
     rows: workstreams_expected
-    columns: [node_count, edge_count, zero_coverage, thin_coverage, stale_nodes, duplicate_nodes, rfi_route, negotiation_route]
+    columns:
+      - node_count
+      - edge_count
+      - zero_coverage
+      - thin_coverage
+      - stale_nodes
+      - duplicate_nodes
+      - rfi_route
+      - negotiation_route
   - view_id: W08_DEPENDENCY_PROPAGATION
     title: RTM OFFER ADR OCD propagation
-    rows: [RTM, OFFER, ADR, OCD, evidence]
-    columns: [support, controls, safety, RAMS, interfaces, lifecycle, spares_rcm]
+    rows:
+      - RTM
+      - OFFER
+      - ADR
+      - OCD
+      - evidence
+    columns:
+      - support
+      - controls
+      - safety
+      - RAMS
+      - interfaces
+      - lifecycle
+      - spares_rcm
   - view_id: W08_REVERSE_LOAD_CATCHUP
     title: Reverse-load catch-up queue
     rows: mandatory_workstreams
-    columns: [graph_depth_delta, evidence_depth_delta, stale_age, recommended_priority]
+    columns:
+      - graph_depth_delta
+      - evidence_depth_delta
+      - stale_age
+      - recommended_priority
   - view_id: W08_PARENT_RETURN_QUEUE
     title: Candidate DOW return queue
     rows: candidate_findings
-    columns: [finding_id, workstream_id, check_id, severity, recommended_child_disposition, no_credit_statement]
-controls:
+    columns:
+      - finding_id
+      - workstream_id
+      - check_id
+      - severity
+      - recommended_child_disposition
+      - no_credit_statement
+display_controls:
   dashboard_is_ssot: false
   child_disposition_required: true
-  confidential_bidder_payload_allowed: false
+  confidential_payload_allowed: false
   parent_credit_promotion_allowed: false
   completion_credit_allowed: false
   bidder_compliance_credit_allowed: false
