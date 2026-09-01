@@ -39,6 +39,7 @@ class CIIssueCreator:
         self.repo = self.github.get_repo(repo_name)
         self.pr_number = pr_number
         self.created_issues = []
+        self.closed_issues = []
         
     def parse_test_report(self, report_path: str = "test_report.json") -> Dict:
         """Parse pytest JSON report"""
@@ -112,6 +113,21 @@ class CIIssueCreator:
         except GithubException as e:
             print(f"❌ Failed to create issue for {test_name}: {e}")
             return None
+
+    def close_issue_for_test(self, test_name: str) -> int:
+        """Close open CI-failure issues when a test passes again"""
+        closed_count = 0
+        for issue in self.get_existing_issues(test_name):
+            try:
+                issue.create_comment(
+                    f"✅ Auto-closing: `{test_name}` is passing in CI again."
+                )
+                issue.edit(state="closed")
+                self.closed_issues.append(issue.number)
+                closed_count += 1
+            except GithubException as e:
+                print(f"⚠️  Could not close issue #{issue.number} for {test_name}: {e}")
+        return closed_count
     
     def _determine_priority(self, test_name: str, failure_message: str) -> str:
         """Determine issue priority based on test characteristics"""
@@ -247,7 +263,11 @@ This issue was automatically created by the CI monitoring system. The test faile
         print(f"🔍 Processing {failed} failing test(s)...\n")
         
         for test in report.get('tests', []):
-            if test.get('outcome') == 'failed':
+            outcome = test.get('outcome')
+            nodeid = test.get('nodeid')
+            if outcome == 'passed' and nodeid:
+                self.close_issue_for_test(nodeid)
+            elif outcome == 'failed':
                 self.create_issue_for_test(test)
         
         # Summary
