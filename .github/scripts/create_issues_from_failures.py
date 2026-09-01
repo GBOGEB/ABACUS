@@ -18,27 +18,47 @@ This script:
 
 import json
 import os
+import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
 
 try:
     from github import Github, GithubException
 except ImportError:
+    Github = None
+
+    class GithubException(Exception):
+        """Fallback GitHub exception when PyGithub is unavailable."""
+
+
+def _ensure_github_client():
+    """Import PyGithub lazily so tests can import this module without it installed."""
+    global Github, GithubException
+    if Github is not None:
+        return Github, GithubException
+
     print("Installing PyGithub...")
-    os.system("pip install PyGithub")
-    from github import Github, GithubException
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "PyGithub"])
+
+    from github import Github as github_client, GithubException as github_exception
+
+    Github = github_client
+    GithubException = github_exception
+    return Github, GithubException
 
 
 class CIIssueCreator:
     """Creates GitHub issues from CI/CD test failures"""
     
     def __init__(self, token: str, repo_name: str, pr_number: Optional[int] = None):
-        self.github = Github(token)
+        github_client, _ = _ensure_github_client()
+        self.github = github_client(token)
         self.repo = self.github.get_repo(repo_name)
         self.pr_number = pr_number
         self.created_issues = []
+        self.closed_issues = []
         
     def parse_test_report(self, report_path: str = "test_report.json") -> Dict:
         """Parse pytest JSON report"""
@@ -112,6 +132,19 @@ class CIIssueCreator:
         except GithubException as e:
             print(f"❌ Failed to create issue for {test_name}: {e}")
             return None
+
+    def close_issue_for_test(self, test_name: str) -> int:
+        """Close matching open issues when a test passes again."""
+        closed_count = 0
+        for issue in self.get_existing_issues(test_name):
+            issue.create_comment(
+                f"✅ Closing automatically because `{test_name}` is passing again in CI."
+            )
+            issue.edit(state="closed")
+            self.closed_issues.append(issue.number)
+            closed_count += 1
+
+        return closed_count
     
     def close_issue_for_test(self, test_name: str) -> int:
         """Close any open CI-failure issues for a test that is now passing.
