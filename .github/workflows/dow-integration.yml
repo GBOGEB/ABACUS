@@ -2,13 +2,7 @@ name: DOW Integration Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
-    paths:
-      - 'DMAIC_V3/**'
-      - 'orchestrator_config.yaml'
-      - 'ranking.yaml'
-      - '.github/workflows/dow-integration.yml'
-  pull_request:
+    branches: [main, develop]
     paths:
       - 'DMAIC_V3/**'
       - 'orchestrator_config.yaml'
@@ -26,150 +20,186 @@ jobs:
     name: Test DOW Agents
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-    - name: Cache pip packages
-      uses: actions/cache@v6
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt || echo "No requirements.txt found"
-    - name: Verify DOW agents exist
-      run: |
-        ls -la DMAIC_V3/local_mcp/agents/dow_*.py
-        echo "Found $(ls DMAIC_V3/local_mcp/agents/dow_*.py | wc -l) DOW agents"
-    - name: Test agent help commands
-      run: |
-        python DMAIC_V3/local_mcp/agents/dow_metadata_injector.py --help
-        python DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py --help
-        python DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py --help
-        python DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py --help
-    - name: Test executor help
-      run: |
-        python DMAIC_V3/dow_integration_executor.py --help
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Cache pip packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      - name: Verify DOW agents exist
+        run: |
+          ls -la DMAIC_V3/local_mcp/agents/dow_*.py
+          count="$(ls DMAIC_V3/local_mcp/agents/dow_*.py | wc -l)"
+          echo "Found ${count} DOW agents"
+      - name: Test agent help commands
+        run: |
+          python DMAIC_V3/local_mcp/agents/dow_metadata_injector.py --help
+          python \
+            DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py \
+            --help
+          python \
+            DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py \
+            --help
+          python DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py --help
+      - name: Test executor help
+        run: |
+          python DMAIC_V3/dow_integration_executor.py --help
 
   integration:
     name: Run DOW Integration
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-    - name: Cache pip packages
-      uses: actions/cache@v6
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt || echo "No requirements.txt found"
-    - name: Create test data directory
-      run: |
-        mkdir -p DMAIC_CANONICAL_OUTPUT
-        echo "Created DMAIC_CANONICAL_OUTPUT directory"
-    - name: Create sample JSON files
-      run: |
-        cat > DMAIC_CANONICAL_OUTPUT/phase1_define.json << 'EOF'
-        {"phase":"define","iteration":0,"timestamp":"2025-01-15T00:00:00Z","data":{"objectives":["Test objective 1","Test objective 2"],"scope":"Test scope"}}
-        EOF
-        cat > DMAIC_CANONICAL_OUTPUT/phase2_measure.json << 'EOF'
-        {"phase":"measure","iteration":0,"timestamp":"2025-01-15T00:00:00Z","data":{"metrics":["metric1","metric2"],"baseline":100}}
-        EOF
-    - name: Run DOW Integration Pipeline
-      run: |
-        python -B DMAIC_V3/dow_integration_executor.py --iteration 1 --target DMAIC_CANONICAL_OUTPUT --verbose
-    - name: Require DOW result
-      run: |
-        test -s dow_integration_results_iteration_1.json
-        cat dow_integration_results_iteration_1.json
-    - name: Validate DOW structure
-      run: |
-        python - <<'PY'
-        import json
-        from pathlib import Path
-        target = Path('DMAIC_CANONICAL_OUTPUT')
-        files = list(target.glob('*.json'))
-        if not files:
-            raise SystemExit('No DOW output JSON files found')
-        required = {'metadata', 'recursive_hooks', 'convergence_metrics', 'knowledge_gain'}
-        failures = []
-        for file in files:
-            data = json.loads(file.read_text())
-            missing = sorted(required - data.keys())
-            if missing:
-                failures.append(f'{file}: missing {missing}')
-        if failures:
-            raise SystemExit('\n'.join(failures))
-        PY
-    - name: Build QPS W08 DOW runtime return
-      run: |
-        mkdir -p qps_w08_dow_return
-        cp dow_integration_results_iteration_1.json qps_w08_dow_return/
-        cp DMAIC_CANONICAL_OUTPUT/*.json qps_w08_dow_return/
-        python - <<'PY'
-        import json
-        import os
-        from pathlib import Path
-        receipt = {
-            'schema_version': '0.1',
-            'document_id': 'QPS_W08_DOW_RUNTIME_RETURN',
-            'status': 'CANDIDATE_ONLY',
-            'authority': 'ABACUS_parent_DOW_runtime',
-            'repository': os.environ['GITHUB_REPOSITORY'],
-            'commit_sha': os.environ['GITHUB_SHA'],
-            'run_id': os.environ['GITHUB_RUN_ID'],
-            'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT', '1'),
-            'workflow': os.environ['GITHUB_WORKFLOW'],
-            'ref': os.environ['GITHUB_REF'],
-            'dow_runtime_checks_passed': True,
-            'child_disposition': 'UNSET',
-            'parent_credit_promotion_allowed': False,
-            'missing_hash_inference_allowed': False,
-        }
-        Path('qps_w08_dow_return/runtime_receipt.json').write_text(
-            json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8'
-        )
-        PY
-        (cd qps_w08_dow_return && sha256sum * > SHA256SUMS)
-        cat qps_w08_dow_return/SHA256SUMS
-    - name: Upload QPS W08 DOW runtime return
-      uses: actions/upload-artifact@v7
-      with:
-        name: qps-w08-dow-runtime-return-${{ github.run_id }}
-        path: qps_w08_dow_return/
-        if-no-files-found: error
-        retention-days: 30
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Cache pip packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "No requirements.txt found"
+      - name: Create test data directory
+        run: |
+          mkdir -p DMAIC_CANONICAL_OUTPUT
+          echo "Created DMAIC_CANONICAL_OUTPUT directory"
+      - name: Create sample JSON files
+        run: |
+          cat > DMAIC_CANONICAL_OUTPUT/phase1_define.json << 'EOF'
+          {
+            "phase": "define",
+            "iteration": 0,
+            "timestamp": "2025-01-15T00:00:00Z",
+            "data": {
+              "objectives": ["Test objective 1", "Test objective 2"],
+              "scope": "Test scope"
+            }
+          }
+          EOF
+          cat > DMAIC_CANONICAL_OUTPUT/phase2_measure.json << 'EOF'
+          {
+            "phase": "measure",
+            "iteration": 0,
+            "timestamp": "2025-01-15T00:00:00Z",
+            "data": {
+              "metrics": ["metric1", "metric2"],
+              "baseline": 100
+            }
+          }
+          EOF
+      - name: Run DOW Integration Pipeline
+        run: |
+          python -B DMAIC_V3/dow_integration_executor.py \
+            --iteration 1 \
+            --target DMAIC_CANONICAL_OUTPUT \
+            --verbose
+      - name: Require DOW result
+        run: |
+          test -s dow_integration_results_iteration_1.json
+          cat dow_integration_results_iteration_1.json
+      - name: Validate DOW structure
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          target = Path("DMAIC_CANONICAL_OUTPUT")
+          files = list(target.glob("*.json"))
+          if not files:
+              raise SystemExit("No DOW output JSON files found")
+          required = {
+              "metadata",
+              "recursive_hooks",
+              "convergence_metrics",
+              "knowledge_gain",
+          }
+          failures = []
+          for file in files:
+              data = json.loads(file.read_text())
+              missing = sorted(required - data.keys())
+              if missing:
+                  failures.append(f"{file}: missing {missing}")
+          if failures:
+              raise SystemExit("\n".join(failures))
+          PY
+      - name: Build QPS W08 DOW runtime return
+        run: |
+          mkdir -p qps_w08_dow_return
+          cp dow_integration_results_iteration_1.json qps_w08_dow_return/
+          cp DMAIC_CANONICAL_OUTPUT/*.json qps_w08_dow_return/
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = {
+              "schema_version": "0.1",
+              "document_id": "QPS_W08_DOW_RUNTIME_RETURN",
+              "status": "CANDIDATE_ONLY",
+              "authority": "ABACUS_parent_DOW_runtime",
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "commit_sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "ref": os.environ["GITHUB_REF"],
+              "dow_runtime_checks_passed": True,
+              "child_disposition": "UNSET",
+              "parent_credit_promotion_allowed": False,
+              "missing_hash_inference_allowed": False,
+          }
+          output = Path("qps_w08_dow_return/runtime_receipt.json")
+          output.write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd qps_w08_dow_return
+            sha256sum * > SHA256SUMS
+          )
+          cat qps_w08_dow_return/SHA256SUMS
+      - name: Upload QPS W08 DOW runtime return
+        uses: actions/upload-artifact@v7
+        with:
+          name: qps-w08-dow-runtime-return-${{ github.run_id }}
+          path: qps_w08_dow_return/
+          if-no-files-found: error
+          retention-days: 30
 
   validate:
     name: Validate Results
     needs: integration
     runs-on: ubuntu-latest
     steps:
-    - name: Download QPS W08 DOW runtime return
-      uses: actions/download-artifact@v8
-      with:
-        name: qps-w08-dow-runtime-return-${{ github.run_id }}
-        path: qps_w08_dow_return
-    - name: Verify hashes
-      run: |
-        cd qps_w08_dow_return
-        sha256sum -c SHA256SUMS
+      - name: Download QPS W08 DOW runtime return
+        uses: actions/download-artifact@v8
+        with:
+          name: qps-w08-dow-runtime-return-${{ github.run_id }}
+          path: qps_w08_dow_return
+      - name: Verify hashes
+        run: |
+          cd qps_w08_dow_return
+          sha256sum -c SHA256SUMS
 
   deploy:
     name: Deploy to Production
@@ -177,11 +207,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    - name: Deploy notification
-      run: |
-        echo "Deploying DOW Integration to production..."
-        echo "Branch: ${{ github.ref }}"
-        echo "Commit: ${{ github.sha }}"
-        echo "Author: ${{ github.actor }}"
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Deploy notification
+        run: |
+          echo "Deploying DOW Integration to production..."
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
