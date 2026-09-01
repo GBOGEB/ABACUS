@@ -1,0 +1,145 @@
+version: "0.1"
+wave: W11
+role: ABACUS_PARENT_CANDIDATE_RUNTIME
+child_request: GBOGEB/cryoplant-project#228
+codex_schema_pr: GBOGEB/CODEX#333
+
+purpose: >-
+  Replay and harden existing QPS binary extraction manifests into sanitized,
+  provenance-aware source atoms suitable for CODEX validation and child-owned
+  RTM/OFFER evidence disposition.
+
+source_policy:
+  confidential_bidder_payload_in_repo: false
+  source_binary_copy_in_repo: false
+  sanitized_metadata_only: true
+  hashes_required: true
+  exact_locators_required: true
+
+input_roles:
+  - CONTRACT
+  - OFFER_ALAT
+  - OFFER_LKT
+  - PRESTUDY_ALAT
+  - PRESTUDY_LKT
+  - RTM_V24
+
+formats:
+  pdf:
+    extract:
+      - page_text
+      - table_blocks
+      - row_order
+      - header_candidates
+      - explicit_RTM_ids
+      - explicit_OFFER_ids
+    locator: page_table_row
+    ocr_policy: LAST_RESORT
+  xlsx:
+    extract:
+      - sheets
+      - values
+      - formulas
+      - tables
+      - named_ranges
+      - RTM_ids
+      - OFFER_ids
+    locator: sheet_cell_or_range
+  docx:
+    extract:
+      - headings
+      - paragraphs
+      - tables
+      - captions
+    locator: section_paragraph_or_table
+  pptx:
+    extract:
+      - slide_titles
+      - body_text
+      - notes
+      - tables
+      - chart_data_if_available
+    locator: slide_shape_or_table
+
+candidate_output:
+  artifact: qps_w11_offer_evidence_candidate.json
+  must_validate_against: schemas/qps_w11_offer_evidence.schema.yaml
+  fields:
+    - atom_id
+    - source_id
+    - source_sha256
+    - source_format
+    - source_locator
+    - bidder
+    - evidence_class
+    - extracted_text
+    - extraction_method
+    - extraction_confidence
+    - bidder_position
+    - typed_relations
+
+classification_hints:
+  ACCEPT_UNCONDITIONAL:
+    positive_markers: ["compliant", "accepted", "without exception"]
+    reject_if_same_atom_contains: ["refer to", "except", "subject to", "clarification", "suggestion", "deviation", "excluded"]
+  COMPLIANT_WITH_REFERENCE:
+    positive_markers: ["compliant", "refer to"]
+    requires_resolved_supporting_atom: true
+  QUALIFICATION:
+    markers: ["subject to", "provided that", "provided by customer", "to be agreed"]
+  CLARIFICATION:
+    markers: ["clarification", "to be clarified"]
+  SUGGESTION:
+    markers: ["suggestion", "modify to"]
+  DEVIATION:
+    markers: ["deviation", "not standard", "will not", "cannot"]
+  EXCLUSION:
+    markers: ["excluded", "not included", "outside scope"]
+
+relation_hints:
+  direct:
+    - explicit_RTM_id_in_atom
+    - explicit_OFFER_id_in_atom
+  supporting:
+    - referenced_technical_proposal_section
+    - matching_equipment_or_test_topic
+  contradiction:
+    - same_bidder_same_target_incompatible_positions
+    - current_offer_conflicts_with_prestudy
+  qualification:
+    - positive_status_with_limiting_comment
+
+priority_overlay:
+  allowed_inputs:
+    - RTM_BT_priority
+    - OFFER_BT_priority
+    - evidence_depth
+    - independent_supporting_edge_count
+    - contradiction_count
+    - non_compensating_gate
+  output_use: REVIEW_ORDER_ONLY
+  formal_credit: 0
+
+fail_closed_rules:
+  - blank or missing exception statement is not a compliance signal
+  - unresolved reference cannot become unconditional acceptance
+  - pre-study cannot overwrite current offer
+  - other bidder evidence cannot support target bidder
+  - missing hash or locator rejects atom
+  - inferred/PCA/BT result cannot change bidder position
+  - parent candidate cannot self-promote to child acceptance
+
+first_runtime_cluster:
+  - SAT_ACCEPTANCE
+  - CC_COMMON_CAUSE_TABLE10
+  - HP_N_MINUS_1
+  - PVPS_N_PLUS_1
+  - TURBINE_TRIP_FALLBACK
+  - LINE_S_WSH_LOOP_RECOVERY
+  - ODH_QPS_CIS
+  - HSE_BELGIAN_REQUIREMENTS
+  - ENERGY_INVCOP_BOUNDARY
+  - CODES_WELDING_NDT
+
+return_state: CANDIDATE_ONLY
+formal_qps_credit: 0
