@@ -1,0 +1,94 @@
+"""AHT statistics bridge backed by bootstrap evaluation helpers."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Iterable
+
+import numpy as np
+
+from bootstrap_eval import bootstrap_ci_diff_means, bootstrap_ci_mean
+
+
+class AHTStatisticsBridge:
+    """Persisted hypothesis-testing bridge for ABACUS learning loops."""
+
+    def __init__(
+        self,
+        learnings_db_path: Path | str | None = None,
+        aht_log_path: Path | str | None = None,
+    ) -> None:
+        self.learnings_db_path = Path(learnings_db_path or "aht_learnings.json")
+        self.aht_log_path = Path(aht_log_path or "aht_statistics.log")
+        self.learnings_db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.aht_log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def test_hypothesis_with_bootstrap(
+        self,
+        hypothesis: str,
+        observed_data: Iterable[float],
+        expected_value: float | None = None,
+        reference_group: Iterable[float] | None = None,
+        alpha: float = 0.05,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        observed = np.asarray(list(observed_data), dtype=float)
+        observed = observed[~np.isnan(observed)]
+        obs_low, obs_high, _ = bootstrap_ci_mean(observed, alpha=alpha)
+        result: dict[str, Any] = {
+            "hypothesis": hypothesis,
+            "alpha": alpha,
+            "context": context or {},
+            "observed": {
+                "n": int(observed.size),
+                "mean": float(observed.mean()) if observed.size else float("nan"),
+                "std": float(observed.std(ddof=1)) if observed.size > 1 else 0.0,
+                "ci_bootstrap_lower": obs_low,
+                "ci_bootstrap_upper": obs_high,
+            },
+        }
+        if reference_group is not None:
+            reference = np.asarray(list(reference_group), dtype=float)
+            reference = reference[~np.isnan(reference)]
+            diff, low, high = bootstrap_ci_diff_means(observed, reference, alpha=alpha)
+            includes_zero = bool(low <= 0 <= high)
+            result["reference"] = {
+                "n": int(reference.size),
+                "mean": float(reference.mean()) if reference.size else float("nan"),
+            }
+            result["comparison"] = {
+                "diff_mean": diff,
+                "ci_lower": low,
+                "ci_upper": high,
+                "includes_zero": includes_zero,
+            }
+            result["status"] = "INCONCLUSIVE" if includes_zero else "SUPPORTED"
+        else:
+            if expected_value is None:
+                raise ValueError("expected_value or reference_group is required")
+            mean = result["observed"]["mean"]
+            lower = result["observed"]["ci_bootstrap_lower"]
+            if lower > expected_value:
+                result["status"] = "EXCEEDED"
+            elif mean >= expected_value or obs_low <= expected_value <= obs_high:
+                result["status"] = "SUPPORTED"
+            else:
+                result["status"] = "REJECTED"
+                result["deviation"] = float(mean - expected_value)
+            result["conclusion"] = result["status"]
+        self._append_learning(result)
+        return result
+
+    def load_learnings(self) -> list[dict[str, Any]]:
+        if not self.learnings_db_path.exists():
+            return []
+        return json.loads(self.learnings_db_path.read_text(encoding="utf-8"))
+
+    def _append_learning(self, result: dict[str, Any]) -> None:
+        learnings = self.load_learnings()
+        learnings.append(result)
+        self.learnings_db_path.write_text(
+            json.dumps(learnings, indent=2, default=str),
+            encoding="utf-8",
+        )
