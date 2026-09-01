@@ -1,4 +1,5 @@
 """Persistent master-document registry used by the ABACUS test surface."""
+
 from __future__ import annotations
 
 import hashlib
@@ -58,7 +59,12 @@ class DocumentMetadata:
 class MasterDocumentManager:
     def __init__(self, workspace_root: Path | str):
         self.workspace_root = Path(workspace_root)
-        self.registry_path = self.workspace_root / "13_CORE_SYSTEMS" / "CENTRAL_LIBRARY" / "master_document_registry.yaml"
+        self.registry_path = (
+            self.workspace_root
+            / "13_CORE_SYSTEMS"
+            / "CENTRAL_LIBRARY"
+            / "master_document_registry.yaml"
+        )
         self.registry_path.parent.mkdir(parents=True, exist_ok=True)
         self.documents: dict[str, DocumentMetadata] = {}
         self.version_history: dict[str, list[DocumentVersion]] = {}
@@ -76,28 +82,70 @@ class MasterDocumentManager:
                 sha256.update(chunk)
         return sha256.hexdigest()
 
-    def register_document(self, doc_id: str, doc_type: DocumentType, title: str, file_path: Path, epic: str | None = None,
-                          topics: list[str] | None = None, author: str = "unknown", version: str = "1.0.0", **_: Any) -> DocumentMetadata:
+    def register_document(
+        self,
+        doc_id: str,
+        doc_type: DocumentType,
+        title: str,
+        file_path: Path,
+        epic: str | None = None,
+        topics: list[str] | None = None,
+        author: str = "unknown",
+        version: str = "1.0.0",
+        **_: Any,
+    ) -> DocumentMetadata:
         if doc_id in self.documents:
             return self.documents[doc_id]
         now = datetime.now()
         path = Path(file_path)
-        doc = DocumentMetadata(doc_id, doc_type, title, version, DocumentStatus.DRAFT, epic, list(topics or []), path, now, now, author)
+        doc = DocumentMetadata(
+            doc_id,
+            doc_type,
+            title,
+            version,
+            DocumentStatus.DRAFT,
+            epic,
+            list(topics or []),
+            path,
+            now,
+            now,
+            author,
+        )
         self.documents[doc_id] = doc
-        self.version_history[doc_id] = [DocumentVersion(version, now, author, "Initial version", path, self._checksum(path))]
+        self.version_history[doc_id] = [
+            DocumentVersion(
+                version, now, author, "Initial version", path, self._checksum(path)
+            )
+        ]
         return doc
 
     def get_document(self, doc_id: str) -> DocumentMetadata | None:
         return self.documents.get(doc_id)
 
-    def update_document(self, doc_id: str, version: str, author: str, changes: str, status: DocumentStatus | None = None) -> DocumentMetadata:
+    def update_document(
+        self,
+        doc_id: str,
+        version: str,
+        author: str,
+        changes: str,
+        status: DocumentStatus | None = None,
+    ) -> DocumentMetadata:
         doc = self._require(doc_id)
         doc.version = version
         doc.author = author
         doc.modified_date = datetime.now()
         if status is not None:
             doc.status = status
-        self.version_history[doc_id].append(DocumentVersion(version, doc.modified_date, author, changes, doc.file_path, self._checksum(doc.file_path)))
+        self.version_history[doc_id].append(
+            DocumentVersion(
+                version,
+                doc.modified_date,
+                author,
+                changes,
+                doc.file_path,
+                self._checksum(doc.file_path),
+            )
+        )
         return doc
 
     def get_by_type(self, doc_type: DocumentType) -> list[DocumentMetadata]:
@@ -132,9 +180,20 @@ class MasterDocumentManager:
         doc = self._require(doc_id)
         doc.status = DocumentStatus.DEPRECATED
         doc.modified_date = datetime.now()
-        self.version_history[doc_id].append(DocumentVersion(doc.version, doc.modified_date, author, f"Deprecated: {reason}", doc.file_path, self._checksum(doc.file_path)))
+        self.version_history[doc_id].append(
+            DocumentVersion(
+                doc.version,
+                doc.modified_date,
+                author,
+                f"Deprecated: {reason}",
+                doc.file_path,
+                self._checksum(doc.file_path),
+            )
+        )
 
-    def get_dependency_tree(self, doc_id: str, _seen: set[str] | None = None) -> dict[str, Any]:
+    def get_dependency_tree(
+        self, doc_id: str, _seen: set[str] | None = None
+    ) -> dict[str, Any]:
         doc = self._require(doc_id)
         seen = set(_seen or set())
         if doc_id in seen:
@@ -164,27 +223,57 @@ class MasterDocumentManager:
 
     @staticmethod
     def _version_to_dict(item: DocumentVersion) -> dict[str, Any]:
-        return {"version": item.version, "date": item.date.isoformat(), "author": item.author, "changes": item.changes,
-                "file_path": str(item.file_path), "checksum": item.checksum}
+        return {
+            "version": item.version,
+            "date": item.date.isoformat(),
+            "author": item.author,
+            "changes": item.changes,
+            "file_path": str(item.file_path),
+            "checksum": item.checksum,
+        }
 
     def save_registry(self) -> None:
         payload = {
             "documents": {k: self._doc_to_dict(v) for k, v in self.documents.items()},
-            "version_history": {k: [self._version_to_dict(v) for v in values] for k, values in self.version_history.items()},
+            "version_history": {
+                k: [self._version_to_dict(v) for v in values]
+                for k, values in self.version_history.items()
+            },
         }
-        self.registry_path.write_text(yaml.safe_dump(payload, sort_keys=True), encoding="utf-8")
+        self.registry_path.write_text(
+            yaml.safe_dump(payload, sort_keys=True), encoding="utf-8"
+        )
 
     def _load_registry(self) -> None:
         payload = yaml.safe_load(self.registry_path.read_text(encoding="utf-8")) or {}
         for doc_id, data in (payload.get("documents") or {}).items():
             self.documents[doc_id] = DocumentMetadata(
-                doc_id=doc_id, doc_type=DocumentType(data["doc_type"]), title=data["title"], version=data["version"],
-                status=DocumentStatus(data["status"]), epic=data.get("epic"), topics=list(data.get("topics") or []),
-                file_path=Path(data["file_path"]), created_date=datetime.fromisoformat(data["created_date"]),
-                modified_date=datetime.fromisoformat(data["modified_date"]), author=data["author"],
-                dependencies=list(data.get("dependencies") or []), golden_threads=list(data.get("golden_threads") or []))
+                doc_id=doc_id,
+                doc_type=DocumentType(data["doc_type"]),
+                title=data["title"],
+                version=data["version"],
+                status=DocumentStatus(data["status"]),
+                epic=data.get("epic"),
+                topics=list(data.get("topics") or []),
+                file_path=Path(data["file_path"]),
+                created_date=datetime.fromisoformat(data["created_date"]),
+                modified_date=datetime.fromisoformat(data["modified_date"]),
+                author=data["author"],
+                dependencies=list(data.get("dependencies") or []),
+                golden_threads=list(data.get("golden_threads") or []),
+            )
         for doc_id, values in (payload.get("version_history") or {}).items():
-            self.version_history[doc_id] = [DocumentVersion(v["version"], datetime.fromisoformat(v["date"]), v["author"], v["changes"], Path(v["file_path"]), v["checksum"]) for v in values]
+            self.version_history[doc_id] = [
+                DocumentVersion(
+                    v["version"],
+                    datetime.fromisoformat(v["date"]),
+                    v["author"],
+                    v["changes"],
+                    Path(v["file_path"]),
+                    v["checksum"],
+                )
+                for v in values
+            ]
 
     def _count_by_type(self) -> dict[str, int]:
         counts: dict[str, int] = {}
