@@ -85,6 +85,46 @@ class AHTStatisticsBridge:
             return []
         return json.loads(self.learnings_db_path.read_text(encoding="utf-8"))
 
+    def classify_failed_check_threshold(
+        self,
+        *,
+        repository: str,
+        pull_request: str,
+        head_sha: str,
+        successful_checks: int,
+        failed_checks: int,
+        action_required_checks: int = 0,
+        threshold_failed_checks: int = 1,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Embed CI failure-threshold status using the AHT learning format."""
+        total_decisive = successful_checks + failed_checks + action_required_checks
+        blocker_checks = failed_checks + action_required_checks
+        failure_rate = blocker_checks / total_decisive if total_decisive else 0.0
+        threshold_reached = blocker_checks >= threshold_failed_checks
+        result = {
+            "hypothesis": "PR head remains below failed-check control threshold",
+            "repository": repository,
+            "pull_request": pull_request,
+            "head_sha": head_sha,
+            "threshold": {
+                "failed_or_action_required_checks": threshold_failed_checks,
+                "reached": threshold_reached,
+            },
+            "observed": {
+                "successful_checks": successful_checks,
+                "failed_checks": failed_checks,
+                "action_required_checks": action_required_checks,
+                "blocker_checks": blocker_checks,
+                "total_decisive_checks": total_decisive,
+                "failure_rate": failure_rate,
+            },
+            "status": "THRESHOLD_BREACHED" if threshold_reached else "SUPPORTED",
+            "context": context or {},
+        }
+        self._append_learning(result)
+        return result
+
     def _append_learning(self, result: dict[str, Any]) -> None:
         learnings = self.load_learnings()
         learnings.append(result)
