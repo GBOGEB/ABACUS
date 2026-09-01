@@ -119,7 +119,7 @@
     {"pattern": "^(cd-pipeline|cd-unified|cd|release|delta-1-deploy|delta-1-release|history-purge-20260827|remove-public-binaries)\\.yml$", "cluster": "delivery", "lifecycle": "post_merge", "disposition": "keep"},
     {"pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$", "cluster": "documentation", "lifecycle": "post_merge", "disposition": "keep"},
     {"pattern": "^(auto-merge-prs|branch-analysis|branch-pruner|ci-failure-debug-rerun|ci_monitor_and_issue_creator|copilot-pr-creator|dashboard-health|post-merge-pr-summary)\\.yml$", "cluster": "automation", "lifecycle": "scheduled", "disposition": "keep"},
-    {"pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps-w08-dow-contract|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd)\\.yml$", "cluster": "specialised", "lifecycle": "pr_domain", "disposition": "keep"}
+    {"pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd)\\.yml$", "cluster": "specialised", "lifecycle": "pr_domain", "disposition": "keep"}
   ],
   "quality_gates": {
     "allow_unclassified": 0,
