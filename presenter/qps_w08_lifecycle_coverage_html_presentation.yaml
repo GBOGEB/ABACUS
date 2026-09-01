@@ -5,28 +5,59 @@ authority: ABACUS_parent_graph_support
 source_child_pr: GBOGEB/cryoplant-project#219
 source_request: feedback/qps_w08_lifecycle_coverage_graph_request.yaml
 purpose: >-
-  Define a review-only HTML presentation/navigator for W08 lifecycle coverage. This presenter may
-  communicate graph gaps, RFI routes, negotiation topics and parent candidate findings, but it must
-  not become the QPS child SSOT and must not include confidential bidder payloads.
+  Define a review-only HTML presentation and navigator for W08 lifecycle
+  coverage. This presenter may communicate graph gaps, RFI routes, negotiation
+  topics and parent candidate findings, but it must not become the QPS child
+  SSOT and must not include confidential bidder payloads.
 presenter_sections:
   - section_id: S01_EXECUTIVE_GATE
     title: W08 coverage gate status
-    contents: [workstreams_total, mandatory_lanes_present, zero_coverage_declared, parent_candidate_findings, child_disposition_required]
+    contents:
+      - workstreams_total
+      - mandatory_lanes_present
+      - zero_coverage_declared
+      - parent_candidate_findings
+      - child_disposition_required
   - section_id: S02_WORKSTREAM_MATRIX
     title: Workstream coverage matrix
-    contents: [node_count, edge_count, source_supported_coverage, quantitative_binding, semantic_binding, validated_disposition]
+    contents:
+      - node_count
+      - edge_count
+      - source_supported_coverage
+      - quantitative_binding
+      - semantic_binding
+      - validated_disposition
   - section_id: S03_GRAPH_PROPAGATION
     title: RTM OFFER ADR OCD propagation
-    contents: [propagation_edges, missing_edges, duplicate_nodes, stale_nodes, allocation_shift_edges]
+    contents:
+      - propagation_edges
+      - missing_edges
+      - duplicate_nodes
+      - stale_nodes
+      - allocation_shift_edges
   - section_id: S04_RFI_NEGOTIATION
     title: RFI and negotiation routes
-    contents: [rfi_id, workstream_id, negotiation_topic_id, blocker_state, owner]
+    contents:
+      - rfi_id
+      - workstream_id
+      - negotiation_topic_id
+      - blocker_state
+      - owner
   - section_id: S05_PARENT_RETURN_QUEUE
     title: Candidate DOW parent return queue
-    contents: [finding_id, check_id, severity, recommended_child_disposition, no_credit_statement]
+    contents:
+      - finding_id
+      - check_id
+      - severity
+      - recommended_child_disposition
+      - no_credit_statement
   - section_id: S06_REVERSE_LOAD_CATCHUP
     title: Reverse-load catch-up priorities
-    contents: [undercovered_lane, graph_depth_delta, evidence_depth_delta, proposed_next_action]
+    contents:
+      - undercovered_lane
+      - graph_depth_delta
+      - evidence_depth_delta
+      - proposed_next_action
 visual_controls:
   html_is_review_surface_only: true
   html_is_child_ssot: false
@@ -43,5 +74,6 @@ rendering_qa_required:
   - child_disposition_required_banner_visible
   - source_child_pr_visible
 handoff_note: >-
-  HTML presentation is suitable for review meetings and negotiation preparation only. Formal evidence,
-  compliance, completion and ranking remain controlled by the QPS child repository and disposition files.
+  HTML presentation is suitable for review meetings and negotiation
+  preparation only. Formal evidence, compliance, completion and ranking remain
+  controlled by the QPS child repository and disposition files.
