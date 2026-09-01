@@ -187,18 +187,21 @@ class MasterDocumentManager:
 
     def _count_by_type(self) -> dict[str, int]:
         counts: dict[str, int] = {}
-        for doc in self.documents.values(): counts[doc.doc_type.value] = counts.get(doc.doc_type.value, 0) + 1
+        for doc in self.documents.values():
+            counts[doc.doc_type.value] = counts.get(doc.doc_type.value, 0) + 1
         return counts
 
     def _count_by_status(self) -> dict[str, int]:
         counts: dict[str, int] = {}
-        for doc in self.documents.values(): counts[doc.status.value] = counts.get(doc.status.value, 0) + 1
+        for doc in self.documents.values():
+            counts[doc.status.value] = counts.get(doc.status.value, 0) + 1
         return counts
 
     def _count_by_epic(self) -> dict[str, int]:
         counts: dict[str, int] = {}
         for doc in self.documents.values():
-            if doc.epic: counts[doc.epic] = counts.get(doc.epic, 0) + 1
+            if doc.epic:
+                counts[doc.epic] = counts.get(doc.epic, 0) + 1
         return counts
 
     def generate_report(self) -> str:
