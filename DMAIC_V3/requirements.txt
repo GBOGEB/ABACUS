@@ -21,7 +21,7 @@ typing-extensions>=4.15.0
 # ============================================================================
 
 # Data manipulation and analysis
-pandas>=3.0.5,<4.0.0
+pandas>=1.5.3,<4.0.0
 numpy>=1.21.0,<2.0.0
 
 # ============================================================================
@@ -50,7 +50,7 @@ jinja2>=3.1.6,<4.0.0
 pyyaml>=6.0.3,<7.0
 
 # JSON schema validation
-jsonschema>=4.26.0,<5.0.0
+jsonschema>=4.25.1,<5.0.0
 
 # ============================================================================
 # UTILITIES
@@ -92,19 +92,19 @@ watchdog>=2.1.0,<3.0.0
 # ============================================================================
 
 # Testing framework
-pytest>=7.0.0,<8.0.0
+pytest>=8.3.5,<10.0.0
 pytest-cov>=3.0.0,<4.0.0
 pytest-mock>=3.6.0,<4.0.0
 
 # Code formatting
-black>=22.0.0,<23.0.0
+black>=23.0.0
 
 # Linting
 flake8>=7.3.0
 pylint>=2.12.0,<3.0.0
 
 # Type checking
-mypy>=0.950,<1.0.0
+mypy>=1.4.0
 
 # Documentation
 # Sphinx 9.x requires Python >=3.12. Keep the Python 3.8-3.11
