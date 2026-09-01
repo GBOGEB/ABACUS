@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUEST = ROOT / "feedback" / "qps_w08_lifecycle_coverage_graph_request.yaml"
 DASHBOARD = ROOT / "dashboards" / "qps_w08_coverage_graph_view.yaml"
 PRESENTER = ROOT / "presenter" / "qps_w08_lifecycle_coverage_html_presentation.yaml"
+PR_HEAD_AHT = ROOT / "feedback" / "qps_w08_pr_head_aht_control_snapshot.yaml"
 
 EXPECTED = {
     "W08-REVIEW",
@@ -74,3 +75,17 @@ def test_dashboard_and_html_presentation_are_review_only_not_ssot():
     assert presenter["visual_controls"]["html_may_embed_confidential_bidder_payload"] is False
     assert presenter["visual_controls"]["html_may_promote_parent_credit"] is False
     assert presenter["visual_controls"]["html_may_grant_completion_credit"] is False
+
+
+def test_pr_head_aht_snapshot_embeds_failed_check_threshold():
+    snapshot = load(PR_HEAD_AHT)
+    assert snapshot["pull_request"] == "GBOGEB/ABACUS#795"
+    assert snapshot["head_sha"] == "177b3808d365b54b0a12d19bd1f83492f62585cb"
+    assert snapshot["status"] == "THRESHOLD_BREACHED"
+    assert snapshot["evidence_class"] == "SOURCE-SUPPORTED"
+    assert snapshot["threshold_policy"]["threshold_reached"] is True
+    assert snapshot["aht_statistics_bridge"]["method"] == "classify_failed_check_threshold"
+    assert snapshot["measure"]["failed_checks"] == 6
+    assert snapshot["measure"]["blocker_checks"] == 6
+    assert snapshot["measure"]["total_decisive_checks"] == 16
+    assert snapshot["control"]["completion_credit_allowed"] is False
