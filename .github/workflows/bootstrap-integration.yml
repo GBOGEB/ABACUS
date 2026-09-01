@@ -174,7 +174,7 @@ jobs:
       - name: Run DMAIC-Orchestrated Tests
         run: |
           echo "🎯 Running DMAIC-Orchestrated Comprehensive Test Suite"
-          python run_integrated_tests.py dmaic
+          pytest -m dmaic -v --tb=short
 
       - name: Run Bridge Orchestrator
         run: |
