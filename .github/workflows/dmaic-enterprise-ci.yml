@@ -70,9 +70,7 @@ jobs:
     
     - name: Verify Python syntax
       run: |
-        python -m py_compile DMAIC_V3/agents/*.py
-        python -m py_compile DMAIC_V3/convergence/*.py
-        python -m py_compile DMAIC_V3/core/*.py
+        python -c 'import glob, py_compile; [py_compile.compile(path, doraise=True) for pattern in ("DMAIC_V3/agents/*.py", "DMAIC_V3/convergence/*.py", "DMAIC_V3/core/*.py") for path in glob.glob(pattern)]'
     
     - name: Run pytest with coverage
       run: |
