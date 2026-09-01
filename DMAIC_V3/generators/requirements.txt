@@ -15,7 +15,11 @@ reportlab>=4.0.7
 
 # Data processing
 pandas>=3.0.5
-numpy>=2.5.2
+numpy>=1.26.2; python_version < '3.9'
+numpy>=2.0.2; python_version >= '3.9' and python_version < '3.10'
+numpy>=2.2.6; python_version >= '3.10' and python_version < '3.11'
+numpy>=2.4.6; python_version >= '3.11' and python_version < '3.12'
+numpy>=2.5.2; python_version >= '3.12'
 
 # Utilities
 python-dateutil>=2.9.0.post0
