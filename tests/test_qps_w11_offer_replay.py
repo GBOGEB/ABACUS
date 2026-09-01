@@ -41,6 +41,20 @@ def test_limiting_position_overrides_positive_wording() -> None:
     assert classify_bidder_position("Compliant", "Suggestion: modify to alternative") == "SUGGESTION"
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "RTM-514 not compliant",
+        "RTM-514 non-compliant",
+        "RTM-514 does not comply",
+        "RTM-514 not accepted",
+        "RTM-514 not acceptable",
+    ],
+)
+def test_negative_compliance_wording_fails_closed(text: str) -> None:
+    assert classify_bidder_position("Compliant", text) == "DEVIATION"
+
+
 def test_unconditional_acceptance_requires_no_limiting_marker() -> None:
     assert classify_bidder_position("Compliant", "RTM-230 accepted") == "ACCEPT_UNCONDITIONAL"
 
