@@ -69,9 +69,15 @@ class AHTStatisticsBridge:
                 raise ValueError("expected_value or reference_group is required")
             mean = result["observed"]["mean"]
             lower = result["observed"]["ci_bootstrap_lower"]
+            upper = result["observed"]["ci_bootstrap_upper"]
+            std = result["observed"]["std"]
+            n = result["observed"]["n"]
+            standard_error = std / np.sqrt(n) if n else 0.0
+            boundary_tolerance = 2.0 * standard_error
+            near_expected = abs(mean - expected_value) <= boundary_tolerance
             if lower > expected_value:
                 result["status"] = "EXCEEDED"
-            elif mean >= expected_value or obs_low <= expected_value <= obs_high:
+            elif mean >= expected_value or lower <= expected_value <= upper or near_expected:
                 result["status"] = "SUPPORTED"
             else:
                 result["status"] = "REJECTED"

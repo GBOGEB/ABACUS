@@ -59,9 +59,9 @@ class ContainerRegistryManager:
                 "error": result.stderr if result.returncode != 0 else None
             }
         except subprocess.TimeoutExpired:
-            return {"success": False, "error": "Build timeout"}
+            return {"success": False, "image": f"{image_name}:{tag}", "error": "Build timeout"}
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            return {"success": False, "image": f"{image_name}:{tag}", "error": str(e)}
     
     def build_multiarch(self, dockerfile_path: Path, image_name: str, tag: str = "latest",
                        platforms: List[str] = None) -> Dict[str, Any]:
@@ -115,11 +115,13 @@ class ContainerRegistryManager:
             else:
                 return {
                     "success": False,
+                    "image": image_ref,
                     "error": "Image not found or inspection failed"
                 }
         except Exception as e:
             return {
                 "success": False,
+                "image": image_ref,
                 "error": str(e)
             }
     
@@ -151,6 +153,7 @@ class ContainerRegistryManager:
         except Exception as e:
             return {
                 "success": False,
+                "image": image_ref,
                 "error": str(e)
             }
     
@@ -175,6 +178,8 @@ class ContainerRegistryManager:
         except Exception as e:
             return {
                 "success": False,
+                "source": source_ref,
+                "target": target_ref,
                 "error": str(e)
             }
     
