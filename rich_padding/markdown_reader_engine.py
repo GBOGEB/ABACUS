@@ -57,10 +57,18 @@ class MarkdownReaderEngine:
         in_code = False
         code_lang = ""
         code_lines: list[str] = []
+        seen_header_levels: set[int] = set()
+
         for line in content.splitlines():
             if line.startswith("```"):
                 if in_code:
-                    elements.append(MarkdownElement(ElementType.CODE_BLOCK, "\n".join(code_lines), {"language": code_lang}))
+                    elements.append(
+                        MarkdownElement(
+                            ElementType.CODE_BLOCK,
+                            "\n".join(code_lines),
+                            {"language": code_lang},
+                        )
+                    )
                     in_code = False
                     code_lang = ""
                     code_lines = []
@@ -72,7 +80,10 @@ class MarkdownReaderEngine:
                 code_lines.append(line)
                 continue
             if line.startswith("#"):
-                elements.append(MarkdownElement(ElementType.HEADER, line))
+                level = len(line) - len(line.lstrip("#"))
+                if level not in seen_header_levels:
+                    seen_header_levels.add(level)
+                    elements.append(MarkdownElement(ElementType.HEADER, line))
             for match in self.LINK_RE.finditer(line):
                 elements.append(MarkdownElement(ElementType.LINK, match.group(1), {"target": match.group(2)}))
             if line.strip() and not line.startswith("#"):
