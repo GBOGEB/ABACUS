@@ -63,7 +63,7 @@ formats:
 
 candidate_output:
   artifact: qps_w11_offer_evidence_candidate.json
-  must_validate_against: schemas/qps_w11_offer_evidence.schema.json
+  must_validate_against: schemas/qps_w11_offer_evidence.schema.yaml
   fields:
     - atom_id
     - source_id
@@ -121,7 +121,7 @@ priority_overlay:
   formal_credit: 0
 
 fail_closed_rules:
-  - no exception row cannot become compliant
+  - blank or missing exception statement is not a compliance signal
   - unresolved reference cannot become unconditional acceptance
   - pre-study cannot overwrite current offer
   - other bidder evidence cannot support target bidder
