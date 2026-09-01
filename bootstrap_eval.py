@@ -45,11 +45,11 @@ def bootstrap_ci_diff_means(
     b_values = b_values[~np.isnan(b_values)]
     if a_values.size == 0 or b_values.size == 0:
         return float("nan"), float("nan"), float("nan")
-    diff_hat = float(a_values.mean() - b_values.mean())
+    diff_hat = float(b_values.mean() - a_values.mean())
     generator = _rng(random_state)
     a_samples = generator.choice(a_values, size=(n_bootstrap, a_values.size), replace=True)
     b_samples = generator.choice(b_values, size=(n_bootstrap, b_values.size), replace=True)
-    diffs = a_samples.mean(axis=1) - b_samples.mean(axis=1)
+    diffs = b_samples.mean(axis=1) - a_samples.mean(axis=1)
     low = float(np.percentile(diffs, 100 * alpha / 2))
     high = float(np.percentile(diffs, 100 * (1 - alpha / 2)))
     return diff_hat, low, high
