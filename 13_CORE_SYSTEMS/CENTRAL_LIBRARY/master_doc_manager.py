@@ -14,6 +14,7 @@ import yaml
 class DocumentType(Enum):
     ADR = "ADR"
     OCD = "OCD"
+    RTM = "RTM"
     SOR = "SOR"
     SPEC = "SPEC"
     REPORT = "REPORT"
