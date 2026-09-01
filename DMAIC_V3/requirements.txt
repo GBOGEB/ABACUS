@@ -97,7 +97,7 @@ pytest-cov>=3.0.0,<4.0.0
 pytest-mock>=3.15.1,<4.0.0
 
 # Code formatting
-black>=23.0.0
+black>=23.0.0,<27.0.0
 
 # Linting
 flake8>=7.3.0
@@ -132,7 +132,7 @@ sphinx-rtd-theme>=3.1.0,<4.0.0
 # ============================================================================
 
 # Windows-specific
-pywin32>=300; platform_system == "Windows"
+pywin32>=312; platform_system == "Windows"
 
 # Unix-specific
 # (most Unix tools are in standard library)
