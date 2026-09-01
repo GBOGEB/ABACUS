@@ -107,7 +107,10 @@ pylint>=2.12.0,<3.0.0
 mypy>=0.950,<1.0.0
 
 # Documentation
-sphinx>=9.1.0,<10.0.0
+# Sphinx 9.x requires Python >=3.12. Keep the Python 3.8-3.11
+# CI matrix on the supported 8.x line while using 9.x on 3.12+.
+sphinx>=8.1.0,<9.0.0; python_version < '3.12'
+sphinx>=9.1.0,<10.0.0; python_version >= '3.12'
 sphinx-rtd-theme>=3.1.0,<4.0.0
 
 # ============================================================================
