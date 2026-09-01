@@ -66,7 +66,14 @@ class MasterDocumentManager:
 
     @staticmethod
     def _checksum(path: Path) -> str:
-        return hashlib.sha256(path.as_posix().encode("utf-8")).hexdigest()
+        if not path.exists():
+            return ""
+
+        sha256 = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(4096), b""):
+                sha256.update(chunk)
+        return sha256.hexdigest()
 
     def register_document(self, doc_id: str, doc_type: DocumentType, title: str, file_path: Path, epic: str | None = None,
                           topics: list[str] | None = None, author: str = "unknown", version: str = "1.0.0", **_: Any) -> DocumentMetadata:
