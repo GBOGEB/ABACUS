@@ -11,7 +11,7 @@ markdown>=3.5.1
 
 # PDF handling
 PyPDF2>=3.0.1
-reportlab>=4.0.7
+reportlab>=5.0.1
 
 # Data processing
 pandas>=3.0.5
