@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `a1af580a797ee940be24328528daaf4fabf4eeb342f0fbe25d882af924846b01`
+Policy SHA-256: `a1fa9595a13b7ba16ab9b3c0769cb89cc00dae46e7a985b6dd5e012f687181e1`
 
 ## Outcome
 
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -164,12 +164,10 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
-- `pip install pre-commit pytest pytest-cov` — `ci-abacus.yml`, `ci-codex.yml`
 - `pip install pytest pytest-benchmark` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
 - `pip install pytest pyyaml` — `codespace-federation.yml`, `dow-sprint6-cicd.yml`
-- `pip install pyyaml numpy pytest` — `governance.yml`, `validation.yml`
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
