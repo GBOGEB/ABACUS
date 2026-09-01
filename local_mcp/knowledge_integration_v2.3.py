@@ -12,6 +12,7 @@ Connects V2.3 agents with KEB (Kernel Execution Backbone) and GBOGEB knowledge b
 
 import sys
 import json
+import concurrent.futures
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
@@ -26,6 +27,23 @@ try:
 except ImportError:
     print("Warning: KEB/GBOGEB core modules not found, using fallback mode")
     KEB_AVAILABLE = False
+
+
+class OperationTimeoutError(Exception):
+    """Raised when an operation exceeds its allowed time budget."""
+
+
+def _run_with_timeout(func, timeout: float):
+    """Run *func* with a wall-clock *timeout* (seconds).
+
+    Raises :class:`OperationTimeoutError` if the call does not complete in time.
+    """
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(func)
+        try:
+            return future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            raise OperationTimeoutError(f"Operation timed out after {timeout}s")
 
 
 @dataclass
@@ -189,10 +207,11 @@ class KnowledgeIntegrationV23:
             self.metrics_cache.append(metric)
             print(f"[METRIC] {agent_name}.{metric_name} = {metric_value}")
     
-    def schedule_agent_task(self, task_id: str, agent_name: str, 
+    def schedule_agent_task(self, task_id: str, agent_name: str,
                            task_func: callable, priority: int = 5,
-                           args: tuple = (), kwargs: dict = None):
-        """Schedule agent task via KEB"""
+                           args: tuple = (), kwargs: dict = None,
+                           timeout: float = None):
+        """Schedule agent task via KEB, with optional per-task timeout."""
         if self.keb_enabled and self.keb:
             self.keb.schedule_task(
                 task_id=f"{agent_name}_{task_id}",
@@ -204,24 +223,46 @@ class KnowledgeIntegrationV23:
         else:
             print(f"[TASK] Scheduled: {agent_name}.{task_id} (priority: {priority})")
             try:
-                task_func(*args, **(kwargs or {}))
+                if timeout is not None:
+                    _run_with_timeout(lambda: task_func(*args, **(kwargs or {})), timeout)
+                else:
+                    task_func(*args, **(kwargs or {}))
+            except OperationTimeoutError:
+                self.metrics_cache.append({
+                    "agent": agent_name,
+                    "metric_name": "task_timeout",
+                    "metric_value": 1,
+                    "tags": {"task_id": task_id, "mode": "fallback"},
+                    "timestamp": datetime.now().isoformat(),
+                })
+                print(f"[TIMEOUT] Task {task_id} timed out after {timeout}s")
             except Exception as e:
                 print(f"[ERROR] Task {task_id} failed: {e}")
-    
-    def check_compliance(self, rule_name: str, check_func: callable, 
-                        severity: str = "info") -> bool:
-        """Check compliance rule"""
+
+    def check_compliance(self, rule_name: str, check_func: callable,
+                        severity: str = "info", timeout: float = None,
+                        max_retries: int = 5) -> bool:
+        """Check compliance rule, with optional timeout and automatic retries."""
         if self.gbogeb_enabled:
             return self.gbogeb.check_compliance(rule_name, check_func, severity)
-        else:
+        for attempt in range(1, max_retries + 1):
             try:
-                result = check_func()
+                if timeout is not None:
+                    result = _run_with_timeout(check_func, timeout)
+                else:
+                    result = check_func()
                 status = "PASS" if result else "FAIL"
                 print(f"[COMPLIANCE] {rule_name}: {status}")
                 return result
+            except OperationTimeoutError:
+                if attempt >= max_retries:
+                    print(f"[COMPLIANCE] {rule_name}: TIMEOUT after {attempt} attempts")
+                    return False
+                print(f"[COMPLIANCE] {rule_name}: timeout, retry {attempt}/{max_retries}")
             except Exception as e:
                 print(f"[COMPLIANCE] {rule_name}: ERROR - {e}")
                 return False
+        return False
     
     def get_knowledge_summary(self) -> Dict[str, Any]:
         """Get knowledge base summary"""
