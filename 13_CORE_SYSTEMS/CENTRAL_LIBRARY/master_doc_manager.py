@@ -204,5 +204,11 @@ class MasterDocumentManager:
     def generate_report(self) -> str:
         lines = ["# Master Document Registry Report", ""]
         for doc in sorted(self.documents.values(), key=lambda d: d.doc_id):
-            lines.append(f"- {doc.doc_id}: {doc.title} [{doc.doc_type.value}] EPIC={doc.epic or '-'} STATUS={doc.status.value}")
+            lines.append(
+                f"- {doc.doc_id}: {doc.title} [{doc.doc_type.value}] "
+                f"EPIC={doc.epic or '-'} STATUS={doc.status.value}"
+            )
         return "\n".join(lines)
+
+    def get_registry_report(self) -> str:
+        return self.generate_report()
