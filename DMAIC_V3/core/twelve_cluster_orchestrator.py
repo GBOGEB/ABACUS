@@ -59,10 +59,17 @@ class TwelveClusterOrchestrator:
     - Cluster 11-12: Phase 8 (TODO Management) - Task tracking
     """
 
-    def __init__(self, max_workers: int = 12, use_keb: bool = True, use_gbogeb: bool = True):
+    PHASE_SEQUENCE = [
+        "phase1", "phase2", "phase3", "phase4",
+        "phase5", "phase6", "phase7", "phase8",
+    ]
+
+    def __init__(self, max_workers: int = 12, use_keb: bool = True, use_gbogeb: bool = True,
+                 task_timeout_seconds: float = None):
         self.max_workers = max_workers
         self.use_keb = use_keb and KEB_AVAILABLE
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
+        self.task_timeout_seconds = task_timeout_seconds
 
         self.clusters = self._initialize_clusters()
         self.keb = None
@@ -101,19 +108,29 @@ class TwelveClusterOrchestrator:
 
         return clusters
 
+    def get_cluster_contract(self) -> List[Dict[str, Any]]:
+        """Return the canonical 12-cluster contract as a list of dicts."""
+        return [
+            {
+                "cluster_id": c.cluster_id,
+                "name": c.name,
+                "phase": c.phase,
+                "priority": c.priority,
+            }
+            for c in self.clusters.values()
+        ]
+
     def execute_phase_parallel(self, phase: str, tasks: List[Dict[str, Any]],
                                iteration: int) -> Dict[str, Any]:
         """
-        Execute a DMAIC phase across multiple clusters in parallel
+        Execute a DMAIC phase across multiple clusters in parallel.
 
-        Args:
-            phase: Phase name (e.g., "phase1", "phase2")
-            tasks: List of tasks to distribute across clusters
-            iteration: Current iteration number
-
-        Returns:
-            Execution results
+        Returns a dict including a ``results_map`` keyed by ``file_path`` or
+        ``task_id`` (whichever is present on the task dict).
         """
+        import math
+        from concurrent.futures import wait as _wait, FIRST_COMPLETED
+
         print(f"\n[12-CLUSTER] Executing {phase} across clusters (iteration {iteration})")
 
         phase_clusters = [c for c in self.clusters.values() if c.phase == phase]
@@ -123,8 +140,17 @@ class TwelveClusterOrchestrator:
             print(f"[12-CLUSTER] No tasks to execute for {phase}")
             return {"success": True, "tasks_executed": 0, "clusters_used": 0}
 
-        chunk_size = max(1, len(tasks) // len(phase_clusters))
+        # Use ceiling division so all tasks are assigned even when
+        # len(tasks) is not divisible by the number of clusters.
+        chunk_size = max(1, math.ceil(len(tasks) / len(phase_clusters)))
         task_chunks = [tasks[i:i + chunk_size] for i in range(0, len(tasks), chunk_size)]
+
+        # Match chunks to clusters; any extra chunks overflow onto the last cluster.
+        cluster_chunk_pairs: List[tuple] = list(zip(phase_clusters, task_chunks))
+        if len(task_chunks) > len(phase_clusters):
+            overflow_cluster = phase_clusters[-1]
+            for extra_chunk in task_chunks[len(phase_clusters):]:
+                cluster_chunk_pairs.append((overflow_cluster, extra_chunk))
 
         print(f"[12-CLUSTER] Distributing {len(tasks)} tasks across {len(phase_clusters)} clusters")
         print(f"[12-CLUSTER] Chunk size: ~{chunk_size} tasks per cluster")
@@ -135,7 +161,7 @@ class TwelveClusterOrchestrator:
         if self.use_keb and self.keb:
             self.keb.start()
 
-            for idx, (cluster, chunk) in enumerate(zip(phase_clusters, task_chunks)):
+            for idx, (cluster, chunk) in enumerate(cluster_chunk_pairs):
                 cluster.status = "running"
 
                 for task_idx, task in enumerate(chunk):
@@ -163,30 +189,56 @@ class TwelveClusterOrchestrator:
                 "tasks_executed": self.keb.tasks_executed,
                 "tasks_failed": self.keb.tasks_failed,
                 "clusters_used": len(phase_clusters),
-                "execution_time": time.time() - start_time
+                "results_map": {},
+                "execution_time": time.time() - start_time,
             }
         else:
             with ThreadPoolExecutor(max_workers=len(phase_clusters)) as executor:
-                futures = {}
+                futures: Dict = {}
+                chunk_by_future: Dict = {}
 
-                for cluster, chunk in zip(phase_clusters, task_chunks):
+                for cluster, chunk in cluster_chunk_pairs:
                     cluster.status = "running"
-                    future = executor.submit(self._execute_cluster_tasks, cluster, chunk)
+                    future = executor.submit(self._execute_cluster_tasks, cluster, chunk, phase)
                     futures[future] = cluster
+                    chunk_by_future[future] = chunk
+
+                # Apply a wall-clock timeout if configured.
+                if self.task_timeout_seconds is not None:
+                    done_set, not_done_set = __import__("concurrent.futures", fromlist=["wait"]).wait(
+                        list(futures.keys()), timeout=self.task_timeout_seconds
+                    )
+                else:
+                    done_set = set(futures.keys())
+                    not_done_set = set()
 
                 cluster_results = []
-                for future in as_completed(futures):
+                results_map: Dict[str, Any] = {}
+
+                for future in done_set:
                     cluster = futures[future]
                     try:
-                        result = future.result()
-                        cluster_results.append(result)
-                        cluster.tasks_executed += result.get("tasks_executed", 0)
-                        cluster.tasks_failed += result.get("tasks_failed", 0)
+                        cr = future.result()
+                        cluster_results.append(cr)
+                        cluster.tasks_executed += cr.get("tasks_executed", 0)
+                        cluster.tasks_failed += cr.get("tasks_failed", 0)
+                        results_map.update(cr.get("results_map", {}))
                     except Exception as e:
                         print(f"[12-CLUSTER] Cluster {cluster.name} failed: {e}")
+                        chunk = chunk_by_future[future]
                         cluster.tasks_failed += len(chunk)
+                        cluster_results.append({"tasks_executed": 0, "tasks_failed": len(chunk), "results_map": {}})
                     finally:
                         cluster.status = "idle"
+
+                for future in not_done_set:
+                    cluster = futures[future]
+                    chunk = chunk_by_future[future]
+                    print(f"[12-CLUSTER] Cluster {cluster.name} timed out")
+                    cluster.tasks_failed += len(chunk)
+                    cluster_results.append({"tasks_executed": 0, "tasks_failed": len(chunk), "results_map": {}})
+                    cluster.status = "idle"
+                    future.cancel()
 
                 total_executed = sum(r.get("tasks_executed", 0) for r in cluster_results)
                 total_failed = sum(r.get("tasks_failed", 0) for r in cluster_results)
@@ -196,7 +248,8 @@ class TwelveClusterOrchestrator:
                     "tasks_executed": total_executed,
                     "tasks_failed": total_failed,
                     "clusters_used": len(phase_clusters),
-                    "execution_time": time.time() - start_time
+                    "results_map": results_map,
+                    "execution_time": time.time() - start_time,
                 }
 
         if self.use_gbogeb and self.gbogeb:
@@ -212,8 +265,9 @@ class TwelveClusterOrchestrator:
 
         return results
 
-    def _execute_cluster_tasks(self, cluster: ClusterConfig, tasks: List[Dict]) -> Dict:
-        """Execute tasks for a single cluster"""
+    def _execute_cluster_tasks(self, cluster: ClusterConfig, tasks: List[Dict],
+                               phase: str = "") -> Dict:
+        """Execute tasks for a single cluster, returning a results_map."""
         executed = 0
         failed = 0
 

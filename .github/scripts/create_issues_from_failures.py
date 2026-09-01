@@ -113,6 +113,23 @@ class CIIssueCreator:
             print(f"❌ Failed to create issue for {test_name}: {e}")
             return None
     
+    def close_issue_for_test(self, test_name: str) -> int:
+        """Close any open CI-failure issues for a test that is now passing.
+
+        Returns:
+            Number of issues closed.
+        """
+        existing = self.get_existing_issues(test_name)
+        closed = 0
+        for issue in existing:
+            issue.create_comment(
+                f"✅ Test `{test_name}` is now passing. Closing this issue automatically."
+            )
+            issue.edit(state="closed")
+            self.closed_issues.append(issue.number)
+            closed += 1
+        return closed
+
     def _determine_priority(self, test_name: str, failure_message: str) -> str:
         """Determine issue priority based on test characteristics"""
         # Critical: Integration tests, core functionality
@@ -239,13 +256,18 @@ This issue was automatically created by the CI monitoring system. The test faile
         print(f"   ❌ Failed: {failed}")
         print()
         
+        # Close issues for tests that are now passing
+        for test in report.get('tests', []):
+            if test.get('outcome') == 'passed':
+                self.close_issue_for_test(test.get('nodeid', ''))
+
         if failed == 0:
             print("✅ All tests passing! No issues to create.")
             return
-        
+
         # Process each failing test
         print(f"🔍 Processing {failed} failing test(s)...\n")
-        
+
         for test in report.get('tests', []):
             if test.get('outcome') == 'failed':
                 self.create_issue_for_test(test)

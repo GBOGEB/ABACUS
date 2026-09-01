@@ -322,6 +322,30 @@ class GitManager:
 
         print(f"[GIT] Saved history: {output_file}")
 
+    def get_status(self):
+        """Return current repository status with at least a ``branch`` attribute."""
+        ok, branch_out = self._run_git(["rev-parse", "--abbrev-ref", "HEAD"], check=False)
+        branch = branch_out.strip().splitlines()[0] if ok and branch_out.strip() else "unknown"
+
+        ok_s, status_out = self._run_git(["status", "--porcelain"], check=False)
+        clean = not bool(status_out.strip()) if ok_s else False
+
+        class _Status:
+            pass
+
+        status = _Status()
+        status.branch = branch
+        status.clean = clean
+        return status
+
+    def list_baselines(self) -> List[Dict]:
+        """Return a list of existing baseline tags."""
+        ok, output = self._run_git(["tag", "-l", "baseline-*"], check=False)
+        if not ok:
+            return []
+        tags = [t.strip() for t in output.strip().splitlines() if t.strip()]
+        return [{"tag": t, "name": t} for t in tags]
+
 
 def main():
     """CLI interface"""
