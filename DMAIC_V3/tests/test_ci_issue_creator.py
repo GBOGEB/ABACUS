@@ -1,5 +1,7 @@
 import importlib.util
 from pathlib import Path
+import sys
+import types
 from unittest.mock import Mock
 
 import pytest
@@ -16,6 +18,10 @@ SCRIPT_SPEC = importlib.util.spec_from_file_location(
     SCRIPT_PATH,
 )
 SCRIPT_MODULE = importlib.util.module_from_spec(SCRIPT_SPEC)
+stub_github = types.ModuleType("github")
+stub_github.Github = object
+stub_github.GithubException = Exception
+sys.modules.setdefault("github", stub_github)
 assert SCRIPT_SPEC.loader is not None
 SCRIPT_SPEC.loader.exec_module(SCRIPT_MODULE)
 CIIssueCreator = SCRIPT_MODULE.CIIssueCreator
