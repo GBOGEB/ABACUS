@@ -21,8 +21,14 @@ typing-extensions>=4.15.0
 # ============================================================================
 
 # Data manipulation and analysis
-pandas>=2.0.0,<4.0.0
-numpy>=1.21.0,<2.0.0
+pandas>=1.5.3,<2.0.0; python_version < '3.9'
+pandas>=2.3.3,<3.0.0; python_version >= '3.9' and python_version < '3.11'
+pandas>=3.0.5,<4.0.0; python_version >= '3.11'
+numpy>=1.21.0,<2.0.0; python_version < '3.9'
+numpy>=2.0.2,<3.0.0; python_version >= '3.9' and python_version < '3.10'
+numpy>=2.2.6,<3.0.0; python_version >= '3.10' and python_version < '3.11'
+numpy>=2.4.6,<3.0.0; python_version >= '3.11' and python_version < '3.12'
+numpy>=2.5.2,<3.0.0; python_version >= '3.12'
 
 # ============================================================================
 # VISUALIZATION
@@ -50,7 +56,8 @@ jinja2>=3.1.6,<4.0.0
 pyyaml>=6.0.3,<7.0
 
 # JSON schema validation
-jsonschema>=4.25.1,<5.0.0
+jsonschema>=4.25.1,<5.0.0; python_version < '3.11'
+jsonschema>=4.26.0,<5.0.0; python_version >= '3.11'
 
 # ============================================================================
 # UTILITIES
@@ -107,8 +114,11 @@ pylint>=2.12.0,<3.0.0
 mypy>=1.4.0
 
 # Documentation
-sphinx>=7.0.0,<10.0.0
-sphinx-rtd-theme>=3.1.0,<4.0.0
+sphinx>=7.4.7,<9.0.0; python_version < '3.11'
+sphinx>=9.0.4,<10.0.0; python_version >= '3.11' and python_version < '3.12'
+sphinx>=9.1.0,<10.0.0; python_version >= '3.12'
+sphinx-rtd-theme>=3.0.2,<4.0.0; python_version < '3.11'
+sphinx-rtd-theme>=3.1.0,<4.0.0; python_version >= '3.11'
 
 # ============================================================================
 # OPTIONAL: ENHANCED FEATURES
