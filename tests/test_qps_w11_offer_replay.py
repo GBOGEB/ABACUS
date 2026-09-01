@@ -45,6 +45,14 @@ def test_unconditional_acceptance_requires_no_limiting_marker() -> None:
     assert classify_bidder_position("Compliant", "RTM-230 accepted") == "ACCEPT_UNCONDITIONAL"
 
 
+def test_without_exception_is_unconditional_acceptance() -> None:
+    assert classify_bidder_position("Compliant without exception", "RTM-230 accepted") == "ACCEPT_UNCONDITIONAL"
+
+
+def test_except_word_is_limiting_marker() -> None:
+    assert classify_bidder_position("Compliant", "accepted except for item 3") != "ACCEPT_UNCONDITIONAL"
+
+
 def test_missing_hash_and_locator_fail_closed() -> None:
     with pytest.raises(ValueError):
         candidate_from_record(_record(source_sha256="bad"), "ATOM-1")

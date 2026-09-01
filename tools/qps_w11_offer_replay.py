@@ -18,7 +18,6 @@ SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 
 LIMITING_MARKERS = (
     "refer to",
-    "except",
     "subject to",
     "clarification",
     "suggestion",
@@ -29,6 +28,8 @@ LIMITING_MARKERS = (
     "to be agreed",
     "provided by customer",
 )
+
+_EXCEPT_RE = re.compile(r"\bexcept\b")
 
 
 @dataclass(frozen=True)
@@ -79,7 +80,7 @@ def classify_bidder_position(stated_status: str, text: str) -> str:
     positive = any(marker in combined for marker in ("compliant", "accepted", "without exception"))
     if positive and "refer to" in combined:
         return "COMPLIANT_WITH_REFERENCE"
-    if positive and not any(marker in combined for marker in LIMITING_MARKERS):
+    if positive and not any(marker in combined for marker in LIMITING_MARKERS) and not _EXCEPT_RE.search(combined):
         return "ACCEPT_UNCONDITIONAL"
     return "MISSING_EVIDENCE"
 
