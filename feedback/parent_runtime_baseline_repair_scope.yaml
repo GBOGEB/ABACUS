@@ -1,0 +1,21 @@
+document_id: ABACUS_PARENT_RUNTIME_BASELINE_REPAIR_SCOPE
+version: 0.1.0
+status: repair_in_progress
+scope:
+  pull_request: 803
+  purpose: restore inherited parent runtime modules required by strict pytest collection
+  restored_modules:
+    - 13_CORE_SYSTEMS/CENTRAL_LIBRARY/master_doc_manager.py
+    - rich_padding/markdown_reader_engine.py
+    - refactoring_engine_protocols.py
+controls:
+  test_suppression_allowed: false
+  fail_soft_changes_allowed: false
+  qps_child_completion_credit: 0
+  bidder_compliance_credit: 0
+  safety_legal_source_acceptance_credit: 0
+  pca_bt_rerank_credit: 0
+closure:
+  - strict_collection_advances_past_restored_modules
+  - newly_exposed_failures_are_fixed_or_explicitly_classified
+  - parent_runtime_return_is_hashed_before_child_disposition
