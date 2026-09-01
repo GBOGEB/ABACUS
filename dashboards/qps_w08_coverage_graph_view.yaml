@@ -38,7 +38,7 @@ views:
       - spares_rcm
   - view_id: W08_REVERSE_LOAD_CATCHUP
     title: Reverse-load catch-up queue
-    rows: mandatory_workstreams
+    rows: workstreams_expected
     columns:
       - graph_depth_delta
       - evidence_depth_delta
