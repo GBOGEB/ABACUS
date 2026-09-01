@@ -107,7 +107,10 @@ pylint>=2.12.0,<3.0.0
 mypy>=0.950,<1.0.0
 
 # Documentation
-sphinx>=9.1.0,<10.0.0
+# Sphinx 9.x requires Python >=3.12. Keep the legacy Python 3.8-3.11
+# matrix on the supported 8.x line while allowing 9.x on 3.12+.
+sphinx>=8.1.0,<9.0.0; python_version < '3.12'
+sphinx>=9.1.0,<10.0.0; python_version >= '3.12'
 sphinx-rtd-theme>=3.1.0,<4.0.0
 
 # ============================================================================
@@ -147,7 +150,7 @@ pywin32>=300; platform_system == "Windows"
 # Development installation:
 #   pip install -r requirements.txt -r requirements-dev.txt
 #
-# Upgrade all:
+# Upgrade all dependencies:
 #   pip install --upgrade -r requirements.txt
 #
 # Freeze current environment:
