@@ -38,6 +38,7 @@ class ActionType(str, Enum):
     FEATURE = "feature"
     DECISION = "decision"
     RISK = "risk"
+    REVIEW = "review"
 
 
 @dataclass
@@ -210,6 +211,9 @@ class ActionTracker:
             lines.extend(["", "## Overdue Actions"])
             lines.extend(f"- {action.action_id}" for action in overdue)
         return "\n".join(lines)
+
+    def get_tracker_report(self) -> str:
+        return self.generate_report()
 
     def save_tracker(self) -> None:
         payload = {

@@ -76,7 +76,7 @@ class SASTScanner:
         }
         
         for py_file in python_files:
-            if "test" in str(py_file) or "venv" in str(py_file):
+            if py_file.name.startswith("test_") or "tests" in py_file.parts or "venv" in py_file.parts:
                 continue
             
             try:

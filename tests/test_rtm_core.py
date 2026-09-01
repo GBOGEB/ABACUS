@@ -1,4 +1,3 @@
-"""
 import pytest
 pytest.skip("rtm_core module not yet implemented", allow_module_level=True)
 
