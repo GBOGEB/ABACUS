@@ -179,10 +179,67 @@ jobs:
           )
           cat qps_w08_dow_return/SHA256SUMS
       - name: Upload QPS W08 DOW runtime return
+        id: upload_dow_payload
         uses: actions/upload-artifact@v7
         with:
           name: qps-w08-dow-runtime-return-${{ github.run_id }}
           path: qps_w08_dow_return/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Build post-upload DOW binding
+        env:
+          DOW_ARTIFACT_ID: ${{ steps.upload_dow_payload.outputs.artifact-id }}
+          DOW_ARTIFACT_DIGEST: ${{ steps.upload_dow_payload.outputs.artifact-digest }}
+          DOW_ARTIFACT_URL: ${{ steps.upload_dow_payload.outputs.artifact-url }}
+        run: |
+          mkdir -p qps_w08_dow_binding
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          artifact_id = os.environ.get("DOW_ARTIFACT_ID", "").strip()
+          artifact_digest = os.environ.get("DOW_ARTIFACT_DIGEST", "").strip()
+          if not artifact_id:
+              raise SystemExit("upload-artifact did not return artifact-id")
+          if not artifact_digest.startswith("sha256:"):
+              raise SystemExit("upload-artifact did not return a sha256 artifact-digest")
+          binding = {
+              "schema_version": "0.1",
+              "document_id": "QPS_W08_DOW_RUNTIME_BINDING",
+              "status": "CANDIDATE_ONLY",
+              "authority": "ABACUS_parent_DOW_runtime",
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "commit_sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "ref": os.environ["GITHUB_REF"],
+              "runtime_artifact_id": artifact_id,
+              "runtime_artifact_digest": artifact_digest,
+              "runtime_artifact_url": os.environ.get("DOW_ARTIFACT_URL", ""),
+              "dow_runtime_checks_passed": True,
+              "child_disposition": "UNSET",
+              "parent_credit_promotion_allowed": False,
+              "missing_hash_inference_allowed": False,
+          }
+          out = Path("qps_w08_dow_binding/runtime_binding.json")
+          out.write_text(
+              json.dumps(binding, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (
+            cd qps_w08_dow_binding
+            sha256sum runtime_binding.json > SHA256SUMS
+          )
+          cat qps_w08_dow_binding/runtime_binding.json
+          cat qps_w08_dow_binding/SHA256SUMS
+      - name: Upload post-upload DOW binding
+        uses: actions/upload-artifact@v7
+        with:
+          name: qps-w08-dow-runtime-binding-${{ github.run_id }}
+          path: qps_w08_dow_binding/
           if-no-files-found: error
           retention-days: 30
 
