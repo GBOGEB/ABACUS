@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QPS GitHub Round-Trip Handover</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --ink: #1b2430; --sub: #5b6675;
+    --line: #e2e6ea; --accent: #0f6e5c; --accent-bg: #e6f4f0;
+    --code-bg: #eef1f4; --warn-bg: #fdf3e3; --warn-line: #e3a71a;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  article { max-width: 900px; margin: 0 auto; padding: 48px 32px 100px; background: var(--card); }
+  h1 { font-size: 26px; margin: 0 0 6px; }
+  h1 + p.byline { color: var(--sub); font-size: 14px; margin: 0 0 32px; }
+  h2 { font-size: 19px; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 15px; margin: 20px 0 8px; color: var(--sub); }
+  ol, ul { padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 90%; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0 20px; }
+  th { text-align:left; font-size: 11px; text-transform:uppercase; letter-spacing:.04em;
+    color: var(--sub); padding: 7px 10px; border-bottom: 2px solid var(--line); white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  a { color: var(--accent); }
+  strong { font-weight: 700; }
+  .flag { border-left: 3px solid var(--accent); background: var(--accent-bg); border-radius: 0 8px 8px 0;
+    padding: 4px 16px; margin: 16px 0; font-size: 14px; }
+  .warn { border-left: 3px solid var(--warn-line); background: var(--warn-bg); border-radius: 0 8px 8px 0;
+    padding: 4px 16px; margin: 16px 0; font-size: 14px; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<article>
+
+<h1>QPS GitHub round-trip — PR triage &amp; local repo handover</h1>
+<p class="byline">2026-09-02 · covers <code>GBOGEB/cryoplant-project</code>, <code>GBOGEB/ABACUS</code>, <code>GBOGEB/CODEX</code> ·
+rendered from <a href="QPS_GITHUB_ROUNDTRIP_HANDOVER.md"><code>QPS_GITHUB_ROUNDTRIP_HANDOVER.md</code></a></p>
+
+<h2>1. PR triage — last 5 per repo (via GitHub REST API, authenticated)</h2>
+<p>All 15 PRs below are <strong>merged</strong>, all created and merged same-day, all targeting <code>main</code> directly.
+0 open PRs remain in any of the three repos as of this scan.</p>
+
+<h3>cryoplant-project (child SSOT)</h3>
+<div class="table-wrap"><table>
+<tr><th>#</th><th>Title</th><th>Branch</th><th>Created</th><th>Merged</th></tr>
+<tr><td>265</td><td>control(qps): add dynamic progress metrics beyond saturated PCA</td><td><code>control/qps-dynamic-metrics-v1</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>264</td><td>control(lkt): add negotiation return capture intake</td><td><code>lkt-w13-return-capture</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>263</td><td>control(nego): harden LKT SAT and ODH return gates</td><td><code>control/lkt-t0-sat-odh-return-w13</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>262</td><td>control(nego): add LKT SAT and ODH return capture</td><td><code>control/lkt-t0-sat-odh-return-w13</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>261</td><td>control(lkt): add negotiation execution register</td><td><code>lkt-w13-execution</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+</table></div>
+
+<h3>ABACUS (DOW analysis plane)</h3>
+<div class="table-wrap"><table>
+<tr><th>#</th><th>Title</th><th>Branch</th><th>Created</th><th>Merged</th></tr>
+<tr><td>811</td><td>fix(qps): publish W08 DOW post-upload artifact binding</td><td><code>fix/w08-dow-post-upload-binding</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>810</td><td>fix(ci): govern W08 DOW return as main-bound full-tier lane</td><td><code>fix/qps-w08-dow-return-governance</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>809</td><td>control(qps): emit hash-bound W08 DOW runtime return</td><td><code>control/qps-w08-dow-runtime-return-artifact</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>808</td><td>fix(ci): restore docker hygiene and bootstrap test deps</td><td><code>codex/abacus-small-ci-scale-20260901</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>807</td><td>fix(qps): fail closed on negative compliance wording</td><td><code>fix/qps-w11-negative-compliance-guard</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+</table></div>
+
+<h3>CODEX (KEB exchange/governance plane)</h3>
+<div class="table-wrap"><table>
+<tr><th>#</th><th>Title</th><th>Branch</th><th>Created</th><th>Merged</th></tr>
+<tr><td>337</td><td>fix(qps): publish W08 KEB post-upload artifact binding</td><td><code>fix/w08-keb-post-upload-binding</code></td><td>2026-09-02</td><td>2026-09-02</td></tr>
+<tr><td>336</td><td>control(qps): emit hash-bound W08 KEB runtime return</td><td><code>control/qps-w08-keb-runtime-return-artifact</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>335</td><td>control(qps): advance W08 ABACUS peer lineage post-802</td><td><code>control/qps-w08-peer-lineage-post802</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>334</td><td>fix(qps): harden W11 OFFER evidence runtime schema</td><td><code>fix/qps-w11-evidence-schema-runtime</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+<tr><td>333</td><td>feat(qps): add W11 OFFER evidence schema</td><td><code>feat/qps-w11-offer-evidence-schema</code></td><td>2026-09-01</td><td>2026-09-01</td></tr>
+</table></div>
+
+<div class="flag"><strong>Reading across the three:</strong> ABACUS #809&rarr;#810&rarr;#811 and CODEX #335&rarr;#336&rarr;#337
+are the <em>same</em> W08 DOW/KEB "runtime-return artifact" sequence, running in lockstep one day apart on the two peer
+planes &mdash; direct evidence the DOW&harr;KEB round-trip mechanism is not just designed, it executed this week. See &sect;3
+for why the tracking issues don't yet reflect that.</div>
+
+<h2>2. Local repo handover — state of the checkouts under this Master_Input tree</h2>
+<div class="table-wrap"><table>
+<tr><th>Repo</th><th>Local path</th><th>Branch</th><th>vs origin/main</th><th>Uncommitted</th><th>Last local commit</th></tr>
+<tr><td>cryoplant-project</td><td><code>17_CRYOPLANT_PROJECT/builds/cryoplant-project</code></td><td>main</td><td><strong>behind 844</strong></td><td>1 file (README.md)</td><td><code>ad8cf5a</code> 2025-06-12 "Initial commit"</td></tr>
+<tr><td>ABACUS</td><td><code>13_CORE_SYSTEMS/ABACUS/ABACUS</code></td><td>main</td><td><strong>ahead 17, behind 2206</strong> (diverged)</td><td>12 files (docs + RTM scripts)</td><td><code>1adf7126</code> 2025-11-08</td></tr>
+<tr><td>CODEX</td><td colspan="5"><em>no local checkout found under Master_Input</em></td></tr>
+</table></div>
+
+<p><strong>Read this plainly:</strong> none of these local checkouts are the working copies behind the PR activity
+in &sect;1 &mdash; that traffic (branch created &rarr; PR opened &rarr; merged, same day, every time) is an automated
+pipeline operating directly against GitHub, not a human <code>git push</code> from this machine. The local
+cryoplant-project clone is a frozen day-one snapshot (844 commits stale); the local ABACUS clone
+last touched real history in November 2025 and has since diverged both ways (17 commits of local
+edits GitHub doesn't have, 2206 it hasn't pulled). CODEX has never been cloned here at all.</p>
+
+<div class="warn"><strong>Not executed, needs your call before anything destructive:</strong>
+<ul>
+  <li>ABACUS's 12 uncommitted files (README/TROUBLESHOOTING/RTM-generator docs+scripts) look like
+    manual edits made against a since-superseded base &mdash; worth reviewing individually (<code>git diff</code>)
+    before deciding stash vs. discard vs. cherry-pick, not a blanket reset.</li>
+  <li>Both <code>main</code> branches are too far behind to fast-forward; catching up is a <code>fetch</code> +
+    (<code>reset --hard origin/main</code> after stashing local changes, or a fresh clone) &mdash; a hard-reset class
+    operation, so flagging rather than running it.</li>
+  <li>CODEX has no local presence to align at all; clone it only if a local checkout is actually needed
+    for this tree's workflows &mdash; the automation clearly doesn't need one.</li>
+</ul></div>
+
+<h2>3. Compare against existing artefacts — what's now stale</h2>
+<ul>
+  <li><strong><a href="QPS_FEDERATION_TOPOLOGY.html">QPS_FEDERATION_TOPOLOGY.html</a></strong> (built 2026-08-31) shows
+    ABACUS#659, ABACUS#667, CODEX#254, CODEX#255 as open tracking issues for "run the DOW/KEB cycle" and
+    "mature it into a typed round-trip service." Re-checked live: <strong>all four are still open</strong>, but the PR
+    bodies in &sect;1 show the DOW cycle work is now three PRs deep (#809 "close the W08 DOW handback evidence gap
+    after #805" &rarr; #810 &rarr; #811 "close the remaining W08 DOW return observability gap after merged #810"),
+    with the matching KEB sequence on CODEX one day behind it. None of the PR bodies use a GitHub closing keyword
+    against #659/#667/#254/#255, which is exactly why the issues never auto-closed despite the work landing &mdash;
+    a tracking gap, not a work gap.</li>
+  <li><strong><a href="QPS_SESSION_NARRATIVE.html">QPS_SESSION_NARRATIVE.html</a></strong>'s "Honest open items" section
+    states <em>"No ABACUS DOW or CODEX KEB cycle has actually executed against real QPS content yet."</em> That's now
+    incorrect as of 2026-09-01/02 &mdash; both cycles have executed, repeatedly, this week. Needs a correction pass.</li>
+  <li><strong><a href="QPS_ARTEFACT_LINEAGE.json">QPS_ARTEFACT_LINEAGE.json</a></strong> has no entries at all for this
+    GitHub-side activity (it only covers the Excel/PPTX/HTML artefact chain) &mdash; out of scope for that manifest's
+    schema, not a gap in it.</li>
+</ul>
+
+<h2>4. Recommended next actions (none executed — your call)</h2>
+<ol>
+  <li>Either add closing keywords (<code>Closes #659</code>, <code>Closes #254</code>, etc.) to the next PR in each
+    DOW/KEB sequence, or manually update/close #659, #667, #254, #255 to reflect the work already merged.</li>
+  <li>Correct <code>QPS_SESSION_NARRATIVE.html</code>'s "Honest open items" claim about DOW/KEB not having executed
+    &mdash; it's stale as of this scan.</li>
+  <li>Decide what to do with the two stale local checkouts (&sect;2) &mdash; review-then-resync, or accept they're
+    purely observational and leave them as-is since the real pipeline doesn't depend on them.</li>
+  <li>Decide whether CODEX needs a local checkout under this tree at all.</li>
+</ol>
+
+</article>
+</body>
+</html>

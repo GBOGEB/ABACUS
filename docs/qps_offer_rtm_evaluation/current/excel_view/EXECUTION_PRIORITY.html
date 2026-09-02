@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EXECUTION_PRIORITY — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>EXECUTION_PRIORITY</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">EXECUTION_PRIORITY — what PCA + BT ranking actually say to work on first</th><th data-col="1"></th><th data-col="2"></th><th data-col="3"></th><th data-col="4"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>EXECUTION_PRIORITY</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["EXECUTION_PRIORITY \u2014 what PCA + BT ranking actually say to work on first", "", "", "", ""];
+const ROWS = [["Figures read directly from v24!PCA_ANALYSIS, v24!OFFER_RANKING, v24!RTM_RANKING, and", "", "", "", ""], ["v24!CONFLICT_CANDIDATES -- not asserted independently. This file's own STATIC_BT/", "", "", "", ""], ["STATIC_BT_RTM sheets provide a second, independently-computed cross-check on rank order.", "", "", "", ""], ["1. Gate items first, always \u2014 lexicographic, not compensatory", "", "", "", ""], ["6 OFFER T0 Gate items (OFFER-01,02,03,47,48,49) and 43 RTM T0 Gate items sit above every", "", "", "", ""], ["other item regardless of BT score. A gate failure cannot be bought back by strong scores", "", "", "", ""], ["elsewhere. Top RTM gate cluster by domain: Safety & Protection and Codes & Standards", "", "", "", ""], ["dominate the first 13 RTM_RANKING rows.", "", "", "", ""], ["2. Within non-gate items, PCA justifies keeping all 7 dimensions", "", "", "", ""], ["PC1 explains only 30.6% of variance; 7 components needed to reach 100% (v24!PCA_ANALYSIS).", "", "", "", ""], ["PC3 is a near-pure Cost axis (0.881 loading) -- Cost is structurally independent of the", "", "", "", ""], ["other 6, so a cost-only or performance-only shortlist would miss real signal. Sequence", "", "", "", ""], ["strictly by OFFER_RANKING / RTM_RANKING Weighted-S order, not any single dimension.", "", "", "", ""], ["3. First 5 non-gate OFFER items after the 6 gate items", "", "", "", ""], ["Rank", "OFFER ID", "Title", "Tier", "Category"], ["7", "OFFER-09", "LN2 Techno-Economic Evaluation (CAPEX/OPEX)", "T1 Primary", "Performance / Process / Utilities"], ["8", "OFFER-42", "After-Sales Service Organization & Pricing", "T1 Primary", "Reliability / RAM / Service"], ["9", "OFFER-20", "Helium Leak Detection & Loss Management", "T1 Primary", "Reliability / RAM / Service"], ["10", "OFFER-34", "Cooling Water System Requirements", "T1 Primary", "Performance / Process / Utilities"], ["11", "OFFER-29", "Control System Obsolescence Strategy", "T1 Primary", "Controls / Software / Management"], ["4. Conflict-review hotspots (from v24!CONFLICT_CANDIDATES, 68 heuristic pairs)", "", "", "", ""], ["3 sections account for the majority of candidate pairs -- review as blocks, not row by row;", "", "", "", ""], ["a shared drafting pattern is more likely than 68 independent coincidences.", "", "", "", ""], ["Section", "Domain", "Approx. pairs", "Read", ""], ["4.6.8", "Control & Interlock", "~15", "Operator-station visualization/control language repeats across adjacent RTMs -- shared drafting template, review as a block.", ""], ["8.1.7", "Quality Assurance & Control", "~15", "Non-conformity/corrective-action language repeats across adjacent RTMs -- same pattern.", ""], ["10.3", "Acceptance & Warranty", "8", "Warranty-clause language repeats across RTM-711 through RTM-722 -- review the whole warranty block together.", ""]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>
