@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BT_Method — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>BT_Method</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">BT Method — controlled prior, shared weighting and evidence rules</th><th data-col="1"></th><th data-col="2"></th><th data-col="3"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>BT_Method</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["BT Method \u2014 controlled prior, shared weighting and evidence rules", "", "", ""];
+const ROWS = [["Cold/static ranking uses no bidder evidence. The OFFER prior is replicated; RTM ranking uses the same dimension weights and a narrow gate rule. \u03bb is a regularized Bradley\u2013Terry diagnostic.", "", "", ""], ["Layer", "Rule", "Implementation", "Guardrail"], ["Universe", "50 OFFER + 722 RTM", "Canonical SCK CEN/90508872", "No ranking by text length or bullet count"], ["Scores", "0\u20133 maximum relevance per dimension", "L/R/P/F/Q/LC/C", "Repeated sub-bullets do not accumulate weight"], ["Weights", "20/22/20/16/12/7/3%", "BT_Config", "Reliability slightly above performance; cost tie-break only"], ["OFFER", "Frozen old rank/tiers/BT Weight", "STATIC_BT", "Shared-weight rank is diagnostic only"], ["RTM", "Weighted composite and all-pairs dominance", "STATIC_BT_RTM", "Every RTM remains mandatory"], ["Gate", "RTM-001..004; safety/protection; selected legislation/conformity/functional safety", "T0", "Narrow rule avoids making all \u201cshall\u201d statements gates"], ["Pairwise", "Higher gate/composite wins; equal=tie", "Expected win % 0\u2013100", "Deterministic, no random sampling"], ["\u03bb", "Zermelo/MM MLE; pseudo-count 0.10; tolerance 1E-10", "OFFER 252 iterations; RTM 316 iterations", "Normalized max=100; scale does not change order"], ["Standards", "Explicit/table-grounded separated from section-derived", "Canonical sheets / Standards_Register", "No external standard invented"], ["Evidence", "Explicit deliverable separated from derived proof route", "Canonical sheets / Deliverables_Register", "Derived route is reviewer guidance, not a new requirement"], ["Dimension", "3 Core", "2 Significant", "1 Supporting"], ["Safety/Legal", "Safety, EU/PED/CE, personnel protection", "Compliance, standards, acceptance/warranty", "Governance"], ["Reliability", "Availability, MTBF, redundancy, LOOP/recovery", "Maintenance, spares, obsolescence, FMECA", "Monitoring/diagnostics"], ["Performance", "Capacity, heat load, flow, P/T stability, transients", "Equipment ratings, accuracy, utilities", "Interface constraint"], ["Functional", "Scenarios, controls, software, interlocks", "Architecture, integration, procedures", "Planning support"], ["Quality/Verifiability", "FAT/SAT, validation, inspection, audit, QAP", "Files, reports, drawings, traceability", "Numeric measure"], ["Lifecycle", "Lifetime, maintenance strategy, spares, warranty", "Training, serviceability, manuals", "Retention/as-built"], ["Cost", "Price/CAPEX/OPEX", "Energy economics", "Schedule/procurement"]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BT_Config — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>BT_Config</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">BT Engine Configuration</th><th data-col="1"></th><th data-col="2"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>BT_Config</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["BT Engine Configuration", "", ""];
+const ROWS = [["Yellow cells are editable inputs. This export is a frozen static calculation; rerun the analysis after changing weights/scores.", "", ""], ["BT dimension", "Weight", "Default intention"], ["Safety/Legal", "0.2", "Gate-sensitive, compliance critical"], ["Reliability", "0.22", "2 K continuity / recovery / no warm stop"], ["Performance", "0.2", "Heat loads, capacity, transient support"], ["Functional", "0.16", "Control logic, procedures, operability"], ["Quality/Verifiability", "0.12", "FAT/SAT, QAP, standards, auditability"], ["Lifecycle", "0.07", "Maintainability / obsolescence / support"], ["Cost", "0.03", "Technical tie-break only; price evaluated separately"], ["Weight sum", "1", ""], ["OFFER frozen method", "User-supplied 1\u201350 rank, 4 tiers and BT Weight", "STATIC_BT"], ["RTM T0 gate rule", "Narrow legal/safety/admissibility rule", "BT_Method"], ["RTM T1 non-gate share", "0.23", "Mirrors 10/44 OFFER ratio"], ["RTM T2 non-gate share", "0.36", "Mirrors 16/44 OFFER ratio"], ["MLE pseudo-count", "0.1", "Regularizes deterministic comparisons"], ["MLE tolerance", "1e-10", "Maximum relative lambda change"], ["OFFER MLE iterations", "252", "9.802E-11 final change"], ["RTM MLE iterations", "316", "9.789E-11 final change"]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>
