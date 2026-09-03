@@ -1,0 +1,48 @@
+schema_version: "0.1"
+document_id: QPS_W28_WORD_PDF_DOW_REQUEST
+wave: W28
+status: PARENT_RUNTIME_REQUEST_NO_CHILD_CREDIT
+return_to_child: GBOGEB/cryoplant-project
+source_child_pr: GBOGEB/cryoplant-project#319
+source:
+  title: QPS AGENDA_fuLL-COMMENT-REOSLUTION.docx
+  sckcen_reference: SCK CEN/99733122
+  sha256: >-
+    cd16f80619c00fe84616c648dbdaf44ca801f63e294fb7d9c1b60c0bfaaf4959
+  outward_direct_word_link: false
+purpose: >-
+  Treat Word and Word-to-PDF as a special governed DOW path rather than
+  another ordinary view. Inspect existing document/PDF skills, agentic
+  execution, orchestration, federation, renderer QA and publication bridges
+  before promoting a PDF rendition into the child outward-navigation set.
+required_dow_checks:
+  - discover_existing_DOCX_and_PDF_builders_before_new_code
+  - preserve_Word_sequence_wording_and_reviewer_attribution
+  - preserve_source_reference_and_SHA256
+  - prune_duplicate_or_stale_document_surfaces
+  - verify_Aptos_typography_page_flow_tables_headers_footers
+  - verify_document_reference_number
+  - render_DOCX_to_PDF_and_compare_page_renders
+  - detect_missing_glyphs_clipping_overflow_and_bad_page_breaks
+  - bind_generated_PDF_hash_and_source_hash
+  - return_structural_findings_and_hash_bound_receipts_to_child
+  - do_not_set_child_compliance_or_negotiation_closure
+orchestration:
+  sequence:
+    - source_intake
+    - Word_structure_inspection
+    - skill_and_builder_reuse_scan
+    - normalization_without_silent_rewording
+    - governed_PDF_render
+    - visual_QA
+    - duplicate_surface_prune_scan
+    - DOW_receipt
+    - child_accept_reject_defer
+federation_bridge:
+  CODEX_KEB_companion_required: true
+  child_reentry_required: true
+  promotion_rule: >-
+    PDF becomes an outward navigation target only after the DOW runtime and
+    visual receipt plus the CODEX KEB semantic and lineage receipt are
+    available and the child accepts the return.
+formal_credit: 0
