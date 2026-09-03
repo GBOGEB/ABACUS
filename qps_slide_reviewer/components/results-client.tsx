@@ -24,12 +24,27 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   LabelList,
+  Cell,
+  BarChart,
+  Bar,
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import type { Analytics } from '@/lib/analytics';
 
 type SlideStat = Analytics['slides'][number];
 type SortMode = 'bt' | 'stars' | 'votes' | 'ab-wins';
+type PcAxis = 'pc2' | 'pc3';
+
+const GROUP_COLORS: Record<string, string> = {
+  'Front matter': '#7030A0',
+  'ALAT 3D model': '#A855F7',
+  'Compliance tables': '#EC4899',
+  'LKT 2D drawings': '#F59E0B',
+};
+const FALLBACK_COLOR = '#6B7280';
+function groupColor(g?: string | null): string {
+  return (g && GROUP_COLORS[g]) || FALLBACK_COLOR;
+}
 
 function fmt(n: number | null | undefined, d = 2): string {
   if (n == null || !Number.isFinite(n)) return '–';
@@ -72,6 +87,7 @@ export function ResultsClient() {
   const [data, setData] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>('bt');
+  const [pcAxis, setPcAxis] = useState<PcAxis>('pc2');
 
   const fetchResults = useCallback(async () => {
     setLoading(true);
@@ -121,16 +137,57 @@ export function ResultsClient() {
         ? 'bg-amber-100 text-amber-800'
         : 'bg-red-100 text-red-800';
 
+  const yLabel = pcAxis === 'pc2' ? 'PC2' : 'PC3';
+  const yIndex = pcAxis === 'pc2' ? 1 : 2;
+
   const scatterData = useMemo(
     () =>
       (data?.slides ?? []).map((s) => ({
         x: s.pc1,
-        y: s.pc2,
+        y: pcAxis === 'pc2' ? s.pc2 : s.pc3,
         name: `S${s.pageNumber}`,
+        group: s.groupName ?? null,
+        fill: groupColor(s.groupName),
         starred: s.starred,
+      })),
+    [data, pcAxis]
+  );
+
+  // Legend groups actually present, in canonical order
+  const legendGroups = useMemo(() => {
+    const present = new Set((data?.slides ?? []).map((s) => s.groupName ?? ''));
+    const ordered = Object.keys(GROUP_COLORS).filter((g) => present.has(g));
+    if (present.has('')) ordered.push('Ungrouped');
+    return ordered;
+  }, [data]);
+
+  // Scree plot data (explained variance per component)
+  const screeData = useMemo(
+    () =>
+      (data?.pca.explainedVariance ?? []).map((v, i) => ({
+        name: `PC${i + 1}`,
+        variance: Math.max(0, v),
       })),
     [data]
   );
+
+  // Biplot: loading vectors scaled into the score space
+  const biplot = useMemo(() => {
+    const l0 = data?.pca.loadings?.[0] ?? [];
+    const l1 = data?.pca.loadings?.[yIndex] ?? [];
+    const feats = data?.pca.features ?? [];
+    if (!feats.length || !scatterData.length) return [] as { f: string; x: number; y: number }[];
+    const maxScore = Math.max(
+      0.0001,
+      ...scatterData.flatMap((d) => [Math.abs(d.x), Math.abs(d.y)])
+    );
+    const maxLoad = Math.max(
+      0.0001,
+      ...feats.map((_, j) => Math.hypot(l0[j] ?? 0, l1[j] ?? 0))
+    );
+    const scale = (maxScore / maxLoad) * 0.85;
+    return feats.map((f, j) => ({ f, x: (l0[j] ?? 0) * scale, y: (l1[j] ?? 0) * scale }));
+  }, [data, scatterData, yIndex]);
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8">
@@ -342,75 +399,158 @@ export function ResultsClient() {
 
           {/* PCA */}
           <section className="mb-10">
-            <div className="mb-3 flex items-center gap-2">
-              <Activity className="h-5 w-5 text-primary" />
-              <h2 className="font-display text-xl font-bold text-primary">PCA — slide feature space</h2>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                <h2 className="font-display text-xl font-bold text-primary">PCA — slide feature space</h2>
+              </div>
+              <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+                {(['pc2', 'pc3'] as PcAxis[]).map((ax) => (
+                  <button
+                    key={ax}
+                    onClick={() => setPcAxis(ax)}
+                    className={cn(
+                      'rounded-md px-3 py-1 text-xs font-medium transition-all',
+                      pcAxis === ax ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    PC1 vs {ax === 'pc2' ? 'PC2' : 'PC3'}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="grid gap-4 lg:grid-cols-3">
+              {/* Biplot scatter */}
               <div className="rounded-xl border bg-card p-4 lg:col-span-2" style={{ boxShadow: 'var(--shadow-sm)' }}>
                 {data.pca.explainedVariance.some((v) => v > 0) ? (
-                  <div className="h-[340px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <ScatterChart margin={{ top: 16, right: 16, bottom: 16, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E9D5FF" />
-                        <XAxis
-                          type="number"
-                          dataKey="x"
-                          name="PC1"
-                          tick={{ fontSize: 11 }}
-                          label={{ value: `PC1 (${pct(data.pca.explainedVariance[0])})`, position: 'insideBottom', offset: -8, fontSize: 11 }}
-                        />
-                        <YAxis
-                          type="number"
-                          dataKey="y"
-                          name="PC2"
-                          tick={{ fontSize: 11 }}
-                          label={{ value: `PC2 (${pct(data.pca.explainedVariance[1])})`, angle: -90, position: 'insideLeft', fontSize: 11 }}
-                        />
-                        <ReferenceLine x={0} stroke="#9CA3AF" />
-                        <ReferenceLine y={0} stroke="#9CA3AF" />
-                        <Tooltip
-                          cursor={{ strokeDasharray: '3 3' }}
-                          formatter={(v: number) => fmt(v)}
-                          labelFormatter={() => ''}
-                          contentStyle={{ fontSize: 12 }}
-                        />
-                        <Scatter data={scatterData} fill="#7030A0">
-                          <LabelList dataKey="name" position="top" style={{ fontSize: 10, fill: '#4B5563' }} />
-                        </Scatter>
-                      </ScatterChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <>
+                    <div className="h-[360px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ScatterChart margin={{ top: 16, right: 24, bottom: 16, left: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E9D5FF" />
+                          <XAxis
+                            type="number"
+                            dataKey="x"
+                            name="PC1"
+                            tick={{ fontSize: 11 }}
+                            label={{ value: `PC1 (${pct(data.pca.explainedVariance[0])})`, position: 'insideBottom', offset: -8, fontSize: 11 }}
+                          />
+                          <YAxis
+                            type="number"
+                            dataKey="y"
+                            name={yLabel}
+                            tick={{ fontSize: 11 }}
+                            label={{ value: `${yLabel} (${pct(data.pca.explainedVariance[yIndex])})`, angle: -90, position: 'insideLeft', fontSize: 11 }}
+                          />
+                          <ReferenceLine x={0} stroke="#9CA3AF" />
+                          <ReferenceLine y={0} stroke="#9CA3AF" />
+                          {/* Feature loading vectors (biplot overlay) */}
+                          {biplot.map((v) => (
+                            <ReferenceLine
+                              key={v.f}
+                              ifOverflow="extendDomain"
+                              segment={[{ x: 0, y: 0 }, { x: v.x, y: v.y }]}
+                              stroke="#C084FC"
+                              strokeWidth={1.5}
+                              strokeDasharray="4 2"
+                              label={{ value: v.f, position: 'end', fontSize: 9, fill: '#7030A0' }}
+                            />
+                          ))}
+                          <Tooltip
+                            cursor={{ strokeDasharray: '3 3' }}
+                            formatter={(val: number) => fmt(val)}
+                            labelFormatter={() => ''}
+                            contentStyle={{ fontSize: 12 }}
+                          />
+                          <Scatter data={scatterData}>
+                            {scatterData.map((d, i) => (
+                              <Cell key={i} fill={d.fill} stroke={d.starred ? '#7030A0' : 'none'} strokeWidth={d.starred ? 2 : 0} />
+                            ))}
+                            <LabelList dataKey="name" position="top" style={{ fontSize: 10, fill: '#4B5563' }} />
+                          </Scatter>
+                        </ScatterChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {/* Legend */}
+                    {legendGroups.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                        {legendGroups.map((g) => (
+                          <div key={g} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                            <span
+                              className="inline-block h-2.5 w-2.5 rounded-full"
+                              style={{ backgroundColor: g === 'Ungrouped' ? FALLBACK_COLOR : groupColor(g) }}
+                            />
+                            {g}
+                          </div>
+                        ))}
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                          <span className="inline-block h-2.5 w-2.5 rounded-full border-2 border-primary" />
+                          Key slide (starred)
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                          <span className="inline-block h-0 w-4 border-t-2 border-dashed" style={{ borderColor: '#C084FC' }} />
+                          Feature vector
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="py-16 text-center text-sm text-muted-foreground">
                     Not enough variation for PCA yet — star, vote or run A/B rounds first.
                   </p>
                 )}
               </div>
-              <div className="rounded-xl border bg-card p-4" style={{ boxShadow: 'var(--shadow-sm)' }}>
-                <h3 className="font-display mb-2 text-sm font-bold text-primary">Loadings</h3>
-                <table className="w-full text-xs">
-                  <thead className="text-left text-muted-foreground">
-                    <tr>
-                      <th className="py-1">Feature</th>
-                      <th className="py-1 text-right">PC1</th>
-                      <th className="py-1 text-right">PC2</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.pca.features.map((f, j) => (
-                      <tr key={f} className="border-t">
-                        <td className="py-1 font-medium">{f}</td>
-                        <td className="py-1 text-right font-mono">{fmt(data.pca.loadings[0]?.[j])}</td>
-                        <td className="py-1 text-right font-mono">{fmt(data.pca.loadings[1]?.[j])}</td>
+
+              {/* Scree + loadings */}
+              <div className="flex flex-col gap-4">
+                <div className="rounded-xl border bg-card p-4" style={{ boxShadow: 'var(--shadow-sm)' }}>
+                  <h3 className="font-display mb-2 text-sm font-bold text-primary">Scree — explained variance</h3>
+                  {screeData.some((d) => d.variance > 0) ? (
+                    <div className="h-[140px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={screeData} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E9D5FF" vertical={false} />
+                          <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                          <YAxis tickFormatter={(v: number) => `${Math.round(v * 100)}%`} tick={{ fontSize: 10 }} />
+                          <Tooltip formatter={(v: number) => pct(v)} contentStyle={{ fontSize: 12 }} />
+                          <Bar dataKey="variance" fill="#7030A0" radius={[4, 4, 0, 0]}>
+                            <LabelList dataKey="variance" position="top" formatter={(v: number) => pct(v)} style={{ fontSize: 10, fill: '#4B5563' }} />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <p className="py-6 text-center text-xs text-muted-foreground">No variance yet.</p>
+                  )}
+                </div>
+                <div className="rounded-xl border bg-card p-4" style={{ boxShadow: 'var(--shadow-sm)' }}>
+                  <h3 className="font-display mb-2 text-sm font-bold text-primary">Loadings</h3>
+                  <table className="w-full text-xs">
+                    <thead className="text-left text-muted-foreground">
+                      <tr>
+                        <th className="py-1">Feature</th>
+                        <th className="py-1 text-right">PC1</th>
+                        <th className="py-1 text-right">PC2</th>
+                        <th className="py-1 text-right">PC3</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="mt-3 text-[11px] text-muted-foreground">
-                  Features are standardised before decomposition. PC1 typically captures overall preference; PC2 separates
-                  explicit votes from pairwise wins.
-                </p>
+                    </thead>
+                    <tbody>
+                      {data.pca.features.map((f, j) => (
+                        <tr key={f} className="border-t">
+                          <td className="py-1 font-medium">{f}</td>
+                          <td className="py-1 text-right font-mono">{fmt(data.pca.loadings[0]?.[j])}</td>
+                          <td className="py-1 text-right font-mono">{fmt(data.pca.loadings[1]?.[j])}</td>
+                          <td className="py-1 text-right font-mono">{fmt(data.pca.loadings[2]?.[j])}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="mt-3 text-[11px] text-muted-foreground">
+                    Features are standardised before decomposition. PC1 typically captures overall preference; PC2 separates
+                    explicit votes from pairwise wins; PC3 picks up residual structure. Dashed vectors show how each feature
+                    projects onto the current axes.
+                  </p>
+                </div>
               </div>
             </div>
           </section>

@@ -141,13 +141,13 @@ export interface PcaResult {
   features: string[];
   explainedVariance: number[]; // ratio per component
   components: number[][]; // loadings: components[k][feature]
-  scores: { id: number; pc1: number; pc2: number }[];
+  scores: { id: number; pc1: number; pc2: number; pc3: number }[];
 }
 
-export function pca(ids: number[], features: string[], matrix: number[][], nComponents = 2): PcaResult {
+export function pca(ids: number[], features: string[], matrix: number[][], nComponents = 3): PcaResult {
   const n = matrix.length;
   const m = features.length;
-  if (n < 2) return { features, explainedVariance: [], components: [], scores: ids.map((id) => ({ id, pc1: 0, pc2: 0 })) };
+  if (n < 2) return { features, explainedVariance: [], components: [], scores: ids.map((id) => ({ id, pc1: 0, pc2: 0, pc3: 0 })) };
 
   // standardise
   const means = features.map((_, j) => matrix.reduce((s, r) => s + r[j], 0) / n);
@@ -189,6 +189,7 @@ export function pca(ids: number[], features: string[], matrix: number[][], nComp
     id: ids[i],
     pc1: comps[0] ? r.reduce((s, x, j) => s + x * comps[0][j], 0) : 0,
     pc2: comps[1] ? r.reduce((s, x, j) => s + x * comps[1][j], 0) : 0,
+    pc3: comps[2] ? r.reduce((s, x, j) => s + x * comps[2][j], 0) : 0,
   }));
   return { features, explainedVariance: eig.map((e) => e / totalVar), components: comps, scores };
 }

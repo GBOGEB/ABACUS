@@ -36,13 +36,12 @@ export async function buildAnalytics() {
     const tot = r.votesUp + r.votesDown;
     return [r.starred ? 1 : 0, r.votesUp - r.votesDown, tot ? r.votesUp / tot : 0.5, b.logStrength, b.winRate];
   });
-  const pcaRes = pca(ids, features, matrix, 2);
+  const pcaRes = pca(ids, features, matrix, 3);
   const pcaById = new Map(pcaRes.scores.map((s) => [s.id, s]));
   const kpis = dmaicKpis(rows, comps, sessions, bt, pcaRes);
 
   const btRanked = [...bt].sort((a, b) => b.strength - a.strength);
   const rankById = new Map(btRanked.map((b, i) => [b.id, i + 1]));
-  const pageBySlideId = new Map(slides.map((slide) => [slide.id, slide.pageNumber]));
 
   const slideStats = rows.map((r) => {
     const b = btById.get(r.id)!;
@@ -61,6 +60,7 @@ export async function buildAnalytics() {
       btRank: rankById.get(r.id) ?? null,
       pc1: p.pc1,
       pc2: p.pc2,
+      pc3: p.pc3,
     };
   });
 
@@ -68,9 +68,9 @@ export async function buildAnalytics() {
     .filter((r) => r.reason && r.reason.trim())
     .map((r) => ({
       sessionId: r.sessionId,
-      slideA: pageBySlideId.get(r.slideAId) ?? r.slideAId,
-      slideB: pageBySlideId.get(r.slideBId) ?? r.slideBId,
-      winner: r.winnerId ? pageBySlideId.get(r.winnerId) ?? r.winnerId : null,
+      slideA: slides.find((s) => s.id === r.slideAId)?.pageNumber ?? r.slideAId,
+      slideB: slides.find((s) => s.id === r.slideBId)?.pageNumber ?? r.slideBId,
+      winner: r.winnerId ? slides.find((s) => s.id === r.winnerId)?.pageNumber ?? r.winnerId : null,
       isTie: r.isTie,
       reason: r.reason,
       at: r.createdAt.toISOString(),
