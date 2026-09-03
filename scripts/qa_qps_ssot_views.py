@@ -22,9 +22,15 @@ def check_xlsx(path: Path) -> list[dict[str, object]]:
     checks: list[dict[str, object]] = []
     def add(name: str, ok: bool, detail: str = "") -> None:
         checks.append({"check": name, "ok": bool(ok), "detail": detail})
-    add("xlsx_zip_integrity", zipfile.is_zipfile(path))
-    wb = load_workbook(path, data_only=False)
-    visible = [s for s in wb.sheetnames if wb[s].sheet_state == "visible"]
+    is_zip = zipfile.is_zipfile(path)
+    add("xlsx_zip_integrity", is_zip)
+    if not is_zip:
+        return checks
+    try:
+        wb = load_workbook(path, data_only=False)
+    except Exception as exc:
+        add("load_workbook", False, repr(exc))
+        return checks
     add("five_visible_sheets", visible == VISIBLE, str(visible))
     add("hidden_support_sheets", all(x in wb.sheetnames and wb[x].sheet_state != "visible" for x in HIDDEN))
     for s in ["MASTER_REVIEW", "NEG_RFI_RETURNS", "EVIDENCE_LINEAGE"]:
