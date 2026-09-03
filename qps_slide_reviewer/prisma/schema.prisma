@@ -1,0 +1,58 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/qps_slide_reviewer/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Slide {
+  id            Int        @id @default(autoincrement())
+  pageNumber    Int        @unique @map("page_number")
+  imageFilename String     @map("image_filename")
+  starred       Boolean    @default(false)
+  votesUp       Int        @default(0) @map("votes_up")
+  votesDown     Int        @default(0) @map("votes_down")
+  votesNeutral  Int        @default(0) @map("votes_neutral")
+  groupName     String?    @map("group_name")
+  title         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  abResultsA    AbResult[] @relation("slideA")
+  abResultsB    AbResult[] @relation("slideB")
+  abWins        AbResult[] @relation("winner")
+
+  @@map("slides")
+}
+
+model AbSession {
+  id           Int        @id @default(autoincrement())
+  sessionToken String     @unique @map("session_token")
+  totalRounds  Int        @default(10) @map("total_rounds")
+  currentRound Int        @default(0) @map("current_round")
+  groupName    String?    @map("group_name")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  results      AbResult[]
+
+  @@map("ab_sessions")
+}
+
+model AbResult {
+  id        Int       @id @default(autoincrement())
+  sessionId Int       @map("session_id")
+  slideAId  Int       @map("slide_a_id")
+  slideBId  Int       @map("slide_b_id")
+  winnerId  Int?      @map("winner_id")
+  isTie     Boolean   @default(false) @map("is_tie")
+  reason    String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  session AbSession @relation(fields: [sessionId], references: [id])
+  slideA  Slide     @relation("slideA", fields: [slideAId], references: [id])
+  slideB  Slide     @relation("slideB", fields: [slideBId], references: [id])
+  winner  Slide?    @relation("winner", fields: [winnerId], references: [id])
+
+  @@map("ab_results")
+}
