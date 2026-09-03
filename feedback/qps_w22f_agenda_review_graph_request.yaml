@@ -1,0 +1,122 @@
+schema_version: "0.1"
+document_id: QPS_W22F_AGENDA_REVIEW_GRAPH_REQUEST
+status: PARENT_CANDIDATE_REQUEST
+authority: ABACUS_parent_graph_dow_support
+return_to_child: GBOGEB/cryoplant-project
+source_child_prs:
+  - GBOGEB/cryoplant-project#307
+  - GBOGEB/cryoplant-project#308
+  - GBOGEB/cryoplant-project#300
+source_document:
+  reference: SCK_CEN_99733122
+  negotiation_date: 2026-09-10
+  sha256: cd16f80619c00fe84616c648dbdaf44ca801f63e294fb7d9c1b60c0bfaaf4959
+  confidentiality_rule: SANITIZED_STRUCTURE_ONLY_NO_BIDDER_VERBATIM
+measured_child_review_surface:
+  agenda_topic_blocks: 114
+  comment_atoms: 230
+  compliance_matrix_rows: 86
+  explicit_agenda_entity_edges: 165
+purpose: >-
+  Ask DOW to inspect the newly ingested full QPS agenda/comment-resolution graph for missing edges,
+  orphan review nodes, multi-node evidence reuse, dependency/common-cause links, re-entry paths and
+  double-count risks. Parent output is graph/review candidate evidence only and cannot set child
+  compliance or negotiation closure.
+semantic_controls:
+  - DEVIATION_NE_NOK
+  - CLARIFICATION_NE_AUTOMATIC_COMPLIANCE_OR_NONCOMPLIANCE
+  - MISSING_OR_DEFERRED_EVIDENCE_ROUTES_TO_RFI_OR_CLARIFY_UNLESS_REQUIREMENT_IS_EXPLICITLY_NOT_MET
+  - PARTIAL_COMPLIANCE_PRESERVES_SATISFIED_AND_RESIDUAL_SUBCONDITIONS
+  - PCO_TO_GBO_IS_INTERNAL_SCK_REVIEW_ROUTING_NOT_BIDDER_EVIDENCE
+  - REVIEWED_NE_COMPLIANT
+  - AGREED_OR_PROMISED_NE_CLOSED
+  - NO_CROSS_BIDDER_SUBSTITUTION
+  - NO_FORMAL_CREDIT_FROM_PARENT_GRAPH_FINDINGS
+requested_node_types:
+  - REVIEW_COMMENT_ATOM
+  - INTERNAL_REVIEW_REQUEST
+  - AGENDA_TOPIC
+  - SOURCE_FACT
+  - REVIEW_ASSESSMENT
+  - ACTION_ROUTE
+  - UPDATED_OFFER_RETURN
+  - REENTRY_EVIDENCE
+  - RTM
+  - OFFER
+  - COM
+  - GEN
+  - HSE
+  - TODO
+  - ADR_OCD
+  - ICD
+  - EQUIPMENT_CARD
+  - BUILDING_UTILITY_CARD
+  - BOM_COST
+  - DELIVERABLE
+  - PHASE_GATE
+  - TEST_EVIDENCE
+requested_edge_types:
+  - COMMENT_TO_TOPIC
+  - PCO_TO_GBO
+  - AGENDA_TOPIC_TO_ENTITY
+  - TOPIC_TO_SOURCE_FACT
+  - TOPIC_TO_REVIEW_ASSESSMENT
+  - TOPIC_TO_ACTION_ROUTE
+  - TOPIC_TO_UPDATED_OFFER_RETURN
+  - AGENDA_TO_DELIVERABLE_ROUTE
+  - EVIDENCE_SUPPORTS_MULTIPLE_NODES
+  - COMMON_DEPENDENCY
+  - REQUIRES_REENTRY_EVIDENCE
+  - SUPERSEDES_OR_RETAINS_DEVIATION
+  - CONSISTENCY_RECONCILIATION
+priority_graph_lanes:
+  - id: COMMON_CAUSE_CC
+    anchors: [RTM-595, TODO-014, T6.4, T8.3]
+    inspect: [shared_power, controls, cooling, instrumentation, headers, maintenance, non_overlap]
+  - id: HP_PVPS_REDUNDANCY
+    anchors: [T6.2, T6.3]
+    inspect: [running_capacity, reserve_capacity, trip_consequence, utilities, common_dependencies]
+  - id: TURBINES_RECOVERY
+    anchors: [T6.5, T6.6, U1.3, U1.5, OFFER-19, OFFER-21]
+    inspect: [trip_state, degraded_state, recovery, WSH_inventory, LOOP_utilities, site_layout]
+  - id: UTILITIES_BUILDINGS_INTERFACES
+    anchors: [T5.1, T5.2, T5.5]
+    inspect: [normal_vs_emergency_utilities, ownership, capacity, consequence, building_space, interface_boundary]
+  - id: CONTROLS_CYBER
+    anchors: [T5.3, T5.4, OFFER-25]
+    inspect: [internal_review_origin, MIT, remote_access, segmentation, authentication, logging, long_term_support]
+  - id: ACCEPTANCE_FAT_SAT
+    anchors: [T7.1, T7.2, T7.4, T7.5, T7.6, T7.7, RTM-514, OFFER-39, COM_ID_45, COM_ID_84]
+    inspect: [verification_scope, deemed_acceptance, retest_propagation, no_cross_compensation, invCOP_boundary, resource_ownership]
+  - id: SAFETY_RAMS_RISK
+    anchors: [T8.2, T8.3, T8.4, T8.5, RTM-702, RTM-595, RTM-608, OFFER-46]
+    inspect: [proof_retest, RAMS_chain, safety_file_acceptance, risk_deliverable]
+  - id: UPDATED_OFFER_REENTRY
+    anchors: [U4.3, U4.4, U4.5, U4.6]
+    inspect: [deviation_disposition, final_document_set, compliance_matrix_update, cross_document_consistency]
+requested_metrics:
+  - agenda_topic_bind_rate
+  - explicit_id_edge_rate
+  - comment_to_topic_attribution_completeness
+  - source_fact_to_review_assessment_separation_rate
+  - unresolved_review_to_rfi_or_nego_route_rate
+  - updated_offer_reentry_bind_rate
+  - orphan_node_rate
+  - invalid_edge_rate
+  - multi_node_evidence_reuse_leverage
+  - common_dependency_edge_density
+  - double_count_risk_count
+  - false_red_or_overgraded_candidate_count
+return_contract:
+  disposition_owner: GBOGEB/cryoplant-project
+  parent_disposition: UNSET
+  allowed_child_dispositions: [ACCEPT, REJECT, DEFER]
+  formal_closure_delta: 0
+  negotiation_resolution_delta: 0
+  required_for_acceptance:
+    - parent_commit_sha
+    - request_sha256
+    - runtime_or_result_reference
+    - result_sha256
+    - finding_ids
+    - child_disposition
