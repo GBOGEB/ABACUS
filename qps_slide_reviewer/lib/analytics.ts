@@ -42,6 +42,7 @@ export async function buildAnalytics() {
 
   const btRanked = [...bt].sort((a, b) => b.strength - a.strength);
   const rankById = new Map(btRanked.map((b, i) => [b.id, i + 1]));
+  const pageBySlideId = new Map(slides.map((slide) => [slide.id, slide.pageNumber]));
 
   const slideStats = rows.map((r) => {
     const b = btById.get(r.id)!;
@@ -67,9 +68,9 @@ export async function buildAnalytics() {
     .filter((r) => r.reason && r.reason.trim())
     .map((r) => ({
       sessionId: r.sessionId,
-      slideA: slides.find((s) => s.id === r.slideAId)?.pageNumber ?? r.slideAId,
-      slideB: slides.find((s) => s.id === r.slideBId)?.pageNumber ?? r.slideBId,
-      winner: r.winnerId ? slides.find((s) => s.id === r.winnerId)?.pageNumber ?? r.winnerId : null,
+      slideA: pageBySlideId.get(r.slideAId) ?? r.slideAId,
+      slideB: pageBySlideId.get(r.slideBId) ?? r.slideBId,
+      winner: r.winnerId ? pageBySlideId.get(r.winnerId) ?? r.winnerId : null,
       isTie: r.isTie,
       reason: r.reason,
       at: r.createdAt.toISOString(),

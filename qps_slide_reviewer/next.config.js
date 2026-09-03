@@ -1,15 +1,18 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
 
+const allowedDevOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
+  ? process.env.NEXT_ALLOWED_DEV_ORIGINS.split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : ['127.0.0.1', 'localhost'];
+
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   output: process.env.NEXT_OUTPUT_MODE,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   outputFileTracingRoot: process.env.NEXT_OUTPUT_MODE ? path.join(__dirname, '../') : '/',
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: { unoptimized: true },
   // Next 16 BLOCKS unlisted origins on /_next/* and /__nextjs* in dev — including the /_next/hmr
   // WEBSOCKET upgrade, and Turbopack gates client module wiring on that socket, so a blocked origin
@@ -21,7 +24,7 @@ const nextConfig = {
   // the platform's browser checks on the pod browse via 127.0.0.1. Enumerated hosts, never a
   // wildcard: every conversation previews under the same parent domain and serves content its own
   // author controls, so `**.<domain>` would let any UNRELATED app's preview reach this dev server.
-  allowedDevOrigins: ['127.0.0.1', '37c491d61.na121.preview.abacusai.app'],
+  allowedDevOrigins,
 };
 
 const fs = require('fs');
@@ -38,4 +41,3 @@ if (fs.existsSync(userConfigPath)) {
 }
 
 module.exports = nextConfig;
-

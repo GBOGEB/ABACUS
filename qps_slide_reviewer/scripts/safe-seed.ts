@@ -20,7 +20,9 @@ try {
     process.exit(1);
   }
 
-} catch (err: any) {
+} catch (err: unknown) {
+  console.error("Seed safety check failed:", err);
+  process.exit(1);
 }
 
 execSync("tsx --require dotenv/config scripts/seed.ts", { stdio: "inherit" });
