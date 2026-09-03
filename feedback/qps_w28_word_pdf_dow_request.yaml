@@ -2,8 +2,8 @@ schema_version: "0.1"
 document_id: QPS_W28_WORD_PDF_DOW_REQUEST
 wave: W28
 status: PARENT_RUNTIME_REQUEST_NO_CHILD_CREDIT
-child_repo: GBOGEB/cryoplant-project
-child_pr: 319
+return_to_child: GBOGEB/cryoplant-project
+source_child_pr: GBOGEB/cryoplant-project#319
 source:
   title: QPS AGENDA_fuLL-COMMENT-REOSLUTION.docx
   sckcen_reference: SCK CEN/99733122
