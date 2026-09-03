@@ -180,3 +180,127 @@ summary:
     NEGOTIABLE: 2
     NOT_COMPLIANT: 3
     OPEN: 1
+
+pca:
+  method: PCA on standardised compliance-item encodings (covariance eigers, numpy.linalg.eigh)
+  n_observations: 18
+  features:
+  - dko_acceptance
+  - bidder_stance
+  - bidder_LKT
+  - format_strictness
+  encoding:
+    dko_acceptance:
+      COMPLIANT: 2
+      CONDITIONALLY_COMPLIANT: 1
+      NEGOTIABLE: 0
+      NOT_COMPLIANT: -1
+      OPEN: -0.5
+    bidder_stance:
+      Compliant: 2
+      Clarification: 1
+      Suggestion: 0.5
+      Not applicable: -1
+      Deviation: -1.5
+    bidder_LKT: ALAT=0, LKT=1
+    format_strictness: 1 = strict digital-CAD/format/process requirement (STEP AP242/AP203,
+      metadata, LoR, coordinate system, model-management platform); 0 = GA drawings
+      / file-naming / staged interface locations
+  explained_variance_ratio:
+  - 0.4356
+  - 0.3109
+  - 0.1768
+  cumulative_variance:
+  - 0.4356
+  - 0.7465
+  - 0.9233
+  loadings:
+    dko_acceptance:
+    - 0.6183
+    - 0.2765
+    - 0.426
+    bidder_stance:
+    - 0.6228
+    - -0.3459
+    - 0.246
+    bidder_LKT:
+    - -0.1717
+    - 0.7994
+    - 0.3614
+    format_strictness:
+    - -0.4476
+    - -0.406
+    - 0.7921
+  scores:
+  - item: ALAT·RTM-437
+    pc1: 1.798
+    pc2: -0.002
+    pc3: -0.787
+  - item: ALAT·RTM-437
+    pc1: 2.201
+    pc2: -0.983
+    pc3: 1.544
+  - item: ALAT·RTM-438
+    pc1: -0.309
+    pc2: -1.368
+    pc3: 0.031
+  - item: ALAT·RTM-439
+    pc1: 1.94
+    pc2: -0.675
+    pc3: -0.904
+  - item: ALAT·RTM-442
+    pc1: 1.206
+    pc2: -0.267
+    pc3: -1.195
+  - item: ALAT·RTM-442
+    pc1: -1.043
+    pc2: -0.96
+    pc3: -0.259
+  - item: ALAT·RTM-443
+    pc1: -0.309
+    pc2: -1.368
+    pc3: 0.031
+  - item: ALAT·RTM-447
+    pc1: -1.288
+    pc2: -0.824
+    pc3: -0.356
+  - item: ALAT·OFFER-36
+    pc1: -1.288
+    pc2: -0.824
+    pc3: -0.356
+  - item: ALAT·OFFER-36
+    pc1: -0.309
+    pc2: -1.368
+    pc3: 0.031
+  - item: LKT·RTM-437
+    pc1: 0.482
+    pc2: 2.105
+    pc3: -0.467
+  - item: LKT·RTM-437
+    pc1: 1.375
+    pc2: 0.853
+    pc3: 2.057
+  - item: LKT·RTM-439
+    pc1: -0.109
+    pc2: 1.841
+    pc3: -0.875
+  - item: LKT·RTM-441
+    pc1: -1.624
+    pc2: 0.739
+    pc3: 0.351
+  - item: LKT·RTM-442
+    pc1: 1.115
+    pc2: 1.161
+    pc3: -0.391
+  - item: LKT·RTM-442
+    pc1: -1.624
+    pc2: 0.739
+    pc3: 0.351
+  - item: LKT·RTM-443
+    pc1: -1.624
+    pc2: 0.739
+    pc3: 0.351
+  - item: LKT·RTM-447
+    pc1: -0.593
+    pc2: 0.463
+    pc3: 0.845
