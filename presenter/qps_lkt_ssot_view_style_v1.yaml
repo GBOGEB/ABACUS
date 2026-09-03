@@ -1,0 +1,138 @@
+schema_version: "1.0"
+document_id: QPS_LKT_SSOT_VIEW_STYLE
+status: REUSABLE_PARENT_PRESENTATION_CONTRACT
+authority: ABACUS_parent_outward_presentation
+applies_to:
+  child_ssot: QPS_LKT_NEGO_RFI_COMPLIANCE_SSOT_v1.0
+  products: [XLSX, HTML, PDF]
+purpose: >-
+  Provide a consistent reusable outward presentation and interaction standard for the canonical
+  QPS LKT negotiation/RFI/compliance SSOT. ABACUS owns view behaviour and presentation QA;
+  cryoplant-project retains engineering, evidence and compliance authority.
+authority_boundary:
+  - style/view rules cannot change compliance, evidence maturity, RFI/NEG or closure state
+  - filters are projections only and never alternate SSOTs
+  - hidden Excel columns/sheets are view state, not missing data
+  - HTML remains read-only and exposes source/version lineage
+shared_semantic_legend:
+  COMPLY: {meaning: supported and accepted, treatment: positive}
+  PARTIAL: {meaning: supported subconditions plus explicit residuals, treatment: caution}
+  ACCEPTED_VARIANCE: {meaning: accepted deviation/alternative with retained lineage, treatment: controlled_variance}
+  REVIEW_REQUIRED: {meaning: source exists but reviewer disposition incomplete, treatment: review}
+  NOK: {meaning: explicit unacceptable mismatch after review, treatment: error}
+  MISS: {meaning: required evidence absent, treatment: error}
+  TBD: {meaning: unresolved pending review or return, treatment: neutral_open}
+  RFI: {meaning: information/clarification route, treatment: action}
+  NEG: {meaning: negotiation route for changed obligation/deviation, treatment: action}
+  DEFERRED: {meaning: future proof route with phase/deliverable/re-entry condition, treatment: future_control}
+colour_palette:
+  principles:
+    - status text is authoritative; colour is secondary
+    - retain grayscale/print readability
+    - avoid saturated full-row fills except compact status chips
+  roles:
+    imported_linked: "#008000"
+    derived_formula: "#000000"
+    static_control: "#666666"
+    review_caution: "#F4B183"
+    error_flag: "#F4CCCC"
+    control_logic: "#D9D2E9"
+    visual_anchor: "#DDEBF7"
+    success_soft: "#E2F0D9"
+    neutral_open: "#E7E6E6"
+    hyperlink: "#0563C1"
+typography:
+  family: Aptos
+  excel: {body_pt: 10, header_pt: 10, title_pt: 14, note_pt: 9}
+  html: {body_px: 14, table_px: 13, title_px: 22, small_px: 12}
+  rules:
+    - avoid body text below 9pt Excel or 12px HTML
+    - prefer weight and spacing before adding colour
+spacing_and_density:
+  excel: {default_row_height: 18, wrapped_row_target: 30, compact_row_height: 16, header_row_height: 28}
+  html: {cell_vertical_px: 7, cell_horizontal_px: 9, section_gap_px: 18, toolbar_gap_px: 10}
+  modes: [STANDARD, DENSE]
+  default_mode: STANDARD
+excel_view_contract:
+  visible_sheets: [START_HERE, MASTER_REVIEW, NEG_RFI_RETURNS, EVIDENCE_LINEAGE, DASHBOARD]
+  hidden_support_sheets: [LISTS_CONTROLS, RAW_RELATIONS, SOURCE_HASHES]
+  usability_rules:
+    - do not duplicate a register into multiple sheets merely to show different filters
+    - prefer grouped/hideable advanced columns to duplicate sheets
+    - preserve full text using wrapping and sensible widths
+    - freeze panes and filters mandatory on visible registers
+    - no border around every populated cell
+    - use section separators and subtle banding sparingly
+    - START_HERE owns legend, lineage, current score and stale/rebuild indicators
+  paragraph_columns: [Exact_Finding, Bidder_Position, SCK_Position, Requested_Return, Canonical_Reentry_Test]
+html_view_contract:
+  default_view: ACTIONABLE_MASTER
+  views: [ACTIONABLE_MASTER, NEGOTIATION_MEETING, UPDATED_OFFER_RETURNS, COMPLIANCE_EXCEPTIONS, EVIDENCE_GAPS, DESIGN_LINEAGE, RETURN_AND_REENTRY]
+  required_controls:
+    - global text search
+    - multi-select status filter
+    - priority filter
+    - domain/cluster filter
+    - Agenda_ID filter
+    - OFFER/RTM filter
+    - RFI/NEG filter
+    - reviewer/owner filter
+    - evidence maturity filter
+    - unresolved-only toggle
+    - advanced-columns toggle
+    - dense-mode toggle
+    - reset filters
+  row_behaviour:
+    - stable Global_ID deep link
+    - expandable source finding, bidder position, SCK position and return history
+    - source locator visible for source-supported rows
+  navigation:
+    - sticky toolbar
+    - visible-row count versus canonical total
+    - current filter summary
+    - legend accessible from every view
+  accessibility:
+    - status text always visible
+    - keyboard reachable controls
+    - sufficient contrast
+    - no meaning by colour alone
+lean_table_pattern:
+  columns: [Ref_or_Global_ID, Topic, Current_position_or_required_outcome]
+  use_for: [management_summary, meeting_print_view, short_review_extracts]
+  rule: third column is reader-facing synthesis; full lineage stays in canonical data/detail view
+build_contract:
+  single_normalized_dataset: true
+  output_rule: Excel_and_HTML_generated_from_same_row_model
+  staleness_triggers: [child_SSOT_hash_change, source_agenda_hash_change, semantic_legend_change, style_profile_change]
+  required_identity: [child_source_repo_commit, SSOT_document_id_version, source_agenda_SHA256, build_timestamp, view_profile_version, output_SHA256]
+qa_contract:
+  excel:
+    - workbook opens without repair warning
+    - visible/hidden sheet set matches contract
+    - freeze panes and autofilters present
+    - grouped columns expand/collapse
+    - legend matches semantic contract
+    - wrapped cells do not clip key text
+    - Aptos typography and sizes conform
+  html:
+    - zero console errors
+    - search/filter/reset work
+    - advanced and dense toggles work
+    - deep links resolve
+    - visible-row count updates
+    - legend parity with Excel
+    - source/version/hash visible
+  parity:
+    - same canonical row count
+    - same Global_ID set
+    - same status/action/evidence labels
+    - same source hash/build identity
+    - same legend vocabulary
+anti_patterns:
+  - one sheet per status when a filter suffices
+  - manually edited parallel HTML and Excel status registers
+  - colour-only compliance coding
+  - Deviation automatically rendered as NOK
+  - hidden data with no user control to reveal it
+  - duplicated evidence text that can diverge
+  - unreadably narrow columns or 8pt body text
