@@ -100,3 +100,40 @@
 
 ## 7. Deck structure note (for the slide-design side)
 15 slides: 1 title, 6 model-observation slides (3–8), 4 compliance tables (9, 10, 13, 14), 2 drawing/room slides (11, 12), 1 legal/closure (15). No agenda, no summary/decision slide, no navigation — consistent with a short technical review deck; a 40–50 slide full deck would add agenda, requirement-by-requirement backup, and a decisions/actions slide.
+
+## 8. PCA / statistical summary of compliance items (exploratory)
+
+> This is an *exploratory* low-dimensional summary of the 18 compliance items, not a contractual judgement. Every item was encoded numerically with the explicit scheme below, features were standardised, and principal components were computed from the covariance matrix. It is a lens on *where the offers diverge*, nothing more.
+
+**Encoding (per compliance item)**
+
+| Feature | Meaning | Scale |
+|---|---|---|
+| `dko_acceptance` | DKO verdict | COMPLIANT +2 · CONDITIONALLY_COMPLIANT +1 · NEGOTIABLE 0 · NOT_COMPLIANT −1 · OPEN −0.5 |
+| `bidder_stance` | Tone of the bidder's own comment | Compliant +2 · Clarification +1 · Suggestion +0.5 · Not applicable −1 · Deviation −1.5 |
+| `bidder_LKT` | Which bidder | ALAT 0 · LKT 1 |
+| `format_strictness` | Item hinges on a strict digital-CAD/format/process requirement (STEP AP242/AP203, metadata, LoR, coordinate system, model-management platform) vs GA drawings / file-naming / staged interface locations | 1 vs 0 |
+
+**Variance captured** (18 observations, 4 features)
+
+| Component | Explained variance | Cumulative |
+|---|---|---|
+| PC1 | 43.6% | 43.6% |
+| PC2 | 31.1% | 74.7% |
+| PC3 | 17.7% | 92.3% |
+
+**Loadings**
+
+| Feature | PC1 | PC2 | PC3 |
+|---|---|---|---|
+| `dko_acceptance` | +0.62 | +0.28 | +0.43 |
+| `bidder_stance` | +0.62 | −0.35 | +0.25 |
+| `bidder_LKT` | −0.17 | +0.80 | +0.36 |
+| `format_strictness` | −0.45 | −0.41 | +0.79 |
+
+**Interpretation**
+
+- **PC1 (44%) — an "acceptability" axis.** DKO verdict (+0.62) and the bidder's own stance (+0.62) move together, opposed by format strictness (−0.45). High-PC1 items are the agreeable, low-format ones (ALAT·RTM-437 GA drawings ≈ +2.2, ALAT·RTM-439 naming ≈ +1.9); low-PC1 items are the strict digital-format requirements that were rejected (LKT·RTM-441 coordinate system and LKT·RTM-442 as-built ≈ −1.6). In plain terms: **the more a requirement is about strict CAD/format compliance, the more likely it was refused.**
+- **PC2 (31%) — a "bidder" axis.** `bidder_LKT` dominates (+0.80): the two offers separate here mainly because LKT phrased most positions as "Deviation" while ALAT used softer "Suggestion" language, even where the DKO verdict was similar.
+- **PC3 (18%) — residual format-strictness** (+0.79), the part of the format dimension not already absorbed by PC1.
+- **Take-away:** ~75% of the variation across all 18 items is captured by just two axes — *how acceptable an item is* and *which bidder it belongs to*. The disagreements are structural (they cluster on the strict-format requirements: STEP AP242, LoR, metadata, coordinate system, model-management platform), not scattered — which is exactly where the close-out decisions in §6 should focus.

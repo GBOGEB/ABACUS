@@ -14,12 +14,12 @@ export async function GET() {
     const data = await buildAnalytics();
     const header = [
       'Slide', 'Title', 'Group', 'Starred', 'Votes Up', 'Votes Down', 'Votes Neutral', 'Net Votes',
-      'A/B Wins', 'A/B Losses', 'A/B Ties', 'Win Rate', 'BT Strength', 'BT Log Strength', 'BT Std Error', 'BT Rank', 'PC1', 'PC2',
+      'A/B Wins', 'A/B Losses', 'A/B Ties', 'Win Rate', 'BT Strength', 'BT Log Strength', 'BT Std Error', 'BT Rank', 'PC1', 'PC2', 'PC3',
     ];
     const rows = data.slides.map((s) => [
       s.pageNumber, s.title, s.groupName, s.starred ? 'Yes' : 'No', s.votesUp, s.votesDown, s.votesNeutral, s.netVotes,
       s.abWins, s.abLosses, s.abTies, s.winRate.toFixed(3), s.btStrength.toFixed(4), s.btLogStrength.toFixed(4),
-      s.btStdError === null ? '' : s.btStdError.toFixed(4), s.btRank, s.pc1.toFixed(4), s.pc2.toFixed(4),
+      s.btStdError === null ? '' : s.btStdError.toFixed(4), s.btRank, s.pc1.toFixed(4), s.pc2.toFixed(4), s.pc3.toFixed(4),
     ].map(csvCell).join(','));
 
     const csv = [header.join(','), ...rows].join('\n');
