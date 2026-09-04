@@ -1,0 +1,87 @@
+schema_version: '0.1'
+document_id: QPS_W42_P01_THREE_REPO_TRIAGE_DOW_REQUEST
+status: BOUNDED_PARENT_ANALYSIS_REQUEST_NO_CHILD_CREDIT
+wave: W42
+pulse: P01
+parent: GBOGEB/ABACUS
+child: GBOGEB/cryoplant-project
+child_pr: 387
+purpose: >-
+  Provide bounded DOW analysis for the W42/P01 exact-source triage sequence without copying
+  raw private evidence. Rank the work that most increases exact evidence connectivity and review
+  coverage while preserving the child as the only compliance/score authority.
+public_parent_boundary:
+  forbidden_content:
+    - raw_MSG_or_email_body
+    - tender_PDF_content
+    - confidential_commercial_text
+    - bidder_private_document_extracts
+  allowed_content:
+    - hashes
+    - counts
+    - derived_metrics
+    - sanitized_identifiers
+    - candidate_crosswalks
+    - priority_ranks
+child_frozen_state:
+  formal_engineering: '70/90 = 77.78%'
+  negotiation: '0/20'
+  global_reviewed: '116/722 = 16.07%'
+  reviewer_RTM_edges: 123
+  buildings_utilities_page_bound: '51/53 = 96.23%'
+  buildings_utilities_candidate: '26/53 = 49.06%'
+  original_MSG_exact: '0/53'
+  evaluated_price_delta_eur: 0
+  cost_candidate: 'EUR 378000 POSTULATED_ONLY'
+analysis_tasks:
+  - id: DOW-W42-001
+    priority: P0
+    task: rank_source_recovery_value
+    input: sanitized_NFS_001_to_016_status_and_known_gap_types
+    output:
+      - prioritized_source_recovery_order
+      - expected_exact_edge_gain_if_recovered
+      - evidence_reuse_leverage_candidate
+    guard: do_not_claim_exact_gain_before_child_source_admission
+  - id: DOW-W42-002
+    priority: P0
+    task: rank_fixed_53_RTM_gap_burn
+    input:
+      page_bound_missing: [RTM-384, RTM-385]
+      candidate_vs_exact_gap: '26 candidate / 0 original-MSG exact'
+    output:
+      - RTM_gap_priority
+      - dependency_clusters
+      - bidder_page_anchor_priority
+    guard: candidate_mapping_NE_review_coverage_NE_compliance
+  - id: DOW-W42-003
+    priority: P1
+    task: quantify_graph_value_without_credit
+    input:
+      fixed_W40_3D_exact_edges: '3 -> 7'
+      fixed_W40_M_floor_mean: '1.05 -> 1.15'
+    output:
+      - prospective_interface_edge_rank
+      - exact_edge_admission_requirements
+      - no_credit_adjacency_report
+    guard: no_multiplier_recompute_without_new_exact_edges_and_frozen_population
+  - id: DOW-W42-004
+    priority: P1
+    task: produce_child_dispositionable_return
+    output:
+      - accepted_metrics_only
+      - candidate_crosswalks
+      - explicit_uncertainties
+      - next_BT_rank
+return_contract:
+  path_hint: federation/returns/qps_w42_p01_three_repo_triage_dow_return.json
+  child_disposition_required: true
+  return_must_distinguish:
+    - exact
+    - candidate
+    - derived
+    - blocked
+formal_effect:
+  formal_credit_delta: 0
+  negotiation_credit_delta: 0
+  evaluated_price_delta_eur: 0
