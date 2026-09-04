@@ -2,6 +2,7 @@
   "schema_version": "0.1",
   "return_id": "QPS_W44_DOW_RETURN",
   "source_contract": "QPS_W43_DOW_EXECUTION",
+  "source_child_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8",
   "source_child": {
     "repository": "GBOGEB/cryoplant-project",
     "baseline_pr": 388,
@@ -45,12 +46,14 @@
     {
       "finding_id": "DOW-W44-B01",
       "scope": "formal engineering closure",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
       "reason": "No new source-bound bidder/OEM/design evidence was introduced in W43 execution contracts.",
       "recommended_child_disposition": "DEFER_PENDING_SOURCE"
     },
     {
       "finding_id": "DOW-W44-B02",
       "scope": "negotiation resolution",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
       "reason": "No bidder written response or updated-offer acceptance was introduced.",
       "recommended_child_disposition": "DEFER_PENDING_SOURCE"
     }
@@ -70,5 +73,6 @@
     "formal credit remains zero until child disposition plus source-bound evidence"
   ],
   "formal_credit_delta": 0,
-  "return_hash_basis": "canonical_json_content_on_merge"
+  "return_hash_basis": "sha256(canonical_json_without_return_hash)",
+  "return_hash": "150035b4f0e2b88ac9ed0aa07139c4174c60e1554f77fc5adff53028868f4f3c"
 }
