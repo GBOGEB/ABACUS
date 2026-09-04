@@ -1,0 +1,45 @@
+schema_version: "0.1"
+document_id: QPS_W44_PCA_PROMOTION_DOW_REQUEST
+status: BOUNDED_PARENT_REQUEST
+snapshot_date: 2026-09-04
+parent_repo: GBOGEB/ABACUS
+child_repo: GBOGEB/cryoplant-project
+child_W43_anchor:
+  pr: 386
+  merge_sha: e9b6567239ba451899686162fad0635180329612
+prior_parent_anchor:
+  pr: 830
+  merge_sha: be7b95003a36f64b1c6738fe4ae4949a23cc1dfb
+
+request:
+  objective: >-
+    For RTM-075, OFFER-39 and OFFER-20, calculate crosswalk depth, overlap and candidate legacy PCA
+    atom mapping. Return derived candidates only. Do not promote PCA or engineering state.
+  candidates: [RTM-075, OFFER-39, OFFER-20]
+  required_return_fields:
+    - candidate_node
+    - candidate_legacy_PCA_atom_ID_or_UNRESOLVED
+    - direct_source_anchor
+    - crosswalk_neighbors
+    - duplicate_credit_neighbors
+    - bidder_scope
+    - proof_level
+    - unresolved_conditions
+    - confidence_basis
+    - child_disposition_required
+
+DOW_controls:
+  - denominator_fixed_at_26
+  - baseline_numerator_16
+  - graph_depth_is_not_numerator_credit
+  - OFFER_12_and_RTM_075_overlap_must_be_flagged
+  - source_filled_partial_is_not_promoted
+  - no_cross_bidder_substitution
+  - no_parent_self_promotion
+  - no_formal_or_negotiation_credit
+
+return_effect:
+  formal_delta: 0
+  PCA_delta: 0
+  negotiation_delta: 0
+  evaluated_price_delta: 0
