@@ -1,0 +1,47 @@
+schema_version: '0.1'
+wave: W53/P05
+role: physics_hydraulics_authority
+request_from: cryoplant-project
+analysis_population:
+  configurations: [c24, c30]
+  scenarios: [2K_OP, 2K_SB, TRANSIENT, CC_RECOVERY]
+  domains:
+    - sub_31_mbar_distributed_line_b
+    - 31_to_1200_mbar_2_to_4K_recovery
+required_inputs:
+  - qrb_qdb_boundary_pressure
+  - qcell_positions_or_bounded_geometry
+  - segment_diameter_roughness_length
+  - fitting_K_or_Cv
+  - local_and_cumulative_mass_flow
+  - temperature_or_enthalpy_state
+property_policy:
+  normal_fluid_provider: governed_He4_provider
+  heii_sub_lambda:
+    status: FAIL_CLOSED_UNTIL_VALIDATED_REFERENCE
+    hepak_reference: REQUIRED_FOR_VALIDATION_OR_EQUIVALENT
+outputs:
+  - per_segment_delta_p
+  - per_branch_delta_p
+  - per_qcell_local_pressure
+  - per_qcell_pressure_margin
+  - cumulative_mass_flow
+  - density
+  - enthalpy
+  - entropy
+  - phase_regime
+  - provider_provenance
+  - uncertainty_and_missing_input_flags
+return_policy:
+  typed_receipt: true
+  source_sha_required: true
+  units_required: true
+  no_bidder_price_inference: true
+  no_child_state_promotion: true
+negative_tests:
+  - missing_geometry
+  - missing_units
+  - stale_source_sha
+  - heii_with_unvalidated_provider
+  - qve_assumed_worst_without_calculation
+victory: return a reproducible ranked QCELL/state pressure-margin population with unsupported cases explicitly deferred
