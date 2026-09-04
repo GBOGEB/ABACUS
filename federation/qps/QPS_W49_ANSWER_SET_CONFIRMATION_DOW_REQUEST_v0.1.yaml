@@ -1,0 +1,24 @@
+schema_version: '0.1'
+document_id: QPS_W49_ANSWER_SET_CONFIRMATION_DOW_REQUEST
+status: PARENT_VALIDATION_REQUEST
+source_child_pr: GBOGEB/cryoplant-project#415
+scope:
+  answer_sets: 69
+  member_records: 247
+checks:
+  - verify_prefill_count_parity
+  - verify_actor_partition_ALAT57_LKT7_SCK5
+  - verify_APPLY_TO_SET_does_not_reduce_member_denominator
+  - verify_APPLY_TO_SUBSET_receipt_is_deterministic
+  - verify_generic_pointer_and_text_duplicate_render_as_non_substantive
+  - verify_near_duplicate_candidates_remain_fail_closed
+  - verify_member_include_exclude_review_overrides_preserve_every_member_ID
+  - verify_source_lineage_PR_413_is_consumed_not_duplicated
+return_contract:
+  allowed_effects: [PARITY_CHECK, DETERMINISTIC_RECEIPT_GUIDANCE, RENDERING_GUIDANCE, DERIVED_EVIDENCE]
+  forbidden_effects: [COMPLIANCE_CREDIT, NEGOTIATION_CREDIT, OBLIGATION_COLLAPSE, CROSS_BIDDER_SUBSTITUTION]
+  child_accept_reject_defer_required: true
+formal_effect:
+  engineering_closure: '70/90 = 77.78%'
+  negotiation_resolution: '0/20'
+  compliance_credit_delta: 0
