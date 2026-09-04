@@ -1,0 +1,36 @@
+schema: qps-dow-convergence/v1
+wave: W45
+correlation_id: QPS-FED-W45-CONVERGENCE
+role: ABACUS_DOW
+source_child:
+  repo: GBOGEB/cryoplant-project
+  authority: merged_PR_395
+  merge_sha: 7a598666a1f50553fa12dffcb2a5ed992f0660c6
+execution:
+  mode: convergence_not_taxonomy_expansion
+  lanes:
+    - {rank: 1, id: CC_TABLE10, target: RTM-595, todo: TODO-014, potential_formal_atoms: '0-2', state: SOURCE_BOUND_RETURN_REQUIRED}
+    - {rank: 2, id: OFFER49_HSE, target: 'HSE_ID_010,HSE_ID_012', potential_formal_atoms: '0-2', state: SUPERSEDING_BELGIAN_LAW_COMMITMENT_REQUIRED}
+    - {rank: 3, id: ORIGINAL_MSG_PROVENANCE, target: NFS_MSG_1_2, potential_formal_atoms: 0, state: SOURCE_RECOVERY}
+    - {rank: 4, id: BUILDING_UTILITY_BRIDGE, target: MODEL_OBJECT_TO_SBS_BOM_ICD_INTERFACE, potential_formal_atoms: 0, state: EXACT_EDGE_BINDING}
+    - {rank: 5, id: TODO013_SELECTED_DESIGN, target: LINE_S_WSH_LOOP, potential_formal_atoms: '0-7', state: SELECTED_DESIGN_EVIDENCE_REQUIRED}
+    - {rank: 6, id: TODO009_RELIABILITY, target: HP_PVPS_TURBINES_COMMON_CAUSE, potential_formal_atoms: '0-7', state: SERVICE_EVENT_EVIDENCE_REQUIRED}
+metrics_input:
+  formal: '70/90'
+  negotiation: '0/20'
+  reviewed_RTM: '116/722'
+  reviewer_RTM_edges: 123
+  buildings_utilities_page_bound: '51/53'
+  buildings_utilities_MSG_exact: '0/53'
+  MSG_candidate: '24/53'
+  evaluated_price_delta_EUR: 0
+analysis_contract:
+  - rank_by_expected_formal_closure_yield_then_dependency_release
+  - keep_review_depth_separate_from_unique_RTM_breadth
+  - quantify_bridge_gain_only_for_exact_source_bound_edges
+  - suppress_duplicate_graph_taxonomy_framework_work
+  - retain_378k_EUR_as_POSTULATED_and_deduplicate_against_DKO_before_any_financial_use
+return_contract:
+  required: [schema,payload_version,correlation_id,source_child_sha,executed_stages,actionable_findings,blocked_findings,evidence_class,formal_credit_delta,return_hash]
+  child_disposition_required: true
+formal_credit_delta: 0
