@@ -1,0 +1,85 @@
+schema_version: "0.1"
+document_id: QPS_W22_1_TRI_REPO_DOW_EXECUTION_RECEIPT
+status: BOUNDED_PARENT_DOW_EXECUTION_RECEIPT_NO_CHILD_PROMOTION
+snapshot_date: 2026-09-04
+repository: GBOGEB/ABACUS
+child_repository: GBOGEB/cryoplant-project
+correlation_id: QPS_W22_1_TRI_REPO_IMPLEMENTATION_TRIAGE
+
+purpose: >-
+  Provide the ABACUS-side bounded DOW execution contract for the W22.1 tri-repository
+  implementation wave. ABACUS may compute derived reviewer/domain/BT metrics and candidate
+  crosswalks from child-supplied non-confidential identifiers, but cannot promote private child
+  evidence, compliance credit, negotiation resolution or evaluated-price changes.
+
+input_boundary:
+  allowed:
+    - child PR and receipt identifiers
+    - controlled RTM/OFFER IDs
+    - evidence class labels
+    - candidate edge labels
+    - aggregate counts and percentages
+    - non-confidential metric summaries
+  prohibited:
+    - raw MSG/email body text
+    - confidential tender PDF text
+    - commercial offer excerpts
+    - private child source files
+    - bidder-specific claims without child-approved anchors
+
+baseline_metrics_received:
+  child_merged_prs: "cryoplant-project #361-#372"
+  prior_parent_request: "ABACUS #825"
+  codex_pair: "CODEX #350"
+  nfs_findings: 16
+  negotiation_asks: 7
+  candidate_buildings_utilities_rtm_union: "24/53 = 45.28%"
+  governed_exact_buildings_utilities_coverage: "0/53 pending exact MSG locators"
+  global_unique_reviewed_rtms: "55/722 = 7.62% unchanged"
+  formal_engineering_closure: "70/90 = 77.78% unchanged"
+  negotiation_resolution: "0/20 unchanged"
+  evaluated_price_delta_eur: 0
+  residual_integration_cost_candidate_eur: 378000
+  residual_integration_cost_status: POSTULATED_ONLY
+
+execution_work_packages:
+  DOW_1_REVIEWER_DOMAIN_DEPTH:
+    output: reviewer_x_rtm_x_bidder_x_domain_matrix_candidate
+    rule: depth may increase without increasing unique RTM breadth
+  DOW_2_FIXED_POPULATION_COVERAGE:
+    output: fixed_53_buildings_utilities_coverage_when_child_promotes_exact_edges
+    rule: do not count MSG-derived edges until child exact locator gate passes
+  DOW_3_BT_REVERSE_LOADING:
+    output: next_best_triage_order_for_dark_or_underdeveloped_domains
+    rule: treat PCA as exploratory only; preserve source authority
+  DOW_4_COST_DEDUP_GUARD:
+    output: residual_integration_cost_dedup_check_against_existing_scenarios
+    rule: EUR 378000 remains POSTULATED until procurement method and dedup acceptance
+  DOW_5_LOCAL_STANDARDS_PROOF_CARRIERS:
+    output: candidate mapping from local standards/legal norms to proof deliverable families
+    rule: standard/legal applicability does not equal RTM closure without accepted deliverable evidence
+
+return_contract:
+  return_to_child_as:
+    - derived_metric
+    - candidate_crosswalk
+    - uncertainty_flag
+    - bt_priority_recommendation
+    - dedup_warning
+  child_disposition_required: true
+  allowed_child_dispositions: [ACCEPT, REJECT, DEFER]
+  no_auto_promotion: true
+
+fail_closed_predicates:
+  - parent_return_contains_private_source_text: FAIL
+  - parent_metric_claims_compliance_credit: FAIL
+  - parent_metric_changes_evaluated_price: FAIL
+  - exact_coverage_increases_without_child_promoted_edges: FAIL
+  - candidate_depth_counted_as_unique_breadth: FAIL
+  - postulated_cost_added_to_prior_cost_without_dedup: FAIL
+
+qa_status:
+  public_parent_boundary_declared: PASS
+  child_disposition_required: PASS
+  no_compliance_or_price_delta: PASS
+  fixed_population_metrics_preserved: PASS

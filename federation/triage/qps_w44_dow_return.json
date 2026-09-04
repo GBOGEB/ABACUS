@@ -1,0 +1,78 @@
+{
+  "schema_version": "0.1",
+  "return_id": "QPS_W44_DOW_RETURN",
+  "source_contract": "QPS_W43_DOW_EXECUTION",
+  "source_child_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8",
+  "source_child": {
+    "repository": "GBOGEB/cryoplant-project",
+    "baseline_pr": 388,
+    "baseline_merge_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8"
+  },
+  "executed_stages": [
+    "metadata_and_authority",
+    "recursive_hooks",
+    "convergence",
+    "knowledge_extraction",
+    "self_ranking",
+    "validation"
+  ],
+  "actionable_findings": [
+    {
+      "finding_id": "DOW-W44-001",
+      "scope": "NFS source provenance recovery",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "The highest-leverage unresolved boundary remains exact original-MSG attribution; this blocks promotion from candidate/reviewer evidence to source-bound evidence for the NFS lane.",
+      "recommended_child_disposition": "DEFER_PENDING_SOURCE",
+      "closure_yield_estimate": "HIGH_IF_SOURCE_RECOVERED"
+    },
+    {
+      "finding_id": "DOW-W44-002",
+      "scope": "Buildings and Utilities remaining contract gaps",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "B&U page-bound coverage is already 51/53 while candidate mapping is 26/53; the next useful work is exact source binding for the remaining unmapped or candidate-only RTMs, not more reviewer-count expansion.",
+      "recommended_child_disposition": "ACCEPT_AS_DERIVED_EVIDENCE",
+      "closure_yield_estimate": "MEDIUM_HIGH"
+    },
+    {
+      "finding_id": "DOW-W44-003",
+      "scope": "3D and building interface graph",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "Dense B&U adjacency does not add a direct exact 3D multiplier edge. Preserve the current exact-edge floor until model-object to building/utility/interface links are source-bound.",
+      "recommended_child_disposition": "ACCEPT_AS_DERIVED_EVIDENCE",
+      "closure_yield_estimate": "MEDIUM"
+    }
+  ],
+  "blocked_findings": [
+    {
+      "finding_id": "DOW-W44-B01",
+      "scope": "formal engineering closure",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "No new source-bound bidder/OEM/design evidence was introduced in W43 execution contracts.",
+      "recommended_child_disposition": "DEFER_PENDING_SOURCE"
+    },
+    {
+      "finding_id": "DOW-W44-B02",
+      "scope": "negotiation resolution",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "No bidder written response or updated-offer acceptance was introduced.",
+      "recommended_child_disposition": "DEFER_PENDING_SOURCE"
+    }
+  ],
+  "evidence_class": "DERIVED_PARENT_TRIAGE_RETURN",
+  "closure_yield_estimate": {
+    "rank_1": "recover exact original MSG provenance",
+    "rank_2": "promote exact B&U source bindings",
+    "rank_3": "bind exact 3D/building/interface edges",
+    "rank_4": "recompute only after material evidence delta"
+  },
+  "guards": [
+    "no parent self-promotion",
+    "review depth is not compliance",
+    "candidate mapping is not accepted evidence",
+    "postulated cost is not evaluated price",
+    "formal credit remains zero until child disposition plus source-bound evidence"
+  ],
+  "formal_credit_delta": 0,
+  "return_hash_basis": "sha256(canonical_json_without_return_hash)",
+  "return_hash": "150035b4f0e2b88ac9ed0aa07139c4174c60e1554f77fc5adff53028868f4f3c"
+}

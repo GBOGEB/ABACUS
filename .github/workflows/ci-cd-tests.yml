@@ -11,6 +11,8 @@ on:
       - 'setup.cfg'
       - 'tox.ini'
       - 'Dockerfile*'
+      - 'docker-compose.yml'
+      - '.dockerignore'
       - '.github/workflows/ci-cd-tests.yml'
   pull_request:
     branches: [main, develop]
@@ -22,6 +24,8 @@ on:
       - 'setup.cfg'
       - 'tox.ini'
       - 'Dockerfile*'
+      - 'docker-compose.yml'
+      - '.dockerignore'
       - '.github/workflows/ci-cd-tests.yml'
   schedule:
     - cron: '0 2 * * *'

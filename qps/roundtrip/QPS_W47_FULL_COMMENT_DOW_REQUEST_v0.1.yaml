@@ -1,0 +1,38 @@
+schema_version: '0.1'
+document_id: QPS_W47_FULL_COMMENT_DOW_REQUEST
+status: DERIVED_ANALYSIS_AND_RENDERING_REQUEST_NO_CHILD_CREDIT
+source_repo: GBOGEB/cryoplant-project
+source_wave: W47
+source_branch: control/w47-full-comment-filter-ui
+source_population:
+  content_blocks: 453
+  block_identity: QPS-CB-0001..QPS-CB-0453
+requested_dow_outputs:
+  - verify_filter_count_parity_for_severity_source_corrigendum_agenda
+  - verify_independent_facet_overlap_not_partition
+  - verify_commercial_contractual_not_collapsed_into_Addendum_I
+  - verify_RTM_and_OFFER_blank_links_are_preserved
+  - verify_selected_export_preserves_content_block_id
+  - provide_deterministic_filter_selection_receipt_schema
+  - provide_visual_or_tabular_summary_recommendations_without_mutating_child_state
+expected_facets:
+  Major_Crucial: 199
+  Commercial_Contractual: 135
+  COM_ID_contract_clause: 96
+  RTM_linked: 23
+  OFFER_linked: 33
+  No_primary_RTM_or_OFFER: 405
+semantic_guards:
+  - deviation_is_not_automatic_NOK
+  - filter_membership_is_not_evidence
+  - reviewed_is_not_compliant
+  - parent_output_cannot_promote_child_compliance
+  - Addendum_I_is_independent_from_COM_ID_and_RTM
+  - candidate_mapping_is_not_exact_binding
+return_contract:
+  required_fields: [source_child_commit, input_identity, output_sha256, findings, parity_checks, blockers]
+  child_disposition_required: true
+  allowed_child_dispositions: [ACCEPT_AS_DERIVED_EVIDENCE, REJECT, DEFER_PENDING_SOURCE, DUPLICATE_EXISTING_WORK]
+formal_effect:
+  compliance_credit_delta: 0
+  negotiation_credit_delta: 0

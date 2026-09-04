@@ -1,0 +1,83 @@
+schema_version: "0.1"
+document_id: QPS_W08_PR_HEAD_AHT_CONTROL_SNAPSHOT
+status: THRESHOLD_BREACHED
+evidence_class: SOURCE-SUPPORTED
+authority: ABACUS_parent_dashboard_dow_support
+source_child_pr: GBOGEB/cryoplant-project#219
+source_peer_pr: GBOGEB/CODEX#330
+pull_request: GBOGEB/ABACUS#795
+head_sha: 54efca908006295f2ff17a1b0a68f47337c47469
+synthetic_merge_sha: 0ec3b4ecae9354f76af698433266ec923703dc0f
+observed_at_utc: "2026-09-01T08:16:00Z"
+aht_statistics_bridge:
+  source_file: aht_statistics_bridge.py
+  method: classify_failed_check_threshold
+  hypothesis: PR head remains below failed-check control threshold
+threshold_policy:
+  failed_or_action_required_checks: 1
+  threshold_reached: true
+measure:
+  rolling_window: current_pr_head_workflow_runs
+  successful_checks: 9
+  failed_checks: 7
+  action_required_checks: 0
+  blocker_checks: 7
+  total_decisive_checks: 16
+  failure_rate: 0.4375
+  current_failure_runs:
+    - run_id: 33478828758
+      name: Pytest Config Validation
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672799
+    - run_id: 33478828716
+      name: Bootstrap Statistics Integration CI/CD
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672613
+    - run_id: 33478828697
+      name: DOW + Recursive DMAIC Enhanced CI
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672609
+    - run_id: 33478828752
+      name: Bootstrap Statistics CI/CD Pipeline
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672668
+    - run_id: 33478828738
+      name: DMAIC V3 Enterprise CI
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672699
+    - run_id: 33478828677
+      name: CI/CD Test Suite
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672646
+    - run_id: 33485672663
+      name: Validate Docs (Markdown/YAML/JSON)
+      conclusion: failure
+      url: >-
+        https://github.com/GBOGEB/ABACUS/actions/runs/33485672663
+analyse:
+  failure_class:
+    - validator_test_fragility
+    - repository_bootstrap_debt
+    - matrix_environment_drift
+  current_root_signals:
+    - undeclared pytest markers benchmark, aht, hypothesis and legacy
+    - missing legacy integration_DOW_KEB_MASTER import path
+    - bootstrap difference sign convention failures
+    - smoke/style/matrix failures
+improve:
+  current_repair_wave:
+    - declare benchmark, aht, hypothesis and legacy pytest markers
+    - add AHT failed-check threshold classifier
+    - embed this PR-head control snapshot for downstream retest evidence
+control:
+  stop_condition: >-
+    Close only after ABACUS#795 repaired head and merge SHA pass, the child
+    repository records ACCEPT/REJECT/DEFER for parent findings, and no failed,
+    cancelled, action_required or unresolved material review signal remains.
+  completion_credit_allowed: false

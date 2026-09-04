@@ -1,0 +1,311 @@
+{
+  "schema": "qps-artefact-lineage/v1",
+  "generated_utc": "2026-09-02",
+  "purpose": "Machine-readable cross-checksum + lineage manifest for every artefact this session produced or verified. Each entry's sha256 was freshly recomputed at generation time, not copied from an earlier claim -- re-run sha256sum against 'path' to independently confirm any entry.",
+  "artefacts": [
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/QPS_OFFER_Evaluation_FULL_v24.xlsx",
+      "sha256": "3e84a3cab305b5b6b9bcf73367a47b3d49fef9f74077cff95e5cfe7e1b4a7118",
+      "role": "SSOT",
+      "note": "The governed parent workbook. Untouched by this session -- verified by mtime before and after every build. Internally declares itself 'v18 DMAIC-ready' (differs from filename version).",
+      "derived_from": [],
+      "feeds": [
+        "QPS_PCA_Navigator.html",
+        "QPS_RTM_BT_Navigator_v22.html",
+        "QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx (cross-reference only, not row-merged)"
+      ]
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/pca_results_v23.json",
+      "sha256": "3ef6cfe82ea7a5d9267d0532bd03241f2b0d5a03a8b74f5a16c1a85d7f749dbd",
+      "role": "derived_data",
+      "note": "Normalized JSON projection of v24!RTM_RANKING's 7 dimension scores through sklearn PCA. Not the SSOT -- the governed workbook is. Staleness-checked 2026-09-02 against QPS_OFFER_Evaluation_FULL_v24.xlsx by direct row-level diff: RTM_RANKING (725 rows) and OFFER_RANKING (53 rows) -- the only sheets feeding these 7 dimension scores -- are byte-identical between _v23.xlsx and _v24.xlsx. v24 only adds PCA_ANALYSIS and OFFER_PHASE_EXPANSION sheets on top. Not stale despite the v23 filename.",
+      "derived_from": [
+        "QPS_OFFER_Evaluation_FULL_v24.xlsx (via scripts/compute_pca.py, per its own header comment)"
+      ],
+      "feeds": [
+        "QPS_PCA_Navigator.html"
+      ]
+    },
+    {
+      "path": "04_GITHUB_INTEGRATION/QPS_Cost_Estimate_GitHub_Integration/03_DATA_SSOT/pca_adequacy_check.json",
+      "sha256": "6f99688aee9cae2c6a00c8a499e80c00de280b940fa79ac40e56544c4c524976",
+      "role": "derived_data",
+      "note": "KMO sampling-adequacy figures (item-level 0.656 mediocre, domain-level 0.576 miserable).",
+      "derived_from": [
+        "same underlying RTM dimension-score population as pca_results_v23.json"
+      ],
+      "feeds": [
+        "QPS_PCA_Navigator.html"
+      ]
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/QPS_PCA_Navigator.html",
+      "sha256": "9e6dea782576e5e04fb29cd1b3728907991c3912c1196b66d06f6ec178e40823",
+      "role": "presentation",
+      "note": "Built 2026-08-31, interactivity pass 2026-09-02 (variance per-component/cumulative toggle, loadings column click-to-sort, domain search-filter + show-all-labels, new domain-sizes linear/log chart). QA: Playwright, 0 console/page errors, all 4 new controls exercised and screenshot-verified, not just load-tested. Added an explicit v23-vs-v24 staleness-check note to the page itself (header + footer), 2026-09-02.",
+      "derived_from": [
+        "pca_results_v23.json",
+        "pca_adequacy_check.json"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/QPS_RTM_BT_Navigator_v22.html",
+      "sha256": "98a5e72789b0db43edd38336a057d446d764450fd859b503e25248a464a248e7",
+      "role": "presentation",
+      "note": "Pre-existing (not built this session). Highest-numbered navigator; v21 alongside it is superseded. QA: Playwright confirmed 0 console/page errors.",
+      "derived_from": [
+        "QPS_OFFER_Evaluation_FULL_v24.xlsx (per its own build pipeline, not this session's)"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/BT_Method_Evaluation_v12.pptx",
+      "sha256": "05d47694a319bd46f88489cb93d74e6bf88b9befedae48041d785529b1947774",
+      "role": "superseded",
+      "note": "Was the git-tracked 'current' deck; missing EVAL-S16/S17 present in the v14 PDF export. Superseded by v15.pptx below, kept as lineage, not deleted.",
+      "derived_from": [],
+      "feeds": [
+        "BT_Method_Evaluation_v15.pptx"
+      ]
+    },
+    {
+      "path": "04_GITHUB_INTEGRATION/QPS_Cost_Estimate_GitHub_Integration/04_DELIVERABLES/pdf/BT_Method_Evaluation_v14.pdf",
+      "role": "reconciliation_source",
+      "note": "PDF-only export, 2 rounds ahead of v12.pptx, no editable-source counterpart existed anywhere until this session. Text-diffed against v12 to find the exact gap (2 slides, not a broad divergence).",
+      "derived_from": [],
+      "feeds": [
+        "BT_Method_Evaluation_v15.pptx"
+      ]
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/BT_Method_Evaluation_v15.pptx",
+      "sha256": "41c77609370ccac6cbba9959b91d1ecd977e43704f614bb53916d8ffc46f45d5",
+      "role": "reconciled_presentation",
+      "note": "v12.pptx + the 2 slides (EVAL-S16, EVAL-S17) found only in v14.pdf, text copied verbatim from the PDF extraction, built via direct OOXML editing (python-pptx blocked by a broken Pillow DLL in this environment). QA: structural (zip integrity, all-29-parts XML-valid) AND a real PowerPoint COM render -- opened in actual PowerPoint, all 29 slides exported to PNG, visually confirmed correct formatting on the 2 new slides specifically.",
+      "derived_from": [
+        "BT_Method_Evaluation_v12.pptx",
+        "BT_Method_Evaluation_v14.pdf"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+      "sha256": "1ccc12548f9d4a547c4fff06118741e4438e6408dd887e6f8359f4859f2afceb",
+      "role": "companion_reference",
+      "note": "NOT the SSOT. Deduplicated import of ~/Documents/QPS_OFFER_Cluster_v3_4_BT_RTM_Standards_Evidence.xlsx's 21 unique sheets (2 confirmed exact duplicates dropped: Format_Pivot, RTM_Offer). Cross-referenced to v24 by ID, never row-merged into it. QA: zip/XML structural validation (0 errors) + a real Excel COM open/read/close, 23 sheets confirmed, A1 content spot-checked on first 3 sheets.",
+      "derived_from": [
+        "~/Documents/QPS_OFFER_Cluster_v3_4_BT_RTM_Standards_Evidence.xlsx (SHA256 00a5f0ed3d... matches its own OCD-ADR governance receipt, verified before use)"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "OFFERS_ITT/QPS_OUTPUT_DISCOVERY.html",
+      "sha256": "e926a31d6d1286992c95d0f75508aae8b2bb7a020556d098b3e05497ca3e46cb",
+      "role": "index",
+      "note": "DMAIC/PCA/BT review index. Every linked path verified to exist on disk before linking. QA: Playwright confirmed 0 console/page errors.",
+      "derived_from": [],
+      "feeds": []
+    },
+    {
+      "path": "OFFERS_ITT/QPS_FEDERATION_TOPOLOGY.html",
+      "sha256": "74d6cb39990747c8806feda4e06c57cbac362be1706df8393b2c767c06f69292",
+      "role": "index",
+      "note": "DOW/KEB parent-child federation node graph. Issue states (open/merged) cross-checked live against the GitHub API 2026-09-01, not copied from the SSOT doc's own claims.",
+      "derived_from": [
+        "cryoplant-project/ocd-adr/40_implementation/QPS_DOW_KEB_EXECUTION_ARCHITECTURE_SSOT_v0.1.md",
+        "live GitHub issue API"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "OFFERS_ITT/DELIVERABLES_INDEX.md",
+      "sha256": "b82e234d21bb54f000654e88a5990b126a2a8a16c76ebc916119eba2bbef9c1b",
+      "role": "index",
+      "note": "The master map for this whole OFFERS_ITT tree -- see this file first if unsure where something lives.",
+      "derived_from": [],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py",
+      "sha256": "86b665c19d6e0732e0909ee4e02c28b6b1abf1277c34fec2b97a60224c8b8f05",
+      "role": "build_script",
+      "note": "Regenerates excel_view/*.html directly from QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx (the 6 BT-ranking FUNCTION sheets + 3 analysis sheets). Excel stays the SSOT; this is the only permitted path from workbook to HTML. Follows the 02_SCRIPTS/ JSON-embed + vanilla-JS pattern found in this session's build-script audit, but adopts cryoplant-project/web/'s external-stylesheet convention instead of per-page inline <style>.",
+      "derived_from": [],
+      "feeds": [
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Clusters.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Config.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Input.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Method.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/CROSSWALK_TO_V24.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/EXECUTION_PRIORITY.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/MERGE_CANDIDATES.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT_RTM.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/index.html"
+      ]
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/qps_shared.css",
+      "sha256": "2a927b0239643a08254b3483708b94af1c43374f643624558dce8262c3e86e8b",
+      "role": "presentation",
+      "note": "Shared stylesheet for all excel_view/ pages -- token set matches QPS_PCA_Navigator.html's .viz-root palette (light/dark via prefers-color-scheme + [data-theme]) so generated Excel views and the PCA/BT navigators read as one visual family.",
+      "derived_from": [],
+      "feeds": [
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Clusters.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Config.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Input.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Method.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/CROSSWALK_TO_V24.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/EXECUTION_PRIORITY.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/MERGE_CANDIDATES.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT_RTM.html",
+        "docs/qps_offer_rtm_evaluation/current/excel_view/index.html"
+      ]
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Clusters.html",
+      "sha256": "a9e653bcb080c0c48670aa201869d1390830faa570adfc1a67b43a534f7c8680",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!BT_Clusters. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Config.html",
+      "sha256": "2285c392fb18d396bf6c560f93e5deedf10833a76d68b3d068485435a7b3c74d",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!BT_Config. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Input.html",
+      "sha256": "6560530d9e666b0394c5ea704f97a963ced6008dbe8400bb1befe69785c42f32",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!BT_Input. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/BT_Method.html",
+      "sha256": "cacc392ff69a5f3cccc93e7c910976372de194d07576e93d49a1389c668873f6",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!BT_Method. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/CROSSWALK_TO_V24.html",
+      "sha256": "e2df3306b7ceca0fc18926ed9e35cc0357356bc24c252e7c49560c6a44232b6a",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!CROSSWALK_TO_V24. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/EXECUTION_PRIORITY.html",
+      "sha256": "077b5882552679cd43839b52040800116dcaf1ab1d3f4be4ab06e752e22bd83c",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!EXECUTION_PRIORITY. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/MERGE_CANDIDATES.html",
+      "sha256": "169ba6989b83da0cc08461319d185b70e8d757b461a8d2a6c56ef6bcf8306581",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!MERGE_CANDIDATES. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT.html",
+      "sha256": "b93ac09d658e0e1eaf3203aec9a4299ad758ee0d40f58c6e969ef823d005005f",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!STATIC_BT. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/STATIC_BT_RTM.html",
+      "sha256": "95c5fe6be7b82fa63b737fb699034e011daddca1c5a16e5616d75a3ab795171f",
+      "role": "presentation",
+      "note": "Generated table view of QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!STATIC_BT_RTM. Client-side sort (click column header) + filter, no server. Regenerate via build_html_from_excel.py, never hand-edit.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx",
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "docs/qps_offer_rtm_evaluation/current/excel_view/index.html",
+      "sha256": "3b0b0c85edcb19fcc8e28973ed21ad0ea647e856745313d697182e50548db239",
+      "role": "index",
+      "note": "Landing page linking all 9 generated sheet views. Playwright-verified 0 console errors.",
+      "derived_from": [
+        "docs/qps_offer_rtm_evaluation/current/build_html_from_excel.py"
+      ],
+      "feeds": []
+    },
+    {
+      "path": "OFFERS_ITT/QPS_GITHUB_ROUNDTRIP_HANDOVER.md",
+      "sha256": "c50ed25ea7bf1aaa0f9774da698e0d20dbbb10e356a761c957f1284efc0bd64a",
+      "role": "reconciliation_source",
+      "note": "PR triage (last 5 per repo, authenticated GitHub REST API) + local repo handover for cryoplant-project/ABACUS/CODEX. Found: local checkouts under this tree are 844 and 2206 commits stale respectively (not the working copies behind the live PR pipeline); CODEX has no local checkout at all. Found the DOW/KEB tracking issues (#659/#667/#254/#255) are still open despite 6 merged PRs completing that exact work -- a tracking gap, not a work gap.",
+      "derived_from": [
+        "GBOGEB/cryoplant-project PRs (GitHub API)",
+        "GBOGEB/ABACUS PRs (GitHub API)",
+        "GBOGEB/CODEX PRs (GitHub API)",
+        "local git status of 2 checkouts under Master_Input"
+      ],
+      "feeds": [
+        "OFFERS_ITT/QPS_GITHUB_ROUNDTRIP_HANDOVER.html"
+      ]
+    },
+    {
+      "path": "OFFERS_ITT/QPS_GITHUB_ROUNDTRIP_HANDOVER.html",
+      "sha256": "4cb0015c95b43163fd8829127650dfed2d088ced946e48018091a74746743558",
+      "role": "reconciled_presentation",
+      "note": "Rendered view of QPS_GITHUB_ROUNDTRIP_HANDOVER.md. Playwright-verified 0 console errors.",
+      "derived_from": [
+        "OFFERS_ITT/QPS_GITHUB_ROUNDTRIP_HANDOVER.md"
+      ],
+      "feeds": []
+    }
+  ],
+  "verified_but_not_produced_this_session": [
+    {
+      "path": "OFFERS_ITT/QPS_Cost_Estimate/QPS_Cost_Estimate_v17.xlsx",
+      "sha256": "581bcf4b2fb12342bbde3e344539183c7d2bc0700f287fe90a03a40a26596189",
+      "role": "SSOT",
+      "note": "Cost-estimate SSOT, a separate workstream from the RTM/OFFER family above."
+    }
+  ]
+}
