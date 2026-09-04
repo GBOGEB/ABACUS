@@ -1,0 +1,31 @@
+{
+  "scenario_id": "LKT_2K_OP_W52_P2J_v0.1",
+  "authority": "MIXED_SOURCE_BOUND_AND_OPEN",
+  "streams": {
+    "A": {"stream_id":"A","mdot_g_s":43.1,"h_J_kg":null,"P_bara":3.0,"T_K":4.5,"authority":"LKT_CURRENT_OFFER_BOP_SOURCE_SUPPORTED","validation":"COOLPROP_PENDING"},
+    "B": {"stream_id":"B","mdot_g_s":null,"h_J_kg":null,"P_bara":0.022,"T_K":3.6,"authority":"LKT_CURRENT_OFFER_BOP_PARTIAL","validation":"MASS_FLOW_TOPOLOGY_BINDING_REQUIRED"},
+    "W": {"stream_id":"W","mdot_g_s":2.42,"h_J_kg":null,"P_bara":1.1,"T_K":300.0,"authority":"LKT_CURRENT_OFFER_BOP_SOURCE_SUPPORTED","validation":"COOLPROP_PENDING"},
+    "D": {"stream_id":"D","mdot_g_s":81.0,"h_J_kg":null,"P_bara":null,"T_K":40.0,"authority":"LKT_CURRENT_OFFER_BOP_PARTIAL","validation":"HP_PRESSURE_EXACT_BINDING_REQUIRED"},
+    "E": {"stream_id":"E","mdot_g_s":81.0,"h_J_kg":null,"P_bara":null,"T_K":60.0,"authority":"LKT_CURRENT_OFFER_BOP_PARTIAL","validation":"HP_MINUS_1BAR_EXACT_BINDING_REQUIRED"}
+  },
+  "qcell_heat_W": 809.0,
+  "ts_heat_W": 8610.0,
+  "hp_total_flow_g_s": 326.0,
+  "hp_total_flow_authority": "OWNER_REPORTED_LKT_SOURCE_PENDING_EXACT_LOCATOR",
+  "hp_reference_design_point": {"flow_g_s_each":112.0,"P1_bara":1.05,"T1_K":298.0,"P2_bara":14.0,"package_input_kW_each":357.0},
+  "hp_predicted_kW": null,
+  "hp_reference_kW": null,
+  "pvps_predicted_kW": null,
+  "pvps_reference_kW": null,
+  "hepak_reference_status": "MISSING_FROZEN_INDEPENDENT_REFERENCE",
+  "state_mismatch": [
+    {"id":"B_LOCAL_VS_INTERFACE","status":"OPEN","note":"LKT BOP 0.022 bara return must be mapped to distributed Line-B/QCELL/QRB pressure nodes; do not substitute one node for another."},
+    {"id":"HP_FLOW_SOURCE_LOCATOR","status":"OPEN","note":"326 g/s is retained as owner-reported LKT nominal 2K-OP until exact source page/table is bound."},
+    {"id":"HP_DESIGN_REFERENCE_GENERATION","status":"OPEN","note":"Current project SSOT also contains 112.54 g/s and 337.62 g/s diagnostic references; preserve source generation and do not silently overwrite the current-offer 112.0 g/s anchor."}
+  ],
+  "notes": [
+    "CPLR/W flow may be a split from A; topology must be resolved before enforcing A=B+W on this bidder BOP row.",
+    "No energy residual is published until helium enthalpies are evaluated by the governed provider.",
+    "No PVPS residual is published until the B-return mass flow at the PVPS boundary and SV750 BF performance evidence are bound."
+  ]
+}
