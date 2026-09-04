@@ -1,0 +1,90 @@
+schema: abacus-repo-coverage-control/v1
+wave: W52
+repo: GBOGEB/ABACUS
+baseline_sha: 6d05ccbcb0e45c41a4caf47642cb21f45d105cc5
+formal_credit_delta: 0
+
+definitions:
+  coverage: relevant repository surface wired into governed runtime/federation
+  penetration: maturity of discovered capability nodes
+  bidirectionality: forward request and reverse return both executed without material loss
+
+coverage:
+  denominator_state: OPEN
+  denominator_confidence: MEDIUM
+  eligible_classes:
+    - runtime_engine
+    - api_entrypoint
+    - manifest_registry
+    - schema_contract
+    - adapter_bridge
+    - mcp_worker
+    - agent_orchestrator
+    - ci_workflow
+    - regression_test
+    - provider_interface
+    - governed_dashboard
+    - external_typed_edge
+  subsystem_census:
+    DOW: {state: PARTIAL, evidence: [W43, W49, W50]}
+    physics_property_engines: {state: PARTIAL, evidence: [cryo_dashboard_v0_3_0, models/qps_line_s/recovery_model.py]}
+    qplant_models: {state: PARTIAL}
+    MCP: {state: PARTIAL}
+    agents_orchestration: {state: PARTIAL}
+    federation_bridges: {state: PARTIAL}
+    CI: {state: PARTIAL}
+    dashboards_renderers: {state: PARTIAL}
+    provenance_receipts: {state: PARTIAL}
+  publish_ratio: false
+  reason: denominator remains open while hidden/dormant nodes are still being discovered
+
+penetration:
+  lifecycle: [DISCOVERED, DECLARED, IMPORTABLE, TESTED, INTEGRATED, ON_DUTY]
+  cryo_property_snapshot:
+    discovered_nodes: 9
+    coarse_active_nodes: 5
+    coarse_fraction: 0.5556
+    strict_on_duty_fraction: null
+  rules:
+    - contract_binding_is_not_on_duty
+    - documentation_is_not_runtime
+    - merged_is_not_victory
+
+bidirectionality:
+  peer: GBOGEB/CODEX
+  forward: CODEX_KEB_REQUEST_TO_ABACUS_PROVIDER
+  reverse: ABACUS_PROPERTY_RECEIPT_TO_CODEX_KEB
+  required_metrics:
+    - forward_route_defined
+    - reverse_route_defined
+    - forward_executed
+    - reverse_executed
+    - exact_sha_match
+    - stale_sha_rejected
+    - request_schema_complete
+    - response_schema_complete
+    - receipt_hash_valid
+    - negative_case_fail_closed
+    - information_loss_fields
+    - semantic_mutation_count
+    - roundtrip_success
+  current_state: CONTRACT_BOUND_NOT_EXECUTION_PROVEN
+
+roundtrip_target:
+  workload: QPS_LINE_S
+  request_owner: CODEX_KEB
+  execution_owner: ABACUS
+  validation_owner: CODEX_KEB
+  child_authority: GBOGEB/cryoplant-project
+  positive_case: warm_or_HeI_property_request_with_explicit_units_and_validity
+  negative_cases:
+    - stale_provider_sha
+    - unsupported_property
+    - missing_units
+    - HeII_without_valid_low_temperature_provider
+
+control_rules:
+  - newly_discovered_nodes_may_lower_coverage_without_being_regression
+  - physics_authority_stays_in_ABACUS
+  - HEPAK_runtime_remains_unproven_until_importable_and_tested
+  - runtime_success_creates_no_automatic_QPS_credit
