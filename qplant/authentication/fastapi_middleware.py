@@ -33,10 +33,7 @@ from rate_limiter import RateLimiter
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-_keys_db_path = os.environ.get(
-    "QPLANT_API_KEYS_DB",
-    "/home/ubuntu/authentication/api_keys.json",
-)
+_keys_db_path = os.environ.get("QPLANT_API_KEYS_DB")
 key_manager = APIKeyManager(keys_db_path=_keys_db_path)
 rate_limiter = RateLimiter()
 

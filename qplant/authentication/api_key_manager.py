@@ -29,6 +29,17 @@ _KEY_PREFIX_LEN = 15
 _INTERNAL_FIELDS: frozenset = frozenset({"key_hash", "key_salt", "key_prefix"})
 
 
+def default_keys_db_path() -> str:
+    """Cross-platform default location for the API keys database.
+
+    Resolves under the current user's home directory so it works
+    unmodified on Windows, macOS, and any Linux account layout — the
+    previous default (``/home/ubuntu/...``) silently broke everywhere
+    else unless overridden via ``QPLANT_API_KEYS_DB``.
+    """
+    return str(Path.home() / ".qplant" / "authentication" / "api_keys.json")
+
+
 class APIKeyManager:
     """
     Manages API keys for secure service access.
@@ -41,8 +52,8 @@ class APIKeyManager:
     Each key carries metadata: name, expiry, rate-limit, status, usage count.
     """
 
-    def __init__(self, keys_db_path: str = "/home/ubuntu/authentication/api_keys.json") -> None:
-        self.keys_db = Path(keys_db_path)
+    def __init__(self, keys_db_path: Optional[str] = None) -> None:
+        self.keys_db = Path(keys_db_path) if keys_db_path else Path(default_keys_db_path())
         self._ensure_db()
 
     # ── Key lifecycle ────────────────────────────────────────────────────
