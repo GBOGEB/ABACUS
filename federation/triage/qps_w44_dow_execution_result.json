@@ -3,6 +3,7 @@
   "result": "QPS_W44_DOW_EXECUTION_RESULT",
   "parent": "ABACUS",
   "role": "DOW_ANALYSIS_RUNTIME",
+  "source_child_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8",
   "source_child": {
     "repository": "GBOGEB/cryoplant-project",
     "pr": 388,
@@ -72,5 +73,7 @@
     "DOW result cannot self-promote child state",
     "postulated cost != financial penalty"
   ],
-  "formal_credit_delta": 0
+  "formal_credit_delta": 0,
+  "return_hash_basis": "sha256(canonical_json_without_return_hash)",
+  "return_hash": "3f4a32ba702b08e3d9aa841735dee041173faeaf0e534fc19d3ec62a268e23fa"
 }
