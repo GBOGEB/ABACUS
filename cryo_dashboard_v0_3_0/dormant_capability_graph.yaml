@@ -1,0 +1,198 @@
+schema: abacus-dormant-capability-graph/v1
+capability_id: CRYO_HE4_PROPERTY_SURFACE
+source_pr: 850
+source_merge_sha: be81f8e8865942a91f51c34298279c71c7ff6db3
+state: PARTIALLY_ACTIVATED
+formal_credit_delta: 0
+
+nodes:
+  - id: NODE-CRYO-DASHBOARD
+    kind: UI_REFERENCE_SURFACE
+    path: cryo_dashboard_v0_3_0/index.html
+    lifecycle: ACTIVE
+    evidence_class: CONTROLLED
+
+  - id: NODE-CRYO-PROPERTY-MANIFEST
+    kind: NORMALIZED_BRIDGE_CONTRACT
+    path: cryo_dashboard_v0_3_0/property_surface_manifest.json
+    lifecycle: ACTIVE
+    evidence_class: CONTROLLED
+
+  - id: NODE-COOLPROP-HELIUM-RUNTIME
+    kind: RUNTIME_PROPERTY_PROVIDER
+    path: models/qps_line_s/recovery_model.py
+    lifecycle: ACTIVE_ELSEWHERE
+    evidence_class: SOURCE_SUPPORTED
+    capabilities:
+      - saturation_pressure
+      - saturation_temperature
+      - latent_heat
+      - liquid_cp
+      - warm_gas_density
+
+  - id: NODE-HEPAK-ORACLE
+    kind: DECLARED_INDEPENDENT_ORACLE
+    lifecycle: DORMANT_DECLARED
+    evidence_class: SOURCE_SUPPORTED
+    runtime_import_proven: false
+    guard: DO_NOT_CLAIM_RUNTIME_UNTIL_BOUND_AND_TESTED
+
+  - id: NODE-REFPROP-RUNTIME
+    kind: LICENSED_RUNTIME_PROVIDER
+    lifecycle: NOT_BOUND
+    evidence_class: SOURCE_SUPPORTED
+    runtime_import_proven: false
+
+  - id: NODE-DOW
+    kind: DOCUMENT_ORIENTED_WORKSPACE
+    lifecycle: ACTIVE
+
+  - id: NODE-KEB
+    kind: EXECUTION_SEMANTIC_BACKBONE
+    lifecycle: ACTIVE
+
+  - id: NODE-MCP-CRYO-PROPERTY-WORKER
+    kind: MCP_WORKER
+    lifecycle: PLANNED
+
+  - id: NODE-QPS-LINE-S
+    kind: REAL_CRYOPLANT_WORKLOAD
+    path: models/qps_line_s/recovery_model.py
+    lifecycle: ACTIVE
+
+atoms:
+  - id: ATOM-HE4-LAMBDA-REFERENCE
+    subject: He4
+    predicate: reference_state_at_lambda_transition
+    evidence_class: SOURCE_SUPPORTED
+    source: Donnelly-Barenghi/NIST-derived reference surface
+    status: REFERENCE_ONLY
+
+  - id: ATOM-HE4-NBP-REFERENCE
+    subject: He4
+    predicate: reference_state_at_normal_boiling_point
+    evidence_class: SOURCE_SUPPORTED
+    source: Donnelly-Barenghi/NIST-derived reference surface
+    status: REFERENCE_ONLY
+
+  - id: ATOM-HEII-RUNTIME-GUARD
+    subject: He4_HeII
+    predicate: requires_specialized_low_temperature_provider
+    evidence_class: CONTROLLED
+    status: ACTIVE_GUARD
+
+  - id: ATOM-COOLPROP-PROVIDER
+    subject: CoolProp
+    predicate: provides_runtime_helium_properties
+    evidence_class: SOURCE_SUPPORTED
+    status: ACTIVE
+
+  - id: ATOM-HEPAK-RUNTIME
+    subject: HEPAK
+    predicate: provides_importable_runtime_helium_properties
+    evidence_class: SOURCE_SUPPORTED
+    status: UNPROVEN
+
+edges:
+  - id: EDGE-001
+    source: NODE-CRYO-DASHBOARD
+    target: NODE-CRYO-PROPERTY-MANIFEST
+    type: EXPOSES_VIA
+    status: ACTIVE
+
+  - id: EDGE-002
+    source: NODE-COOLPROP-HELIUM-RUNTIME
+    target: NODE-CRYO-PROPERTY-MANIFEST
+    type: CANDIDATE_RUNTIME_PROVIDER_FOR
+    status: READY_FOR_BRIDGE_BINDING
+
+  - id: EDGE-003
+    source: NODE-HEPAK-ORACLE
+    target: NODE-CRYO-PROPERTY-MANIFEST
+    type: DECLARED_INDEPENDENT_ORACLE_FOR
+    status: DORMANT
+    promotion_requires:
+      - importable_runtime
+      - version_identity
+      - validity_range
+      - unit_contract
+      - golden_test_pass
+
+  - id: EDGE-004
+    source: NODE-REFPROP-RUNTIME
+    target: NODE-CRYO-PROPERTY-MANIFEST
+    type: OPTIONAL_LICENSED_PROVIDER_FOR
+    status: NOT_BOUND
+
+  - id: EDGE-005
+    source: NODE-QPS-LINE-S
+    target: NODE-COOLPROP-HELIUM-RUNTIME
+    type: EXECUTES_WITH
+    status: ACTIVE
+
+  - id: EDGE-006
+    source: NODE-CRYO-PROPERTY-MANIFEST
+    target: NODE-DOW
+    type: DISCOVERABLE_BY
+    status: PENDING_REGISTRY_BINDING
+
+  - id: EDGE-007
+    source: NODE-CRYO-PROPERTY-MANIFEST
+    target: NODE-KEB
+    type: ROUTABLE_BY
+    status: PENDING_REGISTRY_BINDING
+
+  - id: EDGE-008
+    source: NODE-CRYO-PROPERTY-MANIFEST
+    target: NODE-MCP-CRYO-PROPERTY-WORKER
+    type: PROMOTES_TO
+    status: PLANNED
+
+  - id: EDGE-009
+    source: NODE-HEPAK-ORACLE
+    target: NODE-COOLPROP-HELIUM-RUNTIME
+    type: INDEPENDENT_CROSSCHECK_OF
+    status: DORMANT
+    guard: NO_SHARED_ALGORITHM_ASSUMPTION_WITH_PRIMARY_PROVIDER
+
+activation_metrics:
+  discovered_nodes: 9
+  active_or_active_elsewhere: 5
+  dormant_declared: 1
+  planned: 1
+  not_bound: 1
+  partially_activated: 1
+  current_penetration_fraction: 0.5556
+  note: >
+    Penetration is descriptive only: active-or-active-elsewhere divided by discovered nodes.
+    It is not formal engineering closure and creates no compliance credit.
+
+promotion_gates:
+  DORMANT_TO_DISCOVERABLE:
+    - source_identity
+    - typed_node
+    - typed_edges
+  DISCOVERABLE_TO_IMPORTABLE:
+    - import_test
+    - version_capture
+    - dependency_pin
+  IMPORTABLE_TO_TESTED:
+    - golden_reference_cases
+    - unit_tests
+    - phase_validity_tests
+    - failure_injection
+  TESTED_TO_INTEGRATED:
+    - normalized_bridge_binding
+    - DOW_discovery
+    - KEB_routing
+  INTEGRATED_TO_ON_DUTY:
+    - real_QPS_workload_execution
+    - receipt_with_source_sha
+    - independent_crosscheck
+    - regression_guard
+
+wave_links:
+  - W50_provenance_closure
+  - W46_MCP_worker_fabric
+  - W49_real_cryoplant_workload_proof
+  - W51_autonomous_planning
