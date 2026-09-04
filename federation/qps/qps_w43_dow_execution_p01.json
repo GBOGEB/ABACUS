@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "document_id": "QPS_W43_DOW_EXECUTION_P01",
+  "wave": "W43",
+  "set": "TRI_REPO_EXECUTION",
+  "pulse": "P01",
+  "role": "DOW_ANALYSIS_PLANE",
+  "status": "REQUESTED",
+  "child_request": {
+    "repository": "GBOGEB/cryoplant-project",
+    "pr": 418,
+    "head_sha": "8ea024eeb9087db7ce5370c3cad506893f8cf636"
+  },
+  "source_baseline": {
+    "parent_main_sha": "3c98cef9ae9cf43b9fa2b2358b261d7dd21aa6c7",
+    "latest_return_pr": 827
+  },
+  "lanes": [
+    {
+      "lane_id": "W43-P01-L1",
+      "title": "RTM-595 common-cause / Table-10",
+      "worker": "DOW-CC-001",
+      "intent": "Inspect existing source-bound return contract and identify evidence, dependency, traceability and non-double-counting gaps that block deterministic Table-10 re-entry.",
+      "expected_outputs": ["typed_findings", "missing_evidence", "trace_gaps", "priority_signal", "proposed_child_actions"],
+      "stop_condition": "Do not infer independent/common-cause allocation or promote any Table-10 value without source-bound evidence."
+    },
+    {
+      "lane_id": "W43-P01-L2",
+      "title": "OFFER-49 HSE",
+      "worker": "DOW-HSE-002",
+      "intent": "Inspect HSE/OFFER-49 source, deliverable, review and evidence chains; identify exact missing locators and reusable evidence edges.",
+      "expected_outputs": ["source_gap_register", "evidence_reuse_candidates", "deliverable_bindings", "priority_signal"],
+      "stop_condition": "No closure from review presence alone."
+    },
+    {
+      "lane_id": "W43-P01-L3",
+      "title": "SAT / deemed acceptance",
+      "worker": "DOW-SAT-003",
+      "intent": "Build the analysis-side requirement->test->result->return->minute->reentry chain and expose broken or duplicate edges.",
+      "expected_outputs": ["acceptance_chain", "broken_edges", "duplicate_edges", "missing_test_evidence"],
+      "stop_condition": "Render or document existence is not acceptance evidence."
+    },
+    {
+      "lane_id": "W43-P01-L4",
+      "title": "MINERVA P&ID semantic federation",
+      "worker": "DOW-PID-004",
+      "intent": "Compare real ABACUS MINERVA_PID outputs with current CODEX parser outputs and return engineering-analysis deltas without altering child compliance state.",
+      "expected_outputs": ["source_set_delta", "colour_line_delta", "boundary_delta", "unresolved_delta", "recommended_reconciliation"],
+      "stop_condition": "No P&ID result creates automatic QPS compliance credit."
+    }
+  ],
+  "return_contract": {
+    "receipt_type": "DOW_ANALYSIS_RETURN",
+    "required_fields": ["source_sha", "input_hash", "output_hash", "findings", "known_gaps", "confidence", "validation_result", "child_disposition_required"],
+    "child_disposition_required": true
+  },
+  "guards": [
+    "reviewed != compliant",
+    "candidate mapping != accepted evidence",
+    "parent analysis cannot self-promote child state",
+    "duplicate evidence fan-out does not duplicate compliance atoms"
+  ],
+  "formal_credit_delta": 0,
+  "negotiation_credit_delta": 0
+}
