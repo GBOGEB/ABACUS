@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -32,6 +32,14 @@ from fastapi.responses import JSONResponse
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+# ── Ensure the qplant package root (parent of this app) is importable,
+# so the existing API-key auth module can be reused here ─────────────
+QPLANT_ROOT = PROJECT_ROOT.parent
+if str(QPLANT_ROOT) not in sys.path:
+    sys.path.insert(0, str(QPLANT_ROOT))
+
+from authentication.fastapi_middleware import verify_api_key
 
 from api.models import (
     AudienceType,
@@ -529,11 +537,16 @@ async def get_build_status():
     return result
 
 
-@app.post("/api/v1/build/trigger", tags=["Build"])
+@app.post(
+    "/api/v1/build/trigger",
+    tags=["Build"],
+    dependencies=[Depends(verify_api_key)],
+)
 async def trigger_build(skip_tests: bool = False):
     """Trigger a full build pipeline execution.
 
-    WARNING: This runs the build_all.sh script. Use with caution.
+    WARNING: This runs the build_all.sh script. Requires a valid
+    ``X-API-Key`` header (see ``authentication.fastapi_middleware``).
     """
     build_script = PROJECT_ROOT / "build_all.sh"
     if not build_script.exists():
