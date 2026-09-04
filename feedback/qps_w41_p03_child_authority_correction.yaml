@@ -1,0 +1,40 @@
+schema_version: "0.1"
+document_id: QPS_W41_P03_CHILD_AUTHORITY_CORRECTION_DOW
+wave: W41
+pulse: P03
+status: DERIVED_PARENT_CORRECTION_NO_CHILD_CREDIT
+child_repo: GBOGEB/cryoplant-project
+child_authority_pr: 375
+supersedes_parent_return_pr: 826
+purpose: >-
+  Correct only the stale candidate Buildings & Utilities mapping count in the merged W41 DOW return.
+  Preserve the valid parent review-depth metrics and all no-credit semantics while yielding to the private child SSOT.
+correction:
+  stale_parent_candidate_mapping: {count: 24, denominator: 53, pct: 45.28}
+  child_authoritative_candidate_mapping: {count: 26, denominator: 53, pct: 49.06}
+  source: GBOGEB/cryoplant-project#375
+  reason: >-
+    Child review-thread reconciliation corrected NFS-007 from RTM-416-only to RTM-417/418/424 and retained
+    NFS-008 bidder scope as BOTH, producing the corrected 26-node contract-anchored candidate union.
+preserved_parent_metrics:
+  page_bound_NFS_reviewer_edges: 61
+  buildings_utilities_page_bound: {reviewed: 51, denominator: 53, pct: 96.23}
+  global_unique_reviewed_RTM: {reviewed: 116, denominator: 722, pct: 16.07}
+  reviewer_RTM_edges: 123
+  original_MSG_paragraph_attribution: {exact: 0, denominator: 53}
+  fixed_W40_3D_exact_edges: "3->7"
+  fixed_W40_3D_M_floor_mean: "1.05->1.15"
+semantic_guard:
+  - candidate_mapping_NE_page_bound_reviewer_coverage
+  - page_bound_review_NE_original_MSG_paragraph_attribution
+  - reviewed_NE_compliant
+  - parent_derived_metrics_NE_child_SSOT_authority
+  - postulated_cost_NE_financial_penalty
+formal_effect:
+  engineering_closure: "70/90 = 77.78%"
+  negotiation_resolution: "0/20"
+  evaluated_price_delta_eur: 0
+  child_credit_delta: 0
+return_to_child:
+  target: GBOGEB/cryoplant-project
+  disposition: ACCEPT_CORRECTION_SUBJECT_TO_CHILD_RELEASE_CONTROL
