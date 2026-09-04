@@ -1,0 +1,45 @@
+schema_version: "0.1"
+document_id: QPS_W41_NFS_BUILDINGS_UTILITIES_DOW_REQUEST
+wave: W41
+status: PARENT_RUNTIME_REQUEST_NO_CHILD_CREDIT
+return_to_child: GBOGEB/cryoplant-project
+source_child_pr: GBOGEB/cryoplant-project#369
+child_source_control: ocd-adr/40_implementation/QPS_NFS_BUILDINGS_UTILITIES_BURNDOWN_W41_v0.1.yaml
+public_parent_boundary: >-
+  Do not copy raw tender evidence, MSG contents, bidder PDFs, reviewer email text, confidential commercial detail,
+  or uncontrolled source extracts into this public parent. Consume only the bounded child control surface and return
+  derived analysis/receipts.
+purpose: >-
+  Run bounded DOW analysis for the NFS / Buildings / Utilities / Support Systems burndown lane and its interaction
+  with the existing 3D / Digital Configuration hotspot. Focus on reviewer x RTM x bidder x domain depth, interface
+  multiplication, BT ordering and evidence-reuse leverage without changing child compliance or negotiation scores.
+required_dow_checks:
+  - consume_child_control_without_copying_raw_confidential_evidence
+  - classify_reviewer_x_RTM_x_bidder_x_domain_edges
+  - preserve_existing_DKO_overlap_for_RTM_438_442_447
+  - distinguish_unique_RTM_breadth_from_additional_reviewer_domain_depth
+  - quantify_hotspot_edge_growth_without_double_counting
+  - rank_buildings_utilities_topics_by_consequence_and_closure_leverage
+  - crosswalk_3D_model_deviation_to_building_utility_installation_and_as_built_consequences
+  - keep_OFFER_SOURCE_PENDING_rows_separate_from_exact_offer_anchored_evidence
+  - keep_EUR_378k_as_postulated_negotiation_adjustment_candidate_only
+  - do_not_convert_review_presence_or_cost_posture_into_compliance_credit
+  - return_exact_topic_to_RTM_crosswalk_candidates_to_child_for_accept_reject_defer
+  - emit_machine_readable_runtime_receipt_with_source_child_PR_and_commit_identity
+requested_metrics:
+  - reviewed_unique_RTM_before_after
+  - reviewer_union_depth
+  - active_domain_count_before_after
+  - exact_vs_pending_edge_counts
+  - hotspot_edge_count_and_reuse_leverage
+  - BT_ranked_NFS_topics
+  - duplicate_overlap_count
+  - invalid_or_unowned_edge_count
+  - public_parent_confidentiality_guard_pass_fail
+federation_bridge:
+  CODEX_KEB_companion_required: true
+  child_reentry_required: true
+  child_authority_wins: true
+  return_semantics: derived_analysis_only
+formal_credit: 0
+negotiation_credit: 0

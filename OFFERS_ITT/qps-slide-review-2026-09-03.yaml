@@ -1,0 +1,421 @@
+# QPS Slide Reviewer export — SCK CEN/101648634
+meta:
+  deck: "QPS- 3D _DKO.pptx"
+  docNumber: SCK CEN/101648634
+  classification: "ISC: Restricted"
+  generatedAt: "2026-09-03T16:26:20.508Z"
+  method: "Bradley-Terry (MM, prior 0.1, ties = half win) + PCA (standardised, power iteration)"
+style:
+  primaryColor: "#7030A0"
+  secondaryColor: "#F3E8FF"
+  headingFont: Plus Jakarta Sans
+  bodyFont: DM Sans
+  monoFont: JetBrains Mono
+  footer:
+    logo: "bottom-left"
+    docNumber: after logo
+    slideNumber: "bottom-right"
+    classification: "bottom-right below number"
+kpis:
+  define:
+    slides: 15
+    groups:
+      - Front matter
+      - ALAT 3D model
+      - Compliance tables
+      - LKT 2D drawings
+    sessions: 1
+    comparisons: 2
+    ties: 1
+  measure:
+    starredCount: 1
+    starRate: 0.06666666666666667
+    totalVotes: 2
+    approvalRate: 1
+    neutralRate: 0.5
+    coverage: 0.01904761904761905
+    meanComparisonsPerSlide: 0.26666666666666666
+  analyze:
+    transitivityConsistency: 1
+    cyclicTriads: 0
+    observedTriads: 0
+    btSpread: 2.7562037727532624
+    meanStdError: 3.1097102498586704
+    pc1Variance: 0.7238793321663924
+    pc2Variance: 0.2000000012045955
+  improve:
+    topSlides:
+      - 3
+      - 4
+      - 8
+    bottomSlides:
+      - 13
+      - 15
+      - 14
+    underSampled:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+  control:
+    sigmaLevelProxy: 4.04
+    readiness: amber
+    notes:
+      - "Pair coverage below 50% — run more A/B rounds for a stable ranking."
+      - "Standard errors > 1 — ranking not yet discriminative."
+pca:
+  features:
+    - starred
+    - netVotes
+    - approval
+    - btLogStrength
+    - winRate
+  explainedVariance:
+    - 0.7238793321663924
+    - 0.2000000012045955
+  loadings:
+    - - -0.042475674742276655
+      - 0.5192163860121756
+      - 0.5192163860121756
+      - 0.435245735814327
+      - 0.5192163860121756
+    - - 0.9952718274435144
+      - -1.3853952146102384e-8
+      - -1.3853952132224597e-8
+      - 0.09712872642656538
+      - -1.3853952146102384e-8
+slides:
+  - id: 1
+    pageNumber: 1
+    imageFilename: "slide-01.png"
+    title: "QPS-LB Offers – Review (title)"
+    groupName: Front matter
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 4
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 2
+    pageNumber: 2
+    imageFilename: "slide-02.png"
+    title: "QPLANT-LB 3D Model (ALAT-20260812)"
+    groupName: ALAT 3D model
+    starred: true
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 1
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 5
+    pc1: -0.5557236430439488
+    pc2: 3.5976931534644345
+  - id: 3
+    pageNumber: 3
+    imageFilename: "slide-03.png"
+    title: "QPLANT-LB (Building Integration) – overview"
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 1
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 1
+    abWins: 1
+    abLosses: 0
+    abTies: 0
+    abComparisons: 1
+    winRate: 1
+    btStrength: 3.9673581328712646
+    btLogStrength: 1.378100415468789
+    btStdError: 4.219420499717343
+    btRank: 1
+    pc1: 6.7930838842122165
+    pc2: -5.0079051155830856e-8
+  - id: 4
+    pageNumber: 4
+    imageFilename: "slide-04.png"
+    title: "QPLANT-LB (Building Integration) – detail"
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 1
+    abComparisons: 1
+    winRate: 0
+    btStrength: 1.0000011483048137
+    btLogStrength: 0.0000011483041543791994
+    btStdError: 2
+    btRank: 2
+    pc1: -0.39121515162959686
+    pc2: -0.2569778559838791
+  - id: 5
+    pageNumber: 5
+    imageFilename: "slide-05.png"
+    title: "Building Integration – QLM-LB wall / multiline interface"
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 6
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 6
+    pageNumber: 6
+    imageFilename: "slide-06.png"
+    title: Building Integration – wall openings
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 7
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 7
+    pageNumber: 7
+    imageFilename: "slide-07.png"
+    title: Building Integration – CCB height discrepancy
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 8
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 8
+    pageNumber: 8
+    imageFilename: "slide-08.png"
+    title: Building Integration – structural interference
+    groupName: ALAT 3D model
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 1
+    abComparisons: 1
+    winRate: 0
+    btStrength: 1.0000011483048137
+    btLogStrength: 0.0000011483041543791994
+    btStdError: 2
+    btRank: 3
+    pc1: -0.39121515162959686
+    pc2: -0.2569778559838791
+  - id: 9
+    pageNumber: 9
+    imageFilename: "slide-09.png"
+    title: ALAT Compliancy to Requirements (1/2)
+    groupName: Compliance tables
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 9
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 10
+    pageNumber: 10
+    imageFilename: "slide-10.png"
+    title: ALAT Compliancy to Requirements (2/2)
+    groupName: Compliance tables
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 10
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 11
+    pageNumber: 11
+    imageFilename: "slide-11.png"
+    title: "QPLANT-LB 2D Drawings (LKT-20260812)"
+    groupName: LKT 2D drawings
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 11
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 12
+    pageNumber: 12
+    imageFilename: "slide-12.png"
+    title: "QRB-LB & WCS-LB Rooms"
+    groupName: LKT 2D drawings
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 12
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 13
+    pageNumber: 13
+    imageFilename: "slide-13.png"
+    title: LKT Compliancy to Requirements (1/2)
+    groupName: Compliance tables
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 1
+    abTies: 0
+    abComparisons: 1
+    winRate: 0
+    btStrength: 0.2520561604719367
+    btLogStrength: -1.3781033572844734
+    btStdError: 4.21942049971734
+    btRank: 15
+    pc1: -1.5427693164271903
+    pc2: -0.5139567996804384
+  - id: 14
+    pageNumber: 14
+    imageFilename: "slide-14.png"
+    title: LKT Compliancy to Requirements (2/2)
+    groupName: Compliance tables
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 13
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+  - id: 15
+    pageNumber: 15
+    imageFilename: "slide-15.png"
+    title: Copyright / closure
+    groupName: Front matter
+    starred: false
+    votesUp: 0
+    votesDown: 0
+    votesNeutral: 0
+    netVotes: 0
+    abWins: 0
+    abLosses: 0
+    abTies: 0
+    abComparisons: 0
+    winRate: 0
+    btStrength: 1.0000000586552176
+    btLogStrength: 5.865521585165077e-8
+    btStdError: null
+    btRank: 14
+    pc1: -0.3912160621481884
+    pc2: -0.2569780591737186
+reasons:
+  - sessionId: 2
+    slideA: 3
+    slideB: 13
+    winner: 3
+    isTie: false
+    reason: "3D view is clearer than the dense table"
+    at: "2026-09-03T16:25:05.662Z"

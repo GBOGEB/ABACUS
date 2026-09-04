@@ -1,0 +1,29 @@
+schema_version: '0.1'
+document_id: QPS_W48_SHARED_ANSWER_DOW_REQUEST
+status: PARENT_DERIVED_VALIDATION_REQUEST
+child_repo: GBOGEB/cryoplant-project
+child_pr: 412
+purpose: Validate review-efficiency and deterministic fanout of shared ANSWER_SET nodes without changing child compliance or obligation counts.
+metrics_to_validate:
+  answer_sets_total: 140
+  exact_sets: 127
+  near_candidates: 13
+  cross_item_sets: 69
+  intra_item_fanout_sets: 71
+  exact_by_actor: {LKT: 6, ALAT: 116, SCK: 5}
+checks:
+  - repeated_response_text_may_render_once_with_member_count_and_expandable_members
+  - filter_and_export_must_preserve_all_member_ids
+  - generic_pointer_only_sets_must_be_visually_distinct_from_substantive_shared_answers
+  - APPLY_TO_SET_and_APPLY_TO_SUBSET_must_produce_deterministic_selection_receipts
+  - near_duplicate_candidates_must_never_auto_merge
+  - source_row_count_reduction_is_navigation_efficiency_only_not_requirement_reduction
+  - current_offer_and_historic_prestudy_must_render_as_distinct_evidence_classes
+guards:
+  parent_may_mutate_child_compliance: false
+  parent_may_reduce_child_obligation_denominator: false
+  cross_bidder_answer_sharing: false
+  formal_credit_delta: 0
+return_contract:
+  accepted_outputs: [derived_rendering_guidance, filter_parity_receipt, fanout_QA, duplicate_efficiency_metrics]
+  child_gate: ACCEPT_REJECT_DEFER

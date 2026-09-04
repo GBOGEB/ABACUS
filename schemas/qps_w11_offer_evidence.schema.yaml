@@ -1,0 +1,17 @@
+schema_version: "0.1"
+contract: QPS_W11_OFFER_EVIDENCE
+canonical_child_reference: GBOGEB/cryoplant-project#228
+producer: ABACUS
+required_fields:
+  - atom_id
+  - source_id
+  - source_sha256
+  - source_format
+  - source_locator
+  - bidder
+  - evidence_class
+  - extracted_text
+  - extraction_method
+  - extraction_confidence
+  - bidder_position
+  - typed_relations

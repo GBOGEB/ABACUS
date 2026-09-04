@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QPS Pipeline Map</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6;
+    --ssot:           #1BAF7A;
+    --script:         #8a5cf6;
+    --derived:        #fab219;
+    --binary:         #e34948;
+    --html-badge:     #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #fff;
+      --text-secondary: #c3c2b7; --text-muted: #898781; --grid: #2c2c2a;
+      --baseline: #383835; --border: rgba(255,255,255,0.10); --series-1: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #fff;
+    --text-secondary: #c3c2b7; --text-muted: #898781; --grid: #2c2c2a;
+    --baseline: #383835; --border: rgba(255,255,255,0.10); --series-1: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--page); }
+  .viz-root { color: var(--text-primary); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 32px 40px 20px; border-bottom: 1px solid var(--border); background: var(--surface-1); }
+  header h1 { margin: 0 0 6px; font-size: 22px; }
+  header p { margin: 0; color: var(--text-secondary); max-width: 900px; }
+  header code { background: var(--grid); padding: 1px 5px; border-radius: 4px; font-size: 90%; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 40px 80px; }
+  section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin-bottom: 22px; }
+  section h2 { margin: 0 0 4px; font-size: 17px; }
+  section .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 18px; max-width: 900px; }
+  .chart-wrap { overflow-x: auto; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .lane-label { fill: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .node-box { stroke-width: 1.5; }
+  .node-title { fill: var(--text-primary); font-size: 12px; font-weight: 600; }
+  .node-sub { fill: var(--text-secondary); font-size: 10.5px; }
+  .edge { stroke: var(--baseline); stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+  .edge-dashed { stroke-dasharray: 4 3; }
+  table.data { width:100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  table.data th { text-align:left; font-size: 11px; text-transform:uppercase; letter-spacing:.04em;
+    color: var(--text-muted); padding: 7px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.data td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700;
+    color: #fff; white-space: nowrap; }
+  .badge.ssot { background: var(--ssot); }
+  .badge.script { background: var(--script); }
+  .badge.derived { background: var(--derived); color:#3a2a00; }
+  .badge.binary { background: var(--binary); }
+  .badge.html { background: var(--html-badge); }
+  .badge.index { background: var(--text-muted); }
+  .mono { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 12px; }
+  .foot-note { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+  footer { max-width: 1180px; margin: 0 auto; padding: 0 40px 40px; color: var(--text-muted); font-size: 12px; }
+  footer a, header a { color: var(--series-1); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+
+<header>
+  <h1>QPS RTM/OFFER pipeline map — entry, exit, and every node between</h1>
+  <p>What generates what, verified against the actual files in <code>docs/qps_offer_rtm_evaluation/</code> on 2026-09-02
+  (not just <code>CONTINUATION.md</code>'s claims — cross-checked by <code>ls</code> against every node named below).
+  <strong>This is the "view after clone" page</strong>: open this file first.</p>
+</header>
+
+<main>
+
+<section>
+  <h2>Pipeline graph — SSOT to human-facing exit</h2>
+  <p class="sub">Four lanes: source-of-truth &rarr; build script &rarr; derived/intermediate data &rarr; what a human actually opens.
+  Solid arrows = direct script output. Dashed = cross-referenced (not derived-from). Colour = artefact type, see legend.</p>
+  <div class="chart-wrap">
+    <svg id="pipeline-graph" width="1040" height="720" viewBox="0 0 1040 720">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--baseline)"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  <div id="legend" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--text-secondary);"></div>
+</section>
+
+<section>
+  <h2>Human-facing binaries</h2>
+  <p class="sub">Open these directly with no browser needed. Excel/PowerPoint/PDF readers only.</p>
+  <table class="data" id="tbl-binaries"></table>
+</section>
+
+<section>
+  <h2>HTML renders (browser views)</h2>
+  <p class="sub">Open in any browser, no install. These are the rich, interactive counterparts of the binaries above.</p>
+  <table class="data" id="tbl-html"></table>
+</section>
+
+<section>
+  <h2>SSOT and derived data</h2>
+  <p class="sub">Everything downstream ultimately traces to one of these two source-of-truth files.</p>
+  <table class="data" id="tbl-ssot"></table>
+</section>
+
+<section>
+  <h2>Build scripts (the 8 that matter)</h2>
+  <p class="sub"><code>scripts/</code> holds 69 files; most are superseded version history (build_deck.py through build_deck5.py,
+  build_bt_deck_v5/v6/v10/v12.py, build_workbook_slim_v11/v12/v13.py, etc.) &mdash; kept for lineage, not part of the live chain.
+  These 8 are what <code>CONTINUATION.md</code>'s reproduce-anything chain actually calls, confirmed present on disk.</p>
+  <table class="data" id="tbl-scripts"></table>
+</section>
+
+</main>
+
+<footer>
+  Verified 2026-09-02 against the actual working tree, not against documentation claims alone &mdash; e.g.
+  <code>QPS_Taxonomy_and_Domain_Summary.pdf</code> is named in <code>CONTINUATION.md</code>'s priority list but does
+  <strong>not</strong> exist in this checkout (confirmed via <code>find</code>), so it is omitted above rather than listed
+  as available. See <a href="DELIVERABLES_INDEX.html">DELIVERABLES_INDEX.html</a> for the broader deliverables list and
+  <a href="../CONTINUATION.md">CONTINUATION.md</a> for the full narrative.
+</footer>
+
+</div>
+
+<script>
+function el(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function cssVar(name) {
+  return getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(name).trim();
+}
+
+const TYPE_COLOR = { ssot: '--ssot', script: '--script', derived: '--derived', binary: '--binary', html: '--html-badge' };
+
+// ---- node/edge definitions (4 lanes x rows) ----
+const svg = document.getElementById("pipeline-graph");
+const laneX = { source: 8, script: 258, data: 500, exit: 720 };
+const laneW = { source: 232, script: 224, data: 202, exit: 312 };
+const rowH = 74;
+
+function truncate(str, maxChars) {
+  return str.length > maxChars ? str.slice(0, maxChars - 1) + "…" : str;
+}
+
+const nodes = {
+  v24:      { lane:"source", row:0, type:"ssot",   title:"QPS_OFFER_Evaluation_FULL_v24.xlsx", sub:"governed parent SSOT · 34 sheets · 722 RTM" },
+  bt34:     { lane:"source", row:5, type:"ssot",   title:"QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx", sub:"companion detail · 23 sheets · cross-ref only" },
+
+  exportnav:{ lane:"script", row:0, type:"script", title:"export_nav_data.py", sub:"v24.xlsx → nav_data" },
+  slim:     { lane:"script", row:1, type:"script", title:"build_workbook_slim_v24.py", sub:"v24.xlsx → LITE_v24" },
+  pcaprior: { lane:"script", row:2, type:"script", title:"compute_pca.py", sub:"(prior round, on v23.xlsx)" },
+  buildhtml:{ lane:"script", row:5, type:"script", title:"build_html_from_excel.py", sub:"BT34.xlsx → excel_view/*.html (this session)" },
+  registry: { lane:"script", row:6.3, type:"script", title:"generate_artifact_registry.py", sub:"scans current/ → registry" },
+
+  navdata:  { lane:"data", row:0, type:"derived", title:"nav_data_v24.json", sub:"1.36MB, full v24 projection" },
+  pcajson:  { lane:"data", row:2, type:"derived", title:"pca_results_v23.json + pca_adequacy_check.json", sub:"staleness-checked clean vs v24 (2026-09-02)" },
+
+  navhtml:  { lane:"exit", row:0, type:"html", title:"QPS_RTM_BT_Navigator_v22.html", sub:"splice_navigator.py output · 13 tabs" },
+  litexlsx: { lane:"exit", row:1, type:"binary", title:"QPS_OFFER_Evaluation_LITE_v24.xlsx", sub:"synced to FULL_v24" },
+  pcahtml:  { lane:"exit", row:2.5, type:"html", title:"QPS_PCA_Navigator.html", sub:"this session · interactive: sort/filter/log-scale" },
+  btdeck:   { lane:"exit", row:3.7, type:"binary", title:"BT_Method_Evaluation_v15.pptx", sub:"29 slides · reconciled this session, not script-built" },
+  excelview:{ lane:"exit", row:5, type:"html", title:"excel_view/index.html + 9 pages", sub:"this session · sort/filter tables" },
+  regjson:  { lane:"exit", row:6.3, type:"derived", title:"ARTIFACT_REGISTRY.json", sub:"STALE — still lists v12 deck, needs regen" },
+};
+
+const edges = [
+  ["v24","exportnav"], ["exportnav","navdata"], ["navdata","navhtml"],
+  ["v24","slim"], ["slim","litexlsx"],
+  ["pcaprior","pcajson"], ["pcajson","pcahtml"],
+  ["bt34","buildhtml"], ["buildhtml","excelview"],
+  ["v24","registry", true], ["bt34","registry", true], ["registry","regjson"],
+];
+// dashed cross-reference (not derived-from)
+const dashedExtra = [["v24","bt34"]];
+
+function nodeCenter(n) {
+  const x = laneX[n.lane] + laneW[n.lane]/2;
+  const y = 50 + n.row*rowH + 22;
+  return {x, y};
+}
+function nodeBox(n) {
+  const x = laneX[n.lane];
+  const y = 50 + n.row*rowH;
+  return {x, y, w: laneW[n.lane], h: 44};
+}
+
+// lane labels
+["source","script","data","exit"].forEach(lane => {
+  const label = {source:"SSOT / source", script:"build script", data:"derived data", exit:"human-facing exit"}[lane];
+  svg.appendChild(el("text", {class:"lane-label", x: laneX[lane], y: 28})).textContent = label;
+});
+
+// edges first (behind nodes)
+function drawEdge(fromKey, toKey, dashed) {
+  const a = nodeBox(nodes[fromKey]), b = nodeBox(nodes[toKey]);
+  const x1 = a.x + a.w, y1 = a.y + a.h/2;
+  const x2 = b.x, y2 = b.y + b.h/2;
+  const midX = (x1+x2)/2;
+  const path = `M${x1},${y1} C${midX},${y1} ${midX},${y2} ${x2},${y2}`;
+  const p = el("path", {d: path, class: "edge" + (dashed ? " edge-dashed" : "")});
+  svg.appendChild(p);
+}
+edges.forEach(([f,t,dashed]) => drawEdge(f,t,dashed));
+dashedExtra.forEach(([f,t]) => {
+  // same-lane cross-ref: draw a curved side link
+  const a = nodeBox(nodes[f]), b = nodeBox(nodes[t]);
+  const x = a.x - 14;
+  const path = `M${x},${a.y+a.h/2} C${x-24},${a.y+a.h/2} ${x-24},${b.y+b.h/2} ${x},${b.y+b.h/2}`;
+  svg.appendChild(el("path", {d: path, class: "edge edge-dashed"}));
+});
+
+// nodes -- text truncated to fit box width (~5.7px/char at 11.5px, ~5.1px/char at 10px),
+// full name/description always available via native <title> tooltip on hover.
+Object.values(nodes).forEach(n => {
+  const box = nodeBox(n);
+  const color = cssVar(TYPE_COLOR[n.type]);
+  const g = el("g", {});
+  const titleBudget = Math.floor((box.w - 16) / 5.9);
+  const subBudget = Math.floor((box.w - 16) / 5.15);
+
+  const rect = el("rect", {x:box.x, y:box.y, width:box.w, height:box.h, rx:7,
+    class:"node-box", fill: color, "fill-opacity":0.14, stroke: color});
+  g.appendChild(rect);
+  const tip = el("title", {});
+  tip.textContent = n.title + " — " + n.sub;
+  g.appendChild(tip);
+
+  const t1 = el("text", {class:"node-title", x: box.x+10, y: box.y+18});
+  t1.textContent = truncate(n.title, titleBudget);
+  g.appendChild(t1);
+  const t2 = el("text", {class:"node-sub", x: box.x+10, y: box.y+33});
+  t2.textContent = truncate(n.sub, subBudget);
+  g.appendChild(t2);
+  svg.appendChild(g);
+});
+
+// legend
+const legendDiv = document.getElementById("legend");
+Object.entries({ssot:"SSOT", script:"build script", derived:"derived data", binary:"binary (Excel/PPT)", html:"HTML render"}).forEach(([type,label]) => {
+  const sw = document.createElement("span");
+  sw.style.cssText = `display:inline-flex;align-items:center;gap:5px;`;
+  sw.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${cssVar(TYPE_COLOR[type])}"></span>${label}`;
+  legendDiv.appendChild(sw);
+});
+
+// ---- tables ----
+function badge(type, label) { return `<span class="badge ${type}">${label}</span>`; }
+
+const binaries = [
+  ["QPS_OFFER_Evaluation_FULL_v24.xlsx", badge("ssot","SSOT"), "Governed parent workbook: 34 sheets, 722 RTM rows, 50 OFFER rows, BT weights, PCA_ANALYSIS sheet.", "v23.xlsx + pca_results_v23.json + weight_scenario4_v23.json", "current/ (untouched all session, mtime-verified)"],
+  ["QPS_OFFER_Evaluation_LITE_v24.xlsx", badge("binary","Binary"), "Slimmed reviewer copy, synced to FULL_v24 lockstep.", "QPS_OFFER_Evaluation_FULL_v24.xlsx", "build_workbook_slim_v24.py"],
+  ["QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx", badge("ssot","SSOT-adjacent"), "Companion detail workbook: 23 sheets (BT ranking FUNCTIONS, reference, governance, 3 analysis sheets), cross-referenced to v24 by ID, not merged.", "QPS_OFFER_Cluster_v3_4_BT_RTM_Standards_Evidence.xlsx (external, ~/Documents)", "manual build, this session, 2026-09-01"],
+  ["BT_Method_Evaluation_v15.pptx", badge("binary","Binary"), "BT method deck, 29 slides. 2 slides (EVAL-S16/S17) recovered from a v14 PDF that had no editable source.", "v12.pptx (27 slides) + v14 PDF export", "direct OOXML edit, this session (python-pptx blocked by broken Pillow DLL)"],
+];
+const tblB = document.getElementById("tbl-binaries");
+tblB.innerHTML = "<tr><th>File</th><th>Badge</th><th>What it does</th><th>Main input</th><th>Main output / built by</th></tr>" +
+  binaries.map(r => `<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="mono" style="font-size:11px">${r[3]}</td><td class="mono" style="font-size:11px">${r[4]}</td></tr>`).join("");
+
+const htmlRenders = [
+  ["QPS_RTM_BT_Navigator_v22.html", badge("html","HTML"), "13-tab navigator: full RTM/OFFER browse, BT ranking, PCA/Structure tab.", "nav_data_v24.json", "splice_navigator.py + navigator_template.html"],
+  ["QPS_PCA_Navigator.html", badge("html","HTML"), "Interactive PCA visual: variance toggle, loadings sort-by-column, domain search/filter, log-scale domain-sizes chart.", "pca_results_v23.json + pca_adequacy_check.json", "hand-built, this session"],
+  ["excel_view/index.html + 9 pages", badge("html","HTML"), "Sortable/filterable table mirror of BT34's 6 FUNCTION sheets + 3 analysis sheets. Excel is SSOT; regenerate, never hand-edit.", "QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx", "build_html_from_excel.py, this session"],
+  ["DELIVERABLES_INDEX.html", badge("index","Index"), "Top-level landing page, links every deliverable filename.", "manual/script curation", "prior round (2026-08-19)"],
+  ["MASTER_DEVELOPER_DASHBOARD.html / QPS_DMAIC_KPI_Dashboard.html", badge("html","HTML"), "Previously-orphaned dashboards, now linked from DELIVERABLES_INDEX.html.", "various", "prior round"],
+];
+const tblH = document.getElementById("tbl-html");
+tblH.innerHTML = "<tr><th>File</th><th>Badge</th><th>What it does</th><th>Main input</th><th>Built by</th></tr>" +
+  htmlRenders.map(r => `<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="mono" style="font-size:11px">${r[3]}</td><td class="mono" style="font-size:11px">${r[4]}</td></tr>`).join("");
+
+const ssotRows = [
+  ["QPS_OFFER_Evaluation_FULL_v24.xlsx", badge("ssot","SSOT"), "The single source of truth for RTM/OFFER scoring, BT weights, PCA results.", "everything above (directly or via nav_data_v24.json)"],
+  ["nav_data_v24.json", badge("derived","Derived"), "Full v24 projection for the RTM/BT Navigator. 1.36MB.", "QPS_RTM_BT_Navigator_v22.html"],
+  ["pca_results_v23.json + pca_adequacy_check.json", badge("derived","Derived"), "PCA output. Computed against the v23 intermediate, but staleness-checked 2026-09-02: RTM_RANKING/OFFER_RANKING are byte-identical between v23 and v24, so this is current despite the filename.", "QPS_PCA_Navigator.html"],
+  ["QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx", badge("ssot","SSOT-adjacent"), "Companion detail, cross-referenced to v24 by ID (dashed edge above) -- not derived from it, not merged into it.", "excel_view/*.html"],
+];
+const tblS = document.getElementById("tbl-ssot");
+tblS.innerHTML = "<tr><th>File</th><th>Badge</th><th>What it is</th><th>Feeds</th></tr>" +
+  ssotRows.map(r => `<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="mono" style="font-size:11px">${r[3]}</td></tr>`).join("");
+
+const scriptRows = [
+  ["compute_pca.py", "v23.xlsx", "pca_results_v23.json", "sklearn PCA over the 7 raw dimension scores"],
+  ["compute_weight_scenario4.py", "v23.xlsx", "weight_scenario4_v23.json", "4th BT weight-toggle scenario"],
+  ["build_workbook_v24.py", "v23.xlsx + PCA/weight JSONs", "QPS_OFFER_Evaluation_FULL_v24.xlsx", "assembles the SSOT, adds PCA_ANALYSIS + OFFER_PHASE_EXPANSION sheets"],
+  ["build_workbook_slim_v24.py", "FULL_v24.xlsx", "LITE_v24.xlsx", "reviewer-slim copy"],
+  ["export_nav_data.py", "FULL_v24.xlsx", "nav_data_v24.json", "flattens workbook for the Navigator"],
+  ["splice_navigator.py", "nav_data_v24.json + navigator_template.html", "QPS_RTM_BT_Navigator_v22.html", "template splice, no framework"],
+  ["build_html_from_excel.py", "QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx", "excel_view/*.html", "openpyxl read → f-string HTML + vanilla JS sort/filter (this session)"],
+  ["generate_artifact_registry.py", "scans current/", "ARTIFACT_REGISTRY.json", "mechanical filename/version registry -- STALE, needs a re-run"],
+];
+const tblSc = document.getElementById("tbl-scripts");
+tblSc.innerHTML = "<tr><th>Script</th><th>Input</th><th>Output</th><th>What it does</th></tr>" +
+  scriptRows.map(r => `<tr><td class="mono">${r[0]}</td><td class="mono" style="font-size:11px">${r[1]}</td><td class="mono" style="font-size:11px">${r[2]}</td><td>${r[3]}</td></tr>`).join("");
+</script>
+
+</body>
+</html>

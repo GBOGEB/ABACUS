@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CROSSWALK_TO_V24 — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>CROSSWALK_TO_V24</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">CROSSWALK_TO_V24 — how this file&#x27;s sheets relate to the parent SSOT</th><th data-col="1"></th><th data-col="2"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>CROSSWALK_TO_V24</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["CROSSWALK_TO_V24 \u2014 how this file's sheets relate to the parent SSOT", "", ""];
+const ROWS = [["Parent = QPS_OFFER_Evaluation_FULL_v24.xlsx (docs/qps_offer_rtm_evaluation/current/).", "", ""], ["This file never writes to or reads live from v24 -- this table is a static, human-read", "", ""], ["reference, refreshed manually if either file changes materially.", "", ""], ["This file's sheet", "Relationship", "v24 equivalent (if any)"], ["BT_Input", "Unique to this file -- per-bidder evaluation shell, all STATUS=TBD (not started)", "(none -- v24's EVALUATION_WORKSPACE/EVALUATION_INPUT serve the same live-review role differently)"], ["STATIC_BT", "Unique to this file -- computed OFFER Bradley-Terry rank/lambda/pairwise-% output", "cross-check against v24!OFFER_RANKING (same weights, different pipeline)"], ["STATIC_BT_RTM", "Unique to this file -- computed RTM Bradley-Terry rank output", "cross-check against v24!RTM_RANKING"], ["Compliance_Legend", "Superseded by richer version", "v24!COMPLIANCE_LEGEND (authoritative)"], ["BT_Config", "Superseded by richer version", "v24!WEIGHTS_METHOD (authoritative)"], ["BT_Clusters", "Different granularity (per-item)", "v24!CLUSTERS (cluster-level summary)"], ["Applicant_Offer#", "Unique to this file -- verbatim Applicant DocList text per OFFER item", "(none directly -- v24!OFFER_CANONICAL has similar but not identical sourcing detail)"], ["Full_DocList_Items", "Unique to this file -- complete numbered Applicant DocList incl. non-OFFER items", "(none)"], ["Audit_Findings", "Unique to this file -- numbering-shift correction log", "distinct from v24!AUDIT_NOTES and v24!DMAIC_AUDIT (different audit trails)"], ["Lists", "Reference dropdown values", "v24!LISTS (broader)"], ["RTM_Audit", "Unique to this file -- PASS/FAIL QC summary, internally labeled 'v3.3'", "conceptually parallel to v24!QUALITY_CHECKS"], ["OFFER_RTM_Crosswalk", "Different column naming, same 377-row relationship data", "v24!RTM_CROSSWALK"], ["RTM_Canonical", "Unique to this file -- full verbatim RTM shall-text + requirement text", "v24 does not carry full verbatim text in one place at this grain"], ["OFFER_Canonical", "Near-duplicate (9/50 rows differ, punctuation only)", "v24!OFFER_CANONICAL (authoritative)"], ["States_OfferIDs", "Unique to this file -- per-OFFER coverage-state summary", "(none directly)"], ["States_Epics", "Unique to this file -- per-section coverage summary", "loosely parallels v24!DOMAIN_SUMMARY"], ["BT_Method", "Unique to this file -- BT methodology rule table", "loosely parallels v24!WEIGHTS_METHOD"], ["Standards_Register", "Different granularity (more rows)", "v24!STANDARDS"], ["Deliverables_Register", "Different granularity (775 vs 54 rows -- likely the source detail)", "v24!DELIVERABLES (rolled-up summary)"], ["PCA \u2014 not duplicated here", "", ""], ["This file has no PCA sheet. PCA_ANALYSIS exists only in v24, computed from RTM_RANKING's", "", ""], ["7 dimension scores. See v24!PCA_ANALYSIS directly, or QPS_PCA_Navigator.html for the", "", ""], ["visual version -- not reproduced here to avoid a second, potentially-diverging PCA copy.", "", ""]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>
