@@ -1,0 +1,34 @@
+schema_version: '0.1'
+document_id: QPS_W45_CLOSURE_YIELD_DOW_CONTRACT
+parent: ABACUS
+role: DOW_ANALYSIS_RUNTIME
+source_child:
+  repository: GBOGEB/cryoplant-project
+  pr: 399
+  source_main_sha: 47366543fb3d5e878b5f649c5699bf4ade96551f
+upstream_result:
+  pr: 839
+  state: OPEN_REBASED_RESULT
+  head_sha: a0397900f1e7ed05858a78edbd4db261b996bbeb
+priority_order:
+  - {rank: 1, lane: RTM-595_TODO-014_TABLE10_COMMON_CAUSE, mode: CLOSURE_YIELD}
+  - {rank: 2, lane: OFFER-49_HSE_ITEM_LEVEL_RETURN, mode: PARALLEL_HOT_LANE}
+  - {rank: 3, lane: ORIGINAL_MSG_PROVENANCE, mode: SOURCE_RECOVERY}
+  - {rank: 4, lane: BUILDINGS_UTILITIES_EXACT_BINDING, mode: EXACT_EDGE_PROMOTION}
+  - {rank: 5, lane: MODEL_OBJECT_TO_BUILDING_INTERFACE, mode: MULTIPLIER_PRECONDITION}
+required_analysis:
+  - quantify_dependency_release_potential_without_awarding_credit
+  - rank_source_blocked_vs_internally_actionable_work
+  - suppress_duplicate_graph_taxonomy_expansion
+  - retain_51_of_53_page_bound_review_distinct_from_0_of_53_MSG_exact
+  - retain_26_of_53_candidate_mapping_as_candidate_only
+  - keep_EUR_378k_postulated_and_dedup_guarded
+return_contract:
+  child_disposition_required: true
+  allowed_effects: [PRIORITY, DERIVED_EVIDENCE, BLOCKER, LINEAGE]
+  forbidden_effects: [COMPLIANCE_CREDIT, NEGOTIATION_CREDIT, PRICE_MUTATION, PCA_PROMOTION, MULTIPLIER_PROMOTION]
+formal_effect:
+  engineering_closure: '70/90 = 77.78%'
+  negotiation_resolution: '0/20'
+  formal_credit_delta: 0
+  evaluated_price_delta_eur: 0
