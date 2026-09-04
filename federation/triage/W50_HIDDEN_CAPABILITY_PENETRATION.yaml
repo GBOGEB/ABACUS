@@ -1,0 +1,105 @@
+schema: qps-w50-hidden-capability-penetration/v1
+wave: W50
+repo: GBOGEB/ABACUS
+role: DOW_ANALYSIS_PARENT
+formal_credit_delta: 0
+intent: >-
+  Inventory latent reusable engineering capabilities before PCA/BT wave ranking so already-built
+  DOW, HEPAK, cryogenic-property, orchestration and validation blocks are not undervalued simply
+  because they are poorly exposed.
+
+observed_capabilities:
+  dow_engine:
+    evidence:
+      - DMAIC_V3/tools/dow_engine.py
+      - DOW_DEPLOYMENT_ORCHESTRATOR.py
+      - ABACUS-UNIFIED/AGENT_DOW_INTERACTIONS.md
+    state: ACTIVE_DEEP
+    promotion: REUSE_NOT_REBUILD
+  coolprop_runtime:
+    evidence:
+      - docs/qps_line_s_recovery/reference-registry.yaml
+    version: 7.2.0
+    state: ACTIVE_PINNED
+    role: runtime_property_backend
+  hepak_reference:
+    evidence:
+      - docs/qps_line_s_recovery/reference-registry.yaml
+      - qplant/phase3_physics_validation/physics_validation_report.md
+      - KNOWLEDGE_SYSTEMS_ARCHITECTURE.md
+    state: LATENT_PARTIAL
+    role: independent_frozen_reference_oracle
+    expected_csv: docs/qps_line_s_recovery/he_reference_hepak.csv
+    blocker: expected frozen HEPAK CSV is not present on main
+    required_ranges:
+      - He4_2K_to_4_5K_including_sub_lambda
+      - He4_4_5K_to_300K
+  refprop_surface:
+    evidence:
+      - cryo_dashboard_v0_3_0/README.md
+      - cryo_dashboard_v0_3_0/index.html
+    state: ACTIVE_REFERENCE_SURFACE
+    role: NIST_REFPROP_10_helium4_surface
+    independence_guard: >-
+      Do not treat CoolProp-vs-REFPROP as an independent helium oracle where they share EOS lineage.
+  mcp_controller:
+    evidence:
+      - MASTER_EXECUTION_TRACKER.md
+    state: PRESENT_NEEDS_RUNTIME_VALIDATION
+  hepak_chatgpt_skill:
+    state: NOT_EXPOSED
+    note: >-
+      Repository capability is not the same as a ChatGPT Skill. Promote engine -> worker -> Skill only
+      after the property contract and validation oracle are stable.
+
+proposed_property_contract:
+  name: helium_property_bridge
+  inputs:
+    - temperature_K
+    - pressure_Pa_or_bar
+    - optional_state_pair
+  outputs:
+    - density
+    - enthalpy
+    - entropy
+    - cp
+    - cv
+    - viscosity
+    - thermal_conductivity
+    - quality_when_defined
+    - phase
+    - backend
+    - source_version
+    - provenance
+    - confidence
+  providers:
+    runtime: CoolProp_7_2_0
+    independent_reference: HEPAK_frozen_table
+    secondary_reference: NIST_REFPROP10_surface
+  guards:
+    - colour_or_UI_labels_do_not_change_physics
+    - no_interpolation_outside_declared_domain_without_flag
+    - below_lambda_results_must_identify_backend_and_reference
+    - missing_HEPAK_reference_must_fail_as_UNVALIDATED_NOT_PASS
+
+pca_bt_effect:
+  before_ranking: true
+  reason: >-
+    Candidate generation must include latent capabilities and integration gaps, not only visible PR work.
+  candidate_dimensions:
+    - dormant_capability_value
+    - reuse_value
+    - activation_effort
+    - validation_gap
+    - federation_leverage
+    - engineering_risk_reduction
+    - source_blocking
+    - reproducibility
+
+victory:
+  - capability register is source-bound
+  - HEPAK gap is explicit and testable
+  - property bridge contract exists
+  - duplicate rebuild is suppressed
+  - W50 PCA/BT candidate population includes hidden capabilities
+  - no automatic engineering or compliance credit is created
