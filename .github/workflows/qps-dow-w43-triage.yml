@@ -2,6 +2,18 @@ name: QPS DOW W43 TRIAGE
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/dow_integration_executor.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_metadata_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py'
+      - 'DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
+      - 'federation/triage/qps_w43_dow_execution_contract.json'
+      - 'federation/qps/wave-43/**'
+      - '.github/workflows/qps-dow-w43-triage.yml'
   push:
     branches: [main]
     paths:
