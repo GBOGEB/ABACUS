@@ -1,0 +1,60 @@
+schema: qps-w44-evidence-output-dow-request/v1
+payload_version: "0.1"
+correlation_id: qps-w44-evidence-output-20260904
+source:
+  repo: GBOGEB/cryoplant-project
+  branch: triage/w44-evidence-output-reverse-load
+  contract: ocd-adr/40_implementation/QPS_W44_EVIDENCE_OUTPUT_REVERSE_LOAD_v0.1.yaml
+role: DOW_ANALYSIS_PLANE
+formal_credit_delta: 0
+
+objective: >-
+  Rank and quantify the shortest internally actionable paths that increase exact evidence depth,
+  interface completeness and release acceptance without conflating review, candidate mapping or render QA with compliance.
+
+operations:
+  - id: DOW-W44-01
+    operation: rank_exact_source_recovery
+    inputs: [NFS_findings, current_review_union, candidate_mapping]
+    output: prioritized_source_recovery_candidates
+  - id: DOW-W44-02
+    operation: rank_offer_anchor_recovery
+    inputs: [RTM_offer_crosswalk, bidder_specific_findings]
+    output: exact_offer_page_binding_queue
+  - id: DOW-W44-03
+    operation: interface_completeness_screen
+    inputs: [helium, electrical, PCW, RCW, HVAC, GN2, instrument_air, controls, heat_recovery]
+    dimensions: [TP1, TP2, terminal_points, lifecycle_phase, deliverables, codes_standards, evidence_status]
+    output: interface_gap_rank
+  - id: DOW-W44-04
+    operation: binary_release_acceptance_screen
+    outputs: [xlsx, html, pptx, pdf]
+    output: release_QA_gap_rank
+  - id: DOW-W44-05
+    operation: reverse_load_priority
+    objective: maximize_BxD_and_depth_gain_per_action
+    output: ranked_actionable_vs_blocked_findings
+
+return_contract:
+  schema: qps-w44-evidence-output-dow-return/v1
+  required_fields:
+    - schema
+    - payload_version
+    - correlation_id
+    - source
+    - child_source_sha
+    - executed_operations
+    - actionable_findings
+    - blocked_findings
+    - evidence_class
+    - estimated_metric_delta
+    - formal_credit_delta
+    - return_sha256
+  child_disposition: [ACCEPT, REJECT, DEFER]
+
+anti_overclaim:
+  - reviewed_is_not_compliant
+  - candidate_mapping_is_not_accepted_evidence
+  - render_QA_is_not_engineering_closure
+  - DOW_rank_is_not_compliance
+  - parent_may_not_override_child_SSOT
