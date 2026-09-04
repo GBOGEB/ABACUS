@@ -1,0 +1,56 @@
+schema_version: '0.1'
+document_id: QPS_W41_P02_NFS_GRAPH_RECONCILIATION_DOW_RECEIPT
+status: PARENT_DERIVED_RECEIPT_NO_CHILD_CREDIT
+source_child_repo: GBOGEB/cryoplant-project
+source_child_lineage: '#361-#371 merged'
+source_child_followup_pr: 377
+source_parent_request: 825
+
+metric_reconciliation:
+  page_bound_review_projection:
+    exact_reviewer_RTM_edges_added_by_NFS: 61
+    buildings_utilities_reviewed: 51
+    buildings_utilities_denominator: 53
+    buildings_utilities_pct: 96.23
+    unique_reviewed_RTM_after_union: 116
+    RTM_population: 722
+    global_review_pct: 16.07
+    reviewer_RTM_edges_after: 123
+  bidder_offer_candidate_mapping:
+    candidate_RTM_union: 24
+    buildings_utilities_denominator: 53
+    pct: 45.28
+  original_MSG_attribution:
+    exact_MSG_paragraph_to_RTM_edges: 0
+    buildings_utilities_denominator: 53
+    blocker: exact_filename_sha_sender_date_paragraph_locator_pending
+
+analysis:
+  unique_breadth_vs_depth: >-
+    The 61 page-bound NFS reviewer edges create 61 new unique RTM nodes relative to the W39 55-node baseline,
+    yielding 116/722 exact page-bound human-review breadth. The 24/53 bidder-page mapping is a separate evidence-depth
+    subset linked to the 16 NFS findings and must not replace the total reviewer-coverage measure.
+  graph_effect: >-
+    Buildings & Utilities changes from a dark review domain to a densely reviewed downstream neighbourhood.
+    This strengthens consequence propagation from 3D/model deviations into buildings, electrical, cooling water,
+    heat recovery, instrument air, HVAC and SAT evidence, but it does not add a direct exact edge to the fixed W40
+    3D cohort.
+  multiplier_control:
+    fixed_cohort_exact_edges: '3->7'
+    fixed_cohort_M_floor_mean: '1.05->1.15'
+    direct_NFS_increment_now: 0
+    next_measurement_gate: exact_model_object_to_building_utility_interface_edges
+
+BT:
+  - recover_original_MSG_metadata_and_paragraph_locators
+  - close_or_disposition_RTM_384_385_page_locator_gap
+  - validate_16_finding_atoms_against_exact_MSG_paragraphs
+  - bind_remaining_authority_and_programme_bidder_sources
+  - create_exact_model_object_to_building_utility_interface_edges
+
+boundaries:
+  reviewed_is_not_compliant: true
+  parent_derived_is_not_child_authority: true
+  postulated_cost_is_not_evaluated_price: true
+  formal_credit: 0
+  negotiation_credit: 0
