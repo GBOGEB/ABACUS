@@ -1,0 +1,64 @@
+schema_version: "0.1"
+wave: FED-W044
+pulse: P04
+repository: GBOGEB/ABACUS
+plane: DOW_analysis
+intent: calculate_and_return_qplant_physics_and_controls_cost_drivers_without_owning_child_cost_state
+
+analysis_tasks:
+  qplant_envelope:
+    - build_geometry_aware_line_b_segment_graph
+    - accumulate_mass_flow_toward_qrb
+    - calculate_local_qcell_pressure_and_margin
+    - compare_c24_c30
+    - expose_qve_worst_case
+    - cover_2K_sub31_and_2K_to4K_31to1200mbar
+    - cover_4p5K_40K_300K_compression_storage_and_line_s
+  thermodynamics:
+    - bind_property_backend_by_regime
+    - derive_h_s_rho_cp_cv_where_valid
+    - derive_hp_pvps_specific_work_and_power_where_inputs_sufficient
+    - derive_heat_recovery_and_cooling_duty
+    - fail_closed_for_unproven_heii_backend
+  controls_cost_drivers:
+    - count_instruments_by_type
+    - count_control_loops
+    - count_discrete_interlocks_and_permissives
+    - count_sequences_and_operating_modes
+    - count_io_channels
+    - count_network_nodes
+    - count_hmi_objects_and_alarm_classes
+    - estimate_complexity_weighted_coding_hours
+    - estimate_fat_sat_loop_tuning_hours
+    - link_run_hours_starts_and_duty_severity_to_spares_rcm
+
+return_contract:
+  target: GBOGEB/cryoplant-project
+  via: GBOGEB/CODEX
+  required:
+    - source_sha
+    - calculation_version
+    - input_state_hash
+    - units
+    - evidence_class
+    - uncertainty
+    - validity_regime
+    - derived_value
+    - no_compliance_promotion
+
+provider_rules:
+  coolprop: executable_where_valid
+  hepak: independent_reference_unproven_until_source_bound
+  heii_without_valid_provider: FAIL_CLOSED
+
+cost_rules:
+  bidder_price_inference: forbidden
+  postulated_hour_or_cost_value_must_be_typed: true
+  existing_child_cost_lineage_is_authoritative: true
+
+victory:
+  physics_driver_return_ready: true
+  controls_complexity_driver_return_ready: true
+  qve_margin_driver_ready: true
+  scenario_energy_driver_ready: true
+  spares_rcm_exposure_driver_ready: true
