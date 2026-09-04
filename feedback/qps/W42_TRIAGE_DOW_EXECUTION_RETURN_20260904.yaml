@@ -1,0 +1,104 @@
+schema_version: "0.1"
+document_id: ABACUS_QPS_W42_TRIAGE_DOW_EXECUTION_RETURN
+status: BOUNDED_PUBLIC_PARENT_DOW_EXECUTION_RETURN
+snapshot_date: 2026-09-04
+repository_role: public_parent_dow
+repo: GBOGEB/ABACUS
+child_repo: GBOGEB/cryoplant-project
+upstream_lineage:
+  prior_parent_pr: 827
+  child_references:
+    - cryoplant-project#339
+    - cryoplant-project#372
+purpose: >-
+  Provide the DOW side of the W42 three-repo triage implementation wave. This return is bounded:
+  it carries only derived metrics, triage buckets and execution priorities. It must not copy raw
+  MSG/email content, private tender pages, reviewer text or confidential commercial evidence.
+public_parent_boundary:
+  copies_private_evidence: false
+  carries_candidate_metrics_only: true
+  child_accept_reject_defer_required: true
+  creates_child_compliance_credit: false
+triage_inputs:
+  merged_prs:
+    - repo: GBOGEB/cryoplant-project
+      pr: 339
+      role: Table-10 common-cause return contract
+    - repo: GBOGEB/cryoplant-project
+      pr: 372
+      role: NFS atom graph federation
+    - repo: GBOGEB/ABACUS
+      pr: 827
+      role: W42 binary DOW return
+    - repo: GBOGEB/CODEX
+      pr: 352
+      role: W42 binary KEB return
+triage_waves:
+  DOW_W42_P1_metrics:
+    objective: keep current metrics fixed until child disposition
+    metrics:
+      formal_engineering_closure: "70/90 = 77.78%"
+      negotiation_resolution: "0/20"
+      global_unique_reviewed_rtms: "55/722 = 7.62%"
+      nfs_governed_exact_bu_coverage: "0/53 pending exact MSG locators"
+      candidate_bu_union: "24/53 = 45.28% candidate only"
+      evaluated_price_delta_eur: 0
+  DOW_W42_P2_depth_vs_breadth:
+    objective: separate additional reviewer/domain depth from unique RTM breadth
+    rules:
+      - reviewer_depth_does_not_increment_unique_breadth_without_new_exact_rtm
+      - candidate_crosswalks_remain_non_promoting_until_child_accepts
+      - rendered_binary_success_is_artifact_quality_not_compliance_closure
+  DOW_W42_P3_reverse_loading:
+    objective: propose next BT focus without overriding child SSOT
+    priority_order:
+      - exact MSG locator recovery
+      - bidder offer page gap closure
+      - child accept/reject/defer ledger
+      - Table-10 return atom review
+      - binary/session-close artifact consistency
+  DOW_W42_P4_return_contract:
+    objective: provide machine-readable return for child disposition
+    return_fields:
+      - metric_id
+      - candidate_value
+      - evidence_boundary
+      - child_action
+      - promotion_blocker
+      - proposed_bt_priority
+dow_atoms:
+  - id: DOW-ATOM-001
+    label: formal baseline held
+    value: "70/90 = 77.78%"
+    promote: false
+  - id: DOW-ATOM-002
+    label: negotiation baseline held
+    value: "0/20"
+    promote: false
+  - id: DOW-ATOM-003
+    label: render QA is not compliance closure
+    value: true
+    promote: false
+  - id: DOW-ATOM-004
+    label: 80/20 reviewer filter is presentation scope not requirement deletion
+    value: true
+    promote: false
+  - id: DOW-ATOM-005
+    label: NFS candidate B&U union remains candidate
+    value: "24/53"
+    promote: false
+  - id: DOW-ATOM-006
+    label: exact governed NFS coverage remains pending MSG anchors
+    value: "0/53"
+    promote: false
+qa:
+  public_boundary_preserved: PASS
+  no_confidential_evidence_copied: PASS
+  formal_delta_zero: PASS
+  child_disposition_required: PASS
+  render_success_not_closure: PASS
+return_to_child:
+  action: child_accept_reject_defer_required
+  suggested_child_next: >-
+    Add DOW atoms to the child W42 triage ledger, then decide which metrics are accepted as
+    navigational, rejected as non-actionable, or deferred pending source anchors.

@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "iteration": 43,
+    "phase": "federation_triage",
+    "version": "1.0.0",
+    "correlation_id": "QPS-FED-W43",
+    "source_repository": "GBOGEB/cryoplant-project",
+    "source_pr": 388,
+    "source_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8",
+    "authority": "CHILD_SSOT_DERIVED_FIXTURE",
+    "confidential": false
+  },
+  "system_under_test": {
+    "name": "QPS W43 three-repo TRIAGE federation",
+    "scope": ["OCD", "ADR", "RTM", "review-evidence", "graph", "TODO", "release-QA", "federation"],
+    "authority_rule": "Contract/Addendum and cryoplant-project child SSOT remain authoritative; ABACUS findings require child disposition before promotion"
+  },
+  "claims": [
+    {
+      "id": "W43-C01",
+      "text": "Formal engineering closure remains 70/90 with 20 remaining obligations and negotiation resolution 0/20.",
+      "status": "controlled",
+      "trace": "cryoplant-project#383"
+    },
+    {
+      "id": "W43-C02",
+      "text": "Human-review union is 116/722 with 123 reviewer-to-RTM edges; review depth does not create duplicate compliance credit.",
+      "status": "controlled",
+      "trace": "cryoplant-project#383"
+    },
+    {
+      "id": "W43-C03",
+      "text": "Buildings and Utilities page-bound review is 51/53, candidate mapping is 26/53, and raw MSG exact attribution remains 0/53 pending source locators.",
+      "status": "controlled",
+      "trace": "cryoplant-project#383"
+    },
+    {
+      "id": "W43-C04",
+      "text": "W43 must separate internally actionable closure candidates from source-blocked work and return typed reasons rather than create more routing-only artifacts.",
+      "status": "governance",
+      "trace": "cryoplant-project#388"
+    }
+  ],
+  "recursive_hooks": {
+    "consumed_from": ["cryoplant-project/W42-reentry", "cryoplant-project/W43-triage-contract"],
+    "feeds_into": ["QPS child disposition", "TODO/graph assimilation", "DMAIC/PCA/BT rerank after material delta", "anonymized ABACUS regression learning"]
+  },
+  "convergence_metrics": {
+    "quality_score": 0.82,
+    "convergence_status": "routing_saturated_execute_closure",
+    "improvement_from_previous": 0.14
+  },
+  "requested_return": {
+    "finding_fields": ["finding_id", "source_reference", "scope", "finding_type", "confidence", "proposed_action", "authority_level", "blocked_reason", "input_hash", "output_hash"],
+    "triage_classes": ["INTERNALLY_ACTIONABLE", "SOURCE_BLOCKED", "DUPLICATE_EXISTING_WORK", "PARENT_MECHANIC_GAP"],
+    "child_disposition": null
+  }
+}
