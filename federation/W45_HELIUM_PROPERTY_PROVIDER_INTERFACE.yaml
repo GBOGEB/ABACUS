@@ -1,0 +1,45 @@
+schema_version: "0.1"
+wave: W45
+repository: GBOGEB/ABACUS
+role: physics_property_provider
+interface_id: helium_property_provider
+
+operations:
+  - state_tp
+  - state_ph
+  - state_ps
+  - saturation_t
+  - saturation_p
+
+outputs:
+  - density
+  - enthalpy
+  - entropy
+  - cp
+  - cv
+  - viscosity
+  - conductivity
+  - phase
+  - quality
+
+providers:
+  coolprop:
+    status: ACTIVE
+    regime: NORMAL_FLUID_ONLY
+    implementation: models/qps_line_s/recovery_model.py
+  refprop:
+    status: EVIDENCED_EXISTING_SURFACE
+    runtime_binding: NOT_PROVEN_IN_W45
+  hepak:
+    status: NOT_PROVEN_BLOCKED
+    regime_target: HEII_AND_LAMBDA_REGION
+
+selection_rules:
+  - provider_must_declare_validity_regime
+  - provider_commit_and_provenance_required
+  - no_silent_cross_regime_extrapolation
+  - heii_requires_hepak_or_equivalent_validated_provider
+  - runtime_success_does_not_create_compliance_credit
+
+formal_credit_delta: 0
+negotiation_credit_delta: 0
