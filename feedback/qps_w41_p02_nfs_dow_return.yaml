@@ -1,0 +1,96 @@
+schema_version: "0.1"
+document_id: QPS_W41_P02_NFS_DOW_RETURN
+status: DERIVED_PARENT_RETURN_READY_FOR_CHILD_DISPOSITION
+created_utc: "2026-09-04T10:00:00Z"
+repo_role: ABACUS_PARENT_DOW
+source_request:
+  child_repo: GBOGEB/cryoplant-project
+  child_request_pr: 369
+  parent_request_pr: 825
+  paired_semantic_parent_repo: GBOGEB/CODEX
+  paired_semantic_parent_pr: 350
+public_parent_boundary:
+  raw_msg_content_copied: false
+  tender_pdf_content_copied: false
+  confidential_bidder_text_copied: false
+  allowed_content: "derived metrics, edge categories, candidate crosswalks, BT ordering and child-disposition requests only"
+
+input_state_from_child:
+  merged_child_prs: [361,362,363,364,365,366,367,368,369,370,371]
+  child_status_summary:
+    formal_engineering_closure: "70/90 = 77.78%"
+    negotiation_resolution: "0/20"
+    evaluated_price_delta_eur: 0
+    postulated_internal_cost_candidate_eur: 378000
+    candidate_bu_rtm_union: "24/53 = 45.28%"
+    governed_exact_nfs_coverage: "0/53 pending MSG paragraph locators"
+    global_unique_reviewed_rtms: "55/722 = 7.62% unchanged"
+    reviewer_rtm_edges: 65
+
+derived_dow_analysis:
+  reviewer_domain_depth:
+    conclusion: "The W41/P02 increment is depth and downstream-interface propagation, not global unique-RTM breadth."
+    breadth_delta: 0
+    depth_delta_categories:
+      - bidder_page_anchor_recovery
+      - candidate_topic_to_rtm_mapping
+      - building_utility_interface_neighborhood
+      - negotiation_ask_consolidation
+      - source_gap_partitioning
+  domain_heat:
+    p1_dark_domain_before: Buildings_Utilities_Support_Systems
+    p1_state_after: ACTIVATED_REVIEW_LANE_BUT_NOT_GOVERNED_COVERAGE
+    reason: "Candidate RTM mapping and bidder-page anchors exist, but exact MSG paragraph locators are still absent."
+  hotspot_propagation:
+    source_hotspot: [RTM-438,RTM-441,RTM-442,RTM-443,RTM-447,OFFER-36]
+    downstream_neighborhood:
+      - roof_opening_and_temporary_closure
+      - civil_exclusions_and_installation_boundary
+      - ceiling_support_loads
+      - cold_box_height_and_lifting_route
+      - crane_lifting_assumptions
+      - cooling_water_temperature_and_chemistry
+      - heat_recovery_bypass_and_controls
+      - electrical_one_line_vfd_dol_emc_harmonics
+      - emergency_power_and_loop_recovery
+      - warm_interconnecting_piping_and_cabling_boundary
+      - authority_notified_body_scope
+      - programme_installation_risk
+  edge_accounting:
+    counted_edges:
+      - reviewer_to_existing_3d_rtm_edges
+      - candidate_topic_to_building_utility_rtm_edges
+      - bidder_page_anchor_to_finding_edges
+      - parent_return_to_child_disposition_edge
+    not_counted_edges:
+      - duplicate_derivative_review_edges
+      - candidate_msg_edges_without_exact_paragraph_locator
+      - postulated_cost_to_scoring_edges
+      - parent_inferred_edges_as_child_control_facts
+
+bt_ordering_return:
+  P1: recover_two_msg_exact_metadata_sender_date_subject_hash_and_paragraph_locators
+  P2: promote_only_substantive_msg_to_rtm_matches_into_governed_reviewer_coverage
+  P3: close_remaining_bidder_page_gaps_for_NFS_015_and_NFS_016
+  P4: deduplicate_378k_against_existing_DKO_cost_scenarios_before_any_aggregation
+  P5: recompute_fixed_53_buildings_utilities_coverage_and_reverse_loading
+  P6: create_abacus_dashboard_only_after_child_accepts_exact_bindings
+
+recommended_child_disposition:
+  disposition: ACCEPT_AS_DERIVED_DOW_RETURN_WITH_PROMOTION_GATES
+  promote_now:
+    - DOW_depth_classification
+    - BT_ordering
+    - candidate_downstream_neighborhood
+  keep_deferred:
+    - governed_exact_nfs_coverage_delta
+    - scoring_adjustment
+    - bidder_compliance_mutation
+    - graph_multiplier_activation
+
+return_contract:
+  child_must_accept_reject_or_defer: true
+  parent_can_not_override_child_ssot: true
+  formal_credit_delta: 0
+  negotiation_resolution_delta: 0
+  evaluated_price_delta_eur: 0
