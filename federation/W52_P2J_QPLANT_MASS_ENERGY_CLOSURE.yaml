@@ -1,0 +1,87 @@
+schema_version: "0.1"
+wave: W52
+pulse: P2J
+repository: GBOGEB/ABACUS
+plane: DOW_physics_runtime
+intent: run_one_real_LKT_2K_OP_case_end_to_end_and_score_system_accuracy
+
+case:
+  id: LKT_2K_OP_NOMINAL
+  source_priority:
+    - LKT_current_offer
+    - contract_RTM
+    - merged_cryoplant_state_contracts
+  required_boundaries:
+    - QRB_A_supply
+    - QRB_B_vlp_return
+    - QRB_D_shield_supply
+    - QRB_E_shield_return
+    - QRB_W_warm_return
+    - PVPS_suction_discharge_flow
+    - HP_suction_discharge_flow
+    - cold_compressor_suction_discharge
+    - cold_box_refrigeration_duty
+    - heat_recovery_duty
+    - cooling_water_duty
+    - storage_or_buffer_if_active
+
+closure_metrics:
+  mass_residual:
+    definition: "sum(mdot_in) - sum(mdot_out) - dM_dt"
+    units: kg_s
+  energy_residual:
+    definition: "sum(mdot*h)_in + Q_in + W_in - sum(mdot*h)_out - Q_out - W_out - dU_dt"
+    units: W
+  state_mismatch:
+    compare: [pressure, temperature, mass_flow, enthalpy, phase]
+    report: absolute_and_relative
+  hp_power_residual:
+    compare: [thermodynamic_work, package_electrical_input]
+    report: absolute_and_relative
+  pvps_residual:
+    compare: [B_return_flow, pump_flow, suction_pressure, discharge_pressure, power]
+    report: absolute_and_relative
+  hepak_reference_status:
+    allowed: [SOURCE_BOUND_VALIDATED, PARTIAL_REFERENCE, UNVALIDATED_BLOCKED]
+
+accuracy_score:
+  rule: weighted_score_from_normalized_residuals
+  required_components:
+    - mass_closure
+    - energy_closure
+    - state_consistency
+    - hp_power_consistency
+    - pvps_consistency
+    - property_reference_confidence
+  caveat: no_single_score_without_component_breakdown
+
+provider_rules:
+  coolprop: allowed_where_valid
+  heii_sub_lambda: fail_closed_without_valid_low_temperature_provider
+  frozen_hepak_reference: preferred_independent_oracle
+
+report_required:
+  - input_source_table
+  - state_point_table
+  - mass_balance_table
+  - energy_balance_table
+  - equipment_power_table
+  - residual_summary
+  - uncertainty_and_missing_data
+  - hepak_reference_status
+  - system_accuracy_score
+  - pass_fail_by_component
+
+victory:
+  real_lkt_case_executed: true
+  all_primary_boundaries_source_bound_or_explicitly_missing: true
+  mass_residual_reported: true
+  energy_residual_reported: true
+  state_mismatch_reported: true
+  hp_power_residual_reported: true
+  pvps_residual_reported: true
+  hepak_status_reported: true
+  component_scores_reported: true
+  system_accuracy_score_reported: true
+  no_architecture_only_completion: true
+  formal_credit_delta: 0
