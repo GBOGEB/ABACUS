@@ -1,0 +1,168 @@
+name: QPS DOW W43 TRIAGE
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/dow_integration_executor.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_metadata_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py'
+      - 'DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
+      - 'federation/triage/qps_w43_dow_execution_contract.json'
+      - 'federation/qps/wave-43/**'
+      - '.github/workflows/qps-dow-w43-triage.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'DMAIC_V3/dow_integration_executor.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_metadata_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py'
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py'
+      - 'DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py'
+      - 'federation/triage/qps_w43_dow_execution_contract.json'
+      - 'federation/qps/wave-43/**'
+      - '.github/workflows/qps-dow-w43-triage.yml'
+
+permissions:
+  contents: read
+
+env:
+  CORRELATION_ID: QPS-FED-W43
+  TARGET_DIR: federation/qps/wave-43/input
+  SOURCE_CHILD_SHA: 29c2fb587403c5ccab690392026a51ecd8fd92d8
+
+jobs:
+  dow-w43-triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install DOW dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f DMAIC_V3/requirements.txt ]; then pip install -r DMAIC_V3/requirements.txt; fi
+
+      - name: Stage 0 - show W43 execution architecture
+        run: |
+          echo 'QPS W43 CHILD SSOT'
+          echo '      | exact source SHA'
+          echo '      v'
+          echo 'ABACUS DOW: metadata -> hooks -> convergence -> knowledge -> ranking -> validation'
+          echo '      |'
+          echo '      v'
+          echo 'TRIAGE RETURN: actionable | source-blocked | duplicate | parent-gap'
+          echo '      |'
+          echo '      v'
+          echo 'QPS CHILD DISPOSITION'
+          echo "correlation_id=${CORRELATION_ID} source_child_sha=${SOURCE_CHILD_SHA}"
+
+      - name: Run canonical DOW integration executor
+        id: dow
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          mkdir -p federation/qps/wave-43/output
+          python DMAIC_V3/dow_integration_executor.py --iteration 43 --target "${TARGET_DIR}" --verbose 2>&1 | tee federation/qps/wave-43/output/dow_run.log
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build source-bound W43 receipt
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          fixture = Path('federation/qps/wave-43/input/qps_w43_triage_fixture.json')
+          fixture_data = json.loads(fixture.read_text(encoding='utf-8'))
+          input_sha = hashlib.sha256(fixture.read_bytes()).hexdigest()
+
+          preferred = Path('dow_integration_results_iteration_43.json')
+          if preferred.exists():
+              result_file = preferred
+          else:
+              candidates = sorted(Path('.').glob('dow_integration_results_iteration_*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+              result_file = candidates[0] if candidates else preferred
+
+          result = json.loads(result_file.read_text(encoding='utf-8')) if result_file.exists() else {'status': 'missing_result', 'results': []}
+          expected = {1:'metadata_injection',2:'recursive_hooks',3:'convergence',4:'knowledge_extraction',5:'recursive_self_ranking',6:'validation'}
+          by_stage = {int(item.get('stage')): item for item in result.get('results', []) if item.get('stage') is not None}
+          stages = []
+          for number, name in expected.items():
+              item = by_stage.get(number)
+              stages.append({
+                  'stage_number': number,
+                  'stage': name,
+                  'status': item.get('status') if item else 'NOT_REACHED',
+                  'agent': item.get('agent') if item else None,
+                  'mechanic_path': item.get('path') if item else None,
+                  'reason': (item.get('reason') or item.get('error')) if item else None,
+                  'executed': bool(item and item.get('status') == 'success'),
+              })
+
+          receipt = {
+              'schema': 'abacus-dow-triage-receipt/v1',
+              'correlation_id': 'QPS-FED-W43',
+              'source_child_sha': fixture_data['metadata']['source_sha'],
+              'input_sha256': input_sha,
+              'engine': 'DMAIC_V3/dow_integration_executor.py',
+              'engine_status': result.get('status', 'unknown'),
+              'all_required_stages_pass': all(s['executed'] for s in stages),
+              'stages': stages,
+              'triage_classes': fixture_data['requested_return']['triage_classes'],
+              'result_artifact': str(result_file),
+              'child_disposition_required': True,
+              'formal_credit_delta': 0,
+              'authority_rule': 'ABACUS DOW output cannot self-promote QPS engineering/compliance state'
+          }
+          out = Path('federation/qps/wave-43/output/dow_triage_receipt.json')
+          out.write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Publish visible stage summary
+        run: |
+          echo "## DOW W43 TRIAGE — ${CORRELATION_ID}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```text' >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'QPS CHILD SSOT' '      | exact SHA' '      v' 'ABACUS DOW' '  1 metadata/authority' '  2 recursive hooks' '  3 convergence' '  4 knowledge extraction' '  5 self-ranking' '  6 validation' '      |' '      v' 'TRIAGE RETURN -> CHILD DISPOSITION' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat federation/qps/wave-43/output/dow_triage_receipt.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload W43 DOW artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: qps-dow-w43-${{ github.run_id }}
+          path: |
+            federation/qps/wave-43/input/qps_w43_triage_fixture.json
+            federation/qps/wave-43/output/dow_run.log
+            federation/qps/wave-43/output/dow_triage_receipt.json
+            dow_integration_results_iteration_*.json
+          if-no-files-found: warn
+
+      - name: Fail closed on executor or stage failure
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path('federation/qps/wave-43/output/dow_triage_receipt.json').read_text())
+          if not receipt['all_required_stages_pass']:
+              raise SystemExit('W43 DOW triage blocked: not all six canonical stages executed successfully')
+          PY
+          if [ "${{ steps.dow.outputs.exit_code }}" != "0" ]; then
+            echo "Canonical DOW executor returned exit code ${{ steps.dow.outputs.exit_code }}"
+            exit 1
+          fi
