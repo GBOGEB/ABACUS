@@ -1,0 +1,24 @@
+pulse_id: QPS-P43
+role: ABACUS
+parent_pr: 827
+parent_merge_sha: 93f48827217167110d6f025b783f8def46d7e2db
+purpose: DOW evidence bridge and rendered-receipt contract for three-repo QPS triage
+inputs:
+  - cryoplant-project:PROJECT_TRIAGE_STATE
+  - CODEX:KEB_SEMANTIC_RECEIPT
+outputs:
+  - DOW_RECEIPT
+  - RENDER_QA_RECEIPT
+  - HASH_LINEAGE_RECEIPT
+workers:
+  - dow_worker
+  - render_worker
+  - evidence_worker
+  - github_bridge
+gates:
+  - render_success_is_not_compliance_closure
+  - preserve_zero_automatic_compliance_credit
+  - bind_outputs_to_source_sha
+next_handoff:
+  target: CODEX
+  event: AGENT_DISPATCH
