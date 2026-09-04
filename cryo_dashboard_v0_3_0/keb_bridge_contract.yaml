@@ -1,0 +1,108 @@
+schema: abacus-codex-cryo-property-bridge/v1
+correlation_id: QPS-CRYO-PROPERTY-KEB-W50
+state: CONTRACT_BOUND
+formal_credit_delta: 0
+
+provider:
+  repository: GBOGEB/ABACUS
+  capability: CRYO_HE4_PROPERTY_SURFACE
+  graph_source:
+    pr: 851
+    merge_sha: 168f00d9f0875ef706131f68dd76ffadb514afb6
+  manifest: cryo_dashboard_v0_3_0/property_surface_manifest.json
+  primary_runtime_candidate:
+    provider: CoolProp
+    implementation: models/qps_line_s/recovery_model.py
+    lifecycle: ACTIVE_ELSEWHERE_READY_FOR_BRIDGE_BINDING
+  independent_oracle:
+    provider: HEPAK
+    lifecycle: DORMANT_DECLARED
+    runtime_import_proven: false
+
+consumer:
+  repository: GBOGEB/CODEX
+  role: KEB_DOMAIN_CAPABILITY_ROUTER
+  source_main_sha: 51fed017cf576f4f98178bb73eac7a3f261de4ea
+  target_graph: governance/qps/keb_cryo_property_capability_graph.yaml
+
+request_contract:
+  required:
+    - fluid
+    - property
+    - input_pair
+    - values
+    - units
+  optional:
+    - preferred_provider
+    - crosscheck_required
+    - validity_region
+  supported_fluid_initial:
+    - He4
+  fail_closed_on:
+    - unsupported_fluid
+    - unsupported_property
+    - missing_units
+    - ambiguous_pressure_basis
+    - HeII_request_without_valid_low_temperature_provider
+
+response_contract:
+  schema: abacus-cryo-property/v1
+  required:
+    - fluid
+    - property
+    - value
+    - unit
+    - provider
+    - method
+    - phase_region
+    - validity
+    - source_sha
+    - status
+  crosscheck_fields:
+    - crosscheck_provider
+    - crosscheck_value
+    - delta_percent
+
+inter_repo_edges:
+  - id: ABACUS-CODEX-CRYO-001
+    source: ABACUS::CRYO_HE4_PROPERTY_SURFACE
+    target: CODEX::KEB_CRYO_PROPERTY_ROUTER
+    type: PROVIDES_TYPED_PROPERTY_RECEIPT_TO
+    status: CONTRACT_BOUND
+
+  - id: ABACUS-CODEX-CRYO-002
+    source: CODEX::KEB_CRYO_PROPERTY_ROUTER
+    target: ABACUS::CRYO_HE4_PROPERTY_SURFACE
+    type: ROUTES_TYPED_PROPERTY_REQUEST_TO
+    status: CONTRACT_BOUND
+
+  - id: ABACUS-CODEX-CRYO-003
+    source: ABACUS::QPS_LINE_S_REAL_WORKLOAD
+    target: CODEX::KEB_CRYO_PROPERTY_ROUTER
+    type: REAL_WORKLOAD_PROOF_FOR
+    status: READY_FOR_EXECUTION
+
+  - id: ABACUS-CODEX-CRYO-004
+    source: ABACUS::HEPAK_ORACLE
+    target: CODEX::KEB_CRYO_PROPERTY_ROUTER
+    type: DECLARED_INDEPENDENT_ORACLE_VISIBLE_TO
+    status: DORMANT_FAIL_CLOSED
+
+guards:
+  - CODEX_DOES_NOT_REIMPLEMENT_PHYSICS
+  - ABACUS_DOES_NOT_CREATE_CHILD_COMPLIANCE_CREDIT
+  - STALE_SOURCE_SHA_REJECTED
+  - HEPAK_RUNTIME_NOT_CLAIMED_UNTIL_IMPORTABLE_TESTED
+  - HEII_REQUEST_FAILS_CLOSED_WITHOUT_VALID_PROVIDER
+  - EVERY_RESULT_CARRIES_UNITS_PROVIDER_VALIDITY_PROVENANCE
+
+next_execution:
+  workload: QPS Line-S recovery model
+  objective: exercise CODEX route -> ABACUS property provider -> typed return receipt
+  victory_requires:
+    - exact_SHA_request
+    - real_provider_execution
+    - typed_response
+    - negative_case
+    - receipt_hash
+    - regression_test
