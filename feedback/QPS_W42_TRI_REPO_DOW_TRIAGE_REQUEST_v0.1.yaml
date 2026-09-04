@@ -1,0 +1,55 @@
+schema_version: '0.1'
+document_id: QPS_W42_TRI_REPO_DOW_TRIAGE_REQUEST
+status: ACTIVE_PARENT_DOW_TRIAGE_REQUEST
+repository: GBOGEB/ABACUS
+branch: feedback/qps-w42-tri-repo-dow-triage
+source_child: GBOGEB/cryoplant-project
+source_child_context:
+  child_pr_369: W41_NFS_PARENT_FEDERATION_REQUEST
+  child_pr_375: W41_NODE_EDGE_GRAPH_ATOM_RECONCILIATION
+  child_pr_380: W41_SESSION_CLOSURE_BINARY_MANIFEST
+  planned_child_pr: W42_TRI_REPO_IMPLEMENTATION_TRIAGE
+purpose: >-
+  Provide a bounded public-parent DOW request for W42 tri-repo implementation triage. ABACUS should analyze
+  ranking, depth/breadth, reverse-loading and candidate crosswalk leverage without copying confidential child
+  content, tender PDFs, MSG/email text or commercial evidence.
+
+scope:
+  include:
+    - reviewer_RTM_bidder_domain_depth
+    - unique_RTM_breadth_vs_reviewer_domain_depth
+    - exact_workbook_review_union_surface_116_of_722
+    - MSG_gated_candidate_surface_26_of_53
+    - Buildings_Utilities_domain_catchup_and_reverse_loading
+    - EUR_378k_postulated_cost_candidate_dedup_gate
+    - parent_return_candidate_crosswalks_for_child_accept_reject_defer
+  exclude:
+    - raw_MSG_or_email_content
+    - tender_pdf_text_or_pages
+    - confidential_bidder_commercial_evidence
+    - automatic_child_score_mutation
+
+analysis_contract:
+  DOW_outputs_requested:
+    - ranked_next_BT_actions_for_child
+    - exact_vs_candidate_edge_delta_table
+    - depth_breadth_decomposition
+    - underdeveloped_domain_catchup_order
+    - cost_candidate_dedup_warning_against_DKO_261k_288k_scenarios
+    - child_disposition_candidates_accept_reject_defer
+  return_format: CHILD_DISPOSITIONABLE_DERIVED_METRICS_ONLY
+  no_credit_rule: >-
+    ABACUS output is advisory until the private child repository accepts, rejects or defers it. No parent output
+    creates formal compliance credit, negotiation credit, evaluated-price mutation, M/ERL computation or PCA refresh.
+
+current_known_metrics:
+  formal_engineering: {closed: 70, total: 90, pct: 77.78, delta: 0}
+  negotiation: {resolved: 0, total: 20, pct: 0.0, delta: 0}
+  exact_workbook_union: {unique_reviewed_rtms: 116, population: 722, pct: 16.07, reviewer_rtm_edges_after: 123}
+  exact_buildings_utilities_page_bound: {covered: 51, population: 53, pct: 96.23}
+  msg_gated_candidate_union: {covered: 26, population: 53, pct: 49.06, governed_delta: 0}
+  cost_candidate: {eur: 378000, status: POSTULATED_ONLY}
+
+public_parent_boundary: >-
+  Keep this parent request and any parent return public-safe. Use only abstracted IDs, derived metrics and bounded
+  semantic/ranking guidance; do not reproduce private source text or confidential evidence.
