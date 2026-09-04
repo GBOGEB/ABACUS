@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1",
+  "result": "QPS_W44_DOW_EXECUTION_RESULT",
+  "parent": "ABACUS",
+  "role": "DOW_ANALYSIS_RUNTIME",
+  "source_child_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8",
+  "source_child": {
+    "repository": "GBOGEB/cryoplant-project",
+    "pr": 388,
+    "merge_sha": "29c2fb587403c5ccab690392026a51ecd8fd92d8"
+  },
+  "supersedes_contract_child_anchor": {
+    "pr": 383,
+    "merge_sha": "c3cb08af3d1c3dddef12af2aa71f8508849e4a2e",
+    "reason": "W43 parent contract was merged after child authority advanced to #388"
+  },
+  "executed_stages": [
+    "metadata_and_authority",
+    "recursive_hooks",
+    "convergence",
+    "knowledge_extraction",
+    "self_ranking",
+    "validation"
+  ],
+  "actionable_findings": [
+    {
+      "finding_id": "DOW-W44-F01",
+      "scope": "freshness",
+      "source_refs": ["cryoplant-project#388", "ABACUS#832"],
+      "reason": "Parent contract child anchor is stale relative to the merged W43 child authority.",
+      "recommended_child_disposition": "ACCEPT_AS_DERIVED_EVIDENCE"
+    },
+    {
+      "finding_id": "DOW-W44-F02",
+      "scope": "closure-priority",
+      "source_refs": ["RTM-595", "TODO-014", "OFFER-49"],
+      "reason": "Highest closure-yield lanes remain common-cause/Table-10 and item-level HSE because they can release multiple downstream obligations without inventing evidence.",
+      "recommended_child_disposition": "ACCEPT_AS_DERIVED_EVIDENCE"
+    },
+    {
+      "finding_id": "DOW-W44-F03",
+      "scope": "duplicate-work",
+      "source_refs": ["cryoplant-project#375", "cryoplant-project#388"],
+      "reason": "Reviewer-edge and B&U graph-depth expansion is already governed; another taxonomy/graph-count wave would duplicate existing work.",
+      "recommended_child_disposition": "DUPLICATE_EXISTING_WORK"
+    }
+  ],
+  "blocked_findings": [
+    {
+      "finding_id": "DOW-W44-B01",
+      "scope": "original-msg-provenance",
+      "source_refs": ["B&U 0/53 exact MSG attribution"],
+      "reason": "Raw MSG filename/SHA/sender/date/paragraph locators are still absent.",
+      "recommended_child_disposition": "DEFER_PENDING_SOURCE"
+    },
+    {
+      "finding_id": "DOW-W44-B02",
+      "scope": "formal-closure",
+      "source_refs": ["70/90", "0/20 negotiation"],
+      "reason": "No source-bound LKT minute/BAFO/updated-offer return entered canonical child re-entry.",
+      "recommended_child_disposition": "DEFER_PENDING_SOURCE"
+    }
+  ],
+  "evidence_class": "DERIVED",
+  "closure_yield_estimate": {
+    "rank_1": "RTM-595/common-cause/Table-10",
+    "parallel_hot_lane": "OFFER-49 item-level HSE",
+    "formal_credit_delta": 0
+  },
+  "guards": [
+    "reviewed != compliant",
+    "candidate mapping != accepted evidence",
+    "DOW result cannot self-promote child state",
+    "postulated cost != financial penalty"
+  ],
+  "formal_credit_delta": 0,
+  "return_hash_basis": "sha256(canonical_json_without_return_hash)",
+  "return_hash": "3f4a32ba702b08e3d9aa841735dee041173faeaf0e534fc19d3ec62a268e23fa"
+}
