@@ -121,8 +121,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--db",
-        default="/home/ubuntu/authentication/api_keys.json",
-        help="Path to API keys database (default: %(default)s)",
+        default=None,
+        help="Path to API keys database (default: ~/.qplant/authentication/api_keys.json)",
     )
 
     sub = parser.add_subparsers(dest="command", help="Sub-command")
