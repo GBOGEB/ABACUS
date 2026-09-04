@@ -7,6 +7,7 @@ source_child:
   pr: 399
   source_main_sha: 47366543fb3d5e878b5f649c5699bf4ade96551f
 upstream_result:
+  repository: GBOGEB/cryoplant-project
   pr: 839
   state: OPEN_REBASED_RESULT
   head_sha: a0397900f1e7ed05858a78edbd4db261b996bbeb
