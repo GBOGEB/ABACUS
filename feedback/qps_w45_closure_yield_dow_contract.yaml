@@ -29,7 +29,15 @@ return_contract:
   allowed_effects: [PRIORITY, DERIVED_EVIDENCE, BLOCKER, LINEAGE]
   forbidden_effects: [COMPLIANCE_CREDIT, NEGOTIATION_CREDIT, PRICE_MUTATION, PCA_PROMOTION, MULTIPLIER_PROMOTION]
 formal_effect:
-  engineering_closure: '70/90 = 77.78%'
-  negotiation_resolution: '0/20'
+  engineering_closure:
+    numerator: 70
+    denominator: 90
+    percent: 77.78
+    display: '70/90 = 77.78%'
+  negotiation_resolution:
+    numerator: 0
+    denominator: 20
+    percent: 0.0
+    display: '0/20 = 0.00%'
   formal_credit_delta: 0
   evaluated_price_delta_eur: 0
