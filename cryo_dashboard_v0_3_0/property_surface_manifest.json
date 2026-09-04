@@ -1,0 +1,82 @@
+{
+  "schema": "abacus-cryo-property-surface/v1",
+  "component": "cryo_dashboard_v0_3_0",
+  "status": "REVIVAL_IN_PROGRESS",
+  "role": "reference_surface_and_bridge_entrypoint",
+  "fluids": ["He4", "N2"],
+  "providers": {
+    "reference_table": {
+      "status": "ACTIVE",
+      "basis": ["NIST REFPROP 10 derived/tabulated references", "Donnelly & Barenghi 1998 for He-4 saturated-vapour-pressure reference data"],
+      "authority": "REFERENCE_ONLY"
+    },
+    "coolprop": {
+      "status": "ACTIVE_ELSEWHERE_IN_ABACUS",
+      "implementation": "models/qps_line_s/recovery_model.py",
+      "role": "runtime_thermophysical_provider",
+      "authority": "DERIVED_ENGINEERING"
+    },
+    "hepak": {
+      "status": "DECLARED_NOT_WIRED",
+      "role": "independent_helium_oracle_and_low_temperature_provider",
+      "authority": "UNAVAILABLE_UNTIL_RUNTIME_BOUND_AND_TESTED"
+    },
+    "refprop_runtime": {
+      "status": "NOT_BOUND",
+      "role": "licensed_runtime_provider",
+      "authority": "UNAVAILABLE_UNTIL_RUNTIME_BOUND_AND_TESTED"
+    }
+  },
+  "validity_guards": {
+    "he4_he_i": "REFPROP/CoolProp-compatible normal-fluid calculations may be used only within their documented validity ranges.",
+    "he4_he_ii": "2 K / He-II values require explicit low-temperature reference or specialized provider; do not silently extrapolate a normal-fluid EOS.",
+    "cross_provider": "Provider disagreement is reported as a validation signal and is never averaged away automatically."
+  },
+  "normalized_result_fields": [
+    "fluid",
+    "temperature_K",
+    "pressure_Pa",
+    "property",
+    "value",
+    "unit",
+    "provider",
+    "method",
+    "phase_region",
+    "validity",
+    "source_ref",
+    "source_sha",
+    "crosscheck_provider",
+    "crosscheck_value",
+    "delta_percent",
+    "status"
+  ],
+  "golden_reference_cases": [
+    {
+      "id": "HE4-LAMBDA-SVP-DENSITY",
+      "temperature_K": 2.1768,
+      "property": "density",
+      "value": 146.1087,
+      "unit": "kg/m3",
+      "phase_region": "lambda_transition",
+      "basis": "Donnelly-Barenghi saturated-vapour-pressure reference"
+    },
+    {
+      "id": "HE4-NBP-DENSITY",
+      "temperature_K": 4.222,
+      "pressure_Pa": 101325,
+      "property": "density",
+      "value": 124.9772,
+      "unit": "kg/m3",
+      "phase_region": "He-I",
+      "basis": "Donnelly-Barenghi saturated-vapour-pressure reference"
+    }
+  ],
+  "promotion_path": [
+    "STATIC_REFERENCE",
+    "NORMALIZED_BRIDGE",
+    "TESTED_RUNTIME_PROVIDER",
+    "DOW_KEB_REGISTRY",
+    "MCP_WORKER",
+    "SKILL_OR_AGENT_WORKFLOW"
+  ]
+}
