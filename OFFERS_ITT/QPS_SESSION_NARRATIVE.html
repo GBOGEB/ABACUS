@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QPS Session Narrative</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --card: #ffffff; --ink: #1b2430; --sub: #5b6675;
+    --line: #e2e6ea; --accent: #0f6e5c; --accent-bg: #e6f4f0;
+    --code-bg: #eef1f4;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  article { max-width: 760px; margin: 0 auto; padding: 48px 32px 100px; background: var(--card); }
+  h1 { font-size: 26px; margin: 0 0 6px; }
+  h1 + p.byline { color: var(--sub); font-size: 14px; margin: 0 0 32px; }
+  h2 { font-size: 19px; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h2:first-of-type { border-top: none; }
+  ol, ul { padding-left: 22px; }
+  li { margin-bottom: 10px; }
+  li > ul, li > ol { margin-top: 6px; }
+  code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 90%; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+  th { text-align:left; font-size: 11px; text-transform:uppercase; letter-spacing:.04em;
+    color: var(--sub); padding: 7px 10px; border-bottom: 2px solid var(--line); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  a { color: var(--accent); }
+  strong { font-weight: 700; }
+  .flag { border-left: 3px solid var(--accent); background: var(--accent-bg); border-radius: 0 8px 8px 0;
+    padding: 4px 16px; margin: 16px 0; }
+</style>
+</head>
+<body>
+<article>
+
+<h1>QPS session narrative — workbook reconciliation</h1>
+<p class="byline">2026-08-31 → 09-01 · rendered from <a href="QPS_SESSION_NARRATIVE.md"><code>QPS_SESSION_NARRATIVE.md</code></a></p>
+
+<h2>What happened, in order</h2>
+<ol>
+  <li><strong>Discovered two independently-built RTM/OFFER workbooks</strong> describing the same real evaluation: <code>QPS_OFFER_Evaluation_FULL_v24.xlsx</code> (git-tracked, Master_Input) and <code>QPS_OFFER_Cluster_v3_4_BT_RTM_Standards_Evidence.xlsx</code> (governed by <code>cryoplant-project</code>'s OCD-ADR system, sitting unconnected in <code>~/Documents</code>).</li>
+  <li><strong>Verified they're the same evaluation, not a guess</strong>: 722 RTM rows, 50 OFFER rows, 377 crosswalk rows in both, confirmed by direct row count — plus the BT weights match to the decimal. Zero shared sheet names otherwise; two genuinely different build pipelines.</li>
+  <li><strong>First merge attempt was wrong</strong> — bolted the second workbook's sheets directly onto a file that read as "the new canonical," conflating a governed parent with unreviewed child detail. Caught and corrected in the same session.</li>
+  <li><strong>Rebuilt properly</strong>: <code>QPS_OFFER_Evaluation_FULL_v24.xlsx</code> left completely untouched (verified by file-modification-time, not assumed). All child detail moved into a clearly-labeled companion file, <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, cross-referenced by ID rather than merged by row.</li>
+  <li><strong>Normalized real duplication</strong>: two sheets inside the <em>source</em> v3_4 workbook were already 100% identical to two others in the same file (<code>Format_Pivot</code>≡<code>OFFER_RTM_Crosswalk</code>, <code>RTM_Offer</code>≡<code>RTM_Canonical</code>) — dropped in the companion file with zero data loss.</li>
+  <li><strong>QA'd for real, not just structurally</strong>:
+    <ul>
+      <li>SHA256 on every artefact, independently re-verified.</li>
+      <li>Zip/XML structural validation on every <code>.xlsx</code>/<code>.pptx</code>.</li>
+      <li><strong>Playwright</strong>, actually installed (chromium binary + all), run against 3 HTML pages — caught a real label-collision bug on first render, fixed it, re-screenshotted to confirm.</li>
+      <li><strong>PowerPoint and Excel COM automation</strong> — both files actually opened in the real applications, not just parsed as XML. PowerPoint exported all 29 slides to PNG; the 2 new slides visually confirmed pixel-correct.</li>
+    </ul>
+  </li>
+  <li><strong>Reconciled the BT deck's own version gap</strong>: <code>BT_Method_Evaluation_v12.pptx</code> (git-tracked "current") was missing 2 slides that existed only in a PDF export 2 rounds ahead. Diffed the actual text, found the exact gap (not a broad rebuild), rebuilt as <code>v15.pptx</code> via direct OOXML editing since <code>python-pptx</code> was blocked by a broken Pillow DLL in this environment.</li>
+  <li><strong>Built the federation topology view</strong> — a real node graph of <code>cryoplant-project</code> (child SSOT) ↔ <code>ABACUS</code> (DOW analysis plane) ↔ <code>CODEX</code> (KEB exchange plane), with live-checked GitHub issue states, not the architecture doc's own claims taken on faith.</li>
+</ol>
+
+<h2>Changelog</h2>
+<table>
+<tr><th>Date</th><th>Change</th><th>File(s)</th></tr>
+<tr><td>08-31</td><td>Built PCA visual (variance, loadings, domain structure, KMO)</td><td><code>QPS_PCA_Navigator.html</code></td></tr>
+<tr><td>08-31</td><td>Reconciled BT deck v12→v15 (2 missing slides recovered)</td><td><code>BT_Method_Evaluation_v15.pptx</code></td></tr>
+<tr><td>08-31</td><td>First workbook merge attempt (flawed — parent/child conflated)</td><td><code>_DEPRECATED_..._CANONICAL_v1.xlsx</code></td></tr>
+<tr><td>09-01</td><td>Corrected: v24 untouched, deduplicated companion file built</td><td><code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code></td></tr>
+<tr><td>09-01</td><td>Real render QA added (Playwright, PowerPoint COM, Excel COM)</td><td>all of the above</td></tr>
+<tr><td>09-01</td><td>Fixed a real label-collision bug found by Playwright</td><td><code>QPS_PCA_Navigator.html</code></td></tr>
+<tr><td>09-01</td><td>Built federation topology + this narrative + lineage manifest</td><td><code>QPS_FEDERATION_TOPOLOGY.html</code>, <code>QPS_ARTEFACT_LINEAGE.json</code>, this file</td></tr>
+</table>
+<p>Full machine-readable version with checksums: <a href="QPS_ARTEFACT_LINEAGE.json"><code>QPS_ARTEFACT_LINEAGE.json</code></a>.</p>
+
+<h2>PCA + BT ranking → what to actually work on next</h2>
+<p>Not opinion — read directly from <code>v24!PCA_ANALYSIS</code>, <code>v24!OFFER_RANKING</code>, <code>v24!RTM_RANKING</code>, <code>v24!CONFLICT_CANDIDATES</code> (also reproduced in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx!EXECUTION_PRIORITY</code>).</p>
+<ol>
+  <li><strong>Gate items first, always.</strong> 6 OFFER T0 Gate items (OFFER-01/02/03/47/48/49) and 43 RTM T0 Gate items outrank everything else regardless of BT score — lexicographic precedence, not compensatory. RTM gate cluster: Safety &amp; Protection and Codes &amp; Standards dominate the first 13 <code>RTM_RANKING</code> rows.</li>
+  <li><strong>Don't shortcut to fewer dimensions.</strong> PCA: PC1 is only 30.6% of variance, 7 components needed to reach 100%. PC3 is a near-pure Cost axis (0.881 loading) — Cost is structurally independent of the other 6, so a cost-only or performance-only shortlist misses real signal.</li>
+  <li><strong>Next 5 non-gate OFFER items</strong> (rank 7–11): OFFER-09 (LN2 techno-economic), OFFER-42 (after-sales), OFFER-20 (helium leak detection), OFFER-34 (cooling water), OFFER-29 (control system obsolescence).</li>
+  <li><strong>Conflict-review hotspots</strong> — not random, 3 sections carry the bulk of 68 heuristic candidate pairs:
+    <ul>
+      <li>§4.6.8 Control &amp; Interlock (~15 pairs) — operator-station visualization language repeats across adjacent RTMs, likely a shared drafting template.</li>
+      <li>§8.1.7 Quality Assurance &amp; Control (~15 pairs) — non-conformity/corrective-action language, same pattern.</li>
+      <li>§10.3 Acceptance &amp; Warranty (8 pairs) — RTM-711 through RTM-722, review as one warranty block.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2>Honest open items (not resolved this session)</h2>
+<div class="flag">
+<ul>
+  <li>The 5 pairs flagged <code>DIFFERENT GRANULARITY</code> in <code>MERGE_CANDIDATES</code> (Standards, Deliverables, Clusters) were compared by row count only — a full row-level diff hasn't been done.</li>
+  <li><s>No ABACUS DOW or CODEX KEB cycle has actually executed against real QPS content yet</s> — <strong>superseded 2026-09-02</strong>: both cycles have now executed, repeatedly. ABACUS #809&rarr;#810&rarr;#811 and CODEX #335&rarr;#336&rarr;#337 are the same W08 DOW/KEB "runtime-return artifact" sequence, one day apart on each peer plane. The tracking issues (#659, #667, #254, #255) are still open only because none of those PRs used a GitHub closing keyword against them — a tracking gap, not a work gap. See <a href="QPS_GITHUB_ROUNDTRIP_HANDOVER.html">QPS_GITHUB_ROUNDTRIP_HANDOVER.html</a> &sect;1/&sect;3.</li>
+  <li>The BT34 companion file's own <code>Standards_Register</code>/<code>Deliverables_Register</code> granularity claim ("likely the source detail v24's summary was digested from") is inferred from row-count and column-shape similarity, not proven by tracing an actual build script.</li>
+</ul>
+</div>
+
+</article>
+</body>
+</html>

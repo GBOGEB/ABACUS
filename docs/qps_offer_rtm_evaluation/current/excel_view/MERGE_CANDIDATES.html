@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MERGE_CANDIDATES — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>MERGE_CANDIDATES</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">MERGE_CANDIDATES — normalization record</th><th data-col="1"></th><th data-col="2"></th><th data-col="3"></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>MERGE_CANDIDATES</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["MERGE_CANDIDATES \u2014 normalization record", "", "", ""];
+const ROWS = [["Built by direct row-level comparison (set-equality on data rows). 'Identical' means", "", "", ""], ["every data row matched exactly. Rows marked NORMALIZED were actually acted on below.", "", "", ""], ["Action", "Sheet A", "Sheet B", "Finding"], ["NORMALIZED \u2014 B dropped from this file", "OFFER_RTM_Crosswalk", "Format_Pivot (source sheet, dropped)", "377/377 data rows identical as sets in the source v3_4 workbook itself -- pre-existing duplication, not introduced by any merge. Kept OFFER_RTM_Crosswalk."], ["NORMALIZED \u2014 B dropped from this file", "RTM_Canonical", "RTM_Offer (source sheet, dropped)", "722/722 data rows identical as sets in the source workbook. Kept RTM_Canonical."], ["FLAGGED, not merged (lives in v24, not here)", "v24!OFFER_CANONICAL", "OFFER_Canonical (this file)", "41/50 rows identical; 9 differ only in punctuation of one free-text note column. Not substantive. Left both in place -- v24's is the parent SSOT copy, this file's is descriptive only."], ["FLAGGED, not merged (lives in v24, not here)", "v24!COMPLIANCE_LEGEND", "Compliance_Legend (this file)", "v24 has 21 richer rows (Deviation/Next-steps/Who-resolves populated); this file's 8-row version is a thinner precursor. v24's remains authoritative."], ["FLAGGED, not merged (lives in v24, not here)", "v24!WEIGHTS_METHOD", "BT_Config (this file)", "Same 7 BT dimension weights; v24 adds Output/Construction/Interpretation/Guardrail columns this file's BT_Config lacks. v24's remains authoritative."], ["DIFFERENT GRANULARITY \u2014 both kept, different files", "v24!CLUSTERS", "BT_Clusters (this file)", "v24: 22-row cluster-level summary. This file: 51-row per-OFFER-item assignment. Complementary."], ["DIFFERENT GRANULARITY \u2014 both kept, different files", "v24!STANDARDS", "Standards_Register (this file)", "48 vs 83 rows, same column shape -- this file's appears more granular. Not diffed row-by-row yet."], ["DIFFERENT GRANULARITY \u2014 both kept, different files", "v24!DELIVERABLES", "Deliverables_Register (this file)", "v24: 54-row rolled-up summary. This file: 775-row full per-item breakdown -- likely the source detail v24's summary was digested from."], ["Net effect of normalization", "", "", "2 confirmed exact-duplicate sheets removed from this file (0 data loss -- their twin sheet carries the same rows). Nothing was deleted from v24; v24 was not opened for writing by this build at all. 4 pairs flagged as v24-superseding-this-file are left as-is in both files rather than deleted, since deleting from v24 would be a governance action on the parent SSOT, out of scope for a supplementary-file build."]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>

@@ -79,6 +79,7 @@
   "permission_controls": {
     "intent": "Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.",
     "pr_write_allowed": [
+      "bootstrap-integration.yml",
       "codeql.yml",
       "dependency-review.yml",
       "osv-scanner.yml",

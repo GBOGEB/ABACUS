@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QPS PCA Navigator</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6;   /* categorical slot 1, blue */
+    --div-pos:        #2a78d6;   /* diverging: blue pole */
+    --div-neg:        #e34948;   /* diverging: red pole (categorical slot 8) */
+    --div-mid:        #f0efec;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --div-pos:        #3987e5;
+      --div-neg:        #e66767;
+      --div-mid:        #383835;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --series-1:       #3987e5;
+    --div-pos:        #3987e5;
+    --div-neg:        #e66767;
+    --div-mid:        #383835;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--page); }
+  .viz-root { color: var(--text-primary);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 32px 40px 20px; border-bottom: 1px solid var(--border); background: var(--surface-1); }
+  header h1 { margin: 0 0 6px; font-size: 22px; }
+  header p { margin: 0; color: var(--text-secondary); max-width: 820px; }
+  header code { background: var(--grid); padding: 1px 5px; border-radius: 4px; font-size: 90%; }
+  main { max-width: 1040px; margin: 0 auto; padding: 28px 40px 80px; }
+  section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin-bottom: 22px; }
+  section h2 { margin: 0 0 4px; font-size: 17px; }
+  section .sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 18px; max-width: 720px; }
+  .chart-wrap { overflow-x: auto; }
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--text-secondary); }
+  svg .axis-line { stroke: var(--baseline); stroke-width: 1; }
+  svg .grid-line { stroke: var(--grid); stroke-width: 1; }
+  svg .value-label { fill: var(--text-primary); font-weight: 600; font-size: 12px; }
+  svg .muted-label { fill: var(--text-muted); font-size: 11px; }
+  .tooltip { position: fixed; pointer-events: none; background: var(--text-primary); color: var(--surface-1);
+    font-size: 12px; padding: 6px 10px; border-radius: 6px; opacity: 0; transition: opacity .1s;
+    z-index: 50; max-width: 240px; }
+  .stat-row { display:flex; gap: 16px; flex-wrap: wrap; }
+  .stat-card { flex: 1 1 260px; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+  .stat-card .kmo-val { font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .stat-card .kmo-band { display:inline-flex; align-items:center; gap: 6px; font-size: 12px; font-weight: 600;
+    padding: 2px 9px; border-radius: 999px; margin-bottom: 10px; }
+  .stat-card .kmo-band.mediocre { background: rgba(250,178,25,0.16); color: #9a6a00; }
+  .stat-card .kmo-band.miserable { background: rgba(236,131,90,0.16); color: #a8431f; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .stat-card .kmo-band.mediocre { color: var(--status-warning); }
+    :root:not([data-theme="light"]) .stat-card .kmo-band.miserable { color: var(--status-serious); }
+  }
+  :root[data-theme="dark"] .stat-card .kmo-band.mediocre { color: var(--status-warning); }
+  :root[data-theme="dark"] .stat-card .kmo-band.miserable { color: var(--status-serious); }
+  .stat-card p { margin: 0; color: var(--text-secondary); font-size: 13px; }
+  table.data { width:100%; border-collapse: collapse; font-size: 13px; margin-top: 14px; }
+  table.data th { text-align:left; font-size: 11px; text-transform:uppercase; letter-spacing:.04em;
+    color: var(--text-muted); padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.data td { padding: 6px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  .legend-note { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  footer { max-width: 1040px; margin: 0 auto 60px; padding: 0 40px; color: var(--text-secondary); font-size: 13px; }
+  a.quiet { color: var(--series-1); }
+
+  /* ---- interactive controls ---- */
+  .controls { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .seg-toggle { display:inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+  .seg-toggle button { appearance:none; border:none; background: var(--surface-1); color: var(--text-secondary);
+    font: inherit; font-size: 12.5px; padding: 6px 12px; cursor: pointer; }
+  .seg-toggle button + button { border-left: 1px solid var(--border); }
+  .seg-toggle button.active { background: var(--series-1); color: #fff; font-weight: 600; }
+  .seg-toggle button:hover:not(.active) { background: var(--grid); }
+  .search-box { display:flex; align-items:center; gap:6px; }
+  .search-box input[type="text"] { font: inherit; font-size: 13px; padding: 6px 10px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--page); color: var(--text-primary); width: 220px; }
+  .search-box input[type="text"]::placeholder { color: var(--text-muted); }
+  .check-toggle { display:flex; align-items:center; gap: 6px; font-size: 12.5px; color: var(--text-secondary); cursor: pointer; -webkit-user-select: none; user-select: none; }
+  .check-toggle input { accent-color: var(--series-1); }
+  .clear-filter { font-size: 12px; color: var(--series-1); background: none; border: none; cursor: pointer;
+    padding: 0; text-decoration: underline; display: none; }
+  th.sortable, .col-head-sortable { cursor: pointer; }
+  th.sortable:hover, .col-head-sortable:hover rect { opacity: 0.85; }
+  .sort-hint { font-size: 10px; fill: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+
+<header>
+  <h1>QPS PCA Navigator — component structure of the RTM/OFFER scoring dimensions</h1>
+  <p>Principal Component Analysis over the 7 raw 0&ndash;3 dimension scores (Safety/Legal,
+  Reliability, Performance, Functional, Quality, Lifecycle, Cost) across 722 RTM items, from
+  <code>current/pca_results_v23.json</code> and <code>pca_adequacy_check.json</code>. Built as
+  the visual counterpart to <a class="quiet" href="QPS_RTM_BT_Navigator_v22.html">QPS_RTM_BT_Navigator_v22.html</a> —
+  this thread previously had no visual presentation, only raw JSON.
+  <strong>Not stale against the current v24 SSOT</strong> — the "v23" in the filename is the
+  intermediate workbook version PCA was computed against, verified 2026-09-02 by a direct
+  row-level diff: <code>RTM_RANKING</code> (725 rows) and <code>OFFER_RANKING</code> (53 rows) —
+  the only sheets that feed these 7 dimension scores — are byte-identical between
+  <code>QPS_OFFER_Evaluation_FULL_v23.xlsx</code> and <code>_v24.xlsx</code>; v24 only adds two
+  unrelated sheets (<code>PCA_ANALYSIS</code>, <code>OFFER_PHASE_EXPANSION</code>) on top.</p>
+</header>
+
+<main>
+
+<section>
+  <h2>Variance explained</h2>
+  <p class="sub">How much of the total spread across items is captured by each component. The first four components together explain 73.2% — after that, returns drop off quickly.</p>
+  <div class="controls">
+    <div class="seg-toggle" id="variance-toggle" role="group" aria-label="Variance view">
+      <button type="button" data-mode="per" class="active">Per-component %</button>
+      <button type="button" data-mode="cum">Cumulative %</button>
+    </div>
+  </div>
+  <div class="chart-wrap"><svg id="variance-chart" width="760" height="260"></svg></div>
+</section>
+
+<section>
+  <h2>Sampling adequacy (KMO)</h2>
+  <p class="sub">Kaiser&ndash;Meyer&ndash;Olkin measure — whether there's enough shared structure across items for PCA to be meaningful. Both figures are below the commonly-cited 0.6 minimum-usable threshold; disclosed here rather than omitted.</p>
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="kmo-val">0.656</div>
+      <div class="kmo-band mediocre">&#9888; mediocre</div>
+      <p>Item-level (N=722, p=7, N/p=103.1) — clears the 10&times; sample-size rule of thumb despite the mediocre adequacy band.</p>
+    </div>
+    <div class="stat-card">
+      <div class="kmo-val">0.576</div>
+      <div class="kmo-band miserable">&#9888; miserable</div>
+      <p>Domain-level (N=22, p=7, N/p=3.1) — fails both the 5&times; and 10&times; sample-size rules; the domain-level PCA reading should be treated as illustrative only, not confirmatory.</p>
+    </div>
+  </div>
+  <p class="legend-note">Kaiser 1974 KMO scale, cited directly in the source JSON as "a widely-cited rule of thumb, not a universal law."</p>
+</section>
+
+<section>
+  <h2>Component loadings</h2>
+  <p class="sub">How strongly each of the 7 scoring dimensions pulls on the first 3 components. Blue = positive loading, red = negative, white = no relationship. PC1 reads as a Safety/Quality/Lifecycle axis pulling against Performance/Functional; PC2 is dominated by Reliability; PC3 by Cost. <b>Click a PC column header</b> to sort dimensions by strength of pull on that component; click again to reset to the original L/R/P/F/Q/LC/C order.</p>
+  <div class="chart-wrap"><svg id="loadings-chart" width="520" height="260"></svg></div>
+</section>
+
+<section>
+  <h2>Domain structure (PC1 &times; PC2)</h2>
+  <p class="sub">All 22 requirement domains positioned by their mean PC1/PC2 score; bubble size = item count. Domains higher/right load more on the Safety-Quality-Lifecycle axis; domains lower/left load more on Performance-Functional. Hover any bubble for its exact values.</p>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="domain-search" placeholder="Filter domains&hellip;" aria-label="Filter domains by name">
+      <button type="button" class="clear-filter" id="domain-search-clear">clear</button>
+    </div>
+    <label class="check-toggle">
+      <input type="checkbox" id="domain-show-all-labels">
+      Show all 22 labels (default: largest 6 only)
+    </label>
+  </div>
+  <div class="chart-wrap"><svg id="domain-chart" width="760" height="480"></svg></div>
+</section>
+
+<section>
+  <h2>Domain sizes</h2>
+  <p class="sub">The same 22 domains by item count alone — 3 to 202 items, a 67&times; range where a linear scale compresses every domain below ~30 items into an unreadable sliver. Toggle to log scale to compare the smaller domains meaningfully.</p>
+  <div class="controls">
+    <div class="seg-toggle" id="domainsize-toggle" role="group" aria-label="Domain size scale">
+      <button type="button" data-scale="linear" class="active">Linear</button>
+      <button type="button" data-scale="log">Log</button>
+    </div>
+  </div>
+  <div class="chart-wrap"><svg id="domainsize-chart" width="760" height="520"></svg></div>
+</section>
+
+<section>
+  <h2>Bulk vs. distinctive items</h2>
+  <p class="sub">Of the 722 RTM items, 174 (24%) sit far enough from the PC1/PC2 population center to be considered distinctive rather than typical — these are the items whose scoring profile most differs from the bulk of the requirement set.</p>
+  <div class="chart-wrap"><svg id="bulk-chart" width="500" height="70"></svg></div>
+</section>
+
+</main>
+
+<footer>
+  Source: <code>current/pca_results_v23.json</code> (variance, loadings, domain table, bulk/distinctive split)
+  + <code>04_GITHUB_INTEGRATION/QPS_Cost_Estimate_GitHub_Integration/03_DATA_SSOT/pca_adequacy_check.json</code>
+  (KMO). Neither file is the SSOT — per the OCD-ADR SSOT model, the governed workbook
+  (<code>QPS_OFFER_Evaluation_FULL_v24.xlsx</code>) is; these are its normalized JSON
+  projections, computed against the v23 intermediate but staleness-checked clean against v24
+  (see header note — <code>RTM_RANKING</code>/<code>OFFER_RANKING</code> byte-identical, v24 is
+  additive-only on top of v23 for this data). Built 2026-08-31, staleness re-verified 2026-09-02.
+</footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const tooltip = document.getElementById("tooltip");
+function showTip(evt, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.left = (evt.clientX + 14) + "px";
+  tooltip.style.top = (evt.clientY + 14) + "px";
+  tooltip.style.opacity = 1;
+}
+function hideTip() { tooltip.style.opacity = 0; }
+function el(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function cssVar(name) {
+  return getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(name).trim();
+}
+
+// ---------- Variance explained (bar chart, per-component / cumulative toggle) ----------
+(function() {
+  const data = [
+    {pc:"PC1", pct:30.6, cum:30.6}, {pc:"PC2", pct:16.5, cum:47.1},
+    {pc:"PC3", pct:13.8, cum:60.9}, {pc:"PC4", pct:12.4, cum:73.2},
+    {pc:"PC5", pct:11.3, cum:84.5}, {pc:"PC6", pct:8.9, cum:93.4},
+    {pc:"PC7", pct:6.6, cum:100.0}
+  ];
+  const svg = document.getElementById("variance-chart");
+  const W = 760, H = 260, padL = 40, padB = 34, padT = 16, padR = 16;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const bw = plotW / data.length;
+  const series1 = cssVar('--series-1');
+  let mode = "per"; // "per" | "cum"
+
+  function render() {
+    svg.innerHTML = "";
+    const maxPct = mode === "per" ? 35 : 105;
+    const ticks = mode === "per" ? [0,10,20,30] : [0,25,50,75,100];
+    ticks.forEach(v => {
+      const y = padT + plotH - (v/maxPct)*plotH;
+      svg.appendChild(el("line", {class:"grid-line", x1:padL, x2:W-padR, y1:y, y2:y}));
+      svg.appendChild(el("text", {class:"muted-label", x:padL-8, y:y+4, "text-anchor":"end"})).textContent = v+"%";
+    });
+    svg.appendChild(el("line", {class:"axis-line", x1:padL, x2:W-padR, y1:padT+plotH, y2:padT+plotH}));
+
+    data.forEach((d,i) => {
+      const val = mode === "per" ? d.pct : d.cum;
+      const barW = bw*0.5;
+      const x = padL + i*bw + (bw-barW)/2;
+      const barH = (val/maxPct)*plotH;
+      const y = padT + plotH - barH;
+      const rect = el("rect", {x, y, width:barW, height:barH, rx:4, fill:series1});
+      svg.appendChild(rect);
+      rect.addEventListener("mousemove", e => showTip(e, `<b>${d.pc}</b><br>${d.pct}% of variance<br>${d.cum}% cumulative through ${d.pc}`));
+      rect.addEventListener("mouseleave", hideTip);
+      svg.appendChild(el("text", {class:"value-label", x:x+barW/2, y:y-6, "text-anchor":"middle"})).textContent = val.toFixed(1)+"%";
+      svg.appendChild(el("text", {class:"muted-label", x:x+barW/2, y:padT+plotH+18, "text-anchor":"middle"})).textContent = d.pc;
+    });
+  }
+  render();
+
+  const toggle = document.getElementById("variance-toggle");
+  toggle.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-mode]");
+    if (!btn) return;
+    mode = btn.dataset.mode;
+    toggle.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+    render();
+  });
+})();
+
+// ---------- Component loadings (diverging heatmap, click column to sort) ----------
+(function() {
+  const dimsOriginal = [
+    {d:"L", name:"Safety / Legal", PC1:0.523, PC2:-0.109, PC3:-0.204},
+    {d:"R", name:"Reliability", PC1:-0.039, PC2:0.762, PC3:0.077},
+    {d:"P", name:"Performance", PC1:-0.392, PC2:-0.248, PC3:0.387},
+    {d:"F", name:"Functional", PC1:-0.465, PC2:0.146, PC3:-0.105},
+    {d:"Q", name:"Quality / Verifiability", PC1:0.425, PC2:-0.265, PC3:-0.044},
+    {d:"LC", name:"Lifecycle", PC1:0.358, PC2:0.502, PC3:0.118},
+    {d:"C", name:"Cost", PC1:0.215, PC2:-0.046, PC3:0.881}
+  ];
+  const pcs = ["PC1","PC2","PC3"];
+  const svg = document.getElementById("loadings-chart");
+  const padL = 170, padT = 34, cellW = 90, cellH = 30, gap = 3;
+  const divPos = cssVar('--div-pos'), divNeg = cssVar('--div-neg');
+  let sortedBy = null; // null = original order, else "PC1"|"PC2"|"PC3"
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function hexToRgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+  function mix(hex1, hex2, t) {
+    const a = hexToRgb(hex1), b = hexToRgb(hex2);
+    return `rgb(${Math.round(lerp(a[0],b[0],t))},${Math.round(lerp(a[1],b[1],t))},${Math.round(lerp(a[2],b[2],t))})`;
+  }
+  const white = "#f0efec";
+
+  function render() {
+    svg.innerHTML = "";
+    const dims = sortedBy
+      ? dimsOriginal.slice().sort((a,b) => Math.abs(b[sortedBy]) - Math.abs(a[sortedBy]))
+      : dimsOriginal;
+
+    pcs.forEach((pc,ci) => {
+      const gx = padL+ci*cellW, gw = cellW;
+      const headGroup = el("g", {class:"col-head-sortable", style:"cursor:pointer"});
+      const headBg = el("rect", {x:gx+gap/2, y:2, width:gw-gap, height:22, rx:4,
+        fill: sortedBy === pc ? cssVar('--series-1') : "transparent"});
+      headGroup.appendChild(headBg);
+      const headText = el("text", {x:gx+gw/2, y:18, "text-anchor":"middle"});
+      headText.setAttribute("class", sortedBy === pc ? "value-label" : "muted-label");
+      if (sortedBy === pc) headText.style.fill = "#fff";
+      headText.textContent = pc + (sortedBy === pc ? " ↓|v|" : "");
+      headGroup.appendChild(headText);
+      headGroup.addEventListener("click", () => { sortedBy = (sortedBy === pc) ? null : pc; render(); });
+      svg.appendChild(headGroup);
+    });
+
+    dims.forEach((row,ri) => {
+      const y0 = padT + ri*cellH;
+      svg.appendChild(el("text", {class:"muted-label", x:padL-10, y:y0+cellH/2+4, "text-anchor":"end"}))
+        .textContent = `${row.d} — ${row.name}`;
+      pcs.forEach((pc,ci) => {
+        const v = row[pc];
+        const t = Math.min(Math.abs(v), 1);
+        const fill = v >= 0 ? mix(white, divPos, t) : mix(white, divNeg, t);
+        const x = padL+ci*cellW, y = y0;
+        const rect = el("rect", {x:x+gap/2, y:y+gap/2, width:cellW-gap, height:cellH-gap, rx:3, fill});
+        svg.appendChild(rect);
+        rect.addEventListener("mousemove", e => showTip(e, `<b>${row.name} &times; ${pc}</b><br>loading: ${v.toFixed(3)}`));
+        rect.addEventListener("mouseleave", hideTip);
+        const label = el("text", {x:x+cellW/2, y:y+cellH/2+4, "text-anchor":"middle"});
+        label.style.fontSize = "11px";
+        label.style.fontWeight = "600";
+        label.style.fill = t > 0.55 ? "#ffffff" : cssVar('--text-primary');
+        label.textContent = v.toFixed(2);
+        svg.appendChild(label);
+      });
+    });
+    svg.setAttribute("height", padT + dims.length*cellH + 10);
+  }
+  render();
+})();
+
+// ---------- Shared domain dataset (bubble chart + domain-sizes chart) ----------
+const DOMAINS_DATA = [
+  {domain:"Subsystems", n:202, pc1:-1.04, pc2:0.06},
+  {domain:"Control & Interlock", n:86, pc1:-0.74, pc2:0.39},
+  {domain:"Acceptance Testing", n:66, pc1:1.22, pc2:-0.67},
+  {domain:"Buildings & Utilities", n:53, pc1:-1.27, pc2:0.31},
+  {domain:"Process & Functional", n:49, pc1:-1.28, pc2:-0.65},
+  {domain:"Quality Assurance & Control", n:45, pc1:2.24, pc2:-0.83},
+  {domain:"Design & Fabrication", n:35, pc1:0.13, pc2:-0.42},
+  {domain:"Technical Documentation", n:28, pc1:2.06, pc2:0.62},
+  {domain:"Global Design Criteria", n:24, pc1:0.64, pc2:0.66},
+  {domain:"Contract Performance", n:21, pc1:0.66, pc2:-0.37},
+  {domain:"Safety & Protection", n:20, pc1:1.31, pc2:-0.25},
+  {domain:"Codes & Standards", n:19, pc1:1.71, pc2:-0.25},
+  {domain:"Acceptance & Warranty", n:17, pc1:3.24, pc2:1.52},
+  {domain:"Cryogenic Interfaces", n:17, pc1:-1.02, pc2:-0.24},
+  {domain:"Training", n:8, pc1:1.17, pc2:2.01},
+  {domain:"Schedule", n:7, pc1:0.87, pc2:-0.43},
+  {domain:"Other Deliverables", n:6, pc1:1.03, pc2:1.56},
+  {domain:"General / Compliance", n:5, pc1:1.46, pc2:-0.58},
+  {domain:"Commissioning", n:4, pc1:-0.36, pc2:0.18},
+  {domain:"Installation", n:4, pc1:-0.16, pc2:-0.25},
+  {domain:"After-Sales", n:3, pc1:1.93, pc2:3.63},
+  {domain:"Transport & Logistics", n:3, pc1:0.73, pc2:-0.67}
+];
+
+// ---------- Domain structure (bubble chart, filterable, toggle all labels) ----------
+(function() {
+  const domains = DOMAINS_DATA;
+  const svg = document.getElementById("domain-chart");
+  const W = 760, H = 480, pad = 60;
+  const plotW = W - pad*2, plotH = H - pad*2;
+  const xMin=-1.5, xMax=3.5, yMin=-1.2, yMax=4.0;
+  const series1 = cssVar('--series-1');
+  function xPos(v){ return pad + (v-xMin)/(xMax-xMin)*plotW; }
+  function yPos(v){ return pad + plotH - (v-yMin)/(yMax-yMin)*plotH; }
+  const maxN = 202;
+  function rFor(n){ return 6 + Math.sqrt(n/maxN)*38; }
+
+  let query = "";
+  let showAllLabels = false;
+
+  function render() {
+    svg.innerHTML = "";
+    const q = query.trim().toLowerCase();
+
+    svg.appendChild(el("line", {class:"grid-line", x1:xPos(0), x2:xPos(0), y1:pad, y2:pad+plotH}));
+    svg.appendChild(el("line", {class:"grid-line", x1:pad, x2:pad+plotW, y1:yPos(0), y2:yPos(0)}));
+    svg.appendChild(el("text", {class:"muted-label", x:pad+plotW, y:yPos(0)-6, "text-anchor":"end"})).textContent = "PC1 →";
+    svg.appendChild(el("text", {class:"muted-label", x:xPos(0)+6, y:pad+10, "text-anchor":"start"})).textContent = "PC2 ↑";
+
+    domains.slice().sort((a,b)=>b.n-a.n).forEach(d => {
+      const r = rFor(d.n);
+      const cx = xPos(d.pc1), cy = yPos(d.pc2);
+      const matched = !q || d.domain.toLowerCase().includes(q);
+      const c = el("circle", {cx, cy, r, fill:series1,
+        "fill-opacity": matched ? 0.55 : 0.08,
+        stroke: series1, "stroke-width": matched ? 1.5 : 1,
+        "stroke-opacity": matched ? 1 : 0.25});
+      svg.appendChild(c);
+      c.addEventListener("mousemove", e => showTip(e, `<b>${d.domain}</b><br>n=${d.n} items<br>PC1=${d.pc1}, PC2=${d.pc2}`));
+      c.addEventListener("mouseleave", hideTip);
+    });
+
+    // direct labels: default top-6 by size, with collision avoidance; search match
+    // always forces a label on; "show all" shows every domain's label.
+    const placedLabelBoxes = [];
+    const labelW = 130, labelH = 14;
+    const top6 = new Set(domains.slice().sort((a,b)=>b.n-a.n).slice(0,6).map(d=>d.domain));
+    const toLabel = domains.slice().sort((a,b)=>b.n-a.n).filter(d => {
+      const matched = q && d.domain.toLowerCase().includes(q);
+      return showAllLabels || top6.has(d.domain) || matched;
+    });
+    toLabel.forEach(d => {
+      const matched = q && d.domain.toLowerCase().includes(q);
+      const dim = q && !matched;
+      const cx = xPos(d.pc1), cy = yPos(d.pc2);
+      let ly = cy - rFor(d.n) - 6;
+      const left = cx - labelW / 2, right = cx + labelW / 2;
+      function overlaps(y) {
+        return placedLabelBoxes.some(b => left < b.right && right > b.left && Math.abs(y - b.y) < labelH);
+      }
+      let guard = 0;
+      while (overlaps(ly) && guard < 12) { ly -= labelH; guard++; }
+      placedLabelBoxes.push({left, right, y: ly});
+      const t = el("text", {class:"value-label", x:cx, y:ly, "text-anchor":"middle"});
+      t.style.fontSize = "11px";
+      if (matched) t.style.fontWeight = "700";
+      if (dim) t.style.opacity = "0.25";
+      t.textContent = d.domain + " (" + d.n + ")";
+      svg.appendChild(t);
+    });
+  }
+  render();
+
+  const searchInput = document.getElementById("domain-search");
+  const clearBtn = document.getElementById("domain-search-clear");
+  searchInput.addEventListener("input", () => {
+    query = searchInput.value;
+    clearBtn.style.display = query ? "inline" : "none";
+    render();
+  });
+  clearBtn.addEventListener("click", () => {
+    query = ""; searchInput.value = ""; clearBtn.style.display = "none"; render();
+  });
+  document.getElementById("domain-show-all-labels").addEventListener("change", (e) => {
+    showAllLabels = e.target.checked;
+    render();
+  });
+})();
+
+// ---------- Domain sizes (bar chart, linear/log toggle) ----------
+(function() {
+  const svg = document.getElementById("domainsize-chart");
+  const domains = DOMAINS_DATA.slice().sort((a,b) => b.n - a.n);
+  const W = 760, H = 520, padL = 190, padT = 16, padB = 34, padR = 40;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const rowH = plotH / domains.length;
+  const series1 = cssVar('--series-1');
+  let scale = "linear"; // "linear" | "log"
+
+  function render() {
+    svg.innerHTML = "";
+    const maxN = 202;
+    const minN = 1; // log floor; real min is 3
+    function wFor(n) {
+      if (scale === "linear") return (n / maxN) * plotW;
+      return (Math.log10(n) - Math.log10(minN)) / (Math.log10(maxN) - Math.log10(minN)) * plotW;
+    }
+    const ticks = scale === "linear" ? [0,50,100,150,200] : [1,3,10,30,100,200];
+    ticks.forEach(v => {
+      const x = padL + wFor(v);
+      svg.appendChild(el("line", {class:"grid-line", x1:x, x2:x, y1:padT, y2:padT+plotH}));
+      svg.appendChild(el("text", {class:"muted-label", x, y:padT+plotH+18, "text-anchor":"middle"})).textContent = v;
+    });
+
+    domains.forEach((d,i) => {
+      const y = padT + i*rowH + rowH*0.18;
+      const barH = rowH*0.64;
+      const w = Math.max(wFor(d.n), 2);
+      svg.appendChild(el("text", {class:"muted-label", x:padL-10, y:y+barH/2+4, "text-anchor":"end"})).textContent = d.domain;
+      const rect = el("rect", {x:padL, y, width:w, height:barH, rx:3, fill:series1});
+      svg.appendChild(rect);
+      rect.addEventListener("mousemove", e => showTip(e, `<b>${d.domain}</b><br>${d.n} items`));
+      rect.addEventListener("mouseleave", hideTip);
+      const label = el("text", {class:"value-label", x:padL+w+6, y:y+barH/2+4, "text-anchor":"start"});
+      label.textContent = d.n;
+      svg.appendChild(label);
+    });
+  }
+  render();
+
+  const toggle = document.getElementById("domainsize-toggle");
+  toggle.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-scale]");
+    if (!btn) return;
+    scale = btn.dataset.scale;
+    toggle.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+    render();
+  });
+})();
+
+// ---------- Bulk vs distinctive (single stacked bar) ----------
+(function() {
+  const svg = document.getElementById("bulk-chart");
+  const bulk = 548, distinctive = 174, total = bulk+distinctive;
+  const W = 500, H = 40, y = 15;
+  const series1 = cssVar('--series-1'), grid = cssVar('--grid');
+  const bulkW = (bulk/total)*W, distW = (distinctive/total)*W;
+  svg.appendChild(el("rect", {x:0, y, width:bulkW-1, height:H, rx:4, fill:grid}));
+  svg.appendChild(el("rect", {x:bulkW+2, y, width:distW-1, height:H, rx:4, fill:series1}));
+  const l1 = el("text", {x:8, y:y+H/2+4}); l1.style.fill = cssVar('--text-secondary'); l1.style.fontSize="12px";
+  l1.textContent = "bulk " + bulk + " (76%)"; svg.appendChild(l1);
+  const l2 = el("text", {x:bulkW+10, y:y+H/2+4}); l2.style.fill = "#ffffff"; l2.style.fontSize="12px"; l2.style.fontWeight="600";
+  l2.textContent = "distinctive " + distinctive + " (24%)"; svg.appendChild(l2);
+})();
+</script>
+
+</body>
+</html>

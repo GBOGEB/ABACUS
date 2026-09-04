@@ -14,7 +14,7 @@ jobs:
   validate-w04-dow-receipt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ABACUS parent
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
@@ -34,7 +34,7 @@ jobs:
       - name: Validate sanitized-snapshot W04 DOW runtime receipt
         run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
       - name: Upload sanitized-snapshot W04 DOW runtime receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qps-w04-dow-sanitized-snapshot-receipt-${{ github.run_id }}
           path: federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ABACUS parent
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with: {path: parent}
       - name: Check private child credential
         id: credential
@@ -56,14 +56,14 @@ jobs:
           if [ -n "$QPS_REPO_READ_TOKEN" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
       - name: Checkout request-bound QPS child SSOT
         if: steps.credential.outputs.available == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: GBOGEB/cryoplant-project
           ref: ${{ env.QPS_W04_CHILD_SHA }}
           token: ${{ secrets.QPS_REPO_READ_TOKEN }}
           persist-credentials: false
           path: qps
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: steps.credential.outputs.available == 'true'
         with: {python-version: '3.12'}
       - name: Install runtime dependency
@@ -88,7 +88,7 @@ jobs:
         run: python tools/validate_qps_w04_dow_receipt.py federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml
       - name: Upload private-child W04 DOW runtime receipt
         if: steps.credential.outputs.available == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qps-w04-dow-private-child-receipt-${{ github.run_id }}
           path: parent/federation/qps/runtime/QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml

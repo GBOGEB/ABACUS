@@ -1,0 +1,69 @@
+{
+  "schema_version": "0.1",
+  "contract": "QPS_W43_DOW_EXECUTION",
+  "parent": "ABACUS",
+  "role": "DOW_ANALYSIS_RUNTIME",
+  "child": {
+    "repository": "GBOGEB/cryoplant-project",
+    "baseline_pr": 383,
+    "baseline_merge_sha": "c3cb08af3d1c3dddef12af2aa71f8508849e4a2e"
+  },
+  "prior_return": {
+    "pr": 827,
+    "merge_sha": "93f48827217167110d6f025b783f8def46d7e2db"
+  },
+  "execution": {
+    "mode": "PARALLEL_WITH_KEB",
+    "required_stages": [
+      "metadata_and_authority",
+      "recursive_hooks",
+      "convergence",
+      "knowledge_extraction",
+      "self_ranking",
+      "validation"
+    ],
+    "triage_tasks": [
+      "separate_internal_closure_candidates_from_external_source_waiting",
+      "compute_reviewer_rtm_bidder_domain_depth_without_inflating_unique_rtm_breadth",
+      "identify_exact_source_bound_graph_edges_reusable_across_open_obligations",
+      "rank_actionable_findings_by_closure_yield_and_dependency_release",
+      "flag_duplicate_or_already_governed_work",
+      "emit_blocked_reason_for_every_non_actionable_candidate"
+    ]
+  },
+  "input_control": {
+    "engineering_closure": "70/90 = 77.78%",
+    "remaining_obligations": 20,
+    "reviewed_rtms": "116/722 = 16.07%",
+    "reviewer_rtm_edges": 123,
+    "buildings_utilities_page_bound": "51/53 = 96.23%",
+    "buildings_utilities_candidate_mapping": "26/53 = 49.06%",
+    "raw_msg_exact_attribution": "0/53 pending"
+  },
+  "return_schema": {
+    "required": [
+      "source_child_sha",
+      "executed_stages",
+      "actionable_findings",
+      "blocked_findings",
+      "evidence_class",
+      "closure_yield_estimate",
+      "return_hash"
+    ],
+    "finding_required": ["finding_id", "scope", "source_refs", "reason", "recommended_child_disposition"],
+    "recommended_child_dispositions": [
+      "ACCEPT_AS_DERIVED_EVIDENCE",
+      "REJECT_WITH_REASON",
+      "DEFER_PENDING_SOURCE",
+      "DUPLICATE_EXISTING_WORK"
+    ]
+  },
+  "guards": [
+    "DOW does not mutate child compliance state",
+    "review depth does not create duplicate compliance atoms",
+    "candidate mapping is not accepted evidence",
+    "postulated cost is not financial penalty",
+    "missing source identity is fail-closed"
+  ],
+  "formal_credit_delta": 0
+}

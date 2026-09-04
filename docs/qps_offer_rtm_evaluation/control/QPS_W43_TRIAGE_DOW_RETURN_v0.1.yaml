@@ -1,0 +1,76 @@
+schema_version: "0.1"
+id: QPS_W43_TRIAGE_DOW_RETURN
+state: CANDIDATE_ONLY
+repo: GBOGEB/ABACUS
+parent_role: DOW
+source_main_sha: 3c98cef9ae9cf43b9fa2b2358b261d7dd21aa6c7
+child_authority:
+  repo: GBOGEB/cryoplant-project
+  main_sha: c3cb08af3d1c3dddef12af2aa71f8508849e4a2e
+  controlling_pr: 383
+
+supersedes_unmerged_attempt:
+  pr: 828
+  head_sha: d8b5235da126d91f025b4c15346682ae6beffd95
+
+observed_child_baseline:
+  reviewed_rtm_union: 116
+  reviewed_rtm_denominator: 722
+  reviewer_rtm_edges: 123
+  buildings_utilities_page_bound: 51
+  buildings_utilities_denominator: 53
+  buildings_utilities_candidate_mapping: 26
+  buildings_utilities_original_msg_exact: 0
+  formal_engineering_percent: 77.78
+  negotiation_resolved: 0
+  negotiation_total: 20
+  evaluated_price_delta_eur: 0
+
+correction:
+  stale_parent_candidate_mapping: 24
+  corrected_child_authority_candidate_mapping: 26
+  delta: 2
+  corrected_percent: 49.06
+  page_bound_percent_unchanged: 96.23
+  global_reviewed_percent_unchanged: 16.07
+  direct_3d_edge_delta: 0
+
+DOW_effect:
+  graph_depth:
+    reviewed_nodes: 116
+    reviewer_rtm_edges: 123
+  evidence_surfaces:
+    - PAGE_BOUND_REVIEW
+    - CANDIDATE_MAPPING
+    - ORIGINAL_MSG_EXACT
+  required_separation: true
+  formal_credit_delta: 0
+  negotiation_credit_delta: 0
+  evaluated_price_delta_eur: 0
+
+triage_waves:
+  T01:
+    name: FEDERATION_CONVERGENCE
+    result: CORRECT_24_TO_26
+    status: EXECUTED
+  T02:
+    name: GRAPH_WAKE_AND_LINEAGE
+    result: KEEP_3D_EXACT_EDGE_COUNT_7_UNTIL_SOURCE_BOUND_INTERFACE_EDGES
+    status: EXECUTED
+  T03:
+    name: DYNAMIC_BASELINE_INPUT
+    result: EXPORT_COUNTS_ONLY_CHILD_CALCULATES_B0
+    status: EXECUTED
+  T04:
+    name: RETURN_REENTRY
+    result: CHILD_ACCEPT_REJECT_DEFER_REQUIRED
+    status: READY_FOR_CHILD
+
+controls:
+  - render_or_graph_success_is_not_compliance_closure
+  - parent_must_not_override_child_ssot
+  - candidate_mapping_must_not_be_promoted_to_source_supported
+  - original_msg_exact_0_of_53_must_remain_visible
+  - postulated_378k_must_not_become_bidder_value_or_price_penalty
+
+child_disposition: UNSET

@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyyaml numpy pytest
+          pip install pyyaml numpy pandas pytest pytest-asyncio
 
       - name: Generate runtime evidence
         run: |
@@ -33,28 +33,40 @@ jobs:
       - name: Generate RTM artifacts
         run: |
           python - <<'EOF'
-          from src.qplant_presentation_engine.rtm import generate_rtm_artifacts
+          from src.qplant_presentation_engine.rtm import (
+              generate_rtm_artifacts,
+          )
           result = generate_rtm_artifacts()
           summary = result["rtm_summary"]
-          print(f"RTM coverage: {summary['coverage_ratio']:.2%}")
-          print(f"Requirements: {summary['requirements_with_evidence']}/{summary['total_requirements']}")
+          coverage = summary["coverage_ratio"]
+          with_evidence = summary["requirements_with_evidence"]
+          total = summary["total_requirements"]
+          print(f"RTM coverage: {coverage:.2%}")
+          print(f"Requirements: {with_evidence}/{total}")
           EOF
 
       - name: Run release gate (validation checks)
         run: |
           python - <<'EOF'
-          import json, sys
-          from src.qplant_presentation_engine.release_gate import evaluate_release_gate
+          import json
+          import sys
+
+          from src.qplant_presentation_engine.release_gate import (
+              evaluate_release_gate,
+          )
+
           result = evaluate_release_gate()
           print(json.dumps(result, indent=2))
 
-          rtm_ok = result["checks"]["rtm_coverage"]["passed"]
-          runtime_ok = result["checks"]["runtime_evidence"]["passed"]
+          rtm_check = result["checks"]["rtm_coverage"]
+          runtime_check = result["checks"]["runtime_evidence"]
+          rtm_ok = rtm_check["passed"]
+          runtime_ok = runtime_check["passed"]
 
           if not rtm_ok:
-              print(f"FAIL: {result['checks']['rtm_coverage']['message']}", file=sys.stderr)
+              print(f"FAIL: {rtm_check['message']}", file=sys.stderr)
           if not runtime_ok:
-              print(f"FAIL: {result['checks']['runtime_evidence']['message']}", file=sys.stderr)
+              print(f"FAIL: {runtime_check['message']}", file=sys.stderr)
           if not rtm_ok or not runtime_ok:
               sys.exit(1)
 

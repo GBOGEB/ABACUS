@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BT_Clusters — QPS BT34 Excel view</title>
+<link rel="stylesheet" href="qps_shared.css">
+</head>
+<body>
+<header>
+  <h1>BT_Clusters</h1>
+  <p>Read-only HTML mirror of one sheet in <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>.
+     Excel is the source of truth — this page is regenerated from it, never edited directly.
+     <a href="index.html">&larr; all sheets</a></p>
+  <p class="provenance">source sha256 <code>1ccc12548f9d4a54&hellip;</code> ·
+     generated 2026-09-01 23:21 UTC by <code>build_html_from_excel.py</code></p>
+</header>
+<main>
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="filter" placeholder="Filter rows&hellip;" aria-label="Filter rows">
+    </div>
+    <span class="row-count" id="row-count"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="data-table">
+      <thead><tr><th data-col="0">Offer ID</th><th data-col="1">Title</th><th data-col="2">Cluster ID</th><th data-col="3">Cluster Name</th><th data-col="4">Cluster Weight</th><th data-col="5">Item Weight in Cluster</th><th data-col="6">EPIC</th><th data-col="7">Category</th><th data-col="8">Section</th><th data-col="9">Primary RTM(s)</th><th data-col="10">Supporting / Context RTM(s)</th><th data-col="11">Link basis / coverage</th><th data-col="12">Review flag</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+<footer>Generated from <code>QPS_BT34_SUPPLEMENTARY_DETAIL_v1.xlsx</code>, sheet <code>BT_Clusters</code>. Not hand-edited.</footer>
+<script>
+const HEADER = ["Offer ID", "Title", "Cluster ID", "Cluster Name", "Cluster Weight", "Item Weight in Cluster", "EPIC", "Category", "Section", "Primary RTM(s)", "Supporting / Context RTM(s)", "Link basis / coverage", "Review flag"];
+const ROWS = [["OFFER-01", "Tender Compliance Confirmation", "C8", "Commercial & Execution", "0.05", "0.125", "COMMERCIAL", "Governance", "\u00a74.1", "RTM-001; RTM-003", "RTM-002; RTM-004", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-02", "Assumptions, Deviations & Additions Register", "C8", "Commercial & Execution", "0.05", "0.125", "PROJECT_EXECUTION", "Deliverables", "\u00a74.1", "RTM-004", "RTM-001..RTM-003", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-03", "Integrated Technical Proposal & Execution Strategy", "C8", "Commercial & Execution", "0.05", "0.125", "PROJECT_EXECUTION", "Planning & Scheduling", "\u00a74.1", "RTM-002", "RTM-001; RTM-003..RTM-004", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-04", "Cooldown & Thermal Performance Modelling", "C1", "Performance", "0.2", "0.3", "SYSTEM_PERFORMANCE", "Cooldown Performance", "\u00a74.2.2.2", "RTM-019..RTM-022", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-05", "Operational Procedure Strategy (Auto vs Manual)", "C8", "Commercial & Execution", "0.05", "0.125", "OPERATIONS_MAINTENANCE", "Operations Strategy", "\u00a74.2.2.4.1", "RTM-025..RTM-027", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-06", "LHe Filling & Emptying Performance", "C1", "Performance", "0.2", "0.2", "SYSTEM_PERFORMANCE", "Filling/Emptying Performance", "\u00a74.2.2.4.3", "RTM-030..RTM-033", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-07", "Header Design Pressure & Temperature Definition", "C2", "Process Design", "0.15", "0.12", "PROCESS_DESIGN", "Thermodynamic Design", "\u00a74.2.4", "RTM-040..RTM-044", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-08", "LN2 Precooling Design Decision", "C2", "Process Design", "0.15", "0.12", "PROCESS_DESIGN", "LN2 Integration", "\u00a74.2.5", "RTM-045", "RTM-046..RTM-047", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-09", "LN2 Techno-Economic Evaluation (CAPEX/OPEX)", "C2", "Process Design", "0.15", "0.22", "COMMERCIAL", "Cost Model", "\u00a74.2.5", "", "RTM-045..RTM-047", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-10", "LN2 System Functional & Interface Design", "C2", "Process Design", "0.15", "0.18", "PROCESS_DESIGN", "LN2 Integration", "\u00a74.2.5", "RTM-046..RTM-047", "RTM-045", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-11", "Reliability, MTBF & Recovery Strategy", "C6", "Reliability & Maintenance", "0.15", "0.2", "OPERATIONS_MAINTENANCE", "Reliability", "\u00a74.3.2", "RTM-057..RTM-063", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-12", "Performance Efficiency (invCOP) Declaration", "C1", "Performance", "0.2", "0.3", "SYSTEM_PERFORMANCE", "Efficiency", "\u00a74.3.4", "RTM-069..RTM-072", "RTM-073..RTM-077", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-13", "Main Equipment Technical Specifications", "C3", "Mechanical & Equipment", "0.1", "0.25", "MECHANICAL_DESIGN", "Equipment Design", "\u00a74.4", "", "RTM-141..RTM-152; RTM-193..RTM-197; RTM-236..RTM-257; RTM-263..RTM-267", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "Review breadth"], ["OFFER-14", "Expansion Joint Design & Risk Justification", "C3", "Mechanical & Equipment", "0.1", "0.25", "MECHANICAL_DESIGN", "Piping & Layout", "\u00a74.4.1.1", "RTM-079", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-15", "Compressor Noise Emission Specification", "C3", "Mechanical & Equipment", "0.1", "0.25", "MECHANICAL_DESIGN", "Noise & Vibrations", "\u00a74.4.3.1", "RTM-141..RTM-147", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-16", "Compressor Configuration & Operating Limits", "C3", "Mechanical & Equipment", "0.1", "0.25", "MECHANICAL_DESIGN", "Equipment Design", "\u00a74.4.3.2", "RTM-148..RTM-152", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-17", "Preliminary 3D Plant Layout Model", "C5", "Infrastructure & Integration", "0.1", "0.142858", "INFRASTRUCTURE", "Buildings & Layout", "\u00a74.4.4.1", "RTM-193..RTM-197", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-18", "MPHX Technology Selection", "C2", "Process Design", "0.15", "0.1", "PROCESS_DESIGN", "Thermodynamic Design", "\u00a74.4.4.2.2", "RTM-202..RTM-209", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-19", "Warm Storage Heater (WSH) Design & Layout", "C2", "Process Design", "0.15", "0.1", "PROCESS_DESIGN", "Process Interfaces", "\u00a74.4.5.2", "RTM-239..RTM-248", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-20", "Helium Leak Detection & Loss Management", "C7", "Quality, Testing & Risk", "0.1", "0.142858", "QUALITY_RISK", "Risk Management", "", "RTM-252..RTM-257", "RTM-258..RTM-262", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-21", "LOOP Strategy & Critical Load Management", "C2", "Process Design", "0.15", "0.08", "PROCESS_DESIGN", "LOOP Strategy", "\u00a74.4.7.1", "RTM-258", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-22", "Helium Recovery System Design", "C2", "Process Design", "0.15", "0.05", "PROCESS_DESIGN", "Helium Management", "\u00a74.4.7.3", "RTM-260..RTM-262", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-23", "User Configuration Filling Performance", "C1", "Performance", "0.2", "0.2", "SYSTEM_PERFORMANCE", "Filling/Emptying Performance", "\u00a74.4.8.1", "RTM-268..RTM-272", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-24", "Helium Purity Acceptance Criteria", "C2", "Process Design", "0.15", "0.03", "PROCESS_DESIGN", "Helium Management", "\u00a74.4.8.2", "RTM-273..RTM-280", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-25", "Supplier Experience & Reference Justification", "C8", "Commercial & Execution", "0.05", "0.125", "COMMERCIAL", "Qualification", "\u00a74.6.4.5", "RTM-321..RTM-327", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-26", "Software Architecture & Development Scope", "C4", "Software & Control", "0.15", "0.166665", "SOFTWARE", "Software Architecture", "\u00a74.6.7", "RTM-334..RTM-339", "RTM-340..RTM-345", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-27", "Programming Standards & Language Strategy", "C4", "Software & Control", "0.15", "0.166667", "SOFTWARE", "Programming Standards", "\u00a74.6.7", "RTM-340..RTM-341; RTM-343..RTM-344", "RTM-334..RTM-339; RTM-342; RTM-345", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-28", "Functional Analysis & Control Sequences", "C4", "Software & Control", "0.15", "0.166667", "SOFTWARE", "Functional Analysis", "\u00a74.6.7", "RTM-342; RTM-345", "RTM-334..RTM-341; RTM-343..RTM-344", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-29", "Control System Obsolescence Strategy", "C4", "Software & Control", "0.15", "0.166667", "CONTROL_SYSTEM", "Lifecycle Management", "\u00a74.6.8", "RTM-346..RTM-367", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-30", "Software Change Management Process", "C4", "Software & Control", "0.15", "0.166667", "SOFTWARE", "Change Management", "\u00a74.6.9", "RTM-368..RTM-370", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-31", "Cold Box Environmental Requirements", "C5", "Infrastructure & Integration", "0.1", "0.142857", "INFRASTRUCTURE", "Buildings & Layout", "\u00a74.7.1", "RTM-386..RTM-387", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-32", "Equipment Transport & Installation Constraints", "C5", "Infrastructure & Integration", "0.1", "0.142857", "INFRASTRUCTURE", "Structural Constraints", "\u00a74.7.2", "RTM-388..RTM-394", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-33", "Electrical System Design & Load Analysis", "C5", "Infrastructure & Integration", "0.1", "0.142857", "CONTROL_SYSTEM", "Electrical Systems", "\u00a74.7.3.1", "RTM-401..RTM-402", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-34", "Cooling Water System Requirements", "C5", "Infrastructure & Integration", "0.1", "0.142857", "INFRASTRUCTURE", "Utilities", "\u00a74.7.4.3.2", "RTM-426..RTM-427", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-35", "Heat Rejection & HVAC Interface Design", "C5", "Infrastructure & Integration", "0.1", "0.142857", "INFRASTRUCTURE", "HVAC & Heat Rejection", "\u00a74.7.6", "RTM-434..RTM-435", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-36", "3D Model Platform & CAD Delivery", "C5", "Infrastructure & Integration", "0.1", "0.142857", "INFRASTRUCTURE", "Buildings & Layout", "\u00a74.8.1", "RTM-445..RTM-449", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-37", "Digital Twin / Simulation Strategy", "C4", "Software & Control", "0.15", "0.166667", "SOFTWARE", "Software Architecture", "\u00a74.8.2", "RTM-450..RTM-451", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-38", "Training Program & Competency Definition", "C6", "Reliability & Maintenance", "0.15", "0.2", "OPERATIONS_MAINTENANCE", "Training", "\u00a74.12", "RTM-483..RTM-490", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-39", "FAT/SAT Testing Strategy & Procedures", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "QUALITY_RISK", "Testing", "\u00a74.13.1", "RTM-491..RTM-495", "RTM-496..RTM-556", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "Review breadth"], ["OFFER-40", "Electrical Power Measurement Methodology", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "CONTROL_SYSTEM", "Instrumentation", "\u00a74.13.3.2.7", "RTM-542..RTM-544", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-41", "Spare Parts & Critical Components Strategy", "C6", "Reliability & Maintenance", "0.15", "0.2", "OPERATIONS_MAINTENANCE", "Spare Parts", "\u00a74.14.3", "RTM-560..RTM-562", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-42", "After-Sales Service Organization & Pricing", "C8", "Commercial & Execution", "0.05", "0.125", "COMMERCIAL", "Warranty", "\u00a74.15", "RTM-563..RTM-565", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-43", "Maintenance Effort & Intervention Estimation", "C6", "Reliability & Maintenance", "0.15", "0.2", "OPERATIONS_MAINTENANCE", "Maintenance Strategy", "\u00a74.15", "", "RTM-563..RTM-565", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-44", "Project Schedule & Milestone Definition", "C8", "Commercial & Execution", "0.05", "0.125", "PROJECT_EXECUTION", "Planning & Scheduling", "\u00a76.2", "", "RTM-614..RTM-620", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "Review breadth"], ["OFFER-45", "Project Dashboard & Management Processes", "C8", "Commercial & Execution", "0.05", "0.125", "PROJECT_EXECUTION", "Governance", "\u00a77.4.1", "RTM-633", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-46", "Risk Assessment & Mitigation Strategy", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "QUALITY_RISK", "Risk Management", "\u00a77.5", "RTM-640", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-47", "Quality Assurance Program (QAP) Definition", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "QUALITY_RISK", "QAP", "\u00a78", "RTM-642", "RTM-648..RTM-652", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "Review breadth"], ["OFFER-48", "Detailed Quality Control Procedures", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "QUALITY_RISK", "QAP", "\u00a78.1.3.1", "RTM-650..RTM-652", "", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"], ["OFFER-49", "Codes, Standards & Compliance Framework", "C7", "Quality, Testing & Risk", "0.1", "0.142857", "QUALITY_RISK", "Compliance", "\u00a79", "RTM-687..RTM-688", "RTM-689..RTM-705", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "Review breadth"], ["OFFER-50", "Warranty Extension Commercial Terms", "C6", "Reliability & Maintenance", "0.15", "0.2", "COMMERCIAL", "Warranty", "\u00a710.2", "RTM-708", "RTM-709..RTM-710", "Canonical link classification; OFFER evidence does not replace RTM compliance.", "OK"]];
+const tbody = document.querySelector("#data-table tbody");
+const rowCountEl = document.getElementById("row-count");
+let sortCol = null, sortDir = 1;
+let filterText = "";
+
+function renderRows() {
+  let data = ROWS.map((r, i) => ({ r, i }));
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    data = data.filter(({r}) => r.some(c => c.toLowerCase().includes(q)));
+  }
+  if (sortCol !== null) {
+    data.sort((a, b) => {
+      const av = a.r[sortCol], bv = b.r[sortCol];
+      const an = parseFloat(av), bn = parseFloat(bv);
+      const bothNumeric = !isNaN(an) && !isNaN(bn) && av !== "" && bv !== "";
+      const cmp = bothNumeric ? (an - bn) : av.localeCompare(bv);
+      return cmp * sortDir;
+    });
+  }
+  tbody.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  data.forEach(({r}) => {
+    const tr = document.createElement("tr");
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    frag.appendChild(tr);
+  });
+  tbody.appendChild(frag);
+  rowCountEl.textContent = data.length + " / " + ROWS.length + " rows";
+}
+
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = parseInt(th.dataset.col, 10);
+    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("th[data-col]").forEach(t => t.classList.remove("sorted-asc", "sorted-desc"));
+    th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    renderRows();
+  });
+});
+
+document.getElementById("filter").addEventListener("input", (e) => {
+  filterText = e.target.value;
+  renderRows();
+});
+
+renderRows();
+</script>
+</body>
+</html>
