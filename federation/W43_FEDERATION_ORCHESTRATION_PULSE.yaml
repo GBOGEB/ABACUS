@@ -1,0 +1,100 @@
+wave: W43
+pulse_id: W43-FED-001
+repo: GBOGEB/ABACUS
+role: DOW_RUNTIME_GOVERNANCE_AND_VISUALIZATION
+base_lineage:
+  merged_pr: 827
+  title: federation(qps): W42 binary DOW return
+  paired_codex_pr: 352
+  child_authority_repo: GBOGEB/cryoplant-project
+  child_reference_pr: 339
+
+purpose: >-
+  Move the existing QPS DOW/runtime evidence path into a common federation execution
+  contract shared with CODEX and the child authority. ABACUS remains a bounded public
+  parent: it may emit structural/runtime/governance findings and rendered evidence,
+  but it cannot self-promote child engineering, compliance, negotiation, or source truth.
+
+shared_contract:
+  session_identity:
+    required: [session_id, federation_id, repo, branch, commit_sha, wave, pulse_id]
+  event_envelope:
+    required: [event_id, session_id, parent_event_id, event_type, timestamp, producer, evidence_class, payload_ref]
+  task_identity:
+    required: [task_id, session_id, capability_required, priority, expected_outputs]
+  bridge_identity:
+    required: [bridge_request_id, source_repo, destination_repo, operation, disposition_required]
+
+active_front:
+  W002_CI_EVIDENCE:
+    priority: P0
+    target: governed runtime trace -> validated evidence -> rendered artifact -> CI artifact
+  W003_SESSION_REGISTRY:
+    priority: P0
+    target: zero orphan controlled sessions
+  W004_CANONICAL_EVENTS:
+    priority: P0
+    target: 100_percent schema conformance for controlled federation events
+
+abacus_outputs:
+  - DOW structural findings
+  - runtime/session evidence
+  - rendered HTML/Markdown governance views
+  - evidence completeness metrics
+  - bridge return package with disposition UNSET
+
+required_event_types:
+  - session.created
+  - worker.claimed
+  - worker.started
+  - worker.completed
+  - worker.failed
+  - agent.invoked
+  - agent.completed
+  - agent.failed
+  - bridge.requested
+  - bridge.returned
+  - runtime.start
+  - runtime.stop
+  - runtime.error
+  - evidence.created
+  - evidence.validated
+  - evidence.rendered
+  - governance.checked
+  - governance.passed
+  - governance.failed
+  - federation.returned
+  - federation.dispositioned
+
+governance:
+  child_accept_reject_defer_required: true
+  formal_credit_delta: 0
+  negotiation_credit_delta: 0
+  render_success_is_not_compliance: true
+  public_parent_must_not_copy_private_child_evidence: true
+  no_silent_evidence_class_promotion: true
+
+metrics_contract:
+  retain_history: true
+  track:
+    - sessions_total
+    - sessions_passed
+    - sessions_failed
+    - orphan_sessions
+    - tasks_total
+    - tasks_completed
+    - tasks_failed
+    - worker_attempts
+    - bridge_requests_total
+    - bridge_returns_total
+    - evidence_items
+    - validated_items
+    - rendered_items
+    - governance_checks_total
+    - governance_checks_failed
+    - pending_dispositions
+
+exit_demo: >-
+  Create a federation session, create a task, assign one worker/agent, emit canonical
+  runtime events, create and render evidence, return via the bridge, and expose the
+  full Wave -> Pulse -> Session -> Task -> Worker -> Event -> Evidence chain.
