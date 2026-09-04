@@ -1,0 +1,42 @@
+schema_version: "0.1"
+document_id: W49_P03_DOW_FAILCLOSED_FALLBACK_REQUEST
+wave: W49
+pulse: P03
+child_repo: GBOGEB/cryoplant-project
+child_commit: 0192a88a9c26f823b7034e4210ef311a7dd09e7c
+intent: >-
+  Validate fail-closed handling of RTM-595 and immediately execute the
+  source-bound fallback analysis for HSE_ID_026 and HSE_ID_029.
+checks:
+  rtm595:
+    - confirm_no_authoritative_common_cause_non_overlap_source_is_bound
+    - prohibit_zero_imputation
+    - keep_ALAT_independent_stage_candidate_separate
+    - preserve_Table10_gate_open
+  hse026:
+    - validate_exact_source_lineage
+    - validate_member_predicate_for_working_at_height_threshold
+    - preserve_literal_reviewer_answer_2_meter
+    - identify_duplicate_or_shared_answer_neighbors
+  hse029:
+    - validate_exact_source_lineage
+    - validate_member_predicate_for_radiography_control
+    - preserve_reviewer_OK_as_review_evidence_only
+    - identify_duplicate_or_shared_answer_neighbors
+  provenance:
+    - rank_NFS_original_MSG_locator_recovery
+    - rank_exact_model_object_interface_edge_recovery
+return_required:
+  - correlation_id
+  - executed_checks
+  - findings
+  - source_gaps
+  - recommended_child_dispositions
+  - next_recovery_priority
+  - immutable_return_hash
+guards:
+  - parent_is_derived_analysis_only
+  - no_child_state_mutation
+  - no_formal_or_PCA_credit
+  - no_cross_bidder_substitution
+  - no_duplicate_credit
