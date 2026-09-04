@@ -1,0 +1,64 @@
+schema_version: "0.1"
+wave: W43-agentic-federation-runtime
+repository: GBOGEB/ABACUS
+plane: runtime_analysis
+status: ACTIVE_TRIAGE
+principle: converge_existing_before_creating_new
+
+authority:
+  may:
+    - execute_bounded_analysis
+    - schedule_workers
+    - emit_derived_returns
+    - report_health
+  may_not:
+    - grant_child_compliance_credit
+    - grant_negotiation_credit
+    - override_cryoplant_child_ssot
+
+existing_components:
+  - id: abacus.agent_manager
+    role: manager
+    path: DMAIC_V3/core/agent_manager.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.agent_health_monitor
+    role: health_monitor
+    path: DMAIC_V3/core/agent_health_monitor.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.local_mcp_orchestrator
+    role: orchestrator
+    path: local_mcp/agent_orchestrator_v3.0.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.full_pipeline_orchestrator
+    role: orchestrator
+    path: DMAIC_V3/full_pipeline_orchestrator.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.cluster_orchestrator
+    role: orchestrator
+    path: DMAIC_V3/core/twelve_cluster_orchestrator.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.dow_keb_master
+    role: bridge_orchestrator
+    path: integration_DOW_KEB_MASTER/dow_keb_master_orchestrator.py
+    status: EXISTING_ACTIVE_CANDIDATE
+  - id: abacus.mcp_controller
+    role: mcp_worker_controller
+    path: local_mcp/mcp_controller.py
+    status: EXISTING_NEEDS_PING
+
+bridge_contract:
+  child_repo: GBOGEB/cryoplant-project
+  governance_repo: GBOGEB/CODEX
+  request_types:
+    - DOW_ANALYSIS_REQUEST
+    - GRAPH_EXPANSION_REQUEST
+    - REVIEW_UNION_REQUEST
+    - MULTIPLIER_RETEST_REQUEST
+    - MCP_WORKER_REQUEST
+  return_states: [RETURNED, ACCEPTED, REJECTED, DEFERRED, BLOCKED]
+  child_disposition_required: true
+
+health_contract:
+  command: python scripts/w43_federation_ping.py
+  success_line: "W43_ABACUS_FEDERATION_PING: OK"
+  side_effect_class: READ_ONLY
