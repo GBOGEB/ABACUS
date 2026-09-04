@@ -1,0 +1,39 @@
+pulse_id: QPS-P43
+registry_type: hidden_node_inventory
+repo: GBOGEB/ABACUS
+nodes:
+  - id: abacus.cryo_dashboard_v0_3_0
+    path: cryo_dashboard_v0_3_0
+    role: helium_property_surface
+    evidence: NIST_REFPROP_10_HE4
+    status: active_existing
+  - id: abacus.qplant.energy_exergy
+    path: qplant/energy_exergy
+    role: thermo_exergy_engine
+    status: active_existing
+  - id: abacus.qplant.handover_dashboard
+    path: qplant/handover_dashboard
+    role: engineering_render_and_analysis
+    status: active_existing
+  - id: abacus.qplant.config_service
+    path: qplant/config_service
+    role: canonical_model_configuration
+    status: active_existing
+providers:
+  refprop:
+    status: evidenced_existing
+  hepak:
+    status: not_found_gap
+  gasprop:
+    status: not_found_gap
+bridge_target:
+  name: helium_property_provider
+  requirement: provider_neutral_interface
+  preferred_domains:
+    - he4_300K_to_4.5K
+    - he4_4.5K_to_2K
+rules:
+  - do_not_duplicate_existing_refprop_surfaces
+  - mark_provider_specific_domain_and_provenance
+  - hepak_claim_requires_repository_evidence
+  - expose_as_skill_or_mcp_only_after_bridge_validation
