@@ -1,0 +1,52 @@
+schema_version: "0.1"
+wave: W45
+repository: GBOGEB/ABACUS
+plane: physics_runtime
+intent: prove_real_line_s_property_roundtrip
+
+provider:
+  id: abacus.he4.coolprop
+  implementation: models/qps_line_s/recovery_model.py
+  fluid: Helium
+  status: ACTIVE_PROVIDER
+  authority: physics_property_provider
+  hepak_reference_status: UNPROVEN_BLOCKED
+
+accepted_request:
+  required_fields:
+    - request_id
+    - property
+    - state_inputs
+    - units
+    - consumer_repo
+    - consumer_commit
+  supported_regime:
+    normal_fluid: true
+    heii: false
+
+receipt:
+  required_fields:
+    - request_id
+    - provider_id
+    - property
+    - value
+    - units
+    - input_state
+    - validity_regime
+    - provider_commit
+    - provenance
+    - warnings
+
+negative_cases:
+  - unsupported_property
+  - stale_consumer_commit
+  - missing_units
+  - heii_without_valid_low_temperature_provider
+
+fail_closed:
+  heii_without_provider: true
+  missing_units: true
+  stale_commit: true
+
+formal_credit_delta: 0
+negotiation_credit_delta: 0
