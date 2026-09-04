@@ -1,0 +1,18 @@
+{
+  "receipt": "QPS_W42_BINARY_DOW_RETURN",
+  "parent": "ABACUS",
+  "prior_parent_pr": 825,
+  "child_repo": "GBOGEB/cryoplant-project",
+  "child_pr": 381,
+  "child_head_sha": "b4532a26f9d28af7a3a9776681e099737798339c",
+  "scope": ["xlsx", "html", "pptx", "pdf", "reviewer-filter-view", "80-20-focus", "render-QA"],
+  "artifact_hashes": {
+    "xlsx": "7efff89086265819f839a39bed91701dcd191bb1639f24b77989f4be1a345e45",
+    "html": "5ef3de54a2a755093dfd182925fd7644b07ffa03b19d2c8df7cfafbf926403cf",
+    "pptx": "78df935da4131b8b42c606912bf3a836bf0a6b17908c69054307cbc8a0f46d4a",
+    "pdf": "ec51d8cf142d9256d615a60da0f7f95187903f81d3ed7257466103ba842e59c4"
+  },
+  "render_status": "PDF rendered 8/8; XLSX LibreOffice open/save + PDF export passed; HTML browser visual QA environment-blocked",
+  "formal_credit_delta": 0,
+  "guard": "DOW/render success does not imply compliance closure or source acceptance."
+}
