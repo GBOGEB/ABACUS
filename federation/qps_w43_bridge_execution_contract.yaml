@@ -1,0 +1,67 @@
+wave: W43
+role: ABACUS
+scope: bridge_presenter_execution_metrics
+formal_credit_delta: 0
+upstream_contract:
+  repo: GBOGEB/CODEX
+  path: federation/qps_w43_test_oracle_contract.yaml
+  binding: exact_sha_required
+presentation_contract:
+  show_separately:
+    - sut_result
+    - independent_oracle
+    - plausibility_window
+    - delta_percent
+    - units
+    - source_sha
+    - execution_status
+    - formal_compliance_closure
+    - multiplication_coverage
+    - render_coverage
+  never_equate:
+    - render_success_with_compliance_closure
+    - sanity_pass_with_evidence_acceptance
+    - agent_recommendation_with_owner_disposition
+triage_dashboard:
+  counters:
+    - workers_total
+    - workers_passed
+    - workers_failed
+    - workers_retested
+    - oracle_divergences
+    - unit_guard_failures
+    - backlog_open
+    - backlog_closed
+    - catchup_delta_vs_mean
+  status_classes:
+    - GREEN
+    - AMBER
+    - RED
+    - UNKNOWN
+example:
+  name: HCC_total_skid_flow
+  sut_value_g_s: null
+  oracle_nominal_g_s: 336
+  oracle_window_g_s: [320, 380]
+  behavior:
+    within_window: GREEN_SANITY
+    outside_window: AMBER_INVESTIGATE
+    impossible_or_unit_mismatch: RED_GUARD
+worker_receipt_view:
+  required_fields:
+    - repo
+    - worker_id
+    - task_id
+    - source_sha
+    - input_hash
+    - output_hash
+    - test_suite
+    - status
+    - failure_class
+    - repair_commit
+    - retest_status
+acceptance:
+  - exact_sha_binding_visible
+  - oracle_and_sut_are_visibly_distinct
+  - formal_credit_delta_remains_zero
+  - failure_repair_retest_chain_is_renderable
