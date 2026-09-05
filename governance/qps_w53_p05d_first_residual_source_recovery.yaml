@@ -1,0 +1,41 @@
+schema_version: "0.1"
+wave: W53
+pulse: P05D
+role: ABACUS_DOW
+status: DEFER_SOURCE_GAP
+child_target: GBOGEB/cryoplant-project
+residual_target: QCELL_mass
+score_before: "0/5"
+score_after: "0/5"
+
+independence_rule:
+  B_equals_A_minus_W_counts_as_independent_prediction: false
+  equal_split_across_QCELLs_counts_as_source_supported: false
+
+available_inputs:
+  contract_projection: {A_g_s: 47.0, B_g_s: 45.0, W_g_s: 2.0}
+  current_offer: {A_g_s: 43.1, W_g_s: 2.42, B_derived_g_s: 40.68}
+
+missing_inputs:
+  - exact_authoritative_Table_7_or_Table_9_flow_row_locator
+  - per_QCELL_B_flow_population
+  - source_supported_B_allocation_rule
+  - exact_active_QCELL_mapping_for_c30_2K_OP
+
+execution_result:
+  independent_prediction_available: false
+  residual_executable: false
+  status: DEFER
+  formal_credit_delta: 0
+
+return_contract:
+  rerun_when:
+    - source_document_locator_present
+    - c30_2K_OP_identity_present
+    - per_QCELL_B_values_or_governed_rule_present
+    - units_and_same_boundary_semantics_present
+  compute:
+    - sum_per_QCELL_B
+    - absolute_mass_residual
+    - relative_mass_residual_percent
+  pass_threshold_percent: 0.5
