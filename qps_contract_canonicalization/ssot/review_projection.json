@@ -1,1 +1,32 @@
-{"schemaVersion":"1.0.0","removedScopeTags":["QSN","LN2_PRECOOL","LN2_TRANSPORT","LN2_VAPORIZER","LN2_LOGISTICS"],"rows":[{"id":"RTM-045","canonicalId":"RTM-045","semanticGroupKey":"QPLANT.LN2.PRECOOL.80K","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_PRECOOL"],"overrideEvidence":[]},{"id":"RTM-046","canonicalId":"RTM-046","semanticGroupKey":"QPLANT.LN2.QSN_QRB_INTERFACE","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_TRANSPORT"],"overrideEvidence":[]},{"id":"RTM-047","canonicalId":"RTM-047","semanticGroupKey":"QPLANT.LN2.SIZING_LOGISTICS","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_LOGISTICS"],"overrideEvidence":[]}],"outwardArtifacts":[{"id":"XLSX","dependsOn":["review_projection.json"]},{"id":"HTML","dependsOn":["review_projection.json"]},{"id":"PPTX","dependsOn":["review_projection.json"]},{"id":"PDF","dependsOn":["review_projection.json"]}]}
+{
+  "schemaVersion": "1.1.0",
+  "removedScopeTags": ["QSN", "LN2_PRECOOL", "LN2_TRANSPORT", "LN2_VAPORIZER", "LN2_LOGISTICS"],
+  "rows": [
+    {"id":"RTM-045","canonicalId":"RTM-045","semanticGroupKey":"QPLANT.LN2.PRECOOL.80K","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_PRECOOL"],"overrideEvidence":[]},
+    {"id":"RTM-046","canonicalId":"RTM-046","semanticGroupKey":"QPLANT.LN2.QSN_QRB_INTERFACE","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_TRANSPORT","LN2_LOGISTICS"],"overrideEvidence":[]},
+    {"id":"RTM-047","canonicalId":"RTM-047","semanticGroupKey":"QPLANT.LN2.AUTONOMY_LOGISTICS","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_LOGISTICS"],"overrideEvidence":[]},
+    {"id":"RTM-249","canonicalId":"RTM-249","semanticGroupKey":"QPLANT.LN2.QSN.SUPPLY","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_PRECOOL"],"overrideEvidence":[]},
+    {"id":"RTM-250","canonicalId":"RTM-250","semanticGroupKey":"QPLANT.LN2.QSN.SIZING","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_LOGISTICS"],"overrideEvidence":[]},
+    {"id":"RTM-251","canonicalId":"RTM-251","semanticGroupKey":"QPLANT.LN2.QSN.EQUIPMENT","applicability":"OBSOLETE","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_VAPORIZER","LN2_TRANSPORT","LN2_LOGISTICS"],"overrideEvidence":[]},
+    {"id":"OFFER-08","canonicalId":"OFFER-08","semanticGroupKey":"QPLANT.LN2.BID_SCOPE_DECLARATION","applicability":"SUPERSEDED","complianceStatus":"NOT_SCORED","scoreEligible":false,"reviewWeight":0,"scopeTags":["QSN","LN2_PRECOOL"],"overrideEvidence":[]}
+  ],
+  "canonicalGroups": [
+    {"canonicalId":"CANON-QPS-T04-TRANSIENT-SCENARIOS","governingRtmIds":["RTM-019"],"sourceFragments":["section_4.2.2.2_RTM_019","Table_4_Transient_Operational_Scenarios"],"linkedNonmergedRtmIds":[],"scoreOnce":true},
+    {"canonicalId":"CANON-QPS-T05-LHE-FILL-EMPTY-DEMAND","governingRtmIds":["RTM-031"],"sourceFragments":["section_4.2.2.4.3_RTM_031","Table_5_Indicative_LHe_Filling_and_Emptying_Demand","RTM_031_explanatory_bullets"],"linkedNonmergedRtmIds":["RTM-043"],"scoreOnce":true},
+    {"canonicalId":"CANON-QPS-T06-T07-OPERATING-CONDITIONS","governingRtmIds":["RTM-034"],"sourceFragments":["section_4.2.3_RTM_034","RTM_034_Table_6_bullet","RTM_034_Table_7_bullet","Table_6_Operational_Heat_Load_Ranges","Table_7_Operational_Flow_Conditions"],"linkedNonmergedRtmIds":["RTM-035","RTM-036","RTM-037","RTM-038","RTM-039"],"scoreOnce":true},
+    {"canonicalId":"CANON-QPS-T08-DESIGN-COOLING-CAPACITY","governingRtmIds":["RTM-040"],"sourceFragments":["section_4.2.4_RTM_040","Table_8_Design_Cooling_Capacity"],"linkedNonmergedRtmIds":[],"scoreOnce":true},
+    {"canonicalId":"CANON-QPS-T09-DESIGN-FLOW-CONDITIONS","governingRtmIds":["RTM-041"],"sourceFragments":["section_4.2.4_RTM_041","Table_9_Design_Flow_Conditions","Table_9_D_E_footnote_to_RTM_035"],"linkedNonmergedRtmIds":["RTM-035"],"scoreOnce":true}
+  ],
+  "denominatorReceipt": {
+    "rawNumberedRtmRows": 722,
+    "obsoleteNumberedRtmRows": 6,
+    "applicableNumberedRtmRows": 716,
+    "tableFragmentNormalizationDeltaToNumberedRtmDenominator": 0
+  },
+  "outwardArtifacts": [
+    {"id":"XLSX","dependsOn":["review_projection.json"]},
+    {"id":"HTML","dependsOn":["review_projection.json"]},
+    {"id":"PPTX","dependsOn":["review_projection.json"]},
+    {"id":"PDF","dependsOn":["review_projection.json"]}
+  ]
+}
