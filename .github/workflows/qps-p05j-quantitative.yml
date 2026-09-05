@@ -1,0 +1,25 @@
+name: QPS P05J quantitative waves
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'models/qps_quantitative/**'
+      - '.github/workflows/qps-p05j-quantitative.yml'
+permissions:
+  contents: read
+jobs:
+  quantitative:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check CoolProp==7.2.0 numpy
+      - run: python models/qps_quantitative/p05j_quantitative.py > p05j_stdout.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p05j-quantitative-receipt
+          path: |
+            docs/qps_quantitative/generated/P05J_QUANTITATIVE_RECEIPT.json
+            p05j_stdout.json
