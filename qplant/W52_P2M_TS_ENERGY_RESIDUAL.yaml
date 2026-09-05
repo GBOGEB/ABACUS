@@ -1,0 +1,60 @@
+schema_version: "0.1"
+wave: W52
+pulse: P2M
+intent: close_first_independent_numeric_qplant_residual_if_source_allows
+
+candidate_residual:
+  id: R3_TS_ENERGY
+  equation: "mdot_E*h_E - mdot_D*h_D - Q_TS"
+  source_bound:
+    mdot_D_g_s: 81.0
+    mdot_E_g_s: 81.0
+    T_D_K: 40.0
+    T_E_K: 60.0
+    Q_TS_W: 8610.0
+  unresolved:
+    P_D_bara: EXACT_SOURCE_BIND_REQUIRED
+    P_E_bara: EXACT_SOURCE_BIND_REQUIRED
+    relation_candidate: "P_E = P_D - 1 bar"
+  provider:
+    helium_runtime: governed_provider
+    regime: normal_helium
+    hepak_required_for_runtime: false
+    independent_validation_still_required: true
+
+execution_gate:
+  do_not_assume_14_13_bara: true
+  on_exact_pressure_bind:
+    - evaluate_h_D
+    - evaluate_h_E
+    - calculate_absolute_residual_W
+    - calculate_relative_residual_percent_of_8610W
+    - record_provider_and_source_SHA
+    - compare_to_governed_tolerance
+    - request_child_disposition
+
+residual_burndown:
+  current_strict_score: "0/5"
+  pass_effect: "first independent numerical energy residual may earn 1/5 only if governed tolerance passes"
+  mass_gate_remains_open: true
+
+source_recovery_priority:
+  queries:
+    - exact_LKT_2K_OP_thermal_shield_HP_pressure
+    - exact_D_supply_pressure
+    - exact_E_return_pressure
+    - Table_or_BOP_row_with_81_g_s_40K_60K
+  acceptable_evidence:
+    - current_LKT_offer_exact_row
+    - contract_exact_boundary
+    - source_bound_project_SSOT_with_exact_locator
+
+victory:
+  exact_D_E_pressures_bound: true
+  enthalpies_calculated: true
+  residual_W_reported: true
+  residual_percent_reported: true
+  tolerance_bound: true
+  child_disposition_recorded: true
+  no_assumed_pressure_pair: true
+  formal_credit_delta: 0
