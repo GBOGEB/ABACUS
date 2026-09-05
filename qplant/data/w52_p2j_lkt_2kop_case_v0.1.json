@@ -1,5 +1,5 @@
 {
-  "scenario_id": "LKT_2K_OP_W52_P2J_v0.1",
+  "scenario_id": "LKT_2K_OP_W52_P2J_v0.2",
   "authority": "MIXED_SOURCE_BOUND_AND_OPEN",
   "streams": {
     "A": {"stream_id":"A","mdot_g_s":43.1,"h_J_kg":null,"P_bara":3.0,"T_K":4.5,"authority":"LKT_CURRENT_OFFER_BOP_SOURCE_SUPPORTED","validation":"COOLPROP_PENDING"},
@@ -11,21 +11,27 @@
   "qcell_heat_W": 809.0,
   "ts_heat_W": 8610.0,
   "hp_total_flow_g_s": 326.0,
-  "hp_total_flow_authority": "OWNER_REPORTED_LKT_SOURCE_PENDING_EXACT_LOCATOR",
-  "hp_reference_design_point": {"flow_g_s_each":112.0,"P1_bara":1.05,"T1_K":298.0,"P2_bara":14.0,"package_input_kW_each":357.0},
+  "hp_total_flow_authority": "LKT_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "hp_reference_design_point": {"flow_g_s_each":112.0,"P1_bara":1.05,"T1_K":298.0,"P2_bara":14.0,"package_input_kW_each":357.0,"authority":"LKT_72HZ_MAXIMUM_REFERENCE_NOT_NOMINAL_2K_OP"},
   "hp_predicted_kW": null,
-  "hp_reference_kW": null,
+  "hp_reference_kW": 814.0,
+  "hp_reference_authority": "LKT_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "hp_cooling_water_reference_kWth": 733.0,
   "pvps_predicted_kW": null,
-  "pvps_reference_kW": null,
+  "pvps_reference_kW": 83.0,
+  "pvps_reference_authority": "LKT_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "pvps_cooling_water_reference_kWth": 75.0,
+  "minor_2kop_loads": {"cold_compressors_kW":5.0,"dryer_kW":3.0},
   "hepak_reference_status": "MISSING_FROZEN_INDEPENDENT_REFERENCE",
   "state_mismatch": [
     {"id":"B_LOCAL_VS_INTERFACE","status":"OPEN","note":"LKT BOP 0.022 bara return must be mapped to distributed Line-B/QCELL/QRB pressure nodes; do not substitute one node for another."},
-    {"id":"HP_FLOW_SOURCE_LOCATOR","status":"OPEN","note":"326 g/s is retained as owner-reported LKT nominal 2K-OP until exact source page/table is bound."},
-    {"id":"HP_DESIGN_REFERENCE_GENERATION","status":"OPEN","note":"Current project SSOT also contains 112.54 g/s and 337.62 g/s diagnostic references; preserve source generation and do not silently overwrite the current-offer 112.0 g/s anchor."}
+    {"id":"HP_NOMINAL_VS_MAXIMUM","status":"CONTROLLED","note":"326 g/s and 814 kW are nominal 2K-OP operating-mode values; 112 g/s each and 357 kW each are 72 Hz maximum-reference values and shall not be substituted for nominal per-unit power."},
+    {"id":"HP_DESIGN_REFERENCE_GENERATION","status":"OPEN","note":"Current project SSOT also contains 112.54 g/s and 337.62 g/s diagnostic references; preserve source generation and do not silently overwrite the current-offer 112.0 g/s maximum anchor."}
   ],
   "notes": [
     "CPLR/W flow may be a split from A; topology must be resolved before enforcing A=B+W on this bidder BOP row.",
     "No energy residual is published until helium enthalpies are evaluated by the governed provider.",
-    "No PVPS residual is published until the B-return mass flow at the PVPS boundary and SV750 BF performance evidence are bound."
+    "HP and PVPS reference powers are now source-bound; residuals remain OPEN_INPUT until independent predicted powers are produced.",
+    "PVPS residual additionally requires the B-return mass-flow boundary and SV750 BF operating/capacity evidence for an independent prediction."
   ]
 }
