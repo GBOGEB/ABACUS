@@ -1,0 +1,102 @@
+schema_version: "0.1"
+wave: W52
+pulse: P2J
+mode: residual_burndown
+architecture_percentage_reporting: deprecated_for_helium_model_progress
+
+baseline:
+  scenario: LKT_2K_OP_W52_P2J_v0.2
+  source_file: qplant/data/w52_p2j_lkt_2kop_case_v0.1.json
+  residual_harness: qplant/w52_p2j_mass_energy_closure.py
+  merged_execution_lineage: [863, 865]
+
+score:
+  closed: 0
+  total: 5
+  rule: a_gate_closes_only_on_numeric_residual_plus_tolerance_plus_source_bound_inputs
+
+residual_gates:
+  - gate: 1
+    id: MASS_CLOSURE
+    status: OPEN_INPUT
+    current_residual: null
+    tolerance: TO_BE_GOVERNED
+    blocking_input:
+      - same_boundary_B_mass_flow
+      - A_B_W_topology_confirmation
+    known:
+      A_g_s: 43.1
+      W_g_s: 2.42
+    next_action: recover_exact_B_flow_at_same_QCELL_boundary_then_execute_A_minus_B_minus_W
+
+  - gate: 2
+    id: ENERGY_CLOSURE
+    status: OPEN_INPUT
+    current_residual: null
+    tolerance: TO_BE_GOVERNED
+    blocking_input:
+      - governed_enthalpy_A
+      - governed_enthalpy_B
+      - governed_enthalpy_W
+      - governed_enthalpy_D
+      - governed_enthalpy_E
+      - exact_D_E_pressures
+    known:
+      qcell_heat_W: 809
+      thermal_shield_heat_W: 8610
+    next_action: populate_validated_property_states_and_run_QCELL_plus_TS_enthalpy_balances
+
+  - gate: 3
+    id: STATE_CONSISTENCY
+    status: OPEN
+    current_residual: null
+    tolerance: TO_BE_GOVERNED
+    blocking_input:
+      - distributed_Line_B_QCELL_QRB_mapping
+      - exact_state_node_equivalence
+    known_mismatches:
+      - B_LOCAL_VS_INTERFACE
+      - HP_DESIGN_REFERENCE_GENERATION
+    controlled_mismatch:
+      - HP_NOMINAL_VS_MAXIMUM
+    next_action: bind_each_source_state_to_exact_physical_node_before_numeric_comparison
+
+  - gate: 4
+    id: EQUIPMENT_POWER_CLOSURE
+    status: OPEN_INPUT
+    current_residual: null
+    tolerance: TO_BE_GOVERNED
+    source_bound_references:
+      hp_total_flow_g_s: 326
+      hp_reference_kW: 814
+      pvps_reference_kW: 83
+    blocking_input:
+      - independent_HP_predicted_power_at_nominal_2K_OP
+      - FSD575_part_load_map
+      - B_return_flow_for_PVPS
+      - PVPS_suction_discharge_state
+      - PVPS_capacity_power_curve
+    next_action: predict_HP_and_PVPS_independently_then_compare_to_814kW_and_83kW
+
+  - gate: 5
+    id: HEPAK_REFERENCE
+    status: BLOCKED
+    current_residual: null
+    tolerance: TO_BE_GOVERNED
+    blocking_input:
+      - frozen_independent_HEPAK_reference
+    current_status: MISSING_FROZEN_INDEPENDENT_REFERENCE
+    next_action: recover_versioned_source_bound_HEPAK_or_equivalent_low_temperature_reference
+
+priority:
+  first_target: MASS_CLOSURE
+  rationale: smallest_source_gap_and_prerequisite_for_energy_and_PVPS_closure
+  do_not_count:
+    - derived_B_equals_A_minus_W_as_independent_validation
+    - zero_imputed_missing_inputs
+    - architecture_or_schema_completion
+
+reporting_contract:
+  headline: "QPLANT helium residual closure: N/5"
+  per_gate_fields: [status, residual, tolerance, source_coverage, dominant_blocker, next_action]
+  formal_compliance_credit_delta: 0
