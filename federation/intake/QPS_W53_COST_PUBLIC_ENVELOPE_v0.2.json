@@ -1,0 +1,46 @@
+{
+  "correlation_id": "QPS-W53-COST-FED-REPAIR-001",
+  "cost_structure": {
+    "bidder_total_relation": "BIDDER_B_GT_BIDDER_A",
+    "historic_current_rule": "HISTORIC_REFERENCE_CANNOT_OVERRIDE_CURRENT_OFFER",
+    "installation_evidence": "CURRENT_BUDGETARY_PARENT_WITH_CHILD_WBS_RFI_UNKNOWN",
+    "qps_cs_quantity_state": "ARCHITECTURE_BOUND_QUANTITIES_RFI_UNKNOWN",
+    "spares_rule": "SPARE_BASKET_ANCHORS_ARE_NOT_PARENT_PACKAGE_CAPEX",
+    "spread_block_order": [
+      "STAGE_III_INSTALLATION",
+      "STAGE_I_DESIGN_DEVELOPMENT",
+      "STAGE_II_PROCUREMENT_MANUFACTURING",
+      "CONTINGENCY_I_SPARES_MAINTENANCE",
+      "STAGE_IV_COMMISSIONING_ACCEPTANCE",
+      "CONTINGENCY_II_WSH"
+    ],
+    "storage_normalization": "EXCLUDE_CURRENT_STORAGE_ONLY_WHEN_PRIVATE_CHILD_SOURCE_BINDS_EXACT_LINE"
+  },
+  "evidence_gaps": [
+    "CURRENT_STORAGE_EXACT_COMMERCIAL_LINE",
+    "INSTALLATION_WBS_CHILDREN",
+    "QPS_CS_ACTUAL_HARDWARE_AND_INSTRUMENT_QUANTITIES"
+  ],
+  "formal_credit_delta": 0,
+  "negotiation_credit_delta": 0,
+  "private_child": {
+    "payload_digest_sha256": "299239602528faa939587a0ebfede84af2249baeffaea790687974b32cff9334",
+    "payload_id": "QPS_W53_COST_PRIVATE_PAYLOAD_v0.2",
+    "raw_commercial_values_exported": false,
+    "repo_class": "PRIVATE_CHILD_OVERLAY"
+  },
+  "requested_parent_returns": {
+    "ABACUS": [
+      "DECOMPOSE_STAGE_III_STRUCTURALLY_WITHOUT_RAW_COMMERCIAL_VALUES",
+      "DEFINE_MC_MODEL_OVER_PRIVATE_CHILD_CALLBACK_INTERFACE",
+      "RANK_MISSING_COST_EVIDENCE_BY_SENSITIVITY"
+    ],
+    "CODEX": [
+      "VALIDATE_EVIDENCE_CLASS_SEMANTICS",
+      "VALIDATE_PRIVATE_PUBLIC_BOUNDARY",
+      "VALIDATE_HASH_AND_CANONICAL_SERIALIZATION",
+      "VALIDATE_NO_DOUBLE_COUNT_AND_RFI_UNKNOWN"
+    ]
+  },
+  "schema": "qps-cost-federation-public-envelope/v0.2"
+}
