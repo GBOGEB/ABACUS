@@ -1,0 +1,41 @@
+{
+  "wave": "W53/P05I",
+  "classification": "DIAGNOSTIC_SOURCE_BOUND_GEOMETRY",
+  "distributed_vlp": {
+    "line": "B",
+    "geometry": {"dn": "DN150", "id_mm": 162.76, "length_m": 160.0},
+    "configuration": "c30_uniform-flow-diagnostic",
+    "qcell_count": 30,
+    "total_B_flow_g_s": 50.0,
+    "segment_length_m": 5.3333333333,
+    "flow_rule": "equal local contribution; cumulative flow increases toward QRB",
+    "property_state": {"temperature_K": 4.0, "pressure_mbar_abs": 27.0, "provider": "CoolProp 7.2.0 normal-fluid diagnostic surrogate"},
+    "roughness_m": 1.0e-5,
+    "results_mbar": {
+      "distributed_straight_pipe": 0.46457,
+      "distributed_total_K10": 0.77359,
+      "distributed_total_K20": 1.08261,
+      "distributed_total_K30": 1.39164,
+      "distributed_total_K50": 2.00968,
+      "distributed_total_K100": 3.55480
+    },
+    "interpretation": "With the same total 50 g/s but distributed pickup along the B header, hydraulic loss is substantially below the conservative full-flow/full-length P05H check. Even total equivalent K=100 remains below 4 mbar in this diagnostic distribution. Exact QCELL flow and segment positions are still required for acceptance."
+  },
+  "thermodynamic_review": {
+    "current_LKT_2K_OP": {"Q_2K_W": 809, "A_flow_g_s": 43.1, "A_P_bara": 3.0, "A_T_K": 4.5, "B_P_bara": 0.022, "B_T_K": 3.6, "W_flow_g_s": 2.42, "TS_W": 8610, "TS_flow_g_s": 81},
+    "current_ALAT_2K_OP": {"cavity_W": 770, "B_line_W": 81, "A_P_bara": 3.0, "A_T_K": 4.5, "B_P_bara": 0.026, "B_T_K": 3.8, "calculated_B_flow_g_s": 36.88},
+    "historic_LKT_TS_with_LN2": {"flow_g_s": 77.37, "Tin_K": 38.15, "Tout_K": 58.42, "Pin_bara": 12.8, "Pout_bara": 11.5, "Q_W": 8293},
+    "historic_ALAT_method": "Aspen HYSYS v10 / MBWR / HEPAK v3.4",
+    "strict_residual_status": "OPEN",
+    "reason": "Same-boundary independent enthalpy residuals and He-II validation are not yet fully closed; pre-study evidence remains non-governing."
+  },
+  "line_s_review": {
+    "generated_model": "models/qps_line_s/run_scenarios.py + recovery_model.py",
+    "scenario_matrix_status": "EXECUTABLE_DIAGNOSTIC",
+    "existing_cases": ["A_balanced_abnormal", "B_pre_HP_transient", "C_intermediate", "D_peak_without_HP", "E_peak_with_HP", "F_shield_mitigated"],
+    "effective_volumes_m3": [9, 30, 120, 240],
+    "key_observation": "Balanced 100 g/s recovery cases remain pressure-neutral; 112 in / 100 rec pre-HP produces 12 g/s net accumulation and buffer-time dependence; 200 in / 100 rec without HP is not sustained unless pressure margin/duration is proven; 200 in / 100 rec + 100 HP is balanced.",
+    "limitations": ["energy column is gamma-times-isothermal early-time bound, not time-integrated energy", "effective gas volume remains scenario variable", "inventory/thermal-mass and recovery timing require source binding", "formal relief/recovery closure not achieved"]
+  },
+  "formal_credit_delta": 0
+}
