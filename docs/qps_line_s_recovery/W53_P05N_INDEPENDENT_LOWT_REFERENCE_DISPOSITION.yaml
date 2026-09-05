@@ -1,0 +1,87 @@
+schema_version: "0.1"
+document_id: W53_P05N_INDEPENDENT_LOWT_REFERENCE_DISPOSITION
+status: FAIL_CLOSED_EXACT_B_REFERENCE_NOT_RECOVERED
+snapshot_date: 2026-09-05
+
+objective: >-
+  Recover one provenance-controlled independent helium reference pair for A=4.5 K/3 bara and B=3.6 K/22 mbar,
+  rerun delta-h, B-flow and the corrected 890 W balance, then issue ACCEPT or FAIL.
+
+reference_contract:
+  existing_HEPAK_loader: models/helium_properties/hepak_reference.py
+  required_HEPAK_csv: docs/qps_line_s_recovery/he_reference_hepak.csv
+  required_columns: [temperature_K, pressure_Pa, density_kg_m3, enthalpy_J_kg]
+  HEPAK_csv_found_on_main: false
+  rule: absence_is_UNVALIDATED_never_PASS
+
+recovery_result:
+  HEPAK:
+    status: NOT_RECOVERED
+    reason: no_engineer_generated_licensed_HEPAK_numeric_export_present_in_ABACUS_CODEX_or_cryoplant_project
+  NIST_TN1334:
+    status: PARTIAL_INDEPENDENT_REFERENCE_RECOVERED
+    source: "Arp, McCarty & Friend, NIST Technical Note 1334, revised 1998"
+    A_exact:
+      table_pressure_MPa: 0.300
+      temperature_K: 4.5
+      pressure_Pa: 300000
+      density_kg_m3: 129.6
+      enthalpy_J_kg: 11780
+      source_page: 61
+    B_required:
+      temperature_K: 3.6
+      pressure_Pa: 2200
+      exact_row_recovered: false
+    B_pressure_bracket:
+      table_pressure_MPa: 0.010
+      temperature_K: 3.6
+      pressure_Pa: 10000
+      density_kg_m3: 1.386
+      enthalpy_J_kg: 33340
+      source_page: 29
+      exactness: PRESSURE_BRACKET_ONLY
+
+independent_bracket_calculation:
+  delta_h_J_kg: 21560
+  Q_same_boundary_W: 890
+  predicted_B_g_s: 41.28014842300557
+  Table9_minimum_g_s: 39
+  margin_g_s: 2.28014842300557
+  margin_percent: 5.846534417963
+  runtime_CoolProp_delta_h_J_kg: 21901.420023589865
+  bracket_vs_runtime_delta_h_percent: -1.558879302505
+  interpretation: >-
+    The independent NIST pressure-bracket result supports the corrected B-flow physics and remains above the 39 g/s
+    minimum. It cannot satisfy the strict same-state oracle because the B row is at 10 kPa rather than 2.2 kPa.
+
+child_disposition:
+  result: FAIL
+  failure_class: INDEPENDENT_EXACT_STATE_REFERENCE_MISSING
+  strict_residual_score_before: "1/5"
+  strict_residual_score_after: "1/5"
+  DOV3_percent_before: 58
+  DOV3_percent_after: 58
+  reason: >-
+    A is independently bound, but B=3.6 K/2200 Pa is not. The acceptance contract explicitly requires an exact
+    independent A/B numeric pair. A pressure-bracket proxy is evidence, not a strict residual PASS.
+
+next_required_action:
+  preferred: >-
+    Run licensed HEPAK v3.4 (or controlled equivalent independent implementation) at exactly 4.5 K/300000 Pa and
+    3.6 K/2200 Pa. Export temperature_K,pressure_Pa,density_kg_m3,enthalpy_J_kg to the existing
+    docs/qps_line_s_recovery/he_reference_hepak.csv contract with HEPAK version, execution date and engineer provenance.
+  alternate: >-
+    Recover an exact independently tabulated/evaluated B=3.6 K/2200 Pa value from a source independent of CoolProp.
+  immediate_after_receipt:
+    - load_reference_through_existing_fail_closed_HEPAK_loader
+    - calculate_independent_delta_h
+    - calculate_B_flow_as_890W_over_delta_h
+    - compare_B_flow_to_39_g_s_lower_bound
+    - compare_same_boundary_energy_to_governed_1pct_tolerance
+    - issue_new_child_ACCEPT_or_FAIL
+
+prohibitions:
+  - do_not_rename_NIST_bracket_csv_as_HEPAK
+  - do_not_interpolate_the_10kPa_row_to_2p2kPa_and_call_it_independent_exact_evidence
+  - do_not_use_CoolProp_to_generate_the_independent_reference
+  - do_not_increment_strict_residual_score_on_source_identity_or_bracket_only
