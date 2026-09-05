@@ -1,0 +1,20 @@
+name: W52 P2T HP power residual
+on:
+  pull_request:
+    paths:
+      - 'qplant/w52_p2t_hp_power_residual.py'
+      - '.github/workflows/w52-p2t-hp-power-residual.yml'
+jobs:
+  hp-power-residual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install CoolProp==7.2.0
+      - run: python qplant/w52_p2t_hp_power_residual.py | tee w52_p2t_hp_power_residual.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w52-p2t-hp-power-residual
+          path: w52_p2t_hp_power_residual.json
