@@ -1,0 +1,37 @@
+name: W52 P2M Helium Runtime Receipt
+on:
+  pull_request:
+    paths:
+      - 'qplant/w52_p2l_b_flow_enthalpy.py'
+      - 'tests/test_w52_p2l_b_flow_enthalpy.py'
+      - 'models/helium_properties/provider.py'
+      - '.github/workflows/w52-p2m-helium-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  helium-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install governed helium runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install CoolProp==7.2.0 pytest
+      - name: Run focused P2L tests
+        run: pytest -q tests/test_w52_p2l_b_flow_enthalpy.py
+      - name: Generate numerical receipt
+        run: |
+          mkdir -p artifacts/w52_p2m
+          python -m qplant.w52_p2l_b_flow_enthalpy > artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
+      - name: Display receipt
+        run: cat artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
+      - name: Upload receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: w52-p2m-helium-receipt
+          path: artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
