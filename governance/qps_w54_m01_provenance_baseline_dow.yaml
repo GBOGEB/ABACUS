@@ -1,0 +1,44 @@
+schema_version: "0.1"
+wave: W54
+pulse: M01
+role: ABACUS_DOW
+status: CANDIDATE_ONLY
+child_authority: GBOGEB/cryoplant-project
+child_pr: 459
+child_head_sha: 9d9b03c1883151ba3c4d3aff101d674b9b95b69f
+
+source_return:
+  prior_wave: W53-P05D
+  merged_pr: 868
+  merge_sha: ec605f1be82300a7b0fdd17c4fdfe87c83eac49e
+  known:
+    repository: true
+    merge_or_main_sha: true
+  not_yet_bound:
+    workflow_run_id: true
+    artifact_id: true
+    full_platform_digest: true
+    internal_manifest_verified: true
+    relevant_runtime_checks_passed: true
+
+metric_projection:
+  IBC:
+    verified_fields: 2
+    required_fields: 7
+    percent: 28.57
+    authority: child_scoped_B0
+  LCR:
+    note: child combines DOW and KEB governed predicates; parent must not self-promote
+  SFR:
+    independent_B_source_current_and_version_bound: false
+
+improve_target:
+  - recover_runtime_run_and_artifact_binding_if_emitted
+  - recover_full_digest_and_internal_manifest_verification_if_available
+  - expose_no_value_for_missing_binding
+
+control:
+  - no_parent_promotion
+  - no_inferred_hashes
+  - no_formal_credit
+  - no_residual_credit
