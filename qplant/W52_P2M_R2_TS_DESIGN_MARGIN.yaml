@@ -1,0 +1,54 @@
+schema_version: "0.1"
+wave: W52
+pulse: P2M-R2
+intent: correct_thermal_shield_reference_semantics_and_prepare_strict_residual_closure
+
+thermal_shield_reference_chain:
+  contract_user_base_load_W: 8200
+  design_margin_percent: 5.0
+  design_margin_W: 410
+  lkt_design_target_W: 8610
+  relation: "8610 = 8200 * 1.05"
+  interpretation: CONTRACT_BASE_LOAD_PLUS_BIDDER_DESIGN_MARGIN
+
+source_roles:
+  contract_user:
+    value_W: 8200
+    role: acceptance_and_user_design_load_basis
+  lkt_offer:
+    value_W: 8610
+    role: bidder_design_point_with_5_percent_margin
+
+residual_definition:
+  strict_design_residual: "Q_calc_D_to_E - 8610 W"
+  contract_capacity_margin_check: "Q_calc_D_to_E - 8200 W"
+  rule: do_not_treat_410W_as_model_error
+
+known_state:
+  mdot_g_s: 81.0
+  T_D_K: 40.0
+  T_E_K: 60.0
+  pressure_relation: "D=HP; E=HP-1 bar"
+  hp_control_window_bara: [9.0, 14.0]
+
+strict_gate:
+  current_score: "0/5"
+  design_margin_semantics: CLOSED
+  residual_numeric_closure: OPEN
+  pass_requires:
+    - exact_or_governed_operating_pressure_basis
+    - calculated_h_D
+    - calculated_h_E
+    - calculated_Q_D_to_E_W
+    - residual_vs_8610_W
+    - governed_energy_tolerance
+    - provenance
+    - child_disposition
+
+reporting:
+  do_not_count_as_residual_pass:
+    - design_margin_reconciliation_only
+    - hp_window_sensitivity_only
+  formal_credit_delta: 0
+
+next_action: execute_D_to_E_enthalpy_receipt_and_compare_against_8610W_design_target
