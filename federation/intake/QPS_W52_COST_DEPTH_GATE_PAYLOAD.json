@@ -1,0 +1,81 @@
+{
+  "child_branch": "w52-issue481-pr-html-index",
+  "child_repo": "GBOGEB/cryoplant-project",
+  "correlation_id": "QPS-W52-COST-DEPTH-GATE-001",
+  "current_LKT_installation": {
+    "decomposition_status": "RFI_UNKNOWN",
+    "evidence_class": "BUDGETARY_CURRENT_OFFER",
+    "quoted_meur": 13.0
+  },
+  "current_LKT_storage_price": {
+    "evidence_class": "RFI_UNKNOWN",
+    "normalization_rule": "exclude when source-bound",
+    "value_meur": null
+  },
+  "formal_credit_delta": 0,
+  "historic_LKT_execution_meur": {
+    "commissioning_support": 0.5,
+    "engineering_design": 4.6,
+    "installation_budgetary": 0.85,
+    "procurement_manufacturing": 9.72,
+    "total": 15.67
+  },
+  "historic_LKT_normalized_ex_storage": {
+    "max": 18.6,
+    "min": 12.4,
+    "mode": 15.5
+  },
+  "issues": [416, 480, 481],
+  "negotiation_credit_delta": 0,
+  "observed_bid_totals_meur": {
+    "ALAT": 29.243,
+    "LKT": 50.79163567,
+    "spread": 21.54863567
+  },
+  "qps_cs": {
+    "engineering_cost_eur": {
+      "base": 1405750,
+      "high": 2583250,
+      "low": 711500
+    },
+    "engineering_hours": {
+      "base": 10250,
+      "high": 15450,
+      "low": 6350
+    },
+    "hardware_quantities_status": "RFI_UNKNOWN_TAX18_OFFER27_NOT_RECOVERED_FROM_CANONICAL_REPO",
+    "major_cost_objects": 18
+  },
+  "requested_parent_returns": {
+    "ABACUS": [
+      "decompose_stage_III_into_source_supported_or_inferred_WBS_nodes",
+      "run_MC_and_bottom_up_residual",
+      "rank_missing_cost_evidence_by_sensitivity"
+    ],
+    "CODEX": [
+      "validate_evidence_classes",
+      "enforce_current_vs_historic_non_override",
+      "validate_no_double_counting_and_RFI_UNKNOWN_semantics"
+    ]
+  },
+  "schema": "qps-cost-federation-payload/v0.1",
+  "spares": {
+    "ALAT_PVPS": {
+      "major_main_kits_eur": 73800
+    },
+    "LKT_PVPS": {
+      "commissioning_major_kit_eur": 19892.47,
+      "complete_spare_pumps_eur": 311827.96,
+      "four_year_minor_kits_eur": 90838.72,
+      "rollup_eur": 422559.15
+    }
+  },
+  "spread_blocks_meur": {
+    "contingency_II_WSH": 0.065,
+    "contingency_I_spares_maintenance": 2.19863567,
+    "stage_III_installation": 8.447,
+    "stage_II_procurement_manufacturing": 4.861,
+    "stage_IV_commissioning_acceptance": 0.996,
+    "stage_I_design_development": 4.981
+  }
+}
