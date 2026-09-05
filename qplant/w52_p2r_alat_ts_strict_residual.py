@@ -55,7 +55,7 @@ def report() -> dict:
     crosscheck_pass = abs(delta_h_delta_pct) <= DELTA_H_CROSSCHECK_TOLERANCE_PERCENT
     independent_flow_status = "PENDING_INDEPENDENT_EXACT_TS_FLOW"
     independent_numeric_reference_status = "ALAT_QUOTED_DELTA_H_CROSSCHECK_PASS" if crosscheck_pass else "FAIL"
-    strict_pass = False  # fail-closed: 77.01 g/s is reconstructed from Q/delta-h
+    strict_pass = False
     return {
         "schema": "qps-w52-p2r-alat-ts-strict-residual/v2",
         "source_state": {
@@ -84,7 +84,7 @@ def report() -> dict:
             "numeric_property_crosscheck": independent_numeric_reference_status,
             "flow_independence": independent_flow_status,
             "contract_table9_flow": "approximately 77 g/s; useful corroboration but not an exact independent operating flow",
-            "pass": false if False else False,
+            "pass": False,
         },
         "strict_residual": {
             "status": "PASS" if strict_pass else "DEFER_DERIVED_FLOW_NOT_INDEPENDENT",
