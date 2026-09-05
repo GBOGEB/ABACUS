@@ -1,0 +1,28 @@
+name: W52 P2R ALAT TS strict residual
+
+on:
+  pull_request:
+    paths:
+      - 'qplant/w52_p2r_alat_ts_strict_residual.py'
+      - 'models/helium_properties/**'
+      - '.github/workflows/w52-p2r-alat-ts-strict-residual.yml'
+  workflow_dispatch:
+
+jobs:
+  residual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install governed property backend
+        run: pip install CoolProp==7.2.0
+      - name: Execute ALAT TS residual
+        run: |
+          python -m qplant.w52_p2r_alat_ts_strict_residual | tee w52_p2r_alat_ts_receipt.json
+      - name: Upload receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w52-p2r-alat-ts-receipt
+          path: w52_p2r_alat_ts_receipt.json
