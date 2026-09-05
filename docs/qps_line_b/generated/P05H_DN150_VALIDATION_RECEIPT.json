@@ -1,0 +1,40 @@
+{
+  "wave": "W53/P05H",
+  "classification": "DIAGNOSTIC_SOURCE_BOUND_GEOMETRY",
+  "source_geometry": {
+    "line": "B",
+    "service": "VLP return",
+    "dn": "DN150",
+    "od_mm": 168.3,
+    "wall_mm": 2.77,
+    "derived_internal_diameter_mm": 162.76,
+    "source_class": "CONCEPTUAL_PRESTUDY_CONTROLLED",
+    "offer_confirmation_status": "NOT_YET_EXPLICITLY_STATED_IN_CURRENT_OFFER"
+  },
+  "hydraulic_check": {
+    "length_m": 160.0,
+    "mass_flow_g_s": 50.0,
+    "boundary_pressure_mbar_abs": 27.0,
+    "required_local_max_mbar_abs": 31.0,
+    "property_state": {
+      "temperature_K": 4.0,
+      "pressure_mbar_abs": 27.0,
+      "density_kg_m3": 0.3272245872984415,
+      "viscosity_Pa_s": 1.0252575519353215e-06,
+      "provider": "CoolProp 7.2.0 normal-fluid diagnostic surrogate"
+    },
+    "roughness_m": 1.0e-05,
+    "straight_pipe_delta_p_mbar": 1.2585,
+    "total_delta_p_mbar_at_K10": 2.1401,
+    "total_delta_p_mbar_at_K20": 3.0217,
+    "total_delta_p_mbar_at_K30": 3.9033,
+    "equivalent_K_budget_for_4mbar_total": 31.10,
+    "interpretation": "At full 50 g/s over the entire 160 m path, DN150/ID~162.8 mm remains below 4 mbar total delta-p provided total equivalent local-loss K is about 31 or less. This full-flow/full-length assumption is conservative relative to a distributed return line where cumulative flow grows toward QRB."
+  },
+  "controls": {
+    "heii_2K_acceptance": false,
+    "bounded_fittings_need_source_binding": true,
+    "distributed_flow_model_still_required": true,
+    "formal_credit_delta": 0
+  }
+}
