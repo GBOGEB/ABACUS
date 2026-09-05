@@ -1,0 +1,23 @@
+name: QPS P05F measured VLP sensitivity
+on:
+  pull_request:
+    paths:
+      - 'models/qps_line_b/**'
+      - '.github/workflows/qps-p05f-measured-sensitivity.yml'
+  workflow_dispatch:
+jobs:
+  measured-sensitivity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install CoolProp==7.2.0
+      - run: python -m models.qps_line_b.run_measured_sensitivity | tee p05f_receipt.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p05f-measured-vlp-sensitivity
+          path: |
+            p05f_receipt.json
+            docs/qps_line_b/generated/P05F_MEASURED_SENSITIVITY_RECEIPT.json
