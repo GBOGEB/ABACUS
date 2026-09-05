@@ -1,4 +1,4 @@
-"""W52-P2T: independent HP power residual triage for nominal LKT 2K-OP point.
+"""W52-P2U: repaired independent HP power residual triage for nominal LKT 2K-OP point.
 
 Source-bound bidder point:
 - total HP mass flow = 326 g/s
@@ -13,12 +13,18 @@ Independent engineering model:
 - secondary real-gas isentropic lower-bound from governed CoolProp provider
 
 This script is fail-closed: it does not assume the 72 Hz boundary is the exact nominal 2K-OP boundary.
-A large residual therefore diagnoses boundary/configuration mismatch rather than vendor non-compliance.
+A large residual diagnoses boundary/configuration mismatch rather than vendor non-compliance.
 """
 from __future__ import annotations
 
 import json
 import math
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from models.helium_properties.provider import state_tp
 
@@ -48,7 +54,7 @@ def main() -> None:
     eta_required = p_iso_kw / P_REF_KW
 
     payload = {
-        "schema": "qps-w52-p2t-hp-power-residual/v1",
+        "schema": "qps-w52-p2u-hp-power-residual/v2",
         "source_point": {
             "hp_total_flow_g_s": 326.0,
             "hp_reference_power_kW": P_REF_KW,
@@ -81,6 +87,10 @@ def main() -> None:
             "score_before": "1/5",
             "score_after": "1/5",
             "reason": "72Hz maximum-reference boundary is not yet proven identical to nominal 326 g/s 2K-OP boundary",
+        },
+        "execution_guard": {
+            "repo_root_injected": str(REPO_ROOT),
+            "false_green_predecessor": "PR897_INVALID_RECEIPT",
         },
     }
     print(json.dumps(payload, indent=2, sort_keys=True))

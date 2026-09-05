@@ -13,8 +13,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install CoolProp==7.2.0
-      - run: python qplant/w52_p2t_hp_power_residual.py | tee w52_p2t_hp_power_residual.json
+      - name: Execute HP residual fail-closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qplant/w52_p2t_hp_power_residual.py | tee w52_p2t_hp_power_residual.json
+          python -m json.tool w52_p2t_hp_power_residual.json >/dev/null
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: w52-p2t-hp-power-residual
           path: w52_p2t_hp_power_residual.json
+          if-no-files-found: error
