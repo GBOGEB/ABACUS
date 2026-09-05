@@ -1,0 +1,35 @@
+{
+  "wave": "W53/P05F",
+  "classification": "DIAGNOSTIC_ONLY",
+  "artifact_digest": "sha256:5f6d9c0f6bc0388a2133b8caed562b44a1a76c75c11fa04d16aca0b2d9bf07f8",
+  "workflow_run_id": 33965693549,
+  "property_receipt": {
+    "temperature_K": 4.0,
+    "pressure_mbar_abs": 27.0,
+    "density_kg_m3": 0.3272245872984415,
+    "viscosity_Pa_s": 1.0252575519353215e-06,
+    "provider_id": "abacus.he4.coolprop",
+    "provider_version": "7.2.0",
+    "validity_regime": "NORMAL_FLUID_DIAGNOSTIC_SURROGATE"
+  },
+  "population_size": 243,
+  "worst_case": {
+    "distance_m": 160.0,
+    "diameter_m": 0.08,
+    "roughness_m": 1e-05,
+    "k_local": 6.0,
+    "mass_flow_kg_s": 0.05,
+    "delta_p_mbar": 51.840259916616695,
+    "predicted_local_pressure_mbar_abs": 78.8402599166167,
+    "pressure_margin_mbar": -47.8402599166167
+  },
+  "sensitivity_ranking": [
+    {"rank": 1, "factor": "diameter_m", "margin_span_mbar": 16.273195785992396},
+    {"rank": 2, "factor": "mass_flow_kg_s", "margin_span_mbar": 13.80653862339354},
+    {"rank": 3, "factor": "distance_m", "margin_span_mbar": 6.237662820566774},
+    {"rank": 4, "factor": "k_local", "margin_span_mbar": 2.2273427587011545},
+    {"rank": 5, "factor": "roughness_m", "margin_span_mbar": 0.8626382909112831}
+  ],
+  "next_recovery_target": "diameter_m",
+  "formal_credit_delta": 0
+}
