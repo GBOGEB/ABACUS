@@ -1,14 +1,9 @@
 """W52-P2R: ALAT thermal-shield strict residual attempt.
 
-Source point (ALAT current offer, explicitly non-binding example):
-- mdot = 77.01 g/s
-- D = 14.12 bara, 35 K
-- E = 13.12 bara, 55 K
-- QTS = 8200 W
-- ALAT quoted hD = 196438 J/kg, hE = 302915 J/kg
-
-Runtime model: repository-pinned CoolProp provider.
-Independent/reference layers are reported separately and never averaged.
+The ALAT current offer gives a non-binding thermodynamic example with QTS=8200 W,
+D=14.12 bara/35 K, E=13.12 bara/55 K and quoted hD/hE. The 77.01 g/s flow
+was reconstructed from Q/delta-h, so this pulse is a property-consistency proof,
+not an independent physical residual closure.
 """
 from __future__ import annotations
 
@@ -20,14 +15,11 @@ from models.helium_properties.provider import state_tp
 BAR = 1e5
 MDOT_KG_S = 77.01 / 1000.0
 Q_REF_W = 8200.0
-P_D_BARA = 14.12
-T_D_K = 35.0
-P_E_BARA = 13.12
-T_E_K = 55.0
-ALAT_H_D = 196438.0
-ALAT_H_E = 302915.0
+P_D_BARA, T_D_K = 14.12, 35.0
+P_E_BARA, T_E_K = 13.12, 55.0
+ALAT_H_D, ALAT_H_E = 196438.0, 302915.0
 ENERGY_TOLERANCE_PERCENT = 1.0
-ENTHALPY_CROSSCHECK_TOLERANCE_PERCENT = 1.0
+DELTA_H_CROSSCHECK_TOLERANCE_PERCENT = 1.0
 
 
 @dataclass(frozen=True)
@@ -57,17 +49,18 @@ def report() -> dict:
     e = state_tp(T_E_K, P_E_BARA * BAR)
     runtime = calc(f"{d.backend} {d.backend_version}", d.enthalpy_J_kg, e.enthalpy_J_kg)
     bidder = calc("ALAT_QUOTED_ENTHALPY", ALAT_H_D, ALAT_H_E)
-    h_d_delta_pct = pct_delta(runtime.h_D_J_kg, ALAT_H_D)
-    h_e_delta_pct = pct_delta(runtime.h_E_J_kg, ALAT_H_E)
+    delta_h_delta_pct = pct_delta(runtime.delta_h_J_kg, bidder.delta_h_J_kg)
     runtime_pass = abs(runtime.residual_percent) <= ENERGY_TOLERANCE_PERCENT
     bidder_pass = abs(bidder.residual_percent) <= ENERGY_TOLERANCE_PERCENT
-    crosscheck_pass = max(abs(h_d_delta_pct), abs(h_e_delta_pct)) <= ENTHALPY_CROSSCHECK_TOLERANCE_PERCENT
-    independent_reference_status = "NIST_EOS_AUTHORITY_BOUND_NUMERIC_SAME_POINT_PENDING"
-    strict_pass = runtime_pass and bidder_pass and crosscheck_pass and independent_reference_status.endswith("PASS")
+    crosscheck_pass = abs(delta_h_delta_pct) <= DELTA_H_CROSSCHECK_TOLERANCE_PERCENT
+    independent_flow_status = "PENDING_INDEPENDENT_EXACT_TS_FLOW"
+    independent_numeric_reference_status = "ALAT_QUOTED_DELTA_H_CROSSCHECK_PASS" if crosscheck_pass else "FAIL"
+    strict_pass = False  # fail-closed: 77.01 g/s is reconstructed from Q/delta-h
     return {
-        "schema": "qps-w52-p2r-alat-ts-strict-residual/v1",
+        "schema": "qps-w52-p2r-alat-ts-strict-residual/v2",
         "source_state": {
             "mdot_g_s": 77.01,
+            "mdot_role": "DERIVED_FROM_ALAT_Q_AND_QUOTED_DELTA_H_NOT_INDEPENDENT",
             "D": {"P_bara": P_D_BARA, "T_K": T_D_K},
             "E": {"P_bara": P_E_BARA, "T_K": T_E_K},
             "Q_reference_W": Q_REF_W,
@@ -76,9 +69,10 @@ def report() -> dict:
         "runtime": asdict(runtime),
         "alat_quoted_enthalpy_crosscheck": asdict(bidder),
         "crosscheck": {
-            "runtime_minus_ALAT_hD_percent": h_d_delta_pct,
-            "runtime_minus_ALAT_hE_percent": h_e_delta_pct,
-            "tolerance_percent": ENTHALPY_CROSSCHECK_TOLERANCE_PERCENT,
+            "quantity": "delta_h_not_absolute_h",
+            "reason": "absolute_enthalpy_reference_zero_can_differ_between_property_packages",
+            "runtime_minus_ALAT_delta_h_percent": delta_h_delta_pct,
+            "tolerance_percent": DELTA_H_CROSSCHECK_TOLERANCE_PERCENT,
             "pass": crosscheck_pass,
         },
         "energy_gate": {
@@ -86,13 +80,14 @@ def report() -> dict:
             "runtime_pass": runtime_pass,
             "alat_quoted_enthalpy_pass": bidder_pass,
         },
-        "independent_reference": {
-            "model_authority": "NIST helium EOS / REFPROP lineage",
-            "same_point_numeric_status": independent_reference_status,
-            "note": "ALAT quoted enthalpies are source-independent from the ABACUS runtime calculation but not independent of the bidder. Strict 1/5 remains fail-closed until a same-point numeric independent reference is bound.",
+        "independence_gate": {
+            "numeric_property_crosscheck": independent_numeric_reference_status,
+            "flow_independence": independent_flow_status,
+            "contract_table9_flow": "approximately 77 g/s; useful corroboration but not an exact independent operating flow",
+            "pass": false if False else False,
         },
         "strict_residual": {
-            "status": "PASS" if strict_pass else "DEFER_INDEPENDENT_NUMERIC_REFERENCE",
+            "status": "PASS" if strict_pass else "DEFER_DERIVED_FLOW_NOT_INDEPENDENT",
             "score_before": "0/5",
             "score_after": "1/5" if strict_pass else "0/5",
             "formal_credit_delta": 0,
