@@ -1,0 +1,57 @@
+name: W52 P2T TS Runtime Receipt
+on:
+  pull_request:
+    paths:
+      - 'qplant/w52_p2n_ts_enthalpy_receipt.py'
+      - 'models/helium_properties/provider.py'
+      - '.github/workflows/w52-p2t-ts-runtime-receipt.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ts-runtime-receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install governed helium runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install CoolProp==7.2.0
+      - name: Generate P2N thermal-shield receipt
+        run: |
+          mkdir -p artifacts/w52_p2t
+          python - <<'PY' > artifacts/w52_p2t/LKT_TS_enthalpy_receipt.json
+          import json
+          from qplant.w52_p2n_ts_enthalpy_receipt import report
+          print(json.dumps(report(), indent=2, sort_keys=True))
+          PY
+      - name: Validate numerical receipt contract
+        run: |
+          python - <<'PY'
+          import json
+          p='artifacts/w52_p2t/LKT_TS_enthalpy_receipt.json'
+          with open(p, encoding='utf-8') as f: r=json.load(f)
+          assert r['reference_chain']['contract_base_W'] == 8200.0
+          assert r['reference_chain']['lkt_design_target_W'] == 8610.0
+          assert len(r['window_points']) == 6
+          assert [x['hp_bara'] for x in r['window_points']] == [9,10,11,12,13,14]
+          assert r['strict_score_effect'] == 0
+          assert r['strict_status'] == 'OPEN_EXACT_2K_OP_HP_SETPOINT_AND_CHILD_DISPOSITION'
+          print('receipt_contract=PASS')
+          print('duty_envelope_W=', r['calculated_duty_envelope_W'])
+          print('design_residual_envelope_W=', r['lkt_design_residual_envelope_W'])
+          print('pressure_sensitivity_W=', r['pressure_sensitivity_W'])
+          for x in r['window_points']:
+              print(x['hp_bara'], x['calculated_duty_W'], x['residual_vs_lkt_design_percent'], x['within_engineering_tolerance_vs_lkt'])
+          PY
+      - name: Display receipt
+        run: cat artifacts/w52_p2t/LKT_TS_enthalpy_receipt.json
+      - name: Upload governed runtime receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: w52-p2t-lkt-ts-enthalpy-receipt
+          path: artifacts/w52_p2t/LKT_TS_enthalpy_receipt.json
