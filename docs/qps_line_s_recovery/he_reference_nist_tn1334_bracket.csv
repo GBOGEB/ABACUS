@@ -1,0 +1,3 @@
+source,source_version,source_page,state,temperature_K,pressure_Pa,density_kg_m3,enthalpy_J_kg,exactness,provenance_note
+NIST_TN1334,1998_revised,61,A,4.5,300000,129.6,11780,EXACT_STATE,"NIST TN1334 table PRESSURE=0.300 MPa; 4.500 K row"
+NIST_TN1334,1998_revised,29,B_PROXY,3.6,10000,1.386,33340,PRESSURE_BRACKET_ONLY,"NIST TN1334 table PRESSURE=0.010 MPa; 3.600 K row; required B state is 2200 Pa and is not tabulated"
