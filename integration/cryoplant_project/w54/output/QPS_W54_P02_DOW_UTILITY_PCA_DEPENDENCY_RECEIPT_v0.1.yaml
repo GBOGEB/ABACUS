@@ -1,0 +1,51 @@
+schema_version: "0.1"
+receipt_id: QPS-W54-P02-DOW-UTILITY-001
+role: ABACUS_DOW_DERIVED_ANALYSIS
+input:
+  payload_id: QPS-W54-P01-UTILITY-GRAPH-001
+  payload_sha256: d417236e81e8ba9d39aa841ef4b7bd942e064ef9ff29855e9ed05a64208d3804
+  KEB_receipt: QPS-W54-P02-KEB-SEMANTIC-001
+  bytes_mutated: false
+analysis:
+  graph_connectivity:
+    utility_source_nodes: [PS01_PG40, NA_ES, HVAC, HV06]
+    current_payload_consumers: [PVPS, HP01, HP02, HP03, HP04]
+    missing_high_value_consumer: QRB_CC
+    finding: QRB_CC_must_be_added_as_distinct_room_CW_and_electrical_subgraph_not_folded_into_PVPS_or_HVAC
+  dependency_graph:
+    - PG40_properties_to_flow_conversion
+    - equipment_heat_to_CW_branch_flow
+    - branch_flow_to_PICV_or_equivalent_selection
+    - electrical_package_power_to_NA_ES_interface
+    - water_rejected_heat_to_HV06_recovery_candidate
+    - non_water_rejected_heat_to_HVAC_only
+  PCA_feature_projection:
+    method: STRUCTURAL_FEATURE_PROJECTION_NO_STATISTICAL_FIT
+    high_loading_candidates:
+      - source_quality_and_boundary_definition
+      - electrical_power_boundary
+      - cooling_water_heat_and_flow
+      - branch_cardinality_and_control
+      - runtime_parent_penetration
+    note: no_numeric_PCA_fit_claimed_from_single_payload
+  bottleneck_rank:
+    - {rank: 1, gap: QRB_CC_CW_and_electrical_nodes_missing_from_payload}
+    - {rank: 2, gap: PG40_cp_density_receipt_missing_for_flow_conversion}
+    - {rank: 3, gap: HP_branch_actual_flow_or_heat_per_skid_missing}
+    - {rank: 4, gap: card_ICD_HTML_manifest_parity_not_yet_runtime_proven}
+  invariants:
+    kWe_not_kWth: PASS
+    water_heat_not_HVAC: PASS
+    null_not_zero: PASS
+    parent_no_SSOT_mutation: PASS
+recommendation:
+  next_child_delta:
+    - add_QRB_CC_parent_node_under_QRB
+    - add_three_CC_equipment_nodes_CC1_CC2_CC3
+    - add_room_CW_split_to_three_CC_branches
+    - apply_PICV_or_equivalent_fixed_design_flow_function_per_CC_branch
+    - add_NA_ES_electrical_edges_per_CC
+    - preserve_contract_electrical_envelope_separately_from_bidder_selected_lower_values
+    - project_same_atoms_to_ICD_equipment_cards_utility_cards_HTML
+status: DOW_ANALYZED_RETURN_READY_FOR_KEB
+formal_credit_delta: 0
