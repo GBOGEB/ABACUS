@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "wave": "W53/P05Q",
+  "classification": "DIAGNOSTIC_ONLY",
+  "source_geometry": {
+    "source": "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx",
+    "source_class": "HISTORIC_PRESTUDY_DESIGN_RATIONALE",
+    "table": "Table 12",
+    "line": "VLP return (Line B)",
+    "nominal_DN": 150,
+    "outside_diameter_mm": 168.3,
+    "wall_thickness_mm": 2.77,
+    "derived_internal_diameter_mm": 162.76,
+    "caveat": "Values to be verified and updated during design of the cryoline"
+  },
+  "property_receipt_reused": {
+    "temperature_K": 4.0,
+    "pressure_mbar_abs": 27.0,
+    "density_kg_m3": 0.3272245872984415,
+    "viscosity_Pa_s": 1.0252575519353215e-06,
+    "provider_id": "abacus.he4.coolprop",
+    "provider_version": "7.2.0",
+    "validity_regime": "NORMAL_FLUID_DIAGNOSTIC_SURROGATE"
+  },
+  "fixed_diameter_m": 0.16276,
+  "remaining_bounds": {
+    "distance_m": [70.0, 115.0, 160.0],
+    "roughness_m": [1e-06, 5e-06, 1e-05],
+    "k_local": [1.0, 3.0, 6.0],
+    "mass_flow_kg_s": [0.020, 0.035, 0.050]
+  },
+  "population_size": 81,
+  "worst_case": {
+    "distance_m": 160.0,
+    "roughness_m": 1e-05,
+    "k_local": 6.0,
+    "mass_flow_kg_s": 0.050,
+    "delta_p_mbar": 1.7894849797346557,
+    "predicted_local_pressure_mbar_abs": 28.789484979734656,
+    "pressure_margin_mbar": 2.210515020265344
+  },
+  "nominal_screen": {
+    "distance_m": 151.5,
+    "roughness_m": 5e-06,
+    "k_local": 3.0,
+    "mass_flow_kg_s": 0.04068,
+    "delta_p_mbar": 0.9714116283111592,
+    "predicted_local_pressure_mbar_abs": 27.97141162831116,
+    "pressure_margin_mbar": 3.0285883716888407
+  },
+  "remaining_sensitivity_margin_span_mbar": {
+    "mass_flow_kg_s": 0.9646564705680345,
+    "distance_m": 0.39363076665658436,
+    "k_local": 0.24267569984258275,
+    "roughness_m": 0.021608011741027777
+  },
+  "disposition": "IMPROVE_DIAGNOSTIC_NOT_ACCEPT",
+  "acceptance_blockers": [
+    "current-design or as-built Line-B geometry revision",
+    "per-segment lengths and fittings/K/Cv",
+    "local QCELL suction-pressure basis",
+    "validated 2 K He-II property reference"
+  ],
+  "formal_credit_delta": 0
+}
