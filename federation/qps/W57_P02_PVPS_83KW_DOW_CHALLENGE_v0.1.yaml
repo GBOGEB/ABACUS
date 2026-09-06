@@ -1,0 +1,49 @@
+schema_version: "0.1"
+document_id: W57_P02_PVPS_83KW_DOW_CHALLENGE
+child_pr: "GBOGEB/cryoplant-project#604"
+keb_pr: "GBOGEB/CODEX#414"
+child_head_sha: d6757844f26c91e8a5390aaa57519d12252fb420
+keb_head_sha: 9630a1ff3e4184ef11249b7200170ed1ef1b5dcb
+source_sha256: d92af4666cc10ec6a4f8ac6cfe57aef477bca116f72a12f9156a680ce7e1e35e
+authority: DOW_INDEPENDENT_PHYSICAL_CHALLENGE
+
+independent_calculations:
+  installed_motor_nameplate_kW: 74.0
+  offer_printed_motor_total_kW: 78.0
+  offer_2K_OP_PVPS_consumption_kW: 83.0
+  printed_arithmetic_error_kW: 4.0
+  mode_consumption_minus_nameplate_kW: 9.0
+  mode_consumption_over_nameplate_percent: 12.1621621622
+  cooling_water_heat_kW: 75.0
+  cooling_heat_over_83_percent: 90.3614457831
+  cooling_heat_over_74_percent: 101.3513513514
+
+physical_findings:
+  - id: DOW-PVPS-01
+    result: REJECT_PRINTED_ARITHMETIC
+    statement: "The offer expression 4 x 18.5 = 78 kW is numerically invalid; 74 kW is exact."
+  - id: DOW-PVPS-02
+    result: DEFER_83KW_BOUNDARY
+    statement: >-
+      83 kW is 12.16% above the aggregate 74 kW motor rated power. Without an explicit package boundary,
+      running count/frequency/load and auxiliary definition, the 83 kW same-point claim is not independently reproducible.
+  - id: DOW-PVPS-03
+    result: DEFER_COOLING_RECONCILIATION
+    statement: >-
+      75 kW cooling duty is 90.36% of the stated 83 kW electrical value but 101.35% of the exact 74 kW aggregate
+      motor nameplate. This supports the need for a defined electrical/package boundary; it does not prove one.
+  - id: DOW-PVPS-04
+    result: HISTORIC_DIAGNOSTIC_ONLY
+    statement: >-
+      LKT MOL-STUDY22 / Leybold data for the different historic SV630BF gives about 15 kW per pump at 400 mbar.a
+      versus 20 kW motor rated power. It is useful as a plausibility prior only and cannot validate the current SV750BF point.
+
+recommendation_to_keb: DEFER
+required_return:
+  - bidder/OEM current SV750BF performance curve or calculation at the actual 2K-OP suction condition
+  - number of pumps running at 2K-OP and per-pump VFD frequency/load
+  - PVPS helium mass flow at the same point, not total plant compressor circulation unless explicitly reconciled
+  - suction pressure and temperature and discharge pressure at the same point
+  - explicit definition of the 83 kW boundary and reconciliation of the erroneous 78 kW table entry
+  - explicit definition/reconciliation of the 75 kW cooling-water heat duty
+engineering_credit_delta: 0
