@@ -1,0 +1,46 @@
+schema_version: "0.1"
+document_id: QPS_W56_COMPONENT_UTILITY_DOW_INTAKE
+wave_id: W56
+status: WAITING_FOR_KEB_EXACT_SHA256
+parent_repo: GBOGEB/ABACUS
+parent_role: DOW
+source_child:
+  repo: GBOGEB/cryoplant-project
+  architecture_pr: 582
+  architecture_merge_sha: 087eaa3ca3fa7f98cd977442bc20ce62dd86b21d
+  runtime_pr: 588
+  runtime_merge_sha: f16d3c2e2f26309097f56cb962b3e8c25c970b13
+  canonical_source: ocd-adr/20_canonical/architecture/QPS_COMPONENT_UTILITY_ICD_SSOT_W55_v0.1.yaml
+keb_gate:
+  repo: GBOGEB/CODEX
+  pr: 416
+  required_before_analysis:
+    - exact_source_sha256
+    - exact_dispatch_payload_sha256
+    - semantic_validation_receipt
+    - provenance_validation_receipt
+  hash_policy: FAIL_CLOSED
+intake_scope:
+  - PCA challenge of component ownership and utility dependencies
+  - dependency review for PS01.PAB12 PG40 27/37 C topology
+  - verify HP01..04, PVPS and CC01..03 cooling-water relationships
+  - challenge exactly-three CC cooling-water branch cardinality
+  - challenge 3x45-kW CC electrical envelope without promoting compliance
+  - identify unsupported component/source-locator promotions
+execution_gate: >-
+  Intake and CI may proceed in parallel, but DOW analysis/receipt generation is forbidden
+  until CODEX #416 publishes the exact source and dispatch SHA256 values for the pinned
+  cryoplant-project #588 merge.
+return_route:
+  - ABACUS_DOW_FINDINGS
+  - CODEX_NORMALIZATION
+  - CHILD_REENTRY
+  - ACCEPT_REJECT_DEFER
+child_authority:
+  parent_may_mutate_child_payload: false
+  parent_may_award_compliance_credit: false
+  parent_may_award_engineering_closure_credit: false
+formal_engineering_closure:
+  numerator: 70
+  denominator: 90
+  delta_from_this_intake: 0
