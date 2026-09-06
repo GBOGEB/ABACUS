@@ -1,0 +1,55 @@
+schema_version: '0.1'
+wave: W54/P03
+role: ABACUS_DOW_PROPERTY_EXECUTION
+status: PROPERTY_DOMAIN_CONTRACT_READY
+formal_engineering_credit_delta: 0
+
+service_routing:
+  A: {class: COLD_TRANSFER, length_m_owner_basis: 150, backend: HEPAK_GOVERNED_LOWT}
+  B: {class: COLD_TRANSFER_VLP, length_m_owner_basis: 150, backend: HEPAK_GOVERNED_LOWT}
+  D: {class: COLD_TRANSFER_TS_SUPPLY, length_m_owner_basis: 150, backend: CRYOGENIC_HE_BACKEND_HEPAK_PREFERRED}
+  E: {class: COLD_TRANSFER_TS_RETURN, length_m_owner_basis: 150, backend: CRYOGENIC_HE_BACKEND_HEPAK_PREFERRED}
+  W: {class: WARM_TRANSFER, nominal_T_K: 300, backend: NORMAL_FLUID_HE}
+  U: {class: WARM_TRANSFER, nominal_T_K: 300, backend: NORMAL_FLUID_HE}
+  WPS: {class: WARM_PIPING_SYSTEM, nominal_T_K: 300, backend: NORMAL_FLUID_HE}
+  S:
+    class: WARM_NORMAL_ABNORMAL_CRYOGENIC
+    nominal_T_K: 300
+    backend_normal: NORMAL_FLUID_HE
+    backend_abnormal: STATE_DEPENDENT_HEPAK_OR_CRYOGENIC_HE
+
+main_warm_interconnect:
+  WCS.HP: {class: WARM_HP, nominal_T_K: 300}
+  WCS.LP: {class: WARM_LP, nominal_T_K: 300}
+  WCS.VLP: {class: WARM_VLP, nominal_T_K: 300}
+  invariant: WCS.VLP_NE_LINE_B
+
+HEPAK_scope:
+  mandatory_governing_temperature_band_K: [2.0, 4.5]
+  cold_transfer_extension: [A, B, D, E]
+  required_outputs: [h, s, rho, Cp, Cv, mu, thermal_conductivity, phase, quality, gamma, Pr]
+  derived_outputs: [velocity, Reynolds, friction_factor, pressure_drop, line_inventory, residence_time]
+  NIST_role: INDEPENDENT_VALIDATION_NOT_PRIMARY_LOWT_BACKEND
+
+execution_matrix:
+  A_nominal: {T_K: 4.5, P_bara: 3.0}
+  B_window: {T_K: [2.0, 4.0], P_mbar_abs: [20, 40]}
+  D_window: {T_K: [30, 45], P_bara: [12, 17]}
+  E_window: {T_K: [50, 70], P_bara: [11, 16]}
+  W_nominal: {T_K: 300}
+  WPS_nominal: {T_K: 300}
+  WCS_nominal: {T_K: 300}
+
+fail_closed:
+  - reject_300K_properties_on_A_B_D_E
+  - reject_fixed_300K_properties_on_S_during_cold_abnormal_event
+  - reject_CoolProp_as_promoted_lowT_source_for_2_to_4p5K
+  - reject_WCS_VLP_as_alias_for_cold_Line_B
+  - preserve_unknown_geometry_as_null_not_zero
+
+next_numeric_receipts:
+  - HEPAK_A_B_D_E_property_grid
+  - cold_line_150m_pressure_drop_sensitivity
+  - cold_line_inventory_and_heat_leak_receipt
+  - Line_S_transient_backend_switch_receipt
+  - WCS_HP_LP_VLP_warm_header_property_receipt
