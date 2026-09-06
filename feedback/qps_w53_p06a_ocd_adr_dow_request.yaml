@@ -1,0 +1,38 @@
+schema_version: "0.1"
+document_id: QPS_W53_P06A_OCD_ADR_DOW_REQUEST
+wave_id: W53-P06A
+status: PARENT_ANALYSIS_REQUEST_NO_CHILD_CREDIT
+parent_repo: GBOGEB/ABACUS
+parent_role: DOW
+source_child: GBOGEB/cryoplant-project
+source_child_pr: 568
+source_child_head_sha: d45ee7b4c5eb10113790a71298554bb0884875ae
+child_authority_rule: >-
+  ABACUS may return derived analysis and review findings only. It may not promote OCD/ADR
+  candidate state, alter bidder/contract authority, or award QPS engineering closure credit.
+request:
+  - inspect the OCD/ADR HTML review surface for broken or missing engineering navigation
+  - cross-check architecture, hierarchy, trace, federation and tender-evaluation usefulness
+  - identify missing outward views/binaries that materially affect engineering review
+  - return PCA/BT observations only where based on observed review-surface defects or gaps
+  - distinguish exact evidence gaps from candidate UX/analysis improvements
+expected_child_products:
+  - QPS_OCD_ADR_REVIEW.docx
+  - QPS_OCD_ADR_REVIEW.pdf
+  - QPS_ADR_REGISTER.xlsx
+  - QPS_ADR_REGISTER.pdf
+  - QPS_OCD_ADR_SUMMARY.pptx
+  - START_HERE.html
+  - RELEASE_MANIFEST.json
+return_contract:
+  path_hint: federation/returns/qps_w53_p06a_ocd_adr_dow_return.yaml
+  child_disposition_required: true
+  allowed_dispositions:
+    - OBSERVED_GAP
+    - CANDIDATE_IMPROVEMENT
+    - NO_FINDING
+  forbidden:
+    - CHILD_ACCEPT
+    - CHILD_REJECT
+    - CHILD_DEFER
+    - COMPLIANCE_PROMOTION
