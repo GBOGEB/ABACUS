@@ -1,0 +1,37 @@
+schema_version: '0.1'
+wave: W55/P08
+role: DOW_REVERSE_PRESSURE_BT
+intent: rank_actions_by_probability_of_closing_controlling_reverse_pressure_margin
+hydraulic_direction:
+  start: FURTHEST_OR_CONTROLLING_QCELL
+  boundary_requirement: LOCAL_2K_SATURATION_PRESSURE
+  march: QCELL_BRANCH_TO_B_HEADER_TO_QRB_THEN_WARM_RECOVERY_INTERFACE
+  compare_against: QRB_B_INTERFACE_TARGET
+candidates:
+  - EXACT_B_ID_SCHEDULE
+  - LOCAL_QCELL_B_FLOW_DISTRIBUTION
+  - BRANCH_AND_HEADER_K_CV
+  - HEPAK_RHO_MU_ALONG_B
+  - EXACT_QCELL_POSITIONS_LENGTHS
+  - LOCAL_HEAT_LOAD_AND_REQUIRED_PSAT
+  - ROUGHNESS
+  - WCS_VLP_DOWNSTREAM_BACKPRESSURE
+prior_evidence:
+  bounded_sensitivity_rank: [EXACT_B_ID_SCHEDULE,LOCAL_QCELL_B_FLOW_DISTRIBUTION,EXACT_QCELL_POSITIONS_LENGTHS,BRANCH_AND_HEADER_K_CV,ROUGHNESS]
+  measured_effect_mbar: {diameter:16.2732,flow:13.8065,distance:6.23766,K:2.22734,roughness:0.862638}
+BT_rules:
+  comparisons_use: [expected_margin_reduction,dependency_unlock,evidence_readiness,cross_model_leverage,time_to_proof]
+  no_compliance_credit: true
+  tie_break: evidence_readiness_then_time_to_proof
+  preserve_Pareto_alternatives: true
+provisional_priority:
+  1: EXACT_B_ID_SCHEDULE
+  2: LOCAL_QCELL_B_FLOW_DISTRIBUTION
+  3: HEPAK_RHO_MU_ALONG_B
+  4: EXACT_QCELL_POSITIONS_LENGTHS
+  5: BRANCH_AND_HEADER_K_CV
+  6: LOCAL_HEAT_LOAD_AND_REQUIRED_PSAT
+  7: WCS_VLP_DOWNSTREAM_BACKPRESSURE
+  8: ROUGHNESS
+status: PROVISIONAL_UNTIL_RUNTIME_PAIRWISE_RECEIPT
+formal_engineering_delta: 0

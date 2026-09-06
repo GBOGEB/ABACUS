@@ -1,0 +1,24 @@
+schema_version: '0.1'
+wave: W55/P07
+role: DOW_SPATIAL_PCA
+purpose: identify_correlated_property_and_geometry_drivers_of_spatial_pressure_variance
+observation_unit: line_segment_or_local_node
+minimum_matrix:
+  rows: 30
+  preferred_rows: 100
+  features: [rho,mu,velocity,Re,friction_factor,local_deltaP,cumulative_deltaP,temperature,pressure]
+optional_source_bound_features: [internal_diameter,roughness,K_or_Cv,local_mass_flow,heat_leak]
+preprocessing:
+  - retain_observed_or_directly_derived_rows_only
+  - standardize_continuous_features
+  - record_missingness
+  - no_hand_seeded_planning_scores_in_statistical_PCA
+outputs: [explained_variance,loadings,scores,spatial_hotspots,feature_contributions,sign_stability]
+benchmark_only: {PC1_percent:84.2,PC2_percent:12.5,PC3_percent:2.8,status:EXPECTED_NOT_REPRODUCED}
+quality_gates:
+  - N_greater_than_feature_count
+  - no_constant_columns
+  - provenance_per_column
+  - measured_weights_supersede_benchmark
+  - PC2_above_15pct_triggers_lowT_viscosity_subcooling_review
+formal_engineering_delta: 0
