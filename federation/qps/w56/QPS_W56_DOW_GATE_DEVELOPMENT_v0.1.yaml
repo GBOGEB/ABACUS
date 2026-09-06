@@ -1,0 +1,73 @@
+schema_version: "0.1"
+document_id: QPS-W56-DOW-GATE-DEVELOPMENT-001
+payload_sha256: 9ed2c54e975e7b35b2e16f9253e5f21c16411ae0bd41e4ffbb1037c7c3260cc5
+purpose: >-
+  Develop the five W56 DOW gates beyond first-pass disposition without inventing
+  unsupported engineering values.
+gates:
+  - id: DOW-W56-001
+    name: dependency_graph
+    maturity: 2_of_5
+    current_state: PARTIAL_GRAPH
+    defensible_now: [subsystem_parentage, PS01_PAB12_CW_provider, eight_known_CW_dependencies]
+    missing_relationship_classes: [component_process_in_out, component_control, component_failure_effect, component_maintainability, component_spares]
+    next_victory: >-
+      Every promoted WCS and QRB component has a process edge, relevant utility
+      edge, control/protection edge and failure-effect edge.
+  - id: DOW-W56-002
+    name: connectivity_orphans
+    maturity: 3_of_5
+    current_state: REPAIRABLE_GRAPH_GAP
+    repair_now_without_new_engineering_claim:
+      - explicit_WCS_to_component_contains_edges
+      - explicit_QRB_to_component_contains_edges
+    next_victory: zero_orphan_promoted_components_and_explicit_parent_edges
+  - id: DOW-W56-003
+    name: PS01_PAB12_utility_boundary
+    maturity: 3_of_5
+    current_state: TOPOLOGY_PASS_NUMERICAL_DEFER
+    accepted_boundary:
+      provider: PS01.PAB12
+      medium: PG40
+      pg_wt_pct: 40
+      supply_C: 27
+      return_C: 37
+      design_deltaT_K: 10
+      consumers: [WCS.HP01, WCS.HP02, WCS.HP03, WCS.HP04, PVPS, QRB.CC01, QRB.CC02, QRB.CC03]
+    quantitative_missing: [branch_design_flow, branch_heat_duty, branch_dp, PICV_design_point, simultaneity_basis]
+    next_victory: source_bound_flow_and_duty_for_all_eight_branches
+  - id: DOW-W56-004
+    name: diagnostic_PCA
+    maturity: 1_of_5
+    current_state: GATED_NO_NUMERIC_MATRIX
+    prohibited_now: [synthetic_PCA_scores, arbitrary_encoding_as_engineering_result]
+    candidate_future_features: [electrical_power_kW, cooling_water_duty_kW, cooling_water_flow_m3h, helium_mass_flow_gs, pressure_ratio, component_count, redundancy_class, failure_criticality, maintenance_interval, CAPEX, OPEX]
+    minimum_gate:
+      source_bound_numeric_features_per_component: 4
+      component_rows_minimum: 8
+      missingness_rule: explicit_and_reported
+  - id: DOW-W56-005
+    name: component_completeness
+    maturity: 3_of_5
+    current_state: FAMILY_COVERAGE_GOOD_DETAIL_DEFERRED
+    WCS_families_present: [HP01_HP04, ORS, DRYER, GMP, INTERCOOLING, SEPARATION, BUFFER, LOCAL_CIS]
+    QRB_families_present: [HX, EXPANDER, CC01_CC03, ADS80, ADS20, SEP4K5, POT2K, HEATER2K, VALVE_FAMILY, VACUUM, RELIEF_GUARD, LOCAL_CIS]
+    detail_backlog:
+      WCS_ORS: [separation_stages, residual_oil_target, cooler_duty, filters, instrumentation]
+      WCS_DRYER: [adsorbent_basis, regeneration_mode, switching_logic, purity]
+      WCS_GMP: [isolation, regulation, bypass, purge, pressure_measurement, flow_measurement]
+      QRB_HX: [stream_pairing, Tin_Tout, Pin_Pout, dP_hot, dP_cold, duty, UA_or_effectiveness]
+      QRB_EXPANDER: [inlet_state, outlet_state, flow, speed, efficiency, bearing_type, bypass, trip_effect]
+      QRB_ADSORBERS: [contaminant_target, capacity, regeneration, dP_allowance]
+portfolio:
+  current_maturity_average: 2.4_of_5
+  strongest_gates: [DOW-W56-002, DOW-W56-003, DOW-W56-005]
+  weakest_gate: DOW-W56-004
+  highest_value_next_actions:
+    - repair_component_containment_edges_now
+    - recover_exact_source_locators_for_WCS_ORS_DRYER_GMP
+    - recover_exact_source_locators_for_QRB_HX_EXPANDER_ADSORBERS
+    - bind_eight_CW_branch_flows_and_duties
+    - only_then_build_numeric_PCA_matrix
+  engineering_credit_delta: 0
+  formal_engineering_closure: 70/90
