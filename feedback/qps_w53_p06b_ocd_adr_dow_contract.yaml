@@ -7,8 +7,9 @@ parent_role: DOW
 source_child: GBOGEB/cryoplant-project
 source_child_pr: 581
 child_authority_rule: >-
-  ABACUS returns observations only. Child disposition is a separate required step owned by
-  cryoplant-project and may be ACCEPT, REJECT or DEFER without implying compliance credit.
+  ABACUS returns observations only. Child disposition is a separate
+  required step owned by cryoplant-project and may be ACCEPT, REJECT or
+  DEFER without implying compliance credit.
 return_contract:
   observation_class_required: true
   allowed_observation_classes:
