@@ -1,0 +1,18 @@
+schema_version: '0.1'
+wave: W55/P06
+role: DOW_RUNTIME
+input_scope: [A,B,D,E,S,U,W,WCS.HP,WCS.LP,WCS.VLP]
+lengths_m: {A:150,B:150,D:150,E:150,S:150,U:150,W:150,WCS.HP:65,WCS.LP:65,WCS.VLP:65}
+required_state_outputs: [h,s,rho,Cp,Cv,mu,k,Pr,gamma,phase,quality]
+required_spatial_outputs: [velocity,Re,Mach,friction_factor,deltaP,inventory,residence_time]
+pressure_execution:
+  forward: QRB_TO_QCELL_OR_WCS_TO_QRB
+  reverse: CONTROLLING_QCELL_TO_QRB_AND_QRB_TO_WCS
+  convergence_check: forward_reverse_boundary_residual
+property_authority:
+  2_to_4p5K: HEPAK_REQUIRED
+  other_cryo: HEPAK_PREFERRED_VALIDATED
+  warm_300K: NORMAL_HE_BACKEND
+fail_closed: [no_HEPAK_lowT_numeric_receipt,no_ID,no_local_flow,no_density,phase_transition_without_valid_model]
+parent_authority: OBSERVATION_ONLY
+formal_engineering_delta: 0
