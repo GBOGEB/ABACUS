@@ -2,9 +2,12 @@ schema_version: "0.1"
 execution_id: QPS-W56-DOW-COMPONENT-UTILITY-001
 status: EXECUTED_FINDINGS_READY_FOR_CODEX_NORMALIZATION
 inputs:
-  child_merge_sha: f16d3c2e2f26309097f56cb962b3e8c25c970b13
-  source_sha256: 4afd7e4e77737297165368282471d1e9d926918510ddb9f05854a62c4496d557
-  canonical_payload_sha256: da745e3488a9eebf356056610b8612c8f53cea8afd71d459553c89bc27346b63
+  child_merge_sha: >-
+    f16d3c2e2f26309097f56cb962b3e8c25c970b13
+  source_sha256: >-
+    4afd7e4e77737297165368282471d1e9d926918510ddb9f05854a62c4496d557
+  canonical_payload_sha256: >-
+    da745e3488a9eebf356056610b8612c8f53cea8afd71d459553c89bc27346b63
   keb_receipt_commit: 0fc661daae7ebc5607f2ee535373f42143f33f2c
   keb_semantic_result: PASS
   keb_provenance_result: PASS
@@ -18,32 +21,45 @@ findings:
   - id: DOW-W56-001
     class: NO_FINDING
     subject: PS01.PAB12 ownership and heat-sink boundary
-    observation: PS01.PAB12 remains a site utility provider and heat sink, not QPS-owned.
+    observation: >-
+      PS01.PAB12 remains a site utility provider and heat sink, not QPS-owned.
     child_action_recommendation: ACCEPT
   - id: DOW-W56-002
     class: NO_FINDING
     subject: QRB cold-compressor cooling-water topology
-    observation: The governed graph requires exactly three separately identifiable CC cooling-water branches with PICV or equivalent hydraulic control.
+    observation: >-
+      The governed graph requires exactly three separately identifiable CC
+      cooling-water branches with PICV or equivalent hydraulic control.
     child_action_recommendation: ACCEPT
   - id: DOW-W56-003
     class: CANDIDATE_IMPROVEMENT
     subject: QRB cold-compressor electrical envelope
-    observation: The 3x45 kW electrical value is a contract/feed envelope and must not be promoted into evidence that each bidder-selected CC is a fixed 45 kW machine.
+    observation: >-
+      The 3x45 kW electrical value is a contract/feed envelope and must not be
+      promoted into evidence that each bidder-selected CC is a fixed 45 kW
+      machine.
     child_action_recommendation: ACCEPT_AS_GUARD
   - id: DOW-W56-004
     class: OBSERVED_GAP
     subject: Cooling-water duty and flow source locators
-    observation: Exact source-bound duties and flows for all promoted HP, PVPS and CC cooling-water consumers remain required before numerical utility closure.
+    observation: >-
+      Exact source-bound duties and flows for all promoted HP, PVPS and CC
+      cooling-water consumers remain required before numerical utility closure.
     child_action_recommendation: DEFER
   - id: DOW-W56-005
     class: OBSERVED_GAP
     subject: Bidder-selected WCS and QRB component details
-    observation: ORS, dryer, gas-management panel, HX/expander and adsorber detailed counts, ratings or geometry remain RFI_UNKNOWN unless an exact offer or contract locator is attached.
+    observation: >-
+      ORS, dryer, gas-management panel, HX/expander and adsorber detailed
+      counts, ratings or geometry remain RFI_UNKNOWN unless an exact offer or
+      contract locator is attached.
     child_action_recommendation: DEFER
   - id: DOW-W56-006
     class: NO_FINDING
     subject: HVAC residual heat accounting
-    observation: Water-rejected heat must not be double counted as an HVAC room-load dependency.
+    observation: >-
+      Water-rejected heat must not be double counted as an HVAC room-load
+      dependency.
     child_action_recommendation: ACCEPT
 parent_authority:
   may_mutate_child_payload: false
