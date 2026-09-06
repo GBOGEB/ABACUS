@@ -1,0 +1,77 @@
+schema_version: "0.1"
+intake_id: QPS-W56-DOW-COMPONENT-UTILITY-001
+role: ABACUS_DOW_DERIVED_ANALYSIS
+state: UNPAUSED_INTAKE_HASH_GATED
+
+upstream:
+  child_repo: GBOGEB/cryoplant-project
+  child_pr: 588
+  child_merge_sha: f16d3c2e2f26309097f56cb962b3e8c25c970b13
+  child_source_path: ocd-adr/20_canonical/architecture/QPS_COMPONENT_UTILITY_ICD_SSOT_W55_v0.1.yaml
+  child_source_git_blob_sha1: dd9098b411bb1d5b447c1630c9401c9fb4b8af71
+  keb_repo: GBOGEB/CODEX
+  keb_pr: 416
+  keb_head_at_intake: 56915c3daa9dc2a1c776928782e57612db11f49f
+
+execution_gate:
+  state: BLOCKED_UNTIL_EXACT_SHA256_RECEIPT
+  required_from_keb:
+    - source_sha256
+    - canonical_payload_sha256
+    - schema_result
+    - invariant_results
+  rule: >-
+    DOW intake and analysis plan may exist before KEB closure, but no PCA, dependency result, graph finding or
+    boundary diagnostic may be represented as executed against W56 until the exact KEB SHA256 receipt is bound.
+
+planned_analyses:
+  - id: DOW-W56-001
+    method: dependency_graph
+    focus: component_to_process_utility_control_and_failure_dependencies
+  - id: DOW-W56-002
+    method: graph_connectivity
+    focus: orphan_components_missing_edges_and_illegal_containment
+  - id: DOW-W56-003
+    method: utility_boundary_diagnostics
+    focus: PS01_PAB12_PG40_27_37C_HP_PVPS_CC_branches_and_HVAC_heat_accounting
+  - id: DOW-W56-004
+    method: PCA_feature_projection
+    focus: component_completeness_and_dependency_feature_space
+    guard: PCA_IS_DIAGNOSTIC_NOT_ENGINEERING_AUTHORITY
+  - id: DOW-W56-005
+    method: component_completeness_gap_analysis
+    focus: WCS_ORS_DRYER_GMP_intercooling_separation_buffer_and_QRB_HX_expanders_adsorbers_separators_valves_vacuum_protection
+
+invariants_to_challenge_not_mutate:
+  - PVPS_PARENT_QPLANT
+  - WSH_PARENT_QPS
+  - WPS_EXTERNAL_TO_QPS
+  - PS01_PAB12_SITE_UTILITY_NOT_QPS_OWNED
+  - PG40_40WT_27C_37C_DT10K
+  - FOUR_WCS_HP_CW_BRANCH_IDENTITIES
+  - THREE_QRB_CC_CW_BRANCH_IDENTITIES
+  - THREE_QRB_CC_ELECTRICAL_FEEDS_45KW_CONTRACT_ENVELOPE
+  - NO_HVAC_DOUBLE_COUNT_OF_WATER_REJECTED_HEAT
+  - NO_PROMOTED_COMPONENT_WITHOUT_SOURCE_LOCATOR
+  - SAME_SOURCE_DOCUMENT_AND_DIGEST_ACROSS_ALL_PROJECTIONS
+
+analysis_authority:
+  may_append_derived_findings: true
+  may_mutate_child_payload: false
+  may_promote_source_class: false
+  may_award_compliance_credit: false
+  may_select_ADR: false
+
+return_contract:
+  destination: GBOGEB/CODEX
+  normalized_then_to: GBOGEB/cryoplant-project
+  required_payload_binding: SAME_CANONICAL_PAYLOAD_SHA256
+  child_disposition: [ACCEPT, REJECT, DEFER]
+  finding_fields: [finding_id, method, affected_nodes, affected_edges, evidence_basis, severity, recommendation, payload_sha256]
+
+formal_credit_delta: 0
+formal_engineering_closure: 70/90
+victory_condition: >-
+  The DOW lane is no longer schedule-waiting: its governed intake and analysis plan exist in ABACUS, while execution
+  remains fail-closed until CODEX/KEB publishes the exact W56 SHA256 receipt. Once bound, all five analyses execute on
+  the identical payload and return findings without altering child authority.
