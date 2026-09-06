@@ -1,0 +1,41 @@
+schema_version: '0.1'
+wave: W54/P02
+role: ABACUS_DOW_PARENT_ANALYSIS
+payload_id: QPS-W54-P01-UTILITY-GRAPH-001
+upstream: CODEX_KEB_PARENT_INTAKE
+canonical_json_sha256_in: d417236e81e8ba9d39aa841ef4b7bd942e064ef9ff29855e9ed05a64208d3804
+canonical_json_sha256_out: d417236e81e8ba9d39aa841ef4b7bd942e064ef9ff29855e9ed05a64208d3804
+analysis:
+  dependency_findings:
+    - id: PVPS_CW_FLOW
+      state: DEFER_SOURCE_PROPERTY
+      reason: PG40 flow requires source-bound PG40 cp/density; missing flow remains null
+    - id: HP_BRANCHES
+      state: ACCEPT_TOPOLOGY
+      branch_count: 4
+      design_flows: null
+      reason: dedicated topology is governed; per-branch design flow not yet source-bound
+    - id: PVPS_ENERGY_BOUNDARY
+      state: ACCEPT_SOURCE_ATOMS
+      electrical_kWe: 83
+      water_side_kWth: 75
+      residual_classification: UNALLOCATED_BOUNDARY_DIFFERENCE
+    - id: HEAT_RECOVERY
+      state: ACCEPT_GUARD
+      rule: recovery_credit_must_not_exceed_source_bound_water_side_heat
+  pca_priority_order:
+    - source_bind_PG40_properties_and_flow
+    - source_bind_HP_branch_flows
+    - close_PVPS_same_point_power_receipt
+  prohibited_derivations:
+    - infer_missing_flow_as_zero
+    - allocate_8kW_electrical_minus_CW_without_source
+    - convert_water_rejected_heat_to_room_HVAC_load
+    - promote_cross_bidder_power_screen_to_acceptance
+provenance:
+  payload_hash_preserved: true
+  semantic_mutation: false
+  information_loss: false
+return_to: CODEX_KEB_SEMANTIC_RECEIPT
+status: ANALYZED_RETURN_READY
+formal_engineering_credit_delta: 0
