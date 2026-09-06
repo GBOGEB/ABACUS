@@ -1,0 +1,27 @@
+schema: abacus-w54-p09-wsh-sline-propagation-review/v1
+source_repo: GBOGEB/cryoplant-project
+source_pr: 583
+source_head_sha: 13ac7a2b45aea6840954b6988e92befa49060af8
+review_role: DOW_QUANTIFIED_RECOVERY_AND_STALE_REFERENCE_IMPACT
+
+must_quantify:
+  - applicant_specific_geometric_storage_ALAT_555m3_LKT_600m3_without_treating_as_usable_mass
+  - required_missing_inputs_for_usable_mass_by_applicant
+  - S_line_100_150_200_g_s_case_output_contract
+  - time_to_1p30_bara_and_PSV_threshold_once_setpoint_bound
+  - recovery_capacity_start_delay_and_WSH_headroom_dependencies
+  - stale_120m3_reference_penetration_risk
+  - HEPAK_lowT_receipt_dependency
+  - cross_backend_datum_stitch_dependency_for_exergy
+
+hard_guards:
+  - do_not_promote_3x120m3_as_current_design
+  - do_not_cross_mix_ALAT_and_LKT
+  - do_not_infer_PSV_setpoint_from_1p30_bara
+  - do_not_self_promote_child_acceptance
+  - formal_engineering_delta_zero_without_child_disposition
+
+return_contract:
+  findings_namespace: DOW-W54-P09
+  mutation_allowed: false
+  child_reentry_required: true
