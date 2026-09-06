@@ -1,0 +1,47 @@
+name: W53 P05T QCELL JT Runtime
+on:
+  pull_request:
+    paths:
+      - 'qplant/w53_p05s_qcell_jt_flash_receipt.py'
+      - '.github/workflows/w53-p05t-qcell-jt-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jt-flash-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install governed helium runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install CoolProp==7.2.0
+      - name: Execute canonical receipt
+        run: |
+          mkdir -p artifacts/w53_p05t
+          python qplant/w53_p05s_qcell_jt_flash_receipt.py | tee artifacts/w53_p05t/qcell_jt_flash_receipt.json
+      - name: Validate and summarize
+        run: |
+          python - <<'PY'
+          import json
+          p='artifacts/w53_p05t/qcell_jt_flash_receipt.json'
+          with open(p, encoding='utf-8') as f: r=json.load(f)
+          x=r['flash_quality_mass_fraction']
+          assert 0.0 <= x <= 1.0
+          assert abs(r['boundary']['outlet_local_QCELL']['P_mbar_abs']-31.0) < 1e-12
+          print('flash_percent=', r['flash_percent_of_A'])
+          print('Tsat_K=', r['boundary']['outlet_local_QCELL']['T_sat_K'])
+          print('hA_J_kg=', r['boundary']['inlet_A']['h_J_kg'])
+          print('hf_J_kg=', r['boundary']['outlet_local_QCELL']['h_f_J_kg'])
+          print('hg_J_kg=', r['boundary']['outlet_local_QCELL']['h_g_J_kg'])
+          for row in r['A_flow_cases']:
+              print('A=', row['A_g_s'], 'flash=', row['JT_flash_g_s'], 'liquid=', row['post_flash_liquid_g_s'])
+          PY
+      - name: Upload receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: w53-p05t-qcell-jt-flash-receipt
+          path: artifacts/w53_p05t/qcell_jt_flash_receipt.json
