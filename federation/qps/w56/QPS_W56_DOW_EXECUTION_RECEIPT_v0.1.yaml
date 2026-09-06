@@ -1,0 +1,186 @@
+schema_version: "0.1"
+receipt_id: QPS-W56-DOW-EXECUTION-001
+role: ABACUS_DOW_DERIVED_ANALYSIS_RECEIPT
+state: EXECUTED_ON_EXACT_HASH
+
+lineage:
+  child_repo: GBOGEB/cryoplant-project
+  child_pr: 588
+  child_merge_sha: f16d3c2e2f26309097f56cb962b3e8c25c970b13
+  source_blob_sha1: dd9098b411bb1d5b447c1630c9401c9fb4b8af71
+  source_sha256: 4afd7e4e77737297165368282471d1e9d926918510ddb9f05854a62c4496d557
+  payload_blob_sha1: 730e2050ef1d37674bcfc9a9c55987b872b43504
+  payload_sha256: 9ed2c54e975e7b35b2e16f9253e5f21c16411ae0bd41e4ffbb1037c7c3260cc5
+  hash_receipt_pr: GBOGEB/cryoplant-project#607
+  hash_workflow_run: 34055026124
+  keb_merge_sha: fab8afde01d9bdd9c5157144f3baec10c2c7166e
+  dow_intake_merge_sha: 1b071311ae26c027d47c19e9577391102ceeefc4
+  dow_repair_merge_sha: a74c0a3b23f7c49b6d7c24f60c52e511f487113d
+
+analysis_authority:
+  derived_only: true
+  mutates_child_ssot: false
+  awards_compliance_credit: false
+  selects_adr: false
+
+analyses:
+  - id: DOW-W56-001
+    method: dependency_graph
+    status: COMPLETE
+    result: PARTIAL_GRAPH
+    findings:
+      - id: DOW-W56-F001
+        severity: HIGH
+        affected_nodes:
+          - WCS.ORS
+          - WCS.DRYER
+          - WCS.GMP
+          - WCS.INTERCOOLING
+          - WCS.SEPARATION
+          - WCS.BUFFER
+          - WCS.LOCAL_CIS
+          - QRB.HX
+          - QRB.EXPANDER
+          - QRB.ADS80
+          - QRB.ADS20
+          - QRB.SEP4K5
+          - QRB.POT2K
+          - QRB.HEATER2K
+          - QRB.VALVE_FAMILY
+          - QRB.VACUUM
+          - QRB.RELIEF_GUARD
+          - QRB.LOCAL_CIS
+        finding: >-
+          Component families exist as canonical nodes but most are not yet bound
+          by explicit component-level process, utility, control, failure and
+          maintainability edges in the canonical graph.
+        recommendation: >-
+          Keep the nodes, but defer engineering promotion until source-bound
+          component edges and required minimum fields are populated.
+
+  - id: DOW-W56-002
+    method: graph_connectivity
+    status: COMPLETE
+    result: CONNECTIVITY_GAPS_FOUND
+    findings:
+      - id: DOW-W56-F002
+        severity: HIGH
+        finding: >-
+          Canonical containment edges currently stop at QPLANT-to-WCS/PVPS/QRB.
+          WCS and QRB component families are listed under component_nodes but do
+          not yet have explicit contains edges from their parent subsystem.
+        recommendation: >-
+          Add explicit WCS-to-component and QRB-to-component containment edges
+          from the same SSOT, then enforce them in Zod and outward projections.
+      - id: DOW-W56-F003
+        severity: MEDIUM
+        affected_nodes:
+          - WCS.HP01
+          - WCS.HP02
+          - WCS.HP03
+          - WCS.HP04
+          - PVPS
+          - QRB.CC01
+          - QRB.CC02
+          - QRB.CC03
+        finding: >-
+          Cooling-water connectivity exists for all eight current known
+          consumers, but process/control/failure edges remain incomplete.
+        recommendation: >-
+          Preserve the valid CW topology and add missing non-CW engineering
+          relationships without changing the established utility boundary.
+
+  - id: DOW-W56-003
+    method: utility_boundary_diagnostics
+    status: COMPLETE
+    result: TOPOLOGY_PASS_NUMERICAL_DEFER
+    findings:
+      - id: DOW-W56-F004
+        severity: INFO
+        finding: >-
+          PS01.PAB12 is consistently represented as site cooling-water heat-sink
+          provider with PG40, 27 C supply, 37 C return and 10 K design deltaT.
+          Four HP, one PVPS and three CC branch identities are present.
+        recommendation: ACCEPT_TOPOLOGY_ONLY
+      - id: DOW-W56-F005
+        severity: MEDIUM
+        finding: >-
+          The component SSOT does not yet carry source-bound branch flow and heat
+          duty values for all eight consumers, so hydraulic balance and total
+          heat-rejection closure cannot be independently recalculated here.
+        recommendation: >-
+          Defer quantitative CW closure until branch flow/duty atoms are bound to
+          exact bidder/contract/source locators.
+      - id: DOW-W56-F006
+        severity: INFO
+        finding: >-
+          HVAC semantics correctly restrict room-HVAC accounting to residual
+          non-water-rejected heat, preventing intentional double count at this
+          graph level.
+        recommendation: RETAIN_GUARD
+
+  - id: DOW-W56-004
+    method: PCA_feature_projection
+    status: COMPLETE
+    result: DEFERRED_NO_NUMERIC_FEATURE_MATRIX
+    findings:
+      - id: DOW-W56-F007
+        severity: LOW
+        finding: >-
+          The W56 component payload is primarily categorical/topological and does
+          not yet contain a sufficiently source-bound numeric component feature
+          matrix for meaningful PCA without manufacturing data.
+        recommendation: >-
+          Do not invent PCA numbers. Re-run PCA after component duties, powers,
+          flows, counts, reliability or cost features are source-bound.
+
+  - id: DOW-W56-005
+    method: component_completeness_gap_analysis
+    status: COMPLETE
+    result: FAMILY_COVERAGE_GOOD_DETAIL_DEFERRED
+    findings:
+      - id: DOW-W56-F008
+        severity: HIGH
+        finding: >-
+          Major requested WCS and QRB families are represented, including ORS,
+          dryer, gas-management panel, intercooling, HX, expanders, adsorbers,
+          separators, valves, vacuum and protection. Many bidder-selected counts,
+          ratings and geometries remain RFI_UNKNOWN and lack exact source locators.
+        recommendation: >-
+          Accept family-level taxonomy and parentage; defer detailed engineering
+          attributes until exact offer/OCD/RTM evidence is attached.
+
+normalized_candidates_for_codex:
+  - finding_id: DOW-W56-F001
+    candidate_disposition: DEFER
+  - finding_id: DOW-W56-F002
+    candidate_disposition: ACCEPT_REPAIR
+  - finding_id: DOW-W56-F003
+    candidate_disposition: ACCEPT_WITH_GAPS
+  - finding_id: DOW-W56-F004
+    candidate_disposition: ACCEPT
+  - finding_id: DOW-W56-F005
+    candidate_disposition: DEFER
+  - finding_id: DOW-W56-F006
+    candidate_disposition: ACCEPT
+  - finding_id: DOW-W56-F007
+    candidate_disposition: DEFER
+  - finding_id: DOW-W56-F008
+    candidate_disposition: ACCEPT_FAMILY_DEFER_DETAIL
+
+summary:
+  executed_analyses: 5
+  findings: 8
+  topology_accepts: 2
+  repair_candidates: 1
+  conditional_accepts: 2
+  defers: 3
+  rejects: 0
+  engineering_credit_delta: 0
+  formal_engineering_closure: 70/90
+
+return_contract:
+  destination: GBOGEB/CODEX
+  required_payload_sha256: 9ed2c54e975e7b35b2e16f9253e5f21c16411ae0bd41e4ffbb1037c7c3260cc5
+  child_final_authority: GBOGEB/cryoplant-project
+  allowed_child_disposition: [ACCEPT, REJECT, DEFER]
