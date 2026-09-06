@@ -1,0 +1,38 @@
+schema_version: "0.1"
+document_id: W56_LINEB_DOW_PARENT_RECEIPT
+role: PARENT_PHYSICS_ANALYSIS_CHALLENGE
+child_source:
+  repo: GBOGEB/cryoplant-project
+  pr: 613
+  head_sha: 89881b6e19048565db5c2114eec557e78ebb4ef8
+analysis:
+  inherited_bounded_results:
+    straight_pipe_dp_mbar: 1.2585
+    total_with_K30_mbar: 3.9033
+    K_limit_for_4mbar: 31.10
+    distributed_c30_K100_dp_mbar: 3.5548
+    margin_mbar: 0.4452
+    evidence_class: CHILD_ACCEPTED_BOUNDED_CONSERVATIVE
+  sensitivity:
+    priority_order: [current_internal_diameter, cumulative_B_flow, current_K_Cv, spatial_temperature_enthalpy, exact_segment_length_positions, roughness]
+    status: PRIORITIZED_NOT_RECALCULATED_WITH_NEW_PROPERTIES
+  pca:
+    status: DEFER_MEASURED_GOVERNED_MATRIX_PENDING
+    features: [ID, cumulative_flow, rho, mu, velocity, Re, K_Cv, heat_leak, T, P, dP_friction, dP_local, dP_momentum]
+  monte_carlo:
+    status: DEFER_DISTRIBUTIONS_PENDING
+    candidate_uncertainties: [ID, B_flow, K_Cv, heat_leak, roughness, property_source]
+  bt:
+    ordered_evidence_recovery: [current_ID_wall_schedule, exact_QCELL_positions_branch_lengths, current_K_Cv, source_bound_per_QCELL_B_flow, HEPAK_spatial_receipt, distributed_heat_leak_Tx_hx]
+  vv:
+    status: BOUNDED_BASELINE_PRESERVED_DETAIL_VALIDATION_DEFERRED
+physics_guards:
+  - no_new_HEPAK_numeric_result
+  - no_surrogate_provider_promoted_to_governing_authority
+  - no_JT_flash_mass_double_count
+  - no_27mbar_31mbar_boundary_conflation
+  - no_parent_acceptance_promotion
+return_candidate:
+  bounded_LineB_state_consistency: ACCEPT_PRESERVE_PRIOR_CHILD_DECISION
+  detailed_subreceipts: DEFER
+  formal_delta: 0
