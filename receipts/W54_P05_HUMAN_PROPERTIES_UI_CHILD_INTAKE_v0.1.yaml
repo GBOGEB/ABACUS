@@ -1,0 +1,27 @@
+schema: abacus-w54-p05-human-properties-ui-intake/v1
+source_repo: GBOGEB/cryoplant-project
+source_pr: 583
+source_head_sha: 8d2109b89da98b4fbac49882c7812f1aa64e6454
+source_receipt: controls/W54_P05_RUNTIME_UI_ROUNDTRIP_RECEIPT_v0.1.yaml
+quantified_intake:
+  QRB_A_validation: {T_K: 4.5, P_bara: 3.0, h_kJ_kg: 11.78, s_kJ_kgK: 3.621, rho_kg_m3: 129.6}
+  QRB_DE: {delta_h_kJ_kg: 106.477, mdot_g_s: 77.01, heat_load_kW: 8.2}
+  WCS_HP: {mdot_g_s: 326, raw_delta_h_kJ_kg: 1551.540, raw_delta_s_kJ_kgK: 24.28765, exergy_status: DATUM_STITCH_PENDING}
+  PCA_benchmark_component_weights: [0.842, 0.125, 0.028]
+  exact_HEPAK_numeric_receipts: 0
+  strict_exergy_edges_promoted: 0
+  blocked_or_stitch_pending_edges: 6
+review_scope:
+  - quantified_property_completeness
+  - exergy_datum_alignment
+  - hydraulics_ready_inputs
+  - PCA_matrix_readiness
+  - uncertainty_and_sensitivity_priorities
+constraints:
+  do_not_fabricate_missing_properties: true
+  pca_benchmark_is_not_measured: true
+  parent_cannot_promote_child_compliance: true
+expected_return:
+  disposition: ACCEPT_REJECT_DEFER
+  quantified_findings: []
+formal_engineering_delta: 0
