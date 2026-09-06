@@ -2,8 +2,12 @@ schema_version: "0.1"
 wave: W53/P05Q
 classification: CONTROLLED_EXECUTION_STATUS
 requested_states:
-  A: {temperature_K: 4.5, pressure_Pa_abs: 300000}
-  B: {temperature_K: 3.6, pressure_Pa_abs: 2200}
+  A:
+    temperature_K: 4.5
+    pressure_Pa_abs: 300000
+  B:
+    temperature_K: 3.6
+    pressure_Pa_abs: 2200
 recovered_runtime_artifact:
   filename: CH15_HEPAK_QPLANT_Runtime_v0_1.xlsx
   source_surface: ChatGPT_File_Library
@@ -24,11 +28,17 @@ acceptance_recipe:
   - export h_A and h_B with version/date/engineer provenance
   - calculate delta_h_kJ_kg = h_B - h_A
   - calculate B_g_s = 890 / delta_h_kJ_kg
-  - compare B against the current same-boundary checksum and Table-9 lower bound
-  - compare the 890 W same-boundary energy reconstruction under governed plus_or_minus_1_percent tolerance
+  - >-
+    compare B against the current same-boundary checksum and Table-9 lower
+    bound
+  - >-
+    compare the 890 W same-boundary energy reconstruction under governed
+    plus_or_minus_1_percent tolerance
 guards:
   - do_not_use_cached_quickcalc_example_values_as_A_B_receipt
   - do_not_fabricate_HeCalc_output
-  - keep_existing_NIST_accepted_mass_residual_separate_from_HEPAK_reference_quality_upgrade
+  - >-
+    keep_existing_NIST_accepted_mass_residual_separate_from_HEPAK_reference
+    quality_upgrade
 formal_credit_delta: 0
 strict_score_delta: 0
