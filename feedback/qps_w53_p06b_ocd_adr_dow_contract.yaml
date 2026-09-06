@@ -1,0 +1,37 @@
+schema_version: "0.1"
+document_id: QPS_W53_P06B_OCD_ADR_DOW_CONTRACT
+wave_id: W53-P06B
+status: PARENT_ANALYSIS_CONTRACT_REPAIR_NO_CHILD_CREDIT
+parent_repo: GBOGEB/ABACUS
+parent_role: DOW
+source_child: GBOGEB/cryoplant-project
+source_child_pr: 581
+child_authority_rule: >-
+  ABACUS returns observations only. Child disposition is a separate required step owned by
+  cryoplant-project and may be ACCEPT, REJECT or DEFER without implying compliance credit.
+return_contract:
+  observation_class_required: true
+  allowed_observation_classes:
+    - OBSERVED_GAP
+    - CANDIDATE_IMPROVEMENT
+    - NO_FINDING
+  child_disposition_required: true
+  allowed_child_dispositions:
+    - ACCEPT
+    - REJECT
+    - DEFER
+  forbidden_parent_promotions:
+    - CANDIDATE
+    - OPEN
+    - COMPLIANCE_PROMOTION
+    - ENGINEERING_CLOSURE_CREDIT
+expected_child_products:
+  - QPS_OCD_ADR_REVIEW.docx
+  - QPS_OCD_ADR_REVIEW.pdf
+  - QPS_TRACE_EVIDENCE_REVIEW.xlsx
+  - QPS_OCD_ADR_REVIEW_BRIEF.pptx
+  - QPS_OCD_ADR_NAVIGATOR.html
+required_receipts:
+  - SOURCE_MANIFEST.json
+  - RENDER_QA_RECEIPT.json
+  - RECURSIVE_SHA256.json
