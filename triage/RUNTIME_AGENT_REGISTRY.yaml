@@ -1,0 +1,16 @@
+schema_version: "1.0"
+repository: GBOGEB/ABACUS
+runtime:
+  - {path: DMAIC_V3/core/twelve_cluster_orchestrator.py, role: canonical_orchestrator, state: CANONICAL_ACTIVE}
+  - {path: DMAIC_V3/core/temporal_metadata_engine.py, role: temporal_runtime, state: CANONICAL_ACTIVE}
+  - {path: DMAIC_V3/core/handover_bridge.py, role: handover_bridge, state: CANONICAL_ACTIVE}
+  - {path: local_mcp/agent_orchestrator_v3.0.py, role: MCP_compatibility_orchestrator, state: ACTIVE_COMPATIBILITY}
+  - {path: local_mcp/knowledge_integration_v2.3.py, role: knowledge_integration, state: CANONICAL_ACTIVE}
+agents:
+  architecture: twelve_cluster_multi_agent
+  disposition_policy: findings_only_no_child_self_approval
+containers:
+  - {path: docker-compose.yml, state: ACTIVE_COMPATIBILITY}
+  - {path: ABACUS_V21_DEPLOYMENT_PACKAGE/Dockerfile, state: ACTIVE_COMPATIBILITY}
+  - {path: qplant/deployment/k8s, state: ACTIVE_COMPATIBILITY}
+historical_rule: versioned_or_roadmap_container_assets_do_not_count_as_live_without_runtime_or_CI_reference
