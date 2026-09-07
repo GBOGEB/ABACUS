@@ -1,0 +1,18 @@
+schema_version: "1.0"
+repository: GBOGEB/ABACUS
+graphs:
+  - id: DMAIC_WORK_GRAPH
+    state: CANONICAL_ACTIVE
+    root: DMAIC_V3
+    nodes: [work_unit, tuple, phase, cluster, analysis, finding, metric, handover]
+    edges: [feeds, analyzes, scores, improves, hands_over, tracks]
+  - id: DOW_ANALYSIS_GRAPH
+    state: CANONICAL_ACTIVE
+    roots: [analytics, models, qplant]
+    nodes: [model, evidence, dependency, PCA_feature, BT_priority, finding]
+    edges: [depends_on, challenges, recommends, produces_finding, validates]
+  - id: AGENT_EXECUTION_GRAPH
+    state: CANONICAL_ACTIVE
+    roots: [local_mcp, DMAIC_V3/core]
+    nodes: [agent, task, runtime_state, knowledge_item, handover]
+    edges: [executes, monitors, replays, hands_over, returns_to]
