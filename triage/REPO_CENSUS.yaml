@@ -1,0 +1,34 @@
+schema_version: "1.0"
+repository: GBOGEB/ABACUS
+role: ANALYTICAL_RUNTIME
+purpose: DOW engineering/scientific analysis, DMAIC, PCA/BT, analytical findings, handover and multi-agent execution
+asset_state_enum: [CANONICAL_ACTIVE, ACTIVE_COMPATIBILITY, GENERATED, HISTORICAL, DOCUMENTATION_ONLY, DORMANT, UNKNOWN]
+canonical_roots:
+  - {path: DMAIC_V3, state: CANONICAL_ACTIVE}
+  - {path: src/dmaic, state: CANONICAL_ACTIVE}
+  - {path: local_mcp, state: CANONICAL_ACTIVE}
+  - {path: qplant, state: CANONICAL_ACTIVE}
+  - {path: analytics, state: CANONICAL_ACTIVE}
+  - {path: models, state: CANONICAL_ACTIVE}
+  - {path: federation, state: CANONICAL_ACTIVE}
+  - {path: feedback, state: CANONICAL_ACTIVE}
+  - {path: ssot, state: CANONICAL_ACTIVE}
+  - {path: scripts, state: CANONICAL_ACTIVE}
+historical_or_compatibility_roots:
+  - {path: ABACUS-v031, state: HISTORICAL}
+  - {path: ABACUS-v032, state: ACTIVE_COMPATIBILITY}
+  - {path: ABACUS-UNIFIED, state: ACTIVE_COMPATIBILITY}
+  - {path: ABACUS_V21_DEPLOYMENT_PACKAGE, state: ACTIVE_COMPATIBILITY}
+architecture:
+  node_classes: [work_unit, tuple, phase, cluster, analysis, finding, metric, evidence, artifact, handover, agent, task, model, ssot_item, runtime_state, PCA_feature, BT_priority]
+  edge_classes: [feeds, analyzes, scores, challenges, depends_on, recommends, hands_over, validates, replays, improves, tracks, produces_finding, returns_to]
+canonical_orchestrator: DMAIC_V3/core/twelve_cluster_orchestrator.py
+bridge:
+  handover: DMAIC_V3/core/handover_bridge.py
+  mcp_wrapper: local_mcp/agent_orchestrator_v3.0.py
+  knowledge: local_mcp/knowledge_integration_v2.3.py
+validation:
+  zod: [qps_contract_canonicalization/src/schema.ts, qps_slide_reviewer/lib/qps-contract-clarification-schema.ts]
+authority:
+  outputs_are_findings_not_child_decisions: true
+  may_mutate_child_payload: false
