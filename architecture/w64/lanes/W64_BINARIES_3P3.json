@@ -1,0 +1,38 @@
+{
+  "schema_version": "W64-3P3-1.0.0",
+  "lane": "binaries",
+  "title": "W64 binaries outward-artifact proof",
+  "depends_on": {
+    "w63_receipt_pr": 961,
+    "w63_receipt_merge_sha": "ba0a0207686347fb2e3511d53048f725003c1493"
+  },
+  "purpose": "Prove the outward release artifacts are regenerated from canonical authorities and carry stable hashes.",
+  "pulses": {
+    "P1_primary": [
+      "Locate authoritative build entrypoints for XLSX, HTML, PPTX, and PDF outputs.",
+      "Record artifact paths, producing commands, input authorities, and expected output names.",
+      "Create a binary manifest that distinguishes generated outputs from source authorities."
+    ],
+    "P2_reverse_pressure": [
+      "Reject any binary that cannot be linked to a canonical authority or generator command.",
+      "Detect stale checked-in generated artifacts that no longer match their authority inputs.",
+      "Flag dependency-bound outputs instead of falsely claiming regeneration."
+    ],
+    "P3_receipt": [
+      "Hash every regenerated or source-verified outward artifact.",
+      "Emit a release artifact receipt with exact commit SHA, generator command, and SHA256.",
+      "Block release promotion if any required binary is missing, stale, or unhashable."
+    ]
+  },
+  "artifacts_in_scope": ["xlsx", "html", "pptx", "pdf"],
+  "acceptance_gates": [
+    "Every artifact has source authority, generator path, and SHA256.",
+    "Generated artifacts are not allowed to supersede SSOT authorities.",
+    "Exact-head CI must be green before W64 binary credit is claimed."
+  ],
+  "non_claims": [
+    "Does not claim binary regeneration until commands execute successfully.",
+    "Does not promote W64 release readiness by itself.",
+    "Does not treat artifacts as engineering truth sources."
+  ]
+}
