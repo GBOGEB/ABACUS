@@ -1,0 +1,22 @@
+id: DOW-xOCD-W57
+version: 0.1.0
+repo: GBOGEB/ABACUS
+purpose: executable runtime description for governed execution and return
+pipeline:
+  - receive_governed_payload
+  - ingress_validate_digest
+  - queue
+  - orchestrate
+  - assign_workers
+  - execute_DMAIC
+  - execute_PCA
+  - execute_BT
+  - execute_QA_and_rendering
+  - collect_telemetry
+  - emit_DOW_receipt
+  - return_to_child
+binary_family:
+  - DOW_ARCHITECTURE.xlsx
+  - DOW_ARCHITECTURE.html
+  - DOW_ARCHITECTURE.pptx
+  - DOW_ARCHITECTURE.pdf
