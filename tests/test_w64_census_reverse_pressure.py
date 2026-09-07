@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from tools.w64_census_reverse_pressure import reverse_pressure
+from tools.w64_total_repo_census import category_for, classification_for
 
 
 def asset(path, category, classification, family=None):
@@ -57,6 +60,23 @@ def test_release_critical_unknown_blocks():
         "assets": [asset("unknown/contract.bin", "schema_or_config", "unknown")],
     }
     report = reverse_pressure(census)
+    assert report["status"] == "blocked"
+    assert "release_critical_unknown_assets" in finding_types(report)
+
+
+def test_p1_unknown_authority_like_path_blocks_end_to_end():
+    path = Path("unknown/contract.bin")
+    category = category_for(path)
+    classification = classification_for(path, category)
+    assert category == "other"
+    assert classification == "unknown"
+
+    report = reverse_pressure(
+        {
+            "asset_count": 1,
+            "assets": [asset(path.as_posix(), category, classification)],
+        }
+    )
     assert report["status"] == "blocked"
     assert "release_critical_unknown_assets" in finding_types(report)
 
