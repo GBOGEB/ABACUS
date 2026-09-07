@@ -8,6 +8,7 @@ on:
     branches: [main, develop, sprint-6]
     paths:
       - 'bootstrap_eval.py'
+      - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
       - 'tests/bootstrap_bridge.py'
       - 'tests/test_integration_bootstrap_bridges.py'
@@ -19,6 +20,7 @@ on:
     branches: [main, develop]
     paths:
       - 'bootstrap_eval.py'
+      - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
       - 'tests/bootstrap_bridge.py'
       - 'tests/test_integration_bootstrap_bridges.py'
