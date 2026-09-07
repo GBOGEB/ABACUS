@@ -19,7 +19,7 @@ jobs:
           set -euo pipefail
           python qplant/w52_p2t_hp_power_residual.py | tee w52_p2t_hp_power_residual.json
           python -m json.tool w52_p2t_hp_power_residual.json >/dev/null
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: w52-p2t-hp-power-residual
