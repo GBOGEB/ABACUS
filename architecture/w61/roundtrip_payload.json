@@ -1,0 +1,25 @@
+{
+  "contract": "TRIAGE_3PR_W61_ROUNDTRIP",
+  "version": "0.1.0",
+  "authority": "QPS_ENGINEERING_CHILD",
+  "child_schema_version": "qps.w61.roundtrip/v1",
+  "engineering_graph_sha256": "6256e1ea3af8548048ea62962e0c319c08d1a049251bc48991a0ba5f5dfd847f",
+  "evidence_registry_sha256": "d9312fbcbd36cd815d867278d80a54a99c3c873f82159976e48863404b62f282",
+  "generated_at": "2026-09-07T18:37:00+02:00",
+  "bidder_model": {
+    "split": ["LKT_ONLY", "ALAT_ONLY"],
+    "combined": ["SIDE_BY_SIDE_BY_RTM", "DIFFERENTIAL_ONLY", "SHARED_GAPS", "BIDDER_UNIQUE_GAPS"],
+    "shared_grain": "RTM",
+    "cross_bidder_state_copy": false
+  },
+  "artifact_policy": {
+    "existing_binaries_current_non_stale": true,
+    "regenerate_only_on_mismatch_or_qa_failure": true,
+    "p4_action": "BIND_EXISTING_ARTIFACTS",
+    "p5_action": "CROSS_BINARY_QA"
+  },
+  "credit_policy": {
+    "parent_receipt_cannot_promote_compliance": true,
+    "formal_credit_requires_source_locator_and_child_accept": true
+  }
+}
