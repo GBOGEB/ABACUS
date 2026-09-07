@@ -1,0 +1,43 @@
+wave: W63
+scale: 2x3PR
+lane: B
+name: DMAIC_3_4_RENEWAL
+base_sha: 266dd0372306949361d9c616091b929bc7c89048
+product: ABACUS_5.0.0
+engine: DMAIC_3.4
+intent: >-
+  Renew executable DMAIC orchestration beneath the already-requalified Twelve Cluster contract without changing engineering authority.
+pulses:
+  P1:
+    name: AGENT_MANAGER_GOVERNED_CODE_RUNNER
+    status: ACTIVE
+    targets:
+      - DMAIC_V3/core/agent_manager.py
+      - governed code execution contract
+      - deterministic worker result receipt
+    victory:
+      - AgentManager requalified on representative and adversarial inputs
+      - execution is bounded observable and deterministic where required
+      - code runner cannot establish engineering authority
+  P2:
+    name: HANDOVER_BRIDGE_MCP_EXECUTION_CONTRACTS
+    status: QUEUED
+    targets:
+      - DMAIC_V3/core/handover_bridge.py
+      - local_mcp runtime surfaces
+    victory:
+      - handover preserves exact payload identity
+      - MCP execution is typed bounded and receipt-producing
+  P3:
+    name: DMAIC34_RENEWAL_RECEIPT
+    status: QUEUED
+    victory:
+      - input method execution output dimensions scored
+      - golden representative adversarial populations executed
+      - final KEEP REFRESH MERGE SPLIT RETIRE REPLACE or COMPATIBILITY_ONLY verdict recorded
+hard_gates:
+  - exact_sha_execution
+  - deterministic_receipts
+  - authority_boundary_preserved
+  - no_unexplained_federation_delta
+engineering_truth_mutation: forbidden
