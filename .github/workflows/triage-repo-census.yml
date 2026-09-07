@@ -1,10 +1,10 @@
 name: TRIAGE Repo Census
 on:
   pull_request:
-    paths: ['triage/census/**','scripts/validate_triage_census.py','.github/workflows/triage-repo-census.yml']
+    paths: ['triage/**','scripts/validate_triage_census.py','.github/workflows/triage-repo-census.yml']
   push:
     branches: [main]
-    paths: ['triage/census/**','scripts/validate_triage_census.py']
+    paths: ['triage/**','scripts/validate_triage_census.py']
 jobs:
   census:
     runs-on: ubuntu-latest
@@ -14,7 +14,12 @@ jobs:
         with: {python-version: '3.12'}
       - run: pip install pyyaml
       - run: python scripts/validate_triage_census.py
+      - run: python triage/run_repo_census.py
       - name: Guard DOW authority boundary
         run: |
           grep -q 'DOW_DERIVED_ANALYSIS' triage/census/ABACUS.census.yaml
           grep -q 'parent repo may not promote engineering facts' triage/census/ABACUS.census.yaml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: triage-repo-census-abacus
+          path: triage/generated/
