@@ -1,9 +1,9 @@
-version: 0.1.0
+version: 0.2.0
 moniker: 3PR
 scheme: 3P3
 pulse: P3_DOW
 role: runtime_execution
-purpose: self-evaluate runtime residuals and emit bounded recommendations for frequency, worker allocation, coverage and QA intensity
+purpose: self-evaluate runtime residuals and emit a canonical ThreeP3SelfEvaluation payload while preserving exact child SHA
 
 self_eval:
   measures:
@@ -16,15 +16,17 @@ self_eval:
     - telemetry_gap
     - binary_staleness
     - unresolved_receipts
-  outputs:
-    - reverse_pressure_vector
-    - ranked_BT_recommendations
-    - proposed_frequency_delta
-    - proposed_worker_delta
-    - proposed_coverage_delta
-    - proposed_qa_intensity_delta
-    - expected_DoV_gain
-    - confidence
+  canonical_outputs:
+    - payloadSha256
+    - priorPulseReceiptSha256
+    - reversePressure
+    - recommendations
+    - dovScore
+    - pcaResidualScore
+    - btPriorityScore
+    - stopConditions
+    - nextPulseAllowed
+    - generatedAt
 
 recommendations:
   allowed:
@@ -42,6 +44,7 @@ recommendations:
   frequency_growth_must_be_bounded: true
 
 auto_execution:
+  bounds_contract: architecture/w60/3P3_EXECUTION_BOUNDS.yaml
   bounded_actions_only:
     - bounded_retry
     - worker_reallocation_within_configured_pool

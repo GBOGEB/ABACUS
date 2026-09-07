@@ -1,0 +1,44 @@
+{
+  "contract": "TRIAGE_3PR_W60_ROUNDTRIP",
+  "version": "0.1.0",
+  "authority": "QPS_ENGINEERING_CHILD",
+  "moniker": "3PR",
+  "scheme": "3P3",
+  "wave": "W60",
+  "sequence": ["P1","P2","P3","P4","P5","P6","P7"],
+  "sessionDoV": {
+    "scope": "current_chat_execution",
+    "horizons": ["CURRENT","PLUS_1","PLUS_5","PLUS_50","PLUS_100"]
+  },
+  "globalDoV": {
+    "scope": "cross_session_project_maturity",
+    "horizons": ["CURRENT","PLUS_1","PLUS_5","PLUS_50","PLUS_100"]
+  },
+  "pcaAxes": [
+    "engineering_evidence",
+    "source_locator",
+    "schema_alignment",
+    "graph_joinability",
+    "parent_receipts",
+    "runtime_qa",
+    "binary_freshness",
+    "cross_binary_consistency",
+    "zero_delta_repeatability",
+    "historical_duplication"
+  ],
+  "precedence": [
+    "hard_stop",
+    "engineering_evidence_and_source_locator",
+    "exact_parent_sha_roundtrip",
+    "schema_and_graph_joinability",
+    "runtime_and_qa",
+    "worker_and_frequency_scaling",
+    "binary_refresh",
+    "historical_cleanup"
+  ],
+  "engineeringCreditPolicy": {
+    "formalCreditRequiresSourceLocator": true,
+    "parentReceiptCannotPromoteCompliance": true,
+    "childFinalDisposition": ["ACCEPT","REJECT","DEFER"]
+  }
+}
