@@ -1,12 +1,13 @@
 """
-DMAIC V3.3 Configuration Module
-Updated: 2025-11-12
+DMAIC 3.4 Configuration Module
+Updated: 2026-09-07
 
 Centralized configuration for all DMAIC phases with support for:
 - Phase-specific settings
 - Idempotency controls
 - Ranking integration
 - Metrics collection
+- ABACUS 5 self-evaluation and release qualification
 """
 
 from dataclasses import dataclass, field
@@ -14,8 +15,8 @@ from pathlib import Path
 from typing import Dict, List, Any
 from enum import Enum
 
-VERSION = "3.3.0"
-PREVIOUS_VERSION = "2.3.0"
+VERSION = "3.4.0-rc1"
+PREVIOUS_VERSION = "3.3.1"
 
 # Core Principles
 CORE_PRINCIPLES = [
@@ -23,6 +24,8 @@ CORE_PRINCIPLES = [
     "IDEMPOTENCY: Same input → Same output",
     "MODULARITY: Independent, testable phases",
     "OBSERVABILITY: Track everything",
+    "SELF-EVALUATION: Measure method and execution quality before scaling",
+    "AUTHORITY: Analysis may prioritize work but may not mutate engineering truth",
 ]
 
 
@@ -31,8 +34,8 @@ class ExecutionMode(Enum):
     FULL = "full"                    # Execute all phases
     SINGLE_PHASE = "single_phase"    # Execute single phase
     RESUME = "resume"                # Resume from checkpoint
-    DRY_RUN = "dry_run"             # Validation only
-    SETUP_ONLY = "setup_only"       # Phase 0 only
+    DRY_RUN = "dry_run"              # Validation only
+    SETUP_ONLY = "setup_only"        # Phase 0 only
 
 
 @dataclass
@@ -47,12 +50,7 @@ class PathConfig:
     logs_dir: Path = Path("DMAIC_V3_OUTPUT/logs")
 
     def create_directories(self):
-        """Create all required directories"""
-        for attr_name in dir(self):
-            if attr_name.endswith('_dir') or attr_name.endswith('_root'):
-                path = getattr(self, attr_name)
-                if isinstance(path, Path):
-                    path.mkdir(parents=True, exist_ok=True)
+        """Create all required directories exactly once."""
         for attr_name in dir(self):
             if attr_name.endswith('_dir') or attr_name.endswith('_root'):
                 path = getattr(self, attr_name)

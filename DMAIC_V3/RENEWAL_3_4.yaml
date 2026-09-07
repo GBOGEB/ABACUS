@@ -1,0 +1,116 @@
+schema_version: "0.1.0"
+engine:
+  family: DMAIC
+  lineage_namespace: DMAIC_V3
+  candidate_version: "3.4.0-rc1"
+  previous_documented_version: "3.3.1"
+  product_host: "ABACUS 5.0.0"
+  release_status: REQUALIFICATION
+
+version_policy:
+  three_four:
+    meaning: non_breaking_method_and_execution_renewal
+    may_change:
+      - input_and_sample_qualification
+      - self_evaluation
+      - pca_bt_integration
+      - reverse_pressure_recommendations
+      - observability_and_receipts
+      - deterministic_release_smoke
+    must_preserve:
+      - DMAIC_V3_namespace
+      - phase_0_to_9_semantics_unless_individually_qualified
+      - engineering_authority_boundary
+  four_zero:
+    status: RESERVED
+    requires_breaking_evidence:
+      - phase_model_contract_break
+      - incompatible_observation_or_result_schema
+      - mandatory_recursive_self_dmaic_execution_semantics
+      - distributed_or_api_first_runtime_contract_break
+      - microservice_or_cross_process_authority_change
+
+renewal_dimensions:
+  input:
+    - source_diversity
+    - provenance
+    - sample_size
+    - representative_population
+    - adversarial_population
+    - missingness
+    - evidence_freshness
+  method:
+    - assumptions
+    - phase_utility
+    - duplication
+    - alternatives
+    - sensitivity
+    - stopping_rules
+    - false_convergence
+  output:
+    - schema_validity
+    - semantic_completeness
+    - provenance
+    - downstream_fitness
+    - reproducibility
+  execution:
+    - determinism
+    - structured_observability
+    - retry_behavior
+    - worker_independence
+    - exact_sha_identity
+
+component_classification:
+  - path: DMAIC_V3/config.py
+    baseline: "3.3.x"
+    candidate: "3.4.0-rc1"
+    disposition: REFRESHED
+    reason: version_authority_alignment_self_evaluation_principles_and_duplicate_directory_loop_removed
+  - path: DMAIC_V3/core/twelve_cluster_orchestrator.py
+    disposition: REQUALIFY
+    priority: CRITICAL
+    reason: canonical_orchestration_method_and_import_hygiene_require_current_sample_execution
+  - path: DMAIC_V3/core/agent_manager.py
+    disposition: REQUALIFY
+    priority: CRITICAL
+    reason: worker_scaling_and_receipt_contract_must_be_proven
+  - path: DMAIC_V3/core/handover_bridge.py
+    disposition: REQUALIFY
+    priority: CRITICAL
+    reason: exact_sha_federation_and_zero_delta_must_be_proven
+  - path: DMAIC_V3/core/temporal_metadata_engine.py
+    disposition: REQUALIFY
+    priority: HIGH
+    reason: temporal_freshness_and_lineage_semantics_need_current_evidence
+  - path: DMAIC_V3/phases/
+    disposition: REQUALIFY
+    priority: HIGH
+    reason: all_phases_need_input_method_output_and_sample_review
+  - path: DMAIC_V3/generators/
+    disposition: REQUALIFY
+    priority: HIGH
+    reason: outputs_need_current_semantic_and_binary_fitness_review
+  - path: local_mcp/agent_orchestrator_v3.0.py
+    disposition: COMPATIBILITY_PENDING_REFRESH
+    priority: HIGH
+  - path: local_mcp/knowledge_integration_v2.3.py
+    disposition: REFRESH_THEN_SHIM
+    priority: CRITICAL
+
+method_qualification:
+  PCA:
+    require: [n_observations, n_features, n_to_p_ratio, scaling_policy, variance_explained, loading_stability, bootstrap_or_resample_stability, outlier_sensitivity]
+  BT:
+    require: [candidate_count, comparison_count, graph_connectivity, confidence_or_uncertainty, cycle_diagnostics, rank_separation, sensitivity]
+  THREE_P3:
+    require: [baseline_workers, proposed_workers, useful_throughput_delta, rework_delta, divergence_delta, residual_delta, keep_increase_reduce_redirect_decision]
+
+promotion_to_3_4_0:
+  hard_gates:
+    - canonical_self_smoke_passes_twice_on_exact_sha
+    - no_competing_engine_version_authority
+    - canonical_orchestrator_requalified
+    - phase_contracts_regression_green
+    - pca_bt_3p3_method_receipts_present
+    - engineering_authority_boundary_preserved
+  status: NOT_YET_PROMOTED

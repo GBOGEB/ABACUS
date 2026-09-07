@@ -1,0 +1,139 @@
+{
+  "schema_version": "W62-0.1.0",
+  "receipt_type": "DMAIC_3_4_SELF_EVALUATION_PCA_BT_3P3",
+  "scope": {
+    "wave": "W62",
+    "pressure": "1x3PR",
+    "pr": 947,
+    "evaluated_head_sha": "15364035c4149f2948507a498b71f8e319620058",
+    "engine_candidate": "3.4.0-rc1",
+    "canonical_orchestrator": "DMAIC_V3/core/twelve_cluster_orchestrator.py"
+  },
+  "observations": {
+    "exact_sha_checkout": "PASS",
+    "product_engine_identity": "PASS",
+    "ordinary_smoke": "PASS",
+    "yaml_validation": "PASS",
+    "ruff_security": "PASS",
+    "qps_canonicalization": "PASS",
+    "w62_double_self_smoke": "FAIL",
+    "w62_double_self_smoke_failure_class": "MACHINE_RECEIPT_SERIALIZATION",
+    "w62_double_self_smoke_failure": "probe import-time stdout preceded JSON and made redirected smoke receipts non-JSON",
+    "docs_validation": "FAIL_AT_OBSERVATION_TIME",
+    "remaining_ci": "IN_PROGRESS_OR_QUEUED"
+  },
+  "orchestrator_requalification": {
+    "status": "DEFER",
+    "strengths": [
+      "canonical 12-cluster mapping exists",
+      "fail-closed unknown-phase behavior exists",
+      "bounded ThreadPoolExecutor path exists",
+      "timeout path exists",
+      "KEB compatibility path is explicitly separated from QPS canonical local execution"
+    ],
+    "findings": [
+      {
+        "id": "ORCH-34-001",
+        "severity": "HIGH",
+        "finding": "module header still describes DMAIC V4.0 while candidate engine is 3.4.0-rc1",
+        "action": "align implementation lineage wording without renaming DMAIC_V3 namespace"
+      },
+      {
+        "id": "ORCH-34-002",
+        "severity": "HIGH",
+        "finding": "optional KEB/GBOGEB imports print to stdout during import",
+        "action": "replace import-time print side effects with structured logging or captured diagnostics"
+      },
+      {
+        "id": "ORCH-34-003",
+        "severity": "MEDIUM",
+        "finding": "sys.path insertion is used to resolve KEB compatibility import",
+        "action": "replace with package-safe adapter/import after current level is hardened"
+      },
+      {
+        "id": "ORCH-34-004",
+        "severity": "HIGH",
+        "finding": "current W62 self-smoke proves importability but not yet representative task execution across all mapped phases",
+        "action": "add bounded representative and adversarial orchestrator execution sample before 3.4.0 final"
+      }
+    ]
+  },
+  "self_evaluation": {
+    "reproducibility": 0.45,
+    "test_pass_rate": 0.70,
+    "schema_validity": 0.90,
+    "zero_delta_integrity": 0.50,
+    "useful_throughput_gain": 0.55,
+    "worker_independence": 0.50,
+    "evidence_freshness": 1.0,
+    "confidence_formula": "0.25*reproducibility + 0.20*test_pass_rate + 0.15*schema_validity + 0.15*zero_delta_integrity + 0.10*useful_throughput_gain + 0.10*worker_independence + 0.05*evidence_freshness",
+    "confidence": 0.6175,
+    "confidence_status": "BELOW_W63_GATE"
+  },
+  "pca": {
+    "status": "DIAGNOSTIC_SMALL_N",
+    "sample_type": "current W62 release-control observations",
+    "sample_size": 7,
+    "features": [
+      "reproducibility",
+      "test_pass_rate",
+      "schema_validity",
+      "zero_delta_integrity",
+      "useful_throughput_gain",
+      "worker_independence",
+      "evidence_freshness"
+    ],
+    "method_limit": "sample is too small for a defensible statistical PCA; do not claim production PCA loadings",
+    "residual_priority_axes": [
+      "reproducibility",
+      "zero_delta_integrity",
+      "worker_independence"
+    ]
+  },
+  "bt": {
+    "status": "BOUNDED_PAIRWISE_PRIORITY",
+    "candidates": [
+      "repair machine-readable self-smoke",
+      "remove orchestrator import-time stdout side effects",
+      "execute representative 12-cluster sample",
+      "resolve docs validation failure",
+      "increase workers"
+    ],
+    "priority_order": [
+      "repair machine-readable self-smoke",
+      "remove orchestrator import-time stdout side effects",
+      "execute representative 12-cluster sample",
+      "resolve docs validation failure",
+      "increase workers"
+    ],
+    "top_action": "repair machine-readable self-smoke",
+    "scale_action_rank": 5
+  },
+  "three_p3": {
+    "pressure_axes": {
+      "scope": "KEEP",
+      "frequency": "KEEP",
+      "coverage": "INCREASE_ORCHESTRATOR_SAMPLE",
+      "workers": "KEEP_1X",
+      "evidence": "INCREASE",
+      "schema": "KEEP",
+      "runtime": "REPAIR",
+      "qa": "INCREASE",
+      "binary_freshness": "DEFER"
+    },
+    "decision": "KEEP_1X_AND_REDIRECT",
+    "next_pulse_allowed": true,
+    "next_pulse": "rerun exact-SHA double self-smoke after stdout-capture repair; then execute representative Twelve Cluster sample"
+  },
+  "promotion": {
+    "dmaic_3_4_0_rc1": "CONTINUE_REQUALIFICATION",
+    "dmaic_3_4_0_final": "BLOCKED",
+    "w63_2x3pr": "BLOCKED",
+    "w63_confidence_gate": 0.70,
+    "observed_confidence": 0.6175
+  },
+  "authority": {
+    "engineering_truth_mutated": false,
+    "receipt_role": "release-control observation and prioritization only"
+  }
+}
