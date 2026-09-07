@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import subprocess
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -61,7 +61,7 @@ def git_commit() -> str:
 
 
 def provenance_header(generated_at: str | None = None, register_hash: str | None = None, commit: str | None = None) -> str:
-    timestamp = generated_at or datetime.now(UTC).isoformat()
+    timestamp = generated_at or datetime.now(timezone.utc).isoformat()
     digest = register_hash or register_sha256()
     revision = commit or git_commit()
     return (
