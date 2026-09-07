@@ -1,0 +1,19 @@
+schema_version: triage-pipeline/1.0.0
+repo: GBOGEB/ABACUS
+owned_stages: [P6_DOW]
+upstream: P5_KEB
+downstream: P7_NORMALIZE
+analysis_methods: [dependency_analysis, graph_diagnostics, PCA, DMAIC, sensitivity, completeness_analysis]
+bridges:
+  - {name: DOW_Bridge, from: CODEX, to: ABACUS}
+  - {name: Analysis_Return_Bridge, from: ABACUS, to: CODEX}
+adaptors:
+  - payload_to_feature_matrix
+  - graph_to_diagnostics
+  - analysis_to_findings
+invariants:
+  - immutable_analysis_input
+  - exact_incoming_SHA256_binding
+  - synthetic_engineering_values_forbidden
+  - findings_are_non_authoritative
+  - child_final_disposition_authority
