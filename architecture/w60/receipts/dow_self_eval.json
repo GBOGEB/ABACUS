@@ -1,0 +1,61 @@
+{
+  "moniker": "3PR",
+  "scheme": "3P3",
+  "pulse": "P3_DOW",
+  "payloadSha256": "aff1b8cccd0911080278d07169e17e32ceed1fa0323d6fad929bfe9dc8701998",
+  "priorPulseReceiptSha256": "271e6e0454157e2ed34f355647d417667f56793de668fb2695306270de0dfd65",
+  "reversePressure": [
+    {
+      "axis": "runtime",
+      "level": "HIGH",
+      "score": 0.7,
+      "residual": 0.7,
+      "sourceMetrics": ["W58_DOW_RUNTIME_RECEIPT_CONTRACT.required_checks", "worker_assignment_recorded", "mcp_worker_health_recorded", "dmaic_result_bound", "telemetry_digest_present"],
+      "rationale": "Exact-SHA transport is proven, but the full worker/MCP/DMAIC/telemetry execution receipt was not rerun and bound during W60.1."
+    },
+    {
+      "axis": "qa",
+      "level": "HIGH",
+      "score": 0.75,
+      "residual": 0.75,
+      "sourceMetrics": ["render_qa_bound_if_requested", "P5 cross-binary QA", "Playwright/render QA"],
+      "rationale": "Current user-facing artifacts exist, but W60.1 has not yet bound cross-binary tuple equality, Playwright, or render QA to the accepted payload."
+    },
+    {
+      "axis": "binary_freshness",
+      "level": "MEDIUM",
+      "score": 0.3,
+      "residual": 0.3,
+      "sourceMetrics": ["project current-artifact state", "BINARIES_MANIFEST.md", "checksums.sha256"],
+      "rationale": "The project state identifies the canonical SSOT and user-facing binaries as current and non-stale; the remaining gap is W60.1 digest/manifest binding, not regeneration."
+    }
+  ],
+  "recommendations": [
+    {
+      "action": "ADD_COVERAGE",
+      "targetAxis": "qa",
+      "proposedDelta": 0.2,
+      "boundedBy": ["architecture/w60/3P3_EXECUTION_BOUNDS.yaml", "P5 cross-binary QA scope"],
+      "requiresChildAcceptance": false,
+      "autoExecutable": true,
+      "expectedBenefit": 0.25,
+      "confidence": 0.9
+    },
+    {
+      "action": "HOLD",
+      "targetAxis": "binary_freshness",
+      "proposedDelta": 0.0,
+      "boundedBy": ["do not regenerate current binaries unless digest/staleness check fails"],
+      "requiresChildAcceptance": false,
+      "autoExecutable": true,
+      "expectedBenefit": 0.1,
+      "confidence": 0.95
+    }
+  ],
+  "dovScore": 0.45,
+  "pcaResidualScore": 0.58,
+  "btPriorityScore": 0.85,
+  "stopConditions": ["runtime_contract_bindings_incomplete", "w60_binary_manifest_binding_pending"],
+  "nextPulseAllowed": false,
+  "generatedAt": "2026-09-07T16:19:00Z"
+}

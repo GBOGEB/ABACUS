@@ -1,20 +1,33 @@
 {
-  "contract": "TRIAGE_3PR_W60_PARENT_RECEIPT",
+  "contract": "W58_DOW_RUNTIME_RECEIPT_CONTRACT",
+  "wave": "W60.1",
   "parent": "DOW_ABACUS",
   "pulse": "P3_DOW",
-  "scope": "P1_P2_identical_sha_roundtrip",
-  "payloadSha256": "aff1b8cccd0911080278d07169e17e32ceed1fa0323d6fad929bfe9dc8701998",
-  "payloadGitBlobSha1": "715644d5c8e212f84c6367417fd95c455a39a35c",
-  "status": "PASS",
+  "child_payload_sha256": "aff1b8cccd0911080278d07169e17e32ceed1fa0323d6fad929bfe9dc8701998",
+  "child_payload_git_blob_sha1": "715644d5c8e212f84c6367417fd95c455a39a35c",
+  "runtime_schema_version": "ThreeP3SelfEvaluationSchema@W60-0.2.0",
+  "execution_status": "DEFER",
+  "qa_status": "DEFER",
+  "worker_digest": "6e1099d0715b37f9604de8cc09863bc62b3b62df52982429e56419c60a7b219b",
+  "telemetry_digest": "6e1099d0715b37f9604de8cc09863bc62b3b62df52982429e56419c60a7b219b",
+  "findings_digest": "7e26e262741c3653731005c15c76c8b85d298da32a837ac7e6d59f8e1becb753",
   "checks": {
-    "exactPayloadShaPreserved": true,
-    "runtimeContractAccepted": true,
-    "executionBoundsContractPresent": true,
-    "qaScopeLimitedToRoundtripReceipt": true,
-    "outwardArtifactsRegenerated": false,
-    "engineeringTruthMutation": false,
-    "formalCompliancePromotion": false
+    "payload_sha_preserved": true,
+    "operation_schema_valid": true,
+    "worker_assignment_recorded": false,
+    "mcp_worker_health_recorded": false,
+    "dmaic_result_bound": false,
+    "pca_bt_result_bound": true,
+    "render_qa_bound_if_requested": false,
+    "telemetry_digest_present": false
   },
-  "engineeringCreditGranted": false,
-  "next": "P3_CHILD_REENTRY"
+  "binary_context": {
+    "project_state": "CURRENT_USER_FACING_BINARIES_EXIST_AND_ARE_NON_STALE",
+    "w60_repo_manifest_binding": "PENDING",
+    "regeneration_required": false
+  },
+  "engineering_credit_granted": false,
+  "formal_compliance_promoted": false,
+  "receipt_hash_method": "sha256(canonical-json-without-receipt_sha256)",
+  "receipt_sha256": "749c6a4f3f96fba3aa7410188d50959aaf35d20bc1dcccc80f7cc4ee90410b64"
 }
