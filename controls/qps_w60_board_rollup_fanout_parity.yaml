@@ -1,0 +1,38 @@
+schema_version: "0.1"
+document_id: QPS_W60_BOARD_ROLLUP_FANOUT_PARITY
+status: DOW_PARENT_VALIDATION_REQUEST
+source_child_pr: GBOGEB/cryoplant-project#634
+source_child_head: dc003f599ef7b782ac3853f32de46f2c36b0cbd7
+repo_role: ABACUS_DOW_PARENT
+scope:
+  - board_metric_rollup
+  - fanout_member_count_parity
+  - grouped_navigation_parity
+  - bidder_partition_parity
+board_contract:
+  primary_groups: 6
+  board_core_slides: 8
+  engineering_closure: "70/90 = 77.78%"
+  negotiation_resolution: "0/20"
+  navigation_credit_delta: 0
+fanout_contract:
+  one_source_many_members_allowed: true
+  obligation_denominator_collapse_allowed: false
+  duplicate_formal_credit_allowed: false
+  cross_bidder_value_transfer_allowed: false
+  explicit_member_mapping_required: true
+rollup_contract:
+  reducer_must_be_declared: true
+  aliases_comments_and_duplicate_views_count_once_at_canonical_atom: true
+  board_summary_is_new_evidence: false
+  aggregate_value_may_be_split_to_branches_without_source: false
+validation_requests:
+  - verify_six_group_launcher_has_no_metric_delta
+  - verify_LKT_ALAT_comparison_keeps_bidder_counts_and_selected_values_separate
+  - verify_fanout_member_edges_do_not_change_formal_denominators
+  - verify_board_core_metrics_equal_child_source_metrics
+  - return_DOW_parity_receipt_to_child_without_self_promotion
+formal_effect:
+  engineering_closure_delta: 0
+  negotiation_resolution_delta: 0
+  score_delta: 0
