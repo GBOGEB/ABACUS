@@ -19,7 +19,10 @@ def scope_dmaic_component_coverage(monkeypatch, request):
     entire repository instead of the selected component.  Rewrite only those
     exact nested component commands; all other subprocess calls are untouched.
     """
-    if request.node.module.__name__ != "tests.test_dmaic_orchestration":
+    if request.node.module.__name__ not in {
+        "test_dmaic_orchestration",
+        "tests.test_dmaic_orchestration",
+    }:
         return
 
     original_run = subprocess.run
