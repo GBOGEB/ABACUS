@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1.0",
+  "source": "ssot/manifest.yaml",
+  "state": "DERIVED_NORMALIZED_INDEX",
+  "authorities": [
+    {"logical_id":"QPS_CLARIFICATION_REGISTER","path":"ssot/clarification_register.yaml","state":"AUTHORITATIVE_CANDIDATE"},
+    {"logical_id":"QPS_CONTRACTUAL_GAP_REGISTER","path":"ssot/contractual_gap_register.yaml","state":"AUTHORITATIVE_CANDIDATE"},
+    {"logical_id":"QPS_RTM_REFERENCE_MATRIX","path":"ssot/rtm_reference_matrix.yaml","state":"AUTHORITATIVE_CANDIDATE"},
+    {"logical_id":"SEMANTIC_TRACEABILITY","path":"ssot/semantic_traceability.yaml","state":"AUTHORITATIVE_CANDIDATE"},
+    {"logical_id":"SSOT_ITEMS","path":"ssot/ssot_items.yaml","state":"REGISTRY_CANDIDATE"},
+    {"logical_id":"SSOT_STYLE","path":"ssot/ssot_style.json","state":"AUTHORITATIVE_STYLE_CANDIDATE"}
+  ]
+}
