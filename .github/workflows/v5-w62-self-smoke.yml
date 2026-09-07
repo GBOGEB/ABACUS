@@ -1,0 +1,46 @@
+name: V5 W62 Self Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/**'
+      - 'ssot/**'
+      - 'pyproject.toml'
+      - '.github/workflows/v5-w62-self-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  self-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact checkout SHA
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Product/engine identity
+        run: python -m DMAIC_V3 version --json
+      - name: Run deterministic self-smoke twice
+        shell: bash
+        run: |
+          python -m DMAIC_V3 self-smoke > /tmp/smoke-1.json
+          python -m DMAIC_V3 self-smoke > /tmp/smoke-2.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a = json.loads(Path('/tmp/smoke-1.json').read_text())
+          b = json.loads(Path('/tmp/smoke-2.json').read_text())
+          assert a['commit_sha'] == b['commit_sha']
+          assert a['tree_sha'] == b['tree_sha']
+          assert a['deterministic_sha256'] == b['deterministic_sha256']
+          assert a['success'] and b['success']
+          print(json.dumps({'commit_sha': a['commit_sha'], 'tree_sha': a['tree_sha'], 'deterministic_sha256': a['deterministic_sha256'], 'passed': a['passed'], 'total': a['total']}, sort_keys=True))
+          PY
