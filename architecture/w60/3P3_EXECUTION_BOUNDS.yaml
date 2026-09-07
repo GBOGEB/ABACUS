@@ -1,0 +1,35 @@
+version: 0.1.0
+contract: 3P3_EXECUTION_BOUNDS
+owner: QPS_ENGINEERING_CHILD
+applies_to: [QPS, KEB, DOW]
+principle: bounded autonomy may tune execution resources and review intensity but may not mutate engineering truth
+
+retry:
+  max_attempts_per_pulse: 2
+  max_validation_retries_per_receipt: 1
+
+frequency:
+  baseline_multiplier_min: 0.5
+  baseline_multiplier_max: 2.0
+  max_step_change_per_rollup: 0.5
+  requires_child_acceptance_above_multiplier: 1.5
+
+workers:
+  allow_only_configured_pool: true
+  max_reallocation_fraction_per_rollup: 0.25
+  max_net_new_workers: 0
+
+coverage:
+  read_only_expansion_max_fraction_per_pulse: 0.20
+  write_scope_expansion_requires_child_acceptance: true
+
+qa:
+  max_reruns_per_pulse: 2
+  binary_regeneration_max_per_accepted_ssot_digest: 1
+
+hard_stops:
+  - payload_sha_mismatch
+  - provenance_fail
+  - formal_credit_without_source_locator
+  - requested_unbounded_resource_growth
+  - authority_conflict
