@@ -1,0 +1,21 @@
+{
+  "schema_version": "W63-0.1.0",
+  "lane": "B",
+  "pulse": "P1",
+  "lineage": [953, 954],
+  "pr": 954,
+  "head_sha": "873bca64f1627eb5540414da255a6c772760ca00",
+  "merge_sha": "a8c71a4bb736b81aa1b95af3f29444f126c06570",
+  "capability": "agent_manager_governed_execution",
+  "status": "MERGED_CI_PENDING_AT_LAST_OBSERVATION",
+  "implemented": [
+    "no_runtime_source_stub_creation",
+    "dmaic_version_authority",
+    "explicit_callable_execution",
+    "deterministic_analytical_receipts",
+    "representative_adversarial_fail_closed_tests"
+  ],
+  "ci_at_last_observation": "QUEUED",
+  "engineering_truth_mutated": false,
+  "decision": "ADVANCE_P2_IMPLEMENTATION_WITHOUT_FINAL_P1_DOV_CLAIM"
+}
