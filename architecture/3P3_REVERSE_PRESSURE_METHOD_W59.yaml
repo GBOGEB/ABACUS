@@ -1,0 +1,76 @@
+version: 0.1.0
+moniker: 3PR
+scheme: 3P3
+pulse: P3_DOW
+role: runtime_execution
+purpose: self-evaluate runtime residuals and emit bounded recommendations for frequency, worker allocation, coverage and QA intensity
+
+self_eval:
+  measures:
+    - dov_gap
+    - runtime_failure_rate
+    - qa_failure_rate
+    - worker_saturation
+    - queue_backlog
+    - queue_age
+    - telemetry_gap
+    - binary_staleness
+    - unresolved_receipts
+  outputs:
+    - reverse_pressure_vector
+    - ranked_BT_recommendations
+    - proposed_frequency_delta
+    - proposed_worker_delta
+    - proposed_coverage_delta
+    - proposed_qa_intensity_delta
+    - expected_DoV_gain
+    - confidence
+
+recommendations:
+  allowed:
+    - HOLD
+    - INCREASE_FREQUENCY
+    - DECREASE_FREQUENCY
+    - ADD_WORKERS
+    - REDUCE_WORKERS
+    - ADD_COVERAGE
+    - REGENERATE_BINARIES
+    - REQUIRE_HUMAN_REVIEW
+  recommendations_are_not_authority: true
+  engineering_scope_change_requires_child_acceptance: true
+  worker_growth_must_be_bounded: true
+  frequency_growth_must_be_bounded: true
+
+auto_execution:
+  bounded_actions_only:
+    - bounded_retry
+    - worker_reallocation_within_configured_pool
+    - frequency_adjustment_within_configured_bounds
+    - read_only_coverage_expansion
+    - qa_rerun
+    - binary_regeneration
+  prohibited:
+    - engineering_truth_mutation
+    - formal_compliance_promotion
+    - unbounded_worker_creation
+    - unbounded_frequency_increase
+
+rollup_contribution:
+  consumes: [P1_QPS_self_eval, P2_KEB_self_eval]
+  emits: P3_DOW_self_eval
+  preserves_exact_payload_sha: true
+  next_state: ROLLUP
+
+self_awareness:
+  tracks:
+    - execution_success_rate
+    - execution_failure_rate
+    - delta_DoV_per_pass
+    - worker_utilisation
+    - worker_idle_rate
+    - queue_age
+    - queue_growth_rate
+    - recommendation_hit_rate
+    - recommendation_false_positive_rate
+    - stale_artifact_count
+  learning_rule: tune runtime allocation and recommendation thresholds only; never mutate engineering truth autonomously
