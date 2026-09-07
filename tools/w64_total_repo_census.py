@@ -132,8 +132,10 @@ def build_census(root: Path) -> dict[str, object]:
         )
 
     for asset in assets:
-        if duplicate_counter[duplicate_key(Path(str(asset["path"]))) ] > 1 and asset["classification"] not in {"generated", "dormant"}:
-            asset["duplicate_family_candidate"] = duplicate_key(Path(str(asset["path"])))
+        asset_path = Path(str(asset["path"]))
+        duplicate_family = duplicate_key(asset_path)
+        if duplicate_counter[duplicate_family] > 1 and asset["classification"] not in {"generated", "dormant"}:
+            asset["duplicate_family_candidate"] = duplicate_family
 
     by_category = Counter(str(asset["category"]) for asset in assets)
     by_classification = Counter(str(asset["classification"]) for asset in assets)
