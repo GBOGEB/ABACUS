@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.0.1",
   "policy_id": "ABACUS-CI-SSOT-001",
   "purpose": "Single source of truth for GitHub Actions grouping, lifecycle ordering, canonical ownership and consolidation decisions.",
   "baseline_snapshot": {
@@ -33,7 +33,8 @@
         "osv-scanner.yml",
         "format-check.yml",
         "yaml-validation.yml",
-        "validate_docs.yml"
+        "validate_docs.yml",
+        "v5-w62-self-smoke.yml"
       ]
     },
     "full": {
@@ -115,12 +116,12 @@
     {"pattern": "^(bridge-ci|codespace-federation|federation-notebook|gbogeb-abacus-integration-ci-cd)\\.yml$", "cluster": "bridge_federation", "lifecycle": "pr_domain", "disposition": "keep"},
     {"pattern": "^(dmaic-commit-metrics|dmaic-enterprise-ci|dmaic-phase-execution|dmaic-v3-cd|dmaic-v3-ci|dmaic-v3-cognitive-cicd|book-build|recursive-build)\\.yml$", "cluster": "dmaic", "lifecycle": "pr_domain", "disposition": "keep"},
     {"pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|background_orchestrator|sprint-trigger)\\.yml$", "cluster": "dow", "lifecycle": "pr_domain", "disposition": "keep"},
-    {"pattern": "^(governance-drift-detection|governance|review-artifact-validation|runtime-governance|runtime-smoke|runtime-verification|validation|validate-setup|validate_docs|yaml-validation|inventory|deployment-enforcement)\\.yml$", "cluster": "runtime_governance", "lifecycle": "pr_domain", "disposition": "keep"},
+    {"pattern": "^(governance-drift-detection|governance|review-artifact-validation|runtime-governance|runtime-smoke|runtime-verification|validation|validate-setup|validate_docs|yaml-validation|inventory|deployment-enforcement|v5-w62-self-smoke|v5-w62-twelve-cluster-requalification|triage-repo-census)\\.yml$", "cluster": "runtime_governance", "lifecycle": "pr_domain", "disposition": "keep"},
     {"pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$", "cluster": "security", "lifecycle": "pr_domain", "disposition": "keep"},
     {"pattern": "^(cd-pipeline|cd-unified|cd|release|delta-1-deploy|delta-1-release|history-purge-20260827|remove-public-binaries)\\.yml$", "cluster": "delivery", "lifecycle": "post_merge", "disposition": "keep"},
     {"pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$", "cluster": "documentation", "lifecycle": "post_merge", "disposition": "keep"},
     {"pattern": "^(auto-merge-prs|branch-analysis|branch-pruner|ci-failure-debug-rerun|ci_monitor_and_issue_creator|copilot-pr-creator|dashboard-health|post-merge-pr-summary)\\.yml$", "cluster": "automation", "lifecycle": "scheduled", "disposition": "keep"},
-    {"pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd)\\.yml$", "cluster": "specialised", "lifecycle": "pr_domain", "disposition": "keep"}
+    {"pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd|qps-canonicalization|qps-dow-w43-triage|qps-p05f-measured-sensitivity|qps-p05j-quantitative|w52-p2m-helium-proof|w52-p2r-alat-ts-strict-residual|w52-p2t-hp-power-residual|w52-p2t-ts-runtime-receipt|w53-p05t-qcell-jt-runtime)\\.yml$", "cluster": "specialised", "lifecycle": "pr_domain", "disposition": "keep"}
   ],
   "quality_gates": {
     "allow_unclassified": 0,

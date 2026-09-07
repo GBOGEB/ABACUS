@@ -1,0 +1,72 @@
+{
+  "schema_version": "W62-0.2.0",
+  "receipt_type": "DMAIC_3_4_W62_GATE_DECISION",
+  "evidence": {
+    "pr_947_merge_sha": "def0e4e8455fdd50fff085291831d79f6b3a44f1",
+    "pr_948_head_sha": "59313ce7a09cf5e835968f0dc621986d74d57974",
+    "pr_948_merge_sha": "71259bac4759c0e4aeda9f108173721366fa2217",
+    "double_self_smoke": "PASS",
+    "representative_adversarial_twelve_cluster": "PASS",
+    "exact_sha_step": "PASS",
+    "ordinary_smoke": "PASS",
+    "abacus_matrix": "PASS",
+    "yaml": "PASS",
+    "format": "PASS",
+    "ruff": "PASS",
+    "semgrep": "PASS",
+    "codeql": "PASS",
+    "osv": "PASS",
+    "qps_canonicalization": "PASS"
+  },
+  "self_evaluation": {
+    "reproducibility": 0.90,
+    "test_pass_rate": 0.90,
+    "schema_validity": 0.90,
+    "zero_delta_integrity": 0.90,
+    "useful_throughput_gain": 0.55,
+    "worker_independence": 0.75,
+    "evidence_freshness": 1.0,
+    "confidence_formula": "0.25*reproducibility + 0.20*test_pass_rate + 0.15*schema_validity + 0.15*zero_delta_integrity + 0.10*useful_throughput_gain + 0.10*worker_independence + 0.05*evidence_freshness",
+    "confidence": 0.855,
+    "w63_gate": 0.70,
+    "gate_result": "PASS"
+  },
+  "pca": {
+    "status": "DIAGNOSTIC_SMALL_N",
+    "resolved_axes": ["reproducibility", "zero_delta_integrity"],
+    "remaining_axes": ["workflow_governance", "full_phase_regression", "worker_scaling_evidence"],
+    "claim_boundary": "No production statistical PCA loading claim; bounded release-control residual analysis only."
+  },
+  "bt": {
+    "top_residual": "workflow_governance",
+    "next": "full_phase_regression",
+    "then": "worker_scaling_evidence"
+  },
+  "three_p3": {
+    "decision": "INCREASE_TO_2X_AFTER_GOVERNANCE_GREEN",
+    "scope": "KEEP",
+    "frequency": "KEEP",
+    "coverage": "INCREASE",
+    "workers": "INCREASE_1X_TO_2X",
+    "evidence": "INCREASE",
+    "schema": "KEEP",
+    "runtime": "KEEP",
+    "qa": "KEEP_HIGH",
+    "binary_freshness": "DEFER"
+  },
+  "promotion": {
+    "w62_confidence_gate": "PASSED",
+    "w63": "CONDITIONALLY_OPEN_AFTER_CI_GOVERNANCE_GREEN",
+    "dmaic_3_4_0_rc1": "ADVANCE",
+    "dmaic_3_4_0_final": "STILL_REQUIRES_FULL_PROMOTION_GATES"
+  },
+  "known_residuals": [
+    "CI governance previously rejected newly introduced/unclassified workflows; policy SSOT is repaired in this gate-crossing pulse and must turn green.",
+    "Validate Docs has a separate red check and remains visible; it is not reclassified as orchestrator evidence.",
+    "DMAIC Enterprise and Recursive DMAIC were still in progress at the last observation and are not counted as passes here."
+  ],
+  "authority": {
+    "engineering_truth_mutated": false,
+    "role": "release-control evidence and scaling decision only"
+  }
+}
