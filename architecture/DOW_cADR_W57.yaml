@@ -1,0 +1,35 @@
+id: DOW-cADR-W57
+version: 0.1.0
+repo: GBOGEB/ABACUS
+plane: runtime
+role: runtime-execution-authority
+status: PROPOSED_CONTROL
+owns:
+  - orchestration
+  - worker_execution
+  - DMAIC
+  - PCA
+  - BT
+  - telemetry
+  - render_QA
+  - runtime_receipts
+  - MCP_worker_health
+does_not_own:
+  - engineering_truth
+  - semantic_policy
+interaction:
+  input_from: GBOGEB/CODEX
+  engineering_origin: GBOGEB/cryoplant-project
+  return_to: GBOGEB/cryoplant-project
+outward_binary_targets:
+  - DOW_ARCHITECTURE.xlsx
+  - DOW_ARCHITECTURE.html
+  - DOW_ARCHITECTURE.pptx
+  - DOW_ARCHITECTURE.pdf
+  - DOW_AGENT_REGISTER.xlsx
+  - DOW_RUNTIME_GRAPH.html
+  - DOW_PIPELINE.html
+  - DOW_DMAIC_SCORECARD.xlsx
+  - DOW_PCA_BT_REPORT.pdf
+  - DOW_TELEMETRY.html
+release_rule: runtime results must preserve exact governed input digest and emit a hash-bound receipt
