@@ -1,0 +1,38 @@
+{
+  "schema_version": "W64-3P3-1.0.0",
+  "lane": "total_repo_census",
+  "title": "W64 total repository census and penetration proof",
+  "depends_on": {
+    "w63_receipt_pr": 961,
+    "w63_receipt_merge_sha": "ba0a0207686347fb2e3511d53048f725003c1493"
+  },
+  "purpose": "Quantify active, dormant, duplicate, stale, and unknown assets across the repository before release credit is promoted.",
+  "pulses": {
+    "P1_primary": [
+      "Enumerate tracked assets by category: source, SSOT, schema, workflow, script, binary, generated output, docs, and legacy material.",
+      "Bind every registry path to an existing file or explicitly mark it unresolved.",
+      "Produce category-level active/dormant/unknown counts."
+    ],
+    "P2_reverse_pressure": [
+      "Detect duplicate or competing SSOTs, schemas, runtimes, and release outputs.",
+      "Prevent stale ABACUS version trees, old bridge proposals, generated outputs, and Docker leftovers from inflating active architecture coverage.",
+      "Classify unknowns conservatively until import, workflow, or registry evidence proves activity."
+    ],
+    "P3_receipt": [
+      "Emit a unified W64 census receipt with counts, duplicate candidates, unresolved references, and follow-up consolidation queue.",
+      "Require exact-head CI and machine-readable output before DoV uplift.",
+      "Declare release-critical unknowns as blockers, not neutral inventory."
+    ]
+  },
+  "classification_values": ["active", "dormant", "duplicate_candidate", "stale", "generated", "unknown", "blocked"],
+  "acceptance_gates": [
+    "Every counted asset has path, category, classification, and evidence basis.",
+    "No registry path is silently ignored.",
+    "Duplicate authority candidates are reported before consolidation."
+  ],
+  "non_claims": [
+    "Does not delete or migrate assets.",
+    "Does not claim architectural penetration from generated outputs alone.",
+    "Does not promote W64 until census output is executable and exact-head green."
+  ]
+}
