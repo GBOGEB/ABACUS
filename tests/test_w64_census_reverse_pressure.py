@@ -43,6 +43,33 @@ def test_stale_version_tree_is_warning_not_active_credit():
     assert "stale_version_tree_or_legacy_material" in finding_types(report)
 
 
+def test_stale_markers_match_path_components_not_substrings():
+    stale_paths = [
+        "old/contract.yaml",
+        "legacy/contract.yaml",
+        "archive/contract.yaml",
+        "deprecated/contract.yaml",
+        "stale/contract.yaml",
+        "ABACUS-v2/contract.yaml",
+    ]
+    active_paths = [
+        "tests/golden/contract.yaml",
+        "scripts/cold_start_doctor.py",
+        "docs/viewer_runtime_scaffold.md",
+    ]
+    census = {
+        "asset_count": len(stale_paths) + len(active_paths),
+        "assets": [
+            *[asset(path, "schema_or_config", "active_candidate") for path in stale_paths],
+            *[asset(path, "source_or_script", "active_candidate") for path in active_paths],
+        ],
+    }
+    report = reverse_pressure(census)
+    stale = next(finding for finding in report["findings"] if finding["type"] == "stale_version_tree_or_legacy_material")
+    assert stale["count"] == len(stale_paths)
+    assert set(stale["paths"]) == set(stale_paths)
+
+
 def test_generated_authority_collision_blocks():
     census = {
         "asset_count": 1,
