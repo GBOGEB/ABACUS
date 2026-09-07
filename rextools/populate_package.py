@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,7 +34,7 @@ def _status_block(status: dict) -> str:
     verdict = status["verdict"]
     n_gates = status["n_open_gates"]
     energy = status["energy_model"]
-    timestamp = datetime.now(UTC).isoformat()
+    timestamp = datetime.now(timezone.utc).isoformat()
     gate_ids = ", ".join(g["id"] for g in status.get("open_gates", [])) or "none"
 
     lines = [
