@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+from io import StringIO
 import hashlib
 import json
 from pathlib import Path
@@ -85,11 +87,17 @@ def run_self_smoke() -> dict[str, Any]:
     ]
     stages: list[dict[str, Any]] = []
     for name, probe in probes:
+        captured = StringIO()
         try:
-            detail = probe()
-            stages.append({"name": name, "status": "PASS", "detail": detail})
+            with redirect_stdout(captured):
+                detail = probe()
+            stage: dict[str, Any] = {"name": name, "status": "PASS", "detail": detail}
         except Exception as exc:  # smoke receipt must capture rather than hide the failing stage
-            stages.append({"name": name, "status": "FAIL", "error": f"{type(exc).__name__}: {exc}"})
+            stage = {"name": name, "status": "FAIL", "error": f"{type(exc).__name__}: {exc}"}
+        noise = captured.getvalue().strip()
+        if noise:
+            stage["captured_stdout"] = noise
+        stages.append(stage)
 
     commit_sha = _git("rev-parse", "HEAD")
     tree_sha = _git("rev-parse", "HEAD^{tree}")
