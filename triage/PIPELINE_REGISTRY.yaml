@@ -1,0 +1,18 @@
+schema_version: "1.0"
+repository: GBOGEB/ABACUS
+pipelines:
+  - id: DOW_DMAIC
+    state: CANONICAL_ACTIVE
+    implementation: DMAIC_V3/core/twelve_cluster_orchestrator.py
+    flow: [intake, define, measure, analyze, improve, control, knowledge, todo_temporal, findings_receipt]
+  - id: DOW_FEDERATION_RETURN
+    state: CANONICAL_ACTIVE
+    implementation: [DMAIC_V3/core/handover_bridge.py, federation, feedback]
+    flow: [governed_payload, bounded_analysis, typed_findings, KEB_normalization, child_return]
+  - id: AGENTIC_EXECUTION
+    state: CANONICAL_ACTIVE
+    implementation: [local_mcp/agent_orchestrator_v3.0.py, local_mcp/knowledge_integration_v2.3.py]
+  - id: SSOT_VIEW_GENERATION
+    state: CANONICAL_ACTIVE
+    implementation: [scripts/build_qps_ssot_views.py, scripts/qa_qps_ssot_views.py]
+quality_gates: [payload_identity, provenance, analytical_scope, finding_type, return_contract]

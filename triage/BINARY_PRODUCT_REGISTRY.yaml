@@ -1,0 +1,12 @@
+schema_version: "1.0"
+repository: GBOGEB/ABACUS
+authority_rule: analysis_and_presentation_products_are_derived_views
+product_families:
+  dashboards:
+    state: GENERATED
+    products: [docs/deep_analysis_dashboard.html, docs/handover_book.html, docs/progress_tracker.html, docs/dmaic-metrics.html, docs/repository_structure.html, docs/final_status_v4.4.0.html]
+  qps_views:
+    state: GENERATED
+    products: [XLSX, HTML, PPTX, PDF]
+    builders: [scripts/build_qps_ssot_views.py, scripts/qa_qps_ssot_views.py]
+required_lineage: [input_payload_identity, analysis_receipt, generator, QA]
