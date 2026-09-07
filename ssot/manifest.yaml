@@ -1,0 +1,93 @@
+schema_version: "0.1.0"
+repository: GBOGEB/ABACUS
+status: CANDIDATE_V5_AUTHORITY_MAP
+
+principles:
+  one_logical_fact_one_authority: true
+  derived_views_may_be_many: true
+  reverse_mutation_from_binary_to_authority: false
+  runtime_may_not_silently_create_authority: true
+
+authority_states:
+  - AUTHORITATIVE
+  - DERIVED
+  - MATERIALIZED_VIEW
+  - RECEIPT
+  - COMPATIBILITY
+  - HISTORICAL
+
+format_roles:
+  yaml:
+    preferred: human_maintained_authoritative_data_contracts_registries
+  yml:
+    preferred: existing_authority_or_compatibility_until_safe_normalization
+  json:
+    preferred: normalized_interchange_materialized_views_receipts
+  ts:
+    preferred: zod_schemas_types_validators_typed_adapters
+  js:
+    preferred: runtime_consumers_and_adapters
+    independent_authority_default: false
+
+roots:
+  domain:
+    purpose: engineering_or_analysis_domain_state
+    target: ssot/domain/
+  contracts:
+    purpose: runtime_federation_agent_mcp_self_eval_artifact_release_contracts
+    target: ssot/contracts/
+  registries:
+    purpose: ssot_pipeline_agent_mcp_artifact_port_compatibility_registries
+    target: ssot/registries/
+  schemas:
+    purpose: json_schema_and_schema_crosswalks
+    target: ssot/schemas/
+  views:
+    purpose: normalized_materialized_non_authoritative_views
+    target: ssot/views/
+  generated:
+    purpose: generated_types_validators_constants_indexes
+    target: ssot/generated/
+  receipts:
+    purpose: immutable_execution_federation_binary_release_receipts
+    target: ssot/receipts/
+
+current_bindings:
+  - logical_id: QPS_CLARIFICATION_REGISTER
+    path: ssot/clarification_register.yaml
+    state: AUTHORITATIVE_CANDIDATE
+    migration: classify_before_move
+  - logical_id: QPS_CONTRACTUAL_GAP_REGISTER
+    path: ssot/contractual_gap_register.yaml
+    state: AUTHORITATIVE_CANDIDATE
+    migration: classify_before_move
+  - logical_id: QPS_RTM_REFERENCE_MATRIX
+    path: ssot/rtm_reference_matrix.yaml
+    state: AUTHORITATIVE_CANDIDATE
+    migration: classify_before_move
+  - logical_id: SEMANTIC_TRACEABILITY
+    path: ssot/semantic_traceability.yaml
+    state: AUTHORITATIVE_CANDIDATE
+    migration: classify_before_move
+  - logical_id: SSOT_ITEMS
+    path: ssot/ssot_items.yaml
+    state: REGISTRY_CANDIDATE
+    migration: classify_before_move
+  - logical_id: SSOT_STYLE
+    path: ssot/ssot_style.json
+    state: AUTHORITATIVE_STYLE_CANDIDATE
+    migration: classify_before_move
+
+zod_bindings:
+  - path: qps_contract_canonicalization/src/schema.ts
+    role: domain_schema_validator
+  - path: qps_slide_reviewer/lib/qps-contract-clarification-schema.ts
+    role: review_contract_validator
+
+migration_rule:
+  physical_moves_in_w62: false
+  reason: soft_non_breaking_refactor_first
+  hardening_required_before_cross_level_move:
+    python_package: __init__.py
+    executable_python_package: __main__.py
+    typed_runtime: explicit_export_and_schema_contract

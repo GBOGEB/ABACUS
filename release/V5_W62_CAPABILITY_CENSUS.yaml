@@ -1,0 +1,53 @@
+schema_version: "0.1.0"
+repository: GBOGEB/ABACUS
+wave: W62
+base_merge_sha: ebe88207d7a2f473de8fd01225a3e11723e71813
+purpose: release_identity_and_capability_renewal_census
+
+release_identity:
+  target_product_version: "5.0.0"
+  current_published_release: "4.4.0"
+  rule: product_version_is_not_engine_generation
+
+known_version_surfaces:
+  - {path: README.md, observed: "4.4.0", class: PRODUCT_RELEASE_DOC, action: REFRESH}
+  - {path: DMAIC_V3/__init__.py, observed: "3.3.0", class: ENGINE_API_VERSION, action: REVIEW}
+  - {path: DMAIC_V3/config.py, observed: "3.3.0", class: ENGINE_GENERATION_VERSION, action: REFRESH_VERSION_AUTHORITY}
+  - {path: DMAIC_V3/core/__init__.py, observed: "3.0.0", class: SUBPACKAGE_API_VERSION, action: REVIEW}
+  - {path: DMAIC_V3/phases/__init__.py, observed: "3.0.0", class: SUBPACKAGE_API_VERSION, action: REVIEW}
+  - {path: DMAIC_V3/generators/__init__.py, observed: "3.1.0", class: SUBPACKAGE_API_VERSION, action: REVIEW}
+  - {path: DMAIC_V3/core/agent_manager.py, observed: "3.3.1", class: COMPONENT_API_VERSION, action: REQUALIFY}
+  - {path: local_mcp/__init__.py, observed: "2.3.0", class: COMPATIBILITY_FRAMEWORK_VERSION, action: REFRESH}
+  - {path: src/dmaic/__init__.py, observed: "1.0.0", class: COMPATIBILITY_PACKAGE_VERSION, action: REVIEW}
+
+runtime_candidates:
+  - {path: DMAIC_V3/core/twelve_cluster_orchestrator.py, role: canonical_orchestrator, state: CANONICAL_ACTIVE, renewal: CRITICAL}
+  - {path: DMAIC_V3/core/handover_bridge.py, role: federation_handover_bridge, state: CANONICAL_ACTIVE, renewal: CRITICAL}
+  - {path: DMAIC_V3/core/temporal_metadata_engine.py, role: temporal_runtime, state: CANONICAL_ACTIVE, renewal: HIGH}
+  - {path: local_mcp/agent_orchestrator_v3.0.py, role: compatibility_orchestrator, state: ACTIVE_COMPATIBILITY, renewal: HIGH}
+  - {path: local_mcp/knowledge_integration_v2.3.py, role: knowledge_integration, state: CANONICAL_ACTIVE_WITH_LEGACY_NAME, renewal: CRITICAL}
+  - {path: DMAIC_V3/core/agent_manager.py, role: agent_manager, state: CANONICAL_ACTIVE, renewal: CRITICAL}
+
+method_engines:
+  DMAIC: [phase_value, duplication, evidence_growth, control_closure, replay]
+  PCA: [sample_size, feature_ratio, scaling, variance_explained, loading_stability, outlier_sensitivity]
+  BT: [comparison_density, connectivity, confidence, cyclicity, separation, sensitivity]
+  THREE_P3: [worker_gain, scope_gain, qa_gain, evidence_gain, repeated_work_penalty]
+  CONVERGENCE: [stopping_rule, zero_delta, false_convergence, sample_freshness]
+
+support_engines:
+  critical: [TESTING, HASHING_INTEGRITY, REPO_CENSUS_INDEXING, SSOT_RESOLUTION, ZOD_VALIDATION, BINARY_GENERATION]
+  high: [CODE_HEALTH, DEBUG_DIAGNOSTICS, LOGGING]
+  medium: [UI_DASHBOARDS, PORT_DAP_DEBUG_ADAPTERS]
+
+renewal_contract:
+  input: [accepted_types, source_diversity, provenance, current_population, representative_sample, adversarial_sample, missing_data_behavior]
+  method: [assumptions, validity, alternatives, sensitivity, failure_modes]
+  execution: [runtime, memory, concurrency, determinism, observability, retry_failure_behavior]
+  output: [schema_validity, semantic_completeness, provenance, downstream_fitness, reproducibility]
+  verdicts: [KEEP, REFRESH, MERGE, SPLIT, COMPATIBILITY_ONLY, RETIRE, REPLACE]
+
+findings:
+  - {id: W62-F01, severity: CRITICAL, finding: release_identity_fragmented, action: establish_product_version_authority_without_renaming_DMAIC_V3}
+  - {id: W62-F02, severity: HIGH, finding: live_legacy_versioned_MCP_names, action: requalify_then_add_unversioned_canonical_implementation_and_compatibility_wrapper}
+  - {id: W62-F03, severity: CRITICAL, finding: canonical_status_does_not_yet_prove_current_method_sample_requalification, action: require_renewal_receipt_before_5_0}
