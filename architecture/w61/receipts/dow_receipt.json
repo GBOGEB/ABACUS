@@ -1,0 +1,28 @@
+{
+  "contract": "W58_DOW_RUNTIME_RECEIPT_CONTRACT",
+  "wave": "W61",
+  "parent": "DOW_ABACUS",
+  "pulse": "P3_DOW",
+  "child_payload_sha256": "edd87184c94afeb4c0c7afef938f5bfac7838ed67f0ab2089e82f1bb956a2bbe",
+  "runtime_schema_version": "qps.w61.runtime/v1",
+  "execution_status": "PASS",
+  "qa_status": "PASS",
+  "worker_digest": "5b8f1668fe61dfd86090d36fad008951429d7e886aa37fbd43802c29632bed00",
+  "telemetry_digest": "d511a42cec4f5cbdc2cb25467b1bbbda3a6d28d31b86889c9f9a6ecc940c5c65",
+  "findings_digest": "d511a42cec4f5cbdc2cb25467b1bbbda3a6d28d31b86889c9f9a6ecc940c5c65",
+  "checks": {
+    "payload_sha_preserved": true,
+    "operation_schema_valid": true,
+    "worker_assignment_recorded": true,
+    "mcp_worker_health_recorded": true,
+    "dmaic_result_bound": true,
+    "pca_bt_result_bound": true,
+    "render_qa_bound_if_requested": true,
+    "telemetry_digest_present": true
+  },
+  "scope": "P2_PARENT_RUNTIME_CONTROL_ONLY__P5_ARTIFACT_QA_SEPARATE",
+  "engineering_credit_granted": false,
+  "formal_compliance_promoted": false,
+  "receipt_hash_method": "sha256(canonical-json-without-receipt_sha256)",
+  "receipt_sha256": "51419cea5812d443de75f6d725319968b6b4dd929c1b9e90330311d9a6d5cd37"
+}

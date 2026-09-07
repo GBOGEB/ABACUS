@@ -1,0 +1,11 @@
+{
+  "contract": "W61_DOW_WORKER_ASSIGNMENT",
+  "scope": "P2_PARENT_RUNTIME_CONTROL_ONLY__P5_ARTIFACT_QA_SEPARATE",
+  "workers": [
+    {"id":"github_repo_connector","assignment":"consume exact W61 payload and emit runtime receipt","health":"PASS"},
+    {"id":"file_library_evidence_retriever","assignment":"resolve current canonical bidder/artifact evidence","health":"PASS"},
+    {"id":"mcp_worker_health_gate","assignment":"record MCP requirement/health for this bounded parent pulse","health":"PASS_NOT_REQUIRED_SEPARATE_MCP_WORKER_FOR_THIS_SCOPE"}
+  ],
+  "bounded_by": "architecture/w60/3P3_EXECUTION_BOUNDS.yaml",
+  "net_new_workers": 0
+}
