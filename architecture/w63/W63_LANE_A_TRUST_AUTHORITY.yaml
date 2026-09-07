@@ -1,0 +1,50 @@
+wave: W63
+scale: 2x3PR
+lane: A
+name: TRUST_AUTHORITY
+base_sha: 266dd0372306949361d9c616091b929bc7c89048
+intent: >-
+  Collapse integrity and authority ambiguity before wider execution scaling.
+principles:
+  - one_logical_fact_one_authority
+  - sha256_plus_git_identity
+  - derived_views_cannot_mutate_authority
+  - exact_federation_zero_delta
+pulses:
+  P1:
+    name: SHA256_GIT_AUTHORITY
+    status: ACTIVE
+    targets:
+      - canonical SHA256 service
+      - git commit tree blob identity receipt
+      - deterministic payload digest
+    evidence_seen:
+      - DMAIC_V3/core/utils.py
+      - DMAIC_V3/self_smoke.py
+      - src/dmaic/idempotency.py
+      - scripts/hash_update.py
+      - scripts/preview_diff.py
+      - triage/run_repo_census.py
+    victory:
+      - one canonical integrity API identified and implemented
+      - compatibility callers cannot silently redefine hashing semantics
+      - receipt binds sha256 commit tree and blob where applicable
+  P2:
+    name: SSOT_DUPLICATE_AUTHORITY_RESOLVER
+    status: QUEUED
+    victory:
+      - logical authorities resolve through one manifest-backed resolver
+      - duplicate authority candidates are detected fail-closed
+  P3:
+    name: ZOD_GITHUB_FEDERATION_ZERO_DELTA
+    status: QUEUED
+    victory:
+      - schema agreement proven across runtime and interchange
+      - exact child payload identity survives federation roundtrip
+      - zero unexplained semantic delta
+hard_gates:
+  - no_sha_mismatch
+  - no_competing_authoritative_ssot
+  - schema_pass
+  - zero_delta_pass
+release_truth_mutation: forbidden
