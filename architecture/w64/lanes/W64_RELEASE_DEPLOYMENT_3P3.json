@@ -1,0 +1,37 @@
+{
+  "schema_version": "W64-3P3-1.0.0",
+  "lane": "release_deployment",
+  "title": "W64 release and deployment reproducibility proof",
+  "depends_on": {
+    "w63_receipt_pr": 961,
+    "w63_receipt_merge_sha": "ba0a0207686347fb2e3511d53048f725003c1493"
+  },
+  "purpose": "Prove release packaging and deployment steps can be recreated from authority files without hidden local state.",
+  "pulses": {
+    "P1_primary": [
+      "Locate release packaging entrypoints, version manifests, and deployment descriptors.",
+      "Map release inputs to canonical authorities and generated package outputs.",
+      "Record environment assumptions and reproducibility prerequisites."
+    ],
+    "P2_reverse_pressure": [
+      "Reject packaging steps that depend on untracked local state, stale Docker material, or old ABACUS version trees.",
+      "Detect deployment paths without authority lineage or rollback evidence.",
+      "Verify release metadata does not claim binaries or registries outside their receipts."
+    ],
+    "P3_receipt": [
+      "Emit an exact-head release deployment receipt with package names, commands, inputs, and rollback boundary.",
+      "Require green release/deployment CI before readiness credit.",
+      "Declare any dependency-bound release step as blocked rather than promoted."
+    ]
+  },
+  "acceptance_gates": [
+    "Every release output has source input lineage and command provenance.",
+    "Deployment descriptors are classified as active, dormant, or obsolete.",
+    "Rollback or non-deployable boundary is explicitly documented."
+  ],
+  "non_claims": [
+    "Does not publish a formal GitHub release.",
+    "Does not alter protected main settings.",
+    "Does not claim deployment success without exact-head execution evidence."
+  ]
+}
