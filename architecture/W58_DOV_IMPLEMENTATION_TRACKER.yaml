@@ -1,0 +1,132 @@
+wave_set: TRIAGE-W58-DOV
+repo: GBOGEB/ABACUS
+plane: runtime
+baseline:
+  prior_wave: W57
+  prior_pr: 926
+  prior_state: MERGED
+current_wave:
+  id: W58
+  role: +1
+  intent: operationalize runtime, orchestration, DMAIC, PCA, BT, QA and receipt controls against exact governed payloads
+  definition_of_victory:
+    - one runtime receipt contract
+    - worker and MCP execution observable
+    - DMAIC/PCA/BT outputs linked to exact payload digest
+    - render QA state measurable
+    - runtime KPI scorecard live
+horizons:
+  plus_1:
+    target_wave: W58
+    objective: runtime receipt and telemetry activation
+    expected_dov: 0.63
+    required:
+      - runtime_receipt_contract
+      - worker_health_baseline
+      - payload_digest_linkage
+      - KPI_baseline
+  plus_5:
+    target_wave: W62
+    objective: closed-loop executable parent roundtrip
+    expected_dov: 0.77
+    required:
+      - exact_SHA_runtime_receipt
+      - agent_orchestrator_trace
+      - DMAIC_PCA_BT_receipt_binding
+      - render_QA_receipt
+      - child_reentry_verified
+  plus_50:
+    target_wave: W107
+    objective: broad runtime and QA convergence
+    expected_dov: 0.91
+    required:
+      - stable worker orchestration
+      - automated retry_and_repair telemetry
+      - browser_render_QA automation
+      - cross_binary_tuple_checks
+      - low orphaned runtime outputs
+  plus_100:
+    target_wave: W157
+    objective: sustained governed runtime autonomy
+    expected_dov: 0.97
+    required:
+      - deterministic clean-checkout execution
+      - stable worker health limits
+      - reproducible receipts
+      - runtime drift detection
+      - zero-delta rebuild capability
+DMAIC:
+  Define:
+    status: COMPLETE
+    statement: runtime authority and non-authority boundaries frozen in W57
+  Measure:
+    status: ACTIVE
+    measures:
+      - runtime_receipt_pass_pct
+      - worker_health_pct
+      - payload_digest_link_pct
+      - render_QA_pass_pct
+      - retry_repair_success_pct
+      - orphan_output_count
+  Analyse:
+    status: ACTIVE
+    method:
+      - PCA for runtime debt concentration only
+      - BT for actionable execution priority
+  Improve:
+    status: NEXT
+    actions:
+      - bind exact runtime receipt schema
+      - link DMAIC_PCA_BT to payload digest
+      - expose worker and MCP health in receipt
+  Control:
+    status: TARGET
+    gates:
+      - input_hash_matches_governed_payload
+      - runtime_complete
+      - telemetry_complete
+      - QA_complete
+      - receipt_emitted
+PCA:
+  dimensions:
+    - orchestration_gap
+    - worker_health_gap
+    - runtime_receipt_gap
+    - telemetry_gap
+    - render_QA_gap
+    - retry_repair_gap
+BT:
+  priority_order:
+    - P1_runtime_receipt_schema
+    - P2_exact_payload_digest_linkage
+    - P3_worker_MCP_health_telemetry
+    - P4_render_QA_binding
+    - P5_historical_runtime_duplication_cleanup
+KPI:
+  DoV_score:
+    formula: weighted runtime gate completion across orchestration, receipt, telemetry, QA and reproducibility dimensions
+    current_estimate: 0.56
+    note: planning estimate for implementation tracking, not engineering compliance credit
+  targets:
+    W58: 0.63
+    W62: 0.77
+    W107: 0.91
+    W157: 0.97
+  supporting:
+    architecture_authority_split_pct: 100
+    runtime_receipt_contract_pct: 25
+    worker_health_observability_pct: 50
+    cross_binary_QA_control_pct: 20
+wave_tracking:
+  cadence: each merged pulse updates actuals, blockers, delta and next BT target
+  required_fields:
+    - wave
+    - PR
+    - merged_sha
+    - KPI_before
+    - KPI_after
+    - DoV_before
+    - DoV_after
+    - PCA_shift
+    - BT_next
+    - blockers
