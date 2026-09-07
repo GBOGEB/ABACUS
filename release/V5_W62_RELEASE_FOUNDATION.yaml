@@ -1,0 +1,125 @@
+schema_version: "0.1.0"
+release:
+  repository: GBOGEB/ABACUS
+  target: "5.0.0"
+  wave: W62
+  scale: "1x3PR"
+  base_commit_sha: fe9eb87b83871c2c56d983b27be3a5f1aacfd42e
+  status: EXECUTING
+
+principles:
+  - product_version_is_distinct_from_engine_generation
+  - engineering_truth_is_not_promoted_by_release_mechanics
+  - one_logical_fact_has_one_authority
+  - derived_views_must_preserve_lineage
+  - worker_scale_is_earned_by_reproducibility_and_deficit_reduction
+
+pca_bt_priority:
+  - rank: 1
+    item: version_and_packaging_ssot
+  - rank: 2
+    item: canonical_entrypoint_and_self_smoke
+  - rank: 3
+    item: agent_mcp_execution_contract
+  - rank: 4
+    item: sha256_github_roundtrip_integrity
+  - rank: 5
+    item: ssot_authority_and_zod_interfaces
+  - rank: 6
+    item: four_binary_semantic_parity
+  - rank: 7
+    item: census_v2_full_index
+  - rank: 8
+    item: structured_logs_debug_receipts
+
+w62:
+  purpose: establish the measuring instrument before increasing worker pressure
+  passes:
+    P1:
+      name: release_identity_census
+      tasks:
+        - inventory product engine API protocol and compatibility versions
+        - classify canonical and compatibility entrypoints
+        - inventory current skill engine agent runner analyzer validator generator and bridge surfaces
+        - establish renewal candidate register
+    P2:
+      name: ssot_and_packaging_foundation
+      tasks:
+        - define product version authority
+        - define non_binary_ssot_manifest contract
+        - define authority classes
+        - define YAML JSON TS JS roles
+        - define canonical runtime invocation target without renaming DMAIC_V3 lineage
+    P3:
+      name: self_smoke_and_receipt
+      tasks:
+        - define canonical self_smoke stages
+        - bind receipt to exact git SHA and SHA256 inputs outputs
+        - emit PCA residual BT priority and reverse_pressure recommendation
+        - decide whether 2x3PR is permitted
+
+skill_engine_renewal:
+  mandatory: true
+  dimensions:
+    - input_contract
+    - source_diversity
+    - sample_size_and_adequacy
+    - representative_population
+    - adversarial_edge_population
+    - method_assumptions
+    - method_alternatives
+    - sensitivity_and_failure_modes
+    - runtime_and_concurrency
+    - output_schema
+    - semantic_quality
+    - provenance
+    - reproducibility
+    - downstream_fitness
+  verdicts:
+    - KEEP
+    - REFRESH
+    - MERGE
+    - SPLIT
+    - COMPATIBILITY_ONLY
+    - RETIRE
+    - REPLACE
+
+ssot_wireframe:
+  root: ssot/
+  authority_states:
+    - AUTHORITATIVE
+    - DERIVED
+    - MATERIALIZED_VIEW
+    - RECEIPT
+    - COMPATIBILITY
+    - HISTORICAL
+  preferred_roles:
+    yaml: human_maintained_authoritative_data_contracts_registries
+    yml: compatibility_or_existing_authority_until_safe_normalization
+    json: normalized_interchange_materialized_views_receipts
+    ts: zod_schemas_types_validators_adapters
+    js: runtime_consumers_adapters_not_independent_authority_by_default
+  target_nodes:
+    - manifest.yaml
+    - index.json
+    - schemas/
+    - contracts/
+    - domain/
+    - registries/
+    - views/
+    - generated/
+    - receipts/
+
+scale_gate:
+  current_workers: 1
+  next_workers: 2
+  minimum_confidence: 0.70
+  required:
+    - deterministic_self_smoke
+    - no_authoritative_ssot_collision
+    - version_identity_unambiguous
+    - receipt_schema_valid
+    - exact_base_sha_preserved
+  on_failure: remain_at_1x3PR_and_repair
+
+release_dov_not_project_dov: true
