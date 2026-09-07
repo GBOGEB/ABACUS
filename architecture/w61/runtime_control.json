@@ -1,0 +1,32 @@
+{
+  "contract": "W61_DOW_RUNTIME_CONTROL",
+  "child_payload_sha256": "edd87184c94afeb4c0c7afef938f5bfac7838ed67f0ab2089e82f1bb956a2bbe",
+  "payload_git_blob_sha1": "b23cfcf56450375599865c247f5d33f4fe82fe23",
+  "scope": "P2_PARENT_RUNTIME_CONTROL_ONLY__P5_ARTIFACT_QA_SEPARATE",
+  "worker_digest": "5b8f1668fe61dfd86090d36fad008951429d7e886aa37fbd43802c29632bed00",
+  "worker_assignment_recorded": true,
+  "mcp_worker_health_recorded": true,
+  "dmaic": {
+    "define": "close parent DEFERs without engineering-credit mutation",
+    "measure": "exact payload, graph/evidence hashes, worker/tool outcomes",
+    "analyse": "separate runtime parent QA from outward binary P5 QA",
+    "improve": "emit W58-conformant PASS receipt for bounded runtime scope",
+    "control": "QPS child remains final disposition authority"
+  },
+  "pca_bt": {
+    "closed_axes": ["parent_runtime_receipt", "exact_sha_runtime_join"],
+    "next_bt": ["child_reentry", "existing_binary_binding", "cross_binary_qa", "zero_delta_repeat"]
+  },
+  "render_qa": {
+    "requested_in_this_parent_scope": false,
+    "downstream_gate": "P5_CROSS_BINARY_QA",
+    "binding_status": "BOUND_TO_SEPARATE_GATE_NOT_FALSELY_EXECUTED"
+  },
+  "tool_health": {
+    "github_connector": "PASS",
+    "file_library": "PASS",
+    "external_binary_browser_runtime": "NOT_PART_OF_THIS_PARENT_SCOPE"
+  },
+  "execution_status": "PASS",
+  "qa_status": "PASS"
+}
