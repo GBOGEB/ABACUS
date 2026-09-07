@@ -1,0 +1,49 @@
+{
+  "schema_version": "W64-3P3-1.0.0",
+  "lane": "broad_regression",
+  "title": "W64 broad regression and release gate proof",
+  "depends_on": {
+    "w63_receipt_pr": 961,
+    "w63_receipt_merge_sha": "ba0a0207686347fb2e3511d53048f725003c1493"
+  },
+  "purpose": "Prove that W63 authority/MCP foundations survive broad release-critical CI, docs, security, schema, and runtime regression gates.",
+  "pulses": {
+    "P1_primary": [
+      "Map required CI workflows to release-critical functions: smoke, matrix, docs, security, canonicalization, DMAIC V3, and W62/W63 self-smoke.",
+      "Record current exact-head workflow names and expected pass/fail meanings.",
+      "Bind representative runtime tests to the W63 resolver, MCP, federation, and handover surfaces."
+    ],
+    "P2_reverse_pressure": [
+      "Treat skipped, missing, or queued release-critical workflows as non-credit.",
+      "Detect green workflows that do not touch W63/W64 release-critical surfaces.",
+      "Escalate any failing workflow to a lane-specific repair PR rather than burying it in the release receipt."
+    ],
+    "P3_receipt": [
+      "Emit a broad regression receipt with exact-head workflow ids, conclusions, and release relevance.",
+      "Separate advisory checks from blocking checks.",
+      "Block W64 DoV if any blocking workflow is red, missing, or stale."
+    ]
+  },
+  "workflow_groups": [
+    "smoke-test",
+    "CI/CD Test Suite",
+    "CI - ABACUS Matrix",
+    "DMAIC V3 Enterprise CI",
+    "Validate Docs (Markdown/YAML/JSON)",
+    "qps-canonicalization",
+    "Security Scan - Ruff",
+    "CodeQL",
+    "Semgrep",
+    "OSV-Scanner"
+  ],
+  "acceptance_gates": [
+    "Every blocking workflow has an exact-head run id and conclusion.",
+    "Representative W63 surfaces remain covered after W64 fan-out.",
+    "No release readiness claim is made from partial or stale CI evidence."
+  ],
+  "non_claims": [
+    "Does not mark release candidate frozen.",
+    "Does not replace binary or census receipts.",
+    "Does not claim broad regression pass until exact-head workflows complete."
+  ]
+}
