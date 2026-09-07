@@ -1,0 +1,53 @@
+version: 0.1.0
+wave: W58
+repo: GBOGEB/ABACUS
+role: runtime_parent
+purpose: executable_receipt_contract
+
+input_contract:
+  required:
+    - child_payload_sha256
+    - child_schema_version
+    - governed_operation_id
+    - requested_checks
+
+execution:
+  status: [PASS, DEFER, FAIL]
+  qa_status: [PASS, DEFER, FAIL]
+  required_checks:
+    - payload_sha_preserved
+    - operation_schema_valid
+    - worker_assignment_recorded
+    - mcp_worker_health_recorded
+    - dmaic_result_bound
+    - pca_bt_result_bound
+    - render_qa_bound_if_requested
+    - telemetry_digest_present
+
+receipt:
+  required:
+    - child_payload_sha256
+    - runtime_schema_version
+    - execution_status
+    - qa_status
+    - worker_digest
+    - telemetry_digest
+    - findings_digest
+    - receipt_sha256
+
+return_rules:
+  PASS:
+    requires:
+      - execution_status == PASS
+      - qa_status == PASS
+  FAIL:
+    when_any:
+      - execution_status == FAIL
+      - qa_status == FAIL
+  DEFER:
+    otherwise: true
+
+boundary:
+  may_mutate_engineering_truth: false
+  may_return_runtime_findings: true
+  may_return_runtime_receipt: true
