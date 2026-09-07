@@ -1,0 +1,67 @@
+schema_version: "0.1.0"
+release_target: "5.0.0"
+wave: W62
+
+self_smoke:
+  canonical_command_target: "python -m DMAIC_V3"
+  status: CONTRACT_ONLY_PENDING_ENTRYPOINT_IMPLEMENTATION
+  stages:
+    - import_and_syntax
+    - configuration_load
+    - ssot_manifest_load
+    - schema_zod_contract_probe
+    - twelve_cluster_bootstrap
+    - agent_manager_probe
+    - mcp_health_probe
+    - minimal_dmaic_task
+    - handover_bridge_probe
+    - integrity_receipt
+    - minimal_html_render_probe
+    - artifact_manifest_probe
+
+receipt:
+  required_identity:
+    - git_commit_sha
+    - git_tree_sha
+    - input_sha256
+    - ssot_manifest_sha256
+    - schema_digest
+    - output_sha256
+  required_runtime:
+    - run_id
+    - start_timestamp
+    - end_timestamp
+    - elapsed_ms
+    - stage_results
+    - exceptions
+    - retries
+  required_self_evaluation:
+    - code_health
+    - test_health
+    - runtime_health
+    - ssot_health
+    - schema_health
+    - provenance_health
+    - pca_residual
+    - bt_priority
+    - reverse_pressure_recommendation
+
+scale_gate:
+  from: "1x3PR"
+  to: "2x3PR"
+  minimum_confidence: 0.70
+  hard_requirements:
+    deterministic_self_smoke: PENDING
+    no_authoritative_ssot_collision: PENDING_CENSUS
+    version_identity_unambiguous: PENDING_IMPLEMENTATION
+    receipt_schema_valid: CONTRACT_DEFINED_NOT_EXECUTED
+    exact_sha_preserved: true
+  decision: HOLD_1X
+  reason: execution evidence not yet sufficient to earn 2x worker pressure
+
+next_actions:
+  - implement canonical package entrypoint without moving architectural levels
+  - establish product version authority in packaging metadata
+  - execute census and duplicate-authority detection
+  - execute self-smoke on exact branch SHA
+  - calculate first evidence-backed confidence score
