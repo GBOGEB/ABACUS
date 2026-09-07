@@ -1,0 +1,52 @@
+{
+  "schema_version": "W63-1.0.0",
+  "receipt": "W63_PAIRED_P2_P3_RECEIPT",
+  "status": "CANDIDATE_PENDING_EXACT_HEAD_CLOSEOUT",
+  "scope": "ABACUS 5.0 release foundation W63 authority and MCP paired proof",
+  "lanes": {
+    "A": {
+      "name": "SSOT resolver, Zod envelope, federation zero-delta",
+      "prs": [955, 957, 960],
+      "implemented": [
+        "manifest-bound SSOT resolver",
+        "duplicate authority fail-closed behavior",
+        "manifest digest validation for derived index freshness",
+        "Zod zero-delta authority envelope",
+        "federation transport boundary proof",
+        "adversarial corrupted-transport and non-bytes tests"
+      ]
+    },
+    "B": {
+      "name": "MCP execution contract and AgentManager handover",
+      "prs": [956, 958, 959],
+      "implemented": [
+        "canonical parent SHA identity",
+        "analytical-only MCP authority",
+        "deep-copy worker isolation",
+        "timeout-aware execution envelope",
+        "AgentManager to MCP to handover roundtrip",
+        "representative, deterministic, adversarial mutation, and failure propagation tests"
+      ]
+    }
+  },
+  "merged_prs": {
+    "955": "Lane A P2 SSOT resolver",
+    "956": "Lane B P2 MCP execution contract",
+    "957": "Lane A P3 Zod/federation zero-delta",
+    "958": "Lane B P3 AgentManager MCP handover",
+    "959": "P2 residual hardening for manifest digest and MCP isolation/timeout",
+    "960": "P3 residual hardening for federation transport boundary"
+  },
+  "current_gate": {
+    "w63_pairing": "implemented",
+    "formal_dov": "blocked_until_exact_head_ci_and_codex_closeout_for_960",
+    "w64_4x3p3": "blocked_until_this_receipt_is_green_and_merged"
+  },
+  "non_claims": [
+    "Does not promote ABACUS 5.0 full release DoV",
+    "Does not claim W64 has started",
+    "Does not mutate engineering truth",
+    "Does not treat analytical findings as child authority"
+  ],
+  "recommended_next": "After exact-head closeout, merge this receipt and start W64 4x3P3 across binaries, release/deployment, total repo census, and broad regression."
+}
