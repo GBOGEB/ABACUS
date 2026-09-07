@@ -9,11 +9,13 @@ from __future__ import annotations
 
 import hashlib
 import subprocess
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+UTC = timezone.utc
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTER = ROOT / "docs" / "qps_line_s_recovery" / "assumptions_register.yaml"
