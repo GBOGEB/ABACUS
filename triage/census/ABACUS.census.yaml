@@ -1,0 +1,61 @@
+schema_version: triage-repo-census/1.0.0
+identity:
+  repo: GBOGEB/ABACUS
+  role: DOW_DERIVED_ANALYSIS
+  authority: derived analysis diagnostics DMAIC PCA and challenge findings only
+locations:
+  canonical: [ABACUS-UNIFIED, 13_CORE_SYSTEMS]
+  runtime: [qps_contract_canonicalization/src, qps_slide_reviewer]
+  schemas: [qps_contract_canonicalization/src, qps_slide_reviewer/lib, triage/census]
+  docs: [12CLUSTER_ARCHITECTURE_BOOK.md, 12CLUSTER_DMAIC_V3_QUICK_START_GUIDE.md]
+  tests: [qps_contract_canonicalization, qps_slide_reviewer]
+  workflows: [.github/workflows, .github/actions]
+  artifacts: []
+  federation: [federation]
+architecture:
+  nodes: [feature, metric, component, dependency, finding, driver, loading, PCA_component, DMAIC_phase, quality_gate, failure, risk, test, run, receipt]
+  edges: [depends_on, loads_on, challenges, measures, derived_from, affects, returned_to]
+  atoms: [numeric_feature, missingness, method, severity, confidence, affected_node, affected_edge, digest]
+  graphs: [dependency_graph, PCA_feature_graph, DMAIC_graph, quality_graph, finding_graph]
+contracts:
+  ssot: [analysis_methods, derived_models, run_receipts, diagnostic_findings]
+  zod: [qps_contract_canonicalization/src/schema.ts, qps_slide_reviewer/lib/qps-contract-clarification-schema.ts]
+  json_schema: []
+  yaml_schema: []
+execution:
+  python: [.dmaic/scripts/marker_usage_report.py, .github/scripts/create_issues_from_failures.py, .github/scripts/security_dashboard.py]
+  typescript: [qps_contract_canonicalization/src, qps_slide_reviewer]
+  shell: []
+  powershell: []
+pipeline:
+  ingress: [immutable_CODEX_routed_child_payload]
+  validate: [payload_hash, analysis_input_schema, missingness]
+  transform: [feature_projection, dependency_projection]
+  analyze: [dependency_analysis, graph_diagnostics, PCA, DMAIC, sensitivity, completeness_analysis]
+  render: [analysis_views, diagnostic_views]
+  federate: [ABACUS_to_CODEX]
+  return: [findings_and_receipts]
+outward_products:
+  excel: [analytical_workbooks]
+  html: [analytical_dashboards]
+  pptx: [analytical_decks]
+  pdf: [analytical_reports]
+  docx: []
+  machine: [YAML, JSON, CSV, run_receipts]
+automation:
+  agents: [Deep_Agent_assets]
+  skills: []
+  mcp: []
+  containers: [.devcontainer, .dockerignore]
+  runners: [GitHub_Actions]
+  github_actions: [governance-audit, release-evidence, runtime-guard]
+integration:
+  orchestration: [analysis_execution_plane]
+  federation: [CODEX_to_ABACUS, ABACUS_to_CODEX]
+  bridges: [DOW_Bridge, Analysis_Return_Bridge]
+  adaptors: [payload_to_feature_matrix, graph_to_diagnostics, analysis_to_findings]
+governance:
+  provenance: every finding retains immutable input identity and method receipt
+  hashes: analysis binds exact incoming SHA256 and may not replace it with derived hashes
+  disposition: ABACUS recommends findings only; child remains final disposition authority
+  promotion_rules: parent repo may not promote engineering facts
