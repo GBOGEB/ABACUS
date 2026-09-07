@@ -1,6 +1,7 @@
 {
   "schema_version": "0.1.0",
   "source": "ssot/manifest.yaml",
+  "source_sha256": "f94d6021417aba8c819182e41cf84d9b1e5f244e5439f64cff6030f89da61295",
   "state": "DERIVED_NORMALIZED_INDEX",
   "authorities": [
     {"logical_id":"QPS_CLARIFICATION_REGISTER","path":"ssot/clarification_register.yaml","state":"AUTHORITATIVE_CANDIDATE"},

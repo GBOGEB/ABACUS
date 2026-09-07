@@ -1,8 +1,8 @@
 """Manifest-backed SSOT authority resolver.
 
 The YAML manifest remains the human-maintained authority map. ``ssot/index.json`` is
-its normalized runtime view. Resolution fails closed when a logical ID is absent or
-has more than one authority candidate.
+its normalized runtime view. Resolution fails closed when a logical ID is absent,
+has more than one authority candidate, or is stale versus the manifest digest.
 """
 from __future__ import annotations
 
@@ -10,9 +10,22 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .integrity import sha256_bytes
+
 
 class AuthorityResolutionError(RuntimeError):
     pass
+
+
+def _manifest_path(root: Path) -> Path:
+    return Path(root) / "ssot" / "manifest.yaml"
+
+
+def manifest_sha256(root: Path) -> str:
+    path = _manifest_path(root)
+    if not path.exists():
+        raise AuthorityResolutionError("ssot/manifest.yaml does not exist")
+    return sha256_bytes(path.read_bytes())
 
 
 def load_index(root: Path) -> dict[str, Any]:
@@ -20,6 +33,12 @@ def load_index(root: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if data.get("source") != "ssot/manifest.yaml":
         raise AuthorityResolutionError("SSOT index is not bound to ssot/manifest.yaml")
+    expected_manifest_sha = data.get("source_sha256")
+    if not expected_manifest_sha:
+        raise AuthorityResolutionError("SSOT index is missing ssot/manifest.yaml SHA256")
+    actual_manifest_sha = manifest_sha256(root)
+    if expected_manifest_sha != actual_manifest_sha:
+        raise AuthorityResolutionError("SSOT index is stale versus ssot/manifest.yaml")
     authorities = data.get("authorities")
     if not isinstance(authorities, list):
         raise AuthorityResolutionError("SSOT index authorities must be a list")

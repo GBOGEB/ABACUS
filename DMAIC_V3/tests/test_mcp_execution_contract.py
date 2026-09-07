@@ -1,4 +1,6 @@
 import copy
+import time
+from concurrent.futures import TimeoutError
 
 import pytest
 
@@ -23,14 +25,18 @@ def test_bad_parent_hash_fails_closed():
         execute_mcp(request, lambda p: {})
 
 
-def test_worker_parent_mutation_is_rejected():
+def test_worker_parent_mutation_is_isolated_and_rejected():
     payload = {"x": 1}
     request = MCPRequest("T3", "BURST", payload, sha256_json(payload))
+    before = copy.deepcopy(payload)
+
     def mutating_worker(parent):
         parent["x"] = 2
         return {"finding": "bad"}
+
     with pytest.raises(RuntimeError, match="mutated"):
         execute_mcp(request, mutating_worker)
+    assert payload == before
 
 
 def test_same_finding_has_same_digest():
@@ -39,3 +45,15 @@ def test_same_finding_has_same_digest():
     _, first = execute_mcp(MCPRequest("T4", "BACKGROUND", payload1, sha256_json(payload1)), lambda p: {"a": 1})
     _, second = execute_mcp(MCPRequest("T4", "BACKGROUND", payload2, sha256_json(payload2)), lambda p: {"a": 1})
     assert first.finding_sha256 == second.finding_sha256
+
+
+def test_worker_timeout_fails_closed():
+    payload = {"x": 1}
+    request = MCPRequest("T5", "TRIGGERED", payload, sha256_json(payload), timeout_seconds=0.01)
+
+    def blocked(_):
+        time.sleep(0.05)
+        return {"late": True}
+
+    with pytest.raises(TimeoutError, match="timeout"):
+        execute_mcp(request, blocked)
