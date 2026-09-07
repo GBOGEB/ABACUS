@@ -1,0 +1,125 @@
+wave_set: TRIAGE-W60-3PR-5H-DOV
+repo: GBOGEB/ABACUS
+plane: DOW_runtime_QA
+created_at: 2026-09-07
+authority:
+  engineering_truth_source: accepted_child_SSOT_from_QPS
+  role_authority: execute_runtime_QA_render_and_cross_binary_checks
+  promotion_rule: DOW runtime pass cannot promote global DoV without KEB semantic receipt and QPS child re-entry
+  false_compliance_guard:
+    - runtime_completion_without_matching_payload_sha_is_invalid
+    - render_pass_does_not_replace_semantic_acceptance
+    - generated_binary_claims_require_recorded_sha256_and_tuple
+session_chat_dov:
+  scope: current_chat_and_branch_only
+  can_close:
+    - runtime_control_packet_defined
+    - 5_horizon_model_recorded
+    - DOW_receipt_requirements_defined
+  cannot_close:
+    - real_DOW_runtime_receipt_for_future_payload
+    - real_binary_render_QA
+    - clean_checkout_zero_delta_roundtrip
+global_dov:
+  scope: merged_state_across_QPS_KEB_DOW_and_artifact_binaries
+  close_requires:
+    - exact_QPS_payload_sha_preserved
+    - KEB_semantic_receipt
+    - DOW_runtime_receipt
+    - child_ACCEPT_REJECT_DEFER_reentry
+    - XLSX_HTML_PPTX_PDF_regenerated_from_accepted_SSOT
+    - cross_binary_SHA_tuple_Playwright_render_QA
+    - repeat_zero_delta_roundtrip
+    - duplicate_schema_cleanup
+five_horizons:
+  H0_session_chat:
+    target: this_branch
+    dov_kind: session_chat
+    expected_dov: 0.62
+    evidence: control/schema only
+  H1_next_pulse:
+    target: P1_to_P3
+    dov_kind: global_incremental
+    expected_dov: 0.70
+    evidence: DOW_receipt_for_identical_QPS_sha
+  H5_five_wave:
+    target: P4_to_P6
+    dov_kind: global_artifact
+    expected_dov: 0.84
+    evidence: binary_tuple_render_QA_and_zero_delta_repeat
+  H50_portfolio:
+    target: runtime_and_QA_convergence
+    dov_kind: global_structural
+    expected_dov: 0.92
+    evidence: stable_workers_playwright_render_and_tuple_checks
+  H100_sustained:
+    target: reproducible_runtime_autonomy
+    dov_kind: global_sustained
+    expected_dov: 0.97
+    evidence: deterministic_clean_checkout_execution_with_low_manual_repair
+pulses:
+  P1_identical_sha_qps_to_keb_dow_roundtrip:
+    status: CONTROL_DEFINED_PENDING_QPS_PAYLOAD
+    gate: DOW_receives_exact_QPS_sha_and_records_no_mutation
+  P2_real_keb_dow_receipts:
+    status: DOW_RECEIPT_SCHEMA_READY_PENDING_REAL_RUN
+    required_output: DOW_runtime_receipt_sha256
+    gate: receipt_includes_payload_sha_worker_state_runtime_result_QA_result_and_recommendation
+  P3_child_accept_reject_defer_reentry:
+    status: PENDING_P2
+    gate: DOW_recommendation_returned_to_QPS_without_authority_promotion
+  P4_regenerate_xlsx_html_pptx_pdf:
+    status: BLOCKED_UNTIL_CHILD_ACCEPT
+    gate: all_four_binaries_generated_from_accepted_SSOT_with_sha256
+  P5_cross_binary_sha_tuple_playwright_render_qa:
+    status: BLOCKED_UNTIL_P4
+    gate: tuple_match_plus_Playwright_and_render_QA_pass
+  P6_repeat_zero_delta_roundtrip:
+    status: BLOCKED_UNTIL_P5
+    gate: second_runtime_pass_has_zero_semantic_delta_and_stable_binary_tuple
+  P7_duplicate_schema_historical_cleanup:
+    status: CONTROL_DEFINED_DEFERRED
+    gate: cleanup_after_runtime_baseline_not_before
+pca:
+  granularity: runtime_subdimension_scores_with_reverse_load_priority
+  low_score_threshold: 0.50
+  reverse_load_formula: residual_weight * authority_weight * unblock_weight * recurrence_weight
+  dimensions:
+    - id: worker_receipt_integrity
+      score: 0.44
+      residual_weight: 0.56
+      reverse_load_priority: 0.80
+      emphasis: P2 DOW receipt must bind worker state to payload sha
+    - id: render_QA_coverage
+      score: 0.32
+      residual_weight: 0.68
+      reverse_load_priority: 0.91
+      emphasis: P5 is the highest runtime reverse-load gap
+    - id: cross_binary_tuple_stability
+      score: 0.35
+      residual_weight: 0.65
+      reverse_load_priority: 0.88
+      emphasis: P4/P5 cannot close without stable XLSX/HTML/PPTX/PDF tuple
+    - id: zero_delta_reproducibility
+      score: 0.29
+      residual_weight: 0.71
+      reverse_load_priority: 0.93
+      emphasis: P6 blocks any sustained global DoV claim
+    - id: historical_runtime_duplication
+      score: 0.41
+      residual_weight: 0.59
+      reverse_load_priority: 0.66
+      emphasis: defer P7 cleanup until accepted baseline exists
+bt:
+  priority_order:
+    - P5_cross_binary_render_QA_gap
+    - P6_zero_delta_reproducibility_gap
+    - P2_real_DOW_runtime_receipt_contract
+    - P4_binary_tuple_regeneration
+    - P3_child_reentry_runtime_recommendation
+    - P7_historical_cleanup_after_baseline
+kpi_rollup:
+  session_chat_dov_current: 0.62
+  global_dov_current: 0.46
+  global_dov_note: DOW controls advanced; global DoV remains pending until real runtime and render receipts exist
+  next_required_receipt: DOW_runtime_receipt_for_QPS_payload_sha
