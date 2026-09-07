@@ -1,0 +1,33 @@
+{
+  "schema_version": "W63-0.1.0",
+  "lane": "A",
+  "pulse": "P1",
+  "pr": 952,
+  "head_sha": "2c8ab5b77a8a36809c03cc1895850c73510010a0",
+  "merge_sha": "af5214661d61a80a7ffa855cae68a08ecce399f4",
+  "capability": "canonical_integrity_api",
+  "status": "MERGED_WITH_CORE_GATES_GREEN",
+  "evidence": {
+    "validate_docs": "PASS",
+    "dependency_review": "PASS",
+    "ruff_security": "PASS",
+    "qps_canonicalization": "PASS",
+    "yaml_validation": "PASS",
+    "smoke_test": "PASS",
+    "w62_self_smoke": "PASS",
+    "osv": "PASS",
+    "abacus_matrix": "PASS",
+    "semgrep": "PASS",
+    "format_check": "PASS",
+    "codeql": "PASS",
+    "enterprise_dmaic": "IN_PROGRESS_AT_LAST_OBSERVATION",
+    "recursive_dmaic": "QUEUED_AT_LAST_OBSERVATION",
+    "ci_cd_suite": "QUEUED_AT_LAST_OBSERVATION"
+  },
+  "authority": {
+    "engineering_truth_mutated": false,
+    "legacy_hash_helpers_removed": false,
+    "canonical_new_api": "DMAIC_V3/core/integrity.py"
+  },
+  "decision": "ADVANCE_P2_SSOT_RESOLVER"
+}
