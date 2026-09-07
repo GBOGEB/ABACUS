@@ -55,10 +55,10 @@ def is_stale_tree_like(asset: dict[str, object]) -> bool:
 
 
 def is_release_critical_unknown(asset: dict[str, object]) -> bool:
-    return (
-        str(asset.get("classification")) == "unknown"
-        and str(asset.get("category")) in RELEASE_CRITICAL_CATEGORIES
-    )
+    if str(asset.get("classification")) != "unknown":
+        return False
+    category = str(asset.get("category", ""))
+    return category in RELEASE_CRITICAL_CATEGORIES or is_authority_like(asset)
 
 
 def duplicate_authority_findings(assets: list[dict[str, object]]) -> list[dict[str, object]]:
