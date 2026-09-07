@@ -15,6 +15,8 @@ from typing import Any
 
 import yaml
 
+UTC = timezone.utc
+
 ROOT = Path(__file__).resolve().parents[2]
 REGISTER = ROOT / "docs" / "qps_line_s_recovery" / "assumptions_register.yaml"
 OUT = ROOT / "docs" / "qps_line_s_recovery" / "generated" / "applicant_rfi.md"
@@ -61,7 +63,7 @@ def git_commit() -> str:
 
 
 def provenance_header(generated_at: str | None = None, register_hash: str | None = None, commit: str | None = None) -> str:
-    timestamp = generated_at or datetime.now(timezone.utc).isoformat()
+    timestamp = generated_at or datetime.now(UTC).isoformat()
     digest = register_hash or register_sha256()
     revision = commit or git_commit()
     return (
