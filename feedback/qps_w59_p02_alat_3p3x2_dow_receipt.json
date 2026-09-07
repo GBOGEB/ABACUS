@@ -1,0 +1,9 @@
+{
+  "moniker":"3PR","scheme":"3P3","pulse":"P3_DOW",
+  "cycle1":{"payloadSha256":"2e851e8b08bcab19b02219de619649df5edcf2fdaa31d5f0027fb965c1e56bb2","receiptSha256":"b942db0ce0d4f68c939824303f8af9bae14832a937fd54642eb85a5536a3f1e8","dovScore":0.90,"pcaResidualScore":0.31,"btPriorityScore":0.84},
+  "cycle2":{"payloadSha256":"6ff1e904dc64217c6218e3e7953eb3151a4d0e229faf17d53e37adc98efc79b6","receiptSha256":"f97cd753ab8414227b9e8d5902fc3775189c8c73d94cb7d86200b997d8fe9a95","dovScore":0.95,"pcaResidualScore":0.20,"btPriorityScore":0.89},
+  "qa_receipt":{"xlsx_formula_errors":0,"pdf_render_pages":7,"graph_nodes":63,"graph_edges":82,"decision_queue_rows":12},
+  "recommendation":"NARROW_TO_HIGHEST_CONSEQUENCE_OWNER_DECISIONS",
+  "guards":["reviewed_NE_compliant","deviation_NE_automatic_NOK","postulated_NE_evaluated_price_penalty"],
+  "formal_effect":{"engineering":"70/90 = 77.78%","negotiation":"0/20","delta":0}
+}
