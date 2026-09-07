@@ -1,0 +1,26 @@
+schema_version: triage-architecture/1.0.0
+cOCD:
+  id: TRIAGE-OCD-DOW
+  repo: GBOGEB/ABACUS
+  role: DOW_DERIVED_ANALYSIS
+  mission: [dependency_analysis, graph_diagnostics, PCA, DMAIC, sensitivity, completeness_analysis, quality_challenge]
+  owns: [derived_models, analysis_runs, diagnostic_findings, statistical_receipts]
+  consumes: [immutable_child_payload, CODEX_semantic_contract]
+  authority:
+    engineering_truth: false
+    compliance: false
+    final_disposition: false
+cADR:
+  id: TRIAGE-ADR-DOW-001
+  title: DOW is analytical never authoritative
+  status: ACCEPTED
+  decision:
+    analysis_inputs: IMMUTABLE
+    derived_results: APPEND_ONLY
+    synthetic_engineering_values: FORBIDDEN
+    PCA_authority: DIAGNOSTIC_ONLY
+  return:
+    destination: CODEX
+    required_binding: [payload_sha256, method, affected_nodes, evidence_basis]
+  child_promotion:
+    requires_explicit_reentry: true
