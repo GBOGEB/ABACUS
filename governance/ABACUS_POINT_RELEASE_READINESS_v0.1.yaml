@@ -2,6 +2,40 @@
 schema_version: '0.1'
 repo: GBOGEB/ABACUS
 purpose: TRIAGE point-release self-readiness and self-evaluation
+
+current_control_override:
+  observed_main_sha: d5202e39be1e51684cf21679919128b752faa6aa
+  cross_repo_assimilation: governance/ABACUS_CROSS_REPO_RELEASE_ASSIMILATION_2026-09-08.yaml
+  decision_authority: current_control_override_supersedes_baseline_for_live_release_decisions
+  accepted_receipt_rule: activity_without_accepted_receipt_has_zero_score_delta
+  predecessor_w64_pr: 1042
+  predecessor_w64_head_sha: 12cc4a6f6a384700fe84b8dba83dae178ff94042
+  predecessor_w64_observed:
+    p1_asset_count: 2828
+    baseline_blocker_count: 34
+    authority_family_count: 32
+    temporal_cluster_count: 226
+    disposition_aware_p2: FAILED_BEFORE_RECEIPT
+    failure: ModuleNotFoundError_No_module_named_tools
+    p3_receipt: NOT_EMITTED
+  blocker_conversion_credit:
+    planned_34_to_1: WITHHELD
+    observed_release_score_delta: 0
+    next_required_evidence: successful_disposition_aware_P2_plus_P3_receipt
+  execution_assurance:
+    status: BLOCKED_PENDING_ACCEPTED_W64_RERUN
+    weighted_score_cannot_override: true
+  terminal_denominator:
+    frozen_count: 12
+    strict_non_pass_outstanding: 12
+    equivalent_outstanding_partial_half_credit: 9.5
+  pca_measurement:
+    empirical_release_credit: WITHHELD
+    observed_numeric_row_count_minimum: 1
+    observed_distinct_sha_count_minimum: 1
+    promotion_threshold_numeric_rows: 3
+    promotion_threshold_distinct_shas: 3
+
 baseline:
   audited_main_sha: abc12152ebe2dba17cf21ee995dd1c2df9b35b3c
   publish_readiness_score: 65.5
