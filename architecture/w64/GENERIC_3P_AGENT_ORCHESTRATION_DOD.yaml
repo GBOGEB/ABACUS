@@ -1,0 +1,101 @@
+schema_version: TRIAGE-3P-AGENT-ORCHESTRATION-1.0.0
+purpose: bounded parallel execution contract for adaptive 3P burndown
+roles:
+  coordinator:
+    count: 1
+    owns:
+      - freeze_root_item_queue
+      - invoke_selector
+      - allocate_variant_arms
+      - prevent_duplicate_work
+      - collect_receipts
+      - compute_DMAIC_AHT_progress_DoV_rollup
+    may_mutate_authority: false
+    DoD:
+      - every_root_item_assigned_once_per_arm
+      - every_worker_receipt_bound_to_root_and_facet_id
+      - missing_failed_or_duplicate_receipts_reported
+      - arm_comparison_emitted
+  discovery_worker:
+    count: scalable
+    scope: read_only
+    owns:
+      - evidence_and_relationship_scouting
+      - source_location
+      - pipeline_and_consumer_edges
+      - timing_and_yield_metrics
+    prohibited:
+      - root_id_creation_for_existing_item
+      - delete_rename_merge
+      - authority_reclassification
+      - DoV_or_release_credit
+    DoD:
+      - bounded_root_item_scope
+      - exact_variant_pulse_capability_facet
+      - evidence_paths_or_explicit_none_found
+      - duration_and_yield_recorded
+  challenge_worker:
+    count: scalable
+    scope: read_only
+    owns:
+      - 3PC_or_3PV_counterevidence
+      - information_loss_risk
+      - consumer_dependency_challenge
+      - PCA_semantic_dimensions
+      - BT_rule_priority
+    prohibited: [mutation, final_disposition, authority_promotion]
+    DoD:
+      - challenge_has_evidence_or_explicit_gap
+      - disagreement_visible_not_silently_resolved
+      - preservation_risk_scored
+  statistical_worker:
+    count: 1_per_rollup
+    scope: read_only
+    owns:
+      - coverage_matrix
+      - descriptive_and_robust_metrics
+      - covariance_PCA_BT_eligibility
+      - cadence_refresh
+    prohibited:
+      - significance_claim_below_threshold
+      - semantic_weight_promotion_without_stability_gate
+    DoD:
+      - sample_n_and_missingness_reported
+      - activated_and_inactive_methods_explicit
+      - repeated_item_dependence_not_counted_as_independent
+  P3_writer:
+    count: 1
+    scope: governed_disposition_only
+    owns:
+      - accept_reject_defer_quarantine_remove_eligible_receipt
+      - verify_reintroduction_proof
+      - return_to_local_authority
+    prohibited:
+      - removal_without_preservation_gate
+      - cross_repo_truth_mutation
+    DoD:
+      - one_terminal_or_deferred_disposition_per_root_item
+      - all_unique_information_atoms_accounted
+      - consumer_dependency_check_complete
+      - lineage_to_canonical_target_or_quarantine
+repo_responsibility:
+  ABACUS:
+    owns: [reference_runtime, evidence_scouting, performance_metrics, receipt_rendering]
+    does_not_own: [QPS_engineering_truth, CODEX_semantic_authority]
+  CODEX:
+    owns: [selector_orchestration, semantic_challenge, cross_repo_receipt_integrity]
+    does_not_own: [engineering_acceptance, ABACUS_artifact_truth]
+  cryoplant-project:
+    owns: [engineering_truth, RTM_acceptance, bidder_scope_disposition, parent_reentry]
+    does_not_own: [global_worker_runtime, semantic_policy_outside_child_scope]
+parallel_arms:
+  ARM_DISCOVERY:
+    chain: [3PE, 3PL]
+    intent: maximize_coverage_edges_and_evidence_yield
+  ARM_DISCRIMINATION:
+    chain: [3PC, 3PV]
+    intent: maximize_correct_classification_and_preservation_proof
+  comparison:
+    same_frozen_root_ids: true
+    metrics: [wall_time_ms, AHT_ms, evidence_yield, edge_yield, disagreement_rate, rework_rate, coverage_depth]
+    rule: no_arm_may_mutate_source_truth

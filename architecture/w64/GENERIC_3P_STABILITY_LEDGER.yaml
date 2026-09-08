@@ -1,0 +1,148 @@
+schema_version: TRIAGE-3P-STABILITY-1.0.0
+purpose: track per-run performance and distinguish directional speed gains from stable convergence improvement
+
+per_run_record:
+  identity:
+    - run_id
+    - timestamp_utc
+    - source_sha
+    - method_version
+    - frozen_root_item_ids
+    - variant_chain
+    - runner_pool_requested
+    - runner_pool_active
+  load:
+    - sample_n_root_items
+    - queue_before
+    - queue_after
+    - blockers_before
+    - blockers_after
+    - difficulty_mix
+    - coverage_cells_touched
+  timing:
+    - queue_wait_ms
+    - startup_ms
+    - touch_time_ms
+    - wall_time_ms
+    - AHT_ms_per_root_item
+    - median_item_ms
+    - p90_item_ms
+    - p95_item_ms
+  throughput:
+    - terminal_items
+    - terminal_items_per_hour
+    - evidence_yield
+    - edge_yield
+    - evidence_yield_per_minute
+    - edge_yield_per_minute
+  quality:
+    - first_pass_yield
+    - rework_rate
+    - disagreement_rate
+    - false_positive_rate
+    - information_loss_failures
+    - preservation_failures
+  progress:
+    - queue_burndown_fraction
+    - blocker_burndown_fraction
+    - DoV_gap_before
+    - DoV_gap_after
+    - DoV_gap_delta
+
+speed_comparisons:
+  fixed_baseline:
+    rule: first_valid_comparable_run_for_same_scope_and_sampling_contract
+    metrics:
+      wall_speedup_x: baseline_wall_ms/current_wall_ms
+      AHT_speedup_x: baseline_AHT_ms/current_AHT_ms
+      throughput_gain_fraction: current_items_per_hour/baseline_items_per_hour_minus_1
+  previous_valid_run:
+    metrics:
+      wall_speedup_x: previous_wall_ms/current_wall_ms
+      AHT_speedup_x: previous_AHT_ms/current_AHT_ms
+      throughput_gain_fraction: current_items_per_hour/previous_items_per_hour_minus_1
+  rolling_5_valid_runs:
+    reference: median_of_previous_up_to_5_comparable_valid_runs
+    metrics:
+      wall_speedup_x
+      AHT_speedup_x
+      throughput_gain_fraction
+      evidence_yield_change_fraction
+      rework_change_fraction
+  normalized_speed:
+    metrics:
+      wall_ms_per_root_item
+      touch_ms_per_root_item
+      terminal_items_per_worker_hour
+      evidence_yield_per_worker_minute
+    reason: separates_more_workers_from_actual_worker_method_improvement
+
+stability_classification:
+  INSUFFICIENT_EVIDENCE:
+    when: comparable_valid_runs_less_than_3
+  DIRECTIONAL_IMPROVEMENT:
+    require:
+      - current_normalized_speed_better_than_fixed_baseline
+      - no_material_quality_regression
+    note: may_be_one_off
+  PROVISIONALLY_STABLE:
+    require:
+      - at_least_3_of_last_5_comparable_runs_show_positive_normalized_speed_gain
+      - rolling_median_speedup_x_at_least_1_05
+      - rework_not_worse_by_more_than_0_05_absolute
+      - evidence_yield_not_worse_by_more_than_0_10_fraction
+      - information_loss_failures_equal_0
+  STABLE_IMPROVEMENT:
+    require:
+      - at_least_5_comparable_valid_runs
+      - at_least_4_of_last_5_positive_normalized_speed_gain
+      - rolling_median_speedup_x_at_least_1_10
+      - p95_not_worse_than_baseline_by_more_than_0_05_fraction
+      - first_pass_yield_not_degraded
+      - rework_not_degraded
+      - information_loss_failures_equal_0
+      - DoV_gap_not_regressing
+  REGRESSION:
+    when_any:
+      - rolling_median_speedup_x_below_0_90
+      - rework_spike_above_control_limit
+      - evidence_yield_materially_degrades
+      - information_loss_failure_occurs
+      - DoV_gap_regresses
+
+comparability:
+  require_same:
+    - root_item_type_or_declared_stratum
+    - measurement_contract
+    - timing_definition
+  record_differences:
+    - sample_n
+    - difficulty_mix
+    - runner_pool
+    - variant_chain
+    - repo_state_sha
+  noncomparable_runs:
+    keep_in_history: true
+    use_for_speedup_claim: false
+
+reporting:
+  every_run:
+    show:
+      - raw_timing
+      - normalized_timing
+      - speedup_vs_baseline
+      - speedup_vs_previous
+      - rolling_5_reference
+      - quality_guard_metrics
+      - current_stability_class
+  every_5_valid_runs:
+    show:
+      - median_speedup
+      - p25_p75_speedup
+      - AHT_trend
+      - throughput_trend
+      - evidence_yield_trend
+      - rework_trend
+      - DoV_gap_trend
+      - selector_variant_transition_mix
+  claim_rule: never_call_speed_increase_stable_until_STABLE_IMPROVEMENT_gate_passes
