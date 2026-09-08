@@ -1,0 +1,15 @@
+{
+  "source_sha": "3e52a1db7560c56a4e67a9a0ffd5686600cfceb1",
+  "registry_gap_rate": 0.5,
+  "unresolved_reference_rate": 0.727273,
+  "consumer_penetration_rate": 0.6,
+  "graph_drop_rate": 0.36,
+  "lineage_gap_rate": 0.4,
+  "total_population": 76,
+  "total_open_backlog": 35,
+  "evidence": {
+    "workflow_run_id": 34202744471,
+    "artifact_id": 10046496239,
+    "artifact_zip_sha256": "ac24dbb0fe003091f1bf33e9981b280411fe773d50df5e7825de438f0984d3b9"
+  }
+}
