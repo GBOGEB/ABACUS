@@ -1,0 +1,13 @@
+schema: TRIAGE-W69-MEASURED-PCA-PULSE-2/v1
+wave: W69
+lane: C
+purpose: add one distinct numeric FEATURE_ROW observation for reverse-loading PCA promotion
+source_rule: exact_pr_head_sha
+required_workflow: W67 Measured ID Pulse
+promotion_gate:
+  minimum_numeric_feature_rows: 3
+  minimum_distinct_source_shas: 3
+credit_boundary:
+  engineering_credit_delta: 0
+  authority_credit_delta: 0
+  pca_status: diagnostic_until_promotion_gate_passes
