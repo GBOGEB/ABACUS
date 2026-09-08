@@ -1,0 +1,29 @@
+name: CReq Federation CI
+on:
+  pull_request:
+    paths:
+      - 'triage/requirements/**'
+      - 'DMAIC_V3/**'
+      - '.github/workflows/creq-federation-ci.yml'
+  workflow_dispatch:
+jobs:
+  resolve-and-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Resolve and enforce ABACUS CReq
+        run: |
+          python triage/requirements/creq_ci_gate.py \
+            --registry triage/requirements/GLOBAL_CREQ_REGISTRY.json \
+            --overlay triage/requirements/ABACUS_CREQ_OVERLAY.json \
+            --resolver triage/requirements/creq_resolver.py \
+            --out triage/requirements/receipts/ABACUS_CREQ_CI_RESOLUTION.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: creq-abacus-receipt
+          path: triage/requirements/receipts/ABACUS_CREQ_CI_*.json
