@@ -12,6 +12,8 @@ on:
 jobs:
   census:
     runs-on: ubuntu-latest
+    env:
+      W64_RECEIPTS: architecture/w64/receipts
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,27 +21,34 @@ jobs:
           python-version: '3.11'
       - name: Run P1 census
         run: |
-          mkdir -p architecture/w64/receipts
+          mkdir -p "$W64_RECEIPTS"
+          p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
           python tools/w64_total_repo_census.py \
             --root . \
-            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json
+            --out "$p1"
       - name: Run corrected P2 reverse pressure
         run: |
+          p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
+          p2="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json"
           python tools/w64_census_reverse_pressure.py \
-            --census architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json \
-            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json
+            --census "$p1" \
+            --out "$p2"
       - name: Emit P3 receipt
         run: |
+          p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
+          p2="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json"
+          p3="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json"
           python tools/w64_census_p3_receipt.py \
-            --p1 architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json \
-            --p2 architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json \
-            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json
+            --p1 "$p1" \
+            --p2 "$p2" \
+            --out "$p3"
       - name: Show P3 status
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          p = Path('architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json')
+          root = Path('architecture/w64/receipts')
+          p = root / 'W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json'
           r = json.loads(p.read_text())
           print(json.dumps({
               'status': r['status'],
