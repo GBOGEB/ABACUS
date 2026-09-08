@@ -1,0 +1,44 @@
+schema_version: "0.1"
+document_id: W57_3PR_B_TERMINAL_MEASUREMENT
+role: DOW_TERMINAL_MEASUREMENT
+child_pr: GBOGEB/cryoplant-project#690
+keb_pr: GBOGEB/CODEX#509
+
+observed_state:
+  formal_engineering_percent: 77.78
+  strict_numerical_percent: 80.0
+  runtime_mean_percent: 87.0
+  release_preparation_diagnostic_percent: 90.6
+  internal_terminal_tasks_complete: 4
+  internal_terminal_tasks_total: 7
+  internal_terminal_completion_percent: 57.14
+  external_real_source_packets: 0
+
+completion_status_metrics:
+  source_return_control_pipeline_percent: 100
+  actual_source_return_population_percent: 0
+  current_3PR_contract_population_percent: 100
+  current_3PR_merge_observation_percent: 0
+  same_digest_UI_POST_completion_percent: 0
+
+PCA_reverse_loading:
+  primary_internal_component: exact_parent_merge_and_receipt_binding
+  secondary_internal_component: same_digest_UI_evidence_consumption
+  tertiary_internal_component: POST_runtime_zero_delta
+  primary_external_component: B_flow_chainage_HEPAK_LineB_cluster
+
+BT_next_actions:
+  - merge_and_bind_3PR_A_and_B_exact_heads
+  - run_same_digest_UI_evidence_reconciliation
+  - run_POST_runtime_zero_delta_and_reroll_axes
+  - consume_first_real_source_packet_immediately
+  - prioritize_B_flow_then_chainage_then_HEPAK_for_LineB_pressure_value
+
+promotion_rule:
+  runtime: only_from_observed_POST
+  formal: only_from_source_bound_child_acceptance
+  strict: only_from_explicit_same_boundary_numeric_acceptance
+
+predicted_runtime_after_internal_terminal_closure_percent: "90-92"
+earned_runtime_now_percent: 87.0
+DOW_disposition: RETURN_TO_CHILD_FOR_POST_EXECUTION
