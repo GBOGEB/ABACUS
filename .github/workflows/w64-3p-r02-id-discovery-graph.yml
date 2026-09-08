@@ -1,0 +1,101 @@
+name: W64 3P R02 ID Discovery Graph
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/w64-3p-r02-id-discovery-graph.yml'
+      - 'tools/w64_discovery_graph.py'
+      - 'tools/w64_3p_parallel_pilot.py'
+      - 'tools/w64_total_repo_census.py'
+      - 'tools/w64_census_reverse_pressure.py'
+      - 'ssot/**'
+      - 'architecture/w64/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  r02:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Build P1 P2 and discovery graph
+        run: |
+          mkdir -p architecture/w64/receipts/r02
+          python tools/w64_total_repo_census.py \
+            --root . \
+            --out architecture/w64/receipts/r02/W64_TOTAL_REPO_CENSUS_P1.json
+          python tools/w64_census_reverse_pressure.py \
+            --census architecture/w64/receipts/r02/W64_TOTAL_REPO_CENSUS_P1.json \
+            --out architecture/w64/receipts/r02/W64_TOTAL_REPO_CENSUS_P2.json
+          python tools/w64_discovery_graph.py \
+            --root . \
+            --out architecture/w64/receipts/r02/W64_DISCOVERY_GRAPH.json
+
+      - name: Execute R02 with one added worker pair per arm
+        run: |
+          python tools/w64_3p_parallel_pilot.py \
+            --p2 architecture/w64/receipts/r02/W64_TOTAL_REPO_CENSUS_P2.json \
+            --root . \
+            --sample 5 \
+            --discovery-workers 7 \
+            --discrimination-workers 7 \
+            --out architecture/w64/receipts/r02/W64_3P_R02_PILOT.json
+
+      - name: Validate missing-ID and graph receipt
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('architecture/w64/receipts/r02')
+          graph = json.loads((root / 'W64_DISCOVERY_GRAPH.json').read_text())
+          pilot = json.loads((root / 'W64_3P_R02_PILOT.json').read_text())
+          arms = {x['arm']: x for x in pilot['arms']}
+          assert graph['state'] == 'DERIVED_DISCOVERY_ONLY'
+          assert graph['summary']['nodes'] > 0
+          assert graph['summary']['edges'] > 0
+          assert arms['ARM_DISCOVERY']['workers'] == 7
+          assert arms['ARM_DISCRIMINATION']['workers'] == 7
+          receipt = {
+              'schema_version': 'TRIAGE-3P-RUN-RECEIPT-1.1.0',
+              'run_id': 'R02',
+              'source_sha': os.environ['SOURCE_SHA'],
+              'worker_delta_from_r01': {
+                  'ARM_DISCOVERY': 2,
+                  'ARM_DISCRIMINATION': 2,
+              },
+              'workers': {
+                  'ARM_DISCOVERY': 7,
+                  'ARM_DISCRIMINATION': 7,
+                  'P3_writer': 0,
+              },
+              'missing_id_summary': graph['summary'],
+              'missing_ids': graph['missing_ids'],
+              'stable_root_ids': pilot['stable_root_ids'],
+              'claim_guard': (
+                  'R02 measures paired-worker discovery and ID graph yield; '
+                  'no authority, release or engineering promotion.'
+              ),
+          }
+          (root / 'W64_3P_R02_RUN_RECEIPT.json').write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + '\n'
+          )
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: w64-3p-r02-id-discovery-graph
+          path: architecture/w64/receipts/r02/
+          if-no-files-found: error
