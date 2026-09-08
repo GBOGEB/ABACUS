@@ -1,62 +1,75 @@
-# ABACUS Coding Requirements (`CReq_###`)
+# Coding Requirements (`CReq_###`)
 
-`CReq_###` is the normative coding-requirement layer between architectural/control decisions and implementation PRs.
+`CReq_###` is a **repo-agnostic canonical coding-requirement namespace**. A requirement may be discovered in ABACUS, CODEX, cryoplant-project, or another child, but discovery location is provenance rather than ownership.
+
+## Identity and scope
+
+- `CReq_###` — global/federated canonical requirement.
+- `CReq_ABACUS_###` — ABACUS-local requirement or approved ABACUS override.
+- `CReq_CODEX_###` — CODEX-local requirement or approved CODEX override.
+- `CReq_CRYOPLANT_###` — cryoplant-project-local requirement or approved override.
+
+Local IDs use their own local sequence and therefore never consume, overwrite, or masquerade as global IDs.
+
+## Resolution hierarchy
+
+```text
+GLOBAL CReq_###
+     |
+     +--> applies by default to every adopted scope
+     |
+     +--> local non-conflicting addition: CReq_<REPO>_###
+     |
+     +--> proposed local override: CReq_<REPO>_###
+              |
+              +--> local repo owner review
+              +--> parent cADR/cOCD authority review
+              +--> global CReq authority approval
+              |
+              +--> APPROVED -> local wins inside declared scope only
+              +--> otherwise -> global remains effective
+```
+
+A local requirement SHALL NOT silently shadow a global requirement. `Local wins` is valid only for an explicit approved override. The global ID, text, and applicability to other repositories remain unchanged.
+
+The normative scope/precedence contract is `CODING_REQUIREMENT_SCOPE_POLICY.yaml`.
 
 ## Trace chain
 
 ```text
-repo mission / cOCD
+federation / global governance
+        |
+       cOCD
         |
        cADR
         |
-    CReq_###        <- stable, testable coding requirement
+    CReq_###                 <- global stable requirement
+        |
+        +-- CReq_<REPO>_###  <- local addition/approved override when needed
         |
  implementation surface / test contract
         |
  set -> wave -> pulse -> task -> PR(s)
         |
- verification receipt / CI evidence
+ verification + approval receipt / CI evidence
         |
  CONTROLLED
 ```
 
-A PR is not automatically a requirement. Multiple PRs caused by the same contract defect SHALL trace to the same `CReq_###` root requirement.
-
-## Required fields
-
-Each requirement carries:
-
-- stable `CReq_###` identifier;
-- normative `statement` using SHALL/MAY semantics;
-- rationale/root cause;
-- originating or representative `source_prs`;
-- parent `cADR` and `cOCD`;
-- DMAIC and repository lifecycle phase;
-- implementation surfaces;
-- executable verification method and acceptance condition;
-- controlled status.
+A PR is not automatically a requirement. Multiple PRs caused by the same contract defect SHALL trace to the same root requirement.
 
 ## Status lifecycle
 
-`PROPOSED -> ACCEPTED -> IMPLEMENTED -> VERIFIED -> CONTROLLED`
+Requirement conformance: `PROPOSED -> ACCEPTED -> IMPLEMENTED -> VERIFIED -> CONTROLLED`.
 
-`DEPRECATED` is terminal for superseded requirements. A replacement SHALL retain an explicit lineage edge to the deprecated requirement.
+Override approval is separate: `PROPOSED -> REVIEWED -> APPROVED`, with `REJECTED`, `SUPERSEDED`, and `EXPIRED` states retained as traceable outcomes.
 
 ## Credit boundary
 
-A verified `CReq` proves repository/runtime conformance. It does **not** grant QPS engineering, compliance, negotiation, or child-disposition credit. ABACUS/DOW analytical outputs remain diagnostic until explicit governed re-entry through child authority.
+A verified `CReq` proves coding/repository/runtime conformance. It does **not** grant QPS engineering, compliance, negotiation, or child-disposition credit. ABACUS/DOW analytical outputs remain diagnostic until explicit governed re-entry through child authority.
 
-## Initial requirement families
+## Initial globally-candidate requirement families
 
-| ID | Family | Primary DMAIC role |
-|---|---|---|
-| `CReq_001` | canonical phase execution contract | Control |
-| `CReq_002` | canonical construction / dependency injection | Control |
-| `CReq_003` | canonical result schema | Control |
-| `CReq_004` | incident deduplication / one repair pulse | Analyze |
-| `CReq_005` | editorial-bot isolation | Control |
-| `CReq_006` | mandatory PR lineage metadata | Measure |
-| `CReq_007` | maturity metric normalization | Measure |
-| `CReq_008` | DOW authority-boundary enforcement | Control |
+The initial `CReq_001`–`CReq_008` were discovered from ABACUS PR history. Their ABACUS origin does not make their identity ABACUS-local. They remain `PROPOSED` global candidates until accepted by the global/federated requirement authority.
 
-The registry of record is `ABACUS_CODING_REQUIREMENTS.yaml`.
+The originating registry is `ABACUS_CODING_REQUIREMENTS.yaml`; federation should later promote accepted global records into the canonical cross-repository registry while retaining `origin_repo` and `origin_prs` provenance.
