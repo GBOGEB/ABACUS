@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Generic 3PM/3PR burndown discriminator and preservation gate.
+"""Generic 3PM/3PR burndown discriminator, scout, and preservation gate.
 
-Consumes an item-list JSON and emits stable IDs, five read-only subtask plans,
-relationship-scout hints, preservation gates, and timing/result roll-up slots.
-It does not delete, rename, merge, or mutate repository truth.
+The worker is read-only. It assigns stable IDs, scouts repository relationships,
+measures five evidence subtasks, and evaluates whether a discriminated candidate
+must be quarantined or is eligible for later single-writer removal.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import statistics
+import time
 from pathlib import Path
 from typing import Iterable
 
@@ -20,6 +22,10 @@ SUBTASKS = [
     "information_delta_and_preservation",
     "disposition_risk_and_tests",
 ]
+TEXT_SUFFIXES = {".py", ".md", ".yaml", ".yml", ".json", ".toml", ".ini", ".txt", ".sh"}
+AUTHORITY_WORDS = {"ssot", "authority", "contract", "schema", "registry", "manifest", "canonical"}
+GENERATED_WORDS = {"generated", "dist", "build", "export", "rendered"}
+VERSION_WORDS = {"legacy", "archive", "deprecated", "stale", "old", "v0", "v1", "v2", "v3"}
 
 
 def stable_item_id(item: dict[str, object]) -> str:
@@ -50,6 +56,159 @@ def relation_hints(path: str) -> list[dict[str, str]]:
             {"edge": "workflow_invokes", "query": stem + " workflow"},
         ]
     return hints
+
+
+def iter_text_files(root: Path) -> Iterable[Path]:
+    for path in root.rglob("*"):
+        if not path.is_file() or ".git" in path.parts:
+            continue
+        if path.suffix.lower() in TEXT_SUFFIXES:
+            yield path
+
+
+def read_text_safe(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return ""
+
+
+def file_sha256(path: Path) -> str | None:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def identity_subtask(root: Path, members: list[str]) -> dict[str, object]:
+    records = []
+    for member in members:
+        path = root / member
+        records.append({
+            "path": member,
+            "exists": path.exists(),
+            "is_file": path.is_file(),
+            "suffix": path.suffix.lower(),
+            "parent": path.parent.relative_to(root).as_posix() if path.parent.is_relative_to(root) else str(path.parent),
+            "size": path.stat().st_size if path.is_file() else None,
+        })
+    return {"records": records, "evidence_yield": sum(1 for x in records if x["exists"])}
+
+
+def relatives_subtask(root: Path, members: list[str]) -> dict[str, object]:
+    needles = {Path(member).stem.lower() for member in members if Path(member).stem}
+    relatives: list[dict[str, str]] = []
+    member_set = set(members)
+    for path in iter_text_files(root):
+        rel = path.relative_to(root).as_posix()
+        text = read_text_safe(path).lower()
+        for needle in needles:
+            if needle and needle in text and rel not in member_set:
+                relatives.append({"path": rel, "edge": "references_or_documents", "needle": needle})
+                break
+    same_folder = []
+    parents = {Path(member).parent.as_posix() for member in members}
+    for parent in parents:
+        base = root / parent
+        if base.is_dir():
+            for path in base.iterdir():
+                rel = path.relative_to(root).as_posix()
+                if path.is_file() and rel not in member_set:
+                    same_folder.append({"path": rel, "edge": "same_folder"})
+    combined = relatives[:250] + same_folder[:250]
+    return {"edges": combined, "edge_yield": len(combined)}
+
+
+def authority_subtask(root: Path, members: list[str]) -> dict[str, object]:
+    records = []
+    for member in members:
+        path = root / member
+        text = (member + " " + read_text_safe(path)[:20000]).lower() if path.is_file() else member.lower()
+        authority_hits = sorted(word for word in AUTHORITY_WORDS if word in text)
+        generated_hits = sorted(word for word in GENERATED_WORDS if word in text)
+        version_hits = sorted(word for word in VERSION_WORDS if word in text)
+        records.append({
+            "path": member,
+            "authority_hits": authority_hits,
+            "generated_hits": generated_hits,
+            "version_hits": version_hits,
+        })
+    return {"records": records, "evidence_yield": sum(bool(x["authority_hits"]) for x in records)}
+
+
+def information_subtask(root: Path, members: list[str]) -> dict[str, object]:
+    records = []
+    hashes = []
+    for member in members:
+        path = root / member
+        digest = file_sha256(path) if path.is_file() else None
+        hashes.append(digest)
+        records.append({"path": member, "sha256": digest, "size": path.stat().st_size if path.is_file() else None})
+    valid_hashes = [h for h in hashes if h]
+    return {
+        "records": records,
+        "all_byte_identical": bool(valid_hashes) and len(set(valid_hashes)) == 1,
+        "distinct_content_count": len(set(valid_hashes)),
+        "unique_information_requires_review": len(set(valid_hashes)) > 1,
+    }
+
+
+def risk_subtask(root: Path, members: list[str]) -> dict[str, object]:
+    names = {Path(member).name.lower() for member in members}
+    stems = {Path(member).stem.lower() for member in members}
+    member_set = set(members)
+    consumers = []
+    for path in iter_text_files(root):
+        rel = path.relative_to(root).as_posix()
+        if rel in member_set:
+            continue
+        text = read_text_safe(path).lower()
+        if any(name and name in text for name in names) or any(stem and stem in text for stem in stems):
+            consumers.append(rel)
+    return {
+        "consumer_paths": sorted(set(consumers))[:500],
+        "consumer_count": len(set(consumers)),
+        "safe_to_remove_without_deeper_consumer_review": len(consumers) == 0,
+    }
+
+
+def run_subtask(root: Path, item: dict[str, object], subtask: str) -> dict[str, object]:
+    if subtask not in SUBTASKS:
+        raise ValueError(f"unknown subtask: {subtask}")
+    members = [str(x) for x in item.get("members", []) or []]
+    started = time.perf_counter_ns()
+    if subtask == SUBTASKS[0]:
+        evidence = identity_subtask(root, members)
+    elif subtask == SUBTASKS[1]:
+        evidence = relatives_subtask(root, members)
+    elif subtask == SUBTASKS[2]:
+        evidence = authority_subtask(root, members)
+    elif subtask == SUBTASKS[3]:
+        evidence = information_subtask(root, members)
+    else:
+        evidence = risk_subtask(root, members)
+    finished = time.perf_counter_ns()
+    return {
+        "item_id": item.get("item_id") or stable_item_id(item),
+        "subtask": subtask,
+        "started_ns": started,
+        "finished_ns": finished,
+        "duration_ms": (finished - started) / 1_000_000,
+        "evidence": evidence,
+        "read_only": True,
+    }
+
+
+def run_all_subtasks(root: Path, item: dict[str, object]) -> dict[str, object]:
+    results = [run_subtask(root, item, subtask) for subtask in SUBTASKS]
+    durations = [float(x["duration_ms"]) for x in results]
+    return {
+        "item_id": item.get("item_id") or stable_item_id(item),
+        "results": results,
+        "median_subtask_ms": statistics.median(durations) if durations else 0.0,
+        "p95_subtask_ms": max(durations) if durations else 0.0,
+        "wall_time_ms": sum(durations),
+    }
 
 
 def preservation_disposition(result: dict[str, object]) -> dict[str, object]:
@@ -101,7 +260,6 @@ def build_plan(payload: dict[str, object]) -> dict[str, object]:
                 "subtask": subtask,
                 "read_only": True,
                 "runner_may_parallelize": True,
-                "timing": {"started_ns": None, "finished_ns": None, "duration_ms": None},
             })
         hints = []
         for member in members:
@@ -179,14 +337,28 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--root", default=".")
     parser.add_argument("--evaluate", action="store_true")
+    parser.add_argument("--subtask", choices=SUBTASKS)
+    parser.add_argument("--item-index", type=int, default=0)
     args = parser.parse_args(list(argv) if argv is not None else None)
     source = json.loads(Path(args.input).read_text(encoding="utf-8"))
-    result = evaluate_payload(source) if args.evaluate else build_plan(source)
+    if args.subtask:
+        items = source.get("items", [])
+        if not isinstance(items, list) or not items:
+            raise ValueError("input must contain at least one item")
+        item = items[args.item_index]
+        if not isinstance(item, dict):
+            raise TypeError("selected item must be an object")
+        result = run_subtask(Path(args.root).resolve(), item, args.subtask)
+    elif args.evaluate:
+        result = evaluate_payload(source)
+    else:
+        result = build_plan(source)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"item_count": result["item_count"], "out": str(out)}, sort_keys=True))
+    print(json.dumps({"out": str(out)}, sort_keys=True))
     return 0
 
 
