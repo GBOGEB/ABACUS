@@ -1,0 +1,42 @@
+schema_version: '0.1'
+document_id: TRIAGE_3PR_DOV_CLOSURE_W62_A_ABACUS
+snapshot_date: '2026-09-08'
+repository: GBOGEB/ABACUS
+mode: 3PR
+observed_main_sha: d75dcd016326ddd7cf0fe1ee0296b84e1bb0566d
+observed_state:
+  release_readiness_control_pr: 1003
+  baseline_publish_readiness_pct: 65.5
+  architecture_readiness_pct: 92
+  rc_technical_readiness_pct: 76
+  checklist_effective: '21.5/32 = 67.2%'
+  dmaic_process_maturity_pct: 86
+  dmaic_control_pct: 59
+  pca_completeness_pct: 62
+  pca_state: PROVISIONAL_RULE_BASED
+cross_repo:
+  cryoplant_project:
+    release_convergence_pr: 670
+    state: MERGED
+    diagnostic_dmaic_pct: 90.6
+  CODEX:
+    terminal_proof_lane_present: true
+closure_metrics:
+  outward_runtime_style_authority: PRESENT
+  federation_creq_ci: MERGED
+  exact_rc_census: PARTIAL
+  reproducibility_receipt: PARTIAL
+  zero_delta_adversarial_qa: PARTIAL
+  protection_and_publish: OPEN
+diagnostic_dov:
+  wave_a_target_pct: 88
+  terminal_dov: WITHHELD
+wave_b_focus:
+- exact-RC census and blocker retirement
+- reproducibility and output-control receipt
+- zero-delta/adversarial QA
+- branch protection, tag, release and publication smoke
+formal_effect:
+  engineering_delta: 0
+  compliance_delta: 0
+  release_credit: observed_only_until_terminal_receipts
