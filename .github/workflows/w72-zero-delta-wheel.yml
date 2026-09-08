@@ -32,8 +32,8 @@ jobs:
           python -m build --wheel --outdir /tmp/w72-pass1
           rm -rf build *.egg-info
           python -m build --wheel --outdir /tmp/w72-pass2
-          f1="$(find /tmp/w72-pass1 -maxdepth 1 -type f -name '*.whl' -print -quit)"
-          f2="$(find /tmp/w72-pass2 -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          f1="$(find /tmp/w72-pass1 -name '*.whl' | head -n1)"
+          f2="$(find /tmp/w72-pass2 -name '*.whl' | head -n1)"
           test -n "$f1" -a -n "$f2"
           h1="$(sha256sum "$f1" | awk '{print $1}')"
           h2="$(sha256sum "$f2" | awk '{print $1}')"
