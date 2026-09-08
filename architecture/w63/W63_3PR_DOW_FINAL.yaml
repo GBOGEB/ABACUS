@@ -1,0 +1,25 @@
+version: 0.1.0
+wave: W63
+pulse: P3_DOW_FINAL
+owner: DOW_ABACUS
+classification: RUNTIME_CONTROL_ONLY
+observed_at: '2026-09-08T05:19:00+02:00'
+
+p7_runtime_disposition:
+  current_runtime_selection_excludes_superseded_receipts: true
+  current_runtime_selection_excludes_duplicate_alias_as_independent_authority: true
+  W61_repeat_fixtures_retained: true
+  historic_compare_assets_noncanonical: true
+  destructive_cleanup_required: false
+
+p3_result: PASS
+control_dov_contribution:
+  runtime_gate: CLOSED
+  zero_delta: PASS
+  cleanup_runtime_selection: PASS_NON_DESTRUCTIVE
+
+boundary:
+  engineering_truth_owner: QPS
+  engineering_credit_delta: 0
+  compliance_credit_delta: 0
+  negotiation_credit_delta: 0
