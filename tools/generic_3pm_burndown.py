@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generic 3PM/3PR burndown discriminator.
+"""Generic 3PM/3PR burndown discriminator and preservation gate.
 
 Consumes an item-list JSON and emits stable IDs, five read-only subtask plans,
 relationship-scout hints, preservation gates, and timing/result roll-up slots.
@@ -52,6 +52,33 @@ def relation_hints(path: str) -> list[dict[str, str]]:
     return hints
 
 
+def preservation_disposition(result: dict[str, object]) -> dict[str, object]:
+    atoms = result.get("unique_information_atoms", []) or []
+    targets = result.get("reintroduction_targets", []) or []
+    proof = str(result.get("reintroduction_proof", "NOT_EXECUTED"))
+    consumer = str(result.get("consumer_dependency_check", "NOT_EXECUTED"))
+    duplicate_proven = bool(result.get("duplicate_or_obsolete_role_proven", False))
+    canonical_target = bool(result.get("canonical_target_lineaged", False))
+    post_tests = bool(result.get("post_reintroduction_tests_passed", False))
+    all_atoms_reintroduced = len(atoms) == len(targets) and proof == "PASS"
+    no_live_consumer = consumer == "PASS_NO_REQUIRED_CONSUMER"
+    remove_eligible = all(
+        [duplicate_proven, canonical_target, post_tests, all_atoms_reintroduced, no_live_consumer]
+    )
+    return {
+        "remove_eligible": remove_eligible,
+        "quarantine_required": not remove_eligible,
+        "disposition": "REMOVE_ELIGIBLE" if remove_eligible else "QUARANTINE",
+        "checks": {
+            "duplicate_or_obsolete_role_proven": duplicate_proven,
+            "all_unique_information_atoms_reintroduced": all_atoms_reintroduced,
+            "canonical_target_lineaged": canonical_target,
+            "post_reintroduction_tests_passed": post_tests,
+            "no_required_consumer_dependency": no_live_consumer,
+        },
+    }
+
+
 def build_plan(payload: dict[str, object]) -> dict[str, object]:
     raw_items = payload.get("items", [])
     if not isinstance(raw_items, list):
@@ -93,6 +120,9 @@ def build_plan(payload: dict[str, object]) -> dict[str, object]:
                 "reintroduction_targets": [],
                 "reintroduction_proof": "NOT_EXECUTED",
                 "consumer_dependency_check": "NOT_EXECUTED",
+                "duplicate_or_obsolete_role_proven": False,
+                "canonical_target_lineaged": False,
+                "post_reintroduction_tests_passed": False,
                 "remove_eligible": False,
                 "quarantine_required": True,
             },
@@ -115,17 +145,48 @@ def build_plan(payload: dict[str, object]) -> dict[str, object]:
     }
 
 
+def evaluate_payload(payload: dict[str, object]) -> dict[str, object]:
+    items = payload.get("items", [])
+    if not isinstance(items, list):
+        raise TypeError("items must be a list")
+    evaluated = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        preservation = item.get("preservation", {})
+        if not isinstance(preservation, dict):
+            preservation = {}
+        decision = preservation_disposition(preservation)
+        evaluated.append({
+            "item_id": item.get("item_id") or stable_item_id(item),
+            "disposition": decision["disposition"],
+            "remove_eligible": decision["remove_eligible"],
+            "quarantine_required": decision["quarantine_required"],
+            "checks": decision["checks"],
+        })
+    return {
+        "schema_version": "GENERIC-3PM-BURNDOWN-EVAL-1.0.0",
+        "item_count": len(evaluated),
+        "items": evaluated,
+        "remove_eligible_count": sum(1 for x in evaluated if x["remove_eligible"]),
+        "quarantine_count": sum(1 for x in evaluated if x["quarantine_required"]),
+        "mutation_allowed": False,
+        "single_writer_required_for_any_later_mutation": True,
+    }
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--evaluate", action="store_true")
     args = parser.parse_args(list(argv) if argv is not None else None)
     source = json.loads(Path(args.input).read_text(encoding="utf-8"))
-    plan = build_plan(source)
+    result = evaluate_payload(source) if args.evaluate else build_plan(source)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"item_count": plan["item_count"], "out": str(out)}, sort_keys=True))
+    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({"item_count": result["item_count"], "out": str(out)}, sort_keys=True))
     return 0
 
 
