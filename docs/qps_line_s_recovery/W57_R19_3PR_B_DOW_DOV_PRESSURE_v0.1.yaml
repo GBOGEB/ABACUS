@@ -1,0 +1,26 @@
+schema_version: "0.1"
+document_id: W57_R19_3PR_B_DOW_DOV_PRESSURE
+role: PARENT_PHYSICS_DOV_PRESSURE
+observed_metrics:
+  physical_source_classes_closed: 0
+  physical_source_classes_total: 4
+  reverse_pressure_input_classes_closed: 0
+  reverse_pressure_input_classes_total: 3
+  reverse_pressure_executable: false
+analysis_readiness:
+  deterministic_spatial_solver: BLOCKED_SOURCE_INPUTS
+  measured_PCA: BLOCKED_GOVERNED_MATRIX
+  sensitivity: PRIORITY_ONLY_NOT_ACCEPTANCE
+  Monte_Carlo: BLOCKED_DISTRIBUTIONS_AND_BASE_MODEL
+  VV: HISTORIC_BOUNDED_BASELINE_ONLY
+reverse_loading:
+  HEPAK_numeric_receipt: 1.00
+  selected_LineB_geometry: 0.95
+  per_QCELL_B_flow_positions: 0.92
+  spatial_heat_leak_Tx_hx: 0.82
+  governed_reverse_pressure_receipt: 0.78
+return:
+  physical_closure: DEFER
+  formal_delta: 0
+  strict_delta: 0
+  next_executable_event: INGEST_FIRST_REAL_SOURCE_RETURN
