@@ -1,0 +1,30 @@
+schema_version: triage-observed-completion/1.0.0
+repo: GBOGEB/ABACUS
+role: DOW_DERIVED_ANALYSIS
+baseline:
+  w58_pr: 939
+  w58_merged: true
+  w59_pr: 940
+  w59_merged: true
+metrics:
+  census_contract_present: {earned: 10, possible: 10, status: PASS}
+  coded_ocd_adr_present: {earned: 10, possible: 10, status: PASS}
+  derived_analysis_authority_declared: {earned: 10, possible: 10, status: PASS}
+  ssot_zod_schema_declared: {earned: 10, possible: 10, status: PASS}
+  dow_pipeline_p6_declared: {earned: 10, possible: 10, status: PASS}
+  pca_dmaic_graph_methods_declared: {earned: 10, possible: 10, status: PASS}
+  container_runner_action_inventory: {earned: 10, possible: 10, status: PASS}
+  no_engineering_promotion_guard: {earned: 10, possible: 10, status: PASS}
+  fail_closed_census_validation: {earned: 10, possible: 10, status: PASS}
+  observed_zero_delta_cross_repo_receipt: {earned: 0, possible: 10, status: OPEN}
+summary:
+  earned: 90
+  possible: 100
+  observed_completion_pct: 90
+  structural_completion_pct: 100
+  terminal_proof_completion_pct: 50
+  dov_state: CONTROL_FRAMEWORK_ACHIEVED_TERMINAL_PROOF_OPEN
+remaining:
+  - exact input/output digest receipt for DOW run
+  - synchronized cross-repo tuple comparison
+  - zero-delta second-pass receipt
