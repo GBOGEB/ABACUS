@@ -1,0 +1,109 @@
+schema_version: '1.0'
+repo: GBOGEB/ABACUS
+purpose: Cross-repo release-control assimilation for ABACUS
+observed_at_main_sha: d5202e39be1e51684cf21679919128b752faa6aa
+
+source_lanes:
+  TRIAGE:
+    adopted_learning:
+      - activity_without_accepted_receipt_has_zero_score_delta
+      - use_fixed_before_after_delta_target_remaining_gap reporting
+      - separate diagnosis_gain from readiness_credit
+  QPS_CRYOPLANT:
+    adopted_learning:
+      - separate_structural_preparation_from_weighted_readiness_and_publish_permission
+      - track_absolute_release_artifact_count_type_size_and_materialization_state
+      - exact_SHA_runtime_then_parity_then_publication_envelope_then_tag_archive
+  CODEX:
+    adopted_learning:
+      - freeze_terminal_prerequisite_denominator
+      - track_strict_non_PASS_outstanding_separately_from_equivalent_outstanding
+      - track_items_under_executable_attack_without_counting_queued_as_PASS
+  ABACUS:
+    retained_strengths:
+      - exact_pathset_fingerprints_for_authority_disposition
+      - release_critical_unknown_asset_classification
+      - full_file_index_with_size_last_touch_commit_and_300_second_temporal_clusters
+      - measured_PCA_rows_require_numeric_features_and_distinct_source_SHAs
+
+runtime_correction:
+  predecessor_pr: 1042
+  predecessor_head_sha: 12cc4a6f6a384700fe84b8dba83dae178ff94042
+  observed_w64_execution:
+    p1_asset_count: 2828
+    baseline_p2_blocker_count: 34
+    authority_family_count: 32
+    temporal_cluster_count: 226
+    disposition_aware_p2: FAILED_BEFORE_RECEIPT
+    failure: ModuleNotFoundError_No_module_named_tools
+    p3_receipt: NOT_EMITTED
+  score_effect:
+    planned_34_to_1_conversion_credit: WITHHELD
+    release_score_delta: 0
+    reason: no accepted disposition-aware P2/P3 receipt
+
+terminal_denominator:
+  frozen_count: 12
+  strict_non_pass_outstanding: 12
+  equivalent_outstanding_partial_half_credit: 9.5
+  items:
+    - {id: T01, item: exact_RC_P1_P2_P3_accepted, state: BLOCKED}
+    - {id: T02, item: census_release_critical_blockers_zero, state: BLOCKED}
+    - {id: T03, item: source_generated_legacy_measurement_closed, state: PARTIAL}
+    - {id: T04, item: clean_clone_install_build_test, state: OPEN}
+    - {id: T05, item: full_exact_RC_mandatory_regression, state: PARTIAL}
+    - {id: T06, item: outward_outputs_regenerated_from_RC, state: PARTIAL}
+    - {id: T07, item: output_hash_source_lineage_manifest, state: PARTIAL}
+    - {id: T08, item: repeat_build_zero_delta_PASS, state: OPEN}
+    - {id: T09, item: adversarial_release_QA, state: PARTIAL}
+    - {id: T10, item: immutable_RC_freeze, state: OPEN}
+    - {id: T11, item: protected_main_required_checks, state: OPEN}
+    - {id: T12, item: version_tag_GitHub_point_release_archive_smoke, state: OPEN}
+
+execution_assurance:
+  status: BLOCKED_PENDING_ACCEPTED_W64_RERUN
+  score_policy:
+    accepted_receipt_required: true
+    queued_or_registered_workflow_credit: 0
+    diagnostic_failure_can_raise_BT_confidence: true
+    weighted_readiness_cannot_override_open_hard_gate: true
+  next_conversion:
+    - direct_CLI_import_regression_PASS
+    - W64_disposition_aware_P2_executes
+    - P3_receipt_emitted
+    - observed_blocker_count_established
+    - only_then_promote_census_blocker_retirement_score
+
+pca_measurement:
+  empirical_release_credit: WITHHELD_UNTIL_DENOMINATOR_PROVEN
+  observed_numeric_row:
+    source_sha: 3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+    registry_gap_rate: 0.5
+    unresolved_reference_rate: 0.727273
+    consumer_penetration_rate: 0.6
+    graph_drop_rate: 0.36
+    lineage_gap_rate: 0.4
+    total_population: 76
+    total_open_backlog: 35
+  promotion_rule:
+    minimum_numeric_rows: 3
+    minimum_distinct_source_shas: 3
+    counted_only_when_retained: true
+
+cross_repo_propagation_candidates:
+  TRIAGE:
+    - import_ABACUS_temporal_file_clustering_for_migration_family_detection
+    - import_exact_pathset_fingerprint_before_authority_disposition
+  QPS_CRYOPLANT:
+    - use_ABACUS_file_index_to_measure_binary_refresh_population_by_path_size_and_last_touch_time
+    - correlate_same_wave_generated_outputs_by_short_time_windows_before_regeneration
+  CODEX:
+    - apply_ABACUS_scope_aware_duplicate_authority_discrimination_to_terminal_manifest_and_schema_families
+    - use_temporal_clusters_to_distinguish_versioned_receipt_series_from_competing_authority
+
+control_rules:
+  - no_cross_repo_score_is_copied_into_ABACUS_without_repo_native_evidence
+  - cross_repo_learning_may_change_method_or_priority_but_not_grant_release_credit
+  - exact_runtime_receipt_precedes_score_promotion
+  - empirical_PCA_requires_retained_numeric_multi_SHA_population
+  - terminal_denominator_changes_require_explicit_scope_change
