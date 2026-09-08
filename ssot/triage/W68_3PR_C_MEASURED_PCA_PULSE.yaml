@@ -1,0 +1,26 @@
+schema: TRIAGE-W68-3PR-C-1.0
+wave: W068
+lane: C
+intent: execute one new numeric A-E census feature row on a distinct source SHA
+baseline:
+  cluster_PXA_pct: 62
+  pca_promotion: WITHHELD
+  committed_measured_feature_rows: LT_3
+BT: 0.80
+negative_loading: measurement_allocation_uncertainty
+victory:
+  workflow: .github/workflows/w67-measured-id-pulse.yml
+  required_artifact_prefix: w67-measured-id-pulse-
+  required_receipt: architecture/w66/receipts/history/<SOURCE_SHA>/FEATURE_ROW.json
+  required_numeric_fields:
+    - registry_gap_rate
+    - unresolved_reference_rate
+    - consumer_penetration_rate
+    - graph_drop_rate
+    - lineage_gap_rate
+    - total_population
+    - total_open_backlog
+promotion_boundary:
+  pca_requires_three_distinct_committed_source_shas: true
+  worker_allocation_stays_rule_based_until_promotion: true
+  engineering_credit_delta: 0
