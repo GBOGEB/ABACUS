@@ -1,0 +1,99 @@
+name: W70 Retain Measured Pulse
+
+on:
+  workflow_run:
+    workflows: ["W70 Exact-SHA Measured ID Pulse"]
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  retain:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Resolve source metadata
+        id: meta
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "source_sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+            echo "run_id=${{ github.event.workflow_run.id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "source_sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            echo "run_id=${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download successful measured pulse
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.meta.outputs.run_id }}
+          pattern: w70-measured-id-pulse-*
+          path: /tmp/w70-pulse
+          merge-multiple: true
+      - name: Stage governed measurement history
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="${{ steps.meta.outputs.source_sha }}"
+          DEST="architecture/w66/receipts/history/${SRC}"
+          mkdir -p "$DEST"
+          cp /tmp/w70-pulse/*.json "$DEST"/
+          test -s "$DEST/FEATURE_ROW.json"
+      - name: Compute PCA denominator receipt
+        shell: bash
+        run: |
+          mkdir -p architecture/w70/receipts
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=sorted(Path('architecture/w66/receipts/history').glob('*/FEATURE_ROW.json')) if Path('architecture/w66/receipts/history').exists() else []
+          shas=sorted({p.parent.name for p in rows})
+          n=len(rows)
+          payload={
+            'schema_version':'1.0',
+            'gate':'PCA_MEASURED_DENOMINATOR',
+            'required_numeric_rows':3,
+            'required_distinct_source_shas':3,
+            'candidate_committed_rows_after_stage':n,
+            'candidate_distinct_source_shas_after_stage':len(shas),
+            'missing_rows_to_threshold':max(0,3-n),
+            'promotion_candidate':'YES' if n>=3 and len(shas)>=3 else 'NO',
+            'source_shas':shas,
+            'boundary':'PCA is diagnostic only and creates no engineering authority.'
+          }
+          p=Path('architecture/w70/receipts/PCA_DENOMINATOR_RECEIPT.json')
+          p.write_text(json.dumps(payload,indent=2)+'\n',encoding='utf-8')
+          print(p.read_text())
+          PY
+      - name: Retain history on main
+        id: push
+        if: github.event_name == 'workflow_run'
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add architecture/w66/receipts/history architecture/w70/receipts/PCA_DENOMINATOR_RECEIPT.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "data(w70): retain exact-SHA measured ID pulse ${{ steps.meta.outputs.source_sha }}"
+          git push origin HEAD:main
+      - name: Upload denominator control receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w70-pca-denominator-control
+          path: |
+            architecture/w70/receipts/PCA_DENOMINATOR_RECEIPT.json
+            architecture/w66/receipts/history/**
+          if-no-files-found: warn
+          retention-days: 30
