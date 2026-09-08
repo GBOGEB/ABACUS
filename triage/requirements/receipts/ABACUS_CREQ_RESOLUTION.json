@@ -1,0 +1,17 @@
+{
+  "schema_version": "creq-resolution/0.1.0",
+  "repo": "GBOGEB/ABACUS",
+  "effective_requirements": [
+    {"effective_id":"CReq_001","scope":"GBOGEB/ABACUS","source":"global","title":"Canonical phase execution contract"},
+    {"effective_id":"CReq_002","scope":"GBOGEB/ABACUS","source":"global","title":"Canonical construction and dependency injection"},
+    {"effective_id":"CReq_003","scope":"GBOGEB/ABACUS","source":"global","title":"Canonical result schema"},
+    {"effective_id":"CReq_004","scope":"GBOGEB/ABACUS","source":"global_fallback","blocked_override":"CReq_ABACUS_001","title":"One incident to one controlled repair pulse"},
+    {"effective_id":"CReq_005","scope":"GBOGEB/ABACUS","source":"global","title":"Editorial changes isolated from functional maturity"},
+    {"effective_id":"CReq_006","scope":"GBOGEB/ABACUS","source":"global","title":"PR lineage metadata is mandatory"},
+    {"effective_id":"CReq_007","scope":"GBOGEB/ABACUS","source":"global","title":"Activity is separated from controlled maturity"},
+    {"effective_id":"CReq_008","scope":"GBOGEB/ABACUS","source":"global","title":"Analytical authority boundary is executable"}
+  ],
+  "warnings": ["CReq_ABACUS_001 override blocked: approval chain incomplete"],
+  "status": "PASS",
+  "run_note": "First executable reference run. Local override intentionally incomplete; global CReq_004 remains effective. Duplicate-fallback bug found in run 1 and corrected before this retained receipt."
+}

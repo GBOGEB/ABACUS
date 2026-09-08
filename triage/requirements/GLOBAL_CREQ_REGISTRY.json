@@ -1,0 +1,14 @@
+{
+  "schema_version": "creq-global/0.1.0",
+  "authority": "TRIAGE_FEDERATION",
+  "requirements": [
+    {"id":"CReq_001","title":"Canonical phase execution contract","origin_repo":"GBOGEB/ABACUS","origin_prs":[85,94,117,172,204],"status":"PROPOSED"},
+    {"id":"CReq_002","title":"Canonical construction and dependency injection","origin_repo":"GBOGEB/ABACUS","origin_prs":[93,99,118,174,203],"status":"PROPOSED"},
+    {"id":"CReq_003","title":"Canonical result schema","origin_repo":"GBOGEB/ABACUS","origin_prs":[84,100,108,168,199],"status":"PROPOSED"},
+    {"id":"CReq_004","title":"One incident to one controlled repair pulse","origin_repo":"GBOGEB/ABACUS","origin_prs":[84,96,121,171,204],"status":"PROPOSED"},
+    {"id":"CReq_005","title":"Editorial changes isolated from functional maturity","origin_repo":"GBOGEB/ABACUS","origin_prs":[21,22,23],"status":"PROPOSED"},
+    {"id":"CReq_006","title":"PR lineage metadata is mandatory","origin_repo":"GBOGEB/ABACUS","origin_prs":[28,108,172,199],"status":"PROPOSED"},
+    {"id":"CReq_007","title":"Activity is separated from controlled maturity","origin_repo":"GBOGEB/ABACUS","origin_prs":[984],"status":"PROPOSED"},
+    {"id":"CReq_008","title":"Analytical authority boundary is executable","origin_repo":"GBOGEB/ABACUS","origin_prs":[984],"status":"PROPOSED"}
+  ]
+}
