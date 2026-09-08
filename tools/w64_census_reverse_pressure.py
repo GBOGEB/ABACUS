@@ -18,7 +18,8 @@ from pathlib import Path
 from typing import Iterable
 
 AUTHORITY_KEYWORDS = ("ssot", "authority", "contract", "schema", "resolver", "registry", "manifest")
-STALE_TREE_KEYWORDS = ("abacus-v0", "abacus-v1", "abacus-v2", "abacus-v3", "legacy", "archive", "deprecated", "stale", "old")
+STALE_TREE_COMPONENTS = {"legacy", "archive", "deprecated", "stale", "old"}
+STALE_TREE_PREFIXES = ("abacus-v0", "abacus-v1", "abacus-v2", "abacus-v3")
 GENERATED_KEYWORDS = ("generated", "dist/", "build/", "exports/")
 RELEASE_CRITICAL_CATEGORIES = {"workflow", "ssot", "schema_or_config", "source_or_script", "binary_or_rendered_output"}
 
@@ -50,8 +51,10 @@ def is_generated_like(asset: dict[str, object]) -> bool:
 
 
 def is_stale_tree_like(asset: dict[str, object]) -> bool:
-    text = path_text(asset).lower()
-    return str(asset.get("classification")) == "dormant" or any(keyword in text for keyword in STALE_TREE_KEYWORDS)
+    if str(asset.get("classification")) == "dormant":
+        return True
+    parts = [part.lower() for part in Path(path_text(asset)).parts]
+    return any(part in STALE_TREE_COMPONENTS or part.startswith(STALE_TREE_PREFIXES) for part in parts)
 
 
 def is_release_critical_unknown(asset: dict[str, object]) -> bool:
