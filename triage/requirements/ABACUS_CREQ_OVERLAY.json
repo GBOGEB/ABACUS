@@ -1,0 +1,20 @@
+{
+  "schema_version": "creq-local/0.1.0",
+  "repo": "GBOGEB/ABACUS",
+  "requirements": [
+    {
+      "id": "CReq_ABACUS_001",
+      "mode": "override",
+      "overrides": "CReq_004",
+      "title": "ABACUS repair fanout cap",
+      "delta": "ABACUS may later set a repo-specific fanout threshold without changing the global deduplication rule.",
+      "rationale": "Runtime reference case for proving override precedence and approval gating.",
+      "approval_state": "PROPOSED",
+      "approval_chain": [
+        {"role":"local_repo_owner","state":"APPROVED"},
+        {"role":"parent_cADR_or_cOCD_authority","state":"REVIEWED"},
+        {"role":"global_CReq_authority","state":"PROPOSED"}
+      ]
+    }
+  ]
+}
