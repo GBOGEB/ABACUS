@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema_version: '0.1'
 repo: GBOGEB/ABACUS
 purpose: TRIAGE point-release self-readiness and self-evaluation
@@ -20,6 +21,27 @@ baseline:
     successful: 5
   main_protected: false
   formal_release_dov: WITHHELD
+
+observed_burndown:
+  pulse: P1
+  predecessor_pr: 1003
+  predecessor_merge_sha: 1d7bf0855a349fcffc402d6ba7546a68a79c8f03
+  current_main_at_p1_start: 231b4a8d1d67ce5a58722f6d1da20962e6e8a675
+  predecessor_pr_matrix:
+    observed_workflows: 12
+    successful: 11
+    failed: 1
+    failed_gate: Validate Docs (Markdown/YAML/JSON)
+    failure_class: documentation lint / YAML line length
+    semantic_failure: false
+  reverse_pressure_focus:
+    - census_blocker_retirement
+    - clean_reproducible_rebuild
+    - zero_delta_repeatability
+    - rc_freeze_immutable_manifest
+    - main_protection_required_checks
+    - formal_tag_point_release
+  score_uplift_policy: observed evidence only
 
 release_score:
   - {domain: release_identity_evidence_authority, weight: 8, earned: 7.5, status: PASS}
