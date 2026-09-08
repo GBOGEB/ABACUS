@@ -1,14 +1,13 @@
-schema_version: '1.0'
+schema_version: '1.1'
 repo: GBOGEB/ABACUS
 purpose: Cross-repo release-control assimilation for ABACUS
-observed_at_main_sha: d5202e39be1e51684cf21679919128b752faa6aa
 
 source_lanes:
   TRIAGE:
     adopted_learning:
       - activity_without_accepted_receipt_has_zero_score_delta
-      - use_fixed_before_after_delta_target_remaining_gap reporting
-      - separate diagnosis_gain from readiness_credit
+      - use_fixed_before_after_delta_target_remaining_gap_reporting
+      - separate_diagnosis_gain_from_readiness_credit
   QPS_CRYOPLANT:
     adopted_learning:
       - >-
@@ -27,28 +26,38 @@ source_lanes:
       - full_file_index_with_size_last_touch_commit_and_300_second_temporal_clusters
       - measured_PCA_rows_require_numeric_features_and_distinct_source_SHAs
 
-runtime_correction:
-  predecessor_pr: 1042
-  predecessor_head_sha: 12cc4a6f6a384700fe84b8dba83dae178ff94042
-  observed_w64_execution:
-    p1_asset_count: 2828
-    baseline_p2_blocker_count: 34
-    authority_family_count: 32
-    temporal_cluster_count: 226
-    disposition_aware_p2: FAILED_BEFORE_RECEIPT
-    failure: ModuleNotFoundError_No_module_named_tools
-    p3_receipt: NOT_EMITTED
-  score_effect:
-    planned_34_to_1_conversion_credit: WITHHELD
-    release_score_delta: 0
-    reason: no accepted disposition-aware P2/P3 receipt
+accepted_w64_conversion:
+  workflow_run_id: 34204333571
+  artifact_id: 10047177187
+  artifact_sha256: 12cb160d81ecf8e4b3eb6217c4b66d9f64421651c90485b792aa258c1421b750
+  source_head_sha: e20f923b5994a2d817fe1fde5d625d189170127b
+  p1_asset_count: 2832
+  baseline_p2_blocker_count: 34
+  disposition_aware_p2_blocker_count: 1
+  blocker_reduction: 33
+  blocker_reduction_pct: 97.0588
+  resolved_duplicate_families: 32
+  resolved_unknown_assets: 24
+  resolved_generated_assets: 2
+  warning_count: 2
+  temporal_cluster_count: 228
+  p3_status: BLOCKED
+  release_credit: NOT_GRANTED
+  w64_dov: NOT_PROMOTED
+  interpretation: >-
+    Exact P1/P2/P3 execution is accepted. T01 is closed, but T02 remains blocked
+    by one generated-authority lineage finding.
 
 terminal_denominator:
   frozen_count: 12
-  strict_non_pass_outstanding: 12
-  equivalent_outstanding_partial_half_credit: 9.5
+  before_strict_non_pass_outstanding: 12
+  after_strict_non_pass_outstanding: 11
+  strict_delta: -1
+  before_equivalent_outstanding_partial_half_credit: 9.5
+  after_equivalent_outstanding_partial_half_credit: 8.5
+  equivalent_delta: -1.0
   items:
-    - {id: T01, item: exact_RC_P1_P2_P3_accepted, state: BLOCKED}
+    - {id: T01, item: exact_RC_P1_P2_P3_accepted, state: PASS}
     - {id: T02, item: census_release_critical_blockers_zero, state: BLOCKED}
     - {id: T03, item: source_generated_legacy_measurement_closed, state: PARTIAL}
     - {id: T04, item: clean_clone_install_build_test, state: OPEN}
@@ -62,47 +71,24 @@ terminal_denominator:
     - {id: T12, item: version_tag_GitHub_point_release_archive_smoke, state: OPEN}
 
 execution_assurance:
-  status: BLOCKED_PENDING_ACCEPTED_W64_RERUN
+  status: ACCEPTED_W64_EXECUTION_WITH_ONE_RESIDUAL_BLOCKER
   score_policy:
     accepted_receipt_required: true
     queued_or_registered_workflow_credit: 0
     diagnostic_failure_can_raise_BT_confidence: true
     weighted_readiness_cannot_override_open_hard_gate: true
   next_conversion:
-    - direct_CLI_import_regression_PASS
-    - W64_disposition_aware_P2_executes
-    - P3_receipt_emitted
-    - observed_blocker_count_established
-    - only_then_promote_census_blocker_retirement_score
+    - govern_source_and_generator_for_P05H_and_P05I
+    - rerun_identical_W64_P1_P2_P3
+    - require_observed_blocker_count_zero
+    - only_then_promote_T02_and_census_blocker_retirement_score
 
 pca_measurement:
   empirical_release_credit: WITHHELD_UNTIL_DENOMINATOR_PROVEN
-  observed_numeric_row:
-    source_sha: 3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
-    registry_gap_rate: 0.5
-    unresolved_reference_rate: 0.727273
-    consumer_penetration_rate: 0.6
-    graph_drop_rate: 0.36
-    lineage_gap_rate: 0.4
-    total_population: 76
-    total_open_backlog: 35
   promotion_rule:
     minimum_numeric_rows: 3
     minimum_distinct_source_shas: 3
     counted_only_when_retained: true
-
-cross_repo_propagation_candidates:
-  TRIAGE:
-    - import_ABACUS_temporal_file_clustering_for_migration_family_detection
-    - import_exact_pathset_fingerprint_before_authority_disposition
-  QPS_CRYOPLANT:
-    - >-
-        use_ABACUS_file_index_to_measure_binary_refresh_population_by_path_size_and_last_touch_time
-    - correlate_same_wave_generated_outputs_by_short_time_windows_before_regeneration
-  CODEX:
-    - >-
-        apply_ABACUS_scope_aware_duplicate_authority_discrimination_to_terminal_manifest_and_schema_families
-    - use_temporal_clusters_to_distinguish_versioned_receipt_series_from_competing_authority
 
 control_rules:
   - no_cross_repo_score_is_copied_into_ABACUS_without_repo_native_evidence

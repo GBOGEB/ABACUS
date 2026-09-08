@@ -1,5 +1,5 @@
 schema: abacus.cross-repo-terminal-denominators/v1
-as_of: '2026-09-08T10:06:00+02:00'
+as_of: '2026-09-08T10:12:00+02:00'
 repo: GBOGEB/ABACUS
 source: governance/ABACUS_POINT_RELEASE_READINESS_v0.1.yaml
 classification: RELEASE_CONTROL_DIAGNOSTIC_ONLY
@@ -9,16 +9,23 @@ transferred_learning:
   from_QPS: absolute artifact count/type/known-bytes/unknown-size must be explicit before publication
   from_TRIAGE: activity without accepted receipt earns zero score
 
+source_precedence:
+  rule: detailed_checklist_rows_override_summary_block_when_they_disagree
+  detected_summary_block: {pass: 17, partial: 9, open_blocked: 6}
+  recounted_detailed_rows: {pass: 17, partial: 10, open_blocked: 5}
+  discrepancy_status: CORRECTED_IN_THIS_LEDGER
+
 full_checklist:
   total: 32
   pass: 17
-  partial: 9
-  open_blocked: 6
+  partial: 10
+  open_blocked: 5
   strict_outstanding: 15
-  equivalent_outstanding: 10.5
+  equivalent_outstanding: 10.0
   equivalent_formula: open_blocked + 0.5 * partial
-  effective_units: 21.5
-  effective_pct: 67.2
+  effective_units_from_recount: 22.0
+  effective_pct_from_recount: 68.75
+  note: this recount corrects denominator arithmetic only and does not promote release readiness score
 
 terminal_publish_subset:
   ids: [27, 28, 29, 30, 31, 32]
@@ -46,6 +53,7 @@ census_context:
   note: census blocker reduction and terminal publication closure remain separate denominators
 
 control_rules:
+  - detailed checklist rows are authoritative for recount arithmetic when summary fields disagree
   - strict outstanding burns only on PASS
   - PARTIAL remains outstanding and contributes 0.5 equivalent unit
   - no weighted score can compensate for an open hard terminal prerequisite
