@@ -1,0 +1,116 @@
+name: W64 3P R01 Retained Baseline
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/w64-3p-r01-retained-baseline.yml'
+      - 'tools/w64_3p_parallel_pilot.py'
+      - 'tools/generic_3pm_burndown.py'
+      - 'tools/w64_total_repo_census.py'
+      - 'tools/w64_census_reverse_pressure.py'
+      - 'architecture/w64/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r01:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Build current P1 and P2 receipts
+        run: |
+          mkdir -p architecture/w64/receipts/r01
+          python tools/w64_total_repo_census.py \
+            --root . \
+            --out architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P1.json
+          python tools/w64_census_reverse_pressure.py \
+            --census architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P1.json \
+            --out architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json
+
+      - name: Execute same-root parallel arms
+        run: |
+          python tools/w64_3p_parallel_pilot.py \
+            --p2 architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json \
+            --root . \
+            --sample 5 \
+            --discovery-workers 5 \
+            --discrimination-workers 5 \
+            --out architecture/w64/receipts/r01/W64_3P_R01_PILOT.json
+
+      - name: Build retained baseline receipt
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('architecture/w64/receipts/r01')
+          pilot = json.loads((root / 'W64_3P_R01_PILOT.json').read_text())
+          arms = {x['arm']: x for x in pilot['arms']}
+          wall_total = sum(float(x['wall_time_ms']) for x in arms.values())
+          sample_n = int(pilot['sample_root_items'])
+          record = {
+              'schema_version': 'TRIAGE-3P-RUN-RECEIPT-1.0.0',
+              'run_id': 'R01',
+              'valid': True,
+              'source_sha': os.environ['GITHUB_SHA'],
+              'stratum': 'W64_DUPLICATE_AUTHORITY_MIXED_SAMPLE5',
+              'measurement_contract': 'R01-READONLY-PARALLEL-ARMS-1.0.0',
+              'sample_root_items': sample_n,
+              'stable_root_ids': pilot['stable_root_ids'],
+              'workers': {
+                  'ARM_DISCOVERY': arms['ARM_DISCOVERY']['workers'],
+                  'ARM_DISCRIMINATION': arms['ARM_DISCRIMINATION']['workers'],
+                  'P3_writer': 0,
+              },
+              'wall_ms_total_arms': wall_total,
+              'wall_ms_per_root_item': wall_total / sample_n if sample_n else 0.0,
+              'AHT_ms_per_root_item': sum(
+                  float(x['AHT_variant_job_ms']) for x in arms.values()
+              ) / len(arms),
+              'evidence_yield_total': sum(int(x['total_yield']) for x in arms.values()),
+              'terminal_items_per_worker_hour': 0.0,
+              'evidence_yield_per_worker_minute': 0.0,
+              'rework_rate': 0.0,
+              'information_loss_failures': 0,
+              'DoV_gap_after': 1.0,
+              'stability_class': 'INSUFFICIENT_EVIDENCE',
+              'anchor_promotions': [],
+              'claim_guard': 'R01 is a read-only performance baseline; no stable speed, PCA, anchor, or DoV claim.',
+          }
+          (root / 'W64_3P_R01_RUN_RECEIPT.json').write_text(
+              json.dumps(record, indent=2, sort_keys=True) + '\n'
+          )
+          (root / 'W64_3P_RUN_HISTORY.jsonl').write_text(
+              json.dumps(record, sort_keys=True) + '\n'
+          )
+
+      - name: Validate R01 governance contract
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+          p = Path('architecture/w64/receipts/r01/W64_3P_R01_RUN_RECEIPT.json')
+          r = json.loads(p.read_text())
+          assert r['run_id'] == 'R01'
+          assert r['sample_root_items'] == 5
+          assert len(r['stable_root_ids']) == 5
+          assert r['workers']['P3_writer'] == 0
+          assert r['stability_class'] == 'INSUFFICIENT_EVIDENCE'
+          assert r['anchor_promotions'] == []
+          assert r['DoV_gap_after'] == 1.0
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: w64-3p-r01-retained-baseline
+          path: architecture/w64/receipts/r01/
+          if-no-files-found: error
