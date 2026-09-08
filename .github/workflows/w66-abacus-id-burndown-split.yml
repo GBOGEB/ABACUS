@@ -1,0 +1,161 @@
+name: W66 ABACUS ID Burndown Split
+
+on:
+  pull_request:
+    paths:
+      - 'architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml'
+      - 'tools/w64_discovery_graph.py'
+      - 'ssot/**'
+      - 'architecture/w64/**'
+  workflow_dispatch: {}
+  schedule:
+    - cron: '15 5 * * 1,4'
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  split-plan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [A_registry_gap, B_reference_gap, C_consumer_penetration, D_graph_orphan_drop, E_lineage_evidence]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate lane contract
+        run: |
+          test -f architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep "${{ matrix.lane }}:" architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+      - name: Emit SHA-bound lane receipt
+        run: |
+          mkdir -p architecture/w66/receipts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          lane = '${{ matrix.lane }}'
+          receipt = {
+              'schema_version': 'W66-ID-BURNDOWN-LANE-1.1.0',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'source_sha': os.environ['SOURCE_SHA'],
+              'lane': lane,
+              'state': 'EXECUTION_SURFACE_READY',
+              'totals': {
+                  'total_population': None,
+                  'backlog_open': None,
+                  'backlog_closed': None,
+                  'completion_pct': None,
+              },
+              'burndown': {
+                  'new_findings': None,
+                  'retired_findings': None,
+                  'net_backlog_delta': None,
+                  'burn_rate_per_pulse': None,
+                  'median_repair_cost': None,
+                  'downstream_nodes_unlocked': None,
+              },
+              'pca': {
+                  'features': 'DEFINED_IN_LANE_CONTRACT',
+                  'observations_available': 0,
+                  'stable_loadings': 'WITHHELD_UNTIL_3_COMPARABLE_PULSES',
+                  'provisional_rank_allowed': True,
+              },
+              'reverse_loading': {
+                  'priority_formula': 'DEFINED_IN_LANE_CONTRACT',
+                  'queue': [],
+                  'highest_loading_candidate': None,
+              },
+              'parallelism': {
+                  'active_workers': None,
+                  'worker_seconds': None,
+                  'queue_depth': None,
+                  'evidence_yield': None,
+                  'evidence_yield_per_worker': None,
+                  'aht_seconds': None,
+                  'parallel_efficiency': None,
+                  'duplicate_work_ratio': None,
+                  'scale_decision': 'HOLD_UNTIL_MEASURED',
+              },
+              'claim_guard': 'plan/measurement surface only; no authority promotion',
+          }
+          out = Path(f'architecture/w66/receipts/{lane}.json')
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w66-id-${{ matrix.lane }}
+          path: architecture/w66/receipts/${{ matrix.lane }}.json
+          if-no-files-found: error
+
+  convergence:
+    needs: split-plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate roll-up contract
+        run: |
+          grep 'declared' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'evidence_lineaged' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'cross_lane_reverse_loading_formula' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'calculate_within_lane_pca: true' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'calculate_cross_lane_pca: true' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+      - name: Emit convergence receipt
+        run: |
+          mkdir -p architecture/w66/receipts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          receipt = {
+              'schema_version': 'W66-ID-BURNDOWN-CONVERGENCE-1.1.0',
+              'source_sha': os.environ['SOURCE_SHA'],
+              'lanes': 5,
+              'status': 'SPLIT_EXECUTION_READY',
+              'totals': {
+                  'total_population': None,
+                  'total_open_backlog': None,
+                  'total_closed_backlog': None,
+                  'total_completion_pct': None,
+                  'total_net_backlog_delta': None,
+                  'total_burn_rate_per_pulse': None,
+              },
+              'lane_status': {
+                  'A_registry_gap': None,
+                  'B_reference_gap': None,
+                  'C_consumer_penetration': None,
+                  'D_graph_orphan_drop': None,
+                  'E_lineage_evidence': None,
+              },
+              'pca': {
+                  'within_lane': 'ENABLED_AFTER_3_COMPARABLE_PULSES_PER_LANE',
+                  'cross_lane': 'ENABLED_AFTER_3_COMPARABLE_CONVERGENCE_PULSES',
+                  'stable_loadings': 'WITHHELD_UNTIL_MEASURED_PULSES',
+              },
+              'reverse_loading': {
+                  'cross_lane_queue': [],
+                  'allocation_rule': 'NEXT_WORKER_PAIR_TO_HIGHEST_LOADING_LANE_NOT_LARGEST_BACKLOG',
+              },
+              'parallelism': {
+                  'baseline': '7_PLUS_7_HELD',
+                  'total_active_workers': None,
+                  'total_worker_seconds': None,
+                  'total_parallel_efficiency': None,
+                  'total_duplicate_work_ratio': None,
+                  'scale_rule': 'SCALE_ONLY_ON_IMPROVED_YIELD_PER_WORKER_WITHOUT_DUPLICATION_PENALTY',
+                  'downscale_rule': 'DOWNSCALE_AFTER_2_CONSECUTIVE_WORSE_PULSES',
+              },
+          }
+          Path('architecture/w66/receipts/ID_BURNDOWN_CONVERGENCE.json').write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + '\n'
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w66-id-burndown-convergence
+          path: architecture/w66/receipts/ID_BURNDOWN_CONVERGENCE.json
+          if-no-files-found: error
