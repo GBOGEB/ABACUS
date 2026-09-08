@@ -6,6 +6,8 @@ on:
       - '.github/workflows/w72-clean-clone-proof.yml'
       - 'DMAIC_V3/product_version.py'
       - 'pyproject.toml'
+      - 'requirements.txt'
+      - 'DMAIC_V3/requirements.txt'
   workflow_dispatch: {}
 
 permissions:
@@ -25,7 +27,8 @@ jobs:
       - name: Install from clean checkout
         run: |
           python -m pip install --upgrade pip
-          python -m pip install . pytest
+          python -m pip install .
+          python -m pip install -r requirements.txt
       - name: Exercise installed entrypoint
         run: abacus --help >/tmp/abacus-help.txt
       - name: Run package regression suite
@@ -42,7 +45,7 @@ jobs:
               'status': 'PASS',
               'source_sha': os.environ.get('GITHUB_SHA'),
               'python': platform.python_version(),
-              'install': 'python -m pip install . pytest',
+              'install': 'pip install . + pip install -r requirements.txt',
               'entrypoint': 'abacus --help',
               'tests': 'python -m pytest DMAIC_V3/tests -q',
               'terminal_item': 'T04_clean_clone_install_build_test',
