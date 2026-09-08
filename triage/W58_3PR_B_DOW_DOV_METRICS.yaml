@@ -1,0 +1,34 @@
+wave: W58
+pulse: 3PR_B_DOW
+role: metric_execution_and_reverse_pressure
+intent: make closure progress observable and prioritize the lowest-scoring executable gates
+observed_inputs:
+  child_engineering_percent: 77.78
+  child_release_diagnostic_percent: 90.6
+  keb_gate_effective_completion_percent: 8.33
+  source_return_packets: 0
+metrics:
+  P4_html_navigation_receipt: OPEN
+  zod_contract_receipt: OPEN
+  bidirectional_parent_receipt: OPEN
+  source_return_conversion: OPEN
+  exact_SHA_release_receipt: OPEN
+PCA_status:
+  class: PROVISIONAL_RULE_BASED
+  empirical_credit: WITHHELD
+  dominant_gap: observed_runtime_receipts
+reverse_loading_BT:
+  rank_1: execute_HTML_Playwright_and_Zod
+  rank_2: emit_Keb_Dow_child_roundtrip_receipt
+  rank_3: acquire_real_PVPS_source_return
+  rank_4: bind_exact_SHA_zero_delta_release_receipt
+completion_model:
+  total_terminal_metrics: 5
+  observed_pass: 0
+  observed_open: 5
+  terminal_completion_percent: 0
+  note: specification progress is not terminal proof
+DoD:
+  - replace OPEN only from observed receipt
+  - preserve source and engineering authority boundaries
+DoV: METRICS_READY_EXECUTION_WITHHELD
