@@ -1,0 +1,45 @@
+name: W67 Pulse3 PCA Promotion
+
+on:
+  pull_request:
+    paths:
+      - 'architecture/w67/PULSE3_PCA_PROMOTION.yaml'
+      - 'tools/w67_pca_promotion_gate.py'
+      - 'architecture/w66/receipts/history/**'
+      - '.github/workflows/w67-pulse3-pca-promotion.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  promotion-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate fail-closed promotion contract
+        run: |
+          grep 'required_comparable_numeric_pulses: 3' architecture/w67/PULSE3_PCA_PROMOTION.yaml
+          grep 'required_distinct_source_shas: 3' architecture/w67/PULSE3_PCA_PROMOTION.yaml
+          python -m py_compile tools/w67_pca_promotion_gate.py
+      - name: Evaluate available measured history
+        run: |
+          mkdir -p architecture/w67/receipts
+          mapfile -t ROWS < <(find architecture/w66/receipts/history -type f -name 'FEATURE_ROW.json' 2>/dev/null | sort || true)
+          if [ "${#ROWS[@]}" -lt 3 ]; then
+            cat > architecture/w67/receipts/PCA_PROMOTION_RECEIPT.json <<EOF
+          {"schema_version":"W67-PCA-PROMOTION-1.0.0","promotion":"WITHHELD","reason":"fewer_than_3_committed_measured_feature_rows","measured_rows":${#ROWS[@]},"worker_allocation_mode":"RULE_BASED"}
+          EOF
+          else
+            python tools/w67_pca_promotion_gate.py "${ROWS[@]}" --out architecture/w67/receipts/PCA_PROMOTION_RECEIPT.json
+          fi
+      - name: Show promotion decision
+        run: cat architecture/w67/receipts/PCA_PROMOTION_RECEIPT.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w67-pca-promotion-receipt
+          path: architecture/w67/receipts/PCA_PROMOTION_RECEIPT.json
+          if-no-files-found: error
