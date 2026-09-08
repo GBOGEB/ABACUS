@@ -1,0 +1,218 @@
+schema_version: abacus-creq/0.1.0
+repo: GBOGEB/ABACUS
+namespace: CReq
+id_format: CReq_%03d
+status_model: [PROPOSED, ACCEPTED, IMPLEMENTED, VERIFIED, CONTROLLED, DEPRECATED]
+trace_policy:
+  rule: >-
+    Every coding requirement SHALL be linked to at least one originating architectural/control
+    decision or PR/root-cause lineage, an implementation surface, and a verification method.
+  pr_semantics: >-
+    Pull requests are implementation/evidence nodes and SHALL NOT be treated as independent
+    requirements when they are symptoms of the same root architectural decision.
+  engineering_credit_boundary: >-
+    CReq verification demonstrates repository/runtime conformance only. It grants zero QPS
+    engineering, compliance, negotiation, or child-disposition credit unless separately re-entered
+    through governed child authority.
+
+requirements:
+  - id: CReq_001
+    title: Canonical phase execution contract
+    statement: >-
+      All canonical DMAIC phase implementations SHALL expose one versioned execution contract with
+      a single normative return shape and explicit success/error semantics. Compatibility adapters
+      MAY accept legacy forms, but canonical callers SHALL NOT need to infer tuple-versus-dictionary
+      behavior at runtime.
+    rationale: >-
+      Historical Phase 4/5 PR fan-out repeatedly alternated between Dict and Tuple[bool, Dict]
+      return contracts, causing duplicate fixes and test churn.
+    source_prs: [85, 86, 87, 88, 92, 94, 95, 96, 98, 100, 103, 104, 105, 106, 107, 108, 117, 120, 121, 171, 172, 174, 195, 199, 204]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: CONTROL
+    lifecycle_phase: runtime_contract_stabilization
+    implementation_surfaces:
+      - DMAIC_V3/phases
+      - DMAIC_V3/core/twelve_cluster_orchestrator.py
+      - DMAIC_V3/full_pipeline_orchestrator.py
+    verification:
+      method: contract_test
+      acceptance: >-
+        One executable contract test proves identical success/error/result semantics for every
+        canonical phase and fails if a phase changes the contract without a version bump.
+    status: PROPOSED
+
+  - id: CReq_002
+    title: Canonical phase construction and dependency injection
+    statement: >-
+      Every canonical DMAIC phase SHALL use a documented construction contract for configuration,
+      state, output paths, and optional services. A phase SHALL NOT reinterpret a configuration
+      object as a filesystem path or rely on positional ambiguity.
+    rationale: >-
+      Phase5Control repeatedly diverged between (output_dir, use_gbogeb) and
+      (config, state_manager, use_gbogeb), producing repeated TypeError and initialization PRs.
+    source_prs: [93, 96, 97, 98, 99, 101, 102, 103, 104, 105, 113, 115, 116, 118, 119, 120, 121, 144, 146, 149, 150, 156, 158, 162, 163, 165, 166, 167, 174, 195, 197, 202, 203]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: CONTROL
+    lifecycle_phase: dependency_contract_stabilization
+    implementation_surfaces:
+      - DMAIC_V3/phases
+      - DMAIC_V3/core
+    verification:
+      method: constructor_interface_test
+      acceptance: >-
+        All canonical phases instantiate from the same typed dependency contract and reject
+        ambiguous positional construction in CI.
+    status: PROPOSED
+
+  - id: CReq_003
+    title: Canonical phase result schema
+    statement: >-
+      Every canonical phase result SHALL conform to a versioned schema containing at minimum phase,
+      iteration, success, timestamp, input provenance, output provenance, metrics, and phase-specific
+      payload fields. Saved and in-memory representations SHALL be schema-equivalent.
+    rationale: >-
+      Multiple PRs repaired missing phase, improvements, controls, checkpoints, metrics, and
+      input_source fields independently.
+    source_prs: [84, 89, 90, 95, 96, 97, 98, 99, 100, 101, 102, 104, 108, 109, 110, 112, 113, 114, 115, 116, 119, 120, 121, 145, 147, 148, 149, 150, 151, 152, 153, 154, 155, 157, 158, 159, 160, 162, 163, 164, 165, 166, 167, 168, 170, 173, 195, 196, 197, 198, 199, 201, 202, 203, 204]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: CONTROL
+    lifecycle_phase: data_contract_stabilization
+    implementation_surfaces:
+      - DMAIC_V3/schema
+      - DMAIC_V3/phases
+      - DMAIC_V3/tests
+    verification:
+      method: schema_validation
+      acceptance: >-
+        CI validates every canonical phase result, including serialized outputs, against one
+        versioned result schema and blocks missing/renamed mandatory fields.
+    status: PROPOSED
+
+  - id: CReq_004
+    title: One incident to one controlled repair pulse
+    statement: >-
+      Automated CI remediation SHALL deduplicate failures by root-cause fingerprint before opening
+      repair PRs. A single unresolved root cause SHALL have one active repair pulse unless a recorded
+      cADR explicitly authorizes parallel experimental variants.
+    rationale: >-
+      The historical tuple/dict and Phase5 constructor defects generated many near-duplicate WIP and
+      repair PRs for the same underlying condition.
+    source_prs: [84, 85, 86, 87, 88, 90, 91, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 162, 163, 164, 165, 166, 167, 168, 170, 171, 172, 173, 174, 195, 196, 197, 198, 199, 201, 202, 203, 204]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: ANALYZE
+    lifecycle_phase: orchestration_control
+    implementation_surfaces:
+      - .github/workflows
+      - CI_monitor
+      - automation
+    verification:
+      method: incident_fanout_test
+      acceptance: >-
+        Replaying N equivalent failures results in one root-cause identity and at most one active
+        repair PR, with all subsequent events appended to its lineage.
+    status: PROPOSED
+
+  - id: CReq_005
+    title: Editorial bot changes are isolated from functional repair
+    statement: >-
+      Editorial-only changes SHALL be classified separately from functional, contract, architecture,
+      and evidence changes. Editorial bots SHALL NOT create functional closure credit or trigger
+      independent repair lineages unless executable behavior is affected.
+    rationale: >-
+      Historical spelling, wording, and metadata investigations can inflate activity while carrying
+      little or no executable maturity gain.
+    source_prs: [21, 22, 23]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: CONTROL
+    lifecycle_phase: editorial_governance
+    implementation_surfaces:
+      - .github
+      - triage
+      - automation
+    verification:
+      method: classification_test
+      acceptance: >-
+        Editorial-only PRs are machine-labeled and excluded from functional maturity, defect-burndown,
+        and engineering-credit metrics.
+    status: PROPOSED
+
+  - id: CReq_006
+    title: PR lineage metadata is mandatory
+    statement: >-
+      Every non-editorial repair or improvement PR SHALL declare its root cause, parent requirement,
+      parent cADR/cOCD when applicable, predecessor/superseded PRs, verification evidence, and whether
+      it creates new behavior or only restores an existing contract.
+    rationale: >-
+      Traceability is required to compress many symptom PRs into stable requirements and prevent
+      maturity metrics from counting duplicate lineage as independent advancement.
+    source_prs: [28, 84, 85, 86, 92, 96, 108, 121, 171, 172, 174, 195, 199, 204]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: MEASURE
+    lifecycle_phase: traceability_control
+    implementation_surfaces:
+      - .github/pull_request_template.md
+      - triage/requirements
+      - triage/census
+    verification:
+      method: pr_metadata_lint
+      acceptance: >-
+        CI rejects governed PRs missing required lineage metadata or referencing unknown CReq/cADR/cOCD IDs.
+    status: PROPOSED
+
+  - id: CReq_007
+    title: Repository maturity metrics separate activity from controlled maturity
+    statement: >-
+      ABACUS maturity reporting SHALL distinguish raw activity counts from unique root causes,
+      controlled requirements, verified requirements, active defects, duplicate/superseded PRs, and
+      release-readiness evidence. Commit or PR volume SHALL NOT be used as a standalone maturity score.
+    rationale: >-
+      ABACUS has exceeded 1000 commits and contains high PR volume, but the repository itself records
+      that such thresholds are maturity/release-control signals rather than engineering credit.
+    source_prs: [984]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: MEASURE
+    lifecycle_phase: maturity_measurement
+    implementation_surfaces:
+      - metrics
+      - triage/census
+      - dashboards
+    verification:
+      method: metric_crosscheck
+      acceptance: >-
+        Published maturity outputs expose both raw and deduplicated/root-cause-normalized measures and
+        explicitly show zero automatic child engineering/compliance credit.
+    status: PROPOSED
+
+  - id: CReq_008
+    title: DOW analytical authority boundary is enforced in code and outputs
+    statement: >-
+      ABACUS/DOW code SHALL treat PCA, DMAIC, sensitivity, completeness, and diagnostic findings as
+      analytical outputs only. Any promotion into child engineering truth, compliance, negotiation,
+      or final disposition SHALL require explicit governed re-entry with payload identity, method,
+      affected nodes, and evidence basis.
+    rationale: >-
+      Existing cADR/cOCD define DOW as analytical and non-authoritative; coding requirements must make
+      that boundary executable and testable rather than purely documentary.
+    source_prs: [984]
+    parent_cADR: [TRIAGE-CADR-ABACUS-001, TRIAGE-ADR-DOW-001]
+    parent_cOCD: [TRIAGE-OCD-DOW]
+    dmaic_phase: CONTROL
+    lifecycle_phase: authority_boundary_control
+    implementation_surfaces:
+      - DMAIC_V3/core/twelve_cluster_orchestrator.py
+      - triage
+      - handover
+      - bridge
+    verification:
+      method: authority_boundary_test
+      acceptance: >-
+        No DOW analytical result can be serialized or returned as child-authoritative disposition
+        without an explicit governed re-entry receipt containing the required bindings.
+    status: PROPOSED
