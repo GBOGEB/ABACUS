@@ -1,0 +1,28 @@
+schema: TRIAGE-OFFER-EVAL-DOV-1.0
+wave: A
+repo: GBOGEB/ABACUS
+role: DOW_runtime_analysis
+observed_at: 2026-09-08T05:19:00+02:00
+source_main_sha: abc12152ebe2dba17cf21ee995dd1c2df9b35b3c
+child_pr: GBOGEB/cryoplant-project#709
+keb_pr: GBOGEB/CODEX#516
+observed_repo_state:
+  publish_readiness_percent: 65.5
+  architecture_readiness_percent: 92
+  rc_technical_readiness_percent: 76
+  checklist_effective: 21.5/32
+  checklist_percent: 67.2
+  dmaic_process_maturity_percent: 86
+  control_percent: 59
+  pca_completeness_percent: 62
+  pca_state: PROVISIONAL_RULE_BASED
+  cReq_federation_ci: PASS_MERGED_PR_995
+  current_release_control_pr: PR_1003_OPEN
+runtime_gates:
+  singular_bidder_selection: REQUIRED
+  singular_surface_selection: REQUIRED
+  central_filter_propagation: REQUIRED
+  local_bundle_navigation: REQUIRED
+  stale_or_hash_mismatch: FAIL_CLOSED
+wave_a_status: RUNTIME_RECEIPT_STAGED
+credit_delta: 0
