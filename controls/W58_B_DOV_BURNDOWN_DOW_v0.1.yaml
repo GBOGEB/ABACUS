@@ -1,0 +1,22 @@
+schema: abacus-w58-b-dov-burndown/v1
+child_repo: GBOGEB/cryoplant-project
+child_pr: 721
+child_head_sha: f968c13ea4961f9cb2716b6f977d8b2ba499d469
+observed_metrics:
+  execution_control: {numerator: 2, denominator: 7, fraction: 0.2857}
+  control_topology: {numerator: 3, denominator: 3, fraction: 1.0}
+  parent_returns: {numerator: 0, denominator: 2, fraction: 0.0}
+  physical_blocker_conversion: {numerator: 0, denominator: 5, fraction: 0.0}
+  formal_engineering: {numerator: 70, denominator: 90, fraction: 0.7778}
+reverse_loading_order:
+  - BT0_HEPAK_numeric_receipt
+  - BT1_current_LineB_geometry
+  - BT2_per_QCELL_B_flow
+  - BT3_spatial_thermal_field
+  - BT4_S_line_recovery_and_PSV
+challenge:
+  - no_control_topology_credit_as_physical_closure
+  - first_source_return_must_change_physical_conversion_from_0_of_5
+  - HEPAK_receipt_must_unlock_only_affected_descendants
+  - no_cross_bidder_storage_substitution
+review_disposition: REVIEW_PENDING_CI
