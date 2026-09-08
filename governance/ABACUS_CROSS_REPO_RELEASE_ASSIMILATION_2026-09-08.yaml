@@ -11,7 +11,8 @@ source_lanes:
       - separate diagnosis_gain from readiness_credit
   QPS_CRYOPLANT:
     adopted_learning:
-      - separate_structural_preparation_from_weighted_readiness_and_publish_permission
+      - >-
+        separate_structural_preparation_from_weighted_readiness_and_publish_permission
       - track_absolute_release_artifact_count_type_size_and_materialization_state
       - exact_SHA_runtime_then_parity_then_publication_envelope_then_tag_archive
   CODEX:
@@ -95,10 +96,12 @@ cross_repo_propagation_candidates:
     - import_ABACUS_temporal_file_clustering_for_migration_family_detection
     - import_exact_pathset_fingerprint_before_authority_disposition
   QPS_CRYOPLANT:
-    - use_ABACUS_file_index_to_measure_binary_refresh_population_by_path_size_and_last_touch_time
+    - >-
+        use_ABACUS_file_index_to_measure_binary_refresh_population_by_path_size_and_last_touch_time
     - correlate_same_wave_generated_outputs_by_short_time_windows_before_regeneration
   CODEX:
-    - apply_ABACUS_scope_aware_duplicate_authority_discrimination_to_terminal_manifest_and_schema_families
+    - >-
+        apply_ABACUS_scope_aware_duplicate_authority_discrimination_to_terminal_manifest_and_schema_families
     - use_temporal_clusters_to_distinguish_versioned_receipt_series_from_competing_authority
 
 control_rules:
