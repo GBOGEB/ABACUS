@@ -34,4 +34,5 @@ observed_baseline:
   pca_completeness_percent: 62
 runtime_dov: PARTIAL
 credit_delta: 0
-victory: all 8 runtime gates PASS with a hash-bound DOW receipt returned to the child
+victory: >-
+  all 8 runtime gates PASS with a hash-bound DOW receipt returned to the child
