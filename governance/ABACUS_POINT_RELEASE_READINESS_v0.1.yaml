@@ -1,0 +1,136 @@
+schema_version: '0.1'
+repo: GBOGEB/ABACUS
+purpose: TRIAGE point-release self-readiness and self-evaluation
+baseline:
+  audited_main_sha: abc12152ebe2dba17cf21ee995dd1c2df9b35b3c
+  publish_readiness_score: 65.5
+  architecture_readiness_pct: 92
+  rc_technical_readiness_pct: 76
+  dmaic_process_maturity_pct: 86
+  control_maturity_pct: 59
+  checklist:
+    total: 32
+    pass: 17
+    partial: 9
+    open_blocked: 6
+    effective_units: 21.5
+    effective_pct: 67.2
+  exact_head_visible_checks:
+    total: 5
+    successful: 5
+  main_protected: false
+  formal_release_dov: WITHHELD
+
+release_score:
+  - {domain: release_identity_evidence_authority, weight: 8, earned: 7.5, status: PASS}
+  - {domain: census_authority_ssot_discrimination, weight: 9, earned: 8.0, status: PASS}
+  - {domain: dmaic_3p_3pr_control_plane, weight: 8, earned: 7.5, status: PASS}
+  - {domain: federation_creq_resolver, weight: 8, earned: 7.5, status: PASS}
+  - {domain: security_governance_ci, weight: 7, earned: 6.5, status: PASS}
+  - {domain: exact_head_health, weight: 7, earned: 6.5, status: PASS}
+  - {domain: source_generated_legacy_measurement, weight: 7, earned: 4.5, status: PARTIAL}
+  - {domain: census_blocker_retirement, weight: 9, earned: 4.5, status: PARTIAL_BLOCKED}
+  - {domain: clean_reproducible_rebuild, weight: 7, earned: 2.5, status: BLOCKED}
+  - {domain: artifact_output_lineage, weight: 7, earned: 4.5, status: PARTIAL}
+  - {domain: zero_delta_repeatability, weight: 6, earned: 2.5, status: BLOCKED}
+  - {domain: adversarial_release_qa, weight: 4, earned: 2.5, status: PARTIAL}
+  - {domain: rc_freeze_immutable_manifest, weight: 4, earned: 1.5, status: BLOCKED}
+  - {domain: main_protection_required_checks, weight: 4, earned: 0.0, status: BLOCKED}
+  - {domain: formal_tag_point_release, weight: 5, earned: 0.0, status: BLOCKED}
+
+pca_completeness:
+  status: PROVISIONAL_RULE_BASED
+  empirical_pca_release_credit: WITHHELD
+  completeness_pct: 62
+  qualification_todo:
+    - retain sufficient complete multi-run observations for empirical PCA
+    - freeze feature vector and missing-data policy
+    - retain covariance/eigenvalue/loading receipt
+    - prove loading stability across repeat windows
+    - bind PCA result to exact source SHA and release specimen
+  residual_risk_loading:
+    census_authority_root_closure: 0.30
+    reproducibility_clean_clone_exact_rc: 0.25
+    output_lineage_zero_delta_stale_artifacts: 0.18
+    terminal_control_rc_protection_release: 0.15
+    adversarial_assurance: 0.07
+    federation_3p_residual: 0.05
+
+checklist:
+  - {id: 1, item: ABACUS_TRIAGE_analytical_reference_role_explicit, state: PASS}
+  - {id: 2, item: W64_release_evidence_boundary_explicit, state: PASS}
+  - {id: 3, item: total_repo_census_P1_executable, state: PASS}
+  - {id: 4, item: reverse_pressure_P2_executable, state: PASS}
+  - {id: 5, item: governed_P3_receipt_generator_exists, state: PASS}
+  - {id: 6, item: release_critical_unknowns_fail_closed, state: PASS}
+  - {id: 7, item: source_generated_classifier_exists, state: PASS}
+  - {id: 8, item: current_source_generated_legacy_receipt_retained, state: PARTIAL}
+  - {id: 9, item: generic_3PM_3PR_discriminator, state: PASS}
+  - {id: 10, item: end_to_end_DMAIC_control_pipeline, state: PASS}
+  - {id: 11, item: parallel_discovery_discrimination_arms, state: PASS}
+  - {id: 12, item: stable_root_facet_identity_contract, state: PASS}
+  - {id: 13, item: anchor_control_drift_watch_semantics, state: PASS}
+  - {id: 14, item: multi_run_empirical_stability_PCA_qualification, state: PARTIAL}
+  - {id: 15, item: global_CReq_model, state: PASS}
+  - {id: 16, item: global_local_namespace_precedence, state: PASS}
+  - {id: 17, item: unapproved_override_fail_safe, state: PASS}
+  - {id: 18, item: three_repo_federation_receipt, state: PASS}
+  - {id: 19, item: federation_CI_enforcement, state: PASS}
+  - {id: 20, item: frozen_release_SHA_mandatory_matrix_retained, state: PARTIAL}
+  - {id: 21, item: current_P1_P2_P3_on_RC_SHA, state: PARTIAL}
+  - {id: 22, item: release_critical_blocker_roots_zero, state: OPEN}
+  - {id: 23, item: source_generated_measurement_terminally_closed, state: PARTIAL}
+  - {id: 24, item: legacy_binary_population_dispositioned, state: PARTIAL}
+  - {id: 25, item: clean_clone_install_build_test, state: OPEN}
+  - {id: 26, item: full_exact_RC_regression_retained, state: PARTIAL}
+  - {id: 27, item: outward_outputs_regenerated_from_RC, state: PARTIAL}
+  - {id: 28, item: output_SHA256_source_lineage_manifest, state: PARTIAL}
+  - {id: 29, item: repeat_build_zero_delta_PASS, state: OPEN}
+  - {id: 30, item: adversarial_release_QA, state: PARTIAL}
+  - {id: 31, item: immutable_RC_and_protected_main, state: OPEN}
+  - {id: 32, item: version_tag_GitHub_point_release, state: OPEN}
+
+burndown_pulses:
+  P1:
+    name: exact_RC_census
+    victory: freeze candidate SHA; retain P1/P2/P3; establish N_current
+    target_score: 73
+  P2:
+    name: authority_census_conversion
+    victory: N_current release-critical unresolved roots -> 0
+    target_score: 82
+  P3:
+    name: maturity_reproducibility
+    victory: source/generated and legacy closed; clean clone PASS
+    target_score: 89
+  P4:
+    name: regression_output_control
+    victory: exact-RC mandatory matrix green; outputs regenerated and hash-bound
+    target_score: 95
+  P5:
+    name: deterministic_adversarial_control
+    victory: zero-delta PASS; adversarial QA PASS; immutable manifest
+    target_score: 99
+  P6:
+    name: release_authority
+    victory: protect main; require gates; freeze version/tag; publish point release
+    target_score: 100
+
+todo_priority:
+  - {rank: 1, action: freeze_candidate_SHA_and_execute_fresh_P1_P2_P3, bt: 0.98}
+  - {rank: 2, action: retire_current_release_critical_roots_N_to_zero, bt: 0.97}
+  - {rank: 3, action: close_source_generated_and_legacy_measurement, bt: 0.93}
+  - {rank: 4, action: prove_clean_clone_exact_RC_build_test, bt: 0.91}
+  - {rank: 5, action: execute_full_mandatory_regression_federation_matrix, bt: 0.89}
+  - {rank: 6, action: regenerate_outputs_and_source_hash_manifest, bt: 0.86}
+  - {rank: 7, action: repeat_build_and_prove_zero_delta, bt: 0.84}
+  - {rank: 8, action: adversarial_release_QA, bt: 0.76}
+  - {rank: 9, action: immutable_RC_and_branch_protection, bt: 0.73}
+  - {rank: 10, action: version_tag_publish, bt: 0.70}
+
+control_rules:
+  - no release credit for capability-only framework additions
+  - every release-wave mutation must reduce a hard gate, release-critical root count, or exact-RC evidence gap
+  - historical blocker counts are not current truth; measure N_current on the frozen candidate SHA
+  - publish is AND-gated; weighted score cannot compensate for an open hard prerequisite
+  - update this ledger from observed receipts and CI only
