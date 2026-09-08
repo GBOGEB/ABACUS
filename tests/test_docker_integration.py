@@ -12,10 +12,17 @@ import time
 import requests
 import asyncio
 import aiohttp
+import platform
 from pathlib import Path
 from typing import Dict, List
 from datetime import datetime
 import json
+
+
+WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE = platform.system() == "Windows"
+WINDOWS_DOCKER_LINUX_BASE_REASON = (
+    "Linux python:3.11-slim base image is not available from the Windows Docker daemon in CI"
+)
 
 
 class TestDockerConfiguration:
@@ -147,6 +154,7 @@ class TestPortAvailability:
 
 
 @pytest.mark.integration
+@pytest.mark.skipif(WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON)
 class TestDockerBuild:
 
     @pytest.mark.slow
@@ -208,6 +216,7 @@ class TestDockerContainer:
 
 @pytest.mark.slow
 @pytest.mark.integration
+@pytest.mark.skipif(WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON)
 class TestDockerContainerIntegration:
     """Slow integration tests for actual Docker container operations"""
 
@@ -228,7 +237,6 @@ class TestDockerContainerIntegration:
     @pytest.mark.asyncio
     async def test_docker_container_health_async(self):
         """Test container health check asynchronously"""
-        # Start container
         proc = await asyncio.create_subprocess_exec(
             'docker', 'run', '-d', '--name', 'test-container',
             '-p', '8000:8000', 'test-app:latest',
@@ -240,10 +248,8 @@ class TestDockerContainerIntegration:
         container_id = stdout.decode().strip()
 
         try:
-            # Wait for container to be healthy
             await asyncio.sleep(5)
 
-            # Check health
             proc = await asyncio.create_subprocess_exec(
                 'docker', 'inspect', '--format={{.State.Health.Status}}', container_id,
                 stdout=asyncio.subprocess.PIPE
@@ -255,7 +261,6 @@ class TestDockerContainerIntegration:
             assert health_status in ['healthy', 'starting'], f"Container unhealthy: {health_status}"
 
         finally:
-            # Cleanup
             await asyncio.create_subprocess_exec('docker', 'stop', container_id)
             await asyncio.create_subprocess_exec('docker', 'rm', container_id)
 
@@ -285,7 +290,6 @@ class TestDockerContainerIntegration:
     @pytest.mark.asyncio
     async def test_docker_network_connectivity_async(self):
         """Test container network connectivity"""
-        # Start two containers and test connectivity
         proc1 = await asyncio.create_subprocess_exec(
             'docker', 'run', '-d', '--name', 'test-app1',
             '--network', 'bridge', 'test-app:latest',
@@ -307,7 +311,6 @@ class TestDockerContainerIntegration:
         try:
             await asyncio.sleep(2)
 
-            # Test ping from container1 to container2
             proc = await asyncio.create_subprocess_exec(
                 'docker', 'exec', container1_id,
                 'ping', '-c', '1', 'test-app2',
