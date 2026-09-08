@@ -1,0 +1,48 @@
+name: W70 Exact-SHA Measured ID Pulse
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  measured-pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute A-E census at exact SHA
+        run: |
+          OUT="architecture/w70/receipts/${SOURCE_SHA}"
+          python tools/w66_id_burndown_measure.py --out "$OUT"
+          test -s "$OUT/FEATURE_ROW.json"
+          for lane in A_registry_gap B_reference_gap C_consumer_penetration D_graph_orphan_drop E_lineage_evidence; do test -s "$OUT/${lane}.json"; done
+      - name: Validate numeric feature row
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('architecture/w70/receipts')/os.environ['SOURCE_SHA']/'FEATURE_ROW.json'
+          d=json.loads(p.read_text())
+          req=['registry_gap_rate','unresolved_reference_rate','consumer_penetration_rate','graph_drop_rate','lineage_gap_rate','total_population','total_open_backlog']
+          assert all(isinstance(d.get(k),(int,float)) for k in req), d
+          assert d['total_population'] >= d['total_open_backlog'] >= 0, d
+          print(json.dumps(d, sort_keys=True))
+          PY
+      - name: Upload exact-SHA measurement
+        uses: actions/upload-artifact@v4
+        with:
+          name: w70-measured-id-pulse-${{ env.SOURCE_SHA }}
+          path: architecture/w70/receipts/${{ env.SOURCE_SHA }}/
+          if-no-files-found: error
+          retention-days: 30
