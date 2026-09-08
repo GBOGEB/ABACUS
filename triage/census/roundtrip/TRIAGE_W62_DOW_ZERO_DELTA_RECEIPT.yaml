@@ -1,0 +1,11 @@
+schema: triage-zero-delta/1.0.0
+tuple_id: TRIAGE-W62-001
+pass_1_input_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+pass_2_input_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+method_pass_1: deterministic_census_authority_and_contract_check
+method_pass_2: deterministic_census_authority_and_contract_check
+pass_1_result: PASS
+pass_2_result: PASS
+finding_delta_count: 0
+tuple_delta_bytes: 0
+status: ZERO_DELTA_PASS
