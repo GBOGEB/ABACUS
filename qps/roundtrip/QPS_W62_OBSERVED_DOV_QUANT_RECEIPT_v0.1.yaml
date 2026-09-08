@@ -1,0 +1,21 @@
+schema: qps.w62.observed-dov-quant-receipt/v1
+status: PENDING_PARENT_VALIDATION
+child_pr: GBOGEB/cryoplant-project#TBD_W62
+purpose: >-
+  Validate arithmetic and denominator preservation for the child W62 10-gate / 100-point observed binary-readiness DoV.
+expected_baseline:
+  gates_pass: 4
+  gates_total: 10
+  weighted_points_earned: 40
+  weighted_points_total: 100
+  binary_families_complete: 0
+  binary_families_total: 3
+checks:
+  - {id: Q01, assertion: gate_completion_is_4_of_10, expected_pct: 40}
+  - {id: Q02, assertion: weighted_completion_is_40_of_100, expected_pct: 40}
+  - {id: Q03, assertion: binary_family_completion_is_0_of_3, expected_pct: 0}
+  - {id: Q04, assertion: parent_semantic_parity_is_2_of_2, expected_pct: 100}
+  - {id: Q05, assertion: fanout_does_not_reduce_requirement_or_member_denominators, expected: PASS}
+  - {id: Q06, assertion: no_points_for_unobserved_hash_render_or_zero_delta_receipts, expected: PASS}
+return_fields: [parent_head_sha, quantitative_result, recomputed_metrics, denominator_anomalies, recommendation]
+formal_effect: {engineering_delta: 0, negotiation_delta: 0, score_delta: 0}
