@@ -1,0 +1,65 @@
+name: W72 Zero Delta Wheel
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/w72-zero-delta-wheel.yml'
+      - 'pyproject.toml'
+      - 'DMAIC_V3/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  zero-delta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated build frontend
+        run: python -m pip install --upgrade pip build
+      - name: Build twice at fixed source epoch
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          rm -rf /tmp/w72-pass1 /tmp/w72-pass2 build *.egg-info
+          python -m build --wheel --outdir /tmp/w72-pass1
+          rm -rf build *.egg-info
+          python -m build --wheel --outdir /tmp/w72-pass2
+          f1="$(find /tmp/w72-pass1 -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          f2="$(find /tmp/w72-pass2 -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          test -n "$f1" -a -n "$f2"
+          h1="$(sha256sum "$f1" | awk '{print $1}')"
+          h2="$(sha256sum "$f2" | awk '{print $1}')"
+          test "$h1" = "$h2"
+          mkdir -p architecture/w72/receipts
+          python - "$h1" "$h2" "$SOURCE_DATE_EPOCH" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          h1,h2,epoch=sys.argv[1:]
+          payload={
+              'schema_version':'W72-ZERO-DELTA-WHEEL-1.0.0',
+              'status':'PASS' if h1==h2 else 'FAIL',
+              'source_sha':os.environ.get('GITHUB_SHA'),
+              'source_date_epoch':int(epoch),
+              'pass1_sha256':h1,
+              'pass2_sha256':h2,
+              'delta_hashes':0 if h1==h2 else 1,
+              'terminal_item':'T08_repeat_build_zero_delta_PASS',
+          }
+          p=Path('architecture/w72/receipts/W72_ZERO_DELTA_WHEEL_RECEIPT.json')
+          p.write_text(json.dumps(payload,indent=2)+'\n')
+          print(p.read_text())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: w72-zero-delta-wheel-receipt
+          path: architecture/w72/receipts/W72_ZERO_DELTA_WHEEL_RECEIPT.json
+          if-no-files-found: warn
