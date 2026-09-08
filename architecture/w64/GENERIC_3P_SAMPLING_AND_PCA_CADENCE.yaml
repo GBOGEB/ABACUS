@@ -1,0 +1,120 @@
+schema_version: TRIAGE-3P-SAMPLING-PCA-1.0.0
+purpose: permit fast operational learning from small samples while preventing premature statistical claims
+
+coverage_model:
+  dimensions:
+    - variant_coverage
+    - progression_state_coverage
+    - repo_plane_coverage
+    - item_type_coverage
+    - capability_coverage
+    - disposition_coverage
+    - runner_allocation_coverage
+    - difficulty_band_coverage
+  minimum_useful_depth:
+    pilot:
+      total_root_items: 5
+      intent: smoke_method_and_detect_gross_failure_modes
+      allowed_changes: [search_order, logging, instrumentation, obvious_scope_errors]
+    early_learning:
+      total_root_items: 10
+      per_major_variant_target: 2
+      intent: compare_directional_AHT_yield_rework_and_variant_fit
+      allowed_changes: [bounded_threshold_tuning, runner_allocation_tuning, variant_routing_tuning]
+    working_sample:
+      total_root_items: 20
+      per_major_variant_target: 4
+      intent: paired_pre_post_and_runner_arm_analysis_can_begin_where_matched
+    stable_learning:
+      total_root_items: 30
+      per_major_variant_target: 5
+      intent: covariance_and_empirical_BT_may_activate_if_other_prerequisites_met
+    factor_learning:
+      total_root_items: 50
+      per_major_variant_target: 8
+      intent: empirical_PCA_may_activate_if_complete_case_and_dimensionality_rules_met
+  breadth_before_depth_rule: avoid_50_samples_of_one_easy_family_while_other_variant_state_type_cells_are_empty
+  stratification_priority:
+    - high_information_loss_risk
+    - high_authority_ambiguity
+    - high_consumer_dependency
+    - high_AHT_low_yield
+    - high_rework
+    - low_risk_control_items
+
+cadence:
+  every_valid_run:
+    update:
+      - queue_depth
+      - AHT
+      - median_and_p95_duration
+      - evidence_yield
+      - edge_yield
+      - rework_rate
+      - first_pass_yield
+      - progress_and_DoV_gap
+      - rule_based_PCA_dimension_scores
+      - BT_rule_priority
+    may_change_method: true
+    statistical_claim: false
+  every_5_valid_runs:
+    update:
+      - coverage_matrix
+      - semantic_weight_drift
+      - variant_transition_matrix
+      - runner_allocation_comparison
+      - exploratory_correlation_view
+      - PCA_candidate_feature_matrix
+    may_change:
+      - selector_thresholds_with_change_log
+      - preferred_variant_chain
+      - search_order
+      - runner_pool_size
+    guard: changes_must_be_bounded_reversible_and_not_authority_bearing
+  every_10_valid_runs:
+    update:
+      - robust_distribution_metrics
+      - MAD_IQR_p90_p95
+      - control_bands
+      - subgroup_comparisons
+    may_change: [control_limits, routing_hysteresis, sampling_priority]
+  empirical_covariance:
+    activate_only_when: complete_n_at_least_max_30_and_10p
+  empirical_PCA:
+    refresh_candidate_view_every_5_runs: true
+    activate_for_decision_weighting_only_when: complete_n_at_least_max_50_and_10p
+    require:
+      - missingness_report
+      - feature_scaling_declared
+      - near_zero_variance_removed
+      - component_stability_checked_across_refreshes
+    promotion_rule: require_two_consecutive_refreshes_with_similar_dominant_loadings_before_using_components_to_modify_selector_weights
+  empirical_BT:
+    refresh_candidate_view_every_5_terminal_items: true
+    activate_only_when: terminal_n_at_least_30_and_positive_outcomes_at_least_5
+
+small_sample_change_policy:
+  allowed_without_empirical_PCA:
+    - fix_broken_search_pattern
+    - add_missing_relationship_edge_type
+    - change_runner_assignment_for_clear_starvation_or_duplication
+    - route_obvious_high_information_loss_item_to_3PV
+    - route_obvious_evidence_unknown_item_to_3PE
+    - append_3PR_when_cross_repo_reentry_is_required
+  require_larger_sample:
+    - claim_one_variant_is_globally_superior
+    - retire_a_variant
+    - permanently_change_semantic_weight_model
+    - use_covariance_or_PCA_as_authoritative_priority
+    - reduce_preservation_or_DoV_gates
+
+sample_accounting:
+  valid_run: completed_PRE_and_POST_with_same_root_id_contract
+  valid_terminal_item: root_item_with_P3_terminal_or_governed_defer_and_POST
+  retries:
+    retain_in_history: true
+    count_once_for_cross_sectional_statistics: latest_valid_attempt
+    count_all_for_rework_and_AHT_process_metrics: true
+  repeated_same_item:
+    useful_for: [paired_pre_post, method_transition_learning, rework_learning]
+    not_independent_for: [cross_sectional_covariance, empirical_PCA_without_cluster_adjustment]
