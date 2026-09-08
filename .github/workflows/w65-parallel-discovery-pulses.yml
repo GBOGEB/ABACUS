@@ -1,0 +1,93 @@
+name: W65 Parallel Discovery Pulses
+
+on:
+  pull_request:
+    paths:
+      - 'tools/w65_parallel_discovery.py'
+      - 'tools/w64_discovery_graph.py'
+      - 'ssot/**'
+      - 'architecture/w65/**'
+      - '.github/workflows/w65-parallel-discovery-pulses.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1,4'
+
+permissions:
+  contents: read
+
+jobs:
+  top_down:
+    name: W65-A top-down authority walk
+    runs-on: ubuntu-latest
+    steps: &discovery_steps
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - run: mkdir -p architecture/w65/current
+      - name: Execute method
+        run: python tools/w65_parallel_discovery.py top-down --root . --out architecture/w65/current/top_down.json
+      - uses: actions/upload-artifact@v7
+        with: {name: w65-top-down, path: architecture/w65/current/top_down.json}
+
+  bottom_up:
+    name: W65-B bottom-up asset census
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - run: mkdir -p architecture/w65/current
+      - run: python tools/w65_parallel_discovery.py bottom-up --root . --out architecture/w65/current/bottom_up.json
+      - uses: actions/upload-artifact@v7
+        with: {name: w65-bottom-up, path: architecture/w65/current/bottom_up.json}
+
+  frontier:
+    name: W65-C graph-frontier expansion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - run: mkdir -p architecture/w65/current
+      - run: python tools/w65_parallel_discovery.py frontier --root . --out architecture/w65/current/frontier.json
+      - uses: actions/upload-artifact@v7
+        with: {name: w65-frontier, path: architecture/w65/current/frontier.json}
+
+  orphan_drop:
+    name: W65-D orphan and drop-off inverse walk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - run: mkdir -p architecture/w65/current
+      - run: python tools/w65_parallel_discovery.py orphan --root . --out architecture/w65/current/orphan_drop.json
+      - uses: actions/upload-artifact@v7
+        with: {name: w65-orphan-drop, path: architecture/w65/current/orphan_drop.json}
+
+  converge:
+    name: W65-E funnel PCA-ready reverse-loading convergence
+    needs: [top_down, bottom_up, frontier, orphan_drop]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - uses: actions/download-artifact@v8
+        with: {pattern: 'w65-*', path: architecture/w65/incoming, merge-multiple: true}
+      - name: Converge independent receipts
+        run: |
+          mkdir -p architecture/w65/current
+          python tools/w65_parallel_discovery.py converge --root . \
+            --inputs architecture/w65/incoming/top_down.json \
+                     architecture/w65/incoming/bottom_up.json \
+                     architecture/w65/incoming/frontier.json \
+                     architecture/w65/incoming/orphan_drop.json \
+            --out architecture/w65/current/convergence.json
+      - uses: actions/upload-artifact@v7
+        with: {name: w65-convergence, path: architecture/w65/current/convergence.json}
