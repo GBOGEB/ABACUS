@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/w64-3p-r01-retained-baseline.yml'
+      - 'ci/governance/workflow_policy.json'
       - 'tools/w64_3p_parallel_pilot.py'
       - 'tools/generic_3pm_burndown.py'
       - 'tools/w64_total_repo_census.py'
@@ -13,6 +14,9 @@ on:
 
 permissions:
   contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   r01:
@@ -29,22 +33,26 @@ jobs:
       - name: Build current P1 and P2 receipts
         run: |
           mkdir -p architecture/w64/receipts/r01
+          p1=architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P1.json
+          p2=architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2.json
           python tools/w64_total_repo_census.py \
             --root . \
-            --out architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P1.json
+            --out "$p1"
           python tools/w64_census_reverse_pressure.py \
-            --census architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P1.json \
-            --out architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json
+            --census "$p1" \
+            --out "$p2"
 
       - name: Execute same-root parallel arms
         run: |
+          p2=architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2.json
+          out=architecture/w64/receipts/r01/W64_3P_R01_PILOT.json
           python tools/w64_3p_parallel_pilot.py \
-            --p2 architecture/w64/receipts/r01/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json \
+            --p2 "$p2" \
             --root . \
             --sample 5 \
             --discovery-workers 5 \
             --discrimination-workers 5 \
-            --out architecture/w64/receipts/r01/W64_3P_R01_PILOT.json
+            --out "$out"
 
       - name: Build retained baseline receipt
         shell: python
@@ -54,43 +62,69 @@ jobs:
           from pathlib import Path
 
           root = Path('architecture/w64/receipts/r01')
-          pilot = json.loads((root / 'W64_3P_R01_PILOT.json').read_text())
+          pilot_path = root / 'W64_3P_R01_PILOT.json'
+          pilot = json.loads(pilot_path.read_text())
           arms = {x['arm']: x for x in pilot['arms']}
           wall_total = sum(float(x['wall_time_ms']) for x in arms.values())
           sample_n = int(pilot['sample_root_items'])
+          service_total = sum(
+              float(x['AHT_variant_job_ms']) * int(x['variant_job_count'])
+              for x in arms.values()
+          )
+          worker_minutes = sum(
+              float(x['wall_time_ms']) * int(x['workers']) / 60000.0
+              for x in arms.values()
+          )
+          evidence_total = sum(
+              int(x['total_yield']) for x in arms.values()
+          )
           record = {
-              'schema_version': 'TRIAGE-3P-RUN-RECEIPT-1.0.0',
+              'schema_version': 'TRIAGE-3P-RUN-RECEIPT-1.0.1',
               'run_id': 'R01',
               'valid': True,
-              'source_sha': os.environ['GITHUB_SHA'],
+              'source_sha': os.environ['SOURCE_SHA'],
               'stratum': 'W64_DUPLICATE_AUTHORITY_MIXED_SAMPLE5',
-              'measurement_contract': 'R01-READONLY-PARALLEL-ARMS-1.0.0',
+              'measurement_contract': (
+                  'R01-READONLY-PARALLEL-ARMS-1.0.1'
+              ),
               'sample_root_items': sample_n,
               'stable_root_ids': pilot['stable_root_ids'],
               'workers': {
                   'ARM_DISCOVERY': arms['ARM_DISCOVERY']['workers'],
-                  'ARM_DISCRIMINATION': arms['ARM_DISCRIMINATION']['workers'],
+                  'ARM_DISCRIMINATION': (
+                      arms['ARM_DISCRIMINATION']['workers']
+                  ),
                   'P3_writer': 0,
               },
               'wall_ms_total_arms': wall_total,
-              'wall_ms_per_root_item': wall_total / sample_n if sample_n else 0.0,
-              'AHT_ms_per_root_item': sum(
-                  float(x['AHT_variant_job_ms']) for x in arms.values()
-              ) / len(arms),
-              'evidence_yield_total': sum(int(x['total_yield']) for x in arms.values()),
+              'wall_ms_per_root_item': (
+                  wall_total / sample_n if sample_n else 0.0
+              ),
+              'AHT_ms_per_root_item': (
+                  service_total / sample_n if sample_n else 0.0
+              ),
+              'evidence_yield_total': evidence_total,
+              'evidence_yield_per_worker_minute': (
+                  evidence_total / worker_minutes
+                  if worker_minutes else 0.0
+              ),
               'terminal_items_per_worker_hour': 0.0,
-              'evidence_yield_per_worker_minute': 0.0,
               'rework_rate': 0.0,
               'information_loss_failures': 0,
               'DoV_gap_after': 1.0,
               'stability_class': 'INSUFFICIENT_EVIDENCE',
               'anchor_promotions': [],
-              'claim_guard': 'R01 is a read-only performance baseline; no stable speed, PCA, anchor, or DoV claim.',
+              'claim_guard': (
+                  'R01 is a read-only performance baseline; no stable '
+                  'speed, PCA, anchor, or DoV claim.'
+              ),
           }
-          (root / 'W64_3P_R01_RUN_RECEIPT.json').write_text(
+          receipt = root / 'W64_3P_R01_RUN_RECEIPT.json'
+          history = root / 'W64_3P_RUN_HISTORY.jsonl'
+          receipt.write_text(
               json.dumps(record, indent=2, sort_keys=True) + '\n'
           )
-          (root / 'W64_3P_RUN_HISTORY.jsonl').write_text(
+          history.write_text(
               json.dumps(record, sort_keys=True) + '\n'
           )
 
@@ -98,16 +132,24 @@ jobs:
         shell: python
         run: |
           import json
+          import os
           from pathlib import Path
-          p = Path('architecture/w64/receipts/r01/W64_3P_R01_RUN_RECEIPT.json')
-          r = json.loads(p.read_text())
-          assert r['run_id'] == 'R01'
-          assert r['sample_root_items'] == 5
-          assert len(r['stable_root_ids']) == 5
-          assert r['workers']['P3_writer'] == 0
-          assert r['stability_class'] == 'INSUFFICIENT_EVIDENCE'
-          assert r['anchor_promotions'] == []
-          assert r['DoV_gap_after'] == 1.0
+
+          path = Path(
+              'architecture/w64/receipts/r01/'
+              'W64_3P_R01_RUN_RECEIPT.json'
+          )
+          receipt = json.loads(path.read_text())
+          assert receipt['run_id'] == 'R01'
+          assert receipt['source_sha'] == os.environ['SOURCE_SHA']
+          assert receipt['sample_root_items'] == 5
+          assert len(receipt['stable_root_ids']) == 5
+          assert receipt['workers']['P3_writer'] == 0
+          assert receipt['AHT_ms_per_root_item'] > 0
+          assert receipt['evidence_yield_per_worker_minute'] >= 0
+          assert receipt['stability_class'] == 'INSUFFICIENT_EVIDENCE'
+          assert receipt['anchor_promotions'] == []
+          assert receipt['DoV_gap_after'] == 1.0
 
       - uses: actions/upload-artifact@v7
         with:
