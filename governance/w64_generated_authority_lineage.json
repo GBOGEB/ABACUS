@@ -1,1 +1,37 @@
-{"schema_version":"W64-GENERATED-LINEAGE-1.0.0","purpose":"Explicit source/generator lineage for generated authority-like outputs.","assets":[{"path":"docs/qps_line_b/generated/P05F_MEASURED_SENSITIVITY_RECEIPT.json","state":"generated_with_lineage","source":"models/qps_line_b/run_measured_sensitivity.py","generator":"python -m models.qps_line_b.run_measured_sensitivity","evidence_basis":"Generator code and workflow explicitly name the output path."},{"path":"docs/qps_line_s_recovery/generated/runtime_status.json","state":"generated_with_lineage","source":"models/qps_line_s/runtime.py","generator":"qps_line_s runtime pipeline","evidence_basis":"Runtime model and recovery index identify runtime_status.json as generated pipeline output."}],"unresolved":["docs/qps_line_b/generated/P05H_DN150_VALIDATION_RECEIPT.json","docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json"]}
+{
+  "schema_version": "W64-GENERATED-LINEAGE-1.1.0",
+  "purpose": "Explicit source/generator lineage for generated authority-like outputs.",
+  "assets": [
+    {
+      "path": "docs/qps_line_b/generated/P05F_MEASURED_SENSITIVITY_RECEIPT.json",
+      "state": "generated_with_lineage",
+      "source": "models/qps_line_b/run_measured_sensitivity.py",
+      "generator": "python -m models.qps_line_b.run_measured_sensitivity",
+      "evidence_basis": "Generator code and workflow explicitly name the output path."
+    },
+    {
+      "path": "docs/qps_line_s_recovery/generated/runtime_status.json",
+      "state": "generated_with_lineage",
+      "source": "models/qps_line_s/runtime.py",
+      "generator": "qps_line_s runtime pipeline",
+      "evidence_basis": "Runtime model and recovery index identify runtime_status.json as generated pipeline output."
+    },
+    {
+      "path": "docs/qps_line_b/generated/P05H_DN150_VALIDATION_RECEIPT.json",
+      "state": "generated_with_lineage",
+      "source": "models/qps_line_b/p05h_p05i_source_payload.json",
+      "generator": "python -m models.qps_line_b.run_p05h_p05i_receipts",
+      "output_sha256_before_control_binding": "89a3b63ebac6436bbd4f18e0aa0cc5d36953ee581e8f3f8b737b7d46f587c30b",
+      "evidence_basis": "W71 residual census measured the exact file; W72 source payload plus deterministic generator reproduces its parsed JSON semantics in regression testing."
+    },
+    {
+      "path": "docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json",
+      "state": "generated_with_lineage",
+      "source": "models/qps_line_b/p05h_p05i_source_payload.json",
+      "generator": "python -m models.qps_line_b.run_p05h_p05i_receipts",
+      "output_sha256_before_control_binding": "e1115f087bfea0a295a97c65bce719ba998dcf3fa38297e532b7883ae5b12440",
+      "evidence_basis": "W71 residual census measured the exact file; W72 source payload plus deterministic generator reproduces its parsed JSON semantics in regression testing."
+    }
+  ],
+  "unresolved": []
+}
