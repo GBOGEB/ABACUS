@@ -1,0 +1,128 @@
+schema_version: W64-GENERIC-3PM-3PR-1.0.0
+purpose: reusable item-list burndown with evidence-preserving discrimination
+repo_planes:
+  cryoplant-project: engineering_truth_and_acceptance
+  CODEX: semantic_governance_and_orchestration
+  ABACUS: evidence_render_receipts_and_burndown_execution
+method_3pm:
+  PRE:
+    - freeze_input_queue_and_item_ids
+    - capture_baseline_nodes_edges_clusters_and_metrics
+    - assign_read_only_subtasks
+  P1_PRODUCE:
+    - discover_item_relatives_and_evidence_edges
+    - classify_candidate_relationships
+    - extract_unique_information_candidates
+  P2_CHALLENGE:
+    - run_reverse_pressure_PCA_BT_KPI
+    - test_duplicate_claim_and_authority_claim
+    - challenge_information_loss_and_false_merge_risk
+  P3_REENTER:
+    - single_writer_disposition
+    - prove_unique_information_reintroduced_to_canonical_record
+    - choose_keep_merge_quarantine_or_remove_eligible
+  POST:
+    - rerun_same_sweep
+    - compare_queue_nodes_edges_information_and_timings
+    - update_learning_patterns_without_mutating_source_truth
+three_pr:
+  semantic_unit: PRE_to_P1_to_P2_to_P3_to_POST
+  mutation_writer_count: 1
+  discovery_workers_may_scale: true
+  discovery_scale_ladder: [1, 2, 4, 5, 8, 16]
+  no_id_inflation: true
+five_subtasks:
+  - identity_and_repo_location
+  - code_and_pipeline_relatives
+  - authority_and_provenance
+  - information_delta_and_preservation
+  - disposition_risk_and_tests
+item_id:
+  rule: sha256_of_stable_scope_type_and_normalized_member_set
+  discovered_by_runner: false
+  explanation: runners find evidence for an existing ID; they do not mint extra IDs for the same item
+relationship_scouting:
+  edges:
+    - same_folder
+    - imports_or_calls
+    - workflow_invokes
+    - configures_or_parameterizes
+    - documents
+    - generates
+    - consumes
+    - supersedes
+    - derived_from
+    - same_duplicate_family
+  file_types: [python, markdown, yaml, json, workflow, binary_or_rendered_output]
+  learning_rollup:
+    capture_per_runner:
+      - successful_search_patterns
+      - failed_search_patterns
+      - edge_types_found
+      - evidence_paths_found
+      - duration_ms
+      - items_examined
+    aggregate:
+      - median_duration_ms_by_subtask
+      - p95_duration_ms_by_subtask
+      - evidence_yield_per_minute
+      - edge_yield_per_minute
+      - recommendation_hit_rate
+      - false_positive_rate
+    allowed_learning: tune_search_order_runner_allocation_and_thresholds
+    prohibited_learning: mutate_engineering_truth_or_provenance_without_evidence
+preservation_gate:
+  remove_requires_all:
+    - duplicate_or_obsolete_role_proven
+    - unique_information_inventory_complete
+    - every_unique_information_atom_reintroduced_or_explicitly_not_applicable
+    - reintroduction_target_is_canonical_and_lineaged
+    - post_reintroduction_tests_pass
+    - no_required_consumer_depends_on_candidate_path
+    - P3_single_writer_approves
+  otherwise: quarantine_for_deeper_analysis
+  quarantine_is_not_deletion: true
+runner_experiment:
+  arm_A:
+    model: one_coordinator_one_runner_five_sequential_subtasks
+  arm_B:
+    model: one_coordinator_five_read_only_runners_one_subtask_each
+  compare:
+    - wall_time_ms
+    - median_subtask_ms
+    - p95_subtask_ms
+    - evidence_yield
+    - edge_yield
+    - disagreement_rate
+    - rework_rate
+    - information_loss_failures
+  choose: smallest_pool_with_material_wall_time_gain_and_no_quality_regression
+reverse_pressure:
+  PCA:
+    - authority_ambiguity
+    - provenance_gap
+    - information_loss_risk
+    - consumer_dependency
+    - false_duplicate_key
+    - generated_derivative
+    - historical_or_versioned_record
+    - parallel_representation
+  BT_order:
+    - information_loss_risk
+    - authority_conflict
+    - active_consumer_dependency
+    - provenance_gap
+    - cleanup_value
+  KPI:
+    - queue_remaining
+    - true_duplicate_rate
+    - quarantine_rate
+    - removal_eligible_rate
+    - information_atoms_extracted
+    - information_atoms_reintroduced
+    - reintroduction_proof_pass_rate
+    - median_item_duration_ms
+    - p95_item_duration_ms
+    - runner_utilization
+    - rework_rate
+    - false_positive_rate

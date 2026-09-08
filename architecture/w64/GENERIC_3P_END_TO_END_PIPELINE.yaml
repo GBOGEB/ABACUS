@@ -1,0 +1,231 @@
+schema_version: W64-GENERIC-3P-E2E-1.0.0
+purpose: closed-loop start-to-finish TRIAGE burndown with repeatable subprocesses and measurable convergence
+
+pipeline:
+  - stage: INTAKE
+    outputs: [frozen_queue, root_item_ids, source_sha, scope, baseline_sample]
+    dov: every_input_has_one_stable_root_id_and_declared_scope
+  - stage: DEFINE
+    dmaic: D
+    actions:
+      - define_problem_queue_and_authority_boundary
+      - choose_3P_variant_or_nested_variant_chain
+      - define_victory_and_stop_conditions
+      - define_information_preservation_constraints
+    outputs: [problem_statement, variant_chain, dov_contract, stop_conditions]
+  - stage: MEASURE_PRE
+    dmaic: M
+    actions:
+      - PRE_sweep
+      - capture_nodes_edges_clusters_consumers_information_atoms
+      - capture_queue_depth_and_runner_capacity
+      - record_wall_median_p95_and_AHT_baseline
+    outputs: [pre_receipt, baseline_metrics, baseline_graph]
+  - stage: ANALYZE_P1_P2
+    dmaic: A
+    actions:
+      - execute_P1_read_only_discovery_or_classification
+      - execute_P2_reverse_pressure
+      - compute_rule_based_PCA_dimensions
+      - compute_BT_priority
+      - compute_covariance_PCA_empirical_BT_only_if_statistically_eligible
+      - identify_bottlenecks_rework_and_nonconvergence
+    outputs: [evidence_edges, findings, PCA, BT, statistical_eligibility]
+  - stage: IMPROVE_P3
+    dmaic: I
+    actions:
+      - extract_unique_information_atoms
+      - reintroduce_to_canonical_lineaged_target
+      - verify_consumers
+      - disposition_keep_merge_quarantine_remove_eligible_defer
+      - permit_mutation_only_via_single_writer_and_local_authority
+    outputs: [reentry_receipt, disposition, preservation_proof]
+  - stage: CONTROL_POST
+    dmaic: C
+    actions:
+      - POST_sweep_using_same_measurement_contract
+      - compare_pre_post_queue_graph_information_and_timing
+      - compute_progress_and_DoV
+      - append_history
+      - update_search_order_variant_selection_and_runner_allocation
+      - choose_repeat_scale_hold_or_stop
+    outputs: [post_receipt, delta_metrics, history_record, next_pulse_decision]
+
+subprocess_repeat:
+  contract: any_complex_stage_may_spawn_child_root_item_queue
+  child_loop: DEFINE_to_MEASURE_PRE_to_ANALYZE_P1_P2_to_IMPROVE_P3_to_CONTROL_POST
+  child_must_return:
+    - parent_root_item_id
+    - child_root_item_ids
+    - exact_source_sha
+    - unique_information_atoms
+    - reintroduction_or_quarantine_receipt
+    - progress_delta
+    - dov_delta
+    - timing_metrics
+  parent_reentry: child_result_never_mutates_parent_authority_without_P3_reentry
+
+progress:
+  metrics:
+    queue_burndown_fraction: (queue_before_minus_queue_after)/max(queue_before,1)
+    blocker_burndown_fraction: (blockers_before_minus_blockers_after)/max(blockers_before,1)
+    information_reintroduction_fraction: atoms_reintroduced/max(atoms_extracted,1)
+    terminal_fraction: terminal_items/max(total_root_items,1)
+    first_pass_yield: terminal_without_rework/max(terminal_items,1)
+    rework_rate: reworked_items/max(processed_items,1)
+    convergence_velocity_items_per_hour: terminal_items/max(active_hours,epsilon)
+    convergence_acceleration: current_velocity_minus_prior_velocity
+  progress_is_not_DoV: true
+
+DoV:
+  layers:
+    item_DoV:
+      all:
+        - P1_evidence_complete_or_explicitly_deferred
+        - P2_reverse_pressure_closed_or_waived_with_source_bound_receipt
+        - preservation_gate_passed_for_any_removal
+        - P3_local_authority_disposition_terminal
+        - POST_measurement_complete
+    queue_DoV:
+      all:
+        - every_root_item_terminal_or_governed_deferred
+        - no_unowned_blocker
+        - history_and_receipts_complete
+    release_DoV:
+      all:
+        - queue_DoV
+        - required_exact_head_CI_green
+        - downstream_product_or_acceptance_gates_green
+  no_progress_score_can_override_DoV_gate: true
+
+DMAIC_metrics:
+  Define:
+    - root_item_count
+    - cluster_count
+    - scope_ambiguity_count
+    - authority_ambiguity_count
+  Measure:
+    - queue_depth
+    - evidence_yield
+    - edge_yield
+    - runner_utilization
+    - AHT_item_ms
+    - median_item_ms
+    - p95_item_ms
+    - cycle_time_ms
+    - wait_time_ms
+    - touch_time_ms
+  Analyze:
+    - PCA_dimension_scores
+    - BT_priority_score
+    - covariance_matrix_if_eligible
+    - empirical_PCA_if_eligible
+    - bottleneck_share
+    - rework_rate
+    - disagreement_rate
+    - false_positive_rate
+  Improve:
+    - information_atoms_extracted
+    - information_atoms_reintroduced
+    - preservation_pass_rate
+    - remove_eligible_rate
+    - quarantine_rate
+    - merge_candidate_rate
+  Control:
+    - queue_delta
+    - blocker_delta
+    - DoV_delta
+    - velocity_items_per_hour
+    - acceleration_items_per_hour2
+    - control_band_breaches
+    - regression_count
+
+AHT:
+  definition: total_touch_time_ms/max(processed_root_items,1)
+  companion_metrics:
+    - median_touch_time_ms
+    - p95_touch_time_ms
+    - wait_to_touch_ratio
+    - queue_age_p50
+    - queue_age_p95
+    - first_pass_yield
+  interpretation:
+    high_AHT_high_yield: difficult_but_productive_work
+    high_AHT_low_yield: search_or_scope_bottleneck
+    low_AHT_high_rework: premature_disposition_or_under_analysis
+    low_AHT_high_yield: candidate_for_more_parallelism
+  never_optimize_AHT_alone: true
+
+PCA:
+  rule_based_dimensions_always_available:
+    - authority_ambiguity
+    - provenance_gap
+    - information_loss_risk
+    - consumer_dependency
+    - false_duplicate_key
+    - generated_derivative
+    - historical_or_versioned_record
+    - parallel_representation
+  empirical_PCA:
+    activate_only_when: complete_n_at_least_max_50_and_10p
+    use: discover_latent_process_and_risk_dimensions
+    not_authority: true
+
+BT:
+  rule_based:
+    order:
+      - information_loss_risk
+      - authority_conflict
+      - active_consumer_dependency
+      - provenance_gap
+      - cleanup_value
+  empirical:
+    activate_only_when: terminal_n_at_least_30_and_positive_outcomes_at_least_5
+    preferred_terminal_n: 50
+    use: calibrate_priority_against_observed_terminal_outcomes
+    may_not_override_local_authority: true
+
+covariance_and_other_stats:
+  covariance:
+    activate_only_when: complete_n_at_least_max_30_and_10p
+    report_pairwise_n: true
+  paired_pre_post:
+    activate_at_paired_n: 20
+    preferred_n: 30
+    methods: [paired_effect_size, bootstrap_CI, signed_rank_or_equivalent]
+  runner_arm_comparison:
+    activate_at_items_per_arm: 20
+    preferred_n: 30
+    methods: [effect_size, bootstrap_CI, nonparametric_comparison]
+  control_process:
+    minimum_n_for_robust_percentiles: 10
+    metrics: [median, MAD, IQR, p90, p95]
+  below_threshold:
+    - descriptive_only
+    - rule_based_PCA_and_BT
+    - no_significance_claim
+
+convergence_control:
+  repeat_when_any:
+    - blockers_remaining
+    - quarantine_requires_new_evidence
+    - information_reintroduction_incomplete
+    - DoV_gate_not_met
+    - post_sweep_regression_detected
+  scale_up_discovery_when_all:
+    - queue_per_active_runner_high
+    - runner_utilization_high
+    - rework_below_control_limit
+    - false_positive_rate_below_control_limit
+    - evidence_yield_not_degrading_materially
+  scale_down_when_any:
+    - runner_starvation
+    - rework_spike
+    - evidence_yield_collapse
+    - collision_or_duplicate_effort
+    - wait_time_not_improving
+  stop_when_all:
+    - queue_DoV_met
+    - no_unowned_blockers
+    - POST_no_regression
+    - required_CI_or_acceptance_gate_green
