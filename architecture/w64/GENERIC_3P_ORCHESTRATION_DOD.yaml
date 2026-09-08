@@ -1,0 +1,124 @@
+schema_version: TRIAGE-3P-ORCHESTRATION-DOD-1.0.0
+purpose: define agent responsibilities, scope boundaries, parallel variant execution, and definition of done
+
+roles:
+  coordinator:
+    owns:
+      - freeze_queue_and_root_ids
+      - choose_or_accept_selector_variant_chain
+      - allocate_runner_pool
+      - enforce_read_only_discovery
+      - collect_metrics_and_receipts
+      - compare_parallel_arms
+    may_not:
+      - redefine_engineering_truth
+      - mint_duplicate_root_ids
+      - bypass_P3_single_writer
+  discovery_runner:
+    owns: [3PE, 3PL, IDN, REL]
+    scope: read_only_source_and_relationship_discovery
+    outputs: [evidence_paths, graph_edges, search_patterns, timing, yield]
+    may_not: [delete, merge, mutate_authority, promote_DoV]
+  discrimination_runner:
+    owns: [3PC, AUT, RSK]
+    scope: read_only_role_authority_lifecycle_consumer_classification
+    outputs: [classification, counterevidence, ambiguity, consumer_risk, BT_priority]
+    may_not: [delete, mutate_authority, final_disposition]
+  proof_runner:
+    owns: [3PV, INF]
+    scope: same_boundary_validation_and_information_preservation_proof
+    outputs: [information_atoms, reintroduction_targets, proof_status, loss_risk]
+    may_not: [delete, claim_reintroduction_without_test, final_disposition]
+  semantic_orchestrator_CODEX:
+    owns: [variant_selection_semantics, cross_repo_receipt_validation, reverse_pressure]
+    may_recommend: [repeat, switch_variant, scale_pool, hold, narrow, expand_coverage]
+    may_not: [engineering_truth_mutation, formal_compliance_promotion]
+  evidence_executor_ABACUS:
+    owns: [runner_execution, timing, evidence_receipts, history, DMAIC_rollup]
+    may_not: [engineering_truth_mutation, local_QPS_acceptance]
+  engineering_authority_cryoplant:
+    owns: [engineering_accept_reject_defer, RTM_truth, bidder_scope_truth, reentry_acceptance]
+    may_not_delegate: [formal_engineering_disposition]
+  P3_single_writer:
+    owns: [terminal_disposition_receipt, merge_quarantine_remove_eligible_or_defer]
+    prerequisite: all_required_child_receipts_present
+
+parallel_variant_test:
+  frozen_sample_required: true
+  arm_A:
+    name: discovery_learning
+    chain: [3PE, 3PL]
+    capabilities: [IDN, REL]
+    runner_model: parallel_read_only
+  arm_B:
+    name: discrimination_proof
+    chain: [3PC, 3PV]
+    capabilities: [AUT, RSK, INF]
+    runner_model: parallel_read_only
+  shared:
+    same_root_ids: true
+    no_mutation: true
+    compare:
+      - wall_time_ms
+      - median_task_ms
+      - p95_task_ms
+      - evidence_yield
+      - edge_yield
+      - ambiguity_reduction
+      - information_atoms_found
+      - consumer_dependencies_found
+      - rework_prediction
+      - disagreement_rate
+  interpretation:
+    arm_A_fast_low_yield: discovery_method_needs_improvement
+    arm_A_high_yield: retain_or_scale_discovery_pool
+    arm_B_high_ambiguity: more_3PC_or_3PE_required
+    arm_B_high_information_loss_risk: force_3PV_and_quarantine_until_proven
+
+DoD:
+  item_discovery_done:
+    all:
+      - root_id_stable
+      - repo_location_confirmed
+      - relevant_relatives_scouted
+      - evidence_paths_recorded
+      - runner_metrics_recorded
+  item_discrimination_done:
+    all:
+      - authority_role_classified_or_explicitly_unknown
+      - lifecycle_classified_or_explicitly_unknown
+      - consumer_dependency_checked
+      - counterevidence_recorded
+  item_proof_done:
+    all:
+      - unique_information_inventory_complete_or_explicitly_deferred
+      - reintroduction_target_declared_if_needed
+      - proof_executed_or_explicitly_blocked
+      - information_loss_risk_declared
+  item_P3_done:
+    all:
+      - child_receipts_complete
+      - local_authority_disposition_recorded
+      - preservation_gate_enforced
+      - no_unauthorized_mutation
+  item_POST_done:
+    all:
+      - same_contract_aftersweep_complete
+      - progress_delta_computed
+      - DoV_status_computed
+      - history_appended
+      - next_action_or_terminal_state_recorded
+  queue_done:
+    all:
+      - every_root_item_terminal_or_governed_deferred
+      - no_unowned_blockers
+      - no_root_id_inflation
+      - all_required_P3_receipts_present
+      - control_POST_shows_no_regression
+
+stop_conditions:
+  - unauthorized_mutation_attempt
+  - root_id_collision_or_inflation
+  - information_loss_unbounded
+  - evidence_provenance_missing_for_authority_change
+  - runner_rework_or_false_positive_rate_exceeds_control_limit
