@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "repo_health" / "measure_source_generated_split.py"
 spec = importlib.util.spec_from_file_location("measure_source_generated_split", MODULE_PATH)
 module = importlib.util.module_from_spec(spec)
-assert spec and spec.loader
+assert spec and spec.loader and spec.name
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
+assert sys.modules[spec.name] is module
 
 
 def write(path: Path, text: str = "x") -> None:
