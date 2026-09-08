@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/w72-clean-clone-proof.yml'
+      - 'DMAIC_V3/product_version.py'
+      - 'pyproject.toml'
   workflow_dispatch: {}
 
 permissions:
