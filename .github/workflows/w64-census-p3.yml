@@ -5,7 +5,13 @@ on:
     paths:
       - 'tools/w64_total_repo_census.py'
       - 'tools/w64_census_reverse_pressure.py'
+      - 'tools/w64_census_reverse_pressure_v2.py'
+      - 'tools/w64_authority_family_discovery.py'
+      - 'tools/w64_file_index_temporal.py'
       - 'tools/w64_census_p3_receipt.py'
+      - 'governance/w64_authority_dispositions.json'
+      - 'governance/w64_release_critical_asset_dispositions.json'
+      - 'governance/w64_generated_authority_lineage.json'
       - 'governance/ABACUS_POINT_RELEASE_READINESS_v0.1.yaml'
       - '.github/workflows/w64-census-p3.yml'
   workflow_dispatch:
@@ -17,6 +23,8 @@ jobs:
       W64_RECEIPTS: architecture/w64/receipts
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -24,41 +32,61 @@ jobs:
         run: |
           mkdir -p "$W64_RECEIPTS"
           p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
-          python tools/w64_total_repo_census.py \
-            --root . \
-            --out "$p1"
-      - name: Run corrected P2 reverse pressure
+          python tools/w64_total_repo_census.py --root . --out "$p1"
+      - name: Run baseline P2 for discovery comparison
+        run: |
+          p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
+          baseline="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_BASELINE.json"
+          python tools/w64_census_reverse_pressure.py --census "$p1" --out "$baseline"
+      - name: Build authority-family discovery map
+        run: |
+          baseline="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_BASELINE.json"
+          out="$W64_RECEIPTS/W64_AUTHORITY_FAMILY_DISCOVERY.json"
+          python tools/w64_authority_family_discovery.py --p2 "$baseline" --out "$out"
+      - name: Build full file index with temporal clusters
+        run: |
+          out="$W64_RECEIPTS/W64_FILE_INDEX_TEMPORAL.json"
+          python tools/w64_file_index_temporal.py --root . --window-seconds 300 --out "$out"
+      - name: Run disposition-aware P2 reverse pressure
         run: |
           p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
           p2="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json"
-          python tools/w64_census_reverse_pressure.py \
+          python tools/w64_census_reverse_pressure_v2.py \
             --census "$p1" \
+            --duplicate-dispositions governance/w64_authority_dispositions.json \
+            --unknown-dispositions governance/w64_release_critical_asset_dispositions.json \
+            --generated-lineage governance/w64_generated_authority_lineage.json \
             --out "$p2"
       - name: Emit P3 receipt
         run: |
           p1="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P1.json"
           p2="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json"
           p3="$W64_RECEIPTS/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json"
-          python tools/w64_census_p3_receipt.py \
-            --p1 "$p1" \
-            --p2 "$p2" \
-            --out "$p3"
-      - name: Show P3 status
+          python tools/w64_census_p3_receipt.py --p1 "$p1" --p2 "$p2" --out "$p3"
+      - name: Show conversion status
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          root = Path('architecture/w64/receipts')
-          p = root / 'W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json'
-          r = json.loads(p.read_text())
+          root=Path('architecture/w64/receipts')
+          b=json.loads((root/'W64_TOTAL_REPO_CENSUS_P2_BASELINE.json').read_text())
+          p=json.loads((root/'W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json').read_text())
+          p3=json.loads((root/'W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json').read_text())
+          idx=json.loads((root/'W64_FILE_INDEX_TEMPORAL.json').read_text())
           print(json.dumps({
-              'status': r['status'],
-              'release_credit': r['release_credit'],
-              'w64_dov': r['w64_dov'],
-              'p2_blocker_count': r['p2']['blocker_count'],
-              'p2_warning_count': r['p2']['warning_count'],
-              'finding_types': r['p2']['finding_types'],
-          }, sort_keys=True))
+            'baseline_blockers': b['blocker_count'],
+            'current_blockers': p['blocker_count'],
+            'blocker_reduction': b['blocker_count']-p['blocker_count'],
+            'resolved_duplicate_families': len(p.get('resolved',{}).get('duplicate_authority_families',[])),
+            'resolved_unknown_assets': len(p.get('resolved',{}).get('unknown_assets',[])),
+            'resolved_generated_assets': len(p.get('resolved',{}).get('generated_authority_assets',[])),
+            'asset_count': idx['asset_count'],
+            'extension_types': len(idx['by_extension']),
+            'temporal_cluster_count': len(idx['temporal_clusters']),
+            'status': p3['status'],
+            'release_credit': p3['release_credit'],
+            'w64_dov': p3['w64_dov'],
+          },sort_keys=True))
           PY
       - uses: actions/upload-artifact@v4
         with:
