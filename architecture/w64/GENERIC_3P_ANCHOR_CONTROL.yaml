@@ -1,0 +1,109 @@
+schema_version: TRIAGE-3P-ANCHOR-CONTROL-1.0.0
+priority: HIGH
+purpose: promote stable metrics and PCA semantics into DMAIC Control anchors while watching for deviation and reopening Measure/Analyze when drift is detected
+
+anchor_lifecycle:
+  states: [MOVING, SETTLING, STABLE, CONTROLLED, WARNING, BREACH, DRIFT, REOPENED]
+  promote_to_stable_requires:
+    - minimum_comparable_refreshes: 3
+    - no_material_quality_regression: true
+    - semantic_interpretation_unchanged: true
+    - control_reference_frozen: true
+  stable_dual_role:
+    model_anchor: stop_normal_noise_from_continuously_reweighting_selector
+    dmaic_control_reference: compare_future_runs_against_frozen_behavior
+
+metric_anchor:
+  reference:
+    - center
+    - sigma_or_robust_sigma
+    - lower_control_limit
+    - upper_control_limit
+    - promotion_run_id
+    - reference_source_sha
+  deviation:
+    z_score: (current-center)/sigma_or_robust_sigma
+    warning: abs_z_at_least_2
+    breach: abs_z_at_least_3
+    severe_breach: abs_z_at_least_4
+    six_sigma_watch: abs_z_at_least_6
+  drift:
+    trigger_any:
+      - two_consecutive_breaches_same_direction
+      - three_of_five_points_beyond_warning_same_direction
+      - one_six_sigma_watch_event
+    action: reopen_measure_analyze
+
+pca_anchor:
+  sign_alignment: use_absolute_cosine_similarity_for_component_direction
+  watch:
+    - loading_vector_cosine_similarity
+    - top_loading_membership
+    - explained_variance_fraction
+    - semantic_label
+  thresholds:
+    controlled_cosine_min: 0.95
+    warning_cosine_min: 0.90
+    breach_cosine_min: 0.85
+    explained_variance_warning_delta_abs: 0.05
+    explained_variance_breach_delta_abs: 0.10
+  drift:
+    require:
+      - repeated_breach_or_semantic_membership_change
+    action: reopen_analyze_without_automatic_retraining
+
+watchful_eye_execution:
+  every_valid_run:
+    collect:
+      - AHT
+      - wall_ms_per_root_item
+      - terminal_items_per_worker_hour
+      - evidence_yield_per_worker_minute
+      - rework_rate
+      - first_pass_yield
+      - DoV_gap
+      - anchor_metric_deviation
+      - anchor_status
+    action:
+      CONTROLLED: keep_defaults
+      WARNING: increase_observation_depth_without_retraining
+      BREACH: freeze_selector_weight_changes_for_affected_anchor_and_open_diagnostic
+      DRIFT: reopen_measure_analyze_and_route_to_3PC_or_3PV_as_semantically_required
+  every_5_valid_runs:
+    collect:
+      - rolling_speedup
+      - rolling_quality
+      - anchor_stability_fraction
+      - PC1_loading_stability
+      - transition_counts
+    action: update_control_receipt
+
+performance_guard:
+  faster_is_not_better_if_any:
+    - evidence_yield_materially_degrades
+    - rework_rate_materially_increases
+    - information_loss_failure_occurs
+    - DoV_gap_regresses
+  stable_speed_gain_requires:
+    - repeated_normalized_speed_gain
+    - anchor_status_not_in_BREACH_or_DRIFT
+    - quality_guards_pass
+
+responsibility:
+  ABACUS:
+    - own_anchor_registry
+    - compute_watch_receipts
+    - retain_per_run_history
+    - emit_drift_signal
+  CODEX:
+    - consume_drift_signal
+    - adjust_orchestration_depth_and_variant_chain
+    - cannot_redefine_engineering_truth
+  cryoplant-project:
+    - consume_authority_safe_control_deviation
+    - local_engineering_reentry_required_for_acceptance_change
+
+non_claims:
+  - stable_anchor_does_not_grant_release_credit
+  - PCA_or_drift_signal_does_not_override_preservation_gate
+  - automatic_retraining_is_not_allowed_on_single_excursion

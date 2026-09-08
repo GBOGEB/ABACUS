@@ -1,0 +1,21 @@
+{
+  "schema_version": "TRIAGE-3P-ANCHOR-REGISTRY-1.0.0",
+  "status": "INITIALIZED_NO_PROMOTED_ANCHORS",
+  "anchors": [],
+  "promotion_policy": {
+    "minimum_comparable_refreshes": 3,
+    "minimum_control_observations_preferred": 10,
+    "pca_component_stability_required": true,
+    "quality_regression_forbids_promotion": true
+  },
+  "watch_policy": {
+    "every_valid_run": true,
+    "every_5_valid_runs_rollup": true,
+    "single_excursion_retrains": false,
+    "drift_reopens_measure_analyze": true
+  },
+  "non_claims": [
+    "No anchors are statistically promoted by initializing this registry.",
+    "No release or engineering DoV credit is granted."
+  ]
+}
