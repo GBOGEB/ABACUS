@@ -1,0 +1,54 @@
+schema: abacus.cross-repo-terminal-denominators/v1
+as_of: '2026-09-08T10:06:00+02:00'
+repo: GBOGEB/ABACUS
+source: governance/ABACUS_POINT_RELEASE_READINESS_v0.1.yaml
+classification: RELEASE_CONTROL_DIAGNOSTIC_ONLY
+
+transferred_learning:
+  from_CODEX: strict versus equivalent outstanding counters
+  from_QPS: absolute artifact count/type/known-bytes/unknown-size must be explicit before publication
+  from_TRIAGE: activity without accepted receipt earns zero score
+
+full_checklist:
+  total: 32
+  pass: 17
+  partial: 9
+  open_blocked: 6
+  strict_outstanding: 15
+  equivalent_outstanding: 10.5
+  equivalent_formula: open_blocked + 0.5 * partial
+  effective_units: 21.5
+  effective_pct: 67.2
+
+terminal_publish_subset:
+  ids: [27, 28, 29, 30, 31, 32]
+  items:
+    - {id: 27, item: outward_outputs_regenerated_from_RC, state: PARTIAL}
+    - {id: 28, item: output_SHA256_source_lineage_manifest, state: PARTIAL}
+    - {id: 29, item: repeat_build_zero_delta_PASS, state: OPEN}
+    - {id: 30, item: adversarial_release_QA, state: PARTIAL}
+    - {id: 31, item: immutable_RC_and_protected_main, state: OPEN}
+    - {id: 32, item: version_tag_GitHub_point_release, state: OPEN}
+  total: 6
+  strict_outstanding: 6
+  equivalent_outstanding: 4.5
+  under_executable_attack: null
+  artifact_count: null
+  artifact_known_bytes: null
+  artifact_unknown_size_count: null
+  next_measurement: enumerate concrete output/package/tag/release/archive atoms and known versus unknown bytes
+
+census_context:
+  asset_population: 2794
+  release_critical_blocker_residual: 1
+  authority_families_dispositioned: 32
+  release_critical_unknown_assets_classified: 24
+  note: census blocker reduction and terminal publication closure remain separate denominators
+
+control_rules:
+  - strict outstanding burns only on PASS
+  - PARTIAL remains outstanding and contributes 0.5 equivalent unit
+  - no weighted score can compensate for an open hard terminal prerequisite
+  - unknown artifact bytes are not zero
+  - next terminal pulse should add concrete artifact atoms with path/type/bytes/producer/consumer
+  - engineering and negotiation credit delta from this normalization is zero
