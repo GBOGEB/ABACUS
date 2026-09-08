@@ -1,0 +1,28 @@
+schema_version: triage-dov-receipt/1.0.0
+repo: GBOGEB/ABACUS
+role: DOW_DERIVED_ANALYSIS
+predecessor: TRIAGE_W60_OBSERVED_COMPLETION
+wave_status: READY_FOR_SYNCHRONIZED_EXECUTION
+observed:
+  w58_w59_pr_pairs_merged: true
+  local_census_contract: PRESENT
+  local_fail_closed_validator: PRESENT
+  DOW_analysis_contract: PRESENT
+  PCA_DMAIC_graph_boundary: PRESENT
+  no_engineering_promotion_guard: PRESENT
+  local_observed_score_pct: 90
+cross_repo_victory_gates:
+  G1_three_repo_census_present: READY
+  G2_three_repo_authority_non_overlap: READY
+  G3_exact_input_digest: OPEN
+  G4_exact_output_return_binding: OPEN
+  G5_non_authoritative_finding_contract: READY
+  G6_method_receipt: READY
+  G7_zero_delta_second_pass: OPEN
+session_dov:
+  analytical_control: ACHIEVED
+  non_authority_control: ACHIEVED
+  terminal_runtime_proof: WITHHELD
+  global_dov: WITHHELD
+promotion_rule: DOW cannot declare engineering closure; terminal proof requires exact input/output digest and repeat zero delta
+next_execution: consume immutable census tuple, emit hash-bound finding receipt, repeat identical input and prove zero delta
