@@ -1,0 +1,28 @@
+schema_version: "0.1"
+document_id: W57_R18_3PR_A_DOW_SOURCE_CHALLENGE
+role: PARENT_PHYSICS_SOURCE_CHALLENGE
+child_round: W57_R18_3PR_A
+observed_state:
+  HEPAK_numeric_receipt: MISSING
+  selected_LineB_geometry: MISSING
+  per_QCELL_B_flow: MISSING
+  physical_source_conversion_pct: 0.0
+physics_effect:
+  reverse_pressure_solver: NOT_EXECUTABLE_GOVERNED
+  measured_PCA: NOT_EXECUTABLE_GOVERNED
+  Monte_Carlo: NOT_EXECUTABLE_GOVERNED
+  bounded_historic_LineB_screen: PRESERVE_ONLY
+priority_after_observation:
+  - HEPAK_numeric_receipt
+  - selected_LineB_geometry
+  - per_QCELL_B_flow
+  - spatial_thermal_field
+analysis_guards:
+  - no_CoolProp_or_NIST_as_governing_lowT_substitute
+  - no_historic_geometry_promotion
+  - no_aggregate_flow_split_without_source
+  - no_diagnostic_solver_output_as_acceptance
+return_candidate:
+  engineering_disposition: DEFER_SOURCE_RETURN_REQUIRED
+  formal_delta: 0
+  strict_delta: 0
