@@ -1,0 +1,14 @@
+{
+  "schema_version":"creq-federation-comparison/0.1.0",
+  "status":"PASS",
+  "global_registry_sha256":"541fbff68b298427ae8fc560efede6348ed7a8a27712b9e3c762225eb2de2eaa",
+  "gates":{"identical_global_registry_digest":"PASS","global_requirement_count_consistent":"PASS","local_addition_preserves_global":"PASS","unapproved_override_falls_back_global":"PASS","repo_local_identity_isolated":"PASS"},
+  "repos":[
+    {"repo":"GBOGEB/ABACUS","global_count":8,"effective_count":8,"local_case":"CReq_ABACUS_001 overrides CReq_004","outcome":"BLOCKED_INCOMPLETE_APPROVAL_GLOBAL_FALLBACK","warnings":1,"receipt_sha256":"578d9906219705b355837939339d80830a217ef0bc1f6ccd0ac0a5d02e1c2b6b"},
+    {"repo":"GBOGEB/CODEX","global_count":8,"effective_count":9,"local_case":"CReq_CODEX_001 adds to CReq_006","outcome":"LOCAL_ADDITION_PLUS_GLOBAL","warnings":0,"receipt_sha256":"3f6ab1e62ac5d4f5181e1c8b9ce7e3ce2265367347e5b26222a50df4543a6fc7"},
+    {"repo":"GBOGEB/cryoplant-project","global_count":8,"effective_count":8,"local_case":"CReq_CRYOPLANT_001 overrides CReq_008","outcome":"BLOCKED_INCOMPLETE_APPROVAL_GLOBAL_FALLBACK","warnings":1,"receipt_sha256":"4b6c8268d6d048b7e0dfd0179b7aa3bc980675aebc1ca263c946e5019892d96e"}
+  ],
+  "precedence_observed":["global_requirement","local_nonconflicting_addition","unapproved_local_override -> global_fallback"],
+  "not_yet_exercised":"approved_local_override",
+  "note":"Cross-repo execution proves common registry identity, namespace isolation, non-conflicting addition behavior and fail-safe fallback. Approved override is intentionally not simulated; it requires a real hierarchy approval receipt."
+}
