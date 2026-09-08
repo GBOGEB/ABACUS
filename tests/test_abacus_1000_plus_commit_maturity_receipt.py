@@ -26,10 +26,11 @@ def test_receipt_records_actual_1000_plus_commit_state():
 
 def test_receipt_is_not_a_vanity_commit_goal():
     data = load_receipt()
+    controlled_meaning = " ".join(data["milestone_interpretation"]["controlled_meaning"].split())
 
     assert data["milestone_interpretation"]["observed_threshold_state"] == "EXCEEDED"
     assert data["controls"]["no_vanity_commit_goal"] is True
-    assert "not to add more\n    commits" in data["milestone_interpretation"]["controlled_meaning"]
+    assert "not to add more commits" in controlled_meaning
 
 
 def test_parent_maturity_does_not_grant_child_credit():
