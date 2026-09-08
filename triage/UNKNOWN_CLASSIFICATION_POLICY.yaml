@@ -1,0 +1,54 @@
+schema_version: "1.0"
+policy_id: TRIAGE-UNKNOWN-BURNDOWN-V3
+repository: GBOGEB/ABACUS
+baseline:
+  census_merge_sha: e7d8fb699d3d38999746ee2118739ff039152a02
+  tracked_files: 2692
+  awake_ratio: 0.216
+  unknown_files: 1587
+principle: UNKNOWN is classification debt, never deletion authority.
+dispositions:
+  PROMOTE_CANONICAL_ACTIVE:
+    evidence_required:
+      - referenced_by_current_main_runtime_or_ci
+      - or_named_by_repo_cadr_ocd_registry
+    effect: add the smallest defensible root to canonical_roots
+  RETAIN_ACTIVE_COMPATIBILITY:
+    evidence_required:
+      - current wrapper_or_adapter_calls_canonical_runtime
+      - or_current_ci_requires_compatibility_surface
+    effect: add root to reference_roots with ACTIVE_COMPATIBILITY
+  ARCHIVE_CANDIDATE:
+    evidence_required:
+      - versioned_or_superseded_surface
+      - no_current_main_runtime_or_ci_reference
+    effect: classify HISTORICAL; do not delete in this wave
+  DOCUMENTATION_ONLY:
+    evidence_required:
+      - prose_or_rendered_reference_without_execution_role
+    effect: documentation does not count as awake runtime
+  INVESTIGATE:
+    evidence_required:
+      - ambiguous_or_conflicting_signals
+    effect: remain UNKNOWN until explicit evidence exists
+reverse_loading_order:
+  - duplicate_runtime_stems
+  - active_ssot_candidates
+  - workflows
+  - bridge_adapter
+  - agentic
+  - runtime
+  - deployment
+hard_rules:
+  - never infer active status from filename alone
+  - never delete from census classification
+  - generated artifacts never count as canonical runtime
+  - versioned ABACUS trees require explicit current reference before promotion
+  - parent analytical assets never become child engineering authority
+victory:
+  metric: unknown_ratio
+  target_direction: decrease
+  guardrails:
+    - registry_missing_paths_must_not_increase
+    - duplicate_authority_must_not_increase
+    - formal_qps_engineering_closure_unchanged
