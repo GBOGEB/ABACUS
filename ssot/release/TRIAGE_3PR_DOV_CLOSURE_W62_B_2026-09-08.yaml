@@ -1,0 +1,36 @@
+schema_version: '0.1'
+document_id: TRIAGE_3PR_DOV_CLOSURE_W62_B_ABACUS
+snapshot_date: '2026-09-08'
+repository: GBOGEB/ABACUS
+mode: 3PR
+reverse_loading_priority:
+  P1: exact-RC census and release-critical blocker retirement
+  P2: fresh-checkout reproducibility and runtime self-smoke
+  P3: cross-binary/output-control parity receipt
+  P4: DOW runtime receipt returned to child
+  P5: zero-delta/adversarial QA
+  P6: branch protection, tag/release and publication smoke
+observed_baseline:
+  publish_readiness_pct: 65.5
+  architecture_readiness_pct: 92
+  rc_technical_readiness_pct: 76
+  checklist_effective: '21.5/32 = 67.2%'
+  dmaic_process_maturity_pct: 86
+  dmaic_control_pct: 59
+  pca_completeness_pct: 62
+metrics:
+  terminal_gates_total: 6
+  observed_complete: 1
+  partial: 3
+  open: 2
+  effective_score: '2.5/6 = 41.7%'
+  wave_a_cross_repo_target_pct: 88
+  wave_b_cross_repo_target_pct: 95
+victory_condition: >-
+  ABACUS receives the exact child/CODEX payload, proves runtime/output parity from a
+  fresh checkout, emits a typed DOW receipt, repeats zero-delta, and demonstrates
+  protected publishable release smoke without changing child truth.
+formal_effect:
+  engineering_delta: 0
+  compliance_delta: 0
+  terminal_dov: WITHHELD_UNTIL_OBSERVED_PASS
