@@ -1,5 +1,5 @@
 {
-  "schema_version": "W72-DOUBLE-3P-1.0.0",
+  "schema_version": "W72-DOUBLE-3P-1.0.1",
   "method": "six-lane double 3P; accepted evidence only; queued activity earns zero credit",
   "baseline": {
     "publish_readiness_score": 65.5,
@@ -19,9 +19,9 @@
     "terminal_strict_outstanding": 10,
     "terminal_equivalent_outstanding": 7.0,
     "full_checklist_pass": 19,
-    "full_checklist_partial": 11,
-    "full_checklist_open_blocked": 2,
-    "full_checklist_equivalent_outstanding": 7.5,
+    "full_checklist_partial": 10,
+    "full_checklist_open_blocked": 3,
+    "full_checklist_equivalent_outstanding": 8.0,
     "pca_operational_promotion": "PASS",
     "pca_release_grade_empirical_credit": "WITHHELD",
     "repeat_build_zero_delta": "PACKAGE_PASS_RELEASE_WIDE_PARTIAL",
@@ -34,7 +34,7 @@
     "terminal_strict_outstanding": -2,
     "terminal_equivalent_outstanding": -2.5,
     "full_checklist_strict_outstanding": -2,
-    "full_checklist_equivalent_outstanding": -2.5,
+    "full_checklist_equivalent_outstanding": -2.0,
     "pca_numeric_rows_retained": 3,
     "pca_distinct_source_shas": 3
   },
