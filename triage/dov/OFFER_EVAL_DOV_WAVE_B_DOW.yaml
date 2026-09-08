@@ -1,0 +1,37 @@
+schema: TRIAGE-OFFER-EVAL-DOV-1.0
+wave: B
+repo: GBOGEB/ABACUS
+role: DOW_runtime_analysis
+wave_a_pr: GBOGEB/ABACUS#1023
+child_wave_b_pr: GBOGEB/cryoplant-project#712
+keb_wave_b_pr: GBOGEB/CODEX#519
+terminal_runtime_gates:
+  - id: D1_COMPENDIUM_LOADS_LKT
+    status: PASS_LOCAL_STATIC_QA
+  - id: D2_COMPENDIUM_LOADS_ALAT
+    status: PASS_LOCAL_STATIC_QA
+  - id: D3_SINGULAR_BIDDER_SURFACE_SELECTION
+    status: PASS_LOCAL_STATIC_QA
+  - id: D4_FILTER_PROPAGATION
+    status: PASS_LOCAL_STATIC_QA
+  - id: D5_LOCAL_BUNDLE_LINK_RESOLUTION
+    status: PARTIAL
+  - id: D6_HASH_STALE_FAIL_CLOSED
+    status: OPEN
+  - id: D7_ZERO_DELTA_BROWSER_REPLAY
+    status: OPEN
+  - id: D8_RETURN_RECEIPT_TO_CHILD
+    status: OPEN
+score:
+  pass_local: 4
+  partial: 1
+  open: 3
+  effective_gate_fraction: 0.5625
+observed_baseline:
+  publish_readiness_percent: 65.5
+  checklist_percent: 67.2
+  control_percent: 59
+  pca_completeness_percent: 62
+runtime_dov: PARTIAL
+credit_delta: 0
+victory: all 8 runtime gates PASS with a hash-bound DOW receipt returned to the child
