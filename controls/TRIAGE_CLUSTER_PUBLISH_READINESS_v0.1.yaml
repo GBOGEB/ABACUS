@@ -1,0 +1,38 @@
+schema: TRIAGE-CLUSTER-PUBLISH-READINESS-0.1
+as_of: 2026-09-08
+cluster_publish_readiness: 67.0
+cluster_pxa_completeness: 58.0
+publish_decision: NO_GO
+repo_role: execution-scout-analysis-control-plane
+repo_local_issue: 1002
+repo_local_todo:
+  - close CI Workflow Governance on exact head
+  - retain R01/R02 measurement semantics
+  - emit exact-head agent/orchestration health receipt
+  - expose graph/logical-ID registry version
+  - expose CReq federation digest
+  - expose trigger coverage and control telemetry
+  - participate in synchronized three-repo green receipt
+pxa_components:
+  exact_head_governance: 78
+  graph_identity: 76
+  agent_execution: 88
+  orchestration_telemetry: 90
+  trigger_coverage: 66
+  federation_control: 70
+  synchronized_cluster_control: 40
+dmaic_control_boundary:
+  define: 100
+  measure: 95
+  analyze: 93
+  improve: 82
+  control: 57
+bt_priority:
+  governance_red_closure: 0.94
+  synchronized_cluster_receipt: 0.97
+  agent_trigger_mcp_receipt: 0.80
+  scheduler_scaling: 0.14
+credit_boundary:
+  engineering_credit_delta: 0
+  release_credit_from_registry_creation: 0
+  publish_rule: cluster_AND_gate
