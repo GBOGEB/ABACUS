@@ -1,0 +1,86 @@
+schema_version: creq-scope/0.1.0
+model: GLOBAL_WITH_APPROVED_LOCAL_OVERRIDE
+
+identity:
+  global:
+    format: CReq_%03d
+    meaning: repo_agnostic_canonical_coding_requirement
+    ownership: federation_or_global_governance
+    origin_may_be_any_repo: true
+    example: CReq_001
+  local:
+    format: CReq_<REPO>_%03d
+    meaning: repository_specific_requirement_or_approved_override
+    ownership: repository_governance
+    examples:
+      - CReq_ABACUS_001
+      - CReq_CODEX_001
+      - CReq_CRYOPLANT_001
+
+resolution:
+  default_rule: global_requirement_applies
+  local_addition:
+    allowed: true
+    condition: local requirement does not weaken or conflict with an applicable global requirement
+  local_override:
+    allowed: true
+    condition: override record is explicitly APPROVED by the required hierarchy
+    effect: approved local requirement takes precedence only inside its declared scope
+  unapproved_override:
+    effect: INVALID
+    fallback: global requirement remains effective
+  silent_shadowing: FORBIDDEN
+  id_reuse_across_scopes: FORBIDDEN
+
+required_local_override_fields:
+  - id
+  - scope
+  - repo
+  - overrides
+  - delta
+  - rationale
+  - risk
+  - requested_by
+  - approval_state
+  - approval_chain
+  - verification
+  - effective_from
+  - review_or_expiry
+
+approval:
+  states: [PROPOSED, REVIEWED, APPROVED, REJECTED, SUPERSEDED, EXPIRED]
+  hierarchy:
+    - level: 1
+      role: local_repo_owner
+      purpose: confirms local need and implementation feasibility
+    - level: 2
+      role: parent_cADR_or_cOCD_authority
+      purpose: confirms architectural/control consistency
+    - level: 3
+      role: global_CReq_authority
+      purpose: authorizes deviation from canonical requirement
+  rule: >-
+    A local override SHALL NOT become effective until all approval levels required by the
+    overridden global requirement are satisfied. The approval receipt SHALL be immutable
+    and traceable to PR/commit evidence.
+
+precedence:
+  order:
+    - approved_local_override
+    - global_requirement
+    - local_nonconflicting_addition
+  note: >-
+    'Local wins' means an explicitly approved scoped override wins inside that scope only.
+    It never mutates, renumbers, or weakens the global requirement for other repositories.
+
+traceability:
+  global_requirement_fields:
+    - origin_repo
+    - origin_prs
+    - adopted_by
+  local_requirement_fields:
+    - parent_global_requirement
+    - local_prs
+    - approval_receipt
+  invariant: >-
+    Discovery location is evidence provenance, not requirement ownership.
