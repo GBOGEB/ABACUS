@@ -1,0 +1,58 @@
+name: W67 Measured ID Pulse
+
+on:
+  pull_request:
+    paths:
+      - 'tools/w66_id_burndown_measure.py'
+      - '.github/workflows/w67-measured-id-pulse.yml'
+      - 'ssot/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  measured-pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute A-E census
+        run: |
+          OUT="architecture/w66/receipts/history/${SOURCE_SHA}"
+          python tools/w66_id_burndown_measure.py --out "$OUT"
+          test -s "$OUT/FEATURE_ROW.json"
+          for lane in A_registry_gap B_reference_gap C_consumer_penetration D_graph_orphan_drop E_lineage_evidence; do test -s "$OUT/${lane}.json"; done
+      - name: Validate numeric feature row
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('architecture/w66/receipts/history')/os.environ['SOURCE_SHA']/'FEATURE_ROW.json'
+          d=json.loads(p.read_text())
+          req=['registry_gap_rate','unresolved_reference_rate','consumer_penetration_rate','graph_drop_rate','lineage_gap_rate','total_population','total_open_backlog']
+          assert all(isinstance(d.get(k),(int,float)) for k in req), d
+          print(d)
+          PY
+      - name: Upload measured pulse
+        uses: actions/upload-artifact@v4
+        with:
+          name: w67-measured-id-pulse-${{ env.SOURCE_SHA }}
+          path: architecture/w66/receipts/history/${{ env.SOURCE_SHA }}/
+          if-no-files-found: error
+      - name: Retain measured history on PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add architecture/w66/receipts/history/${SOURCE_SHA}/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "data(w67): retain measured ID pulse ${SOURCE_SHA}"
+          git push origin HEAD:${{ github.head_ref }}

@@ -1,0 +1,48 @@
+wave: W67
+program: ABACUS_PULSE3_PCA_PROMOTION
+predecessor_pr: 1028
+predecessor_merge_sha: c83b8b5d50c01bb4c24780e763a522b9e810eddc
+observed_pipeline_state:
+  workflow_run_number: 3
+  workflow_run_id: 34190159992
+  workflow_conclusion: success
+  lane_artifacts: 5
+  convergence_artifact: 1
+  measured_numeric_observations: 0
+  pca_promotion: WITHHELD
+reason: pipeline pulse count is not equivalent to three comparable measured observations
+promotion_gate:
+  required_comparable_numeric_pulses: 3
+  required_distinct_source_shas: 3
+  same_lane_feature_schema: true
+  no_null_core_features: true
+  features:
+    - registry_gap_rate
+    - unresolved_reference_rate
+    - consumer_penetration_rate
+    - graph_drop_rate
+    - lineage_gap_rate
+  on_pass:
+    within_category_pca: ENABLED
+    cross_category_pca: ENABLED
+    worker_allocation: PCA_REVERSE_LOADING
+  on_fail:
+    within_category_pca: WITHHELD
+    cross_category_pca: WITHHELD
+    worker_allocation: RULE_BASED
+allocation_after_promotion:
+  unit: worker_pair
+  increment: 2
+  objective: maximize downstream unlock and evidence yield per worker while reducing governing PCA gap
+  constraints:
+    - do_not_allocate_to_largest_backlog_by_size_alone
+    - penalize_duplicate_work_ratio
+    - penalize_worse_AHT_without_yield_gain
+    - preserve_one_pair_for_convergence_retest
+  scale_up: two consecutive measured pulses improve yield_per_worker and do not worsen duplication
+  scale_down: two consecutive measured pulses worsen yield_per_worker or duplication
+claim_guards:
+  - THREE_WORKFLOW_RUNS_NE_THREE_MEASURED_PULSES
+  - PCA_NE_AUTHORITY
+  - PCA_NE_ENGINEERING_CREDIT
+  - ALLOCATION_RECOMMENDATION_NE_AUTOMATIC_MERGE_OR_RELEASE
