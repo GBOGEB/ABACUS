@@ -6,6 +6,7 @@ on:
       - 'tools/w64_total_repo_census.py'
       - 'tools/w64_census_reverse_pressure.py'
       - 'tools/w64_census_p3_receipt.py'
+      - 'governance/ABACUS_POINT_RELEASE_READINESS_v0.1.yaml'
       - '.github/workflows/w64-census-p3.yml'
   workflow_dispatch:
 
