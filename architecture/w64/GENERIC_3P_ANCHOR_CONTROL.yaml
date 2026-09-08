@@ -1,9 +1,19 @@
 schema_version: TRIAGE-3P-ANCHOR-CONTROL-1.0.0
 priority: HIGH
-purpose: promote stable metrics and PCA semantics into DMAIC Control anchors while watching for deviation and reopening Measure/Analyze when drift is detected
+purpose: >-
+  Promote stable metrics and PCA semantics into DMAIC Control anchors while
+  watching for deviation and reopening Measure/Analyze when drift is detected.
 
 anchor_lifecycle:
-  states: [MOVING, SETTLING, STABLE, CONTROLLED, WARNING, BREACH, DRIFT, REOPENED]
+  states:
+    - MOVING
+    - SETTLING
+    - STABLE
+    - CONTROLLED
+    - WARNING
+    - BREACH
+    - DRIFT
+    - REOPENED
   promote_to_stable_requires:
     - minimum_comparable_refreshes: 3
     - no_material_quality_regression: true
@@ -67,8 +77,10 @@ watchful_eye_execution:
     action:
       CONTROLLED: keep_defaults
       WARNING: increase_observation_depth_without_retraining
-      BREACH: freeze_selector_weight_changes_for_affected_anchor_and_open_diagnostic
-      DRIFT: reopen_measure_analyze_and_route_to_3PC_or_3PV_as_semantically_required
+      BREACH: >-
+        freeze_selector_weight_changes_for_affected_anchor_and_open_diagnostic
+      DRIFT: >-
+        reopen_measure_analyze_and_route_to_3PC_or_3PV_as_semantically_required
   every_5_valid_runs:
     collect:
       - rolling_speedup
@@ -88,22 +100,3 @@ performance_guard:
     - repeated_normalized_speed_gain
     - anchor_status_not_in_BREACH_or_DRIFT
     - quality_guards_pass
-
-responsibility:
-  ABACUS:
-    - own_anchor_registry
-    - compute_watch_receipts
-    - retain_per_run_history
-    - emit_drift_signal
-  CODEX:
-    - consume_drift_signal
-    - adjust_orchestration_depth_and_variant_chain
-    - cannot_redefine_engineering_truth
-  cryoplant-project:
-    - consume_authority_safe_control_deviation
-    - local_engineering_reentry_required_for_acceptance_change
-
-non_claims:
-  - stable_anchor_does_not_grant_release_credit
-  - PCA_or_drift_signal_does_not_override_preservation_gate
-  - automatic_retraining_is_not_allowed_on_single_excursion
