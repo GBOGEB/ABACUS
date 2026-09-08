@@ -1,0 +1,52 @@
+schema_version: "w65-federated-discovery/1.0.0"
+document_id: W65_TRI_REPO_DISCOVERY_ROLLUP
+state: CONTROLLED_DISCOVERY_ONLY
+repository: GBOGEB/ABACUS
+role: analytics_orchestrator
+members:
+  - repo: GBOGEB/cryoplant-project
+    role: child_domain_evidence_producer
+  - repo: GBOGEB/CODEX
+    role: semantic_bridge_router
+  - repo: GBOGEB/ABACUS
+    role: analytics_orchestrator
+method_contract: [A_top_down, B_bottom_up, C_graph_frontier, D_orphan_drop, E_convergence]
+rollup_dimensions:
+  - authority_penetration
+  - canonical_association
+  - graph_frontier_coverage
+  - orphan_rate
+  - terminal_drop_rate
+  - unresolved_id_count
+  - consumer_penetration
+  - runtime_penetration
+  - evidence_lineage_coverage
+  - release_receipt_coverage
+cross_repo_edges:
+  - cryoplant:evidence -> CODEX:semantic_route
+  - CODEX:semantic_route -> ABACUS:analytics_rollup
+  - ABACUS:reverse_loading -> CODEX:challenge_route
+  - CODEX:challenge_route -> cryoplant:child_disposition
+federated_funnel:
+  stages: [domain_source, child_registry, semantic_bridge, federation_graph, runtime_consumer, product_artifact, retained_evidence]
+  rule: measure_survival_and_drop_at_each_transition
+pca:
+  minimum_comparable_pulses: 3
+  status_before_minimum: WITHHELD
+  feature_scope: repo_local_plus_cross_repo
+reverse_loading:
+  rank_by:
+    - downstream_nodes_unblocked
+    - hard_gate_weight
+    - evidence_authority_gain
+    - runtime_penetration_gain
+    - repair_cost_inverse
+  prohibit:
+    - score_only_framework_work
+    - worker_scaling_without_yield_gain
+    - authority_promotion_from_graph_inference
+continuous_operation:
+  local_pulses_independent: true
+  federation_rollup_after_each_available_pulse: true
+  preserve_missing_peer_as_explicit_gap: true
+  longitudinal_receipts: true
