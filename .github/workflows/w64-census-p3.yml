@@ -1,0 +1,56 @@
+name: W64 Census P3 Receipt
+
+on:
+  pull_request:
+    paths:
+      - 'tools/w64_total_repo_census.py'
+      - 'tools/w64_census_reverse_pressure.py'
+      - 'tools/w64_census_p3_receipt.py'
+      - '.github/workflows/w64-census-p3.yml'
+  workflow_dispatch:
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run P1 census
+        run: |
+          mkdir -p architecture/w64/receipts
+          python tools/w64_total_repo_census.py \
+            --root . \
+            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json
+      - name: Run corrected P2 reverse pressure
+        run: |
+          python tools/w64_census_reverse_pressure.py \
+            --census architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json \
+            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json
+      - name: Emit P3 receipt
+        run: |
+          python tools/w64_census_p3_receipt.py \
+            --p1 architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P1.json \
+            --p2 architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json \
+            --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json
+      - name: Show P3 status
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json')
+          r = json.loads(p.read_text())
+          print(json.dumps({
+              'status': r['status'],
+              'release_credit': r['release_credit'],
+              'w64_dov': r['w64_dov'],
+              'p2_blocker_count': r['p2']['blocker_count'],
+              'p2_warning_count': r['p2']['warning_count'],
+              'finding_types': r['p2']['finding_types'],
+          }, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w64-census-p1-p2-p3-receipts
+          path: architecture/w64/receipts/
