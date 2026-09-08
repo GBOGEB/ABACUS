@@ -1,0 +1,26 @@
+schema: qps.w63.binary-receipt-quant-gate/v1
+status: PENDING_EXECUTION
+child_wave: W63
+purpose: >-
+  Recompute W62/W63 completion only from observed receipts and validate board metrics, source pins, binary-family completeness,
+  member denominators and repeat-build parity before any 10/10 DoV claim.
+expected_transition:
+  baseline: {gates_pass: 4, gates_total: 10, weighted_points: 40, weighted_total: 100}
+  R01_LKT: {gates_pass: 5, weighted_points: 55}
+  R02_ALAT: {gates_pass: 6, weighted_points: 70}
+  R03_COMPARE: {gates_pass: 7, weighted_points: 80}
+  R04_RENDER: {gates_pass: 8, weighted_points: 90}
+  R05_PARITY: {gates_pass: 9, weighted_points: 95}
+  R06_ZERO_DELTA: {gates_pass: 10, weighted_points: 100}
+checks:
+  - {id: Q63_01, assertion: each_binary_family_scores_only_if_all_required_artifacts_and_hashes_exist}
+  - {id: Q63_02, assertion: primary_group_count_is_at_most_6_for_each_HTML}
+  - {id: Q63_03, assertion: LKT_and_ALAT_requirement_denominators_are_unchanged_by_navigation_grouping}
+  - {id: Q63_04, assertion: comparison_contains_no_cross_bidder_selected_value_transfer}
+  - {id: Q63_05, assertion: board_summary_metrics_equal_declared_source_metrics}
+  - {id: Q63_06, assertion: repeat_build_normalized_semantic_hashes_match_first_build}
+  - {id: Q63_07, assertion: unexplained_binary_or_metric_delta_blocks_100_percent_DoV}
+return_contract:
+  result_enum: [PASS, FAIL, DEFER]
+  required_fields: [parent_head_sha, recomputed_gate_count, recomputed_weighted_score, denominator_check, parity_deltas, recommendation]
+formal_effect: {engineering_delta: 0, negotiation_delta: 0, score_credit_delta: 0}
