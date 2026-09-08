@@ -1,0 +1,93 @@
+name: W66 ABACUS ID Burndown Split
+
+on:
+  pull_request:
+    paths:
+      - 'architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml'
+      - 'tools/w64_discovery_graph.py'
+      - 'ssot/**'
+      - 'architecture/w64/**'
+  workflow_dispatch: {}
+  schedule:
+    - cron: '15 5 * * 1,4'
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  split-plan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [A_registry_gap, B_reference_gap, C_consumer_penetration, D_graph_orphan_drop, E_lineage_evidence]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate lane contract
+        run: |
+          test -f architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep "${{ matrix.lane }}:" architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+      - name: Emit SHA-bound lane receipt
+        run: |
+          mkdir -p architecture/w66/receipts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          lane = '${{ matrix.lane }}'
+          receipt = {
+              'schema_version': 'W66-ID-BURNDOWN-LANE-1.0.0',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'source_sha': os.environ['SOURCE_SHA'],
+              'lane': lane,
+              'state': 'EXECUTION_SURFACE_READY',
+              'numerator': None,
+              'denominator': None,
+              'completion_pct': None,
+              'new_findings': None,
+              'retired_findings': None,
+              'net_backlog_delta': None,
+              'claim_guard': 'plan/measurement surface only; no authority promotion',
+          }
+          out = Path(f'architecture/w66/receipts/{lane}.json')
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w66-id-${{ matrix.lane }}
+          path: architecture/w66/receipts/${{ matrix.lane }}.json
+          if-no-files-found: error
+
+  convergence:
+    needs: split-plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate roll-up contract
+        run: |
+          grep 'declared' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'evidence_lineaged' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+          grep 'reverse_loading_formula' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
+      - name: Emit convergence receipt
+        run: |
+          mkdir -p architecture/w66/receipts
+          cat > architecture/w66/receipts/ID_BURNDOWN_CONVERGENCE.json <<EOF
+          {
+            "schema_version": "W66-ID-BURNDOWN-CONVERGENCE-1.0.0",
+            "source_sha": "$SOURCE_SHA",
+            "lanes": 5,
+            "status": "SPLIT_EXECUTION_READY",
+            "stable_pca_loadings": "WITHHELD_UNTIL_MEASURED_PULSES",
+            "worker_scaling": "HOLD_7_PLUS_7_UNTIL_YIELD_IMPROVES"
+          }
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w66-id-burndown-convergence
+          path: architecture/w66/receipts/ID_BURNDOWN_CONVERGENCE.json
+          if-no-files-found: error
