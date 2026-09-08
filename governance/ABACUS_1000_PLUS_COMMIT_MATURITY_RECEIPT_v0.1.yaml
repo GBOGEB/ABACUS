@@ -1,0 +1,87 @@
+schema_version: "0.1"
+document_id: ABACUS_1000_PLUS_COMMIT_MATURITY_RECEIPT
+status: INITIAL_CONTROLLED_RECEIPT
+issue: 981
+snapshot_date: 2026-09-08
+repository:
+  full_name: GBOGEB/ABACUS
+  default_branch: main
+  observed_main_head: 10c0ce67f7ba2eb67f474f061bc675be4139ce62
+  observed_main_head_message: "metrics: update DMAIC metrics for 6e3dca14e762b995c468021944864b34d7a9547c"
+  observed_main_commit_count: 2786
+  commit_count_method:
+    type: github_api_pagination
+    evidence:
+      - page_2786_per_page_1_exists
+      - page_2787_per_page_1_empty
+  initial_commit: b549ad1d8696d019ceb4cc73c659660f91258e0c
+milestone_interpretation:
+  simple_threshold: "1000 commits"
+  observed_threshold_state: EXCEEDED
+  controlled_meaning: >-
+    ABACUS has passed the simple commit-count milestone. The current milestone is therefore not to add more
+    commits, but to prove that accumulated DOW/runtime/dashboard/orchestration capability is controlled,
+    reproducible, and useful as parent evidence without self-promoting child engineering credit.
+receipt_fields:
+  source_generated_split:
+    status: TODO_MEASURE
+    required: true
+    note: quantify source, generated, output, binary, fixture and dashboard/metrics auto-commit surfaces
+  open_control_issues:
+    status: SEE_LINKED_ISSUES
+    linked:
+      queue_fanout_control: 776
+      clean_clone_reproducibility: 635
+      ci_semantic_reproducibility_legacy_audit: 638
+  ci_queue_health:
+    status: TODO_OBSERVE_CURRENT
+    required: true
+    note: distinguish runner capacity from workflow arrival/fan-out before repair claims
+  clean_clone_status:
+    status: BLOCKED_OR_PENDING_LOCAL_EVIDENCE
+    linked_issue: 635
+  qps_parent_return_status:
+    status: TODO_BIND_CURRENT_DOW_RECEIPTS
+    required: true
+    guard: parent_findings_are_derived_until_child_disposition
+  legacy_binary_status:
+    status: TODO_CLASSIFY
+    required: true
+    dispositions_allowed:
+      - KEEP
+      - MIGRATE
+      - DELETE
+      - REGENERATE
+  parent_self_promotion_guard:
+    status: PASS
+    rule: parent repository maturity grants zero child engineering, compliance, negotiation, or QPS formal credit by itself
+  release_readiness:
+    status: WARN
+    reason: maturity receipt exists, but measurement, current CI health, clean-clone proof and legacy classification remain open
+controls:
+  no_vanity_commit_goal: true
+  no_child_credit_from_parent_maturity: true
+  no_qps_engineering_credit: true
+  no_qps_negotiation_credit: true
+  no_child_compliance_credit: true
+  no_history_rewrite_without_explicit_separate_governance: true
+  stale_parent_results_require_revalidation: true
+definition_of_done:
+  - current_main_commit_count_and_head_sha_retained
+  - source_generated_history_health_split_measured
+  - ci_queue_fanout_condition_observed_and_mitigated_or_blocked
+  - clean_clone_status_proven_or_explicitly_blocked
+  - dow_parent_return_reproducibility_status_recorded
+  - legacy_binary_security_maintenance_classified
+  - zero_child_credit_boundary_preserved
+credit_boundary:
+  github_repo_maturity_credit: possible
+  qps_engineering_closure_credit: 0
+  qps_negotiation_credit: 0
+  child_compliance_credit: 0
+next_actions:
+  - measure_source_generated_split
+  - inspect_current_ci_queue_health_against_issue_776
+  - bind_clean_clone_status_to_issue_635
+  - bind_semantic_reproducibility_and_legacy_audit_to_issue_638
+  - produce_release_readiness_update_after_measurement
