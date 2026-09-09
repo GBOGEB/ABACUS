@@ -1,0 +1,20 @@
+schema: triage-fresh-main-dov/1.0.0
+repo: GBOGEB/ABACUS
+role: DOW_DERIVED_ANALYSIS
+fresh_main_sha: ea169a90122ed73a8d70d129bc347b9a13c02496
+w62_merge_sha: 3a906876c0d16cba9b7112b0084c10fb093a0d14
+tuple_id: TRIAGE-W62-001
+tuple_path: triage/census/roundtrip/TRIAGE_W62_IMMUTABLE_TUPLE.json
+tuple_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+fresh_main_content_verified: true
+dow_return_receipt_present: true
+zero_delta_receipt_present: true
+finding_delta_count: 0
+tuple_delta_bytes: 0
+cross_repo_expected_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+observed_gate_state:
+  G3_exact_input_digest: PASS
+  G4_exact_output_return_binding: PASS
+  G7_zero_delta_second_pass: PASS
+terminal_dov_candidate: PASS_PENDING_W63_EXACT_HEAD_CI_AND_THREE_REPO_MERGE
+engineering_closure_credit: NONE
