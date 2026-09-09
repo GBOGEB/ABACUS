@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "wave": "W87",
+  "subject": "LLDB-DAP Swift Federation",
+  "lane": "DOW",
+  "status": "PASS",
+  "semantic_owner": "CODEX/KEB",
+  "dow_owner": "ABACUS/DOW",
+  "child_authority": "GBOGEB/cryoplant-project",
+  "keb_receipt": {
+    "repo": "GBOGEB/CODEX",
+    "source_pr": 555,
+    "source_head_sha": "d87df050d2d9c91f35fd5d1c565cd0a2d5b6e9f3",
+    "merge_commit_sha": "0400c642643121bace6f13ae50ecfbec0ce1ee86",
+    "semantic_validation": "PASS",
+    "runtime_federation_ci": "PASS",
+    "validate_federation": "PASS"
+  },
+  "upstream_chain": {
+    "w84_keb_pr": 552,
+    "w84_dow_pr": 1063,
+    "w84_child_pr": 769,
+    "w85_semantic_repair_pr": 554,
+    "w86_semantic_residual_pr": 555
+  },
+  "predicates": [
+    "exact KEB head is immutable and identified",
+    "dedicated semantic-validation passed on exact KEB head",
+    "Runtime Federation CI passed on exact KEB head",
+    "Validate Federation passed on exact KEB head",
+    "DOW receipt does not grant child engineering or compliance authority"
+  ],
+  "disposition": "READY_FOR_CHILD_REENTRY",
+  "engineering_credit": 0,
+  "compliance_credit": 0,
+  "formal_score_delta": 0,
+  "negotiation_score_delta": 0
+}
