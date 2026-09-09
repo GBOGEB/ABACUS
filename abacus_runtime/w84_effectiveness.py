@@ -2,7 +2,8 @@
 """W84 observed-effectiveness scorer for 3P3/3PR cycles.
 
 No recommendation receives effectiveness credit without observed before/after
-counters. Debug-spine fields are optional telemetry and carry no authority.
+counters and a completed exact-SHA parent chain. Debug-spine fields are optional
+telemetry and carry no authority.
 """
 from __future__ import annotations
 
@@ -24,6 +25,12 @@ def score(cycle: dict) -> dict:
     missing = [key for key in REQUIRED if key not in cycle]
     if missing:
         return {"status": "DEFER_MISSING_OBSERVED_METRICS", "missing": missing}
+    if cycle.get("parent_chain_complete") is not True:
+        return {
+            "status": "DEFER_PARENT_CHAIN_INCOMPLETE",
+            "required": "exact child + KEB + DOW merge/re-entry lineage",
+            "engineering_credit_delta": 0,
+        }
     effort = float(cycle["execution_effort"])
     if effort <= 0:
         return {"status": "DEFER_INVALID_EFFORT", "execution_effort": effort}

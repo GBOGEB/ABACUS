@@ -1,0 +1,44 @@
+schema_version: "0.1"
+wave: W84
+cycle: BFLOW-C1
+status: PENDING_PARENT_CHAIN_COMPLETION
+privacy: PUBLIC_REDACTED_COUNTERS_ONLY
+
+lineage:
+  child_repo: GBOGEB/cryoplant-project
+  child_head_sha: a468db9da1f5b3714423e99cf9f1ecea4f0d9a4b
+  child_atom: LB-02-BFLOW
+  child_gate_digest_sha256: d3a9f74cfc52b7ee39c1cc4247c47221ce5417a12c91178a16a0c8ebc9b91855
+  child_package_digest_sha256: 830dfd6fe133f364c0362d3e36520387831b9d5bd075315d1d0ca6b0b9482a16
+  keb_return: PENDING_W84_BFLOW_CYCLE1_CODEX_PR
+  dow_return: THIS_PR_PENDING_MERGE
+  child_reentry: PENDING
+
+observed_metrics_candidate:
+  parent_chain_complete: false
+  execution_effort: 1
+  accepted_atoms_before: 0
+  accepted_atoms_after: 1
+  dov_before: 77.78
+  dov_after: 77.78
+  recommendations_executed: 1
+  recommendations_successful: 1
+  retries: 0
+  successful_repaired_tasks: 0
+  residual_before: 6
+  residual_after: 5
+
+expected_after_exact_sha_reentry:
+  evidence_yield: 1.0
+  dov_yield: 0.0
+  recommendation_hit_rate: 1.0
+  pressure_reduction: 1.0
+  p0c_cycle_count: 1
+  p0c_victory_required_cycles: 2
+
+controls:
+  - scorer_must_return_DEFER_PARENT_CHAIN_INCOMPLETE_until_exact_merge_SHAs_are_bound
+  - no_private_bidder_locator_hash_or_numeric_source_value_in_public_parent
+  - evidence_yield_is_not_formal_engineering_credit
+  - engineering_credit_delta_zero
+  - adaptive_scheduler_remains_disabled_until_two_comparable_positive_cycles
