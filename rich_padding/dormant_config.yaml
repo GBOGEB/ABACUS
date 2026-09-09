@@ -1,0 +1,76 @@
+version: 1.0.0
+status: reconstructed_from_executable_contract
+source_of_truth:
+  primary: tests/test_dormant_file_management.py
+  secondary:
+    - tests/PHASE2B_IMPLEMENTATION_SUMMARY.md
+    - tests/PHASE2B_DEVOPS_INTEGRATION_EXECUTIVE_SUMMARY.md
+    - tests/TEST_ALIGNMENT_PHASE2_WEEK3.md
+  note: >-
+    Historical repository documentation referenced this configuration, but no
+    commit history for the exact path is available. This file therefore
+    reconstructs only the semantics asserted by the surviving executable tests
+    and documentation. It does not claim recovery of the historical 422-line
+    file.
+
+detection:
+  thresholds:
+    inactive_days: 30
+    warning_days: 60
+    critical_days: 90
+    archive_days: 180
+  file_types:
+    code:
+      - "*.py"
+    config:
+      - "*.yaml"
+      - "*.yml"
+      - "*.json"
+    docs:
+      - "*.md"
+    tests:
+      - "test_*.py"
+      - "*_test.py"
+  exclusions:
+    directories:
+      - .git
+      - __pycache__
+      - .venv
+      - venv
+      - build
+      - dist
+    files:
+      - "*.pyc"
+      - "*.pyo"
+      - "*.tmp"
+
+ranking:
+  weights:
+    recency: 0.35
+    reference_density: 0.25
+    test_coverage: 0.20
+    documentation: 0.20
+  tiers:
+    tier1_critical:
+      score_min: 0.85
+      score_max: 1.0
+      priority: HIGH
+      action: integrate_immediately
+    tier2_important:
+      score_min: 0.70
+      score_max: 0.84
+      priority: MEDIUM
+      action: integrate_soon
+    tier3_supporting:
+      score_min: 0.50
+      score_max: 0.69
+      priority: LOW
+      action: integrate_opportunistic
+
+integration:
+  allowed_actions:
+    - integrate_immediately
+    - integrate_soon
+    - integrate_opportunistic
+  fail_closed_below_score: 0.50
+  preserve_provenance: true
