@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "wave": "W84",
+  "lane": "DOW",
+  "owner": "GBOGEB/ABACUS",
+  "subject": "LLDB-DAP Swift Federation",
+  "upstream_semantic_owner": "GBOGEB/CODEX",
+  "child_authority": "GBOGEB/cryoplant-project",
+  "required_languages": ["Swift", "Python", "JavaScript", "TypeScript"],
+  "required_modes": ["launch", "attach"],
+  "required_events": [
+    "session.created",
+    "federation.profile.bound",
+    "dap.initialized",
+    "dap.request.normalized",
+    "breakpoint.bound",
+    "execution.paused",
+    "render.snapshot",
+    "session.closed"
+  ],
+  "evidence_predicates": [
+    "canonical_control_adapter == lldb-dap",
+    "backbone.language == Swift",
+    "semantic_owner == CODEX/KEB",
+    "github.repository is non-empty",
+    "github.commit_sha is non-empty",
+    "all required events occur exactly once per governed proof session",
+    "launch requires program",
+    "attach requires process_id",
+    "unsupported language fails closed",
+    "unsupported mode fails closed"
+  ],
+  "dow_disposition": "PASS only from observed exact-head evidence; structure alone is PARTIAL",
+  "score_credit": 0,
+  "engineering_credit": 0
+}
