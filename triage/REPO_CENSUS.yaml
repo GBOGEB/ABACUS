@@ -1,4 +1,4 @@
-schema_version: "1.0"
+schema_version: "1.1"
 repository: GBOGEB/ABACUS
 role: ANALYTICAL_RUNTIME
 purpose: DOW engineering/scientific analysis, DMAIC, PCA/BT, analytical findings, handover and multi-agent execution
@@ -14,11 +14,18 @@ canonical_roots:
   - {path: feedback, state: CANONICAL_ACTIVE}
   - {path: ssot, state: CANONICAL_ACTIVE}
   - {path: scripts, state: CANONICAL_ACTIVE}
-historical_or_compatibility_roots:
-  - {path: ABACUS-v031, state: HISTORICAL}
+  - {path: tests, state: CANONICAL_ACTIVE, evidence: current_main_CI_executes_repository_tests}
+  - {path: .github/workflows, state: CANONICAL_ACTIVE, evidence: current_main_GitHub_Actions_control_plane}
+  - {path: qps_contract_canonicalization, state: CANONICAL_ACTIVE, evidence: current_Zod_contract_mirror}
+  - {path: qps_slide_reviewer, state: CANONICAL_ACTIVE, evidence: current_Zod_clarification_validator}
+reference_roots:
   - {path: ABACUS-v032, state: ACTIVE_COMPATIBILITY}
   - {path: ABACUS-UNIFIED, state: ACTIVE_COMPATIBILITY}
   - {path: ABACUS_V21_DEPLOYMENT_PACKAGE, state: ACTIVE_COMPATIBILITY}
+historical_roots:
+  - {path: ABACUS-v031, state: HISTORICAL}
+documentation_roots:
+  - {path: docs, state: DOCUMENTATION_ONLY}
 architecture:
   node_classes: [work_unit, tuple, phase, cluster, analysis, finding, metric, evidence, artifact, handover, agent, task, model, ssot_item, runtime_state, PCA_feature, BT_priority]
   edge_classes: [feeds, analyzes, scores, challenges, depends_on, recommends, hands_over, validates, replays, improves, tracks, produces_finding, returns_to]
@@ -29,6 +36,12 @@ bridge:
   knowledge: local_mcp/knowledge_integration_v2.3.py
 validation:
   zod: [qps_contract_canonicalization/src/schema.ts, qps_slide_reviewer/lib/qps-contract-clarification-schema.ts]
+census_controls:
+  unknown_is_debt_not_deletion_authority: true
+  compatibility_counts_as_awake: true
+  historical_does_not_count_as_awake: true
+  documentation_does_not_count_as_runtime: true
+  next_reverse_loading: [active_ssot_candidates, duplicate_runtime_stems, deployment, root_level_runtime]
 authority:
   outputs_are_findings_not_child_decisions: true
   may_mutate_child_payload: false
