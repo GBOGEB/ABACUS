@@ -1,0 +1,67 @@
+schema_version: '1.0'
+document_id: TRIAGE_DOW_SSOT_ROLE_REGISTRY_W90
+status: CONTROLLED_CLASSIFICATION
+repo: GBOGEB/ABACUS
+baseline:
+  census_pr: 1075
+  census_merge_sha: f3440b3d9ad575504a51fea6cf4bbf3e0c7e3341
+  active_ssot_candidates: 33
+rules:
+  AUTHORITY: governed data or scoped SSOT content; authority is limited to the declared scope
+  REGISTRY: index, manifest, hierarchy, or registry describing SSOT objects
+  VIEW: generated/review projection or builder consuming SSOT
+  VALIDATOR: code/schema/test that validates SSOT but is not SSOT authority
+  DEPLOYMENT_BINDING: deployment configuration that mounts or references SSOT
+  RECEIPT: immutable release, federation, PCA, or DoV evidence object
+classifications:
+  AUTHORITY:
+    - ssot/clarification_register.yaml
+    - ssot/contractual_gap_register.yaml
+    - ssot/rtm_reference_matrix.yaml
+    - ssot/semantic_traceability.yaml
+    - ssot/ssot_items.yaml
+    - ssot/ssot_style.json
+  REGISTRY:
+    - ssot/index.json
+    - ssot/manifest.yaml
+    - ssot/review_artifact_manifest.yaml
+    - qplant/energy_exergy/rev1_7/SSOT_INDEX.yaml
+    - qplant/energy_exergy/rev1_7/data/project_ssot_hierarchy_rev1_7.csv
+  VIEW:
+    - analytics/qps_cost_estimate_roundtrip/ssot/README.md
+    - qps_contract_canonicalization/ssot/review_projection.json
+    - scripts/build_qps_ssot_views.py
+    - scripts/qa_qps_ssot_views.py
+    - qplant/docs/phase3/SSOT_LINEAGE_REPORT.md
+  VALIDATOR:
+    - DMAIC_V3/core/ssot_resolver.py
+    - DMAIC_V3/tests/test_ssot_resolver.py
+    - scripts/validate_ssot_style.py
+    - tests/test_validate_ssot_style.py
+    - models/qps_line_s/ssot_tables.py
+  DEPLOYMENT_BINDING:
+    - qplant/deployment/k8s/configmap-ssot-production.yaml
+    - qplant/deployment/k8s/configmap-ssot.yaml
+    - qplant/deployment/k8s/deployment-with-ssot.yaml
+    - qplant/deployment/k8s/ssot-validation-init-container.yaml
+  RECEIPT:
+    - federation/qps/QPS_FED_W05_PARENT_SSOT_MANIFEST_v0.1.yaml
+    - ssot/qps/W57_3PR_A_DOW_COMPLETION_CHALLENGE_v0.1.yaml
+    - ssot/qps/W57_3PR_B_TERMINAL_MEASUREMENT_v0.1.yaml
+    - ssot/qps_w04_dow_qa_actions.yaml
+    - ssot/release/TRIAGE_3PR_DOV_CLOSURE_W62_A_2026-09-08.yaml
+    - ssot/release/TRIAGE_3PR_DOV_CLOSURE_W62_B_2026-09-08.yaml
+    - ssot/triage/W68_3PR_C_MEASURED_PCA_PULSE.yaml
+    - ssot/triage/W69_MEASURED_PCA_PULSE_2.yaml
+controls:
+  candidate_count: 33
+  classified_count: 33
+  unresolved_candidate_count: 0
+  authority_count: 6
+  competing_authority_claims: 0
+  note: multiple scoped AUTHORITY objects are not duplicates unless they claim the same scope
+  engineering_credit_delta: 0
+next_reverse_load:
+  - duplicate_active_runtime_stems
+  - deployment_docker_state
+  - root_level_runtimes
