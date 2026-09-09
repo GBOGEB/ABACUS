@@ -1,0 +1,44 @@
+{
+  "schema_version": "0.1",
+  "document_id": "QPS_W93_PVPS_R5_DOW_GATE",
+  "wave": "W93",
+  "receipt_type": "DOW_ANALYSIS_RETURN_GATE",
+  "status": "WAITING_KEB_ELIGIBLE_SOURCE_PAYLOAD",
+  "child_authority": "GBOGEB/cryoplant-project",
+  "residual": "R5_PVPS_POWER",
+  "target_package_power_kW": 83.0,
+  "tolerance_percent": 1.0,
+  "acceptance_band_kW": [82.17, 83.83],
+  "known_non_closing_values": {
+    "installed_motor_nameplate_sum_kW": 74.0,
+    "bidder_package_electrical_kW": 83.0,
+    "bidder_cooling_kW": 75.0
+  },
+  "required_reconstruction_inputs": [
+    "active_2K_OP_pump_count",
+    "selected_helium_article_or_variant",
+    "drive_frequency_or_load_basis",
+    "same_point_suction_pressure",
+    "same_point_discharge_pressure",
+    "same_point_helium_mass_flow",
+    "per_pump_electrical_input",
+    "package_auxiliary_power_split",
+    "cooling_split_and_boundary",
+    "helium_specific_OEM_power_capacity_basis"
+  ],
+  "challenge_rules": [
+    "reconstruct package power from source-bound inputs without using 83 kW as an algebraic input",
+    "report motor and auxiliary contributions separately",
+    "preserve electrical versus thermal cooling boundaries",
+    "do not infer active count from installed count",
+    "do not substitute generic gas curves for helium-specific evidence",
+    "do not impute missing values as zero",
+    "emit sensitivity only for source-bound uncertainty ranges"
+  ],
+  "PASS": "independent same-boundary reconstruction is reproducible and within 82.17-83.83 kW",
+  "REJECT_CANDIDATE": "complete eligible reconstruction is reproducible but outside 82.17-83.83 kW",
+  "DEFER": "one or more essential reconstruction inputs are absent or ineligible",
+  "child_disposition_required": true,
+  "engineering_credit_delta": 0,
+  "negotiation_credit_delta": 0
+}
