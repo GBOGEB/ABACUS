@@ -1,0 +1,27 @@
+schema: TRIAGE-OFFER-EVAL-DOV-1.0
+wave: W088
+repo: GBOGEB/ABACUS
+role: DOW_runtime_analysis
+scope: offer_eval_zero_delta_replay
+upstream:
+  keb_b6_branch: GBOGEB/CODEX:triage/w88-offer-eval-b6-keb-receipt
+  prior_dow_pr: GBOGEB/ABACUS#1031
+terminal_gate:
+  id: B7_ZERO_DELTA_REPLAY
+  status: READY_FOR_EXACT_HEAD_EXECUTION
+  required_assertions:
+    - identical_source_tuple_replays_without_semantic_delta
+    - html_navigation_state_is_stable
+    - bidder_partition_is_unchanged
+    - artifact_manifest_digest_is_stable
+    - stale_or_mismatched_receipt_fails_closed
+    - no_parent_self_promotion
+replay_receipt:
+  requires_keb_b6_pass: true
+  bind_exact_head: true
+  return_to_child_only_after_pass: true
+credit_delta:
+  engineering: 0
+  compliance: 0
+  negotiation: 0
+victory: exact-head zero-delta replay PASS with a hash-bound DOW receipt eligible for child re-entry
