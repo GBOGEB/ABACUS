@@ -1,0 +1,9 @@
+{
+  "moniker":"3PR","scheme":"3P3","pulse":"P3_DOW","bidder":"LKT",
+  "status":"PASS_BOUNDED_QA_PRIORITIZATION_NO_FORMAL_CREDIT",
+  "qa":{"findings":16,"graph_nodes":54,"graph_edges":81,"decision_queue_rows":12,"pdf_rendered_pages":7},
+  "prioritization":"narrow_to_highest_consequence_owner_decisions_first",
+  "guards":["reviewed_is_not_compliant","deviation_is_not_automatic_NOK","binary_generation_is_not_engineering_credit"],
+  "formal":{"engineering":"70/90 = 77.78%","negotiation":"0/20","delta":0},
+  "recommendation":"REQUIRE_HUMAN_REVIEW"
+}
