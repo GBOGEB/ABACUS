@@ -1,21 +1,23 @@
-"""
-ANALYSIS Agent: artifact_analyzer
-Version: 0.0.0-stub
-Status: STUB - Needs implementation
+"""Legacy-path compatibility launcher for the canonical artifact analyzer.
 
-This is a stub agent created by the Agent Manager.
-Implement the actual agent logic here.
+Canonical runtime: ``local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.py``.
+This file deliberately owns no agent implementation.
 """
 
-__version__ = "0.0.0-stub"
+from pathlib import Path
+import runpy
 
-class ArtifactAnalyzerAgent:
-    """Stub implementation for artifact_analyzer agent"""
+CANONICAL_AGENT = (
+    Path(__file__).resolve().parents[3]
+    / "local_mcp"
+    / "agents"
+    / "analysis_artifact_analyzer_v2.3_OPTIMIZED.py"
+)
 
-    def __init__(self, config=None):
-        self.config = config or {}
-        self.version = __version__
 
-    def execute(self, *args, **kwargs):
-        """Execute agent logic - TO BE IMPLEMENTED"""
-        raise NotImplementedError(f"{self.__class__.__name__} is a stub and needs implementation")
+def main() -> None:
+    runpy.run_path(str(CANONICAL_AGENT), run_name="__main__")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,37 @@
+schema_version: '1.0'
+document_id: TRIAGE_ABACUS_RUNTIME_CONSOLIDATION_W91
+status: IMPLEMENTED_PARTIAL_WITH_DISCRIMINATION
+baseline_duplicate_stem_groups: 19
+policy:
+  one_canonical_implementation_per_runtime_role: true
+  compatibility_shims_may_not_own_business_logic: true
+  harmless_basename_collisions_are_not_consolidation_debt: true
+  deletion_requires_call_graph_and_CI_evidence: true
+implemented:
+  - family: dmaic_config
+    canonical: DMAIC_V3/config.py
+    compatibility: src/dmaic/config.py
+    action: replaced divergent stub defaults with import-only compatibility surface
+    evidence: DMAIC_V3 runtime and docs import DMAIC_V3.config
+  - family: artifact_analyzer_agent
+    canonical: local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.py
+    compatibility: DMAIC_V3/local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.py
+    action: replaced NotImplemented stub with canonical launcher
+    evidence: root agent is full implementation; DMAIC_V3 copy was explicit 0.0.0-stub
+harmless_collision_classes:
+  - package___init__
+  - nextjs_route_handlers
+  - pytest_conftest
+  - language_launcher_pair_py_sh
+remaining_strong_candidates:
+  - family: remaining_DMAIC_V3_local_mcp_agent_mirrors
+    action: migrate each stub/mirror to canonical root agent or prove unique role
+  - family: metrics_surfaces
+    action: establish collector/model/view ownership before shim or merge
+  - family: models_surfaces
+    action: establish domain model versus serialization/view ownership
+  - family: self_smoke
+    action: retain one implementation and make alternate entrypoints delegate
+controls:
+  engineering_credit_delta: 0
+  no_delete_this_wave: true
