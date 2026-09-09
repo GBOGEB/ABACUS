@@ -1,0 +1,66 @@
+schema: dow-ctaxonomy-display-profile/1.0.0
+status: RUNTIME_RENDER_PROFILE
+wave: W94
+repo: GBOGEB/ABACUS
+role: DOW_RUNTIME_RENDER_AUTHORITY
+upstream:
+  child_ssot: GBOGEB/cryoplant-project:ctaxonomy/CTAXONOMY_SEMANTIC_SUPPORT_v1.yaml
+  keb_contract: GBOGEB/CODEX:governance/ctaxonomy/CTAXONOMY_SEMANTIC_SUPPORT_CONTRACT_v1.yaml
+
+controls:
+  preserve_canonical_taxonomy_id: true
+  friendly_label_is_projection_only: true
+  alias_is_navigation_not_identity: true
+  runtime_cannot_redefine_definition: true
+  runtime_cannot_promote_engineering_disposition: true
+  unknown_term_fails_closed: true
+  engineering_credit_delta: 0
+
+friendly_labels:
+  PLOC: Pressure Location
+  BFLOW: B-Line Flow
+  GEO: Hydraulic Geometry
+  GEO-A: Pipe Identity / Section Geometry
+  GEO-B: Routing / Local-Loss Geometry
+  THERM: Thermal State / Input
+  THERM-A: Distributed / Discrete Heat Load
+  THERM-B: Governed Helium Property Field
+
+render_fields:
+  - taxonomy_id
+  - canonical_term
+  - definition
+  - status
+  - authority
+  - aliases
+  - abbreviations_used
+  - source_ref
+
+runtime_resolution:
+  input_precedence: [canonical_id, exact_alias, casefold_alias]
+  output_always_contains_canonical_id: true
+  ambiguous_alias: FAIL
+  unknown_alias: FAIL
+  deprecated_term: WARN_AND_RESOLVE_TO_REPLACEMENT
+
+surfaces:
+  html:
+    glossary_tooltip: true
+    canonical_id_visible: true
+    aliases_searchable: true
+  reports:
+    first_use_expansion_for_abbreviations: true
+    glossary_appendix_supported: true
+  telemetry:
+    emit_resolution_event: true
+    event_name: ctaxonomy.term.resolved
+    fields: [input_term, canonical_id, resolution_mode, status]
+
+p1_scheduler_guard:
+  taxonomy_resolution_may_improve_task_matching: true
+  adaptive_scheduling_enabled_by_this_profile: false
+  requires_observed_effectiveness_gate: true
+
+p2_debug_spine_guard:
+  debug_events_may_reference_taxonomy_ids: true
+  debug_runtime_may_create_taxonomy_ids: false
