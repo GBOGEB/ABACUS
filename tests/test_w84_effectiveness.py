@@ -5,8 +5,9 @@ def test_missing_observation_defers():
     assert score({})["status"] == "DEFER_MISSING_OBSERVED_METRICS"
 
 
-def test_positive_cycle_scores_without_scheduler_or_engineering_credit():
-    cycle = {
+def positive_cycle():
+    return {
+        "parent_chain_complete": True,
         "execution_effort": 2,
         "accepted_atoms_before": 0,
         "accepted_atoms_after": 2,
@@ -20,7 +21,18 @@ def test_positive_cycle_scores_without_scheduler_or_engineering_credit():
         "residual_after": 4,
         "debug_spine": {"runtime.error": 1},
     }
+
+
+def test_parent_chain_must_complete_before_effectiveness_pass():
+    cycle = positive_cycle()
+    cycle["parent_chain_complete"] = False
     receipt = score(cycle)
+    assert receipt["status"] == "DEFER_PARENT_CHAIN_INCOMPLETE"
+    assert receipt["engineering_credit_delta"] == 0
+
+
+def test_positive_cycle_scores_without_scheduler_or_engineering_credit():
+    receipt = score(positive_cycle())
     assert receipt["status"] == "PASS_POSITIVE_EFFECTIVENESS"
     assert receipt["evidence_yield"] == 1.0
     assert receipt["pressure_reduction"] == 2.0
