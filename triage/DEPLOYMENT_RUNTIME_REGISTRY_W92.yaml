@@ -1,0 +1,63 @@
+schema_version: '1.0'
+document_id: TRIAGE_ABACUS_DEPLOYMENT_RUNTIME_REGISTRY_W92
+status: CONTROLLED_DEPLOYMENT_DISCRIMINATION
+principles:
+  - one canonical deployment surface per runtime product
+  - environment compose overlays may coexist when they target the same canonical image
+  - historical/versioned Dockerfiles are not current deployment authority
+  - no deployment path may imply QPS child engineering authority
+runtime_products:
+  abacus_repository_service:
+    canonical_dockerfile: Dockerfile
+    canonical_compose: docker-compose.yml
+    role: repository-level lightweight service and health surface
+    state: CANONICAL_ACTIVE
+    observations:
+      - python_3_11_slim
+      - port_8000
+      - current command is python http.server rather than DMAIC analytical runtime
+    modernization_required:
+      - replace generic static server command only after an executable ABACUS application entrypoint is proven
+      - remove pip-install-or-true fail-open behavior after dependency contract is validated
+  qplant_dashboard_service:
+    canonical_dockerfile: qplant/deployment/Dockerfile
+    canonical_compose: qplant/deployment/docker-compose.yml
+    environment_overlays:
+      - qplant/deployment/docker-compose.staging.yml
+      - qplant/deployment/docker-compose.production.yml
+    orchestration:
+      - qplant/deployment/k8s/
+    role: QPLANT dashboard/config/monitoring application
+    state: CANONICAL_ACTIVE
+    observations:
+      - multi_stage_build
+      - tests_in_builder_stage
+      - non_root_runtime
+      - ports_8100_8200
+      - uvicorn_dashboard_entrypoint
+  abacus_v032_snapshot:
+    dockerfile: ABACUS-v032/Dockerfile
+    role: versioned compatibility snapshot
+    state: ACTIVE_COMPATIBILITY
+    promotion_forbidden: true
+  abacus_v21_package:
+    dockerfile: ABACUS_V21_DEPLOYMENT_PACKAGE/Dockerfile
+    role: packaged v2.1 deployment snapshot
+    state: ACTIVE_COMPATIBILITY
+    promotion_forbidden: true
+collision_disposition:
+  Dockerfile:
+    disposition: RETAIN_ROLE_SEPARATED
+    rationale: root ABACUS service and qplant dashboard are different products; versioned/package copies are compatibility surfaces
+  docker_compose:
+    disposition: RETAIN_CANONICAL_PLUS_ENVIRONMENT_OVERLAYS
+    rationale: staging and production compose files are environment overlays, not competing runtime implementations
+controls:
+  engineering_credit_delta: 0
+  delete_files_this_wave: false
+  require_ci_build_receipt_before_promotion: true
+next:
+  - prove root Docker image build and health contract
+  - prove qplant image build and compose config
+  - classify versioned deployment packages out of active census denominator where governance permits
+  - reconcile workflow callers to canonical deployment surfaces
