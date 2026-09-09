@@ -1,0 +1,51 @@
+{
+  "schema_version": "0.2",
+  "document_id": "QPS_W93R_PVPS_R5_DOW_GATE",
+  "wave": "W93R",
+  "receipt_type": "DOW_ANALYSIS_RETURN_GATE",
+  "status": "WAITING_KEB_ELIGIBLE_SOURCE_PAYLOAD",
+  "child_authority": "GBOGEB/cryoplant-project",
+  "child_active_pr": 811,
+  "keb_corrective_pr": 575,
+  "predecessor_dow_pr": 1081,
+  "residual": "R5_PVPS_POWER",
+  "target_package_power_kW": 83.0,
+  "tolerance_percent": 1.0,
+  "acceptance_band_kW": [82.17, 83.83],
+  "required_reconstruction_inputs": [
+    "active_2K_OP_pump_count",
+    "selected_helium_article_or_variant",
+    "source_bound_drive_type",
+    "same_point_suction_pressure",
+    "same_point_suction_temperature",
+    "same_point_discharge_pressure",
+    "same_point_helium_mass_flow",
+    "per_pump_electrical_input",
+    "package_auxiliary_power_split",
+    "helium_specific_OEM_power_capacity_basis"
+  ],
+  "conditional_reconstruction_input": "frequency_or_vfd_load_basis_only_if_variable_speed_source_proven",
+  "challenge_input": "cooling_split_and_boundary",
+  "drive_semantics": {
+    "current_source_state": "DISPUTED_SOURCE_REQUIRED",
+    "owner_working_basis": "FIXED_SPEED",
+    "owner_working_basis_is_not_bidder_fact": true
+  },
+  "challenge_rules": [
+    "reconstruct package power without using 83 kW as an algebraic input",
+    "report motor and auxiliary contributions separately",
+    "preserve electrical versus thermal cooling boundaries",
+    "require suction temperature before same-point PASS or REJECT_CANDIDATE",
+    "do not infer active count from installed count",
+    "do not promote owner fixed-speed basis as bidder evidence",
+    "do not substitute generic gas curves for helium-specific evidence",
+    "do not impute missing values as zero",
+    "emit sensitivity only for source-bound uncertainty ranges"
+  ],
+  "PASS": "independent same-boundary reconstruction is reproducible and within 82.17-83.83 kW",
+  "REJECT_CANDIDATE": "complete eligible reconstruction is reproducible but outside 82.17-83.83 kW",
+  "DEFER": "one or more essential reconstruction inputs are absent or ineligible",
+  "child_disposition_required": true,
+  "engineering_credit_delta": 0,
+  "negotiation_credit_delta": 0
+}
