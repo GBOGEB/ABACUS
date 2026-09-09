@@ -1,0 +1,57 @@
+schema_version: "0.1"
+document_id: W58_RTM595_DOW_INDEPENDENT_CHALLENGE
+child_source:
+  pr: "GBOGEB/cryoplant-project#773"
+  head_sha: 2a5724eca734f8c6b0f14ce0bd32af4a2b469119
+keb_challenge:
+  pr: "GBOGEB/CODEX#557"
+  head_sha: 3f1f4cdee49edddcf7519c9a5dc807919be3e68e
+authority: DOW_INDEPENDENT_ANALYSIS_DISPOSITION
+
+independent_findings:
+  - id: DOW-RTM595-01
+    disposition: ACCEPT_SOURCE_LIMITATION
+    finding: >-
+      Current LKT evidence positively establishes that statistically reliable CC MTBF is unavailable and
+      non-turbine MTBF values are assumption-based; this is evidence of uncertainty, not evidence of zero failure rate.
+  - id: DOW-RTM595-02
+    disposition: DEFER_COMMON_CAUSE_RATE
+    finding: >-
+      No source-supported common-cause probability/rate can be calculated from the current offer because
+      shared-dependency exposure and occurrence data are not supplied.
+  - id: DOW-RTM595-03
+    disposition: DEFER_TABLE10_ALLOCATION
+    finding: >-
+      The bidder's 8000-hour versus ~8760-hour question shows that the Table-10 reference period itself is unresolved;
+      allocation cannot be normalized until the contractual period is fixed.
+  - id: DOW-RTM595-04
+    disposition: DEFER_NON_OVERLAP
+    finding: >-
+      Component/stage failure and shared power, control, cooling, instrumentation, header and maintenance events
+      cannot be demonstrated non-overlapping from current evidence.
+
+minimum_authoritative_return:
+  reference_period:
+    required: true
+    content: "accepted Table-10 reference period and conversion basis"
+  dependency_matrix:
+    required: true
+    content: "CC stages versus shared power/control/cooling/instrumentation/header/maintenance dependencies"
+  preserved_state:
+    required: true
+    content: "highest cryogenic state preserved for each independent and shared failure class, with hold/recovery"
+  non_overlap_rule:
+    required: true
+    content: "explicit event attribution rule preventing component and common-mode double counting"
+  quantified_allocation:
+    required: true
+    content: "source-supported rate/probability or justified bounded treatment; zero imputation prohibited"
+  acceptance_route:
+    required: true
+    content: "named verification/acceptance evidence for Table-10 handoff"
+
+recommendation_to_keb: DEFER
+reason: CURRENT_BIDDER_EVIDENCE_DEEPENED_BUT_COMMON_CAUSE_AND_TABLE10_HANDOFF_NOT_CLOSED
+engineering_credit_delta: 0
+formal_engineering: "70/90"
+negotiation: "0/20"
