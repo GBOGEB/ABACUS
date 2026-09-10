@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema_version: "0.2"
 rollup_id: ABACUS-1102-RUNTIME-HEALTH
 seed: {repo: GBOGEB/ABACUS, pr: 1102, merge_sha: 8841dc701a1896233273413c81d7c88d268b9498}
