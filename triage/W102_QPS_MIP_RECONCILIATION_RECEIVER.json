@@ -1,0 +1,37 @@
+{
+  "schema": "abacus-qps-mip-reconciliation-receiver/v1",
+  "classification": "EVIDENCE_ONLY_RECONCILIATION_RECEIVER",
+  "pulse": "W102",
+  "source_repo": "GBOGEB/cryoplant-project",
+  "source_branch": "triage/w102-mip-reconcile-burndown",
+  "source_head": "022d9bd5218da9d3f19e8543a71d2dffa0533920",
+  "upstream_docx_head": "26e48114cbdc4f1b4d97405be39f95620e970239",
+  "upstream_docx_run": 34430378055,
+  "upstream_handoff_sha256": "911e906302ee08b9972bba8e71d4d8e30ee135e96edc2211bca5c6e92d730d6d",
+  "qps_rtm_semantic_sha256": "fef323a92108106a5b88edb86c6fe1ad3e9348a5d06134f7a0597775ba2084db",
+  "semantic_as_of": "2026-08-27T21:29:29Z",
+  "observed_at": "2026-09-10T05:27:00Z",
+  "counts": {
+    "prior_source_unmatched": 729,
+    "newly_bound": 4,
+    "ambiguous": 12,
+    "residual_source_unmatched": 713,
+    "prior_canonical_unmatched": 694,
+    "new_unique_canonical_bound": 4,
+    "residual_canonical_unmatched": 690
+  },
+  "mip": {
+    "modernize": "consume a normalized exact-match delta instead of a hardcoded denominator shortcut",
+    "innovate": "treat structural collisions as their own backlog family instead of binary match/no-match",
+    "perpetuate": "validate recursive arithmetic, temporal ordering and exact upstream lineage on every pulse"
+  },
+  "next_backlog": {
+    "priority_1": "12 ambiguous clause-8.1.5 atoms across RTM-659/660",
+    "priority_2": "713 source-unmatched atoms",
+    "priority_3": "690 canonical-unmatched RTMs",
+    "promotion_rule": "only exact or independently unique structural evidence may reduce the denominator"
+  },
+  "authority_effect": "NONE",
+  "compliance_credit": false,
+  "release_credit": false
+}
