@@ -1,0 +1,13 @@
+schema_version: '1.0'
+mip_id: MIP-PILOT-002
+role: DOW_HEALTHY_CONTROL
+repository: GBOGEB/ABACUS
+observed_head: 7cefc4330a3e765fd2843de4ebeb950b76564f56
+sampled_workflows: 12
+successful_workflows: 12
+failed_workflows: 0
+observed_pass_rate: 1.0
+interpretation: healthy exact-head control lane for comparison against repair candidates; no child promotion authority
+credit:
+  engineering_delta: 0
+  release_delta: 0
