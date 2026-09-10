@@ -1,0 +1,37 @@
+schema_version: "0.1"
+document_id: W104_CC_R01_R08_DOW_EXECUTION
+wave: W104
+role: ABACUS_DOW
+child_contract: QPS_W104_CC_R01_R08_ROUNDTRIP
+status: EXECUTION_REQUEST
+atom_set: [CC-R01, CC-R02, CC-R03, CC-R04, CC-R05, CC-R06, CC-R07, CC-R08]
+required_execution_per_atom:
+  - resolve_bound_source_locator_or_mark_SOURCE_MISSING
+  - classify_evidence_as_original_derived_or_provisional
+  - test_common_cause_and_non_overlap_predicate
+  - test_same_operating_boundary
+  - identify_duplicate_credit_neighbors
+  - emit_atom_disposition_candidate
+receipt:
+  type: REAL_DOW_EXECUTION_RECEIPT
+  must_include:
+    - exact_source_commit
+    - all_8_atom_results
+    - executed_count
+    - pass_fail_defer_counts
+    - source_gaps
+    - receipt_payload_sha256
+  fail_closed_if:
+    - executed_count_is_not_8
+    - any_atom_is_silently_dropped
+    - missing_common_cause_data_is_treated_as_zero
+    - provisional_independent_stage_rate_is_substituted_for_common_cause
+email_provenance:
+  EMAIL_ORIG: authoritative_only_when_raw_file_hash_and_headers_are_bound
+  EMAIL_REFINED: DERIVED_ANALYSIS_ONLY
+  guard: never_promote_refined_email_to_original_source
+credit_guard:
+  engineering_delta: 0
+  negotiation_delta: 0
+  parent_has_no_child_score_authority: true
+return_to: GBOGEB/cryoplant-project
