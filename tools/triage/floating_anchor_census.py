@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 """Census files that are not visibly linked to a governing anchor.
 
-The scanner is intentionally path-first and dependency-free.  It does not
+The scanner is intentionally path-first and dependency-free. It does not
 claim semantic orphan status; it produces a conservative triage queue for the
 next evidence-linking pulse.
 """
@@ -10,8 +9,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 ENGINE_RE = re.compile(
     r"(engine|orchestrator|pipeline|runner|agent|mcp|dmaic|sprint|"
@@ -28,6 +27,7 @@ DEFAULT_EXCLUDES = {
     ".pytest_cache",
     ".mypy_cache",
 }
+LINKED_PREFIXES = ("triage/", "federation/", "architecture/", "contracts/")
 
 
 def iter_files(root: Path) -> Iterable[Path]:
@@ -43,13 +43,7 @@ def iter_files(root: Path) -> Iterable[Path]:
 def linked_by_path(path: str, anchor: str) -> bool:
     lower = path.lower()
     anchor = anchor.lower()
-    return (
-        anchor in lower
-        or lower.startswith("triage/")
-        or lower.startswith("federation/")
-        or lower.startswith("architecture/")
-        or lower.startswith("contracts/")
-    )
+    return anchor in lower or lower.startswith(LINKED_PREFIXES)
 
 
 def classify_path(path: str) -> str:
@@ -70,7 +64,8 @@ def build_report(root: Path, repo: str, anchor: str) -> dict:
     anchor_named = [path for path in files if anchor.lower() in path.lower()]
     engine_like = [path for path in files if ENGINE_RE.search(path)]
     linked_engine_like = [path for path in engine_like if linked_by_path(path, anchor)]
-    floating = [path for path in engine_like if path not in set(linked_engine_like)]
+    linked_set = set(linked_engine_like)
+    floating = [path for path in engine_like if path not in linked_set]
 
     buckets: dict[str, list[str]] = {}
     for path in floating:
