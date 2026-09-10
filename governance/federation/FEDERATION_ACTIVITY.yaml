@@ -1,0 +1,19 @@
+schema: gbogeb-federation-activity/1.0.0
+as_of: '2026-09-10T06:52:00+02:00'
+repo: GBOGEB/ABACUS
+classification: CORE_ACTIVE
+federation_role: DOW_RUNTIME_ORCHESTRATION_METRICS_AND_PROJECTION_AUTHORITY
+last_wave: W98_QPS_GLOSSARY_3PC_3PR
+recent_activity: [{pr: 1091, state: MERGED, role: glossary_projection_and_census}]
+mip_state: {modernize: ACTIVE, innovate: ACTIVE, perpetuate: ACTIVE_WITH_RUNTIME_DEBT}
+three_p_capability: {P1_source_atom: false, P2_integration_graph: true, P3_evidence_control: true}
+runtime_proof: {state: PASS_FOR_W98, yaml_run: 34438146342, pytest_matrix_run: 34438146344}
+source_authority: {state: RUNTIME_MEASUREMENT_ONLY, may_mutate_qps_disposition: false}
+produces_receipts: [dow_projection_receipt, runtime_metrics_receipt]
+consumes_receipts: [child_contract, keb_semantic_receipt]
+current_blocker: broad CI runtime dependency missing Python github module; W98 projection gate itself passed
+next_victory: repair only the exact missing-github dependency boundary and re-run affected broad CI without reopening W98 disposition
+federation_dependencies:
+  upstream: [GBOGEB/cryoplant-project, GBOGEB/CODEX]
+  downstream: [GBOGEB/pipeline-automation-hub]
+controls: {engineering_credit: false, compliance_credit: false, negotiation_credit: false}
