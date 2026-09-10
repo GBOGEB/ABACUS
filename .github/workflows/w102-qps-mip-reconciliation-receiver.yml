@@ -1,0 +1,41 @@
+name: W102 QPS MIP Reconciliation Receiver
+on:
+  pull_request:
+    paths:
+      - 'triage/W102_QPS_MIP_RECONCILIATION_RECEIVER.json'
+      - '.github/workflows/w102-qps-mip-reconciliation-receiver.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate recursive receiver contract
+        run: |
+          python - <<'PY'
+          import json,re
+          d=json.load(open('triage/W102_QPS_MIP_RECONCILIATION_RECEIVER.json'))
+          c=d['counts']
+          assert c['prior_source_unmatched']==729
+          assert c['newly_bound']==4
+          assert c['ambiguous']==12
+          assert c['residual_source_unmatched']==713
+          assert c['prior_source_unmatched']==c['newly_bound']+c['ambiguous']+c['residual_source_unmatched']
+          assert c['prior_canonical_unmatched']==694
+          assert c['new_unique_canonical_bound']==4
+          assert c['residual_canonical_unmatched']==690
+          assert c['prior_canonical_unmatched']==c['new_unique_canonical_bound']+c['residual_canonical_unmatched']
+          for k in ('source_head','upstream_docx_head'):
+              assert re.fullmatch(r'[a-f0-9]{40}',d[k]), (k,d[k])
+          for k in ('upstream_handoff_sha256','qps_rtm_semantic_sha256'):
+              assert re.fullmatch(r'[a-f0-9]{64}',d[k]), (k,d[k])
+          assert d['semantic_as_of'] < d['observed_at']
+          assert d['authority_effect']=='NONE' and d['compliance_credit'] is False and d['release_credit'] is False
+          assert d['next_backlog']['priority_1'].startswith('12 ambiguous')
+          print('PASS W102 ABACUS MIP reconciliation receiver',c)
+          PY
