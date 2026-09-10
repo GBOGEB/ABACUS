@@ -1,0 +1,47 @@
+name: W99 R1 Reconciliation Return
+
+on:
+  pull_request:
+    paths:
+      - 'triage/W99_R1_757x722_RECONCILIATION_RETURN.json'
+      - '.github/workflows/w99-r1-reconciliation-return.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-return:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact hashes, denominators and authority ceiling
+        run: |
+          python - <<'PY'
+          import json,re
+          p='triage/W99_R1_757x722_RECONCILIATION_RETURN.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['schema']=='qps-docx-rtm-reconciliation-return/v1'
+          assert d['classification']=='MEASURED_RECONCILIATION_NOT_COMPLIANCE'
+          assert d['source_docx_merge_sha']=='6c1f88778c55ebd20c81db5080fc6b5df0e81016'
+          assert d['qps_workbook_sha256']=='00a5f0ed3ded00620a33edd045706ba5fb9a67b5fb7fe63c495305f911c43ccb'
+          assert d['qps_rtm_semantic_sha256']=='fef323a92108106a5b88edb86c6fe1ad3e9348a5d06134f7a0597775ba2084db'
+          for k in ('canonical_materialisation_sha256','source_extraction_sha256','reconciliation_receipt_sha256'):
+              assert re.fullmatch(r'[a-f0-9]{64}', d[k]), (k,d[k])
+          c=d['counts']
+          assert c['source_atoms']==757
+          assert c['canonical_atoms']==722
+          assert c['EXACT_TEXT']==28
+          assert c['EXPLICIT_ID']==0
+          assert c['AMBIGUOUS']==0
+          assert c['UNMATCHED']==729
+          assert c['unique_canonical_matched']==28
+          assert c['canonical_unmatched']==694
+          assert c['EXACT_TEXT']+c['EXPLICIT_ID']+c['AMBIGUOUS']+c['UNMATCHED']==c['source_atoms']
+          assert d['authority_effect']=='NONE'
+          assert d['compliance_credit'] is False and d['release_credit'] is False
+          print('PASS W99 measured reconciliation return')
+          PY
