@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const SourceClass = z.enum([
+  "CANONICAL_SOURCE_AUTHORITY",
   "SSOT",
   "CONTRACT_REQUIREMENT_MIRROR",
   "SOURCE_DOCUMENT",
@@ -14,6 +15,7 @@ export const SourceClass = z.enum([
 ]);
 
 export const InputMode = z.enum(["PRODUCTION", "COMPARATIVE", "TEST", "SAMPLE"]);
+export const AuthorityClass = z.enum(["CANONICAL_SOURCE_AUTHORITY", "SSOT"]);
 
 export const SourceBinding = z.object({
   id: z.string().min(1),
@@ -27,13 +29,16 @@ export const SourceBinding = z.object({
 });
 
 export const SourceAuthorityContract = z.object({
-  schemaVersion: z.literal("1.0.0"),
+  schemaVersion: z.literal("1.1.0"),
   mode: InputMode,
   canonicalAuthority: z.object({
     logicalId: z.string().min(1),
-    sourceClass: z.literal("SSOT"),
+    sourceClass: AuthorityClass,
     pathOrLogicalRef: z.string().min(1),
     authorityUse: z.literal("AUTHORITATIVE"),
+    authorityReceipt: z.string().min(1),
+    sourceSha256: z.string().regex(/^[a-f0-9]{64}$/),
+    semanticSha256: z.string().regex(/^[a-f0-9]{64}$/),
   }),
   localProjection: z.object({
     path: z.string().min(1),
@@ -48,22 +53,16 @@ export const SourceAuthorityContract = z.object({
 
   for (const source of value.sources) {
     if (nonAuthority.has(source.sourceClass) && source.authorityUse === "AUTHORITATIVE") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `${source.id}: non-authoritative source class cannot be authoritative`,
-      });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${source.id}: non-authoritative source class cannot be authoritative` });
     }
     if (nonAuthority.has(source.sourceClass) && source.productionCreditAllowed) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `${source.id}: fixture/view/history source cannot earn production credit`,
-      });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${source.id}: fixture/view/history source cannot earn production credit` });
     }
     if (source.sourceClass === "CONTRACT_REQUIREMENT_MIRROR" && source.authorityUse !== "SUPPORTING_ONLY") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `${source.id}: contract mirror must remain SUPPORTING_ONLY`,
-      });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${source.id}: contract mirror must remain SUPPORTING_ONLY` });
+    }
+    if (source.sourceClass === "CONTRACT_REQUIREMENT_MIRROR" && source.productionCreditAllowed) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${source.id}: contract mirror cannot directly earn production credit` });
     }
   }
 
@@ -74,6 +73,9 @@ export const SourceAuthorityContract = z.object({
         code: z.ZodIssueCode.custom,
         message: "production authority must come from canonicalAuthority only; source bindings are supporting/non-authoritative",
       });
+    }
+    if (!value.canonicalAuthority.authorityReceipt) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "production canonical authority requires an authority receipt" });
     }
   }
 });
