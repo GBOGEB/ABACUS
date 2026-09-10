@@ -5,7 +5,14 @@ origin_authority: GBOGEB/cryoplant-project
 semantic_validator: GBOGEB/CODEX
 
 3pc_runtime_projection:
-  preserve_dimensions: [authority, scope, lexical_type, source_exactness, collision_type, contract_relevance, disposition]
+  preserve_dimensions:
+    - authority
+    - scope
+    - lexical_type
+    - source_exactness
+    - collision_type
+    - contract_relevance
+    - disposition
   outward_views:
     - QPS_CONTRACT_GLOSSARY
     - QPLANT_SUBSYSTEM_GLOSSARY
@@ -38,7 +45,9 @@ semantic_validator: GBOGEB/CODEX
 challenge_assertions:
   - QPS scope delta is visibly rendered
   - PID homonym is visibly rendered with context
-  - ALAT and LKT partitions never expose each other in contractor-safe outward views
+  - >-
+    ALAT and LKT partitions never expose each other in contractor-safe
+    outward views
   - general-related terms are marked non-contractual
   - no rendered view changes child authority or engineering score
 
