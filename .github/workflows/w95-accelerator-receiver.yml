@@ -1,0 +1,36 @@
+name: W95 Accelerator Receiver Acceptance
+on:
+  pull_request:
+    paths:
+      - 'tools/triage/accept_accelerator_atom_contract.py'
+      - 'triage/fixtures/accelerator_abacus_mapping_w95.json'
+      - '.github/workflows/w95-accelerator-receiver.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  receiver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact source and target fixture binding
+        run: >-
+          python tools/triage/accept_accelerator_atom_contract.py
+          --payload triage/fixtures/accelerator_abacus_mapping_w95.json
+          --expected-source-sha 98a414088a7141d03291064731a19b5554d1819f
+          --expected-target-sha c4bb2173df5df7cdb27fc43a2d5f700ee8997c28
+          --output triage/receipts/W95_ACCELERATOR_RECEIVER.json
+      - name: Assert evidence-only disposition
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('triage/receipts/W95_ACCELERATOR_RECEIVER.json'))
+          assert d['status']=='ACCEPTED_AS_EVIDENCE_ONLY'
+          assert d['authority_effect']=='NONE'
+          assert d['compliance_credit'] is False
+          assert d['release_credit'] is False
+          print('PASS receiver',d['mapping_rows'])
+          PY
