@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "mode": "PRODUCTION",
+  "canonicalAuthority": {
+    "logicalId": "QPS_MASTER_01_OFFER_RTM",
+    "sourceClass": "SSOT",
+    "pathOrLogicalRef": "GBOGEB/cryoplant-project::ocd-adr/40_implementation/QPS_CURRENT_MASTERS_REGISTRY_v0.1.yaml#MASTER_01_OFFER_RTM",
+    "authorityUse": "AUTHORITATIVE"
+  },
+  "localProjection": {
+    "path": "qps_contract_canonicalization/ssot/review_projection.json",
+    "sourceClass": "GENERATED_VIEW",
+    "authorityUse": "NON_AUTHORITATIVE"
+  },
+  "sources": [
+    {
+      "id": "SRC-SCK-CONTRACT-MIRROR",
+      "sourceClass": "CONTRACT_REQUIREMENT_MIRROR",
+      "pathOrLogicalRef": "QPS_Contract_mirror_DOCX(3).pdf",
+      "sha256": "34654694099e74419c4d95c0e7bfa12aa2f698244ad6037cad8fb606fa36595d",
+      "authorityUse": "SUPPORTING_ONLY",
+      "productionCreditAllowed": false,
+      "freshnessState": "CURRENT",
+      "notes": "137-page registered contract/Addendum-II mirror. Source text/location support only; never SSOT and never bidder evidence."
+    },
+    {
+      "id": "LOCAL-REVIEW-PROJECTION",
+      "sourceClass": "GENERATED_VIEW",
+      "pathOrLogicalRef": "qps_contract_canonicalization/ssot/review_projection.json",
+      "authorityUse": "NON_AUTHORITATIVE",
+      "productionCreditAllowed": false,
+      "freshnessState": "CURRENT",
+      "notes": "Validated projection of governed state; directory placement does not confer SSOT authority."
+    },
+    {
+      "id": "LEGACY-HARDCODED-QPS-FIXTURES",
+      "sourceClass": "HARDCODED_FIXTURE",
+      "pathOrLogicalRef": "legacy seeded/hardcoded requirement and engineering inputs",
+      "authorityUse": "NON_AUTHORITATIVE",
+      "productionCreditAllowed": false,
+      "freshnessState": "STALE",
+      "notes": "Retained only for regression, comparison and sample use. Must not seed production canonical state."
+    }
+  ]
+}
