@@ -1,0 +1,30 @@
+{
+  "receipt_id": "DOW-LLDB-DAP-SWIFT-DOCKER-RUNNER-MCP-CONSUMER-001",
+  "schema_version": "0.1",
+  "created_utc": "2026-09-10T00:00:00Z",
+  "consumer_repo": "GBOGEB/ABACUS",
+  "producer_repo": "GBOGEB/CODEX",
+  "producer_branch": "wave/lldb-dap-swift-keb-receipt",
+  "producer_base_sha": "a1aeda135a9ed2629456db5b00e53569185400d3",
+  "expected_receipt_path": "receipts/keb/LLDB_DAP_SWIFT_DOCKER_RUNNER_MCP_RECEIPT.json",
+  "surface_scope": ["lldb-dap", "swift-debug", "docker", "runner", "mcp"],
+  "dow_consumption_state": "WAITING_FOR_WORKFLOW_RECEIPT",
+  "promotion_rule": {
+    "accept_when": [
+      "producer receipt exact_head_sha matches observed producer commit",
+      "producer receipt probe_status is ACCEPT",
+      "producer receipt dov_status is PASS",
+      "producer receipt real_probe_steps_gt_zero is true"
+    ],
+    "reject_when": [
+      "producer receipt probe_status is REJECT",
+      "exact_head_sha mismatch",
+      "receipt missing required minimum victory fields"
+    ],
+    "defer_when": [
+      "producer workflow has not emitted receipt yet",
+      "producer receipt reports missing runner capability"
+    ]
+  },
+  "current_disposition": "DEFER"
+}
