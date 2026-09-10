@@ -1,0 +1,20 @@
+{
+  "schema": "accelerator-abacus-mapping/v0.1",
+  "source_repo": "GBOGEB/cryogenic-accelerator-workspace",
+  "source_sha": "98a414088a7141d03291064731a19b5554d1819f",
+  "target_repo": "GBOGEB/ABACUS",
+  "target_sha": "c4bb2173df5df7cdb27fc43a2d5f700ee8997c28",
+  "mapping_rows": [
+    {
+      "source_requirement_id": "TEST-SRC-001",
+      "source_requirement_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_artifact": "TEST_ONLY",
+      "target_test_or_evidence": "receiver_contract_smoke",
+      "relation_type": "tests_contract_shape",
+      "disposition": "DEFER"
+    }
+  ],
+  "authority": "TEST_ONLY",
+  "release_credit": false,
+  "compliance_credit": false
+}
