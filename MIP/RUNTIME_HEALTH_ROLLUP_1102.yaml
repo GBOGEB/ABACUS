@@ -1,11 +1,37 @@
-schema_version: "0.1"
+schema_version: "0.2"
 rollup_id: ABACUS-1102-RUNTIME-HEALTH
 seed: {repo: GBOGEB/ABACUS, pr: 1102, merge_sha: 8841dc701a1896233273413c81d7c88d268b9498}
 active_window: 24h
 role: DOW_RUNTIME_HEALTH_CONSUMER_ROLLUP
 capabilities: [RECEIPT_CONSUMPTION, RUNTIME_METRICS, FEDERATION_ROLLUP]
 acceptance_requires: [CODEX_EXACT_PRODUCER_SHA, PROBE_STATUS_ACCEPT, DOV_STATUS_PASS, REAL_PROBE_STEPS_GT_ZERO]
+producer:
+  repo: GBOGEB/CODEX
+  pr: 600
+  pr_head_sha: 7f062faf8c76a6e89780bb0fbb1ee1fe96f5af4b
+  tested_merge_sha: 299eef00da58e8ec1ab888a5ad01db378ffc75f7
+  tested_merge_parents:
+    base_sha: 45f609f77f6f9990f643390635f60e5b957c652b
+    pr_head_sha: 7f062faf8c76a6e89780bb0fbb1ee1fe96f5af4b
+  workflow_run_id: 34514179505
+  workflow_name: LLDB-DAP Swift Docker Runner MCP Proof
+  workflow_conclusion: success
+receipt:
+  artifact_id: 10166998450
+  artifact_name: keb-lldb-dap-swift-docker-runner-mcp-receipt
+  artifact_sha256: 432c9ff5c98d84055da2787fc721996200032a26b077199e5cbcb1dd77c7c73b
+  receipt_id: KEB-LLDB-DAP-SWIFT-DOCKER-RUNNER-MCP-001
+  receipt_sha256: 8021f625720ab1ec3fb7ad7f1929b27723b6517fefd54156d5684b596c3a57d2
+  exact_executed_sha: 299eef00da58e8ec1ab888a5ad01db378ffc75f7
+  census_status: PASS
+  probe_status: ACCEPT
+  dov_status: PASS
+  real_probe_steps_gt_zero: true
+  real_probe_steps: 10
+  compile_correction: swiftc_-g_-parse-as-library
+consumer_disposition: ACCEPT
+reason: workflow-generated receipt satisfies all four predicates; executed SHA is the GitHub PR merge commit cryptographically parent-bound to CODEX PR #600 head
 child: GBOGEB/cryoplant-project
 authority_transfer: false
 credit_delta: 0
-next_victory: consume generated CODEX receipt and emit ACCEPT_DEFER_REJECT at exact producer SHA
+next_victory: child consumes this DOW ACCEPT with the same source-head/executed-SHA pair and emits governed disposition
