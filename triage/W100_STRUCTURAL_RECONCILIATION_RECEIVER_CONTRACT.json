@@ -1,0 +1,23 @@
+{
+  "schema": "abacus-w100-structural-reconciliation-receiver/v1",
+  "upstream": {
+    "qps_semantic_sha256": "fef323a92108106a5b88edb86c6fe1ad3e9348a5d06134f7a0597775ba2084db",
+    "source_candidates": 757,
+    "canonical_rtm": 722,
+    "baseline_exact_text": 28,
+    "baseline_source_unmatched": 729,
+    "baseline_canonical_unmatched": 694
+  },
+  "acceptance": {
+    "required_worker_ids": ["W100-A", "W100-B", "W100-C", "W100-D"],
+    "serialized_state_order": ["EXACT_TEXT", "STRUCTURAL_PARENT", "TEXT_CONTAINMENT_DIAGNOSTIC"],
+    "require_exact_input_hashes": true,
+    "require_arithmetic_closure": true,
+    "reject_multi_candidate_promotion": true,
+    "reject_authority_transfer": true
+  },
+  "classification": "RECEIVER_CONTRACT_NOT_MAPPING_AUTHORITY",
+  "authority_effect": "NONE",
+  "compliance_credit": false,
+  "release_credit": false
+}
