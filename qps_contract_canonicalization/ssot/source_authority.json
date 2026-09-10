@@ -1,11 +1,14 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "mode": "PRODUCTION",
   "canonicalAuthority": {
     "logicalId": "QPS_MASTER_01_OFFER_RTM",
-    "sourceClass": "SSOT",
+    "sourceClass": "CANONICAL_SOURCE_AUTHORITY",
     "pathOrLogicalRef": "GBOGEB/cryoplant-project::ocd-adr/40_implementation/QPS_CURRENT_MASTERS_REGISTRY_v0.1.yaml#MASTER_01_OFFER_RTM",
-    "authorityUse": "AUTHORITATIVE"
+    "authorityUse": "AUTHORITATIVE",
+    "authorityReceipt": "GBOGEB/cryoplant-project::ocd-adr/00_authority/source_receipts/SCKCEN_90508872_QPS_OFFER_v3_4.json",
+    "sourceSha256": "00a5f0ed3ded00620a33edd045706ba5fb9a67b5fb7fe63c495305f911c43ccb",
+    "semanticSha256": "fef323a92108106a5b88edb86c6fe1ad3e9348a5d06134f7a0597775ba2084db"
   },
   "localProjection": {
     "path": "qps_contract_canonicalization/ssot/review_projection.json",
@@ -30,7 +33,7 @@
       "authorityUse": "NON_AUTHORITATIVE",
       "productionCreditAllowed": false,
       "freshnessState": "CURRENT",
-      "notes": "Validated projection of governed state; directory placement does not confer SSOT authority."
+      "notes": "Validated local projection. The ssot/ directory name does not confer SSOT authority."
     },
     {
       "id": "LEGACY-HARDCODED-QPS-FIXTURES",
