@@ -1,0 +1,47 @@
+name: MIP QPS External Probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mip-qps-external-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qps_external_probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Admit runner
+        run: echo 'MIP external diagnostic runner admitted'
+      - name: Checkout exact cryoplant child
+        uses: actions/checkout@v4
+        with:
+          repository: GBOGEB/cryoplant-project
+          ref: 00f4af0bcce7645eb71fcdbc832de14f6cfc4ad8
+          path: cryoplant-project
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install focused test dependencies
+        run: python -m pip install pytest pyyaml
+      - name: Run unchanged B1 adapter regression
+        working-directory: cryoplant-project
+        run: python -m pytest -q tests/test_qps_w99_adapt_alat_v3_agenda.py
+      - name: Emit diagnostic receipt
+        if: always()
+        run: |
+          mkdir -p mip-receipt
+          printf '%s\n' \
+            'repository=GBOGEB/ABACUS' \
+            'role=external_diagnostic_only' \
+            'cryoplant_sha=00f4af0bcce7645eb71fcdbc832de14f6cfc4ad8' \
+            'release_credit_delta=0' \
+            > mip-receipt/QPS_EXTERNAL_PROBE.txt
+      - name: Upload diagnostic receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mip-qps-external-probe-${{ github.sha }}
+          path: mip-receipt/QPS_EXTERNAL_PROBE.txt
