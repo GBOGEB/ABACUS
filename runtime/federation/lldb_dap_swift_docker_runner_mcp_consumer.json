@@ -4,11 +4,17 @@
   "created_utc": "2026-09-10T00:00:00Z",
   "consumer_repo": "GBOGEB/ABACUS",
   "producer_repo": "GBOGEB/CODEX",
-  "producer_branch": "wave/lldb-dap-swift-keb-receipt",
+  "producer_branch": "wave/lldb-dap-probe-followup",
   "producer_base_sha": "a1aeda135a9ed2629456db5b00e53569185400d3",
   "expected_receipt_path": "receipts/keb/LLDB_DAP_SWIFT_DOCKER_RUNNER_MCP_RECEIPT.json",
-  "surface_scope": ["lldb-dap", "swift-debug", "docker", "runner", "mcp"],
-  "dow_consumption_state": "WAITING_FOR_WORKFLOW_RECEIPT",
+  "surface_scope": [
+    "lldb-dap",
+    "swift-debug",
+    "docker",
+    "runner",
+    "mcp"
+  ],
+  "dow_consumption_state": "RECEIPT_CONSUMED",
   "promotion_rule": {
     "accept_when": [
       "producer receipt exact_head_sha matches observed producer commit",
@@ -26,5 +32,31 @@
       "producer receipt reports missing runner capability"
     ]
   },
-  "current_disposition": "DEFER"
+  "current_disposition": "ACCEPT",
+  "consumed_utc": "2026-09-10T17:31:56Z",
+  "producer_exact_head_sha": "5e58badb150df9ce0423e1d02f9d913380d4597d",
+  "producer_pr": "https://github.com/GBOGEB/CODEX/pull/598",
+  "producer_workflow_run_id": 34508749625,
+  "producer_workflow_run_url": "https://github.com/GBOGEB/CODEX/actions/runs/34508749625",
+  "producer_receipt_artifact_id": 10164897765,
+  "producer_receipt_artifact_digest": "sha256:1e66581b7e2c53db6526eb08490cf744554618025e52e7691ed74373de0ad150",
+  "producer_receipt_sha256": "3b32650abf18b824b5f3f06a113139ce470900c0957cef9d44c4b4e6e920f2d1",
+  "producer_probe_status": "ACCEPT",
+  "producer_dov_status": "PASS",
+  "producer_real_probe_steps": 10,
+  "producer_real_probe_steps_gt_zero": true,
+  "acceptance_evidence": {
+    "producer_exact_head_sha": "5e58badb150df9ce0423e1d02f9d913380d4597d",
+    "producer_pr": "https://github.com/GBOGEB/CODEX/pull/598",
+    "producer_workflow_run_id": 34508749625,
+    "producer_workflow_run_url": "https://github.com/GBOGEB/CODEX/actions/runs/34508749625",
+    "producer_receipt_artifact_id": 10164897765,
+    "producer_receipt_artifact_digest": "sha256:1e66581b7e2c53db6526eb08490cf744554618025e52e7691ed74373de0ad150",
+    "producer_receipt_sha256": "3b32650abf18b824b5f3f06a113139ce470900c0957cef9d44c4b4e6e920f2d1",
+    "probe_status": "ACCEPT",
+    "dov_status": "PASS",
+    "real_probe_steps": 10,
+    "real_probe_steps_gt_zero": true,
+    "lldb_stop_reason": "step over"
+  }
 }
