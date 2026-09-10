@@ -1,0 +1,60 @@
+name: W93 Docker Deployment Proof
+
+on:
+  pull_request:
+    paths:
+      - Dockerfile
+      - docker-compose.yml
+      - qplant/deployment/**
+      - triage/DEPLOYMENT_RUNTIME_REGISTRY_W92.yaml
+      - .github/workflows/w93-docker-deployment-proof.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  root-service-shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose model
+        run: docker compose config --quiet
+      - name: Build exact-head root image
+        run: docker build --pull -t abacus-w93:${GITHUB_SHA} .
+      - name: Execute root service shell
+        run: |
+          cid=$(docker run -d -p 18000:8000 abacus-w93:${GITHUB_SHA})
+          trap 'docker logs "$cid" || true; docker rm -f "$cid" || true' EXIT
+          for i in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:18000/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:18000/ >/dev/null
+          test "$(docker inspect -f '{{.State.Health.Status}}' "$cid")" = healthy
+          printf 'source_sha=%s\nruntime_role=SERVICE_SHELL\ncontainer_execution=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_root_docker_receipt.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w93-abacus-root-docker-${{ github.sha }}
+          path: w93_root_docker_receipt.txt
+
+  qplant-application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate QPLANT compose surfaces
+        run: |
+          docker compose -f qplant/deployment/docker-compose.yml config --quiet
+          docker compose -f qplant/deployment/docker-compose.staging.yml config --quiet
+          docker compose -f qplant/deployment/docker-compose.production.yml config --quiet
+      - name: Build exact-head QPLANT application image
+        run: docker build --pull -t qplant-w93:${GITHUB_SHA} qplant/deployment
+      - name: Record build receipt
+        run: |
+          printf 'source_sha=%s\nruntime_role=QPLANT_APPLICATION\nimage_build=PASS\ncompose_validation=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_qplant_docker_receipt.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w93-qplant-docker-${{ github.sha }}
+          path: w93_qplant_docker_receipt.txt
