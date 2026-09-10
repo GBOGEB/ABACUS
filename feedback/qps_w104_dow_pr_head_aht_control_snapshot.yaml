@@ -1,0 +1,81 @@
+schema_version: "0.2"
+document_id: QPS_W104_DOW_PR_HEAD_AHT_CONTROL_SNAPSHOT
+status: ACTIVE_CHECKS_PENDING
+evidence_class: SOURCE-SUPPORTED
+authority: ABACUS_parent_dashboard_dow_support
+observed_at_utc: "2026-09-10T05:05:00Z"
+source:
+  repository: GBOGEB/ABACUS
+  source_pr: 1096
+  source_pr_url: https://github.com/GBOGEB/ABACUS/pull/1096
+  source_head_sha: 1b80cca4ba7c68755cd364b53f8ea2193ab22877
+  source_base_sha: 742cea8bf8b85f85888fb56b0f460f9fae513d48
+  successor_control_branch: w104-abacus-dow-aht-control
+  peer_repository: GBOGEB/CODEX
+  peer_pr: 591
+  child_repository: GBOGEB/cryoplant-project
+threshold_policy:
+  name: failed_check_threshold_to_embed_pr_head_stats
+  failed_cancelled_action_required_threshold: 1
+  include_active_checks_as_blockers: true
+  threshold_reached: false
+  reason: no failed, cancelled, or action_required checks were observed for the PR head; active and queued checks still block Control.
+aht_statistics:
+  source_method: AHT.py-compatible PR-head checkpoint
+  total_observed_runs: 15
+  completed_successful: 7
+  completed_failed: 0
+  completed_cancelled: 0
+  action_required: 0
+  queued: 1
+  in_progress: 7
+  decisive_success_rate: 1.0
+  first_pass_yield: unknown
+  repair_retest_pass_rate: unknown
+  blocker_count: 8
+  latest_successful_run:
+    id: 34439399360
+    name: Security Scan - Ruff
+  successful_run_ids:
+    - 34439399311
+    - 34439399310
+    - 34439399303
+    - 34439399345
+    - 34439399355
+    - 34439399360
+    - 34439399356
+  active_or_queued_run_ids:
+    - 34439399677
+    - 34439399329
+    - 34439399318
+    - 34439399319
+    - 34439399343
+    - 34439399340
+    - 34439399447
+    - 34439399298
+floating_coverage:
+  schema: gbo.floating-anchor-census/1.0
+  anchor: DOW
+  files: 2888
+  anchor_named_files: 187
+  engine_like_files: 1290
+  linked_engine_like_files: 140
+  floating_engine_like_files: 1150
+  floating_rate: 0.8914728682
+  floating_buckets:
+    legacy_status_or_handover: 409
+    engine_like_unlinked: 418
+    staged_workflow: 11
+    embedded_version_or_subrepo: 234
+    runtime_agent_surface: 78
+pca_blocker_counts:
+  infrastructure_or_runner_capacity: 8
+  code_or_contract_defect: 0
+  validator_or_test_fragility: 0
+  governance_or_policy_ambiguity: 0
+  stale_lineage_or_artifacts: 1
+  review_or_manual_action: 0
+control:
+  completion_credit_allowed: false
+  merge_alone_counts_as_success: false
+  stop_condition: current head and merge SHA checks pass with zero failed, cancelled, timed_out, startup_failure, action_required, unresolved material review, or active checks; child intake must bind the final parent SHA and issue ACCEPTED or HOLD receipt.
