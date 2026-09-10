@@ -1,0 +1,11 @@
+schema_version: "0.1"
+rollup_id: ABACUS-1102-RUNTIME-HEALTH
+seed: {repo: GBOGEB/ABACUS, pr: 1102, merge_sha: 8841dc701a1896233273413c81d7c88d268b9498}
+active_window: 24h
+role: DOW_RUNTIME_HEALTH_CONSUMER_ROLLUP
+capabilities: [RECEIPT_CONSUMPTION, RUNTIME_METRICS, FEDERATION_ROLLUP]
+acceptance_requires: [CODEX_EXACT_PRODUCER_SHA, PROBE_STATUS_ACCEPT, DOV_STATUS_PASS, REAL_PROBE_STEPS_GT_ZERO]
+child: GBOGEB/cryoplant-project
+authority_transfer: false
+credit_delta: 0
+next_victory: consume generated CODEX receipt and emit ACCEPT_DEFER_REJECT at exact producer SHA
