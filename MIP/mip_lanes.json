@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "expansion": {
+    "modernize": "Repair stale code, scripts, workflows, tests, runners, CI/CD, contracts, and diagnostics.",
+    "innovate": "Create new useful node/edge/atom/graph connections, alternate viewpoints, dependencies, hierarchy, and orchestration patterns.",
+    "perpetuate": "Put improvements in motion through repeatable runners, Docker, DMAIC-style loops, metrics, history, PR progression, and self-heal receipts."
+  },
+  "lanes": [
+    {
+      "id": "repo_self_index",
+      "status": "active",
+      "evidence": "MIP/receipts/repo_self_index.json",
+      "victory": "Repo census generated with denominators, runtime surfaces, branch/SHA, dirty state, and candidate backlog."
+    },
+    {
+      "id": "repo_self_assess_debug_ldab",
+      "status": "seeded",
+      "evidence": "MIP/receipts/repo_self_index.json#/assessments/repo_self_assess_debug_ldab",
+      "victory": "Debug and observability candidates are classified by signal and next action."
+    },
+    {
+      "id": "repo_self_assess_runners_mcp",
+      "status": "seeded",
+      "evidence": "MIP/receipts/repo_self_index.json#/assessments/repo_self_assess_runners_mcp",
+      "victory": "Docker, runner, CI, MCP, and orchestration surfaces are separated into present, missing, and suspicious."
+    },
+    {
+      "id": "repo_self_assess_codz_health_selfheal",
+      "status": "seeded",
+      "evidence": "MIP/receipts/repo_self_index.json#/assessments/repo_self_assess_codz_health_selfheal",
+      "victory": "Stale, duplicate, TODO, health, and self-heal candidates are visible without behavior-changing automation."
+    },
+    {
+      "id": "repo_self_produce",
+      "status": "seeded",
+      "evidence": "MIP/receipts/repo_self_index.json#/assessments/repo_self_produce",
+      "victory": "At least one reusable core skill or agent/orchestrator candidate is selected for packaging."
+    }
+  ]
+}
