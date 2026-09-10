@@ -1,0 +1,53 @@
+schema: dow-qps-glossary-3pc-3pr/1.0.0
+wave: W98
+role: DOW_RUNTIME_RENDER_MEASUREMENT
+origin_authority: GBOGEB/cryoplant-project
+semantic_validator: GBOGEB/CODEX
+
+3pc_runtime_projection:
+  preserve_dimensions: [authority, scope, lexical_type, source_exactness, collision_type, contract_relevance, disposition]
+  outward_views:
+    - QPS_CONTRACT_GLOSSARY
+    - QPLANT_SUBSYSTEM_GLOSSARY
+    - ALAT_ONLY_GLOSSARY
+    - LKT_ONLY_GLOSSARY
+    - ABBREVIATION_TLA_ACRONYM_REGISTER
+    - DEFINED_TERMS_REGISTER
+    - CONFLICT_REGISTER
+    - ALIAS_REGISTER
+    - UNRESOLVED_SOURCE_QUEUE
+  render_rules:
+    canonical_token_always_visible: true
+    authority_badge_always_visible: true
+    applicant_badge_for_applicant_terms: true
+    conflicts_never_collapsed: true
+    qplant_filter_preserves_qps_parent: true
+
+3pr_metrics:
+  - total_terms
+  - source_exact_terms
+  - applicant_local_terms
+  - conflict_count
+  - unresolved_source_count
+  - aliases_resolved
+  - aliases_ambiguous
+  - qps_contract_coverage
+  - qplant_view_coverage
+  - deterministic_projection_digest
+
+challenge_assertions:
+  - QPS scope delta is visibly rendered
+  - PID homonym is visibly rendered with context
+  - ALAT and LKT partitions never expose each other in contractor-safe outward views
+  - general-related terms are marked non-contractual
+  - no rendered view changes child authority or engineering score
+
+return_receipt:
+  status: [PASS, FAIL, DEFER]
+  to: GBOGEB/cryoplant-project
+  evidence:
+    - renderability
+    - census
+    - conflict_visibility
+    - deterministic_projection
+  credit_delta: 0
