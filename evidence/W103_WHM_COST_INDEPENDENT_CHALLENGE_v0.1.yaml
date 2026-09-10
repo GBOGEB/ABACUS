@@ -1,0 +1,79 @@
+schema_version: "0.1"
+document_id: W103_WHM_COST_INDEPENDENT_CHALLENGE
+role: DOW_INDEPENDENT_RECONSTRUCTION
+child_authority: GBOGEB/cryoplant-project
+KEB_contract: GBOGEB/CODEX_W103_P2
+engineering_credit_delta: 0
+
+objective: >-
+  Independently reconstruct and challenge the warm-helium module pre-RFQ estimate without copying the child's conclusion.
+  Measure sensitivity, evidence maturity, and installed-cost boundary while preserving explicit UNKNOWN where evidence is absent.
+
+challenge_lanes:
+  C1_MFC:
+    current_allowance_EUR: 4200
+    reproduce_scenarios:
+      base_low_EUR: 800
+      base_high_EUR: 1300
+      factor_low_sum_pct: 95
+      factor_high_sum_pct: 220
+      expected:
+        LB_LF_EUR: 1560
+        LB_HF_EUR: 2560
+        UB_LF_EUR: 2535
+        UB_HF_EUR: 4160
+    arithmetic_guard: "scenario = base * (1 + sum(factors)); factors are never chained"
+    challenge: >-
+      Treat 4200 as conservative/high-side only. Do not promote until at least one technically normalized new-vendor quote exists;
+      prefer three comparable vendors or one quote plus two current new-product anchors for triangulation.
+  C2_BPR:
+    current_allowance_EUR: 1300
+    challenge_fields: [low_flow_backpressure_range, helium_compatibility, Cv_or_flow_coefficient, inlet_outlet_pressure, connections, seal_material, accuracy_or_droop, quote]
+    disposition_until_complete: MEDIUM_CONFIDENCE_ALLOWANCE
+  C3_ESD:
+    current_allowance_EUR: 650
+    challenge_fields: [NC_fail_closed, helium_leakage, body_material, seat_seal, Cv, pressure, connection, voltage, certification, quote]
+    disposition_until_complete: MEDIUM_CONFIDENCE_ALLOWANCE
+  C4_SPOOL:
+    current_allowance_EUR: 450
+    bottom_up_fields: [material, flange, VCR_end, tube_length, weld_count, orbital_weld_hours, cleaning, NDT_or_leak_test, QA, batch_quantity]
+    disposition_until_complete: MEDIUM_HIGH_FABRICATION_ALLOWANCE
+
+BOM_completeness_challenge:
+  hardware_rows_required: [process_connection, spool, manual_isolation, filter, ESD, MFC, RFO, BPR, PT_upstream, PT_downstream, test_port, tubing_fittings]
+  installed_CAPEX_layers_required:
+    - hardware
+    - fabrication_and_assembly
+    - installation_labour
+    - supports_mounting
+    - electrical_cabling_and_termination
+    - controls_IO_panel_and_software
+    - FAT_SAT_calibration
+    - commissioning
+    - logistics
+    - engineering_QA_PM_documentation
+    - contingency
+  guard: "missing installed layers remain UNKNOWN; do not fill with generic EPC multipliers and call the result observed"
+
+weighted_estimate_method:
+  recommended: THREE_POINT_PLUS_EVIDENCE_WEIGHT
+  rule: >-
+    Weight scenarios by evidence maturity and configuration likelihood, not by convenience. Publish both the weighted planning
+    value and the unweighted envelope. The weighted value cannot narrow the source uncertainty band.
+  suggested_initial_state: "DEFER_WEIGHTS_UNTIL_REAL_NEW_PRODUCT_ANCHORS_OR_QUOTES_ARE_BOUND"
+
+DMAIC_measurements:
+  - percentage_of_BOM_value_quote_backed
+  - percentage_of_BOM_value_public_new_anchor_backed
+  - percentage_of_BOM_value_parametric_or_allowance
+  - top4_share_of_total_hardware_cost
+  - installed_scope_completeness_percentage
+  - low_to_high_uncertainty_EUR_per_module
+  - sixty_unit_uncertainty_EUR
+  - quote_to_prior_variance_by_item
+
+victory:
+  - independent arithmetic reproduces child scenarios
+  - every top4 row has explicit missing evidence rather than false precision
+  - hardware and installed CAPEX totals cannot be confused
+  - measured evidence coverage increases after RFQ and variance is logged rather than silently overwriting history
