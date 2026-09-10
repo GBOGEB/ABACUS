@@ -1,0 +1,36 @@
+schema_version: "0.1"
+document_id: W104_CC_R01_R08_DOW_RECEIPT_C1
+wave: W104
+role: ABACUS_DOW
+receipt_type: REAL_DOW_EXECUTION_RECEIPT
+execution_basis:
+  request_merge_sha: b39a2fdd0683e0403146a00053705192ba9765cd
+  observed_main_sha: 695e71e600d6384d10fdda4c4d995f2069ee93ec
+  atom_set: [CC-R01, CC-R02, CC-R03, CC-R04, CC-R05, CC-R06, CC-R07, CC-R08]
+execution_summary:
+  executed_count: 8
+  pass_count: 0
+  fail_count: 0
+  defer_count: 8
+  silently_dropped_count: 0
+  missing_treated_as_zero: false
+  provisional_rate_substituted_for_common_cause: false
+atom_results:
+  - {atom_id: CC-R01, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R02, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R03, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R04, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R05, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R06, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R07, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+  - {atom_id: CC-R08, source_state: SOURCE_MISSING, evidence_class: UNRESOLVED, common_cause_predicate: DEFER, non_overlap_predicate: DEFER, same_boundary_predicate: DEFER, duplicate_credit_neighbors: [], disposition_candidate: DEFER_SOURCE_MISSING}
+source_gaps:
+  - authoritative_common_cause_non_overlap_source
+  - same_boundary_source_per_atom
+  - raw_EMAIL_ORIG_hash_and_headers_if_email_evidence_is_used
+payload_sha256: 0999e56e3e801702d80f0cb7c00d218b0fc35ea3eeb6b1369344f84ab47c37b9
+credit_guard:
+  engineering_delta: 0
+  negotiation_delta: 0
+  parent_has_no_child_score_authority: true
+return_to: GBOGEB/cryoplant-project
