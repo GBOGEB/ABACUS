@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "surface": "integration/codespace_jyperter",
+  "parent_repo": "GBOGEB/ABACUS",
+  "surface_type": "nested_integration",
+  "lanes": [
+    {
+      "id": "repo_self_index",
+      "status": "active",
+      "evidence": "integration/codespace_jyperter/MIP/receipts/surface_self_index.json",
+      "victory": "Surface census generated with parent SHA, file denominators, and lane assessments."
+    },
+    {
+      "id": "repo_self_assess_debug_ldab",
+      "status": "seeded",
+      "evidence": "integration/codespace_jyperter/MIP/receipts/surface_self_index.json#/assessments/repo_self_assess_debug_ldab",
+      "victory": "Notebook parser and federation diagnostics are classified."
+    },
+    {
+      "id": "repo_self_assess_runners_mcp",
+      "status": "seeded",
+      "evidence": "integration/codespace_jyperter/MIP/receipts/surface_self_index.json#/assessments/repo_self_assess_runners_mcp",
+      "victory": "Contract, manifest, runner/test, and federation surfaces are separated."
+    },
+    {
+      "id": "repo_self_assess_codz_health_selfheal",
+      "status": "seeded",
+      "evidence": "integration/codespace_jyperter/MIP/receipts/surface_self_index.json#/assessments/repo_self_assess_codz_health_selfheal",
+      "victory": "Stale, TODO, repair, and self-heal candidates are visible."
+    },
+    {
+      "id": "repo_self_produce",
+      "status": "seeded",
+      "evidence": "integration/codespace_jyperter/MIP/receipts/surface_self_index.json#/assessments/repo_self_produce",
+      "victory": "A reusable CODESPACE/Jupyter federation skill or agent candidate is selected."
+    }
+  ]
+}
+
