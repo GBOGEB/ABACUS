@@ -5,7 +5,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
+# Root requirements delegates to DMAIC_V3/requirements.txt, so both files must
+# exist in the build context before the fail-closed dependency installation.
 COPY requirements.txt ./requirements.txt
+COPY DMAIC_V3/requirements.txt ./DMAIC_V3/requirements.txt
 RUN python -m pip install --no-cache-dir --upgrade pip \
     && python -m pip install --no-cache-dir -r requirements.txt
 

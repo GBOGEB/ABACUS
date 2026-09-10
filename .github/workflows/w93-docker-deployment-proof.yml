@@ -47,10 +47,10 @@ jobs:
       - name: Validate QPLANT compose surfaces
         run: |
           docker compose -f qplant/deployment/docker-compose.yml config --quiet
-          docker compose -f qplant/deployment/docker-compose.staging.yml config --quiet
-          docker compose -f qplant/deployment/docker-compose.production.yml config --quiet
+          docker compose -f qplant/deployment/docker-compose.yml -f qplant/deployment/docker-compose.staging.yml config --quiet
+          docker compose -f qplant/deployment/docker-compose.yml -f qplant/deployment/docker-compose.production.yml config --quiet
       - name: Build exact-head QPLANT application image
-        run: docker build --pull -t qplant-w93:${GITHUB_SHA} qplant/deployment
+        run: docker build --pull -t qplant-w93:${GITHUB_SHA} -f qplant/deployment/Dockerfile qplant
       - name: Record build receipt
         run: |
           printf 'source_sha=%s\nruntime_role=QPLANT_APPLICATION\nimage_build=PASS\ncompose_validation=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_qplant_docker_receipt.txt
