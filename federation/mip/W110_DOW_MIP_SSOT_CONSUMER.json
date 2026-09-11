@@ -1,0 +1,66 @@
+{
+  "schema_version": "dow-mip-ssot-consumer/1.0",
+  "wave": "W110",
+  "created_utc": "2026-09-11T07:10:00Z",
+  "consumer_repo": "GBOGEB/ABACUS",
+  "producer_registry_repo": "GBOGEB/CODEX",
+  "producer_registry_path": "federation/mip/W110_CANONICAL_SSOT_REGISTRY.json",
+  "consumed_previous_tail": {
+    "status": "FIXED_AS_HISTORICAL_ACCEPT_NOT_CURRENT_HEAD",
+    "lane": "LLDB-DAP Swift Docker Runner MCP",
+    "codex_pr": "https://github.com/GBOGEB/CODEX/pull/598",
+    "codex_exact_head_sha": "5e58badb150df9ce0423e1d02f9d913380d4597d",
+    "codex_workflow_run": "https://github.com/GBOGEB/CODEX/actions/runs/34508749625",
+    "codex_receipt_artifact_id": 10164897765,
+    "codex_receipt_artifact_digest": "sha256:1e66581b7e2c53db6526eb08490cf744554618025e52e7691ed74373de0ad150",
+    "codex_receipt_sha256": "3b32650abf18b824b5f3f06a113139ce470900c0957cef9d44c4b4e6e920f2d1",
+    "probe_status": "ACCEPT",
+    "dov_status": "PASS",
+    "real_lldb_steps": 10,
+    "abacus_pr": "https://github.com/GBOGEB/ABACUS/pull/1103",
+    "abacus_final_head_sha": "0dce7cf74c1139cb53d5b2fb703b7daa4821a184",
+    "cryoplant_pr": "https://github.com/GBOGEB/cryoplant-project/pull/842",
+    "cryoplant_final_head_sha": "3b63e605030a5721cad3188d2407ac2b1d1200d2",
+    "note": "This fixes the previous tail as a receipt-backed ACCEPT lineage. It is historical proof and is not reused as current-head proof for W110."
+  },
+  "consumed_active_satellites": [
+    {
+      "repo": "GBOGEB/codespaces-jupyter",
+      "observed_head_sha": "98e18d6e80a7335b329bbcd39f651e8ba95de1e6",
+      "current_role": "JUPYTER_RUNTIME_PRODUCER",
+      "disposition": "DEFER_UNTIL_REPO_LOCAL_SSOT_POINTER"
+    },
+    {
+      "repo": "GBOGEB/CODESPACES_jyperter",
+      "observed_head_sha": "eda6aa0f576e276a3dd335555ebcf7f740f7f1b2",
+      "current_role": "CODESPACE_RUNTIME_PROOF",
+      "disposition": "DEFER_UNTIL_REPO_LOCAL_SSOT_POINTER"
+    },
+    {
+      "repo": "GBOGEB/DOCX_RTM_Automation",
+      "observed_head_sha": "28cc8d97c751cff2bad44a5cbf83ebcf6379641d",
+      "current_role": "DOCX_RTM_AUTOMATION",
+      "disposition": "DEFER_UNTIL_REPO_LOCAL_SSOT_POINTER"
+    },
+    {
+      "repo": "GBOGEB/cryogenic-accelerator-workspace",
+      "observed_head_sha": "771b4b6f4e45722125aa65bd42f9052f3659f5bf",
+      "current_role": "BRIDGE_RUNTIME_PROOF",
+      "disposition": "DEFER_UNTIL_REPO_LOCAL_SSOT_POINTER"
+    },
+    {
+      "repo": "GBOGEB/cryo_leak_rate_dashboard",
+      "observed_head_sha": "6ef501f37bc9c41dc50c4c0b54095963b02630f6",
+      "current_role": "LEAK_EVIDENCE_RUNTIME_PROOF",
+      "disposition": "DEFER_UNTIL_REPO_LOCAL_SSOT_POINTER"
+    }
+  ],
+  "dow_checks": {
+    "exact_sha_fields_present": true,
+    "previous_lldb_tail_accept_receipt_present": true,
+    "active_satellite_denominator": 5,
+    "dormant_candidates_not_promoted": 2
+  },
+  "dow_disposition": "ACCEPT_CORE_REGISTRY_DEFER_SATELLITES",
+  "reason": "Core triad registry and previous tail are receipt-bound; smaller active repos are indexed but not promoted until each exposes a repo-local SSOT pointer and exact-head receipt."
+}
