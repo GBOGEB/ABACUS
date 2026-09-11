@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dow-mip-ssot-consumer/1.0",
+  "type": "object",
+  "required": ["schema_version", "wave", "consumer_repo", "dow_disposition"],
+  "properties": {
+    "schema_version": {"const": "dow-mip-ssot-consumer/1.0"},
+    "wave": {"const": "W110"},
+    "consumer_repo": {"const": "GBOGEB/ABACUS"},
+    "dow_disposition": {"enum": ["ACCEPT_CORE_REGISTRY_DEFER_SATELLITES", "REJECT", "DEFER"]},
+    "consumed_active_satellites": {"type": "array"}
+  }
+}
