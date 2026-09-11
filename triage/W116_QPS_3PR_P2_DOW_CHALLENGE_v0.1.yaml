@@ -1,0 +1,92 @@
+schema_version: "0.1"
+document_id: W116_QPS_3PR_P2_DOW_CHALLENGE
+wave: W116
+method: 3PR
+phase: P2_CHALLENGE
+repository: GBOGEB/ABACUS
+role: DOW_RUNTIME_ORCHESTRATION_CHALLENGE
+status: CHALLENGE_EMITTED_PENDING_CHILD_REENTRY
+
+input:
+  qps_repository: GBOGEB/cryoplant-project
+  qps_pr: 903
+  qps_head_sha: "f1170618331826b9b9281f09c4e67d0cb160260c"
+  qps_phase: P1_PRODUCE
+
+challenge_findings:
+  - id: DOW-1
+    result: PASS_WITH_GUARD
+    subject: blocked_lane_behavior
+    finding: blocked_or_DEFER_lanes_may_release_capacity_but_must_not_be_counted_as_green
+  - id: DOW-2
+    result: PASS_WITH_GUARD
+    subject: WIP_control
+    finding: future_seed_is_valid_only_when_shared_source_schema_test_or_dependency_context_is_real
+  - id: DOW-3
+    result: CHALLENGE_ACTION
+    subject: WIP_limit
+    finding: planned_percentages_do_not_limit_node_count
+    required_change: add_explicit_WIP_caps_per_horizon_and_lane
+  - id: DOW-4
+    result: CHALLENGE_ACTION
+    subject: mid_wave_reallocation
+    finding: every_reallocation_needs_trigger_source_from_to_capacity_and_expected_unlock
+    required_change: emit_reallocation_receipt_not_just_new_percentage
+  - id: DOW-5
+    result: CHALLENGE_ACTION
+    subject: tail_recovery
+    finding: DEFER_burndown_requires_age_and_reentry_condition_not_simple_count
+    required_change: track_defer_age_waves_oldest_defer_and_reentry_ready_count
+  - id: DOW-6
+    result: PASS
+    subject: release_guard
+    finding: MC_P95_and_fresh_PCA_remain_blocked_while_C6_is_red_and_registry_not_reconciled
+  - id: DOW-7
+    result: CHALLENGE_ACTION
+    subject: future_MC_runtime
+    finding: future_MC_PCA_cycle_needs_exact_input_manifest_seed_execution_count_and_exact_SHA_receipt
+    required_change: seed_runtime_receipt_schema_during_N_plus_1_or_N_plus_2
+  - id: DOW-8
+    result: CHALLENGE_ACTION
+    subject: productivity_metrics
+    finding: planned_capacity_must_not_be_compared_to_output_without_actual_effort_or_execution_denominator
+    required_change: keep_planned_allocation_productivity_and_observed_execution_as_separate_metrics
+
+orchestration_disposition:
+  overall: ACCEPT_FOR_ORCHESTRATION_WITH_ACTIONS
+  qps_engineering_authority_transfer: false
+  child_reentry_required: true
+
+recommended_WIP_caps:
+  primary_active_nodes_max: 2
+  secondary_active_nodes_max: 4
+  future_seed_nodes_max: 4
+  tail_recovery_active_nodes_max: 3
+  note: planning_guard_until_measured_flow_data_justifies_change
+
+reallocation_receipt_minimum_fields:
+  - event_id
+  - trigger
+  - from_node
+  - to_node
+  - planned_capacity_delta
+  - evidence_or_blocker_ref
+  - expected_dependency_unlock
+  - resulting_node_states
+
+runtime_receipt_seed:
+  required_fields:
+    - source_sha
+    - input_manifest_sha256
+    - seed
+    - sample_count_or_execution_count
+    - executed_steps
+    - quality_gate
+    - output_hashes
+    - timestamp
+
+formal_effect:
+  engineering_credit_delta: 0
+  compliance_credit_delta: 0
+  negotiation_credit_delta: 0
+  release_credit_delta: 0
