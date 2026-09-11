@@ -8,7 +8,7 @@ Do not commit generated receipt payloads from `MIP/receipts/` to public rollout
 PRs unless the receipt has been explicitly reviewed and approved for publication.
 
 This keeps local path census, working-tree state, commit evidence, and
-thvironment-specific diagnostics out of source-control history by default.
+environment-specific diagnostics out of source-control history by default.
 
 The same rule applies to nested MIP surfaces, including
 `integration/codespace_jyperter/MIP/receipts/`.
