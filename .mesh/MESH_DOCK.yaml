@@ -1,0 +1,25 @@
+schema: gbogeb-mesh-dock/1.0
+repo: GBOGEB/ABACUS
+node_id: repo.abacus
+ring: R0_CORE_AUTHORITY
+role: DOW_DERIVED_ANALYSIS_CONSUMPTION
+local_ssot:
+  catalog: ssot_artifacts_catalog.md
+  resolver: DMAIC_V3/core/ssot_resolver.py
+  qps_glossary_bridge: architecture/w98/W98_QPS_GLOSSARY_DOW_3PC_3PR.yaml
+global_directory:
+  repo: GBOGEB/CODEX
+  census: federation/mesh/GLOBAL_HIVE_CENSUS_v1.yaml
+  glossary: federation/mesh/GLOBAL_GLOSSARY_v1.yaml
+  action_taxonomy: federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
+  where_used: federation/mesh/GLOBAL_WHERE_USED_v1.yaml
+authority:
+  may: [consume_and_challenge_receipts, derived_analysis, ranking, ACCEPT_REJECT_DEFER_return]
+  must_not: [promote_QPS_engineering_truth, override_child_authority]
+inputs: [KEB_receipts, child_source_tuple, measured_features]
+outputs: [DOW_disposition, analytics, ranked_actions, child_return_receipt]
+action_classes: [CG, RR, SR, DR, PB, FE, QH, BG, WD]
+first_use_case: consume an exact KEB receipt and return a scoped disposition to the QPS child
+current_focus:
+  object: W111_CIS_30_CELL_DOW_CONSUMER
+  action_class: PB
