@@ -1,0 +1,12 @@
+{
+  "producer_repo": "GBOGEB/CODEX",
+  "producer_pr": 609,
+  "producer_head_sha": "2eabd5167363158f07d620707948c20f153fdd0d",
+  "producer_receipt_commit": "8762e7ad7193856a50754d196658c41146b2d2b0",
+  "result": "DEFER",
+  "receipt_sha256": "a2f855989351931abeb5cfb4a3f11de5ea4b84d0fd8248f2ab881ca3262f6d3f",
+  "source_object_ids": ["QTG-REAL-PAIR-001"],
+  "source_manifest_sha256": "79777fcec7868ddfcc6edd86daee26d29a918a7fb3e7b4fa9efbacc22bbed6d2",
+  "private_evidence_copied": false,
+  "requested_disposition": "DEFER_IF_PRODUCER_NOT_PASS"
+}
