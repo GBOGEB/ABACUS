@@ -11,7 +11,7 @@ child_producer:
 keb_projection:
   repo: GBOGEB/CODEX
   pr: 615
-  exact_branch_head_sha: 1433822bdf7536668f40b0dea572d90006501c30
+  exact_branch_head_sha: 3d46e231424de47780f58016e1577bfb625d149c
   file: federation/mesh/W111_CIS_30_CELL_KEB_CONSUMER.yaml
 measured_counts:
   denominator_cells: 30
