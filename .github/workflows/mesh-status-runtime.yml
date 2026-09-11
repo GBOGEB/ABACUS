@@ -1,0 +1,32 @@
+name: Mesh Status Runtime
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'architecture/mesh/emit_mesh_status.py'
+      - 'architecture/mesh/select_mesh_blocker.py'
+      - '.github/workflows/mesh-status-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  emit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run emitter
+        run: python3 architecture/mesh/emit_mesh_status.py
+      - name: Verify vector
+        run: |
+          test -s mesh-status.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('mesh-status.json'))
+          assert len(x['dimensions']) == 13
+          assert len(x['source_sha']) == 40
+          print('PASS 13 dimensions', x['source_sha'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mesh-status-abacus
+          path: mesh-status.json
