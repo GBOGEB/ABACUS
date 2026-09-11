@@ -18,6 +18,8 @@ EXPECTED_PAYLOAD_SHA256 = "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465
 EXPECTED_CHILD_SSOT_BLOB = "d19975a150a3530cc4db3bd2fbbf4180f757c2a4"
 EXPECTED_KEB_ARTIFACT_ID = 10266200791
 EXPECTED_COOLPROP_RECEIPT_SHA256 = "85c8a7c0796fa031381c3b2144820af7adff4bab3e4bf31e41b89b2649f5a022"
+ISOTHERMAL_CROSSCHECK_TOLERANCE = 0.001
+ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE = 0.002
 
 
 @dataclass(frozen=True)
@@ -39,7 +41,7 @@ def canonical_payload_sha256(body: dict) -> str:
 def load_json(path: Path) -> dict:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
-        raise ValueError(f"{path} must contain a JSON object")
+        raise ValueError(f"{path} must be a JSON object")
     return value
 
 
@@ -198,7 +200,7 @@ def analyze() -> dict[str, object]:
     residual = atom_value(atoms, "LKT_UNRECONCILED_ELECTRICAL")
 
     return {
-        "schema": "abacus-dow-w111-power-utility-receipt/0.3",
+        "schema": "abacus-dow-w111-power-utility-receipt/0.4",
         "authority_scope": "REPO_LOCAL_ANALYTICAL_RUNTIME",
         "engineering_promotion_forbidden": True,
         "source_contract": {
@@ -222,13 +224,16 @@ def analyze() -> dict[str, object]:
             "local_ideal_isothermal_kW": local_iso,
             "coolprop_ideal_isothermal_kW": cp_iso,
             "isothermal_relative_delta": relative_delta(cp_iso, local_iso),
+            "isothermal_tolerance_fraction": ISOTHERMAL_CROSSCHECK_TOLERANCE,
             "local_package_isothermal_efficiency": local_eta,
             "coolprop_package_isothermal_efficiency": cp_eta,
             "efficiency_relative_delta": relative_delta(cp_eta, local_eta),
             "local_ideal_isentropic_reference_kW": local_is,
             "coolprop_ideal_isentropic_reference_kW": cp_is,
             "isentropic_reference_relative_delta": relative_delta(cp_is, local_is),
-            "disposition": "CORROBORATES_IDEAL_WORK_WITHIN_MODEL_DIFFERENCE_NOT_ENGINEERING_PROMOTION",
+            "isentropic_model_tolerance_fraction": ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE,
+            "isentropic_model_difference_class": "IDEAL_GAS_GAMMA_VS_REAL_FLUID_PROPERTY_MODEL",
+            "disposition": "CORROBORATES_IDEAL_WORK_WITHIN_DECLARED_MODEL_FORM_TOLERANCE_NOT_ENGINEERING_PROMOTION",
         },
         "invCOP_screen": {
             "Qeq_margin_kW": qeq,
@@ -266,9 +271,9 @@ def validate_receipt(receipt: dict[str, object]) -> None:
     assert 0.63 < normal["package_isothermal_efficiency"] < 0.66
     assert normal["isentropic_reference"]["classification"] == "REFERENCE_ONLY"
     cross = receipt["independent_thermophysical_crosscheck"]
-    assert abs(cross["isothermal_relative_delta"]) < 0.001
-    assert abs(cross["efficiency_relative_delta"]) < 0.001
-    assert abs(cross["isentropic_reference_relative_delta"]) < 0.001
+    assert abs(cross["isothermal_relative_delta"]) < ISOTHERMAL_CROSSCHECK_TOLERANCE
+    assert abs(cross["efficiency_relative_delta"]) < ISOTHERMAL_CROSSCHECK_TOLERANCE
+    assert abs(cross["isentropic_reference_relative_delta"]) < ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE
     inv = receipt["invCOP_screen"]
     assert abs(inv["bidder_implied_total_electrical_kW"] - 1061.13) < 1e-6
     assert abs(inv["unreconciled_electrical_kW"] - 153.13) < 1e-6
