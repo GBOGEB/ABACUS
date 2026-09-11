@@ -155,7 +155,11 @@ def main() -> int:
     receipt = build_receipt()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"Wrote {args.output.relative_to(ROOT)}")
+    try:
+        output_display = args.output.relative_to(ROOT)
+    except ValueError:
+        output_display = args.output
+    print(f"Wrote {output_display}")
     print(json.dumps({"sha": receipt["repo"]["sha"], "files": receipt["census"]["file_count"], "dirty": receipt["repo"]["dirty_file_count"]}, indent=2))
     return 0
 
