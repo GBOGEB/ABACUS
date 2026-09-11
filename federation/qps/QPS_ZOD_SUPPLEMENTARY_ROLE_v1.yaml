@@ -1,0 +1,49 @@
+schema_version: qps-zod-supplementary-role/1.0.0
+repo: GBOGEB/ABACUS
+role: DOW_DERIVED_ANALYSIS
+status: CONTROLLED_CANDIDATE
+
+qps_authority_boundary:
+  child_engineering_authority: GBOGEB/cryoplant-project
+  dow_authority: runtime_orchestration_analysis_evidence
+  zod_authority: executable_contract_validation_only
+
+zod_may:
+  - validate_runtime_ingress_shape
+  - validate_runner_and_scheduler_vectors
+  - validate_receipt_shape_and_required_identity
+  - validate_metric_and_analysis_payload_contracts
+  - fail_closed_on_malformed_runtime_evidence
+
+zod_must_not:
+  - select_scheduler_priority
+  - fabricate_runtime_execution
+  - promote_engineering_truth
+  - override_child_ACCEPT_REJECT_DEFER
+  - convert_zero_step_or_missing_receipt_to_PASS
+  - convert_UNKNOWN_or_DEFER_to_zero_or_false
+
+invariants:
+  - ZOD_PASS_NE_RUNTIME_PROOF
+  - DOW_PASS_NE_CHILD_ACCEPT
+  - RUNNER_ID_NONZERO_AND_STEPS_GT_ZERO_REQUIRED_FOR_RUNTIME_CREDIT
+  - RECEIPT_MUST_BIND_EXACT_REPO_PR_HEAD_SHA_SCHEMA_VERSION
+  - MERGED_NE_PERPETUATED
+
+federation_path:
+  - governed_payload_from_keb_or_child
+  - zod_ingress_parse
+  - actual_orchestrated_execution
+  - observed_runtime_receipt
+  - zod_receipt_parse
+  - dow_analysis_and_qa_receipt
+  - child_reentry
+
+dov:
+  state: WITHHELD
+  requires:
+    - runner_id_nonzero
+    - steps_executed_gt_zero
+    - exact_sha_schema_version_receipt
+    - child_reentry_disposition
+    - fresh_head_repeat
