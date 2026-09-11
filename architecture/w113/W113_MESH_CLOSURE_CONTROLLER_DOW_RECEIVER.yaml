@@ -1,0 +1,73 @@
+# yamllint disable rule:line-length
+schema: w113-mesh-closure-controller-dow-receiver/1.0
+wave: W113
+consumer: GBOGEB/ABACUS
+role: DOW_RUNTIME_ORCHESTRATION_CONSUMER
+producer:
+  repo: GBOGEB/CODEX
+  pr: 625
+  exact_head_sha: 94709cbd1466a5d6a74f5330f592b1dcd7362854
+  merge_sha: d480331b1bb02a442df148bbe377b2792656e55b
+  controller: federation/mesh/MESH_CLOSURE_CONTROLLER_v1.json
+  glob: GLOB.yaml
+  status_contract: governance/mesh/MESH_STATUS_CONTRACT_v1.yaml
+producer_proof:
+  workflow: Mesh Closure Controller
+  run_id: 34580399249
+  job_id: 103202365085
+  conclusion: PASS
+  executed_steps:
+    - Checkout exact PR head
+    - Setup Node
+    - Install validator dependencies
+    - Validate closure controller contract
+    - Prove zero-step and exact-SHA guards
+  validator_result:
+    validated: true
+    controller: mesh closure control
+    classifications: 6
+    atomic_actions: 13
+    stop_rule: STOP
+    zero_step_pass_forbidden: true
+    qps_child_reentry_required: true
+  tests: {total: 5, pass: 5, fail: 0}
+baseline:
+  abacus_main_sha: 2887bc055b336b747b86a0a71bb5626cbcb52029
+consumption:
+  classification_enum: [DONE, REPAIR_REENTRY, HARDENING, NEW_CAPABILITY, PROPAGATION_PROOF, REPEAT]
+  default_sequence: [3PR, MIP_IF_NEEDED, 3PC_IF_TRANSACTIONAL, 3P3_IF_GENERALISATION_MISSING]
+  stop_rule:
+    when_dov_satisfied: STOP
+    rerun_mip: ONLY_IF_NEW_STRUCTURAL_GAP_OBSERVED
+    run_3p3: ONLY_IF_GENERALISATION_PROOF_IS_MISSING
+    repeat_3pr: ONLY_IF_STATE_CHANGED_MATERIALLY
+  scheduler_status_keys: [CG, BG, EX, QH, KR, DR, SR, WD, PB]
+  atomic_actions: [CLOSE, RED, RUNTIME, SEM, SSOT, RECEIPT, ENABLE, HARDEN, CLEAN, MAINT, READ, EXP, WATCH]
+authority:
+  may:
+    - consume_controller_policy
+    - select_minimum_non_repeating_sequence
+    - rank_runtime_and_analysis_actions
+    - emit_DOW_receipts
+  must_not:
+    - redefine_CODEX_controller_semantics
+    - promote_QPS_engineering_truth
+    - override_QPS_child_disposition
+    - convert_runtime_PASS_into_engineering_acceptance
+proof_policy:
+  qh_pass_requires_executed_steps: true
+  exact_sha_kr_required: true
+  floating_ref_forbidden_as_proof: true
+  local_execution_required_for_this_receiver: false
+status_snapshot:
+  CG: PROPAGATE_MESH_CLOSURE_CONTROLLER_TO_DOW
+  BG: null
+  EX: PRODUCER_EXECUTED_GT_ZERO
+  QH: PASS
+  KR: CODEX_MERGE_SHA_d480331b1bb02a442df148bbe377b2792656e55b
+  WD: ACCEPT_FOR_DOW_ORCHESTRATION_POLICY
+disposition: ACCEPT_CONTROLLER_FOR_RUNTIME_ORCHESTRATION
+next_action: >-
+  Publish this receiver after changed-doc validation. Then the QPS child may
+  re-enter the CODEX controller and exact ABACUS receiver merge SHA without
+  transferring engineering authority.
