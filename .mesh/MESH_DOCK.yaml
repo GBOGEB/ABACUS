@@ -1,5 +1,5 @@
 # yamllint disable rule:line-length
-schema: gbogeb-mesh-dock/1.1
+schema: gbogeb-mesh-dock/1.2
 repo: GBOGEB/ABACUS
 node_id: repo.abacus
 ring: R0_CORE_AUTHORITY
@@ -9,6 +9,7 @@ local_ssot:
   resolver: DMAIC_V3/core/ssot_resolver.py
   qps_glossary_bridge: architecture/w98/W98_QPS_GLOSSARY_DOW_3PC_3PR.yaml
   w112_receiver: architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml
+  w113_closure_controller_receiver: architecture/w113/W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER.yaml
 global_directory:
   repo: GBOGEB/CODEX
   glob: GLOB.yaml
@@ -17,20 +18,27 @@ global_directory:
   action_taxonomy: federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
   where_used: federation/mesh/GLOBAL_WHERE_USED_v1.yaml
   status_contract: governance/mesh/MESH_STATUS_CONTRACT_v1.yaml
+  closure_controller: federation/mesh/MESH_CLOSURE_CONTROLLER_v1.json
 authority:
-  may: [consume_and_challenge_receipts, derived_analysis, ranking, ACCEPT_REJECT_DEFER_return]
-  must_not: [promote_QPS_engineering_truth, override_child_authority, treat_GLOB_as_scheduler]
-inputs: [KEB_receipts, child_source_tuple, measured_features]
+  may: [consume_and_challenge_receipts, derived_analysis, ranking, ACCEPT_REJECT_DEFER_return, consume_controller_policy]
+  must_not: [promote_QPS_engineering_truth, override_child_authority, treat_GLOB_as_scheduler, redefine_CODEX_controller_semantics]
+inputs: [KEB_receipts, child_source_tuple, measured_features, CODEX_closure_controller_receipt]
 outputs: [DOW_disposition, analytics, ranked_actions, child_return_receipt]
 action_monikers: [CLOSE, RED, RUNTIME, SEM, SSOT, RECEIPT, ENABLE, HARDEN, CLEAN, MAINT, READ, EXP, WATCH]
 reserved_status_keys: [CG, WD, RR, DR, SR, HK, EX, FE, QH, KR, CR, PB, BG]
 first_use_case: consume an exact KEB receipt and return a scoped disposition to the QPS child
+closure_control:
+  policy_source: federation/mesh/MESH_CLOSURE_CONTROLLER_v1.json
+  producer_repo: GBOGEB/CODEX
+  producer_merge_sha: d480331b1bb02a442df148bbe377b2792656e55b
+  receiver: architecture/w113/W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER.yaml
+  rule: select the minimum non-repeating method sequence; stop when bounded DoV is satisfied
 current_focus:
-  object: W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER
+  object: W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER
   action_moniker: RECEIPT
   status_snapshot:
-    CG: CROSS_PLANE_CONSUMMATION
-    BG: ABACUS_DOCS_VALIDATION_AND_CHILD_EXACT_HEAD_REFRESH
-    EX: EXECUTED
-    QH: REPAIR_IN_PROGRESS
-    KR: CODEX_PRODUCER_RECEIPT_BOUND
+    CG: PROPAGATE_MESH_CLOSURE_CONTROLLER_TO_DOW
+    BG: null
+    EX: PRODUCER_EXECUTED_GT_ZERO
+    QH: PASS
+    KR: CODEX_MERGE_SHA_d480331b1bb02a442df148bbe377b2792656e55b
