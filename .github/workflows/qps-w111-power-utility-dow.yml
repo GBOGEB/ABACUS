@@ -21,14 +21,14 @@ jobs:
         with:
           python-version: '3.12'
       - name: Execute W111 deterministic DOW analysis
-        run: python scripts/qps_w111_power_utility_analysis.py > /tmp/dow_w111_power_utility_receipt.json
-      - name: Show receipt summary
         run: >-
-          python -c "import json; d=json.load(open('/tmp/dow_w111_power_utility_receipt.json'));
-          print('DOW_W111_POWER_UTILITY=PASS');
-          print('unreconciled_kW=', d['invCOP_screen']['unreconciled_electrical_kW']);
-          print('baseload=', d['baseload']['status']);
-          print('pca=', d['pca']['status'])"
+          python scripts/qps_w111_power_utility_analysis.py
+          > /tmp/dow_w111_power_utility_receipt.json
+      - name: Validate generated receipt
+        run: >-
+          python -m json.tool
+          /tmp/dow_w111_power_utility_receipt.json
+          > /dev/null
       - uses: actions/upload-artifact@v4
         with:
           name: dow-w111-power-utility-${{ github.sha }}
