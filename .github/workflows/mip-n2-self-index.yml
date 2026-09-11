@@ -1,0 +1,57 @@
+name: MIP N2 exact-SHA self-index
+
+on:
+  pull_request:
+    paths:
+      - "MIP/**"
+      - "scripts/mip_*.py"
+      - "integration/codespace_jyperter/MIP/**"
+      - "integration/codespace_jyperter/scripts/mip_*.py"
+      - ".github/workflows/mip-n2-self-index.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  self-index-proof:
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact evaluated SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify exact-SHA binding and repeatability
+        run: |
+          python scripts/mip_verify_self_index.py \
+            --summary "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
+
+      - name: Confirm verifier left source checkout clean
+        run: test -z "$(git status --porcelain)"
+
+      - name: Publish sanitized summary to job log
+        run: |
+          cat "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
+          {
+            echo '## MIP N2 exact-SHA self-index'
+            echo '```json'
+            cat "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload sanitized evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
+          path: ${{ runner.temp }}/mip-n2-self-index-summary.json
+          if-no-files-found: error
+          retention-days: 14
