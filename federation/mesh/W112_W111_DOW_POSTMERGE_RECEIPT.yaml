@@ -19,6 +19,10 @@ source_merges:
     pr: 1115
     merge_sha: 496323ce828a9266ed04898af964433cd3a7e2f0
     reviewed_head_sha: 38f9fe175420fee61c207307858950d1f615ff5b
+postmerge_identity:
+  source_pr: 1118
+  source_merge_sha: f3e1afc2db86b8ff9615b12fa5edde3f833eb12e
+  receipt_refresh_wave: W113
 baseline:
   qps_census_pr: 877
   qps_census_merge_sha: 067e1ad9c6c461018ccb43bc2e50f6a5b2b89ee7
@@ -41,7 +45,8 @@ first_red_repair:
   repair_commits:
     mesh_dock: 23595cd73b5d47b934223c6345f8a63e63192e23
     dow_consumer: ba2621539b9a01016e0f138d223cd79afc3cb4c5
-  repair: add the repository-standard '# yamllint disable rule:line-length' directive only; no semantic mutation
+  repair: >-
+    Add the repository-standard yamllint line-length waiver only; no semantic mutation.
 codex_gate_observation:
   original_w003_run_id: 34576162207
   original_conclusion: failure
