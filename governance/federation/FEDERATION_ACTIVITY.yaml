@@ -1,19 +1,44 @@
-schema: gbogeb-federation-activity/1.0.0
-as_of: '2026-09-10T06:52:00+02:00'
+schema: gbogeb-federation-activity/1.1.0
+as_of: '2026-09-11T04:18:30+02:00'
 repo: GBOGEB/ABACUS
 classification: CORE_ACTIVE
-federation_role: DOW_RUNTIME_ORCHESTRATION_METRICS_AND_PROJECTION_AUTHORITY
-last_wave: W98_QPS_GLOSSARY_3PC_3PR
-recent_activity: [{pr: 1091, state: MERGED, role: glossary_projection_and_census}]
-mip_state: {modernize: ACTIVE, innovate: ACTIVE, perpetuate: ACTIVE_WITH_RUNTIME_DEBT}
+federation_role: DOW_RUNTIME_ORCHESTRATION_METRICS_CHALLENGE_AND_RECEIPT_CONSUMPTION_AUTHORITY
+last_wave: QTG_DOW_REPO_DEEP
+recent_activity:
+  - {pr: 1102, state: MERGED, role: w107_runtime_health_consumer_contract}
+  - {pr: 1105, state: MERGED, role: w107_federation_rollup_seed}
+  - {pr: 1107, state: MERGED, role: w107_exact_keb_receipt_accept}
+  - {pr: 1109, state: OPEN_DRAFT, role: qps_triage_dow_repo_deep_contract_and_test}
+mip_state: {modernize: ACTIVE, innovate: BOUNDED, perpetuate: EVIDENCE_GATED}
 three_p_capability: {P1_source_atom: false, P2_integration_graph: true, P3_evidence_control: true}
-runtime_proof: {state: PASS_FOR_W98, yaml_run: 34438146342, pytest_matrix_run: 34438146344}
-source_authority: {state: RUNTIME_MEASUREMENT_ONLY, may_mutate_qps_disposition: false}
-produces_receipts: [dow_projection_receipt, runtime_metrics_receipt]
-consumes_receipts: [child_contract, keb_semantic_receipt]
-current_blocker: broad CI runtime dependency missing Python github module; W98 projection gate itself passed
-next_victory: repair only the exact missing-github dependency boundary and re-run affected broad CI without reopening W98 disposition
+runtime_proof:
+  inherited_w107:
+    state: PASS
+    producer_repo: GBOGEB/CODEX
+    producer_pr: 600
+    producer_head_sha: 7f062faf8c76a6e89780bb0fbb1ee1fe96f5af4b
+    dow_accept_pr: 1107
+    real_probe_steps: 10
+  qtg_repo_deep:
+    state: PENDING_EXACT_HEAD_EXECUTION
+    pr: 1109
+source_authority: {state: RUNTIME_MEASUREMENT_AND_RECEIPT_CONSUMPTION_ONLY, may_mutate_qps_disposition: false}
+produces_receipts: [dow_projection_receipt, runtime_metrics_receipt, dow_accept_reject_defer_receipt]
+consumes_receipts: [child_contract, keb_semantic_receipt, keb_provenance_receipt, keb_runtime_receipt]
+current_blockers:
+  - QTG PR 1109 exact-head contract test has not yet been observed PASS
+  - private QPS evidence remains child-bound and must not be copied into this public DOW lane
+first_red_rule: repair_or_defer_first_observed_consumer_or_runtime_predicate_then_rerun_same_gate
+fifo_rule: oldest_actionable_consumer_blocker_first_with_same_surface_low_cost_adjacency_only
+next_victory: >-
+  Observe PR 1109 contract checks on its exact head, consume the exact matching KEB QTG receipt
+  from CODEX PR 605 when available, then emit ACCEPT/REJECT/DEFER for cryoplant child re-entry.
 federation_dependencies:
   upstream: [GBOGEB/cryoplant-project, GBOGEB/CODEX]
-  downstream: [GBOGEB/pipeline-automation-hub]
-controls: {engineering_credit: false, compliance_credit: false, negotiation_credit: false}
+  downstream: [GBOGEB/cryoplant-project, GBOGEB/pipeline-automation-hub]
+controls:
+  engineering_credit: false
+  compliance_credit: false
+  negotiation_credit: false
+  final_child_disposition: false
+  merge_is_not_runtime_pass: true
