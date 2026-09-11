@@ -1,0 +1,47 @@
+{
+  "payload_sha256": "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465370d96e124b",
+  "canonicalization": "json.dumps(payload_body,sort_keys=True,separators=(',',':'),ensure_ascii=True)",
+  "payload_body": {
+    "schema_version": "qps-w111-power-utility-payload/1.0.0",
+    "payload_id": "QPS-W111-POWER-UTILITY",
+    "authority": {
+      "child_repo": "GBOGEB/cryoplant-project",
+      "source_ssot_path": "ocd-adr/20_canonical/control/QPS_W111_POWER_UTILITY_SOURCE_SSOT_v1.json",
+      "source_ssot_git_blob_sha": "d19975a150a3530cc4db3bd2fbbf4180f757c2a4",
+      "engineering_promotion_authority": "CHILD_ONLY"
+    },
+    "confidentiality": {
+      "classification": "SANITIZED_TYPED_ENGINEERING_RECEIPT",
+      "raw_bidder_pdf_included": false,
+      "raw_offer_text_included": false,
+      "commercial_price_table_included": false
+    },
+    "boundary_taxonomy": {
+      "electrical": ["E0_SHAFT", "E1_MOTOR_INPUT", "E2_SKID_PACKAGE_INPUT", "E3_QPLANT_PROCESS_FEED", "E4_FACILITY_ALL_IN"],
+      "thermal": ["T0_INTERNAL_REJECTION", "T1_HEAT_RECOVERY", "T2_HEAT_RECOVERY_BYPASS", "T3_WCS_ROOM_AIR", "T4_MAKEUP_INTAKE_AIR", "T5_EXHAUST_BYPASS_AIR"]
+    },
+    "atoms": [
+      {"id": "LKT_HP_FREQUENCY_2KOP", "value": 56.0, "unit": "Hz", "evidence_class": "OWNER_CONFIRMED_IMMUTABLE_PROJECT_INPUT", "source_pointer": "QPS_W111_SOURCE_SSOT.owner_immutable_inputs.LKT_HP_normal_2K_OP"},
+      {"id": "LKT_HP_TOTAL_FLOW_2KOP", "value": 326.0, "unit": "g/s", "evidence_class": "CURRENT_BIDDER_SOURCE_PDF", "source_pointer": "SRC-LKT-OFFER-BOOKMARKED-CURRENT:p398:LKT_P522_2096_AP-P-SE_1001_EN:6/11:3.1"},
+      {"id": "LKT_HP_FLOW_EACH_2KOP", "value": 81.5, "unit": "g/s", "evidence_class": "DERIVED_CHILD_ANALYSIS", "source_pointer": "326/4; immutable installed_skids=4"},
+      {"id": "LKT_HP_P1", "value": 1.05, "unit": "bara", "evidence_class": "OWNER_CONFIRMED_IMMUTABLE_PROJECT_INPUT", "source_pointer": "QPS_W111_SOURCE_SSOT.owner_immutable_inputs.LKT_HP_normal_2K_OP"},
+      {"id": "LKT_HP_P2", "value": 14.0, "unit": "bara", "evidence_class": "OWNER_CONFIRMED_IMMUTABLE_PROJECT_INPUT", "source_pointer": "QPS_W111_SOURCE_SSOT.owner_immutable_inputs.LKT_HP_normal_2K_OP"},
+      {"id": "LKT_HP_ELECTRICAL_2KOP", "value": 814.0, "unit": "kW", "evidence_class": "CURRENT_BIDDER_SOURCE_PDF", "source_pointer": "SRC-LKT-OFFER-BOOKMARKED-CURRENT:p398:LKT_P522_2096_AP-P-SE_1001_EN:6/11:3.1"},
+      {"id": "LKT_PVPS_ELECTRICAL_2KOP", "value": 83.0, "unit": "kW", "evidence_class": "CURRENT_BIDDER_SOURCE_PDF", "source_pointer": "SRC-LKT-PVPS-W57-CURRENT:OFFER-12:1/3"},
+      {"id": "LKT_CC_ELECTRICAL_2KOP", "value": 5.0, "unit": "kW", "evidence_class": "CURRENT_BIDDER_SOURCE_PDF", "source_pointer": "SRC-LKT-OFFER-BOOKMARKED-CURRENT:p398:LKT_P522_2096_AP-P-SE_1001_EN:6/11:3.1"},
+      {"id": "LKT_INV_COP_QEQ_MARGIN", "value": 3.423, "unit": "kW_eq_4p5K", "evidence_class": "DERIVED_CHILD_ANALYSIS", "source_pointer": "QPS_W53_P08_LKT_INVCOP_UTILITY_EVIDENCE_SPLIT"},
+      {"id": "LKT_INV_COP_REFERENCE", "value": 310.0, "unit": "W_per_W", "evidence_class": "CURRENT_WORKING_SSOT", "source_pointer": "QPS_W53_P08_LKT_INVCOP_UTILITY_EVIDENCE_SPLIT"},
+      {"id": "LKT_INV_COP_IMPLIED_TOTAL_ELECTRICAL", "value": 1061.13, "unit": "kW", "evidence_class": "DERIVED_CHILD_ANALYSIS", "source_pointer": "310*3.423"},
+      {"id": "LKT_CONTROLLED_OPERATING_SUBTOTAL", "value": 908.0, "unit": "kW", "evidence_class": "DERIVED_CHILD_ANALYSIS", "source_pointer": "QPS_W53_P08_LKT_INVCOP_UTILITY_EVIDENCE_SPLIT"},
+      {"id": "LKT_UNRECONCILED_ELECTRICAL", "value": 153.13, "unit": "kW", "evidence_class": "UNKNOWN", "source_pointer": "1061.13-908; allocation prohibited"}
+    ],
+    "guards": [
+      "STALE_52P4HZ_REJECTED",
+      "315KW_MOTOR_RATING_NE_357KW_PACKAGE_INPUT",
+      "UNKNOWN_LOADS_NE_ZERO",
+      "HEAT_RECOVERY_NE_NEGATIVE_ELECTRICAL_INPUT",
+      "RETURNED_COLD_COUNT_ONCE_AT_DECLARED_CONTROL_VOLUME",
+      "PARENT_AND_SATELLITE_PROMOTION_FORBIDDEN"
+    ]
+  }
+}

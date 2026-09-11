@@ -1,0 +1,110 @@
+schema: w112-global-hive-glob-dow-receiver/1.2
+wave: W112
+consumer: GBOGEB/ABACUS
+role: DOW_RUNTIME_ANALYSIS_CONSUMER
+producer:
+  repo: GBOGEB/CODEX
+  pr: 619
+  exact_head_sha: 537cd69aebbd9b75a39266723ad6c0fcfd1ba74e
+  merge_sha: a330210ef092c4aeb74b2b5878f5a9a8e555b423
+  glob: GLOB.yaml
+  action_taxonomy: federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
+  receipt: federation/mesh/W112_GLOBAL_HIVE_3PC_MIP_RECEIPT.yaml
+baseline:
+  abacus_main_sha: aefc9db9e5e71b83d2983f7894b90d09eb402b3d
+3pc_consumption:
+  role: >-
+    Consume task/action vocabulary and status pointers for orchestration
+    visibility.
+  authority:
+    may:
+      - consume_status
+      - select_action_moniker
+      - orchestrate_bounded_runtime
+      - emit_derived_receipt
+    must_not:
+      - redefine_CODEX_status_contract
+      - promote_QPS_engineering_truth
+      - treat_GLOB_as_scheduler
+  lifecycle:
+    W108_status_keys: RESERVED_ACTIVE
+    W111_colliding_action_aliases: HISTORICAL_ONLY
+    W112_action_monikers: ACCEPTED_FOR_DOW_ROUTING
+  consumer_classification: ACCEPT_SEMANTIC_MODEL
+namespace_invariant:
+  status_keys:
+    - CG
+    - WD
+    - RR
+    - DR
+    - SR
+    - HK
+    - EX
+    - FE
+    - QH
+    - KR
+    - CR
+    - PB
+    - BG
+  action_monikers:
+    - CLOSE
+    - RED
+    - RUNTIME
+    - SEM
+    - SSOT
+    - RECEIPT
+    - ENABLE
+    - HARDEN
+    - CLEAN
+    - MAINT
+    - READ
+    - EXP
+    - WATCH
+  intersection_must_be_empty: true
+orchestration_binding:
+  status_source: >-
+    GBOGEB/CODEX:governance/mesh/MESH_STATUS_CONTRACT_v1.yaml
+  action_source: >-
+    GBOGEB/CODEX:federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
+  rule: >-
+    ABACUS may use status to rank and dispatch existing orchestration but does
+    not create a replacement global scheduler.
+mip:
+  modernize: >-
+    Stop interpreting W108 status aliases as W111 action classes.
+  innovate: >-
+    Consume GLOB lookup, menu, direction and lane filters as a discovery
+    surface.
+  perpetuate: >-
+    Emit DOW receipts with separate status_snapshot and action_moniker fields.
+proof_gate:
+  producer_ci_required: true
+  producer_ci_state: PASS
+  producer_ci_run_id: 34577942623
+  producer_ci_job_id: 103194616065
+  producer_ci_observed_steps:
+    - lint_ruff: PASS
+    - authority_integrity: PASS
+    - ssot_schema_validation: PASS
+    - dashboard_build: PASS
+    - tests: PASS
+    - mcp_federation_sweep: PASS
+    - glob_policy: PASS
+    - bridge_alignment: PASS
+    - render_governance: PASS
+    - dmaic_phase_map: PASS
+  governance_gate:
+    rerun_id: 34578608930
+    conclusion: PASS
+  first_red_repair:
+    prior_run_id: 34577727320
+    prior_failure: undocumented_semantic_readiness
+    repaired_in_sha: 537cd69aebbd9b75a39266723ad6c0fcfd1ba74e
+    semantic_validator_recheck: PASS_OBSERVED
+  exact_sha_required: true
+  local_execution_required_for_this_receiver: false
+disposition: ACCEPT_CONTRACT_AND_ROUTING_VOCABULARY
+next_action: >-
+  DOW may emit runtime work with separate action_moniker and W108
+  status_snapshot; any invoked runtime still requires its own EX/QH/KR
+  evidence.

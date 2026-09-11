@@ -22,8 +22,8 @@ Owner entries below are responsibility roles, not claims of spawned agents.
 | ID | Priority | Action / location | Dependency | Owner / resource | State | Exit evidence |
 | --- | --- | --- | --- | --- | --- | --- |
 | M01 | P0 | Reconcile receipt branches in all 3 repos | none | Coordinator / GitHub reads | DONE | Branch policy files present; no existing receipt-policy PRs at reconciliation |
-| M02 | P0 | Guard receipts; repair conflicting DOCX bootstrap instruction | M01 | Implementer / contents API, git | IN_PROGRESS | Ignore behavior checked including nested paths; reviewed source-only PRs |
-| M03 | P1 | Recheck accepted heads; establish census baseline on all 4 surfaces | M02 accepted | Repo maintainers / isolated worktrees, Python stdlib | BLOCKED | Private commit-bound receipts; actual tracked-file denominators |
+| M02 | P0 | Reconcile already-merged guards and clarify private evidence acceptance | M01 | Implementer / contents API, git | IN_PROGRESS | Existing main guards retained; DOCX bootstrap removal retained; clarification PRs open |
+| M03 | P1 | Inspect newer main execution artifacts before rerunning the 4-surface census | Existing main guards; M01 | Repo maintainers / isolated worktrees, Python stdlib | READY | Private commit-bound receipts; actual tracked-file denominators |
 | M04 | P1 | Execute real debug/LDAB and Docker/runner/MCP probes | M03 | Technical lead / existing probes and declared environments | PLANNED | Process executes >0 steps; exit code, environment and results bound to commit |
 | M05 | P1 | Resolve first real failure or missing dependency; repeat | M04 | Implementer / smallest affected module | PLANNED | Targeted fix passes and independent checkout repeats |
 | M06 | P1 | Prove one reusable capability, then implant in another repo | M03; selected capability passes M04 | Skill engineer / existing code, skill-creator | PLANNED | Callable package, dependencies, examples and second-repo execution |
@@ -104,3 +104,15 @@ Keep detailed receipts private; public events contain only reviewed summaries.
 A failed check is FAIL; a missing prerequisite is BLOCKED/DEFER; an unexecuted check is NOT_RUN.
 A PR opening is implementation progress, not merged acceptance or runtime DoV.
 Next event: verify M02 diffs and ignore behavior, open the three PRs, then recheck acceptance.
+
+## Reconciliation event: current main supersedes stale branches
+
+Main now contains receipt guards on 3/3 repos and 4/4 scoped paths. DOCX bootstrap is already removed;
+preserve that removal. The earlier starting counts apply only to stale receipt-policy branches.
+Current main commits inspected: ABACUS 36d636090e90a806056baed71615318cf21986e9;
+CODEX cfd687d67596cab791da4c11fe263653451e78ec;
+DOCX 6531500e87cd684491c18ad511bd2cd022bbad29.
+PRs: ABACUS #1127, CODEX #631, DOCX #49. These clarify policy and consolidate execution;
+they do not earn duplicate credit for already-merged guards. Preserve all newer main work.
+Next action: inspect newer MIP manifests, acceptance summaries and runtime receipts before selecting
+M03-M11 work. Their current execution maturity has not been assessed in this pulse.

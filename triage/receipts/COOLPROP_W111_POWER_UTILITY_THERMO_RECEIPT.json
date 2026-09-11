@@ -1,0 +1,64 @@
+{
+  "artifact": {
+    "artifact_digest": "sha256:7492f2871387f2d84a1cae8296eb61c7ec1ce642a8f4ed1aa8cf039c487df32f",
+    "artifact_id": 10265104108,
+    "receipt_sha256": "85c8a7c0796fa031381c3b2144820af7adff4bab3e4bf31e41b89b2649f5a022",
+    "run_id": 34604175050,
+    "source_head_sha": "263f483bd9919f55cb8f57ea9b242cae4530b91a",
+    "source_merge_test_sha": "7d07e23f9001031b09571083809ec95ec321a058",
+    "source_repo": "GBOGEB/CoolProp"
+  },
+  "receipt": {
+    "authority_scope": "COMPATIBILITY_REFERENCE",
+    "consumer": "GBOGEB/ABACUS",
+    "coolprop": {
+      "backend": "HEOS",
+      "fluid": "Helium",
+      "git_head": "7d07e23f9001031b09571083809ec95ec321a058",
+      "version": "7.2.1dev"
+    },
+    "engineering_promotion_forbidden": true,
+    "guards": [
+      "CoolProp_receipt_does_not_replace_HEPAK_or_bidder_guarantee",
+      "full_1p05_to_14_bara_isentropic_reference_is_not_whole_intercooled_package_efficiency",
+      "no_raw_bidder_offer_ingestion",
+      "QPS_engineering_promotion_requires_child_reentry"
+    ],
+    "input": {
+      "P1_Pa": 105000.0,
+      "P2_Pa": 1400000.0,
+      "T1_K": 298.0,
+      "evidence_class": "OWNER_IMMUTABLE_PLUS_SOURCE_BOUND_DERIVED_EQUAL_SHARE",
+      "fluid": "Helium",
+      "id": "LKT_HP_NORMAL_56HZ_EACH",
+      "mass_flow_kg_s": 0.0815,
+      "package_input_kW": 203.5
+    },
+    "isentropic_reference": {
+      "T2s_K": 839.702036171536,
+      "apparent_efficiency_vs_package": 1.1282010088609697,
+      "classification": "REFERENCE_ONLY_FOR_INTERCOOLED_PACKAGE",
+      "h2s_J_kg": 4369991.122625839,
+      "ideal_power_kW": 229.58890530320735
+    },
+    "isothermal_reference": {
+      "ideal_power_kW": 130.66658548280085,
+      "package_isothermal_efficiency": 0.6420962431587266
+    },
+    "qps_child_authority": {
+      "repo": "GBOGEB/cryoplant-project",
+      "source_ssot": "ocd-adr/20_canonical/control/QPS_W111_POWER_UTILITY_SOURCE_SSOT_v1.json",
+      "source_ssot_git_blob_sha": "d19975a150a3530cc4db3bd2fbbf4180f757c2a4"
+    },
+    "repo": "GBOGEB/CoolProp",
+    "schema": "qps-coolprop-w111-power-utility-thermo/0.1",
+    "state_1": {
+      "R_effective_J_kgK": 2077.0459729922036,
+      "cp_J_kgK": 5193.200033089827,
+      "cv_J_kgK": 3116.1540600976236,
+      "h_J_kg": 1552949.3397643995,
+      "rho_kg_m3": 0.16953660551708086,
+      "s_J_kgK": 27871.63266153105
+    }
+  }
+}

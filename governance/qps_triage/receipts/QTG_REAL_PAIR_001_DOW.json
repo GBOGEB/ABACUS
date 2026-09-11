@@ -1,0 +1,17 @@
+{
+  "consumer_repo": "GBOGEB/ABACUS",
+  "consumer_pr": 1110,
+  "consumer_head_sha": "83b8bc4b290893f4b81bf63cd26b357f6d2838ca",
+  "producer_repo": "GBOGEB/CODEX",
+  "producer_pr": 609,
+  "producer_head_sha": "2eabd5167363158f07d620707948c20f153fdd0d",
+  "producer_receipt_sha256": "a2f855989351931abeb5cfb4a3f11de5ea4b84d0fd8248f2ab881ca3262f6d3f",
+  "challenge_or_execution": "DOW contract check: producer result DEFER; ACCEPT gate requires PASS",
+  "disposition": "DEFER",
+  "reason": "PRODUCER_RESULT_DEFER_AND_POSITIVE_EXECUTION_NOT_OBSERVED",
+  "child_reentry_target": "GBOGEB/cryoplant-project",
+  "receipt_sha256": "7b65ab81f87b74e466fadbb7aa05d0523d10581c8822f0963d348a4f21da7ce2",
+  "receipt_digest_basis": "canonical JSON of all required output fields except receipt_sha256",
+  "private_evidence_copied": false,
+  "authority_transfer": false
+}

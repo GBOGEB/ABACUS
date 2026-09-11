@@ -1,0 +1,66 @@
+schema: mesh-execution-taxonomy-3pc-mip/1.0.0
+wave: W109
+role: DOW_ORCHESTRATION_CONSUMER
+source_contract:
+  repository: GBOGEB/CODEX
+  pr: 616
+  merge_sha: ded67cdf28f845289158eabe53044d9c6e17c8e9
+  status: EXACT_SHA_BOUND
+3PC:
+  classification:
+    object: execution_state_observability_contract
+    not: replacement_scheduler
+  authority:
+    taxonomy_schema: CODEX_W108
+    execution_orchestration: existing_ABACUS_and_CODEX_schedulers
+    child_domain_state: emitted_by_each_child_repo
+  lifecycle:
+    flow: telemetry_to_status_contract_to_orchestrator_to_execution_to_receipt_to_status
+  consumer:
+    primary: federated_execution_scheduler
+    secondary: DOW_KEB_child_triage_and_dashboards
+  discrimination:
+    - CG_is_target_transition_BG_is_blocker
+    - EX_is_execution_QH_is_acceptability_KR_is_durable_proof
+    - RR_is_local_readiness_DR_is_dependency_readiness
+    - SR_is_semantic_alignment_HK_is_actual_handshake
+    - FE_is_boundary_crossing_not_receipt_proof
+visible_taxonomy:
+  intent_control:
+    CG: {name: Current Gate, type_label: Target transition}
+    WD: {name: Work Disposition, type_label: Decision state}
+  preconditions:
+    RR: {name: Repository Readiness, type_label: Can repo proceed?}
+    DR: {name: Dependency Readiness, type_label: Are dependencies ready?}
+    SR: {name: Semantic Readiness, type_label: Does meaning align?}
+    HK: {name: Integration Handshake, type_label: Are endpoints connected?}
+  execution:
+    EX: {name: Execution / Runtime, type_label: Did it actually run?}
+    FE: {name: Federation Exchange, type_label: Did it cross the boundary?}
+  verification_evidence:
+    QH: {name: Quality Health, type_label: Was the run acceptable?}
+    KR: {name: Knowledge Receipt, type_label: Can we prove it?}
+    CR: {name: Critical Risk, type_label: What can still hurt us?}
+  progress_blocking:
+    PB: {name: Progress / Burndown, type_label: How much remains?}
+    BG: {name: Blocking Gate, type_label: What stops transition?}
+MIP:
+  Modernize:
+    action: adapt_existing_scheduler_inputs_from_commit_scrape_to_mesh_status_vectors
+    metric: percent_scheduler_decisions_using_contract_without_commit_scrape
+  Innovate:
+    action: dependency_aware_BG_to_next_CG_selection_using_fanout_and_evidence_strength
+    metric: agreement_rate_between_contract_only_and_full_diagnostic_selection
+  Perpetuate:
+    action: regenerate_vector_on_gate_runtime_receipt_or_dependency_change
+    metric: fresh_exact_SHA_vectors_over_active_repos
+scheduler_decision:
+  build_new_global_scheduler: DEFER
+  reason: existing_federated_execution_scheduler_already_covers_recursive_semantic_distributed_execution
+  promotion_trigger: demonstrate_existing_orchestration_cannot_consume_vectors_or_rank_mesh_dependencies
+working_memory_contract:
+  rule: all_future_mesh_scheduler_work_shall_use_long_name_plus_short_alias_on_first_reference
+  no_greenwashing: UNKNOWN_DEFER_STALE_not_GREEN
+  commit_noise: diagnostic_only
+next_action: implant_emitters_in_ABACUS_CODEX_cryoplant_and_run_three_repo_contract_only_selection
+blocking_atom: three_repo_runtime_emitter_proof

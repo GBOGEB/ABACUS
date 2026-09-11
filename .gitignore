@@ -80,6 +80,10 @@ reports/*
 !rtm/trace_matrix.json
 !tracking_v2.3/tasks/tasks.json
 
+# MIP generated evidence is private by default
+MIP/receipts/
+integration/codespace_jyperter/MIP/receipts/
+
 # QPS Line S generated render outputs
 # Regenerate with: python -m models.qps_line_s.runtime
 # These are expected outputs, not source of record.
@@ -210,7 +214,3 @@ maturity_assessment.json
 venv*/
 *.msi
 *.vsix
-
-# MIP generated receipts (local/private evidence)
-MIP/receipts/
-integration/codespace_jyperter/MIP/receipts/
