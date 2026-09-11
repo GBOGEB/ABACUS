@@ -1,0 +1,51 @@
+schema: w111-cis-30-cell-dow-consumer/1.0
+wave: W111
+consumer: GBOGEB/ABACUS
+role: DOW_DERIVED_ANALYSIS_CONSUMPTION
+child_producer:
+  repo: GBOGEB/cryoplant-project
+  pr: 880
+  exact_head_sha: 6563b1f7fe9318625e0346a244415207d8f9b952
+  baseline_pr: 877
+  baseline_merge_sha: 067e1ad9c6c461018ccb43bc2e50f6a5b2b89ee7
+keb_projection:
+  repo: GBOGEB/CODEX
+  pr: 615
+  exact_branch_head_sha: 3d46e231424de47780f58016e1577bfb625d149c
+  file: federation/mesh/W111_CIS_30_CELL_KEB_CONSUMER.yaml
+measured_counts:
+  denominator_cells: 30
+  LKT: {source_bound_partial_or_gap: 7, unknown_after_search: 8, fully_closed_by_offer: 0, external_packages: 3}
+  ALAT: {source_bound_partial_or_gap: 8, unknown_after_search: 7, fully_closed_by_offer: 0, external_packages: 3}
+  total: {source_bound_partial_or_gap: 15, unknown_after_search: 15, fully_closed_by_offer: 0, narrowed: 15}
+dow_analysis:
+  activity_importance_rule: ACTIVITY_NE_IMPORTANCE
+  queue_class: CG
+  current_internal_support_classes: [DR, SR, PB]
+  external_wait_class_after_issue: WD
+  reverse_fanout_P0:
+    - {rank: 1, id: RFI-CIS-01, downstream: [QPLANT:CIS, WCS:CS, QRB:CS, WSH, QSN, MCS]}
+    - {rank: 2, id: RFI-CIS-02, downstream: [all_contractor_control_layers, sequencing, interlocks, integration]}
+    - {rank: 3, id: RFI-CIS-03, downstream: [WCS, QRB, subsystem_sequences, permissives, interlocks]}
+    - {rank: 4, id: RFI-CIS-07, downstream: [WSH_CP2, recovery, storage, QPLANT:CIS]}
+    - {rank: 5, id: RFI-CIS-08, downstream: [QSN, LN2_option, QPLANT:CIS]}
+    - {rank: 6, id: RFI-CIS-10, downstream: [MCS, QPLANT:CIS, external_interface]}
+    - {rank: 7, id: RFI-CIS-14, downstream: [scope, responsibility, FAT, SAT, commissioning, lifecycle]}
+    - {rank: 8, id: RFI-CIS-04, downstream: [OEM_protection, override_paths, trip_permissive_semantics]}
+    - {rank: 9, id: RFI-CIS-15, downstream: [deviations, assumptions, interface_changes]}
+    - {rank: 10, id: RFI-CIS-12, downstream: [software_rights, maintainability, lifecycle]}
+  rationale: >-
+    Architecture and authority are reverse-loaded first because their answers change interpretation
+    of multiple lower-level questions. WSH/QSN and MCS boundaries follow. Lifecycle/toolchain work
+    remains contractually material but has lower immediate SBS/CIS interpretation fan-out.
+package_disposition:
+  LKT: ACCEPT_THREE_PACKAGE_EXTERNAL_SET_AS_DERIVED_DOW_PROJECTION
+  ALAT: ACCEPT_THREE_PACKAGE_EXTERNAL_SET_AS_DERIVED_DOW_PROJECTION
+  stable_atom_count_per_bidder: 15
+  package_count_per_bidder: 3
+  semantic_loss_allowed: false
+disposition: ACCEPT_DERIVED_PRIORITY_AND_COUNTS_DEFER_BIDDER_CLOSURE
+boundary: >-
+  DOW accepts the measured counts and ranking as derived workflow control. No bidder compliance,
+  engineering truth or negotiation credit is promoted. Authoritative bidder responses remain child-owned inputs.
+next_action: return this DOW disposition to cryoplant #880 for child re-entry after KEB and DOW branches are exact-head bound.
