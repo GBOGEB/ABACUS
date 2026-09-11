@@ -1,0 +1,38 @@
+name: QPS W111 Power Utility DOW
+
+on:
+  pull_request:
+    paths:
+      - 'triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml'
+      - 'scripts/qps_w111_power_utility_analysis.py'
+      - 'triage/PIPELINE_REGISTRY.yaml'
+      - '.github/workflows/qps-w111-power-utility-dow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute W111 deterministic DOW analysis
+        run: python scripts/qps_w111_power_utility_analysis.py > /tmp/dow_w111_power_utility_receipt.json
+      - name: Show receipt summary
+        run: python - <<'PY'
+          import json
+          p='/tmp/dow_w111_power_utility_receipt.json'
+          d=json.load(open(p))
+          print('DOW_W111_POWER_UTILITY=PASS')
+          print('unreconciled_kW=', d['invCOP_screen']['unreconciled_electrical_kW'])
+          print('baseload=', d['baseload']['status'])
+          print('pca=', d['pca']['status'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dow-w111-power-utility-${{ github.sha }}
+          path: /tmp/dow_w111_power_utility_receipt.json
