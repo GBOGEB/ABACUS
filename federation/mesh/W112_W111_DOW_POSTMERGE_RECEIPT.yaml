@@ -1,0 +1,71 @@
+# yamllint disable rule:line-length
+schema: w112-w111-dow-postmerge-receipt/1.0
+wave: W112
+role: DOW_POSTMERGE_RECEIPT_AND_FIRST_RED_REPAIR
+source_wave: W111
+source_merges:
+  codex:
+    repo: GBOGEB/CODEX
+    pr: 615
+    merge_sha: 1ad94ae3e2244a76b3b3aaa0d47d858518c79557
+    reviewed_head_sha: 3d46e231424de47780f58016e1577bfb625d149c
+  qps_child:
+    repo: GBOGEB/cryoplant-project
+    pr: 880
+    merge_sha: 8843eb4a4ac6155f35f4284b81385ab34e5b4556
+    reviewed_head_sha: 6563b1f7fe9318625e0346a244415207d8f9b952
+  abacus:
+    repo: GBOGEB/ABACUS
+    pr: 1115
+    merge_sha: 496323ce828a9266ed04898af964433cd3a7e2f0
+    reviewed_head_sha: 38f9fe175420fee61c207307858950d1f615ff5b
+baseline:
+  qps_census_pr: 877
+  qps_census_merge_sha: 067e1ad9c6c461018ccb43bc2e50f6a5b2b89ee7
+measured_contract:
+  denominator_cells: 30
+  source_bound_partial_or_gap: 15
+  unknown_after_search: 15
+  fully_closed_by_offer: 0
+  materially_narrowed: 15
+  external_packages_per_bidder: 3
+first_red_repair:
+  action_sequence: [RR, QH]
+  failed_workflow: Validate Docs (Markdown/YAML/JSON)
+  failed_run_id: 34576185859
+  failed_step: Validate changed docs
+  diagnosis: >-
+    The changed YAML documents were parse-valid, while the stricter changed-docs workflow invokes
+    yamllint with the repository default line-length rule. W111 introduced long controlled lines
+    without the repository-standard file-level line-length waiver used by comparable governed YAML.
+  repair_commits:
+    mesh_dock: 23595cd73b5d47b934223c6345f8a63e63192e23
+    dow_consumer: ba2621539b9a01016e0f138d223cd79afc3cb4c5
+  repair: add the repository-standard '# yamllint disable rule:line-length' directive only; no semantic mutation
+codex_gate_observation:
+  original_w003_run_id: 34576162207
+  original_conclusion: failure
+  failure_class: missing_PR_CLASSIFICATION_metadata
+  repair: PR #615 metadata updated with mandatory governance header
+  rerun_id: 34577373709
+  rerun_conclusion: success
+qps_runtime_observation:
+  status: DEFER_RUNTIME_EXECUTION
+  action_class: CR
+  evidence:
+    w56_run_id: 34576080106
+    w69_run_id: 34576080052
+    ubuntu_latest: {conclusion: failure, steps_executed: 0, runner_id: 0}
+    ubuntu_2204: {conclusion: failure, steps_executed: 0, runner_id: 0}
+    windows_latest: {conclusion: failure, steps_executed: 0, runner_id: 0}
+  interpretation: runner provisioning/execution did not begin; do not reinterpret as an application test failure or PASS
+review_feedback_closed_by_this_wave:
+  source_pr: GBOGEB/cryoplant-project#880
+  finding: bind propagation contract to actual child revision
+  disposition: >-
+    W112 binds the reviewed child head and actual #880 merge SHA, plus the exact W111 CODEX and ABACUS merge SHAs.
+authority:
+  may: [consume, challenge, rank, return_disposition]
+  must_not: [promote_QPS_engineering_truth, promote_bidder_compliance, claim_runtime_green]
+disposition: ACCEPT_W111_DERIVED_PROJECTION_WITH_EXACT_MERGE_TUPLE_DEFER_QPS_RUNTIME_AND_BIDDER_CLOSURE
+next: CODEX KEB consumes this post-merge DOW receipt; QPS child then performs re-entry against exact W111 merge identities.
