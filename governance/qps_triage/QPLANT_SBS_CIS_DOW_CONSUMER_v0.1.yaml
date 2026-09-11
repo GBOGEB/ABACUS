@@ -1,0 +1,41 @@
+schema: qps.dow.contract-clarification/v0.1
+wave: W105
+role: DOW_CONSUMER
+source:
+  repo: GBOGEB/cryoplant-project
+  pr: 862
+  head_sha: ac94710352d93fe09c9c81c2a20d086f799abdcb
+  artifact: canonical/QPLANT_SBS_CIS_CONTRACT_CLARIFICATION_v0.1.md
+state: PROVISIONAL_UNTIL_SOURCE_MERGED
+claims:
+  functional_sbs:
+    QPLANT: [WCS, QRB]
+    QINFRA: [WSH, QSN, WPS, WPR]
+    QDIST: [QLM, QVE]
+    QCELL: [QVB, QM]
+    QDB_physical: [QLM, QVBs, QVE]
+  control_hierarchy:
+    master: QPLANT:CIS
+    subordinate: [WCS:CS, QRB:CS]
+    conditional_integrations:
+      WSH: contingent_part_2
+      QSN: applicant_design_prerogative_if_included
+  exclusions:
+    - QINFRA.WPS.U downstream of defined QRB/QPLANT interface toward QCELL
+    - QINFRA.WPS.W downstream of defined QRB/QPLANT interface toward QCELL
+    - QINFRA.WPS.S downstream of defined QRB/QPLANT interface toward QCELL
+challenge_rules:
+  - reject functional classification of QVB as QDIST
+  - do not infer scope ownership from physical routing alone
+  - do not promote QSN to mandatory contractor scope
+  - preserve local OEM equipment protection while requiring coordination with QPLANT:CIS
+  - require terminal/interface-point ownership for WPS/WPR line segments
+promotion_gate:
+  required:
+    - cryoplant source PR merged
+    - controlled Addendum/RTM incorporation receipt
+    - derived interface/control artifacts parity checked
+  until_then: NO_FORMAL_COMPLIANCE_CREDIT
+notes:
+  - This consumer object carries contract semantics into DOW without converting proposed clarification into accepted evidence.
+  - The source Addendum currently contains stale wording that groups QVBs inside QDIST; W105 explicitly treats correction as a governed change, not a silent rewrite.
