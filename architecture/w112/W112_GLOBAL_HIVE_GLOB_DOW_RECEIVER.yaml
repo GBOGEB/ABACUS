@@ -1,4 +1,4 @@
-schema: w112-global-hive-glob-dow-receiver/1.1
+schema: w112-global-hive-glob-dow-receiver/1.2
 wave: W112
 consumer: GBOGEB/ABACUS
 role: DOW_RUNTIME_ANALYSIS_CONSUMER
@@ -6,6 +6,7 @@ producer:
   repo: GBOGEB/CODEX
   pr: 619
   exact_head_sha: 537cd69aebbd9b75a39266723ad6c0fcfd1ba74e
+  merge_sha: a330210ef092c4aeb74b2b5878f5a9a8e555b423
   glob: GLOB.yaml
   action_taxonomy: federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
   receipt: federation/mesh/W112_GLOBAL_HIVE_3PC_MIP_RECEIPT.yaml
@@ -92,6 +93,9 @@ proof_gate:
     - bridge_alignment: PASS
     - render_governance: PASS
     - dmaic_phase_map: PASS
+  governance_gate:
+    rerun_id: 34578608930
+    conclusion: PASS
   first_red_repair:
     prior_run_id: 34577727320
     prior_failure: undocumented_semantic_readiness
