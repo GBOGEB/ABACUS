@@ -1,4 +1,11 @@
-schema_version: triage-architecture/1.0.0
+schema_version: triage-architecture/1.1.0
+qps_authority_source:
+  repo: GBOGEB/cryoplant-project
+  artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  authority_scope: QPS_ENGINEERING
+  projection_role: DERIVED_ANALYSIS_RUNTIME
+  engineering_promotion_forbidden: true
+  source_or_payload_digest_when_exchanged: REQUIRED
 cOCD:
   id: TRIAGE-OCD-DOW
   repo: GBOGEB/ABACUS
@@ -8,16 +15,20 @@ cOCD:
   consumes: [immutable_child_payload, CODEX_semantic_contract]
   authority:
     engineering_truth: false
+    qps_canonical_ocd: false
+    qps_engineering_adrs: false
     compliance: false
     final_disposition: false
 cADR:
   id: TRIAGE-ADR-DOW-001
-  title: DOW is analytical never authoritative
+  title: DOW is analytical never QPS-authoritative
   status: ACCEPTED
+  authority_scope: REPO_LOCAL_ANALYTICAL_RUNTIME
   decision:
     analysis_inputs: IMMUTABLE
     derived_results: APPEND_ONLY
     synthetic_engineering_values: FORBIDDEN
+    engineering_promotion: FORBIDDEN
     PCA_authority: DIAGNOSTIC_ONLY
   return:
     destination: CODEX
