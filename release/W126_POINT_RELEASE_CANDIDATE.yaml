@@ -1,0 +1,67 @@
+schema: triage.point-release-candidate/v1
+wave: W126
+repo: GBOGEB/ABACUS
+role: DOW_LINEAGE_REPEATABILITY_ORCHESTRATION
+base_main_sha: ee478dc5e976f57bc89fbffbf14b4416b0a1009d
+status: RC_CANDIDATE_PROBE_NO_RELEASE_CREDIT
+purpose: >-
+  Trigger one fresh exact-head release-candidate proof pulse using existing
+  ABACUS lineage, self-index, canonicalization, matrix, smoke and security
+  machinery. This file adds no feature architecture and grants no release
+  credit by merge alone.
+
+release_gates:
+  - id: D1
+    gate: canonicalization_and_matrix
+    evidence:
+      - qps-canonicalization
+      - CI - ABACUS Matrix
+      - YAML Validation
+    pass: all three PASS on this exact PR head
+  - id: D2
+    gate: lineage_and_repeatability
+    evidence:
+      - W71 Residual Generated-Lineage Census
+      - W70 Exact-SHA Measured ID Pulse
+      - MIP N2 exact-SHA self-index
+    pass: all three PASS on this exact PR head
+  - id: D3
+    gate: smoke_and_security
+    evidence:
+      - smoke-test
+      - Security Scan — Ruff
+      - DELTA_1 Dependency Review
+      - DELTA_1 CodeQL
+    pass: all applicable selected checks PASS on this exact PR head
+  - id: D4
+    gate: tooling_and_docs
+    evidence:
+      - Validate Docs (Markdown/YAML/JSON)
+      - Format Check
+      - Tooling CI
+      - CI/CD Test Suite
+    pass: >-
+      all release-blocking selected checks PASS or are explicitly
+      dispositioned nonblocking
+
+workers:
+  DOW: runtime_lineage_and_orchestration
+  QA: repeatability_and_receipt_review
+  Project_Manager: WIP_gate_sequence_and_release_burndown
+  Governor: release_gate_disposition
+
+stop_rule: first real red -> repair only that invariant -> rerun same gate
+handoff_to_child:
+  required:
+    - exact_repo
+    - exact_head_sha
+    - workflow_run_ids
+    - executed_steps_gt_0
+    - release_gate_disposition
+  authority: analytical_and_orchestration_only
+  child_release_authority: GBOGEB/cryoplant-project
+
+credit_guard:
+  engineering_delta: 0
+  negotiation_delta: 0
+  release_delta: 0
