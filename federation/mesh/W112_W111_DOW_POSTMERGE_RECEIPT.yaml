@@ -51,7 +51,8 @@ codex_gate_observation:
   original_w003_run_id: 34576162207
   original_conclusion: failure
   failure_class: missing_PR_CLASSIFICATION_metadata
-  repair: PR #615 metadata updated with mandatory governance header
+  repair: >-
+    PR 615 metadata was updated with the mandatory governance header.
   rerun_id: 34577373709
   rerun_conclusion: success
 qps_runtime_observation:
