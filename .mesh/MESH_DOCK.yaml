@@ -1,5 +1,5 @@
 # yamllint disable rule:line-length
-schema: gbogeb-mesh-dock/1.0
+schema: gbogeb-mesh-dock/1.1
 repo: GBOGEB/ABACUS
 node_id: repo.abacus
 ring: R0_CORE_AUTHORITY
@@ -8,19 +8,29 @@ local_ssot:
   catalog: ssot_artifacts_catalog.md
   resolver: DMAIC_V3/core/ssot_resolver.py
   qps_glossary_bridge: architecture/w98/W98_QPS_GLOSSARY_DOW_3PC_3PR.yaml
+  w112_receiver: architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml
 global_directory:
   repo: GBOGEB/CODEX
+  glob: GLOB.yaml
   census: federation/mesh/GLOBAL_HIVE_CENSUS_v1.yaml
   glossary: federation/mesh/GLOBAL_GLOSSARY_v1.yaml
   action_taxonomy: federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml
   where_used: federation/mesh/GLOBAL_WHERE_USED_v1.yaml
+  status_contract: governance/mesh/MESH_STATUS_CONTRACT_v1.yaml
 authority:
   may: [consume_and_challenge_receipts, derived_analysis, ranking, ACCEPT_REJECT_DEFER_return]
-  must_not: [promote_QPS_engineering_truth, override_child_authority]
+  must_not: [promote_QPS_engineering_truth, override_child_authority, treat_GLOB_as_scheduler]
 inputs: [KEB_receipts, child_source_tuple, measured_features]
 outputs: [DOW_disposition, analytics, ranked_actions, child_return_receipt]
-action_classes: [CG, RR, SR, DR, PB, FE, QH, BG, WD]
+action_monikers: [CLOSE, RED, RUNTIME, SEM, SSOT, RECEIPT, ENABLE, HARDEN, CLEAN, MAINT, READ, EXP, WATCH]
+reserved_status_keys: [CG, WD, RR, DR, SR, HK, EX, FE, QH, KR, CR, PB, BG]
 first_use_case: consume an exact KEB receipt and return a scoped disposition to the QPS child
 current_focus:
-  object: W111_CIS_30_CELL_DOW_CONSUMER
-  action_class: PB
+  object: W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER
+  action_moniker: RECEIPT
+  status_snapshot:
+    CG: CROSS_PLANE_CONSUMMATION
+    BG: ABACUS_DOCS_VALIDATION_AND_CHILD_EXACT_HEAD_REFRESH
+    EX: EXECUTED
+    QH: REPAIR_IN_PROGRESS
+    KR: CODEX_PRODUCER_RECEIPT_BOUND
