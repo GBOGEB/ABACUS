@@ -1,8 +1,14 @@
 # yamllint disable rule:line-length
-schema: w112-w111-dow-postmerge-receipt/1.0
+schema: w112-w111-dow-postmerge-receipt/1.1
 wave: W112
 role: DOW_POSTMERGE_RECEIPT_AND_FIRST_RED_REPAIR
 source_wave: W111
+action_namespace:
+  source_repo: GBOGEB/CODEX
+  source_pr: 619
+  exact_head_sha: 537cd69aebbd9b75a39266723ad6c0fcfd1ba74e
+  rule: W108 two-letter tokens are status dimensions only; new tasks emit verb action monikers
+  legacy_w111_action_aliases: DEPRECATED_PARSE_ONLY
 source_merges:
   codex:
     repo: GBOGEB/CODEX
@@ -34,7 +40,7 @@ measured_contract:
   materially_narrowed: 15
   external_packages_per_bidder: 3
 first_red_repair:
-  action_sequence: [RR, QH]
+  action_monikers: [RED, HARDEN]
   failed_workflow: Validate Docs (Markdown/YAML/JSON)
   failed_run_id: 34576185859
   failed_step: Validate changed docs
@@ -47,17 +53,25 @@ first_red_repair:
     dow_consumer: ba2621539b9a01016e0f138d223cd79afc3cb4c5
   repair: >-
     Add the repository-standard yamllint line-length waiver only; no semantic mutation.
+  verification:
+    exact_head_sha: ab42e4370cf2708f89b8c85427329df992f765f8
+    validate_docs_run_id: 34578066977
+    conclusion: success
 codex_gate_observation:
   original_w003_run_id: 34576162207
   original_conclusion: failure
   failure_class: missing_PR_CLASSIFICATION_metadata
+  repair_action_moniker: RED
   repair: >-
     PR 615 metadata was updated with the mandatory governance header.
   rerun_id: 34577373709
   rerun_conclusion: success
 qps_runtime_observation:
-  status: DEFER_RUNTIME_EXECUTION
-  action_class: CR
+  disposition: DEFER_RUNTIME_EXECUTION
+  action_moniker: RUNTIME
+  status_snapshot:
+    EX: RED
+    BG: BLOCKED
   evidence:
     w56_run_id: 34576080106
     w69_run_id: 34576080052
@@ -74,4 +88,5 @@ authority:
   may: [consume, challenge, rank, return_disposition]
   must_not: [promote_QPS_engineering_truth, promote_bidder_compliance, claim_runtime_green]
 disposition: ACCEPT_W111_DERIVED_PROJECTION_WITH_EXACT_MERGE_TUPLE_DEFER_QPS_RUNTIME_AND_BIDDER_CLOSURE
+next_action_moniker: RECEIPT
 next: CODEX KEB consumes this post-merge DOW receipt; QPS child then performs re-entry against exact W111 merge identities.
