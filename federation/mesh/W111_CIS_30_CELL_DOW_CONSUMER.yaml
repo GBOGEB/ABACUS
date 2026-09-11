@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema: w111-cis-30-cell-dow-consumer/1.0
 wave: W111
 consumer: GBOGEB/ABACUS
