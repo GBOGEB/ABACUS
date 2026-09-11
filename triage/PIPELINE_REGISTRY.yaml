@@ -1,18 +1,77 @@
-schema_version: "1.0"
+schema_version: "1.1"
 repository: GBOGEB/ABACUS
 pipelines:
   - id: DOW_DMAIC
     state: CANONICAL_ACTIVE
     implementation: DMAIC_V3/core/twelve_cluster_orchestrator.py
-    flow: [intake, define, measure, analyze, improve, control, knowledge, todo_temporal, findings_receipt]
+    flow:
+      - intake
+      - define
+      - measure
+      - analyze
+      - improve
+      - control
+      - knowledge
+      - todo_temporal
+      - findings_receipt
   - id: DOW_FEDERATION_RETURN
     state: CANONICAL_ACTIVE
-    implementation: [DMAIC_V3/core/handover_bridge.py, federation, feedback]
-    flow: [governed_payload, bounded_analysis, typed_findings, KEB_normalization, child_return]
+    implementation:
+      - DMAIC_V3/core/handover_bridge.py
+      - federation
+      - feedback
+    flow:
+      - governed_payload
+      - bounded_analysis
+      - typed_findings
+      - KEB_normalization
+      - child_return
+  - id: DOW_W111_QPS_POWER_UTILITY
+    state: CONTROL_CANDIDATE
+    child_authority: GBOGEB/cryoplant-project
+    keb_ingress: GBOGEB/CODEX
+    manifest: triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml
+    implementation: scripts/qps_w111_power_utility_analysis.py
+    workflow: .github/workflows/qps-w111-power-utility-dow.yml
+    analyses:
+      - isothermal
+      - isentropic_reference
+      - hybrid_boundary
+      - baseload_gate
+      - invCOP_E3_E4
+      - Monte_Carlo
+      - PCA_sample_gate
+      - BT_reverse_loading
+    flow:
+      - KEB_governed_payload
+      - deterministic_baseline
+      - optional_CoolProp_receipt
+      - residual_decomposition
+      - MC_if_priors_declared
+      - PCA_if_adequate
+      - BT_next_evidence
+      - typed_DOW_receipt
+      - KEB_return
+    prohibitions:
+      - QPS_engineering_promotion
+      - zero_fill_UNKNOWN
+      - preferred_invCOP_curve_fit
+      - raw_bidder_PDF_ingest
   - id: AGENTIC_EXECUTION
     state: CANONICAL_ACTIVE
-    implementation: [local_mcp/agent_orchestrator_v3.0.py, local_mcp/knowledge_integration_v2.3.py]
+    implementation:
+      - local_mcp/agent_orchestrator_v3.0.py
+      - local_mcp/knowledge_integration_v2.3.py
   - id: SSOT_VIEW_GENERATION
     state: CANONICAL_ACTIVE
-    implementation: [scripts/build_qps_ssot_views.py, scripts/qa_qps_ssot_views.py]
-quality_gates: [payload_identity, provenance, analytical_scope, finding_type, return_contract]
+    implementation:
+      - scripts/build_qps_ssot_views.py
+      - scripts/qa_qps_ssot_views.py
+quality_gates:
+  - payload_identity
+  - provenance
+  - analytical_scope
+  - thermodynamic_boundary
+  - residual_visibility
+  - finding_type
+  - return_contract

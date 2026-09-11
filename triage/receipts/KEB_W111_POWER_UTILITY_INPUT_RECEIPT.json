@@ -1,0 +1,24 @@
+{
+  "artifact": {
+    "artifact_digest": "sha256:a2f793d76097edd41269493c5931462b572278afc6eeb9e80bf3f9f77801f3cf",
+    "artifact_id": 10266200791,
+    "run_id": 34605581034,
+    "source_head_sha": "7236672cf7ea450ac5103df2e99e3d59b66acd01",
+    "source_repo": "GBOGEB/CODEX"
+  },
+  "receipt": {
+    "authority_scope": "REPO_LOCAL_SEMANTIC_RUNTIME",
+    "child_return_required": true,
+    "child_source_ssot_git_blob_sha": "d19975a150a3530cc4db3bd2fbbf4180f757c2a4",
+    "confidentiality_checks": "PASS",
+    "dispatch_target": "GBOGEB/ABACUS",
+    "engineering_promotion_forbidden": true,
+    "input_payload_sha256": "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465370d96e124b",
+    "output_payload_sha256": "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465370d96e124b",
+    "payload_digest_preserved": true,
+    "provenance_checks": "PASS",
+    "receipt_id": "KEB-W111-POWER-UTILITY",
+    "schema": "codex-keb-w111-power-utility-receipt/0.1",
+    "semantic_checks": "PASS"
+  }
+}
