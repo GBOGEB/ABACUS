@@ -210,3 +210,7 @@ maturity_assessment.json
 venv*/
 *.msi
 *.vsix
+
+# MIP generated receipts (local/private evidence)
+MIP/receipts/
+integration/codespace_jyperter/MIP/receipts/
