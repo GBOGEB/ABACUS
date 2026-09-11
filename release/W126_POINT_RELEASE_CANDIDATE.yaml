@@ -5,9 +5,10 @@ role: DOW_LINEAGE_REPEATABILITY_ORCHESTRATION
 base_main_sha: ee478dc5e976f57bc89fbffbf14b4416b0a1009d
 status: RC_CANDIDATE_PROBE_NO_RELEASE_CREDIT
 purpose: >-
-  Trigger one fresh exact-head release-candidate proof pulse using existing ABACUS
-  lineage, self-index, canonicalization, matrix, smoke and security machinery.
-  This file adds no feature architecture and grants no release credit by merge alone.
+  Trigger one fresh exact-head release-candidate proof pulse using existing
+  ABACUS lineage, self-index, canonicalization, matrix, smoke and security
+  machinery. This file adds no feature architecture and grants no release
+  credit by merge alone.
 
 release_gates:
   - id: D1
@@ -39,7 +40,9 @@ release_gates:
       - Format Check
       - Tooling CI
       - CI/CD Test Suite
-    pass: all release-blocking selected checks PASS or are explicitly dispositioned nonblocking
+    pass: >-
+      all release-blocking selected checks PASS or are explicitly
+      dispositioned nonblocking
 
 workers:
   DOW: runtime_lineage_and_orchestration
