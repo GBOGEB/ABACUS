@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 schema_version: abacus-dow-qps-power-utility/0.1
 wave: W111
 status: CONTROL_CANDIDATE
@@ -157,10 +158,10 @@ output_receipt:
 
 DoD:
   analysis_contract_present: true
-  deterministic_calculation_script: PENDING
-  registry_binding: PENDING
-  CI: PENDING
-  DOW_receipt: PENDING
+  deterministic_calculation_script: PRESENT
+  registry_binding: PRESENT
+  CI: EXECUTES
+  DOW_receipt: GENERATED_BY_WORKFLOW
 
 victory: >-
   ABACUS can reproduce isothermal and isentropic-reference powers, explicitly classify non-applicable whole-package
