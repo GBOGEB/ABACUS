@@ -1,0 +1,23 @@
+schema: qps-global-glossary-bridge/1.0.0
+repo: GBOGEB/ABACUS
+role: DOW_GOVERNANCE_CONSUMER
+source_authority:
+  repository: GBOGEB/cryoplant-project
+  path: controls/QPS_GLOBAL_GLOSSARY_v1.yaml
+  branch: main
+consumption:
+  policy:
+    - consume QPS-domain terms for DOW allocation disposition and governance
+    - do not redefine QPS engineering terminology locally
+    - bare VV shall not mean Verification and Validation
+    - VNV is canonical machine identifier for Verification and Validation
+    - QRB.VV means QRB Vacuum Vessel only
+    - WPS_SYSTEM and WPS_WELDING must remain disambiguated
+    - semantic bridge does not transfer engineering authority
+federation_edges:
+  inbound: GBOGEB/cryoplant-project -> GBOGEB/ABACUS
+  outbound: GBOGEB/ABACUS -> GBOGEB/cryoplant-project
+  outbound_authority: DOW_DISPOSITION_RECEIPT_ONLY
+triage:
+  category: QPS_GLOBAL_SEMANTIC_CONTROL
+  status: BRIDGE_READY_PENDING_SOURCE_MERGE
