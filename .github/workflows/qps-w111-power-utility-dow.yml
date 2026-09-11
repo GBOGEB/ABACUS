@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml'
+      - 'triage/payloads/QPS_W111_POWER_UTILITY_SANITIZED_v1.json'
       - 'scripts/qps_w111_power_utility_analysis.py'
       - 'triage/PIPELINE_REGISTRY.yaml'
       - '.github/workflows/qps-w111-power-utility-dow.yml'
@@ -20,7 +21,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Execute W111 deterministic DOW analysis
+      - name: Execute W111 exact-payload DOW analysis
         run: >-
           python scripts/qps_w111_power_utility_analysis.py
           > /tmp/dow_w111_power_utility_receipt.json
