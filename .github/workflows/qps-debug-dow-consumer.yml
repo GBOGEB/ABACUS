@@ -13,14 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      CODEX_QPS_DEBUG_BINDING_JSON: ${{ toJson(github.event.client_payload.binding) }}
+      CODEX_QPS_DEBUG_BINDING_JSON: >-
+        ${{ toJson(github.event.client_payload.binding) }}
     steps:
       - uses: actions/checkout@v4
       - name: Consume CODEX KEB binding fail-closed
-        run: python3 runtime/federation/qps_debug_dow_consumer.py
+        run: |
+          python3 runtime/federation/qps_debug_dow_consumer.py
       - name: Assert manual/no-input invocation remains DEFER
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: grep -q '"status": "DEFER"' runtime/federation/generated/qps_debug_dow_binding.json
+        run: |
+          grep -q '"status": "DEFER"' \
+            runtime/federation/generated/qps_debug_dow_binding.json
       - uses: actions/upload-artifact@v4
         with:
           name: qps-debug-dow-binding
