@@ -51,6 +51,17 @@ def compile_ok(source: str) -> bool:
     return True
 
 
+def _recompute_verification(receipt: dict[str, Any]) -> None:
+    checks = receipt["checks"]
+    failed = sorted(name for name, passed in checks.items() if not passed)
+    verification = "PASS" if not failed else "FAIL"
+    receipt["failed_checks"] = failed
+    receipt["verification"] = verification
+    receipt["return_state"] = (
+        "IMPROVED" if verification == "PASS" else "REGRESSED"
+    )
+
+
 def build_receipt() -> dict[str, Any]:
     exact_sha = git("rev-parse", "HEAD")
     checkout_before = git("status", "--porcelain")
@@ -73,6 +84,7 @@ def build_receipt() -> dict[str, Any]:
     checkout_after = git("status", "--porcelain")
     delta = after_metric - before_metric
     fix_records = fixer.fixes_applied
+    source_checkout_unchanged = checkout_before == "" and checkout_after == ""
 
     checks = {
         "before_metric_observed": before_metric == 1,
@@ -85,17 +97,16 @@ def build_receipt() -> dict[str, Any]:
         "after_fixture_compiles": after_compile,
         "after_fixture_exact": after_text == AFTER,
         "improvement_delta": delta == -1,
-        "source_checkout_unchanged": checkout_before == checkout_after,
+        "source_checkout_clean_before": checkout_before == "",
+        "source_checkout_clean_after_repair": checkout_after == "",
+        "source_checkout_unchanged": source_checkout_unchanged,
     }
-    failed = sorted(name for name, passed in checks.items() if not passed)
-    verification = "PASS" if not failed else "FAIL"
-    return_state = "IMPROVED" if verification == "PASS" else "REGRESSED"
 
-    return {
+    receipt: dict[str, Any] = {
         "schema_version": "0.1",
         "program": "MIP",
         "diagnostic": "repo_health_selfheal",
-        "verification": verification,
+        "verification": "FAIL",
         "exact_sha": exact_sha,
         "execution_context": "transient_controlled_fixture",
         "source_primitive": (
@@ -106,15 +117,17 @@ def build_receipt() -> dict[str, Any]:
         "after_metric": after_metric,
         "delta": delta,
         "metric_direction": "lower_is_better",
-        "return_state": return_state,
-        "source_checkout_unchanged": checkout_before == checkout_after,
+        "return_state": "REGRESSED",
+        "source_checkout_unchanged": source_checkout_unchanged,
         "fixture_before_sha256": sha256_text(before_text),
         "fixture_after_sha256": sha256_text(after_text),
         "checks": checks,
-        "failed_checks": failed,
+        "failed_checks": [],
         "raw_receipt_retention": "transient_runner_only",
         "promotion_authority": False,
     }
+    _recompute_verification(receipt)
+    return receipt
 
 
 def main() -> int:
@@ -125,9 +138,28 @@ def main() -> int:
     args = parser.parse_args()
 
     receipt = build_receipt()
-    payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+    checkout_final = git("status", "--porcelain")
+    receipt["checks"]["source_checkout_clean_after_output"] = (
+        checkout_final == ""
+    )
+    receipt["source_checkout_unchanged"] = (
+        receipt["source_checkout_unchanged"] and checkout_final == ""
+    )
+    receipt["checks"]["source_checkout_unchanged"] = receipt[
+        "source_checkout_unchanged"
+    ]
+    _recompute_verification(receipt)
+
+    payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+    if args.output is not None:
         args.output.write_text(payload, encoding="utf-8")
     print(payload, end="")
     return 0 if receipt["verification"] == "PASS" else 1

@@ -5,6 +5,7 @@ on:
     paths:
       - "MIP/**"
       - "scripts/mip_*.py"
+      - "DMAIC_V3/quick_error_fix.py"
       - "integration/codespace_jyperter/MIP/**"
       - "integration/codespace_jyperter/scripts/mip_*.py"
       - ".github/workflows/mip-n2-self-index.yml"
