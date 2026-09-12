@@ -32,7 +32,9 @@ findings:
       licensed HEPAK emits the governed eight-row CSV + manifest. A delete-safe
       project-facing handover should preserve this as a parallel non-compensating
       local execution gate even though it is not the primary provenance lane.
-    required_repair: add W3-12/#990 to the opportunity radar and bootstrap parallel-anchor refresh list
+    required_repair: >-
+      Add W3-12/#990 to the opportunity radar and to the bootstrap parallel-anchor
+      refresh list.
   - id: DOW-SC-002
     severity: LOW
     state: PASS_WITH_GUARD
