@@ -1,0 +1,129 @@
+# yamllint disable rule:line-length
+schema_version: abacus-dow-qps-w145-numerical-dov/0.1
+wave: W145
+status: CONTROLLED_ANALYTICAL_REENTRY_RUNTIME_REFERENCE_PASS_AUTHORITY_GATES_WITHHELD
+repo: GBOGEB/ABACUS
+authority_scope: READ_ONLY_ANALYTICAL_DIAGNOSTICS
+engineering_promotion_forbidden: true
+
+qps_child_authority:
+  repo: GBOGEB/cryoplant-project
+  execution_PR: 1023
+  execution_merge_sha: bd9907a715e2bfb50b9d9b9cac09aa1628cb88bc
+  runtime_reentry_PR: 1025
+  runtime_reentry_merge_sha: 95847e489918c25a7c471404c425c130c9485aa3
+  runtime_receipt: triage/w145/QPS_W145_COOLPROP_RUNTIME_REENTRY_v0.1.yaml
+
+keb_ingress:
+  repo: GBOGEB/CODEX
+  PR: 660
+  merge_sha: 5378569e00f7013b369e63908d7245776f29aa9b
+  contract: triage/W145_QPS_NUMERICAL_DOV_KEB_REENTRY.yaml
+  rule: typed_semantics_and_provenance_only
+
+controlled_numerical_view:
+  bidder_invCOP_2K_OP:
+    Qeq_kW_4p5K: 3.35
+    total_power_printed_kW: 1038.0
+    invCOP_W_per_W: 310.0
+    direct_refrigerator_kW: 908.0
+    modeled_CWS_kW: 80.8
+    pre_uncertainty_kW: 988.8
+    reconstructed_with_5pct_uncertainty_kW: 1038.24
+  same_state_selected_stream:
+    state: SOURCE_RETURN_COMPLETE_5_OF_5
+    A: {mdot_g_s: 44.0, P_bara: 3.0, T_K: 4.5}
+    B: {mdot_g_s: 41.6, P_bara: 0.022, T_K: 3.6}
+    D: {mdot_g_s: 81.0, P_bara: 12.6, T_K: 40.0}
+    E: {mdot_g_s: 81.0, P_bara: 11.5, T_K: 60.0}
+    W: {mdot_g_s: 2.42, P_bara: 1.1, T_K: 300.0}
+
+coolprop_runtime_reference:
+  repo: GBOGEB/CoolProp
+  PR: 7
+  merge_sha: 9e5927ddae4678f1c38947b261bbb21e2425c7c2
+  exact_head_sha: 3f3b4b1e016a940b9b29102cf264bfac43d19e18
+  workflow_run_id: 34707993462
+  job_id: 103591440737
+  runner_id: 1000256609
+  artifact_id: 10302452576
+  artifact_digest_sha256: af7e3b7625d45092e23430964e5526298b55dd2897bac243c6afc757da5e9f84
+  conclusion: PASS_RUNTIME_COMPATIBILITY_REFERENCE
+  output_values_imported_here: false
+  reason: >-
+    This DOW receipt binds runtime identity and analytical capability only. It does not invent or retype h/s/rho/cp values
+    from unavailable artifact bytes, and it does not upgrade CoolProp calculations into HEPAK or SAT authority.
+
+analytical_gate_matrix:
+  - {gate: bidder_invCOP_source_semantics, state: PASS_SOURCE_BOUND}
+  - {gate: same_state_A_B_D_E_W_source_row, state: PASS_SOURCE_RETURN_5_OF_5}
+  - {gate: exact_source_CoolProp_runtime, state: PASS_RUNTIME_COMPATIBILITY_REFERENCE}
+  - {gate: licensed_HEPAK_lowT_authority, state: WITHHELD_EXTERNAL_LOCAL, issue: 663}
+  - {gate: SAT_E3_meter_consumer_census, state: WITHHELD_EXTERNAL_RETURN, issue: 1021}
+  - {gate: synchronized_Qeq_equal_exergy_method, state: WITHHELD_EXTERNAL_RETURN, issue: 1021}
+  - {gate: HP_56Hz_E2_decomposition, state: WITHHELD_EXTERNAL_RETURN, issue: 1022}
+  - {gate: PVPS_E2_decomposition, state: WITHHELD_EXTERNAL_RETURN, issues: [553, 962]}
+  - {gate: numerical_baseload, state: WITHHELD_DEPENDENT_ON_DIRECT_AUX_OR_MULTIPOINT}
+  - {gate: formal_invCOP_SAT, state: WITHHELD_EXTERNAL_PROCEDURE_AND_EXECUTION}
+  - {gate: global_project_DOV, state: WITHHELD}
+
+analysis_contract:
+  allowed:
+    - compare_bidder_total_power_owner_E3_and_site_E4_boundaries_without_equating_them
+    - calculate_diagnostic_isothermal_and_isentropic_reference_work
+    - build_residual_waterfalls_with_UNCLASSIFIED_NOT_BASELOAD_default
+    - rank_missing_evidence_by_decision_leverage
+    - test_duplicate_physical_credit_keys
+    - propagate_uncertainty_only_when_source_or_POSTULATED_inputs_are_explicit
+  forbidden:
+    - infer_h_s_rho_cp_values_not_present_in_bound_receipt
+    - replace_HEPAK_with_CoolProp
+    - create_contractual_equal_exergy_formula
+    - classify_single_point_residual_as_baseload
+    - zero_fill_UNKNOWN_or_DEFER
+    - subtract_recovered_heat_from_electrical_invCOP_numerator
+    - double_count_returned_cold
+    - grant_engineering_SAT_OPEX_or_release_credit
+
+reverse_pressure_priority:
+  - rank: 1
+    gate: HEPAK_LOW_T_AUTHORITY
+    evidence: licensed_W3_12_HEPAK_CSV_manifest_and_workbench
+    reason: converts_lowT_property_reference_from_compatibility_to_governed_authority
+  - rank: 2
+    gate: SAT_E3_AND_QEQ
+    evidence: issue_1021_approved_meter_census_synchronized_equal_exergy_procedure_and_executed_receipt
+    reason: defines_the_actual_numerator_denominator_and_acceptance_window
+  - rank: 3
+    gate: HP_E2_DECOMPOSITION
+    evidence: issue_1022_same_point_56Hz_VFD_motor_auxiliary_and_OEM_map
+    reason: separates_compressor_work_package_losses_and_candidate_fixed_loads
+  - rank: 4
+    gate: PVPS_E2_DECOMPOSITION
+    evidence: issues_553_962_running_count_frequency_flow_VFD_motor_auxiliary_and_CW_map
+    reason: resolves_83_75_74_printed78_boundary_without_false_residual_allocation
+  - rank: 5
+    gate: NUMERICAL_BASELOAD
+    evidence: direct_auxiliary_measurements_or_at_least_three_same_boundary_operating_points
+    reason: permits_intercept_classification_without_single_point_overfit
+
+returned_cold_control:
+  rule: one_physical_refrigeration_effect_one_credit
+  duplicate_credit_allowed: false
+  residual_cold_role: refrigerator_return_state_that_may_change_internal_work_not_second_exported_load
+
+stale_semantics_quarantine:
+  forbidden_bidder_Qeq_kW: 3.423
+  forbidden_bidder_implied_total_kW: 1061.13
+  forbidden_false_residual_kW: 153.13
+  rule: these_values_may_appear_only_as_historical_superseded_semantics_not_current_baseload_or_performance_truth
+
+DoD:
+  analytical_current_view_present: true
+  exact_child_and_KEB_identity_bound: true
+  runtime_reference_identity_bound: true
+  reverse_pressure_priority_bound: true
+  noncompensating_gates_preserved: true
+DoV:
+  DOW_current_projection: ACHIEVED
+  engineering_numerical_DOV: WITHHELD_CHILD_GATES
