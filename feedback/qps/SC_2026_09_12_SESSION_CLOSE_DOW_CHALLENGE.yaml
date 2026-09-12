@@ -1,0 +1,53 @@
+schema_version: "1.0"
+document_id: SC_2026_09_12_SESSION_CLOSE_DOW_CHALLENGE
+role: ABACUS_DOW
+status: CHALLENGE_COMPLETE_REPAIR_REQUIRED
+child_source:
+  repository: GBOGEB/cryoplant-project
+  branch: control/sc-20260912-3pr-mip-handover
+  reviewed_head: 514baa8a3ddb8c8715a6ca71bea04a07f079f63f
+review_scope:
+  - authority_reconstruction
+  - backlog_and_blocker_reconstruction
+  - next_gate_determinism
+  - missed_opportunity_scan
+  - anti_churn_stop_rules
+checks:
+  authority_model: PASS
+  w104_mechanical_state: PASS
+  cc_fail_closed_semantics: PASS
+  email_provenance_intent: PASS
+  nfs_and_model_edge_intent: PASS
+  external_waits_and_runtime_veto: PASS
+  next_three_change_gates: PASS
+  anti_churn_rules: PASS
+findings:
+  - id: DOW-SC-001
+    severity: MATERIAL_HANDOVER_GAP
+    state: REPAIR_REQUIRED
+    finding: >-
+      The handover radar captures #923, #974, #981 and #991 but omits the
+      already-merged W3-12 licensed HEPAK local-execution gate (#990). Current
+      program control states that W3-12 remains withheld until Windows + Excel +
+      licensed HEPAK emits the governed eight-row CSV + manifest. A delete-safe
+      project-facing handover should preserve this as a parallel non-compensating
+      local execution gate even though it is not the primary provenance lane.
+    required_repair: add W3-12/#990 to the opportunity radar and bootstrap parallel-anchor refresh list
+  - id: DOW-SC-002
+    severity: LOW
+    state: PASS_WITH_GUARD
+    finding: >-
+      #991 is correctly classified as parallel/open and must be refreshed before
+      consumption; bounded-domain P95 must never become project P95.
+  - id: DOW-SC-003
+    severity: LOW
+    state: PASS_WITH_GUARD
+    finding: >-
+      Preserve prior merged session-close #992 as lineage only; the present close
+      must not overwrite its W115 BD stop/rotation semantics.
+recommended_child_disposition: REPAIR_THEN_ACCEPT_IF_KEB_CLEAR
+credit_guard:
+  engineering_delta: 0
+  negotiation_delta: 0
+  release_delta: 0
+  parent_has_no_child_authority: true
