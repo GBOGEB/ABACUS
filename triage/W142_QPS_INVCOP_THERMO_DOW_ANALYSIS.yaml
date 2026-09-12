@@ -1,0 +1,141 @@
+# yamllint disable rule:line-length
+schema_version: abacus-dow-qps-invcop-thermo/0.1
+wave: W142
+status: CONTROL_CANDIDATE
+repo: GBOGEB/ABACUS
+authority_scope: REPO_LOCAL_ANALYTICAL_VIEW
+engineering_promotion_forbidden: true
+
+qps_child_authority:
+  repo: GBOGEB/cryoplant-project
+  child_pr: 998
+  child_head_sha: 4615f6647a1a66751da8fe03cf532b8b203766a0
+  child_contract: triage/w142/QPS_W142_INVCOP_THERMO_RETURN_COLD_CONTROL_v0.1.yaml
+  child_manifest: triage/w142/QPS_W142_INVCOP_FEDERATION_MANIFEST_v0.1.yaml
+
+keb_ingress:
+  repo: GBOGEB/CODEX
+  pr: 653
+  contract: triage/W142_QPS_INVCOP_THERMO_KEB_BRIDGE.yaml
+  required_receipt: KEB-W142-INVCOP-THERMO
+  rule: DOW_consumes_governed_typed_payload_and_returns_diagnostics_only
+
+supersession:
+  historical_file: triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml
+  historical_execution_immutable: true
+  stale_current_interpretation_quarantined:
+    Qeq_margin_kW: 3.423
+    bidder_implied_total_electrical_kW: 1061.13
+    unreconciled_electrical_kW: 153.13
+  reason: W135_W136_direct_offer_source_correction_proved_5pct_was_applied_to_power_not_denominator
+  current_engineering_semantics_source: QPS_W142_child_contract
+
+current_controlled_LKT_2K_OP:
+  evidence_class: CURRENT_BIDDER_SOURCE_PLUS_CONTROLLED_REPRODUCTION
+  direct_refrigerator_terms_kW:
+    HP: 814.0
+    PVPS: 83.0
+    CC: 5.0
+    dryer: 3.0
+    insulation_vacuum: 3.0
+    internal_auxiliaries: 0.0
+    subtotal: 908.0
+  cooling_water:
+    HP_rejection_kWth: 733.0
+    PVPS_rejection_kWth: 75.0
+    total_rejection_kWth: 808.0
+    bidder_CWS_factor_kWe_per_kWth: 0.10
+    modeled_CWS_electrical_kW: 80.8
+  bidder_invCOP:
+    pre_uncertainty_power_kW: 988.8
+    source_power_uncertainty_fraction: 0.05
+    reproduced_total_power_kW: 1038.24
+    printed_total_power_kW: 1038.0
+    Q_4p5K_eq_kW: 3.35
+    printed_invCOP_W_per_W: 310.0
+    reproduced_invCOP_W_per_W: 309.8507463
+  boundary_guard: bidder_total_power_is_not_owner_E3_or_site_E4
+
+analysis_model:
+  equations:
+    ideal_isothermal: m_dot*R_He*T1*ln(P2/P1)
+    ideal_isentropic_reference: m_dot*cp*T1*((P2/P1)^((gamma-1)/gamma)-1)
+    eta_iso_package: W_iso/P_E2
+    eta_is_package: W_is/P_E2
+    electrical_residual: P_E2-P_selected_compression_model
+    owner_invCOP: P_E3/Q_4p5K_eq
+    user_net_heat: sum(m_dot*(h_return-h_supply))
+  semantic_guards:
+    - whole_intercooled_HP_package_is_not_single_adiabatic_stage
+    - full_ratio_isentropic_power_is_reference_only_without_stage_statepoints
+    - package_efficiency_includes_auxiliary_and_drive_losses
+    - residual_is_not_baseload_without_multistate_same_boundary_or_direct_aux_metering
+    - heat_recovery_is_not_negative_electrical_input
+    - bidder_1038_kW_is_not_owner_E3_without_meter_scope
+    - residual_return_cold_is_not_second_exported_refrigeration_credit
+
+views:
+  boundary_compare:
+    columns: [E0,E1,E2,E3,E4,bidder_invCOP_boundary]
+    show_unknowns: true
+    zero_fill_unknowns: false
+  compression_diagnostic:
+    series: [W_iso,W_is,P_E2,eta_iso_package,eta_is_package]
+    note: isentropic_reference_is_not_acceptance_efficiency_without_stage_compatible_states
+  residual_waterfall:
+    equation: P_E2=P_compression+P_variable_aux+P_fixed+P_losses
+    residual_label_default: UNCLASSIFIED_NOT_BASELOAD
+  denominator_credit_map:
+    key: physical_refrigeration_effect_id
+    reject_duplicates: true
+    returned_cold_rule: B_return_state_may_reduce_internal_work_but_is_not_second_user_export
+  evidence_matrix:
+    dimensions: [value,unit,operating_state,electrical_boundary,refrigeration_boundary,evidence_class,source_identity]
+
+baseload_inference:
+  current_state: DEFER
+  minimum_promotion_evidence:
+    - at_least_two_same_boundary_operating_points_or_direct_auxiliary_submetering
+    - same_meter_scope
+    - source_bound_flow_or_frequency_state
+  stronger_preference: three_or_more_points_for_intercept_fit
+  prohibited:
+    - use_retired_153p13_kW_as_baseload
+    - assign_all_residual_to_fans_HVAC_or_QRB_without_source
+
+return_cold_analysis:
+  method_state: PASS
+  numerical_state: DEFER_ENTHALPY_CROSSWALK
+  pass_rule: one_credit_key_per_physical_exported_refrigeration_effect
+  fail_examples:
+    - count_A_to_B_user_enthalpy_rise_and_then_add_B_residual_cold
+    - count_total_user_enthalpy_balance_and_overlapping_component_equivalent_loads
+
+BT_reverse_pressure:
+  rank_1:
+    evidence: owner_SAT_E3_meter_boundary_and_consumer_census
+    unlocks: owner_invCOP
+  rank_2:
+    evidence: HP_and_PVPS_same_state_E2_frequency_flow_map
+    unlocks: baseload_and_package_efficiency_decomposition
+  rank_3:
+    evidence: same_state_A_B_D_E_W_enthalpy_crosswalk
+    unlocks: numerical_return_cold_and_denominator_closure
+  rank_4:
+    evidence: motor_or_VFD_or_auxiliary_submeter_breakdown
+    unlocks: E0_E1_E2_separation
+
+output_receipt:
+  id: DOW-W142-INVCOP-THERMO
+  finding_types: [CALCULATED, SOURCE_GAP, BOUNDARY_MISMATCH, DUPLICATE_CREDIT_RED, SENSITIVITY]
+  required: [child_head_sha,keb_contract_ref,results,residual_classification,duplicate_credit_state,next_BG,next_CG,engineering_promotion_forbidden]
+  return_to: GBOGEB/CODEX
+
+DoD:
+  corrected_current_LKT_view: PASS
+  historical_W111_immutability: PASS
+  stale_153p13_interpretation_quarantined: PASS
+  isothermal_isentropic_view_contract: PASS
+  returned_cold_duplicate_credit_guard: PASS
+  numerical_same_state_enthalpy_DoV: WITHHELD
+  owner_E3_SAT_DoV: WITHHELD
