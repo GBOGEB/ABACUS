@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'runtime/federation/qps_debug_dow_consumer.py'
+      - 'runtime/federation/receipts/**'
       - '.github/workflows/qps-debug-dow-consumer.yml'
   workflow_dispatch:
   repository_dispatch:
@@ -34,6 +35,40 @@ jobs:
           assert p['authority_guards']['formal_engineering_credit_delta'] == 0
           assert p['authority_guards']['negotiation_credit_delta'] == 0
           PY
+      - name: Consume retained actual W1F-E KEB binding
+        run: |
+          python3 runtime/federation/qps_debug_dow_consumer.py \
+            --binding \
+            runtime/federation/receipts/CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
+      - name: Enforce exact same-lineage DOW ACCEPT and child eligibility
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(
+              Path('runtime/federation/generated/qps_debug_dow_binding.json')
+              .read_text()
+          )
+          assert p['status'] == 'ACCEPT', p
+          assert p['evidence_mode'] == 'FEDERATED_EXACT_PAYLOAD', p
+          assert p['emit_for_child_disposition'] is True, p
+          assert p['producer_exact_head_sha'] == \
+              '5ba7a25fa45f78b9336523f7311f5a58f36c6d89', p
+          assert p['source_binding_sha256'] == \
+              '7539bc45e3e8a19042a2c249e907983456ad3c23ba55302548e436e4c9b2a91d', p
+          assert p['checks']['runtime_evidence_valid'] is True, p
+          assert p['checks']['runtime_steps_gt_zero'] is True, p
+          assert p['checks']['source_payload_hash_match'] is True, p
+          assert p['checks']['adapter_surface_ready'] is True, p
+          assert p['checks']['repo_local_runner_recovered'] is False, p
+          assert p['authority_guards']['formal_engineering_credit_delta'] == 0
+          assert p['authority_guards']['negotiation_credit_delta'] == 0
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qps-debug-dow-actual-w1f-binding
+          path: runtime/federation/generated/qps_debug_dow_binding.json
+          if-no-files-found: error
 
   consume-live-keb-binding:
     if: ${{ github.event_name == 'repository_dispatch' }}
