@@ -1,0 +1,65 @@
+schema: qps.m05.dow_independent_consumer_closure.v1
+mission: M05_PROVENANCE_ATTESTATION
+pulse: P_M05_DOV2_DOW_01
+status: ACCEPT_COMPLETE
+
+source_owner:
+  repo: GBOGEB/CODEX
+  return_receipt_commit: 49fb7c132c3689cf83f85b4afe997b9ad0810bee
+  return_receipt_path: federation/qps/m05/M05_ATTESTATION_RETURN_RECEIPT_v0.1.json
+  return_receipt_sha256_observed_by_consumer: d89fe46d1744382128a53f0440cfe49cc7080ce0b52f0002eeece4581f780fd9
+  source_control_merge_sha: 077b7a39ef091eb47b30d6134d70d95bc945ad97
+  source_run_id: 34684810640
+  source_job_id: 103529841527
+  source_subject_sha256: d9dc8945622cd0be5dca76e2f98ad66844ad6eaf755509500d8081c6fd03358c
+  source_attestation_id: 47037742
+  source_artifact_id: 10295112538
+  source_artifact_digest: sha256:e08a1ff6ff3040f27416efab50ae82f4f335eea7094f2ee11fc27769c3f73101
+
+independent_consumer_vector_1:
+  repo: GBOGEB/ABACUS
+  head_sha: 1c2891645428563a0f6f6144fe4afbaae8020737
+  pr_merge_ref_sha: b68b49d1408e406b9d62d4e820be536acbd7c6a8
+  run_id: 34684987647
+  job_id: 103530312588
+  result: PASS
+  live_source_run_verified: true
+  live_source_job_steps_verified: 8
+  live_source_artifact_verified: true
+  claim_mutated: false
+  claim_resigned: false
+  emitted_receipt_sha256: cbbb73d985ea46aa9808ead5c0a2a88bb0747f232c063e10d960910ba4ce55b6
+  retained_artifact:
+    id: 10294918054
+    size_bytes: 979
+    digest: sha256:d79ae0cbf08cb3aa8af487603862b838a009b322531550fc3eaca313258d3c38
+
+PM_DOW:
+  disposition: ACCEPT_COMPLETE
+  accepted_scope: PROVENANCE_INTEGRITY_INDEPENDENT_CONSUMER
+  delivery_edge_closed: true
+
+QA:
+  disposition: PASS_INDEPENDENT_LIVE_METADATA_VERIFICATION
+  evidence:
+    - frozen_source_owner_receipt
+    - live_source_run_success
+    - live_source_job_more_than_zero_steps
+    - live_source_artifact_identity_and_digest
+    - authority_boundary_preserved
+
+TM_boundary:
+  engineering_authority_transferred: false
+  semantic_or_physical_validity_claimed: false
+  release_approval_claimed: false
+
+DoV2_component:
+  DOW_independent_consumer: PASS
+  PM_DOW_closure: PASS
+  final_QPS_Governor_reentry: PENDING
+
+CG: >-
+  Re-execute the unchanged independent consumer on this closure-bearing fresh head,
+  then merge on GREEN and return exact run/artifact evidence to QPS for Governor
+  DoV-2 disposition. The already-observed CODEX automatic main recurrence may then
+  contribute to DoV-3 only after DoV-2 is accepted.
