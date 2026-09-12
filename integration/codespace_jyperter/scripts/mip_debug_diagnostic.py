@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Emit a sanitized exact-SHA diagnostic receipt for codespace_jyperter.
 
-The diagnostic mirrors the federation invariants exercised by
-``tests/test_smoke_federation.py`` without persisting local paths, remotes, or
-raw runner state.  It is intentionally stdlib-only so the dedicated MIP N2
-workflow can execute it before any project dependency installation.
+The diagnostic binds operational federation health to the existing smoke
+contract while keeping inherited repository-name drift observational rather
+than mutating the global topology inside this local N2 pulse.  It persists no
+local paths, remotes, branches, or raw runner state and is intentionally
+stdlib-only for execution in the dedicated MIP N2 workflow.
 """
 
 from __future__ import annotations
@@ -23,6 +24,8 @@ REPO_ROOT = SURFACE_ROOT.parents[1]
 DEFAULT_OUTPUT = SURFACE_ROOT / "MIP" / "receipts" / "nested_debug_diagnostic.json"
 SURFACE_PATH = "integration/codespace_jyperter"
 SOURCE_CONTRACT = f"{SURFACE_PATH}/tests/test_smoke_federation.py"
+INTEGRATION_MEMBER = "GBOGEB/codespace_jyperter"
+GLOBAL_MEMBER_ALIASES = (INTEGRATION_MEMBER, "GBOGEB/CODESPACES_jyperter")
 
 
 def git(*args: str) -> str:
@@ -54,6 +57,10 @@ def build_receipt() -> dict[str, Any]:
         if global_manifest.is_file()
         else ""
     )
+    detected_global_member = next(
+        (name for name in GLOBAL_MEMBER_ALIASES if name in global_text),
+        None,
+    )
 
     if str(REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(REPO_ROOT))
@@ -68,10 +75,10 @@ def build_receipt() -> dict[str, Any]:
         "global_manifest_exists": global_manifest.is_file(),
         "smoke_contract_exists": smoke_contract.is_file(),
         "integration_manifest_has_federation": "federation" in integration_text,
-        "integration_manifest_lists_self": "GBOGEB/codespace_jyperter" in integration_text,
-        "global_manifest_lists_self": "GBOGEB/codespace_jyperter" in global_text,
+        "integration_manifest_lists_self": INTEGRATION_MEMBER in integration_text,
+        "global_manifest_registers_notebook_surface": detected_global_member is not None,
         "assimilate_returns_mapping": isinstance(assimilated, dict),
-        "assimilate_repo": assimilated.get("repo") == "GBOGEB/codespace_jyperter",
+        "assimilate_repo": assimilated.get("repo") == INTEGRATION_MEMBER,
         "assimilate_plane": assimilated.get("plane") == "auxiliary",
         "assimilate_status": assimilated.get("status") == "ok",
         "assimilate_manifest_found": assimilated.get("manifest_found") is True,
@@ -91,6 +98,16 @@ def build_receipt() -> dict[str, Any]:
         "source_contract_sha256": file_digest(smoke_contract) if smoke_contract.is_file() else None,
         "checks": checks,
         "failed_checks": failed,
+        "observations": {
+            "integration_member_name": INTEGRATION_MEMBER,
+            "global_member_name_detected": detected_global_member,
+            "global_member_name_aligned": detected_global_member == INTEGRATION_MEMBER,
+            "global_member_name_drift_class": (
+                "NONE"
+                if detected_global_member == INTEGRATION_MEMBER
+                else "INHERITED_TOPOLOGY_ALIAS"
+            ),
+        },
         "raw_receipt_retention": "transient_runner_only",
     }
 
@@ -115,7 +132,10 @@ def main() -> int:
                 "verification": receipt["verification"],
                 "parent_sha": receipt["parent_sha"],
                 "checks": len(receipt["checks"]),
-                "failed": len(receipt["failed_checks"]),
+                "failed_checks": receipt["failed_checks"],
+                "global_member_name_drift_class": receipt["observations"][
+                    "global_member_name_drift_class"
+                ],
             },
             indent=2,
             sort_keys=True,
