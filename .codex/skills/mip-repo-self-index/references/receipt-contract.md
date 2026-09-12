@@ -9,7 +9,8 @@ Required top-level fields:
 - `verification`: `PASS` for accepted evidence
 - `repository`: repository identity
 - `head_sha`: exact evaluated commit SHA
-- `raw_receipt_retention`: `transient_runner_only` unless a stricter authority says otherwise
+- `raw_receipt_retention`: `transient_runner_only` unless stricter authority
+  says otherwise
 - `root_self_index.runs`: at least `2` for repeatability proof
 - `root_self_index.normalized_equal`: `true`
 
@@ -43,10 +44,13 @@ Required fields:
 
 - `BRANCH_CAUSED`: branch introduced the failing predicate.
 - `PRE_EXISTING`: equivalent predicate failed before the branch.
-- `METADATA_OR_GOVERNANCE`: PR metadata/policy/inventory failure, not runtime product code.
+- `METADATA_OR_GOVERNANCE`: PR metadata, policy, or inventory failure;
+  not runtime product code.
 - `EXTERNAL`: service, runner, permission, or external dependency.
 - `UNKNOWN`: insufficient evidence; do not infer causality.
 
 ## Promotion rule
 
-A reusable/self-produce surface can move toward GREEN only when another execution surface can consume it or validate it through a deterministic contract. Presence-only discovery remains AMBER.
+A reusable/self-produce surface can move toward GREEN only when another
+execution surface can consume it or validate it through a deterministic
+contract. Presence-only discovery remains AMBER.
