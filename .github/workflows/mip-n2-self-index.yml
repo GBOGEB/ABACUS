@@ -112,8 +112,31 @@ jobs:
                       "nested_path": nested.get("path") == "integration/codespace_jyperter",
                       "nested_runs": nested.get("runs") == 2,
                       "nested_repeatability": nested.get("normalized_equal") is True,
+                      "nested_debug_green": nested.get("assessments", {}).get(
+                          "repo_self_assess_debug_ldab"
+                      )
+                      == "GREEN",
                   }
               )
+
+          diagnostic = data.get("nested_diagnostic")
+          checks.update(
+              {
+                  "nested_diagnostic_present": isinstance(diagnostic, dict),
+                  "nested_diagnostic_name": isinstance(diagnostic, dict)
+                  and diagnostic.get("diagnostic") == "nested_debug_ldab",
+                  "nested_diagnostic_pass": isinstance(diagnostic, dict)
+                  and diagnostic.get("verification") == "PASS",
+                  "nested_diagnostic_sha": isinstance(diagnostic, dict)
+                  and diagnostic.get("parent_sha") == expected_sha,
+                  "nested_diagnostic_contract": isinstance(diagnostic, dict)
+                  and diagnostic.get("source_contract")
+                  == "integration/codespace_jyperter/tests/test_smoke_federation.py",
+                  "nested_diagnostic_retention": isinstance(diagnostic, dict)
+                  and diagnostic.get("raw_receipt_retention")
+                  == "transient_runner_only",
+              }
+          )
 
           failed = sorted(name for name, passed in checks.items() if not passed)
           if failed:
