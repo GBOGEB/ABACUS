@@ -78,7 +78,8 @@ jobs:
         env:
           SUMMARY: >-
             ${{ runner.temp }}/mip-n2-consumed/mip-n2-self-index-summary.json
-          CONSUMER_SUMMARY: ${{ runner.temp }}/mip-n2-consumer-summary.json
+          CONSUMER_SUMMARY: >-
+            ${{ runner.temp }}/mip-n2-consumer-summary.json
         run: |
           python - <<'PY'
           import json
@@ -92,6 +93,8 @@ jobs:
           data = json.loads(source.read_text(encoding="utf-8"))
           expected_sha = os.environ["EXPECTED_SHA"]
           expected_repo = os.environ["EXPECTED_REPOSITORY"]
+          root = data.get("root_self_index", {})
+          root_assessments = root.get("assessments", {})
 
           checks = {
               "schema_version": data.get("schema_version") == "0.1",
@@ -99,27 +102,73 @@ jobs:
               "verification": data.get("verification") == "PASS",
               "repository": data.get("repository") == expected_repo,
               "head_sha": data.get("head_sha") == expected_sha,
-              "raw_receipt_retention": data.get("raw_receipt_retention")
+              "raw_receipt_retention": data.get(
+                  "raw_receipt_retention"
+              )
               == "transient_runner_only",
-              "root_runs": data.get("root_self_index", {}).get("runs") == 2,
-              "root_repeatability": (
-                  data.get("root_self_index", {}).get("normalized_equal")
-                  is True
-              ),
+              "root_runs": root.get("runs") == 2,
+              "root_repeatability": root.get("normalized_equal") is True,
+              "root_self_produce_green": root_assessments.get(
+                  "repo_self_produce"
+              )
+              == "GREEN",
+              "root_health_selfheal_green": root_assessments.get(
+                  "repo_self_assess_codz_health_selfheal"
+              )
+              == "GREEN",
           }
+
+          skill = data.get("shareable_skill")
+          checks.update(
+              {
+                  "shareable_skill_present": isinstance(skill, dict),
+                  "shareable_skill_pass": isinstance(skill, dict)
+                  and skill.get("verification") == "PASS",
+                  "shareable_skill_sha": isinstance(skill, dict)
+                  and skill.get("validated_head_sha") == expected_sha,
+                  "shareable_skill_retention": isinstance(skill, dict)
+                  and skill.get("raw_receipt_retention")
+                  == "transient_runner_only",
+              }
+          )
+
+          health = data.get("health_selfheal")
+          checks.update(
+              {
+                  "health_selfheal_present": isinstance(health, dict),
+                  "health_selfheal_pass": isinstance(health, dict)
+                  and health.get("verification") == "PASS",
+                  "health_selfheal_sha": isinstance(health, dict)
+                  and health.get("exact_sha") == expected_sha,
+                  "health_selfheal_context": isinstance(health, dict)
+                  and health.get("execution_context")
+                  == "transient_controlled_fixture",
+                  "health_selfheal_improved": isinstance(health, dict)
+                  and health.get("return_state") == "IMPROVED",
+                  "health_selfheal_delta": isinstance(health, dict)
+                  and isinstance(health.get("delta"), int)
+                  and health.get("delta") < 0,
+                  "health_selfheal_checkout": isinstance(health, dict)
+                  and health.get("source_checkout_unchanged") is True,
+                  "health_selfheal_retention": isinstance(health, dict)
+                  and health.get("raw_receipt_retention")
+                  == "transient_runner_only",
+                  "health_selfheal_no_promotion": isinstance(health, dict)
+                  and health.get("promotion_authority") is False,
+              }
+          )
 
           nested = data.get("nested_surface")
           if nested is not None:
               checks.update(
                   {
-                      "nested_path": (
-                          nested.get("path")
-                          == "integration/codespace_jyperter"
-                      ),
+                      "nested_path": nested.get("path")
+                      == "integration/codespace_jyperter",
                       "nested_runs": nested.get("runs") == 2,
-                      "nested_repeatability": (
-                          nested.get("normalized_equal") is True
-                      ),
+                      "nested_repeatability": nested.get(
+                          "normalized_equal"
+                      )
+                      is True,
                       "nested_debug_green": nested.get(
                           "assessments", {}
                       ).get("repo_self_assess_debug_ldab")
@@ -134,7 +183,8 @@ jobs:
                       diagnostic, dict
                   ),
                   "nested_diagnostic_name": isinstance(diagnostic, dict)
-                  and diagnostic.get("diagnostic") == "nested_debug_ldab",
+                  and diagnostic.get("diagnostic")
+                  == "nested_debug_ldab",
                   "nested_diagnostic_pass": isinstance(diagnostic, dict)
                   and diagnostic.get("verification") == "PASS",
                   "nested_diagnostic_sha": isinstance(diagnostic, dict)

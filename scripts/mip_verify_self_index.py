@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify MIP self-index exact-SHA binding and repeatability.
 
-Raw receipts are generated only in a temporary directory.  The durable output is
+Raw receipts are generated only in a temporary directory. The durable output is
 an intentionally sanitized summary that excludes local paths, remotes, branch
 names, dirty-file details, and generated raw receipt payloads.
 """
@@ -29,7 +29,11 @@ NESTED_EMITTER = (
     / "mip_surface_self_index.py"
 )
 NESTED_DIAGNOSTIC = (
-    ROOT / "integration" / "codespace_jyperter" / "scripts" / "mip_debug_diagnostic.py"
+    ROOT
+    / "integration"
+    / "codespace_jyperter"
+    / "scripts"
+    / "mip_debug_diagnostic.py"
 )
 SHAREABLE_SKILL = ROOT / ".codex" / "skills" / "mip-repo-self-index"
 SKILL_ENTRYPOINT = SHAREABLE_SKILL / "SKILL.md"
@@ -40,7 +44,9 @@ SKILL_VALIDATOR = SHAREABLE_SKILL / "scripts" / "validate_receipt.py"
 
 def git(*args: str) -> str:
     return subprocess.check_output(
-        ["git", "-C", str(ROOT), *args], text=True, stderr=subprocess.DEVNULL
+        ["git", "-C", str(ROOT), *args],
+        text=True,
+        stderr=subprocess.DEVNULL,
     ).strip()
 
 
@@ -71,7 +77,11 @@ def normalized(receipt: dict[str, Any]) -> dict[str, Any]:
 
 
 def digest(value: dict[str, Any]) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    payload = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -114,6 +124,69 @@ def verify_pair(
     return first, n1
 
 
+def validate_health_selfheal(
+    root_receipt: dict[str, Any],
+    root_assessments: dict[str, str],
+    actual_sha: str,
+) -> dict[str, Any]:
+    details = root_receipt.get("assessments", {}).get(
+        "repo_self_assess_codz_health_selfheal",
+        {},
+    )
+    evidence = details.get("evidence") if isinstance(details, dict) else None
+
+    checks = {
+        "root_health_green": root_assessments.get(
+            "repo_self_assess_codz_health_selfheal"
+        )
+        == "GREEN",
+        "evidence_present": isinstance(evidence, dict),
+        "verification": isinstance(evidence, dict)
+        and evidence.get("verification") == "PASS",
+        "exact_sha": isinstance(evidence, dict)
+        and evidence.get("exact_sha") == actual_sha,
+        "execution_context": isinstance(evidence, dict)
+        and evidence.get("execution_context")
+        == "transient_controlled_fixture",
+        "return_state": isinstance(evidence, dict)
+        and evidence.get("return_state") == "IMPROVED",
+        "delta": isinstance(evidence, dict)
+        and isinstance(evidence.get("delta"), int)
+        and evidence.get("delta") < 0,
+        "checkout_unchanged": isinstance(evidence, dict)
+        and evidence.get("source_checkout_unchanged") is True,
+        "retention": isinstance(evidence, dict)
+        and evidence.get("raw_receipt_retention")
+        == "transient_runner_only",
+        "no_promotion_authority": isinstance(evidence, dict)
+        and evidence.get("promotion_authority") is False,
+    }
+    failed = sorted(name for name, passed in checks.items() if not passed)
+    if failed:
+        raise SystemExit(
+            "health/self-heal validation failed: " + ", ".join(failed)
+        )
+
+    assert isinstance(evidence, dict)
+    return {
+        "verification": "PASS",
+        "exact_sha": actual_sha,
+        "execution_context": evidence.get("execution_context"),
+        "source_primitive": evidence.get("source_primitive"),
+        "repair_class": evidence.get("repair_class"),
+        "before_metric": evidence.get("before_metric"),
+        "after_metric": evidence.get("after_metric"),
+        "delta": evidence.get("delta"),
+        "metric_direction": evidence.get("metric_direction"),
+        "return_state": evidence.get("return_state"),
+        "source_checkout_unchanged": evidence.get(
+            "source_checkout_unchanged"
+        ),
+        "raw_receipt_retention": evidence.get("raw_receipt_retention"),
+        "promotion_authority": evidence.get("promotion_authority"),
+    }
+
+
 def validate_shareable_skill(
     summary: dict[str, Any],
     temp_root: Path,
@@ -132,7 +205,9 @@ def validate_shareable_skill(
         else ""
     )
     agent_text = (
-        SKILL_AGENT.read_text(encoding="utf-8") if SKILL_AGENT.is_file() else ""
+        SKILL_AGENT.read_text(encoding="utf-8")
+        if SKILL_AGENT.is_file()
+        else ""
     )
     checks = {
         "entrypoint_exists": SKILL_ENTRYPOINT.is_file(),
@@ -142,7 +217,9 @@ def validate_shareable_skill(
         "frontmatter_name": "name: mip-repo-self-index" in skill_text,
         "frontmatter_description": "description:" in skill_text,
         "agent_display_name": "MIP Repo Self Index" in agent_text,
-        "root_self_produce_green": root_assessments.get("repo_self_produce")
+        "root_self_produce_green": root_assessments.get(
+            "repo_self_produce"
+        )
         == "GREEN",
     }
     failed = sorted(name for name, passed in checks.items() if not passed)
@@ -226,11 +303,19 @@ def main() -> int:
                 "runs": 2,
                 "normalized_equal": True,
                 "digest_sha256": digest(root_norm),
-                "file_count": root_receipt.get("census", {}).get("file_count"),
+                "file_count": root_receipt.get("census", {}).get(
+                    "file_count"
+                ),
                 "assessments": root_assessments,
             },
             "raw_receipt_retention": "transient_runner_only",
         }
+
+        summary["health_selfheal"] = validate_health_selfheal(
+            root_receipt,
+            root_assessments,
+            actual_sha,
+        )
 
         if NESTED_EMITTER.exists():
             nested_receipt, nested_norm = verify_pair(
@@ -247,7 +332,9 @@ def main() -> int:
                 "runs": 2,
                 "normalized_equal": True,
                 "digest_sha256": digest(nested_norm),
-                "file_count": nested_receipt.get("census", {}).get("file_count"),
+                "file_count": nested_receipt.get("census", {}).get(
+                    "file_count"
+                ),
                 "assessments": nested_assessments,
             }
 
@@ -267,7 +354,10 @@ def main() -> int:
                         diagnostic.get("failed_checks", [])
                     ) or "unknown"
                     raise SystemExit(f"nested diagnostic failed: {failed}")
-                if nested_assessments.get("repo_self_assess_debug_ldab") != "GREEN":
+                if (
+                    nested_assessments.get("repo_self_assess_debug_ldab")
+                    != "GREEN"
+                ):
                     raise SystemExit(
                         "nested diagnostic exists and passes but "
                         "debug/LDAB assessment is not GREEN"
@@ -282,7 +372,9 @@ def main() -> int:
                     ),
                     "passed_checks": sorted(
                         name
-                        for name, passed in diagnostic.get("checks", {}).items()
+                        for name, passed in diagnostic.get(
+                            "checks", {}
+                        ).items()
                         if passed
                     ),
                     "raw_receipt_retention": diagnostic.get(
