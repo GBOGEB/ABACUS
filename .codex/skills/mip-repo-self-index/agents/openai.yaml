@@ -1,0 +1,3 @@
+interface:
+  display_name: "MIP Repo Self Index"
+  short_description: "Exact-SHA repository proof and red classification"
