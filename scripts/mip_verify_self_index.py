@@ -22,6 +22,9 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_EMITTER = ROOT / "scripts" / "mip_repo_self_index.py"
 NESTED_EMITTER = ROOT / "integration" / "codespace_jyperter" / "scripts" / "mip_surface_self_index.py"
+NESTED_DIAGNOSTIC = (
+    ROOT / "integration" / "codespace_jyperter" / "scripts" / "mip_debug_diagnostic.py"
+)
 
 
 def git(*args: str) -> str:
@@ -134,14 +137,46 @@ def main() -> int:
                 "surface",
                 "parent_sha",
             )
+            nested_assessments = status_map(nested_receipt)
             summary["nested_surface"] = {
                 "path": "integration/codespace_jyperter",
                 "runs": 2,
                 "normalized_equal": True,
                 "digest_sha256": digest(nested_norm),
                 "file_count": nested_receipt.get("census", {}).get("file_count"),
-                "assessments": status_map(nested_receipt),
+                "assessments": nested_assessments,
             }
+
+            if NESTED_DIAGNOSTIC.exists():
+                diagnostic = run_emitter(
+                    NESTED_DIAGNOSTIC,
+                    tmp / "nested-debug-diagnostic.json",
+                )
+                if diagnostic.get("parent_sha") != actual_sha:
+                    raise SystemExit(
+                        "nested diagnostic SHA mismatch: "
+                        f"runtime={actual_sha} diagnostic={diagnostic.get('parent_sha')}"
+                    )
+                if diagnostic.get("verification") != "PASS":
+                    failed = ", ".join(diagnostic.get("failed_checks", [])) or "unknown"
+                    raise SystemExit(f"nested diagnostic failed: {failed}")
+                if nested_assessments.get("repo_self_assess_debug_ldab") != "GREEN":
+                    raise SystemExit(
+                        "nested diagnostic exists and passes but debug/LDAB assessment is not GREEN"
+                    )
+                summary["nested_diagnostic"] = {
+                    "diagnostic": diagnostic.get("diagnostic"),
+                    "verification": diagnostic.get("verification"),
+                    "parent_sha": diagnostic.get("parent_sha"),
+                    "source_contract": diagnostic.get("source_contract"),
+                    "source_contract_sha256": diagnostic.get("source_contract_sha256"),
+                    "passed_checks": sorted(
+                        name
+                        for name, passed in diagnostic.get("checks", {}).items()
+                        if passed
+                    ),
+                    "raw_receipt_retention": diagnostic.get("raw_receipt_retention"),
+                }
 
     args.summary.parent.mkdir(parents=True, exist_ok=True)
     args.summary.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
