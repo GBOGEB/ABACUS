@@ -7,6 +7,8 @@ import argparse
 import json
 import os
 import subprocess
+import sys
+import tempfile
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,6 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "MIP" / "receipts" / "repo_self_index.json"
+HEALTH_SELFHEAL_PROBE = ROOT / "scripts" / "mip_health_selfheal_probe.py"
 IGNORED_DIRS = {
     ".git",
     ".mypy_cache",
@@ -110,7 +113,43 @@ def complete_skill_packages(files: list[Path]) -> list[Path]:
     return sorted(packages, key=lambda path: path.as_posix())
 
 
-def classify(files: list[Path]) -> dict:
+def run_health_selfheal_probe() -> dict | None:
+    if not HEALTH_SELFHEAL_PROBE.is_file():
+        return None
+    with tempfile.TemporaryDirectory(prefix="mip-self-index-health-") as temp:
+        output = Path(temp) / "health-selfheal.json"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(HEALTH_SELFHEAL_PROBE),
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if completed.returncode != 0 or not output.is_file():
+            return {
+                "verification": "FAIL",
+                "return_state": "REGRESSED",
+                "exact_sha": run_git(["rev-parse", "HEAD"]),
+                "failed_checks": ["probe_execution"],
+            }
+        try:
+            value = json.loads(output.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {
+                "verification": "FAIL",
+                "return_state": "REGRESSED",
+                "exact_sha": run_git(["rev-parse", "HEAD"]),
+                "failed_checks": ["probe_receipt_parse"],
+            }
+        return value if isinstance(value, dict) else None
+
+
+def classify(files: list[Path], health_probe: dict | None) -> dict:
     workflows = [p for p in files if p.parts[:2] == (".github", "workflows")]
     docker = [
         p
@@ -123,7 +162,14 @@ def classify(files: list[Path]) -> dict:
         for p in files
         if contains_any(
             p,
-            ("runner", "workflow", "ci/", ".github/workflows", "pytest", "test_"),
+            (
+                "runner",
+                "workflow",
+                "ci/",
+                ".github/workflows",
+                "pytest",
+                "test_",
+            ),
         )
     ]
     mcp = [p for p in files if contains_any(p, ("mcp", "agent", "orchestrat"))]
@@ -138,7 +184,15 @@ def classify(files: list[Path]) -> dict:
         for p in files
         if contains_any(
             p,
-            ("debug", "lldb", "dap", "trace", "diagnostic", "observability", "log"),
+            (
+                "debug",
+                "lldb",
+                "dap",
+                "trace",
+                "diagnostic",
+                "observability",
+                "log",
+            ),
         )
     ]
     selfheal = [
@@ -151,17 +205,64 @@ def classify(files: list[Path]) -> dict:
     ]
     todo_hits = grep_count(files, ("todo", "fixme", "xxx", "hack", "stale"))
 
+    exact_sha = run_git(["rev-parse", "HEAD"])
+    health_green = bool(
+        health_probe
+        and health_probe.get("verification") == "PASS"
+        and health_probe.get("return_state") == "IMPROVED"
+        and health_probe.get("exact_sha") == exact_sha
+        and health_probe.get("source_checkout_unchanged") is True
+        and isinstance(health_probe.get("delta"), int)
+        and health_probe.get("delta") < 0
+    )
+    if health_green:
+        health_status = "green"
+        health_next = (
+            "Keep live-repo mutation gated; recurse only on an observed failing "
+            "health invariant."
+        )
+    elif health_probe or todo_hits or selfheal:
+        health_status = "amber"
+        health_next = "Recurse on the first observed failing health invariant."
+    else:
+        health_status = "red"
+        health_next = "Add an executable fail-closed health/recovery proof."
+
     if complete_skills:
         self_produce_status = "green"
-        self_produce_next = "Execute the packaged skill validator on exact-SHA evidence."
+        self_produce_next = (
+            "Execute the packaged skill validator on exact-SHA evidence."
+        )
     elif skills or mcp:
         self_produce_status = "amber"
         self_produce_next = (
-            "Select one shareable core skill or one implantable agent/orchestrator candidate."
+            "Select one shareable core skill or one implantable "
+            "agent/orchestrator candidate."
         )
     else:
         self_produce_status = "red"
         self_produce_next = "Create one complete reusable skill or orchestrator package."
+
+    health_evidence = None
+    if health_probe:
+        health_evidence = {
+            key: health_probe.get(key)
+            for key in (
+                "verification",
+                "exact_sha",
+                "execution_context",
+                "source_primitive",
+                "repair_class",
+                "before_metric",
+                "after_metric",
+                "delta",
+                "metric_direction",
+                "return_state",
+                "source_checkout_unchanged",
+                "raw_receipt_retention",
+                "promotion_authority",
+            )
+        }
 
     return {
         "repo_self_assess_debug_ldab": {
@@ -184,11 +285,12 @@ def classify(files: list[Path]) -> dict:
             "next_action": "Separate executable runners from dormant/config-only surfaces.",
         },
         "repo_self_assess_codz_health_selfheal": {
-            "status": "amber" if todo_hits or selfheal else "red",
+            "status": health_status,
             "todo_like_file_count": todo_hits,
             "selfheal_signal_count": len(selfheal),
             "sample_paths": sample(selfheal),
-            "next_action": "Recurse on the first observed failing health invariant.",
+            "evidence": health_evidence,
+            "next_action": health_next,
         },
         "repo_self_produce": {
             "status": self_produce_status,
@@ -204,6 +306,7 @@ def classify(files: list[Path]) -> dict:
 
 def build_receipt() -> dict:
     files = iter_files()
+    health_probe = run_health_selfheal_probe()
     extensions = Counter(p.suffix.lower() or "<none>" for p in files)
     top_dirs = Counter(
         p.parts[0] if len(p.parts) > 1 else "<root>" for p in files
@@ -230,10 +333,10 @@ def build_receipt() -> dict:
             "extension_counts": dict(extensions.most_common(30)),
             "top_directory_counts": dict(top_dirs.most_common(30)),
         },
-        "assessments": classify(files),
+        "assessments": classify(files, health_probe),
         "next_victory_condition": (
-            "Run the receipt on two more distinct SHAs, then package and execute "
-            "the highest-confidence repo_self_produce candidate."
+            "Preserve all four root N2 lanes GREEN on a later distinct SHA, "
+            "then recurse into nested-surface AMBER lanes."
         ),
     }
 
