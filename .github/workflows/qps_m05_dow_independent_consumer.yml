@@ -1,0 +1,33 @@
+name: QPS M05 DOW Independent Attestation Consumer
+
+on:
+  pull_request:
+    paths:
+      - "scripts/qps_m05_verify_attestation_return.py"
+      - ".github/workflows/qps_m05_dow_independent_consumer.yml"
+      - "triage/M05_*"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/qps_m05_verify_attestation_return.py"
+      - ".github/workflows/qps_m05_dow_independent_consumer.yml"
+      - "triage/M05_*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-consumer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS exact head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify exact CODEX M05 receipt against live public run metadata
+        run: python scripts/qps_m05_verify_attestation_return.py
+      - name: Upload DOW independent consumer receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qps-m05-dow-independent-consumer-${{ github.sha }}
+          path: artifacts/m05/
+          if-no-files-found: error
