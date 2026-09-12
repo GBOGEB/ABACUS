@@ -1,0 +1,83 @@
+schema_version: qps-session-close-receipt/1.0
+document_id: W117_MESH_RUNTIME_SESSION_CLOSE_RECEIPT
+status: CONTROL
+scope: mesh_runtime_chat_session_close
+
+handover:
+  repo: GBOGEB/ABACUS
+  path: architecture/w117/W117_MESH_RUNTIME_SESSION_CLOSE_3PR_MIP_3PC.yaml
+  publication_pr: 1143
+  candidate_head_sha: b2ce5e9a99413ea86b6c69e6cb1d1510eca8dff7
+  merge_sha: 2d3c68a723976e6b148acb4060865fd35573ec2b
+  merged: true
+
+method_result:
+  three_PR:
+    state: PASS
+    result: current evidence refreshed, first material blocker exposed, LIVE/CONTROL/BD/DROP classified
+  MIP:
+    state: PASS
+    Modernize: SKIPPED_NO_NEW_STRUCTURAL_GAP
+    Innovate: SKIPPED_NO_NEW_CAPABILITY_GAP
+    Perpetuate: PASS_DELETION_SAFE_HANDOVER_MERGED
+  three_PC:
+    Prepare: PASS
+    Prove: PASS_FOR_SESSION_CLOSE_ONLY
+    Commit: PASS
+  three_P3:
+    state: NOT_ADMITTED
+    reason: no_missing_generalisation_proof_for_bounded_session_close
+
+closure_state:
+  session_DoD: PASS
+  global_mesh_DoV: WITHHELD
+  current_CG: obtain_3_of_3_real_exact_SHA_mesh_vectors
+  current_BG: cryoplant_runner_allocation_pending_CODEX_discriminator
+  proven_vectors: 1/3
+
+runtime_anchors:
+  ABACUS:
+    exact_sha: 763771d8430aba5b584bbf2c80c478494b2c1a87
+    run_id: 34618499946
+    job_id: 103326278713
+    runner_id: 1000248596
+    state: PASS
+    artifact_id: 10271910138
+    artifact_digest: sha256:f6f822595a4395091920a68f60eea61d5e3a006830f44c49f00dde9c10c3cf84
+  cryoplant:
+    exact_sha: 83b53192ae1b4e2440d07f987bf4ddd9abf1a1f6
+    run_id: 34618491221
+    attempt: 2
+    job_id: 103530421335
+    runner_id: 0
+    executed_steps: 0
+    state: RED_PRE_EXECUTION
+  CODEX:
+    workflow_pr: 637
+    workflow_merge_sha: 7dfa72df3e5ec73ae814ec0857de414fc9351fac
+    runtime_receipt: UNRESOLVED
+
+next_narrow_victory:
+  - resolve_CODEX_runtime_receipt
+  - discriminate_GLOBAL_vs_cryoplant_specific_runner_blocker
+  - obtain_cryoplant_runner_id_nonzero
+  - execute_unchanged_cryoplant_emitter_more_than_zero_steps
+  - assemble_3_of_3_exact_SHA_vectors
+  - execute_vector_only_selector
+  - execute_full_diagnostic_route
+  - require_selection_agreement
+  - emit_dependency_aware_repo_lane_mesh_rollup_PASS
+  - promote_mesh_status_lane_to_CONTROL
+
+forbidden_detours:
+  - emitter_rewrite_before_runtime_evidence
+  - new_scheduler_before_existing_selector_proof
+  - dashboard_or_taxonomy_expansion_before_first_BG_clearance
+  - source_presence_as_execution_or_receipt_proof
+
+chat_delete_safe: true
+restart_source_of_truth: architecture/w117/W117_MESH_RUNTIME_SESSION_CLOSE_3PR_MIP_3PC.yaml
+restart_instruction: >-
+  Read the W117 handover, refresh current repo/workflow state, then attack only the
+  first observed material blocker. Begin with CODEX runtime receipt discrimination;
+  do not redesign the emitter/scheduler/taxonomy before new runtime evidence exists.
