@@ -55,3 +55,101 @@ jobs:
           path: ${{ runner.temp }}/mip-n2-self-index-summary.json
           if-no-files-found: error
           retention-days: 14
+
+  consume-self-index-evidence:
+    needs: self-index-proof
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download sanitized self-index evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
+          path: ${{ runner.temp }}/mip-n2-consumed
+
+      - name: Consume and validate exact-SHA evidence
+        env:
+          SUMMARY: ${{ runner.temp }}/mip-n2-consumed/mip-n2-self-index-summary.json
+          CONSUMER_SUMMARY: ${{ runner.temp }}/mip-n2-consumer-summary.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source = Path(os.environ["SUMMARY"])
+          if not source.is_file():
+              raise SystemExit(f"missing producer summary: {source}")
+
+          data = json.loads(source.read_text(encoding="utf-8"))
+          expected_sha = os.environ["EXPECTED_SHA"]
+          expected_repo = os.environ["EXPECTED_REPOSITORY"]
+
+          checks = {
+              "schema_version": data.get("schema_version") == "0.1",
+              "program": data.get("program") == "MIP",
+              "verification": data.get("verification") == "PASS",
+              "repository": data.get("repository") == expected_repo,
+              "head_sha": data.get("head_sha") == expected_sha,
+              "raw_receipt_retention": data.get("raw_receipt_retention")
+              == "transient_runner_only",
+              "root_runs": data.get("root_self_index", {}).get("runs") == 2,
+              "root_repeatability": data.get("root_self_index", {}).get("normalized_equal")
+              is True,
+          }
+
+          nested = data.get("nested_surface")
+          if nested is not None:
+              checks.update(
+                  {
+                      "nested_path": nested.get("path") == "integration/codespace_jyperter",
+                      "nested_runs": nested.get("runs") == 2,
+                      "nested_repeatability": nested.get("normalized_equal") is True,
+                  }
+              )
+
+          failed = sorted(name for name, passed in checks.items() if not passed)
+          if failed:
+              raise SystemExit(f"consumer validation failed: {', '.join(failed)}")
+
+          receipt = {
+              "schema_version": "0.1",
+              "program": "MIP",
+              "consumer_verification": "PASS",
+              "repository": expected_repo,
+              "head_sha": expected_sha,
+              "producer_artifact": f"mip-n2-self-index-sanitized-{expected_sha}",
+              "checks": sorted(checks),
+              "raw_receipt_retention": "transient_runner_only",
+          }
+          target = Path(os.environ["CONSUMER_SUMMARY"])
+          target.write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          PY
+
+      - name: Publish sanitized consumer receipt
+        run: |
+          {
+            echo '## MIP N2 artifact consumer'
+            echo '```json'
+            cat "${RUNNER_TEMP}/mip-n2-consumer-summary.json"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload sanitized consumer evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: mip-n2-self-index-consumer-${{ env.EXPECTED_SHA }}
+          path: ${{ runner.temp }}/mip-n2-consumer-summary.json
+          if-no-files-found: error
+          retention-days: 14
