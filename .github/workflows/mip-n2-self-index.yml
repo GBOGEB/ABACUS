@@ -76,7 +76,8 @@ jobs:
 
       - name: Consume and validate exact-SHA evidence
         env:
-          SUMMARY: ${{ runner.temp }}/mip-n2-consumed/mip-n2-self-index-summary.json
+          SUMMARY: >-
+            ${{ runner.temp }}/mip-n2-consumed/mip-n2-self-index-summary.json
           CONSUMER_SUMMARY: ${{ runner.temp }}/mip-n2-consumer-summary.json
         run: |
           python - <<'PY'
@@ -101,20 +102,27 @@ jobs:
               "raw_receipt_retention": data.get("raw_receipt_retention")
               == "transient_runner_only",
               "root_runs": data.get("root_self_index", {}).get("runs") == 2,
-              "root_repeatability": data.get("root_self_index", {}).get("normalized_equal")
-              is True,
+              "root_repeatability": (
+                  data.get("root_self_index", {}).get("normalized_equal")
+                  is True
+              ),
           }
 
           nested = data.get("nested_surface")
           if nested is not None:
               checks.update(
                   {
-                      "nested_path": nested.get("path") == "integration/codespace_jyperter",
+                      "nested_path": (
+                          nested.get("path")
+                          == "integration/codespace_jyperter"
+                      ),
                       "nested_runs": nested.get("runs") == 2,
-                      "nested_repeatability": nested.get("normalized_equal") is True,
-                      "nested_debug_green": nested.get("assessments", {}).get(
-                          "repo_self_assess_debug_ldab"
-                      )
+                      "nested_repeatability": (
+                          nested.get("normalized_equal") is True
+                      ),
+                      "nested_debug_green": nested.get(
+                          "assessments", {}
+                      ).get("repo_self_assess_debug_ldab")
                       == "GREEN",
                   }
               )
@@ -122,25 +130,38 @@ jobs:
           diagnostic = data.get("nested_diagnostic")
           checks.update(
               {
-                  "nested_diagnostic_present": isinstance(diagnostic, dict),
+                  "nested_diagnostic_present": isinstance(
+                      diagnostic, dict
+                  ),
                   "nested_diagnostic_name": isinstance(diagnostic, dict)
                   and diagnostic.get("diagnostic") == "nested_debug_ldab",
                   "nested_diagnostic_pass": isinstance(diagnostic, dict)
                   and diagnostic.get("verification") == "PASS",
                   "nested_diagnostic_sha": isinstance(diagnostic, dict)
                   and diagnostic.get("parent_sha") == expected_sha,
-                  "nested_diagnostic_contract": isinstance(diagnostic, dict)
+                  "nested_diagnostic_contract": isinstance(
+                      diagnostic, dict
+                  )
                   and diagnostic.get("source_contract")
-                  == "integration/codespace_jyperter/tests/test_smoke_federation.py",
-                  "nested_diagnostic_retention": isinstance(diagnostic, dict)
+                  == (
+                      "integration/codespace_jyperter/"
+                      "tests/test_smoke_federation.py"
+                  ),
+                  "nested_diagnostic_retention": isinstance(
+                      diagnostic, dict
+                  )
                   and diagnostic.get("raw_receipt_retention")
                   == "transient_runner_only",
               }
           )
 
-          failed = sorted(name for name, passed in checks.items() if not passed)
+          failed = sorted(
+              name for name, passed in checks.items() if not passed
+          )
           if failed:
-              raise SystemExit(f"consumer validation failed: {', '.join(failed)}")
+              raise SystemExit(
+                  f"consumer validation failed: {', '.join(failed)}"
+              )
 
           receipt = {
               "schema_version": "0.1",
@@ -148,7 +169,9 @@ jobs:
               "consumer_verification": "PASS",
               "repository": expected_repo,
               "head_sha": expected_sha,
-              "producer_artifact": f"mip-n2-self-index-sanitized-{expected_sha}",
+              "producer_artifact": (
+                  "mip-n2-self-index-sanitized-" f"{expected_sha}"
+              ),
               "checks": sorted(checks),
               "raw_receipt_retention": "transient_runner_only",
           }
