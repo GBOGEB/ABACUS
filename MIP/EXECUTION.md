@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 -->
+
 # MIP Controlled Execution Register
 
 Status date: 2026-09-12. Scope: this rollout; other sessions are not assumed synchronized.
