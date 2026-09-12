@@ -1,6 +1,10 @@
 name: QPS Debug DOW Consumer
 
 on:
+  pull_request:
+    paths:
+      - 'runtime/federation/qps_debug_dow_consumer.py'
+      - '.github/workflows/qps-debug-dow-consumer.yml'
   workflow_dispatch:
   repository_dispatch:
     types: [qps-debug-keb-binding]
@@ -9,7 +13,31 @@ permissions:
   contents: read
 
 jobs:
-  consume-keb-binding:
+  validate-consumer-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert no-input consumer remains fail-closed
+        run: |
+          env -u CODEX_QPS_DEBUG_BINDING_JSON \
+            python3 runtime/federation/qps_debug_dow_consumer.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(
+              Path('runtime/federation/generated/qps_debug_dow_binding.json')
+              .read_text()
+          )
+          assert p['status'] == 'DEFER', p
+          assert p['emit_for_child_disposition'] is False, p
+          assert p['authority_guards']['formal_engineering_credit_delta'] == 0
+          assert p['authority_guards']['negotiation_credit_delta'] == 0
+          PY
+
+  consume-live-keb-binding:
+    if: ${{ github.event_name == 'repository_dispatch' }}
+    needs: validate-consumer-contract
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -17,14 +45,26 @@ jobs:
         ${{ toJson(github.event.client_payload.binding) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Consume CODEX KEB binding fail-closed
+      - name: Consume actual CODEX KEB binding
+        run: python3 runtime/federation/qps_debug_dow_consumer.py
+      - name: Enforce exact accepted binding before child eligibility
         run: |
-          python3 runtime/federation/qps_debug_dow_consumer.py
-      - name: Assert manual/no-input invocation remains DEFER
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          grep -q '"status": "DEFER"' \
-            runtime/federation/generated/qps_debug_dow_binding.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(
+              Path('runtime/federation/generated/qps_debug_dow_binding.json')
+              .read_text()
+          )
+          assert p['status'] == 'ACCEPT', p
+          assert p['emit_for_child_disposition'] is True, p
+          assert p['producer_exact_head_sha'] not in (None, 'UNKNOWN'), p
+          assert p['checks']['runtime_evidence_valid'] is True, p
+          if p['evidence_mode'] == 'FEDERATED_EXACT_PAYLOAD':
+              assert p['checks']['source_payload_hash_match'] is True, p
+              assert p['checks']['adapter_surface_ready'] is True, p
+              assert p['checks']['repo_local_runner_recovered'] is False, p
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: qps-debug-dow-binding
