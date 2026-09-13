@@ -36,8 +36,11 @@ jobs:
             | tee architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json
           python -m json.tool architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json >/dev/null
 
-      - name: Run regression tests
-        run: python -m pytest tests/test_w74_qplant_k8s_contract.py -q
+      - name: Run isolated contract regression tests
+        # This narrow contract test has no dependency on the repository-wide
+        # statistical fixtures in tests/conftest.py. Do not make W74 install
+        # unrelated NumPy/DMAIC dependencies merely to collect two local tests.
+        run: python -m pytest --noconftest tests/test_w74_qplant_k8s_contract.py -q
 
       - name: Bind exact workflow SHA
         shell: bash
