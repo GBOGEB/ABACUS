@@ -42,7 +42,7 @@ jobs:
           python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v \
             2>&1 | tee ci-governance-unittest.log
 
-      - name: Generate governed inventory and retain first-red
+      - name: Check governed inventory and retain first-red
         id: inventory
         continue-on-error: true
         shell: bash
@@ -54,6 +54,15 @@ jobs:
             --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md \
             2>&1 | tee ci-governance-inventory.log
 
+      - name: Generate exact derived inventory candidate
+        if: always()
+        shell: bash
+        run: |
+          python ci/governance/audit_ci_workflows.py \
+            --json-output ci-governance-generated-report.json \
+            --markdown-output ci-governance-generated-rationalization.md \
+            > ci-governance-generation.log 2>&1 || true
+
       - name: Upload governance diagnostic evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -63,6 +72,9 @@ jobs:
             ci-governance-unittest.log
             ci-governance-inventory.log
             ci-governance-report.json
+            ci-governance-generation.log
+            ci-governance-generated-report.json
+            ci-governance-generated-rationalization.md
             docs/ci/WORKFLOW_RATIONALIZATION.md
           if-no-files-found: warn
 
