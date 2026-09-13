@@ -17,10 +17,23 @@ jobs:
   contract:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      EVALUATED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact evaluated source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: actions/setup-python@v5
+      - name: Assert exact evaluated source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EVALUATED_SOURCE_SHA"
+          echo "exact_source_sha=$actual"
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
@@ -42,15 +55,22 @@ jobs:
         # unrelated NumPy/DMAIC dependencies merely to collect two local tests.
         run: python -m pytest --noconftest tests/test_w74_qplant_k8s_contract.py -q
 
-      - name: Bind exact workflow SHA
+      - name: Bind exact evaluated source SHA
         shell: bash
         run: |
           python - <<'PY'
-          import hashlib, json, os
+          import hashlib, json, os, subprocess
           from pathlib import Path
+
+          expected = os.environ["EVALUATED_SOURCE_SHA"]
+          actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if actual != expected:
+              raise SystemExit(f"FAIL exact source mismatch actual={actual} expected={expected}")
+
           p = Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json")
           receipt = json.loads(p.read_text())
-          receipt["source_sha"] = os.environ["GITHUB_SHA"]
+          receipt["source_sha"] = expected
+          receipt["source_identity"] = "PULL_REQUEST_HEAD_OR_PUSH_SHA"
           payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
           p.write_text(payload)
           Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.sha256").write_text(
@@ -59,8 +79,8 @@ jobs:
           PY
 
       - name: Upload exact-SHA contract receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: w74-qplant-k8s-contract-${{ github.sha }}
+          name: w74-qplant-k8s-contract-${{ github.event.pull_request.head.sha || github.sha }}
           path: architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.*
           if-no-files-found: error
