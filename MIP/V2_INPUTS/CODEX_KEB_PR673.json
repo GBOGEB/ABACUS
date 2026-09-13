@@ -1,0 +1,30 @@
+{
+  "authority": "SEMANTIC_PROVENANCE_ONLY_NOT_ENGINEERING_ACCEPTANCE",
+  "child_reentry_target": "GBOGEB/cryoplant-project",
+  "contract_version": "qps-triage-keb-contract/1.0.0",
+  "digest_rule": "sha256(canonical_json_without_receipt_sha256)",
+  "downstream_consumer": "GBOGEB/ABACUS",
+  "executed_steps": 4,
+  "producer_head_sha": "99f92dbd0e598d1da2cde3d706e93e33b79f1573",
+  "producer_pr": 673,
+  "producer_repo": "GBOGEB/CODEX",
+  "receipt_sha256": "91c5e0d222896fc273a4d82767c417059760f98c1528d29d5860edcd9b4413a8",
+  "result": "PASS",
+  "source_challenge_schema": "qps.g5.keb_challenge.v2",
+  "source_object_ids": [
+    "docs/qps_m05/QPS_G5_KEB_CHALLENGE_v0.2.json",
+    "cryoplant-project#1043@8fe7c704620336087152a952101e12f7002d47a8",
+    "Q_engineering_tools#19/run/34730906661/job/103653394137",
+    "artifact:10309790070:sha256:9b71d43c2bafd913e9780174a92514e72511bb8a31fec2cfa065745b58effb9a",
+    "attestation:47177812"
+  ],
+  "underlying_execution": {
+    "artifact_digest": "sha256:9b71d43c2bafd913e9780174a92514e72511bb8a31fec2cfa065745b58effb9a",
+    "job": 103653394137,
+    "observed_completed_step_count": 8,
+    "repo": "GBOGEB/Q_engineering_tools",
+    "run": 34730906661,
+    "runner_id": 1000260663
+  },
+  "workflow_or_validator": "QPS M05 Official Attest Provenance Probe / G5 KEB semantic challenge"
+}
