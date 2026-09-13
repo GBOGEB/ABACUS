@@ -151,16 +151,27 @@ jobs:
           import json
           from pathlib import Path
           w72 = json.loads(
-              Path("architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json").read_text()
+              Path(
+                  "architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json"
+              ).read_text()
           )
           w73 = json.loads(
-              Path("architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json").read_text()
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_SEMANTIC_TOPOLOGY_TELEMETRY.json"
+              ).read_text()
           )
           pa95 = json.loads(
-              Path("architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json").read_text()
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_SEMANTIC_TOPOLOGY_PA95.json"
+              ).read_text()
           )
           pressure = json.loads(
-              Path("architecture/w72/runtime/W73_FEDERATED_PRESSURE_MODEL.json").read_text()
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_FEDERATED_PRESSURE_MODEL.json"
+              ).read_text()
           )
           print(json.dumps({
               "w72_semantic_pca": w72["semantic_pca"],
@@ -232,17 +243,22 @@ jobs:
           from pathlib import Path
 
           feature = Path("architecture/w74/probe/census/FEATURE_ROW.json")
+          elapsed = (
+              int(os.environ["completed_ns"])
+              - int(os.environ["started_ns"])
+          )
           payload = {
               "schema_version": "MC2-W74-RUNTIME-PROBE-0.1.0",
               "source_sha": os.environ["TARGET_SHA"],
               "matrix_label": os.environ["MATRIX_LABEL"],
               "probe": "w72_semantic_census_exact_source_state",
               "probe_execute_seconds": round(
-                  (int(os.environ["completed_ns"]) - int(os.environ["started_ns"]))
-                  / 1_000_000_000,
+                  elapsed / 1_000_000_000,
                   6,
               ),
-              "feature_row_sha256": hashlib.sha256(feature.read_bytes()).hexdigest(),
+              "feature_row_sha256": hashlib.sha256(
+                  feature.read_bytes()
+              ).hexdigest(),
               "execution_state": "PASS",
           }
           Path("architecture/w74/probe/PROBE_RECEIPT.json").write_text(
@@ -297,22 +313,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p architecture/w74/runtime
-          gh api \
-            "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs?per_page=100" \
+          run_api="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh api "${run_api}/jobs?per_page=100" \
             > architecture/w74/runtime/jobs.json
-          gh api \
-            "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            --jq '.created_at' \
+          gh api "${run_api}" --jq '.created_at' \
             > architecture/w74/runtime/run_created_at.txt
 
       - name: Build measured W74 runtime rows
         shell: bash
         run: |
           set -euo pipefail
+          run_created_at="$(
+            cat architecture/w74/runtime/run_created_at.txt
+          )"
           python tools/w74_build_runtime_rows.py \
             --jobs-json architecture/w74/runtime/jobs.json \
             --probe-root architecture/w74/probes \
-            --run-created-at "$(cat architecture/w74/runtime/run_created_at.txt)" \
+            --run-created-at "${run_created_at}" \
             --run-id "${GITHUB_RUN_ID}" \
             --repo "${GITHUB_REPOSITORY}" \
             --out architecture/w74/runtime/W74_RUNTIME_ROWS.json
@@ -321,9 +338,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          baseline="fixtures/mc2_federated_telemetry_seed_v0.1.json"
           python tools/w74_paired_pressure.py \
             --runtime-rows architecture/w74/runtime/W74_RUNTIME_ROWS.json \
-            --runtime-baseline-rows fixtures/mc2_federated_telemetry_seed_v0.1.json \
+            --runtime-baseline-rows "${baseline}" \
             --runtime-telemetry \
               architecture/mc2/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json \
             --semantic-rows \
