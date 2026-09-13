@@ -5,9 +5,14 @@ on:
     paths:
       - "tools/w72_semantic_census.py"
       - "tools/w72_build_semantic_rows.py"
+      - "tools/w73_build_semantic_topology_rows.py"
+      - "tools/mc2_semantic_topology_pca.py"
+      - "tools/mc2_federated_pressure_model.py"
       - "tools/mc2_parallel_analysis_block_gate.py"
       - "tools/mc2_federated_telemetry.py"
       - "tests/test_w72_semantic_census.py"
+      - "tests/test_w73_semantic_topology.py"
+      - "tests/test_mc2_federated_pressure_model.py"
       - "tests/test_mc2_parallel_analysis_block_gate.py"
       - ".github/workflows/w72-versioned-semantic-backfill.yml"
   workflow_dispatch:
@@ -56,7 +61,7 @@ jobs:
             git worktree remove --force "${worktree}"
           done
 
-      - name: Build same-schema semantic rows
+      - name: Build same-schema W72 semantic rows
         shell: bash
         run: |
           set -euo pipefail
@@ -64,7 +69,7 @@ jobs:
             architecture/w72/runtime/backfill/*/FEATURE_ROW.json \
             --out architecture/w72/runtime/W72_SEMANTIC_ROWS.json
 
-      - name: Run semantic PCA
+      - name: Run W72 semantic PCA
         shell: bash
         run: |
           set -euo pipefail
@@ -72,7 +77,7 @@ jobs:
             architecture/w72/runtime/W72_SEMANTIC_ROWS.json \
             --out architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json
 
-      - name: Run semantic PA95 retention gate
+      - name: Run W72 semantic PA95 retention gate
         shell: bash
         run: |
           set -euo pipefail
@@ -83,28 +88,74 @@ jobs:
             --simulations 2000 \
             --seed 20260913
 
+      - name: Build W73 measured semantic-topology rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/w73_build_semantic_topology_rows.py \
+            architecture/w72/runtime/backfill/*/C_consumer_penetration.json \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_ROWS.json
+
+      - name: Run W73 semantic-topology PCA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_semantic_topology_pca.py \
+            architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_ROWS.json \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json
+
+      - name: Run W73 semantic-topology PA95 retention gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_parallel_analysis_block_gate.py \
+            architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json \
+            --block semantic_pca \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json \
+            --simulations 2000 \
+            --seed 20260913
+
+      - name: Build bounded federated runtime x semantic pressure model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_federated_pressure_model.py \
+            --runtime-telemetry architecture/mc2/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json \
+            --runtime-pa95 architecture/mc2/MC2_PA95_RETENTION_PULSE_1_v0.1.json \
+            --semantic-telemetry architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json \
+            --semantic-pa95 architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json \
+            --out architecture/w72/runtime/W73_FEDERATED_PRESSURE_MODEL.json
+
       - name: Summarize measured state
         shell: bash
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          telemetry = json.loads(
+          w72 = json.loads(
               Path("architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json").read_text()
           )
+          w73 = json.loads(
+              Path("architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json").read_text()
+          )
           pa95 = json.loads(
-              Path("architecture/w72/runtime/W72_SEMANTIC_PA95.json").read_text()
+              Path("architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json").read_text()
+          )
+          pressure = json.loads(
+              Path("architecture/w72/runtime/W73_FEDERATED_PRESSURE_MODEL.json").read_text()
           )
           print(json.dumps({
-              "semantic_pca": telemetry["semantic_pca"],
-              "pa95": pa95,
+              "w72_semantic_pca": w72["semantic_pca"],
+              "w73_semantic_topology_pca": w73["semantic_pca"],
+              "w73_pa95": pa95,
+              "federated_pressure_model": pressure,
               "allocation_authority": False,
           }, sort_keys=True))
           PY
 
-      - name: Upload W72 exact-SHA backfill evidence
+      - name: Upload W72/W73 exact-SHA pressure evidence
         uses: actions/upload-artifact@v4
         with:
-          name: w72-versioned-semantic-backfill-${{ github.sha }}
+          name: w72-w73-semantic-pressure-${{ github.sha }}
           path: architecture/w72/runtime
           if-no-files-found: error
