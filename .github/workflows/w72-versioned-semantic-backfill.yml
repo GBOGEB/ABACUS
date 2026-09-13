@@ -119,12 +119,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          runtime_dir="architecture/mc2"
+          semantic_dir="architecture/w72/runtime"
+          rt="${runtime_dir}/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json"
+          rp="${runtime_dir}/MC2_PA95_RETENTION_PULSE_1_v0.1.json"
+          st="${semantic_dir}/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json"
+          sp="${semantic_dir}/W73_SEMANTIC_TOPOLOGY_PA95.json"
           python tools/mc2_federated_pressure_model.py \
-            --runtime-telemetry architecture/mc2/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json \
-            --runtime-pa95 architecture/mc2/MC2_PA95_RETENTION_PULSE_1_v0.1.json \
-            --semantic-telemetry architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json \
-            --semantic-pa95 architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json \
-            --out architecture/w72/runtime/W73_FEDERATED_PRESSURE_MODEL.json
+            --runtime-telemetry "${rt}" \
+            --runtime-pa95 "${rp}" \
+            --semantic-telemetry "${st}" \
+            --semantic-pa95 "${sp}" \
+            --out "${semantic_dir}/W73_FEDERATED_PRESSURE_MODEL.json"
 
       - name: Summarize measured state
         shell: bash
