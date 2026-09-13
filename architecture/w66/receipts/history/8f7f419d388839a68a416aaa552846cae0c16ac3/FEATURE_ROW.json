@@ -1,0 +1,10 @@
+{
+  "consumer_penetration_rate": 1.0,
+  "graph_drop_rate": 0.36,
+  "lineage_gap_rate": 0.4,
+  "registry_gap_rate": 0.5,
+  "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+  "total_open_backlog": 31,
+  "total_population": 76,
+  "unresolved_reference_rate": 0.727273
+}

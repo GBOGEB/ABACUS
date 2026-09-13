@@ -1,0 +1,16 @@
+{
+  "findings": {
+    "unbound_consumers": []
+  },
+  "lane": "C_consumer_penetration",
+  "repository": "GBOGEB/ABACUS",
+  "schema_version": "W67-ID-MEASURED-1.0.0",
+  "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+  "state": "MEASURED",
+  "totals": {
+    "backlog_closed": 10,
+    "backlog_open": 0,
+    "completion_pct": 100.0,
+    "total_population": 10
+  }
+}
