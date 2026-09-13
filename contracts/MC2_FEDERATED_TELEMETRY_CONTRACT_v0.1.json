@@ -1,0 +1,67 @@
+{
+  "authority_class": "derived_operational_analysis",
+  "authority_rules": [
+    "DOW may emit analytical PCA pressure only",
+    "DOW may not grant QPS engineering compliance negotiation or release credit",
+    "repository identity alone is not a priority signal",
+    "MC-1 non-compensating gates remain controlling"
+  ],
+  "bt_gate": {
+    "pairwise_observed_evidence_required": true,
+    "synthetic_pairwise_scores_forbidden": true
+  },
+  "common_required_fields": [
+    "row_id",
+    "observation_class",
+    "source_repo",
+    "source_sha",
+    "evidence_reference",
+    "authority_class"
+  ],
+  "missingness_rules": {
+    "unknown_remains_null": true,
+    "zero_imputation_forbidden": true
+  },
+  "observation_classes": [
+    "semantic",
+    "runtime"
+  ],
+  "parent_mission": "GBOGEB/cryoplant-project#1063",
+  "pca_gate": {
+    "constant_features_excluded": true,
+    "minimum_comparable_rows": 5,
+    "minimum_distinct_source_shas": 5,
+    "one_observation_per_sha": true,
+    "parallel_analysis_required_for_retained_component_claim": true
+  },
+  "producer": "ABACUS/DOW",
+  "runtime_numeric_fields": [
+    "runner_allocated_fraction",
+    "steps_executed_total",
+    "queue_seconds_mean",
+    "execute_seconds_total",
+    "evidence_emit_count"
+  ],
+  "runtime_required_fields": [
+    "execution_state",
+    "job_count",
+    "runner_allocated_fraction",
+    "steps_executed_total",
+    "queue_seconds_mean",
+    "execute_seconds_total",
+    "evidence_emit_count"
+  ],
+  "runtime_state_rules": {
+    "NOT_EXECUTED": "runner_allocated_fraction == 0 AND steps_executed_total == 0",
+    "PASS_FAIL_DEFER": "runner_allocated_fraction > 0 AND steps_executed_total > 0"
+  },
+  "schema_version": "MC2-FEDERATED-TELEMETRY-CONTRACT-0.1.0",
+  "semantic_numeric_fields": [
+    "registry_gap_rate",
+    "unresolved_reference_rate",
+    "consumer_penetration_rate",
+    "graph_drop_rate",
+    "lineage_gap_rate"
+  ],
+  "worker_issue": "GBOGEB/ABACUS#1164"
+}
