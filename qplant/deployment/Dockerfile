@@ -19,6 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
+# Copy the canonical repository SSOT. Runtime injection may override this via
+# SSOT_CONFIG_PATH/QPLANT_CONFIG_PATH, but image build/tests must never depend
+# on a non-existent handover_dashboard/data/config.yaml duplicate.
+COPY config.yaml ./config.yaml
+
 # Copy application code
 COPY handover_dashboard/ ./handover_dashboard/
 COPY config_service/ ./config_service/
@@ -42,7 +47,8 @@ WORKDIR /app
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-# Copy application code
+# Copy canonical fallback SSOT and application code from builder
+COPY --from=builder /app/config.yaml ./config.yaml
 COPY --from=builder /app/handover_dashboard/ ./handover_dashboard/
 COPY --from=builder /app/config_service/ ./config_service/
 COPY --from=builder /app/monitoring_dashboard/ ./monitoring_dashboard/
@@ -57,7 +63,7 @@ USER qplant
 # Environment variables
 ENV PYTHONPATH=/app
 ENV QPLANT_ENV=prod
-ENV QPLANT_CONFIG_PATH=/app/handover_dashboard/data/config.yaml
+ENV QPLANT_CONFIG_PATH=/app/config.yaml
 ENV QPLANT_API_PORT=8100
 ENV QPLANT_CONFIG_PORT=8200
 
