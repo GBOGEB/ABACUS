@@ -1,0 +1,21 @@
+{
+  "findings": {
+    "unbound_consumers": [
+      "QPS_CONTRACTUAL_GAP_REGISTER",
+      "QPS_RTM_REFERENCE_MATRIX",
+      "SEMANTIC_TRACEABILITY",
+      "SSOT_ITEMS"
+    ]
+  },
+  "lane": "C_consumer_penetration",
+  "repository": "GBOGEB/ABACUS",
+  "schema_version": "W67-ID-MEASURED-1.0.0",
+  "source_sha": "c39696661d8d67c769c8031a962129c6d67c3935",
+  "state": "MEASURED",
+  "totals": {
+    "backlog_closed": 6,
+    "backlog_open": 4,
+    "completion_pct": 60.0,
+    "total_population": 10
+  }
+}
