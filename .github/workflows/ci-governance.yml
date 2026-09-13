@@ -32,19 +32,48 @@ jobs:
           python-version: "3.12"
       - name: Validate REX workflow immutability and exact-source controls
         run: python ci/governance/validate_mission_workflow_controls.py
-      - name: Validate workflow policy
-        run: python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v
-      - name: Generate governed inventory
+
+      - name: Validate workflow policy and retain first-red
+        id: policy
+        continue-on-error: true
+        shell: bash
         run: |
+          set -o pipefail
+          python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v \
+            2>&1 | tee ci-governance-unittest.log
+
+      - name: Generate governed inventory and retain first-red
+        id: inventory
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
           python ci/governance/audit_ci_workflows.py \
             --check \
             --json-output ci-governance-report.json \
-            --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md
-      - name: Upload inventory evidence
+            --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md \
+            2>&1 | tee ci-governance-inventory.log
+
+      - name: Upload governance diagnostic evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ci-governance-report
+          name: ci-governance-first-red-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ci-governance-unittest.log
+            ci-governance-inventory.log
             ci-governance-report.json
             docs/ci/WORKFLOW_RATIONALIZATION.md
+          if-no-files-found: warn
+
+      - name: Fail closed on governance red
+        if: always()
+        env:
+          POLICY_OUTCOME: ${{ steps.policy.outcome }}
+          INVENTORY_OUTCOME: ${{ steps.inventory.outcome }}
+        shell: bash
+        run: |
+          echo "policy_outcome=$POLICY_OUTCOME"
+          echo "inventory_outcome=$INVENTORY_OUTCOME"
+          test "$POLICY_OUTCOME" = success
+          test "$INVENTORY_OUTCOME" = success
