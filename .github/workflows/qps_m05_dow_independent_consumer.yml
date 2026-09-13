@@ -29,7 +29,7 @@ jobs:
       - name: Verify historical CODEX M05 attestation control
         run: python scripts/qps_m05_verify_attestation_return.py
 
-      - name: Verify G5 KEB ingress and defer until observed H2 attestation
+      - name: Independently consume observed G5 H2 semantic-provenance receipt
         run: python scripts/qps_m05_g5_dow_readiness.py
 
       - name: Upload DOW independent consumer receipts
