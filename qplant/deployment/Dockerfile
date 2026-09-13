@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # QPLANT Cryogenic Dashboard — Multi-Stage Docker Build
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 1: Build & test
+# Stage 1: Build & runtime-contract test
 # Stage 2: Production runtime
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -24,16 +24,25 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 # on a non-existent handover_dashboard/data/config.yaml duplicate.
 COPY config.yaml ./config.yaml
 
-# Copy application code
+# Copy runtime application code. The API imports the shared authentication
+# package from the QPLANT root, so it is part of the executable image contract.
 COPY handover_dashboard/ ./handover_dashboard/
+COPY authentication/ ./authentication/
 COPY config_service/ ./config_service/
 COPY monitoring_dashboard/ ./monitoring_dashboard/
 COPY ai_validation/ ./ai_validation/
 
-# Run tests
+# Run only runtime-relevant tests inside the image build. Release-output,
+# generated-document and manifest tests remain in their dedicated CI lanes and
+# are deliberately not converted into production image payload.
 WORKDIR /app/handover_dashboard
-RUN PYTHONPATH=/install/lib/python3.11/site-packages:$PYTHONPATH \
-    python -m pytest tests/ -q --tb=short
+RUN PYTHONPATH=/app:/install/lib/python3.11/site-packages:$PYTHONPATH \
+    python -m pytest \
+      tests/test_config_loader.py \
+      tests/test_calculations.py \
+      tests/test_api.py \
+      -k "not visualization_catalog and not compressor_availability_chart" \
+      -q --tb=short
 
 # ── Stage 2: Production ─────────────────────────────────────────────────────
 FROM python:3.11-slim AS production
@@ -47,9 +56,10 @@ WORKDIR /app
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-# Copy canonical fallback SSOT and application code from builder
+# Copy canonical fallback SSOT and runtime application code from builder
 COPY --from=builder /app/config.yaml ./config.yaml
 COPY --from=builder /app/handover_dashboard/ ./handover_dashboard/
+COPY --from=builder /app/authentication/ ./authentication/
 COPY --from=builder /app/config_service/ ./config_service/
 COPY --from=builder /app/monitoring_dashboard/ ./monitoring_dashboard/
 COPY --from=builder /app/ai_validation/ ./ai_validation/
