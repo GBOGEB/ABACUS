@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet pytest
+          python -m pip install --quiet pytest numpy
           python -m pytest tests/test_w77_phase_runtime.py -q
 
   phase-probe:
