@@ -30,10 +30,10 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-      - name: Validate workflow policy
-        run: python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v
       - name: Validate REX workflow immutability and exact-source controls
         run: python ci/governance/validate_mission_workflow_controls.py
+      - name: Validate workflow policy
+        run: python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v
       - name: Generate governed inventory
         run: |
           python ci/governance/audit_ci_workflows.py \
