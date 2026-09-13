@@ -13,6 +13,7 @@ K8S = DEPLOY / "k8s"
 EXPECTED_NAMESPACE = "qplant-production"
 EXPECTED_PORT = 8100
 EXPECTED_IMAGE = "qplant/api-server:v4.4.0"
+EXPECTED_RUNTIME_USER = "10001:10001"
 
 
 def docs(name: str):
@@ -48,6 +49,10 @@ def main() -> None:
     dockerfile = (DEPLOY / "Dockerfile").read_text(encoding="utf-8")
     check("ENV QPLANT_API_PORT=8100" in dockerfile, "Dockerfile canonical API port is not 8100")
     check("EXPOSE 8100 8200" in dockerfile, "Dockerfile does not expose canonical API/config ports")
+    check(
+        f"USER {EXPECTED_RUNTIME_USER}" in dockerfile,
+        "Dockerfile runtime USER must be a verifiable numeric non-root UID:GID",
+    )
 
     deployment = load_one("deployment-api-server.yaml")
     check(deployment["metadata"]["namespace"] == EXPECTED_NAMESPACE, "deployment namespace mismatch")
@@ -110,6 +115,7 @@ def main() -> None:
         "replicas": {"baseline": deployment["spec"]["replicas"], "max": hpa["spec"]["maxReplicas"]},
         "security": {
             "non_root_pod": deployment["spec"]["template"]["spec"]["securityContext"]["runAsNonRoot"],
+            "numeric_runtime_user": EXPECTED_RUNTIME_USER,
             "read_only_rootfs": security["readOnlyRootFilesystem"],
             "drop_all_capabilities": security["capabilities"]["drop"] == ["ALL"],
             "network_policy": True,
