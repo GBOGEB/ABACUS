@@ -124,6 +124,31 @@ jobs:
           kubectl get events -n qplant-production --sort-by='.lastTimestamp' || true
           exit "$rc"
 
+      - name: Capture K8S-03 runtime diagnostics
+        if: ${{ always() && steps.cluster.outcome == 'success' }}
+        shell: bash
+        run: |
+          set +e
+          out=architecture/w169/runtime/diagnostics
+          mkdir -p "$out"
+          kubectl get all -n qplant-production -o wide > "$out/get-all.txt" 2>&1 || true
+          kubectl get pods -n qplant-production -o json > "$out/pods.json" 2>&1 || true
+          kubectl describe pods -n qplant-production > "$out/pods-describe.txt" 2>&1 || true
+          kubectl get events -n qplant-production --sort-by='.lastTimestamp' > "$out/events.txt" 2>&1 || true
+          for pod in $(kubectl get pods -n qplant-production -o name 2>/dev/null); do
+            safe=${pod#pod/}
+            kubectl logs -n qplant-production "$pod" -c validate-ssot \
+              > "$out/${safe}-validate-ssot.log" 2>&1 || true
+            kubectl logs -n qplant-production "$pod" -c validate-ssot --previous \
+              > "$out/${safe}-validate-ssot-previous.log" 2>&1 || true
+            kubectl logs -n qplant-production "$pod" -c api-server \
+              > "$out/${safe}-api-server.log" 2>&1 || true
+            kubectl logs -n qplant-production "$pod" -c api-server --previous \
+              > "$out/${safe}-api-server-previous.log" 2>&1 || true
+          done
+          echo "=== API server current/previous logs ==="
+          cat "$out"/*-api-server*.log 2>/dev/null || true
+
       - name: Measure health, cold start and request latency
         id: measure
         if: steps.rollout.outcome == 'success'
@@ -142,7 +167,7 @@ jobs:
             sleep 1
           done
           python - <<'PY'
-          import json, statistics, subprocess, time, urllib.request
+          import json, statistics, time, urllib.request
           from datetime import datetime
           from pathlib import Path
 
@@ -169,13 +194,9 @@ jobs:
                   restarts += int(status.get("restartCount", 0))
                   if status.get("ready"):
                       ready += 1
-                  started_at = (
-                      status.get("state", {}).get("running", {}).get("startedAt")
-                  )
+                  started_at = status.get("state", {}).get("running", {}).get("startedAt")
                   if started_at:
-                      started = datetime.fromisoformat(
-                          started_at.replace("Z", "+00:00")
-                      )
+                      started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
                       cold.append((started - created).total_seconds())
 
           def percentile(values, p):
@@ -219,9 +240,7 @@ jobs:
           def ms_to_s(value):
               return round(value / 1000.0, 6) if value is not None else None
 
-          source_sha = subprocess.check_output(
-              ["git", "rev-parse", "HEAD"], text=True
-          ).strip()
+          source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
           start_ms = read_int("/tmp/w169_job_start_ms")
           now_ms = int(time.time() * 1000)
           image_size = read_int("/tmp/w169_image_size_bytes")
@@ -282,7 +301,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: w169-qplant-k8s-runtime-${{ github.sha }}
-          path: architecture/w169/runtime/*
+          path: architecture/w169/runtime/**
           if-no-files-found: error
 
       - name: Fail closed on first real runtime red
