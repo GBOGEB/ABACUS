@@ -64,11 +64,14 @@ COPY --from=builder /app/config_service/ ./config_service/
 COPY --from=builder /app/monitoring_dashboard/ ./monitoring_dashboard/
 COPY --from=builder /app/ai_validation/ ./ai_validation/
 
-# Create non-root user
-RUN useradd -m -s /bin/bash qplant && \
-    chown -R qplant:qplant /app
+# Kubernetes `runAsNonRoot` requires a verifiable numeric runtime identity.
+# Keep the friendly account name, but make the image contract explicit and
+# deterministic at UID/GID 10001 so admission and container creation agree.
+RUN groupadd --gid 10001 qplant && \
+    useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash qplant && \
+    chown -R 10001:10001 /app
 
-USER qplant
+USER 10001:10001
 
 # Environment variables
 ENV PYTHONPATH=/app
