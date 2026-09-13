@@ -14,6 +14,8 @@ EXPECTED_NAMESPACE = "qplant-production"
 EXPECTED_PORT = 8100
 EXPECTED_IMAGE = "qplant/api-server:v4.4.0"
 EXPECTED_RUNTIME_USER = "10001:10001"
+EXPECTED_AUTH_DB = "/var/lib/qplant/authentication/api_keys.json"
+EXPECTED_AUTH_MOUNT = "/var/lib/qplant/authentication"
 
 
 def docs(name: str):
@@ -56,11 +58,20 @@ def main() -> None:
 
     deployment = load_one("deployment-api-server.yaml")
     check(deployment["metadata"]["namespace"] == EXPECTED_NAMESPACE, "deployment namespace mismatch")
+    pod_spec = deployment["spec"]["template"]["spec"]
+    pod_security = pod_spec.get("securityContext", {})
+    check(pod_security.get("runAsNonRoot") is True, "pod must require non-root execution")
+    check(pod_security.get("runAsUser") == 10001, "pod runAsUser must match image UID 10001")
+    check(pod_security.get("runAsGroup") == 10001, "pod runAsGroup must match image GID 10001")
+    check(pod_security.get("fsGroup") == 10001, "pod fsGroup must make bounded writable volumes available to runtime GID")
+
     api = container_by_name(deployment, "api-server")
     check(api["image"] == EXPECTED_IMAGE, "deployment image mismatch")
     check(api["ports"][0]["containerPort"] == EXPECTED_PORT, "deployment containerPort mismatch")
     check(api["ports"][0]["name"] == "http", "deployment named port missing")
-    check(env_map(api).get("QPLANT_API_PORT") == str(EXPECTED_PORT), "QPLANT_API_PORT env mismatch")
+    api_env = env_map(api)
+    check(api_env.get("QPLANT_API_PORT") == str(EXPECTED_PORT), "QPLANT_API_PORT env mismatch")
+    check(api_env.get("QPLANT_API_KEYS_DB") == EXPECTED_AUTH_DB, "QPLANT_API_KEYS_DB must bind the explicit writable auth-state mount")
     for probe in ("startupProbe", "livenessProbe", "readinessProbe"):
         check(api[probe]["httpGet"]["port"] == "http", f"{probe} must use named http port")
     security = api.get("securityContext", {})
@@ -68,7 +79,19 @@ def main() -> None:
     check(security.get("readOnlyRootFilesystem") is True, "api root filesystem must be read-only")
     check(security.get("capabilities", {}).get("drop") == ["ALL"], "api Linux capabilities must be dropped")
 
-    init = deployment["spec"]["template"]["spec"]["initContainers"][0]
+    # HIST-BD-017 regression guard: the hardened read-only rootfs remains
+    # mandatory, therefore mutable authentication metadata must be explicitly
+    # isolated on a bounded writable volume rather than falling back to $HOME.
+    volume_mounts = {row["name"]: row for row in api.get("volumeMounts", [])}
+    check("auth-state" in volume_mounts, "api must mount bounded auth-state storage")
+    check(volume_mounts["auth-state"].get("mountPath") == EXPECTED_AUTH_MOUNT, "auth-state mount path mismatch")
+    check(volume_mounts["auth-state"].get("readOnly") is False, "auth-state mount must be writable")
+    volumes = {row["name"]: row for row in pod_spec.get("volumes", [])}
+    check("auth-state" in volumes, "deployment must declare auth-state volume")
+    check("emptyDir" in volumes["auth-state"], "bounded W169 auth-state proof must use explicit emptyDir")
+    check(volumes["auth-state"]["emptyDir"].get("sizeLimit") == "16Mi", "auth-state emptyDir must stay bounded")
+
+    init = pod_spec["initContainers"][0]
     check(init["image"] == EXPECTED_IMAGE, "SSOT init validator must reuse canonical image dependencies")
 
     service = load_one("service.yaml")
@@ -96,8 +119,8 @@ def main() -> None:
     cron = next(d for d in validator_docs if d["kind"] == "CronJob")
     cron_container = cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]
     check(cron_container["image"] == EXPECTED_IMAGE, "SSOT CronJob image mismatch")
-    volumes = {v["name"]: v for v in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["volumes"]}
-    check(volumes["ssot-config"]["configMap"]["name"] == config["metadata"]["name"], "SSOT CronJob ConfigMap mismatch")
+    cron_volumes = {v["name"]: v for v in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["volumes"]}
+    check(cron_volumes["ssot-config"]["configMap"]["name"] == config["metadata"]["name"], "SSOT CronJob ConfigMap mismatch")
 
     ingress = load_one("ingress.yaml")
     backend = ingress["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]
@@ -114,12 +137,14 @@ def main() -> None:
         "image": EXPECTED_IMAGE,
         "replicas": {"baseline": deployment["spec"]["replicas"], "max": hpa["spec"]["maxReplicas"]},
         "security": {
-            "non_root_pod": deployment["spec"]["template"]["spec"]["securityContext"]["runAsNonRoot"],
+            "non_root_pod": pod_security["runAsNonRoot"],
             "numeric_runtime_user": EXPECTED_RUNTIME_USER,
             "read_only_rootfs": security["readOnlyRootFilesystem"],
             "drop_all_capabilities": security["capabilities"]["drop"] == ["ALL"],
             "network_policy": True,
             "immutable_ssot": config["immutable"],
+            "bounded_writable_auth_state": True,
+            "auth_state_path": EXPECTED_AUTH_MOUNT,
         },
         "manifest_sha256": manifest_hashes,
     }
