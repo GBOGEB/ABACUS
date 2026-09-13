@@ -178,6 +178,13 @@ def rounded(value):
     return round(float(value), 6)
 
 
+def ranking_value(value: float | None) -> float:
+    """Rank undefined diagnostics below every observed finite metric."""
+    if value is None:
+        return float("-inf")
+    return float(value)
+
+
 def evaluate(panel: dict) -> dict:
     rows = validate_panel(panel)
     metrics = {}
@@ -212,8 +219,10 @@ def evaluate(panel: dict) -> dict:
     ranked = sorted(
         CANDIDATES,
         key=lambda feature: (
-            metrics[feature]["icc_one_way_single_measure"],
-            metrics[feature]["rank_stability"]["median_spearman_rho"],
+            ranking_value(metrics[feature]["icc_one_way_single_measure"]),
+            ranking_value(
+                metrics[feature]["rank_stability"]["median_spearman_rho"]
+            ),
         ),
         reverse=True,
     )
