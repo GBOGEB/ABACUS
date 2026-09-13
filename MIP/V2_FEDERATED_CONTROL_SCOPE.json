@@ -1,0 +1,91 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "scope_id": "mip_v2_federated_closed_loop_control",
+  "observed_date": "2026-09-13",
+  "predecessor": {
+    "scope_id": "mip_dov_v1_receipt_protection_and_self_index",
+    "acceptance": "MIP/N2_CROSS_REPO_ACCEPTANCE_20260912.json",
+    "cleanup": "MIP/FINAL_CLEANUP_20260912.json",
+    "required_state": "CONTROL"
+  },
+  "mission": "Turn the accepted exact-SHA evidence layer into a bounded federated control loop across KEB, DOW and cryoplant child authority without transferring engineering authority to parent repositories.",
+  "fixed_goalpost": {
+    "gate_count": 10,
+    "goalpost_rule": "V2-G1 through V2-G10 are fixed for this scope. Enhancements do not change the denominator; material expansion requires a new versioned scope."
+  },
+  "authority": {
+    "keb_repo": "GBOGEB/CODEX",
+    "dow_repo": "GBOGEB/ABACUS",
+    "child_repo": "GBOGEB/cryoplant-project",
+    "keb_may_promote_child_truth": false,
+    "dow_may_promote_child_truth": false,
+    "child_owns_final_qps_disposition": true
+  },
+  "contract_bindings": {
+    "keb": {
+      "repository": "GBOGEB/CODEX",
+      "path": "governance/qps_triage/KEB_CONTRACT_v1.json",
+      "schema": "qps-triage-keb-contract/1.0.0",
+      "required_runtime_rule": "PASS requires exact head SHA, receipt digest and executed_steps > 0"
+    },
+    "dow": {
+      "repository": "GBOGEB/ABACUS",
+      "path": "governance/qps_triage/DOW_CONTRACT_v1.json",
+      "schema": "qps-triage-dow-contract/1.0.0",
+      "required_dispositions": ["ACCEPT", "REJECT", "DEFER"]
+    },
+    "child": {
+      "repository": "GBOGEB/cryoplant-project",
+      "path": "controls/QPS_TRIAGE_CHILD_CONTRACT_v1.json",
+      "schema": "qps-triage-child-contract/1.1.0",
+      "required_dispositions": ["ACCEPT", "REJECT", "DEFER"],
+      "fresh_head_repeat_required_for_perpetuation": true
+    }
+  },
+  "controller_states": [
+    "WAIT_KEB_RECEIPT",
+    "WAIT_DOW_CHALLENGE",
+    "WAIT_CHILD_REENTRY",
+    "ROUTE_FIRST_RED",
+    "REPAIR_OR_WITHDRAW",
+    "REPEAT_DISTINCT_SHA",
+    "PROMOTE_CONTROL"
+  ],
+  "flow_semantics": {
+    "feedforward": "CONTROL decision emits bounded trigger or next action",
+    "evidence": "execution emits exact-SHA sanitized evidence",
+    "feedback": "federated or child disposition returns to CONTROL before any next execution",
+    "wait": "missing prerequisite is an explicit controller state, not a code failure"
+  },
+  "gates": [
+    {"id": "V2-G1", "name": "scope_and_denominator_frozen", "exit": "versioned 10-gate scope is canonical"},
+    {"id": "V2-G2", "name": "v1_control_baseline_imported", "exit": "v1 8/8 acceptance and CONTROL cleanup are validated"},
+    {"id": "V2-G3", "name": "keb_dow_child_contracts_bound", "exit": "three authority contracts are bound without authority leakage"},
+    {"id": "V2-G4", "name": "controller_state_machine_executable", "exit": "exact-SHA workflow executes WAIT/TRIGGER/DISPOSITION semantics >0 steps"},
+    {"id": "V2-G5", "name": "exact_keb_receipt_intake", "exit": "producer tuple, digest, result and positive runtime evidence are validated or explicitly rejected/deferred"},
+    {"id": "V2-G6", "name": "dow_challenge_and_disposition", "exit": "DOW emits one ACCEPT/REJECT/DEFER receipt bound to producer and DOW exact head"},
+    {"id": "V2-G7", "name": "cryoplant_child_reentry", "exit": "child consumes exact DOW receipt and records ACCEPT/REJECT/DEFER without authority leakage"},
+    {"id": "V2-G8", "name": "feedback_to_bounded_next_action", "exit": "child feedback re-enters controller and produces WAIT/REPAIR/REPEAT/PROMOTE action"},
+    {"id": "V2-G9", "name": "measured_scheduler_telemetry", "exit": "queue, execute, blocker-age and dependency/fan-out features are measured; PCA is used only when statistically justified"},
+    {"id": "V2-G10", "name": "distinct_sha_repeat_and_control", "exit": "closed loop repeats on a second distinct exact SHA with append-only history, owner, cadence and re-entry rule"}
+  ],
+  "initial_observation": {
+    "V2-G1": "IMPLEMENTED_ON_BRANCH",
+    "V2-G2": "PROVABLE_FROM_MAIN",
+    "V2-G3": "CONTRACTS_DISCOVERED_AND_BOUND_BY_LOCATOR",
+    "V2-G4": "IMPLEMENTED_ON_BRANCH",
+    "V2-G5": "WAITING_REAL_KEB_RECEIPT",
+    "V2-G6": "WAITING_G5",
+    "V2-G7": "WAITING_G6",
+    "V2-G8": "WAITING_G7",
+    "V2-G9": "PLANNED",
+    "V2-G10": "PLANNED"
+  },
+  "score_guard": {
+    "formal_engineering_baseline": "70/90",
+    "negotiation_baseline": "0/20",
+    "governance_or_controller_work_credit_delta": 0,
+    "global_project_dov": "WITHHELD"
+  }
+}
