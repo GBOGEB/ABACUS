@@ -87,8 +87,8 @@ jobs:
       - name: Upload W77 phase probe
         uses: actions/upload-artifact@v4
         with:
-          name: >-
-            w77-probe-r${{ matrix.repeat }}-${{ matrix.target.label }}-${{ github.sha }}
+          # Repeat + target is unique within one workflow run.
+          name: r${{ matrix.repeat }}-${{ matrix.target.label }}
           path: architecture/w77/probe
           if-no-files-found: error
 
@@ -108,7 +108,7 @@ jobs:
       - name: Download W77 phase probes
         uses: actions/download-artifact@v4
         with:
-          pattern: w77-probe-*-${{ github.sha }}
+          pattern: r*-*
           path: architecture/w77/probes
 
       - name: Evaluate W77 feature stability
