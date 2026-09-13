@@ -1,0 +1,136 @@
+name: W77 Phase Runtime Instrumentation
+
+on:
+  pull_request:
+    paths:
+      - "tools/w77_instrumented_semantic_census.py"
+      - "tools/w77_phase_stability.py"
+      - "tests/test_w77_phase_runtime.py"
+      - ".github/workflows/w77-phase-runtime-instrumentation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout control implementation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run W77 helper tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pytest numpy
+          python -m pytest tests/test_w77_phase_runtime.py -q
+
+  phase-probe:
+    name: w77-r${{ matrix.repeat }}-${{ matrix.target.label }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        repeat: [1, 2, 3]
+        target:
+          - label: h1
+            sha: e20f923b5994a2d817fe1fde5d625d189170127b
+          - label: h2
+            sha: 3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+          - label: h3
+            sha: 970bc70a016bc071cd3c97bfdbd012d48a85055d
+          - label: h4
+            sha: c39696661d8d67c769c8031a962129c6d67c3935
+          - label: h5
+            sha: 8f7f419d388839a68a416aaa552846cae0c16ac3
+    env:
+      TARGET_SHA: ${{ matrix.target.sha }}
+      MATRIX_LABEL: ${{ matrix.target.label }}
+      REPEAT: ${{ matrix.repeat }}
+    steps:
+      - name: Checkout W77 control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Execute phase-instrumented exact-SHA probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${TARGET_SHA}"
+          worktree="${RUNNER_TEMP}/w77-${REPEAT}-${TARGET_SHA:0:12}"
+          git worktree add --detach "${worktree}" FETCH_HEAD
+          out="architecture/w77/probe"
+          python tools/w77_instrumented_semantic_census.py \
+            --root "${worktree}" \
+            --source-sha "${TARGET_SHA}" \
+            --repeat "${REPEAT}" \
+            --matrix-label "${MATRIX_LABEL}" \
+            --out "${out}"
+          test -s "${out}/W77_PROBE_RECEIPT.json"
+          git worktree remove --force "${worktree}"
+
+      - name: Upload W77 phase probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: >-
+            w77-probe-r${{ matrix.repeat }}-${{ matrix.target.label }}-${{ github.sha }}
+          path: architecture/w77/probe
+          if-no-files-found: error
+
+  aggregate:
+    needs: phase-probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout W77 control implementation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download W77 phase probes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: w77-probe-*-${{ github.sha }}
+          path: architecture/w77/probes
+
+      - name: Evaluate W77 feature stability
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t receipts < <(
+            find architecture/w77/probes \
+              -name W77_PROBE_RECEIPT.json \
+              -type f \
+              | sort
+          )
+          test "${#receipts[@]}" -eq 15
+          mkdir -p architecture/w77/runtime
+          python tools/w77_phase_stability.py \
+            "${receipts[@]}" \
+            --out architecture/w77/runtime/W77_FEATURE_STABILITY.json
+          cat architecture/w77/runtime/W77_FEATURE_STABILITY.json
+
+      - name: Upload W77 stability evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: w77-phase-stability-${{ github.sha }}
+          path: architecture/w77/runtime/W77_FEATURE_STABILITY.json
+          if-no-files-found: error
