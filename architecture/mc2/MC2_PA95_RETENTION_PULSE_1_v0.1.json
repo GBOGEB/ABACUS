@@ -1,0 +1,33 @@
+{
+  "allocation_authority": false,
+  "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE",
+  "child_engineering_promotion_authority": false,
+  "null_eigenvalue_thresholds": [
+    2.914153,
+    1.609482,
+    0.897564,
+    0.275687
+  ],
+  "observed_eigenvalues": [
+    3.009803,
+    0.949176,
+    0.040776,
+    0.000245
+  ],
+  "pc2_diagnostic_not_retained": true,
+  "quantile": 0.95,
+  "receipt_sha256": "eb4534fd49eeea32c7cb3beab09c8c2f706466bacb4ce51c2982837888886890",
+  "retained_component_count": 1,
+  "retained_pcs": [
+    1
+  ],
+  "retention_authority": "DIAGNOSTIC_ONLY",
+  "sample_size": 5,
+  "schema_version": "MC2-PA95-RETENTION-0.1.0",
+  "seed": 20260913,
+  "simulations": 2000,
+  "small_sample_warning": true,
+  "source_receipt_sha256": "3b482e1343b98ece92c65d35a5bc26b5d8896d5261cdb32c10c008eb232a1a17",
+  "status": "PA95_DIAGNOSTIC",
+  "varying_feature_count": 4
+}
