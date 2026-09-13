@@ -1,4 +1,4 @@
-# QPLANT API Service — Load Balancer
+# QPLANT API Service — cluster service fronted by the managed Ingress.
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,15 +8,11 @@ metadata:
     app: qplant-api
     tier: backend
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: qplant-api
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8000
+    targetPort: http
     name: http
-  - protocol: TCP
-    port: 443
-    targetPort: 8000
-    name: https
