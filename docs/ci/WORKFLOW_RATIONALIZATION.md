@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `b9074b1b80168a12ee7f9f7c1cc6a0f8979da156e0ec5a462ad1a246b012aa96`
+Policy SHA-256: `1481418ef46a14a393857052696c439697c57a6f62c2c11f1f8d06f440524f7a`
 
 ## Outcome
 
-The repository currently contains **128 workflow definitions**. All **128** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **129 workflow definitions**. All **129** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -37,7 +37,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 34 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 35 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 1 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -155,6 +155,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `specialised` | `w70-retain-measured-pulse.yml` | workflow_run, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w71-residual-lineage-census.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w72-clean-clone-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w72-versioned-semantic-backfill.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w72-zero-delta-wheel.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w85-census-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w93-docker-deployment-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
