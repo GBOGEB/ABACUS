@@ -8,10 +8,10 @@
     "semantic": 3
   },
   "execution_context": "controlled_local_reproduction_against_committed_seed_candidate",
+  "generator_receipt_sha256": "3b482e1343b98ece92c65d35a5bc26b5d8896d5261cdb32c10c008eb232a1a17",
   "global_allocation_authority": false,
   "hosted_ci_status_at_capture": "WITHHELD_SHARED_ACTIONS_QUEUE",
   "parent_mission": "GBOGEB/cryoplant-project#1063",
-  "receipt_sha256": "3b482e1343b98ece92c65d35a5bc26b5d8896d5261cdb32c10c008eb232a1a17",
   "rows_total": 9,
   "runtime_pca": {
     "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE",
