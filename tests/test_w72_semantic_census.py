@@ -30,9 +30,7 @@ def build_fixture(root: Path, *, omit_index_b: bool = False) -> None:
     state: AUTHORITATIVE_CANDIDATE
 """,
     )
-    authorities = [
-        {"logical_id": "AUTH-A", "path": "ssot/a.yaml"},
-    ]
+    authorities = [{"logical_id": "AUTH-A", "path": "ssot/a.yaml"}]
     if not omit_index_b:
         authorities.append({"logical_id": "AUTH-B", "path": "ssot/b.yaml"})
     write(root, "ssot/index.json", json.dumps({"authorities": authorities}))
@@ -63,10 +61,11 @@ def build_fixture(root: Path, *, omit_index_b: bool = False) -> None:
     gaps: [CG-01]
 """,
     )
+    write(root, "docs/domain.md", "# Q3\nAuthoritative domain source.\n")
     write(
         root,
-        "docs/domain.md",
-        "# Q3\nConsumer binds SSOT-Q3, CG-01, AUTH-A and AUTH-B.\n",
+        "docs/consumer.md",
+        "Consumer binds SSOT-Q3, CG-01, ssot/a.yaml and AUTH-B.\n",
     )
 
 
@@ -84,6 +83,23 @@ def test_w72_separates_authority_registry_from_domain_and_gap_ids(tmp_path):
     assert receipts["B_reference_gap"]["findings"]["unresolved_references"] == []
 
 
+def test_w72_accepts_canonical_path_as_real_consumer_evidence(tmp_path):
+    build_fixture(tmp_path)
+    receipts, _ = MODULE.measure(tmp_path, "d" * 40)
+    evidence = receipts["C_consumer_penetration"]["findings"]["consumer_evidence"]
+    assert "docs/consumer.md" in evidence["AUTH-A"]
+
+
+def test_w72_does_not_count_entity_source_as_downstream_consumer(tmp_path):
+    build_fixture(tmp_path)
+    write(tmp_path, "docs/consumer.md", "No semantic bindings here.\n")
+    write(tmp_path, "docs/domain.md", "# Q3\nSSOT-Q3 is its own source label.\n")
+    receipts, _ = MODULE.measure(tmp_path, "e" * 40)
+    assert "SSOT-Q3" in receipts["C_consumer_penetration"]["findings"][
+        "unbound_consumers"
+    ]
+
+
 def test_w72_detects_real_authority_registry_mismatch(tmp_path):
     build_fixture(tmp_path, omit_index_b=True)
     receipts, row = MODULE.measure(tmp_path, "b" * 40)
@@ -96,12 +112,12 @@ def test_w72_detects_real_authority_registry_mismatch(tmp_path):
 
 def test_w72_generated_receipts_do_not_self_satisfy_consumers(tmp_path):
     build_fixture(tmp_path)
-    # Remove real consumers, then add generated evidence containing every ID.
+    write(tmp_path, "docs/consumer.md", "No semantic bindings here.\n")
     write(tmp_path, "docs/domain.md", "# Q3\nNo semantic IDs here.\n")
     write(
         tmp_path,
         "architecture/w70/receipts/example/FEATURE_ROW.json",
-        json.dumps({"text": "SSOT-Q3 CG-01 AUTH-A AUTH-B"}),
+        json.dumps({"text": "SSOT-Q3 CG-01 AUTH-A AUTH-B ssot/a.yaml ssot/b.yaml"}),
     )
 
     _, row = MODULE.measure(tmp_path, "c" * 40)
