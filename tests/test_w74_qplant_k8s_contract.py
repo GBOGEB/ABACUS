@@ -22,6 +22,7 @@ def test_qplant_k8s_contract_executes_and_passes():
     assert receipt["replicas"] == {"baseline": 3, "max": 10}
     assert receipt["security"]["immutable_ssot"] is True
     assert receipt["security"]["network_policy"] is True
+    assert receipt["security"]["numeric_runtime_user"] == "10001:10001"
 
 
 def test_k8s_contract_has_manifest_hashes():
