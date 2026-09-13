@@ -1,10 +1,13 @@
-schema: qps-global-glossary-bridge/1.0.0
+schema: qps-global-glossary-bridge/1.1.0
 repo: GBOGEB/ABACUS
 role: DOW_GOVERNANCE_CONSUMER
 source_authority:
   repository: GBOGEB/cryoplant-project
   path: controls/QPS_GLOBAL_GLOSSARY_v1.yaml
   branch: main
+  schema: qps-global-glossary/1.2.0
+  observed_blob_sha: 7cdaeeab90e341865f9a008bb18338667bf766c6
+  status: CANONICAL_QPS_DOMAIN_VOCABULARY
 consumption:
   policy:
     - consume QPS-domain terms for DOW allocation disposition and governance
@@ -14,10 +17,19 @@ consumption:
     - QRB.VV means QRB Vacuum Vessel only
     - WPS_SYSTEM and WPS_WELDING must remain disambiguated
     - semantic bridge does not transfer engineering authority
+    - consume N_SAMPLE ARTIFACT_LEVEL_N FORMAT_BALANCED_N PCA KMO MSA MSA_MIN PC1 PC2 PC3 EXPLAINED_VARIANCE_PCT PARALLEL_ANALYSIS PA95 BT VISUAL_REVERSE_PRESSURE and VISUAL_N100_CONTROL from the canonical QPS glossary
+    - Bradley-Terry claims require observed pairwise outcomes and an explicit BT fit
+    - VISUAL_REVERSE_PRESSURE is a non-BT diagnostic weighted scalar and must not be interpreted as Bradley-Terry evidence
+    - REVERSE_BT is deprecated and prohibited for new semantic output except historical traceability
 federation_edges:
   inbound: GBOGEB/cryoplant-project -> GBOGEB/ABACUS
   outbound: GBOGEB/ABACUS -> GBOGEB/cryoplant-project
   outbound_authority: DOW_DISPOSITION_RECEIPT_ONLY
+activation:
+  date: 2026-09-13
+  canonical_source_observed: true
+  semantic_authority_transferred: false
+  project_global_PCA_promoted: false
 triage:
   category: QPS_GLOBAL_SEMANTIC_CONTROL
-  status: BRIDGE_READY_PENDING_SOURCE_MERGE
+  status: ACTIVE_CANONICAL_SOURCE_CONSUMPTION
