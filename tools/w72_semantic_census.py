@@ -5,6 +5,10 @@ Separates authority-object IDs from domain/gap IDs, binds each ID to a real
 source path, excludes generated measurement evidence from consumer counts, and
 emits the same MC-2 semantic feature keys under a new measurement schema.
 
+Consumer evidence is path-aware: a downstream file may consume a logical
+entity by its logical ID or by its canonical bound path. The entity's own
+source file is never counted as its downstream consumer.
+
 This tool is intentionally stdlib-only so it can be copied into an exact-SHA
 checkout and used to remeasure historical repository states without changing
 those historical trees.
@@ -20,33 +24,13 @@ from pathlib import Path
 
 SCHEMA_VERSION = "W72-SEMANTIC-CENSUS-2.0.0"
 TEXT_SUFFIXES = {
-    ".py",
-    ".yml",
-    ".yaml",
-    ".json",
-    ".md",
-    ".toml",
-    ".txt",
-    ".ini",
-    ".cfg",
-    ".html",
-    ".js",
-    ".ts",
-    ".tsx",
-    ".jsx",
-    ".ps1",
-    ".sh",
+    ".py", ".yml", ".yaml", ".json", ".md", ".toml", ".txt", ".ini",
+    ".cfg", ".html", ".js", ".ts", ".tsx", ".jsx", ".ps1", ".sh",
 }
 ID_RE = re.compile(r"\b[A-Z][A-Z0-9_-]{1,80}\b")
 SKIP_PARTS = {
-    ".git",
-    ".venv",
-    "venv",
-    "node_modules",
-    "dist",
-    "build",
-    ".pytest_cache",
-    "__pycache__",
+    ".git", ".venv", "venv", "node_modules", "dist", "build",
+    ".pytest_cache", "__pycache__",
 }
 SKIP_PREFIXES = (
     "architecture/w66/receipts/",
@@ -79,7 +63,9 @@ def parse_id_records(path: Path, path_key: str | None = None) -> dict[str, str |
             records[current] = None
             continue
         if current and path_key:
-            match = re.match(rf"^\s+{re.escape(path_key)}:\s*([^\s#]+(?:#[^\s#]+)?)", line)
+            match = re.match(
+                rf"^\s+{re.escape(path_key)}:\s*([^\s#]+(?:#[^\s#]+)?)", line
+            )
             if match:
                 records[current] = strip_anchor(match.group(1))
     return records
@@ -126,14 +112,17 @@ def gap_bindings(root: Path) -> dict[str, str]:
 def semantic_refs(root: Path) -> set[str]:
     text = read_text(root / "ssot/semantic_traceability.yaml")
     out: set[str] = set()
-    for match in re.finditer(r"\b(?:ssot|gaps):\s*(?:\[([^\]]*)\]|([^\s#]+))", text):
+    for match in re.finditer(
+        r"\b(?:ssot|gaps):\s*(?:\[([^\]]*)\]|([^\s#]+))", text
+    ):
         raw = match.group(1) or match.group(2) or ""
         out.update(value.strip() for value in raw.split(",") if value.strip())
     return out
 
 
-def consumer_hits(root: Path, known: set[str]) -> dict[str, set[str]]:
-    hits = {key: set() for key in known}
+def consumer_hits(root: Path, bindings: dict[str, str]) -> dict[str, set[str]]:
+    """Find downstream consumers by logical ID or canonical bound path."""
+    hits = {key: set() for key in bindings}
     for path in root.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
@@ -143,8 +132,11 @@ def consumer_hits(root: Path, known: set[str]) -> dict[str, set[str]]:
         if rel.startswith("ssot/") or any(rel.startswith(prefix) for prefix in SKIP_PREFIXES):
             continue
         text = read_text(path)
-        for key in known:
-            if key in text:
+        for key, bound_path in bindings.items():
+            # The authority/domain source itself is lineage, not a downstream consumer.
+            if bound_path and rel == bound_path:
+                continue
+            if key in text or (bound_path and bound_path in text):
                 hits[key].add(rel)
     return hits
 
@@ -181,17 +173,22 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
     reference_total = len(refs)
     reference_open = len(unresolved)
 
-    hits = consumer_hits(root, known)
-    unbound = sorted(key for key, values in hits.items() if not values)
-    consumer_total = len(known)
-    consumer_open = len(unbound)
-
     lineage_paths: dict[str, str] = {}
     lineage_paths.update(indexed)
     for logical_id, path in domain.items():
         if path:
             lineage_paths[logical_id] = strip_anchor(path)
     lineage_paths.update(gaps)
+
+    # Every known entity is represented even if it has no current path binding.
+    consumer_bindings = {key: lineage_paths.get(key, "") for key in known}
+    hits = consumer_hits(root, consumer_bindings)
+    unbound = sorted(key for key, values in hits.items() if not values)
+    consumer_total = len(known)
+    consumer_open = len(unbound)
+    consumer_evidence = {
+        key: sorted(values) for key, values in sorted(hits.items()) if values
+    }
 
     edges: list[tuple[str, str]] = []
     for logical_id, path in lineage_paths.items():
@@ -236,7 +233,10 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
         "C_consumer_penetration": (
             consumer_total,
             consumer_open,
-            {"unbound_consumers": unbound},
+            {
+                "unbound_consumers": unbound,
+                "consumer_evidence": consumer_evidence,
+            },
         ),
         "D_graph_orphan_drop": (
             graph_total,
@@ -296,7 +296,9 @@ def main() -> None:
     if not out.is_absolute():
         out = Path.cwd() / out
     out.mkdir(parents=True, exist_ok=True)
-    source_sha = args.source_sha or os.getenv("SOURCE_SHA") or os.getenv("GITHUB_SHA", "LOCAL")
+    source_sha = args.source_sha or os.getenv("SOURCE_SHA") or os.getenv(
+        "GITHUB_SHA", "LOCAL"
+    )
 
     receipts, row = measure(root, source_sha)
     for lane, receipt in receipts.items():
