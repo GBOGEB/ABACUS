@@ -62,3 +62,18 @@ def test_unbalanced_panel_fails_closed() -> None:
         assert "exactly 15" in str(exc)
     else:
         raise AssertionError("unbalanced W76 panel must fail closed")
+
+
+def test_undefined_candidate_metrics_rank_below_defined_metrics() -> None:
+    panel = load(PANEL)
+    for row in panel["rows"]:
+        row["probe_execute_seconds"] = float(row["work_counters"]["consumer_edges"])
+    panel["panel_sha256"] = module.canonical_rows_sha256(panel["rows"])
+
+    result = module.evaluate(panel)
+    constant = result["candidate_metrics"]["seconds_per_consumer_edge"]
+    assert constant["icc_one_way_single_measure"] is None
+    assert constant["rank_stability"]["median_spearman_rho"] is None
+    assert constant["stability_gate_pass"] is False
+    assert result["best_candidate"] != "seconds_per_consumer_edge"
+    assert result["best_candidate"] != "log_seconds_per_consumer_edge"
