@@ -1,0 +1,110 @@
+name: W72 Versioned Semantic Backfill
+
+on:
+  pull_request:
+    paths:
+      - "tools/w72_semantic_census.py"
+      - "tools/w72_build_semantic_rows.py"
+      - "tools/mc2_parallel_analysis_block_gate.py"
+      - "tools/mc2_federated_telemetry.py"
+      - "tests/test_w72_semantic_census.py"
+      - "tests/test_mc2_parallel_analysis_block_gate.py"
+      - ".github/workflows/w72-versioned-semantic-backfill.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-sha-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET_SHAS: >-
+        e20f923b5994a2d817fe1fde5d625d189170127b
+        3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+        970bc70a016bc071cd3c97bfdbd012d48a85055d
+        c39696661d8d67c769c8031a962129c6d67c3935
+        8f7f419d388839a68a416aaa552846cae0c16ac3
+    steps:
+      - name: Checkout control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Backfill five governed exact SHAs under W72 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w72/runtime/backfill
+          for sha in ${TARGET_SHAS}; do
+            echo "remeasure ${sha}"
+            git fetch --no-tags --depth=1 origin "${sha}"
+            worktree="${RUNNER_TEMP}/w72-${sha:0:12}"
+            git worktree add --detach "${worktree}" FETCH_HEAD
+            out="architecture/w72/runtime/backfill/${sha}"
+            python tools/w72_semantic_census.py \
+              --root "${worktree}" \
+              --source-sha "${sha}" \
+              --out "${out}"
+            test -s "${out}/FEATURE_ROW.json"
+            git worktree remove --force "${worktree}"
+          done
+
+      - name: Build same-schema semantic rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/w72_build_semantic_rows.py \
+            architecture/w72/runtime/backfill/*/FEATURE_ROW.json \
+            --out architecture/w72/runtime/W72_SEMANTIC_ROWS.json
+
+      - name: Run semantic PCA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_federated_telemetry.py \
+            architecture/w72/runtime/W72_SEMANTIC_ROWS.json \
+            --out architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json
+
+      - name: Run semantic PA95 retention gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_parallel_analysis_block_gate.py \
+            architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json \
+            --block semantic_pca \
+            --out architecture/w72/runtime/W72_SEMANTIC_PA95.json \
+            --simulations 2000 \
+            --seed 20260913
+
+      - name: Summarize measured state
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          telemetry = json.loads(
+              Path("architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json").read_text()
+          )
+          pa95 = json.loads(
+              Path("architecture/w72/runtime/W72_SEMANTIC_PA95.json").read_text()
+          )
+          print(json.dumps({
+              "semantic_pca": telemetry["semantic_pca"],
+              "pa95": pa95,
+              "allocation_authority": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload W72 exact-SHA backfill evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: w72-versioned-semantic-backfill-${{ github.sha }}
+          path: architecture/w72/runtime
+          if-no-files-found: error
