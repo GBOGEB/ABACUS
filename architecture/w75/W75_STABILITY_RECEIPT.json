@@ -1,0 +1,109 @@
+{
+  "authority": "derived_operational_analysis",
+  "decision": {
+    "association_stability": "WITHHELD",
+    "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_OUTCOME_EVIDENCE",
+    "child_engineering_promotion_authority": false,
+    "engineering_compliance_release_authority": false,
+    "global_allocation_authority": false,
+    "reason": "RESIDUAL_ICC_AND_RANK_STABILITY_BELOW_DECLARED_THRESHOLDS",
+    "stability_dov": "PASS_MEASURED_15_OF_15"
+  },
+  "environment_deconfounding": {
+    "causal_inference_authority": false,
+    "coefficients": {
+      "intercept": -1.006446,
+      "orchestration_overhead_seconds": 0.01227,
+      "queue_seconds_mean": -0.018771
+    },
+    "intrinsic_probe_time_regressed_out": false,
+    "model": "runtime_pc1_frozen_score ~ 1 + queue_seconds_mean + orchestration_overhead_seconds"
+  },
+  "environment_residualized_pc1": {
+    "icc_one_way_single_measure": -0.043412,
+    "rank_stability": {
+      "median_spearman_rho": -0.1,
+      "pairs": [
+        {"repeats": [1, 2], "spearman_rho": 0.7},
+        {"repeats": [1, 3], "spearman_rho": -0.1},
+        {"repeats": [2, 3], "spearman_rho": -0.5}
+      ]
+    },
+    "semantic_association_by_repeat": [
+      {"pearson_r": -0.239123, "repeat": 1, "spearman_rho": -0.288675},
+      {"pearson_r": -0.693167, "repeat": 2, "spearman_rho": -0.866025},
+      {"pearson_r": 0.496127, "repeat": 3, "spearman_rho": 0.57735}
+    ]
+  },
+  "frozen_axis_inputs": {
+    "joint_pca_performed": false,
+    "loading_refit_performed": false,
+    "runtime_axis_frozen": true,
+    "runtime_seed_blob_sha": "fbdfd077c098d33ac871c02305efd5be729268c4",
+    "runtime_telemetry_blob_sha": "d30fbe7a878c58c7a66e1e6df2e26a43afa9aa7b",
+    "semantic_axis_frozen": true
+  },
+  "intrinsic_probe_repeatability": [
+    {"cv": 0.110245, "mean_seconds": 1.007056, "sd_seconds": 0.111023, "source_sha": "3e52a1db7560c56a4e67a9a0ffd5686600cfceb1"},
+    {"cv": 0.03701, "mean_seconds": 1.076391, "sd_seconds": 0.039837, "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3"},
+    {"cv": 0.472135, "mean_seconds": 1.513367, "sd_seconds": 0.714514, "source_sha": "970bc70a016bc071cd3c97bfdbd012d48a85055d"},
+    {"cv": 0.120569, "mean_seconds": 0.994829, "sd_seconds": 0.119945, "source_sha": "c39696661d8d67c769c8031a962129c6d67c3935"},
+    {"cv": 0.219628, "mean_seconds": 1.238915, "sd_seconds": 0.2721, "source_sha": "e20f923b5994a2d817fe1fde5d625d189170127b"}
+  ],
+  "limitations": [
+    "only five distinct source states are observed",
+    "three repeats quantify short-horizon repeatability, not long-horizon stationarity",
+    "environment residualization is observational and has no causal authority",
+    "semantic PC1 contains only two observed topology states across the five SHAs",
+    "stability PASS cannot compensate any external non-compensating gate"
+  ],
+  "panel": {
+    "observation_count": 15,
+    "pair_key": "exact_source_sha",
+    "repeat_count_per_source": 3,
+    "sha256": "97be448275b76683de4d9cf72129905eeba6356449c4ac423842c0d63d1056a4",
+    "source_state_count": 5
+  },
+  "raw_frozen_pc1": {
+    "icc_one_way_single_measure": -0.261044,
+    "rank_stability": {
+      "median_spearman_rho": -0.2,
+      "pairs": [
+        {"repeats": [1, 2], "spearman_rho": 0.410391},
+        {"repeats": [1, 3], "spearman_rho": -0.974679},
+        {"repeats": [2, 3], "spearman_rho": -0.2}
+      ]
+    },
+    "semantic_association_by_repeat": [
+      {"pearson_r": 0.181433, "repeat": 1, "spearman_rho": 0.0},
+      {"pearson_r": -0.019109, "repeat": 2, "spearman_rho": 0.0},
+      {"pearson_r": 0.02896, "repeat": 3, "spearman_rho": 0.0}
+    ]
+  },
+  "receipt_sha256": "e04c3d9b873d8b53d6590f58dace64f2b054c73cbad7f02bdd2c88e778b0de1a",
+  "schema_version": "MC2-W75-DECONFOUNDED-STABILITY-RECEIPT-0.1.0",
+  "semantic_reference": {
+    "artifact_digest": "sha256:5142f09b5e82eaa8b5cce05d8354f4e355d26164ef3dcbb024806d5f6406a8a9",
+    "artifact_id": 10322297673,
+    "source": "W73_SEMANTIC_TOPOLOGY_ROWS.json + W73_SEMANTIC_TOPOLOGY_TELEMETRY.json"
+  },
+  "source_runs": [
+    {"control_head_sha": "95b0d569913060c012d831e76f2e9470694b3526", "paired_artifact_digest": "sha256:24fd0812696df39395a61050e371ade20c0c1ce173bfe57ec2dfb6bd5af70432", "paired_artifact_id": 10321794733, "repeat": 1, "run_id": 34772163349},
+    {"control_head_sha": "9dfcd99bf32f6994d5ae5920d4e0f143bf0a9814", "paired_artifact_digest": "sha256:6503660bef18a0f052f768a6a83bd922820105d8a145e560acaf3051fdf498fa", "paired_artifact_id": 10322471951, "repeat": 2, "run_id": 34772329789},
+    {"control_head_sha": "a08e8b2c9362fec6f0fbe888f68351aec8529ba9", "paired_artifact_digest": "sha256:060651587c9bfb2413a4a8e9353bbeb1a364bca8f2a81ad6232838a0afc306ec", "paired_artifact_id": 10322028107, "repeat": 3, "run_id": 34772375276}
+  ],
+  "stability_design_decision": {
+    "both_required": true,
+    "declared_before_measurement": true,
+    "median_pairwise_rank_rho_min": 0.8,
+    "residual_icc_min": 0.75,
+    "statistical_truth_claim": false
+  },
+  "status": "STABILITY_DIAGNOSTIC_WITHHELD",
+  "timing_decomposition": {
+    "intrinsic_probe": "probe_execute_seconds",
+    "orchestration_overhead": "execute_seconds_total - probe_execute_seconds",
+    "orchestration_wall": "execute_seconds_total",
+    "queue_admission": "queue_seconds_mean"
+  }
+}
