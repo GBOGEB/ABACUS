@@ -12,6 +12,19 @@ CONTRACT_URL = (
     "https://raw.githubusercontent.com/GBOGEB/CODEX/"
     f"{CODEX_HEAD}/{CONTRACT_PATH}"
 )
+EXPECTED_H1 = {
+    "run": 34730906661,
+    "job": 103653394137,
+    "runner_id": 1000260663,
+    "artifact_id": 10309790070,
+    "artifact_digest": (
+        "sha256:9b71d43c2bafd913e9780174a92514e72511bb8a31fec2cfa065745b58effb9a"
+    ),
+    "projection_sha256": (
+        "97be102020859048940cbe255224c36bb786ff19b31ea7483af2c9f898b4e450"
+    ),
+    "result": "PASS_EXECUTED_EXACT_PAYLOAD",
+}
 
 
 def fetch_json(url: str):
@@ -75,31 +88,27 @@ def main() -> int:
     )
 
     execution = contract["execution"]
-    require(execution["run"] == 34730906661, "H1 run mismatch")
-    require(execution["job"] == 103653394137, "H1 job mismatch")
-    require(execution["runner_id"] != 0, "H1 zero-step evidence rejected")
-    require(
-        execution["result"] == "PASS_EXECUTED_EXACT_PAYLOAD",
-        "H1 runtime result mismatch",
-    )
+    for key, expected in EXPECTED_H1.items():
+        require(execution.get(key) == expected, f"H1 {key} mismatch")
 
     out = {
-        "schema": "qps.m05.g5.dow_readiness.v1",
+        "schema": "qps.m05.g5.dow_readiness.v2",
         "consumer_mission": "MISSION_H3_DOW",
         "local_mission": "M05_PROVENANCE_ATTESTATION",
         "source_repo": "GBOGEB/CODEX",
         "source_head_sha": CODEX_HEAD,
         "source_contract_path": CONTRACT_PATH,
         "source_contract_sha256": digest,
-        "h1_runtime": "PASS_EXECUTED_EXACT_PAYLOAD",
-        "h2_contract_ingress": "PASS",
-        "h2_observed_attestation": "PENDING",
-        "dow_disposition": "DEFER_H2_ATTESTATION_PENDING",
+        "h1_runtime": "PASS_EXACT_EXPECTED_IDENTITY",
+        "h1_runner_id": EXPECTED_H1["runner_id"],
+        "h2_contract_ingress": "DEFER_SUPERSEDED_V1_REPAIR_PENDING",
+        "h2_observed_attestation": "PENDING_REPAIRED_V2",
+        "dow_disposition": "DEFER_H2_REPAIRED_ATTESTATION_PENDING",
         "emit_for_child_disposition": False,
         "promotion_authority": False,
         "numeric_cost_release": "WITHHELD_SOURCE_VALUES",
         "source_value_gates": [974, 981],
-        "status": "PASS_READINESS_ONLY",
+        "status": "PASS_READINESS_ONLY_NO_H2_ACCEPT",
     }
     path = pathlib.Path("artifacts/m05/g5_dow_readiness_receipt.json")
     path.parent.mkdir(parents=True, exist_ok=True)
