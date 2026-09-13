@@ -1,0 +1,63 @@
+name: W74 QPLANT Kubernetes Contract
+
+on:
+  pull_request:
+    paths:
+      - "qplant/deployment/Dockerfile"
+      - "qplant/deployment/k8s/**"
+      - "qplant/deployment/scripts/validate_k8s_contract.py"
+      - "tests/test_w74_qplant_k8s_contract.py"
+      - ".github/workflows/w74-qplant-k8s-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install contract dependencies
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2 pytest==9.0.3
+
+      - name: Execute Kubernetes contract validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w74/runtime
+          python qplant/deployment/scripts/validate_k8s_contract.py \
+            | tee architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json
+          python -m json.tool architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json >/dev/null
+
+      - name: Run regression tests
+        run: python -m pytest tests/test_w74_qplant_k8s_contract.py -q
+
+      - name: Bind exact workflow SHA
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          p = Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json")
+          receipt = json.loads(p.read_text())
+          receipt["source_sha"] = os.environ["GITHUB_SHA"]
+          payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          p.write_text(payload)
+          Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.sha256").write_text(
+              hashlib.sha256(payload.encode()).hexdigest() + "\n"
+          )
+          PY
+
+      - name: Upload exact-SHA contract receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w74-qplant-k8s-contract-${{ github.sha }}
+          path: architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.*
+          if-no-files-found: error
