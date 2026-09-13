@@ -22,6 +22,7 @@ permissions:
 jobs:
   independent-consumer:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout ABACUS exact head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -29,7 +30,7 @@ jobs:
       - name: Verify historical CODEX M05 attestation control
         run: python scripts/qps_m05_verify_attestation_return.py
 
-      - name: Verify G5 KEB ingress and defer until observed H2 attestation
+      - name: Consume observed H2F KEB PASS and emit bounded H3 disposition
         run: python scripts/qps_m05_g5_dow_readiness.py
 
       - name: Upload DOW independent consumer receipts
