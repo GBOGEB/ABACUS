@@ -1,0 +1,49 @@
+schema: MC2-W79-CONTROL-0.1.0
+state: IMPLEMENTED_WAIT_EXACT_HEAD_RUNTIME
+owner: ABACUS_MC2_DERIVED_OPERATIONAL_ANALYSIS
+entry:
+  predecessor: W78_DETERMINISTIC_WORK_CENSUS
+  workflow_run_id: 34777543492
+  evaluated_head_sha: 9d55b8ba73a05efaa3e519acacacd1dffb3c787c
+  diversity_status: DIVERSITY_GATE_PASS_FOR_W79_ANALYSIS
+  exact_source_targets: 15
+  replay_consistency: PASS_15_OF_15
+  distinct_work_states: 15
+  distinct_semantic_work_states: 10
+  centered_work_rank: 9
+  centered_semantic_work_rank: 7
+  diversity_artifact_id: 10323323552
+  diversity_artifact_digest: sha256:6e0a868916c1730fdc8eefc1f24ffea06185ca56ef1a8caffdaeb325eed445ae
+method:
+  primary_panel: SEMANTIC_WORK_PRIMARY
+  sensitivity_panel: ALL_DETERMINISTIC_WORK_SENSITIVITY
+  transform: LOG1P_THEN_COLUMN_ZSCORE_DDOF1
+  retention: NORMAL_RANDOM_CORRELATION_PA95
+  pa_replicates: 2000
+  random_seed: 7901
+  numpy_version: 2.3.3
+execution:
+  exact_pr_head_checkout_required: true
+  immutable_action_sha_pins_required: true
+  runner_id_nonzero_required: true
+  completed_steps_gt_zero_required: true
+  execution_receipt_required: true
+authority:
+  derived_operational_analysis: true
+  pca_is_diagnostic_only: true
+  bradley_terry: WITHHELD_NO_OBSERVED_PAIRWISE_OUTCOME_EVIDENCE
+  reverse_bradley_terry: WITHHELD_NO_PAIRWISE_OUTCOME_GRAPH
+  autonomous_allocation: false
+  child_engineering_promotion: false
+  engineering_compliance_release: false
+  qps_credit_delta: 0
+non_compensating:
+  - GBOGEB/cryoplant-project#923
+exit:
+  - exact_head_workflow_runner_id_nonzero
+  - exact_head_completed_steps_gt_zero
+  - tests_pass
+  - fifteen_exact_source_states_recomputed
+  - analysis_receipt_retained
+  - execution_receipt_retained
+  - ci_governance_green
