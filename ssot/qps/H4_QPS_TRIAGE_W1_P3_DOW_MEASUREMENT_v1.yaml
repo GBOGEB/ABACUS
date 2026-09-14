@@ -1,0 +1,171 @@
+schema: qps-h4-w1-p3-dow-measurement/1.0
+as_of: '2026-09-14T09:57:00+02:00'
+mission: H4_QPS_TRIAGE
+wave: H4_QPS_TRIAGE:W1
+pulse: H4-QPS-W1-P3
+horizontal_lane: H3_DOW
+method: 3PR
+repository: GBOGEB/ABACUS
+role: INDEPENDENT_CONSUMER_AND_DELIVERY_CLOSURE
+status: MEASURED_BASELINE_CANDIDATE
+formal_credit_delta: 0
+authority_transfer: false
+
+purpose: >-
+  Fix the narrow reliability pilot denominator at five atoms, measure what is
+  actually bound through the merged analytical consumer, and expose the
+  residual without treating source discovery, PCA/BT, or a calculable model
+  as QPS engineering acceptance.
+
+measurement_scope:
+  denominator_basis: MERGED_DOCX_PR54_PILOT_SCOPE
+  denominator: 5
+  atoms:
+    - HP_COMPRESSOR
+    - PVPS
+    - COLD_COMPRESSOR_TRAIN
+    - TURBINE_EXPANDER
+    - QPLANT_CLASS_A_SYSTEM
+  excludes: FULL_QPS_NEGOTIATION_CORPUS
+  note: >-
+    This pulse measures only the five-atom proof-of-architecture surface. It
+    does not claim coverage over the full QPS agenda, RTM population,
+    bidder-return minutes, or Table-10 contributor universe.
+
+consumer_evidence:
+  repo: GBOGEB/DOCX_RTM_Automation
+  merged_pr: 54
+  merge_sha: b94319a8f824dd3a709d03194bdb0f5e1f9a1d8e
+  role: ANALYSIS_CONSUMER_ONLY
+  observed_capabilities:
+    - MTBF_year_hour_normalization
+    - lambda_year_hour_normalization
+    - campaign_mu
+    - P0
+    - P_ge_1
+    - Poisson_Pk
+    - provenance
+    - model_readiness
+
+atom_census:
+  - atom: HP_COMPRESSOR
+    real_controlled_input_bound: true
+    source_repo: GBOGEB/cryoplant-project
+    source_path: "ocd-adr/20_canonical/analysis/\
+      QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml"
+    source_blob_sha: 1cd312315325991100d90d3f4b2ef51e6796bad6
+    source_origin: SOURCE_BOUND
+    mtbf_h: 333450
+    mttr_h: 78
+    deterministic_component_math_ready: true
+    architecture_complete_for_system_event: false
+    system_consequence_bound: false
+    table10_rate_promotable: false
+    expected_model_state_at_system_boundary: SCENARIO_ONLY
+    first_red: GHP03_N_MINUS_1_CAPACITY
+
+  - atom: PVPS
+    real_controlled_input_bound: false
+    source_origin: UNBOUND_IN_THIS_CONSUMER_PILOT
+    deterministic_component_math_ready: false
+    architecture_complete_for_system_event: false
+    system_consequence_bound: false
+    table10_rate_promotable: false
+    expected_model_state_at_system_boundary: NOT_YET_EVALUATED
+    first_red: BIND_ONE_CURRENT_SOURCE_CONTROLLED_RELIABILITY_ATOM
+
+  - atom: COLD_COMPRESSOR_TRAIN
+    real_controlled_input_bound: false
+    source_origin: UNBOUND_IN_THIS_CONSUMER_PILOT
+    deterministic_component_math_ready: false
+    architecture_complete_for_system_event: false
+    system_consequence_bound: false
+    table10_rate_promotable: false
+    expected_model_state_at_system_boundary: NOT_YET_EVALUATED
+    first_red: BIND_ONE_CURRENT_SOURCE_CONTROLLED_RELIABILITY_ATOM
+
+  - atom: TURBINE_EXPANDER
+    real_controlled_input_bound: false
+    source_origin: UNBOUND_IN_THIS_CONSUMER_PILOT
+    deterministic_component_math_ready: false
+    architecture_complete_for_system_event: false
+    system_consequence_bound: false
+    table10_rate_promotable: false
+    expected_model_state_at_system_boundary: NOT_YET_EVALUATED
+    first_red: BIND_ONE_CURRENT_SOURCE_CONTROLLED_RELIABILITY_ATOM
+
+  - atom: QPLANT_CLASS_A_SYSTEM
+    real_controlled_input_bound: false
+    source_origin: SCENARIO_MAY_EXIST_BUT_NOT_SOURCE_BOUND_IN_PILOT
+    deterministic_component_math_ready: false
+    architecture_complete_for_system_event: false
+    system_consequence_bound: false
+    table10_rate_promotable: false
+    expected_model_state_at_system_boundary: >-
+      SCENARIO_ONLY_UNTIL_SOURCE_AND_CONSEQUENCE_BOUND
+    first_red: DEFINE_SOURCE_BOUND_SYSTEM_EVENT_MODEL_INPUT_CONTRACT
+
+measured_kpis:
+  pilot_atoms: 5
+  real_controlled_atoms_bound: 1
+  real_controlled_atom_coverage: 0.20
+  deterministic_component_math_bound: 1
+  deterministic_component_math_coverage: 0.20
+  system_consequence_bound: 0
+  system_consequence_coverage: 0.00
+  table10_promotable_atoms: 0
+  table10_promotion_coverage: 0.00
+  exact_source_blob_bound_atoms: 1
+  exact_source_blob_coverage: 0.20
+
+pca_bt_policy:
+  pca: DEFER
+  reason: >-
+    One source-bound measured reliability atom is not a meaningful comparable
+    multivariate population. Do not manufacture PCA from seed scores or
+    heterogeneous semantic rows.
+  bt_reverse_pressure: ALLOWED_FOR_SCHEDULING_ONLY
+  recommended_next_atom_order:
+    - COLD_COMPRESSOR_TRAIN
+    - PVPS
+    - TURBINE_EXPANDER
+    - QPLANT_CLASS_A_SYSTEM
+  basis: >-
+    Prefer atoms with the greatest architecture, common-cause and consequence
+    information gain. This ordering is a work-allocation diagnostic and
+    carries zero engineering authority.
+
+CG: FIVE_ATOM_CENSUS_BOUND_RESIDUAL_EXPLICIT
+BG: FOUR_OF_FIVE_PILOT_ATOMS_NOT_YET_BOUND_THROUGH_THE_REAL_CONSUMER
+EX: DOCUMENT_LEVEL_MEASUREMENT_EXECUTED
+QH: PASS_CANDIDATE
+KR: PENDING_EXACT_SHA_REPO_RECEIPT
+DR: PARTIAL
+SR: PASS_NON_AUTHORITY_BOUNDARY
+WD: CONTINUE_BOUNDED_PILOT
+PB:
+  before_real_atom_coverage: 0.00
+  observed_real_atom_coverage: 0.20
+  delta: 0.20
+  target_w1: 0.20
+  remaining_to_full_five_atom_source_binding: 0.80
+  authority_note: PB_IS_MEASUREMENT_NOT_PROMOTION
+
+w1_victory_condition:
+  - denominator fixed at five
+  - one real source-bound atom measured
+  - architecture/system consequence residual explicit
+  - PCA correctly withheld
+  - exact-head repository receipt captured
+
+w2_measurement_target:
+  minimum: >-
+    Bind and independently reproduce one additional high-information atom,
+    preferably the cold-compressor train, before considering multivariate
+    PCA. Preserve exact source, bidder/equipment scope and common-cause
+    boundaries.
+
+stop_rule: >-
+  Do not expand to the full QPS corpus in W1. Close P3 after exact-head proof.
+  Re-enter only when a new controlled atom is bound or the five-atom model
+  contract changes materially.
