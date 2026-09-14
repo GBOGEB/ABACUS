@@ -1,0 +1,47 @@
+{
+  "schema_version": "w190-dow-3pc-mip-consumer/1.0",
+  "wave": "W190",
+  "created_utc": "2026-09-14T17:12:00Z",
+  "repo": "GBOGEB/ABACUS",
+  "role": "DOW_DERIVED_CONSUMER",
+  "consumed_child_pr": "https://github.com/GBOGEB/cryoplant-project/pull/1178",
+  "consumed_child_head_sha": "bc93ce38e3266099470e49904749c5bd2d31d64d",
+  "consumed_child_files": [
+    "federation/w190/W190_FULL_3PC_MIP_HANDOVER.json",
+    "federation/w190/W190_FULL_3PC_MIP_HANDOVER.yaml",
+    "federation/w190/W190_FULL_3PC_MIP_HANDOVER.md",
+    "federation/w190/W190_FULL_3PC_MIP_HANDOVER.zod.ts",
+    "handover/qps_recursive/W190_3PC_MIP_DROPIN.md",
+    "handover/qps_recursive/W190_3PC_MIP_LOSSLESS_HANDOVER.yaml"
+  ],
+  "three_pc_consumption": {
+    "PREPARE": "PASS_CHILD_HANDOVER_VISIBLE",
+    "PROVE": "PARTIAL_OPEN_BLOCKERS_REMAIN",
+    "COMMIT": "DEFER_GLOBAL_DOV"
+  },
+  "mip_consumption": {
+    "modernize": "Child volatile state has durable handover artifacts.",
+    "innovate": "DOW links child handover to derived diagnostics without authority transfer.",
+    "perpetuate": "DOW will only promote after exact-SHA KEB receipt and child re-entry."
+  },
+  "dow_disposition": "ACCEPT_HANDOVER_DEFER_GLOBAL_DOV",
+  "reason": "The W190 child handover is present at exact child PR head, but global engineering/release DoV remains withheld because open blockers remain and the handover itself carries no engineering credit.",
+  "disposition_records": [
+    {
+      "disposition": "ACCEPT",
+      "current": true,
+      "scope": "handover visibility and DOW consumption"
+    },
+    {
+      "disposition": "REJECT",
+      "current": false,
+      "scope": "exact SHA mismatch or invalid child payload"
+    },
+    {
+      "disposition": "DEFER",
+      "current": true,
+      "scope": "global engineering/release DoV"
+    }
+  ],
+  "next_gate": "CODEX KEB receipt must bind this DOW consumer and preserve withheld global DoV."
+}
