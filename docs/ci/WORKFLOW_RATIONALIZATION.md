@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `cdf1b624216790a7d1bd73b30340a3ec09cc5ea3d4ee7863ad684702af84a678`
+Policy SHA-256: `d1ebb06483f05908cef2d4c55d259b27236672751a79b43814c48107eb7d081c`
 
 ## Outcome
 
-The repository currently contains **132 workflow definitions**. All **132** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **135 workflow definitions**. All **135** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,7 +29,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `core_test` | `ci-abacus.yml` | 10 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 5 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `bridge_federation` | `bridge-ci.yml` | 6 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 14 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 17 | Runtime evidence, governance, review artifacts and schema validation. |
@@ -37,7 +37,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 38 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 40 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 1 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -76,6 +76,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | — |
 | 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
 | 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
@@ -160,6 +161,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `specialised` | `w72-zero-delta-wheel.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w74-qplant-k8s-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w77-phase-runtime-instrumentation.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w78-deterministic-work-census.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w79-deterministic-multivariate.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w85-census-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w93-docker-deployment-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `specialised` | `w95-accelerator-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -212,6 +215,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
 - `python -m pytest tests -v` — `governance.yml`, `validation.yml`
