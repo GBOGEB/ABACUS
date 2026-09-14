@@ -51,9 +51,8 @@ atom_census:
   - atom: HP_COMPRESSOR
     real_controlled_input_bound: true
     source_repo: GBOGEB/cryoplant-project
-    source_path: >-
-      ocd-adr/20_canonical/analysis/
-      QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml
+    source_path: "ocd-adr/20_canonical/analysis/\
+      QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml"
     source_blob_sha: 1cd312315325991100d90d3f4b2ef51e6796bad6
     source_origin: SOURCE_BOUND
     mtbf_h: 333450
@@ -136,8 +135,7 @@ pca_bt_policy:
     information gain. This ordering is a work-allocation diagnostic and
     carries zero engineering authority.
 
-CG: >-
-  FIVE_ATOM_CENSUS_WITH_AT_LEAST_ONE_REAL_SOURCE_BOUND_ATOM_AND_EXPLICIT_RESIDUAL
+CG: FIVE_ATOM_CENSUS_BOUND_RESIDUAL_EXPLICIT
 BG: FOUR_OF_FIVE_PILOT_ATOMS_NOT_YET_BOUND_THROUGH_THE_REAL_CONSUMER
 EX: DOCUMENT_LEVEL_MEASUREMENT_EXECUTED
 QH: PASS_CANDIDATE
