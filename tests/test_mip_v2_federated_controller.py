@@ -78,3 +78,25 @@ def test_pass_without_positive_steps_is_first_red():
     assert result["first_red"] == "KEB_RECEIPT_CONTRACT"
     assert result["gate_observations"]["V2-G5"] == "FAIL"
     assert "executed_steps" in result["errors"]
+
+
+def test_keb_pass_requires_integer_step_count_not_boolean_or_coercion():
+    for steps in (True, False, None, "1", 1.0, 0, -1):
+        result = control.evaluate(keb_receipt(executed_steps=steps), head_sha=HEAD)
+        assert result["controller_state"] == "REPAIR_OR_WITHDRAW", repr(steps)
+        assert result["first_red"] == "KEB_RECEIPT_CONTRACT"
+        assert "executed_steps" in result["errors"]
+
+
+def test_dow_pass_requires_integer_step_count_not_boolean_or_coercion():
+    for steps in (True, False, None, "1", 1.0, 0, -1):
+        result = control.evaluate(keb_receipt(), challenge(executed_steps=steps), head_sha=HEAD)
+        assert result["controller_state"] == "REPAIR_OR_WITHDRAW", repr(steps)
+        assert result["first_red"] == "DOW_CHALLENGE_CONTRACT"
+
+
+def test_one_real_step_remains_sufficient_for_pass():
+    result = control.evaluate(keb_receipt(executed_steps=1), challenge(executed_steps=1), head_sha=HEAD)
+    assert result["controller_state"] == "WAIT_CHILD_REENTRY"
+    assert result["dow_receipt"]["disposition"] == "ACCEPT"
+    assert result["global_project_dov"] == "WITHHELD"
