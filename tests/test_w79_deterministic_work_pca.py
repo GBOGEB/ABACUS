@@ -84,3 +84,14 @@ def test_w78_permission_and_replay_gates_fail_closed() -> None:
         assert "PASS_15_OF_15" in str(exc)
     else:
         raise AssertionError("unproven deterministic replay must fail closed")
+
+
+def test_forged_w78_lineage_fails_closed() -> None:
+    source = copy.deepcopy(load_input())
+    source["source_w78"]["artifact_id"] = 99999999
+    try:
+        w79.validate_input(source)
+    except ValueError as exc:
+        assert "governed lineage mismatch" in str(exc)
+    else:
+        raise AssertionError("forged W78 provenance must fail closed")
