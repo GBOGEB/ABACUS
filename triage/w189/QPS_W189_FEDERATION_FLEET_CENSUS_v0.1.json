@@ -1,0 +1,59 @@
+{
+  "schema": "qps-federation-fleet-census/v0.1",
+  "wave": "W189",
+  "state": "PARTIAL_CLASSIFICATION_DENOMINATOR_NOT_YET_FROZEN",
+  "census_sources": [
+    "GITHUB_OWNER_REPOSITORY_SEARCH_USER_GBOGEB_PAGE_1_PAGE_2_EMPTY",
+    "GITHUB_INSTALLED_REPOSITORY_STREAM_GBOGEB_TOKEN_EXHAUSTED",
+    "MISSION_CONTROL_CROSS_REPO_AUTHORITY_MAPS_AND_ACCEPTED_SAMPLE_LINEAGE"
+  ],
+  "denominator_model": {
+    "accessible_repository_universe": {
+      "purpose": "ACCOUNT_CONTEXT_ONLY",
+      "value": null,
+      "freeze_state": "NOT_FROZEN",
+      "reason": "Raw owner/install results mix MissionControl repositories, upstream forks, reference/tool repositories, experiments and empty placeholders. They are not automatically governed federation surfaces."
+    },
+    "mission_relevant_governed_surface_universe": {
+      "purpose": "FUTURE_FEDERATION_PENETRATION_DENOMINATOR",
+      "value": null,
+      "freeze_state": "CLASSIFICATION_IN_PROGRESS",
+      "unit": "GOVERNED_SURFACE_NOT_REPOSITORY",
+      "rule": "ONE_REPOSITORY_MAY_HOST_MULTIPLE_DISTINCT_GOVERNED_SURFACES_AND_ONE_SURFACE_MAY_SPAN_MULTIPLE_REPOSITORIES"
+    }
+  },
+  "confirmed_core_repositories": [
+    {"repo":"GBOGEB/cryoplant-project","role":"H1_QPS_CHILD_AUTHORITY_AND_MISSIONCONTROL","denominator_status":"IN_SCOPE"},
+    {"repo":"GBOGEB/CODEX","role":"H2_KEB_SEMANTIC_PROVENANCE","denominator_status":"IN_SCOPE"},
+    {"repo":"GBOGEB/ABACUS","role":"H3_DOW_INDEPENDENT_CONSUMER_RUNTIME","denominator_status":"IN_SCOPE"},
+    {"repo":"GBOGEB/pipeline-automation-hub","role":"H4_QPS_TRIAGE_COORDINATION_AND_GLOBAL_METHOD","denominator_status":"IN_SCOPE"},
+    {"repo":"GBOGEB/Q_engineering_tools","role":"FEDERATED_EXECUTION_CARRIER","denominator_status":"IN_SCOPE"},
+    {"repo":"GBOGEB/DOCX_RTM_Automation","role":"TOOLING_PROJECTION_EVIDENCE_CONSUMER","denominator_status":"IN_SCOPE"}
+  ],
+  "candidate_governed_repositories_requiring_surface_classification": [
+    {"repo":"GBOGEB/gg_MATH","candidate_role":"REUSABLE_MATH_PROVIDER","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"},
+    {"repo":"GBOGEB/CoolProp","candidate_role":"THERMOPHYSICAL_RUNTIME_PROVIDER","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"},
+    {"repo":"GBOGEB/cryogenic-accelerator-workspace","candidate_role":"ENGINEERING_SSOT_RUNTIME_WORKSPACE","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"},
+    {"repo":"GBOGEB/cryo_leak_rate_dashboard","candidate_role":"SPECIALIZED_ENGINEERING_DASHBOARD","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"},
+    {"repo":"GBOGEB/GBOGEB-PROGRAM-COOL","candidate_role":"PROGRAM_DEV_TOPOLOGY","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"},
+    {"repo":"GBOGEB/GEMINI","candidate_role":"DIVERSITY_CRITIQUE_INPUT","status":"CANDIDATE_NOT_DENOMINATOR_CREDITED"}
+  ],
+  "explicit_account_context_exclusions_examples": [
+    {"class":"UPSTREAM_OR_VENDOR_FORK_REFERENCE","examples":["GBOGEB/vscode","GBOGEB/prettier","GBOGEB/plotly.py","GBOGEB/tesseract","GBOGEB/openai-cookbook"]},
+    {"class":"PROFILE_TUTORIAL_OR_GENERIC_REFERENCE","examples":["GBOGEB/GBOGEB-profile","GBOGEB/skills-introduction-to-github","GBOGEB/awesome","GBOGEB/the-book-of-secret-knowledge"]},
+    {"class":"EMPTY_OR_EXPERIMENTAL_PLACEHOLDER_REQUIRES_NO_AUTOMATIC_SCOPE","examples":["GBOGEB/welcome-_-test","GBOGEB/OMI_PTIT","GBOGEB/orchestration-sandbox"]}
+  ],
+  "known_accepted_federation_samples": [
+    "FED-SAMPLE-001-W164-CONTROL",
+    "FED-SAMPLE-002-ABACUS-W74",
+    "FED-SAMPLE-003-CODEX-M05"
+  ],
+  "current_candidate_sample": "FED-SAMPLE-004-W184F-N200-MIRROR",
+  "next_census_actions": [
+    "DECOMPOSE_CONFIRMED_CORE_REPOSITORIES_INTO_NAMED_GOVERNED_SURFACES",
+    "CLASSIFY_CANDIDATE_REPOSITORIES_BY_AUTHORITY_RUNTIME_AND_REUSE_CONTRACT",
+    "DEDUPLICATE_CROSS_REPO_SURFACES",
+    "FREEZE_SURFACE_DENOMINATOR_ONLY_AFTER_EACH_INCLUDED_UNIT_HAS_AN_EXPLICIT_SCOPE_PREDICATE"
+  ],
+  "guard": "NO_GLOBAL_PENETRATION_FRACTION_UNTIL_GOVERNED_SURFACE_DENOMINATOR_IS_FROZEN"
+}

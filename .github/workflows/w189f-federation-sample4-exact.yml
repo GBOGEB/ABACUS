@@ -1,0 +1,88 @@
+name: W189F Exact Federation Sample 4
+
+on:
+  pull_request:
+    paths:
+      - 'controls/QPS_W189_FEDERATION_SAMPLE4_CURRENT_v1.json'
+      - 'triage/w189/**'
+      - 'scripts/qps_w189_*.py'
+      - 'tests/test_qps_w189_federation_sample4.py'
+      - '.github/workflows/w189f-federation-sample4-exact.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'controls/QPS_W189_FEDERATION_SAMPLE4_CURRENT_v1.json'
+      - 'triage/w189/**'
+      - 'scripts/qps_w189_*.py'
+      - 'tests/test_qps_w189_federation_sample4.py'
+      - '.github/workflows/w189f-federation-sample4-exact.yml'
+
+jobs:
+  exact-w189:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact consumer head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Assert exact consumer checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: Verify seven exact W189 source blobs
+        shell: bash
+        run: |
+          verify_blob() {
+            path="$1" expected="$2"
+            actual="$(git hash-object "$path")"
+            echo "$path expected=$expected actual=$actual"
+            test "$actual" = "$expected"
+          }
+          verify_blob controls/QPS_W189_FEDERATION_SAMPLE4_CURRENT_v1.json ff89db044818bd73651b1a36b79451fa327c4243
+          verify_blob triage/w189/QPS_W189_CROSS_SURFACE_FEATURE_MATRIX_v0.1.json dbb4bbad6e56b3487d391db710d8badfe640ce1d
+          verify_blob triage/w189/QPS_W189_PAIRWISE_DISPOSITION_LEDGER_v0.1.json d8c0b5d80c361a5ec0e814862462f12f98674a9f
+          verify_blob triage/w189/QPS_W189_FEDERATION_FLEET_CENSUS_v0.1.json d35d70c55cf04b65f83c66af356aee459944af97
+          verify_blob scripts/qps_w189_validate_federation_sample4.py 270d5f7fae8b69dcbaf4eaeb00e6884371554954
+          verify_blob scripts/qps_w189_compute_pca_stability.py 442f637c259c2fc9a2fc6ce5a0afedd27ad509db
+          verify_blob tests/test_qps_w189_federation_sample4.py 24f52360d367abd1f899fae2c33ba6ff2e7334a9
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned PCA dependency
+        run: python -m pip install 'numpy==2.3.3'
+      - name: Execute W189 governance validator
+        run: python scripts/qps_w189_validate_federation_sample4.py
+      - name: Reproduce W189 n4 PCA stability candidate
+        run: python scripts/qps_w189_compute_pca_stability.py
+      - name: Execute W189 regression tests
+        run: python -m unittest discover -s tests -p 'test_qps_w189_federation_sample4.py' -v
+      - name: Emit exact W189F receipt
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          out = Path('triage/w189/W189F_EXACT_EXECUTION_RECEIPT.json')
+          out.write_text(json.dumps({
+            'schema':'w189f-exact-execution-receipt/v1',
+            'source_repo':'GBOGEB/cryoplant-project',
+            'source_head':'e4bce25ef4d07d4d472f29aad9793f6974eb43ad',
+            'exact_source_blob_count':7,
+            'consumer_repo':'GBOGEB/ABACUS',
+            'consumer_sha':os.environ['GITHUB_SHA'],
+            'run_id':int(os.environ['GITHUB_RUN_ID']),
+            'result':'PASS',
+            'sample4_acceptance':False,
+            'pca_state':'N4_CANDIDATE_WITHHELD',
+            'bt_global_fit':'WITHHELD',
+            'fleet_denominator_frozen':False,
+            'authority_transfer':False
+          }, indent=2, sort_keys=True)+'\n')
+          PY
+      - name: Upload W189F receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: w189f-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            triage/w189/W189F_EXACT_EXECUTION_RECEIPT.json
+            triage/w189/QPS_W189_PCA_STABILITY_RUNTIME_RECEIPT.json
