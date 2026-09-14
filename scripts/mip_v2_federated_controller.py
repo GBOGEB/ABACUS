@@ -116,7 +116,7 @@ def validate_keb_receipt(receipt: dict[str, Any]) -> tuple[bool, list[str]]:
         errors.append("receipt_sha256")
     if result == "PASS":
         steps = receipt.get("executed_steps")
-        if not isinstance(steps, int) or steps <= 0:
+        if type(steps) is not int or steps <= 0:
             errors.append("executed_steps")
     return not errors, sorted(set(errors))
 
@@ -132,7 +132,7 @@ def dow_disposition(
     if not isinstance(challenge_name, str) or not challenge_name:
         return {}, False
     if challenge_result == "PASS" and (
-        not isinstance(challenge_steps, int) or challenge_steps <= 0
+        type(challenge_steps) is not int or challenge_steps <= 0
     ):
         return {}, False
 
