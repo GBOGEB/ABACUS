@@ -1,0 +1,61 @@
+schema: MC2-W79-RUNTIME-CLOSEOUT-0.1.0
+state: RUNTIME_PASS_GOVERNANCE_CLOSEOUT_PENDING
+source_pr: 1204
+evaluated_source_sha: c46874ab78100080eedccf50ff7c964acbe51627
+workflow:
+  name: W79 Deterministic Multivariate
+  run_id: 34864041131
+  job_id: 104043277646
+  runner_id: 1000276469
+  runner_name: GitHub Actions 1000276469
+  execution_state: PASS_GT_ZERO_STEPS
+  completed_step_count_before_execution_receipt: 7
+artifact:
+  id: 10356455837
+  name: w79-deterministic-multivariate-c46874ab78100080eedccf50ff7c964acbe51627
+analysis:
+  status: DIAGNOSTIC_PCA_PA_COMPLETE
+  receipt_sha256: e0f7a14463e9e4d7967c80e48fd9fcc90e75ddb1e65437f3f9732a225298c5e4
+  execution_receipt_sha256: 61bbf4139e4355bd4c9257a4f6802cbd03d3155b3a1aacd78b8e360bdbc9f0a5
+  source_panel_input_sha256: cbfd4efbe706e89629150b6f74d922ddfc93a35bc4053b01abe33f310ddbe582
+  exact_source_targets: 15
+  primary_semantic_work_panel:
+    retained_components_pa95: 1
+    pc1_eigenvalue: 6.45992359
+    pc1_pa95_threshold: 2.56118810
+    pc1_explained_variance_ratio: 0.92284623
+    top_loadings:
+      graph_nodes: 0.98354474
+      graph_edges: 0.97727613
+      semantic_entities: 0.96836683
+      lineage_paths: 0.96777360
+      consumer_hits: 0.96382765
+    small_sample_warning: true
+  all_work_sensitivity_panel:
+    retained_components_pa95: 1
+    pc1_eigenvalue: 8.97606963
+    pc1_pa95_threshold: 3.07236161
+    pc1_explained_variance_ratio: 0.89760696
+    top_loadings:
+      graph_nodes: 0.98539625
+      consumer_candidate_checks: 0.98517308
+      semantic_entities: 0.97557250
+      consumer_hits: 0.96126255
+      consumer_files_with_hits: 0.95935775
+    small_sample_warning: true
+authority:
+  role: derived_operational_analysis
+  pca_is_diagnostic_only: true
+  bradley_terry: WITHHELD_NO_OBSERVED_PAIRWISE_OUTCOME_EVIDENCE
+  reverse_bradley_terry: WITHHELD_NO_PAIRWISE_OUTCOME_GRAPH
+  autonomous_allocation: false
+  child_engineering_promotion: false
+  engineering_compliance_release: false
+  qps_credit_delta: 0
+non_compensating_blockers:
+  - GBOGEB/cryoplant-project#923
+governance:
+  source_run: 34864041091
+  first_red: federation-delivery-consumer.yml unclassified plus stale generated report
+  repair_branch: control/w79-governance-closeout-20260914
+  rule: runtime PASS does not override CI governance failure
