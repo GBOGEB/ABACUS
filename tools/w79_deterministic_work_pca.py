@@ -15,6 +15,19 @@ INPUT_SCHEMA = "MC2-W79-W78-INPUT-0.1.0"
 DEFAULT_SIMULATIONS = 5000
 DEFAULT_SEED = 20260914
 DEFAULT_QUANTILE = 0.95
+EXPECTED_INPUT_CANONICAL_SHA256 = (
+    "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4"
+)
+EXPECTED_W78 = {
+    "workflow_run_id": 34777543492,
+    "artifact_id": 10323323552,
+    "artifact_digest": (
+        "sha256:6e0a868916c1730fdc8eefc1f24ffea06185ca56ef1a8caffdaeb325eed445ae"
+    ),
+    "receipt_sha256": (
+        "2717802c3e2bd80f4800e77149e12f47ad6595d3b2142b93b6748a4c0d4c72ed"
+    ),
+}
 
 
 def canonical_sha256(value: object) -> str:
@@ -162,13 +175,19 @@ def validate_input(source: dict) -> list[dict]:
     if source.get("schema_version") != INPUT_SCHEMA:
         raise ValueError("W79 input schema mismatch")
     w78 = source.get("source_w78") or {}
+    for field, expected in EXPECTED_W78.items():
+        if w78.get(field) != expected:
+            raise ValueError(f"W78 governed lineage mismatch for {field}")
     if w78.get("status") != "DIVERSITY_GATE_PASS_FOR_W79_ANALYSIS":
         raise ValueError("W79 requires a W78 diversity gate PASS")
     if w78.get("w79_multivariate_analysis_permitted") is not True:
         raise ValueError("W78 did not permit W79 analysis")
     if w78.get("deterministic_replay_consistency") != "PASS_15_OF_15":
         raise ValueError("W79 requires W78 deterministic replay PASS_15_OF_15")
-    if int(w78.get("target_count", 0)) != 15 or int(w78.get("observation_count", 0)) != 30:
+    if (
+        int(w78.get("target_count", 0)) != 15
+        or int(w78.get("observation_count", 0)) != 30
+    ):
         raise ValueError("W79 requires the governed 15-target/30-observation W78 panel")
 
     work_features = list(source.get("work_features") or [])
@@ -203,6 +222,8 @@ def validate_input(source: dict) -> list[dict]:
                 "semantic_work_vector": semantic,
             }
         )
+    if canonical_sha256(source) != EXPECTED_INPUT_CANONICAL_SHA256:
+        raise ValueError("W79 governed input payload mismatch")
     return sorted(normalized, key=lambda row: str(row["source_sha"]))
 
 
