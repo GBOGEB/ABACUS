@@ -1,0 +1,41 @@
+{
+  "schema_version": "w190-dow-final-head-repair/1.0",
+  "wave": "W190",
+  "created_utc": "2026-09-14T17:18:00Z",
+  "repo": "GBOGEB/ABACUS",
+  "role": "DOW_EXACT_SHA_REPAIR",
+  "reason": "Repair initial DOW W190 consumer after child PR finalization changed the branch head.",
+  "consumed_child": {
+    "pr": "https://github.com/GBOGEB/cryoplant-project/pull/1178",
+    "final_head_sha": "c283eb1f7d19eaa22b31a888a51c798c36107df5",
+    "execution_receipt_path": "federation/w190/W190_3PC_MIP_EXECUTION_RECEIPT.json",
+    "execution_receipt_declared_head_sha": "37623d581df7d91c6ad9ee4e732d3666b44c3569",
+    "execution_receipt_state": "WITHHELD_INFRA_PREEXECUTION",
+    "runner_evidence": "runner_id=0, steps=0, INFRA_PREEXECUTION"
+  },
+  "previous_dow_pr": "https://github.com/GBOGEB/ABACUS/pull/1213",
+  "previous_dow_head_sha": "9d42e735b5e1ba71f9a96f972b61202604b71e4d",
+  "three_pc": {
+    "PREPARE": "PASS_FINAL_CHILD_HEAD_IDENTIFIED",
+    "PROVE": "PASS_CHILD_RECEIPT_BOUND_BUT_INFRA_PREEXECUTION",
+    "COMMIT": "DEFER_GLOBAL_DOV"
+  },
+  "dow_disposition": "ACCEPT_FINAL_HEAD_REPAIR_DEFER_GLOBAL_DOV",
+  "disposition_records": [
+    {
+      "disposition": "ACCEPT",
+      "current": true,
+      "scope": "final child head repair and DOW receipt correction"
+    },
+    {
+      "disposition": "REJECT",
+      "current": false,
+      "scope": "child final head unavailable or receipt contradicts authority boundary"
+    },
+    {
+      "disposition": "DEFER",
+      "current": true,
+      "scope": "global DoV remains withheld because runner_id=0 and steps=0"
+    }
+  ]
+}
