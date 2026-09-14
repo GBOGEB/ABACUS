@@ -1,0 +1,43 @@
+{
+  "schema": "qps-federation-cross-surface-feature-matrix/v0.4",
+  "wave": "W189",
+  "purpose": "FOURTH_DISTINCT_SAMPLE_PCA_STABILITY_TEST_WITHHELD_PENDING_ACCEPTANCE",
+  "rows": [
+    {"sample_id":"FED-SAMPLE-001-W164-CONTROL","surface":"MISSION_FEDERATION_CONTROL","repositories_observed":2,"artifact_units":5,"runtime_vectors":3,"specialist_outputs":6,"breadth_ratio":1.0,"depth_ratio":1.0,"penetration":1.0,"lineage_nodes":9,"lineage_edges":8,"runner_assigned":1,"runtime_first_red_present":1,"accepted_sample":1},
+    {"sample_id":"FED-SAMPLE-002-ABACUS-W74","surface":"KUBERNETES_DEPLOYMENT_CONTRACT","repositories_observed":2,"artifact_units":8,"runtime_vectors":1,"specialist_outputs":6,"breadth_ratio":1.0,"depth_ratio":1.0,"penetration":1.0,"lineage_nodes":9,"lineage_edges":8,"runner_assigned":1,"runtime_first_red_present":1,"accepted_sample":1},
+    {"sample_id":"FED-SAMPLE-003-CODEX-M05","surface":"SUPPLY_CHAIN_PROVENANCE_ATTESTATION","repositories_observed":5,"artifact_units":4,"runtime_vectors":3,"specialist_outputs":6,"breadth_ratio":1.0,"depth_ratio":1.0,"penetration":1.0,"lineage_nodes":8,"lineage_edges":7,"runner_assigned":1,"runtime_first_red_present":0,"accepted_sample":1},
+    {"sample_id":"FED-SAMPLE-004-W184F-N200-MIRROR","surface":"SELF_CONTAINED_EXACT_HASH_ANALYTICAL_CARRIER","repositories_observed":2,"artifact_units":18,"runtime_vectors":2,"specialist_outputs":6,"breadth_ratio":1.0,"depth_ratio":0.875,"penetration":0.875,"lineage_nodes":10,"lineage_edges":9,"runner_assigned":1,"runtime_first_red_present":1,"accepted_sample":0}
+  ],
+  "pca_feature_columns":["repositories_observed","artifact_units","runtime_vectors","lineage_nodes","lineage_edges","runtime_first_red_present"],
+  "constant_columns_excluded_from_pca":["specialist_outputs","breadth_ratio","runner_assigned"],
+  "acceptance_dependent_columns_excluded_from_pca":["depth_ratio","penetration","accepted_sample"],
+  "accepted_n3_reference": {
+    "state":"MEASURED_SMALL_N_ACCEPTED",
+    "explained_variance_ratio":[0.827676357,0.172323643]
+  },
+  "candidate_n4_stability": {
+    "state":"COMPUTABLE_WITHHELD_PENDING_SAMPLE4_ACCEPTANCE",
+    "standardization":"COLUMN_ZSCORE_SAMPLE_STD_DDOF_1",
+    "solver":"SVD",
+    "explained_variance_ratio":[0.756426721,0.136093479,0.107479800],
+    "pc1_loading_congruence_abs":0.998988824,
+    "pc2_loading_congruence_abs":0.118590668,
+    "pc12_subspace_principal_angles_deg":[0.67326683,83.13861784],
+    "interpretation":"PC1 is highly stable under the fourth candidate row while PC2 rotates materially; this is candidate sensitivity evidence only until Sample #4 is accepted.",
+    "guard":"NO_STABILITY_PROMOTION_BEFORE_SAMPLE4_ACCEPTANCE_AND_EXACT_REPEAT"
+  },
+  "analytics_gate": {
+    "row_count":4,
+    "accepted_row_count":3,
+    "pca_state":"N4_STABILITY_CANDIDATE_WITHHELD_PENDING_SAMPLE4_ACCEPTANCE",
+    "bt_state":"REPEATED_TRANSPORT_EDGE_CAPTURED_GLOBAL_FIT_WITHHELD"
+  },
+  "fleet_sampling_guard": {
+    "accepted_bounded_samples":3,
+    "known_candidate_sample_count":4,
+    "global_fleet_denominator":null,
+    "global_fleet_penetration":null,
+    "grand_mission_penetration":null,
+    "rule":"CANDIDATE_SAMPLE_COUNT_IS_NOT_GLOBAL_FLEET_DENOMINATOR"
+  }
+}
