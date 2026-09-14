@@ -1,0 +1,93 @@
+name: Federation Delivery Receipt-Only Consumer
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/federation-delivery-consumer.yml'
+      - 'scripts/*federation*'
+      - 'docs/federation_delivery_consumer.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/federation-delivery-consumer.yml'
+      - 'scripts/*federation*'
+      - 'docs/federation_delivery_consumer.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  consume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        repeat: [1, 2]
+    env:
+      DELIVERY_REPEAT: ${{ matrix.repeat }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: GBOGEB/CODEX
+          ref: 3bfda0e50d2e89b12d850a98f2929e73a3f3c234
+          path: producer
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source checkouts
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C producer rev-parse HEAD)" = "3bfda0e50d2e89b12d850a98f2929e73a3f3c234"
+      - name: Install pinned source validator
+        working-directory: producer/federation/delivery/FED_PCA_20260912
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate source and negative controls
+        working-directory: producer/federation/delivery/FED_PCA_20260912
+        run: npm run validate
+      - name: Consumer and disclosure regressions
+        run: |
+          node scripts/test_federation_delivery.mjs producer/federation/delivery/FED_PCA_20260912
+          node --test scripts/test_federation_receipt_policy.mjs
+      - name: Consume and project approved receipt fields
+        run: |
+          node scripts/consume_federation_delivery.mjs producer/federation/delivery/FED_PCA_20260912 "$RUNNER_TEMP/consumer_receipt.json" > "$RUNNER_TEMP/consumer.log"
+          node scripts/federation_receipt_policy.mjs project receipt-artifact/receipt.json "$RUNNER_TEMP/consumer_receipt.json"
+      - name: Upload only allowlisted receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: delivery-receipt-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.repeat }}
+          path: receipt-artifact/receipt.json
+          if-no-files-found: error
+          retention-days: 7
+  compare:
+    needs: consume
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: delivery-receipt-${{ github.run_id }}-${{ github.run_attempt }}-1
+          path: receipts/1
+      - uses: actions/download-artifact@v4
+        with:
+          name: delivery-receipt-${{ github.run_id }}-${{ github.run_attempt }}-2
+          path: receipts/2
+      - name: Compare independent receipt bindings
+        run: node scripts/federation_receipt_policy.mjs compare comparison-artifact/receipt.json receipts/1/receipt.json receipts/2/receipt.json
+      - name: Upload only comparison receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: delivery-repeat-${{ github.run_id }}-${{ github.run_attempt }}
+          path: comparison-artifact/receipt.json
+          if-no-files-found: error
+          retention-days: 7
