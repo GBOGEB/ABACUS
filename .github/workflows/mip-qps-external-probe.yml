@@ -21,7 +21,7 @@ jobs:
           repository: GBOGEB/cryoplant-project
           ref: 00f4af0bcce7645eb71fcdbc832de14f6cfc4ad8
           path: cryoplant-project
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install focused test dependencies

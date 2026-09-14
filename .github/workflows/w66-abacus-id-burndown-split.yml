@@ -26,7 +26,7 @@ jobs:
         lane: [A_registry_gap, B_reference_gap, C_consumer_penetration, D_graph_orphan_drop, E_lineage_evidence]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Validate lane contract

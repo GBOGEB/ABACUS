@@ -19,7 +19,7 @@ jobs:
           ref: ${{ env.QPS_SHA }}
           path: qps
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: python -m pip install --disable-pip-version-check openpyxl PyYAML
