@@ -1,0 +1,50 @@
+{
+  "schema_version": "qps-w190-handover-receiver/1.0",
+  "wave": "W190",
+  "receiver_repo": "GBOGEB/ABACUS",
+  "receiver_role": "DOW_INDEPENDENT_EXECUTION_AND_ORCHESTRATION_RECEIVER",
+  "source_authority": {
+    "repo": "GBOGEB/cryoplant-project",
+    "final_corrected_handover_merge_sha": "46b4e4d3feb5ef29fe3649752be5846469c7f59d",
+    "w190_merge_sha": "460979c48d0c15814ed14547116e99718c2cdcd1",
+    "w190r_pr": 1181,
+    "canonical_paths": [
+      "handover/qps_recursive/W190_3PC_MIP_LOSSLESS_HANDOVER.yaml",
+      "handover/qps_recursive/W190_3PC_MIP_DROPIN.md",
+      "federation/w190/W190_FULL_3PC_MIP_HANDOVER.json"
+    ]
+  },
+  "dominant_first_red": {
+    "repo": "GBOGEB/cryoplant-project",
+    "issue": 923,
+    "classification": "PRIVATE_REPO_ACTIONS_USAGE_OR_BUDGET_HARD_STOP",
+    "state": "OPEN_NON_COMPENSATING_P0"
+  },
+  "three_pc_commit": {
+    "phase": "COMMIT",
+    "plane": "P2_TO_P3_RECEIVER_BINDING",
+    "receiver_disposition": "ACCEPT_POINTER_ONLY",
+    "meaning": "ABACUS accepts the exact child handover pointer for restart/orchestration context only; it does not accept child engineering or release state."
+  },
+  "authority_guards": {
+    "authority_transfer": false,
+    "child_release_credit_delta": 0,
+    "child_engineering_credit_delta": 0,
+    "child_negotiation_credit_delta": 0,
+    "parent_PASS_substitutes_child_ACCEPT": false,
+    "generated_or_parent_evidence_can_close_issue_923": false
+  },
+  "restart_contract": {
+    "first_action": "Re-read the child handover at exact merge SHA 46b4e4d3feb5ef29fe3649752be5846469c7f59d and issue #923 before any QPS runtime action.",
+    "child_victory_chain": [
+      "runner_id_nonzero",
+      "steps_greater_than_zero",
+      "unchanged_child_probe_validator_or_materializer_executes",
+      "exact_SHA_receipt",
+      "child_ACCEPT_REJECT_or_DEFER",
+      "fresh_head_repeat"
+    ],
+    "stop_rule": "Do not create a new handover/release framework or infer application failure from zero-step/empty-job child runs."
+  },
+  "current_disposition": "DEFER_CHILD_RUNTIME_DOV_AT_ISSUE_923"
+}
