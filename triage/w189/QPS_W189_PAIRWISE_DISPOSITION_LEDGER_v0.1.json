@@ -1,0 +1,102 @@
+{
+  "schema": "qps-federation-observed-pairwise-ledger/v0.2",
+  "wave": "W189",
+  "purpose": "PRESERVE_RAW_DISPOSITIONS_AND_ADD_NORMALIZED_COMPARABLE_CANDIDATE_CLASSES",
+  "outcomes": [
+    {
+      "outcome_id": "PAIR-001-M05-ATTEST-IMPLEMENTATION",
+      "decision_domain": "PROVENANCE_IMPLEMENTATION",
+      "winner_raw": "DIRECT_ACTIONS_ATTEST",
+      "loser_raw": "ATTEST_BUILD_PROVENANCE_WRAPPER_FOR_NEW_IMPLEMENTATION",
+      "winner_class": "DIRECT_NATIVE_CAPABILITY",
+      "loser_class": "NEW_WRAPPER_LAYER",
+      "result": 1,
+      "evidence_repo": "GBOGEB/CODEX",
+      "evidence_pr": 648,
+      "observed": true,
+      "comparable_component": "PROVENANCE_IMPLEMENTATION_COMPONENT"
+    },
+    {
+      "outcome_id": "PAIR-002-W168-TEST-HARNESS",
+      "decision_domain": "BOUNDED_TEST_HARNESS",
+      "winner_raw": "TARGETED_NOCONFTEST_ISOLATION",
+      "loser_raw": "INHERIT_UNRELATED_GLOBAL_FIXTURES",
+      "winner_class": "BOUNDED_HARNESS_ISOLATION",
+      "loser_class": "GLOBAL_FIXTURE_INHERITANCE",
+      "result": 1,
+      "evidence_repo": "GBOGEB/ABACUS",
+      "evidence_pr": 1183,
+      "observed": true,
+      "comparable_component": "TEST_HARNESS_COMPONENT"
+    },
+    {
+      "outcome_id": "PAIR-003-W168-PRIVATE-SIBLING-TRANSPORT",
+      "decision_domain": "PRIVATE_SIBLING_EVIDENCE_TRANSPORT",
+      "winner_raw": "EXACT_GIT_BLOB_MIRRORING",
+      "loser_raw": "WIDEN_REPOSITORY_CREDENTIAL_SCOPE",
+      "winner_class": "EXACT_HASH_SELF_CONTAINED_MIRROR",
+      "loser_class": "RUNTIME_PRIVATE_CREDENTIAL_COUPLING",
+      "result": 1,
+      "evidence_repo": "GBOGEB/Q_engineering_tools",
+      "evidence_pr": 35,
+      "observed": true,
+      "comparable_component": "PRIVATE_CROSS_REPO_TRANSPORT_COMPONENT"
+    },
+    {
+      "outcome_id": "PAIR-004-W184F-PRIVATE-CHILD-TRANSPORT",
+      "decision_domain": "PRIVATE_SIBLING_EVIDENCE_TRANSPORT",
+      "winner_raw": "SELF_CONTAINED_EXACT_HASH_MIRROR",
+      "loser_raw": "PRIVATE_CHILD_RUNTIME_CHECKOUT",
+      "winner_class": "EXACT_HASH_SELF_CONTAINED_MIRROR",
+      "loser_class": "RUNTIME_PRIVATE_CREDENTIAL_COUPLING",
+      "result": 1,
+      "evidence_repo": "GBOGEB/Q_engineering_tools",
+      "failed_pr": 45,
+      "failed_run": 34861447664,
+      "failed_job": 104034424600,
+      "repaired_pr": 46,
+      "repaired_head": "766f064e561c28e41cc70dd1a17a29cd71343da5",
+      "repaired_run": 34868622367,
+      "repaired_job": 104058671463,
+      "observed": true,
+      "comparable_component": "PRIVATE_CROSS_REPO_TRANSPORT_COMPONENT"
+    }
+  ],
+  "normalization_policy": {
+    "raw_labels_preserved": true,
+    "candidate_class_normalization_may_not_rewrite_historical_evidence": true,
+    "normalization_basis": "SAME_DECISION_DOMAIN_AND_SAME_OPERATIONAL_ALTERNATIVE_CLASS"
+  },
+  "bt_gate": {
+    "observed_pairwise_outcomes": 4,
+    "global_connected_comparison_graph": false,
+    "global_fit_state": "WITHHELD_DISCONNECTED_HETEROGENEOUS_COMPARISON_GRAPH",
+    "repeated_comparable_component": {
+      "component_id": "PRIVATE_CROSS_REPO_TRANSPORT_COMPONENT",
+      "candidate_nodes": [
+        "EXACT_HASH_SELF_CONTAINED_MIRROR",
+        "RUNTIME_PRIVATE_CREDENTIAL_COUPLING"
+      ],
+      "observed_comparisons": 2,
+      "wins": {
+        "EXACT_HASH_SELF_CONTAINED_MIRROR": 2,
+        "RUNTIME_PRIVATE_CREDENTIAL_COUPLING": 0
+      },
+      "graph_connected": true,
+      "unregularized_mle_state": "SEPARATED_2_TO_0_NO_FINITE_MLE",
+      "fit_state": "WITHHELD_PENDING_REVERSE_TIE_OUTCOME_OR_GOVERNED_REGULARIZATION_POLICY"
+    },
+    "rule": "GLOBAL_BT_REQUIRES_CONNECTED_COMPARABLE_GRAPH; LOCAL_CONNECTED_COMPONENT_WITH_COMPLETE_SEPARATION_DOES_NOT_JUSTIFY_FINITE_UNREGULARIZED_BT_SCORE"
+  },
+  "guards": [
+    "NO_PAIRWISE_OUTCOME_DERIVED_FROM_PCA_SCORE",
+    "NO_SYNTHETIC_WIN_LOSS_FROM_BREADTH_DEPTH_OR_PENETRATION",
+    "NO_RAW_LABEL_REWRITE",
+    "NO_FINITE_BT_COEFFICIENT_FROM_COMPLETE_SEPARATION_WITHOUT_GOVERNED_REGULARIZATION"
+  ],
+  "next_capture": [
+    "OBSERVE_A_REVERSE_OR_TIE_TRANSPORT_DISPOSITION_IF_REAL",
+    "ADD_SHARED_CANDIDATE_CLASSES_IN_OTHER_DECISION_DOMAINS",
+    "CONNECT_COMPONENTS_BEFORE_GLOBAL_BT_FIT"
+  ]
+}

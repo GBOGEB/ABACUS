@@ -1,21 +1,21 @@
 # ABACUS Security Telemetry — machine-readable
-# generated: 2026-09-07T08:08:41Z
+# generated: 2026-09-14T08:08:11Z
 
-generated_at:"2026-09-07T08:08:41Z"
+generated_at:"2026-09-14T08:08:11Z"
 repo:GBOGEB/ABACUS
-total_open:4633
+total_open:4766
 by_severity:
-  warning: 965
-  note: 3587
-  error: 81
+  warning: 1090
+  note: 3591
+  error: 85
 by_tool:
-  Semgrep OSS: 809
-  CodeQL: 505
+  Semgrep OSS: 934
+  CodeQL: 513
   Bandit: 3315
   Semgrep: 4
 by_rex_group:
-  OTHER: 1292
-  QUAL_DEAD_CODE: 249
+  OTHER: 1422
+  QUAL_DEAD_CODE: 252
   SEC_SUBPROCESS: 118
   SEC_ASSERT: 2911
   SEC_HARDCODED_SECRET: 21
@@ -23,7 +23,7 @@ by_rex_group:
   SEC_WEAK_HASH: 10
 hot_files:
   - file: tests/test_dmaic_orchestration.py
-    count: 82
+    count: 81
   - file: tests/test_docker_integration.py
     count: 79
   - file: tests/test_bootstrap_eval.py
@@ -45,6 +45,30 @@ hot_files:
 
 groups:
   OTHER:
+    - number: 7040
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
+      severity: error
+      file: ".github/workflows/w67-measured-id-pulse.yml"
+      line: 52
+    - number: 7001
+      tool: Semgrep OSS
+      rule_id: "python.lang.security.audit.dangerous-subprocess-use-tainted-env-args.dangerous-subprocess-use-tainted-env-args"
+      severity: error
+      file: "triage/requirements/creq_ci_gate.py"
+      line: 40
+    - number: 6989
+      tool: CodeQL
+      rule_id: "py/side-effect-in-assert"
+      severity: error
+      file: "DMAIC_V3/tests/test_integrity.py"
+      line: 37
+    - number: 6988
+      tool: CodeQL
+      rule_id: "py/side-effect-in-assert"
+      severity: error
+      file: "DMAIC_V3/tests/test_integrity.py"
+      line: 36
     - number: 6927
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.run-shell-injection.run-shell-injection"
@@ -435,6 +459,894 @@ groups:
       severity: error
       file: "abacus_v21_security_hardening.py"
       line: 653
+    - number: 7136
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 152
+    - number: 7135
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 130
+    - number: 7134
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 125
+    - number: 7133
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 122
+    - number: 7132
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 110
+    - number: 7131
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 88
+    - number: 7130
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 83
+    - number: 7129
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 26
+    - number: 7128
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w78-deterministic-work-census.yml"
+      line: 23
+    - number: 7127
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 109
+    - number: 7126
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 88
+    - number: 7125
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 132
+    - number: 7123
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 104
+    - number: 7122
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 101
+    - number: 7120
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 66
+    - number: 7119
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 61
+    - number: 7118
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 24
+    - number: 7117
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w77-phase-runtime-instrumentation.yml"
+      line: 21
+    - number: 7111
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 360
+    - number: 7110
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 304
+    - number: 7109
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 298
+    - number: 7108
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 293
+    - number: 7107
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 288
+    - number: 7106
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 273
+    - number: 7105
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 220
+    - number: 7104
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 215
+    - number: 7103
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 45
+    - number: 7102
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 186
+    - number: 7101
+      tool: CodeQL
+      rule_id: "py/redundant-comparison"
+      severity: warning
+      file: "tools/mc2_parallel_analysis_block_gate.py"
+      line: 106
+    - number: 7098
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-versioned-semantic-backfill.yml"
+      line: 40
+    - number: 7097
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-v2-federated-control.yml"
+      line: 88
+    - number: 7096
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-v2-federated-control.yml"
+      line: 35
+    - number: 7095
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-v2-federated-control.yml"
+      line: 29
+    - number: 7092
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-debug-dow-consumer.yml"
+      line: 67
+    - number: 7091
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-debug-dow-consumer.yml"
+      line: 103
+    - number: 7090
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-debug-dow-consumer.yml"
+      line: 82
+    - number: 7089
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-debug-dow-consumer.yml"
+      line: 21
+    - number: 7088
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 247
+    - number: 7087
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 73
+    - number: 7086
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 68
+    - number: 7085
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mesh-status-runtime.yml"
+      line: 29
+    - number: 7084
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mesh-status-runtime.yml"
+      line: 16
+    - number: 7083
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 53
+    - number: 7082
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 30
+    - number: 7081
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-n2-self-index.yml"
+      line: 24
+    - number: 7080
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w111-power-utility-dow.yml"
+      line: 21
+    - number: 7079
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w111-power-utility-dow.yml"
+      line: 33
+    - number: 7077
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w111-power-utility-dow.yml"
+      line: 20
+    - number: 7076
+      tool: CodeQL
+      rule_id: "py/file-not-closed"
+      severity: warning
+      file: "architecture/mesh/emit_mesh_status.py"
+      line: 18
+    - number: 7075
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w105-qps-b1b2-mip-probe.yml"
+      line: 31
+    - number: 7074
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w105-qps-b1b2-mip-probe.yml"
+      line: 22
+    - number: 7073
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w105-qps-b1b2-mip-probe.yml"
+      line: 16
+    - number: 7072
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w102-qps-mip-reconciliation-receiver.yml"
+      line: 15
+    - number: 7071
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w102-qps-mip-reconciliation-receiver.yml"
+      line: 14
+    - number: 7070
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-qps-external-probe.yml"
+      line: 44
+    - number: 7069
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-qps-external-probe.yml"
+      line: 24
+    - number: 7068
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/mip-qps-external-probe.yml"
+      line: 19
+    - number: 7067
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w99-r1-reconciliation-return.yml"
+      line: 18
+    - number: 7066
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w99-r1-reconciliation-return.yml"
+      line: 17
+    - number: 7065
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w93-docker-deployment-proof.yml"
+      line: 57
+    - number: 7064
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w93-docker-deployment-proof.yml"
+      line: 46
+    - number: 7063
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w93-docker-deployment-proof.yml"
+      line: 37
+    - number: 7062
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w93-docker-deployment-proof.yml"
+      line: 21
+    - number: 7061
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w95-accelerator-receiver.yml"
+      line: 16
+    - number: 7060
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w95-accelerator-receiver.yml"
+      line: 15
+    - number: 7059
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w85-census-proof.yml"
+      line: 28
+    - number: 7058
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w85-census-proof.yml"
+      line: 18
+    - number: 7057
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w85-census-proof.yml"
+      line: 17
+    - number: 7055
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-zero-delta-wheel.yml"
+      line: 60
+    - number: 7054
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-zero-delta-wheel.yml"
+      line: 22
+    - number: 7053
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-zero-delta-wheel.yml"
+      line: 18
+    - number: 7052
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-clean-clone-proof.yml"
+      line: 57
+    - number: 7051
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-clean-clone-proof.yml"
+      line: 24
+    - number: 7050
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w72-clean-clone-proof.yml"
+      line: 20
+    - number: 7049
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w71-residual-lineage-census.yml"
+      line: 69
+    - number: 7048
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w71-residual-lineage-census.yml"
+      line: 14
+    - number: 7047
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-retain-measured-pulse.yml"
+      line: 94
+    - number: 7046
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-retain-measured-pulse.yml"
+      line: 35
+    - number: 7045
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-retain-measured-pulse.yml"
+      line: 18
+    - number: 7044
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-measured-id-pulse-exact-sha.yml"
+      line: 43
+    - number: 7043
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-measured-id-pulse-exact-sha.yml"
+      line: 21
+    - number: 7042
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w70-measured-id-pulse-exact-sha.yml"
+      line: 17
+    - number: 7041
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-census-p3.yml"
+      line: 25
+    - number: 7039
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-measured-id-pulse.yml"
+      line: 45
+    - number: 7038
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-measured-id-pulse.yml"
+      line: 24
+    - number: 7037
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-measured-id-pulse.yml"
+      line: 21
+    - number: 7036
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-pulse3-pca-promotion.yml"
+      line: 41
+    - number: 7035
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-pulse3-pca-promotion.yml"
+      line: 20
+    - number: 7034
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w67-pulse3-pca-promotion.yml"
+      line: 19
+    - number: 7033
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w66-abacus-id-burndown-split.yml"
+      line: 157
+    - number: 7032
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w66-abacus-id-burndown-split.yml"
+      line: 100
+    - number: 7031
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w66-abacus-id-burndown-split.yml"
+      line: 90
+    - number: 7030
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w66-abacus-id-burndown-split.yml"
+      line: 29
+    - number: 7029
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w66-abacus-id-burndown-split.yml"
+      line: 28
+    - number: 7028
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 92
+    - number: 7027
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 81
+    - number: 7026
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 79
+    - number: 7025
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 77
+    - number: 7024
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 69
+    - number: 7023
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 65
+    - number: 7022
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 63
+    - number: 7021
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 56
+    - number: 7020
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 52
+    - number: 7019
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 50
+    - number: 7018
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 43
+    - number: 7017
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 39
+    - number: 7016
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 37
+    - number: 7015
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 30
+    - number: 7014
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 25
+    - number: 7013
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w65-parallel-discovery-pulses.yml"
+      line: 23
+    - number: 7012
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r02-id-discovery-graph.yml"
+      line: 97
+    - number: 7011
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r02-id-discovery-graph.yml"
+      line: 29
+    - number: 7010
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r02-id-discovery-graph.yml"
+      line: 25
+    - number: 7009
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r01-retained-baseline.yml"
+      line: 154
+    - number: 7008
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r01-retained-baseline.yml"
+      line: 29
+    - number: 7007
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-3p-r01-retained-baseline.yml"
+      line: 25
+    - number: 7000
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/creq-federation-ci.yml"
+      line: 26
+    - number: 6999
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/creq-federation-ci.yml"
+      line: 16
+    - number: 6998
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/creq-federation-ci.yml"
+      line: 15
+    - number: 6995
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-census-p3.yml"
+      line: 28
+    - number: 6994
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w64-census-p3.yml"
+      line: 91
+    - number: 6987
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/v5-w62-twelve-cluster-requalification.yml"
+      line: 21
+    - number: 6986
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/v5-w62-twelve-cluster-requalification.yml"
+      line: 18
+    - number: 6985
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/v5-w62-self-smoke.yml"
+      line: 22
+    - number: 6984
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/v5-w62-self-smoke.yml"
+      line: 19
+    - number: 6983
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/triage-repo-census.yml"
+      line: 22
+    - number: 6982
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/triage-repo-census.yml"
+      line: 13
+    - number: 6981
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/triage-repo-census.yml"
+      line: 12
+    - number: 6980
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
+      line: 22
+    - number: 6979
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
+      line: 12
+    - number: 6978
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
+      line: 11
+    - number: 6977
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
+      line: 25
+    - number: 6976
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
+      line: 16
+    - number: 6975
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
+      line: 15
+    - number: 6974
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
+      line: 33
+    - number: 6973
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
+      line: 32
+    - number: 6972
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 29
+    - number: 6971
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 28
+    - number: 6970
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 18
+    - number: 6969
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-w04-dow-receipt.yml"
+      line: 17
+    - number: 6968
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05j-quantitative.yml"
+      line: 20
+    - number: 6967
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05j-quantitative.yml"
+      line: 15
+    - number: 6966
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05j-quantitative.yml"
+      line: 14
+    - number: 6965
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
+      line: 18
+    - number: 6964
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
+      line: 13
+    - number: 6963
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
+      line: 12
+    - number: 6962
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-canonicalization.yml"
+      line: 9
+    - number: 6961
+      tool: Semgrep OSS
+      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+      severity: warning
+      file: ".github/workflows/qps-canonicalization.yml"
+      line: 8
     - number: 6960
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -453,30 +1365,12 @@ groups:
       severity: warning
       file: ".github/workflows/w53-p05t-qcell-jt-runtime.yml"
       line: 14
-    - number: 6957
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
-      line: 22
-    - number: 6956
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
-      line: 12
     - number: 6955
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/w52-p2t-ts-runtime-receipt.yml"
       line: 65
-    - number: 6952
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2t-hp-power-residual.yml"
-      line: 11
     - number: 6949
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -489,60 +1383,6 @@ groups:
       severity: warning
       file: ".github/workflows/w52-p2t-ts-runtime-receipt.yml"
       line: 15
-    - number: 6947
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05j-quantitative.yml"
-      line: 20
-    - number: 6946
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05j-quantitative.yml"
-      line: 15
-    - number: 6945
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05j-quantitative.yml"
-      line: 14
-    - number: 6944
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
-      line: 25
-    - number: 6943
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
-      line: 16
-    - number: 6942
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/w52-p2r-alat-ts-strict-residual.yml"
-      line: 15
-    - number: 6941
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
-      line: 18
-    - number: 6940
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
-      line: 13
-    - number: 6939
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-p05f-measured-sensitivity.yml"
-      line: 12
     - number: 6938
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -561,18 +1401,6 @@ groups:
       severity: warning
       file: ".github/workflows/w52-p2m-helium-proof.yml"
       line: 16
-    - number: 6935
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-canonicalization.yml"
-      line: 9
-    - number: 6934
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-canonicalization.yml"
-      line: 8
     - number: 6933
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -687,12 +1515,6 @@ groups:
       severity: warning
       file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
       line: 71
-    - number: 6901
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
-      line: 32
     - number: 6900
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -723,18 +1545,6 @@ groups:
       severity: warning
       file: ".github/workflows/qps-w04-dow-receipt.yml"
       line: 37
-    - number: 6895
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 28
-    - number: 6894
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 17
     - number: 6893
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -849,12 +1659,6 @@ groups:
       severity: warning
       file: ".github/workflows/bandit.yml"
       line: 39
-    - number: 6868
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w05-bidder-eval-dow.yml"
-      line: 33
     - number: 6862
       tool: CodeQL
       rule_id: "py/file-not-closed"
@@ -1010,18 +1814,6 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/dow-monitoring.yml"
-      line: 18
-    - number: 6825
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
-      line: 29
-    - number: 6823
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/qps-w04-dow-receipt.yml"
       line: 18
     - number: 6808
       tool: Semgrep OSS
@@ -3765,24 +4557,6 @@ groups:
       severity: warning
       file: ".github/workflows/ci-pipeline.yml"
       line: 23
-    - number: 6301
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-governance.yml"
-      line: 43
-    - number: 6300
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-governance.yml"
-      line: 30
-    - number: 6299
-      tool: Semgrep OSS
-      rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
-      severity: warning
-      file: ".github/workflows/ci-governance.yml"
-      line: 28
     - number: 6298
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -4508,91 +5282,91 @@ groups:
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 232
+      line: 235
     - number: 6158
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 210
+      line: 213
     - number: 6157
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 207
+      line: 210
     - number: 6156
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 191
+      line: 194
     - number: 6155
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 183
+      line: 186
     - number: 6154
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 163
+      line: 166
     - number: 6153
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 160
+      line: 163
     - number: 6152
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 146
+      line: 149
     - number: 6151
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 126
+      line: 129
     - number: 6150
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 123
+      line: 126
     - number: 6149
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 111
+      line: 114
     - number: 6148
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 103
+      line: 106
     - number: 6147
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 67
+      line: 70
     - number: 6146
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 62
+      line: 65
     - number: 6145
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
       severity: warning
       file: ".github/workflows/bootstrap-integration.yml"
-      line: 57
+      line: 60
     - number: 6144
       tool: Semgrep OSS
       rule_id: "yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
@@ -4952,7 +5726,7 @@ groups:
       rule_id: "py/multiple-definition"
       severity: warning
       file: "tests/test_dmaic_orchestration.py"
-      line: 511
+      line: 530
     - number: 3956
       tool: Bandit
       rule_id: "B103"
@@ -6009,6 +6783,12 @@ groups:
       severity: note
       file: "DMAIC_V3/core/twelve_cluster_orchestrator.py"
       line: 34
+    - number: 6874
+      tool: CodeQL
+      rule_id: "py/import-and-import-from"
+      severity: note
+      file: "tests/test_qps_w05_bidder_eval_dow_return.py"
+      line: 6
     - number: 6863
       tool: CodeQL
       rule_id: "py/empty-except"
@@ -7798,6 +8578,78 @@ groups:
       file: "abacus_v21_backup_recovery.py"
       line: 499
   QUAL_DEAD_CODE:
+    - number: 7094
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 14
+    - number: 7093
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_dmaic_orchestration.py"
+      line: 13
+    - number: 7056
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "scripts/deterministic_census_authority_and_contract_check.py"
+      line: 2
+    - number: 7006
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 19
+    - number: 7005
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 18
+    - number: 7004
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 17
+    - number: 7003
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 14
+    - number: 7002
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_docker_integration.py"
+      line: 12
+    - number: 6997
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tests/test_aht_bridge.py"
+      line: 5
+    - number: 6996
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "tools/generic_3pm_burndown.py"
+      line: 8
+    - number: 6991
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "rextools/populate_package.py"
+      line: 16
+    - number: 6990
+      tool: CodeQL
+      rule_id: "py/unused-import"
+      severity: note
+      file: "DMAIC_V3/tests/test_agent_manager_requalification.py"
+      line: 2
     - number: 6951
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -8038,36 +8890,6 @@ groups:
       severity: note
       file: "tests/test_dormant_file_management.py"
       line: 14
-    - number: 4634
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 18
-    - number: 4633
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 17
-    - number: 4632
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 16
-    - number: 4631
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 14
-    - number: 4630
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_docker_integration.py"
-      line: 12
     - number: 4629
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -8079,19 +8901,7 @@ groups:
       rule_id: "py/unused-import"
       severity: note
       file: "tests/test_dmaic_orchestration.py"
-      line: 18
-    - number: 4627
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_dmaic_orchestration.py"
-      line: 14
-    - number: 4626
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "tests/test_dmaic_orchestration.py"
-      line: 13
+      line: 21
     - number: 4625
       tool: CodeQL
       rule_id: "py/unused-import"
@@ -8175,7 +8985,7 @@ groups:
       rule_id: "py/unused-import"
       severity: note
       file: "tests/conftest.py"
-      line: 5
+      line: 7
     - number: 4606
       tool: CodeQL
       rule_id: "py/unused-local-variable"
@@ -8307,25 +9117,13 @@ groups:
       rule_id: "py/unused-local-variable"
       severity: note
       file: "tests/test_docker_integration.py"
-      line: 202
+      line: 210
     - number: 4584
       tool: CodeQL
       rule_id: "py/unused-local-variable"
       severity: note
       file: "tests/test_dormant_file_management.py"
       line: 151
-    - number: 4583
-      tool: CodeQL
-      rule_id: "py/unused-local-variable"
-      severity: note
-      file: "tests/test_dmaic_orchestration.py"
-      line: 144
-    - number: 2651
-      tool: CodeQL
-      rule_id: "py/unused-import"
-      severity: note
-      file: "rextools/populate_package.py"
-      line: 16
     - number: 2568
       tool: CodeQL
       rule_id: "py/unused-local-variable"
