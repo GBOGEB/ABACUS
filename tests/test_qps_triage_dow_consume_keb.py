@@ -1,4 +1,6 @@
 import copy
+import json
+from pathlib import Path
 
 import pytest
 
@@ -133,3 +135,37 @@ def test_pass_cannot_relax_system_boundary_or_authority():
             dow.finalize_dow_receipt(
                 keb_receipt(), candidate, consumer_pr=1200, consumer_head_sha=HEAD
             )
+
+
+def test_real_w3_p2_offer11_receipt_replays_exactly():
+    root = Path(__file__).resolve().parents[1]
+    keb = json.loads(
+        (root / "governance/qps_triage/inputs/H4_QPS_TRIAGE_W3_P2_KEB_OFFER11.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    actual_challenge = json.loads(
+        (root / "governance/qps_triage/challenges/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    expected = json.loads(
+        (root / "governance/qps_triage/receipts/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    actual = dow.finalize_dow_receipt(
+        keb,
+        actual_challenge,
+        consumer_pr=1219,
+        consumer_head_sha="150deb3f61929944f8d3f0a7ed1453177cde1bce",
+    )
+
+    assert actual == expected
+    assert actual["disposition"] == "ACCEPT"
+    assert actual["receipt_sha256"] == "7e3d2efd498b89540392eef9da52cbf0a2dbd35d09b043200cb1e989e0262e44"
+    assert actual["first_red"] == "GHP03_N_MINUS_1_CAPACITY"
+    assert actual["system_consequence_withheld"] is True
+    assert actual["table10_rate_per_year"] == 0.0
+    assert actual["authority_transfer"] is False
