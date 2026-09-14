@@ -84,3 +84,32 @@ def test_w78_permission_and_replay_gates_fail_closed() -> None:
         assert "PASS_15_OF_15" in str(exc)
     else:
         raise AssertionError("unproven deterministic replay must fail closed")
+
+
+def test_forged_w78_lineage_fails_closed() -> None:
+    source = copy.deepcopy(load_input())
+    source["source_w78"]["artifact_id"] = 99999999
+    try:
+        w79.validate_input(source)
+    except ValueError as exc:
+        assert "governed lineage mismatch" in str(exc)
+    else:
+        raise AssertionError("forged W78 provenance must fail closed")
+
+
+def test_rehashed_forged_row_payload_fails_closed() -> None:
+    source = copy.deepcopy(load_input())
+    row = source["rows"][0]
+    row["values"][-1] += 1
+    work = dict(zip(source["work_features"], row["values"]))
+    semantic = {
+        feature: work[feature] for feature in source["semantic_work_features"]
+    }
+    row["work_sha256"] = w79.canonical_sha256(work)
+    row["semantic_sha256"] = w79.canonical_sha256(semantic)
+    try:
+        w79.validate_input(source)
+    except ValueError as exc:
+        assert "governed input payload mismatch" in str(exc)
+    else:
+        raise AssertionError("rehashed forged W78 payload must fail closed")
