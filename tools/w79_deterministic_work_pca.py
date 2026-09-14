@@ -15,6 +15,9 @@ INPUT_SCHEMA = "MC2-W79-W78-INPUT-0.1.0"
 DEFAULT_SIMULATIONS = 5000
 DEFAULT_SEED = 20260914
 DEFAULT_QUANTILE = 0.95
+EXPECTED_INPUT_CANONICAL_SHA256 = (
+    "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4"
+)
 EXPECTED_W78 = {
     "workflow_run_id": 34777543492,
     "artifact_id": 10323323552,
@@ -219,6 +222,8 @@ def validate_input(source: dict) -> list[dict]:
                 "semantic_work_vector": semantic,
             }
         )
+    if canonical_sha256(source) != EXPECTED_INPUT_CANONICAL_SHA256:
+        raise ValueError("W79 governed input payload mismatch")
     return sorted(normalized, key=lambda row: str(row["source_sha"]))
 
 
