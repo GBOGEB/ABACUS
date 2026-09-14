@@ -1,0 +1,19 @@
+{
+  "challenge_or_execution": "Independent DOW contract challenge: validate the exact CODEX KEB PASS envelope, canonical digest, source tuple and component-only authority boundaries",
+  "result": "PASS",
+  "executed_steps": 1,
+  "reason": "KEB_PASS_CANONICAL_DIGEST_AND_SOURCE_TUPLE_VERIFIED_COMPONENT_ANALYTICS_ONLY_SYSTEM_CONSEQUENCE_WITHHELD",
+  "private_evidence_copied": false,
+  "authority_transfer": false,
+  "component_analytics_only": true,
+  "system_consequence_withheld": true,
+  "table10_rate_per_year": 0.0,
+  "first_red": "GHP03_N_MINUS_1_CAPACITY",
+  "expected_producer_merge_sha": "75cf4a2811bd49870be61813b7928831f864bf9e",
+  "expected_source_manifest_sha256": "f878931f8354481a98a61f5650932b0421eb97166c9e044dd199f1a5f2e71559",
+  "expected_source_object_ids": [
+    "H4-W2-OFFER11-HP-COMPONENT-ANALYTICS",
+    "H4-W3-P1-KEB-OFFER11-HP-001",
+    "QPS-RECEIPT-BLOB-add2f513a2ceb0a5324bd84ee80127578e90ac0a"
+  ]
+}
