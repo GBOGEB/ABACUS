@@ -1,0 +1,38 @@
+name: QPS TRIAGE DOW Contract
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/qps_triage_dow_consume_keb.py'
+      - 'tests/test_qps_triage_dow_consume_keb.py'
+      - '.github/workflows/qps-triage-dow-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/qps_triage_dow_consume_keb.py'
+      - 'tests/test_qps_triage_dow_consume_keb.py'
+      - '.github/workflows/qps-triage-dow-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dow-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v7
+      - name: Assert exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install pytest
+        run: python -m pip install --upgrade pytest
+      - name: Prove DOW KEB consumer contract
+        run: python -m pytest -q tests/test_qps_triage_dow_consume_keb.py
