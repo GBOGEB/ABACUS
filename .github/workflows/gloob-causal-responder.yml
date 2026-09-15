@@ -1,0 +1,77 @@
+name: Gloob causal responder
+
+on:
+  pull_request:
+    paths:
+      - "tools/gloob_dispatch_responder.py"
+      - "gloob_dispatch/capabilities.json"
+      - ".github/workflows/gloob-causal-responder.yml"
+  push:
+    paths:
+      - "gloob_dispatch/inbox/*.json"
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  responder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Self-test responder contract
+        run: python tools/gloob_dispatch_responder.py --self-test
+      - name: Resolve dispatch ticket
+        if: github.event_name == 'push'
+        id: ticket
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t tickets < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^gloob_dispatch/inbox/.*\.json$' || true)
+          test "${#tickets[@]}" -eq 1
+          echo "path=${tickets[0]}" >> "$GITHUB_OUTPUT"
+      - name: Execute DOW pointer-only responder
+        if: github.event_name == 'push'
+        run: python tools/gloob_dispatch_responder.py "${{ steps.ticket.outputs.path }}"
+      - name: Persist delivery and replay ledgers
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "gloob-dispatch-bot"
+          git config user.email "gloob-dispatch-bot@users.noreply.github.com"
+          git add gloob_dispatch/accepted gloob_dispatch/outbox
+          git commit -m "Gloob dispatch: persist DOW pointer-only exact-SHA receipts"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+      - name: Resolve emitted paths
+        if: github.event_name == 'push'
+        id: emitted
+        shell: bash
+        run: |
+          set -euo pipefail
+          ret=$(find gloob_dispatch/outbox -name gloob-causal-return.json -type f | head -n 1)
+          ack=$(find gloob_dispatch/outbox -name delivery-ack.json -type f | head -n 1)
+          test -n "$ret" && test -n "$ack"
+          echo "return=$ret" >> "$GITHUB_OUTPUT"
+          echo "ack=$ack" >> "$GITHUB_OUTPUT"
+      - name: Upload causal return
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gloob-causal-return
+          path: ${{ steps.emitted.outputs.return }}
+          if-no-files-found: error
+      - name: Upload delivery acknowledgement
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gloob-dispatch-ack
+          path: ${{ steps.emitted.outputs.ack }}
+          if-no-files-found: error
