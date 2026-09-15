@@ -1,0 +1,24 @@
+id: W105-PVPS-PLAYGROUND-DOW
+role: RUNTIME_QA_RECEIPT
+child_authority: GBOGEB/cryoplant-project
+child_pr: pending
+observables:
+  - exact_head_sha
+  - exact_workflow_run_id
+  - job_reached_step_1
+  - zod_result
+  - playwright_desktop_result
+  - playwright_laptop_result
+  - playwright_mobile_result
+  - console_and_page_error_count
+  - horizontal_overflow_result
+  - deep_link_result
+  - read_only_result
+receipt_rule:
+  before_observed_run: SPECIFIED_NOT_EXECUTED
+  all_required_observables_pass: ACCEPT_CANDIDATE
+  runner_does_not_reach_step_1: DEFER_RUNTIME
+  any_QA_assertion_fails: FAIL
+may_mutate_child_disposition: false
+mip_lane: PERPETUATE
+repeatability: require_distinct_future_sha_before_control_promotion
