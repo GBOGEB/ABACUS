@@ -1,0 +1,15 @@
+{
+  "schema": "gloob-dispatch-ticket/0.1",
+  "dispatch_url": "https://raw.githubusercontent.com/GBOGEB/document-organization-system/b3bf8f1355b62e183a3f51c86ee85086db242a36/gloob/dispatch/pilot/abacus-dispatch-envelope.json",
+  "expected_dispatch_id": "DISPATCH-571FFA3C1610A78A",
+  "expected_route_id": "ROUTE-80372D288726D227",
+  "expected_assignment_digest": "3cd64ef3c78acab79fe1a040868055e4421f29fc61ff896f975f55de6b267a3e",
+  "expected_target_repo": "GBOGEB/ABACUS",
+  "expected_crew": "FEDERATION_AMBASSADOR",
+  "expected_envelope_digest": "ff7a1fac73240ab44dff7464f32d2f177367fd7e245244f8b1dad33075cf5eb4",
+  "transport": {
+    "mode": "CONNECTOR_CONTROL_PLANE",
+    "dispatch_source_commit": "b3bf8f1355b62e183a3f51c86ee85086db242a36",
+    "receiver_disposition": "ACCEPT_POINTER_ONLY"
+  }
+}
