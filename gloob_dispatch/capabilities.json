@@ -1,0 +1,15 @@
+{
+  "schema": "gloob-responder-capabilities/0.1",
+  "repo": "GBOGEB/ABACUS",
+  "receiver_disposition": "ACCEPT_POINTER_ONLY",
+  "capabilities": {
+    "FEDERATION_AMBASSADOR": {
+      "eligible": true,
+      "authority": "DOW_POINTER_ONLY",
+      "actions": ["VERIFY_DISPATCH", "EMIT_DELIVERY_ACK", "EMIT_CAUSAL_RETURN"]
+    }
+  },
+  "control_credit": false,
+  "engineering_acceptance_credit": false,
+  "commercial_credit": false
+}
