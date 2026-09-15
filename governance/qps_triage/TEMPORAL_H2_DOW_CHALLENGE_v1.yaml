@@ -1,0 +1,25 @@
+schema: abacus.dow.temporal_h2_challenge_contract.v1
+origin:
+  repository: GBOGEB/pipeline-automation-hub
+  pr: 133
+  head_sha: 95a393a558696249d4b94436970220e08067e9b1
+role: CHALLENGE_SIGNAL
+purpose: independent_recomputation_of_genuine_scheduled_surveillance
+checks:
+  - exclude_SYNTHETIC_TEST_from_operational_time
+  - independently_recompute_genuine_temporal_span
+  - recompute_genuine_scheduled_window_count
+  - recompute_directional_window_count
+  - recompute_direction_flip_count
+  - recompute_indeterminate_fraction
+  - recompute_pooled_winner_strength
+  - recompute_dominant_direction
+acceptance:
+  disposition_on_exact_agreement: ACCEPT_CHALLENGE
+  disposition_on_mismatch: FIRST_RED_RECOMPUTATION_MISMATCH
+governance:
+  adds_control_clock_seconds: false
+  control_authority: false
+  engineering_credit_delta: 0
+  competency_promotions: 0
+  authority_transfer: false
