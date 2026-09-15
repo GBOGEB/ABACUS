@@ -1,5 +1,5 @@
 artifact: evidence_map
-generated_at: '2026-05-31T08:47:56+00:00'
+generated_at: '2026-09-15T07:31:00+00:00'
 reports_dir: /tmp/workspace/GBOGEB/ABACUS/reports
 requirements:
   REQ-001:
@@ -58,12 +58,12 @@ requirements:
   REQ-008:
     title: DMAIC governance snapshots are generated
     evidence:
-    - evidence_id: dmaic_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/dmaic_snapshot.json
+    - evidence_id: governance_snapshot_generator
+      artifact: /tmp/workspace/GBOGEB/ABACUS/src/qplant_presentation_engine/governance.py
       domain: dmaic
       available: true
-    - evidence_id: governance_snapshot
-      artifact: /tmp/workspace/GBOGEB/ABACUS/reports/governance_snapshot.json
+    - evidence_id: governance_snapshot_generation_test
+      artifact: /tmp/workspace/GBOGEB/ABACUS/tests/test_governance.py
       domain: governance
       available: true
   REQ-009:
