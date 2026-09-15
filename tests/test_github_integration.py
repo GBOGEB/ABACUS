@@ -188,7 +188,7 @@ class TestGitHubRoundtrip:
             "sync_interval": 300
         }
     
-    def test_full_sync_cycle(self, integration_system, mock_github):
+    def test_full_sync_cycle(self, integration_system):
         local_file = integration_system["local_path"] / "test.json"
         local_file.parent.mkdir(parents=True, exist_ok=True)
         local_file.write_text(json.dumps({"test": "data"}))

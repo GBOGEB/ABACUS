@@ -1,0 +1,156 @@
+name: W78 Deterministic Work Census
+
+on:
+  pull_request:
+    paths:
+      - "tools/w78_deterministic_work_probe.py"
+      - "tools/w78_work_diversity.py"
+      - "tests/test_w78_deterministic_work.py"
+      - ".github/workflows/w78-deterministic-work-census.yml"
+      - "ci/governance/workflow_policy.json"
+      - "docs/ci/WORKFLOW_RATIONALIZATION.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout W78 control implementation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Run W78 helper tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pytest numpy
+          python -m pytest tests/test_w78_deterministic_work.py -q
+
+  census:
+    name: w78-r${{ matrix.repeat }}-${{ matrix.target.label }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        repeat: [1, 2]
+        target:
+          - label: s01
+            sha: 2a5104eecb2ab3ed340c2e63b3f2ba3b46cb56dd
+          - label: s02
+            sha: 107c889c87137bfc660a69bfd7dd1cfc121291fc
+          - label: s03
+            sha: e2ae50cc6951a0fdead9e9b18ea52695c78984be
+          - label: s04
+            sha: 6f70a2926ecc2aa40e54f7d9f869f1804e4a1e41
+          - label: s05
+            sha: c9bc44d217d81244e3f6753cd79ae45781b23163
+          - label: s06
+            sha: e80e7b959c0f0759c48bb0ccf5378564aa29e0ff
+          - label: s07
+            sha: b0761df32fc31c3757bb499f20af386f3569bebb
+          - label: s08
+            sha: bffdc3779cd24ed18c043bde571d1d856cd5c8c2
+          - label: s09
+            sha: 1dfe11f59bca30c4d76ec8c22db237b0a37f1852
+          - label: s10
+            sha: 09c8a36c5a75816c71f2ec45667c3a5103e2a7de
+          - label: s11
+            sha: e20f923b5994a2d817fe1fde5d625d189170127b
+          - label: s12
+            sha: 3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+          - label: s13
+            sha: 970bc70a016bc071cd3c97bfdbd012d48a85055d
+          - label: s14
+            sha: c39696661d8d67c769c8031a962129c6d67c3935
+          - label: s15
+            sha: 8f7f419d388839a68a416aaa552846cae0c16ac3
+    env:
+      TARGET_SHA: ${{ matrix.target.sha }}
+      MATRIX_LABEL: ${{ matrix.target.label }}
+      REPEAT: ${{ matrix.repeat }}
+    steps:
+      - name: Checkout W78 control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Measure deterministic exact-SHA work
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${TARGET_SHA}"
+          worktree="${RUNNER_TEMP}/w78-${REPEAT}-${TARGET_SHA:0:12}"
+          git worktree add --detach "${worktree}" FETCH_HEAD
+          out="architecture/w78/W78_WORK_RECEIPT.json"
+          python tools/w78_deterministic_work_probe.py \
+            --root "${worktree}" \
+            --source-sha "${TARGET_SHA}" \
+            --repeat "${REPEAT}" \
+            --matrix-label "${MATRIX_LABEL}" \
+            --out "${out}"
+          test -s "${out}"
+          git worktree remove --force "${worktree}"
+
+      - name: Upload W78 work receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w78-r${{ matrix.repeat }}-${{ matrix.target.label }}
+          path: architecture/w78/W78_WORK_RECEIPT.json
+          if-no-files-found: error
+
+  aggregate:
+    needs: census
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout W78 control implementation
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Download W78 receipts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: w78-r*-*
+          path: architecture/w78/receipts
+
+      - name: Evaluate deterministic state diversity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t receipts < <(
+            find architecture/w78/receipts \
+              -name W78_WORK_RECEIPT.json \
+              -type f \
+              | sort
+          )
+          test "${#receipts[@]}" -eq 30
+          python tools/w78_work_diversity.py \
+            "${receipts[@]}" \
+            --out architecture/w78/W78_DIVERSITY_RECEIPT.json
+          cat architecture/w78/W78_DIVERSITY_RECEIPT.json
+
+      - name: Upload W78 diversity receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w78-diversity-${{ github.sha }}
+          path: architecture/w78/W78_DIVERSITY_RECEIPT.json
+          if-no-files-found: error

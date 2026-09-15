@@ -1,0 +1,35 @@
+wave: W58
+pulse: 3PR_A_DOW
+role: execution_qa_and_receipt
+upstream:
+  child: GBOGEB/cryoplant-project:controls/W58_3PR_A_CHILD_PLAYGROUND_CONTRACT_v0.1.yaml
+  keb: GBOGEB/CODEX:triage/W58_3PR_A_KEB_PLAYGROUND_ROUTE.yaml
+intent: execute non-authoritative QA contract for the HTML playground
+playwright_contract:
+  viewports:
+    - 1440x1000
+    - 1920x1080
+    - 1280x800
+  required_checks:
+    - no_console_error
+    - no_page_error
+    - no_body_horizontal_overflow
+    - navigation
+    - readable_tables
+    - deep_link
+    - read_only_boundary
+  style_lane: P4_html_navigation_receipts
+  source_style_adapter: GBOGEB/cryoplant-project:ssot/ssot_style_adapter.json
+execution_boundary:
+  can_measure: [render, navigation, layout, links, readability, read_only_behavior]
+  cannot_promote: [engineering_truth, bidder_evidence, compliance, numerical_score]
+receipt_status: SPECIFIED_NOT_YET_EXECUTED
+observed_metrics:
+  qa_dimensions_specified: 7
+  viewport_count: 3
+  engineering_credit_delta: 0
+DoD:
+  - executable QA receipt schema exists
+  - all failures return fail-closed
+  - no visual pass can close R5
+DoV: EXECUTION_CONTRACT_READY

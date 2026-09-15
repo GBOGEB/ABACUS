@@ -1,0 +1,17 @@
+schema: abacus-w58-a-hepak-dow/v1
+child_repo: GBOGEB/cryoplant-project
+child_pr: 720
+child_head_sha: 8de4a3cde52968707a4112adca0e092d59ce9185
+quantified_checks:
+  - no_pressure_or_PCA_promotion_without_governed_rho_mu_rows
+  - ALAT_3x185_and_LKT_4x150_remain_separate
+  - S_line_pressure_roles_1p05_1p10_1p30_and_PSV_gap_preserved
+  - inflow_mass_arithmetic_not_promoted_to_storage_acceptance
+observed_child_metrics:
+  seven_steps_structurally_executed: 7
+  positive_control_results: 2
+  blocked_steps: 5
+  structural_execution_fraction: 0.2857
+review_disposition: REVIEW_PENDING_CI
+formal_engineering_delta: 0
+strict_numerical_delta: 0

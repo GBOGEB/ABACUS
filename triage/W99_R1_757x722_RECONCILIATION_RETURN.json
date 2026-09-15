@@ -1,0 +1,24 @@
+{
+  "authority_effect": "NONE",
+  "canonical_materialisation_sha256": "6d3d73db930779b3b7bbfc45fe6b2b5338e52c22576923ed161deaf732dc3228",
+  "classification": "MEASURED_RECONCILIATION_NOT_COMPLIANCE",
+  "compliance_credit": false,
+  "counts": {
+    "AMBIGUOUS": 0,
+    "EXACT_TEXT": 28,
+    "EXPLICIT_ID": 0,
+    "UNMATCHED": 729,
+    "canonical_atoms": 722,
+    "canonical_unmatched": 694,
+    "source_atoms": 757,
+    "unique_canonical_matched": 28
+  },
+  "qps_rtm_semantic_sha256": "fef323a92108106a5b88edb86c6fe1ad3e9348a5d06134f7a0597775ba2084db",
+  "qps_workbook_sha256": "00a5f0ed3ded00620a33edd045706ba5fb9a67b5fb7fe63c495305f911c43ccb",
+  "reconciliation_receipt_sha256": "dbca71b36336a15ffdc377f48f5c9c56cde57928045381cdb8dd6efb80dd5479",
+  "release_credit": false,
+  "schema": "qps-docx-rtm-reconciliation-return/v1",
+  "source_docx_merge_sha": "6c1f88778c55ebd20c81db5080fc6b5df0e81016",
+  "source_docx_repo": "GBOGEB/DOCX_RTM_Automation",
+  "source_extraction_sha256": "6291b918754d06aeadff80de64dba4889e3955fac32a6f46b25bd8180aaac7bb"
+}

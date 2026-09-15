@@ -1,0 +1,25 @@
+{
+  "findings": {
+    "unresolved_references": [
+      "CG-01",
+      "CG-02",
+      "CG-03",
+      "CG-04",
+      "CG-05",
+      "CG-06",
+      "CG-07",
+      "CG-08"
+    ]
+  },
+  "lane": "B_reference_gap",
+  "repository": "GBOGEB/ABACUS",
+  "schema_version": "W67-ID-MEASURED-1.0.0",
+  "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+  "state": "MEASURED",
+  "totals": {
+    "backlog_closed": 3,
+    "backlog_open": 8,
+    "completion_pct": 27.27,
+    "total_population": 11
+  }
+}

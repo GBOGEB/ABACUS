@@ -1,0 +1,18 @@
+{
+  "authority": "derived_operational_analysis",
+  "centered_semantic_work_matrix_rank": 7,
+  "centered_work_matrix_rank": 9,
+  "deterministic_replay_consistency": "PASS_15_OF_15",
+  "distinct_semantic_work_state_count": 10,
+  "distinct_work_state_count": 15,
+  "diversity_artifact_digest": "sha256:6e0a868916c1730fdc8eefc1f24ffea06185ca56ef1a8caffdaeb325eed445ae",
+  "diversity_artifact_id": 10323323552,
+  "evaluated_head_sha": "9d55b8ba73a05efaa3e519acacacd1dffb3c787c",
+  "observation_count": 30,
+  "pca_fit_performed_in_w78": false,
+  "replay_count_per_target": 2,
+  "status": "DIVERSITY_GATE_PASS_FOR_W79_ANALYSIS",
+  "target_count": 15,
+  "workflow_run_id": 34777543492,
+  "w79_multivariate_analysis_permitted": true
+}

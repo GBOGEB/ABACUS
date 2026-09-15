@@ -1,0 +1,49 @@
+wave: W84
+plane: DOW
+intent: measure whether 3P3 recommendations reduce real residual pressure
+required_observed_metrics:
+  - execution_effort
+  - accepted_atoms_before
+  - accepted_atoms_after
+  - dov_before
+  - dov_after
+  - recommendations_executed
+  - recommendations_successful
+  - retries
+  - successful_repaired_tasks
+  - residual_before
+  - residual_after
+metrics:
+  evidence_yield: delta_accepted_atoms / execution_effort
+  dov_yield: delta_dov / execution_effort
+  recommendation_hit_rate: successful / executed
+  retry_efficiency: successful_repaired_tasks / retries
+  pressure_reduction: residual_before - residual_after
+p0c_victory:
+  required_comparable_cycles: 2
+  predicates:
+    - evidence_yield > 0
+    - pressure_reduction > 0
+    - dov_yield >= 0
+p1_agent_mcp_scheduler:
+  status: observation_gated
+  automatic_allocation: false
+  gate: P0C_victory
+p2_lldb_dap_swift:
+  status: telemetry_provider_only
+  accepted_event_types:
+    - runtime.start
+    - runtime.stop
+    - runtime.error
+    - runtime.breakpoint
+    - worker.started
+    - worker.failed
+    - worker.retried
+    - evidence.created
+    - evidence.rendered
+  governance_authority: none
+  engineering_authority: none
+guards:
+  - activity_without_observed_evidence_equals_zero_effectiveness_credit
+  - debug_telemetry_cannot_promote_compliance
+  - parent_return_cannot_self_promote_child_authority

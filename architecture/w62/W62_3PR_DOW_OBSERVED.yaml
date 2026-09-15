@@ -1,0 +1,30 @@
+version: 0.1.0
+wave: W62
+pulse: P3_DOW
+owner: DOW_ABACUS
+classification: RUNTIME_CONTROL_ONLY
+observed_at: '2026-09-08T05:19:00+02:00'
+child_payload_sha256: edd87184c94afeb4c0c7afef938f5bfac7838ed67f0ab2089e82f1bb956a2bbe
+
+observed_state:
+  W61_QPS: {pr: 641, state: MERGED, merge_sha: 9a9bed42bbcee6c71717d52f940f4e0646203bd7}
+  W61_KEB: {pr: 434, state: MERGED, merge_sha: 42d199fdaa043f3adda734c84904376231a44b47}
+  W61_DOW: {pr: 941, state: MERGED, merge_sha: b041fc94cba5a8a21b9ffec7d4ea5b2af19f4318}
+  execution: PASS
+  qa: PASS
+  worker_assignment: PASS
+  telemetry_binding: PASS
+  dmaic_binding: PASS
+  pca_bt_binding: PASS
+  zero_delta_control_plane: PASS
+
+p3_result: PASS
+credit_effect:
+  engineering: 0
+  compliance: 0
+  negotiation: 0
+
+pressure_to_child:
+  - complete P7 by explicit disposition rather than destructive cleanup by default
+  - retain exact-repeat evidence
+  - remove obsolete candidates from current runtime selection without erasing audit history

@@ -1,0 +1,12 @@
+schema: triage-roundtrip-receipt/1.0.0
+stage: DOW_RETURN
+tuple_id: TRIAGE-W62-001
+input_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+output_tuple_sha256: a18ce8b4ff66e2203a0673b938b39accd29ffb2ee6348beadad770d99ae79038
+method: deterministic_census_authority_and_contract_check
+finding:
+  status: PASS
+  authority_overlap: false
+  engineering_mutation: false
+  recommendation: ACCEPT
+return_to: CODEX_KEB_NORMALIZATION

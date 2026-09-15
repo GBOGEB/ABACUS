@@ -1,7 +1,14 @@
 id: DOW-xOCD-W57
-version: 0.1.0
+version: 0.2.0
 repo: GBOGEB/ABACUS
-purpose: executable runtime description for governed execution and return
+purpose: executable analytical/runtime description for governed execution and return
+authority_scope: REPO_LOCAL_ANALYTICAL_RUNTIME
+qps_authority_source:
+  repo: GBOGEB/cryoplant-project
+  artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  projection_role: EXECUTABLE_DERIVED_ANALYSIS_RUNTIME
+  engineering_promotion_forbidden: true
+  source_or_payload_digest_when_exchanged: REQUIRED
 pipeline:
   - receive_governed_payload
   - ingress_validate_digest
@@ -14,7 +21,12 @@ pipeline:
   - execute_QA_and_rendering
   - collect_telemetry
   - emit_DOW_receipt
-  - return_to_child
+  - return_to_KEB
+  - child_reentry
+invariants:
+  - qps_engineering_content_is_immutable_child_projection
+  - findings_are_append_only
+  - qps_engineering_promotion_requires_child_reentry
 binary_family:
   - DOW_ARCHITECTURE.xlsx
   - DOW_ARCHITECTURE.html

@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `7fe359031c9a4e423131971a24f9192cc5252232e0b2f7a71940b7c835c5cf32`
+Policy SHA-256: `d1ebb06483f05908cef2d4c55d259b27236672751a79b43814c48107eb7d081c`
 
 ## Outcome
 
-The repository currently contains **102 workflow definitions**. All **102** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **135 workflow definitions**. All **135** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -28,16 +28,16 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 |---|---|---:|---|
 | `core_test` | `ci-abacus.yml` | 10 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 2 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 4 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
+| `bridge_federation` | `bridge-ci.yml` | 6 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 12 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 15 | Runtime evidence, governance, review artifacts and schema validation. |
+| `dow` | `dow-integration.yml` | 14 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `runtime_governance` | `governance.yml` | 17 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 16 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 40 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 1 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `codeql.yml`, `dependency-review.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -75,6 +75,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `core_test` | `tooling-ci.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | — |
 | 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | — |
 | 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
 | 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
@@ -93,15 +95,18 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
+| 20 | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | — |
 | 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `qps_m05_dow_independent_consumer.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
@@ -112,6 +117,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `validation.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `w64-census-p3.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
@@ -122,23 +128,50 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `mip-qps-external-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `mip-v2-federated-control.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `specialised` | `qps-canonicalization.yml` | [pull_request, push] | 1 | `keep` | — |
 | 20 | `specialised` | `qps-cost-roundtrip-contract.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `specialised` | `qps-dow-w43-triage.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
 | 20 | `specialised` | `qps-p05f-measured-sensitivity.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `qps-p05j-quantitative.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps-w111-power-utility-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `specialised` | `session_tuple_ci.yml` | push, workflow_dispatch | 3 | `keep` | — |
 | 20 | `specialised` | `v23-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `w102-qps-mip-reconciliation-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w105-qps-b1b2-mip-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w169-qplant-k8s-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2m-helium-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2r-alat-ts-strict-residual.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2t-hp-power-residual.yml` | pull_request | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2t-ts-runtime-receipt.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w53-p05t-qcell-jt-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w66-abacus-id-burndown-split.yml` | pull_request, workflow_dispatch, schedule | 2 | `keep` | — |
+| 20 | `specialised` | `w67-measured-id-pulse.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w67-pulse3-pca-promotion.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w70-measured-id-pulse-exact-sha.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w70-retain-measured-pulse.yml` | workflow_run, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w71-residual-lineage-census.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w72-clean-clone-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w72-versioned-semantic-backfill.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w72-zero-delta-wheel.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w74-qplant-k8s-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w77-phase-runtime-instrumentation.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w78-deterministic-work-census.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w79-deterministic-multivariate.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w85-census-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w93-docker-deployment-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `w95-accelerator-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w99-r1-reconciliation-return.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
+| 20 | `statistics` | `w64-3p-r01-retained-baseline.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `statistics` | `w64-3p-r02-id-discovery-graph.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `statistics` | `w65-parallel-discovery-pulses.yml` | pull_request, workflow_dispatch, schedule | 5 | `keep` | — |
 | 30 | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | — |
 | 30 | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | — |
 | 30 | `delivery` | `cd.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
@@ -182,6 +215,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`
+- `python -m pytest DMAIC_V3/tests -q` — `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
 - `python -m pytest tests -v` — `governance.yml`, `validation.yml`
 

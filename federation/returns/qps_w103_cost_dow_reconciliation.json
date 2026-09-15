@@ -1,0 +1,39 @@
+{
+  "schema_version": "0.1",
+  "document_id": "QPS_W103_COST_DOW_RECONCILIATION",
+  "wave": "W103",
+  "role": "DOW_INDEPENDENT_RECONCILIATION",
+  "status": "BLOCKED_ON_C1_SOURCE_IDENTITY",
+  "child_stack": [828, 829, 830],
+  "precondition": "KEB C1 source-identity PASS on an immutable WHM+WPS source set",
+  "gate": "C2_ROW_BY_ROW_RECONCILIATION",
+  "required_row_fields": [
+    "canonical_item_id",
+    "system_scope_WHM_or_WPS_line",
+    "description",
+    "quantity",
+    "unit",
+    "source_locator",
+    "evidence_class",
+    "estimate_method",
+    "low",
+    "most_likely",
+    "high",
+    "procurement_action"
+  ],
+  "reconciliation_classes": ["MATCH", "CHANGED", "NEW", "REMOVED", "AMBIGUOUS", "DUPLICATE_SCOPE"],
+  "guards": [
+    "no cost arithmetic before C1 source identity PASS",
+    "no duplicate WHM/WPS scope ownership",
+    "150m WPS remains costing scenario until S/U/W lengths are source-bound",
+    "line S abnormal/transient role is not normalized as identical to U/W without evidence",
+    "hardware BOM and installed CAPEX remain separate",
+    "equivalent EUR_per_m is diagnostic only",
+    "first material red stops progression and becomes recursive repair target"
+  ],
+  "PASS": "every authoritative source row has exactly one controlled reconciliation disposition and denominator closure is explicit",
+  "DEFER": "C1 not passed or one or more rows lack unique identity/scope/disposition",
+  "next_gate_on_pass": "C3_EVIDENCE_CLASS_AND_THREE_POINT_UNCERTAINTY",
+  "engineering_credit_delta": 0,
+  "negotiation_credit_delta": 0
+}

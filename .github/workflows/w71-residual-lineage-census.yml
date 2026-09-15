@@ -1,0 +1,74 @@
+name: W71 Residual Generated-Lineage Census
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  residual-lineage-census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Emit absolute residual census
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          targets = [
+              Path('docs/qps_line_b/generated/P05H_DN150_VALIDATION_RECEIPT.json'),
+              Path('docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json'),
+          ]
+          lineage_path = Path('governance/w64_generated_authority_lineage.json')
+          lineage = json.loads(lineage_path.read_text(encoding='utf-8')) if lineage_path.exists() else {}
+          unresolved = set(lineage.get('unresolved', [])) if isinstance(lineage, dict) else set()
+
+          rows = []
+          for p in targets:
+              exists = p.exists()
+              data = p.read_bytes() if exists else b''
+              rows.append({
+                  'path': str(p),
+                  'folder': str(p.parent),
+                  'name': p.name,
+                  'extension': p.suffix.lower(),
+                  'exists': exists,
+                  'bytes': len(data) if exists else None,
+                  'sha256': hashlib.sha256(data).hexdigest() if exists else None,
+                  'listed_unresolved_in_lineage_control': str(p) in unresolved,
+              })
+
+          payload = {
+              'schema': 'abacus.w71.residual-generated-lineage-census/v1',
+              'source_sha': '${{ github.event.pull_request.head.sha || github.sha }}',
+              'census_population_assets': 2794,
+              'blocker_findings_baseline': 34,
+              'blocker_findings_current_target': 1,
+              'residual_target_files': len(rows),
+              'residual_present_files': sum(r['exists'] for r in rows),
+              'residual_total_bytes': sum((r['bytes'] or 0) for r in rows),
+              'residual_type_breakdown': {'.json': sum(r['extension']=='.json' for r in rows)},
+              'measured_pca': {
+                  'observed_rows_before_w71': 1,
+                  'committed_rows_before_w71': 0,
+                  'required_rows': 3,
+                  'promotion': 'WITHHELD'
+              },
+              'assets': rows,
+              'boundary': 'count/type/bytes/hash improves residual observability only; generated-lineage blocker closes only when source+generator lineage is governed.'
+          }
+          out = Path('architecture/w66/receipts/W71_RESIDUAL_GENERATED_LINEAGE_CENSUS.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+          print(out.read_text())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w71-residual-generated-lineage-census
+          path: architecture/w66/receipts/W71_RESIDUAL_GENERATED_LINEAGE_CENSUS.json
+          if-no-files-found: error
+          retention-days: 30

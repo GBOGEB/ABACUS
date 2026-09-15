@@ -1,0 +1,23 @@
+{
+  "schema_version": "W72-A2-1.0.0",
+  "baseline_blockers": 1,
+  "residual_files": 2,
+  "residual_bytes": 4452,
+  "residual_type": ".json",
+  "targets": [
+    {
+      "path": "docs/qps_line_b/generated/P05H_DN150_VALIDATION_RECEIPT.json",
+      "bytes": 1541,
+      "sha256": "89a3b63ebac6436bbd4f18e0aa0cc5d36953ee581e8f3f8b737b7d46f587c30b"
+    },
+    {
+      "path": "docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json",
+      "bytes": 2911,
+      "sha256": "e1115f087bfea0a295a97c65bce719ba998dcf3fa38297e532b7883ae5b12440"
+    }
+  ],
+  "source": "models/qps_line_b/p05h_p05i_source_payload.json",
+  "generator": "python -m models.qps_line_b.run_p05h_p05i_receipts",
+  "victory": "W64 disposition-aware P2 reports blocker_count=0 and P3 accepts the result.",
+  "credit_rule": "No T02 or release-score promotion until the exact-head W64 receipt is observed."
+}

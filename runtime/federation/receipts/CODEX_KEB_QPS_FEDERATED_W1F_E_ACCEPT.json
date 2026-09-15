@@ -1,0 +1,30 @@
+{
+  "authority_guards": {
+    "engineering_authority_transfer": false,
+    "federated_mode_does_not_claim_repo_local_runner_recovery": true,
+    "formal_engineering_credit_delta": 0,
+    "keb_binding_is_runtime_evidence_only": true,
+    "negotiation_credit_delta": 0
+  },
+  "binding_id": "KEB-QPS-DEBUG-DAG-001",
+  "binding_sha256": "7539bc45e3e8a19042a2c249e907983456ad3c23ba55302548e436e4c9b2a91d",
+  "checks": {
+    "adapter_surface_ready": true,
+    "exact_head_sha_present": true,
+    "producer_identity_valid": true,
+    "producer_status_accept": true,
+    "recursive_audit_pass": null,
+    "repo_local_runner_recovered": false,
+    "runtime_steps_gt_zero": true,
+    "source_payload_hash_match": true
+  },
+  "created_utc": "2026-09-12T17:06:25+00:00",
+  "evidence_mode": "FEDERATED_EXACT_PAYLOAD",
+  "producer": "GBOGEB/cryoplant-project",
+  "producer_exact_head_sha": "5ba7a25fa45f78b9336523f7311f5a58f36c6d89",
+  "reason": "FEDERATED_EXACT_PAYLOAD_RUNTIME_EVIDENCE_ACCEPT",
+  "schema": "codex.keb.qps_debug_binding.v2",
+  "semantic_owner": "CODEX/KEB",
+  "source_receipt_sha256": "6c4002640e91e7e7953fc31cdf814454e14dcf191234b20e3e2e87ff2859aa23",
+  "status": "ACCEPT"
+}

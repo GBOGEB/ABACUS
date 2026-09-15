@@ -1,0 +1,187 @@
+wave: W66
+program: ABACUS_ID_BURNDOWN_PARALLEL_SPLIT
+state: CONTROLLED_DISCOVERY_ONLY
+base_main_sha: d75dcd016326ddd7cf0fe1ee0296b84e1bb0566d
+intent: separate ID burndown from generic W65 discovery and make each deficit class independently measurable, PCA-ready and reverse-loadable
+
+common_lane_metrics:
+  - total_population
+  - backlog_open
+  - backlog_closed
+  - completion_pct
+  - new_findings
+  - retired_findings
+  - net_backlog_delta
+  - burn_rate_per_pulse
+  - median_repair_cost
+  - downstream_nodes_unlocked
+  - evidence_yield
+  - evidence_yield_per_worker
+  - aht_seconds
+  - active_workers
+  - queue_depth
+  - parallel_efficiency
+  - duplicate_work_ratio
+
+lanes:
+  A_registry_gap:
+    question: which declared IDs are absent from governing registries and which indexed IDs lack declarations?
+    outputs: [declared_not_indexed, indexed_not_declared, duplicate_registry_ids]
+    value: authority completeness
+    denominator: union_of_declared_and_indexed_logical_ids
+    backlog_definition: declared_not_indexed + indexed_not_declared + duplicate_registry_ids
+    pca_features:
+      - declared_not_indexed_rate
+      - indexed_not_declared_rate
+      - duplicate_registry_rate
+      - registry_churn_rate
+      - repair_yield
+      - evidence_yield_per_worker
+    reverse_loading:
+      priority_formula: downstream_nodes_unlocked * authority_weight * recurrence_weight / max(repair_cost, 1)
+      first_targets: [duplicate_registry_ids, declared_not_indexed, indexed_not_declared]
+
+  B_reference_gap:
+    question: which IDs are referenced by code, docs, workflows or graphs without a resolvable canonical node?
+    outputs: [unresolved_references, dangling_aliases, unknown_prefixes]
+    value: addressability and discovery
+    denominator: all_observed_id_references
+    backlog_definition: unresolved_references + dangling_aliases + unknown_prefixes
+    pca_features:
+      - unresolved_reference_rate
+      - dangling_alias_rate
+      - unknown_prefix_rate
+      - reference_recurrence
+      - repair_yield
+      - evidence_yield_per_worker
+    reverse_loading:
+      priority_formula: reference_frequency * downstream_nodes_unlocked * ambiguity_weight / max(repair_cost, 1)
+      first_targets: [high_frequency_unresolved_references, dangling_aliases, unknown_prefixes]
+
+  C_consumer_penetration:
+    question: where does a valid logical ID fail to penetrate downstream consumers?
+    outputs: [filename_bound_consumers, path_bound_consumers, duplicate_runtime_aliases, unbound_consumers]
+    value: runtime semantic penetration
+    denominator: all_known_consumers
+    backlog_definition: filename_bound_consumers + path_bound_consumers + duplicate_runtime_aliases + unbound_consumers
+    pca_features:
+      - consumer_penetration_gap_rate
+      - filename_binding_rate
+      - path_binding_rate
+      - runtime_alias_rate
+      - runtime_criticality
+      - evidence_yield_per_worker
+    reverse_loading:
+      priority_formula: runtime_criticality * consumer_fanout * downstream_nodes_unlocked / max(repair_cost, 1)
+      first_targets: [high_criticality_unbound_consumers, duplicate_runtime_aliases, filename_bound_consumers]
+
+  D_graph_orphan_drop:
+    question: where do nodes or edges terminate unexpectedly?
+    outputs: [isolated_nodes, parentless_nodes, terminal_nodes, missing_edges, drop_profile]
+    value: graph traversal completeness
+    denominator: all_graph_nodes_plus_expected_edges
+    backlog_definition: isolated_nodes + parentless_nodes + terminal_nodes + missing_edges
+    pca_features:
+      - isolated_node_rate
+      - parentless_node_rate
+      - terminal_drop_rate
+      - missing_edge_rate
+      - frontier_recovery_rate
+      - evidence_yield_per_worker
+    reverse_loading:
+      priority_formula: frontier_nodes_recovered * path_centrality * downstream_nodes_unlocked / max(repair_cost, 1)
+      first_targets: [high_centrality_missing_edges, parentless_nodes, isolated_nodes, terminal_nodes]
+
+  E_lineage_evidence:
+    question: which IDs and consumers lack retained source or exact-SHA evidence lineage?
+    outputs: [unlineaged_ids, unlineaged_consumers, source_without_consumer, consumer_without_source]
+    value: trust and release evidence
+    denominator: all_ids_and_consumers_requiring_lineage
+    backlog_definition: unlineaged_ids + unlineaged_consumers + source_without_consumer + consumer_without_source
+    pca_features:
+      - unlineaged_id_rate
+      - unlineaged_consumer_rate
+      - source_without_consumer_rate
+      - consumer_without_source_rate
+      - exact_sha_evidence_rate
+      - evidence_yield_per_worker
+    reverse_loading:
+      priority_formula: release_weight * trust_weight * downstream_nodes_unlocked / max(repair_cost, 1)
+      first_targets: [runtime_consumers_without_source, canonical_ids_without_lineage, source_without_consumer]
+
+rollup:
+  funnel:
+    - declared
+    - registered
+    - referenced
+    - graph_linked
+    - consumer_bound
+    - runtime_observed
+    - evidence_lineaged
+  totals:
+    total_population: sum_lane_denominators_with_deduplicated_global_ids
+    total_open_backlog: sum_deduplicated_lane_open_findings
+    total_closed_backlog: cumulative_retired_findings
+    total_completion_pct: 100 * total_closed_backlog / max(total_open_backlog + total_closed_backlog, 1)
+    total_net_backlog_delta: new_findings - retired_findings
+    total_burn_rate_per_pulse: retired_findings / max(pulses_elapsed, 1)
+    total_parallel_efficiency: useful_unique_findings / max(worker_seconds, 1)
+  required_metrics:
+    - numerator
+    - denominator
+    - completion_pct
+    - new_findings
+    - retired_findings
+    - net_backlog_delta
+    - burn_rate_per_pulse
+    - median_repair_cost
+    - downstream_nodes_unlocked
+    - evidence_yield
+    - evidence_yield_per_worker
+    - active_workers
+    - queue_depth
+    - parallel_efficiency
+    - duplicate_work_ratio
+  cross_lane_reverse_loading_formula: downstream_nodes_unlocked * authority_weight * runtime_weight * release_weight / max(repair_cost, 1)
+  pca_features:
+    - registry_gap_rate
+    - unresolved_reference_rate
+    - consumer_penetration_gap_rate
+    - graph_drop_rate
+    - lineage_gap_rate
+    - repair_yield
+    - evidence_yield_per_worker
+    - parallel_efficiency
+    - duplicate_work_ratio
+  pca_policy:
+    minimum_comparable_pulses: 3
+    stable_loadings_before_minimum: WITHHELD
+    provisional_rule_based_rank_allowed: true
+    calculate_within_lane_pca: true
+    calculate_cross_lane_pca: true
+
+parallelism:
+  execution: independent_A_to_E
+  current_worker_policy: hold_existing_7_plus_7_discovery_baseline
+  lane_worker_accounting: separate
+  telemetry:
+    - active_workers
+    - worker_seconds
+    - queue_depth
+    - unique_findings
+    - duplicate_findings
+    - evidence_yield_per_worker
+    - aht_seconds
+    - parallel_efficiency
+  scale_rule: add_worker_pair_only_if_evidence_yield_per_worker_improves_and_duplicate_work_ratio_does_not_worsen
+  downscale_rule: remove_worker_pair_if_two_consecutive_pulses_show_lower_yield_per_worker_or_higher_duplicate_work_ratio
+  convergence: rerun_rollup_after_any_lane_changes
+  allocation_rule: assign_next_worker_pair_to_highest_reverse_loading_lane_not_highest_raw_backlog_lane
+
+claim_guards:
+  - DISCOVERY_NE_AUTHORITY
+  - EDGE_NE_ENGINEERING_CREDIT
+  - MERGED_NE_VICTORY
+  - ALIAS_INFERENCE_NE_CANONICAL_PROMOTION
+  - PCA_NE_CAUSALITY
+  - BACKLOG_SIZE_NE_PRIORITY

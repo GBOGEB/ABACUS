@@ -1,0 +1,52 @@
+{
+  "schema_version": "MC2-SEMANTIC-5OF5-VARIANCE-GATE-0.1.0",
+  "parent_mission": "GBOGEB/cryoplant-project#1063",
+  "worker_issue": "GBOGEB/ABACUS#1164",
+  "authority": "derived_operational_analysis",
+  "sample_gate": {
+    "status": "PASS",
+    "numeric_comparable_rows": 5,
+    "distinct_source_shas": 5,
+    "required_rows": 5,
+    "required_distinct_source_shas": 5
+  },
+  "fifth_observation": {
+    "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+    "workflow_run": 34765230520,
+    "job_id": 103744899142,
+    "runner_id": 1000262546,
+    "artifact_id": 10320431081,
+    "artifact_digest": "sha256:e1be872a9f38fcbc63ca7e6616395aa0f450f17dfb3bcb8d501e4a1b6d640244",
+    "execution_state": "PASS",
+    "steps_executed": true
+  },
+  "semantic_feature_state": {
+    "varying_features": [
+      "consumer_penetration_rate"
+    ],
+    "constant_features": [
+      "registry_gap_rate",
+      "unresolved_reference_rate",
+      "graph_drop_rate",
+      "lineage_gap_rate"
+    ],
+    "consumer_penetration_rate_observed": [0.6, 0.6, 0.6, 0.6, 1.0]
+  },
+  "semantic_pca": {
+    "status": "WITHHELD",
+    "reason": "INSUFFICIENT_VARYING_FEATURES",
+    "minimum_varying_features": 2
+  },
+  "parallel_analysis_pa95": {
+    "status": "WITHHELD",
+    "reason": "SEMANTIC_PCA_NOT_IDENTIFIABLE"
+  },
+  "runtime_pc1_vs_semantic_pc1": {
+    "status": "WITHHELD",
+    "reason": "SEMANTIC_PC1_NOT_YET_IDENTIFIABLE"
+  },
+  "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE",
+  "global_allocation_authority": false,
+  "child_engineering_promotion_authority": false,
+  "next_victory_condition": "obtain one or more exact-SHA semantic observations that create real variance in at least one additional registered semantic feature; then rerun semantic PCA and PA95"
+}

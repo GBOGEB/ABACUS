@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1",
+  "mip_id": "MIP-PILOT-002",
+  "role": "DOW",
+  "authority": "independent_measurement_and_challenge_only",
+  "modernize_includes_repair": true,
+  "repair_classes": ["duplicate_runtime", "compatibility_surface", "deployment", "container", "authority_leakage", "test_gap", "generated_view", "fail_open_behavior"],
+  "observed_precedents": [
+    {"pr": 1079, "class": "duplicate_runtime", "pattern": "canonical runtime owner plus compatibility delegation"},
+    {"pr": 1080, "class": "deployment", "pattern": "Docker and deployment runtime discrimination"},
+    {"pr": 1084, "class": "authority_leakage", "pattern": "canonicalization hardening plus negative tests"}
+  ],
+  "measurement_contract": {
+    "requires": ["before_metric", "after_metric", "delta", "execution_context", "exact_sha"],
+    "preferred_metrics": ["duplicate_authority_count", "deterministic_path_count", "runner_pass_rate", "fail_open_count", "provenance_coverage", "runtime_collision_count"]
+  },
+  "return_states": ["IMPROVED", "NO_CHANGE", "REGRESSED", "DEFER", "NOT_APPLICABLE"],
+  "promotion_authority": false,
+  "engineering_credit_delta": 0,
+  "release_credit_delta": 0
+}

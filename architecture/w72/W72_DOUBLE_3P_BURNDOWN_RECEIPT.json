@@ -1,0 +1,109 @@
+{
+  "schema_version": "W72-DOUBLE-3P-1.0.1",
+  "method": "six-lane double 3P; accepted evidence only; queued activity earns zero credit",
+  "baseline": {
+    "publish_readiness_score": 65.5,
+    "w64_blocker_count": 34,
+    "terminal_strict_outstanding": 12,
+    "terminal_equivalent_outstanding": 9.5,
+    "full_checklist_pass": 17,
+    "full_checklist_partial": 10,
+    "full_checklist_open_blocked": 5,
+    "full_checklist_equivalent_outstanding": 10.0,
+    "pca_operational_promotion": "WITHHELD",
+    "repeat_build_zero_delta": "OPEN"
+  },
+  "observed_after": {
+    "publish_readiness_score_floor": 70.0,
+    "w64_blocker_count": 0,
+    "terminal_strict_outstanding": 10,
+    "terminal_equivalent_outstanding": 7.0,
+    "full_checklist_pass": 19,
+    "full_checklist_partial": 10,
+    "full_checklist_open_blocked": 3,
+    "full_checklist_equivalent_outstanding": 8.0,
+    "pca_operational_promotion": "PASS",
+    "pca_release_grade_empirical_credit": "WITHHELD",
+    "repeat_build_zero_delta": "PACKAGE_PASS_RELEASE_WIDE_PARTIAL",
+    "clean_clone": "EXECUTES_WITH_398_TESTS_PASSING_2_FAILING"
+  },
+  "deltas": {
+    "publish_readiness_score_floor_pp": 4.5,
+    "w64_blockers": -34,
+    "w64_blocker_reduction_pct": 100.0,
+    "terminal_strict_outstanding": -2,
+    "terminal_equivalent_outstanding": -2.5,
+    "full_checklist_strict_outstanding": -2,
+    "full_checklist_equivalent_outstanding": -2.0,
+    "pca_numeric_rows_retained": 3,
+    "pca_distinct_source_shas": 3
+  },
+  "lanes": {
+    "A1": {
+      "pr": 1049,
+      "result": "PASS",
+      "effect": "T01 exact P1/P2/P3 accepted"
+    },
+    "A2": {
+      "pr": 1050,
+      "result": "PASS_WITH_ONE_CLASSIFIER_RESIDUAL",
+      "effect": "true generated-lineage assets resolved 2 to 4"
+    },
+    "A3": {
+      "pr": 1054,
+      "result": "PASS",
+      "workflow_run_id": 34206941190,
+      "artifact_id": 10048203248,
+      "artifact_zip_sha256": "ad109961f5c4d14df39144ee22a260246e5bece9b186ae3afcdca29fba6b14d8",
+      "asset_count": 2839,
+      "baseline_blockers": 34,
+      "current_blockers": 0,
+      "temporal_clusters": 230,
+      "effect": "T02 census blocker roots zero"
+    },
+    "B1": {
+      "pr": 1051,
+      "result": "PASS",
+      "workflow_run_id": 34206428265,
+      "numeric_rows": 3,
+      "distinct_source_shas": 3,
+      "allocation_mode": "PCA_REVERSE_LOADING",
+      "pc1_explained_variance_ratio": 1.0,
+      "effect": "repo-native operational PCA promotion passes; release-grade empirical PCA remains withheld"
+    },
+    "B2": {
+      "pr": 1052,
+      "result": "PARTIAL",
+      "latest_workflow_run_id": 34207387628,
+      "install": "PASS",
+      "installed_entrypoint": "PASS",
+      "tests_passed": 398,
+      "tests_failed": 2,
+      "tests_skipped": 10,
+      "effect": "clean-clone defect population reduced to two exact roots; T04 remains open"
+    },
+    "B3": {
+      "pr": 1053,
+      "result": "PASS_PACKAGE_SCOPE",
+      "workflow_run_id": 34207043442,
+      "pass1_sha256": "4078266cf01c8c38e680f660b4943986ce48017be753e6418becd0d173386f3d",
+      "pass2_sha256": "4078266cf01c8c38e680f660b4943986ce48017be753e6418becd0d173386f3d",
+      "delta_hashes": 0,
+      "effect": "T08 OPEN to PARTIAL pending release-wide outward-product replay"
+    }
+  },
+  "checklist_changes": [
+    {"id": 21, "before": "PARTIAL", "after": "PASS"},
+    {"id": 22, "before": "OPEN", "after": "PASS"},
+    {"id": 29, "before": "OPEN", "after": "PARTIAL"}
+  ],
+  "score_rule": "Only census blocker retirement is promoted in the weighted score floor. PCA and package zero-delta are reported separately until their release-wide gates are satisfied.",
+  "next_reverse_pressure": [
+    "B2: resolve the two observed clean-clone regression roots without weakening tests",
+    "T03: close source/generated/legacy measurement",
+    "T05: retain full exact-RC mandatory regression",
+    "T06/T07: regenerate outward outputs and bind hashes/source lineage",
+    "T08: repeat the accepted release-wide output set to zero delta",
+    "T10/T11/T12: immutable RC, protected main, tag/release/archive smoke"
+  ]
+}

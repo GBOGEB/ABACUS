@@ -1,0 +1,39 @@
+schema_version: '0.1'
+document_id: W63_P7_DOW_RUNTIME_EXCLUSION_CLOSURE
+status: CANDIDATE_RUNTIME_RECEIPT
+wave: W63
+formal_engineering_credit_delta: 0
+
+observed_input:
+  w62_dow_pr: 1005
+  w62_head: 495eca26ae561e81e263b363f9c40946f4abe59f
+  role: execution_analysis_consumer_not_child_engineering_authority
+
+runtime_contract:
+  include_in_current_execution_if: disposition_equals_ACTIVE
+  exclude_from_current_execution_if: [SUPERSEDED, HISTORICAL, QUARANTINED]
+  retain_for_audit_and_replay: [ACTIVE, SUPERSEDED, HISTORICAL, QUARANTINED]
+  metrics:
+    - total_candidates
+    - active_candidates
+    - excluded_superseded
+    - excluded_historical
+    - excluded_quarantined
+    - undispositioned_candidates
+    - lineage_retained_pct
+  hard_gate:
+    undispositioned_candidates_required: 0
+    lineage_retained_pct_required: 100
+
+DOW_receipt_predicate:
+  PASS_when:
+    - only_ACTIVE_candidates_reach_runtime
+    - undispositioned_candidates_equals_0
+    - lineage_retained_pct_equals_100
+    - replay_can_address_retained_historical_candidate_by_id
+  current_state: READY_FOR_EXACT_HEAD_EXECUTION
+
+return_to_child:
+  on_PASS: RUNTIME_EXCLUSION_VALID
+  on_FAIL: DEFER_WITH_RUNTIME_COUNTEREXAMPLE
+  engineering_credit: 0

@@ -1,0 +1,116 @@
+{
+  "allocation_state": "WITHHELD_PARENT_TRANSITION_GATE",
+  "authority": "derived_operational_analysis",
+  "authority_classes_collapsed": false,
+  "child_engineering_promotion_authority": false,
+  "class_counts": {
+    "runtime": 6,
+    "semantic": 3
+  },
+  "execution_context": "controlled_local_reproduction_against_committed_seed_candidate",
+  "generator_receipt_sha256": "3b482e1343b98ece92c65d35a5bc26b5d8896d5261cdb32c10c008eb232a1a17",
+  "global_allocation_authority": false,
+  "hosted_ci_status_at_capture": "WITHHELD_SHARED_ACTIONS_QUEUE",
+  "parent_mission": "GBOGEB/cryoplant-project#1063",
+  "rows_total": 9,
+  "runtime_pca": {
+    "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE",
+    "components": [
+      {
+        "absolute_loading_rank": [
+          "evidence_emit_count",
+          "steps_executed_total",
+          "execute_seconds_total",
+          "queue_seconds_mean"
+        ],
+        "eigenvalue": 3.009803,
+        "explained_variance_ratio": 0.752451,
+        "loadings": {
+          "evidence_emit_count": 0.993537,
+          "execute_seconds_total": 0.9821,
+          "queue_seconds_mean": -0.276318,
+          "steps_executed_total": 0.990866
+        },
+        "pc": 1
+      },
+      {
+        "absolute_loading_rank": [
+          "queue_seconds_mean",
+          "steps_executed_total",
+          "execute_seconds_total",
+          "evidence_emit_count"
+        ],
+        "eigenvalue": 0.949176,
+        "explained_variance_ratio": 0.237294,
+        "loadings": {
+          "evidence_emit_count": 0.061473,
+          "execute_seconds_total": 0.091559,
+          "queue_seconds_mean": 0.961065,
+          "steps_executed_total": 0.115619
+        },
+        "pc": 2
+      },
+      {
+        "absolute_loading_rank": [
+          "execute_seconds_total",
+          "evidence_emit_count",
+          "steps_executed_total",
+          "queue_seconds_mean"
+        ],
+        "eigenvalue": 0.040776,
+        "explained_variance_ratio": 0.010194,
+        "loadings": {
+          "evidence_emit_count": 0.094842,
+          "execute_seconds_total": -0.164607,
+          "queue_seconds_mean": 0.001382,
+          "steps_executed_total": 0.068438
+        },
+        "pc": 3
+      },
+      {
+        "absolute_loading_rank": [
+          "steps_executed_total",
+          "evidence_emit_count",
+          "execute_seconds_total",
+          "queue_seconds_mean"
+        ],
+        "eigenvalue": 0.000245,
+        "explained_variance_ratio": 0.000061,
+        "loadings": {
+          "evidence_emit_count": -0.010462,
+          "execute_seconds_total": -0.001233,
+          "queue_seconds_mean": -0.000602,
+          "steps_executed_total": 0.011545
+        },
+        "pc": 4
+      }
+    ],
+    "constant_features_excluded": [
+      "runner_allocated_fraction"
+    ],
+    "distinct_source_shas": 5,
+    "numeric_comparable_rows": 5,
+    "reason": null,
+    "required_distinct_source_shas": 5,
+    "required_rows": 5,
+    "retention": "DIAGNOSTIC_ONLY_NO_PARALLEL_ANALYSIS_YET",
+    "rows_seen": 6,
+    "status": "MEASURED_PCA_DIAGNOSTIC"
+  },
+  "runtime_state_counts": {
+    "NOT_EXECUTED": 1,
+    "PASS": 5
+  },
+  "schema_version": "MC2-FEDERATED-TELEMETRY-0.1.0",
+  "semantic_pca": {
+    "distinct_source_shas": 3,
+    "numeric_comparable_rows": 3,
+    "reason": "INSUFFICIENT_COMPARABLE_ROWS",
+    "required_distinct_source_shas": 5,
+    "required_rows": 5,
+    "rows_seen": 3,
+    "status": "WITHHELD"
+  },
+  "worker_issue": "GBOGEB/ABACUS#1164",
+  "zero_imputation_performed": false
+}

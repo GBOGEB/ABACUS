@@ -1,0 +1,364 @@
+name: W72 Versioned Semantic Backfill
+
+on:
+  pull_request:
+    paths:
+      - "tools/w72_semantic_census.py"
+      - "tools/w72_build_semantic_rows.py"
+      - "tools/w73_build_semantic_topology_rows.py"
+      - "tools/w74_build_runtime_rows.py"
+      - "tools/w74_paired_pressure.py"
+      - "tools/mc2_semantic_topology_pca.py"
+      - "tools/mc2_federated_pressure_model.py"
+      - "tools/mc2_parallel_analysis_block_gate.py"
+      - "tools/mc2_federated_telemetry.py"
+      - "tests/test_w72_semantic_census.py"
+      - "tests/test_w73_semantic_topology.py"
+      - "tests/test_w74_paired_pressure.py"
+      - "tests/test_mc2_federated_pressure_model.py"
+      - "tests/test_mc2_parallel_analysis_block_gate.py"
+      - ".github/workflows/w72-versioned-semantic-backfill.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  exact-sha-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET_SHAS: >-
+        e20f923b5994a2d817fe1fde5d625d189170127b
+        3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+        970bc70a016bc071cd3c97bfdbd012d48a85055d
+        c39696661d8d67c769c8031a962129c6d67c3935
+        8f7f419d388839a68a416aaa552846cae0c16ac3
+    steps:
+      - name: Checkout control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Run W74 helper tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s tests \
+            -p 'test_w74_paired_pressure.py'
+
+      - name: Backfill five governed exact SHAs under W72 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w72/runtime/backfill
+          for sha in ${TARGET_SHAS}; do
+            echo "remeasure ${sha}"
+            git fetch --no-tags --depth=1 origin "${sha}"
+            worktree="${RUNNER_TEMP}/w72-${sha:0:12}"
+            git worktree add --detach "${worktree}" FETCH_HEAD
+            out="architecture/w72/runtime/backfill/${sha}"
+            python tools/w72_semantic_census.py \
+              --root "${worktree}" \
+              --source-sha "${sha}" \
+              --out "${out}"
+            test -s "${out}/FEATURE_ROW.json"
+            git worktree remove --force "${worktree}"
+          done
+
+      - name: Build same-schema W72 semantic rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/w72_build_semantic_rows.py \
+            architecture/w72/runtime/backfill/*/FEATURE_ROW.json \
+            --out architecture/w72/runtime/W72_SEMANTIC_ROWS.json
+
+      - name: Run W72 semantic PCA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_federated_telemetry.py \
+            architecture/w72/runtime/W72_SEMANTIC_ROWS.json \
+            --out architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json
+
+      - name: Run W72 semantic PA95 retention gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_parallel_analysis_block_gate.py \
+            architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json \
+            --block semantic_pca \
+            --out architecture/w72/runtime/W72_SEMANTIC_PA95.json \
+            --simulations 2000 \
+            --seed 20260913
+
+      - name: Build W73 measured semantic-topology rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/w73_build_semantic_topology_rows.py \
+            architecture/w72/runtime/backfill/*/C_consumer_penetration.json \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_ROWS.json
+
+      - name: Run W73 semantic-topology PCA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_semantic_topology_pca.py \
+            architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_ROWS.json \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json
+
+      - name: Run W73 semantic-topology PA95 retention gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mc2_parallel_analysis_block_gate.py \
+            architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json \
+            --block semantic_pca \
+            --out architecture/w72/runtime/W73_SEMANTIC_TOPOLOGY_PA95.json \
+            --simulations 2000 \
+            --seed 20260913
+
+      - name: Build bounded federated runtime x semantic pressure model
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime_dir="architecture/mc2"
+          semantic_dir="architecture/w72/runtime"
+          rt="${runtime_dir}/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json"
+          rp="${runtime_dir}/MC2_PA95_RETENTION_PULSE_1_v0.1.json"
+          st="${semantic_dir}/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json"
+          sp="${semantic_dir}/W73_SEMANTIC_TOPOLOGY_PA95.json"
+          python tools/mc2_federated_pressure_model.py \
+            --runtime-telemetry "${rt}" \
+            --runtime-pa95 "${rp}" \
+            --semantic-telemetry "${st}" \
+            --semantic-pa95 "${sp}" \
+            --out "${semantic_dir}/W73_FEDERATED_PRESSURE_MODEL.json"
+
+      - name: Summarize measured state
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          w72 = json.loads(
+              Path(
+                  "architecture/w72/runtime/W72_FEDERATED_TELEMETRY.json"
+              ).read_text()
+          )
+          w73 = json.loads(
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_SEMANTIC_TOPOLOGY_TELEMETRY.json"
+              ).read_text()
+          )
+          pa95 = json.loads(
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_SEMANTIC_TOPOLOGY_PA95.json"
+              ).read_text()
+          )
+          pressure = json.loads(
+              Path(
+                  "architecture/w72/runtime/"
+                  "W73_FEDERATED_PRESSURE_MODEL.json"
+              ).read_text()
+          )
+          print(json.dumps({
+              "w72_semantic_pca": w72["semantic_pca"],
+              "w73_semantic_topology_pca": w73["semantic_pca"],
+              "w73_pa95": pa95,
+              "federated_pressure_model": pressure,
+              "allocation_authority": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload W72/W73 exact-SHA pressure evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: w72-w73-semantic-pressure-${{ github.sha }}
+          path: architecture/w72/runtime
+          if-no-files-found: error
+
+  paired-runtime:
+    name: w74-runtime-${{ matrix.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: h1
+            sha: e20f923b5994a2d817fe1fde5d625d189170127b
+          - label: h2
+            sha: 3e52a1db7560c56a4e67a9a0ffd5686600cfceb1
+          - label: h3
+            sha: 970bc70a016bc071cd3c97bfdbd012d48a85055d
+          - label: h4
+            sha: c39696661d8d67c769c8031a962129c6d67c3935
+          - label: h5
+            sha: 8f7f419d388839a68a416aaa552846cae0c16ac3
+    env:
+      TARGET_SHA: ${{ matrix.sha }}
+      MATRIX_LABEL: ${{ matrix.label }}
+    steps:
+      - name: Checkout W74 control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Execute exact-SHA semantic runtime probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w74/probe/census
+          git fetch --no-tags --depth=1 origin "${TARGET_SHA}"
+          worktree="${RUNNER_TEMP}/w74-${TARGET_SHA:0:12}"
+          git worktree add --detach "${worktree}" FETCH_HEAD
+          started_ns="$(date +%s%N)"
+          python tools/w72_semantic_census.py \
+            --root "${worktree}" \
+            --source-sha "${TARGET_SHA}" \
+            --out architecture/w74/probe/census
+          completed_ns="$(date +%s%N)"
+          export started_ns completed_ns
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          feature = Path("architecture/w74/probe/census/FEATURE_ROW.json")
+          elapsed = (
+              int(os.environ["completed_ns"])
+              - int(os.environ["started_ns"])
+          )
+          payload = {
+              "schema_version": "MC2-W74-RUNTIME-PROBE-0.1.0",
+              "source_sha": os.environ["TARGET_SHA"],
+              "matrix_label": os.environ["MATRIX_LABEL"],
+              "probe": "w72_semantic_census_exact_source_state",
+              "probe_execute_seconds": round(
+                  elapsed / 1_000_000_000,
+                  6,
+              ),
+              "feature_row_sha256": hashlib.sha256(
+                  feature.read_bytes()
+              ).hexdigest(),
+              "execution_state": "PASS",
+          }
+          Path("architecture/w74/probe/PROBE_RECEIPT.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(payload, sort_keys=True))
+          PY
+          git worktree remove --force "${worktree}"
+
+      - name: Upload W74 exact-SHA runtime probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: w74-probe-${{ matrix.label }}-${{ github.sha }}
+          path: architecture/w74/probe/PROBE_RECEIPT.json
+          if-no-files-found: error
+
+  paired-aggregate:
+    name: w74-paired-aggregate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - exact-sha-backfill
+      - paired-runtime
+    steps:
+      - name: Checkout W74 control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Download exact-SHA runtime probes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: w74-probe-*-${{ github.sha }}
+          path: architecture/w74/probes
+
+      - name: Download W73 semantic-topology evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: w72-w73-semantic-pressure-${{ github.sha }}
+          path: architecture/w74/semantic
+
+      - name: Fetch current-run job metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w74/runtime
+          run_api="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh api "${run_api}/jobs?per_page=100" \
+            > architecture/w74/runtime/jobs.json
+          gh api "${run_api}" --jq '.created_at' \
+            > architecture/w74/runtime/run_created_at.txt
+
+      - name: Build measured W74 runtime rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_created_at="$(
+            cat architecture/w74/runtime/run_created_at.txt
+          )"
+          python tools/w74_build_runtime_rows.py \
+            --jobs-json architecture/w74/runtime/jobs.json \
+            --probe-root architecture/w74/probes \
+            --run-created-at "${run_created_at}" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --out architecture/w74/runtime/W74_RUNTIME_ROWS.json
+
+      - name: Pair frozen runtime and semantic PC1 coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          baseline="fixtures/mc2_federated_telemetry_seed_v0.1.json"
+          python tools/w74_paired_pressure.py \
+            --runtime-rows architecture/w74/runtime/W74_RUNTIME_ROWS.json \
+            --runtime-baseline-rows "${baseline}" \
+            --runtime-telemetry \
+              architecture/mc2/MC2_FEDERATED_TELEMETRY_PULSE_1_v0.1.json \
+            --semantic-rows \
+              architecture/w74/semantic/W73_SEMANTIC_TOPOLOGY_ROWS.json \
+            --semantic-telemetry \
+              architecture/w74/semantic/W73_SEMANTIC_TOPOLOGY_TELEMETRY.json \
+            --out architecture/w74/runtime/W74_PAIRED_PRESSURE.json
+
+      - name: Show W74 paired diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat architecture/w74/runtime/W74_PAIRED_PRESSURE.json
+
+      - name: Upload W74 paired pressure evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: w74-paired-pressure-${{ github.sha }}
+          path: architecture/w74/runtime
+          if-no-files-found: error

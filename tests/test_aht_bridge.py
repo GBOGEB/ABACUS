@@ -44,7 +44,8 @@ class TestSingleSampleHypothesis:
                 learnings_db_path=Path(tmpdir) / "learnings.json"
             )
             
-            data = np.random.normal(85, 5, 50).tolist()
+            rng = np.random.default_rng(1)
+            data = rng.normal(85, 5, 50).tolist()
             
             result = bridge.test_hypothesis_with_bootstrap(
                 hypothesis="System achieves 85% target",

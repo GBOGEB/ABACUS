@@ -222,3 +222,18 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "dmaic: DMAIC phase-aligned tests"
     )
+
+
+def pytest_collection_modifyitems(items):
+    """Apply source-level integration classification to Docker integration tests.
+
+    The CI unit matrix excludes the ``integration`` marker. The dedicated Docker
+    job executes ``tests/test_docker_integration.py`` directly, so the entire
+    module is classified as integration at collection time instead of relying on
+    partial class-level markers that can leak environment-sensitive checks into
+    cross-platform unit runners.
+    """
+    integration = pytest.mark.integration
+    for item in items:
+        if Path(str(item.fspath)).name == "test_docker_integration.py":
+            item.add_marker(integration)

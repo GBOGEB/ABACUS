@@ -1,0 +1,40 @@
+schema_version: '0.1'
+wave: W107
+pulse: C1
+role: DOW_RUNTIME_CONSUMER
+seed:
+  abacus_pr: 1102
+producer:
+  repo: GBOGEB/CODEX
+  pr: 600
+  pr_head_sha: 7f062faf8c76a6e89780bb0fbb1ee1fe96f5af4b
+  pr_merge_sha: 97cb14e1f2e35db0692d63228ee8497cbb9e7026
+  workflow_run_id: 34514179505
+  workflow_merge_ref_sha: >-
+    299eef00da58e8ec1ab888a5ad01db378ffc75f7
+  receipt_id: KEB-LLDB-DAP-SWIFT-DOCKER-RUNNER-MCP-001
+  receipt_sha256: >-
+    8021f625720ab1ec3fb7ad7f1929b27723b6517fefd54156d5684b596c3a57d2
+observed:
+  census_status: PASS
+  swift_debug_classification: PASS
+  probe_status: ACCEPT
+  dov_status: PASS
+  real_probe_steps_gt_zero: true
+  real_probe_steps: 10
+  compile_returncode: 0
+  lldb_returncode: 0
+  observed_value: 42
+consumption:
+  status: ACCEPT
+  reason: EXACT_WORKFLOW_RECEIPT_PASS_AND_REAL_LLDB_STEPS_GT_ZERO
+  same_producer_execution_bound: true
+  emit_for_child_disposition: true
+authority_guards:
+  qps_engineering_authority_transfer: false
+  formal_engineering_credit_delta: 0
+  negotiation_credit_delta: 0
+  runtime_pass_is_not_engineering_compliance: true
+next_victory: >-
+  Child consumes this DOW ACCEPT and records explicit W107 runtime-health
+  ACCEPT without changing QPS engineering truth.

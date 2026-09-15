@@ -1,13 +1,18 @@
 """
 QPLANT Configuration Loader — Single Source of Truth (SSoT)
 
-Loads data/config.yaml and provides typed, dot-notation access to all
-design parameters.  Every calculation module should import this instead
-of hardcoding values.
+Loads the canonical QPLANT config and provides typed, dot-notation access to all
+design parameters. Every calculation module should import this instead of
+hardcoding values.
+
+Runtime precedence:
+    1. SSOT_CONFIG_PATH (Kubernetes/runtime injection)
+    2. QPLANT_CONFIG_PATH (container/local override)
+    3. qplant/config.yaml (repository canonical fallback)
 
 Usage:
     from src.config_loader import ConfigLoader, cfg
-    
+
     hp_count = cfg.get('compressor_specifications.hp_compressors.count')  # 3
     design_flow = cfg.get('flow_parameters.wcs_hp.design_flow_gs')       # 350
 """
@@ -15,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Optional
 
@@ -22,7 +28,9 @@ import yaml
 
 
 _ROOT = Path(__file__).resolve().parent.parent
-_DEFAULT_CONFIG = _ROOT / "data" / "config.yaml"
+_PROJECT_ROOT = _ROOT.parent
+_RUNTIME_CONFIG = os.getenv("SSOT_CONFIG_PATH") or os.getenv("QPLANT_CONFIG_PATH")
+_DEFAULT_CONFIG = Path(_RUNTIME_CONFIG) if _RUNTIME_CONFIG else _PROJECT_ROOT / "config.yaml"
 
 
 class ConfigLoader:
@@ -76,7 +84,7 @@ class ConfigLoader:
         lines = [
             f"# QPLANT Configuration — v{self.version}",
             "",
-            f"*Auto-generated from `data/config.yaml` — do not edit manually.*",
+            "*Auto-generated from the canonical QPLANT config — do not edit generated output manually.*",
             "",
         ]
         self._dict_to_md(self.config, lines, depth=0)

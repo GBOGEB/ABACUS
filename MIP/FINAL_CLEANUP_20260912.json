@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "record_type": "final_cleanup_disposition",
+  "observed_date": "2026-09-12",
+  "scope": "mip_dov_v1_receipt_protection_and_self_index",
+  "fixed_tranche": {
+    "status": "CONTROL",
+    "closed_gate_count": 8,
+    "gate_count": 8,
+    "surface_coverage": "4/4",
+    "canonical_acceptance": "MIP/N2_CROSS_REPO_ACCEPTANCE_20260912.json",
+    "acceptance_merge": "700505790ee0cfff8a7f62f5ad7285e96cf3072d"
+  },
+  "broader_global_dov": "WITHHELD",
+  "open_mip_prs": {
+    "GBOGEB/ABACUS": 0,
+    "GBOGEB/CODEX": 0,
+    "GBOGEB/DOCX_RTM_Automation": 0
+  },
+  "remaining_mip_branches": {
+    "GBOGEB/CODEX": [],
+    "GBOGEB/DOCX_RTM_Automation": [],
+    "GBOGEB/ABACUS": [
+      {
+        "branch": "mip/n2-sanitize-external-output-20260912",
+        "disposition": "SAFE_DELETE",
+        "reason": "proof-only trigger marker; PR 1157 closed without merge after producer and downstream consumer PASS",
+        "ahead_of_main_at_final_compare": 1,
+        "unique_payload": "MIP/N2_REPROOF_PULSE_20260912.md only",
+        "loss_if_deleted": "none; proof preserved in PR/run history"
+      },
+      {
+        "branch": "mip/n2-shareable-self-index-skill-20260912",
+        "disposition": "SAFE_DELETE",
+        "reason": "PR 1156 closed as SUPERSEDED_WITH_CONTENT_PRESERVED; current main contains equivalent or later superset capability",
+        "ahead_of_main_at_final_compare": 6,
+        "loss_if_deleted": "none; reconciled payload preserved on main and in PR lineage"
+      },
+      {
+        "branch": "mip/w105-modernize-cicd-runtime",
+        "disposition": "SAFE_DELETE",
+        "reason": "branch is fully behind current main with no commits ahead and no unique diff",
+        "ahead_of_main_at_final_compare": 0,
+        "loss_if_deleted": "none"
+      }
+    ]
+  },
+  "branch_delete_capability": "UNAVAILABLE_IN_CURRENT_CONNECTOR",
+  "cleanup_rule": "Do not merge, revive or rebase SAFE_DELETE branches. Delete refs when a branch-delete-capable interface is available.",
+  "next_scope_rule": "Any federation, orchestration, broader runtime or repo-expansion work must use a separately versioned scope and must not extend the closed G1-G8 denominator."
+}

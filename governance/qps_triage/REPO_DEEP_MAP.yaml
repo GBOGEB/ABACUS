@@ -1,0 +1,64 @@
+schema: qps-triage-repo-deep-map/1.0.0
+repo: GBOGEB/ABACUS
+as_of: '2026-09-11T04:24:30+02:00'
+role: DOW_RUNTIME_ORCHESTRATION_METRICS_CHALLENGE_AND_RECEIPT_CONSUMPTION_AUTHORITY
+
+existing_qps_projection_surfaces:
+  project_root:
+    path: docs/qps_offer_rtm_evaluation/
+    role: existing_qps_offer_rtm_evaluation_projection_workspace
+  current_binary_provenance:
+    path: docs/qps_offer_rtm_evaluation/current/V24_BINARY_PROVENANCE_BRIDGE.md
+  current_review_status:
+    path: docs/qps_offer_rtm_evaluation/current/RTM_BATCH_REVIEW_STATUS_V24.md
+  artifact_registry:
+    path: docs/qps_offer_rtm_evaluation/current/ARTIFACT_REGISTRY.json
+  pipeline_map:
+    path: docs/qps_offer_rtm_evaluation/current/PIPELINE_MAP.html
+  dmaic_dashboard:
+    path: docs/qps_offer_rtm_evaluation/current/QPS_DMAIC_KPI_Dashboard.html
+  next_iteration_backlog:
+    path: docs/qps_offer_rtm_evaluation/docs/NEXT_ITERATION_BACKLOG.md
+  ranking_runtime:
+    path: docs/qps_offer_rtm_evaluation/scripts/recompute_rtm_ranking.py
+  dashboard_runtime:
+    - path: docs/qps_offer_rtm_evaluation/scripts/gen_kpi_dashboard.py
+    - path: docs/qps_offer_rtm_evaluation/scripts/build_kpi_dashboard_html.py
+  outward_lineage:
+    path: OFFERS_ITT/QPS_ARTEFACT_LINEAGE.json
+
+existing_federation_surfaces:
+  federation_activity:
+    path: governance/federation/FEDERATION_ACTIVITY.yaml
+  receipt_precedent:
+    prs: [1102, 1105, 1107]
+    role: exact_keb_receipt_consume_rollup_and_accept
+
+qtg_added_surfaces:
+  contract: governance/qps_triage/DOW_CONTRACT_v1.json
+  handoff: docs/qps_triage/DOW_REPO_DEEP_HANDOFF.md
+  test: tests/test_qps_triage_dow_contract.py
+  map: governance/qps_triage/REPO_DEEP_MAP.yaml
+
+routing_rules:
+  - existing_qps_offer_rtm_evaluation_content_is_projection_or_analysis_not_child_engineering_authority
+  - ranking_pca_bt_and_dashboards_prioritize_or_render_but_do_not_create_formal_credit
+  - artifact_registry_and_lineage_surfaces_are_preferred_over_new_duplicate_indices
+  - DOW_may_challenge_measure_or_consume_exact_receipts
+  - DOW_may_not_reimplement_KEB_semantic_authority
+  - DOW_may_not_copy_private_child_bidder_evidence
+  - final_ACCEPT_REJECT_DEFER_must_return_to_cryoplant_child
+
+reuse_before_build:
+  - inspect ARTIFACT_REGISTRY before adding artifact census logic
+  - inspect PIPELINE_MAP before adding another pipeline topology view
+  - inspect ranking and dashboard scripts before adding duplicate KPI/PCA computation
+  - inspect existing DOW receipt precedent before adding another receipt shape
+
+known_current_gap:
+  description: >-
+    ABACUS has mature QPS projection/dashboard/lineage surfaces but QTG requires those outputs
+    to remain explicitly downstream of child authority and exact KEB/DOW receipt contracts.
+  disposition: GOVERN_AND_BRIDGE_EXISTING_SURFACES
+
+current_pr: 1109

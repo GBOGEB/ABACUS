@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # QPLANT Cryogenic Dashboard — Multi-Stage Docker Build
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 1: Build & test
+# Stage 1: Build & runtime-contract test
 # Stage 2: Production runtime
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -19,16 +19,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# Copy application code
+# Copy the canonical repository SSOT. Runtime injection may override this via
+# SSOT_CONFIG_PATH/QPLANT_CONFIG_PATH, but image build/tests must never depend
+# on a non-existent handover_dashboard/data/config.yaml duplicate.
+COPY config.yaml ./config.yaml
+
+# Copy runtime application code. The API imports the shared authentication
+# package from the QPLANT root, so it is part of the executable image contract.
 COPY handover_dashboard/ ./handover_dashboard/
+COPY authentication/ ./authentication/
 COPY config_service/ ./config_service/
 COPY monitoring_dashboard/ ./monitoring_dashboard/
 COPY ai_validation/ ./ai_validation/
 
-# Run tests
+# Run only runtime-relevant tests inside the image build. Release-output,
+# generated-document and manifest tests remain in their dedicated CI lanes and
+# are deliberately not converted into production image payload.
 WORKDIR /app/handover_dashboard
-RUN PYTHONPATH=/install/lib/python3.11/site-packages:$PYTHONPATH \
-    python -m pytest tests/ -q --tb=short
+RUN PYTHONPATH=/app:/install/lib/python3.11/site-packages:$PYTHONPATH \
+    python -m pytest \
+      tests/test_config_loader.py \
+      tests/test_calculations.py \
+      tests/test_api.py \
+      -k "not visualization_catalog and not compressor_availability_chart" \
+      -q --tb=short
 
 # ── Stage 2: Production ─────────────────────────────────────────────────────
 FROM python:3.11-slim AS production
@@ -42,22 +56,27 @@ WORKDIR /app
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-# Copy application code
+# Copy canonical fallback SSOT and runtime application code from builder
+COPY --from=builder /app/config.yaml ./config.yaml
 COPY --from=builder /app/handover_dashboard/ ./handover_dashboard/
+COPY --from=builder /app/authentication/ ./authentication/
 COPY --from=builder /app/config_service/ ./config_service/
 COPY --from=builder /app/monitoring_dashboard/ ./monitoring_dashboard/
 COPY --from=builder /app/ai_validation/ ./ai_validation/
 
-# Create non-root user
-RUN useradd -m -s /bin/bash qplant && \
-    chown -R qplant:qplant /app
+# Kubernetes `runAsNonRoot` requires a verifiable numeric runtime identity.
+# Keep the friendly account name, but make the image contract explicit and
+# deterministic at UID/GID 10001 so admission and container creation agree.
+RUN groupadd --gid 10001 qplant && \
+    useradd --uid 10001 --gid 10001 --create-home --shell /bin/bash qplant && \
+    chown -R 10001:10001 /app
 
-USER qplant
+USER 10001:10001
 
 # Environment variables
 ENV PYTHONPATH=/app
 ENV QPLANT_ENV=prod
-ENV QPLANT_CONFIG_PATH=/app/handover_dashboard/data/config.yaml
+ENV QPLANT_CONFIG_PATH=/app/config.yaml
 ENV QPLANT_API_PORT=8100
 ENV QPLANT_CONFIG_PORT=8200
 

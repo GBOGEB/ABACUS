@@ -1,0 +1,59 @@
+schema_version: "0.1"
+document_id: W57_3PR_A_DOW_COMPLETION_CHALLENGE
+role: DOW_QUANTITATIVE_CHALLENGE
+child_pr: GBOGEB/cryoplant-project#683
+keb_pr: GBOGEB/CODEX#506
+
+observed_completion:
+  formal_engineering_percent: 77.78
+  strict_numerical_percent: 80.0
+  runtime_mean_percent: 87.0
+  release_preparation_diagnostic_percent: 90.6
+  source_return_pipeline_stages_merged: 5
+  source_return_packet_classes_supported: 5
+  actual_real_source_packets_present: 0
+
+runtime_axis_residual_to_100:
+  A_architecture_control: 8
+  B_child_runtime: 12
+  C_parent_penetration: 14
+  D_bidirectional_roundtrip: 11
+  E_on_duty_integration: 20
+  total_axis_residual_points: 65
+
+observed_blockers:
+  external_hard:
+    - HEPAK_numeric_export
+    - B_flow_population
+    - QCELL_chainage
+    - bidder_current_LineB_geometry_confirmation
+    - LineB_local_K_Cv
+    - PVPS_same_point_OEM_evidence
+  internal_executable:
+    - exact_same_digest_parent_return_for_current_payload
+    - child_reentry_of_current_parent_findings
+    - same_digest_UI_and_release_surface_reconciliation
+    - POST_zero_delta_and_runtime_rerun
+
+PCA_interpretation:
+  class: OBSERVED_RULE_BASED_UNTIL_SUFFICIENT_MATRIX
+  dominant_runtime_residual: E_on_duty_integration
+  dominant_engineering_external_cluster: LineB_HEPAK_spatial_source_returns
+
+BT_action_priority:
+  - exact_same_digest_parent_return_and_child_reentry
+  - B_flow_population_source_return
+  - QCELL_chainage_source_return
+  - HEPAK_numeric_export
+  - LineB_local_K_Cv
+  - current_bidder_LineB_geometry_confirmation
+  - PVPS_same_point_OEM_return
+
+max_earned_without_new_external_source:
+  formal_engineering_percent: 77.78
+  strict_numerical_percent: 80.0
+  runtime_mean_target_band_percent: "90-92"
+  rationale: internal_roundtrip_UI_POST_can_close_control_residuals_but_not_external_engineering_truth
+
+DOW_disposition: ACCEPT_FOR_CHILD_REENTRY_CONTROL_DOV_ONLY
+engineering_credit_delta: 0
