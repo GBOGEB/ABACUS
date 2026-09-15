@@ -11,6 +11,7 @@
     .runtime-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;border-left:4px solid var(--primary)}
     .runtime-card strong{display:block;margin-bottom:.35rem}
     .status-ok{color:#047857;font-weight:700}
+    .status-run{color:#0369a1;font-weight:700}
     code{background:rgba(15,23,42,.08);padding:.12rem .3rem;border-radius:3px}
   </style>
 </head>
@@ -35,7 +36,7 @@
       <div class="runtime-card"><strong>Dashboard Published</strong><span class="status-ok">Operational</span><br/>Evidence: <a href="dashboard.html">docs/dashboard.html</a></div>
       <div class="runtime-card"><strong>Pages Workflow Active</strong><span class="status-ok">Operational</span><br/>Evidence: <code>.github/workflows/pages.yml</code></div>
       <div class="runtime-card"><strong>Traceability Visible</strong><span class="status-ok">Operational</span><br/>Evidence: <a href="api/rtm_trace_matrix.json">docs/api/rtm_trace_matrix.json</a></div>
-      <div class="runtime-card"><strong>Runtime Governance Operational</strong><span class="status-ok">Operational</span><br/>Evidence: <a href="reports/runtime_governance_status.json">reports/runtime_governance_status.json</a></div>
+      <div class="runtime-card"><strong>Runtime Governance Evidence</strong><span class="status-run">Generated per successful run</span><br/>Evidence: <a href="reports/runtime_governance_status.json">reports/runtime_governance_status.json</a></div>
     </div>
   </section>
 
@@ -53,7 +54,7 @@
 
   <section class="section">
     <h2>Artifact Manifest Validation</h2>
-    <p>The W007 manifest declares the runtime contract and is validated by <code>scripts/validate_runtime_foundation.py</code>.</p>
+    <p>The W007 manifest declares the runtime contract and is validated by <code>scripts/validate_runtime_foundation.py</code>. Runtime-generated evidence must name an existing producer and is emitted with exact run identity after validation.</p>
     <p><a class="btn" href="runtime-artifact-manifest.json">Open runtime-artifact-manifest.json →</a></p>
   </section>
 
