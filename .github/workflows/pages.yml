@@ -7,12 +7,12 @@ on:
     paths:
       - build_qplant_visualization.py
       - scripts/validate_runtime_foundation.py
+      - scripts/write_runtime_governance_status.py
       - tools/gate_rollup.py
       - logs/**
       - content/qplant/**
       - renderers/**
       - rtm/**
-      - reports/runtime_governance_status.json
       - docs/runtime.html
       - docs/runtime-artifact-manifest.json
       - docs/api/rtm_trace_matrix.json
@@ -63,10 +63,13 @@ jobs:
         run: |
           mkdir -p docs/api docs/reports
           cp rtm/trace_matrix.json docs/api/rtm_trace_matrix.json
-          cp reports/*.json docs/reports/
+          cp reports/*.json docs/reports/ 2>/dev/null || true
 
       - name: Validate W007 runtime foundation
         run: python scripts/validate_runtime_foundation.py
+
+      - name: Generate run-bound W007 governance status
+        run: python scripts/write_runtime_governance_status.py --output docs/reports/runtime_governance_status.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -98,4 +101,5 @@ jobs:
           name: qplant-runtime-evidence
           path: |
             dist/qplant_visualization.html
+            docs/reports/runtime_governance_status.json
             reports/runtime_publish_status.json
