@@ -7,20 +7,32 @@ implementation and grants no CONTROL or engineering authority.
 import argparse
 import json
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
 
 
-def recompute(receipt, task_class):
+def genuine_windows(receipt):
     frontier = receipt['scheduled_control_frontier']
     event = frontier['eligibility_event']
     path = frontier['eligibility_workflow_path']
-    windows = [
+    rows = [
         w for w in receipt['windows']
         if w.get('event') == event
         and w.get('workflow_path') == path
         and w.get('source_kind') != 'SYNTHETIC_TEST'
     ]
-    windows.sort(key=lambda w: (w['created_at'], int(w['window_id'])))
+    return sorted(rows, key=lambda w: (w['created_at'], int(w['window_id'])))
+
+
+def genuine_span_seconds(windows):
+    if len(windows) < 2:
+        return 0.0
+    first = datetime.fromisoformat(windows[0]['created_at'].replace('Z', '+00:00'))
+    last = datetime.fromisoformat(windows[-1]['created_at'].replace('Z', '+00:00'))
+    return max(0.0, (last - first).total_seconds())
+
+
+def recompute(windows, task_class):
     rows = [w['task_classes'][task_class] for w in windows]
     directional = [r['direction'] for r in rows if r['direction'] != 'INDETERMINATE']
     flips = sum(a != b for a, b in zip(directional, directional[1:]))
@@ -49,12 +61,20 @@ def main():
     args = ap.parse_args()
     receipt = json.loads(Path(args.receipt).read_text())
     origin = receipt.get('temporal_surveillance', {})
-    result = {'schema': 'abacus.dow.temporal_h2_challenge.v1', 'origin_schema': origin.get('schema'), 'classes': {}}
+    windows = genuine_windows(receipt)
+    result = {
+        'schema': 'abacus.dow.temporal_h2_challenge.v1',
+        'origin_schema': origin.get('schema'),
+        'genuine_scheduled_windows': len(windows),
+        'genuine_temporal_span_seconds': genuine_span_seconds(windows),
+        'classes': {},
+    }
     for task_class in receipt.get('policies', {}):
-        result['classes'][task_class] = recompute(receipt, task_class)
+        result['classes'][task_class] = recompute(windows, task_class)
     result['disposition'] = 'CHALLENGE_RECOMPUTED'
     result['engineering_credit_delta'] = 0
     result['control_authority'] = False
+    result['competency_promotions'] = 0
     result['authority_transfer'] = False
     Path(args.out).write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
 
