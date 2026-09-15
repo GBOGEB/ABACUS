@@ -1,0 +1,57 @@
+schema: qps.chat-final-handover-dow-pointer/1.0
+as_of: '2026-09-15T08:12:00+02:00'
+mode: ACCEPT_POINTER_ONLY
+
+child:
+  repo: GBOGEB/cryoplant-project
+  closeout_pr: 1317
+  closeout_head: 8048967b40819b8c74755ee6e976e1b1b8c7c9f4
+  current_execution_manifest_commit: a469775133acdc343b75eea2aea408563578d597
+  current_execution_manifest_path: handover/session/SC_2026-09-15_EXECUTION_HANDOVER_MANIFEST_v1.yaml
+  execution_core_path: handover/session/SC_2026-09-15_EXECUTION_CORE_WAVES_DOV_DOD_BD_v1.yaml
+
+dow:
+  repo: GBOGEB/ABACUS
+  observed_main_at_refresh: a4fc81db7c2e6774bc8996887aa53cda017d718d
+  role: measurement_challenge_runtime_receiver
+
+preserved_state:
+  session_DoD: ACHIEVED
+  session_control_DoV: ACHIEVED
+  global_project_DoV: WITHHELD
+  formal_engineering: '70/90 = 77.78%'
+  strict_numerical: '4/5 = 80%'
+  negotiation: '0/20'
+  runtime_GOLD: WITHHELD_ISSUE_923
+
+w105_runtime_lineage:
+  modernize_pr: 1228
+  state: MERGED
+  original_PyGithub_blocker: RETIRED
+  real_suite_execution_reached: true
+  last_bound_suite_observation:
+    collected: 413
+    passed: 398
+    failed: 2
+    skipped: 10
+    xpassed: 3
+  residuals_are_independent: true
+
+mip_conclusion:
+  Modernize: COMPLETE_FOR_W105_TARGET
+  Innovate: COMPLETE_FOR_W105_TARGET
+  Perpetuate: COMPLETE_FOR_SESSION_CONTROL
+  selector: PERPETUATE_THEN_STOP_SESSION
+
+guards:
+  authority_transfer: false
+  engineering_credit_delta: 0
+  negotiation_credit_delta: 0
+  publish_credit_delta: 0
+  child_disposition_mutation_allowed: false
+  parent_measurement_ne_child_accept: true
+
+restart_rule: >-
+  Fresh 3PR current heads first. Consume real source/runtime returns before internal work;
+  otherwise execute the highest runnable non-compensating first-red, independently verify,
+  and return an exact receipt to child authority.
