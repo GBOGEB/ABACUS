@@ -69,7 +69,9 @@ jobs:
         run: python scripts/validate_runtime_foundation.py
 
       - name: Generate run-bound W007 governance status
-        run: python scripts/write_runtime_governance_status.py --output docs/reports/runtime_governance_status.json
+        run: >-
+          python scripts/write_runtime_governance_status.py
+          --output docs/reports/runtime_governance_status.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
