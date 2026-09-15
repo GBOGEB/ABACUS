@@ -1,0 +1,85 @@
+schema: abacus.w106.m2.w007-runtime-evidence-repair/v1
+as_of: '2026-09-15T09:31:00+02:00'
+repo: GBOGEB/ABACUS
+base_main: dacff5b3fa8e7130c2ab041eb3727e2096e31104
+status: CANDIDATE_WAIT_SAME_GATE_RUNTIME
+
+observed_precondition:
+  prior_pr: 1237
+  prior_head: 34a29b9cb3de7dc6bc6d98559dfd12b5ea357512
+  observed_suite:
+    collected: 413
+    passed: 399
+    failed: 1
+    skipped: 10
+    xpassed: 3
+  M1_version_contract: RETIRED_OBSERVED_PASS
+  first_red: test_w007_runtime_manifest_is_valid
+  exact_errors:
+    - >-
+      manifest artifact path does not exist:
+      reports/runtime_governance_status.json
+    - >-
+      RTM trace matrix has unavailable or missing evidence:
+      dmaic_snapshot, governance_snapshot
+
+repair:
+  scope: W007_RUNTIME_EVIDENCE_CONTRACT_ONLY
+  runtime_governance_status:
+    old_state: >-
+      manifest claimed a permanently active repository artifact that did not exist
+    new_state: >-
+      runtime_generated evidence with an explicit producer;
+      exact repository, SHA, run id, attempt, workflow and validation result
+      are written only after the W007 validator executes
+    producer: scripts/write_runtime_governance_status.py
+    publication:
+      - .github/workflows/runtime-governance.yml
+      - .github/workflows/pages.yml
+      - docs/reports/runtime_governance_status.json
+  validator:
+    action: >-
+      distinguish active source artifacts from runtime_generated evidence;
+      active paths must exist, runtime-generated entries must bind an existing producer
+  rtm_trace_REQ_008:
+    old:
+      - reports/dmaic_snapshot.json
+      - reports/governance_snapshot.json
+    new:
+      - src/qplant_presentation_engine/governance.py
+      - tests/test_governance.py
+    rationale: >-
+      governance.py is the actual authority that writes dmaic_snapshot.json,
+      governance_snapshot.json and completion_vector.json through the DMAIC/governance
+      generators; tests/test_governance.py executes that generator and verifies the
+      written governance and completion outputs. Traceability therefore binds to
+      executable source plus executable verification rather than pretending ignored
+      generated files are permanent repository evidence.
+  runtime_portal:
+    action: >-
+      replace static Operational claim for the missing file with a truthful
+      Generated per successful run status while preserving the published link
+
+verification_required:
+  same_gate: ABACUS_v032_CI_CD_Pipeline_Execute_Full_DMAIC_Pipeline
+  victory:
+    - test_w007_runtime_manifest_is_valid_PASS
+    - 413_test_suite_zero_failures_or_next_real_first_red_identified
+  additional_checks:
+    - runtime_governance_workflow_emits_exact_run_status
+    - pages_publication_contains_runtime_governance_status
+    - docs_yaml_json_validation_green
+  no_false_credit:
+    - merge_ne_runtime_CONTROL
+    - parent_runtime_ne_child_engineering_acceptance
+    - runtime_status_ne_static_truth_claim
+
+credit_delta:
+  engineering: 0
+  compliance: 0
+  negotiation: 0
+  acceptance: 0
+  publish: 0
+
+next_if_green: >-
+  preserve_W69_PASS_then_reprobe_cryoplant_runner_and_consume_first_real_child_red
