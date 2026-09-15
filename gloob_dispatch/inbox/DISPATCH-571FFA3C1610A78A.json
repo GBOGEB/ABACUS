@@ -10,6 +10,10 @@
   "transport": {
     "mode": "CONNECTOR_CONTROL_PLANE",
     "dispatch_source_commit": "b3bf8f1355b62e183a3f51c86ee85086db242a36",
-    "receiver_disposition": "ACCEPT_POINTER_ONLY"
+    "receiver_disposition": "ACCEPT_POINTER_ONLY",
+    "delivery_attempt": 2,
+    "prior_failed_run_id": "34935946474",
+    "prior_failed_ticket_sha": "6ebd36c7cd8ea1701364fd3b15e32d654e5f764a",
+    "retry_reason": "RESPONDER_SUCCEEDED_BUT_IGNORED_RECEIPTS_WERE_NOT_STAGED"
   }
 }
