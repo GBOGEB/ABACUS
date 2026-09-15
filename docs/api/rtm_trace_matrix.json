@@ -1,6 +1,6 @@
 {
   "artifact": "trace_matrix",
-  "generated_at": "2026-09-15T07:22:00+00:00",
+  "generated_at": "2026-09-15T07:31:00+00:00",
   "rows": [
     {
       "available": true,
@@ -68,17 +68,17 @@
     },
     {
       "available": true,
-      "evidence_artifact": "src/qplant_presentation_engine/runtime.py",
+      "evidence_artifact": "src/qplant_presentation_engine/governance.py",
       "evidence_domain": "dmaic",
-      "evidence_id": "runtime_snapshot_generator",
+      "evidence_id": "governance_snapshot_generator",
       "requirement_id": "REQ-008",
       "requirement_title": "DMAIC governance snapshots are generated"
     },
     {
       "available": true,
-      "evidence_artifact": "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py",
+      "evidence_artifact": "tests/test_governance.py",
       "evidence_domain": "governance",
-      "evidence_id": "runtime_snapshot_generation_test",
+      "evidence_id": "governance_snapshot_generation_test",
       "requirement_id": "REQ-008",
       "requirement_title": "DMAIC governance snapshots are generated"
     },
