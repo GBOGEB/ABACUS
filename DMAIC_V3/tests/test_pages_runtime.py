@@ -3,6 +3,7 @@ import json
 
 from build_qplant_visualization import build_qplant_visualization
 from scripts.validate_runtime_foundation import validate_runtime_foundation
+from scripts.write_runtime_governance_status import build_status
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +48,7 @@ def test_w007_runtime_portal_links_governance_evidence() -> None:
     assert "Traceability" in portal_html
     assert "runtime-artifact-manifest.json" in portal_html
     assert "Visualization Layer" in portal_html
+    assert "Generated per successful run" in portal_html
 
 
 def test_w007_runtime_manifest_is_valid() -> None:
@@ -65,4 +67,30 @@ def test_w007_runtime_manifest_covers_required_capabilities() -> None:
         "artifact_manifest_validation",
         "release_automation",
         "visualization_layer",
+        "runtime_governance_status",
     }.issubset(capabilities)
+
+
+def test_w007_runtime_status_is_declared_as_run_generated() -> None:
+    manifest_path = REPO_ROOT / "docs" / "runtime-artifact-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    status_entry = next(
+        artifact
+        for artifact in manifest["artifacts"]
+        if artifact["capability"] == "runtime_governance_status"
+    )
+
+    assert status_entry["status"] == "runtime_generated"
+    producer = REPO_ROOT / status_entry["producer"]
+    assert producer.exists()
+    assert producer.is_file()
+
+
+def test_w007_runtime_status_builder_binds_validation_and_zero_authority() -> None:
+    status = build_status(REPO_ROOT)
+
+    assert status["wave"] == "W007"
+    assert status["runtime_status"] == "validated"
+    assert status["validation_passed"] is True
+    assert status["validation_errors"] == []
+    assert status["authority"] == "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"
