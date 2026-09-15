@@ -16,14 +16,20 @@ observed_precondition:
   M1_version_contract: RETIRED_OBSERVED_PASS
   first_red: test_w007_runtime_manifest_is_valid
   exact_errors:
-    - 'manifest artifact path does not exist: reports/runtime_governance_status.json'
-    - 'RTM trace matrix has unavailable or missing evidence: dmaic_snapshot, governance_snapshot'
+    - >-
+      manifest artifact path does not exist:
+      reports/runtime_governance_status.json
+    - >-
+      RTM trace matrix has unavailable or missing evidence:
+      dmaic_snapshot, governance_snapshot
 
 repair:
   scope: STALE_W007_EVIDENCE_LOCATORS_ONLY
   runtime_manifest:
-    action: remove_nonexistent_unrequired_runtime_governance_status_entry
-    reason: workflow validates W007 but does not generate that repository artifact
+    action: >-
+      remove_nonexistent_unrequired_runtime_governance_status_entry
+    reason: >-
+      workflow validates W007 but does not generate that repository artifact
   rtm_trace_REQ_008:
     old:
       - reports/dmaic_snapshot.json
@@ -32,9 +38,11 @@ repair:
       - src/qplant_presentation_engine/runtime.py
       - DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py
     rationale: >-
-      Current runtime authority generates pca_snapshot.json, geti_snapshot.json and truth_matrix_snapshot.json dynamically,
-      and the current test explicitly executes and verifies that generation. Bind traceability to the existing generator and
-      executable verification rather than claiming obsolete committed snapshot filenames exist.
+      Current runtime authority generates pca_snapshot.json,
+      geti_snapshot.json and truth_matrix_snapshot.json dynamically,
+      and the current test explicitly executes and verifies that generation.
+      Bind traceability to the existing generator and executable verification
+      rather than claiming obsolete committed snapshot filenames exist.
 
 verification_required:
   same_gate: ABACUS_v032_CI_CD_Pipeline_Execute_Full_DMAIC_Pipeline
@@ -52,4 +60,5 @@ credit_delta:
   acceptance: 0
   publish: 0
 
-next_if_green: preserve_W69_PASS_then_reprobe_cryoplant_runner_and_consume_first_real_child_red
+next_if_green: >-
+  preserve_W69_PASS_then_reprobe_cryoplant_runner_and_consume_first_real_child_red
