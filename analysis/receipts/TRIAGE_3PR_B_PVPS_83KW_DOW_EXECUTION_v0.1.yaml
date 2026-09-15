@@ -1,0 +1,89 @@
+schema_version: "dow-execution/1.0"
+wave: TRIAGE_3PR_B
+role: ABACUS_DOW
+status: EXECUTED_DEFER_RECOMMENDED
+execution_mode: STATIC_NUMERIC_CHALLENGE_FROM_SOURCE_BOUND_INPUTS
+
+inputs:
+  qps_parent:
+    repository: GBOGEB/cryoplant-project
+    pr: 1307
+    head_sha: a6e0b7932e092f50c32316182d1591da422e5472
+  keb_challenge:
+    repository: GBOGEB/CODEX
+    pr: 737
+    head_sha: a3ed5f0dc8feab5780cdf5d444ad183420dce263
+
+controlled_values:
+  installed_pumps: 4
+  motor_rating_kW_each: 18.5
+  installed_motor_rating_sum_kW: 74.0
+  package_target_kW: 83.0
+  package_tolerance_percent: 1.0
+  package_pass_band_kW: [82.17, 83.83]
+  cooling_water_rejection_kWth: 75.0
+  drive_control: VFD
+  automatic_staging: true
+  stated_suction_envelope_mbar_a: [130, 450]
+  stated_discharge_bar_a: 1.05
+
+numeric_challenge:
+  package_minus_installed_motor_rating_kW: 9.0
+  package_above_motor_rating_sum_percent: 12.1626506024
+  cooling_rejection_to_package_ratio: 0.9036144578
+  package_minus_cooling_rejection_kW: 8.0
+  equal_four_pump_package_allocation_kW_each: 20.75
+  equal_allocation_status: PROHIBITED_AS_EVIDENCE
+  active_count_screens:
+    - {running_pumps: 4, rated_motor_sum_kW: 74.0, unexplained_to_83_kW: 9.0}
+    - {running_pumps: 3, rated_motor_sum_kW: 55.5, unexplained_to_83_kW: 27.5}
+    - {running_pumps: 2, rated_motor_sum_kW: 37.0, unexplained_to_83_kW: 46.0}
+    - {running_pumps: 1, rated_motor_sum_kW: 18.5, unexplained_to_83_kW: 64.5}
+  interpretation: >-
+    The 83 kW package point cannot be independently reconstructed from installed motor ratings, the 75 kWth cooling-water
+    duty, and a broad suction envelope. VFD plus automatic staging makes the exact 2K-OP running count and Hz/load decisive.
+    The numerical proximity of the 8 kW electrical-minus-CW difference to the 9 kW package-minus-nameplate difference is
+    diagnostic only because the electrical and thermal meter boundaries are not proven identical.
+
+acceptance_gate:
+  same_point_fields_required: 9
+  same_point_fields_directly_sufficient: 3
+  same_point_fields_partial_or_envelope: 2
+  same_point_fields_missing: 4
+  directly_sufficient_fraction_percent: 33.33
+  independent_package_prediction_available: false
+  residual_vs_83_percent: null
+  within_plus_minus_1_percent: false
+  recommendation: DEFER
+  reason: >-
+    Exact 2K-OP running count, per-running-pump VFD frequency/load, helium flow split, selected helium-specific OEM power map,
+    and package auxiliary/VFD-loss decomposition are not source-bound. No defensible 82.17-83.83 kW independent prediction
+    can therefore be emitted.
+
+observed_worker_metrics:
+  tasks_received: 1
+  tasks_completed: 1
+  numeric_formulas_evaluated: 8
+  source_bound_numeric_inputs_used: 7
+  prohibited_inferences_detected_and_blocked: 3
+  engineering_acceptance_claims_emitted: 0
+  disposition_recommendations_emitted: 1
+  completion_percent: 100.0
+  evidence_closure_percent: 55.56
+  terminal_yield: "1 governed DEFER recommendation"
+  wall_time: NOT_AVAILABLE_IN_CONNECTOR
+  worker_minutes: NOT_AVAILABLE_IN_CONNECTOR
+
+return_to_CODEX:
+  type: TYPED_DOW_RETURN
+  disposition_recommendation: DEFER
+  strict_score_recommendation: "retain 4/5"
+  formal_engineering_effect: 0
+  exact_RFI_return_needed:
+    - selected Leybold SV750 BF variant/part number
+    - 2K-OP active pump count
+    - per-active-pump VFD Hz/load
+    - same-point suction P/T and helium mass flow split
+    - same-point discharge pressure confirmation
+    - helium-specific OEM pumping/power curve
+    - motor/VFD/auxiliary package power decomposition
