@@ -127,13 +127,11 @@ jobs:
         run: |
           echo "Book generation step — ABACUS-v032 scripts removed"
       
-      - name: Commit Updated Documentation
+      - name: Verify retired documentation commit stage
         run: |
-          git config --local user.email "abacus-bot@example.com"
-          git config --local user.name "ABACUS Bot"
-          git add ABACUS-v032/output/canonical/
-          git add ABACUS-v032/output/books/
-          git commit -m "docs: Update canonical documentation [skip ci]" || echo "No changes to commit"
+          test ! -d ABACUS-v032/output/canonical
+          test ! -d ABACUS-v032/output/books
+          echo "No legacy ABACUS-v032 documentation outputs to commit; DMAIC_V3 is canonical"
   
   deploy-artifacts:
     name: Deploy Artifacts
