@@ -1,0 +1,37 @@
+schema: qps-closeout-pointer/1.0
+receiver: GBOGEB/ABACUS
+receiver_role: DOW_ANALYSIS_CHALLENGE_RENDER_RUNTIME_ONLY
+disposition: ACCEPT_POINTER_ONLY
+
+child_authority:
+  repo: GBOGEB/cryoplant-project
+  pr: 1316
+  head_sha: b1bd305e18f8ffece89c06c18c95642a2cb5e934
+  base_main_sha_at_refresh: a469775133acdc343b75eea2aea408563578d597
+  machine_handover: handover/session/SC_2026-09-15_FULL_LOSSLESS_3PR_MIP_CHAT_CLOSEOUT_v1.yaml
+  final_refresh_delta: handover/session/SC_2026-09-15_FULL_LOSSLESS_3PR_MIP_CHAT_CLOSEOUT_REFRESH_v1.yaml
+  restart_cards: handover/session/SC_2026-09-15_DROP_IN_RESTART_CARDS_v1.md
+
+receiver_main_at_refresh: a4fc81db7c2e6774bc8996887aa53cda017d718d
+
+preserved_state:
+  formal_engineering: '70/90 = 77.78%'
+  strict_numerical: '4/5 = 80%'
+  negotiation: '0/20'
+  pvps_3pr_b: MERGED_END_TO_END_DEFER
+  global_project_DoV: WITHHELD
+
+mip:
+  Modernize: NO_NEW_ACTION_JUSTIFIED_AT_CLOSEOUT
+  Innovate: NO_NEW_ACTION_JUSTIFIED_AT_CLOSEOUT
+  Perpetuate: ACCEPT_CHILD_POINTER_AND_PRESERVE_RESTART_LINEAGE
+  selector_result: PERPETUATE_THEN_STOP
+
+authority_guards:
+  engineering_authority_transfer: false
+  engineering_credit_delta: 0
+  negotiation_credit_delta: 0
+  runtime_or_release_credit_delta: 0
+  parent_PASS_ne_child_ACCEPT: true
+
+restart_rule: FRESH_3PR_AGAINST_LIVE_HEADS_BEFORE_ANY_MUTATION
