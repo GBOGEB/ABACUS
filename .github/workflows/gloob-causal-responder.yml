@@ -7,8 +7,10 @@ on:
       - "gloob_dispatch/capabilities.json"
       - ".github/workflows/gloob-causal-responder.yml"
   push:
-    branches-ignore: [main]
     paths:
+      - "tools/gloob_dispatch_responder.py"
+      - "gloob_dispatch/capabilities.json"
+      - ".github/workflows/gloob-causal-responder.yml"
       - "gloob_dispatch/inbox/*.json"
 
 permissions:
@@ -30,7 +32,7 @@ jobs:
       - name: Self-test responder contract
         run: python tools/gloob_dispatch_responder.py --self-test
       - name: Resolve dispatch ticket
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         id: ticket
         shell: bash
         run: |
@@ -39,10 +41,10 @@ jobs:
           test "${#tickets[@]}" -eq 1
           echo "path=${tickets[0]}" >> "$GITHUB_OUTPUT"
       - name: Execute DOW pointer-only responder
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         run: python tools/gloob_dispatch_responder.py "${{ steps.ticket.outputs.path }}"
       - name: Persist delivery and replay ledgers
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         shell: bash
         run: |
           set -euo pipefail
@@ -53,7 +55,7 @@ jobs:
           git commit -m "Gloob dispatch: persist DOW pointer-only exact-SHA receipts"
           git push origin "HEAD:${GITHUB_REF_NAME}"
       - name: Resolve emitted paths
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         id: emitted
         shell: bash
         run: |
@@ -64,14 +66,14 @@ jobs:
           echo "return=$ret" >> "$GITHUB_OUTPUT"
           echo "ack=$ack" >> "$GITHUB_OUTPUT"
       - name: Upload causal return
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         uses: actions/upload-artifact@v4
         with:
           name: gloob-causal-return
           path: ${{ steps.emitted.outputs.return }}
           if-no-files-found: error
       - name: Upload delivery acknowledgement
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != 'main'
         uses: actions/upload-artifact@v4
         with:
           name: gloob-dispatch-ack
