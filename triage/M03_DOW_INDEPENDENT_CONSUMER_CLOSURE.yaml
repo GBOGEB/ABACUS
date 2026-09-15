@@ -1,0 +1,110 @@
+schema: dow.m03.independent_consumer_closure.v1
+mission_id: M03_GITHUB_MCP_SERVER
+pulse_id: P_M03_DOW_CONSUMER_EDGE_CLOSE_01
+state: ACCEPT_WORK_EDGE_COMPLETE_QPS_PROMOTION_PENDING
+
+DOW_authority:
+  canonical_bridge: triage/QPS_TRIAGE_DOW_CONTINUITY_BRIDGE.md
+  rule: >-
+    DoV-2 requires DOW work closure bound to the independent consumer receipt;
+    DOW cannot substitute static preparation for observed execution.
+
+upstream_control:
+  QPS_repo: GBOGEB/cryoplant-project
+  measured_prune_gate_PR: 951
+  measured_prune_gate_merge_sha: 77b8b54d4cad8ed792d52738a96526ee011a0e58
+  disposition: >-
+    Official MCP transport has measured repo-read, Actions-read, and branch-write
+    slices; actual duplicate transport deletion remains HOLD pending independent
+    consumer, parity, and governance.
+
+KEB_consumer:
+  repo: GBOGEB/CODEX
+  PR: 640
+  merged_sha: fdfc973c686a4e91f0627a3abf8a5d71f28d18f2
+  acceptance_path: docs/qps_m03_official_mcp_consumer_acceptance.yaml
+  workflow_path: .github/workflows/qps-m03-official-mcp-consumer.yml
+  official_transport_source:
+    repo: github/github-mcp-server
+    sha: 7d13a7ad6f2a17f351a6d77ce280c85ae1821f4d
+  exact_consumer_target:
+    sha: 1a80176358ffde62459cd257455a51402c847302
+    path: docs/qps_dow_keb_receipt_binding_policy.md
+
+runtime_receipts:
+  - vector: R1
+    consumer_head_sha: 3d44692e969ac9fa211ad82366335ad1624bcd26
+    run_id: 34623862619
+    job_id: 103344100422
+    result: PASS
+    executed_steps: GT_ZERO
+    response_sha256: 37c8dbe31060252ef5173b10e321d95525c2c0f493fa296ecb28e102e1a68805
+    artifact_id: 10273550519
+    artifact_digest: sha256:17499293481f53fc67e6735a4ba49e49a1dd2e615938fa97e1b3cb6e3d2e8ca0
+  - vector: R2_FRESH_HEAD
+    consumer_head_sha: de29dcf3fd0f48e11b4e7479ed866ccb01b4341e
+    run_id: 34623974565
+    job_id: 103344473552
+    result: PASS
+    executed_steps: GT_ZERO
+    response_sha256: 962dd208db399a1c9fa70af54173c67e3f85f9a7b4d00134a271823b102306eb
+    artifact_id: 10273840350
+    artifact_digest: sha256:816f140f2dee91943e1751d5871c2e6b2c01d603db10d340a8f73f6610c8a4f5
+  - vector: R3_SCHEDULE_BEARING_HEAD
+    consumer_head_sha: 0c5c3e0fc5f6ced1dfddf1a0c78179860f8f764c
+    run_id: 34624155194
+    job_id: 103345066899
+    result: PASS
+    executed_steps: GT_ZERO
+    response_sha256: 3c9500073107597741e67c9fa4ef1a5fe4dbe9976e1a7702a96ef6ca6e36fdec
+    artifact_id: 10274245258
+    artifact_digest: sha256:33ee690c318d408056087843e7cd3bb323e5b728629f1f423a7624ab50134363
+    control_mode: WEEKLY_SCHEDULE_PLUS_PR_REPLAY
+
+PM_DOW_disposition:
+  independent_consumer_work_edge: ACCEPT_COMPLETE
+  delivery_scope: >-
+    Establish a non-M03 repository consumer of the exact official GitHub MCP source,
+    prove real execution with exact source/target binding, return the evidence to KEB,
+    and replay on fresh heads.
+  observed_delivery:
+    independent_repo: PASS
+    exact_official_source: PASS
+    exact_consumer_target: PASS
+    real_runner_and_steps: PASS
+    exact_response_digests: PASS
+    artifact_receipts: PASS
+    KEB_binding: PASS
+    fresh_head_repeat: PASS
+    schedule_armed: PASS_NOT_EXECUTED_POST_MERGE
+  acceptance: ACCEPT
+  residual_delivery:
+    - QPS Governor records the M03 transport-slice DoV-2 promotion or HOLD reason
+    - identifier_and_error_contract_parity_before_actual_transport_cutover
+    - one post_merge recurring_or_dispatch execution for DoV-3 perpetuation credit
+
+crew_return:
+  PM_secondment: RETURN_TO_DOW_AFTER_QPS_PROMOTION_RECORD
+  M03_transport_engineer: CONTRACT_TO_PARITY_AND_CUTOVER_ONLY
+  general_recon_scouts: RETURNED
+
+DoD:
+  DOW_source_bound_record: PASS
+  exact_CODEX_merge_bound: PASS
+  independent_consumer_receipts_bound: PASS_3_VECTORS
+  PM_delivery_acceptance: PASS
+  residual_actions_explicit: PASS
+
+DoV:
+  DOW_work_closure_component_of_DoV_2: PASS
+  terminal_M03_DoV_2: QPS_PROMOTION_PENDING
+  DoV_3: WITHHELD_POST_MERGE_CONTROL_EXECUTION_NOT_YET_OBSERVED
+
+BG:
+  before: DOW_independent_consumer_work_edge_open
+  after: QPS_promotion_and_contract_parity
+
+CG: >-
+  QPS consumes this DOW closure plus CODEX KEB acceptance and records the M03
+  transport-slice DoV-2 disposition. Actual custom GitHub transport deletion remains
+  prohibited until identifier/error parity and Governor cutover acceptance.

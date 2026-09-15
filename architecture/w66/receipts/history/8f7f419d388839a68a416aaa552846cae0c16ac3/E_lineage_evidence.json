@@ -1,0 +1,21 @@
+{
+  "findings": {
+    "unlineaged_ids": [
+      "SSOT-CG",
+      "SSOT-Q3",
+      "SSOT-Q4",
+      "SSOT-Q5"
+    ]
+  },
+  "lane": "E_lineage_evidence",
+  "repository": "GBOGEB/ABACUS",
+  "schema_version": "W67-ID-MEASURED-1.0.0",
+  "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+  "state": "MEASURED",
+  "totals": {
+    "backlog_closed": 6,
+    "backlog_open": 4,
+    "completion_pct": 60.0,
+    "total_population": 10
+  }
+}

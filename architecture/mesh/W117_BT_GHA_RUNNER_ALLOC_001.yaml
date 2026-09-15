@@ -1,0 +1,84 @@
+schema: mesh-bt-pressure/1.0.0
+wave: W117
+atom_id: BT-GHA-RUNNER-ALLOC-001
+class: EXECUTION_INFRASTRUCTURE_BLOCKER
+state: BLOCKED
+severity: P0
+scope: [GBOGEB/cryoplant-project, GBOGEB/ABACUS, GBOGEB/CODEX]
+observations:
+  cryoplant:
+    workflow: Mesh Status Runtime
+    merge_sha: 83b53192ae1b4e2440d07f987bf4ddd9abf1a1f6
+    run_id: 34618491221
+    runner_id: 0
+    steps_executed: 0
+    conclusion: failure
+    interpretation: workflow_accepted_but_no_runner_assigned
+  ABACUS:
+    workflow: Mesh Status Runtime
+    merge_sha: 763771d8430aba5b584bbf2c80c478494b2c1a87
+    run_id: 34618499946
+    job_id: 103326278713
+    runner_id: 0
+    steps_executed: 0
+    status: queued
+    interpretation: workflow_accepted_but_no_runner_assigned
+  CODEX:
+    merge_sha: 56bcecd550e8c57fddb802625efb8c2cb2eb53da
+    workflow_runs_for_exact_sha: 0
+    interpretation: no_runtime_receipt_available_for_exact_merge_sha
+BT_pressure:
+  reason: >-
+    The common limiting factor is no longer emitter code, schema, or graph semantics. Hosted execution capacity / runner assignment is the first shared AND-gate preventing EX>0 and therefore QH/KR/roll-up proof.
+  reverse_load_priority: 1.0
+  fanout: 3
+  blocks:
+    - cryoplant_emitter_EX
+    - ABACUS_emitter_EX
+    - CODEX_emitter_EX
+    - three_exact_SHA_vectors
+    - contract_only_scheduler_proof
+    - diagnostic_agreement
+    - repo_lane_mesh_rollup
+  do_not_do:
+    - rewrite_emitter_logic_without_execution_evidence
+    - create_another_scheduler
+    - mark_EX_GREEN_from_source_presence
+recovery_paths_ranked:
+  - rank: 1
+    action: restore_or_obtain_one_GitHub_hosted_runner_assignment
+    victory: runner_id_nonzero_and_steps_executed_gt_0
+  - rank: 2
+    action: attach_existing_ephemeral_or_self_hosted_linux_x64_runner_pool
+    evidence: existing_ABACUS_and_CODEX_self_hosted_runner_patterns
+    victory: one_ordinary_job_executes_gt_0_steps
+  - rank: 3
+    action: execute_same_stdlib_emitters_in_governed_local_or_Codespaces_lane_and_publish_exact_SHA_receipts
+    condition: only_if_GitHub_hosted_assignment_remains_unavailable
+    victory: exact_SHA_runtime_receipt_consumable_by_mesh_contract
+execution_taxonomy:
+  CG: obtain_first_real_mesh_emitter_execution
+  RR: GREEN
+  DR: BLOCKED
+  SR: GREEN
+  HK: AMBER
+  EX: BLOCKED
+  FE: DEFER
+  QH: DEFER
+  KR: AMBER
+  CR: RED
+  PB: AMBER
+  BG: BT-GHA-RUNNER-ALLOC-001
+  WD: REPAIR_INFRASTRUCTURE
+next_action: allocate_or_attach_runner_then_rerun_one_mesh_status_job_unchanged
+DoD:
+  - runner_id_nonzero
+  - steps_executed_gt_0
+  - emitter_produces_13_dimension_vector
+  - exact_SHA_matches_checked_out_commit
+  - artifact_or_equivalent_durable_receipt_exists
+DoV_release:
+  - repeat_on_all_three_repos
+  - selector_consumes_three_vectors_only
+  - diagnostic_route_selects_same_BG_and_next_CG
+  - first_repo_lane_mesh_rollup_persisted

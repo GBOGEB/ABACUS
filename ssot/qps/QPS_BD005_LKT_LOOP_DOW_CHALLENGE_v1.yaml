@@ -1,0 +1,140 @@
+schema: qps-bd005-lkt-loop-dow-challenge/1.0
+as_of: '2026-09-14T21:42:00+02:00'
+repo: GBOGEB/ABACUS
+role: H3_DOW_INDEPENDENT_ANALYTICAL_CHALLENGE
+authority_transfer: false
+formal_credit_delta: {engineering: 0, compliance: 0, negotiation: 0, acceptance: 0, release: 0}
+
+producer:
+  repo: GBOGEB/CODEX
+  pr: 714
+  pr_head: 11a9c5de94b846a6d6d0f7c9c834ac96f4ae860a
+  merge_sha: 1bc865a07c1c57e951b2c1d2633c45ab419aafa4
+  current_main_observed: 45d0f93918a9d01bfebb3ff88601ad4fa147259a
+  evidence_path: docs/qps-source-bound-dense-decks-v1-6/bd005_current_lkt_fsd575_loop_point_v1_6.yaml
+  evidence_blob_sha: 5245d3e98c67c6720b93d956130267676fbd46a0
+  source_pdf_sha256: d92af4666cc10ec6a4f8ac6cfe57aef477bca116f72a12f9156a680ce7e1e35e
+  source_role: CURRENT_LKT_BIDDER_SOURCE
+
+accepted_source_facts:
+  selected_equipment:
+    model: KAESER_FSD575_SFC_wc
+    installed_quantity: 4
+    motor_rated_power_each_kW: 315
+    water_cooled: true
+  maximum_reference_point:
+    suction_pressure_bara: 1.05
+    suction_temperature_K: 298
+    discharge_pressure_bara: 14
+    frequency_Hz: 72
+    helium_flow_g_s_nominal: 112.0
+    helium_flow_tolerance: '-2%/+5%'
+    package_power_kW_nominal: 357
+    package_power_tolerance_pct: 5
+    classification: MAXIMUM_REFERENCE_NOT_LOOP_POINT
+  emergency_boundary:
+    EPS_limit_kW: 350
+    compressors_connected_to_EPS: 2
+    simultaneously_operable_due_generator_size: 1
+    bidder_LOOP_flow_claim_g_s_max: 110
+    recovery_cooling_water_without_glycol: TO_BE_DEFINED
+  air_and_heat:
+    main_cooling_air_m3_h: 5000
+    SFC_cooling_air_m3_h: 4200
+    added_duct_pressure_drop_Pa_max: 40
+    compressor_cooling_air_heat_kW: 17.4
+    SFC_cooling_air_heat_kW: 10.7
+    ambient_radiation_kW: 13.9
+    contractual_LOOP_ambient_ceiling_kW: 15
+  normal_cooling_water_reference:
+    per_compressor_m3_h: 18.5
+    fleet_m3_h: 78
+    supply_temperature_C: '20-30'
+    return_temperature_C_max: 45
+    deltaT_K_max: 15
+    role: NORMAL_REFERENCE_NOT_LOOP_PAB12
+
+independent_dow_checks:
+  nominal_max_point_vs_EPS:
+    package_power_minus_EPS_kW: 7.0
+    package_power_over_EPS_pct: 2.0
+    disposition: FAIL_AS_DIRECT_LOOP_PROOF
+  package_tolerance_screen:
+    nominal_kW: 357
+    lower_5pct_kW: 339.15
+    upper_5pct_kW: 374.85
+    EPS_limit_kW: 350
+    disposition: RANGE_STRADDLES_EPS_LIMIT_NO_FEASIBILITY_PROOF
+  flow_proximity_screen:
+    bidder_LOOP_claim_g_s: 110
+    maximum_reference_g_s: 112
+    ratio_pct: 98.2142857143
+    disposition: DIAGNOSTIC_ONLY_NO_LINEAR_POWER_INTERPOLATION
+  ambient_ceiling_screen:
+    source_ambient_radiation_kW: 13.9
+    contractual_ceiling_kW: 15
+    arithmetic_margin_kW: 1.1
+    disposition: PASS_ARITHMETIC_ONLY_NOT_ROOM_TRANSIENT_PROOF
+
+analysis:
+  closed:
+    - two_EPS_connected_vs_one_simultaneously_running_ambiguity
+    - selected_HP_model_and_installed_count
+    - current_72Hz_112g_s_357kW_maximum_reference
+    - current_airflow_heat_path_and_added_duct_pressure_drop_values
+    - normal_per_compressor_cooling_water_reference
+  still_open:
+    - exact_LOOP_Hz_flow_package_power_point_with_required_margin_inside_350kW
+    - whether_350kW_boundary_includes_all_required_ES02_critical_auxiliaries_and_simultaneity
+    - complete_ES02_critical_load_split
+    - recovery_PAB12_LOOP_flow_pressure_supply_return_temperatures_valve_state_available_capacity
+    - unambiguous_HP_duct_connection_size
+    - effective_room_free_volume_and_equipment_building_thermal_mass
+    - degraded_HV03_room_airflow_fan_power_and_heat_removal
+    - physical_variable_and_limit_for_approximately_2h_onset
+    - measurable_approximately_6h_stabilization_criterion
+    - executable_first_law_room_transient_with_uncertainty
+
+challenge_findings:
+  - id: DOW-BD005-01
+    finding: >-
+      357 kW nominal at the current 112 g/s maximum reference exceeds the 350 kW EPS limit by 7 kW,
+      while the stated +/-5% package-power tolerance spans both below and above the EPS limit. Therefore
+      the maximum reference cannot establish LOOP feasibility or electrical margin.
+    required_return: bidder_or_OEM_exact_LOOP_frequency_flow_package_power_point_and_tolerance
+  - id: DOW-BD005-02
+    finding: >-
+      The 110 g/s LOOP claim is only about 1.8% below the 112 g/s maximum-flow reference. No power estimate
+      is admitted from that proximity because the controlled source explicitly lacks the lower operating point
+      and compressor/VFD package behavior is not linearly inferable here.
+    required_return: measured_or_vendor_curve_point_not_interpolation
+  - id: DOW-BD005-03
+    finding: >-
+      Recovery cooling water remains explicitly TO BE DEFINED. The normal 18.5 m3/h per-compressor reference
+      cannot be reused as the PAB12 LOOP hydraulic state.
+    required_return: recovery_CW_hydraulic_and_control_state
+  - id: DOW-BD005-04
+    finding: >-
+      13.9 kW ambient radiation is arithmetically below the 15 kW LOOP ambient ceiling, but that does not
+      establish room temperature response because degraded ventilation, effective free air volume, solid thermal
+      inventory and duct routing remain unbound.
+    required_return: degraded_HVAC_boundary_plus_thermal_inventory_then_first_law_transient
+
+pca_bt:
+  PCA: NOT_APPLICABLE_SINGLE_BOUNDARY_TRANSACTION
+  Bradley_Terry: WITHHELD_NO_PAIRWISE_OUTCOME_GRAPH
+
+three_pr_disposition:
+  P2_DOW: ACCEPT_SOURCE_CONSUMPTION_DEFER_LOOP_FEASIBILITY
+  child_promotion_recommended: DEFER
+  exact_first_red: EPS_POWER_POINT_AND_ES02_AUXILIARY_MARGIN
+  secondary_first_red: RECOVERY_CW_PAB12_TBD
+
+non_compensating_rules:
+  - no_linear_flow_power_interpolation
+  - source_tolerance_range_is_not_a_probability_distribution
+  - arithmetic_margin_is_not_operational_margin
+  - normal_PCW_is_not_emergency_recovery_CW
+  - ambient_radiation_below_ceiling_is_not_transient_acceptance
+  - parent_acceptance_does_not_substitute_QPS_child_disposition
+  - global_project_DoV_remains_WITHHELD

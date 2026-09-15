@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "pulse_id": "MIP-V2-STEP-COUNT-20260914",
+  "observed_date": "2026-09-14",
+  "branch": "mip/v2-step-count-handover-20260914",
+  "scope": "ABACUS v2 executed_steps validation and scoped operational handover",
+  "repositories": {
+    "ABACUS": "f431061038ec94299cee0a85dd4a7336e6a5bc4b",
+    "CODEX": "d79a1e21396a9556f23142e57bb9b58dd7921534",
+    "DOCX_RTM_Automation": "d30abebfd14d39f10921d3b9881d93c86e7b5309"
+  },
+  "predecessor_prs": {
+    "ABACUS": 1127,
+    "CODEX": 631,
+    "DOCX_RTM_Automation": 49
+  },
+  "predecessor_prs_state": "MERGED",
+  "v1": {
+    "scope": "mip_dov_v1_receipt_protection_and_self_index",
+    "status": "CONTROL",
+    "passed": 8,
+    "total": 8,
+    "evidence": "MIP/N2_CROSS_REPO_ACCEPTANCE_20260912.json"
+  },
+  "v2": {
+    "scope": "mip_v2_federated_closed_loop_control",
+    "total_gates": 10,
+    "accepted_gate_count": null,
+    "global_dov": "WITHHELD"
+  },
+  "three_pc": {
+    "classification": "runtime_evidence_validation_repair",
+    "authority": "ABACUS DOW intake/challenge; child retains final disposition",
+    "lifecycle": "reproduce -> repair -> test -> review -> accepted-head repeat",
+    "consumer": "MIP v2 controller",
+    "discrimination": [
+      "boolean is not a runtime step count",
+      "local fixture tests are not real KEB/DOW/child execution",
+      "v1 CONTROL is not v2 CONTROL"
+    ]
+  },
+  "mip": {
+    "modernize": "Reject JSON booleans as positive runtime counts",
+    "innovate": "Add adversarial cases at both evidence boundaries",
+    "perpetuate": "Preserve tests, pinned baseline and deterministic restart"
+  },
+  "verification": {
+    "method": "stdlib runpy; direct invocation of plain test functions",
+    "pytest_available": false,
+    "test_functions_passed": 8,
+    "test_functions_total": 8,
+    "malformed_cases_rejected": 14,
+    "pre_fix_boolean_defect_reproduced": true,
+    "full_checkout": false,
+    "source_snapshot_pinned": true,
+    "ci": "NOT_YET_VERIFIED"
+  },
+  "files": {
+    "scripts/mip_v2_federated_controller.py": {
+      "sha256": "a011721dae21800216662d97dab2a086a554c0678219d318eefbeb4a144e951d"
+    },
+    "tests/test_mip_v2_federated_controller.py": {
+      "sha256": "a2fd5272dbfc6b08770b2372451a2a7ad0222b335124d07f69b90f882c48dc93"
+    }
+  },
+  "next_actions": [
+    "Find the PR by exact branch and check review/CI at its current head",
+    "After acceptance, repeat the focused checks on merged source",
+    "Inspect actual KEB receipt digest/provenance binding before G5 promotion; current validator checks digest shape only",
+    "Execute independent DOW challenge then child re-entry with actual evidence",
+    "V2-G9 measured telemetry and V2-G10 distinct-SHA repeat; do not alter denominator"
+  ],
+  "limitations": [
+    "No raw full-chat archive is available; this is a scoped execution handover",
+    "No genuine external receipt was injected",
+    "Child runner status was not refreshed in this pulse",
+    "No remote CI success or v2 promotion is claimed"
+  ],
+  "privacy": "No local census, dirty-state or private runtime payload published"
+}

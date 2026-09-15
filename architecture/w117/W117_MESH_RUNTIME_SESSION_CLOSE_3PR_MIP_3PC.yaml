@@ -1,0 +1,243 @@
+schema_version: qps-session-handover/1.0
+wave: W117
+document_id: W117_MESH_RUNTIME_SESSION_CLOSE_3PR_MIP_3PC
+status: CONTROL_CANDIDATE
+purpose: >-
+  Close the mesh-runtime chat/session without losing intent, exact runtime evidence,
+  the first material blocker, bounded backlog debt, or the next executable path.
+  This handover is deletion-safe: no required state should remain only in chat prose.
+
+method_authority:
+  owner_repo: GBOGEB/CODEX
+  controller_path: federation/mesh/MESH_CLOSURE_CONTROLLER_v1.json
+  observed_repo_sha: 3b86c42149cb1eb484c84292047e5704941558b4
+  controller_blob_sha: a3c1b3913abda460221c632fa43d930dece07a25
+  canonical_sequence:
+    - 3PR
+    - MIP_IF_NEEDED
+    - 3PC_IF_TRANSACTIONAL
+    - 3P3_IF_GENERALISATION_MISSING
+  invariants:
+    - DOD_NE_GLOBAL_DOV
+    - RUNTIME_BADGE_NE_EXECUTION_PROOF
+    - RECURSE_ONLY_ON_OBSERVED_FIRST_BG
+    - NO_FRAMEWORK_PASS_WITHOUT_NEW_EVIDENCE_OR_PROTECTION
+
+scope:
+  subject: global mesh scheduler-facing status/runtime closure
+  covered_wave_chain: W108-W116
+  orchestration_authority: GBOGEB/ABACUS
+  semantic_contract_authority: GBOGEB/CODEX
+  qps_child_authority: GBOGEB/cryoplant-project
+
+observed_boundaries:
+  ABACUS_main_at_prepare: f362389b3dcde405d10bca9983eb2f8ee1389bba
+  CODEX_main_at_prepare: 3b86c42149cb1eb484c84292047e5704941558b4
+  cryoplant_main_at_prepare: c302f89d469abe5d89eebe2aad645ff8bb79c5ef
+  note: >-
+    These are observation boundaries for this closeout transaction, not substitutes
+    for the exact runtime SHAs below.
+
+three_PR_refresh:
+  classification: REPAIR_REENTRY
+  goal: obtain 3_of_3 exact-SHA mesh status vectors and prove deterministic roll-up
+
+  CONTROL:
+    - id: W108_status_contract_and_taxonomy
+      state: CONTROL
+      authority: GBOGEB/CODEX
+    - id: graph_node_edge_atom_projection
+      state: CONTROL
+      authority: GBOGEB/cryoplant-project
+    - id: repo_native_emitters
+      state: IMPLEMENTED
+      repos:
+        - GBOGEB/ABACUS
+        - GBOGEB/CODEX
+        - GBOGEB/cryoplant-project
+    - id: ABACUS_runtime_proof
+      state: PASS
+      exact_sha: 763771d8430aba5b584bbf2c80c478494b2c1a87
+      workflow_run_id: 34618499946
+      job_id: 103326278713
+      runner_id: 1000248596
+      runner_label: ubuntu-latest
+      meaningful_steps:
+        - Run emitter
+        - Verify vector
+        - Run actions/upload-artifact@v4
+      artifact:
+        id: 10271910138
+        name: mesh-status-abacus
+        digest: sha256:f6f822595a4395091920a68f60eea61d5e3a006830f44c49f00dde9c10c3cf84
+      evidence_class: RUNTIME_RECEIPT
+
+  LIVE:
+    - id: cryoplant_runner_allocation
+      priority: P0
+      state: RED
+      exact_runtime_sha: 83b53192ae1b4e2440d07f987bf4ddd9abf1a1f6
+      workflow_run_id: 34618491221
+      attempt: 2
+      job_id: 103530421335
+      runner_id: 0
+      executed_steps: 0
+      conclusion: failure
+      blocking_atom: BT-CRYOPLANT-RUNNER-ALLOC-001
+      interpretation: >-
+        Failure occurs before intended execution. Do not repair emitter or scheduler
+        until a real runner is assigned and the unchanged path executes.
+
+    - id: CODEX_runtime_receipt_resolution
+      priority: P0
+      state: UNRESOLVED
+      implementation_pr: 637
+      workflow_merge_sha: 7dfa72df3e5ec73ae814ec0857de414fc9351fac
+      workflow_path: .github/workflows/mesh-status-runtime.yml
+      disposition: >-
+        Runtime receipt was not proven in this closeout refresh. Resolve exact-SHA
+        job/runner/step/artifact evidence before classifying PASS or shared runner failure.
+      discriminator: >-
+        If CODEX also records runner_id=0 and zero intended steps, promote the blocker
+        from cryoplant-specific to shared/global runner allocation. If CODEX executes,
+        keep the blocker scoped to cryoplant eligibility/allocation.
+
+  BLOCKED_DOWNSTREAM:
+    - id: three_exact_sha_vectors
+      progress: 1/3
+      percent: 33.3
+      requires:
+        - ABACUS_runtime_proof
+        - CODEX_runtime_receipt_resolution
+        - cryoplant_runner_allocation
+    - id: vector_only_scheduler_selection
+      requires: three_exact_sha_vectors
+      acceptance: deterministic_BG_and_next_CG_from_vectors_only
+    - id: full_diagnostic_agreement
+      requires: vector_only_scheduler_selection
+      acceptance: vector_selection_equals_full_diagnostic_selection
+    - id: repo_lane_mesh_rollup
+      requires: full_diagnostic_agreement
+      acceptance: dependency_aware_rollup_PASS_with_exact_SHA_receipts
+
+  BD_PARKED:
+    - richer_interactive_dashboards
+    - wider_repo_rollout
+    - scheduler_feature_expansion
+    - emitter_refactoring_without_runtime_evidence
+    - taxonomy_expansion
+    - richer_PCA_BT_visualisation
+    - broad_federation_scale_out
+
+  DROP_AS_REPEAT:
+    - rewrite_emitters_before_execution_evidence
+    - create_new_scheduler_before_existing_selector_proof
+    - infer_EX_or_KR_from_source_presence
+    - repeat_framework_passes_without_new_evidence
+
+MIP:
+  admitted: true
+  reason: deletion_safe_reentry_requires_durable_perpetuation
+  Modernize:
+    disposition: SKIP
+    reason: no_new_structural_defect_observed_in_this_closeout
+  Innovate:
+    disposition: SKIP
+    reason: no_new_capability_gap_required_to_attack_first_BG
+  Perpetuate:
+    disposition: EXECUTE
+    product: this_exact_SHA_bound_restart_handover
+    protection:
+      - preserve_current_CG_BG
+      - preserve_runtime_receipts
+      - preserve_forbidden_detours
+      - preserve_terminal_DoV_release_condition
+
+three_PC_transaction:
+  Prepare:
+    state: PASS
+    actions:
+      - refresh_current_repo_boundaries
+      - bind_ABACUS_runtime_receipt
+      - bind_cryoplant_zero_step_failure
+      - bind_CODEX_workflow_merge_and_unresolved_runtime_state
+      - classify_CONTROL_LIVE_BD_DROP
+  Prove:
+    state: PASS_FOR_SESSION_CLOSE_ONLY
+    proof:
+      - ABACUS_has_runner_id_nonzero_and_meaningful_steps
+      - cryoplant_has_runner_id_zero_and_zero_steps
+      - downstream_gates_are_explicitly_dependency_blocked
+      - no_source_presence_is_promoted_to_runtime_PASS
+    non_claims:
+      - three_repo_runtime_DoV_not_achieved
+      - selector_agreement_not_achieved
+      - mesh_rollup_not_achieved
+  Commit:
+    state: CANDIDATE_UNTIL_MERGED
+    target_repo: GBOGEB/ABACUS
+    target_path: architecture/w117/W117_MESH_RUNTIME_SESSION_CLOSE_3PR_MIP_3PC.yaml
+    effect_after_merge: session_DoD_PASS_and_restart_state_durable
+
+three_P3_generalisation:
+  admitted: false
+  disposition: STOP
+  reason: >-
+    Cross-repo semantic authority, orchestration ownership, and child authority are
+    already represented by the shared mesh contracts. No additional generalisation
+    proof is required merely to close this chat. Re-open 3P3 only after local runtime
+    DoV if a wider-repo propagation proof remains missing.
+
+scheduler_state:
+  CG: obtain_3_of_3_real_exact_SHA_mesh_vectors
+  BG: cryoplant_runner_allocation_pending_CODEX_discriminator
+  EX:
+    ABACUS: PASS
+    CODEX: UNKNOWN_PENDING_RECEIPT
+    cryoplant: FAIL_ZERO_STEP
+  QH:
+    ABACUS: PASS
+    CODEX: UNKNOWN
+    cryoplant: NOT_REACHED
+  KR:
+    ABACUS: EXACT_SHA_ARTIFACT_BOUND
+    CODEX: MISSING_RUNTIME_RECEIPT
+    cryoplant: ZERO_STEP_FAILURE_RECEIPT_BOUND
+  PB:
+    runtime_vectors: 1/3
+  WD: REPAIR_REENTRY
+
+next_narrow_victory_condition:
+  ordered_actions:
+    - resolve_CODEX_exact_SHA_mesh_runtime_receipt
+    - classify_runner_blocker_as_GLOBAL_or_cryoplant_specific
+    - obtain_cryoplant_runner_id_nonzero
+    - rerun_UNCHANGED_cryoplant_mesh_status_job
+    - require_more_than_zero_intended_steps_and_13_dimension_vector
+    - assemble_3_of_3_exact_SHA_vectors
+    - run_existing_ABACUS_vector_only_selector
+    - run_independent_full_diagnostic_route
+    - require_identical_BG_and_next_CG
+    - emit_dependency_aware_repo_to_lane_to_mesh_rollup
+    - promote_mesh_status_lane_from_IMPROVE_to_CONTROL
+
+stop_conditions:
+  session_DoD:
+    after_handover_merge: PASS
+    rationale: no_required_state_remains_only_in_chat
+  terminal_mesh_DoV:
+    state: WITHHELD
+    release_condition: >-
+      3/3 exact-SHA runtime vectors plus vector-only/full-diagnostic selection agreement
+      plus dependency-aware roll-up PASS.
+  immediate_stop_rule: >-
+    Do not spend another implementation pulse on scheduler, emitter, taxonomy, or
+    dashboards while runner/runtime evidence remains the first material blocker.
+
+restart_prompt: >-
+  Resume W117 mesh runtime closure from the authoritative handover. Do not redesign.
+  Resolve CODEX runtime evidence first; use it to discriminate global versus
+  cryoplant-specific runner allocation. Then obtain cryoplant runner_id != 0 and
+  >0 intended steps on the unchanged emitter path. After 3/3 exact-SHA vectors exist,
+  execute vector-only selector, independent diagnostic comparison, and dependency-aware
+  roll-up. Promote to CONTROL only on agreement PASS.

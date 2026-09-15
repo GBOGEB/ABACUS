@@ -83,7 +83,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add architecture/w66/receipts/history architecture/w70/receipts/PCA_DENOMINATOR_RECEIPT.json
+          # Governed exact-SHA history is Git authority. The denominator receipt is
+          # intentionally ignored/transient and remains an uploaded control artifact.
+          git add architecture/w66/receipts/history
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "data(w70): retain exact-SHA measured ID pulse ${{ steps.meta.outputs.source_sha }}"
           git push origin HEAD:main

@@ -1,0 +1,160 @@
+{
+  "authority": "derived_operational_analysis",
+  "best_candidate": {
+    "decision": "WITHHELD_BELOW_STABILITY_GATE",
+    "feature": "log_seconds_per_consumer_edge",
+    "icc_one_way_single_measure": 0.500378,
+    "median_pairwise_rank_rho": 0.6
+  },
+  "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_OUTCOME_EVIDENCE",
+  "candidate_metrics": {
+    "log_probe_execute_seconds": {
+      "icc_one_way_single_measure": 0.077708,
+      "rank_stability": {
+        "median_spearman_rho": -0.5,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.7},
+          {"repeats": [1, 3], "spearman_rho": -0.6},
+          {"repeats": [2, 3], "spearman_rho": -0.5}
+        ]
+      }
+    },
+    "log_seconds_per_consumer_edge": {
+      "icc_one_way_single_measure": 0.500378,
+      "rank_stability": {
+        "median_spearman_rho": 0.6,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.9},
+          {"repeats": [1, 3], "spearman_rho": 0.6},
+          {"repeats": [2, 3], "spearman_rho": 0.5}
+        ]
+      }
+    },
+    "probe_execute_seconds": {
+      "icc_one_way_single_measure": 0.048777,
+      "rank_stability": {
+        "median_spearman_rho": -0.5,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.7},
+          {"repeats": [1, 3], "spearman_rho": -0.6},
+          {"repeats": [2, 3], "spearman_rho": -0.5}
+        ]
+      }
+    },
+    "seconds_per_bound_entity": {
+      "icc_one_way_single_measure": 0.108084,
+      "rank_stability": {
+        "median_spearman_rho": 0.5,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.6},
+          {"repeats": [1, 3], "spearman_rho": -0.1},
+          {"repeats": [2, 3], "spearman_rho": 0.5}
+        ]
+      }
+    },
+    "seconds_per_consumer_edge": {
+      "icc_one_way_single_measure": 0.3277,
+      "rank_stability": {
+        "median_spearman_rho": 0.6,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.9},
+          {"repeats": [1, 3], "spearman_rho": 0.6},
+          {"repeats": [2, 3], "spearman_rho": 0.5}
+        ]
+      }
+    },
+    "seconds_per_consumer_file": {
+      "icc_one_way_single_measure": 0.132317,
+      "rank_stability": {
+        "median_spearman_rho": 0.5,
+        "pairs": [
+          {"repeats": [1, 2], "spearman_rho": 0.6},
+          {"repeats": [1, 3], "spearman_rho": -0.1},
+          {"repeats": [2, 3], "spearman_rho": 0.5}
+        ]
+      }
+    }
+  },
+  "child_engineering_promotion_authority": false,
+  "design_decision": {
+    "both_required": true,
+    "declared_before_candidate_evaluation": true,
+    "icc_min": 0.75,
+    "median_pairwise_rank_rho_min": 0.8,
+    "pca_fit_requires_at_least_two_eligible_runtime_sensitive_features": true,
+    "runtime_sensitive_feature_required": true,
+    "static_work_counters_cannot_pass_gate_alone": true
+  },
+  "deterministic_work_counters": {
+    "fields": [
+      "consumer_edges",
+      "consumer_files",
+      "bound_entities",
+      "semantic_entities"
+    ],
+    "pca_eligibility_by_themselves": false,
+    "role": "normalizers_and_instrumentation_denominators_only"
+  },
+  "eligible_runtime_features": [],
+  "engineering_compliance_release_authority": false,
+  "global_allocation_authority": false,
+  "measurement_dov": "PASS_MEASURED_15_OF_15",
+  "next_instrumentation_contract": {
+    "candidate_feature_examples": [
+      "consumer_scan_seconds_per_text_megabyte",
+      "consumer_scan_seconds_per_candidate_check",
+      "graph_build_seconds_per_graph_edge",
+      "total_probe_seconds_per_text_megabyte"
+    ],
+    "deterministic_counters": [
+      "text_files_scanned",
+      "text_bytes_scanned",
+      "known_entity_count",
+      "consumer_candidate_checks",
+      "consumer_hits",
+      "graph_node_count",
+      "graph_edge_count"
+    ],
+    "phase_timers": [
+      "manifest_parse_seconds",
+      "index_parse_seconds",
+      "gap_parse_seconds",
+      "semantic_reference_parse_seconds",
+      "consumer_scan_seconds",
+      "graph_build_seconds",
+      "receipt_emit_seconds"
+    ],
+    "repeat_design": "minimum 3 independent runner-backed repeats per exact source state; expand if stability remains borderline",
+    "required_binding": [
+      "exact_source_sha",
+      "feature_row_sha256",
+      "runner_id",
+      "job_id",
+      "probe_artifact_id",
+      "probe_artifact_digest"
+    ],
+    "target": "w72_semantic_census_exact_source_state"
+  },
+  "non_compensating_gates": [
+    "MC-1 #923",
+    "G6 release identity",
+    "source/PED/cost gates"
+  ],
+  "pca": {
+    "fit_performed": false,
+    "pa95_performed": false,
+    "reason": "NO_RUNTIME_SENSITIVE_CANDIDATE_CLEARED_0_75_ICC_AND_0_80_MEDIAN_RANK_GATE",
+    "status": "WITHHELD_NO_STABLE_RUNTIME_FEATURE_SET"
+  },
+  "provenance": {
+    "semantic_artifact_digest": "sha256:5142f09b5e82eaa8b5cce05d8354f4e355d26164ef3dcbb024806d5f6406a8a9",
+    "semantic_artifact_id": 10322297673,
+    "source_runs": [34772163349, 34772329789, 34772375276],
+    "w75_evidence_manifest_blob_sha": "67000a6cc4ae15b2c54235c7564159a420d4bb39",
+    "w75_evidence_manifest_sha256": "f2885b2d85461f6be756fdd9f7a302e17129eead4e224eaf41315a271c4b1b4a"
+  },
+  "receipt_sha256": "ccec0728e983af18bbf82cb9c8cf2fa3a0875f4ef0542bb5b46b0d6edfd0918b",
+  "schema_version": "MC2-W76-INTRINSIC-RUNTIME-REDESIGN-0.1.0",
+  "source_panel_sha256": "4947fc598744fc114335437d0719f3188f77555c168f0ff4e8f166fcb8a8ee0f",
+  "status": "INTRINSIC_RUNTIME_AXIS_WITHHELD"
+}

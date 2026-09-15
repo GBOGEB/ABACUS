@@ -43,34 +43,30 @@ def iter_files(root: Path) -> Iterable[Path]:
 def linked_by_path(path: str, anchor: str) -> bool:
     lower = path.lower()
     anchor = anchor.lower()
-    return (
-        anchor in lower
-        or lower.startswith("triage/")
-        or lower.startswith("federation/")
-        or lower.startswith("architecture/")
-        or lower.startswith("contracts/")
-    )
+    # A name is a discovery hint, never proof of an executable anchor edge.
+    return bool(re.search(r"(?<![a-z0-9])" + re.escape(anchor) + r"(?![a-z0-9])", lower))
 
 
 def classify_path(path: str) -> str:
     lower = path.lower()
     if "workflows-pending/" in lower or "workflows-to-install/" in lower:
         return "staged_workflow"
-    if re.search(r"(^|/)(dmaic_v3|abacus-unified|abacus-v[0-9]|tools_v|tracking_v)(/|$)", lower):
+    if re.search(r"(^|/)(dmaic_v3|abacus-unified|abacus-v[0-9][^/]*|tools_v[^/]*|tracking_v[^/]*|vendor|[^/]*_snapshot)(/|$)", lower):
         return "embedded_version_or_subrepo"
     if re.search(r"(^|/)(local_mcp|agents|runtime|engine_dow|src/keb)(/|$)", lower):
         return "runtime_agent_surface"
     if re.search(r"(handover|complete|status|deployment|integration|quick|report|plan)", lower):
-        return "legacy_status_or_handover"
+        return "status_or_handover_needs_review"
     return "engine_like_unlinked"
 
 
 def build_report(root: Path, repo: str, anchor: str) -> dict:
     files = sorted(str(path) for path in iter_files(root))
-    anchor_named = [path for path in files if anchor.lower() in path.lower()]
+    anchor_named = [path for path in files if linked_by_path(path, anchor)]
     engine_like = [path for path in files if ENGINE_RE.search(path)]
     linked_engine_like = [path for path in engine_like if linked_by_path(path, anchor)]
-    floating = [path for path in engine_like if path not in set(linked_engine_like)]
+    named_set = set(linked_engine_like)
+    floating = [path for path in engine_like if path not in named_set]
 
     buckets: dict[str, list[str]] = {}
     for path in floating:
@@ -81,19 +77,21 @@ def build_report(root: Path, repo: str, anchor: str) -> dict:
         roots[path.split("/", 1)[0]] = roots.get(path.split("/", 1)[0], 0) + 1
 
     return {
-        "schema": "gbo.floating-anchor-census/1.0",
+        "schema": "gbo.floating-anchor-census/2.0",
         "repo": repo,
         "anchor": anchor.upper(),
-        "method": "path-first conservative census; requires follow-up semantic linking before disposition",
+        "method": "path hints only; neither anchor naming nor directory placement proves integration",
         "totals": {
             "files": len(files),
             "anchor_named_files": len(anchor_named),
             "engine_like_files": len(engine_like),
-            "linked_engine_like_files": len(linked_engine_like),
+            "anchor_named_engine_like_files": len(linked_engine_like),
+            "verified_linked_engine_like_files": None,
             "floating_engine_like_files": len(floating),
         },
         "top_roots": sorted(roots.items(), key=lambda item: (-item[1], item[0]))[:20],
-        "floating_buckets": {key: {"count": len(value), "examples": value[:40]} for key, value in sorted(buckets.items())},
+        "floating_buckets": {key: {"count": len(value), "paths": value} for key, value in sorted(buckets.items())},
+        "anchor_named_engine_paths": linked_engine_like,
         "anchor_examples": anchor_named[:60],
         "control": {
             "engineering_credit": False,

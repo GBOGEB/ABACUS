@@ -1,0 +1,346 @@
+name: W169 QPLANT Kubernetes Runtime
+
+on:
+  pull_request:
+    paths:
+      - "qplant/config.yaml"
+      - "qplant/handover_dashboard/**"
+      - "qplant/deployment/Dockerfile"
+      - "qplant/deployment/k8s/**"
+      - ".github/workflows/w169-qplant-k8s-runtime.yml"
+      - "ci/governance/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-api-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EVALUATED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact evaluated source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert exact evaluated source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EVALUATED_SOURCE_SHA"
+          echo "exact_source_sha=$actual"
+
+      - name: Start measurement clock
+        run: date +%s%3N > /tmp/w169_job_start_ms
+
+      - name: Re-prove static Kubernetes contract
+        run: python qplant/deployment/scripts/validate_k8s_contract.py > /tmp/w169_static_contract.json
+
+      - name: Create real Kubernetes API
+        id: cluster
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          start=$(date +%s%3N)
+          curl -fsSLo /tmp/kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64
+          chmod +x /tmp/kind
+          sudo mv /tmp/kind /usr/local/bin/kind
+          kind create cluster --name qplant-w169 --wait 120s
+          rc=$?
+          end=$(date +%s%3N)
+          echo "$((end-start))" > /tmp/w169_cluster_ms
+          if [ "$rc" -eq 0 ]; then
+            kubectl version
+            kubectl get nodes -o wide
+          fi
+          exit "$rc"
+
+      - name: K8S-02 server-side admission
+        id: admission
+        if: steps.cluster.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          start=$(date +%s%3N)
+          kubectl apply -f qplant/deployment/k8s/namespace.yaml
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            for manifest in \
+              configmap-ssot-production.yaml \
+              deployment-api-server.yaml \
+              service.yaml \
+              ingress.yaml \
+              hpa.yaml \
+              network-policy.yaml \
+              ssot-validation-init-container.yaml
+            do
+              kubectl apply --server-side --dry-run=server \
+                -f "qplant/deployment/k8s/${manifest}" || rc=$?
+            done
+          fi
+          end=$(date +%s%3N)
+          echo "$((end-start))" > /tmp/w169_admission_ms
+          exit "$rc"
+
+      - name: Build canonical QPLANT image
+        id: image
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          start=$(date +%s%3N)
+          docker build --pull \
+            -t qplant/api-server:v4.4.0 \
+            -f qplant/deployment/Dockerfile qplant
+          rc=$?
+          end=$(date +%s%3N)
+          echo "$((end-start))" > /tmp/w169_image_build_ms
+          if [ "$rc" -eq 0 ]; then
+            docker image inspect qplant/api-server:v4.4.0 \
+              --format '{{.Size}}' > /tmp/w169_image_size_bytes
+            docker image inspect qplant/api-server:v4.4.0 \
+              --format '{{.Id}}' > /tmp/w169_image_id
+          fi
+          exit "$rc"
+
+      - name: K8S-03 load image and execute workload
+        id: rollout
+        if: steps.cluster.outcome == 'success' && steps.image.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          start=$(date +%s%3N)
+          kind load docker-image qplant/api-server:v4.4.0 --name qplant-w169
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            kubectl create secret generic qplant-api-keys \
+              -n qplant-production \
+              --from-literal=admin-api-key='w169-runtime-only' \
+              --dry-run=client -o yaml | kubectl apply -f - || rc=$?
+            kubectl apply -f qplant/deployment/k8s/configmap-ssot-production.yaml || rc=$?
+            kubectl apply -f qplant/deployment/k8s/service.yaml || rc=$?
+            kubectl apply -f qplant/deployment/k8s/network-policy.yaml || rc=$?
+            kubectl apply -f qplant/deployment/k8s/deployment-api-server.yaml || rc=$?
+          fi
+          if [ "$rc" -eq 0 ]; then
+            kubectl rollout status deployment/qplant-api-server \
+              -n qplant-production --timeout=180s || rc=$?
+          fi
+          end=$(date +%s%3N)
+          echo "$((end-start))" > /tmp/w169_rollout_ms
+          kubectl get pods -n qplant-production -o json > /tmp/w169_pods.json 2>/dev/null || true
+          kubectl get all -n qplant-production -o wide || true
+          kubectl get events -n qplant-production --sort-by='.lastTimestamp' || true
+          exit "$rc"
+
+      - name: Retain rollout first-red diagnostics
+        if: always() && steps.cluster.outcome == 'success' && steps.rollout.outcome != 'success'
+        shell: bash
+        run: |
+          set +e
+          out=architecture/w169/runtime/diagnostics
+          mkdir -p "$out"
+          kubectl get deployment qplant-api-server -n qplant-production -o yaml > "$out/deployment.yaml" 2>&1 || true
+          kubectl get replicasets -n qplant-production -o yaml > "$out/replicasets.yaml" 2>&1 || true
+          kubectl get pods -n qplant-production -o wide > "$out/pods-wide.txt" 2>&1 || true
+          kubectl get pods -n qplant-production -o json > "$out/pods.json" 2>&1 || true
+          kubectl get events -n qplant-production --sort-by='.lastTimestamp' > "$out/events.txt" 2>&1 || true
+          for pod in $(kubectl get pods -n qplant-production -o name 2>/dev/null); do
+            safe=$(printf '%s' "$pod" | tr '/' '_')
+            kubectl describe -n qplant-production "$pod" > "$out/${safe}-describe.txt" 2>&1 || true
+            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true > "$out/${safe}-logs.txt" 2>&1 || true
+            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true --previous > "$out/${safe}-previous-logs.txt" 2>&1 || true
+          done
+          if [ -f /tmp/w169_image_id ]; then
+            cp /tmp/w169_image_id "$out/image-id.txt"
+          fi
+          printf '%s\n' "$EVALUATED_SOURCE_SHA" > "$out/evaluated-source-sha.txt"
+
+      - name: Measure health, cold start and request latency
+        id: measure
+        if: steps.rollout.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          kubectl port-forward -n qplant-production svc/qplant-api-service 18100:80 \
+            >/tmp/w169-port-forward.log 2>&1 &
+          pf=$!
+          trap 'kill "$pf" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18100/api/v1/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          python - <<'PY'
+          import json, statistics, time, urllib.request
+          from datetime import datetime
+          from pathlib import Path
+
+          latencies = []
+          for _ in range(30):
+              t0 = time.perf_counter()
+              with urllib.request.urlopen(
+                  "http://127.0.0.1:18100/api/v1/health", timeout=5
+              ) as response:
+                  if response.status != 200:
+                      raise SystemExit(f"health status={response.status}")
+                  response.read()
+              latencies.append((time.perf_counter() - t0) * 1000.0)
+
+          pods = json.loads(Path("/tmp/w169_pods.json").read_text())
+          cold = []
+          restarts = 0
+          ready = 0
+          for pod in pods.get("items", []):
+              created = datetime.fromisoformat(
+                  pod["metadata"]["creationTimestamp"].replace("Z", "+00:00")
+              )
+              for status in pod.get("status", {}).get("containerStatuses", []):
+                  restarts += int(status.get("restartCount", 0))
+                  if status.get("ready"):
+                      ready += 1
+                  started_at = status.get("state", {}).get("running", {}).get("startedAt")
+                  if started_at:
+                      started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+                      cold.append((started - created).total_seconds())
+
+          def percentile(values, p):
+              ordered = sorted(values)
+              idx = max(0, min(len(ordered) - 1, round((len(ordered) - 1) * p)))
+              return ordered[idx]
+
+          metrics = {
+              "request_count": len(latencies),
+              "request_p50_ms": statistics.median(latencies),
+              "request_p95_ms": percentile(latencies, 0.95),
+              "cold_start_p50_seconds": statistics.median(cold) if cold else None,
+              "cold_start_p95_seconds": percentile(cold, 0.95) if cold else None,
+              "restart_count": restarts,
+              "ready_container_count": ready,
+          }
+          Path("/tmp/w169_runtime_metrics.json").write_text(
+              json.dumps(metrics, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(metrics, indent=2, sort_keys=True))
+          PY
+
+      - name: Emit exact-SHA runtime FEATURE_ROW and receipt
+        if: always()
+        env:
+          CLUSTER_OUTCOME: ${{ steps.cluster.outcome }}
+          ADMISSION_OUTCOME: ${{ steps.admission.outcome }}
+          IMAGE_OUTCOME: ${{ steps.image.outcome }}
+          ROLLOUT_OUTCOME: ${{ steps.rollout.outcome }}
+          MEASURE_OUTCOME: ${{ steps.measure.outcome }}
+        run: |
+          mkdir -p architecture/w169/runtime
+          python - <<'PY'
+          import hashlib, json, os, subprocess, time
+          from pathlib import Path
+
+          def read_int(path):
+              p = Path(path)
+              return int(p.read_text().strip()) if p.exists() else None
+
+          def ms_to_s(value):
+              return round(value / 1000.0, 6) if value is not None else None
+
+          expected_source_sha = os.environ["EVALUATED_SOURCE_SHA"]
+          actual_source_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if actual_source_sha != expected_source_sha:
+              raise SystemExit(
+                  f"FAIL exact source mismatch actual={actual_source_sha} expected={expected_source_sha}"
+              )
+
+          start_ms = read_int("/tmp/w169_job_start_ms")
+          now_ms = int(time.time() * 1000)
+          image_size = read_int("/tmp/w169_image_size_bytes")
+          metrics_path = Path("/tmp/w169_runtime_metrics.json")
+          runtime = json.loads(metrics_path.read_text()) if metrics_path.exists() else {}
+          diagnostics_dir = Path("architecture/w169/runtime/diagnostics")
+
+          feature_row = {
+              "schema": "qplant-k8s-runtime-feature-row/v1",
+              "source_sha": expected_source_sha,
+              "source_identity": "PULL_REQUEST_HEAD_OR_PUSH_SHA",
+              "queue_seconds": None,
+              "execute_seconds_observed": ms_to_s(now_ms - start_ms) if start_ms else None,
+              "cluster_create_seconds": ms_to_s(read_int("/tmp/w169_cluster_ms")),
+              "server_admission_seconds": ms_to_s(read_int("/tmp/w169_admission_ms")),
+              "image_build_seconds": ms_to_s(read_int("/tmp/w169_image_build_ms")),
+              "rollout_seconds": ms_to_s(read_int("/tmp/w169_rollout_ms")),
+              "image_size_mib": round(image_size / 1048576.0, 3) if image_size else None,
+              "cold_start_p50_seconds": runtime.get("cold_start_p50_seconds"),
+              "cold_start_p95_seconds": runtime.get("cold_start_p95_seconds"),
+              "request_p50_ms": runtime.get("request_p50_ms"),
+              "request_p95_ms": runtime.get("request_p95_ms"),
+              "restart_count": runtime.get("restart_count"),
+              "cpu_peak_millicores": None,
+              "memory_peak_mib": None,
+              "null_not_zero": True,
+              "pca_eligible": False,
+          }
+          receipt = {
+              "schema": "qplant-k8s-real-api-runtime-receipt/v1",
+              "source_sha": expected_source_sha,
+              "source_identity": "PULL_REQUEST_HEAD_OR_PUSH_SHA",
+              "static_contract": "PASS" if Path("/tmp/w169_static_contract.json").exists() else "NOT_OBSERVED",
+              "real_kubernetes_api": os.environ["CLUSTER_OUTCOME"],
+              "server_side_admission": os.environ["ADMISSION_OUTCOME"],
+              "canonical_image_build": os.environ["IMAGE_OUTCOME"],
+              "workload_rollout": os.environ["ROLLOUT_OUTCOME"],
+              "health_measurement": os.environ["MEASURE_OUTCOME"],
+              "diagnostics_captured": diagnostics_dir.exists(),
+              "feature_row": feature_row,
+              "authority": {
+                  "w165_child_credit": 0,
+                  "engineering_credit_delta": 0,
+                  "control_eligible": False,
+                  "edge_inherited": False,
+              },
+          }
+          out = Path("architecture/w169/runtime/QPLANT_K8S_RUNTIME_RECEIPT.json")
+          payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          out.write_text(payload)
+          Path("architecture/w169/runtime/QPLANT_K8S_RUNTIME_RECEIPT.sha256").write_text(
+              hashlib.sha256(payload.encode()).hexdigest() + "\n"
+          )
+          Path("architecture/w169/runtime/QPLANT_K8S_FEATURE_ROW.json").write_text(
+              json.dumps(feature_row, indent=2, sort_keys=True) + "\n"
+          )
+          print(payload)
+          PY
+
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: w169-qplant-k8s-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          path: architecture/w169/runtime/**
+          if-no-files-found: error
+
+      - name: Fail closed on first real runtime red
+        if: always()
+        env:
+          CLUSTER_OUTCOME: ${{ steps.cluster.outcome }}
+          ADMISSION_OUTCOME: ${{ steps.admission.outcome }}
+          IMAGE_OUTCOME: ${{ steps.image.outcome }}
+          ROLLOUT_OUTCOME: ${{ steps.rollout.outcome }}
+          MEASURE_OUTCOME: ${{ steps.measure.outcome }}
+        run: |
+          test "$CLUSTER_OUTCOME" = success
+          test "$ADMISSION_OUTCOME" = success
+          test "$IMAGE_OUTCOME" = success
+          test "$ROLLOUT_OUTCOME" = success
+          test "$MEASURE_OUTCOME" = success

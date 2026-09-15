@@ -1,5 +1,5 @@
 # QPLANT API Server Deployment — Production
-# 3 replicas for high availability with rolling updates
+# Canonical runtime port is inherited from qplant/deployment/Dockerfile (8100).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,19 +25,35 @@ spec:
         app: qplant-api
         version: v4.4.0
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
       - name: validate-ssot
-        image: python:3.11-slim
+        # Reuse the application image so the validator has the exact PyYAML
+        # dependency set proven by the canonical QPLANT build.
+        image: qplant/api-server:v4.4.0
+        imagePullPolicy: IfNotPresent
         command: ["python3", "-c"]
         args:
           - |
-            import yaml, hashlib, sys
-            with open('/etc/qplant/config/config.yaml') as f:
+            import yaml
+            with open('/etc/qplant/config/config.yaml', encoding='utf-8') as f:
                 cfg = yaml.safe_load(f.read())
             assert cfg['compressors']['count'] == 3, 'Compressor count mismatch'
             assert cfg['compressors']['motor_power_kw'] == 315, 'Motor power mismatch'
             assert cfg['version'] == '4.4.0', 'Version mismatch'
-            print('✅ SSOT validation passed')
+            print('SSOT validation passed')
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
         volumeMounts:
         - name: ssot-volume
           mountPath: /etc/qplant/config
@@ -46,14 +62,19 @@ spec:
       containers:
       - name: api-server
         image: qplant/api-server:v4.4.0
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8000
+        - containerPort: 8100
           name: http
         env:
         - name: ENVIRONMENT
           value: "production"
+        - name: QPLANT_API_PORT
+          value: "8100"
         - name: SSOT_CONFIG_PATH
           value: "/etc/qplant/config/config.yaml"
+        - name: QPLANT_API_KEYS_DB
+          value: "/var/lib/qplant/authentication/api_keys.json"
         - name: LOG_LEVEL
           value: "INFO"
         - name: QPLANT_ADMIN_API_KEY
@@ -66,20 +87,28 @@ spec:
         - name: ssot-volume
           mountPath: /etc/qplant/config
           readOnly: true
+        - name: auth-state
+          mountPath: /var/lib/qplant/authentication
+          readOnly: false
+
+        startupProbe:
+          httpGet:
+            path: /api/v1/health
+            port: http
+          periodSeconds: 5
+          failureThreshold: 12
 
         livenessProbe:
           httpGet:
             path: /api/v1/health
-            port: 8000
-          initialDelaySeconds: 30
+            port: http
           periodSeconds: 10
           failureThreshold: 3
 
         readinessProbe:
           httpGet:
             path: /api/v1/health
-            port: 8000
-          initialDelaySeconds: 5
+            port: http
           periodSeconds: 5
           failureThreshold: 2
 
@@ -91,7 +120,20 @@ spec:
             memory: "512Mi"
             cpu: "500m"
 
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+
       volumes:
       - name: ssot-volume
         configMap:
           name: qplant-ssot-v4-4-0
+      - name: auth-state
+        # W169 proves the hardened runtime contract only. Production persistence
+        # and cross-replica sharing of authentication metadata require an
+        # explicit storage architecture decision; do not infer them from this
+        # bounded writable state surface.
+        emptyDir:
+          sizeLimit: 16Mi

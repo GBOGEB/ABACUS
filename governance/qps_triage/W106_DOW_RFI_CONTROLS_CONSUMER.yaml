@@ -1,0 +1,35 @@
+schema: qps-w106-dow-rfi-controls/v1
+wave: W106
+role: DOW_CONSUMER
+source_child:
+  repo: GBOGEB/cryoplant-project
+  pr: 875
+  state: PROVISIONAL_UNTIL_SOURCE_MERGED
+subject: LKT_ALAT_QPLANT_CONTROL_SYSTEM_RFI
+consume:
+  common_rfi_count: 15
+  bidders: [LKT, ALAT]
+  control_nodes: [QPLANT:CIS, WCS:CS, QRB:CS, WSH, QSN]
+  evidence_states:
+    - EXPLICIT_OFFER
+    - EXPLICIT_DRAWING_OR_DATASHEET
+    - SOURCE_BOUND_INFERENCE
+    - CROSS_SOURCE_INFERENCE
+    - REQUIREMENT_ONLY
+    - UNKNOWN
+    - CONTRADICTED
+rules:
+  - do_not_promote_inference_to_offer_fact
+  - do_not_infer_control_hierarchy_from_component_presence
+  - use_same_common_rfi_for_both_bidders
+  - bidder_specific_followups_require_bidder_specific_source_evidence
+  - authoritative_bidder_response_required_for_closure
+  - local_OEM_protection_is_compatible_with_overarching_CIS_when_interface_defined
+outputs_expected:
+  - LKT_response_matrix
+  - ALAT_response_matrix
+  - explicit_inferred_unknown_comparison
+  - deviation_and_contradiction_register
+  - control_hierarchy_mapping
+credit: NO_FORMAL_COMPLIANCE_CREDIT
+exit_gate: authoritative_bidder_responses_mapped_and_child_disposition_emitted

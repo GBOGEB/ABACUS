@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "w190-dow-final-head-repair/1.0",
+  "type": "object",
+  "required": ["schema_version", "wave", "consumed_child", "dow_disposition"],
+  "properties": {
+    "schema_version": {"const": "w190-dow-final-head-repair/1.0"},
+    "wave": {"const": "W190"},
+    "consumed_child": {
+      "type": "object",
+      "required": ["final_head_sha", "execution_receipt_declared_head_sha"],
+      "properties": {
+        "final_head_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "execution_receipt_declared_head_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"}
+      }
+    },
+    "dow_disposition": {"enum": ["ACCEPT_FINAL_HEAD_REPAIR_DEFER_GLOBAL_DOV", "REJECT", "DEFER"]}
+  }
+}
