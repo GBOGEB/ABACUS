@@ -21,7 +21,9 @@ REQUIRED_CAPABILITIES = {
     "artifact_manifest_validation",
     "release_automation",
     "visualization_layer",
+    "runtime_governance_status",
 }
+ALLOWED_ARTIFACT_STATUSES = {"active", "runtime_generated"}
 
 
 def _relative(path: Path, repo_root: Path) -> str:
@@ -72,12 +74,28 @@ def _validate_manifest(manifest: Mapping[str, Any], repo_root: Path, errors: Lis
             errors.append(f"runtime manifest artifact #{index} missing path")
             continue
 
-        artifact_path = repo_root / path_value
-        if not artifact_path.exists():
-            errors.append(f"manifest artifact path does not exist: {path_value}")
+        status = entry.get("status")
+        if status not in ALLOWED_ARTIFACT_STATUSES:
+            errors.append(
+                f"runtime manifest artifact has unsupported status {status!r}: {path_value}"
+            )
+            continue
 
-        if entry.get("status") != "active":
-            errors.append(f"manifest artifact must be active: {path_value}")
+        artifact_path = repo_root / path_value
+        if status == "active":
+            if not artifact_path.exists():
+                errors.append(f"manifest artifact path does not exist: {path_value}")
+            continue
+
+        producer = entry.get("producer")
+        if not isinstance(producer, str) or not producer:
+            errors.append(f"runtime-generated artifact missing producer: {path_value}")
+            continue
+        producer_path = repo_root / producer
+        if not producer_path.exists():
+            errors.append(
+                f"runtime-generated artifact producer does not exist: {producer}"
+            )
 
     missing_capabilities = sorted(REQUIRED_CAPABILITIES - capabilities)
     for capability in missing_capabilities:
@@ -120,6 +138,7 @@ def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, err
 
     if missing_evidence:
         errors.append(f"RTM trace matrix has unavailable or missing evidence: {', '.join(missing_evidence)}")
+
 
 def _validate_runtime_portal(portal_path: Path, errors: List[str]) -> None:
     if not portal_path.exists():
