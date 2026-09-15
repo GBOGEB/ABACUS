@@ -10,7 +10,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from scripts.validate_runtime_foundation import REPO_ROOT, validate_runtime_foundation
+try:
+    from scripts.validate_runtime_foundation import REPO_ROOT, validate_runtime_foundation
+except ModuleNotFoundError:  # direct `python scripts/...` execution
+    from validate_runtime_foundation import REPO_ROOT, validate_runtime_foundation
 
 
 def build_status(repo_root: Path = REPO_ROOT) -> dict[str, object]:
