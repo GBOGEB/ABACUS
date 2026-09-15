@@ -1,0 +1,30 @@
+schema_version: "receiver/1.0"
+wave: W233
+repo: GBOGEB/ABACUS
+role: DOW_POINTER_ONLY_RECEIVER
+source_child:
+  repo: GBOGEB/cryoplant-project
+  pr: 1308
+  head_sha: 8b316643b3d900f3c819e8cc3b3d1e11bab9f68d
+  handover_path: handover/session/SC_2026-09-15_W233_EXPANDED_FEDERATION_3PR_MIP_LOSSLESS_HANDOVER_v1.yaml
+  handover_blob: b7de17ad41435cba4826135c544ff7d3fcd107df
+  restart_path: handover/session/SC_2026-09-15_W233_EXPANDED_FEDERATION_RESTART_CARD_v1.md
+  restart_blob: fa7aa489c0a58b697f06eb13b1ed28127077d4fe
+disposition: ACCEPT_POINTER_ONLY
+preserve:
+  - nine-repo topology identity
+  - exact source heads at handover creation
+  - W68/W69/W70 merged alignment lineage
+  - active 3PR-A execution lanes as non-promoted work
+  - cryoplant child engineering authority
+analytics_boundary:
+  may:
+    - measure execution receipts
+    - calculate diagnostic PCA/reverse-loading when comparable evidence exists
+    - challenge consistency and reproducibility
+  may_not:
+    - promote engineering truth
+    - compensate child hard gates
+    - convert support-worker success into formal credit
+formal_credit_delta: 0
+global_project_dov: WITHHELD
