@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from DMAIC_V3.core.handover_bridge import HandoverBridge
-from DMAIC_V3.config import DMAICConfig
+from DMAIC_V3.config import DMAICConfig, VERSION
 from DMAIC_V3.core.state import StateManager
 
 
@@ -176,7 +176,7 @@ class TestDOWToDMAICBridge:
         config.execution_mode = dow_metadata["execution_mode"]
 
         assert config.execution_mode == "unified"
-        assert config.version == "3.3.0"
+        assert config.version == VERSION
 
     def test_dow_handover_to_dmaic_state(self, handover_bridge, state_manager):
         """Test DOW handover updates DMAIC state"""
@@ -309,7 +309,7 @@ class TestDOWToKEBBridge:
             "count": 2
         }
 
-        handover_bridge.begin_run("keb_to_dow")
+        handover_bridge.begin_run("dow_to_keb")
         handover_bridge.log_action("level5_keb", "retrieve_knowledge", keb_results)
 
         provenance = handover_bridge.get_provenance_trail()
