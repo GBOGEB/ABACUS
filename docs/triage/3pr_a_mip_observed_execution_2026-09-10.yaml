@@ -1,0 +1,48 @@
+schema_version: "mip/1.0"
+repo: GBOGEB/ABACUS
+wave: TRIAGE_3PR_A
+snapshot_date: 2026-09-10
+role: ANALYSIS_REVIEW_RENDER_EXECUTION
+
+observed_baseline:
+  publish_readiness_percent: 65.5
+  architecture_readiness_percent: 92
+  rc_technical_readiness_percent: 76
+  checklist: {pass: 17, partial: 9, open: 6, effective_percent: 67.2}
+  dmaic_process_maturity_percent: 86
+  control_maturity_percent: 59
+  pca_completeness_percent: 62
+  pca_state: PROVISIONAL_RULE_BASED
+  empirical_release_credit: WITHHELD
+
+modernize:
+  - replace conversational readiness with exact-head receipts
+  - require measured worker timing/yield instead of placeholders
+  - classify every workflow in CI governance SSOT
+innovate:
+  - reverse_load_PCA_on_gap_to_victory
+  - Bradley_Terry_rank_worker_allocations_after_measured_pulses
+  - emit cross_repo_child_receipt_without_parent_authority_mutation
+perpetuate:
+  - retain comparable R01_Rn execution history
+  - require three distinct source SHAs before empirical PCA promotion
+  - rerank only from observed receipts
+  - fail_closed_when_exact_head_CI_is_missing
+
+metrics_to_emit_each_pulse:
+  - exact_source_sha
+  - workers_started
+  - workers_completed
+  - wall_seconds
+  - evidence_yield_per_worker_minute
+  - root_count_before
+  - root_count_after
+  - ambiguity_before
+  - ambiguity_after
+  - reproducibility_status
+  - release_gate_delta
+
+victory:
+  current: PARTIAL
+  next: "three comparable retained pulses + empirical PCA promotion + measurable blocker/root reduction"
+  formal_engineering_credit_delta: 0
