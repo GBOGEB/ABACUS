@@ -88,9 +88,15 @@ jobs:
           python -m pip install -r DMAIC_V3/requirements.txt
       
       - name: Execute Full Pipeline
+        shell: bash
         run: |
+          set -o pipefail
           echo "ABACUS-v032 pipeline removed in refactor — pipeline now lives in DMAIC_V3"
-          python -m pytest DMAIC_V3/tests/ -v --tb=short -q
+          mkdir -p DMAIC_V3/output/w105-runtime
+          python -m pytest DMAIC_V3/tests/ -v --tb=short -q \
+            --junitxml=DMAIC_V3/output/w105-runtime/pytest-junit.xml \
+            2>&1 | tee DMAIC_V3/output/w105-runtime/pytest-terminal.log
+          exit ${PIPESTATUS[0]}
 
       - name: Upload Execution Reports
         if: always()
@@ -99,7 +105,7 @@ jobs:
           name: dmaic-execution-reports
           path: |
             DMAIC_V3/output/
-          if-no-files-found: ignore
+          if-no-files-found: warn
   
   update-documentation:
     name: Update Canonical Documentation
