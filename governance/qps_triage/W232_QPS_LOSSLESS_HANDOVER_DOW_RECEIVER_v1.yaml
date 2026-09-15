@@ -1,0 +1,55 @@
+schema: qps-lossless-handover-dow-receiver/1.1
+wave: W232
+created_local: '2026-09-15T05:46:00+02:00'
+refreshed_local: '2026-09-15T06:10:00+02:00'
+repo: GBOGEB/ABACUS
+role: DOW_ANALYTICAL_POINTER_RECEIVER
+authority_transfer: false
+source_child:
+  repo: GBOGEB/cryoplant-project
+  pr: 1300
+  head_sha: 02deeed770c26c5f0a24b5e8278c952e42223251
+  handover_path: handover/session/SC_2026-09-15_W232_FULL_3PR_MIP_LOSSLESS_HANDOVER_v1.yaml
+  handover_blob_sha: a4363f380f04dce02f2b486e94629ed0a065be40
+  dropin_path: handover/qps_recursive/W232_FULL_3PR_MIP_DROPIN.md
+  dropin_blob_sha: 313dfad84c9d4c7d3f1073b48f62a39714cc39f7
+consumer_basis:
+  abacus_main_at_refresh: 779fac31791592d1fa34bf40aab47a537d7a1c1d
+classification: POINTER_ONLY_ANALYTICAL_RESTART_RECEIPT
+accepted_child_controls:
+  - issue_923_is_independent_noncompensating_runtime_veto
+  - W191_and_G6_and_W152_returns_outrank_further_visual_polish
+  - W199_first_real_return_preempts_visual_lane
+  - W175_integrated_decision_remains_HOLD_zero_commercial_numerical_DoV_no_bidder_penalty
+  - N300_is_300_unique_75_each_but_CONTROL_withheld_on_table_readability_MSA
+  - PCA_retained_components_are_diagnostic_only
+  - Bradley_Terry_withheld_without_observed_pairwise_outcomes
+  - PVPS_issue_553_remains_live_same_point_architecture_power_CW_Nplus1_gate
+  - BD02_C30_2KSB_is_first_red_after_source_bound_C30_2KOP
+  - RTM_row_level_private_extract_is_first_red_after_authority_binding
+formal_guard:
+  engineering: '70/90'
+  negotiation: '0/20'
+  global_project_DoV: WITHHELD
+  receiver_credit_delta: 0
+may:
+  - preserve_child_restart_pointer
+  - independently_challenge_internal_consistency
+  - expose_analytical_restart_context
+may_not:
+  - copy_private_raw_child_evidence
+  - promote_visual_or_statistical_results_to_engineering_authority
+  - award_child_ACCEPT_or_formal_credit
+  - compensate_runtime_source_contract_or_safety_gates
+receipt:
+  disposition: ACCEPT_POINTER_ONLY
+  child_handover_visibility: PASS
+  child_engineering_acceptance: WITHHELD
+  exact_child_head_bound: true
+  exact_child_blob_bound: true
+  exact_dropin_blob_bound: true
+restart_rule: >-
+  Refresh child PR 1300 and current cryoplant main before use. This receiver is bound to final refreshed child head
+  02deeed770c26c5f0a24b5e8278c952e42223251 and handover blob a4363f380f04dce02f2b486e94629ed0a065be40.
+  Preserve DOW as derived analytical support only.
+stop_rule: NO_FURTHER_DOW_HANDOVER_LAYER_WITHOUT_CHILD_IDENTITY_CHANGE_OR_OBSERVED_GAP
