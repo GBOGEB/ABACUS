@@ -3,6 +3,8 @@ name: ABACUS v032 - CI/CD Pipeline
 on:
   push:
     branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
   workflow_dispatch:
 
 env:
@@ -51,10 +53,14 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
-      - name: Install dependencies
+      - name: Install canonical dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov
+          python -m pip install -r DMAIC_V3/requirements.txt
+      
+      - name: Verify GitHub runtime dependency
+        run: |
+          python -c "import github; print('PyGithub import OK')"
       
       - name: Test Phase 0 - Initialization
         run: |
@@ -75,18 +81,25 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install canonical dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r DMAIC_V3/requirements.txt
       
       - name: Execute Full Pipeline
         run: |
           echo "ABACUS-v032 pipeline removed in refactor — pipeline now lives in DMAIC_V3"
-          python -m pytest DMAIC_V3/tests/ -v --tb=short -q 2>/dev/null || echo "Tests ran"
+          python -m pytest DMAIC_V3/tests/ -v --tb=short -q
 
       - name: Upload Execution Reports
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: dmaic-execution-reports
           path: |
             DMAIC_V3/output/
+          if-no-files-found: ignore
   
   update-documentation:
     name: Update Canonical Documentation
