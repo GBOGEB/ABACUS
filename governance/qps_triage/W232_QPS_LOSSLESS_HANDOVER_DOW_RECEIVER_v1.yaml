@@ -1,18 +1,20 @@
-schema: qps-lossless-handover-dow-receiver/1.1
+schema: qps-lossless-handover-dow-receiver/1.2
 wave: W232
 created_local: '2026-09-15T05:46:00+02:00'
-refreshed_local: '2026-09-15T06:10:00+02:00'
+refreshed_local: '2026-09-15T09:24:00+02:00'
 repo: GBOGEB/ABACUS
 role: DOW_ANALYTICAL_POINTER_RECEIVER
 authority_transfer: false
 source_child:
   repo: GBOGEB/cryoplant-project
   pr: 1300
-  head_sha: 02deeed770c26c5f0a24b5e8278c952e42223251
+  head_sha: 3e338e09f4bb12b174946ba53ffa919d1fbd9b9c
   handover_path: handover/session/SC_2026-09-15_W232_FULL_3PR_MIP_LOSSLESS_HANDOVER_v1.yaml
   handover_blob_sha: a4363f380f04dce02f2b486e94629ed0a065be40
   dropin_path: handover/qps_recursive/W232_FULL_3PR_MIP_DROPIN.md
   dropin_blob_sha: 313dfad84c9d4c7d3f1073b48f62a39714cc39f7
+  stable_session_pointer_path: handover/qps_recursive/SESSION_CLOSE_CURRENT.yaml
+  stable_session_pointer_blob_sha: 1e2af7968ad3c413821fd6f23bb1b41fded97056
 consumer_basis:
   abacus_main_at_refresh: 779fac31791592d1fa34bf40aab47a537d7a1c1d
 classification: POINTER_ONLY_ANALYTICAL_RESTART_RECEIPT
@@ -44,12 +46,15 @@ may_not:
 receipt:
   disposition: ACCEPT_POINTER_ONLY
   child_handover_visibility: PASS
+  stable_session_root_visibility: PASS
   child_engineering_acceptance: WITHHELD
   exact_child_head_bound: true
   exact_child_blob_bound: true
   exact_dropin_blob_bound: true
+  exact_session_pointer_blob_bound: true
 restart_rule: >-
-  Refresh child PR 1300 and current cryoplant main before use. This receiver is bound to final refreshed child head
-  02deeed770c26c5f0a24b5e8278c952e42223251 and handover blob a4363f380f04dce02f2b486e94629ed0a065be40.
-  Preserve DOW as derived analytical support only.
+  Refresh child PR 1300 and current cryoplant main before use. This receiver is bound to child head
+  3e338e09f4bb12b174946ba53ffa919d1fbd9b9c, handover blob a4363f380f04dce02f2b486e94629ed0a065be40,
+  drop-in blob 313dfad84c9d4c7d3f1073b48f62a39714cc39f7 and stable-session-pointer blob
+  1e2af7968ad3c413821fd6f23bb1b41fded97056. Preserve DOW as derived analytical support only.
 stop_rule: NO_FURTHER_DOW_HANDOVER_LAYER_WITHOUT_CHILD_IDENTITY_CHANGE_OR_OBSERVED_GAP
