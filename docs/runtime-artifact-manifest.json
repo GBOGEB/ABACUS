@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "wave": "W007",
   "title": "ABACUS Runtime Foundation Manifest",
   "status": "operational",
@@ -59,6 +59,14 @@
       "path": ".github/workflows/runtime-governance.yml",
       "status": "active",
       "description": "Runtime governance workflow that executes W007 validation."
+    },
+    {
+      "id": "runtime_governance_status",
+      "capability": "runtime_governance_status",
+      "path": "reports/runtime_governance_status.json",
+      "status": "runtime_generated",
+      "producer": "scripts/write_runtime_governance_status.py",
+      "description": "Run-bound machine-readable W007 governance evidence generated only after validation; not a static source-controlled truth claim."
     }
   ]
 }
