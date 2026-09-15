@@ -1,0 +1,138 @@
+schema_version: abacus-dow-qps-w147-numerical-source-closure/0.1
+wave: W147
+status: CONTROLLED_ANALYTICAL_PROJECTION_SOURCE_CLOSURES_EXTERNAL_GATES_WITHHELD
+repo: GBOGEB/ABACUS
+authority_scope: READ_ONLY_ANALYTICAL
+engineering_promotion_forbidden: true
+
+lineage:
+  QPS_child:
+    PR: 1029
+    merge_sha: fe6670d20f4ea4b67f42bc370d472e7a03c6bb66
+    contract: triage/w147/QPS_W147_NUMERICAL_AUTHORITY_SOURCE_CLOSURE_v0.1.yaml
+  KEB_parent:
+    PR: 661
+    merge_sha: c13c7b3328e537c0595b501d807f0c0599c4315e
+    contract: triage/W147_QPS_NUMERICAL_SOURCE_CLOSURE_KEB.yaml
+    rule: typed_semantics_and_provenance_only
+
+analytical_gate_matrix:
+  - {gate: offered_invCOP_semantics, state: PASS_SOURCE_BOUND}
+  - {gate: offered_equal_exergy_method_300K_1bara, state: PASS_SOURCE_BOUND}
+  - {gate: returned_cold_single_credit, state: PASS_SOURCE_BOUND}
+  - {gate: SAT_capacity_test_topology_8h, state: PASS_SOURCE_BOUND}
+  - {gate: A_B_D_E_W_source_row, state: PASS_5_OF_5}
+  - {gate: CoolProp_exact_source_runtime, state: PASS_REFERENCE_ONLY}
+  - {gate: final_SAT_E3_invCOP_procedure_and_execution, state: WITHHELD}
+  - {gate: licensed_HEPAK_low_T_authority, state: WITHHELD}
+  - {gate: HP_56Hz_same_state_decomposition, state: WITHHELD}
+  - {gate: PVPS_same_state_decomposition, state: WITHHELD}
+  - {gate: fixed_baseload, state: WITHHELD}
+  - {gate: formal_invCOP_SAT, state: WITHHELD}
+  - {gate: global_project_DoV, state: WITHHELD}
+
+source_bound_invCOP_diagnostics:
+  Qeq_kW_4p5K: 3.35
+  denominator_terms_kW:
+    mCPLR: 0.29
+    Qcav: 1.83
+    Qb_supply: 2.58
+    Qb_return: -2.09
+    QTS_supply: 4.16
+    QTS_return: -3.42
+  numerator:
+    direct_refrigerator_kW: 908.0
+    HP_plus_PVPS_CW_heat_kWth: 808.0
+    CWS_factor_kWe_per_kWheat: 0.10
+    modeled_CWS_kW: 80.8
+    pre_uncertainty_kW: 988.8
+    plus_5pct_kW: 1038.24
+    printed_kW: 1038.0
+  invCOP_contract: 310.0
+  expected_invCOP_SAT: 296.0
+  U_invCOP_SAT: 15.0
+  analytical_conclusion: OFFER12_IS_INTERNALLY_REPRODUCED_WITHOUT_FICTITIOUS_153P13KW_BASELOAD
+
+SAT_projection:
+  capacity_test:
+    window_h: 8
+    primary_2K_simulator: CCPS_electrical_heater
+    acceptance_quantity: cold_compressor_suction_mass_flow
+    mCPLR: downstream_flow_meter
+    thermal_shield: internal_bypass_heater_and_recorded_inlet_outlet_conditions
+  invCOP_metering:
+    state: UNKNOWN_FINAL_APPROVED_IMPLEMENTATION
+  commercial_thresholds:
+    k_formula_present_in_negotiation_text: true
+    thresholds: [1.03, 1.08]
+    same_matrix_contractor_disposition: REJECTED_DEVIATION
+    conclusion: DO_NOT_PROMOTE_TO_FINAL_CONTRACT
+
+HP_projection:
+  aggregate_2KOP: {flow_g_s: 326.0, electrical_kW: 814.0, CW_kWth: 733.0}
+  owner_normal_frequency_Hz: 56.0
+  selected_package: KAESER_FSD575_SFC_wc
+  dedicated_oil_pump_hypothesis: REJECT_GENERIC_PACKAGE_CLARIFICATION_SAYS_NOT_REQUIRED
+  max_reference: {Hz: 72.0, flow_g_s: 112.0, package_kW: 357.0, motor_rating_kW: 315.0}
+  identifiable_fixed_baseload_from_current_evidence: false
+  reason: no_same_state_motor_VFD_auxiliary_split_or_three_point_intercept
+
+PVPS_projection:
+  exact_motor_sum_kW: 74.0
+  printed_offer_expression_kW: 78.0
+  printed_expression_state: ARITHMETIC_ERROR
+  2KOP_package_kW: 83.0
+  2KOP_CW_kWth: 75.0
+  unallocated_difference_kW: 9.0
+  identifiable_auxiliary_kW_from_current_evidence: false
+  reason: 9kW_is_residual_not_submeter_or_same_state_decomposition
+
+reverse_pressure_ranking:
+  - rank: 1
+    item: SAT_E3_APPROVED_INVCOP_PROCEDURE_AND_EXECUTED_RECEIPT
+    qps_issue: 1021
+    expected_information_gain: VERY_HIGH
+    closes: [numerator_boundary, denominator_execution, uncertainty, final_acceptance_semantics]
+  - rank: 2
+    item: LICENSED_HEPAK_NUMERICAL_RECEIPT
+    qps_issue: 663
+    expected_information_gain: HIGH
+    closes: [low_T_property_authority, governed_enthalpy_exergy_crosscheck]
+  - rank: 3
+    item: HP_56HZ_SAME_STATE_E2_DECOMPOSITION
+    qps_issue: 1022
+    expected_information_gain: HIGH
+    closes: [dominant_consumer_efficiency, HP_auxiliary_split, baseload_identifiability]
+  - rank: 4
+    item: PVPS_SAME_STATE_E2_DECOMPOSITION
+    qps_issues: [553, 962]
+    expected_information_gain: MEDIUM_HIGH
+    closes: [PVPS_74_78_83_physical_boundary, PVPS_auxiliary_split]
+  - rank: 5
+    item: BASELOAD_AND_FORMAL_SAT_DISPOSITION
+    expected_information_gain: DERIVED_AFTER_UPSTREAM_RETURNS
+
+analytical_stop_rules:
+  - do_not_fit_baseload_to_force_target_invCOP
+  - do_not_zero_fill_missing_auxiliary_power
+  - do_not_promote_single_point_residual_to_intercept
+  - do_not_use_72Hz_max_reference_as_56Hz_measurement
+  - do_not_credit_returned_cold_twice
+  - do_not_substitute_CoolProp_for_HEPAK
+  - do_not_promote_contractor_rejected_negotiation_clause_to_contract
+  - do_not_cross_substitute_offer_source_hashes
+
+source_identity:
+  bookmarked_navigation_sha256: 8d074db4d07bf6d904635d7666664ebd54a2d0d7fc80d53b8f256be9e48911d0
+  separate_controlled_representation_sha256: d92af4666cc10ec6a4f8ac6cfe57aef477bca116f72a12f9156a680ce7e1e35e
+  relation: BYTE_IDENTITY_NOT_PROVEN
+
+DoD:
+  source_known_numerical_semantics_projected: true
+  physical_external_gaps_isolated: true
+  reverse_pressure_ranked: true
+  no_truth_authority_mutation: true
+DoV:
+  DOW_projection: PASS_PENDING_MERGE
+  numerical_engineering_DoV: WITHHELD_EXTERNAL_SOURCE_AND_EXECUTION
+  global_project_DoV: WITHHELD

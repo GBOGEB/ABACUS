@@ -1,0 +1,86 @@
+name: W74 QPLANT Kubernetes Contract
+
+on:
+  pull_request:
+    paths:
+      - "qplant/deployment/Dockerfile"
+      - "qplant/deployment/k8s/**"
+      - "qplant/deployment/scripts/validate_k8s_contract.py"
+      - "tests/test_w74_qplant_k8s_contract.py"
+      - ".github/workflows/w74-qplant-k8s-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EVALUATED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact evaluated source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert exact evaluated source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EVALUATED_SOURCE_SHA"
+          echo "exact_source_sha=$actual"
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Install contract dependencies
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2 pytest==9.0.3
+
+      - name: Execute Kubernetes contract validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p architecture/w74/runtime
+          python qplant/deployment/scripts/validate_k8s_contract.py \
+            | tee architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json
+          python -m json.tool architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json >/dev/null
+
+      - name: Run isolated contract regression tests
+        # This narrow contract test has no dependency on the repository-wide
+        # statistical fixtures in tests/conftest.py. Do not make W74 install
+        # unrelated NumPy/DMAIC dependencies merely to collect two local tests.
+        run: python -m pytest --noconftest tests/test_w74_qplant_k8s_contract.py -q
+
+      - name: Bind exact evaluated source SHA
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+
+          expected = os.environ["EVALUATED_SOURCE_SHA"]
+          actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if actual != expected:
+              raise SystemExit(f"FAIL exact source mismatch actual={actual} expected={expected}")
+
+          p = Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.json")
+          receipt = json.loads(p.read_text())
+          receipt["source_sha"] = expected
+          receipt["source_identity"] = "PULL_REQUEST_HEAD_OR_PUSH_SHA"
+          payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          p.write_text(payload)
+          Path("architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.sha256").write_text(
+              hashlib.sha256(payload.encode()).hexdigest() + "\n"
+          )
+          PY
+
+      - name: Upload exact-SHA contract receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: w74-qplant-k8s-contract-${{ github.event.pull_request.head.sha || github.sha }}
+          path: architecture/w74/runtime/QPLANT_K8S_CONTRACT_RECEIPT.*
+          if-no-files-found: error

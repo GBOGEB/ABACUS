@@ -14,6 +14,9 @@ import pytest_asyncio
 import asyncio
 import json
 import time
+import sys
+import os
+import uuid
 from pathlib import Path
 from typing import Dict, List, Tuple
 from datetime import datetime
@@ -79,9 +82,9 @@ class DMAICTestOrchestrator:
     """
     
     def __init__(self, workspace_path: Path = Path(".")):
-        self.workspace_path = workspace_path
-        self.metrics_dir = workspace_path / "test_metrics"
-        self.metrics_dir.mkdir(exist_ok=True)
+        self.workspace_path = workspace_path.resolve()
+        self.metrics_dir = self.workspace_path / "test_metrics"
+        self.metrics_dir.mkdir(parents=True, exist_ok=True)
         
         self.test_results: List[TestMetrics] = []
         self.dmaic_metrics: Dict[DMAICPhase, DMAICMetrics] = {}
@@ -129,27 +132,43 @@ class DMAICTestOrchestrator:
         """
         import subprocess
         
-        # Run tests with coverage
+        # Isolate each measurement: stale/shared reports are not runtime evidence.
+        run_dir = self.metrics_dir / uuid.uuid4().hex
+        run_dir.mkdir()
+        report_file = run_dir / "test_report.json"
+        coverage_file = run_dir / "coverage.json"
         cmd = [
-            "python", "-m", "pytest",
+            sys.executable, "-m", "pytest",
             test_suite,
             "--cov=.",
-            "--cov-report=json",
+            f"--cov-report=json:{coverage_file}",
             "--json-report",
-            "--json-report-file=test_metrics/test_report.json",
+            f"--json-report-file={report_file}",
             "-v"
         ]
         
         start_time = time.time()
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        env = {**os.environ, "COVERAGE_FILE": str(run_dir / ".coverage")}
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, cwd=self.workspace_path,
+            env=env, timeout=300,
+        )
         duration = time.time() - start_time
+        (run_dir / "stdout.log").write_text(result.stdout, encoding="utf-8")
+        (run_dir / "stderr.log").write_text(result.stderr, encoding="utf-8")
+        if result.returncode not in (0, 1):
+            raise RuntimeError(
+                f"Measurement subprocess exited {result.returncode}; evidence: {run_dir}"
+            )
         
         # Parse results
-        report_file = self.metrics_dir / "test_report.json"
-        coverage_file = Path("coverage.json")
+        if not report_file.is_file() or not coverage_file.is_file():
+            raise RuntimeError(f"Measurement reports missing; evidence: {run_dir}")
         
         test_data = self._parse_test_report(report_file)
         coverage_data = self._parse_coverage_report(coverage_file)
+        if test_data['total'] <= 0:
+            raise RuntimeError(f"Measurement collected no tests; evidence: {run_dir}")
         
         metrics = DMAICMetrics(
             phase=DMAICPhase.MEASURE,

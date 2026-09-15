@@ -1,0 +1,103 @@
+schema: abacus-qplant-k8s-edge-readiness/v1
+wave: ABACUS:W74
+source_date: 2026-09-13
+mission: harden the existing QPLANT Kubernetes parent and expose measured evidence for QPS TRIAGE adoption
+
+authority:
+  parent_capability: GBOGEB/ABACUS:qplant/deployment/k8s
+  qps_child_authority: false
+  engineering_credit_delta: 0
+  compliance_credit_delta: 0
+  allocation_authority: false
+
+kubernetes:
+  state: IMPLEMENTED_AWAITING_CI_RECEIPT
+  canonical_runtime:
+    image: qplant/api-server:v4.4.0
+    namespace: qplant-production
+    api_port: 8100
+    baseline_replicas: 3
+    max_replicas: 10
+  repaired_contract_gaps:
+    - deployment_service_network_policy_port_drift_8000_vs_canonical_8100
+    - init_validator_dependency_gap_python_slim_without_pyyaml
+    - standalone_ssot_validator_namespace_drift_qplant_vs_qplant-production
+    - standalone_ssot_validator_configmap_and_schema_drift
+    - duplicate_external_exposure_loadbalancer_plus_ingress
+    - missing_container_runtime_hardening
+  controls_added:
+    - startup_liveness_readiness_named_port_probes
+    - run_as_non_root
+    - seccomp_runtime_default
+    - read_only_root_filesystem
+    - no_privilege_escalation
+    - drop_all_linux_capabilities
+    - immutable_ssot_binding
+    - executable_periodic_ssot_semantic_check
+    - exact_manifest_sha256_receipt
+  measurement:
+    validator: qplant/deployment/scripts/validate_k8s_contract.py
+    regression_test: tests/test_w74_qplant_k8s_contract.py
+    workflow: .github/workflows/w74-qplant-k8s-contract.yml
+    static_contract_checks: 30
+    ci_execution: PENDING
+    runtime_cluster_execution: NOT_YET_EARNED
+
+edge_compute:
+  state: UNBOUND_PARENT_CANDIDATE
+  promotion_forbidden: true
+  evidence_search:
+    concrete_k3s_parent: NOT_FOUND
+    concrete_microk8s_parent: NOT_FOUND
+    concrete_arm64_edge_parent: NOT_FOUND
+    vendored_or_false_positive_matches: EXCLUDED
+  next_qualification_contract:
+    required_before_promotion:
+      - exact repository and commit
+      - supported architecture and node class
+      - container runtime and Kubernetes distribution
+      - disconnected_or_degraded_network_behavior
+      - local persistence and replay semantics
+      - workload resource envelope cpu_memory_storage
+      - signed_or_digest_bound_image identity
+      - health and restart evidence
+      - telemetry export path to MissionControl
+      - rollback receipt
+    candidate_modes:
+      - EDGE_AGENT_NO_CLUSTER
+      - SINGLE_NODE_K3S
+      - FEDERATED_K8S_WORKER
+    decision_rule: choose the smallest mode that satisfies measured workload latency availability and recovery requirements
+
+devops_guidance:
+  priority_order:
+    - execute W74 CI and retain exact-SHA receipt
+    - run manifest server-side or cluster dry-run against a real Kubernetes API
+    - execute image and health probe on a real runner
+    - measure cold_start_p50_p95 cpu memory request_latency error_rate restart_count
+    - only then bind QPS child adoption
+    - qualify edge parent independently; do not inherit cloud K8s readiness as edge readiness
+  pca_feature_candidates:
+    - queue_seconds
+    - execute_seconds
+    - cold_start_seconds
+    - cpu_peak_millicores
+    - memory_peak_mib
+    - request_p95_ms
+    - error_rate
+    - restart_count
+    - image_size_mib
+    - node_architecture_pressure
+  bt_reverse_pressure_candidates:
+    - contract_failure
+    - runtime_unproven
+    - security_gap
+    - observability_gap
+    - edge_parent_unbound
+    - resource_pressure
+
+dov:
+  kubernetes_parent_static: workflow_executes_gt_0_steps_and_validator_passes_and_exact_sha_receipt_uploaded
+  kubernetes_parent_runtime: real_cluster_or_api_validation_plus_workload_health_evidence
+  qps_child: exact_parent_sha_consumed_by_QPS_validator_without_claiming_parent_equals_child
+  edge: concrete_parent_plus_runtime_receipt_required

@@ -1,0 +1,168 @@
+# yamllint disable rule:line-length
+schema_version: abacus-dow-qps-power-utility/0.1
+wave: W111
+status: CONTROL_CANDIDATE
+repo: GBOGEB/ABACUS
+authority_scope: REPO_LOCAL_ANALYTICAL_RUNTIME
+engineering_promotion_forbidden: true
+
+qps_child_authority:
+  repo: GBOGEB/cryoplant-project
+  source_ssot: ocd-adr/20_canonical/control/QPS_W111_POWER_UTILITY_SOURCE_SSOT_v1.json
+  source_ssot_git_blob_sha: d19975a150a3530cc4db3bd2fbbf4180f757c2a4
+  child_manifest: triage/w111/QPS_W111_POWER_UTILITY_FEDERATION_MANIFEST_v0.1.yaml
+
+keb_ingress:
+  repo: GBOGEB/CODEX
+  contract: triage/W111_QPS_POWER_UTILITY_KEB_BRIDGE.yaml
+  required_receipt: KEB-W111-POWER-UTILITY
+  rule: DOW consumes governed typed payload; direct raw bidder PDF ingestion is prohibited in this lane
+
+analysis_model:
+  electrical_boundaries:
+    E0: compressor_or_motor_shaft
+    E1: motor_electrical_input
+    E2: complete_skid_package_input
+    E3: QPLANT_process_electrical_feed
+    E4: facility_all_in_electrical_feed
+  thermal_boundaries:
+    T0: compressor_internal_rejection
+    T1: useful_heat_recovery
+    T2: heat_recovery_bypass
+    T3: WCS_room_air_heat
+    T4: HVAC_makeup_intake_air
+    T5: HVAC_exhaust_bypass_air
+  equations:
+    ideal_isothermal: "m_dot * R_He * T1 * ln(P2/P1)"
+    ideal_isentropic_reference: "m_dot * cp * T1 * ((P2/P1)^((gamma-1)/gamma)-1)"
+    package_isothermal_efficiency: "W_iso / P_E2"
+    invCOP_E3: "P_E3 / Q4p5K_eq"
+    invCOP_E4: "P_E4 / Q4p5K_eq"
+    power_decomposition: "P_total = P_compression + P_fixed + P_variable_aux + P_unreconciled"
+  semantic_guards:
+    - whole_intercooled_HP_package_is_not_single_adiabatic_stage
+    - ideal_isentropic_full_ratio_is_reference_only_without_stage_states
+    - isentropic_efficiency_above_one_is_diagnostic_of_boundary_mismatch_not_a_physical_efficiency
+    - heat_recovery_does_not_reduce_electrical_input_for_invCOP
+    - returned_cold_is_counted_once_at_declared_user_or_QRB_control_volume
+
+known_inputs:
+  helium_R_kJ_kgK: 2.077
+  helium_gamma_ideal_reference: 1.6666666667
+  LKT_HP_normal_each:
+    mass_flow_kg_s: 0.0815
+    T1_K: 298.0
+    P1_bara: 1.05
+    P2_bara: 14.0
+    frequency_Hz: 56.0
+    package_input_kW: 203.5
+    classification: MIXED_OWNER_IMMUTABLE_PLUS_SOURCE_BOUND_DERIVED_EQUAL_SHARE
+  LKT_HP_max_each:
+    mass_flow_kg_s: 0.112
+    T1_K: 298.0
+    P1_bara: 1.05
+    P2_bara: 14.0
+    frequency_Hz: 72.0
+    motor_rating_kW: 315.0
+    package_input_kW: 357.0
+    classification: SOURCE_BOUND_BIDDER_MAX_REFERENCE
+  LKT_2KOP:
+    HP_kW: 814.0
+    PVPS_kW: 83.0
+    CC_kW: 5.0
+    controlled_operating_subtotal_kW: 908.0
+    Qeq_margin_kW: 3.423
+    bidder_invCOP_W_per_W: 310.0
+    bidder_implied_total_electrical_kW: 1061.13
+    unreconciled_electrical_kW: 153.13
+
+baseload_inference:
+  model: "P_E3 = a + b1*m_HP + b2*m_PVPS + state_terms + epsilon"
+  promote_only_if:
+    - at_least_3_independent_same_boundary_operating_points
+    - same_metering_or_declared_electrical_boundary
+    - source_bound_state_and_mass_flow
+    - residual_pattern_is_stable_enough_to_support_intercept
+  otherwise: DEFER_NOT_IDENTIFIED
+  forbidden:
+    - assign_153p13kW_wholly_to_baseload
+    - assign_residual_wholly_to_HVAC_fans_or_QRB_without_source
+
+MC_contract:
+  purpose: propagate_uncertainty_not_invent_missing_source
+  candidate_random_variables:
+    - motor_efficiency_when_not_exactly_source_bound
+    - VFD_loss
+    - package_auxiliary_fraction
+    - fixed_baseload
+    - HVAC_fan_or_air_handling_power_if_inside_E4
+    - heat_recovery_secondary_pump_power_if_inside_E4
+    - metering_tolerance
+  outputs: [P2p5, P10, P50, mean, P90, P97p5]
+  rule: UNKNOWN_source_boundaries_remain_explicit_and_MC_priors_are_POSTULATED_non_promoting
+
+PCA_contract:
+  minimum_sample_rule: "n >= max(10, 3*p) for p continuous features unless a documented alternate adequacy test passes"
+  candidate_features:
+    - HP_mass_flow
+    - PVPS_mass_flow
+    - HP_package_kW
+    - PVPS_package_kW
+    - CC_kW
+    - Qeq_kW
+    - E3_total_kW
+    - E4_total_kW
+    - unreconciled_kW
+    - heat_recovery_kWth
+    - room_air_heat_kWth
+    - HVAC_electrical_kW
+  outputs: [scree, explained_variance, loadings, reverse_loading_priority]
+  current_two_point_HP_status: INSUFFICIENT_FOR_PCA
+  rule: PCA_ranks_information_and_structure_not_engineering_truth
+
+BT_reverse_loading:
+  current_priority:
+    - rank: 1
+      evidence: exact_LKT_electrical_SLD_load_schedule_and_invCOP_meter_boundary
+      reason: decomposes_153p13kW_and_defines_E3
+    - rank: 2
+      evidence: FSD575_motor_VFD_auxiliary_breakdown_at_56Hz_and_72Hz
+      reason: separates_E0_E1_E2_and_efficiency
+    - rank: 3
+      evidence: PVPS_running_count_frequency_flow_and_package_boundary
+      reason: permits_same_point_PVPS_power_reconstruction
+    - rank: 4
+      evidence: heat_recovery_HVAC_airflow_exhaust_penetration_scope
+      reason: separates_T1_T5_and_E3_E4
+    - rank: 5
+      evidence: independent_thermophysical_state_receipt
+      reason: verifies_ideal_work_and_returned_cold_enthalpy_without_replacing_child_authority
+
+satellite_adapter:
+  CoolProp:
+    repo: GBOGEB/CoolProp
+    role: thermophysical_calculation_reference
+    inputs: [fluid_He, T, P, h_or_s_where_required]
+    outputs: [h, s, rho, cp, cv, gamma_or_equivalent, state_revision_receipt]
+    promotion: forbidden
+  CODESPACES_jyperter:
+    repo: GBOGEB/CODESPACES_jyperter
+    role: notebook_preview_and_reproducibility
+    promotion: forbidden
+
+output_receipt:
+  id: DOW-W111-POWER-UTILITY
+  finding_types: [CALCULATED, INFERRED, SOURCE_GAP, CONTRADICTION, SENSITIVITY, MC_POSTULATED, PCA_DIAGNOSTIC]
+  required: [input_payload_sha256, model_version, equations, input_evidence_classes, results, residuals, uncertainty, next_BG, next_CG, engineering_promotion_forbidden]
+  return_to: GBOGEB/CODEX
+
+DoD:
+  analysis_contract_present: true
+  deterministic_calculation_script: PRESENT
+  registry_binding: PRESENT
+  CI: EXECUTES
+  DOW_receipt: GENERATED_BY_WORKFLOW
+
+victory: >-
+  ABACUS can reproduce isothermal and isentropic-reference powers, explicitly classify non-applicable whole-package
+  isentropic efficiency, expose E3/E4 and residuals, and return typed MC/PCA/BT findings without mutating QPS source truth.

@@ -1,0 +1,88 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "record_type": "sanitized_cross_repo_acceptance",
+  "scope": "mip_dov_v1_receipt_protection_and_self_index",
+  "observed_date": "2026-09-12",
+  "raw_receipt_retention": "transient_runner_only",
+  "fixed_goalpost": {
+    "gate_count": 8,
+    "closed_gate_count": 8,
+    "status": "PASS"
+  },
+  "global_project_dov": "WITHHELD",
+  "gates": [
+    {"id": "G1", "name": "scope_fixed", "status": "PASS"},
+    {"id": "G2", "name": "exact_heads_pinned", "status": "PASS"},
+    {"id": "G3", "name": "receipt_policy_defined", "status": "PASS"},
+    {"id": "G4", "name": "receipt_ignore_guards", "status": "PASS"},
+    {"id": "G5", "name": "docx_bootstrap_publication_decision", "status": "PASS"},
+    {"id": "G6", "name": "n1_protection_merged", "status": "PASS"},
+    {"id": "G7", "name": "exact_sha_self_index_four_surfaces", "status": "PASS"},
+    {"id": "G8", "name": "repeatability_and_sanitized_acceptance", "status": "PASS"}
+  ],
+  "n1_merge_lineage": [
+    {
+      "repository": "GBOGEB/ABACUS",
+      "pr": 1125,
+      "merge_commit": "b3229db3c22075c375ac56c1e482547987117ebf"
+    },
+    {
+      "repository": "GBOGEB/CODEX",
+      "pr": 629,
+      "merge_commit": "622ba73df61b416dc02725f378034dc737df27ba"
+    },
+    {
+      "repository": "GBOGEB/DOCX_RTM_Automation",
+      "pr": 47,
+      "merge_commit": "41a4b5a86f2e032c779ad148903dc9260fd96cc6"
+    }
+  ],
+  "surface_evidence": [
+    {
+      "repository": "GBOGEB/ABACUS",
+      "surface": "root",
+      "proof_head_sha": "e836930229ebeb95f028c066e287b4ba6775ea80",
+      "run_id": 34712556105,
+      "producer": "PASS",
+      "consumer": "PASS",
+      "repeat_runs": 2,
+      "proof_pr": 1157,
+      "proof_disposition": "PROOF_CAPTURED_NO_RUNTIME_DELTA"
+    },
+    {
+      "repository": "GBOGEB/ABACUS",
+      "surface": "integration/codespace_jyperter",
+      "proof_head_sha": "e836930229ebeb95f028c066e287b4ba6775ea80",
+      "run_id": 34712556105,
+      "producer": "PASS",
+      "consumer": "PASS",
+      "repeat_runs": 2,
+      "nested_diagnostic": "PASS",
+      "proof_pr": 1157,
+      "proof_disposition": "PROOF_CAPTURED_NO_RUNTIME_DELTA"
+    },
+    {
+      "repository": "GBOGEB/CODEX",
+      "surface": "root",
+      "proof_head_sha": "215f367bba12022d4dd19bcf2345a08a8c34c8c8",
+      "run_id": 34712316007,
+      "producer": "PASS",
+      "repeat_runs": 2,
+      "repair_pr": 662,
+      "merge_commit": "ccf36dadf6caa1c3739ab754c201e39b07fb32c3"
+    },
+    {
+      "repository": "GBOGEB/DOCX_RTM_Automation",
+      "surface": "root",
+      "proof_head_sha": "de8a62af406ec72d0883ce41fc4b988f51587e8c",
+      "run_id": 34712361991,
+      "producer": "PASS",
+      "repeat_runs": 2,
+      "repair_pr": 52,
+      "merge_commit": "d85dc2de1b4beb88bc8e8ce4796784f4577f9a96"
+    }
+  ],
+  "acceptance_boundary": "This PASS closes the fixed eight-gate medium-term receipt-protection and exact-SHA self-index tranche only. It does not promote the broader MIP mesh, DOW/KEB federation, project TRIAGE, negotiation, or terminal global DoV.",
+  "next_control_transition": "Move the closed tranche to CONTROL monitoring and treat broader federation/orchestration as separately versioned scope rather than extending this goalpost."
+}

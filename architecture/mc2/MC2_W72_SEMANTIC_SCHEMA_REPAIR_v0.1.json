@@ -1,0 +1,35 @@
+{
+  "schema_version": "MC2-W72-SEMANTIC-SCHEMA-REPAIR-0.1.0",
+  "parent_mission": "GBOGEB/cryoplant-project#1063",
+  "worker_issue": "GBOGEB/ABACUS#1164",
+  "authority": "derived_operational_analysis",
+  "trigger": "semantic denominator reached 5/5 but only one registered feature varied",
+  "observed_model_defect": {
+    "old_measurement_schema": "W67-ID-MEASURED-1.0.0",
+    "problem": "authority-object IDs from ssot/index.json were compared directly with domain IDs from ssot/ssot_items.yaml, while contractual gap record IDs referenced by semantic_traceability were excluded from the known-ID population",
+    "effect": "A/B/D/E rates were structurally frozen or overstated and generated evidence could contribute to consumer counts",
+    "disposition": "SUPERSEDED_FOR_NEW_SEMANTIC_PCA_ONLY",
+    "historical_receipts_deleted": false
+  },
+  "new_measurement_schema": "W72-SEMANTIC-CENSUS-2.0.0",
+  "controls": [
+    "authority_registry_compares_manifest_current_bindings_to_normalized_index_only",
+    "domain_and_contractual_gap_ids_are_separate_known_semantic_entities",
+    "lineage_uses_real_bound_source_paths_with_anchor_stripping",
+    "generated_receipts_tests_and_fixtures_do_not_self_satisfy_consumer_penetration",
+    "semantic_pca_may_use_only_same-schema_exact-SHA rows",
+    "historical_SHAs_must_be_remeasured_not_substituted",
+    "allocation_authority_remains_false"
+  ],
+  "exact_sha_backfill_targets": [
+    "e20f923b5994a2d817fe1fde5d625d189170127b",
+    "3e52a1db7560c56a4e67a9a0ffd5686600cfceb1",
+    "970bc70a016bc071cd3c97bfdbd012d48a85055d",
+    "c39696661d8d67c769c8031a962129c6d67c3935",
+    "8f7f419d388839a68a416aaa552846cae0c16ac3"
+  ],
+  "promotion_rule": "semantic PCA and PA95 require five successfully remeasured distinct source SHAs under W72-SEMANTIC-CENSUS-2.0.0 and at least two varying registered semantic features",
+  "bt_status": "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE",
+  "global_allocation_authority": false,
+  "child_engineering_promotion_authority": false
+}

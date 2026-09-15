@@ -1,0 +1,13 @@
+{
+  "assignment_digest": "3cd64ef3c78acab79fe1a040868055e4421f29fc61ff896f975f55de6b267a3e",
+  "authority": "DOW_POINTER_ONLY",
+  "commercial_credit": false,
+  "control_credit": false,
+  "dispatch_id": "DISPATCH-571FFA3C1610A78A",
+  "engineering_acceptance_credit": false,
+  "route_id": "ROUTE-80372D288726D227",
+  "run_id": "34936014830",
+  "schema": "gloob-dispatch-acceptance-ledger/0.1",
+  "source_commit": "4df645f29285d7d7be2cc6ab3024b871f8e9581a",
+  "state": "RETURN_EMITTED"
+}

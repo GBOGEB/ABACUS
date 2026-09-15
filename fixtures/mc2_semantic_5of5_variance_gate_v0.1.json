@@ -1,0 +1,67 @@
+[
+  {
+    "authority_class": "derived_operational_analysis",
+    "consumer_penetration_rate": 0.6,
+    "evidence_reference": "architecture/w66/receipts/history/e20f923b5994a2d817fe1fde5d625d189170127b/FEATURE_ROW.json",
+    "graph_drop_rate": 0.36,
+    "lineage_gap_rate": 0.4,
+    "observation_class": "semantic",
+    "registry_gap_rate": 0.5,
+    "row_id": "SEM-W66-e20f923b",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "e20f923b5994a2d817fe1fde5d625d189170127b",
+    "unresolved_reference_rate": 0.727273
+  },
+  {
+    "authority_class": "derived_operational_analysis",
+    "consumer_penetration_rate": 0.6,
+    "evidence_reference": "architecture/w66/receipts/history/3e52a1db7560c56a4e67a9a0ffd5686600cfceb1/FEATURE_ROW.json",
+    "graph_drop_rate": 0.36,
+    "lineage_gap_rate": 0.4,
+    "observation_class": "semantic",
+    "registry_gap_rate": 0.5,
+    "row_id": "SEM-W66-3e52a1db",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "3e52a1db7560c56a4e67a9a0ffd5686600cfceb1",
+    "unresolved_reference_rate": 0.727273
+  },
+  {
+    "authority_class": "derived_operational_analysis",
+    "consumer_penetration_rate": 0.6,
+    "evidence_reference": "architecture/w66/receipts/history/970bc70a016bc071cd3c97bfdbd012d48a85055d/FEATURE_ROW.json",
+    "graph_drop_rate": 0.36,
+    "lineage_gap_rate": 0.4,
+    "observation_class": "semantic",
+    "registry_gap_rate": 0.5,
+    "row_id": "SEM-W66-970bc70a",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "970bc70a016bc071cd3c97bfdbd012d48a85055d",
+    "unresolved_reference_rate": 0.727273
+  },
+  {
+    "authority_class": "derived_operational_analysis",
+    "consumer_penetration_rate": 0.6,
+    "evidence_reference": "architecture/w66/receipts/history/c39696661d8d67c769c8031a962129c6d67c3935/FEATURE_ROW.json",
+    "graph_drop_rate": 0.36,
+    "lineage_gap_rate": 0.4,
+    "observation_class": "semantic",
+    "registry_gap_rate": 0.5,
+    "row_id": "SEM-W66-c3969666",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "c39696661d8d67c769c8031a962129c6d67c3935",
+    "unresolved_reference_rate": 0.727273
+  },
+  {
+    "authority_class": "derived_operational_analysis",
+    "consumer_penetration_rate": 1.0,
+    "evidence_reference": "architecture/w66/receipts/history/8f7f419d388839a68a416aaa552846cae0c16ac3/FEATURE_ROW.json",
+    "graph_drop_rate": 0.36,
+    "lineage_gap_rate": 0.4,
+    "observation_class": "semantic",
+    "registry_gap_rate": 0.5,
+    "row_id": "SEM-W70-8f7f419d",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+    "unresolved_reference_rate": 0.727273
+  }
+]

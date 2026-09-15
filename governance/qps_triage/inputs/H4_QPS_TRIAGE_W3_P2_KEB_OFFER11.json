@@ -1,0 +1,22 @@
+{
+  "producer_repo": "GBOGEB/CODEX",
+  "producer_pr": 715,
+  "producer_head_sha": "f6eaef18f95b638baf428a850d102a94d5c76690",
+  "producer_merge_sha": "75cf4a2811bd49870be61813b7928831f864bf9e",
+  "source_object_ids": [
+    "H4-W2-OFFER11-HP-COMPONENT-ANALYTICS",
+    "H4-W3-P1-KEB-OFFER11-HP-001",
+    "QPS-RECEIPT-BLOB-add2f513a2ceb0a5324bd84ee80127578e90ac0a"
+  ],
+  "contract_version": "qps-triage-keb-contract/1.0.0",
+  "workflow_or_validator": "scripts/validate_bridge_rows.py --strict deterministic replay",
+  "executed_steps": 1,
+  "result": "PASS",
+  "reason": "STRICT_BRIDGE_ROWS_PASS_EXACT_QPS_SOURCE_TUPLE_BOUND_SYSTEM_CONSEQUENCE_WITHHELD",
+  "source_manifest_sha256": "f878931f8354481a98a61f5650932b0421eb97166c9e044dd199f1a5f2e71559",
+  "receipt_sha256": "5a08cfaa50a1ae684b7922ae8a15f2d064bac229b2dc35b92e58740e2e4b77e6",
+  "downstream_consumer": "GBOGEB/ABACUS",
+  "child_reentry_target": "GBOGEB/cryoplant-project",
+  "receipt_digest_basis": "canonical JSON of all envelope fields except receipt_sha256",
+  "authority_transfer": false
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "qps-triage-dow-contract/1.0.0",
+  "as_of": "2026-09-11T04:18:00+02:00",
+  "repo": "GBOGEB/ABACUS",
+  "role": "DOW_RUNTIME_ORCHESTRATION_METRICS_CHALLENGE_AND_RECEIPT_CONSUMPTION_AUTHORITY",
+  "authority": {
+    "may_mutate_qps_engineering_truth": false,
+    "may_mutate_qps_compliance": false,
+    "may_mutate_qps_negotiation": false,
+    "may_accept_or_reject_keb_receipt": true,
+    "may_emit_runtime_metrics_receipt": true,
+    "may_emit_projection_receipt": true,
+    "final_qps_disposition": false
+  },
+  "predecessor": {
+    "consumer_contract_pr": 1102,
+    "consumer_contract_merge_sha": "8841dc701a1896233273413c81d7c88d268b9498",
+    "rollup_pr": 1105,
+    "rollup_merge_sha": "e52f5cff071e32b5bae60149868dfe52661019f5",
+    "accepted_keb_receipt_pr": 1107,
+    "accepted_keb_receipt_merge_sha": "49663e929bf38d3b72720b4fc79fd864faecfa4a",
+    "producer_repo": "GBOGEB/CODEX",
+    "producer_pr": 600,
+    "producer_head_sha": "7f062faf8c76a6e89780bb0fbb1ee1fe96f5af4b"
+  },
+  "accepted_inputs": [
+    "keb_semantic_receipt",
+    "keb_provenance_receipt",
+    "keb_runtime_receipt",
+    "child_contract_for_independent_challenge"
+  ],
+  "object_classes": [
+    "DOW_RECEIPT_CONSUMER",
+    "DOW_RUNTIME_CHALLENGE",
+    "DOW_METRIC_PROJECTION",
+    "DOW_CENSUS",
+    "DOW_ORCHESTRATION_RESULT",
+    "DOW_ACCEPT_REJECT_DEFER_RECEIPT",
+    "DOW_DEFERRED_EVIDENCE_GAP"
+  ],
+  "required_input_fields": [
+    "producer_repo",
+    "producer_pr",
+    "producer_head_sha",
+    "result",
+    "receipt_sha256"
+  ],
+  "required_output_fields": [
+    "consumer_repo",
+    "consumer_pr",
+    "consumer_head_sha",
+    "producer_repo",
+    "producer_pr",
+    "producer_head_sha",
+    "producer_receipt_sha256",
+    "challenge_or_execution",
+    "disposition",
+    "reason",
+    "child_reentry_target"
+  ],
+  "disposition_enum": ["ACCEPT", "REJECT", "DEFER"],
+  "accept_gate": {
+    "producer_exact_sha_match": true,
+    "producer_receipt_digest_required": true,
+    "producer_result_must_be_pass_for_accept": true,
+    "positive_execution_required_when_executable": true,
+    "dow_challenge_must_not_copy_private_evidence": true
+  },
+  "first_red_classes": [
+    "PRODUCER_IDENTITY_MISMATCH",
+    "RECEIPT_DIGEST_MISSING",
+    "EXECUTION_NOT_OBSERVED",
+    "RUNTIME_DEPENDENCY",
+    "PROJECTION_CONTRACT",
+    "SOURCE_MISSING",
+    "PRIVATE_EVIDENCE_BOUNDARY"
+  ],
+  "first_red_rule": "Stop at the first observed DOW invariant failure, repair or DEFER that invariant, rerun the same consumer/challenge gate, then advance.",
+  "privacy_boundary": {
+    "public_repo": true,
+    "copy_private_qps_evidence": false,
+    "consume_redacted_contracts": true,
+    "consume_hashes_and_object_ids": true
+  },
+  "repo_surfaces": {
+    "federation_activity": "governance/federation/FEDERATION_ACTIVITY.yaml",
+    "repo_deep_handoff": "docs/qps_triage/DOW_REPO_DEEP_HANDOFF.md",
+    "contract": "governance/qps_triage/DOW_CONTRACT_v1.json",
+    "contract_test": "tests/test_qps_triage_dow_contract.py"
+  },
+  "waves": [
+    {"id": "QTG-00", "name": "recover_and_consumer_census", "exit": "current_keb_and_child_targets_identified"},
+    {"id": "QTG-01", "name": "receipt_identity_validation", "exit": "producer_tuple_and_digest_valid_or_deferred"},
+    {"id": "QTG-02", "name": "independent_challenge_or_projection", "exit": "dow_result_observed"},
+    {"id": "QTG-03", "name": "dow_disposition", "exit": "accept_reject_or_defer_receipt_emitted"},
+    {"id": "QTG-04", "name": "child_dispatch", "exit": "cryoplant_can_consume_exact_dow_receipt"}
+  ],
+  "promotion_rule": "DOW may accept, reject or defer a KEB receipt but cannot promote terminal QPS engineering/compliance/negotiation state; cryoplant child re-entry is mandatory."
+}

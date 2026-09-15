@@ -1,0 +1,34 @@
+wave: W68
+program: MIP_ORCHESTRATION_PERPETUATION
+repository: GBOGEB/ABACUS
+role: analytics_orchestration_rollup
+modernize:
+  - replace monolithic discovery completion with A-E ID lane denominators
+  - track total/open/closed/net-delta/burn-rate per lane and cluster
+  - separate pipeline pulse count from measured PCA observation count
+innovate:
+  - calculate within-lane PCA after three comparable observations
+  - calculate cross-lane PCA after three comparable convergence observations
+  - reverse-load worker pairs to highest governing loading rather than largest backlog
+  - include downstream unlock, repair cost, duplicate ratio and AHT in allocation pressure
+perpetuate:
+  - run census repeatedly on distinct SHAs
+  - retain FEATURE_ROW history immutably by source SHA
+  - recurse on first red or highest reverse-loading deficit
+  - scale workers by +2 only when yield_per_worker improves without duplication penalty
+metrics:
+  lanes: [A_registry_gap, B_reference_gap, C_consumer_penetration, D_graph_orphan_drop, E_lineage_evidence]
+  measured_pca_pulses_required: 3
+  measured_pca_pulses_observed: 0
+  worker_baseline: 7_plus_7
+  scale_increment: 2
+victory:
+  - pulse_1 numeric denominators retained
+  - pulse_2 distinct-SHA delta retained
+  - pulse_3 distinct-SHA delta retained
+  - PCA promotion PASS
+  - next worker pair allocated from measured reverse-loading result
+claim_guards:
+  - THREE_WORKFLOW_RUNS_NE_THREE_MEASURED_PULSES
+  - PCA_NE_AUTHORITY
+  - ORCHESTRATION_NE_CHILD_ENGINEERING_CREDIT
