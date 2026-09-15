@@ -31,7 +31,9 @@ jobs:
         run: python scripts/validate_runtime_foundation.py
 
       - name: Generate runtime governance status
-        run: python scripts/write_runtime_governance_status.py --output reports/runtime_governance_status.json
+        run: >-
+          python scripts/write_runtime_governance_status.py
+          --output reports/runtime_governance_status.json
 
       - name: Upload runtime governance evidence
         uses: actions/upload-artifact@v7
