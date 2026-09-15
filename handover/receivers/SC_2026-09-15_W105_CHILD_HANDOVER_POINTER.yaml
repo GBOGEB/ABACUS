@@ -1,0 +1,31 @@
+schema: federation.handover.pointer_receiver/v1
+receiver_repo: GBOGEB/ABACUS
+receiver_role: DOW_MEASUREMENT_RENDER_RUNTIME
+mode: ACCEPT_POINTER_ONLY
+authority_transfer: false
+child_authority:
+  repo: GBOGEB/cryoplant-project
+  pr: 1312
+  head_sha: 85f96cbf90385183f8d7af694854435576fa63c8
+  handover_path: handover/session/SC_2026-09-15_W105_3PR_MIP_LOSSLESS_HANDOVER_v1.yaml
+  restart_path: handover/session/SC_2026-09-15_W105_RESTART_CARD_v1.md
+bound_local_context:
+  active_mip_pr: 1228
+  active_mip_head: bd56b07f7fdfb46d62c0c05f66c749e3fd7c861e
+  observed_target_receipt:
+    workflow: ABACUS v032 - CI/CD Pipeline
+    run_id: 34935388755
+    conclusion: failure
+    original_pygithub_blocker_retired: true
+    pytest_rollup: {collected: 413, passed: 398, failed: 2, skipped: 10, xpassed: 3}
+    first_red: test_dow_metadata_to_dmaic_config version mismatch 3.4.0-rc1 vs 3.3.0
+    second_red: W007 runtime manifest/evidence path gap
+rules:
+  - this receiver does not duplicate or reinterpret child engineering truth
+  - ABACUS may measure/render/challenge but cannot promote child engineering or negotiation score
+  - repair the first material red only and rerun the same fail-closed suite
+  - continuation must refresh live state before acting
+credit:
+  engineering_delta: 0
+  negotiation_delta: 0
+  publish_delta: 0
