@@ -1,0 +1,78 @@
+name: Cycle 2 Temporal PCA Independent Consumer
+
+on:
+  pull_request:
+    paths:
+      - 'runtime/federation/gg_math_temporal_pca_independent_challenge.py'
+      - 'runtime/federation/gg_math_temporal_pca_dow_consumer.py'
+      - '.github/workflows/cycle2-temporal-pca-independent-consumer.yml'
+      - 'governance/qps_triage/CYCLE2_TEMPORAL_PCA_INDEPENDENT_CONSUMER_v0.1.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-dow-challenge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact ABACUS head
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install independent numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Fetch exact CODEX KEB binding
+        run: |
+          mkdir -p runtime/federation/generated
+          curl --fail --location \
+            https://raw.githubusercontent.com/GBOGEB/CODEX/3b98e5ae1396bdec8e1950b33cb754a15aa84dc4/ssot/bridge_rows/gg_math_temporal_pca_w4_p31.json \
+            --output runtime/federation/generated/codex_temporal_pca_binding.json
+
+      - name: Run existing metadata consumer
+        run: |
+          python runtime/federation/gg_math_temporal_pca_dow_consumer.py \
+            --binding runtime/federation/generated/codex_temporal_pca_binding.json
+
+      - name: Run independent C01-C07 numerical challenge
+        run: |
+          python runtime/federation/gg_math_temporal_pca_independent_challenge.py \
+            --binding runtime/federation/generated/codex_temporal_pca_binding.json \
+            --codex-sha 3b98e5ae1396bdec8e1950b33cb754a15aa84dc4 \
+            --out runtime/federation/generated/cycle2_temporal_pca_independent_receipt.json
+
+      - name: Verify receipt control predicates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('runtime/federation/generated/cycle2_temporal_pca_independent_receipt.json')
+          r = json.loads(p.read_text())
+          assert r['status'] == 'PASS'
+          assert r['independent_implementation'] is True
+          assert r['imports_gg_math'] is False
+          assert r['kpi']['independent_consumer_count'] == 1
+          assert r['kpi']['independent_reproduction_pass_ratio'] == 1.0
+          assert r['kpi']['schema_parity'] == 1.0
+          assert r['kpi']['receipt_concordance'] == 1.0
+          assert r['kpi']['authority_inversion_count'] == 0
+          assert r['authority_transfer'] is False
+          assert r['formal_credit_delta'] == 0
+          assert r['hard_gate_compensation_allowed'] is False
+          print('PASS_CYCLE2_TEMPORAL_PCA_INDEPENDENT_CONSUMER')
+          PY
+
+      - name: Upload independent receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: cycle2-temporal-pca-independent-${{ github.sha }}
+          path: |
+            runtime/federation/generated/codex_temporal_pca_binding.json
+            runtime/federation/generated/gg_math_temporal_pca_dow_binding.json
+            runtime/federation/generated/cycle2_temporal_pca_independent_receipt.json
+          if-no-files-found: error
