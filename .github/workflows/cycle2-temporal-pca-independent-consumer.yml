@@ -12,12 +12,24 @@ on:
 permissions:
   contents: read
 
+env:
+  ABACUS_EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   independent-dow-challenge:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout exact ABACUS head
+      - name: Checkout literal ABACUS source head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ABACUS_EXACT_HEAD }}
+
+      - name: Verify literal source-head identity
+        run: |
+          test "$(git rev-parse HEAD)" = "$ABACUS_EXACT_HEAD"
+          mkdir -p runtime/federation/generated
+          printf '%s\n' "$ABACUS_EXACT_HEAD" > runtime/federation/generated/abacus_exact_head.txt
+          echo "exact_head=$ABACUS_EXACT_HEAD"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -29,7 +41,6 @@ jobs:
 
       - name: Fetch exact CODEX KEB binding
         run: |
-          mkdir -p runtime/federation/generated
           curl --fail --location \
             https://raw.githubusercontent.com/GBOGEB/CODEX/3b98e5ae1396bdec8e1950b33cb754a15aa84dc4/ssot/bridge_rows/gg_math_temporal_pca_w4_p31.json \
             --output runtime/federation/generated/codex_temporal_pca_binding.json
@@ -70,8 +81,9 @@ jobs:
       - name: Upload independent receipt
         uses: actions/upload-artifact@v4
         with:
-          name: cycle2-temporal-pca-independent-${{ github.sha }}
+          name: cycle2-temporal-pca-independent-${{ env.ABACUS_EXACT_HEAD }}
           path: |
+            runtime/federation/generated/abacus_exact_head.txt
             runtime/federation/generated/codex_temporal_pca_binding.json
             runtime/federation/generated/gg_math_temporal_pca_dow_binding.json
             runtime/federation/generated/cycle2_temporal_pca_independent_receipt.json
