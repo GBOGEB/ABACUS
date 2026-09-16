@@ -1,0 +1,47 @@
+{
+  "semantic_owner": "CODEX/KEB",
+  "status": "ACCEPT",
+  "binding_id": "KEB-GG-MATH-LM10-W4-P31-001",
+  "source_repo": "GBOGEB/gg_MATH",
+  "source_pr": 15,
+  "source_sha": "a99d7cacd03ed3a392c063a1b3f8dbffdba0d060",
+  "source_artifact_id": 10463852915,
+  "source_artifact_digest": "sha256:876c55c759de33392985f693f1735cdc0d38dda7d7b7a6c80ee80aee33fd8405",
+  "provider_runtime_run_id": 35138067439,
+  "provider_runtime_result": "PASS",
+  "provider_challenges": [
+    "C01_SIGN_FLIP",
+    "C02_COMPONENT_SWAP",
+    "C03_SMALL_EIGENGAP_INTERNAL_ROTATION",
+    "C04_TRUE_SUBSPACE_ROTATION",
+    "C05_ATTENUATION_WITHOUT_REVERSAL",
+    "C06_IRREGULAR_WALL_TIME",
+    "C07_DISTINCT_AGE_CLOCK"
+  ],
+  "provider_diagnostics": [
+    "COMPONENT_ASSIGNMENT",
+    "SIGN_ALIGNMENT",
+    "TUCKER_CONGRUENCE",
+    "EIGENGAP_CONTEXT",
+    "PRINCIPAL_ANGLES",
+    "ORTHOGONAL_PROCRUSTES",
+    "CANONICAL_CORRELATIONS",
+    "PROJECTION_DISTANCE",
+    "GRASSMANN_GEODESIC_DISTANCE",
+    "EVENT_WALL_AGE_MULTICLOCK_RATES",
+    "SIGNED_EFFECT_ATTENUATION_VS_REVERSAL"
+  ],
+  "authority_cap": "A3_SYNTHETIC_ONLY",
+  "authority_transfer": false,
+  "hard_gate_compensation_allowed": false,
+  "federation_followup": {
+    "mission": "GRANDMISSION-I-B-TEMPORAL-PCA-FEDERATION",
+    "exact_head_sha": "a5f32ef2b65caa9b49270d7fe8134acd6f1e71d8",
+    "workflow_run_id": 35139956561,
+    "artifact_id": 10464776497,
+    "artifact_digest": "sha256:2c7cbcddffc6c3830ab02a212563ef390e7fe189ce24214f4313e6e5bccd2921",
+    "receipt_digest": "sha256:84a2869fca566eb14879e85b5777af8027c6aa096c3bcc746f8eb838b69ac053",
+    "named_clocks_roundtrip": ["k", "t", "a", "wave", "pulse", "pr", "run", "release"],
+    "formal_credit_delta": 0
+  }
+}
