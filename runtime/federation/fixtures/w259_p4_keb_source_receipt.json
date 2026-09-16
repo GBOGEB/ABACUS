@@ -1,0 +1,66 @@
+{
+  "keb_item_id": "KEB-ITEM-0003",
+  "object_type": "KEB_SOURCE_RECEIPT",
+  "state": "ACCEPT_PROVIDER_BOUND_READY_DOW_W259_P4",
+  "status": "ACCEPT",
+  "semantic_owner": "CODEX/KEB",
+  "source_repo": "GBOGEB/gg_MATH",
+  "source_pr": 20,
+  "source_sha": "0af77a081af76a0ac1244a953e0e5f27319b8276",
+  "source_locator": "research/MATH_METHOD_INFO_CARDS_v1.yaml + research/MATH_METHOD_DEPENDENCY_GRAPH_v1.yaml",
+  "source_digest": "sha256:a5ea0c436bfb695245bed82a8275a5a775fea94cb3f8555e5cd89d44b5726012",
+  "replay_status": "PASS",
+  "validation_result": "PASS_EXACT_MERGE_AND_CONTENT_IDENTITY_BOUND_READY_DOW",
+  "downstream_consumer": "GBOGEB/ABACUS/DOW",
+  "next_action": "Independently challenge the 16-card registry, threshold-kind vocabulary, dependency graph semantics, three-plane transaction and optional P4/3P3 authority guards. Do not promote to a KEB knowledge atom until DOW exact-head proof is merged.",
+  "lineage": {
+    "chat_session": "2026-09-16-w259-p4-method-cards-federation",
+    "originating_prompt": "merge/provider pinning -> MissionControl pinning -> W259 immutable SHAs -> P4/3P3 KEB/DOW roundtrip",
+    "created_by": "ChatGPT_federation_extension"
+  },
+  "bundle": {
+    "canonical_bundle_digest": "sha256:a5ea0c436bfb695245bed82a8275a5a775fea94cb3f8555e5cd89d44b5726012",
+    "gg_math": {
+      "merge_sha": "0af77a081af76a0ac1244a953e0e5f27319b8276",
+      "cards_blob": "c9ae20146c8e92f2eb387b410a7a8c8256e661b2",
+      "graph_blob": "8cdecd4af9bf85c060138eebb40edce8033b6e12",
+      "card_count": 16,
+      "threshold_kinds": ["EXACT_IDENTITY", "DISTRIBUTION_DERIVED", "MODEL_DERIVED", "DATA_CALIBRATED", "HEURISTIC", "PROJECT_GOVERNED", "NO_UNIVERSAL_THRESHOLD", "RESEARCH_TODO"]
+    },
+    "mission_control": {
+      "merge_sha": "98686026c4fbc18be5d0ad9d458d37f55c3e7b36",
+      "official_register_blob": "d35b0c1f53b6f35c91cadfb5b0e284459d06eedf",
+      "mission_control_blob": "24587c5525f88ca25a6977688e29c344d3471197",
+      "crew_blob": "41fd9210235d47819e580b7c25ef0ea384918d9a",
+      "mission_id": "LM-10",
+      "mission_type": "LOCAL_SINGLE_FRONTIER_DEVELOPMENT_AND_FEDERATION"
+    },
+    "qps": {
+      "w259r_merge_sha": "28c5e44b835f53387f50900366edd1ca6811a9c9",
+      "cards_control_blob": "0cfc5987438f62f87f751586fbc519c2d614a44d",
+      "graph_control_blob": "7ac80b0f687c59b85d90f54cb233d580a3a0dcf5",
+      "hosted_runtime_state": "INFRASTRUCTURE_PREEXECUTION_NOT_APPLICATION_FAILURE"
+    }
+  },
+  "transaction_semantics": {
+    "P1": {"operator": "3PR", "plane": "METHOD_MATH"},
+    "P2": {"operator": "MIP", "plane": "PROJECT_MATH_QPS"},
+    "P3": {"operator": "3PC", "plane": "TRIAGE_GOVERNANCE"},
+    "P4": {"operator": "3P3", "plane": "FEDERATION_ORCHESTRATION", "optional": true}
+  },
+  "authority_guards": {
+    "authority_transfer": false,
+    "hard_gate_compensation_allowed": false,
+    "formal_engineering_credit_delta": 0,
+    "negotiation_credit_delta": 0,
+    "runtime_gold_created": false,
+    "release_authority_created": false,
+    "stretch_research_authority": "ZERO_UNTIL_SEPARATELY_PROMOTED"
+  },
+  "anti_inference_guards": {
+    "method_card_is_engineering_acceptance": false,
+    "research_todo_is_runtime_capability": false,
+    "project_governed_threshold_is_mutable_by_gg_math": false,
+    "p4_roundtrip_is_domain_authority": false
+  }
+}
