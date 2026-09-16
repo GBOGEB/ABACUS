@@ -5,6 +5,9 @@ on:
     paths:
       - 'runtime/federation/qps_debug_dow_consumer.py'
       - 'runtime/federation/receipts/**'
+      - 'runtime/federation/*temporal_pca*'
+      - 'runtime/federation/input/*temporal_pca*'
+      - 'tests/test_gg_math_temporal_pca_independent_challenge.py'
       - '.github/workflows/qps-debug-dow-consumer.yml'
   workflow_dispatch:
   repository_dispatch:
@@ -27,48 +30,172 @@ jobs:
           import json
           from pathlib import Path
           p = json.loads(
-              Path('runtime/federation/generated/qps_debug_dow_binding.json')
-              .read_text()
+              Path(
+                  'runtime/federation/generated/'
+                  'qps_debug_dow_binding.json'
+              ).read_text()
           )
           assert p['status'] == 'DEFER', p
           assert p['emit_for_child_disposition'] is False, p
-          assert p['authority_guards']['formal_engineering_credit_delta'] == 0
+          assert p['authority_guards'][
+              'formal_engineering_credit_delta'
+          ] == 0
           assert p['authority_guards']['negotiation_credit_delta'] == 0
           PY
       - name: Consume retained actual W1F-E KEB binding
         run: |
           python3 runtime/federation/qps_debug_dow_consumer.py \
             --binding \
-            runtime/federation/receipts/CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
+            runtime/federation/receipts/\
+CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
       - name: Enforce exact same-lineage DOW ACCEPT and child eligibility
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
           p = json.loads(
-              Path('runtime/federation/generated/qps_debug_dow_binding.json')
-              .read_text()
+              Path(
+                  'runtime/federation/generated/'
+                  'qps_debug_dow_binding.json'
+              ).read_text()
           )
           assert p['status'] == 'ACCEPT', p
           assert p['evidence_mode'] == 'FEDERATED_EXACT_PAYLOAD', p
           assert p['emit_for_child_disposition'] is True, p
-          assert p['producer_exact_head_sha'] == \
-              '5ba7a25fa45f78b9336523f7311f5a58f36c6d89', p
-          assert p['source_binding_sha256'] == \
-              '7539bc45e3e8a19042a2c249e907983456ad3c23ba55302548e436e4c9b2a91d', p
+          assert p['producer_exact_head_sha'] == (
+              '5ba7a25fa45f78b9336523f7311f5a58f36c6d89'
+          ), p
+          assert p['source_binding_sha256'] == (
+              '7539bc45e3e8a19042a2c249e9079834'
+              '56ad3c23ba55302548e436e4c9b2a91d'
+          ), p
           assert p['checks']['runtime_evidence_valid'] is True, p
           assert p['checks']['runtime_steps_gt_zero'] is True, p
           assert p['checks']['source_payload_hash_match'] is True, p
           assert p['checks']['adapter_surface_ready'] is True, p
           assert p['checks']['repo_local_runner_recovered'] is False, p
-          assert p['authority_guards']['formal_engineering_credit_delta'] == 0
+          assert p['authority_guards'][
+              'formal_engineering_credit_delta'
+          ] == 0
           assert p['authority_guards']['negotiation_credit_delta'] == 0
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: qps-debug-dow-actual-w1f-binding
-          path: runtime/federation/generated/qps_debug_dow_binding.json
+          path: >-
+            runtime/federation/generated/qps_debug_dow_binding.json
           if-no-files-found: error
+
+  independent-temporal-pca-cycle2:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact PR source head
+        uses: actions/checkout@v4
+        with:
+          ref: >-
+            ${{ github.event.pull_request.head.sha }}
+      - name: Assert exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha }}"
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent challenge dependency
+        run: python -m pip install 'numpy>=1.21,<2.0'
+      - name: Verify exact CODEX snapshot blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git hash-object \
+            runtime/federation/input/\
+codex_gg_math_temporal_pca_3b98e5ae.json)"
+          expected="bd3a555514e7f1f7c59723313b9d5c7f98a932d2"
+          test "$actual" = "$expected"
+      - name: Execute independent C01-C07 tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python \
+            tests/test_gg_math_temporal_pca_independent_challenge.py \
+            2>&1 | tee temporal_pca_independent_tests.out
+          grep -q \
+            PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_CHALLENGE_TESTS \
+            temporal_pca_independent_tests.out
+      - name: Emit typed independent DOW receipt
+        env:
+          SOURCE_SHA: >-
+            ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python \
+            runtime/federation/\
+gg_math_temporal_pca_independent_challenge.py \
+            2>&1 | tee temporal_pca_independent_dow.out
+          grep -q \
+            PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_DOW_CYCLE2 \
+            temporal_pca_independent_dow.out
+      - name: Verify receipt guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path(
+              'runtime/federation/generated/'
+              'gg_math_temporal_pca_independent_dow_receipt.json'
+          )
+          receipt = json.loads(path.read_text())
+          assert receipt['status'] == 'ACCEPT'
+          assert receipt['consumer_exact_head'] == (
+              '${{ github.event.pull_request.head.sha }}'
+          )
+          assert receipt['source']['commit'] == (
+              '3b98e5ae1396bdec8e1950b33cb754a15aa84dc4'
+          )
+          assert receipt['source']['git_blob_sha1'] == (
+              'bd3a555514e7f1f7c59723313b9d5c7f98a932d2'
+          )
+          assert receipt['provider'][
+              'core_artifact_digest_expected_next_keb_atom'
+          ] == (
+              'sha256:876c55c759de33392985f693f1735cdc'
+              '0d38dda7d7b7a6c80ee80aee33fd8405'
+          )
+          assert receipt['independent_math'][
+              'challenge_pass_ratio'
+          ] == 1.0
+          assert receipt['kpis']['authority_inversion_count'] == 0
+          assert receipt['authority_transfer'] is False
+          assert receipt['formal_credit_delta'] == 0
+          assert receipt['hard_gate_compensation_allowed'] is False
+          print('PASS_INDEPENDENT_DOW_RECEIPT_GUARDS')
+          PY
+      - name: Upload independent DOW receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: gg-math-temporal-pca-independent-dow
+          path: |
+            runtime/federation/generated/\
+gg_math_temporal_pca_independent_dow_receipt.json
+            temporal_pca_independent_tests.out
+            temporal_pca_independent_dow.out
+          if-no-files-found: error
+      - name: Enforce Cycle-2 CONTROL outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q \
+            PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_DOW_CYCLE2 \
+            temporal_pca_independent_dow.out
 
   consume-live-keb-binding:
     if: ${{ github.event_name == 'repository_dispatch' }}
@@ -88,12 +215,17 @@ jobs:
           import json
           from pathlib import Path
           p = json.loads(
-              Path('runtime/federation/generated/qps_debug_dow_binding.json')
-              .read_text()
+              Path(
+                  'runtime/federation/generated/'
+                  'qps_debug_dow_binding.json'
+              ).read_text()
           )
           assert p['status'] == 'ACCEPT', p
           assert p['emit_for_child_disposition'] is True, p
-          assert p['producer_exact_head_sha'] not in (None, 'UNKNOWN'), p
+          assert p['producer_exact_head_sha'] not in (
+              None,
+              'UNKNOWN',
+          ), p
           assert p['checks']['runtime_evidence_valid'] is True, p
           if p['evidence_mode'] == 'FEDERATED_EXACT_PAYLOAD':
               assert p['checks']['source_payload_hash_match'] is True, p
@@ -103,5 +235,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: qps-debug-dow-binding
-          path: runtime/federation/generated/qps_debug_dow_binding.json
+          path: >-
+            runtime/federation/generated/qps_debug_dow_binding.json
           if-no-files-found: error
