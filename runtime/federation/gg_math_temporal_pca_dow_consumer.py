@@ -36,6 +36,16 @@ REQUIRED_DIAGNOSTICS = {
     "EVENT_WALL_AGE_MULTICLOCK_RATES",
     "SIGNED_EFFECT_ATTENUATION_VS_REVERSAL",
 }
+EXPECTED_FEDERATION_FOLLOWUP = {
+    "mission": "GRANDMISSION-I-B-TEMPORAL-PCA-FEDERATION",
+    "exact_head_sha": "a5f32ef2b65caa9b49270d7fe8134acd6f1e71d8",
+    "workflow_run_id": 35139956561,
+    "artifact_id": 10464776497,
+    "artifact_digest": "sha256:2c7cbcddffc6c3830ab02a212563ef390e7fe189ce24214f4313e6e5bccd2921",
+    "receipt_digest": "sha256:84a2869fca566eb14879e85b5777af8027c6aa096c3bcc746f8eb838b69ac053",
+    "named_clocks_roundtrip": ["k", "t", "a", "wave", "pulse", "pr", "run", "release"],
+    "formal_credit_delta": 0,
+}
 
 
 def load_binding(path: Path | None) -> dict | None:
@@ -43,6 +53,15 @@ def load_binding(path: Path | None) -> dict | None:
         return json.loads(path.read_text(encoding="utf-8"))
     raw = os.getenv("CODEX_GG_MATH_TEMPORAL_PCA_BINDING_JSON")
     return json.loads(raw) if raw else None
+
+
+def federation_followup_valid(binding: dict) -> bool:
+    if "federation_followup" not in binding:
+        return True
+    followup = binding.get("federation_followup")
+    return isinstance(followup, dict) and all(
+        followup.get(key) == expected for key, expected in EXPECTED_FEDERATION_FOLLOWUP.items()
+    )
 
 
 def evaluate(binding: dict | None) -> tuple[bool, dict]:
@@ -63,6 +82,8 @@ def evaluate(binding: dict | None) -> tuple[bool, dict]:
         "hard_gate_compensation_false": binding.get("hard_gate_compensation_allowed") is False,
         "authority_cap_a3": binding.get("authority_cap") == "A3_SYNTHETIC_ONLY",
     }
+    if "federation_followup" in binding:
+        checks["federation_followup_exact_lineage"] = federation_followup_valid(binding)
     return all(checks.values()), checks
 
 
@@ -97,6 +118,8 @@ def consume(binding: dict | None) -> dict:
             "synthetic_provider_receipt_cannot_create_acceptance_credit": True,
         },
     }
+    if binding and "federation_followup" in binding:
+        dow["federation_followup"] = binding["federation_followup"]
     dow["receipt_sha256"] = hashlib.sha256(json.dumps(dow, sort_keys=True).encode()).hexdigest()
     return dow
 

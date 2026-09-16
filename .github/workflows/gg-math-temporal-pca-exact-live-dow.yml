@@ -1,0 +1,79 @@
+name: gg_MATH Temporal PCA Exact-Live DOW
+
+on:
+  pull_request:
+    paths:
+      - 'runtime/federation/gg_math_temporal_pca_dow_consumer.py'
+      - 'runtime/federation/fixtures/gg_math_temporal_pca_exact_live_binding.json'
+      - 'tests/test_gg_math_temporal_pca_dow_consumer.py'
+      - '.github/workflows/gg-math-temporal-pca-exact-live-dow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-live-dow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Assert exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+          printf '%s\n' "$actual" > gg_math_temporal_pca_exact_live_head.txt
+      - name: Execute exact live DOW challenge
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tests/test_gg_math_temporal_pca_dow_consumer.py 2>&1 | tee gg_math_temporal_pca_exact_live_dow.out
+          grep -q PASS_GG_MATH_TEMPORAL_PCA_DOW_CONSUMER gg_math_temporal_pca_exact_live_dow.out
+      - name: Emit exact live DOW receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          fixture = pathlib.Path('runtime/federation/fixtures/gg_math_temporal_pca_exact_live_binding.json')
+          testlog = pathlib.Path('gg_math_temporal_pca_exact_live_dow.out')
+          head = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
+          data = json.loads(fixture.read_text(encoding='utf-8'))
+          assert data['source_sha'] == 'a99d7cacd03ed3a392c063a1b3f8dbffdba0d060'
+          assert data['source_artifact_digest'] == 'sha256:876c55c759de33392985f693f1735cdc0d38dda7d7b7a6c80ee80aee33fd8405'
+          receipt = {
+              'schema': 'abacus.dow.gg_math_temporal_pca_exact_live_receipt.v1',
+              'consumer': 'GBOGEB/ABACUS/DOW',
+              'source_repo': 'GBOGEB/gg_MATH',
+              'source_pr': 15,
+              'source_sha': data['source_sha'],
+              'source_artifact_id': data['source_artifact_id'],
+              'source_artifact_digest': data['source_artifact_digest'],
+              'abacus_exact_head_sha': head,
+              'challenge_result': 'PASS',
+              'authority_transfer': False,
+              'formal_credit_delta': 0,
+              'hard_gate_compensation_allowed': False,
+              'fixture_sha256': hashlib.sha256(fixture.read_bytes()).hexdigest(),
+              'testlog_sha256': hashlib.sha256(testlog.read_bytes()).hexdigest(),
+              'federation_followup': data['federation_followup'],
+          }
+          pathlib.Path('gg_math_temporal_pca_exact_live_dow_receipt.json').write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          print('PASS_GG_MATH_TEMPORAL_PCA_EXACT_LIVE_DOW_RECEIPT')
+          PY
+      - name: Upload exact live DOW proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: gg-math-temporal-pca-exact-live-dow-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            gg_math_temporal_pca_exact_live_head.txt
+            gg_math_temporal_pca_exact_live_dow.out
+            gg_math_temporal_pca_exact_live_dow_receipt.json
+          if-no-files-found: error
