@@ -1,0 +1,152 @@
+schema: abacus.dow.3p_ral_cycle2_temporal_pca_control/0.1
+as_of: '2026-09-16T22:15:00+02:00'
+repo: GBOGEB/ABACUS
+cycle: 2
+moniker: INDEPENDENT_CONSUMPTION
+status: EXECUTION_CANDIDATE
+authority_transfer: false
+formal_credit_delta: 0
+hard_gate_compensation_allowed: false
+
+3p_ral:
+  parent: 3P-RAL
+  ordinal: '3P#2'
+  objective: prove_independent_consumption_and_reproducibility
+  operator_stack: [3PR, MIP, 3PC]
+  cycle_3_admission: WITHHELD_UNTIL_CYCLE2_EXACT_HEAD_PASS
+
+3PR:
+  Refresh:
+    result: PASS
+    observations:
+      abacus_main: 15acb02f7f191d4f3c251ab747ef9f41487da7ce
+      codex_main_before: df60e22fc57a6f36ac3e949d4c161442ff050ee4
+      codex_cycle2_merge: 3b98e5ae1396bdec8e1950b33cb754a15aa84dc4
+      qps_3p_ral_merge: 2ece599f169b8ebf31a4ba7a18de841f34cf89ba
+    DMAIC: [Define, Measure]
+    KPI:
+      source_state_freshness: REFRESHED
+      exact_provider_identity: BOUND
+  Probe:
+    result: PASS_FINDING_ACTIONABLE
+    first_red: CODEX_KEB_BINDING_STALE_DEFER_PROVIDER_PR_OPEN
+    second_gap: ABACUS_EXISTING_CONSUMER_VALIDATES_METADATA_BUT_DOES_NOT_RECOMPUTE_C01_C07_GEOMETRY
+    DMAIC: [Measure, Analyse]
+    KPI:
+      first_red_count: 2
+      independent_numerical_reproduction_present_before_cycle2: 0
+  Rank:
+    result: PASS
+    priority:
+      - repair_CODEX_provider_boundary
+      - pin_exact_CODEX_merge
+      - independently_recompute_C01_C07_in_ABACUS
+      - emit_typed_DOW_receipt
+      - return_exact_receipt_to_QPS_without_authority_transfer
+    DMAIC: [Analyse, Improve]
+
+MIP:
+  Modernize:
+    state: IMPLEMENTED
+    action: bind_ABACUS_to_machine_consumable_exact_CODEX_JSON_revision
+    DMAIC: [Define, Improve]
+  Innovate:
+    state: IMPLEMENTED
+    action: independently_rederive_alignment_subspace_effect_and_multiclock_reference_checks_in_ABACUS_without_importing_gg_MATH
+    DMAIC: [Analyse, Improve]
+  Perpetuate:
+    state: IMPLEMENTED_PENDING_HOSTED_PROOF
+    action: exact_head_workflow_emits_typed_receipt_and_artifact_for_QPS_reentry
+    DMAIC: [Measure, Control]
+
+3PC:
+  Prepare:
+    state: PASS
+    changed_surfaces:
+      - runtime/federation/gg_math_temporal_pca_independent_challenge.py
+      - .github/workflows/cycle2-temporal-pca-independent-consumer.yml
+      - governance/qps_triage/CYCLE2_TEMPORAL_PCA_INDEPENDENT_CONSUMER_v0.1.yaml
+    codex_exact_merge: 3b98e5ae1396bdec8e1950b33cb754a15aa84dc4
+    DMAIC: [Define, Measure]
+  Prove:
+    state: WAIT_EXACT_HEAD_HOSTED_RUNTIME
+    required:
+      - workflow_steps_gt_zero
+      - binding_checks_all_true
+      - C01_C07_7_of_7_PASS
+      - independent_implementation_true
+      - imports_gg_MATH_false
+      - independent_reproduction_pass_ratio_1_0
+      - schema_parity_1_0
+      - receipt_concordance_1_0
+      - authority_inversion_count_0
+    DMAIC: [Measure, Analyse]
+  Commit:
+    state: WITHHELD_UNTIL_PROVE_PASS
+    required:
+      - merge_exact_unchanged_head
+      - verify_postmerge_main
+      - bind_workflow_run_job_artifact_digest
+      - return_cycle2_receipt_to_QPS
+    DMAIC: [Improve, Control]
+
+DMAIC_full_node:
+  mode: FULL_DMAIC
+  trigger: MATERIAL_CROSS_REPO_TRANSACTION_WITH_STATISTICAL_SEMANTICS
+  Define:
+    problem_statement: >-
+      Provider mathematical proof exists, but independent consumer reproducibility has not yet been established through a distinct implementation boundary.
+    CTQ: independent_ABACUS_reproduction_of_all_frozen_C01_C07_semantics
+    authority_boundary: ABACUS_may_challenge_and_measure_but_cannot_create_QPS_engineering_authority
+  Measure:
+    baseline_independent_consumer_count: 0
+    target_independent_consumer_count: 1
+    baseline_reproduction_pass_ratio: 0.0
+    target_reproduction_pass_ratio: 1.0
+    frozen_codex_revision: 3b98e5ae1396bdec8e1950b33cb754a15aa84dc4
+    provider_artifact_digest: sha256:2c7cbcddffc6c3830ab02a212563ef390e7fe189ce24214f4313e6e5bccd2921
+  Analyse:
+    root_causes:
+      - stale_CODEX_premerge_bridge_state
+      - existing_ABACUS_consumer_performs_binding_validation_but_not_independent_numeric_recalculation
+    confounder_guard: identical_expected_fixture_is_allowed_but_provider_code_import_is_forbidden
+  Improve:
+    selected_change: independent_NumPy_rederivation_plus_exact_CODEX_binding_fetch
+    alternatives_rejected:
+      - importing_gg_MATH_kernels_because_not_independent
+      - metadata_only_replay_because_not_numerical_reproduction
+  Control:
+    acceptance_gate: exact_head_hosted_7_of_7_PASS_with_zero_authority_inversion
+    regression_trigger: any_future_provider_or_binding_change_or_independent_result_delta_above_frozen_tolerance
+    rollback: do_not_promote_Cycle2_and_retain_Cycle1_CONTROL
+
+KPI_vector:
+  independent_consumer_count:
+    baseline: 0
+    target: 1
+    clock_basis: cycle
+  independent_reproduction_pass_ratio:
+    numerator_target: 7
+    denominator: 7
+    target: 1.0
+    clock_basis: workflow_run
+  producer_consumer_numeric_delta_max:
+    target_max: 1.0e-7
+    unit: absolute_geodesic_distance
+    clock_basis: workflow_run
+  schema_parity:
+    numerator_target: 1
+    denominator: 1
+    target: 1.0
+  receipt_concordance:
+    numerator_target: 1
+    denominator: 1
+    target: 1.0
+  authority_inversion_count:
+    baseline: 0
+    target: 0
+  steps_gt_zero:
+    target: true
+
+stop_rule: >-
+  Do not enter Cycle 3 propagation/generalisation until the exact ABACUS PR head executes the independent challenge with steps > 0 and produces a typed receipt showing 7/7 reproduction, schema/receipt parity, numeric delta within tolerance, and zero authority inversion. If green, merge once and return that receipt to QPS; if red, repair only the first observed independent-consumer defect.
