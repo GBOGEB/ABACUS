@@ -1,0 +1,50 @@
+{
+  "schema": "abacus.dow.w259_method_card_semantic_snapshot.v1",
+  "source_repo": "GBOGEB/gg_MATH",
+  "source_merge": "0af77a081af76a0ac1244a953e0e5f27319b8276",
+  "cards_blob": "c9ae20146c8e92f2eb387b410a7a8c8256e661b2",
+  "graph_blob": "8cdecd4af9bf85c060138eebb40edce8033b6e12",
+  "cards": [
+    ["M01", "MATRIX_MATHS", "NO_UNIVERSAL_THRESHOLD"],
+    ["M02", "EIGENVALUES_EIGENVECTORS", "MODEL_DERIVED"],
+    ["M03", "COVARIANCE_CORRELATION_MULTIVARIATE", "NO_UNIVERSAL_THRESHOLD"],
+    ["M04", "PCA", "DATA_CALIBRATED"],
+    ["M05", "CONFIDENCE_INTERVALS", "DISTRIBUTION_DERIVED"],
+    ["M06", "HYPOTHESIS_TESTING_EFFECT_SIZE", "PROJECT_GOVERNED"],
+    ["M07", "ANOVA", "DISTRIBUTION_DERIVED"],
+    ["M08", "BRADLEY_TERRY", "NO_UNIVERSAL_THRESHOLD"],
+    ["M09", "REGRESSION_GLM", "DATA_CALIBRATED"],
+    ["M10", "MULTIVARIATE_INFERENCE", "DISTRIBUTION_DERIVED"],
+    ["M11", "RESAMPLING_MONTE_CARLO", "DATA_CALIBRATED"],
+    ["M12", "TIME_SERIES_STATE_SPACE", "DATA_CALIBRATED"],
+    ["M13", "CALCULUS_DYNAMICAL", "MODEL_DERIVED"],
+    ["M14", "ASYMPTOTICS_DIMENSIONLESS_REGIMES", "RESEARCH_TODO"],
+    ["M15", "INFORMATION_THEORY_DEPENDENCE", "DATA_CALIBRATED"],
+    ["M16", "OPTIMIZATION_NUMERICAL_METHODS", "MODEL_DERIVED"]
+  ],
+  "edges": [
+    ["M01", "M02", "FEEDS"], ["M01", "M03", "FEEDS"], ["M02", "M04", "REQUIRES"], ["M03", "M04", "REQUIRES"],
+    ["M05", "M06", "FEEDS"], ["M03", "M07", "REQUIRES"], ["M05", "M07", "REQUIRES"], ["M06", "M07", "REQUIRES"],
+    ["M05", "M08", "FEEDS"], ["M16", "M08", "REQUIRES"], ["M01", "M09", "REQUIRES"], ["M03", "M09", "REQUIRES"],
+    ["M05", "M09", "FEEDS"], ["M03", "M10", "REQUIRES"], ["M05", "M10", "REQUIRES"], ["M07", "M10", "FEEDS"],
+    ["M11", "M05", "CALIBRATES"], ["M11", "M04", "CHALLENGES"], ["M11", "M08", "CHALLENGES"], ["M12", "M04", "FEEDS"],
+    ["M13", "M12", "FEEDS"], ["M14", "M04", "GOVERNS"], ["M14", "M10", "GOVERNS"], ["M15", "M03", "CHALLENGES"],
+    ["M16", "M09", "REQUIRES"], ["M04", "M08", "DOES_NOT_IMPLY"], ["M08", "M04", "DOES_NOT_IMPLY"]
+  ],
+  "critical_semantics": {
+    "confidence_levels": [90, 95, 99],
+    "bt_parity_probability": 0.5,
+    "pca_sign_requires_alignment_before_interpretation": true,
+    "project_governed_threshold_read_only_to_provider": true,
+    "research_todo_has_zero_consumer_authority": true,
+    "bounded_execution_dag_must_be_acyclic": true,
+    "global_graph_may_cycle_through_feedback": true
+  },
+  "planes": {
+    "P1": ["3PR", "METHOD_MATH"],
+    "P2": ["MIP", "PROJECT_MATH_QPS"],
+    "P3": ["3PC", "TRIAGE_GOVERNANCE"],
+    "P4": ["3P3", "FEDERATION_ORCHESTRATION", "OPTIONAL_CROSS_REPO_OR_AUTHORITY_ONLY"]
+  },
+  "stretch_methods": ["Tracy_Widom", "hierarchical_Bayesian_BT", "high_dimensional_MANOVA", "anytime_valid_confidence_sequences", "Grassmann_state_space_models"]
+}
