@@ -1,0 +1,51 @@
+schema: abacus.dow.w259_p4_method_cards_control/0.1
+as_of: '2026-09-16T22:50:00+02:00'
+repo: GBOGEB/ABACUS
+mission: LM-10
+wave: W259_P4
+state: INDEPENDENT_CHALLENGE_ACTIVE
+authority_transfer: false
+formal_credit_delta: 0
+hard_gate_compensation_allowed: false
+source:
+  repo: GBOGEB/CODEX
+  pr: 751
+  merge_sha: d41e709c93d8c73ba392478592dd75627743a2ad
+  source_receipt_blob: 384584243eaeb63c9f6f41fadc773b83174d6638
+  source_validation_run: 35148642221
+  source_validation_artifact: 10468770871
+  source_validation_artifact_digest: sha256:dd756a19fb43b34dbe03ad3689f7c95e1a3093b280f3f6cd7a2b88bd20e0871a
+  canonical_bundle_digest: sha256:a5ea0c436bfb695245bed82a8275a5a775fea94cb3f8555e5cd89d44b5726012
+challenge:
+  implementation: runtime/federation/w259_method_cards_independent_dow.py
+  imports_gg_MATH: false
+  imports_CODEX_runtime: false
+  scope:
+    - exact_KEB_merge_and_blob_binding
+    - 16_card_unique_registry
+    - threshold_kind_parity
+    - dependency_DAG_and_feedback_distinction
+    - PCA_BT_bidirectional_DOES_NOT_IMPLY
+    - CI_90_95_99_semantics
+    - BT_parity_0_5
+    - PCA_sign_alignment_guard
+    - project_governed_threshold_read_only
+    - research_todo_zero_authority
+    - P1_3PR_P2_MIP_P3_3PC_plane_mapping
+    - optional_P4_3P3_federation_only
+    - zero_authority_inversion
+victory:
+  - all_independent_checks_PASS
+  - semantic_parity_1_0
+  - threshold_kind_parity_1_0
+  - plane_mapping_parity_1_0
+  - authority_inversion_count_0
+  - independent_consumer_count_1
+  - exact_head_steps_gt_zero
+next_if_pass: CODEX_may_promote_KEB_ITEM_0003_lineage_into_new_knowledge_atom_without_domain_authority
+forbidden_credit:
+  - engineering_acceptance
+  - compliance_acceptance
+  - negotiation_credit
+  - runtime_GOLD
+  - release_authority
