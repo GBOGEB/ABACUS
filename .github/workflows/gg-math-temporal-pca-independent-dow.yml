@@ -1,0 +1,109 @@
+name: gg_MATH Temporal PCA Independent DOW
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'runtime/federation/input/codex_gg_math_temporal_pca_3b98e5ae.json'
+      - 'runtime/federation/gg_math_temporal_pca_independent_challenge.py'
+      - 'runtime/federation/gg_math_temporal_pca_dow_consumer.py'
+      - 'tests/test_gg_math_temporal_pca_independent_challenge.py'
+      - '.github/workflows/gg-math-temporal-pca-independent-dow.yml'
+  push:
+    branches:
+      - main
+      - dow/temporal-pca-i-b-independent-challenge
+    paths:
+      - 'runtime/federation/input/codex_gg_math_temporal_pca_3b98e5ae.json'
+      - 'runtime/federation/gg_math_temporal_pca_independent_challenge.py'
+      - 'runtime/federation/gg_math_temporal_pca_dow_consumer.py'
+      - 'tests/test_gg_math_temporal_pca_independent_challenge.py'
+      - '.github/workflows/gg-math-temporal-pca-independent-dow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  independent-dow-cycle2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install independent challenge dependency
+        run: python -m pip install 'numpy>=1.21,<2.0'
+
+      - name: Verify exact CODEX snapshot blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git hash-object runtime/federation/input/codex_gg_math_temporal_pca_3b98e5ae.json)"
+          test "$actual" = "bd3a555514e7f1f7c59723313b9d5c7f98a932d2"
+
+      - name: Execute independent C01-C07 tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tests/test_gg_math_temporal_pca_independent_challenge.py 2>&1 | tee temporal_pca_independent_tests.out
+          grep -q PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_CHALLENGE_TESTS temporal_pca_independent_tests.out
+
+      - name: Emit typed independent DOW receipt
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python runtime/federation/gg_math_temporal_pca_independent_challenge.py 2>&1 | tee temporal_pca_independent_dow.out
+          grep -q PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_DOW_CYCLE2 temporal_pca_independent_dow.out
+
+      - name: Verify receipt guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('runtime/federation/generated/gg_math_temporal_pca_independent_dow_receipt.json')
+          r = json.loads(p.read_text())
+          assert r['status'] == 'ACCEPT'
+          assert r['consumer_exact_head'] == '${{ github.event.pull_request.head.sha || github.sha }}'
+          assert r['source']['commit'] == '3b98e5ae1396bdec8e1950b33cb754a15aa84dc4'
+          assert r['source']['git_blob_sha1'] == 'bd3a555514e7f1f7c59723313b9d5c7f98a932d2'
+          assert r['provider']['core_artifact_digest_expected_next_keb_atom'] == 'sha256:876c55c759de33392985f693f1735cdc0d38dda7d7b7a6c80ee80aee33fd8405'
+          assert r['independent_math']['challenge_pass_ratio'] == 1.0
+          assert r['kpis']['authority_inversion_count'] == 0
+          assert r['authority_transfer'] is False
+          assert r['formal_credit_delta'] == 0
+          assert r['hard_gate_compensation_allowed'] is False
+          print('PASS_INDEPENDENT_DOW_RECEIPT_GUARDS')
+          PY
+
+      - name: Upload independent DOW receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: gg-math-temporal-pca-independent-dow-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            runtime/federation/generated/gg_math_temporal_pca_independent_dow_receipt.json
+            temporal_pca_independent_tests.out
+            temporal_pca_independent_dow.out
+
+      - name: Enforce Cycle-2 CONTROL outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_DOW_CYCLE2 temporal_pca_independent_dow.out
