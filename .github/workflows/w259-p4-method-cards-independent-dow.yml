@@ -1,0 +1,54 @@
+name: W259 P4 Method Cards Independent DOW
+
+on:
+  pull_request:
+    paths:
+      - 'runtime/federation/w259_method_cards_independent_dow.py'
+      - 'runtime/federation/fixtures/w259_p4_keb_source_receipt.json'
+      - 'runtime/federation/fixtures/w259_method_card_semantic_snapshot.json'
+      - 'governance/qps_triage/W259_P4_METHOD_CARDS_DOW_CONTROL_v0.1.yaml'
+      - '.github/workflows/w259-p4-method-cards-independent-dow.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'runtime/federation/w259_method_cards_independent_dow.py'
+      - 'runtime/federation/fixtures/w259_p4_keb_source_receipt.json'
+      - 'runtime/federation/fixtures/w259_method_card_semantic_snapshot.json'
+      - 'governance/qps_triage/W259_P4_METHOD_CARDS_DOW_CONTROL_v0.1.yaml'
+      - '.github/workflows/w259-p4-method-cards-independent-dow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  independent-challenge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert exact checkout head
+        run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+      - name: Execute independent DOW challenge
+        run: |
+          python runtime/federation/w259_method_cards_independent_dow.py \
+            --codex-sha d41e709c93d8c73ba392478592dd75627743a2ad \
+            --codex-receipt-blob 384584243eaeb63c9f6f41fadc773b83174d6638 \
+            --out runtime/federation/generated/w259_method_cards_dow_receipt.json
+      - name: Enforce PASS receipt
+        run: |
+          python - <<'PY'
+          import json
+          p='runtime/federation/generated/w259_method_cards_dow_receipt.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['status']=='PASS'
+          assert r['kpi']['semantic_parity']==1.0
+          assert r['kpi']['threshold_kind_parity']==1.0
+          assert r['kpi']['plane_mapping_parity']==1.0
+          assert r['kpi']['authority_inversion_count']==0
+          assert r['authority_transfer'] is False
+          PY
+      - name: Upload DOW receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w259-method-cards-independent-dow
+          path: runtime/federation/generated/w259_method_cards_dow_receipt.json
+          if-no-files-found: error
