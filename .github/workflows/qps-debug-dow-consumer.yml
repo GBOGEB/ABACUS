@@ -47,7 +47,7 @@ jobs:
           python3 runtime/federation/qps_debug_dow_consumer.py \
             --binding \
             runtime/federation/receipts/\
-CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
+          CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
       - name: Enforce exact same-lineage DOW ACCEPT and child eligibility
         run: |
           python3 - <<'PY'
@@ -115,7 +115,7 @@ CODEX_KEB_QPS_FEDERATED_W1F_E_ACCEPT.json
           set -euo pipefail
           actual="$(git hash-object \
             runtime/federation/input/\
-codex_gg_math_temporal_pca_3b98e5ae.json)"
+          codex_gg_math_temporal_pca_3b98e5ae.json)"
           expected="bd3a555514e7f1f7c59723313b9d5c7f98a932d2"
           test "$actual" = "$expected"
       - name: Execute independent C01-C07 tests
@@ -137,7 +137,7 @@ codex_gg_math_temporal_pca_3b98e5ae.json)"
           set -euo pipefail
           python \
             runtime/federation/\
-gg_math_temporal_pca_independent_challenge.py \
+          gg_math_temporal_pca_independent_challenge.py \
             2>&1 | tee temporal_pca_independent_dow.out
           grep -q \
             PASS_GG_MATH_TEMPORAL_PCA_INDEPENDENT_DOW_CYCLE2 \
@@ -184,8 +184,7 @@ gg_math_temporal_pca_independent_challenge.py \
         with:
           name: gg-math-temporal-pca-independent-dow
           path: |
-            runtime/federation/generated/\
-gg_math_temporal_pca_independent_dow_receipt.json
+            runtime/federation/generated/*temporal_pca*
             temporal_pca_independent_tests.out
             temporal_pca_independent_dow.out
           if-no-files-found: error
