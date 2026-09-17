@@ -1,0 +1,34 @@
+name: LEG5 Federation Dashboard Proof
+
+on:
+  pull_request:
+    paths:
+      - "build_federation_dashboard.py"
+      - "tests/test_federation_dashboard.py"
+      - "tests/test_leg5_federation_dashboard_proof.py"
+      - ".github/workflows/leg5-federation-dashboard-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install bounded test dependencies
+        run: python -m pip install pytest numpy
+
+      - name: Run bounded federation dashboard proof
+        run: |
+          python -m pytest -q \
+            tests/test_federation_dashboard.py \
+            tests/test_leg5_federation_dashboard_proof.py
