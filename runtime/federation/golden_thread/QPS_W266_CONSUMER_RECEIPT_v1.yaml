@@ -1,0 +1,37 @@
+schema: abacus.federation.consumer_receipt/v1
+as_of: '2026-09-17T03:26:00+02:00'
+state: CONSUMER_RECEIPT_REGISTERED
+consumer: GBOGEB/ABACUS
+consumer_role: DELTA_1_RUNTIME_PLANE
+provider: GBOGEB/cryoplant-project
+provider_role: DELTA_1_AUXILIARY_QPS_PLANE
+provider_pr: 1386
+provider_merge_sha: 11cdea5ef74389340c5f13ed7c866dd30cceef64
+provider_head_before_merge: 0ccaaaf7abe5c0bf8edf4aaa1ca54d621b5e3f6a
+provider_base_before_pr:
+  commit_sha: 7f6fdf8bf434bc3ea3dc5d7084f4878966d4a5b7
+  tree_sha: 9270e9c23a48765e1243b9fb8684dae65a1031d5
+consumed_surfaces:
+  replay_core: src/golden_thread.py
+  replay_tests: tests/test_golden_thread.py
+  contract: federation/golden_thread/CONTRACT_v1.yaml
+  human_narrative: docs/federation/GOLDEN_THREAD.md
+  control_receipt: triage/w266/QPS_W266_GOLDEN_THREAD_P0_P6_CONTROL_v1.yaml
+runtime_interpretation:
+  accepted_as: STATIC_RUNTIME_CONSUMER_RECEIPT
+  executable_runtime_gate: NOT_EXECUTED_IN_ABACUS_THIS_PR
+  authority_transfer: false
+  qps_truth_mutation: false
+  qps_runtime_gold_compensation: false
+  qps_issue_923_compensation: false
+digest_claims_from_provider_contract:
+  genesis_digest_sha256: 5aa396a143aad59181452449be3aaecc3151a6457cf4b17edfee7339f540b44e
+  patch_digest_sha256: 4d9fc10fd1d5094f9076e1297d4273ec7af425ed40a38016ca07b2577884c236
+  successor_digest_sha256: 6a778e7131598942b2729a8d8cac52fb666e27a6d550da25520967dc074afb1c
+noncompensation:
+  parent_pass_does_not_imply_child_pass: true
+  runtime_consumer_receipt_does_not_make_qps_authority: true
+  unknown_or_defer_not_equal_pass: true
+follow_up:
+  - Execute ABACUS-local replay compatibility harness only after a dedicated runtime gate is requested.
+  - Do not widen this receipt into ABACUS_CI_GOVERNANCE_DRIFT remediation.
