@@ -1,0 +1,59 @@
+schema: qps.gmi_doceng.source_pointer_challenge/v1
+as_of: '2026-09-17'
+wave: W274
+mission: GMI_DOCENG_CROSS_AGENT_BRIDGE
+role: ABACUS_DOW_RECEIVER_CHALLENGER
+status: ACCEPT_POINTER_ONLY
+receiver_credit_delta: 0
+
+parent_w273:
+  codex_pr: 760
+  codex_merge: 040f66fbbd897ee465f00591e7d05e7be0c4e0c4
+  abacus_pr: 1261
+  abacus_merge: d8f1429b20122a89c025f062560d6276add91221
+  qps_pr: 1442
+  qps_merge: c309ae0ce13266fbfb36aa3f080637e552b97d74
+
+source_pointer:
+  drive_file_id: 1Ad4T-fv5nX8PAxPxIpNQ3b3VMls-MuVs
+  receipt_sha256: >-
+    34985d58ed706f70ad79d3f2ded0817e9d136e8e45c926d8fb33090748e33c82
+  repository: GBOGEB/DOCX_RTM_Automation
+  indexed_source_commit: 193cafd25ea343c01036342400dca4eaa0252536
+  path: addenda/QPS_Addendum_II_Master.docx
+  git_blob: d95e6a15e28e0bf9e810e434b79b62e396511aaf
+  size_bytes: 5063178
+  indexed_sha256: >-
+    ac6627f0a6cbe8c020941686cad249619184d8071a9efca721d0c960d41d63c9
+  verification_level: POINTER_BOUND_BYTES_NOT_REHASHED
+
+codex_successor:
+  repo: GBOGEB/CODEX
+  pr: 761
+  head_sha: 3816ae22b160ff8aa691d1eb15a8da11efb505e9
+  guard_path: scripts/gmi_doceng_bridge_guard.py
+  test_path: tests/test_gmi_doceng_bridge_guard.py
+  expected_pointer_disposition: ACCEPT_SOURCE_POINTER_BOUND
+
+challenge_contract:
+  pointer_identity_fields_complete: REQUIRED
+  malformed_pointer_must_reject: REQUIRED
+  local_master_takes_precedence: REQUIRED
+  pointer_bound_must_not_equal_byte_rehashed: REQUIRED
+  pointer_bound_must_not_equal_canonical_locked: REQUIRED
+  receiver_green_grants_child_acceptance: FORBIDDEN
+  receiver_green_grants_production_readiness: FORBIDDEN
+
+known_withheld_evidence:
+  current_session_binary_rehash: DEFER
+  canonical_extraction_runs: 0
+  canonical_lock: NOT_LOCKED
+  alexandria_graph_runtime: DEFER
+  replay_roundtrip_equivalence: DEFER
+
+receiver_disposition:
+  source_identity_visibility: PASS
+  pointer_semantic_boundary: PASS
+  child_engineering_acceptance: WITHHELD
+  receiver_credit_delta: 0
+  disposition: ACCEPT_POINTER_ONLY
