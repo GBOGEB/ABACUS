@@ -24,8 +24,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install pytest
-        run: python -m pip install pytest
+      - name: Install bounded test dependencies
+        run: python -m pip install pytest numpy
 
       - name: Run bounded federation dashboard proof
         run: |
