@@ -1,0 +1,49 @@
+schema: qps.gmi_doceng.bridge_receiver/v1
+as_of: '2026-09-17'
+wave: W273
+mission: GMI_DOCENG_CROSS_AGENT_BRIDGE
+role: ABACUS_DOW_RECEIVER_CHALLENGER
+status: ACCEPT_POINTER_ONLY
+receiver_credit_delta: 0
+
+source_package:
+  id: GMI-DOCENG-001
+  drive_folder_id: 1bIPFEEe9XtmOB56B_4LIcX1FdSIxY4mZ
+  provenance_doc_id: 1Suf0HhnozsCVXdvCzjeReQkOfinXY2m59paNQHrrQR4
+  source_session: GMI-DOCENG-20260917-001
+
+observed_materialization:
+  cli_py:
+    drive_file_id: 1PHlKDC6x3-9G2VfJGoPWoEI4-4y2LwCQ
+    sha256: 07ee6369982bcb473b293782fa0e76f56cae3dfc8eb45d41323f694fbe138893
+    syntax_check: PASS
+  manifest:
+    drive_file_id: 1lX9ymM-qk6oSipDuVeQVJi1T596rkDJg
+    status: PARTIALLY_MATERIALIZED
+  migration_gap_receipt:
+    drive_file_id: 1tVbJw3GXUD2McdwE_tUHgUtIOKPffQq3
+
+upstream_implementation:
+  repo: GBOGEB/CODEX
+  branch: w273-gmi-doceng-3pr-codex
+  guard_path: scripts/gmi_doceng_bridge_guard.py
+  test_path: tests/test_gmi_doceng_bridge_guard.py
+  expected_dispositions:
+    - REJECT
+    - DEFER_SOURCE_BINDING
+    - ACCEPT_MATERIALIZED_CORE
+
+challenge_contract:
+  - no production credit from Drive folder existence alone
+  - no QPS engineering acceptance from receiver-side green
+  - cli.py digest must match the bound SHA-256
+  - authoritative Master.md or Master.docx remains a separate source-binding predicate
+  - RAW transcript/prompts and normal.dotm remain visible gaps but do not compensate for source binding
+  - ACCEPT_MATERIALIZED_CORE is not equivalent to Alexandria integration or replay equivalence
+
+receiver_disposition:
+  pointer_visibility: PASS
+  implementation_visibility: PASS
+  child_engineering_acceptance: WITHHELD
+  receiver_credit_delta: 0
+  disposition: ACCEPT_POINTER_ONLY
