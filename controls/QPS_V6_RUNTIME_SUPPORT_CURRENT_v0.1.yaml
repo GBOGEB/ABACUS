@@ -1,0 +1,66 @@
+schema: abacus.qps_v6_runtime_support.v0.1
+as_of: '2026-09-17T03:21:00+02:00'
+state: BASELINE_RECEIPT_BOUND_CURRENT_PIN_NOT_YET_REPROVED
+mission: HM-01
+parent_qps_issue: GBOGEB/cryoplant-project#1379
+abacus_issue: GBOGEB/ABACUS#1256
+authority_transfer: false
+formal_credit_delta: 0
+current_pin:
+  repository: GBOGEB/ABACUS
+  branch: main
+  sha: f869ab56f4898e54b9db8bb8d334a3133e5a3e4a
+  qps_v6_validation_state: NOT_YET_REPROVED_ON_CURRENT_PIN
+qps_bounded_baseline_receipt:
+  source_authority: GBOGEB/cryoplant-project
+  qps_control: handover/qps_recursive/QTG_CURRENT.yaml
+  abacus_exact_head: 0fa891e77931b6223d1c9dc7140a54a11a178522
+  run_id: 34981882011
+  target_jobs:
+    lint: PASS
+    phase_tests: PASS
+    full_dmaic: PASS
+    quality_gate: PASS
+    documentation: PASS
+    deploy: SKIPPED_EXPECTED_PR
+  pytest:
+    collected: 415
+    passed: 402
+    failed: 0
+    skipped: 10
+    xpassed: 3
+    warnings: 2
+    seconds: 7.05
+  artifact:
+    id: 10400869667
+    sha256: ff1b0e794ef8690a5734ce81a79db01df4a39eb5e84f9e972fe6920e1c0a7587
+  disposition: ACCEPT_TARGET_RUNTIME_AND_DOCUMENTATION_REPAIR
+  evidence_class: BOUNDED_EXACT_HEAD_RUNTIME_RECEIPT
+  authority_transfer: false
+separate_governance_lane:
+  id: ABACUS_CI_GOVERNANCE_DRIFT
+  state: DEFER_SEPARATE_NONCOMPENSATING
+  qps_v6_policy: DO_NOT_WIDEN_RELEASE_SUPPORT_WORK_ORDER_INTO_GLOBAL_CI_CLEANUP
+release_support_contract:
+  required_action: REPRODUCE_OR_EXPLICITLY_REBIND_BOUNDED_QPS_SUPPORT_ON_CURRENT_RELEASE_PIN
+  required_return_fields:
+    - source_sha
+    - workflow
+    - run_id
+    - job_ids
+    - artifact_digest
+    - test_counts
+    - evidence_class
+    - downstream_qps_disposition
+  current_main_must_not_inherit_old_pass_implicitly: true
+  historical_v4_4_0_release_must_not_be_used_as_qps_v6_pin_by_default: true
+noncompensation:
+  - ABACUS_PASS_NE_QPS_RUNTIME_GOLD
+  - ABACUS_PASS_NE_QPS_ENGINEERING_CREDIT
+  - ABACUS_CI_CLEANUP_NE_RELEASE_SUPPORT_RECEIPT
+  - QPS_923_REMAINS_INDEPENDENT
+next:
+  - IDENTIFY_CURRENT_PIN_BOUNDED_WORKFLOW
+  - EXECUTE_OR_OBSERVE_EXACT_PIN_SUPPORT_PROOF
+  - EMIT_RELEASE_BOUND_SUPPORT_RECEIPT
+  - RETURN_TO_HM_01_AND_QPS_1379
