@@ -24,6 +24,10 @@ w80 = load_module(
     "w80_observed_outcome_validation",
     TOOLS / "w80_observed_outcome_validation.py",
 )
+w79 = load_module(
+    "w79_deterministic_work_pca_for_w80_test",
+    TOOLS / "w79_deterministic_work_pca.py",
+)
 
 
 def load_inputs() -> tuple[dict, dict]:
@@ -136,3 +140,22 @@ def test_range_restriction_blocks_promotion_even_with_observed_count_gate_met() 
     assert result["predeclared_gate"]["pc1_range_gate_pass"] is False
     assert result["pc1_predictive_validation"] is False
     assert result["pairwise_events"] == []
+
+
+def test_authoritative_actions_receipt_binds_every_counted_run() -> None:
+    w79_source, ledger = load_inputs()
+    receipt = w80.load_governed_run_receipt()
+    assert receipt["repository_id"] == 1054507184
+    assert receipt["repository_full_name"] == "GBOGEB/ABACUS"
+    assert receipt["run_count"] == 77
+    rows = w80.validate_ledger(ledger, w79_source, w79, receipt)
+    assert len(rows) == 15
+
+    forged = copy.deepcopy(receipt)
+    forged["runs"][0]["source_sha"] = "0" * 40
+    try:
+        w80.validate_ledger(ledger, w79_source, w79, forged)
+    except ValueError as exc:
+        assert "authoritative run binding mismatch" in str(exc)
+    else:
+        raise AssertionError("cross-SHA Actions outcome must fail closed")
