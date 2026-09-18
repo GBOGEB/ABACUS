@@ -1,0 +1,103 @@
+{
+  "schema_version": "MC2-W80-3PSTAR-MIP-CLOSEOUT-0.2.0",
+  "as_of": "2026-09-18T15:19:00+02:00",
+  "repository": "GBOGEB/ABACUS",
+  "mission": "MC-2 deterministic complexity outcome validation",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "lineage": {
+    "w80_prs": [
+      1266,
+      1269,
+      1270,
+      1272
+    ],
+    "analysis_merges": {
+      "1266": "a0de73a9a60071665f27bf2fecb6e17e24172a93",
+      "1269": "fd5e2f705fe4f5201c6c0986bc3508be6bc257bb",
+      "1270": "5f530096c75715653b7d423cb3db2de759c212ca",
+      "1272": "174f1d6e9a8e00f25593962ec69c2ef9b1e78d08"
+    },
+    "main_after_1272_metrics": "b5f06a8654b499db5e957b8b3c0935ee18d01888"
+  },
+  "three_p_star": {
+    "refresh": "PASS_FRESH_REPOSITORY_AUTHORITY",
+    "probe": "PASS_W80_SPECIFIC_HOSTED_EXECUTION",
+    "rank": "PASS_NO_W80_ANALYSIS_RED_REMAINS",
+    "prepare": "PASS_REPOSITORY_NATIVE_RESTART_CHAIN",
+    "prove": "FIX_FORWARD_IN_PROGRESS_DOCS_POLICY",
+    "commit": "WITHHELD_UNTIL_FIX_FORWARD_REAL_DOCS_PROOF"
+  },
+  "mip": {
+    "modernize": "PASS",
+    "innovate": "PASS_DIAGNOSTIC_ONLY",
+    "perpetuate": "FIX_FORWARD_IN_PROGRESS"
+  },
+  "closeout_control_defect": {
+    "source_pr": 1272,
+    "defect": "PR merged while changed-docs lint was red",
+    "premerge_docs_job_id": 105615459025,
+    "postmerge_summary": "PASS_0_OF_0_NOT_VALID_PROOF",
+    "disposition": "REPAIR_DROPIN_MARKDOWN_AND_REQUIRE_REAL_DOCS_JOB_GT_ZERO_STEPS"
+  },
+  "w80_measurement": {
+    "population_target_states": 15,
+    "observed_outcome_states": 11,
+    "missing_states": 4,
+    "state_coverage_fraction": 0.733333,
+    "semantic_pc1_eigenvalue": 6.341341,
+    "semantic_pc1_explained_variance": 0.905906,
+    "pc1_range_coverage_fraction": 0.276351,
+    "minimum_pc1_range_coverage_fraction": 0.7,
+    "core_validation_spearman_rho": 0.01978,
+    "core_validation_exact_permutation_p": 0.974459,
+    "core_validation_loocv_r2": -0.724876,
+    "docs_failure_auc": 0.604167,
+    "docs_failure_exact_permutation_p": 0.642424
+  },
+  "provenance": {
+    "w79_input_canonical_sha256": "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4",
+    "w80_outcome_ledger": "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
+    "w80_actions_receipt": "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json",
+    "w80_actions_receipt_sha256": "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01",
+    "counted_actions_runs": 77
+  },
+  "w80_hosted_proof": {
+    "pr": 1270,
+    "exact_head": "24d94ed2b5fc4f5186929f00025746f42e2a0f49",
+    "matrix_run_id": 35340909766,
+    "python_3_10_job": 105586352272,
+    "python_3_11_job": 105586352316,
+    "python_3_12_job": 105586352008,
+    "matrix_result": "PASS_GT_ZERO_STEPS",
+    "semgrep_run_id": 35340909754,
+    "semgrep_result": "PASS",
+    "codex_review": "PASS_NO_MAJOR_ISSUES"
+  },
+  "broad_ci_debt": {
+    "classification": "SEPARATE_NONCOMPENSATING",
+    "known_failures": [
+      "DMAIC measurement reports missing",
+      "Week3 total_tests 8 below legacy expectation 10",
+      "11_PREVIOUS_SESSIONS absent",
+      "legacy docker-compose executable assumption",
+      "legacy Docker async/network assertions"
+    ]
+  },
+  "disposition": {
+    "w80_outcome_validation": "NOT_SUPPORTED_RANGE_RESTRICTED",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD",
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "next_frontier": {
+    "primary": "authoritative outcomes for missing low-PC1 states",
+    "secondary": "independent exact-source repair/work outcome block",
+    "not_default": "more elapsed-time PCA"
+  }
+}
