@@ -1,0 +1,85 @@
+{
+  "schema_version": "MC2-W80-V03-PUBLICATION-ATTESTATION-0.1.0",
+  "as_of": "2026-09-18T15:41:19+02:00",
+  "repository": "GBOGEB/ABACUS",
+  "subject": {
+    "pr": 1279,
+    "publication_head": "e20aec2c3844effc50770fbd97c4bb81e98ab529",
+    "publication_merge": "c198ea11554c039f32f527e9834b562dd14dfe37",
+    "subject_semantics": "v0.3 W80 lossless publication package"
+  },
+  "subject_artifacts": [
+    {
+      "path": "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json",
+      "git_blob_sha": "ed9bab9619c13500dc79aec5ff625e2785d5630b"
+    },
+    {
+      "path": "handover/mc2/W80_CURRENT.json",
+      "git_blob_sha": "ed63b138ce10bcfcf0be12f8311869e4f7a19c00"
+    },
+    {
+      "path": "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
+      "git_blob_sha": "e7ab8763fc091949820f60dc6c37493f27d260a7"
+    },
+    {
+      "path": "handover/mc2/W80_DROPIN.md",
+      "git_blob_sha": "de6106202ca438834a0f340e4d183b1503fdf316"
+    }
+  ],
+  "publication_proof": {
+    "changed_docs": {
+      "run_id": 35351428027,
+      "job_id": 105620243742,
+      "result": "PASS_GT_ZERO_STEPS"
+    },
+    "abacus_matrix": {
+      "run_id": 35351427950,
+      "jobs": [
+        {
+          "job_id": 105620243505,
+          "python": "3.10",
+          "result": "PASS_GT_ZERO_STEPS"
+        },
+        {
+          "job_id": 105620243503,
+          "python": "3.11",
+          "result": "PASS_GT_ZERO_STEPS"
+        },
+        {
+          "job_id": 105620243232,
+          "python": "3.12",
+          "result": "PASS_GT_ZERO_STEPS"
+        }
+      ]
+    }
+  },
+  "review_finding_closed": {
+    "source_pr": 1279,
+    "source_comment_id": 4047227178,
+    "finding": "bind proof to publication head",
+    "disposition": "CLOSED_BY_EXACT_SUBJECT_ATTESTATION"
+  },
+  "scope_policy": {
+    "this_file_is_post_publication_metadata": true,
+    "this_file_is_not_part_of_the_attested_subject": true,
+    "full_matrix_reproof_of_this_metadata_file_is_not_required": true,
+    "metadata_publication_requires_json_docs_validation": true
+  },
+  "w80_disposition": {
+    "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC",
+    "outcome_validation": "NOT_SUPPORTED_RANGE_RESTRICTED",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD",
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false,
+    "formal_credit_delta": 0
+  },
+  "next_frontier": {
+    "primary": "authoritative comparable outcomes for missing low-PC1 states s01..s04",
+    "secondary": "independent exact-source repair/work outcome block",
+    "not_default": "more elapsed-time PCA"
+  }
+}
