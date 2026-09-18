@@ -252,6 +252,30 @@
       "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^cycle2-temporal-pca-independent-consumer\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^gg-math-temporal-pca-exact-live-dow\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w259-p4-method-cards-independent-dow\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^leg5-federation-dashboard-proof\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
