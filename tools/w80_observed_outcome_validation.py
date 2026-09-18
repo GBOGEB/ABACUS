@@ -11,14 +11,16 @@ from pathlib import Path
 
 import numpy as np
 
-SCHEMA = "MC2-W80-OBSERVED-OUTCOME-VALIDATION-0.1.0"
+SCHEMA = "MC2-W80-OBSERVED-OUTCOME-VALIDATION-0.1.1"
 LEDGER_SCHEMA = "MC2-W80-OBSERVED-VALIDATION-OUTCOME-0.1.0"
+RUN_RECEIPT_SCHEMA = "MC2-W80-GITHUB-ACTIONS-RUN-RECEIPT-0.1.0"
 EXPECTED_LEDGER_CANONICAL_SHA256 = (
     "f28c2f8d65694ff7f99a3122700008b647cad9b644ea22bec153cd8004106ec5"
 )
 EXPECTED_W79_INPUT_CANONICAL_SHA256 = (
     "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4"
 )
+EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1 = "f0269e34e31a47acf66b99cfea2920c4c23433b2"
 CORE_WORKFLOWS = [
     "CI - ABACUS Matrix",
     "DELTA_1 CodeQL",
@@ -36,8 +38,33 @@ SPEARMAN_ABS_MIN = 0.50
 EXACT_P_MAX = 0.05
 LOOCV_R2_MIN = 0.0
 AUC_DISTANCE_FROM_CHANCE_MIN = 0.25
+MIN_PC1_RANGE_COVERAGE = 0.70
 
 ROOT = Path(__file__).resolve().parents[1]
+RUN_RECEIPT_PATH = ROOT / "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json"
+
+
+def git_blob_sha1(path: Path) -> str:
+    payload = path.read_bytes()
+    header = f"blob {len(payload)}\0".encode("ascii")
+    return hashlib.sha1(header + payload).hexdigest()
+
+
+def load_governed_run_receipt() -> dict:
+    if git_blob_sha1(RUN_RECEIPT_PATH) != EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1:
+        raise ValueError("W80 governed Actions run receipt payload mismatch")
+    receipt = json.loads(RUN_RECEIPT_PATH.read_text(encoding="utf-8"))
+    if receipt.get("schema_version") != RUN_RECEIPT_SCHEMA:
+        raise ValueError("W80 Actions run receipt schema mismatch")
+    if receipt.get("repository_id") != 1054507184:
+        raise ValueError("W80 Actions run receipt repository ID mismatch")
+    if receipt.get("repository_full_name") != "GBOGEB/ABACUS":
+        raise ValueError("W80 Actions run receipt repository mismatch")
+    if int(receipt.get("source_state_count", 0)) != 11:
+        raise ValueError("W80 Actions run receipt source-state count mismatch")
+    if int(receipt.get("run_count", 0)) != 77:
+        raise ValueError("W80 Actions run receipt run count mismatch")
+    return receipt
 
 
 def canonical_sha256(value: object) -> str:
@@ -175,7 +202,12 @@ def exact_auc_p(labels: np.ndarray, scores: np.ndarray) -> tuple[float, int]:
     return extreme / total, total
 
 
-def validate_ledger(ledger: dict, w79_source: dict, w79_module) -> list[dict]:
+def validate_ledger(
+    ledger: dict,
+    w79_source: dict,
+    w79_module,
+    run_receipt: dict,
+) -> list[dict]:
     if canonical_sha256(ledger) != EXPECTED_LEDGER_CANONICAL_SHA256:
         raise ValueError("W80 governed outcome ledger payload mismatch")
     if ledger.get("schema_version") != LEDGER_SCHEMA:
@@ -207,6 +239,11 @@ def validate_ledger(ledger: dict, w79_source: dict, w79_module) -> list[dict]:
     if outcome_block.get("missing_state_policy") != "missing_not_zero":
         raise ValueError("missing source-state validation must remain missing, not zero")
 
+    receipt_runs = list(run_receipt.get("runs") or [])
+    receipt_by_id = {int(run["run_id"]): run for run in receipt_runs}
+    if len(receipt_by_id) != len(receipt_runs):
+        raise ValueError("W80 Actions run receipt contains duplicate run IDs")
+
     observed = []
     missing = []
     seen_run_ids: set[int] = set()
@@ -234,6 +271,22 @@ def validate_ledger(ledger: dict, w79_source: dict, w79_module) -> list[dict]:
                 raise ValueError("W80 validation event must be push or pull_request")
             if run.get("conclusion") not in {"success", "failure", "cancelled"}:
                 raise ValueError("W80 validation conclusion outside governed classes")
+            authoritative = receipt_by_id.get(run_id)
+            if authoritative is None:
+                raise ValueError(f"W80 run {run_id} missing from Actions producer receipt")
+            expected_binding = {
+                "repository_id": 1054507184,
+                "repository_full_name": "GBOGEB/ABACUS",
+                "source_sha": state["source_sha"],
+                "workflow_name": run["name"],
+                "event": run["event"],
+                "conclusion": run["conclusion"],
+            }
+            for field, expected in expected_binding.items():
+                if authoritative.get(field) != expected:
+                    raise ValueError(
+                        f"W80 authoritative run binding mismatch for {run_id}:{field}"
+                    )
         observed.append(state)
 
     if int(ledger.get("population_target_count", 0)) != 15:
@@ -244,6 +297,8 @@ def validate_ledger(ledger: dict, w79_source: dict, w79_module) -> list[dict]:
         raise ValueError("W80 missing-state count mismatch")
     if len(observed) != 11 or len(missing) != 4:
         raise ValueError("W80 governed outcome ledger must preserve 11 observed / 4 missing")
+    if seen_run_ids != set(receipt_by_id):
+        raise ValueError("W80 Actions producer receipt and ledger run sets differ")
     return normalized_w79
 
 
@@ -284,7 +339,13 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "w79_deterministic_work_pca_for_w80",
         ROOT / "tools/w79_deterministic_work_pca.py",
     )
-    normalized_w79 = validate_ledger(ledger, w79_source, w79_module)
+    run_receipt = load_governed_run_receipt()
+    normalized_w79 = validate_ledger(
+        ledger,
+        w79_source,
+        w79_module,
+        run_receipt,
+    )
     pc1 = semantic_pc1(w79_source, normalized_w79)
 
     outcome_rows = []
@@ -336,9 +397,26 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
     auc_p, auc_permutations = exact_auc_p(docs_failure, x)
 
     coverage_fraction = len(outcome_rows) / int(ledger["population_target_count"])
+    full_pc1 = np.asarray(list(pc1["scores"].values()), dtype=float)
+    observed_pc1 = x
+    missing_pc1 = np.asarray(
+        [pc1["scores"][row["source_sha"]] for row in missing_rows],
+        dtype=float,
+    )
+    full_pc1_min = float(np.min(full_pc1))
+    full_pc1_max = float(np.max(full_pc1))
+    observed_pc1_min = float(np.min(observed_pc1))
+    observed_pc1_max = float(np.max(observed_pc1))
+    full_pc1_range = full_pc1_max - full_pc1_min
+    if full_pc1_range <= 0:
+        raise ValueError("W80 PC1 population range must be positive")
+    pc1_range_coverage = (observed_pc1_max - observed_pc1_min) / full_pc1_range
+    range_gate = pc1_range_coverage >= MIN_PC1_RANGE_COVERAGE
+
     primary_gate = (
         len(outcome_rows) >= MIN_COVERED_STATES
         and coverage_fraction >= MIN_COVERAGE_FRACTION
+        and range_gate
         and abs(rho) >= SPEARMAN_ABS_MIN
         and spearman_p <= EXACT_P_MAX
         and cv_r2 > LOOCV_R2_MIN
@@ -360,6 +438,7 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "measurement_basis": "independent_observed_validation_outcomes_not_elapsed_time",
         "source_w79_input_canonical_sha256": EXPECTED_W79_INPUT_CANONICAL_SHA256,
         "source_outcome_ledger_canonical_sha256": EXPECTED_LEDGER_CANONICAL_SHA256,
+        "source_actions_run_receipt_git_blob_sha1": EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1,
         "semantic_pc1": {
             "eigenvalue": round(pc1["eigenvalue"], 6),
             "explained_variance_ratio": round(
@@ -373,6 +452,14 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
             "missing_states": len(missing_rows),
             "coverage_fraction": round(coverage_fraction, 6),
             "missing_state_policy": "missing_not_zero",
+            "pc1_full_min": round(full_pc1_min, 6),
+            "pc1_full_max": round(full_pc1_max, 6),
+            "pc1_observed_min": round(observed_pc1_min, 6),
+            "pc1_observed_max": round(observed_pc1_max, 6),
+            "pc1_range_coverage_fraction": round(pc1_range_coverage, 6),
+            "range_restriction_warning": not range_gate,
+            "missing_pc1_mean": round(float(np.mean(missing_pc1)), 6),
+            "observed_pc1_mean": round(float(np.mean(observed_pc1)), 6),
             "missing_rows": missing_rows,
         },
         "primary_outcome": {
@@ -400,6 +487,8 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
             "maximum_exact_p": EXACT_P_MAX,
             "minimum_loocv_r2_strictly_greater_than": LOOCV_R2_MIN,
             "minimum_auc_distance_from_chance": AUC_DISTANCE_FROM_CHANCE_MIN,
+            "minimum_pc1_range_coverage_fraction": MIN_PC1_RANGE_COVERAGE,
+            "pc1_range_gate_pass": range_gate,
             "primary_gate_pass": primary_gate,
             "secondary_gate_pass": secondary_gate,
         },
@@ -417,8 +506,9 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "child_engineering_promotion_authority": False,
         "engineering_compliance_release_authority": False,
         "next_step": (
-            "obtain independent repair/work outcome blocks or broader comparable "
-            "validation coverage; do not create BT pairs from unvalidated PC1"
+            "expand independent outcomes into the low-complexity PC1 tail or bind "
+            "a comparable repair/work outcome block; do not create BT pairs from "
+            "range-restricted, unvalidated PC1"
         ),
     }
     result["receipt_sha256"] = canonical_sha256(result)
