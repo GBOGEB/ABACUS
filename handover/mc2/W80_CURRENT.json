@@ -1,11 +1,12 @@
 {
-  "schema_version": "MC2-W80-CURRENT-POINTER-0.3.0",
+  "schema_version": "MC2-W80-CURRENT-POINTER-0.4.0",
   "mission": "W80 deterministic PC1 observed-outcome validation",
   "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL",
   "restart_policy": "repository_authority_only",
   "current_handover": "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
   "current_dropin": "handover/mc2/W80_DROPIN.md",
   "current_closeout_receipt": "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json",
+  "current_publication_attestation": "architecture/w80/W80_V03_PUBLICATION_ATTESTATION_v0.1.json",
   "read_before_restart": [
     "architecture/w79/W79_W78_INPUT.json",
     "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
@@ -13,6 +14,7 @@
     "tools/w80_observed_outcome_validation.py",
     "tests/test_w80_observed_outcome_validation.py",
     "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json",
+    "architecture/w80/W80_V03_PUBLICATION_ATTESTATION_v0.1.json",
     "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
     "handover/mc2/W80_DROPIN.md"
   ],
@@ -21,21 +23,29 @@
     "probe": "PASS",
     "rank": "PASS",
     "prepare": "PASS",
-    "prove": "PASS_FINAL_HEAD_DOCS_AND_MATRIX",
-    "commit": "PASS_CLOSEOUT_FIXFORWARD_MERGED"
+    "prove": "PASS_V03_PUBLICATION_HEAD_DOCS_AND_MATRIX",
+    "commit": "PASS_V03_PUBLICATION_MERGED"
   },
   "mip": {
     "modernize": "PASS",
     "innovate": "PASS_DIAGNOSTIC_ONLY",
     "perpetuate": "PASS_REPOSITORY_NATIVE"
   },
-  "final_closeout": {
-    "pr": 1274,
-    "head": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
-    "merge": "b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524",
-    "docs_run": 35350555778,
-    "docs_job": 105617410488,
-    "matrix_run": 35350555821
+  "attested_publication": {
+    "pr": 1279,
+    "head": "e20aec2c3844effc50770fbd97c4bb81e98ab529",
+    "merge": "c198ea11554c039f32f527e9834b562dd14dfe37",
+    "docs_run": 35351428027,
+    "docs_job": 105620243742,
+    "matrix_run": 35351427950,
+    "python_3_10_job": 105620243505,
+    "python_3_11_job": 105620243503,
+    "python_3_12_job": 105620243232
+  },
+  "metadata_policy": {
+    "publication_attestation_is_post_subject_metadata": true,
+    "full_matrix_reproof_of_pointer_metadata_is_not_required": true,
+    "metadata_requires_json_docs_validation": true
   },
   "invariants": {
     "pairwise_outcome_accumulation_permitted": false,
