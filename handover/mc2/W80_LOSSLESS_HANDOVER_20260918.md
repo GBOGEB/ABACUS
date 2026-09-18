@@ -22,8 +22,10 @@ Read these objects in order:
 3. `architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json`
 4. `tools/w80_observed_outcome_validation.py`
 5. `tests/test_w80_observed_outcome_validation.py`
-6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.1.json`
-7. this handover
+6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.2.json`
+7. `handover/mc2/W80_CURRENT.json`
+8. `handover/mc2/W80_DROPIN.md`
+9. this handover
 
 Do not reconstruct W80 from chat memory.
 
@@ -99,13 +101,35 @@ missing-state imputation.
 
 - Refresh: PASS.
 - Probe: PASS.
-- Rank: PASS. No W80-owned red remains.
+- Rank: PASS. No W80 analysis red remains.
 
 ### 3PC
 
-- Prepare: this restart chain.
-- Prove: closeout PR hosted validation.
-- Commit: merge only after closeout proof.
+- Prepare: repository-native restart chain exists.
+- Prove: closeout proof requires a real docs job with more than zero steps.
+- Commit: final fix-forward merge only after that proof.
+
+## Closeout control defect
+
+PR #1272 merged at:
+
+```text
+174f1d6e9a8e00f25593962ec69c2ef9b1e78d08
+```
+
+Its changed-docs lint had already failed on Markdown policy.
+
+The post-merge summary reported PASS with 0 / 0 checks.
+
+That summary is not accepted as proof.
+
+The fix-forward must:
+
+- repair `W80_DROPIN.md`;
+- publish closeout receipt v0.2;
+- prove changed-docs validation with real runner steps;
+- update the current pointer;
+- federate the exact final merge SHA.
 
 ## MIP closeout
 
