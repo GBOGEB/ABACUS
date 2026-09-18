@@ -1,0 +1,63 @@
+schema: abacus.qps_v6_runtime_support_receipt.v0.3
+as_of: '2026-09-18T13:32:00+02:00'
+repo: GBOGEB/ABACUS
+mission: HM-01
+parent_qps_issue: GBOGEB/cryoplant-project#1379
+abacus_issue: GBOGEB/ABACUS#1256
+authority_transfer: false
+formal_credit_delta: 0
+
+lineage:
+  setup_pr: GBOGEB/ABACUS#1259
+  bounded_proof_pr: GBOGEB/ABACUS#1263
+  bounded_proof_merge: 20d4d063a19b54ec1eeb7016494fdf5d447457f1
+  review_race_provenance_pr: GBOGEB/ABACUS#1265
+  rule: FIX_FORWARD_PRESERVE_MERGED_HISTORY
+
+validated_release_support_proof:
+  exact_sha: f55876e4d7985dd672304ff6e3945f24de9b9194
+  workflow: .github/workflows/abacus-cicd.yml
+  run_id: 35272680285
+  event: push
+  target_jobs:
+    lint_and_validate: {job_id: 105375616877, state: PASS}
+    test_dmaic_phases: {job_id: 105375756250, state: PASS}
+    execute_full_dmaic: {job_id: 105375926331, state: PASS}
+    update_canonical_documentation: {job_id: 105376177881, state: PASS}
+    quality_gate: {job_id: 105376177898, state: PASS}
+  pytest:
+    collected: 415
+    passed: 402
+    failed: 0
+    skipped: 10
+    xpassed: 3
+    warnings: 2
+    seconds: 6.90
+  artifact:
+    id: 10518602763
+    name: dmaic-execution-reports
+    bytes: 14403
+    sha256: >-
+      2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
+  disposition: PASS_BOUNDED_QPS_RELEASE_SUPPORT
+
+repository_state_boundary:
+  proof_sha_ne_floating_current: true
+  merge_that_published_v0_2: 20d4d063a19b54ec1eeb7016494fdf5d447457f1
+  rule: >-
+    The exact support proof remains valid at f55876e4. Neither #1263 merge nor
+    any later repository current inherits the PASS. A new release-support pin
+    requires a new bounded exact-SHA proof.
+
+separate_same_run_debt:
+  deploy_artifacts:
+    job_id: 105376239925
+    state: FAIL_LEGACY_PACKAGING_PATH
+    disposition: ABACUS_CI_GOVERNANCE_DRIFT_NONCOMPENSATING
+
+noncompensation:
+  - ABACUS_SUPPORT_PASS_NE_QPS_RUNTIME_GOLD
+  - ABACUS_SUPPORT_PASS_NE_QPS_ENGINEERING_CREDIT
+  - DEPLOY_DRIFT_NE_QPS_SUPPORT_FAILURE
+  - QPS_923_REMAINS_INDEPENDENT
+  - R3_RELEASE_PRODUCTION_DOV_REMAINS_INDEPENDENT
