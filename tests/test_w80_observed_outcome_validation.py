@@ -49,6 +49,12 @@ def test_real_w80_is_negative_observed_outcome_validation() -> None:
     assert coverage["observed_states"] == 11
     assert coverage["missing_states"] == 4
     assert coverage["coverage_fraction"] == 0.733333
+    assert coverage["pc1_full_min"] == -6.074314
+    assert coverage["pc1_full_max"] == 1.904192
+    assert coverage["pc1_observed_min"] == -0.300676
+    assert coverage["pc1_observed_max"] == 1.904192
+    assert coverage["pc1_range_coverage_fraction"] == 0.276351
+    assert coverage["range_restriction_warning"] is True
 
     primary = result["primary_outcome"]
     assert primary["spearman_rho"] == 0.01978
@@ -62,6 +68,11 @@ def test_real_w80_is_negative_observed_outcome_validation() -> None:
     assert secondary["auc"] == 0.604167
     assert secondary["exact_permutation_p"] == 0.642424
     assert secondary["exact_permutation_count"] == 165
+
+    gate = result["predeclared_gate"]
+    assert gate["minimum_pc1_range_coverage_fraction"] == 0.70
+    assert gate["pc1_range_gate_pass"] is False
+    assert gate["primary_gate_pass"] is False
 
     assert result["pc1_predictive_validation"] is False
     assert result["pairwise_outcome_accumulation_permitted"] is False
@@ -114,3 +125,14 @@ def test_tampered_w79_source_fails_closed_before_outcome_credit() -> None:
         assert "hash mismatch" in str(exc) or "payload mismatch" in str(exc)
     else:
         raise AssertionError("tampered W79 source must fail closed")
+
+
+def test_range_restriction_blocks_promotion_even_with_observed_count_gate_met() -> None:
+    result = real_result()
+    coverage = result["outcome_coverage"]
+    assert coverage["observed_states"] >= result["predeclared_gate"]["minimum_observed_states"]
+    assert coverage["coverage_fraction"] >= result["predeclared_gate"]["minimum_coverage_fraction"]
+    assert coverage["pc1_range_coverage_fraction"] < result["predeclared_gate"]["minimum_pc1_range_coverage_fraction"]
+    assert result["predeclared_gate"]["pc1_range_gate_pass"] is False
+    assert result["pc1_predictive_validation"] is False
+    assert result["pairwise_events"] == []
