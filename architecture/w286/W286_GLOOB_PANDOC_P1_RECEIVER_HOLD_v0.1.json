@@ -1,20 +1,29 @@
 {
-  "schema": "gbogeb-p1-receiver-hold/1.0",
+  "schema": "gbogeb-p1-receiver-parity/1.0",
   "wave": "W286",
   "repo": "GBOGEB/ABACUS",
   "authority_role": "DOW_DERIVED_ANALYSIS_CONSUMPTION",
-  "local_base_sha": "ac8938907a367627014f61effe22c6bf880a7714",
+  "local_base_sha": "b67533abc3cb0f04d1c18d1c575937b3f9108754",
   "producer": {
     "repo": "GBOGEB/CODEX",
-    "pr": 771,
-    "head_sha": "9223704e0931cb71ab059a8671eb71e03c84f0cb",
-    "status": "HOLD_WAIT_PRODUCER_CI_MERGE"
+    "pr": 774,
+    "proof_head_sha": "446d1b4520fe991bd18482bcc21939a8c5538170",
+    "proof_run_id": 35372225076,
+    "merge_sha": "3ce6078a12b2fd139f7a674db5d5cf99df6e90da",
+    "status": "PROVEN_MERGED"
   },
+  "parity_state": "PENDING_LOCAL_EXACT_HEAD_PROOF",
+  "authority_transfer": false,
   "must_not": [
     "promote_QPS_engineering_truth",
     "override_child_authority",
-    "treat_local_green_as_producer_merge"
+    "treat_producer_PASS_as_child_acceptance"
   ],
-  "next_action": "after CODEX #771 merges, bind exact merge SHA and execute independent parity probe",
+  "required_local_proof": [
+    "exact_head_bound",
+    "producer_merge_bound",
+    "authority_preserved",
+    "formal_credit_zero"
+  ],
   "formal_credit_delta": 0
 }
