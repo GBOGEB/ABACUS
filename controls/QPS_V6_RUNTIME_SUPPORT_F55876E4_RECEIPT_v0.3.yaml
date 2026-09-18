@@ -1,0 +1,75 @@
+schema: abacus.qps_v6_runtime_support_receipt.v0.3
+as_of: '2026-09-18T13:27:00+02:00'
+repo: GBOGEB/ABACUS
+mission: HM-01
+parent_qps_issue: GBOGEB/cryoplant-project#1379
+abacus_issue: GBOGEB/ABACUS#1256
+authority_transfer: false
+formal_credit_delta: 0
+
+lineage:
+  predecessor_pr: GBOGEB/ABACUS#1259
+  superseded_working_pr: GBOGEB/ABACUS#1263
+  superseded_working_head: 1485611bb288070632a1cba991a38e4e6c2c2e1d
+  supersession_reason: >-
+    PR #1263 correctly bound the bounded support evidence but its CURRENT
+    wording became stale while main advanced during review. Preserve #1263 as
+    review provenance; do not merge stale current-head semantics.
+
+validated_release_support_proof:
+  exact_sha: f55876e4d7985dd672304ff6e3945f24de9b9194
+  workflow: .github/workflows/abacus-cicd.yml
+  run_id: 35272680285
+  event: push
+  target_jobs:
+    lint_and_validate: {job_id: 105375616877, state: PASS}
+    test_dmaic_phases: {job_id: 105375756250, state: PASS}
+    execute_full_dmaic: {job_id: 105375926331, state: PASS}
+    update_canonical_documentation: {job_id: 105376177881, state: PASS}
+    quality_gate: {job_id: 105376177898, state: PASS}
+  pytest:
+    collected: 415
+    passed: 402
+    failed: 0
+    skipped: 10
+    xpassed: 3
+    warnings: 2
+    seconds: 6.90
+  artifact:
+    id: 10518602763
+    name: dmaic-execution-reports
+    bytes: 14403
+    sha256: >-
+      2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
+  disposition: PASS_BOUNDED_QPS_RELEASE_SUPPORT
+
+separate_same_run_debt:
+  deploy_artifacts:
+    job_id: 105376239925
+    state: FAIL_LEGACY_PACKAGING_PATH
+    disposition: ABACUS_CI_GOVERNANCE_DRIFT_NONCOMPENSATING
+
+repository_current_at_successor_prepare:
+  sha: 89747af043337a5e05d99fcf1b087a1184dc08be
+  current_commit: W276_QPS_HUMAN_RENDITION_REVIEW_UX_PROFILE
+  relation_to_validated_support_proof: LATER_REPOSITORY_STATE
+  inherits_validated_support_pass: false
+  rule: >-
+    The exact proof stays attached to f55876e4. Later main commits are history
+    and may be used as a new release-support pin only after a new bounded proof.
+
+acceptance_model:
+  proof_identity: EXACT_VALIDATED_SHA_NOT_FLOATING_CURRENT
+  qps_release_support_status: PASS_ON_F55876E4
+  current_main_validation_status: NOT_IMPLICITLY_INHERITED
+  reproof_trigger:
+    - RELEASE_SUPPORT_PIN_CHANGES
+    - OBSERVED_RUNTIME_REGRESSION
+    - QPS_RELEASE_CONTRACT_REQUIRES_NEW_ABACUS_PIN
+
+noncompensation:
+  - ABACUS_SUPPORT_PASS_NE_QPS_RUNTIME_GOLD
+  - ABACUS_SUPPORT_PASS_NE_QPS_ENGINEERING_CREDIT
+  - DEPLOY_DRIFT_NE_QPS_SUPPORT_FAILURE
+  - QPS_923_REMAINS_INDEPENDENT
+  - R3_RELEASE_PRODUCTION_DOV_REMAINS_INDEPENDENT
