@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
-SCHEMA = "MC2-W80-OBSERVED-OUTCOME-VALIDATION-0.1.0"
+SCHEMA = "MC2-W80-OBSERVED-OUTCOME-VALIDATION-0.1.1"
 LEDGER_SCHEMA = "MC2-W80-OBSERVED-VALIDATION-OUTCOME-0.1.0"
 EXPECTED_LEDGER_CANONICAL_SHA256 = (
     "f28c2f8d65694ff7f99a3122700008b647cad9b644ea22bec153cd8004106ec5"
@@ -36,6 +36,7 @@ SPEARMAN_ABS_MIN = 0.50
 EXACT_P_MAX = 0.05
 LOOCV_R2_MIN = 0.0
 AUC_DISTANCE_FROM_CHANCE_MIN = 0.25
+MIN_PC1_RANGE_COVERAGE = 0.70
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -336,9 +337,26 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
     auc_p, auc_permutations = exact_auc_p(docs_failure, x)
 
     coverage_fraction = len(outcome_rows) / int(ledger["population_target_count"])
+    full_pc1 = np.asarray(list(pc1["scores"].values()), dtype=float)
+    observed_pc1 = x
+    missing_pc1 = np.asarray(
+        [pc1["scores"][row["source_sha"]] for row in missing_rows],
+        dtype=float,
+    )
+    full_pc1_min = float(np.min(full_pc1))
+    full_pc1_max = float(np.max(full_pc1))
+    observed_pc1_min = float(np.min(observed_pc1))
+    observed_pc1_max = float(np.max(observed_pc1))
+    full_pc1_range = full_pc1_max - full_pc1_min
+    if full_pc1_range <= 0:
+        raise ValueError("W80 PC1 population range must be positive")
+    pc1_range_coverage = (observed_pc1_max - observed_pc1_min) / full_pc1_range
+    range_gate = pc1_range_coverage >= MIN_PC1_RANGE_COVERAGE
+
     primary_gate = (
         len(outcome_rows) >= MIN_COVERED_STATES
         and coverage_fraction >= MIN_COVERAGE_FRACTION
+        and range_gate
         and abs(rho) >= SPEARMAN_ABS_MIN
         and spearman_p <= EXACT_P_MAX
         and cv_r2 > LOOCV_R2_MIN
@@ -373,6 +391,14 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
             "missing_states": len(missing_rows),
             "coverage_fraction": round(coverage_fraction, 6),
             "missing_state_policy": "missing_not_zero",
+            "pc1_full_min": round(full_pc1_min, 6),
+            "pc1_full_max": round(full_pc1_max, 6),
+            "pc1_observed_min": round(observed_pc1_min, 6),
+            "pc1_observed_max": round(observed_pc1_max, 6),
+            "pc1_range_coverage_fraction": round(pc1_range_coverage, 6),
+            "range_restriction_warning": not range_gate,
+            "missing_pc1_mean": round(float(np.mean(missing_pc1)), 6),
+            "observed_pc1_mean": round(float(np.mean(observed_pc1)), 6),
             "missing_rows": missing_rows,
         },
         "primary_outcome": {
@@ -400,6 +426,8 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
             "maximum_exact_p": EXACT_P_MAX,
             "minimum_loocv_r2_strictly_greater_than": LOOCV_R2_MIN,
             "minimum_auc_distance_from_chance": AUC_DISTANCE_FROM_CHANCE_MIN,
+            "minimum_pc1_range_coverage_fraction": MIN_PC1_RANGE_COVERAGE,
+            "pc1_range_gate_pass": range_gate,
             "primary_gate_pass": primary_gate,
             "secondary_gate_pass": secondary_gate,
         },
@@ -417,8 +445,9 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "child_engineering_promotion_authority": False,
         "engineering_compliance_release_authority": False,
         "next_step": (
-            "obtain independent repair/work outcome blocks or broader comparable "
-            "validation coverage; do not create BT pairs from unvalidated PC1"
+            "expand independent outcomes into the low-complexity PC1 tail or bind "
+            "a comparable repair/work outcome block; do not create BT pairs from "
+            "range-restricted, unvalidated PC1"
         ),
     }
     result["receipt_sha256"] = canonical_sha256(result)
