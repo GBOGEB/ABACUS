@@ -1,0 +1,588 @@
+{
+  "schema_version": "MC2-W80-OBSERVED-VALIDATION-OUTCOME-0.1.0",
+  "repository": "GBOGEB/ABACUS",
+  "source_w79_input_canonical_sha256": "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4",
+  "population_target_count": 15,
+  "covered_state_count": 11,
+  "missing_state_count": 4,
+  "outcome_block": {
+    "name": "core_validation_suite",
+    "independence_policy": "exclude PCA/census/measurement/promotion and post-merge-summary workflows",
+    "core_workflows": [
+      "CI - ABACUS Matrix",
+      "DELTA_1 CodeQL",
+      "Format Check",
+      "Security Scan — Ruff",
+      "Validate Docs (Markdown/YAML/JSON)",
+      "YAML Validation",
+      "qps-canonicalization"
+    ],
+    "cancelled_policy": "missing_not_failure",
+    "missing_state_policy": "missing_not_zero"
+  },
+  "states": [
+    {
+      "label": "s10",
+      "source_sha": "09c8a36c5a75816c71f2ec45667c3a5103e2a7de",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34197151595,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34197151623,
+          "event": "push",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34197151640,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34197151626,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34197151648,
+          "event": "push",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34197151584,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34197151597,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s02",
+      "source_sha": "107c889c87137bfc660a69bfd7dd1cfc121291fc",
+      "status": "NO_ACTIONS_EVIDENCE",
+      "runs": []
+    },
+    {
+      "label": "s09",
+      "source_sha": "1dfe11f59bca30c4d76ec8c22db237b0a37f1852",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34196956362,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34196956436,
+          "event": "push",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34196956337,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34196956401,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34196956318,
+          "event": "push",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34196956366,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34196965409,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s01",
+      "source_sha": "2a5104eecb2ab3ed340c2e63b3f2ba3b46cb56dd",
+      "status": "NO_ACTIONS_EVIDENCE",
+      "runs": []
+    },
+    {
+      "label": "s12",
+      "source_sha": "3e52a1db7560c56a4e67a9a0ffd5686600cfceb1",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34202744450,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34202744559,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34202744435,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34202744543,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34202744401,
+          "event": "pull_request",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34202744434,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34202744370,
+          "event": "pull_request",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s04",
+      "source_sha": "6f70a2926ecc2aa40e54f7d9f869f1804e4a1e41",
+      "status": "NO_ACTIONS_EVIDENCE",
+      "runs": []
+    },
+    {
+      "label": "s15",
+      "source_sha": "8f7f419d388839a68a416aaa552846cae0c16ac3",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34765230501,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34765230570,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34765230504,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34765230484,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34765230496,
+          "event": "pull_request",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34765230465,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34765230560,
+          "event": "pull_request",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s13",
+      "source_sha": "970bc70a016bc071cd3c97bfdbd012d48a85055d",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34204141257,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34204141044,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34204141126,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34204141101,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34204141323,
+          "event": "pull_request",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34204141069,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34204141232,
+          "event": "pull_request",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s07",
+      "source_sha": "b0761df32fc31c3757bb499f20af386f3569bebb",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34166965969,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34166965886,
+          "event": "push",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34166966005,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34166965992,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34166966044,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34166965996,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34166966013,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s08",
+      "source_sha": "bffdc3779cd24ed18c043bde571d1d856cd5c8c2",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34190097109,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34190097108,
+          "event": "push",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34190097147,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34190097132,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34190097184,
+          "event": "push",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34190097273,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34190097114,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s14",
+      "source_sha": "c39696661d8d67c769c8031a962129c6d67c3935",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34765100200,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34765100170,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34765100162,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34765100124,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34765100198,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34765100123,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34765100131,
+          "event": "pull_request",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s05",
+      "source_sha": "c9bc44d217d81244e3f6753cd79ae45781b23163",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34160815536,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34160815545,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34160815522,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34160815498,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34160815590,
+          "event": "push",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34160815489,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34161103469,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s11",
+      "source_sha": "e20f923b5994a2d817fe1fde5d625d189170127b",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34204333576,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34204333713,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34204333593,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34204333642,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34204333560,
+          "event": "pull_request",
+          "conclusion": "failure"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34204333686,
+          "event": "pull_request",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34204333621,
+          "event": "pull_request",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "label": "s03",
+      "source_sha": "e2ae50cc6951a0fdead9e9b18ea52695c78984be",
+      "status": "NO_ACTIONS_EVIDENCE",
+      "runs": []
+    },
+    {
+      "label": "s06",
+      "source_sha": "e80e7b959c0f0759c48bb0ccf5378564aa29e0ff",
+      "status": "OBSERVED",
+      "runs": [
+        {
+          "name": "CI - ABACUS Matrix",
+          "run_id": 34166178413,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "DELTA_1 CodeQL",
+          "run_id": 34166178399,
+          "event": "push",
+          "conclusion": "cancelled"
+        },
+        {
+          "name": "Format Check",
+          "run_id": 34166178438,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Security Scan — Ruff",
+          "run_id": 34166178439,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docs (Markdown/YAML/JSON)",
+          "run_id": 34166178422,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "YAML Validation",
+          "run_id": 34166178400,
+          "event": "push",
+          "conclusion": "success"
+        },
+        {
+          "name": "qps-canonicalization",
+          "run_id": 34166178410,
+          "event": "push",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}
