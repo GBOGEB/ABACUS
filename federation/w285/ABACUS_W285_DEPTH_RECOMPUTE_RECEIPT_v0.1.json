@@ -4,7 +4,10 @@
     "qps_pr": 1490,
     "qps_head": "f732bac39d9a92ab296982f08ca17185ec51812f",
     "depth_blob": "691680cdf11289142b402a0ae02c95d46a246473",
-    "topology_blob": "df0ee845697578cd644691b81eafb2465249d772"
+    "topology_blob": "df0ee845697578cd644691b81eafb2465249d772",
+    "qps_control_blob": "868861de8da3221a2a9bd934ac960e7798340110",
+    "qps_validator_blob": "1ae329f7485cd8bc32dd4253dc2c8bc147410d7b",
+    "qps_tests_blob": "19ffae87a17198a2a3725be8035db0ccde9e8433"
   },
   "expected_recompute": {
     "B": 0.3333333333333333,
@@ -27,5 +30,9 @@
     "disposition": "REPAIRED_BEFORE_DOW_COMMIT",
     "failed_external_run": 35359203971,
     "review_state": "SOURCE_ATOM_TEXT_REPAIRED_EXACTLY_AND_MIRROR_VERIFIED"
-  }
+  },
+  "review_repairs": [
+    "W285_REX_02_EVIDENCE_BINDING_NOT_BYTE_VERIFIED",
+    "W285_REX_03_DUPLICATE_COVERED_FUNCTION_MASKED_BY_SET"
+  ]
 }
