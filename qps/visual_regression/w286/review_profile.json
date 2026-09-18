@@ -1,0 +1,24 @@
+{
+  "schema": "abacus-qps-visual-regression-profile/1.0",
+  "consumer": "ABACUS_VISUAL_REVIEW_UX",
+  "authority": "PRESENTATION_REVIEW_UX_ONLY",
+  "source_repo": "GBOGEB/cryoplant-project",
+  "source_issue": 1501,
+  "source_pr": 1505,
+  "source_merge": "b96b0db124d5db863313f85b575dc3ada41fec6f",
+  "corpus_name": "QPS_VISUAL_RENDERING_CORPUS_SAMPLE_ONLY_v1_3",
+  "review_classes": ["PASS","INTENTIONAL_VISUAL_CHANGE","REGRESSION","REVIEW_REQUIRED"],
+  "dimensions": [
+    "geometry_and_overflow",
+    "typography_and_minimum_readability",
+    "table_column_balance_and_wrapping",
+    "visual_hierarchy_and_status_prominence",
+    "whitespace_and_density",
+    "cross_format_information_priority",
+    "print_and_export_robustness"
+  ],
+  "required_visible_states": ["variant_id","format","golden_hash","candidate_hash","classification","review_note"],
+  "forbidden_authority_fields": ["engineering_disposition_override","compliance_override","negotiation_override","semantic_ssot_override"],
+  "sample_only": true,
+  "formal_credit_delta": 0
+}
