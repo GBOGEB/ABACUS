@@ -1,7 +1,7 @@
-schema: abacus-qps-v6-local-preflight/1.0
-base_sha: 33de3878ab0e5af0f5061c03844187bfc54a89d9
-qps_pin: 48454561de70a8873f8fe2f32e4c9cbf8e31e51b
-codex_pin: 76cfaf7be9776140ff8064f63b406d35b4fd3099
+schema: abacus-qps-v6-local-preflight/1.1
+base_sha: b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524
+qps_pin: bb6f09e90a6af86e2601d3bad706209fa429eadc
+codex_pin: 23624e10478e115bcea2613bfcd41c24eb5dea24
 observed:
   python_contract: pyproject.toml
   python_min: "3.11"
