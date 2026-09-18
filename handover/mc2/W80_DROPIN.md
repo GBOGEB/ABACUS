@@ -9,7 +9,7 @@ Do not repeat burned W79 or W80 predicates.
 ## Refresh first
 
 1. `GBOGEB/ABACUS main`
-2. `GBOGEB/ABACUS#1270`
+2. `GBOGEB/ABACUS#1274`
 3. `GBOGEB/ABACUS#1164`
 4. `GBOGEB/cryoplant-project#1063`
 
@@ -22,7 +22,7 @@ Read in this order:
 3. `architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json`
 4. `tools/w80_observed_outcome_validation.py`
 5. `tests/test_w80_observed_outcome_validation.py`
-6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.2.json`
+6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json`
 7. `handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md`
 8. `handover/mc2/W80_CURRENT.json`
 
@@ -45,39 +45,44 @@ Read in this order:
 - More elapsed-time PCA is not the default path.
 - QPS formal credit delta is zero.
 
-## Exact proof lineage
+## 3P* and MIP state
 
-PR #1266 merge:
+- 3PR Refresh, Probe, and Rank are PASS.
+- 3PC Prepare, Prove, and Commit are PASS.
+- MIP Modernize is PASS.
+- MIP Innovate is PASS_DIAGNOSTIC_ONLY.
+- MIP Perpetuate is PASS_REPOSITORY_NATIVE.
 
-```text
-a0de73a9a60071665f27bf2fecb6e17e24172a93
-```
+## Final closeout proof
 
-PR #1269 merge:
-
-```text
-fd5e2f705fe4f5201c6c0986bc3508be6bc257bb
-```
-
-PR #1270 merge:
+PR #1274 final head:
 
 ```text
-5f530096c75715653b7d423cb3db2de759c212ca
+7d9802aab65b3fead4c1a99719b839485d55f8a2
 ```
 
-PR #1270 exact head:
+PR #1274 merge:
 
 ```text
-24d94ed2b5fc4f5186929f00025746f42e2a0f49
+b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524
 ```
 
-ABACUS matrix run:
+Changed-docs proof:
 
 ```text
-35340909766
+run 35350555778
+job 105617410488
+PASS_GT_ZERO_STEPS
 ```
 
-Python 3.10, 3.11, and 3.12 passed with real runner steps.
+Final-head matrix proof:
+
+```text
+run 35350555821
+Python 3.10 PASS
+Python 3.11 PASS
+Python 3.12 PASS
+```
 
 W80 producer receipt SHA-256:
 
@@ -85,18 +90,11 @@ W80 producer receipt SHA-256:
 1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01
 ```
 
-## Closeout control note
+Receipt v0.3 closes the v0.2 chronology finding.
 
-PR #1272 merged before its failing Markdown lint could block the merge.
+## Separate non-compensating reds
 
-Do not treat the #1272 0 / 0 post-merge summary as proof.
-
-The closeout fix-forward must show a real docs job with more than zero
-steps before W80 3PC Prove is PASS.
-
-## Do not repair inside W80
-
-Broad `CI/CD Test Suite` debt is separate unless re-routed.
+Broad `CI/CD Test Suite` debt remains outside W80.
 
 It currently includes:
 
@@ -106,9 +104,16 @@ It currently includes:
 - legacy Docker asynchronous and network assertions;
 - legacy `docker-compose` executable assumptions.
 
+Two #1274 merge-push failures are also outside W80:
+
+- Pandoc and TeX package installation failed;
+- QPLANT presentation test collection lacked `requests`.
+
+Do not convert these into W80 outcome or authority credit.
+
 ## Next executable transition
 
-Use 3PR on new evidence.
+Use 3PR only on new evidence.
 
 Prioritize:
 

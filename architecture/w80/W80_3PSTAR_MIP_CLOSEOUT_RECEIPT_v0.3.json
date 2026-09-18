@@ -1,0 +1,166 @@
+{
+  "schema_version": "MC2-W80-3PSTAR-MIP-CLOSEOUT-0.3.0",
+  "as_of": "2026-09-18T15:32:15+02:00",
+  "repository": "GBOGEB/ABACUS",
+  "mission": "MC-2 deterministic complexity outcome validation",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "chronology": {
+    "w80_analysis_prs": [
+      1266,
+      1269,
+      1270
+    ],
+    "lossless_closeout_pr": 1272,
+    "closeout_fixforward_pr": 1274,
+    "final_closeout_head": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+    "final_closeout_merge": "b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524",
+    "current_main_at_v03_branch": "fa8c769ac1d86566a5fba45ee6b422c8db5a508d"
+  },
+  "three_p_star": {
+    "refresh": "PASS_FRESH_REPOSITORY_AUTHORITY",
+    "probe": "PASS_FINAL_HEAD_DOCS_AND_MATRIX_GT_ZERO_STEPS",
+    "rank": "PASS_NO_W80_OWNED_RED_REMAINS",
+    "prepare": "PASS_REPOSITORY_NATIVE_RESTART_CHAIN",
+    "prove": "PASS_FINAL_HEAD_HOSTED_VALIDATION",
+    "commit": "PASS_CLOSEOUT_FIXFORWARD_MERGED"
+  },
+  "mip": {
+    "modernize": {
+      "state": "PASS",
+      "evidence": [
+        "authoritative Actions-run producer receipt",
+        "exact source-SHA run binding",
+        "SHA256 receipt integrity pin",
+        "fail-closed missing/cancelled semantics"
+      ]
+    },
+    "innovate": {
+      "state": "PASS_DIAGNOSTIC_ONLY",
+      "evidence": [
+        "independent observed-outcome validation",
+        "exact permutation inference",
+        "leave-one-out predictive test",
+        "PC1 range-restriction promotion guard"
+      ]
+    },
+    "perpetuate": {
+      "state": "PASS_REPOSITORY_NATIVE",
+      "evidence": [
+        "machine closeout receipt",
+        "lossless handover",
+        "stable current pointer",
+        "drop-in restart",
+        "named re-entry triggers"
+      ]
+    }
+  },
+  "review_closeout": {
+    "v02_chronology_finding": "CLOSED_BY_V03_CORRECTED_AS_OF",
+    "source_review_pr": 1274,
+    "finding": "v0.2 as_of preceded evidence it recorded",
+    "v03_policy": "receipt timestamp follows the final closeout evidence"
+  },
+  "final_head_proof": {
+    "pr": 1274,
+    "head": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+    "docs_run_id": 35350555778,
+    "docs_job_id": 105617410488,
+    "docs_result": "PASS_GT_ZERO_STEPS",
+    "matrix_run_id": 35350555821,
+    "matrix_jobs": [
+      {
+        "job_id": 105617410925,
+        "python": "3.10",
+        "result": "PASS_GT_ZERO_STEPS"
+      },
+      {
+        "job_id": 105617411051,
+        "python": "3.11",
+        "result": "PASS_GT_ZERO_STEPS"
+      },
+      {
+        "job_id": 105617410721,
+        "python": "3.12",
+        "result": "PASS_GT_ZERO_STEPS"
+      }
+    ],
+    "review_result": "P2_CHRONOLOGY_FINDING_ONLY_CLOSED_BY_V03"
+  },
+  "w80_measurement": {
+    "population_target_states": 15,
+    "observed_outcome_states": 11,
+    "missing_states": 4,
+    "state_coverage_fraction": 0.733333,
+    "semantic_pc1_eigenvalue": 6.341341,
+    "semantic_pc1_explained_variance": 0.905906,
+    "pc1_full_range": {
+      "min": -6.074314,
+      "max": 1.904192
+    },
+    "pc1_observed_range": {
+      "min": -0.300676,
+      "max": 1.904192
+    },
+    "pc1_range_coverage_fraction": 0.276351,
+    "minimum_pc1_range_coverage_fraction": 0.7,
+    "core_validation_spearman_rho": 0.01978,
+    "core_validation_exact_permutation_p": 0.974459,
+    "core_validation_loocv_r2": -0.724876,
+    "docs_failure_auc": 0.604167,
+    "docs_failure_exact_permutation_p": 0.642424
+  },
+  "provenance": {
+    "w79_input_canonical_sha256": "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4",
+    "w80_outcome_ledger": "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
+    "w80_actions_receipt": "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json",
+    "w80_actions_receipt_sha256": "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01",
+    "counted_actions_runs": 77
+  },
+  "noncompensating_external_reds": {
+    "broad_ci": [
+      "DMAIC measurement reports missing",
+      "Week3 total_tests 8 below legacy expectation 10",
+      "11_PREVIOUS_SESSIONS absent",
+      "legacy docker-compose executable assumption",
+      "legacy Docker async/network assertions"
+    ],
+    "merge_push": [
+      {
+        "run_id": 35350572009,
+        "job_id": 105617460983,
+        "classification": "OUTSIDE_W80",
+        "failure": "Pandoc/TeX apt install exit 100"
+      },
+      {
+        "run_id": 35350571741,
+        "job_id": 105617458942,
+        "classification": "OUTSIDE_W80",
+        "failure": "QPLANT presentation test collection missing requests"
+      }
+    ]
+  },
+  "disposition": {
+    "w80_status": "CONTROLLED_NEGATIVE_DIAGNOSTIC",
+    "w80_outcome_validation": "NOT_SUPPORTED_RANGE_RESTRICTED",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD",
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "child_engineering_promotion_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "next_frontier": {
+    "primary": "authoritative outcomes for missing low-PC1 states s01..s04",
+    "secondary": "independent exact-source repair/work outcome block",
+    "bt_rule": "only genuine observed pairwise outcomes after predictive validation",
+    "not_default": "more elapsed-time PCA"
+  },
+  "federation_targets": [
+    "GBOGEB/ABACUS#1164",
+    "GBOGEB/cryoplant-project#1063"
+  ]
+}
