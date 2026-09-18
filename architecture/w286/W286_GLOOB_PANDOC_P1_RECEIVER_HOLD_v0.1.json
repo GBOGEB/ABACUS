@@ -1,0 +1,20 @@
+{
+  "schema": "gbogeb-p1-receiver-hold/1.0",
+  "wave": "W286",
+  "repo": "GBOGEB/ABACUS",
+  "authority_role": "DOW_DERIVED_ANALYSIS_CONSUMPTION",
+  "local_base_sha": "ac8938907a367627014f61effe22c6bf880a7714",
+  "producer": {
+    "repo": "GBOGEB/CODEX",
+    "pr": 771,
+    "head_sha": "9223704e0931cb71ab059a8671eb71e03c84f0cb",
+    "status": "HOLD_WAIT_PRODUCER_CI_MERGE"
+  },
+  "must_not": [
+    "promote_QPS_engineering_truth",
+    "override_child_authority",
+    "treat_local_green_as_producer_merge"
+  ],
+  "next_action": "after CODEX #771 merges, bind exact merge SHA and execute independent parity probe",
+  "formal_credit_delta": 0
+}
