@@ -1,6 +1,7 @@
 schema: abacus.qps_v6_runtime_support.v0.2
 as_of: '2026-09-18T13:11:00+02:00'
-state: CURRENT_PIN_REPROVED_BOUNDED_SUPPORT_PASS_DEPLOY_DRIFT_SEPARATE
+state: >-
+  CURRENT_PIN_REPROVED_BOUNDED_SUPPORT_PASS_DEPLOY_DRIFT_SEPARATE
 mission: HM-01
 parent_qps_issue: GBOGEB/cryoplant-project#1379
 abacus_issue: GBOGEB/ABACUS#1256
@@ -10,44 +11,70 @@ formal_credit_delta: 0
 history:
   prior_control_schema: abacus.qps_v6_runtime_support.v0.1
   prior_control_source_pr: GBOGEB/ABACUS#1259
-  prior_state: HISTORICAL_BASELINE_IMMUTABLY_BOUND_CURRENT_PIN_REPROOF_CANDIDATE
+  prior_state: >-
+    HISTORICAL_BASELINE_IMMUTABLY_BOUND_CURRENT_PIN_REPROOF_CANDIDATE
   immutable_qps_authorization:
-    handover_path: handover/session/SC_2026-09-15_W247_GLOBAL_LOSSLESS_HANDOVER_v1.yaml
-    handover_introducing_commit: 2b19c32537b20a99ee735236796c8b2660e2e7a9
+    handover_path: >-
+      handover/session/SC_2026-09-15_W247_GLOBAL_LOSSLESS_HANDOVER_v1.yaml
+    handover_introducing_commit: >-
+      2b19c32537b20a99ee735236796c8b2660e2e7a9
     handover_blob_sha: 8cd747202921df06f4a347162ec813abf5fc8163
     qps_main_at_measurement: 814eaa65372edeb77ba6de96d166e18fd4d40db4
   historical_abacus_baseline:
     exact_head: 0fa891e77931b6223d1c9dc7140a54a11a178522
     run_id: 34981882011
     artifact_id: 10400869667
-    artifact_sha256: ff1b0e794ef8690a5734ce81a79db01df4a39eb5e84f9e972fe6920e1c0a7587
+    artifact_sha256: >-
+      ff1b0e794ef8690a5734ce81a79db01df4a39eb5e84f9e972fe6920e1c0a7587
     disposition: ACCEPT_TARGET_RUNTIME_AND_DOCUMENTATION_REPAIR
 
 current_repository:
   head_at_receipt: 160b6045f0edc921b2eacc979735ecbd28aefe24
-  validated_release_support_pin: f55876e4d7985dd672304ff6e3945f24de9b9194
-  validated_pin_relation: CURRENT_HEAD_IS_ONE_METRICS_ONLY_DESCENDANT_COMMIT
+  validated_release_support_pin: >-
+    f55876e4d7985dd672304ff6e3945f24de9b9194
+  validated_pin_relation: >-
+    CURRENT_HEAD_IS_ONE_METRICS_ONLY_DESCENDANT_COMMIT
   metrics_only_files:
     - docs/api/dmaic_metrics.json
     - docs/api/dmaic_metrics_chart.html
 
 current_reproof:
   state: PASS_BOUNDED_QPS_SUPPORT_ON_EXACT_MAIN_PUSH_PIN
-  receipt: controls/QPS_V6_RUNTIME_SUPPORT_F55876E4_RECEIPT_v0.2.yaml
+  receipt: >-
+    controls/QPS_V6_RUNTIME_SUPPORT_F55876E4_RECEIPT_v0.2.yaml
   workflow: .github/workflows/abacus-cicd.yml
   run_id: 35272680285
   target_jobs:
-    lint_and_validate: {job_id: 105375616877, state: PASS}
-    test_dmaic_phases: {job_id: 105375756250, state: PASS}
-    execute_full_dmaic: {job_id: 105375926331, state: PASS}
-    update_canonical_documentation: {job_id: 105376177881, state: PASS}
-    quality_gate: {job_id: 105376177898, state: PASS}
-  pytest: {collected: 415, passed: 402, failed: 0, skipped: 10, xpassed: 3, warnings: 2, seconds: 6.90}
+    lint_and_validate:
+      job_id: 105375616877
+      state: PASS
+    test_dmaic_phases:
+      job_id: 105375756250
+      state: PASS
+    execute_full_dmaic:
+      job_id: 105375926331
+      state: PASS
+    update_canonical_documentation:
+      job_id: 105376177881
+      state: PASS
+    quality_gate:
+      job_id: 105376177898
+      state: PASS
+  pytest:
+    collected: 415
+    passed: 402
+    failed: 0
+    skipped: 10
+    xpassed: 3
+    warnings: 2
+    seconds: 6.90
   execution_artifact:
     id: 10518602763
-    sha256: 2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
+    sha256: >-
+      2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
     bytes: 14403
-  downstream_qps_disposition: ACCEPT_CURRENT_PIN_BOUNDED_SUPPORT_REPROOF_DEPLOY_DRIFT_CARRIED_SEPARATELY
+  downstream_qps_disposition: >-
+    ACCEPT_CURRENT_PIN_BOUNDED_SUPPORT_REPROOF_DEPLOY_DRIFT_CARRIED_SEPARATELY
 
 separate_governance_lane:
   id: ABACUS_CI_GOVERNANCE_DRIFT
