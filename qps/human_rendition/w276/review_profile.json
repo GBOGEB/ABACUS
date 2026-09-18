@@ -1,0 +1,15 @@
+{
+  "schema": "abacus-qps-human-rendition-profile/1.0",
+  "consumer": "ABACUS_REVIEW_UX",
+  "authority": "PRESENTATION_AND_REVIEW_UX_ONLY",
+  "source_contract": "cryoplant-project/W276 sanitized human-rendition contract",
+  "tabs": ["overview", "requirement", "minutes", "engineering", "federation", "health", "control"],
+  "densities": {
+    "clean": {"primary_question": "What message matters and to whom?", "max_primary_cards": 2},
+    "balanced": {"primary_question": "What should a meeting participant read and act on?", "max_primary_cards": 6},
+    "dense": {"primary_question": "What evidence, contract, federation and QA context supports the item?", "max_primary_cards": 12}
+  },
+  "required_visible_states": ["topic_id", "rendered_reference_family", "source_gap", "authority_boundary"],
+  "forbidden_authority_fields": ["engineering_disposition_override", "compliance_override", "bidder_status_override"],
+  "formal_credit_delta": 0
+}
