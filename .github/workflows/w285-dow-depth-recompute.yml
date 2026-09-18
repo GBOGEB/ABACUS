@@ -1,0 +1,26 @@
+name: W285 DOW Federation Depth Recompute
+
+on:
+  pull_request:
+    paths:
+      - federation/w285/**
+      - scripts/w285_recompute_federation_depth.py
+      - .github/workflows/w285-dow-depth-recompute.yml
+  push:
+    branches: [main]
+    paths:
+      - federation/w285/**
+      - scripts/w285_recompute_federation_depth.py
+      - .github/workflows/w285-dow-depth-recompute.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recompute W285 depth independently
+        run: python scripts/w285_recompute_federation_depth.py
