@@ -1,21 +1,42 @@
 {
-  "schema_version": "MC2-W80-CURRENT-POINTER-0.2.0",
+  "schema_version": "MC2-W80-CURRENT-POINTER-0.3.0",
   "mission": "W80 deterministic PC1 observed-outcome validation",
-  "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_CLOSEOUT_FIX_FORWARD",
+  "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL",
   "restart_policy": "repository_authority_only",
   "current_handover": "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
   "current_dropin": "handover/mc2/W80_DROPIN.md",
-  "current_closeout_receipt": "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.2.json",
+  "current_closeout_receipt": "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json",
   "read_before_restart": [
     "architecture/w79/W79_W78_INPUT.json",
     "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
     "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json",
     "tools/w80_observed_outcome_validation.py",
     "tests/test_w80_observed_outcome_validation.py",
-    "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.2.json",
+    "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json",
     "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
     "handover/mc2/W80_DROPIN.md"
   ],
+  "three_p_star": {
+    "refresh": "PASS",
+    "probe": "PASS",
+    "rank": "PASS",
+    "prepare": "PASS",
+    "prove": "PASS_FINAL_HEAD_DOCS_AND_MATRIX",
+    "commit": "PASS_CLOSEOUT_FIXFORWARD_MERGED"
+  },
+  "mip": {
+    "modernize": "PASS",
+    "innovate": "PASS_DIAGNOSTIC_ONLY",
+    "perpetuate": "PASS_REPOSITORY_NATIVE"
+  },
+  "final_closeout": {
+    "pr": 1274,
+    "head": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+    "merge": "b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524",
+    "docs_run": 35350555778,
+    "docs_job": 105617410488,
+    "matrix_run": 35350555821
+  },
   "invariants": {
     "pairwise_outcome_accumulation_permitted": false,
     "bt_withheld": true,
@@ -23,12 +44,6 @@
     "global_allocation_authority": false,
     "engineering_compliance_release_authority": false,
     "formal_credit_delta": 0
-  },
-  "closeout_control": {
-    "pr1272_merge": "174f1d6e9a8e00f25593962ec69c2ef9b1e78d08",
-    "pr1272_premerge_docs_job": 105615459025,
-    "pr1272_zero_check_summary_is_not_proof": true,
-    "fix_forward_required": true
   },
   "next_frontier": "low-PC1-tail comparable outcomes and/or exact-source repair/work outcomes",
   "reentry_requires_new_evidence": true
