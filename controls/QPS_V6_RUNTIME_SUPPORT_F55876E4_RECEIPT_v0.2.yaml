@@ -1,0 +1,93 @@
+schema: abacus.qps_v6_runtime_support_receipt.v0.2
+as_of: '2026-09-18T13:11:00+02:00'
+repo: GBOGEB/ABACUS
+mission: HM-01
+parent_qps_issue: GBOGEB/cryoplant-project#1379
+abacus_issue: GBOGEB/ABACUS#1256
+authority_transfer: false
+formal_credit_delta: 0
+
+validated_release_support_pin:
+  sha: f55876e4d7985dd672304ff6e3945f24de9b9194
+  branch: main
+  workflow: .github/workflows/abacus-cicd.yml
+  workflow_run_id: 35272680285
+  event: push
+  exact_head_checkout_observed: true
+
+current_repository_head_at_receipt:
+  sha: 160b6045f0edc921b2eacc979735ecbd28aefe24
+  relationship_to_validated_pin: METRICS_ONLY_DESCENDANT_ONE_COMMIT
+  compare:
+    ahead_by: 1
+    behind_by: 0
+    changed_files:
+      - docs/api/dmaic_metrics.json
+      - docs/api/dmaic_metrics_chart.html
+  rule: >-
+    The metrics-only descendant is current repository state, but it does not
+    replace the exact validated release-support proof identity at f55876e4.
+
+target_job_evidence:
+  lint_and_validate:
+    job_id: 105375616877
+    state: PASS
+  test_dmaic_phases:
+    job_id: 105375756250
+    state: PASS
+  execute_full_dmaic:
+    job_id: 105375926331
+    state: PASS
+  update_canonical_documentation:
+    job_id: 105376177881
+    state: PASS
+  quality_gate:
+    job_id: 105376177898
+    state: PASS
+  deploy_artifacts:
+    job_id: 105376239925
+    state: FAIL_LEGACY_PACKAGING_PATH
+    disposition: >-
+      SEPARATE_ABACUS_CI_GOVERNANCE_DRIFT_NONCOMPENSATING
+
+pytest:
+  collected: 415
+  passed: 402
+  failed: 0
+  skipped: 10
+  xpassed: 3
+  warnings: 2
+  seconds: 6.90
+
+execution_artifact:
+  id: 10518602763
+  name: dmaic-execution-reports
+  bytes: 14403
+  sha256: >-
+    2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
+  expires_at: '2026-12-16T20:45:02Z'
+
+bounded_acceptance:
+  state: PASS_CURRENT_PIN_QPS_SUPPORT_REPROOF
+  rationale: >-
+    The QPS-facing bounded support predicate is the five target runtime,
+    documentation and quality jobs plus the execution artifact on one exact
+    main SHA. The legacy Deploy Artifacts failure is the already-separated
+    ABACUS_CI_GOVERNANCE_DRIFT lane and is not allowed to compensate,
+    invalidate, or masquerade as the bounded QPS support proof.
+  review_followup:
+    source_pr: GBOGEB/ABACUS#1259
+    finding: P1_CHOOSE_MAIN_PUSH_PROOF_PATH_THAT_CAN_SUCCEED
+    disposition: >-
+      SCOPE_ACCEPTANCE_TO_BOUND_QPS_TARGET_JOBS_AND_CARRY_DEPLOY_DRIFT_SEPARATELY
+
+downstream_qps_disposition: >-
+  ACCEPT_CURRENT_PIN_BOUNDED_SUPPORT_REPROOF_DEPLOY_DRIFT_CARRIED_SEPARATELY
+evidence_class: BOUNDED_EXACT_MAIN_PUSH_RUNTIME_RECEIPT
+
+noncompensation:
+  - ABACUS_SUPPORT_PASS_NE_QPS_RUNTIME_GOLD
+  - ABACUS_SUPPORT_PASS_NE_QPS_ENGINEERING_CREDIT
+  - DEPLOY_DRIFT_NE_QPS_SUPPORT_FAILURE
+  - QPS_923_REMAINS_INDEPENDENT
+  - R3_ENVIRONMENT_DOV_REMAINS_INDEPENDENT
