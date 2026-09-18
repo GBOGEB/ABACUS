@@ -2,7 +2,7 @@
   "schema": "abacus-w285-dow-federation-depth/v0.1",
   "source": {
     "qps_pr": 1490,
-    "qps_head": "23abb271c2747b63fa2a2c4c71a484ccdc339700",
+    "qps_head": "f732bac39d9a92ab296982f08ca17185ec51812f",
     "depth_blob": "691680cdf11289142b402a0ae02c95d46a246473",
     "topology_blob": "df0ee845697578cd644691b81eafb2465249d772"
   },
@@ -25,6 +25,7 @@
   "rex_binding": {
     "id": "W285_REX_01_EXACT_TOPOLOGY_CURRENT_USE_TEXT_MISMATCH",
     "disposition": "REPAIRED_BEFORE_DOW_COMMIT",
-    "failed_external_run": 35359203971
+    "failed_external_run": 35359203971,
+    "review_state": "SOURCE_ATOM_TEXT_REPAIRED_EXACTLY_AND_MIRROR_VERIFIED"
   }
 }
