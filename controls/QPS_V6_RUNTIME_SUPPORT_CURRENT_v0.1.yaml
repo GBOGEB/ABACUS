@@ -1,92 +1,91 @@
-schema: abacus.qps_v6_runtime_support.v0.1
-as_of: '2026-09-17T06:10:00+02:00'
-state: HISTORICAL_BASELINE_IMMUTABLY_BOUND_CURRENT_PIN_REPROOF_CANDIDATE
+schema: abacus.qps_v6_runtime_support.v0.2
+as_of: '2026-09-18T13:11:00+02:00'
+state: CURRENT_PIN_REPROVED_BOUNDED_SUPPORT_PASS_DEPLOY_DRIFT_SEPARATE
 mission: HM-01
 parent_qps_issue: GBOGEB/cryoplant-project#1379
 abacus_issue: GBOGEB/ABACUS#1256
 authority_transfer: false
 formal_credit_delta: 0
-current_pin:
-  repository: GBOGEB/ABACUS
-  branch: main
-  observed_sha: 79f00e6ba5b33e6ed62a95061a141288a178041c
-  qps_v6_validation_state: NOT_YET_REPROVED_ON_CURRENT_PIN
-  proof_workflow: .github/workflows/abacus-cicd.yml
-  proof_strategy: >-
-    Use the ordinary pull-request proof to validate the bounded receipt/control repair,
-    then use the ordinary main-push run on the merged successor SHA as the current-pin
-    release-support re-proof. Do not inherit the historical PASS implicitly.
-qps_bounded_baseline_receipt:
-  source_authority: GBOGEB/cryoplant-project
+
+history:
+  prior_control_schema: abacus.qps_v6_runtime_support.v0.1
+  prior_control_source_pr: GBOGEB/ABACUS#1259
+  prior_state: HISTORICAL_BASELINE_IMMUTABLY_BOUND_CURRENT_PIN_REPROOF_CANDIDATE
   immutable_qps_authorization:
     handover_path: handover/session/SC_2026-09-15_W247_GLOBAL_LOSSLESS_HANDOVER_v1.yaml
     handover_introducing_commit: 2b19c32537b20a99ee735236796c8b2660e2e7a9
     handover_blob_sha: 8cd747202921df06f4a347162ec813abf5fc8163
     qps_main_at_measurement: 814eaa65372edeb77ba6de96d166e18fd4d40db4
-    current_qps_main_observed: e9f6c78e0627da5c0a74768aa17bfca59ac8c932
-    rule: >-
-      The historical support receipt is authorized by the immutable W247 handover object,
-      not by the mutable meaning of QTG_CURRENT at a later date.
-  abacus_exact_head: 0fa891e77931b6223d1c9dc7140a54a11a178522
+  historical_abacus_baseline:
+    exact_head: 0fa891e77931b6223d1c9dc7140a54a11a178522
+    run_id: 34981882011
+    artifact_id: 10400869667
+    artifact_sha256: ff1b0e794ef8690a5734ce81a79db01df4a39eb5e84f9e972fe6920e1c0a7587
+    disposition: ACCEPT_TARGET_RUNTIME_AND_DOCUMENTATION_REPAIR
+
+current_repository:
+  head_at_receipt: 160b6045f0edc921b2eacc979735ecbd28aefe24
+  validated_release_support_pin: f55876e4d7985dd672304ff6e3945f24de9b9194
+  validated_pin_relation: CURRENT_HEAD_IS_ONE_METRICS_ONLY_DESCENDANT_COMMIT
+  metrics_only_files:
+    - docs/api/dmaic_metrics.json
+    - docs/api/dmaic_metrics_chart.html
+
+current_reproof:
+  state: PASS_BOUNDED_QPS_SUPPORT_ON_EXACT_MAIN_PUSH_PIN
+  receipt: controls/QPS_V6_RUNTIME_SUPPORT_F55876E4_RECEIPT_v0.2.yaml
   workflow: .github/workflows/abacus-cicd.yml
-  run_id: 34981882011
+  run_id: 35272680285
   target_jobs:
-    lint: PASS
-    phase_tests: PASS
-    full_dmaic: PASS
-    quality_gate: PASS
-    documentation: PASS
-    deploy: SKIPPED_EXPECTED_PR
-  pytest:
-    collected: 415
-    passed: 402
-    failed: 0
-    skipped: 10
-    xpassed: 3
-    warnings: 2
-    seconds: 7.05
-  artifact:
-    id: 10400869667
-    sha256: ff1b0e794ef8690a5734ce81a79db01df4a39eb5e84f9e972fe6920e1c0a7587
-  disposition: ACCEPT_TARGET_RUNTIME_AND_DOCUMENTATION_REPAIR
-  evidence_class: BOUNDED_EXACT_HEAD_RUNTIME_RECEIPT
-  authority_transfer: false
+    lint_and_validate: {job_id: 105375616877, state: PASS}
+    test_dmaic_phases: {job_id: 105375756250, state: PASS}
+    execute_full_dmaic: {job_id: 105375926331, state: PASS}
+    update_canonical_documentation: {job_id: 105376177881, state: PASS}
+    quality_gate: {job_id: 105376177898, state: PASS}
+  pytest: {collected: 415, passed: 402, failed: 0, skipped: 10, xpassed: 3, warnings: 2, seconds: 6.90}
+  execution_artifact:
+    id: 10518602763
+    sha256: 2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
+    bytes: 14403
+  downstream_qps_disposition: ACCEPT_CURRENT_PIN_BOUNDED_SUPPORT_REPROOF_DEPLOY_DRIFT_CARRIED_SEPARATELY
+
 separate_governance_lane:
   id: ABACUS_CI_GOVERNANCE_DRIFT
-  state: DEFER_SEPARATE_NONCOMPENSATING
-  qps_v6_policy: DO_NOT_WIDEN_RELEASE_SUPPORT_WORK_ORDER_INTO_GLOBAL_CI_CLEANUP
+  state: OPEN_SEPARATE_NONCOMPENSATING
+  observed_same_run:
+    deploy_artifacts_job_id: 105376239925
+    state: FAIL_LEGACY_PACKAGING_PATH
+  finding_source: GBOGEB/ABACUS#1259
+  rule: >-
+    The legacy deployment job is not part of the bounded QPS runtime-support
+    acceptance predicate. It remains an explicit ABACUS governance/deployment
+    debt and cannot create or remove QPS release-support credit.
+
 release_support_contract:
-  required_action: REPRODUCE_BOUNDED_QPS_SUPPORT_ON_CURRENT_RELEASE_PIN
-  required_return_fields:
-    - source_sha
-    - workflow
-    - run_id
-    - job_ids
-    - artifact_digest
-    - test_counts
-    - evidence_class
-    - downstream_qps_disposition
-  current_main_must_not_inherit_old_pass_implicitly: true
-  historical_v4_4_0_release_must_not_be_used_as_qps_v6_pin_by_default: true
-current_reproof:
-  state: WITHHELD_PENDING_REAL_MAIN_PUSH_RUN
-  candidate_base: 79f00e6ba5b33e6ed62a95061a141288a178041c
   acceptance_predicate:
-    - ABACUS_CICD_MAIN_PUSH_RUN_COMPLETED_SUCCESS
-    - EXACT_MERGED_MAIN_SHA_BOUND
-    - TARGET_JOB_IDS_BOUND
+    - EXACT_MAIN_PUSH_SHA_BOUND
+    - LINT_AND_VALIDATE_PASS
+    - TEST_DMAIC_PHASES_PASS
+    - EXECUTE_FULL_DMAIC_PASS
+    - UPDATE_CANONICAL_DOCUMENTATION_PASS
+    - QUALITY_GATE_PASS
     - PYTEST_COUNTS_BOUND
     - EXECUTION_ARTIFACT_ID_AND_SHA256_BOUND
     - DOWNSTREAM_QPS_DISPOSITION_EXPLICIT
+  whole_workflow_success_required: false
+  deploy_artifacts_required_for_qps_support: false
+  current_main_must_not_inherit_old_pass_implicitly: true
+  historical_v4_4_0_release_must_not_be_used_as_qps_v6_pin_by_default: true
+
 noncompensation:
   - ABACUS_PASS_NE_QPS_RUNTIME_GOLD
   - ABACUS_PASS_NE_QPS_ENGINEERING_CREDIT
   - ABACUS_CI_CLEANUP_NE_RELEASE_SUPPORT_RECEIPT
   - QPS_923_REMAINS_INDEPENDENT
-  - R3_NOT_EXECUTED_NE_ABACUS_SUPPORT_BLOCKED
+  - R3_CONTROLLED_ENVIRONMENT_REMAINS_INDEPENDENT
+
 next:
-  - OPEN_BOUNDED_CURRENT_PIN_REPROOF_PR
-  - REQUIRE_PR_RUN_BEFORE_MERGE
-  - OBSERVE_MAIN_PUSH_RUN_ON_MERGED_SUCCESSOR_SHA
-  - EMIT_RELEASE_BOUND_SUPPORT_RECEIPT_ONLY_FROM_REAL_RUN
-  - RETURN_TO_HM_01_AND_QPS_1379
+  - RETURN_RECEIPT_TO_HM_01
+  - RETURN_RECEIPT_TO_QPS_1379
+  - KEEP_DEPLOY_DRIFT_IN_SEPARATE_ABACUS_GOVERNANCE_LANE
+  - REPROVE_ONLY_ON_OBSERVED_RUNTIME_REGRESSION_OR_RELEASE_PIN_CHANGE
