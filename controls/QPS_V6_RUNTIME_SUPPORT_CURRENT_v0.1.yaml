@@ -36,12 +36,14 @@ release_support_proof:
   artifact_sha256: >-
     2904d3cc2ef3f359b98db0b75bd2613436b94395b975ccf807c08a8c1d793b7f
 
-repository_current:
+repository_head_observation_at_prepare:
+  observation_is_temporal_not_live_assertion: true
   observed_sha: 89747af043337a5e05d99fcf1b087a1184dc08be
   state: LATER_THAN_VALIDATED_SUPPORT_PIN
   inherits_release_support_pass: false
   note: >-
-    CURRENT describes repository navigation only. Release-support proof remains
+    This head is a timestamped observation, not a claim about live main after
+    this transaction. CURRENT provides navigation only. Release-support proof remains
     immutably attached to f55876e4 and is never floated to a later commit.
 
 separate_governance_lane:
