@@ -20,7 +20,7 @@ EXPECTED_LEDGER_CANONICAL_SHA256 = (
 EXPECTED_W79_INPUT_CANONICAL_SHA256 = (
     "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4"
 )
-EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1 = "f0269e34e31a47acf66b99cfea2920c4c23433b2"
+EXPECTED_RUN_RECEIPT_SHA256 = "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01"
 CORE_WORKFLOWS = [
     "CI - ABACUS Matrix",
     "DELTA_1 CodeQL",
@@ -44,14 +44,12 @@ ROOT = Path(__file__).resolve().parents[1]
 RUN_RECEIPT_PATH = ROOT / "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json"
 
 
-def git_blob_sha1(path: Path) -> str:
-    payload = path.read_bytes()
-    header = f"blob {len(payload)}\0".encode("ascii")
-    return hashlib.sha1(header + payload).hexdigest()
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def load_governed_run_receipt() -> dict:
-    if git_blob_sha1(RUN_RECEIPT_PATH) != EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1:
+    if file_sha256(RUN_RECEIPT_PATH) != EXPECTED_RUN_RECEIPT_SHA256:
         raise ValueError("W80 governed Actions run receipt payload mismatch")
     receipt = json.loads(RUN_RECEIPT_PATH.read_text(encoding="utf-8"))
     if receipt.get("schema_version") != RUN_RECEIPT_SCHEMA:
@@ -438,7 +436,7 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "measurement_basis": "independent_observed_validation_outcomes_not_elapsed_time",
         "source_w79_input_canonical_sha256": EXPECTED_W79_INPUT_CANONICAL_SHA256,
         "source_outcome_ledger_canonical_sha256": EXPECTED_LEDGER_CANONICAL_SHA256,
-        "source_actions_run_receipt_git_blob_sha1": EXPECTED_RUN_RECEIPT_GIT_BLOB_SHA1,
+        "source_actions_run_receipt_sha256": EXPECTED_RUN_RECEIPT_SHA256,
         "semantic_pc1": {
             "eigenvalue": round(pc1["eigenvalue"], 6),
             "explained_variance_ratio": round(
