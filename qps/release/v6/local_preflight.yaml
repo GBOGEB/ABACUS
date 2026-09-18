@@ -1,0 +1,27 @@
+schema: abacus-qps-v6-local-preflight/1.0
+base_sha: 33de3878ab0e5af0f5061c03844187bfc54a89d9
+qps_pin: 48454561de70a8873f8fe2f32e4c9cbf8e31e51b
+codex_pin: 76cfaf7be9776140ff8064f63b406d35b4fd3099
+observed:
+  python_contract: pyproject.toml
+  python_min: "3.11"
+  product_version: 5.0.0
+  requirements: requirements.txt
+  dockerfile: Dockerfile
+  compose: docker-compose.yml
+  devcontainer: .devcontainer/devcontainer.json
+  vscode_settings: .vscode/settings.json
+  vscode_tasks: .vscode/tasks.json
+  vscode_extensions: .vscode/extensions.json
+  offer_eval_entry: docs/qps_offer_rtm_evaluation/current/DELIVERABLES_INDEX.html
+  offer_eval_registry_count:
+    files: 18
+    families: 15
+gaps:
+  - no_root_vscode_launch
+  - empty_problem_matchers_in_current_tasks
+  - no_root_cspell
+  - no_root_precommit
+support_issue: GBOGEB/ABACUS#1256
+authority_transfer: false
+formal_credit_delta: 0
