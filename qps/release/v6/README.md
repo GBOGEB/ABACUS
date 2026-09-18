@@ -5,11 +5,11 @@ ABACUS support issue: `GBOGEB/ABACUS#1256`
 
 ABACUS supplies analytical/runtime/review evidence and UX. It does not become QPS domain authority.
 
-## Exact pins at creation
+## Exact pins after administrative merge refresh
 
-- ABACUS: `33de3878ab0e5af0f5061c03844187bfc54a89d9`
-- QPS: `48454561de70a8873f8fe2f32e4c9cbf8e31e51b`
-- CODEX: `76cfaf7be9776140ff8064f63b406d35b4fd3099`
+- ABACUS: `e7b2f11deac2dc9fe7b77f9622339f184a4234d2`
+- QPS: `eeac2b60fc16e5b2131d4054f95da0b0c663cc40`
+- CODEX: `23624e10478e115bcea2613bfcd41c24eb5dea24`
 
 ## Existing local preconfiguration
 
