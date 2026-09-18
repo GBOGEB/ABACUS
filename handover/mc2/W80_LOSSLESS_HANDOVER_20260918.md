@@ -1,13 +1,21 @@
-# W80 / MC-2 — Lossless 3P* + MIP Handover
+# W80 / MC-2 Lossless 3P* + MIP Handover
 
-**Repository:** `GBOGEB/ABACUS`  
-**Mission:** independent observed-outcome validation of the retained W79 deterministic semantic-complexity PC1  
-**Authority:** derived operational analysis only; no QPS engineering/compliance/release authority transfers  
-**Closeout baseline:** ABACUS main `33de3878ab0e5af0f5061c03844187bfc54a89d9`
+Repository: `GBOGEB/ABACUS`
 
-## 1. Read first
+Mission: independent observed-outcome validation of the retained W79
+deterministic semantic-complexity PC1.
 
-Read these repository objects in this order:
+Authority: derived operational analysis only.
+
+Closeout baseline:
+
+```text
+33de3878ab0e5af0f5061c03844187bfc54a89d9
+```
+
+## Read first
+
+Read these objects in order:
 
 1. `architecture/w79/W79_W78_INPUT.json`
 2. `architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json`
@@ -19,33 +27,42 @@ Read these repository objects in this order:
 
 Do not reconstruct W80 from chat memory.
 
-## 2. Burned predicates
+## Burned predicates
 
-The following are already burned and must not be repeated unless a named re-entry trigger occurs.
+The following are already burned.
 
 - W79 deterministic semantic PC1 exists as diagnostic structure.
-- W80 observed validation population target is 15 exact W79 source states.
-- 11 states have the governed comparable seven-workflow outcome block.
-- 4 states are missing outcome evidence and remain missing, never zero-imputed.
-- Every one of the 77 counted Actions runs is bound through the producer receipt to repository, exact source SHA, workflow name, event and conclusion.
-- The producer receipt is pinned by SHA-256:
-  `1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01`.
+- W80 targets 15 exact W79 source states.
+- 11 states have the governed seven-workflow outcome block.
+- 4 states are missing outcome evidence.
+- Missing states are never zero-imputed.
+- The 77 counted Actions runs are producer-receipt bound.
+- Each run is bound to repository, source SHA, workflow, event, and result.
+- The producer receipt is pinned by SHA-256.
 - Cross-SHA outcome substitution fails closed.
-- The W80 exact-head Python 3.10/3.11/3.12 matrix passed with real runner steps.
-- Semgrep passed after replacing the transient Git SHA-1 receipt pin with SHA-256.
+- The W80 Python 3.10, 3.11, and 3.12 matrix passed.
+- Semgrep passed after the SHA-256 repair.
 
-## 3. W80 measured result
+Producer receipt SHA-256:
+
+```text
+1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01
+```
+
+## W80 measured result
 
 | Quantity | Result |
 | --- | ---: |
 | State coverage | 11 / 15 = 0.733333 |
 | Semantic PC1 eigenvalue | 6.341341 |
 | Semantic PC1 explained variance | 0.905906 |
-| Full PC1 range | -6.074314 .. 1.904192 |
-| Observed-outcome PC1 range | -0.300676 .. 1.904192 |
+| Full PC1 minimum | -6.074314 |
+| Full PC1 maximum | 1.904192 |
+| Observed PC1 minimum | -0.300676 |
+| Observed PC1 maximum | 1.904192 |
 | PC1 range coverage | 0.276351 |
-| Promotion minimum PC1 range coverage | 0.70 |
-| Core validation Spearman rho | 0.019780 |
+| Promotion range floor | 0.70 |
+| Spearman rho | 0.019780 |
 | Exact permutation p | 0.974459 |
 | LOOCV R2 | -0.724876 |
 | Docs-failure AUC | 0.604167 |
@@ -53,11 +70,12 @@ The following are already burned and must not be repeated unless a named re-entr
 
 Interpretation is deliberately narrow:
 
-**predictive support is not established in the available range-restricted sample.**
+**Predictive support is not established in the available
+range-restricted sample.**
 
 This is not population-wide falsification of deterministic PC1.
 
-## 4. Final bounded disposition
+## Final bounded disposition
 
 ```text
 W80_OUTCOME_VALIDATION          = NOT_SUPPORTED_RANGE_RESTRICTED
@@ -72,81 +90,106 @@ ENGINEERING_COMPLIANCE_RELEASE  = false
 FORMAL_CREDIT_DELTA             = 0
 ```
 
-No genuine pairwise outcome graph has yet been earned. Do not derive BT rows from PC1 ordering, CI pass fractions, or missing-state imputation.
+Do not derive BT rows from PC1 ordering, CI pass fractions, or
+missing-state imputation.
 
-## 5. 3P* closeout
+## 3P* closeout
 
 ### 3PR
 
-- **Refresh:** PASS — current ABACUS, #1270, ABACUS #1164 and QPS #1063 refreshed.
-- **Probe:** PASS — exact-head W80 matrix has real runner steps and passes Python 3.10/3.11/3.12.
-- **Rank:** PASS — no W80-owned red remains after exact-SHA provenance and SHA-256 repairs.
+- Refresh: PASS.
+- Probe: PASS.
+- Rank: PASS. No W80-owned red remains.
 
 ### 3PC
 
-- **Prepare:** this repository-native closeout / restart chain.
-- **Prove:** closeout PR must pass docs/format/security and at least one real hosted validation surface.
-- **Commit:** merge closeout PR, then federate exact merge SHA to ABACUS #1164 and QPS #1063.
+- Prepare: this restart chain.
+- Prove: closeout PR hosted validation.
+- Commit: merge only after closeout proof.
 
-## 6. MIP closeout
+## MIP closeout
 
-### Modernize — PASS
+### Modernize
 
-- Added authoritative Actions-run producer receipt.
+State: PASS.
+
+- Added an authoritative Actions-run producer receipt.
 - Bound every counted run to exact source SHA.
-- Repaired transient SHA-1 receipt pin to SHA-256.
-- Preserved missing/cancelled fail-closed semantics.
+- Replaced the temporary SHA-1 receipt pin with SHA-256.
+- Preserved missing and cancelled fail-closed semantics.
 
-### Innovate — PASS, diagnostic only
+### Innovate
 
-- Replaced elapsed-time PCA expansion with independent observed-outcome validation.
-- Added exact permutation inference and LOOCV prediction.
-- Added an explicit PC1 range-restriction promotion gate.
+State: PASS_DIAGNOSTIC_ONLY.
 
-### Perpetuate — this transaction
+- Replaced more elapsed-time PCA with observed-outcome validation.
+- Added exact permutation inference.
+- Added leave-one-out prediction.
+- Added a PC1 range-restriction promotion gate.
 
-- Repository-native receipt.
-- Repository-native lossless handover.
-- Stable current pointer.
-- Explicit re-entry triggers.
-- Federation return to worker and Mission Control parent.
+### Perpetuate
 
-## 7. Broad CI is separate
+This closeout transaction provides:
 
-The broad `CI/CD Test Suite` remains red, but its current failures are outside W80:
+- a machine closeout receipt;
+- this lossless handover;
+- a stable current pointer;
+- a drop-in restart;
+- explicit re-entry triggers;
+- federation return to worker and parent.
+
+## Broad CI is separate
+
+The broad `CI/CD Test Suite` remains red outside W80.
+
+Current separate failures include:
 
 - DMAIC measurement reports missing;
-- Week3 reports 8 tests where legacy assertion expects at least 10;
+- Week3 reports 8 tests where a legacy check expects at least 10;
 - `11_PREVIOUS_SESSIONS` is absent;
-- legacy Docker async/network assertions;
-- legacy `docker-compose` executable assumption.
+- legacy Docker asynchronous and network assertions;
+- a legacy `docker-compose` executable assumption.
 
-The W80-specific matrix passes. Do not repair these broad-suite debts inside W80 unless repository authority explicitly re-routes them into this lane.
+The W80-specific matrix passes.
 
-## 8. Next executable frontier
+Do not repair broad-suite debt inside W80 unless authority re-routes it.
 
-Do **not** default to more elapsed-time PCA.
+## Next executable frontier
+
+Do not default to more elapsed-time PCA.
 
 Next work should be one or both of:
 
-1. obtain authoritative comparable outcomes for the missing low-complexity W79 states so that PC1 range coverage can approach or exceed the predeclared 0.70 promotion floor;
-2. bind a genuinely independent repair/work outcome block to exact source states.
+1. obtain authoritative outcomes for the missing low-PC1 states;
+2. bind an independent repair or work outcome block to exact source states.
 
-Only after predictive validation is supported may genuine observed pairwise outcomes be accumulated for BT. PC1 ordering itself is never a substitute for observed pairwise outcomes.
+Only after predictive validation is supported may genuine observed
+pairwise outcomes be accumulated for BT.
 
-## 9. Re-entry triggers
+PC1 ordering is never a substitute for observed pairwise outcomes.
 
-Re-open W80 only if at least one of these occurs:
+## Re-entry triggers
 
-- new authoritative outcome evidence for `s01`, `s02`, `s03` or `s04`;
-- a comparable repair/work outcome block with exact source-SHA provenance becomes available;
-- W80 receipt/provenance/statistical guards regress;
+Re-open W80 only if one or more occur:
+
+- new outcome evidence for `s01`, `s02`, `s03`, or `s04`;
+- a comparable repair or work outcome block becomes available;
+- W80 receipt, provenance, or statistical guards regress;
 - the W79 deterministic source population changes materially.
 
-Otherwise W80 remains in bounded CONTROL as a **negative diagnostic / withheld-promotion result**.
+Otherwise W80 remains in bounded CONTROL as a negative diagnostic with
+promotion withheld.
 
-## 10. Non-compensation
+## Non-compensation
 
-Nothing in W80 changes `GBOGEB/cryoplant-project#923`, QPS engineering authority, bidder disposition, PED/legal authority, negotiation credit or release credit.
+Nothing in W80 changes `GBOGEB/cryoplant-project#923`.
 
-W80 may inform Mission Control pressure; it may not grant those authorities.
+Nothing in W80 grants:
+
+- QPS engineering authority;
+- bidder disposition;
+- PED or legal authority;
+- negotiation credit;
+- release credit.
+
+W80 may inform Mission Control pressure only.
