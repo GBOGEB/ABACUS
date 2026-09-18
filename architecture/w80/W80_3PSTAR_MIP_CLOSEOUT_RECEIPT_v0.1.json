@@ -1,0 +1,170 @@
+{
+  "schema_version": "MC2-W80-3PSTAR-MIP-CLOSEOUT-0.1.0",
+  "as_of": "2026-09-18T15:19:00+02:00",
+  "repository": "GBOGEB/ABACUS",
+  "mission": "MC-2 deterministic complexity outcome validation",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "refresh": {
+    "abacus_main_at_closeout": "33de3878ab0e5af0f5061c03844187bfc54a89d9",
+    "main_relation": "metrics-only descendant of W80 SHA256 fix-forward merge",
+    "w80_merges": [
+      {
+        "pr": 1266,
+        "merge_sha": "a0de73a9a60071665f27bf2fecb6e17e24172a93",
+        "role": "observed outcome validation"
+      },
+      {
+        "pr": 1269,
+        "merge_sha": "fd5e2f705fe4f5201c6c0986bc3508be6bc257bb",
+        "role": "range restriction and exact-run provenance"
+      },
+      {
+        "pr": 1270,
+        "merge_sha": "5f530096c75715653b7d423cb3db2de759c212ca",
+        "role": "SHA256 producer receipt pin"
+      }
+    ]
+  },
+  "three_p_star": {
+    "refresh": "PASS_FRESH_REPOSITORY_AUTHORITY",
+    "probe": "PASS_W80_SPECIFIC_HOSTED_EXECUTION",
+    "rank": "PASS_NO_W80_FIRST_RED_REMAINS",
+    "prepare": "PASS_CLOSEOUT_RECEIPT_AND_RESTART_CHAIN_STAGED",
+    "prove": "PENDING_CLOSEOUT_PR_HOSTED_VALIDATION",
+    "commit": "PENDING_CLOSEOUT_PR_MERGE"
+  },
+  "mip": {
+    "modernize": {
+      "state": "PASS",
+      "evidence": [
+        "exact Actions-run producer receipt added",
+        "every counted run bound to repository/source SHA/workflow/event/conclusion",
+        "producer receipt integrity pin upgraded from SHA1 to SHA256"
+      ]
+    },
+    "innovate": {
+      "state": "PASS_DIAGNOSTIC_ONLY",
+      "evidence": [
+        "independent observed CI/security/governance outcome block",
+        "exact permutation inference",
+        "leave-one-out predictive test",
+        "range-restriction promotion guard"
+      ]
+    },
+    "perpetuate": {
+      "state": "PENDING_REPOSITORY_NATIVE_HANDOVER_MERGE",
+      "rule": "restart from repository artifacts, not chat memory"
+    }
+  },
+  "w80_measurement": {
+    "population_target_states": 15,
+    "observed_outcome_states": 11,
+    "missing_states": 4,
+    "state_coverage_fraction": 0.733333,
+    "semantic_pc1_eigenvalue": 6.341341,
+    "semantic_pc1_explained_variance": 0.905906,
+    "pc1_full_range": {
+      "min": -6.074314,
+      "max": 1.904192
+    },
+    "pc1_observed_range": {
+      "min": -0.300676,
+      "max": 1.904192
+    },
+    "pc1_range_coverage_fraction": 0.276351,
+    "minimum_pc1_range_coverage_fraction": 0.7,
+    "core_validation_spearman_rho": 0.01978,
+    "core_validation_exact_permutation_p": 0.974459,
+    "core_validation_loocv_r2": -0.724876,
+    "docs_failure_auc": 0.604167,
+    "docs_failure_exact_permutation_p": 0.642424
+  },
+  "provenance": {
+    "w79_input_canonical_sha256": "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4",
+    "w80_outcome_ledger_path": "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
+    "w80_actions_receipt_path": "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json",
+    "w80_actions_receipt_sha256": "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01",
+    "counted_actions_runs": 77
+  },
+  "hosted_proof": {
+    "pr": 1270,
+    "exact_head": "24d94ed2b5fc4f5186929f00025746f42e2a0f49",
+    "matrix_run_id": 35340909766,
+    "matrix_jobs": [
+      {
+        "job_id": 105586352272,
+        "python": "3.10",
+        "result": "PASS",
+        "real_steps": true
+      },
+      {
+        "job_id": 105586352316,
+        "python": "3.11",
+        "result": "PASS",
+        "real_steps": true
+      },
+      {
+        "job_id": 105586352008,
+        "python": "3.12",
+        "result": "PASS",
+        "real_steps": true
+      }
+    ],
+    "semgrep_run_id": 35340909754,
+    "semgrep_result": "PASS_AFTER_SHA256_FIX",
+    "codex_review": "PASS_NO_MAJOR_ISSUES",
+    "other_w80_surfaces": {
+      "format": "PASS",
+      "docs": "PASS",
+      "yaml": "PASS",
+      "ruff": "PASS",
+      "dependency_review": "PASS",
+      "osv": "PASS",
+      "codeql": "PASS",
+      "smoke": "PASS",
+      "qps_canonicalization": "PASS",
+      "w70": "PASS",
+      "w71": "PASS",
+      "abacus_v032": "PASS"
+    }
+  },
+  "separate_noncompensating_broad_ci_debt": {
+    "broad_suite_run_id": 35340909974,
+    "classification": "OUTSIDE_W80",
+    "known_failures": [
+      "DMAIC measurement reports missing",
+      "Week3 total_tests remains 8 below expected 10",
+      "11_PREVIOUS_SESSIONS missing",
+      "legacy docker-compose command absent",
+      "legacy asynchronous Docker build/network assertions"
+    ],
+    "rule": "do not convert broad-suite debt into W80 outcome or authority credit"
+  },
+  "disposition": {
+    "w80_outcome_validation": "NOT_SUPPORTED_RANGE_RESTRICTED",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD_PC1_NOT_VALIDATED_AGAINST_OBSERVED_OUTCOMES",
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "child_engineering_promotion_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "next_frontier": {
+    "default": "independent repair/work outcomes and low-complexity-tail outcome coverage",
+    "reentry_triggers": [
+      "new authoritative outcomes for currently missing low-PC1 states",
+      "comparable repair/work outcomes with exact source-state binding",
+      "regression in W80 receipt/provenance/statistical guards"
+    ],
+    "not_default": "more elapsed-time PCA",
+    "bt_rule": "accumulate only genuine observed pairwise outcomes after predictive validation"
+  },
+  "federation_targets": [
+    "GBOGEB/ABACUS#1164",
+    "GBOGEB/cryoplant-project#1063"
+  ]
+}

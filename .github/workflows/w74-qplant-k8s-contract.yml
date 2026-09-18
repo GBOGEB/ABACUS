@@ -1,4 +1,5 @@
 name: W74 QPLANT Kubernetes Contract
+# Historian REX-CM-003/004 distinct-SHA control repeat; no runtime semantic change.
 
 on:
   pull_request:
