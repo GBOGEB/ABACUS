@@ -7,11 +7,9 @@ deterministic semantic-complexity PC1.
 
 Authority: derived operational analysis only.
 
-Closeout baseline:
+Final closeout receipt:
 
-```text
-33de3878ab0e5af0f5061c03844187bfc54a89d9
-```
+`architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json`
 
 ## Read first
 
@@ -22,7 +20,7 @@ Read these objects in order:
 3. `architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json`
 4. `tools/w80_observed_outcome_validation.py`
 5. `tests/test_w80_observed_outcome_validation.py`
-6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.2.json`
+6. `architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.3.json`
 7. `handover/mc2/W80_CURRENT.json`
 8. `handover/mc2/W80_DROPIN.md`
 9. this handover
@@ -44,6 +42,7 @@ The following are already burned.
 - Cross-SHA outcome substitution fails closed.
 - The W80 Python 3.10, 3.11, and 3.12 matrix passed.
 - Semgrep passed after the SHA-256 repair.
+- The final closeout docs proof passed on the final #1274 head.
 
 Producer receipt SHA-256:
 
@@ -80,6 +79,7 @@ This is not population-wide falsification of deterministic PC1.
 ## Final bounded disposition
 
 ```text
+W80_STATUS                      = CONTROLLED_NEGATIVE_DIAGNOSTIC
 W80_OUTCOME_VALIDATION          = NOT_SUPPORTED_RANGE_RESTRICTED
 PC1_PREDICTIVE_VALIDATION       = false
 PAIRWISE_OUTCOME_ACCUMULATION   = false
@@ -95,43 +95,50 @@ FORMAL_CREDIT_DELTA             = 0
 Do not derive BT rows from PC1 ordering, CI pass fractions, or
 missing-state imputation.
 
-## 3P* closeout
+## 3P* final state
 
 ### 3PR
 
 - Refresh: PASS.
 - Probe: PASS.
-- Rank: PASS. No W80 analysis red remains.
+- Rank: PASS.
 
 ### 3PC
 
-- Prepare: repository-native restart chain exists.
-- Prove: closeout proof requires a real docs job with more than zero steps.
-- Commit: final fix-forward merge only after that proof.
+- Prepare: PASS.
+- Prove: PASS on final #1274 head.
+- Commit: PASS through #1274 merge.
 
-## Closeout control defect
-
-PR #1272 merged at:
+Final #1274 head:
 
 ```text
-174f1d6e9a8e00f25593962ec69c2ef9b1e78d08
+7d9802aab65b3fead4c1a99719b839485d55f8a2
 ```
 
-Its changed-docs lint had already failed on Markdown policy.
+Final #1274 merge:
 
-The post-merge summary reported PASS with 0 / 0 checks.
+```text
+b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524
+```
 
-That summary is not accepted as proof.
+Changed-docs proof:
 
-The fix-forward must:
+```text
+run 35350555778
+job 105617410488
+PASS_GT_ZERO_STEPS
+```
 
-- repair `W80_DROPIN.md`;
-- publish closeout receipt v0.2;
-- prove changed-docs validation with real runner steps;
-- update the current pointer;
-- federate the exact final merge SHA.
+Final-head matrix proof:
 
-## MIP closeout
+```text
+run 35350555821
+Python 3.10 PASS
+Python 3.11 PASS
+Python 3.12 PASS
+```
+
+## MIP final state
 
 ### Modernize
 
@@ -153,20 +160,36 @@ State: PASS_DIAGNOSTIC_ONLY.
 
 ### Perpetuate
 
-This closeout transaction provides:
+State: PASS_REPOSITORY_NATIVE.
+
+The closeout chain contains:
 
 - a machine closeout receipt;
 - this lossless handover;
 - a stable current pointer;
 - a drop-in restart;
 - explicit re-entry triggers;
-- federation return to worker and parent.
+- federation targets.
 
-## Broad CI is separate
+## Review lineage
 
-The broad `CI/CD Test Suite` remains red outside W80.
+PR #1272 merged before its Markdown red could block the merge.
 
-Current separate failures include:
+Its 0 / 0 post-merge summary is not accepted as proof.
+
+PR #1274 repaired the closeout and supplied real hosted proof.
+
+Codex then found one chronology defect in v0.2:
+
+- its `as_of` timestamp preceded evidence recorded inside it.
+
+Receipt v0.3 closes that finding with corrected chronology.
+
+## Broad and merge-push reds are separate
+
+The broad `CI/CD Test Suite` remains outside W80.
+
+Separate broad failures include:
 
 - DMAIC measurement reports missing;
 - Week3 reports 8 tests where a legacy check expects at least 10;
@@ -174,9 +197,12 @@ Current separate failures include:
 - legacy Docker asynchronous and network assertions;
 - a legacy `docker-compose` executable assumption.
 
-The W80-specific matrix passes.
+Two #1274 merge-push reds are also outside W80:
 
-Do not repair broad-suite debt inside W80 unless authority re-routes it.
+- DMAIC V3 BOOK failed while installing Pandoc and TeX packages;
+- presentation validation collected tests without `requests`.
+
+These failures do not change W80 analytical disposition.
 
 ## Next executable frontier
 
@@ -184,7 +210,7 @@ Do not default to more elapsed-time PCA.
 
 Next work should be one or both of:
 
-1. obtain authoritative outcomes for the missing low-PC1 states;
+1. obtain authoritative outcomes for missing low-PC1 states;
 2. bind an independent repair or work outcome block to exact source states.
 
 Only after predictive validation is supported may genuine observed
@@ -201,8 +227,7 @@ Re-open W80 only if one or more occur:
 - W80 receipt, provenance, or statistical guards regress;
 - the W79 deterministic source population changes materially.
 
-Otherwise W80 remains in bounded CONTROL as a negative diagnostic with
-promotion withheld.
+Otherwise W80 remains in bounded CONTROL.
 
 ## Non-compensation
 
