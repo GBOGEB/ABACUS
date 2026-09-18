@@ -1,0 +1,27 @@
+{
+  "schema_version": "MC2-W80-CURRENT-POINTER-0.1.0",
+  "mission": "W80 deterministic PC1 observed-outcome validation",
+  "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_WITH_PROMOTION_WITHHELD",
+  "restart_policy": "repository_authority_only",
+  "current_handover": "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
+  "current_closeout_receipt": "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.1.json",
+  "read_before_restart": [
+    "architecture/w79/W79_W78_INPUT.json",
+    "architecture/w80/W80_OBSERVED_VALIDATION_LEDGER.json",
+    "architecture/w80/W80_GITHUB_ACTIONS_RUN_RECEIPT.json",
+    "tools/w80_observed_outcome_validation.py",
+    "tests/test_w80_observed_outcome_validation.py",
+    "architecture/w80/W80_3PSTAR_MIP_CLOSEOUT_RECEIPT_v0.1.json",
+    "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md"
+  ],
+  "invariants": {
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt_withheld": true,
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false,
+    "formal_credit_delta": 0
+  },
+  "next_frontier": "low-PC1-tail comparable outcomes and/or exact-source repair/work outcomes",
+  "reentry_requires_new_evidence": true
+}
