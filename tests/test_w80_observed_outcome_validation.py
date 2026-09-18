@@ -46,6 +46,12 @@ def real_result() -> dict:
 def test_real_w80_is_negative_observed_outcome_validation() -> None:
     result = real_result()
     assert result["status"] == "OUTCOME_VALIDATION_NOT_SUPPORTED"
+    assert result["source_actions_run_receipt_sha256"] == (
+        "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01"
+    )
+    assert w80.file_sha256(w80.RUN_RECEIPT_PATH) == result[
+        "source_actions_run_receipt_sha256"
+    ]
     assert result["semantic_pc1"]["eigenvalue"] == 6.341341
     assert result["semantic_pc1"]["explained_variance_ratio"] == 0.905906
 
