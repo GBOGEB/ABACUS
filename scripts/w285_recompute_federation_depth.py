@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 DEPTH=ROOT/"federation/w285/source/QPS_W285_FEDERATION_FUNCTION_DEPTH_v0.1.json"
 TOPO=ROOT/"federation/w285/source/QPS_REPO_FUNCTION_TOPOLOGY_v1.yaml"
-EXPECTED_DEPTH="0503aeaf611f84afd8e00a87c19270e3e641a8a5"
+EXPECTED_DEPTH="691680cdf11289142b402a0ae02c95d46a246473"
 EXPECTED_TOPO="df0ee845697578cd644691b81eafb2465249d772"
 
 def git_blob(path):
