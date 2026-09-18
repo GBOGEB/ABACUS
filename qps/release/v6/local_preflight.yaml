@@ -1,6 +1,6 @@
 schema: abacus-qps-v6-local-preflight/1.1
-base_sha: e7b2f11deac2dc9fe7b77f9622339f184a4234d2
-qps_pin: eeac2b60fc16e5b2131d4054f95da0b0c663cc40
+base_sha: b4094dbabf1bc2d750fdc0803d4ccc25ca5cf524
+qps_pin: bb6f09e90a6af86e2601d3bad706209fa429eadc
 codex_pin: 23624e10478e115bcea2613bfcd41c24eb5dea24
 observed:
   python_contract: pyproject.toml
