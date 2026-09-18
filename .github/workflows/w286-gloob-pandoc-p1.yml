@@ -1,0 +1,26 @@
+name: W286 GLOOB Pandoc P1 Parity
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "architecture/w286/**"
+      - "tools/validate_w286_gloob_pandoc_p1.py"
+      - ".github/workflows/w286-gloob-pandoc-p1.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+      - name: Bind exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - name: Validate P1 parity
+        run: python tools/validate_w286_gloob_pandoc_p1.py
