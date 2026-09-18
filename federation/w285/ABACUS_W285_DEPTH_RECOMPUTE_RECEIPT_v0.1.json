@@ -1,0 +1,25 @@
+{
+  "schema": "abacus-w285-dow-federation-depth/v0.1",
+  "source": {
+    "qps_pr": 1490,
+    "qps_head": "e847e40957df14af363afe822da04f0f90a2c89c",
+    "depth_blob": "0503aeaf611f84afd8e00a87c19270e3e641a8a5",
+    "topology_blob": "df0ee845697578cd644691b81eafb2465249d772"
+  },
+  "expected_recompute": {
+    "B": 0.3333333333333333,
+    "D_equal_function": 0.6,
+    "pooled_atom_ratio": 0.5625,
+    "PEN": 0.2
+  },
+  "disposition": "WAIT_HOSTED_EXACT_RECOMPUTE",
+  "independence_rule": "ABACUS_RECOMPUTES_FROM_EXACT_BYTES_AND_DOES_NOT_ACCEPT_QPS_REPORTED_D_OR_PEN_AS_INPUT",
+  "guards": [
+    "POOLED_ATOM_RATIO_NE_EQUAL_FUNCTION_D",
+    "NO_ENGINEERING_AUTHORITY",
+    "NO_923_COMPENSATION",
+    "NO_W275_COMPENSATION"
+  ],
+  "formal_credit_delta": 0,
+  "authority_transfer": false
+}
