@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `6a975e6a9a4aefbe08111375be872915efb9dc0c6969ea51311ef20370be5d19`
+Policy SHA-256: `88a72cb2f1b7d0ba7836e2e7a47250d6987a76697954779e2a15fbfabe422231`
 
 ## Outcome
 
-The repository currently contains **142 workflow definitions**. All **142** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **145 workflow definitions**. All **145** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,9 +29,9 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `core_test` | `ci-abacus.yml` | 10 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 8 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `bridge_federation` | `bridge-ci.yml` | 10 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 18 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
@@ -80,7 +80,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
 | 20 | `bridge_federation` | `gloob-causal-responder.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `bridge_federation` | `gm-i-a-coolprop-runtime-bridge.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `bridge_federation` | `w286-gloob-pandoc-p1.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dmaic` | `dmaic-commit-metrics.yml` | push, workflow_run, workflow_dispatch | 3 | `keep` | — |
 | 20 | `dmaic` | `dmaic-enterprise-ci.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | — |
@@ -107,6 +109,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `qps_m05_dow_independent_consumer.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
