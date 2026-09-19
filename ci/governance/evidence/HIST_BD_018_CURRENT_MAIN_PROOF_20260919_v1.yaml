@@ -1,0 +1,57 @@
+schema: abacus-historian-bd018-current-main-proof/1.0
+as_of: '2026-09-19'
+repo: GBOGEB/ABACUS
+historian_root: HIST-BD-018
+status: PROOF_TRIGGER_ONLY_PENDING_RUNTIME
+authority_transfer: false
+formal_credit_delta: 0
+
+purpose: >-
+  Trigger the existing fail-closed CI Workflow Governance workflow against current ABACUS main
+  without changing workflow policy, generated inventory semantics, or any QPS/engineering authority.
+
+current_main_at_branch:
+  sha: aa14c3c6fbcc6a298464fed39eb777e7fa3a7616
+
+historical_first_red:
+  pr: GBOGEB/ABACUS#1280
+  exact_head: 23911ba02b07843c32f5cf29f89e70aeff073f7e
+  run: 35351667446
+  job: 105621023983
+  result: FAIL
+  reds:
+    - four_unclassified_workflows
+    - generated_report_stale
+
+repair_lineage:
+  policy_classification_commit: c17124160b82e0b3ff94eebb98608118296f45cf
+  report_digest_commit: 82f6edaea6a60f948dc51b6038fbad944977d676
+  generated_delta_commit: 621c9ca2ab6848d524f3c8ddb831524e756c159f
+  current_policy_blob: cd591c5d80dd5756075b71b6062d195ae21b406e
+  current_report_blob: 498c3728625f7475d0d6c2e755fd5db7d6de9429
+  current_auditor_blob: 615a7e716cd3d6a77cf062dc1c216e60b2e414cd
+  current_governance_workflow_blob: 479e0d2f63bbd84dea4f8b7721e30fca7d559f93
+
+formerly_unclassified:
+  - cycle2-temporal-pca-independent-consumer.yml
+  - gg-math-temporal-pca-exact-live-dow.yml
+  - leg5-federation-dashboard-proof.yml
+  - w259-p4-method-cards-independent-dow.yml
+
+proof_contract:
+  policy_semantics_changed_by_this_pr: false
+  generated_report_changed_by_this_pr: false
+  required:
+    - CI_WORKFLOW_GOVERNANCE_REAL_STEPS
+    - POLICY_TESTS_PASS
+    - INVENTORY_CHECK_PASS
+    - FAIL_CLOSED_FINAL_STEP_PASS
+  repeat:
+    required_after_merge: true
+
+noncompensating:
+  qps_issue_923: OPEN_EXTERNAL_OWNER_ACTION
+  qps_gt_bdq_0: RED_BLOCKED_ON_923
+  qps_authority_transfer: false
+  engineering_credit_delta: 0
+  release_credit_delta: 0
