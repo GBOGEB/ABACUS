@@ -276,6 +276,24 @@
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^gm-i-a-coolprop-runtime-bridge\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w285-dow-depth-recompute\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w286-gloob-pandoc-p1\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
