@@ -1,0 +1,14 @@
+{
+  "authority": "COMPATIBILITY_RUNTIME_ONLY",
+  "build_seconds": 203,
+  "compiler": "GCC 13.3.0",
+  "engineering_promotion": "WITHHELD",
+  "machine": "x86_64",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "producer_class": "HEAVY",
+  "python": "3.12.14",
+  "schema": "qps.mission_i.fast_heavy.v1",
+  "source_sha": "47cc8dced9278d50714ac39ef0a2edab7458c6a0",
+  "wheel_filename": "coolprop-7.2.1.dev0-cp312-cp312-linux_x86_64.whl",
+  "wheel_sha256": "3fa1df08b909b5becc5128754024cddf702cb21512efc4c6e12af09cb0167e74"
+}
