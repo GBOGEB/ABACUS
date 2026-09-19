@@ -1,0 +1,38 @@
+name: GM-I-A CoolProp FAST-HEAVY Federation Bridge
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'triage/GM_I_A_FAST_HEAVY_DOW_BRIDGE.yaml'
+      - 'triage/receipts/GM_I_A_FAST_HEAVY_PROVIDER_MANIFEST.json'
+      - 'triage/receipts/GM_I_A_FAST_HEAVY_PROVIDER_RECEIPT.json'
+      - 'scripts/validate_gm_i_a_fast_heavy_bridge.py'
+      - '.github/workflows/gm-i-a-fast-heavy-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dow-consume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Consume exact CoolProp FAST-HEAVY evidence
+        run: python scripts/validate_gm_i_a_fast_heavy_bridge.py > /tmp/gm_i_a_dow_receipt.json
+      - name: Validate and bind consumer receipt
+        run: |
+          python -m json.tool /tmp/gm_i_a_dow_receipt.json > /dev/null
+          sha256sum /tmp/gm_i_a_dow_receipt.json | tee /tmp/GM_I_A_DOW_SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gm-i-a-fast-heavy-dow-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            /tmp/gm_i_a_dow_receipt.json
+            /tmp/GM_I_A_DOW_SHA256SUMS
+          if-no-files-found: error
