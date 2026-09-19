@@ -1,0 +1,36 @@
+schema: abacus.gm_i_a_fast_heavy_bridge.v1
+mission: GM-I-A
+provider:
+  repo: GBOGEB/CoolProp
+  exact_source_sha: 47cc8dced9278d50714ac39ef0a2edab7458c6a0
+  merge_sha: 9d10914924810c26a0d88f8aaea4db03b7a3d38e
+  workflow_run_id: 35424686224
+  heavy_job_id: 105848481303
+  fast_job_id: 105848961200
+  heavy_artifact_id: 10578148926
+  heavy_artifact_digest: sha256:9cfeaa3d00ab1d41ba135a2f3f6d9e535aede7fc765027b8bd73251af8e344cf
+  fast_artifact_id: 10578898743
+  fast_artifact_digest: sha256:deb548d884f2dd4e8f0d077b3edc2259cf58b1bdd22c86167f2f67cbb2cda2b2
+  producer_manifest_sha256: 5cb23495c4950d3052b4f298784462ea679cc402462a9b3f49d33f63331346b7
+  fast_receipt_sha256: 8ad81a9862bae0376d0ab755b84f7c63553933d64c2d45976e93a49d8a2a7cef
+consumer:
+  repo: GBOGEB/ABACUS
+  role: DOW_INDEPENDENT_RUNTIME_ECONOMICS_CONSUMER
+  authority_transfer: false
+  formal_credit_delta: 0
+acceptance:
+  - exact_provider_receipt_hash_matches
+  - exact_provider_manifest_hash_matches
+  - source_sha_matches_across_provider_objects
+  - wheel_sha_matches_across_provider_objects
+  - heavy_build_seconds_gt_zero
+  - fast_probe_elapsed_ms_gt_zero
+  - fast_build_invoked_false
+  - fast_source_checkout_performed_false
+  - fast_calculations_passed_gt_zero
+  - derived_runtime_economics_receipt_emitted
+guards:
+  - NO_ENGINEERING_PROMOTION
+  - NO_HEPAK_OR_QEQ_AUTHORITY_TRANSFER
+  - NO_W111_HISTORICAL_RECEIPT_REWRITE
+  - CONSUMPTION_IS_RUNTIME_ECONOMICS_ONLY
