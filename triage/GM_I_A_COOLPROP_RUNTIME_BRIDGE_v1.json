@@ -1,0 +1,26 @@
+{
+  "schema": "abacus.gm_i_a.coolprop_runtime_bridge.v1",
+  "consumer_repo": "GBOGEB/ABACUS",
+  "authority_transfer": false,
+  "engineering_promotion_forbidden": true,
+  "provider": {
+    "repo": "GBOGEB/CoolProp",
+    "source_head_sha": "47cc8dced9278d50714ac39ef0a2edab7458c6a0",
+    "source_merge_sha": "9d10914924810c26a0d88f8aaea4db03b7a3d38e",
+    "attestation_commit_sha": "a71924147117c02ccc70c9b6436d89623897606c",
+    "attestation_path": "qps/recon/federation/GM_I_A_FAST_HEAVY_FEDERATION_ATTESTATION_v1.json",
+    "attestation_sha256": "132ff84a3502f5ce39d4698fa772e98f7e8fba8e52587e698e8ea419197e1398",
+    "workflow_run_id": 35424686224,
+    "heavy_artifact_digest": "sha256:9cfeaa3d00ab1d41ba135a2f3f6d9e535aede7fc765027b8bd73251af8e344cf",
+    "fast_artifact_digest": "sha256:deb548d884f2dd4e8f0d077b3edc2259cf58b1bdd22c86167f2f67cbb2cda2b2"
+  },
+  "bridge_role": "INDEPENDENT_RUNTIME_ECONOMICS_CONSUMER",
+  "downstream_return": "GBOGEB/pipeline-automation-hub",
+  "guards": [
+    "NO_ENGINEERING_AUTHORITY_TRANSFER",
+    "NO_HEPAK_AUTHORITY_TRANSFER",
+    "NO_QEQ_SAT_AUTHORITY_TRANSFER",
+    "EXACT_PROVIDER_COMMIT_AND_DIGEST_REQUIRED",
+    "FAST_MUST_HAVE_BUILD_INVOKED_FALSE_AND_SOURCE_CHECKOUT_FALSE"
+  ]
+}
