@@ -1,0 +1,31 @@
+{
+  "authority": "COMPATIBILITY_RUNTIME_ONLY",
+  "build_invoked": false,
+  "calculations": [
+    {
+      "P_Pa": 101325.0,
+      "T_K": 300.0,
+      "h_J_kg": 1563323.725537633,
+      "name": "ambient",
+      "rho_kg_m3": 0.16251557124354038
+    },
+    {
+      "P_Pa": 300000.0,
+      "T_K": 4.5,
+      "h_J_kg": 1719.849460809816,
+      "name": "w145_A",
+      "rho_kg_m3": 129.31263076205394
+    }
+  ],
+  "calculations_passed": 2,
+  "consumer_class": "FAST",
+  "coolprop_version": "7.2.1dev",
+  "engineering_promotion": "WITHHELD",
+  "probe_elapsed_ms": 838,
+  "python": "3.12.14",
+  "schema": "qps.mission_i.fast_heavy.v1",
+  "source_checkout_performed": false,
+  "source_sha": "47cc8dced9278d50714ac39ef0a2edab7458c6a0",
+  "status": "PASS",
+  "wheel_sha256": "3fa1df08b909b5becc5128754024cddf702cb21512efc4c6e12af09cb0167e74"
+}
