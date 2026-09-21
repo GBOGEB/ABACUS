@@ -137,8 +137,21 @@ class DOWIntegrationExecutor:
     def _run_script(self, agent_name: str, path: Path, args: List[str], timeout: int) -> Dict[str, Any]:
         cmd = [sys.executable, str(path)] + args
         print(f"[>] Running: {' '.join(cmd)}")
+        repo_root = Path(__file__).resolve().parents[1]
+        env = os.environ.copy()
+        pythonpath = [str(repo_root), str(repo_root / "src")]
+        existing_pythonpath = env.get("PYTHONPATH")
+        if existing_pythonpath:
+            pythonpath.append(existing_pythonpath)
+        env["PYTHONPATH"] = os.pathsep.join(pythonpath)
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)  # noqa: S603
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                env=env,
+            )  # noqa: S603
             if result.stdout:
                 print(result.stdout)
             if result.returncode == 0:
