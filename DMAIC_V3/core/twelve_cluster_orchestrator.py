@@ -19,12 +19,11 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 try:
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from keb import KEB
-    KEB_AVAILABLE = True
+    from core.execution_backbone import ExecutionBackbone
+    EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
-    KEB_AVAILABLE = False
-    print("Warning: KEB not available")
+    EXECUTION_BACKBONE_AVAILABLE = False
+    print("Warning: execution backbone not available")
 
 try:
     from gbogeb import GBOGEB
@@ -70,23 +69,31 @@ class TwelveClusterOrchestrator:
     def __init__(
         self,
         max_workers: int = 12,
-        use_keb: bool = True,
+        use_keb: bool | None = None,
         use_gbogeb: bool = True,
         task_timeout_seconds: float | None = None,
+        use_execution_backbone: bool = True,
     ):
         self.max_workers = max_workers
-        self.use_keb = use_keb and KEB_AVAILABLE
+        if use_keb is not None:
+            use_execution_backbone = use_keb
+        self.use_execution_backbone = (
+            use_execution_backbone and EXECUTION_BACKBONE_AVAILABLE
+        )
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.task_timeout_seconds = task_timeout_seconds
 
         self.clusters = self._initialize_clusters()
-        self.keb = None
+        self.execution_backbone = None
         self.gbogeb = None
         self.temporal_events: List[Dict[str, Any]] = []
 
-        if self.use_keb:
-            print("[12-CLUSTER] Initializing KEB compatibility task bridge...")
-            self.keb = KEB(max_workers=min(max_workers, 4), max_memory_mb=2048)
+        if self.use_execution_backbone:
+            print("[12-CLUSTER] Initializing execution backbone...")
+            self.execution_backbone = ExecutionBackbone(
+                max_workers=min(max_workers, 4),
+                max_memory_mb=2048,
+            )
 
         if self.use_gbogeb:
             print("[12-CLUSTER] Initializing GBOGEB observability...")
