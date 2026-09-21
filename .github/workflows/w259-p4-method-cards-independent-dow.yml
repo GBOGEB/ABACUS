@@ -24,7 +24,7 @@ jobs:
   independent-challenge:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Assert exact checkout head
         run: test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
       - name: Execute independent DOW challenge

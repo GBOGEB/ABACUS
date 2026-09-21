@@ -22,7 +22,7 @@ jobs:
     env:
       W64_RECEIPTS: architecture/w64/receipts
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v7
