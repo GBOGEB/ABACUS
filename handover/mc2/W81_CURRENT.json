@@ -1,0 +1,19 @@
+{
+  "schema_version": "MC2-W81-CURRENT-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_REPAIR_PAIR_DIAGNOSTIC",
+  "restart_policy": "repository_authority_only",
+  "predecessor": "handover/mc2/W80_CURRENT.json",
+  "current_receipt": "architecture/w81/W81_REPAIR_PAIR_DIAGNOSTIC_v0.1.json",
+  "current_dropin": "handover/mc2/W81_DROPIN.md",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "invariants": {
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt_withheld": true,
+    "pca_refit_performed": false,
+    "global_allocation_authority": false
+  },
+  "next_frontier": "semantically diverse exact-source outcome states with independently observed outcomes",
+  "reentry_requires_new_evidence": true
+}

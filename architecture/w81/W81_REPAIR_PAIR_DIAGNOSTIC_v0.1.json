@@ -1,0 +1,271 @@
+{
+  "schema_version": "MC2-W81-REPAIR-PAIR-DIAGNOSTIC-0.1.0",
+  "as_of": "2026-09-21",
+  "repository": "GBOGEB/ABACUS",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "entry": {
+    "predecessor": "W80_CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL",
+    "w80_publication_attestation_pr": 1281,
+    "w80_publication_attestation_merge": "05a1118e4e9da81f9434397408ed59a3c34653ef",
+    "w80_pairwise_accumulation_permitted": false,
+    "w80_bt": "WITHHELD"
+  },
+  "primary_frontier_census": {
+    "target": "missing_low_pc1_states_s01_s02_s03_s04",
+    "result": "NO_ACTIONS_EVIDENCE_CONFIRMED_4_OF_4",
+    "states": [
+      {
+        "label": "s01",
+        "source_sha": "2a5104eecb2ab3ed340c2e63b3f2ba3b46cb56dd",
+        "actions_run_count": 0
+      },
+      {
+        "label": "s02",
+        "source_sha": "107c889c87137bfc660a69bfd7dd1cfc121291fc",
+        "actions_run_count": 0
+      },
+      {
+        "label": "s03",
+        "source_sha": "e2ae50cc6951a0fdead9e9b18ea52695c78984be",
+        "actions_run_count": 0
+      },
+      {
+        "label": "s04",
+        "source_sha": "6f70a2926ecc2aa40e54f7d9f869f1804e4a1e41",
+        "actions_run_count": 0
+      }
+    ],
+    "disposition": "EXHAUSTED_NO_OBSERVED_OUTCOME_NOT_ZERO_IMPUTED"
+  },
+  "secondary_frontier_probe": {
+    "purpose": "independent_exact_source_repair_work_outcome_block",
+    "disposable_probe_pr": 1290,
+    "intended_probe_disposition": "CLOSE_UNMERGED_AFTER_RECEIPT_HARVEST",
+    "actual_probe_merge_sha": "3ab3abcd2878640e920b2808610dee1a7c208f0d",
+    "auto_merge_race": true,
+    "corrective_action": "REMOVE_TEMPORARY_W81_JOB_FROM_W78_WORKFLOW_AND_PERSIST_RECEIPTS_ONLY",
+    "probe_head_sha": "5dd946a79a52343097502de9a0de91cb97875417",
+    "workflow_name": "W78 Deterministic Work Census",
+    "workflow_run_id": 35574978275,
+    "states": [
+      {
+        "label": "w77-before",
+        "source_sha": "49852ad2c8c92f2bacc06d5a52ccb6fb5b2f211a",
+        "observed_outcome": {
+          "target": "CI Workflow Governance + Validate Docs",
+          "success": false,
+          "run_ids": [
+            34776586484,
+            34776586491
+          ]
+        },
+        "job_id": 106254751334,
+        "artifact_id": 10627124799,
+        "artifact_digest": "sha256:9cd3d16a433fe70af7ddd98e551bfa2d714fa6e202ed5567d8d16923bbe94261",
+        "semantic_work_vector": {
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        },
+        "work_vector": {
+          "scanned_text_files": 2715,
+          "scanned_text_bytes": 76220185,
+          "consumer_candidate_checks": 48867,
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        }
+      },
+      {
+        "label": "w77-after",
+        "source_sha": "bf8e8bce977e895825e7c39f5609bfa89d751df1",
+        "observed_outcome": {
+          "target": "CI Workflow Governance + Validate Docs",
+          "success": true,
+          "run_ids": [
+            34777322498,
+            34777322479
+          ]
+        },
+        "job_id": 106254751431,
+        "artifact_id": 10626699897,
+        "artifact_digest": "sha256:d54f07e4ed13004c32613d4a8b1c9a00185dd73d3ebcb4286f4d79ff8a01fb67",
+        "semantic_work_vector": {
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        },
+        "work_vector": {
+          "scanned_text_files": 2715,
+          "scanned_text_bytes": 76224548,
+          "consumer_candidate_checks": 48867,
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        }
+      },
+      {
+        "label": "w80-before",
+        "source_sha": "b70f28ba5144aa352b60a511a4237417c6757920",
+        "observed_outcome": {
+          "target": "Validate Docs",
+          "success": false,
+          "run_ids": [
+            35350074306
+          ]
+        },
+        "job_id": 106254751297,
+        "artifact_id": 10627930005,
+        "artifact_digest": "sha256:ed7d3b4cd4ebefbb3dfc454a2587972b22ef16344d7b6418fcbf2ac5451a8e87",
+        "semantic_work_vector": {
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        },
+        "work_vector": {
+          "scanned_text_files": 2799,
+          "scanned_text_bytes": 76578186,
+          "consumer_candidate_checks": 50379,
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        }
+      },
+      {
+        "label": "w80-after",
+        "source_sha": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+        "observed_outcome": {
+          "target": "Validate Docs",
+          "success": true,
+          "run_ids": [
+            35350555778
+          ]
+        },
+        "job_id": 106254751388,
+        "artifact_id": 10628175044,
+        "artifact_digest": "sha256:1342cf0e512e6fcc0d89b0c9a904af373a91179ae2db63e44392373311cfe532",
+        "semantic_work_vector": {
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        },
+        "work_vector": {
+          "scanned_text_files": 2802,
+          "scanned_text_bytes": 76586185,
+          "consumer_candidate_checks": 50433,
+          "consumer_hits": 74,
+          "consumer_files_with_hits": 15,
+          "semantic_entities": 18,
+          "semantic_references": 11,
+          "lineage_paths": 18,
+          "graph_nodes": 26,
+          "graph_edges": 29
+        }
+      }
+    ]
+  },
+  "frozen_w79_projection": {
+    "math_skill_resolution": {
+      "schema": "gbogeb.skill.receipt.v1",
+      "skill": "math",
+      "task_id": "W81_REPAIR_PAIR_PC1_PROJECTION",
+      "source_repo": "GBOGEB/ABACUS",
+      "source_ref": "5dd946a79a52343097502de9a0de91cb97875417",
+      "resolved_skill_path": "skills/math/SKILL.md",
+      "authority_transfer": false,
+      "status": "PASS_SKILL_RESOLUTION"
+    },
+    "semantic_pc1": {
+      "eigenvalue": 6.341340944864425,
+      "explained_variance_ratio": 0.9059058492663464,
+      "w79_in_sample_min": -6.074314162533103,
+      "w79_in_sample_max": 1.9041921482931436,
+      "projected_score_all_four": 2.3131321337446313,
+      "pair_deltas": {
+        "w77_after_minus_before": 0,
+        "w80_after_minus_before": 0
+      },
+      "support_class": "OUT_OF_SAMPLE_ABOVE_W79_MAX"
+    },
+    "full_work_pc1": {
+      "eigenvalue": 9.08986535264184,
+      "explained_variance_ratio": 0.9089865352641843,
+      "w79_in_sample_min": -6.8170834526184265,
+      "w79_in_sample_max": 2.330551907662297,
+      "projected_scores": {
+        "w77-before": 2.7202985302753895,
+        "w77-after": 2.72055562528719,
+        "w80-before": 2.8427429175553867,
+        "w80-after": 2.8468338663976476
+      },
+      "pair_deltas": {
+        "w77_after_minus_before": 0.000257095011800601,
+        "w80_after_minus_before": 0.004090948842260911
+      },
+      "support_class": "OUT_OF_SAMPLE_ABOVE_W79_MAX"
+    }
+  },
+  "disposition": {
+    "status": "CONTROLLED_NEGATIVE_REPAIR_PAIR_DIAGNOSTIC",
+    "measured_exact_source_states": 4,
+    "repair_pairs": 2,
+    "semantic_pair_discrimination": false,
+    "semantic_vector_unique_count": 1,
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD",
+    "pca_refit_performed": false,
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "child_engineering_promotion_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "interpretation": {
+    "supported": "the tested red-to-green repair transitions are invisible to the frozen W79 semantic PC1 and nearly unchanged on full-work PC1",
+    "not_supported": [
+      "semantic PC1 predicts repair success",
+      "full-work PC1 predicts repair success",
+      "BT ranking from these repair pairs",
+      "generalization outside the measured repair states"
+    ],
+    "next_frontier": "seek semantically diverse exact-source outcome states; prefer observed outcomes with distinct semantic-work vectors and coverage away from the current high-PC1 extrapolation region"
+  },
+  "rex": {
+    "id": "REX-W81-001",
+    "event": "DISPOSABLE_PROBE_AUTO_MERGED",
+    "containment": "temporary W81 job removed by corrective transaction; measured receipts retained",
+    "lesson": "disposable measurement branches require merge prevention stronger than PR prose when repository auto-merge automation is active"
+  }
+}
