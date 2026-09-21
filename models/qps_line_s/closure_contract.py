@@ -6,6 +6,8 @@ from typing import Any
 
 import yaml
 
+from . import runtime as runtime_model
+
 ROOT = Path(__file__).resolve().parents[2]
 EXTRACTION = ROOT / "docs" / "qps_line_s_recovery" / "appendix_8_4_mode_valve_extraction.yaml"
 ASSUMPTIONS = ROOT / "docs" / "qps_line_s_recovery" / "assumptions_register.yaml"
@@ -35,6 +37,15 @@ def load_extraction(path: Path = EXTRACTION) -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     require(isinstance(data, dict), "Appendix 8.4 extraction must be a mapping")
     return data
+
+
+def missing_required_artefacts(root: Path = ROOT) -> list[str]:
+    missing: list[str] = []
+    for artefact in runtime_model.REQUIRED_ARTEFACTS:
+        relative = artefact.relative_to(runtime_model.ROOT)
+        if not (root / relative).exists():
+            missing.append(str(relative))
+    return missing
 
 
 def validate_extraction(data: dict) -> dict:
@@ -68,7 +79,14 @@ def validate_extraction(data: dict) -> dict:
         return data
 
     require(_nonempty(source.get("source_ref")), "available source requires source_ref")
-    require(_nonempty(source.get("evidence_locator")), "available source requires evidence_locator")
+    require(
+        _nonempty(source.get("evidence_locator")),
+        "available source requires evidence_locator",
+    )
+    require(
+        bool(modes),
+        "source-backed extraction requires at least one mode row",
+    )
 
     for mode_index, mode in enumerate(modes):
         require(isinstance(mode, dict), f"mode[{mode_index}] must be a mapping")
@@ -122,7 +140,16 @@ def validate_current_contract(root: Path = ROOT) -> dict:
     require(runtime.get("verdict") == "PROCEED_MDA", "runtime verdict must match resolved MDA gates")
     require(runtime.get("n_open_gates") == 0, "runtime must report zero open gates")
     require(runtime.get("open_gates") == [], "runtime open_gates must be empty")
-    require(runtime.get("missing_artefacts") == [], "runtime missing_artefacts must be empty")
+    require(
+        runtime.get("missing_artefacts") == [],
+        "runtime missing_artefacts must be empty",
+    )
+    live_missing = missing_required_artefacts(root)
+    require(
+        live_missing == [],
+        "required Line-S artefacts missing from current tree: "
+        + ", ".join(live_missing),
+    )
 
     extraction = validate_extraction(load_extraction(extraction_path))
     return {
