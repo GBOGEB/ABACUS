@@ -1,15 +1,18 @@
 """Canonical DOW Stage 6 validation mechanic.
 
-Fail-closed validation of the enriched JSON artifacts produced by the canonical DOW pipeline.
-This is intentionally parent-owned and generic: it validates contract/lineage/idempotency/recursive
-structure and the presence of convergence + knowledge outputs without embedding child-domain logic.
+Fail-closed validation of enriched JSON artifacts produced by the canonical
+DOW pipeline. This is parent-owned and generic: it validates contract,
+lineage, idempotency, recursive structure, convergence and knowledge output
+without embedding child-domain logic.
 """
 
+from __future__ import annotations
+
+import argparse
 import json
-import sys
 from pathlib import Path
 
-TARGET = Path("DMAIC_CANONICAL_OUTPUT")
+DEFAULT_TARGET = Path("DMAIC_CANONICAL_OUTPUT")
 REQUIRED_TOP_LEVEL = {
     "metadata",
     "lineage",
@@ -29,7 +32,9 @@ def validate_file(path: Path):
 
     missing = sorted(REQUIRED_TOP_LEVEL - set(data))
     if missing:
-        errors.append(f"{path}: missing top-level keys: {', '.join(missing)}")
+        errors.append(
+            f"{path}: missing top-level keys: {', '.join(missing)}"
+        )
 
     metadata = data.get("metadata")
     if not isinstance(metadata, dict):
@@ -61,7 +66,12 @@ def validate_file(path: Path):
     if not isinstance(hooks, dict):
         errors.append(f"{path}: recursive_hooks must be an object")
     else:
-        for key in ("consumed_from", "feeds_into", "iteration_lineage", "version_history"):
+        for key in (
+            "consumed_from",
+            "feeds_into",
+            "iteration_lineage",
+            "version_history",
+        ):
             if key not in hooks:
                 errors.append(f"{path}: recursive_hooks.{key} missing")
 
@@ -85,14 +95,25 @@ def validate_file(path: Path):
     return errors
 
 
-def main():
-    if not TARGET.exists():
-        print(f"[X] Target directory not found: {TARGET}")
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Validate canonical DOW Stage 6 artifacts."
+    )
+    parser.add_argument(
+        "--target",
+        default=str(DEFAULT_TARGET),
+        help="Directory containing enriched DOW JSON artifacts.",
+    )
+    args = parser.parse_args()
+    target = Path(args.target)
+
+    if not target.exists():
+        print(f"[X] Target directory not found: {target}")
         return 1
 
-    files = sorted(TARGET.glob("*.json"))
+    files = sorted(target.glob("*.json"))
     if not files:
-        print(f"[X] No JSON artifacts found in {TARGET}")
+        print(f"[X] No JSON artifacts found in {target}")
         return 1
 
     all_errors = []
@@ -105,7 +126,10 @@ def main():
             print(f" - {error}")
         return 1
 
-    print(f"[OK] DOW Stage 6 validation passed for {len(files)} JSON artifact(s)")
+    print(
+        f"[OK] DOW Stage 6 validation passed for "
+        f"{len(files)} JSON artifact(s)"
+    )
     return 0
 
 
