@@ -1,0 +1,30 @@
+{
+  "schema_version": "MC2-W83-CURRENT-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_TYPED_BASIS_OUTCOME_DIAGNOSTIC",
+  "restart_policy": "repository_authority_only",
+  "predecessor": "handover/mc2/W82_CURRENT.json",
+  "source_probe_pr": 1297,
+  "source_probe_run": 35577332406,
+  "source_probe_aggregate_artifact": 10628574063,
+  "source_probe_disposition": "HARVESTED_CANONICALIZED_DISPOSABLE_WORKFLOW_REMOVED",
+  "current_ledger": "architecture/w83/W83_OUTCOME_LEDGER_v0.1.json",
+  "current_receipt": "architecture/w83/W83_OUTCOME_DISCRIMINATION_v0.1.json",
+  "current_tool": "tools/w83_outcome_discrimination.py",
+  "current_test": "tests/test_w83_outcome_discrimination.py",
+  "current_dropin": "handover/mc2/W83_DROPIN.md",
+  "owned_first_red": "CI_GOVERNANCE_UNCLASSIFIED_DISPOSABLE_W83_WORKFLOW",
+  "first_red_repair": "REMOVE_DISPOSABLE_WORKFLOW_AFTER_RECEIPT_HARVEST",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "invariants": {
+    "typed_basis_diversity_signal_present": true,
+    "outcome_discrimination_supported": false,
+    "pca_fit_performed": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt_withheld": true,
+    "global_allocation_authority": false
+  },
+  "next_frontier": "exact-source outcome states with genuinely varying non-governance semantic-composition or consumer-graph vectors",
+  "reentry_requires_new_evidence": true
+}
