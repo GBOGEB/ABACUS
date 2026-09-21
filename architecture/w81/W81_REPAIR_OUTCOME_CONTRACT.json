@@ -1,0 +1,70 @@
+{
+  "schema_version": "MC2-W81-REPAIR-OUTCOME-CONTRACT-0.1.0",
+  "repository": "GBOGEB/ABACUS",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "source_w80": {
+    "status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt": "WITHHELD",
+    "publication_attestation_pr": 1281,
+    "publication_attestation_merge": "05a1118e4e9da81f9434397408ed59a3c34653ef"
+  },
+  "primary_frontier_check": {
+    "purpose": "recheck whether missing low-PC1 W79 states have authoritative Actions outcomes",
+    "states": [
+      {"label":"s01","source_sha":"2a5104eecb2ab3ed340c2e63b3f2ba3b46cb56dd","expected_actions_run_count":0},
+      {"label":"s02","source_sha":"107c889c87137bfc660a69bfd7dd1cfc121291fc","expected_actions_run_count":0},
+      {"label":"s03","source_sha":"e2ae50cc6951a0fdead9e9b18ea52695c78984be","expected_actions_run_count":0},
+      {"label":"s04","source_sha":"6f70a2926ecc2aa40e54f7d9f869f1804e4a1e41","expected_actions_run_count":0}
+    ],
+    "policy": "NO_ACTIONS_EVIDENCE_REMAINS_MISSING_NOT_ZERO"
+  },
+  "repair_episode_semantics": "observed_named_red_to_green_episode_not_single_commit_causal_effect",
+  "episodes": [
+    {
+      "episode_id": "W77_GOVERNANCE_DOCS_REPAIR",
+      "predecessor_pr": 1192,
+      "repair_pr": 1197,
+      "failure_label": "w77_fail",
+      "failure_source_sha": "49852ad2c8c92f2bacc06d5a52ccb6fb5b2f211a",
+      "repair_label": "w77_repair",
+      "repair_source_sha": "bf8e8bce977e895825e7c39f5609bfa89d751df1",
+      "observed_failure": [
+        {"workflow":"CI Workflow Governance","run_id":34776586484,"job_id":103775697429,"job_name":"policy-and-inventory","event":"pull_request","conclusion":"failure"},
+        {"workflow":"Validate Docs (Markdown/YAML/JSON)","run_id":34776586491,"job_id":103775697190,"job_name":"Changed docs lint","event":"pull_request","conclusion":"failure"}
+      ],
+      "observed_repair": [
+        {"workflow":"CI Workflow Governance","run_id":34777322498,"job_id":103777707196,"job_name":"policy-and-inventory","event":"pull_request","conclusion":"success"},
+        {"workflow":"Validate Docs (Markdown/YAML/JSON)","run_id":34777322479,"job_id":103777707056,"job_name":"Changed docs lint","event":"pull_request","conclusion":"success"}
+      ]
+    },
+    {
+      "episode_id": "W80_DOCS_REPAIR",
+      "predecessor_pr": 1272,
+      "repair_pr": 1274,
+      "failure_label": "w80_fail",
+      "failure_source_sha": "b70f28ba5144aa352b60a511a4237417c6757920",
+      "repair_label": "w80_repair",
+      "repair_source_sha": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+      "observed_failure": [
+        {"workflow":"Validate Docs (Markdown/YAML/JSON)","run_id":35350074306,"job_id":105615832987,"job_name":"Changed docs lint","event":"pull_request","conclusion":"failure"}
+      ],
+      "observed_repair": [
+        {"workflow":"Validate Docs (Markdown/YAML/JSON)","run_id":35350555778,"job_id":105617410488,"job_name":"Changed docs lint","event":"pull_request","conclusion":"success"}
+      ]
+    }
+  ],
+  "excluded_episode": {
+    "name": "W79_1204_TO_1206",
+    "reason": "NOT_RED_TO_GREEN; governance and docs remained failure on repair PR head"
+  },
+  "promotion_guards": {
+    "minimum_pair_count_for_any_model_fit": 5,
+    "require_connected_pair_graph_for_bt": true,
+    "require_w80_predictive_validation_for_pc1_allocation_use": true,
+    "current_bt_eligibility": false
+  }
+}

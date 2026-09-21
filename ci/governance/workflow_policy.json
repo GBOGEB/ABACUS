@@ -248,7 +248,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(mip-qps-external-probe|mip-n2-self-index|mip-v2-federated-control|w102-qps-mip-reconciliation-receiver|w105-qps-b1b2-mip-probe|w66-abacus-id-burndown-split|w67-measured-id-pulse|w67-pulse3-pca-promotion|w70-measured-id-pulse-exact-sha|w70-retain-measured-pulse|w71-residual-lineage-census|w72-clean-clone-proof|w72-versioned-semantic-backfill|w72-zero-delta-wheel|w74-qplant-k8s-contract|w77-phase-runtime-instrumentation|w78-deterministic-work-census|w79-deterministic-multivariate|w85-census-proof|w93-docker-deployment-proof|w95-accelerator-receiver|w99-r1-reconciliation-return|w169-qplant-k8s-runtime)\\.yml$",
+      "pattern": "^(mip-qps-external-probe|mip-n2-self-index|mip-v2-federated-control|w102-qps-mip-reconciliation-receiver|w105-qps-b1b2-mip-probe|w66-abacus-id-burndown-split|w67-measured-id-pulse|w67-pulse3-pca-promotion|w70-measured-id-pulse-exact-sha|w70-retain-measured-pulse|w71-residual-lineage-census|w72-clean-clone-proof|w72-versioned-semantic-backfill|w72-zero-delta-wheel|w74-qplant-k8s-contract|w77-phase-runtime-instrumentation|w78-deterministic-work-census|w79-deterministic-multivariate|w81-repair-outcome-block|w85-census-proof|w93-docker-deployment-proof|w95-accelerator-receiver|w99-r1-reconciliation-return|w169-qplant-k8s-runtime)\\.yml$",
       "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
