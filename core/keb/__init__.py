@@ -1,4 +1,11 @@
-"""KEB - Kernel Execution Backbone package"""
-from .keb import KEB
+"""Deprecated runtime compatibility module.
 
-__all__ = ['KEB']
+KEB is reserved for Knowledge Exchange Bridge. The former runtime meaning has
+moved to :mod:`core.execution_backbone`.
+"""
+
+from core.execution_backbone import ExecutionBackbone
+
+LegacyExecutionBackbone = ExecutionBackbone
+
+__all__ = ["ExecutionBackbone", "LegacyExecutionBackbone"]

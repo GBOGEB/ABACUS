@@ -6,7 +6,7 @@ Phase 2a: Baseline Measurement
 - Analyze code metrics (LOC, functions, classes)
 - Static complexity analysis
 - File dependency detection
-- KEB integration for parallel analysis
+- ExecutionBackbone integration for parallel analysis
 - 12-Cluster integration for distributed processing
 """
 
@@ -21,13 +21,14 @@ from ..core.utils import ensure_directory, safe_write_json
 from ..config import DMAICConfig
 
 try:
-    import sys
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from keb import KEB
-    KEB_AVAILABLE = True
+    from core.execution_backbone import ExecutionBackbone
+    EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
-    KEB_AVAILABLE = False
-    print("Warning: KEB not available, falling back to sequential analysis")
+    EXECUTION_BACKBONE_AVAILABLE = False
+    print(
+        "Warning: execution backbone not available; "
+        "falling back to sequential analysis"
+    )
 
 try:
     from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
@@ -42,7 +43,7 @@ class Phase2Measure:
     Phase 2: Measure - Code metrics and static analysis
 
     Analyzes Python files to collect baseline metrics without execution.
-    Supports parallel analysis via KEB and 12-Cluster orchestration.
+    Supports parallel analysis via ExecutionBackbone and 12-Cluster orchestration.
     """
 
     def __init__(self, config: DMAICConfig, state_manager: StateManager,
@@ -53,21 +54,24 @@ class Phase2Measure:
         Args:
             config: DMAICConfig instance
             state_manager: StateManager instance
-            use_keb: Enable KEB parallel processing (default: False to avoid memory issues)
+            use_keb: Deprecated compatibility switch for execution-backbone processing
             use_12cluster: Enable 12-cluster parallel processing (default: True)
         """
         self.config = config
         self.state_manager = state_manager
         self.workspace_root = config.paths.workspace_root
         self.max_files_per_chunk = 5000
-        self.use_keb = use_keb and KEB_AVAILABLE
+        self.use_execution_backbone = use_keb and EXECUTION_BACKBONE_AVAILABLE
         self.use_12cluster = use_12cluster and CLUSTER_AVAILABLE
-        self.keb = None
+        self.execution_backbone = None
         self.cluster_orchestrator = None
 
-        if self.use_keb:
-            print("[KEB] Initializing parallel analysis engine...")
-            self.keb = KEB(max_workers=2, max_memory_mb=2048)
+        if self.use_execution_backbone:
+            print("[EXEC-BACKBONE] Initializing parallel analysis engine...")
+            self.execution_backbone = ExecutionBackbone(
+                max_workers=2,
+                max_memory_mb=2048,
+            )
 
         if self.use_12cluster:
             print("[12-CLUSTER] Initializing distributed analysis...")
@@ -246,8 +250,8 @@ class Phase2Measure:
 
             if self.use_12cluster:
                 print(f"  [12-CLUSTER] Distributed analysis ENABLED (2 clusters)")
-            elif self.use_keb:
-                print(f"  [KEB] Parallel analysis ENABLED (2 workers)")
+            elif self.use_execution_backbone:
+                print(f"  [EXEC-BACKBONE] Parallel analysis ENABLED (2 workers)")
             else:
                 print(f"  Sequential analysis mode")
             print()
@@ -293,8 +297,8 @@ class Phase2Measure:
                     else:
                         error_count += 1
 
-            elif self.use_keb and self.keb:
-                self.keb.start()
+            elif self.use_execution_backbone and self.execution_backbone:
+                self.execution_backbone.start()
                 analysis_results = {}
 
                 for chunk_idx in range(num_chunks):
@@ -302,26 +306,26 @@ class Phase2Measure:
                     end_idx = min(start_idx + chunk_size, total_files)
                     chunk_files = python_files[start_idx:end_idx]
 
-                    print(f"  [KEB] Scheduling chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
+                    print(f"  [EXEC-BACKBONE] Scheduling chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
 
                     for file_path in chunk_files:
                         task_id = f"analyze_{chunk_idx}_{file_path.replace('/', '_')[-50:]}"
-                        self.keb.schedule_task(
+                        self.execution_backbone.schedule_task(
                             task_id=task_id,
                             func=self.analyze_python_file,
                             priority=5,
                             args=(file_path,)
                         )
 
-                print(f"  [KEB] Waiting for analysis to complete...")
+                print(f"  [EXEC-BACKBONE] Waiting for analysis to complete...")
                 import time
-                while not self.keb.task_queue.empty():
+                while not self.execution_backbone.task_queue.empty():
                     time.sleep(0.5)
 
                 time.sleep(2)
-                self.keb.stop()
+                self.execution_backbone.stop()
 
-                print(f"  [KEB] Analysis complete: {self.keb.tasks_executed} executed, {self.keb.tasks_failed} failed")
+                print(f"  [EXEC-BACKBONE] Analysis complete: {self.execution_backbone.tasks_executed} executed, {self.execution_backbone.tasks_failed} failed")
 
                 for file_path in python_files:
                     result = self.analyze_python_file(file_path)
