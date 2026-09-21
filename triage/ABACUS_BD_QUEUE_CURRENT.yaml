@@ -1,163 +1,173 @@
-schema: abacus-bd-queue/1.0
+schema: abacus-bd-queue/1.1
 as_of: 2026-09-21
 repository: GBOGEB/ABACUS
 base_branch: main
-purpose: >
-  Single current issue-burndown queue. Every open issue must be either runnable,
-  verification/closure work, an external/local return gate, or a programme parent.
+
+purpose: >-
+  Keep one current issue-burndown queue with evidence-backed closure gates.
+
 rules:
-  - "Do not close from age/title alone; require evidence or explicit supersession."
-  - "Fixes land through PRs; verification-only closures cite the proving PR/run/receipt."
-  - "Owner/admin and local-machine gates stay visible but do not consume coding crew."
-  - "Parent/programme issues remain open while their child gates are genuinely active."
-  - "A red detector is not prevention; merge-admission control is tracked separately."
+  - Do not close from age or title alone.
+  - Fixes require a merged PR and the required runtime or CI receipt.
+  - Verification closures cite the exact proving receipt.
+  - Local, private, and owner-admin gates do not consume coding capacity.
+  - Parent issues stay open only while they own a distinct live outcome.
+  - A red detector is not prevention; merge admission is separate.
+
 summary:
   open_before_pulse: 30
-  closed_this_pulse: [1186, 1187, 1188, 1195, 583, 1256]
-  open_after_pulse: 24
-  execute_now: 4
-  verify_close: 4
+  closed_this_pulse:
+    - 583
+    - 645
+    - 659
+    - 672
+    - 673
+    - 674
+    - 679
+    - 683
+    - 750
+    - 818
+    - 1180
+    - 1186
+    - 1187
+    - 1188
+    - 1195
+    - 1256
+  open_after_pulse: 14
+  next_reconcile: 2
+  control_watch: 1
   local_or_external_return: 6
-  programme_parent: 10
-lanes:
-  EXECUTE_NOW:
-    - issue: 683
-      title: "QPS DOW: make hardened warm-up observable on pull requests"
-      bd_root: BDQ-001
-      evidence:
-        - "PR #1300 merged the path-scoped pull_request trigger."
-        - "Run 35581483282 / job 106275140849 exposed Stage-1 import first-red."
-        - "Successor PR #1306 repairs direct agent imports and exact-source binding."
-      next_action: "Prove PR #1306 exact-head six-stage runtime receipt."
-      closure_gate: "Six-stage exact-source receipt + lint/governance PASS."
-    - issue: 679
-      title: "QPS DOW warm-up: make canonical stages 5/6 fail-closed and executable"
-      bd_root: BDQ-004
-      evidence:
-        - "PR #680 made missing stage mechanics fail closed."
-        - "PR #695 added the Stage-6 validator."
-        - "Current Stage-5 canonical file still declares version 0.0.0-stub."
-      next_action: "After #683 first-red repair, prevent Stage-5 stub from earning success; implement or fail closed."
-      closure_gate: "Stage 5 is a real executable mechanic and Stage 6 executes; no stub can report PASS."
-    - issue: 645
-      title: "Canonicalize KEB = Knowledge Exchange Bridge across ABACUS/CODEX"
-      bd_root: BDQ-002
-      evidence:
-        - "Issue records live acronym collision with ABACUS core/keb runtime."
-      next_action: "Census live imports/docs, choose compatibility rename, then bounded migration PR."
-      closure_gate: "No active Kernel Execution Backbone meaning remains under KEB acronym."
-    - issue: 818
-      title: "federation: distinguish artifact-hash refresh from semantic DOW trigger"
-      bd_root: BDQ-003
-      evidence:
-        - "Typed hash-only vs semantic trigger contract remains explicit issue scope."
-      next_action: "Add typed trigger semantics + idempotent hash-only regression proof."
-      closure_gate: "Hash-only refresh updates lineage without engineering findings; semantic delta still triggers DOW."
+  programme_parent: 5
 
-  VERIFY_CLOSE:
-    - issue: 672
-      title: "Wave 01 DOW warm-up: execute bounded QPS fixture and expose stage telemetry"
-      evidence: ["PR #675 merged the fixture/workflow; PRs #680/#695/#702 hardened mechanics."]
-      next_action: "Bind a successful merged/default-branch receipt or keep open if no such receipt exists."
-      closure_gate: "Real run + artifact proves six visible fail-closed stages."
-    - issue: 673
-      title: "Wave 01 DOW warm-up fixture acceptance"
-      evidence: ["Implementation lineage #675/#680/#695/#702."]
-      next_action: "Verify acceptance checklist against one merged/default-branch run and artifact."
-      closure_gate: "Checklist satisfied and evidence linked back to #659/#667."
-    - issue: 674
-      title: "Wave 01 parallel lane bookkeeping"
-      evidence: ["Correlation QPS-FED-W01 exists; historical run 33254652008 captured Stage-6 first-red."]
-      next_action: "Reconcile state machine to latest successful return/disposition; then close bookkeeping."
-      closure_gate: "RETURNED -> CHILD_DISPOSITIONED -> CLOSED is evidenced."
+lanes:
+  NEXT_RECONCILE:
+    - issue: 644
+      title: >-
+        QPS OCD/ADR bridge: binary parsing feedback and federated roll-up
+        contract
+      next_action: >-
+        Reconcile requested binary bridge tuple against current parser,
+        round-trip, lineage, and federation implementations.
+      closure_gate: >-
+        Directly invokable sample path emits provenance-bound normalized
+        output consumable by cryoplant-project, or one residual gap is split.
     - issue: 1002
-      title: "TRIAGE conversion gate: control-plane green and cluster receipt"
-      evidence: ["Subsequent W64/W7x/W8x control work exists on current main."]
-      next_action: "Reconcile exact requested cluster receipt against current controls; close or isolate the one residual red."
-      closure_gate: "Synchronized green exact-head receipt, not registry existence alone."
+      title: >-
+        TRIAGE conversion gate: control-plane green and cluster receipt
+      next_action: >-
+        Reconcile the requested synchronized exact-head cluster receipt against
+        current W62/W64/W7x/W8x controls.
+      closure_gate: >-
+        Exact-head synchronized green evidence exists, or one residual red is
+        isolated as a bounded successor.
+
+  CONTROL_WATCH:
+    - issue: 776
+      title: Control: arrest QPS-wave main fan-out queue regression
+      evidence:
+        - Original trigger was 148 queued and 5 active.
+        - Current pulse observed 19 queued and 15 active.
+        - Follow-up observed 18 queued and 1 active.
+      next_action: >-
+        Keep open until another interval proves stable drainage with healthy
+        occupancy, or #981 absorbs this unique gate.
 
   EXTERNAL_OR_LOCAL_RETURN:
     - issue: 633
-      title: "GOV-001: QPS cost roundtrip implementation waves W002-W005"
-      blocked_by: "Real local Windows/evidence/Office execution."
-      next_action: "Return local receipts; do not generate substitute GitHub proof."
+      blocked_by: Real local Windows, evidence, and Office execution.
     - issue: 635
-      title: "[GOV-001][Phase 2] Reproducible clean-clone build and evidence binding"
-      blocked_by: "C:\\DEV\\REPOS + governed private evidence vault."
-      next_action: "Execute real A/B build and retain evidence/roundtrip receipts."
+      blocked_by: C:\DEV\REPOS plus governed private evidence vault.
     - issue: 636
-      title: "[GOV-001][Phase 3] Immutable OneDrive publication and Office review copy"
-      blocked_by: "Completed Phase 2 + local OneDrive."
-      next_action: "Publish first immutable local release and separate review copy."
+      blocked_by: Completed Phase 2 plus local OneDrive publication.
     - issue: 637
-      title: "[GOV-001][Phase 4] Office review assimilation and controlled rebuild"
-      blocked_by: "Real Office review cycle."
-      next_action: "Assimilate at least one reviewed delta through source -> PR -> rebuild -> new release."
+      blocked_by: Real Office review and source-side assimilation cycle.
     - issue: 638
-      title: "[GOV-001][Phase 5] CI hardening, semantic reproducibility and legacy-binary audit"
-      blocked_by: "Real release/local execution plus explicit attestation/legacy decisions."
-      next_action: "Complete only remaining real-release and policy gates."
+      blocked_by: >-
+        Real release execution plus attestation and legacy-binary decisions.
     - issue: 1278
-      title: "REX-CM-005 / HIST-BD-018: bind CI governance red to merge admission"
-      blocked_by: "OWNER_ADMIN_GATE"
-      evidence:
-        - "HIST-BD-018 code-side repair is DONE."
-        - "main observed unprotected; connector cannot write branch protection/rulesets."
-      next_action: "Owner requires policy-and-inventory for merges; then prove red non-mergeable and green mergeable."
-      closure_gate: "Negative + positive merge-admission receipts on distinct source states."
+      blocked_by: OWNER_ADMIN_GATE
+      next_action: >-
+        Require policy-and-inventory for merges, then prove a red change is
+        non-mergeable and a green distinct-source change is mergeable.
 
   PROGRAMME_PARENT:
     - issue: 581
-      title: "Track QPS Line S transient recovery model from D2.1 SSOT"
-      children_or_links: ["#583 CLOSED", "PR #582"]
-      next_action: "Keep as Line-S model parent until modelling/RTM closure is proven."
-    - issue: 644
-      title: "QPS OCD/ADR bridge: binary parsing feedback and federated roll-up contract"
-      next_action: "Reconcile with later OCD/ADR/DOW federation implementation before allocating new code."
-    - issue: 659
-      title: "Run QPS payload through canonical DOW integration cycle"
-      children_or_links: [667, 672, 673, 674, 679, 683]
-      next_action: "Close only after a real returned cycle is child-dispositioned and re-ingested."
+      next_action: >-
+        Keep while Line-S modelling and RTM evidence gates remain unresolved.
     - issue: 667
-      title: "Mature DOW into typed bidirectional engineering feedback service"
-      children_or_links: [672, 679, 683, 818]
-      next_action: "Use as capability parent; retire children as their bounded DoV lands."
-    - issue: 750
-      title: "Actions queue recovery: stale backlog cancellation and W04 reserved capacity"
-      next_action: "Re-measure current queue; close as historical if thresholds no longer apply."
-    - issue: 776
-      title: "Control: arrest QPS-wave main fan-out queue regression"
-      next_action: "Re-measure current fan-out/queue; preserve only live recurrence control."
+      next_action: >-
+        Reconcile typed findings, idempotency, authority, feedback, and
+        convergence maturity after the completed W04/W05/Wave-01 children.
     - issue: 785
-      title: "QPS program focus: DOW coverage across engineering domains"
-      next_action: "Keep as domain-coverage parent while active QPS child return remains open."
+      next_action: >-
+        Keep while program-focus DOW coverage still owns active domain gaps.
     - issue: 981
-      title: "ABACUS 1000+ commit maturity milestone: convert repository volume into controlled release readiness"
-      evidence: ["PR #984 merged initial receipt with explicit TODOs/WARN."]
-      next_action: "Resolve source/generated split, queue health, clean-clone, legacy-binary classification."
+      next_action: >-
+        Resolve source/generated split, queue health, clean-clone, and
+        legacy-binary release-readiness controls.
     - issue: 1164
-      title: "MC-2 DOW worker: measured semantic/runtime federation telemetry -> PCA/BT allocation input"
-      next_action: "Continue measured semantic/runtime saturation; no authority transfer."
-    - issue: 1180
-      title: "HISTORIAN child: DOW debugger/runner consumption lineage + missed closure debt"
-      next_action: "Reconcile remaining Historian classifications after closed #1186/#1187/#1188/#1195 and #1278 external gate."
+      next_action: >-
+        Continue measured semantic/runtime telemetry without authority transfer.
 
 closed_this_pulse:
-  - issue: 1186
-    disposition: COMPLETED
-    proof: "PR #1189 + distinct-SHA repeat #1271"
-  - issue: 1187
-    disposition: COMPLETED
-    proof: "PR #1189 + distinct-SHA repeat #1271"
-  - issue: 1188
-    disposition: COMPLETED
-    proof: "PR #1189 diagnostics + #1194 repair + later W169 real-api-runtime success"
-  - issue: 1195
-    disposition: COMPLETED
-    proof: "PR #1196 diagnostic retention; underlying governance repair moved to BD-018 lane"
   - issue: 583
     disposition: VERIFIED_COMPLETE
-    proof: "Generated scenario matrix + progress_21_point + RTM/source traceability on main"
+    proof: >-
+      Generated scenario matrix, 21-point progress, RTM, and source traceability.
+  - issue: 645
+    disposition: COMPLETED
+    proof: PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
+  - issue: 659
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      W04 run 33330746930, artifact 9738796700, child disposition and re-entry.
+  - issue: 672
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      Default-branch run 35591481543, artifact 10634817457, six stages PASS.
+  - issue: 673
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      Merged/default-branch Wave-01 acceptance receipt 35591481543.
+  - issue: 674
+    disposition: SUPERSEDED
+    proof: >-
+      Later W04/W05 cycles own child disposition and feedback assimilation.
+  - issue: 679
+    disposition: COMPLETED
+    proof: >-
+      PR #1308 run 35585659627 proved real Stage 5 and Stage 6 PASS.
+  - issue: 683
+    disposition: COMPLETED
+    proof: >-
+      PR-head observability and retained exact-source warm-up evidence.
+  - issue: 750
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      Queue ratio below 2 plus W04 DOW/KEB receipts and child disposition.
+  - issue: 818
+    disposition: COMPLETED
+    proof: >-
+      PR #1303 run 35582313079 proved hash-only and idempotent semantics.
+  - issue: 1180
+    disposition: COMPLETED
+    proof: >-
+      Historian mission returned; only REX-CM-005 remains under #1278.
+  - issue: 1186
+    disposition: COMPLETED
+    proof: PR #1189 plus distinct-SHA repeat #1271.
+  - issue: 1187
+    disposition: COMPLETED
+    proof: PR #1189 plus distinct-SHA repeat #1271.
+  - issue: 1188
+    disposition: COMPLETED
+    proof: >-
+      PR #1189 diagnostics, #1194 repair, later W169 runtime success.
+  - issue: 1195
+    disposition: COMPLETED
+    proof: >-
+      PR #1196 retained the diagnostic; prevention moved to BD-018.
   - issue: 1256
     disposition: VERIFIED_COMPLETE
-    proof: "Exact support pin consumed by QPS #1554 and MissionControl W275 receipts"
+    proof: >-
+      Exact support pin consumed by QPS #1554 and MissionControl W275.
