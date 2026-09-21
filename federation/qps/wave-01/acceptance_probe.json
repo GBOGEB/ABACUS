@@ -1,0 +1,13 @@
+{
+  "schema": "abacus-qps-wave01-acceptance-probe/v1",
+  "correlation_id": "QPS-FED-W01",
+  "purpose": "Trigger a non-semantic exact-source PR/default-branch warm-up after Stage-5/6 repair.",
+  "changes_child_engineering_semantics": false,
+  "changes_qps_authority": false,
+  "expected_effect": "Workflow execution only; bounded fixture under federation/qps/wave-01/input is unchanged.",
+  "closure_targets": [
+    672,
+    673
+  ],
+  "authority_rule": "ABACUS runtime evidence cannot self-approve QPS engineering decisions."
+}
