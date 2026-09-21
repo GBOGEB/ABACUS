@@ -1,22 +1,22 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-09-14T08:08:11Z · repo: `GBOGEB/ABACUS`  
-> **4766 open alerts** across 4 tools
+> Auto-generated 2026-09-21T08:08:18Z · repo: `GBOGEB/ABACUS`  
+> **4801 open alerts** across 4 tools
 
 ## Severity Overview
 
 | Severity | Count |
 |----------|------:|
 | Error | 85 |
-| Warning | 1090 |
-| Note | 3591 |
+| Warning | 1124 |
+| Note | 3592 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
 | Bandit | 3315 |
-| Semgrep OSS | 934 |
-| CodeQL | 513 |
+| Semgrep OSS | 968 |
+| CodeQL | 514 |
 | Semgrep | 4 |
 
 ## REX Group Summary
@@ -27,10 +27,10 @@ _Groups are defined in [security.toml](security.toml)_
 | 🔴 SEC_SUBPROCESS | HIGH | 118 | Fix now |
 | 🔴 SEC_HARDCODED_SECRET | HIGH | 21 | Fix now |
 | 🟠 SEC_TEMPFILE | MEDIUM | 32 | Fix next sprint |
-| 🟠 SEC_WEAK_HASH | MEDIUM | 10 | Fix next sprint |
+| 🟠 SEC_WEAK_HASH | MEDIUM | 11 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 2911 | Suppress / defer |
 | 🟡 QUAL_DEAD_CODE | LOW | 252 | Suppress / defer |
-| ⚪ OTHER | INFO | 1422 | Suppress / defer |
+| ⚪ OTHER | INFO | 1456 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
@@ -147,7 +147,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [3675](https://github.com/GBOGEB/ABACUS/security/code-scanning/3675) | Bandit | `B108` | `build_temp_gradient_pdf.py` | 140 | warning |
 | … | _2 more — see alerts.yaml_ | | | | |
 
-### 🟠 SEC_WEAK_HASH (10 alerts)
+### 🟠 SEC_WEAK_HASH (11 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -156,6 +156,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2759](https://github.com/GBOGEB/ABACUS/security/code-scanning/2759) | Bandit | `B324` | `phase8_todo_management.py` | 40 | error |
 | [2757](https://github.com/GBOGEB/ABACUS/security/code-scanning/2757) | Bandit | `B324` | `phase7_action_tracking.py` | 37 | error |
 | [2704](https://github.com/GBOGEB/ABACUS/security/code-scanning/2704) | Bandit | `B324` | `canonical_refactoring.py` | 159 | error |
+| [7237](https://github.com/GBOGEB/ABACUS/security/code-scanning/7237) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1` | `w285_recompute_federation_depth.py` | 15 | warning |
 | [2489](https://github.com/GBOGEB/ABACUS/security/code-scanning/2489) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5` | `fast_metrics_collector.py` | 72 | warning |
 | [2488](https://github.com/GBOGEB/ABACUS/security/code-scanning/2488) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5` | `phase8_todo_management.py` | 40 | warning |
 | [2487](https://github.com/GBOGEB/ABACUS/security/code-scanning/2487) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5` | `phase7_action_tracking.py` | 37 | warning |
@@ -234,7 +235,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [4659](https://github.com/GBOGEB/ABACUS/security/code-scanning/4659) | CodeQL | `py/unused-import` | `test_reader_engine.py` | 24 | note |
 | … | _222 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (1422 alerts)
+### ⚪ OTHER (1456 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -268,7 +269,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2505](https://github.com/GBOGEB/ABACUS/security/code-scanning/2505) | Semgrep OSS | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `main.yml` | 168 | error |
 | [2504](https://github.com/GBOGEB/ABACUS/security/code-scanning/2504) | Semgrep | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `gbogeb-abacus-integration-ci-cd.yml` | 551 | error |
 | [2503](https://github.com/GBOGEB/ABACUS/security/code-scanning/2503) | Semgrep | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `gbogeb-abacus-integration-ci-cd.yml` | 367 | error |
-| … | _1392 more — see alerts.yaml_ | | | | |
+| … | _1426 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
@@ -281,4 +282,4 @@ _Groups are defined in [security.toml](security.toml)_
 | 5 | SEC_ASSERT | 2911 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 252 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-09-14T08:08:11Z_
+_Dashboard last updated: 2026-09-21T08:08:18Z_
