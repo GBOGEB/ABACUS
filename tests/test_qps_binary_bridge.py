@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 import zipfile
 
-from pypdf import PdfWriter
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,10 +140,13 @@ def test_pptx_html_and_pdf_have_stable_family_anchors(
         encoding="utf-8",
     )
     pdf = tmp_path / "sample.pdf"
-    writer = PdfWriter()
-    writer.add_blank_page(width=100, height=100)
-    with pdf.open("wb") as handle:
-        writer.write(handle)
+    pdf.write_bytes(
+        b"%PDF-1.4\n"
+        b"1 0 obj << /Type /Page >> endobj\n"
+        b"2 0 obj << /Length 31 >> stream\n"
+        b"BT (QPS PDF sample) Tj ET\n"
+        b"endstream endobj\n%%EOF\n"
+    )
 
     pptx_item = bridge.normalize_source(
         pptx,
@@ -179,6 +181,7 @@ def test_pptx_html_and_pdf_have_stable_family_anchors(
     assert html_item["hierarchy_node"]["blocks"][0]["anchor"] == "scope"
     assert html_item["hierarchy_node"]["blocks"][1]["text"] == "Battery limit A"
     assert pdf_item["hierarchy_node"]["pages"][0]["anchor"] == "page:1"
+    assert "QPS PDF sample" in pdf_item["hierarchy_node"]["pages"][0]["text"]
 
 
 def test_semantic_hash_ignores_filename_for_identical_content(
