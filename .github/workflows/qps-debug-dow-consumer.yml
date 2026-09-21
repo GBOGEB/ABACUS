@@ -64,7 +64,7 @@ jobs:
           assert p['authority_guards']['formal_engineering_credit_delta'] == 0
           assert p['authority_guards']['negotiation_credit_delta'] == 0
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: qps-debug-dow-actual-w1f-binding
           path: runtime/federation/generated/qps_debug_dow_binding.json
@@ -100,7 +100,7 @@ jobs:
               assert p['checks']['adapter_surface_ready'] is True, p
               assert p['checks']['repo_local_runner_recovered'] is False, p
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: qps-debug-dow-binding
           path: runtime/federation/generated/qps_debug_dow_binding.json

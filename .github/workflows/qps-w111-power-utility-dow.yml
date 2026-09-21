@@ -30,7 +30,7 @@ jobs:
           python -m json.tool
           /tmp/dow_w111_power_utility_receipt.json
           > /dev/null
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dow-w111-power-utility-${{ github.sha }}
           path: /tmp/dow_w111_power_utility_receipt.json

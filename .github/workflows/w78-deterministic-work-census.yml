@@ -107,7 +107,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W78 work receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w78-r${{ matrix.repeat }}-${{ matrix.target.label }}
           path: architecture/w78/W78_WORK_RECEIPT.json
@@ -149,7 +149,7 @@ jobs:
           cat architecture/w78/W78_DIVERSITY_RECEIPT.json
 
       - name: Upload W78 diversity receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w78-diversity-${{ github.sha }}
           path: architecture/w78/W78_DIVERSITY_RECEIPT.json
