@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Assert no-input consumer remains fail-closed
         run: |
           env -u CODEX_QPS_DEBUG_BINDING_JSON \
@@ -79,7 +79,7 @@ jobs:
       CODEX_QPS_DEBUG_BINDING_JSON: >-
         ${{ toJson(github.event.client_payload.binding) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Consume actual CODEX KEB binding
         run: python3 runtime/federation/qps_debug_dow_consumer.py
       - name: Enforce exact accepted binding before child eligibility

@@ -37,7 +37,7 @@ jobs:
         8f7f419d388839a68a416aaa552846cae0c16ac3
     steps:
       - name: Checkout control implementation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -212,7 +212,7 @@ jobs:
       MATRIX_LABEL: ${{ matrix.label }}
     steps:
       - name: Checkout W74 control implementation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
@@ -285,7 +285,7 @@ jobs:
       - paired-runtime
     steps:
       - name: Checkout W74 control implementation
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
