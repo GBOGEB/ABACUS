@@ -1,0 +1,129 @@
+name: W81 Repair Outcome Block
+
+on:
+  pull_request:
+    paths:
+      - "architecture/w81/**"
+      - "tools/w81_verify_github_outcomes.py"
+      - "tools/w81_repair_outcome_block.py"
+      - "tests/test_w81_repair_outcome_block.py"
+      - ".github/workflows/w81-repair-outcome-block.yml"
+      - "ci/governance/workflow_policy.json"
+      - "docs/ci/WORKFLOW_RATIONALIZATION.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Unit tests
+        run: |
+          python -m pip install --quiet pytest numpy
+          python -m pytest tests/test_w81_repair_outcome_block.py -q
+
+  verify-outcomes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Verify authoritative GitHub outcomes and low-PC1 absence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python tools/w81_verify_github_outcomes.py             --contract architecture/w81/W81_REPAIR_OUTCOME_CONTRACT.json             --out architecture/w81/W81_VERIFIED_OUTCOMES.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w81-verified-outcomes-${{ github.sha }}
+          path: architecture/w81/W81_VERIFIED_OUTCOMES.json
+          if-no-files-found: error
+
+  measure:
+    needs: validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - {label: w77_fail, sha: 49852ad2c8c92f2bacc06d5a52ccb6fb5b2f211a}
+          - {label: w77_repair, sha: bf8e8bce977e895825e7c39f5609bfa89d751df1}
+          - {label: w80_fail, sha: b70f28ba5144aa352b60a511a4237417c6757920}
+          - {label: w80_repair, sha: 7d9802aab65b3fead4c1a99719b839485d55f8a2}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Measure exact-source deterministic work
+        env:
+          TARGET_SHA: ${{ matrix.target.sha }}
+          MATRIX_LABEL: ${{ matrix.target.label }}
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet numpy
+          git fetch --no-tags --depth=1 origin "$TARGET_SHA"
+          worktree="$RUNNER_TEMP/w81-$MATRIX_LABEL"
+          git worktree add --detach "$worktree" FETCH_HEAD
+          out="architecture/w81/W81_${MATRIX_LABEL}_WORK_RECEIPT.json"
+          python tools/w78_deterministic_work_probe.py             --root "$worktree"             --source-sha "$TARGET_SHA"             --repeat 1             --matrix-label "$MATRIX_LABEL"             --out "$out"
+          test -s "$out"
+          git worktree remove --force "$worktree"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w81-work-${{ matrix.target.label }}
+          path: architecture/w81/W81_*_WORK_RECEIPT.json
+          if-no-files-found: error
+
+  aggregate:
+    needs: [verify-outcomes, measure]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: w81-verified-outcomes-*
+          path: architecture/w81/verified
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: w81-work-*
+          path: architecture/w81/work
+          merge-multiple: true
+      - name: Evaluate measured repair outcome block
+        run: |
+          python -m pip install --quiet numpy
+          python tools/w81_repair_outcome_block.py             --contract architecture/w81/W81_REPAIR_OUTCOME_CONTRACT.json             --verification architecture/w81/verified/W81_VERIFIED_OUTCOMES.json             --receipts-dir architecture/w81/work             --out architecture/w81/W81_REPAIR_OUTCOME_RECEIPT.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w81-repair-outcome-${{ github.sha }}
+          path: architecture/w81/W81_REPAIR_OUTCOME_RECEIPT.json
+          if-no-files-found: error
+
+  governance-report-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Generate exact workflow rationalisation candidate
+        run: |
+          python ci/governance/audit_ci_workflows.py             --json-output /tmp/w81-ci-governance.json             --markdown-output /tmp/WORKFLOW_RATIONALIZATION.md
+          echo W81_REPORT_BASE64_BEGIN
+          base64 -w 0 /tmp/WORKFLOW_RATIONALIZATION.md
+          echo
+          echo W81_REPORT_BASE64_END
