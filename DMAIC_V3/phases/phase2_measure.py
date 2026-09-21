@@ -250,8 +250,8 @@ class Phase2Measure:
 
             if self.use_12cluster:
                 print(f"  [12-CLUSTER] Distributed analysis ENABLED (2 clusters)")
-            elif self.use_keb:
-                print(f"  [KEB] Parallel analysis ENABLED (2 workers)")
+            elif self.use_execution_backbone:
+                print(f"  [EXEC-BACKBONE] Parallel analysis ENABLED (2 workers)")
             else:
                 print(f"  Sequential analysis mode")
             print()
@@ -297,8 +297,8 @@ class Phase2Measure:
                     else:
                         error_count += 1
 
-            elif self.use_keb and self.keb:
-                self.keb.start()
+            elif self.use_execution_backbone and self.execution_backbone:
+                self.execution_backbone.start()
                 analysis_results = {}
 
                 for chunk_idx in range(num_chunks):
@@ -306,26 +306,26 @@ class Phase2Measure:
                     end_idx = min(start_idx + chunk_size, total_files)
                     chunk_files = python_files[start_idx:end_idx]
 
-                    print(f"  [KEB] Scheduling chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
+                    print(f"  [EXEC-BACKBONE] Scheduling chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
 
                     for file_path in chunk_files:
                         task_id = f"analyze_{chunk_idx}_{file_path.replace('/', '_')[-50:]}"
-                        self.keb.schedule_task(
+                        self.execution_backbone.schedule_task(
                             task_id=task_id,
                             func=self.analyze_python_file,
                             priority=5,
                             args=(file_path,)
                         )
 
-                print(f"  [KEB] Waiting for analysis to complete...")
+                print(f"  [EXEC-BACKBONE] Waiting for analysis to complete...")
                 import time
-                while not self.keb.task_queue.empty():
+                while not self.execution_backbone.task_queue.empty():
                     time.sleep(0.5)
 
                 time.sleep(2)
-                self.keb.stop()
+                self.execution_backbone.stop()
 
-                print(f"  [KEB] Analysis complete: {self.keb.tasks_executed} executed, {self.keb.tasks_failed} failed")
+                print(f"  [EXEC-BACKBONE] Analysis complete: {self.execution_backbone.tasks_executed} executed, {self.execution_backbone.tasks_failed} failed")
 
                 for file_path in python_files:
                     result = self.analyze_python_file(file_path)
