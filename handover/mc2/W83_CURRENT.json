@@ -25,6 +25,16 @@
     "bt_withheld": true,
     "global_allocation_authority": false
   },
-  "next_frontier": "exact-source outcome states with genuinely varying non-governance semantic-composition or consumer-graph vectors",
-  "reentry_requires_new_evidence": true
+  "next_frontier": "broader independent exact-source outcomes and/or change-delta features; no PCA/BT until new evidence warrants",
+  "reentry_requires_new_evidence": true,
+  "latest_extension": {
+    "id": "MC2-W83-NG1",
+    "status": "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
+    "control": "architecture/w83/W83_NG1_CONTROL_v0.1.json",
+    "ledger": "architecture/w83/W83_NG1_NON_GOVERNANCE_OUTCOME_LEDGER_v0.1.json",
+    "diagnostic": "architecture/w83/W83_NG1_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC_v0.1.json",
+    "dropin": "handover/mc2/W83_NG1_DROPIN.md",
+    "implementation_pr": 1321,
+    "implementation_merge": "294b53ec2c131d74c118a101e102f60cbce7c023"
+  }
 }
