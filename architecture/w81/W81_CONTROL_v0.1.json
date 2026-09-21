@@ -1,0 +1,118 @@
+{
+  "schema_version": "MC2-W81-CONTROL-0.1.0",
+  "as_of": "2026-09-21T14:35:00+02:00",
+  "mission": "W81 exact-source repair outcome block",
+  "status": "CONTROLLED_MEASURED_NEGATIVE",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "source_w80_status": "CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL",
+  "publication": {
+    "implementation_pr": 1318,
+    "implementation_head": "e7ac84677421184e1512277407838b2fb50ba170",
+    "implementation_merge": "dc6f118409a2e7bc9d3c460edea2300a12162531",
+    "governance_fix_pr": 1319,
+    "governance_fix_head": "7621d333cc9910669193b89175b3c1eafeaec106",
+    "governance_fix_merge": "b10f488d6894cebe4741d9b280b52a06f00a6ce6"
+  },
+  "runtime_proof": {
+    "w81_run_id": 35600002527,
+    "aggregate_job_id": 106334212041,
+    "result": "SUCCESS_GT_ZERO_STEPS",
+    "verified_outcomes_artifact_id": 10638425966,
+    "verified_outcomes_artifact_digest": "sha256:9d84d12ac0104b45b38a288892056ede47c95584f8407375a827e159e30c7a9c",
+    "repair_outcome_artifact_id": 10638696264,
+    "repair_outcome_artifact_digest": "sha256:9a4e1925ff965990482feecca2d95f24d016e69fc1fda622a7b556cd017f4ad8",
+    "work_artifacts": {
+      "w77_fail": {
+        "artifact_id": 10637744745,
+        "digest": "sha256:a3d166cb63e1e6a46ebfb1ff1754f8e43b5f73088a07e1a8e11317e04222364d"
+      },
+      "w77_repair": {
+        "artifact_id": 10638865182,
+        "digest": "sha256:7546cffba99bd28d6c0f2f3acae0b6e782dd7cd17f774beb280c882ad1687437"
+      },
+      "w80_fail": {
+        "artifact_id": 10638840280,
+        "digest": "sha256:3cc3f11997e3e90ef15309f8dfe49bbdb6c0009b6fa556a6d1ddb891dc863f56"
+      },
+      "w80_repair": {
+        "artifact_id": 10638149089,
+        "digest": "sha256:1907285eb9226cd4d475a5fbcf7726273104efa5ed2533ccafbbacc1f906a2c4"
+      }
+    }
+  },
+  "governance_proof": {
+    "fix_exact_head_run": 35600190453,
+    "fix_exact_head_job": 106334199444,
+    "fix_exact_head_result": "PASS",
+    "fix_postmerge_run": 35600257978,
+    "fix_postmerge_job": 106334419889,
+    "fix_postmerge_result": "PASS",
+    "postmerge_docs_run": 35600257767,
+    "postmerge_docs_job": 106334418859,
+    "postmerge_docs_result": "PASS"
+  },
+  "primary_low_pc1_frontier": {
+    "result": "EXHAUSTED_NO_ACTIONS_EVIDENCE",
+    "states": ["s01", "s02", "s03", "s04"],
+    "policy": "MISSING_NOT_ZERO"
+  },
+  "repair_outcome_block": {
+    "episode_count": 2,
+    "pair_graph_component_count": 2,
+    "episodes": [
+      {
+        "episode_id": "W77_GOVERNANCE_DOCS_REPAIR",
+        "failure_source_sha": "49852ad2c8c92f2bacc06d5a52ccb6fb5b2f211a",
+        "repair_source_sha": "bf8e8bce977e895825e7c39f5609bfa89d751df1",
+        "failure_pc1": 2.313132,
+        "repair_pc1": 2.313132,
+        "delta_pc1": 0.0,
+        "outcome": "NAMED_RED_TO_GREEN",
+        "causal_effect_claimed": false
+      },
+      {
+        "episode_id": "W80_DOCS_REPAIR",
+        "failure_source_sha": "b70f28ba5144aa352b60a511a4237417c6757920",
+        "repair_source_sha": "7d9802aab65b3fead4c1a99719b839485d55f8a2",
+        "failure_pc1": 2.313132,
+        "repair_pc1": 2.313132,
+        "delta_pc1": 0.0,
+        "outcome": "NAMED_RED_TO_GREEN",
+        "causal_effect_claimed": false
+      }
+    ]
+  },
+  "disposition": {
+    "pc1_predictive_validation": false,
+    "pc1_repair_discrimination": "ZERO_ON_2_OF_2_MEASURED_EPISODES",
+    "pca_refit_performed": false,
+    "timing_pca_reopened": false,
+    "pairwise_candidate_events_observed": 2,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt": "WITHHELD",
+    "bt_withhold_reasons": [
+      "W80_PC1_PREDICTIVE_VALIDATION_FALSE",
+      "PAIR_COUNT_BELOW_MODEL_FIT_MINIMUM",
+      "PAIR_GRAPH_DISCONNECTED"
+    ],
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "next_frontier": {
+    "id": "W82_REPAIR_SENSITIVE_FEATURE_AUGMENTATION",
+    "objective": "measure deterministic change/repair-sensitive features that can discriminate the observed red-to-green episodes without reopening elapsed-time PCA",
+    "candidate_features": [
+      "changed_files",
+      "added_lines",
+      "deleted_lines",
+      "workflow_definitions_changed",
+      "governance_policy_changed",
+      "documentation_files_changed",
+      "test_files_changed",
+      "source_files_changed"
+    ],
+    "promotion_rule": "diagnostic only until repeated on additional independent repair episodes; no BT until connected eligible graph exists"
+  }
+}
