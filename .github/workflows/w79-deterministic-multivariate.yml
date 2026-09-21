@@ -26,7 +26,7 @@ jobs:
       W78_DIVERSITY_ARTIFACT_DIGEST: "sha256:6e0a868916c1730fdc8eefc1f24ffea06185ca56ef1a8caffdaeb325eed445ae"
     steps:
       - name: Checkout exact W79 PR head
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1

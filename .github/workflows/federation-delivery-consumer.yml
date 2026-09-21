@@ -26,10 +26,10 @@ jobs:
     env:
       DELIVERY_REPEAT: ${{ matrix.repeat }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: GBOGEB/CODEX
           ref: 3bfda0e50d2e89b12d850a98f2929e73a3f3c234
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-node@v4

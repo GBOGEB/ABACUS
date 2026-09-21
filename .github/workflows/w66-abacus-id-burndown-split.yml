@@ -25,7 +25,7 @@ jobs:
       matrix:
         lane: [A_registry_gap, B_reference_gap, C_consumer_penetration, D_graph_orphan_drop, E_lineage_evidence]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -97,7 +97,7 @@ jobs:
     needs: split-plan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Validate roll-up contract
         run: |
           grep 'declared' architecture/w66/ABACUS_ID_BURNDOWN_PARALLEL_SPLIT.yaml
