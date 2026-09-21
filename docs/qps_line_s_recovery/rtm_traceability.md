@@ -11,29 +11,29 @@ and source evidence that remains unresolved.
 
 ## RTM-260
 
-### Interpretation
+### RTM-260 interpretation
 
 Credited abnormal recovery shall not lose more than one percent helium
 inventory.
 
-### Current evidence
+### RTM-260 current evidence
 
 The reduced model and Applicant package include no-loss framing.
 
 Final credited lost-mass evidence still depends on source/calibration closure
 and recovery-path state.
 
-### Status
+### RTM-260 status
 
 `EVIDENCE_PENDING`
 
 ## RTM-261
 
-### Interpretation
+### RTM-261 interpretation
 
 QPS shall cope with Line S / QRB.S return-flow context.
 
-### Current evidence
+### RTM-261 current evidence
 
 The scenario matrix covers 100, 112, 150, and 200 g/s contexts.
 
@@ -42,17 +42,17 @@ capacity.
 
 The source trace for `MDOT_IN_PRE_HP_MAX=112 g/s` remains unresolved.
 
-### Status
+### RTM-261 status
 
 `MDA_MODELLED_SOURCE_TRACE_PENDING`
 
 ## RTM-262
 
-### Interpretation
+### RTM-262 interpretation
 
 QPS shall recover normal helium circulation after the abnormal event.
 
-### Current evidence
+### RTM-262 current evidence
 
 HP/recovery capability is represented.
 
@@ -60,17 +60,17 @@ Appendix 8.4 operating-mode and valve-state extraction is not source-bound.
 
 Recovery procedure evidence is not yet source-bound.
 
-### Status
+### RTM-262 status
 
 `SOURCE_PENDING`
 
 ## RTM-292
 
-### Interpretation
+### RTM-292 interpretation
 
 Line S / recovery interface pressure build-up requirement.
 
-### Current evidence
+### RTM-292 current evidence
 
 `ASSUM-PLIMIT` is resolved at 1.30 bar for the current MDA model.
 
@@ -78,24 +78,24 @@ Pressure and t_available calculations exist.
 
 Exact RTM-292 wording/source citation remains to be bound.
 
-### Status
+### RTM-292 status
 
 `MDA_MODELLED_WORDING_TRACE_PENDING`
 
 ## OFFER-22
 
-### Interpretation
+### OFFER-22 interpretation
 
 Applicant recovery strategy and maximum flow accepted from Line S.
 
-### Current evidence
+### OFFER-22 current evidence
 
 The generated Applicant package and scenario/recovery matrices provide the
 bounded MDA model response.
 
 Remaining source/calibration items are listed below.
 
-### Status
+### OFFER-22 status
 
 `MDA_PACKAGE_READY_EVIDENCE_PENDING`
 
