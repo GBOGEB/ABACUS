@@ -3,8 +3,8 @@
 **As of:** 2026-09-21  
 **Repository:** `GBOGEB/ABACUS`  
 **Start of pulse:** 30 open issues  
-**Evidence-backed closures:** 16  
-**Current open count:** 14
+**Evidence-backed closures:** 17  
+**Current open count:** 13
 
 The YAML file is the machine-readable queue authority. This file is the
 human-facing execution view.
@@ -14,7 +14,7 @@ human-facing execution view.
 - **NEXT_RECONCILE — 2:** #644, #1002.
 - **CONTROL_WATCH — 1:** #776.
 - **EXTERNAL / LOCAL RETURN — 6:** #633, #635, #636, #637, #638, #1278.
-- **PROGRAMME PARENT — 5:** #581, #667, #785, #981, #1164.
+- **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
 There is currently no unambiguous code-only `EXECUTE_NOW` item. The next
 useful work is evidence reconciliation, not another speculative framework.
@@ -24,7 +24,7 @@ useful work is evidence reconciliation, not another speculative framework.
 Closed or retired with evidence:
 
 - #583, #645, #659, #672, #673, #674, #679, #683;
-- #750, #818, #1180, #1186, #1187, #1188, #1195, #1256.
+- #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581.
 
 The Wave-01 runtime now has a merged/default-branch receipt:
 
