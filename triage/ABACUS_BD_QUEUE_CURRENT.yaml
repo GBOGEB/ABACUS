@@ -13,10 +13,10 @@ rules:
   - "A red detector is not prevention; merge-admission control is tracked separately."
 summary:
   open_before_pulse: 30
-  closed_this_pulse: [1186, 1187, 1188, 1195]
-  open_after_pulse: 26
-  execute_now: 3
-  verify_close: 7
+  closed_this_pulse: [1186, 1187, 1188, 1195, 583]
+  open_after_pulse: 25
+  execute_now: 4
+  verify_close: 5
   local_or_external_return: 6
   programme_parent: 10
 lanes:
@@ -25,10 +25,20 @@ lanes:
       title: "QPS DOW: make hardened warm-up observable on pull requests"
       bd_root: BDQ-001
       evidence:
-        - "Current .github/workflows/qps-dow-wave01-warmup.yml has workflow_dispatch + push only."
-        - "Merged hardening: PRs #680, #695, #702."
-      next_action: "Add path-scoped pull_request trigger; run exact PR-head warm-up; retain receipt."
-      closure_gate: "PR-head six-stage receipt executes and is linked to #683."
+        - "PR #1300 merged the path-scoped pull_request trigger."
+        - "Run 35581483282 / job 106275140849 exposed Stage-1 import first-red."
+        - "Successor PR #1306 repairs direct agent imports and exact-source binding."
+      next_action: "Prove PR #1306 exact-head six-stage runtime receipt."
+      closure_gate: "Six-stage exact-source receipt + lint/governance PASS."
+    - issue: 679
+      title: "QPS DOW warm-up: make canonical stages 5/6 fail-closed and executable"
+      bd_root: BDQ-004
+      evidence:
+        - "PR #680 made missing stage mechanics fail closed."
+        - "PR #695 added the Stage-6 validator."
+        - "Current Stage-5 canonical file still declares version 0.0.0-stub."
+      next_action: "After #683 first-red repair, prevent Stage-5 stub from earning success; implement or fail closed."
+      closure_gate: "Stage 5 is a real executable mechanic and Stage 6 executes; no stub can report PASS."
     - issue: 645
       title: "Canonicalize KEB = Knowledge Exchange Bridge across ABACUS/CODEX"
       bd_root: BDQ-002
@@ -45,11 +55,6 @@ lanes:
       closure_gate: "Hash-only refresh updates lineage without engineering findings; semantic delta still triggers DOW."
 
   VERIFY_CLOSE:
-    - issue: 583
-      title: "Agent A: Implement scenario matrix and progress index for QPS Line S model"
-      evidence: ["Parent #581; original scaffold PR #582."]
-      next_action: "Verify scenario_matrix/progress_21_point/rtm_traceability on current main; close if complete."
-      closure_gate: "All three requested deliverables exist and trace D2.1/RTM scope."
     - issue: 672
       title: "Wave 01 DOW warm-up: execute bounded QPS fixture and expose stage telemetry"
       evidence: ["PR #675 merged the fixture/workflow; PRs #680/#695/#702 hardened mechanics."]
@@ -65,11 +70,6 @@ lanes:
       evidence: ["Correlation QPS-FED-W01 exists; historical run 33254652008 captured Stage-6 first-red."]
       next_action: "Reconcile state machine to latest successful return/disposition; then close bookkeeping."
       closure_gate: "RETURNED -> CHILD_DISPOSITIONED -> CLOSED is evidenced."
-    - issue: 679
-      title: "QPS DOW warm-up: make canonical stages 5/6 fail-closed and executable"
-      evidence: ["PR #680 fail-closed; PR #695 Stage-6 validator; PR #702 trigger coverage."]
-      next_action: "Verify current main regression proof; close as implemented if green."
-      closure_gate: "Missing Stage 5/6 cannot report overall success and both mechanics execute."
     - issue: 1002
       title: "TRIAGE conversion gate: control-plane green and cluster receipt"
       evidence: ["Subsequent W64/W7x/W8x control work exists on current main."]
@@ -117,7 +117,7 @@ lanes:
   PROGRAMME_PARENT:
     - issue: 581
       title: "Track QPS Line S transient recovery model from D2.1 SSOT"
-      children_or_links: [583, "PR #582"]
+      children_or_links: ["#583 CLOSED", "PR #582"]
       next_action: "Keep as Line-S model parent until modelling/RTM closure is proven."
     - issue: 644
       title: "QPS OCD/ADR bridge: binary parsing feedback and federated roll-up contract"
@@ -163,3 +163,6 @@ closed_this_pulse:
   - issue: 1195
     disposition: COMPLETED
     proof: "PR #1196 diagnostic retention; underlying governance repair moved to BD-018 lane"
+  - issue: 583
+    disposition: VERIFIED_COMPLETE
+    proof: "Generated scenario matrix + progress_21_point + RTM/source traceability on main"
