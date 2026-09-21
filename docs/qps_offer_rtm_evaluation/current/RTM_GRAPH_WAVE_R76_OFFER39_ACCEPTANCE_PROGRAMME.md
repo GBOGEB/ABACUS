@@ -20,6 +20,28 @@ BT/PCA chooses entry points. Canonical OFFER↔RTM edges and explicit engineerin
 | RTM-494 | Programme defines execution/record/acceptance controls. | ALAT has no flagged row exception; LKT carries family deviations. | **PE_LKT_D / FAMILY-TO-ROW RECONCILIATION.** Bind positive evidence to actual template; require row-specific LKT mapping. |
 | RTM-495 | Contractor provides/makes available contractually allocated test resources. | ALAT transfers utilities/consumables and invCOP electrical measurement to SCK CEN. | **D_MATERIAL / SUPPLY-BOUNDARY MATRIX.** Freeze contractual allocation; define provider, specification, calibration, date, interface and contingency. |
 
+## LOOP abnormal-event FAT/SAT verification dependency
+
+The LOOP operational-interface evidence creates an acceptance dependency under the existing OFFER-39 programme-control envelope. It does **not** change the canonical OFFER-39↔RTM-491..495 family or create requirement closure.
+
+The acceptance programme should carry a dedicated LOOP/abnormal-event test case or justified equivalent that binds:
+
+1. the **historical D2.1 QCELL/combined-user demand profile** as a supporting behavioural stimulus/check;
+2. the current Cryogenic User Transient Model and selected-design QPS calculations as the controlled analytical basis;
+3. the source-supported electrical/support-system sequence: automatic transfer to backup, 15 min preferred / 30 min maximum before one HP compressor is energised, approximately 1–2 h peak backup demand, and manual return to normal supply;
+4. the QPS:CIS cause/effect, load-shedding, hold/abort, alarm/interlock and restoration logic;
+5. measured/recorded Line-S/WSH pressure, recovery flow, HP electrical demand, cooling-water availability and helium-loss disposition.
+
+Specific verification hooks include:
+
+- **RTM-491..495 / OFFER-39:** approved programme, responsibilities, resources, execution/record controls and acceptance criteria;
+- **RTM-497:** FAT functional verification of applicable functional parts should exercise or simulate the LOOP sequence/cause-effect logic where technically practicable;
+- **RTM-498:** FAT instrumentation/wiring verification provides the physical I/O evidence for emergency-power, utility, valve, sensor and control paths;
+- **RTM-309:** automated whole-QPS testing can provide a repeatable abnormal-event sequence test during SAT;
+- **RTM-518:** SAT performance/capacity evidence is the site-level hook for demonstrating the as-built response under approved site conditions where a full live LOOP test is safe and authorised, or for binding an approved partial/simulated test plus analysis.
+
+A full live loss-of-offsite-power test is **not inferred as mandatory solely from this review**. The approved FAT/SAT programme shall determine the safe test method, including which signals/loads are simulated, which interfaces are physically transferred, acceptance limits, witness points and restoration controls.
+
 ## R78 family — External Helium Withdrawal and Recovery / RTM-263..267
 
 These five were part of the RTM-197 depth-2 graph's 11 evidence-recovery nodes. Direct comparison evidence is now sufficient for individual Owner disposition.
