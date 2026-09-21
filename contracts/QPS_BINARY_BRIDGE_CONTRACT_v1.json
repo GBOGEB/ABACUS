@@ -17,6 +17,7 @@
     "authority",
     "lifecycle_status",
     "hierarchy_node",
+    "extraction_quality",
     "trace_links",
     "producer_repository",
     "producer_commit",
@@ -61,7 +62,8 @@
     "unit_test": "tests/test_qps_binary_bridge.py",
     "current_qps_static_sample": "docs/qps_offer_rtm_evaluation/current/DELIVERABLES_INDEX.html",
     "binary_family_test_mode": "runtime-generated minimal OOXML/PDF fixtures",
-    "private_binary_limitation": "governed private QPS binary bytes are intentionally not committed to ABACUS"
+    "private_binary_limitation": "governed private QPS binary bytes are intentionally not committed to ABACUS",
+    "extraction_quality_rule": "Each source reports STRUCTURED or FALLBACK parser status; fallback is visible and non-authoritative."
   },
   "federation": {
     "producer_repository": "GBOGEB/ABACUS",
