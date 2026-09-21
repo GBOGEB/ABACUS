@@ -45,7 +45,7 @@ jobs:
           verify_blob scripts/qps_w189_compute_pca_stability.py 442f637c259c2fc9a2fc6ce5a0afedd27ad509db
           verify_blob tests/test_qps_w189_federation_sample4.py 24f52360d367abd1f899fae2c33ba6ff2e7334a9
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install pinned PCA dependency
