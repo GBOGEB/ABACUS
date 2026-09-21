@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Deprecated execution-runtime compatibility wrapper.
 
-KEB is reserved for Knowledge Exchange Bridge. New runtime callers must import
-`scripts.emit_execution_backbone_runtime_status`.
+KEB is reserved for Knowledge Exchange Bridge. New runtime callers must use
+`emit_execution_backbone_runtime_status.py`.
 """
 
-from scripts.emit_execution_backbone_runtime_status import (
+from emit_execution_backbone_runtime_status import (
     build_execution_backbone_runtime_status,
     main,
 )
