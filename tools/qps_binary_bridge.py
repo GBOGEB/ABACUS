@@ -25,7 +25,6 @@ from typing import Any
 import xml.etree.ElementTree as ET
 import zipfile
 
-from pypdf import PdfReader
 
 
 SCHEMA = "abacus-binary-bridge/v1"
@@ -129,7 +128,14 @@ def extract_docx(path: Path) -> dict[str, Any]:
                 }
             )
 
-    return {"kind": "docx", "blocks": blocks}
+    return {
+        "kind": "docx",
+        "blocks": blocks,
+        "extraction_quality": {
+            "status": "STRUCTURED",
+            "parser": "ooxml_xml",
+        },
+    }
 
 
 def _xlsx_shared_strings(archive: zipfile.ZipFile) -> list[str]:
@@ -208,7 +214,14 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
                     "cells": cells,
                 }
             )
-    return {"kind": "xlsx", "sheets": sheets_out}
+    return {
+        "kind": "xlsx",
+        "sheets": sheets_out,
+        "extraction_quality": {
+            "status": "STRUCTURED",
+            "parser": "ooxml_xml",
+        },
+    }
 
 
 def _slide_number(member: str) -> int:
@@ -239,23 +252,78 @@ def extract_pptx(path: Path) -> dict[str, Any]:
                     "text": text,
                 }
             )
-    return {"kind": "pptx", "slides": slides}
+    return {
+        "kind": "pptx",
+        "slides": slides,
+        "extraction_quality": {
+            "status": "STRUCTURED",
+            "parser": "ooxml_xml",
+        },
+    }
+
+
+def _pdf_literal_fallback(path: Path) -> dict[str, Any]:
+    """Extract uncompressed PDF literal strings when pypdf is unavailable."""
+    raw = path.read_bytes().decode("latin-1", errors="ignore")
+    page_count = max(
+        1,
+        len(re.findall(r"/Type\s*/Page(?!s)", raw)),
+    )
+    literals = [
+        bytes(value, "latin-1").decode(
+            "unicode_escape",
+            errors="ignore",
+        )
+        for value in re.findall(r"\(([^()]*)\)\s*Tj", raw)
+    ]
+    text = " ".join(" ".join(literals).split())
+    pages = [
+        {
+            "anchor": f"page:{number}",
+            "number": number,
+            "text": text if number == 1 else "",
+        }
+        for number in range(1, page_count + 1)
+    ]
+    return {
+        "kind": "pdf",
+        "pages": pages,
+        "extraction_quality": {
+            "status": "FALLBACK",
+            "parser": "pdf_literal_strings",
+        },
+    }
 
 
 def extract_pdf(path: Path) -> dict[str, Any]:
     """Extract page text with stable page anchors from PDF."""
-    reader = PdfReader(str(path))
-    pages = []
-    for number, page in enumerate(reader.pages, start=1):
-        text = " ".join((page.extract_text() or "").split())
-        pages.append(
-            {
-                "anchor": f"page:{number}",
-                "number": number,
-                "text": text,
-            }
-        )
-    return {"kind": "pdf", "pages": pages}
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return _pdf_literal_fallback(path)
+
+    try:
+        reader = PdfReader(str(path))
+        pages = []
+        for number, page in enumerate(reader.pages, start=1):
+            text = " ".join((page.extract_text() or "").split())
+            pages.append(
+                {
+                    "anchor": f"page:{number}",
+                    "number": number,
+                    "text": text,
+                }
+            )
+        return {
+            "kind": "pdf",
+            "pages": pages,
+            "extraction_quality": {
+                "status": "STRUCTURED",
+                "parser": "pypdf",
+            },
+        }
+    except Exception:
+        return _pdf_literal_fallback(path)
 
 
 class SemanticHTMLParser(HTMLParser):
@@ -307,7 +375,14 @@ def extract_html(path: Path) -> dict[str, Any]:
     """Extract heading/body/table-cell text from static HTML."""
     parser = SemanticHTMLParser()
     parser.feed(path.read_text(encoding="utf-8"))
-    return {"kind": "html", "blocks": parser.blocks}
+    return {
+        "kind": "html",
+        "blocks": parser.blocks,
+        "extraction_quality": {
+            "status": "STRUCTURED",
+            "parser": "html_parser",
+        },
+    }
 
 
 EXTRACTORS = {
