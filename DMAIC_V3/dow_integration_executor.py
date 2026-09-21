@@ -47,8 +47,16 @@ class DOWIntegrationExecutor:
             (3, "Convergence Calculation", lambda: self._run_convergence(iteration, target_dir)),
             (4, "Knowledge Extraction", lambda: self._run_agent(
                 "dow_knowledge_extractor", ["--target", target_dir, "--verbose"])),
-            (5, "Recursive Self-Ranking", self._run_ranking),
-            (6, "Validation", lambda: self._run_validation(target_dir)),
+            (
+                5,
+                "Recursive Self-Ranking",
+                lambda: self._run_ranking(target_dir),
+            ),
+            (
+                6,
+                "Validation",
+                lambda: self._run_validation(target_dir),
+            ),
         ]
 
         for stage_number, stage_name, runner in required:
@@ -106,17 +114,47 @@ class DOWIntegrationExecutor:
             }
         return self._run_script(agent_name, agent_path, args, timeout=300)
 
-    def _run_ranking(self) -> Dict[str, Any]:
-        ranking_path = Path("DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py")
+    def _run_ranking(self, target_dir: str) -> Dict[str, Any]:
+        ranking_path = Path(
+            "DMAIC_V3/local_mcp/agents/"
+            "recursive_self_ranking_v2.3_OPTIMIZED.py"
+        )
         if not ranking_path.exists():
             print(f"[X] Required ranking mechanic not found: {ranking_path}")
             return {
                 "status": "blocked_missing_parent_mechanic",
                 "agent": "recursive_self_ranking",
-                "reason": "Canonical executor declares Stage 5 required but the referenced parent implementation is absent",
+                "reason": (
+                    "Canonical executor declares Stage 5 required but the "
+                    "referenced parent implementation is absent"
+                ),
                 "path": str(ranking_path),
             }
-        return self._run_script("recursive_self_ranking", ranking_path, [], timeout=300)
+
+        source = ranking_path.read_text(encoding="utf-8")
+        stub_markers = (
+            "0.0.0-stub",
+            "STUB - Needs implementation",
+            "needs implementation",
+        )
+        if any(marker in source for marker in stub_markers):
+            print(f"[X] Required ranking mechanic is a stub: {ranking_path}")
+            return {
+                "status": "blocked_stub_parent_mechanic",
+                "agent": "recursive_self_ranking",
+                "reason": (
+                    "Canonical Stage 5 resolves to a stub and cannot earn "
+                    "execution success"
+                ),
+                "path": str(ranking_path),
+            }
+
+        return self._run_script(
+            "recursive_self_ranking",
+            ranking_path,
+            ["--target", target_dir, "--output", "ranking.json"],
+            timeout=300,
+        )
 
     def _run_validation(self, target_dir: str) -> Dict[str, Any]:
         validation_candidates = [
@@ -179,7 +217,11 @@ class DOWIntegrationExecutor:
     def _generate_summary(self) -> str:
         total = len(self.results)
         success = sum(1 for result in self.results if result.get("status") == "success")
-        blocked = sum(1 for result in self.results if result.get("status") == "blocked_missing_parent_mechanic")
+        blocked = sum(
+            1
+            for result in self.results
+            if str(result.get("status", "")).startswith("blocked_")
+        )
         error = sum(1 for result in self.results if result.get("status") == "error")
         lines = [
             f"Required stages observed: {total}/6",

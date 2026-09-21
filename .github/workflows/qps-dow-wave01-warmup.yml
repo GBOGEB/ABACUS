@@ -228,6 +228,7 @@ jobs:
             federation/qps/wave-01/dow_wave_receipt.json
             federation/qps/wave-01/input/qps_federation_fixture.json
             dow_integration_results_iteration_1.json
+            ranking.json
           if-no-files-found: warn
 
       - name: Fail if any required canonical stage did not execute
