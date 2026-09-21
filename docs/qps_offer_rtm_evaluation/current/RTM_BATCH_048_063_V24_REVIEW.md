@@ -62,6 +62,14 @@ RTM-057..063 map directly to **OFFER-11 — Reliability, MTBF & Recovery Strateg
 
 Confirm one controlled abnormal-event model/register covers electrical, cryogenic, utilities and controls/CIS failure families, with cause, detection, consequence, safe-state transition, recovery path, required backup/service assumptions, and verification route. Existing transient, LOOP, voltage-dip, WCS and recovery studies may be proposed as evidence but remain derived until governed promotion.
 
+#### 2026-08-28 LOOP operational-interface evidence
+
+New **SOURCE-SUPPORTED** SCK CEN email evidence refines the RTM-051 LOOP sequence without changing its canonical wording or v24 priority. The operational interface currently assumes diesel-backed service after loss of normal power, one QPS HP compressor energised after **30 min maximum / 15 min preferred**, **automatic** transfer to backup power, **manual operator-triggered** return to normal power, and a maximum backup-power-demand period of approximately **1–2 h** before the demand drops materially. The same source states that one HP compressor is capped at approximately **100 g/s** and explicitly requires NA.ES02 design compatibility plus QPS Contractor confirmation.
+
+This evidence closes no RTM. It creates a concrete RTM-051 review test: the electrical abnormal-event model shall represent the 0–15 min, 15–30 min, 30–120 min and >120 min phases; compressor starting and continuous demand; controls/actuators and cooling dependencies; automatic backup transfer; manual retransfer; preserved QPS state; and restoration path. The detailed crosswalk and bidder implications are recorded in `LOOP_OPERATIONAL_SCENARIO_EMAIL_20260828_REVIEW_DELTA.md`.
+
+The email also references older DSBT DEL2.1 curves and labels them outdated/order-of-magnitude. They therefore remain supporting transient evidence only and shall not be promoted to selected-design acceptance values.
+
 ### RTM-055..056 — lifetime
 
 Require an explicit 40-year lifecycle basis and evidence that at least 50 full 2 K → ambient → 2 K thermal cycles are tolerated by affected equipment, piping, supports, seals, insulation/vacuum systems and interfaces. Derived fatigue/maintenance arguments do not amend the contractual lifecycle requirements.
