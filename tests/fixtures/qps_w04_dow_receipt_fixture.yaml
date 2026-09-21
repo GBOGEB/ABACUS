@@ -1,8 +1,9 @@
-schema_version: "0.1"
+schema_version: "0.2"
 fixture_id: qps_w04_dow_receipt_fixture
 correlation_id: QPS-FED-W04-T10-SAFE-CTRL
 purpose: >-
-  Non-confidential CI fixture for validating ABACUS W04 DOW receipt shape before runtime findings are treated as returned evidence.
+  Non-confidential CI fixture for validating ABACUS W04 DOW receipt shape
+  before runtime findings are treated as returned evidence.
 
 receipt_required_fields:
   - run_id
@@ -11,6 +12,11 @@ receipt_required_fields:
   - correlation_id
   - input_hash
   - output_hash
+  - source_artifact_identities
+  - source_artifact_set_sha256
+  - trigger_semantics
+  - analysis_decision
+  - lineage_state_hash
   - executed_stages
   - stage_status
   - fail_closed_status
@@ -24,37 +30,44 @@ example_valid_receipt:
   correlation_id: QPS-FED-W04-T10-SAFE-CTRL
   input_hash: TBD_INPUT_HASH
   output_hash: TBD_OUTPUT_HASH
-  executed_stages:
-    - dependency_graph
-    - missing_atom_scan
-    - common_cause_scan
-    - C24_C30_tradeoff_scan
-    - N_plus_1_degraded_spares_semantics_scan
-    - PCA_BT_candidate_generation
-  stage_status:
-    dependency_graph: not_run_fixture_only
-    missing_atom_scan: not_run_fixture_only
-    common_cause_scan: not_run_fixture_only
-    C24_C30_tradeoff_scan: not_run_fixture_only
-    N_plus_1_degraded_spares_semantics_scan: not_run_fixture_only
-    PCA_BT_candidate_generation: not_run_fixture_only
-  fail_closed_status: required_if_any_stage_missing_or_not_run
+  source_artifact_identities:
+    - artifact: example_child_artifact.yaml
+      sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  source_artifact_set_sha256: BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  trigger_semantics:
+    artifact_hash_changed: true
+    semantic_change: false
+    analysis_requested: false
+  analysis_decision: LINEAGE_REFRESH_ONLY
+  lineage_state_hash: CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+  executed_stages: []
+  stage_status: {}
+  fail_closed_status: PASS_HASH_ONLY_LINEAGE_REFRESH_NO_ANALYSIS
   typed_findings: []
   authority_boundary: ABACUS_returns_DOW_findings_only_QPS_child_disposes
 
 validation_rules:
   - id: ABACUS-W04-CI-001
-    rule: receipt_must_include_correlation_id_equal_QPS_FED_W04_T10_SAFE_CTRL
+    rule: >-
+      receipt correlation_id equals QPS-FED-W04-T10-SAFE-CTRL
   - id: ABACUS-W04-CI-002
-    rule: receipt_must_include_input_and_output_hashes_before_QPS_can_bind_as_runtime_evidence
+    rule: >-
+      source artifact identities and set hash are explicit alongside child SHA
   - id: ABACUS-W04-CI-003
-    rule: every_required_stage_must_have_stage_status
+    rule: >-
+      semantic change or explicit analysis request is required to execute DOW
   - id: ABACUS-W04-CI-004
-    rule: missing_or_not_run_stage_requires_fail_closed_status
+    rule: >-
+      hash-only refresh updates lineage and emits zero typed findings
   - id: ABACUS-W04-CI-005
-    rule: typed_findings_must_not_claim_QPS_authority_or_completion
+    rule: >-
+      repeated unchanged refresh is an idempotent noop with stable lineage hash
+  - id: ABACUS-W04-CI-006
+    rule: >-
+      typed findings must never claim QPS authority or completion
 
 expected_CI_next_step:
-  implement_validator: TBD
-  validator_scope: schema_and_authority_boundary_only
+  implement_validator: COMPLETE
+  validator_scope: >-
+    schema, trigger semantics, hash lineage and authority boundary
   completion_effect: none_for_QPS_until_runtime_receipt_and_child_disposition
