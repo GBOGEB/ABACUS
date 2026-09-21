@@ -113,10 +113,11 @@ closed_this_pulse:
   - issue: 583
     disposition: VERIFIED_COMPLETE
     proof: >-
-      Generated scenario matrix, 21-point progress, RTM, and source traceability.
+      Generated scenario matrix, 21-point progress, RTM, and source
+      traceability.
   - issue: 645
     disposition: COMPLETED
-    proof: PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
+    proof: >-\n      PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
   - issue: 659
     disposition: VERIFIED_COMPLETE
     proof: >-
@@ -155,10 +156,10 @@ closed_this_pulse:
       Historian mission returned; only REX-CM-005 remains under #1278.
   - issue: 1186
     disposition: COMPLETED
-    proof: PR #1189 plus distinct-SHA repeat #1271.
+    proof: >-\n      PR #1189 plus distinct-SHA repeat #1271.
   - issue: 1187
     disposition: COMPLETED
-    proof: PR #1189 plus distinct-SHA repeat #1271.
+    proof: >-\n      PR #1189 plus distinct-SHA repeat #1271.
   - issue: 1188
     disposition: COMPLETED
     proof: >-
