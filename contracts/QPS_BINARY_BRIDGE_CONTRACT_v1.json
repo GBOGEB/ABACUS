@@ -1,0 +1,72 @@
+{
+  "schema": "abacus-qps-binary-bridge-contract/v1",
+  "issue": "GBOGEB/ABACUS#644",
+  "implementation": "tools/qps_binary_bridge.py",
+  "supported_families": [
+    "docx",
+    "xlsx",
+    "pptx",
+    "pdf",
+    "html"
+  ],
+  "authority_rule": "Normalized bridge output is derived and cannot replace source or child authority.",
+  "minimum_bridge_tuple": [
+    "source_id",
+    "source_sha256",
+    "semantic_sha256",
+    "authority",
+    "lifecycle_status",
+    "hierarchy_node",
+    "trace_links",
+    "producer_repository",
+    "producer_commit",
+    "parser_or_builder_version",
+    "artifact_hashes",
+    "freshness_state",
+    "supersedes"
+  ],
+  "anchors": {
+    "docx": [
+      "paragraph:<n>",
+      "table:<n>"
+    ],
+    "xlsx": [
+      "sheet:<name>",
+      "<sheet>!<cell>"
+    ],
+    "pptx": [
+      "slide:<n>"
+    ],
+    "pdf": [
+      "page:<n>"
+    ],
+    "html": [
+      "element id when present",
+      "<tag>:<n>"
+    ]
+  },
+  "fingerprints": {
+    "source_sha256": "exact input bytes",
+    "semantic_sha256": "canonical normalized semantic structure",
+    "bridge_semantic_sha256": "ordered source-id plus semantic-hash package identity"
+  },
+  "deterministic_rules": [
+    "canonical JSON uses sorted keys and compact separators for semantic hashes",
+    "OOXML members are read without rewriting source packages",
+    "slide order is numeric",
+    "XLSX cells preserve sheet/cell anchors and formulas",
+    "generated output is JSON and carries the exact producer commit"
+  ],
+  "verification": {
+    "unit_test": "tests/test_qps_binary_bridge.py",
+    "current_qps_static_sample": "docs/qps_offer_rtm_evaluation/current/DELIVERABLES_INDEX.html",
+    "binary_family_test_mode": "runtime-generated minimal OOXML/PDF fixtures",
+    "private_binary_limitation": "governed private QPS binary bytes are intentionally not committed to ABACUS"
+  },
+  "federation": {
+    "producer_repository": "GBOGEB/ABACUS",
+    "intended_consumer": "GBOGEB/cryoplant-project",
+    "output_role": "derived normalized bridge payload",
+    "accepted_delta_rule": "child disposition remains required before SSOT assimilation"
+  }
+}
