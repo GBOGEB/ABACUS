@@ -154,3 +154,67 @@ jobs:
           name: w78-diversity-${{ github.sha }}
           path: architecture/w78/W78_DIVERSITY_RECEIPT.json
           if-no-files-found: error
+
+  w82_semantic_diversity_probe:
+    name: w82-${{ matrix.target.label }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - label: p1281-pass
+            sha: 7e8ee178f9d7e6d0d2797c754a7e8fbbde93057b
+          - label: p1286-fail
+            sha: 9b89aa3516209f18447f03de91e91b21b35c9304
+          - label: p1288-fail
+            sha: a5a44635d5b10c6bb1984db131d254872efd8b0d
+          - label: p1289-pass
+            sha: 51e044499bcf8828f9bf92c4472f6c0419f58834
+          - label: p1291-fail
+            sha: 17f70d5398a710a3714de8dd50f400b3a6c27dee
+          - label: p1292-pass
+            sha: 9c0e4cd1cf37ff7bebbda9b33734504c32787862
+    env:
+      TARGET_SHA: ${{ matrix.target.sha }}
+      MATRIX_LABEL: ${{ matrix.target.label }}
+    steps:
+      - name: Checkout probe control
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Measure exact-source deterministic work
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${TARGET_SHA}"
+          worktree="${RUNNER_TEMP}/w82-${TARGET_SHA:0:12}"
+          git worktree add --detach "${worktree}" FETCH_HEAD
+          mkdir -p architecture/w82
+          out="architecture/w82/W82_WORK_RECEIPT.json"
+          python tools/w78_deterministic_work_probe.py \
+            --root "${worktree}" \
+            --source-sha "${TARGET_SHA}" \
+            --repeat 1 \
+            --matrix-label "${MATRIX_LABEL}" \
+            --out "${out}"
+          test -s "${out}"
+          echo "W82_RECEIPT_BEGIN"
+          cat "${out}"
+          echo "W82_RECEIPT_END"
+          git worktree remove --force "${worktree}"
+
+      - name: Upload disposable W82 receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w82-${{ matrix.target.label }}-${{ github.sha }}
+          path: architecture/w82/W82_WORK_RECEIPT.json
+          if-no-files-found: error
+
