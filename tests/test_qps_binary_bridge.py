@@ -220,3 +220,30 @@ def test_bridge_payload_is_json_serializable(tmp_path: Path, monkeypatch) -> Non
     assert result["schema"] == "abacus-binary-bridge/v1"
     assert result["sources"][0]["trace_links"] == ["OFFER-01"]
     assert result["bridge_semantic_sha256"] in payload
+
+
+def test_current_qps_html_sample_emits_provenance_tuple() -> None:
+    source = (
+        ROOT
+        / "docs"
+        / "qps_offer_rtm_evaluation"
+        / "current"
+        / "DELIVERABLES_INDEX.html"
+    )
+    assert source.is_file()
+
+    item = bridge.normalize_source(
+        source,
+        authority="QPS_DERIVED_VIEW",
+        lifecycle_status="CURRENT",
+        trace_links=["QPS_OFFER_RTM_DELIVERABLES_INDEX"],
+        supersedes=[],
+        producer_commit="f" * 40,
+    )
+
+    assert item["source_id"] == "DELIVERABLES_INDEX.html"
+    assert item["source_sha256"]
+    assert item["semantic_sha256"]
+    assert item["hierarchy_node"]["kind"] == "html"
+    assert item["hierarchy_node"]["blocks"]
+    assert item["freshness_state"] == "CURRENT_AT_PARSE"
