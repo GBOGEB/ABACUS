@@ -1,0 +1,86 @@
+{
+  "schema_version": "MC2-W83-TYPED-BASIS-OUTCOME-DIAGNOSTIC-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_TYPED_BASIS_OUTCOME_DIAGNOSTIC",
+  "authority": "derived_operational_analysis_only",
+  "measurement_basis": "typed_semantic_and_governance_composition_exact_source",
+  "source_probe_run_id": 35577332406,
+  "source_probe_aggregate_artifact_id": 10628574063,
+  "source_probe_aggregate_artifact_digest": "sha256:c6415796547132f65b1e67b44fea36e5740bd20c8c774ba967d02b17e4d5a348",
+  "sample_geometry": {
+    "state_count": 6,
+    "outcome_pass": 3,
+    "outcome_fail": 3,
+    "unique_recent_typed_vectors": 2,
+    "unique_recent_semantic_composition": 1,
+    "unique_recent_consumer_graph_distribution": 1,
+    "variable_feature_count": 3,
+    "variable_features": [
+      "workflow_governance_composition.keep_rules",
+      "workflow_governance_composition.pr_domain_rules",
+      "workflow_governance_composition.rule_count"
+    ]
+  },
+  "vector_groups": [
+    {
+      "vector": {
+        "keep_rules": 17,
+        "pr_domain_rules": 13,
+        "rule_count": 21
+      },
+      "state_count": 2,
+      "pass_count": 1,
+      "failure_count": 1,
+      "pass_fraction": 0.5,
+      "labels": [
+        "p1281-pass",
+        "p1286-fail"
+      ]
+    },
+    {
+      "vector": {
+        "keep_rules": 20,
+        "pr_domain_rules": 16,
+        "rule_count": 24
+      },
+      "state_count": 4,
+      "pass_count": 2,
+      "failure_count": 2,
+      "pass_fraction": 0.5,
+      "labels": [
+        "p1288-fail",
+        "p1289-pass",
+        "p1291-fail",
+        "p1292-pass"
+      ]
+    }
+  ],
+  "contingency_table_rows_are_vectors_cols_are_pass_fail": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "exact_inference": {
+    "odds_ratio": 1,
+    "fisher_exact_two_sided_p": 1,
+    "mutual_information_bits": 0,
+    "interpretation": "both observed vectors have identical 0.5 pass fractions"
+  },
+  "typed_basis_diversity_signal_present": true,
+  "outcome_discrimination_supported": false,
+  "pca_fit_performed": false,
+  "pc1_predictive_validation": false,
+  "pairwise_outcome_accumulation_permitted": false,
+  "pairwise_events": [],
+  "bt_status": "WITHHELD_NO_CONNECTED_OBSERVED_PAIRWISE_GRAPH",
+  "timing_pca_reopened": false,
+  "global_allocation_authority": false,
+  "engineering_compliance_release_authority": false,
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "next_frontier": "seek exact-source outcome states with genuinely varying non-governance semantic-composition or consumer-graph vectors; do not fit PCA or BT from the two-vector governance-only contrast"
+}
