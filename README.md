@@ -1,5 +1,7 @@
 # ABACUS — 12-Cluster Analysis Framework
 
+<!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD040 MD060 -->
+
 [![Version](https://img.shields.io/badge/version-v4.4.0-blue?style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)
 [![Completion](https://img.shields.io/badge/completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
 [![Build](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci.yml?branch=main&style=flat-square&label=build)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci.yml)
@@ -289,7 +291,8 @@ Master_Input/
 
 **Delivered:**
 - ✅ Orchestrator framework (413 lines)
-- ✅ ExecutionBackbone task runtime - bounded scheduling/execution\n- ✅ KEB = Knowledge Exchange Bridge (federation semantics)
+- ✅ ExecutionBackbone task runtime - bounded scheduling/execution
+- ✅ KEB = Knowledge Exchange Bridge (federation semantics)
 - ✅ Execution tracking system
 - ✅ MCP controller (working)
 - ✅ Debug infrastructure (port 5678)
