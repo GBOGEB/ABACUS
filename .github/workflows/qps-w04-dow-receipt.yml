@@ -20,6 +20,107 @@ jobs:
       - run: python -m pip install --disable-pip-version-check PyYAML
       - run: python tools/validate_qps_w04_dow_receipt.py tests/fixtures/qps_w04_dow_receipt_fixture.yaml
 
+      - name: Prove hash-only lineage refresh emits zero findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          zeros="$(printf '0%.0s' {1..64})"
+          python tools/run_qps_w04_dow_return.py \
+            --snapshot federation/qps/snapshots/QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT_v0.2.yaml \
+            --child-sha "$QPS_W04_CHILD_SHA" \
+            --prior-artifact-set-sha256 "$zeros" \
+            --semantic-change false \
+            --analysis-requested false \
+            --output /tmp/qps-w04-hash-refresh.yaml
+          python tools/validate_qps_w04_dow_receipt.py /tmp/qps-w04-hash-refresh.yaml
+
+      - name: Bind current artifact-set identity
+        id: artifact-set
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(
+            python - <<'PY'
+          import yaml
+          with open("/tmp/qps-w04-hash-refresh.yaml", encoding="utf-8") as fh:
+              data = yaml.safe_load(fh)
+          print(data["source_artifact_set_sha256"])
+          PY
+          )"
+          test "${#current}" -eq 64
+          echo "sha256=$current" >> "$GITHUB_OUTPUT"
+
+      - name: Prove two idempotent no-op repeats
+        shell: bash
+        env:
+          CURRENT_ARTIFACT_SET_SHA256: ${{ steps.artifact-set.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          for repeat in 1 2; do
+            python tools/run_qps_w04_dow_return.py \
+              --snapshot federation/qps/snapshots/QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT_v0.2.yaml \
+              --child-sha "$QPS_W04_CHILD_SHA" \
+              --prior-artifact-set-sha256 "$CURRENT_ARTIFACT_SET_SHA256" \
+              --semantic-change false \
+              --analysis-requested false \
+              --output "/tmp/qps-w04-hash-noop-${repeat}.yaml"
+            python tools/validate_qps_w04_dow_receipt.py \
+              "/tmp/qps-w04-hash-noop-${repeat}.yaml"
+          done
+
+      - name: Enforce BDQ-003 non-semantic invariants
+        shell: bash
+        run: |
+          python - <<'PY'
+          import yaml
+
+          def load(path):
+              with open(path, encoding="utf-8") as fh:
+                  return yaml.safe_load(fh)
+
+          refresh = load("/tmp/qps-w04-hash-refresh.yaml")
+          noop1 = load("/tmp/qps-w04-hash-noop-1.yaml")
+          noop2 = load("/tmp/qps-w04-hash-noop-2.yaml")
+
+          assert refresh["analysis_decision"] == "LINEAGE_REFRESH_ONLY"
+          assert refresh["trigger_semantics"]["artifact_hash_changed"] is True
+          assert refresh["trigger_semantics"]["semantic_change"] is False
+          assert refresh["trigger_semantics"]["analysis_requested"] is False
+
+          for item in (refresh, noop1, noop2):
+              assert item["typed_findings"] == []
+              assert item["executed_analysis_scope"] == []
+              assert item["executed_stages"] == []
+              assert item["stage_status"] == {}
+
+          for item in (noop1, noop2):
+              assert item["analysis_decision"] == "IDEMPOTENT_NOOP"
+              assert item["trigger_semantics"]["artifact_hash_changed"] is False
+
+          hashes = {
+              refresh["lineage_state_hash"],
+              noop1["lineage_state_hash"],
+              noop2["lineage_state_hash"],
+          }
+          assert len(hashes) == 1
+          assert (
+              refresh["source_artifact_set_sha256"]
+              == noop1["source_artifact_set_sha256"]
+              == noop2["source_artifact_set_sha256"]
+          )
+          print("PASS_BDQ_003_HASH_ONLY_REFRESH_AND_IDEMPOTENT_NOOP")
+          PY
+
+      - name: Upload BDQ-003 trigger receipts
+        uses: actions/upload-artifact@v7
+        with:
+          name: qps-w04-hash-semantic-trigger-${{ github.run_id }}
+          path: |
+            /tmp/qps-w04-hash-refresh.yaml
+            /tmp/qps-w04-hash-noop-1.yaml
+            /tmp/qps-w04-hash-noop-2.yaml
+          if-no-files-found: error
+
   execute-w04-dow-sanitized-snapshot-runtime:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
