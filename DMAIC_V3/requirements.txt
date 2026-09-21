@@ -76,6 +76,9 @@ PyGithub>=2.1.1,<3.0.0
 # File watching and monitoring
 watchdog>=2.1.0,<3.0.0
 
+# Governed PDF semantic extraction for the binary bridge
+pypdf>=5.0.0,<7.0.0
+
 # ============================================================================
 # HASHING & CHECKSUMS (for idempotency)
 # ============================================================================
