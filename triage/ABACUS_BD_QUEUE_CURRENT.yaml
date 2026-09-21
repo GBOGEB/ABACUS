@@ -112,7 +112,8 @@ closed_this_pulse:
       traceability.
   - issue: 645
     disposition: COMPLETED
-    proof: >-\n      PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
+    proof: >-
+      PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
   - issue: 659
     disposition: VERIFIED_COMPLETE
     proof: >-
@@ -151,10 +152,12 @@ closed_this_pulse:
       Historian mission returned; only REX-CM-005 remains under #1278.
   - issue: 1186
     disposition: COMPLETED
-    proof: >-\n      PR #1189 plus distinct-SHA repeat #1271.
+    proof: >-
+      PR #1189 plus distinct-SHA repeat #1271.
   - issue: 1187
     disposition: COMPLETED
-    proof: >-\n      PR #1189 plus distinct-SHA repeat #1271.
+    proof: >-
+      PR #1189 plus distinct-SHA repeat #1271.
   - issue: 1188
     disposition: COMPLETED
     proof: >-
@@ -171,15 +174,16 @@ closed_this_pulse:
   - issue: 581
     disposition: SUPERSEDED_WITH_REPLACEMENT
     proof: >-
-      Cold-edge Reader confirmed current reduced model/runtime reaches PROCEED_MDA
-      with zero original MDA gates; stale traceability/Appendix 8.4 residual work
-      transferred losslessly to successor #1313.
+      Cold-edge Reader confirmed current reduced model/runtime reaches
+      PROCEED_MDA with zero original MDA gates; stale traceability and
+      Appendix 8.4 residual work transferred losslessly to successor #1313.
 
   - issue: 638
     disposition: SOURCE_SIDE_COMPLETE
     proof: >-
       Current-main S1/S2 scan found zero tracked binary/archive files in the
-      QPS source paths, no unintended legacy/stale source references, and CODEX
-      #251/#252 already bound attestation policy and the narrow legacy-binary
+      QPS source paths, no unintended legacy/stale source references, and
+      CODEX #251/#252 already bound attestation policy and the narrow
+      legacy-binary
       cleanup. Remaining real-release proof stays under #635 -> #636 -> #637
       and programme parent #633.

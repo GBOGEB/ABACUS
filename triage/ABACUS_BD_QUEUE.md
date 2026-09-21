@@ -16,7 +16,10 @@ human-facing execution view.
 - **EXTERNAL / LOCAL RETURN — 5:** #633, #635, #636, #637, #1278.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
-There is currently no unambiguous code-only `EXECUTE_NOW` item. Phase-5 #638 is source-side complete; its physical release predicates remain losslessly under #635/#636/#637 and #633. The next useful work is evidence reconciliation, not another speculative framework.
+There is currently no unambiguous code-only `EXECUTE_NOW` item. Phase-5
+Issue #638 is source-side complete. Its physical release predicates remain
+losslessly under #635/#636/#637 and #633. The next useful work is evidence
+reconciliation, not another speculative framework.
 
 ## Completed in this pulse
 
