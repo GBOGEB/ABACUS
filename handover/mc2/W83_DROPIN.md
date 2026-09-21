@@ -30,6 +30,7 @@ The two observed governance vectors have identical PASS fractions:
 Exact two-sided Fisher p = 1.0, odds ratio = 1.0, mutual information = 0.
 
 Therefore:
+
 - typed-basis diversity signal = present;
 - outcome discrimination = not supported;
 - PCA was not fit;
