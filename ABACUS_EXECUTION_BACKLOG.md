@@ -27,13 +27,13 @@ Date: 2026-06-11
 - **Dependency:** P0-1 SSOT decision; no duplicate bridge creation.
 - **Acceptance Criteria:** Workflow file existence checks pass against actual repository paths; bridge import commands use the selected path; `ABACUS_DEPLOYMENT_STATUS.md` no longer marks the workflow path-stale.
 
-### P0-3 — Normalize KEB/GBOGEB imports across runtime consumers
+### P0-3 — Normalize ExecutionBackbone/GBOGEB imports across runtime consumers
 
-- **Description:** Establish a single import pattern for `KEB` and `GBOGEB` so `KnowledgeIntegrationV23` and `TwelveClusterOrchestrator` consume the same implementation paths.
-- **Evidence:** `KnowledgeIntegrationV23` imports `core.keb.keb.KEB` and `core.gbogeb.gbogeb.GBOGEB`; `TwelveClusterOrchestrator` currently imports top-level `keb` and `gbogeb` after path insertion.
+- **Description:** Establish a single import pattern for `ExecutionBackbone` and `GBOGEB` so `KnowledgeIntegrationV23` and `TwelveClusterOrchestrator` consume the same implementation paths.
+- **Evidence:** `KnowledgeIntegrationV23` imports `core.execution_backbone.ExecutionBackbone` and `core.gbogeb.gbogeb.GBOGEB`; `TwelveClusterOrchestrator` currently imports top-level `keb` and `gbogeb` after path insertion.
 - **Owner:** Runtime integration owner.
 - **Dependency:** P0-1 SSOT decision.
-- **Acceptance Criteria:** Both runtime consumers import the same implementation modules; tests cover `TwelveClusterOrchestrator(use_keb=True, use_gbogeb=True)` or a documented fallback; no new KEB/GBOGEB implementation files are introduced.
+- **Acceptance Criteria:** Both runtime consumers import the same implementation modules; tests cover `TwelveClusterOrchestrator(use_keb=True, use_gbogeb=True)` or a documented fallback; no new ExecutionBackbone/GBOGEB implementation files are introduced.
 
 ## P1 — Recursive parity closure and registry alignment
 
@@ -99,8 +99,9 @@ Date: 2026-06-11
 
 ### P3-3 — Expand integration smoke tests after path/import consolidation
 
-- **Description:** Add smoke tests only after P0 path/import consolidation to cover KEB/GBOGEB enabled initialization and GBOGEB bridge workflow path assumptions.
+- **Description:** Add smoke tests only after P0 path/import consolidation to cover ExecutionBackbone/GBOGEB enabled initialization and GBOGEB bridge workflow path assumptions.
 - **Evidence:** Current tests cover `TwelveClusterOrchestrator(use_keb=False, use_gbogeb=False)`; runtime code includes enabled paths for KEB/GBOGEB; GBOGEB workflow path drift is known.
 - **Owner:** Test owner / runtime integration owner.
 - **Dependency:** P0-2 and P0-3.
 - **Acceptance Criteria:** Tests cover enabled integration paths; no duplicate test harness creates alternate runtime semantics; failures produce actionable path/import fixes.
+\n\n## Terminology rule\n\nKEB is reserved for Knowledge Exchange Bridge. Runtime scheduling uses\n`ExecutionBackbone`; new runtime work must not revive Kernel Execution Backbone\nas a KEB meaning.\n
