@@ -154,3 +154,57 @@ jobs:
           name: w78-diversity-${{ github.sha }}
           path: architecture/w78/W78_DIVERSITY_RECEIPT.json
           if-no-files-found: error
+
+
+  w82_w72_governance_pair_probe:
+    name: w82-${{ matrix.target.label }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - label: w72-governance-before
+            sha: 6e0a8d3b0fd47bc6f0d44b3df8be1b3c6480e22a
+          - label: w72-governance-after
+            sha: 0de71a45531780a2e28e53b542cbc6788b121b28
+    env:
+      TARGET_SHA: ${{ matrix.target.sha }}
+      MATRIX_LABEL: ${{ matrix.target.label }}
+    steps:
+      - name: Checkout W78 control implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Measure W82 exact-source governance pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${TARGET_SHA}"
+          worktree="${RUNNER_TEMP}/w82-${TARGET_SHA:0:12}"
+          git worktree add --detach "${worktree}" FETCH_HEAD
+          mkdir -p architecture/w82
+          out="architecture/w82/W82_WORK_RECEIPT.json"
+          python tools/w78_deterministic_work_probe.py \
+            --root "${worktree}" \
+            --source-sha "${TARGET_SHA}" \
+            --repeat 1 \
+            --matrix-label "${MATRIX_LABEL}" \
+            --out "${out}"
+          test -s "${out}"
+          cat "${out}"
+          git worktree remove --force "${worktree}"
+
+      - name: Upload disposable W82 work receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w82-${{ matrix.target.label }}-${{ github.sha }}
+          path: architecture/w82/W82_WORK_RECEIPT.json
+          if-no-files-found: error
