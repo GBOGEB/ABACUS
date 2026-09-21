@@ -6,7 +6,7 @@ Phase 2a: Baseline Measurement
 - Analyze code metrics (LOC, functions, classes)
 - Static complexity analysis
 - File dependency detection
-- KEB integration for parallel analysis
+- ExecutionBackbone integration for parallel analysis
 - 12-Cluster integration for distributed processing
 """
 
@@ -21,13 +21,14 @@ from ..core.utils import ensure_directory, safe_write_json
 from ..config import DMAICConfig
 
 try:
-    import sys
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from keb import KEB
-    KEB_AVAILABLE = True
+    from core.execution_backbone import ExecutionBackbone
+    EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
-    KEB_AVAILABLE = False
-    print("Warning: KEB not available, falling back to sequential analysis")
+    EXECUTION_BACKBONE_AVAILABLE = False
+    print(
+        "Warning: execution backbone not available; "
+        "falling back to sequential analysis"
+    )
 
 try:
     from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
@@ -42,7 +43,7 @@ class Phase2Measure:
     Phase 2: Measure - Code metrics and static analysis
 
     Analyzes Python files to collect baseline metrics without execution.
-    Supports parallel analysis via KEB and 12-Cluster orchestration.
+    Supports parallel analysis via ExecutionBackbone and 12-Cluster orchestration.
     """
 
     def __init__(self, config: DMAICConfig, state_manager: StateManager,
@@ -53,21 +54,24 @@ class Phase2Measure:
         Args:
             config: DMAICConfig instance
             state_manager: StateManager instance
-            use_keb: Enable KEB parallel processing (default: False to avoid memory issues)
+            use_keb: Deprecated compatibility switch for execution-backbone processing
             use_12cluster: Enable 12-cluster parallel processing (default: True)
         """
         self.config = config
         self.state_manager = state_manager
         self.workspace_root = config.paths.workspace_root
         self.max_files_per_chunk = 5000
-        self.use_keb = use_keb and KEB_AVAILABLE
+        self.use_execution_backbone = use_keb and EXECUTION_BACKBONE_AVAILABLE
         self.use_12cluster = use_12cluster and CLUSTER_AVAILABLE
-        self.keb = None
+        self.execution_backbone = None
         self.cluster_orchestrator = None
 
-        if self.use_keb:
-            print("[KEB] Initializing parallel analysis engine...")
-            self.keb = KEB(max_workers=2, max_memory_mb=2048)
+        if self.use_execution_backbone:
+            print("[EXEC-BACKBONE] Initializing parallel analysis engine...")
+            self.execution_backbone = ExecutionBackbone(
+                max_workers=2,
+                max_memory_mb=2048,
+            )
 
         if self.use_12cluster:
             print("[12-CLUSTER] Initializing distributed analysis...")
