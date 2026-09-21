@@ -1,0 +1,77 @@
+{
+  "schema_version": "MC2-W83-NG1-CONTROL-0.1.0",
+  "as_of": "2026-09-21",
+  "mission": "MC2-W83-NG1 exact non-governance outcome discrimination",
+  "status": "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "predecessor": "handover/mc2/W83_CURRENT.json",
+  "publication": {
+    "pr": 1321,
+    "exact_head_sha": "a2daa9593be2d8c4c7bc4ff1634888b033e6acbc",
+    "merge_sha": "294b53ec2c131d74c118a101e102f60cbce7c023"
+  },
+  "exact_head_proof": {
+    "abacus_matrix_run": 35601353501,
+    "matrix_jobs": [
+      {"python": "3.10", "job_id": 106337962027, "result": "PASS_GT_ZERO_STEPS"},
+      {"python": "3.11", "job_id": 106337962049, "result": "PASS_GT_ZERO_STEPS"},
+      {"python": "3.12", "job_id": 106337961683, "result": "PASS_GT_ZERO_STEPS"}
+    ],
+    "docs_run": 35601353312,
+    "docs_job": 106337961237,
+    "docs_result": "PASS_GT_ZERO_STEPS"
+  },
+  "postmerge_proof": {
+    "abacus_matrix_run": 35601459785,
+    "matrix_jobs": [
+      {"python": "3.10", "job_id": 106338290052, "result": "PASS_GT_ZERO_STEPS"},
+      {"python": "3.11", "job_id": 106338290299, "result": "PASS_GT_ZERO_STEPS"},
+      {"python": "3.12", "job_id": 106338290184, "result": "PASS_GT_ZERO_STEPS"}
+    ],
+    "docs_run": 35601459810,
+    "docs_job": 106338289830,
+    "docs_result": "PASS_GT_ZERO_STEPS",
+    "canonicalization_run": 35601459812,
+    "canonicalization_job": 106338290169,
+    "canonicalization_result": "PASS_GT_ZERO_STEPS"
+  },
+  "sample_geometry": {
+    "state_count": 11,
+    "docs_failure_count": 8,
+    "docs_pass_count": 3,
+    "unique_semantic_vectors": 2,
+    "unique_consumer_graph_vectors": 6,
+    "variable_non_governance_feature_count": 16,
+    "exact_label_permutation_count": 165
+  },
+  "result": {
+    "significant_feature_count_after_Holm": 0,
+    "strongest_raw_feature": "consumer_graph_distribution.consumer_entities_exactly_one_file",
+    "strongest_raw_auc": 0.770833,
+    "strongest_raw_exact_p": 0.151515,
+    "strongest_Holm_p": 1.0,
+    "signal_supported": false
+  },
+  "invariants": {
+    "pca_fit_performed": false,
+    "timing_pca_reopened": false,
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt": "WITHHELD",
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "math_skill_resolution": {
+    "schema": "gbogeb.skill.receipt.v1",
+    "skill": "math",
+    "task_id": "MC2_W83_NG1_EXACT_NONGOVERNANCE_OUTCOME_DISCRIMINATION",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_ref": "75a2e880760af08d1f76674e7b39da570bf4485f",
+    "resolved_skill_path": "skills/math/SKILL.md",
+    "authority_transfer": false,
+    "status": "PASS_SKILL_RESOLUTION"
+  },
+  "next_frontier": "broader independent exact-source outcomes and/or change-delta features; no PCA/BT until new evidence warrants"
+}
