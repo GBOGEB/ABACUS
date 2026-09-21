@@ -129,7 +129,12 @@ def test_provenance_header_accepts_deterministic_values():
 from models.qps_line_s import closure_contract
 
 
-def test_line_s_closure_contract_matches_current_ssot():
+def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
+    monkeypatch.setattr(
+        closure_contract,
+        "missing_required_artefacts",
+        lambda root=closure_contract.ROOT: [],
+    )
     summary = closure_contract.validate_current_contract()
     assert summary["status"] == "PASS"
     assert summary["open_mda_gates"] == 0
@@ -223,3 +228,26 @@ def test_appendix_8_4_allows_source_bound_unknown_states():
         }
     ]
     assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
+
+
+def test_appendix_8_4_rejects_extracted_empty_modes_when_source_available():
+    data = closure_contract.load_extraction()
+    data["status"] = "EXTRACTED"
+    data["source"]["source_material_available_in_repo"] = True
+    data["source"]["source_ref"] = "D2.1"
+    data["source"]["evidence_locator"] = "Appendix 8.4"
+    data["modes"] = []
+    with pytest.raises(ValueError, match="at least one mode row"):
+        closure_contract.validate_extraction(data)
+
+
+def test_line_s_closure_contract_rechecks_live_artefacts(monkeypatch):
+    monkeypatch.setattr(
+        closure_contract,
+        "missing_required_artefacts",
+        lambda root=closure_contract.ROOT: [
+            "docs/qps_line_s_recovery/generated/recovery_matrix.csv"
+        ],
+    )
+    with pytest.raises(ValueError, match="required Line-S artefacts missing"):
+        closure_contract.validate_current_contract()
