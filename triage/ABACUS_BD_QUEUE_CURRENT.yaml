@@ -33,11 +33,12 @@ summary:
     - 1188
     - 1195
     - 1256
-  open_after_pulse: 14
+    - 581
+  open_after_pulse: 13
   next_reconcile: 2
   control_watch: 1
   local_or_external_return: 6
-  programme_parent: 5
+  programme_parent: 4
 
 lanes:
   NEXT_RECONCILE:
@@ -91,9 +92,6 @@ lanes:
         non-mergeable and a green distinct-source change is mergeable.
 
   PROGRAMME_PARENT:
-    - issue: 581
-      next_action: >-
-        Keep while Line-S modelling and RTM evidence gates remain unresolved.
     - issue: 667
       next_action: >-
         Reconcile typed findings, idempotency, authority, feedback, and
@@ -172,3 +170,10 @@ closed_this_pulse:
     disposition: VERIFIED_COMPLETE
     proof: >-
       Exact support pin consumed by QPS #1554 and MissionControl W275.
+
+  - issue: 581
+    disposition: SUPERSEDED_WITH_REPLACEMENT
+    proof: >-
+      Cold-edge Reader confirmed current reduced model/runtime reaches PROCEED_MDA
+      with zero original MDA gates; stale traceability/Appendix 8.4 residual work
+      transferred losslessly to successor #1313.
