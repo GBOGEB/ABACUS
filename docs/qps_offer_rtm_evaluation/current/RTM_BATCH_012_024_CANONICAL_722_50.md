@@ -93,6 +93,28 @@ Before any derived evidence is promoted for an item in this batch:
 
 These are review questions only. They do not add requirements.
 
+## D2.1 historical QCELL/user-behaviour recursive bound
+
+For LOOP and other abnormal-event reviews, **D2.1 is retained as a historical behavioural hook rather than current design authority**. Its value is the anticipated aggregate response of the Cryogenic Users/QCELL population as seen by QPLANT: the combined user inventory/load, return-flow evolution, pressure/temperature response and transient demand that the QPS must absorb when normal services are lost or restored.
+
+The recursive evidence chain is therefore:
+
+```text
+D2.1 historical QCELL / combined-user transient behaviour
+        ↓  supporting behavioural envelope only
+RTM-014 / RTM-024 current user-interaction + transient-model obligations
+        ↓  controlled current design basis
+RTM-051 / RTM-258 / RTM-260..262 LOOP + recovery requirements
+        ↓
+QPS:CIS sequence / utilities / support-system implementation
+        ↓
+FAT/SAT verification and recorded acceptance evidence
+```
+
+For **RTM-014**, the D2.1 hook is useful specifically for the anticipated Cryogenic User/QCELL trip and recovery behaviour that must be represented at the interface. For **RTM-024**, it is a prior behavioural shape/check against the current Cryogenic User Transient Model, not a substitute for the current model or selected-design calculation. Any disagreement between D2.1 and the current controlled model is a reconciliation item, not permission to select the more convenient curve.
+
+This use of D2.1 is especially relevant to the first 15–30 minutes of LOOP before emergency HP recovery can be credited, because the user-side return-flow/load evolution determines the required Line-S/WSH buffering and the control-system hold/abort/recovery actions.
+
 ## Ordered continuation
 
 After this governed batch:
