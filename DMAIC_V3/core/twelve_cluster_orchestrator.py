@@ -19,12 +19,11 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 try:
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from keb import KEB
-    KEB_AVAILABLE = True
+    from core.execution_backbone import ExecutionBackbone
+    EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
-    KEB_AVAILABLE = False
-    print("Warning: KEB not available")
+    EXECUTION_BACKBONE_AVAILABLE = False
+    print("Warning: execution backbone not available")
 
 try:
     from gbogeb import GBOGEB
@@ -70,23 +69,31 @@ class TwelveClusterOrchestrator:
     def __init__(
         self,
         max_workers: int = 12,
-        use_keb: bool = True,
+        use_keb: bool | None = None,
         use_gbogeb: bool = True,
         task_timeout_seconds: float | None = None,
+        use_execution_backbone: bool = True,
     ):
         self.max_workers = max_workers
-        self.use_keb = use_keb and KEB_AVAILABLE
+        if use_keb is not None:
+            use_execution_backbone = use_keb
+        self.use_execution_backbone = (
+            use_execution_backbone and EXECUTION_BACKBONE_AVAILABLE
+        )
         self.use_gbogeb = use_gbogeb and GBOGEB_AVAILABLE
         self.task_timeout_seconds = task_timeout_seconds
 
         self.clusters = self._initialize_clusters()
-        self.keb = None
+        self.execution_backbone = None
         self.gbogeb = None
         self.temporal_events: List[Dict[str, Any]] = []
 
-        if self.use_keb:
-            print("[12-CLUSTER] Initializing KEB compatibility task bridge...")
-            self.keb = KEB(max_workers=min(max_workers, 4), max_memory_mb=2048)
+        if self.use_execution_backbone:
+            print("[12-CLUSTER] Initializing execution backbone...")
+            self.execution_backbone = ExecutionBackbone(
+                max_workers=min(max_workers, 4),
+                max_memory_mb=2048,
+            )
 
         if self.use_gbogeb:
             print("[12-CLUSTER] Initializing GBOGEB observability...")
@@ -178,29 +185,29 @@ class TwelveClusterOrchestrator:
         # execution intentionally uses the local canonical executor (use_keb=False)
         # so KEB remains a knowledge-exchange boundary rather than a claimed
         # source of engineering authority.
-        if self.use_keb and self.keb:
-            self.keb.start()
+        if self.use_execution_backbone and self.execution_backbone:
+            self.execution_backbone.start()
             for cluster, chunk in cluster_chunk_pairs:
                 cluster.status = "running"
                 for task_idx, task in enumerate(chunk):
                     task_id = self._task_key(task, phase, cluster.cluster_id, task_idx)
-                    self.keb.schedule_task(
+                    self.execution_backbone.schedule_task(
                         task_id=task_id,
                         func=self._execute_task,
                         priority=cluster.priority,
                         args=(task, cluster),
                     )
-            while not self.keb.task_queue.empty():
+            while not self.execution_backbone.task_queue.empty():
                 time.sleep(0.1)
             time.sleep(1)
-            self.keb.stop()
+            self.execution_backbone.stop()
 
             for cluster in phase_clusters:
                 cluster.status = "idle"
             result = {
-                "success": self.keb.tasks_failed == 0,
-                "tasks_executed": self.keb.tasks_executed,
-                "tasks_failed": self.keb.tasks_failed,
+                "success": self.execution_backbone.tasks_failed == 0,
+                "tasks_executed": self.execution_backbone.tasks_executed,
+                "tasks_failed": self.execution_backbone.tasks_failed,
                 "clusters_used": len(phase_clusters),
                 "results_map": {},
                 "execution_time": time.time() - start_time,
@@ -410,7 +417,7 @@ class TwelveClusterOrchestrator:
             "timestamp": datetime.now().isoformat(),
             "orchestrator": "12-Cluster Parallel Execution",
             "status": self.get_cluster_status(),
-            "keb_enabled": self.use_keb,
+            "execution_backbone_enabled": self.use_execution_backbone,
             "gbogeb_enabled": self.use_gbogeb,
             "temporal_events": list(self.temporal_events),
         }

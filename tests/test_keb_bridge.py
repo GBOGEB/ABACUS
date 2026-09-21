@@ -14,7 +14,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
 
-from core.keb.keb import KEB
+from core.execution_backbone import ExecutionBackbone
 
 
 @pytest.fixture
@@ -226,24 +226,24 @@ class TestBidirectionalSync:
         assert conflict_log['conflicts_detected'] == conflict_log['conflicts_resolved']
 
 
-class TestKEBRuntimeBridge:
-    """Test KEB runtime execution used by the DOW bridge."""
+class TestExecutionBackboneRuntimeBridge:
+    """Test task-execution runtime used by the DOW/KEB bridge."""
 
-    def test_keb_runtime_executes_scheduled_bridge_tasks(self):
+    def test_execution_backbone_runs_bridge_tasks(self):
         """Test start/stop lifecycle and scheduled bridge task execution."""
-        keb = KEB(max_workers=1, max_memory_mb=128)
+        backbone = ExecutionBackbone(max_workers=1, max_memory_mb=128)
         executed = []
 
         def record_bridge_event(label):
             executed.append(label)
 
-        keb.schedule_task("dow_to_keb_runtime", record_bridge_event, priority=2, args=("dow_to_keb",))
-        keb.schedule_task("keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",))
+        backbone.schedule_task("dow_to_keb_runtime", record_bridge_event, priority=2, args=("dow_to_keb",))
+        backbone.schedule_task("keb_to_dow_runtime", record_bridge_event, priority=1, args=("keb_to_dow",))
 
-        keb.start()
-        keb.stop(wait=True, timeout=5)
+        backbone.start()
+        backbone.stop(wait=True, timeout=5)
 
-        metrics = keb.get_metrics()
+        metrics = backbone.get_metrics()
         assert executed == ["keb_to_dow", "dow_to_keb"]
         assert metrics["tasks_submitted"] == 2
         assert metrics["tasks_executed"] == 2

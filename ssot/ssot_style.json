@@ -141,7 +141,7 @@
     {
       "id": "keb_engine",
       "path": "core/keb/keb.py",
-      "kind": "keb",
+      "kind": "execution_backbone",
       "weight": 3
     },
     {
@@ -151,8 +151,8 @@
       "weight": 3
     },
     {
-      "id": "keb_runtime_status",
-      "path": "scripts/emit_keb_runtime_status.py",
+      "id": "execution_backbone_runtime_status",
+      "path": "scripts/emit_execution_backbone_runtime_status.py",
       "kind": "keb",
       "weight": 4
     }

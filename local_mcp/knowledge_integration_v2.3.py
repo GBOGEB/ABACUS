@@ -6,8 +6,8 @@
 """
 
 """
-Knowledge Integration V2.3 - KEB/GBOGEB Integration Layer
-Connects V2.3 agents with KEB (Kernel Execution Backbone) and GBOGEB knowledge bases
+Knowledge Integration V2.3 - ExecutionBackbone/GBOGEB Integration Layer
+Connects V2.3 agents with the execution backbone and GBOGEB knowledge services
 """
 
 import sys
@@ -21,12 +21,12 @@ from dataclasses import dataclass, asdict
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
-    from core.keb.keb import KEB
+    from core.execution_backbone import ExecutionBackbone
     from core.gbogeb.gbogeb import GBOGEB
-    KEB_AVAILABLE = True
+    EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
-    print("Warning: KEB/GBOGEB core modules not found, using fallback mode")
-    KEB_AVAILABLE = False
+    print("Warning: execution-backbone/GBOGEB modules not found; using fallback mode")
+    EXECUTION_BACKBONE_AVAILABLE = False
 
 
 class OperationTimeoutError(Exception):
@@ -61,21 +61,21 @@ class KnowledgeEntry:
 class KnowledgeIntegrationV23:
     """
     Knowledge Integration Layer for V2.3 Agents
-    Provides unified access to KEB and GBOGEB knowledge bases
+    Provides unified access to execution and GBOGEB knowledge services
     """
     
     def __init__(self, workspace: str = "knowledge_workspace_v2.3"):
         self.workspace = Path(workspace)
         self.workspace.mkdir(exist_ok=True)
         
-        self.keb_enabled = KEB_AVAILABLE
-        self.gbogeb_enabled = KEB_AVAILABLE
+        self.execution_backbone_enabled = EXECUTION_BACKBONE_AVAILABLE
+        self.gbogeb_enabled = EXECUTION_BACKBONE_AVAILABLE
         
-        if self.keb_enabled:
-            self.keb = KEB(max_workers=2, max_memory_mb=2048)
+        if self.execution_backbone_enabled:
+            self.execution_backbone = ExecutionBackbone(max_workers=2, max_memory_mb=2048)
             self.gbogeb = GBOGEB(workspace=str(self.workspace / "gbogeb"))
         else:
-            self.keb = None
+            self.execution_backbone = None
             self.gbogeb = None
         
         self.knowledge_cache = []
@@ -87,7 +87,7 @@ class KnowledgeIntegrationV23:
         print("Knowledge Integration V2.3 - Initialized")
         print("=" * 80)
         print(f"Workspace: {self.workspace}")
-        print(f"KEB Enabled: {self.keb_enabled}")
+        print(f"Execution Backbone Enabled: {self.execution_backbone_enabled}")
         print(f"GBOGEB Enabled: {self.gbogeb_enabled}")
         print("=" * 80)
     
@@ -211,9 +211,9 @@ class KnowledgeIntegrationV23:
                            task_func: callable, priority: int = 5,
                            args: tuple = (), kwargs: dict = None,
                            timeout: float = None):
-        """Schedule agent task via KEB, with optional per-task timeout."""
-        if self.keb_enabled and self.keb:
-            self.keb.schedule_task(
+        """Schedule an agent task via ExecutionBackbone with an optional timeout."""
+        if self.execution_backbone_enabled and self.execution_backbone:
+            self.execution_backbone.schedule_task(
                 task_id=f"{agent_name}_{task_id}",
                 func=task_func,
                 priority=priority,
@@ -277,7 +277,7 @@ class KnowledgeIntegrationV23:
             "total_entries": len(self.knowledge_cache),
             "categories": categories,
             "sources": sources,
-            "keb_enabled": self.keb_enabled,
+            "execution_backbone_enabled": self.execution_backbone_enabled,
             "gbogeb_enabled": self.gbogeb_enabled,
             "metrics_collected": len(self.metrics_cache)
         }

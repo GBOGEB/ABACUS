@@ -6,7 +6,7 @@ Provides IDE connectivity (VS Code, Cursor) and agent coordination.
 
 Key components:
     - AgentOrchestratorV3: Memory-optimized multi-agent coordinator
-    - KnowledgeIntegrationV23: Unified KEB/GBOGEB knowledge layer
+    - KnowledgeIntegrationV23: ExecutionBackbone/GBOGEB integration layer
     - agents/: Individual agent implementations (cryo, docs, recursive)
 """
 
