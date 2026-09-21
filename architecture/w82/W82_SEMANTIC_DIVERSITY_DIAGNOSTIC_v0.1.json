@@ -1,0 +1,107 @@
+{
+  "authority": "derived_operational_analysis_only",
+  "bt_status": "WITHHELD_NO_CONNECTED_OBSERVED_PAIRWISE_GRAPH",
+  "child_engineering_promotion_authority": false,
+  "engineering_compliance_release_authority": false,
+  "engineering_credit_delta": 0,
+  "formal_credit_delta": 0,
+  "frozen_w79_full_work_pc1": {
+    "docs_failure_auc": 0.444444444444,
+    "eigenvalue": 9.089865352642,
+    "exact_permutation_count": 20,
+    "exact_permutation_p": 1,
+    "explained_variance_ratio": 0.908986535264,
+    "in_sample_max": 2.330551907662,
+    "in_sample_min": -6.817083452618,
+    "out_of_support_count": 6
+  },
+  "frozen_w79_semantic_pc1": {
+    "all_projection_score": 2.313132133745,
+    "discrimination": false,
+    "eigenvalue": 6.341340944864,
+    "explained_variance_ratio": 0.905905849266,
+    "in_sample_max": 1.904192148293,
+    "in_sample_min": -6.074314162533,
+    "out_of_support_count": 6
+  },
+  "global_allocation_authority": false,
+  "interpretation": {
+    "not_supported": [
+      "semantic PC1 predicts docs outcome",
+      "full-work PC1 predicts docs outcome",
+      "BT ranking from these states",
+      "generalization from extrapolative high-tail states"
+    ],
+    "supported": "balanced PASS/FAIL outcomes remain indistinguishable on semantic PC1; full-work PC1 has no exact-test evidence of outcome discrimination"
+  },
+  "math_skill_resolution": {
+    "authority_transfer": false,
+    "resolved_skill_path": "skills/math/SKILL.md",
+    "schema": "gbogeb.skill.receipt.v1",
+    "skill": "math",
+    "source_ref": "17067f6874009f198f24bad6d56faffa2df49833",
+    "source_repo": "GBOGEB/ABACUS",
+    "status": "PASS_SKILL_RESOLUTION",
+    "task_id": "W82_SEMANTIC_DIVERSITY_PC1_PROJECTION"
+  },
+  "next_frontier": "change the measurement basis or seek exact-source states with genuinely different semantic-work vectors inside or spanning the W79 support range",
+  "pairwise_events": [],
+  "pairwise_outcome_accumulation_permitted": false,
+  "pc1_predictive_validation": false,
+  "pca_refit_performed": false,
+  "projection_rows": [
+    {
+      "docs_failure": 0,
+      "full_work_pc1": 2.849973079408,
+      "label": "p1281-pass",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "7e8ee178f9d7e6d0d2797c754a7e8fbbde93057b"
+    },
+    {
+      "docs_failure": 1,
+      "full_work_pc1": 2.869022473897,
+      "label": "p1286-fail",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "9b89aa3516209f18447f03de91e91b21b35c9304"
+    },
+    {
+      "docs_failure": 1,
+      "full_work_pc1": 2.870368543862,
+      "label": "p1288-fail",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "a5a44635d5b10c6bb1984db131d254872efd8b0d"
+    },
+    {
+      "docs_failure": 0,
+      "full_work_pc1": 2.87038857877,
+      "label": "p1289-pass",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "51e044499bcf8828f9bf92c4472f6c0419f58834"
+    },
+    {
+      "docs_failure": 1,
+      "full_work_pc1": 2.874718473354,
+      "label": "p1291-fail",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "17f70d5398a710a3714de8dd50f400b3a6c27dee"
+    },
+    {
+      "docs_failure": 0,
+      "full_work_pc1": 2.874721125033,
+      "label": "p1292-pass",
+      "semantic_pc1": 2.313132133745,
+      "source_sha": "9c0e4cd1cf37ff7bebbda9b33734504c32787862"
+    }
+  ],
+  "receipt_sha256": "5f801d0bfe711e02975a4875e63ba6e1cf681ee3e80245f103220faa8a111549",
+  "sample_geometry": {
+    "docs_fail": 3,
+    "docs_pass": 3,
+    "full_work_unique_vector_count": 6,
+    "measured_states": 6,
+    "semantic_unique_vector_count": 1
+  },
+  "schema_version": "MC2-W82-SEMANTIC-DIVERSITY-DIAGNOSTIC-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_SEMANTIC_DIVERSITY_DIAGNOSTIC",
+  "timing_pca_reopened": false
+}
