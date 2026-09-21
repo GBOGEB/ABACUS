@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 name: DOW + Recursive DMAIC - Unified CD Pipeline
 
 on:
@@ -7,6 +8,10 @@ on:
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
 
 env:
   PYTHON_VERSION: "3.11"
@@ -381,7 +386,7 @@ jobs:
           generate_release_notes: true
           body: |
             ## DOW + Recursive DMAIC Release ${{ github.ref_name }}
-            
+
             This release includes:
             - ✅ Multi-platform validation (Ubuntu + RHEL 8 + RHEL 9)
             - ✅ DMAIC full cycle execution (Phases 0-6)
@@ -389,13 +394,13 @@ jobs:
             - ✅ PDF handover documentation
             - ✅ GLOOB manifest bundles
             - ✅ Universal archives (.zip, .tar.gz)
-            
+
             ### Artifacts
             - `DMAIC_V3_3_HANDOVER_GLOOB_MANIFEST.zip` - Manifest-based bundle
             - `DMAIC_V3_3_HANDOVER_ALL.zip` - Complete handover archive (ZIP)
             - `DMAIC_V3_3_HANDOVER_ALL.tar.gz` - Complete handover archive (TAR.GZ)
             - PDF documentation and reports
-            
+
             ### Validation
             All CI checks passed on:
             - Ubuntu (latest)
