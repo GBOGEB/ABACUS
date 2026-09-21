@@ -26,7 +26,7 @@ jobs:
           assert len(x['source_sha']) == 40
           print('PASS 13 dimensions', x['source_sha'])
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: mesh-status-abacus
           path: mesh-status.json

@@ -47,7 +47,7 @@ jobs:
           assert r['authority_transfer'] is False
           PY
       - name: Upload DOW receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w259-method-cards-independent-dow
           path: runtime/federation/generated/w259_method_cards_dow_receipt.json

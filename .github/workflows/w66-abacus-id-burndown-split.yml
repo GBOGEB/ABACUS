@@ -87,7 +87,7 @@ jobs:
           out = Path(f'architecture/w66/receipts/{lane}.json')
           out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w66-id-${{ matrix.lane }}
           path: architecture/w66/receipts/${{ matrix.lane }}.json
@@ -154,7 +154,7 @@ jobs:
               json.dumps(receipt, indent=2, sort_keys=True) + '\n'
           )
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w66-id-burndown-convergence
           path: architecture/w66/receipts/ID_BURNDOWN_CONVERGENCE.json

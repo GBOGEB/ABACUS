@@ -34,7 +34,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:18000/ >/dev/null
           test "$(docker inspect -f '{{.State.Health.Status}}' "$cid")" = healthy
           printf 'source_sha=%s\nruntime_role=SERVICE_SHELL\ncontainer_execution=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_root_docker_receipt.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w93-abacus-root-docker-${{ github.sha }}
           path: w93_root_docker_receipt.txt
@@ -54,7 +54,7 @@ jobs:
       - name: Record build receipt
         run: |
           printf 'source_sha=%s\nruntime_role=QPLANT_APPLICATION\nimage_build=PASS\ncompose_validation=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_qplant_docker_receipt.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w93-qplant-docker-${{ github.sha }}
           path: w93_qplant_docker_receipt.txt

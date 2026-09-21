@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m json.tool /tmp/gm_i_a_coolprop_runtime_bridge_receipt.json > /dev/null
           sha256sum /tmp/gm_i_a_coolprop_runtime_bridge_receipt.json | tee /tmp/GM_I_A_BRIDGE_SHA256SUMS
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gm-i-a-coolprop-runtime-bridge-${{ github.event.pull_request.head.sha || github.sha }}
           path: |

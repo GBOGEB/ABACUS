@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           python tools/w81_verify_github_outcomes.py             --contract architecture/w81/W81_REPAIR_OUTCOME_CONTRACT.json             --out architecture/w81/W81_VERIFIED_OUTCOMES.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w81-verified-outcomes-${{ github.sha }}
           path: architecture/w81/W81_VERIFIED_OUTCOMES.json
@@ -79,7 +79,7 @@ jobs:
           python tools/w78_deterministic_work_probe.py             --root "$worktree"             --source-sha "$TARGET_SHA"             --repeat 1             --matrix-label "$MATRIX_LABEL"             --out "$out"
           test -s "$out"
           git worktree remove --force "$worktree"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w81-work-${{ matrix.target.label }}
           path: architecture/w81/W81_*_WORK_RECEIPT.json
@@ -107,7 +107,7 @@ jobs:
         run: |
           python -m pip install --quiet numpy
           python tools/w81_repair_outcome_block.py             --contract architecture/w81/W81_REPAIR_OUTCOME_CONTRACT.json             --verification architecture/w81/verified/W81_VERIFIED_OUTCOMES.json             --receipts-dir architecture/w81/work             --out architecture/w81/W81_REPAIR_OUTCOME_RECEIPT.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w81-repair-outcome-${{ github.sha }}
           path: architecture/w81/W81_REPAIR_OUTCOME_RECEIPT.json

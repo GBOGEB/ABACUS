@@ -41,7 +41,7 @@ jobs:
             > mip-receipt/QPS_EXTERNAL_PROBE.txt
       - name: Upload diagnostic receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mip-qps-external-probe-${{ github.sha }}
           path: mip-receipt/QPS_EXTERNAL_PROBE.txt

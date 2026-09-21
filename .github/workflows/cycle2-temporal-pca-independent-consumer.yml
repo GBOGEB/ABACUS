@@ -79,7 +79,7 @@ jobs:
           PY
 
       - name: Upload independent receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cycle2-temporal-pca-independent-${{ env.ABACUS_EXACT_HEAD }}
           path: |

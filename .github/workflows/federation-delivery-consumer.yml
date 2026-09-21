@@ -57,7 +57,7 @@ jobs:
           node scripts/consume_federation_delivery.mjs producer/federation/delivery/FED_PCA_20260912 "$RUNNER_TEMP/consumer_receipt.json" > "$RUNNER_TEMP/consumer.log"
           node scripts/federation_receipt_policy.mjs project receipt-artifact/receipt.json "$RUNNER_TEMP/consumer_receipt.json"
       - name: Upload only allowlisted receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: delivery-receipt-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.repeat }}
           path: receipt-artifact/receipt.json
@@ -85,7 +85,7 @@ jobs:
       - name: Compare independent receipt bindings
         run: node scripts/federation_receipt_policy.mjs compare comparison-artifact/receipt.json receipts/1/receipt.json receipts/2/receipt.json
       - name: Upload only comparison receipt
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: delivery-repeat-${{ github.run_id }}-${{ github.run_attempt }}
           path: comparison-artifact/receipt.json

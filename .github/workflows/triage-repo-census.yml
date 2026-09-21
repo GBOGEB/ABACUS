@@ -19,7 +19,7 @@ jobs:
         run: |
           grep -q 'DOW_DERIVED_ANALYSIS' triage/census/ABACUS.census.yaml
           grep -q 'parent repo may not promote engineering facts' triage/census/ABACUS.census.yaml
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: triage-repo-census-abacus
           path: triage/generated/

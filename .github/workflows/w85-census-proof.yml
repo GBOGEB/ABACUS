@@ -25,7 +25,7 @@ jobs:
           grep -q '^status=PASS$' w85_dow_proof.txt
           grep -q '^recommendation=ACCEPT$' w85_dow_proof.txt
           grep -q '^canonical_sha256=5cba183913a951b01a1ff86ac71eb5bfaaf9aeaee70b7442224ff902e95e0261$' w85_dow_proof.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w85-dow-proof-${{ matrix.os }}
           path: w85_dow_proof.txt
