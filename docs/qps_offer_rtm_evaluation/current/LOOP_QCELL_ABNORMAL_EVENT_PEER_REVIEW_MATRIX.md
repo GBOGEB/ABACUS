@@ -1,6 +1,6 @@
 # QPS LOOP / QCELL abnormal-event peer-review matrix
 
-Status: **OWNER FIRST PASS / PEER-REVIEW INPUT — NO REQUIREMENT CLOSURE / NO SCORE CHANGE**
+Status: **OWNER-FROZEN W307 / PEER CONFIRMATION OPEN — NO REQUIREMENT CLOSURE / NO SCORE CHANGE**
 
 ## Purpose
 
@@ -33,6 +33,25 @@ D2.1 is therefore used for the **anticipated behaviour of QCELLs as the combined
 - **KEEP / CLARIFY** — retain the requirement, but clarify timing, ownership, interface or evidence route.
 - **DO NOT RELAX** — bidder deviation or reduced performance should not be accepted as satisfying the current predicate.
 - **EQUIVALENT PROOF MAY BE ACCEPTABLE** — the test method may change only if an approved alternative demonstrates the same acceptance predicate.
+
+## W307 owner-freeze result
+
+The strongest review sequence has now been executed in `GBOGEB/cryoplant-project` via issue **#1593** and merged PR **#1594**.
+
+| LQ item(s) | Owner-frozen disposition | Peer state |
+|---|---|---|
+| LQ-02 / RTM-260 | **KEEP / DO NOT RELAX** — ≤1% total helium-inventory loss remains the controlled acceptance predicate. | OPEN |
+| LQ-03 / RTM-261 | **KEEP / DO NOT RELAX** — ≥100 g/s abnormal/LOOP recovery without inventory loss remains the controlled predicate. | OPEN |
+| LQ-06 | **KEEP / CLARIFY** — use automatic backup transfer, 15 min preferred / 30 min maximum HP availability and manual retransfer as the working site-interface sequence pending named-authority confirmation. | OPEN |
+| LQ-07 / RTM-428 | **KEEP / CLARIFY** — backup cooling-water function remains; selected-design duty, internal distribution and margin require closure. | OPEN |
+| LQ-08 / RTM-433 | **KEEP / CLARIFY** — required LOOP instrument-air function remains; ownership, autonomy and terminal point require closure. | OPEN |
+| LQ-10 | **KEEP FUNCTIONAL PREDICATE / CLARIFY IMPLEMENTATION** — abnormal-event state machine, cause/effect, interlocks, diagnostics and V&V remain mandatory. | OPEN |
+| LQ-11 / RTM-372 | **KEEP / DO NOT RELAX** — QPS↔MIS hardwired slow-interlock interface remains required. | OPEN |
+| LQ-14 / RTM-491..495 | **KEEP / DO NOT RELAX** — acceptance-programme responsibility, pre-test approval and minimum content remain. | OPEN |
+| LQ-15 | **KEEP PREDICATE / EQUIVALENT FAT METHOD MAY BE ACCEPTED** only with approved equivalent objective V&V coverage. | OPEN |
+| LQ-16 / RTM-518 | **KEEP SAT PERFORMANCE/CAPACITY PREDICATE / SAFE EQUIVALENT SITE METHOD MAY BE ACCEPTED**; no automatic requirement for a deliberate full live blackout. | OPEN |
+
+**Control:** `OWNER-FROZEN` does not mean `PEER-CONFIRMED`, bidder-compliant, requirement-closed or contract-changed. Any challenge must identify the exact LQ item plus the alternative acceptance predicate or evidence route.
 
 ## Review matrix
 
