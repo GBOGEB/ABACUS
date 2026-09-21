@@ -1,26 +1,15 @@
 {
   "schema_version": "MC2-W82-CURRENT-0.1.0",
-  "status": "CONTROLLED_NEGATIVE_SEMANTIC_DIVERSITY_DIAGNOSTIC",
+  "status": "CONTROLLED_NEGATIVE_W72_GOVERNANCE_PAIR_DIAGNOSTIC",
   "restart_policy": "repository_authority_only",
   "predecessor": "handover/mc2/W81_CURRENT.json",
-  "current_ledger": "architecture/w82/W82_SEMANTIC_DIVERSITY_LEDGER_v0.1.json",
-  "current_receipt": "architecture/w82/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC_v0.1.json",
-  "current_tool": "tools/w82_semantic_diversity_diagnostic.py",
-  "current_test": "tests/test_w82_semantic_diversity_diagnostic.py",
+  "current_receipt": "architecture/w82/W82_W72_GOVERNANCE_PAIR_DIAGNOSTIC_v0.1.json",
   "current_dropin": "handover/mc2/W82_DROPIN.md",
-  "source_probe_pr": 1295,
-  "source_probe_disposition": "CLOSED_UNMERGED_AFTER_RECEIPT_HARVEST",
   "authority_transfer": false,
   "formal_credit_delta": 0,
-  "engineering_credit_delta": 0,
-  "invariants": {
-    "pc1_predictive_validation": false,
-    "pairwise_outcome_accumulation_permitted": false,
-    "bt_withheld": true,
-    "pca_refit_performed": false,
-    "timing_pca_reopened": false,
-    "global_allocation_authority": false
-  },
-  "next_frontier": "change measurement basis or seek genuinely different semantic-work vectors inside or spanning W79 support",
+  "pc1_predictive_validation": false,
+  "pairwise_outcome_accumulation_permitted": false,
+  "bt": "WITHHELD",
+  "next_frontier": "materially different semantic topology with observed outcomes inside or below W79 support",
   "reentry_requires_new_evidence": true
 }
