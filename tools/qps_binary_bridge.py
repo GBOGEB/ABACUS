@@ -423,6 +423,10 @@ def normalize_source(
         "authority": authority,
         "lifecycle_status": lifecycle_status,
         "hierarchy_node": normalized,
+        "extraction_quality": normalized.get(
+            "extraction_quality",
+            {"status": "UNKNOWN", "parser": "unknown"},
+        ),
         "trace_links": trace_links,
         "producer_repository": PRODUCER_REPOSITORY,
         "producer_commit": producer_commit,
