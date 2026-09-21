@@ -1,4 +1,4 @@
-schema_version: "0.1"
+schema_version: "0.2"
 document_id: ABACUS_QPS_W04_DOW_QA_ACTIONS
 status: parent_QA_action_contract
 correlation_id: QPS-FED-W04-T10-SAFE-CTRL
@@ -7,28 +7,42 @@ child_prs: [141, 142, 143]
 parent_pr: 722
 runtime_trigger_wave: W04-runtime-retrigger-20260830
 purpose: >-
-  Capture parent-side ABACUS QA/DevOps actions exposed by the QPS W04 exchange. This keeps parent hardening
-  separate from child QPS engineering authority while making returned DOW evidence machine-checkable.
+  Capture parent-side ABACUS QA/DevOps actions exposed by the QPS W04
+  exchange. This keeps parent hardening separate from child QPS engineering
+  authority while making returned DOW evidence machine-checkable.
 
 authority_boundary:
   ABACUS_role: parent_DOW_analysis_and_decomposition_lane
-  child_authority: QPS owns engineering SSOT, Table-10 interpretation, Safety acceptance, compliance and completion.
-  prohibition: ABACUS findings cannot self-promote into QPS maturity or compliance.
+  child_authority: >-
+    QPS owns engineering SSOT, Table-10 interpretation, Safety acceptance,
+    compliance and completion.
+  prohibition: >-
+    ABACUS findings cannot self-promote into QPS maturity or compliance.
 
 receipt_contract:
   required_fields:
     - correlation_id
     - child_source_ref
+    - authoritative_child_sha
     - parent_commit_sha
     - run_id
     - artifact_id
     - input_hash
-    - output_hash
+    - input_snapshot_hash
+    - source_artifact_identities
+    - source_artifact_set_sha256
+    - prior_source_artifact_set_sha256
+    - trigger_semantics
+    - analysis_decision
+    - lineage_state_hash
+    - available_analysis_scope
     - requested_analysis_scope
+    - semantic_trigger_scope
     - executed_analysis_scope
     - stage_status
     - typed_findings
     - child_disposition_placeholder
+    - output_hash
   required_stage_status_fields:
     - stage_id
     - mechanic_path
@@ -39,24 +53,38 @@ receipt_contract:
 QA_actions:
   - id: ABACUS-W04-QA-001
     title: enforce W04 receipt schema
-    action: add schema/check so DOW W04 receipts include correlation, hashes, run/artifact identity and typed findings
-    status: proposed
+    action: >-
+      validate correlation, hashes, run/artifact identity and typed findings
+    status: implemented
   - id: ABACUS-W04-QA-002
     title: typed DOW findings
-    action: expose dependency, common-cause, PCA, reverse-catchup and BT observations as typed records, not prose-only output
-    status: proposed
+    action: >-
+      expose dependency, common-cause, PCA, reverse-catchup and BT
+      observations as typed records, not prose-only output
+    status: implemented
   - id: ABACUS-W04-QA-003
     title: fail-closed stage truth
-    action: ensure each required DOW mechanic has explicit executed/status/reason fields
-    status: proposed
+    action: >-
+      ensure each required DOW mechanic has explicit executed/status/reason
+      fields
+    status: implemented
   - id: ABACUS-W04-QA-004
     title: W04 nonconfidential fixture
-    action: add a small fixture for QPS support-system/Table-10/Safety semantics without confidential bidder or cost values
-    status: proposed
+    action: >-
+      retain a non-confidential fixture for schema and authority validation
+    status: implemented
   - id: ABACUS-W04-QA-005
     title: parent feedback intake
-    action: accept child ACCEPT/REJECT/DEFER feedback as parent learning without claiming QPS authority
+    action: >-
+      accept child ACCEPT/REJECT/DEFER feedback without claiming QPS authority
     status: proposed
+  - id: ABACUS-W04-QA-006
+    title: distinguish source hash refresh from semantic DOW trigger
+    action: >-
+      bind typed source-artifact identity and suppress DOW findings for
+      hash-only or unchanged-artifact refreshes unless semantic change or an
+      explicit analysis request is present
+    status: implemented_by_BDQ_003
 
 finding_types_expected:
   - missing_atom
@@ -75,6 +103,8 @@ CI_or_DevOps_expectations:
   - no_confidential_payload_check
   - all_required_stages_pass_or_fail_closed
   - typed_findings_lint
+  - hash_only_refresh_zero_findings
+  - idempotent_noop_stable_lineage_state_hash
 
 child_return_contract:
   expected_child_dispositions: [ACCEPT, REJECT, DEFER]
@@ -88,4 +118,5 @@ child_return_contract:
 completion_effect:
   ABACUS_parent_maturity_delta: 0
   QPS_child_completion_delta: 0
-  reason: parent_QA_contract_only_until CI_and_receipts_exist
+  reason: >-
+    parent trigger/receipt contract only; engineering authority remains in QPS
