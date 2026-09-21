@@ -154,4 +154,3 @@ jobs:
           name: w78-diversity-${{ github.sha }}
           path: architecture/w78/W78_DIVERSITY_RECEIPT.json
           if-no-files-found: error
-
