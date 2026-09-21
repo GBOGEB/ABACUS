@@ -39,7 +39,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 41 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 1 | This policy, inventory, overlap and staleness gate. |
-| `legacy` | â | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
+| `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
 ## Immediate consolidation decisions
 
@@ -62,175 +62,175 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Order | Cluster | Workflow | Events | Jobs | Decision | Replacement |
 |---:|---|---|---|---:|---|---|
-| 10 | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | â |
-| 10 | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | â |
-| 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | â |
-| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | â |
-| 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | â |
-| 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | â |
-| 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | â |
-| 10 | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | â |
-| 10 | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | â |
-| 10 | `core_test` | `smoke-test.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 10 | `core_test` | `tooling-ci.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | â |
-| 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | â |
-| 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | â |
-| 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | â |
-| 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | â |
-| 20 | `bridge_federation` | `gloob-causal-responder.yml` | pull_request, push | 1 | `keep` | â |
-| 20 | `bridge_federation` | `gm-i-a-coolprop-runtime-bridge.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | â |
-| 20 | `bridge_federation` | `w286-gloob-pandoc-p1.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dmaic` | `dmaic-commit-metrics.yml` | push, workflow_run, workflow_dispatch | 3 | `keep` | â |
-| 20 | `dmaic` | `dmaic-enterprise-ci.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | â |
-| 20 | `dmaic` | `dmaic-phase-execution.yml` | none | 1 | `keep` | â |
-| 20 | `dmaic` | `dmaic-v3-cd.yml` | push, release, workflow_dispatch | 7 | `keep` | â |
-| 20 | `dmaic` | `dmaic-v3-ci.yml` | push, pull_request, schedule, workflow_dispatch | 9 | `keep` | â |
-| 20 | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 9 | `keep` | â |
-| 20 | `dmaic` | `recursive-build.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `background_orchestrator.yml` | schedule, workflow_dispatch | 2 | `keep` | â |
-| 20 | `dow` | `cycle2-temporal-pca-independent-consumer.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `dow-integration-ci-cd.yml` | push, workflow_dispatch | 8 | `keep` | â |
-| 20 | `dow` | `dow-integration.yml` | push, workflow_dispatch, schedule | 4 | `keep` | â |
-| 20 | `dow` | `dow-main-cicd.yml` | push, schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `dow-monitoring.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | â |
-| 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | â |
-| 20 | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | â |
-| 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | â |
-| 20 | `dow` | `qps-triage-dow-contract.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | â |
-| 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | â |
-| 20 | `dow` | `qps_m05_dow_independent_consumer.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | â |
-| 20 | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | â |
-| 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `governance.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | â |
-| 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `runtime-verification.yml` | workflow_dispatch, workflow_run | 1 | `keep` | â |
-| 20 | `runtime_governance` | `triage-repo-census.yml` | pull_request, push | 1 | `keep` | â |
-| 20 | `runtime_governance` | `v5-w62-self-smoke.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `v5-w62-twelve-cluster-requalification.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `validation.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `w64-census-p3.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | â |
-| 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | â |
-| 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | â |
-| 20 | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | â |
-| 20 | `security` | `osv-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | â |
-| 20 | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | â |
-| 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | â |
-| 20 | `specialised` | `mip-qps-external-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `mip-v2-federated-control.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | â |
-| 20 | `specialised` | `qps-canonicalization.yml` | [pull_request, push] | 1 | `keep` | â |
-| 20 | `specialised` | `qps-cost-roundtrip-contract.yml` | pull_request, push | 1 | `keep` | â |
-| 20 | `specialised` | `qps-dow-w43-triage.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | â |
-| 20 | `specialised` | `qps-p05f-measured-sensitivity.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `qps-p05j-quantitative.yml` | workflow_dispatch, pull_request | 1 | `keep` | â |
-| 20 | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | â |
-| 20 | `specialised` | `qps-w111-power-utility-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | â |
-| 20 | `specialised` | `session_tuple_ci.yml` | push, workflow_dispatch | 3 | `keep` | â |
-| 20 | `specialised` | `v23-cicd.yml` | push, workflow_dispatch | 2 | `keep` | â |
-| 20 | `specialised` | `w102-qps-mip-reconciliation-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w105-qps-b1b2-mip-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w169-qplant-k8s-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w52-p2m-helium-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w52-p2r-alat-ts-strict-residual.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w52-p2t-hp-power-residual.yml` | pull_request | 1 | `keep` | â |
-| 20 | `specialised` | `w52-p2t-ts-runtime-receipt.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w53-p05t-qcell-jt-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w66-abacus-id-burndown-split.yml` | pull_request, workflow_dispatch, schedule | 2 | `keep` | â |
-| 20 | `specialised` | `w67-measured-id-pulse.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w67-pulse3-pca-promotion.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w70-measured-id-pulse-exact-sha.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w70-retain-measured-pulse.yml` | workflow_run, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w71-residual-lineage-census.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w72-clean-clone-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w72-versioned-semantic-backfill.yml` | pull_request, workflow_dispatch | 3 | `keep` | â |
-| 20 | `specialised` | `w72-zero-delta-wheel.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w74-qplant-k8s-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w77-phase-runtime-instrumentation.yml` | pull_request, workflow_dispatch | 3 | `keep` | â |
-| 20 | `specialised` | `w78-deterministic-work-census.yml` | pull_request, workflow_dispatch | 3 | `keep` | â |
-| 20 | `specialised` | `w79-deterministic-multivariate.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w81-repair-outcome-block.yml` | pull_request, workflow_dispatch | 5 | `keep` | â |
-| 20 | `specialised` | `w85-census-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w93-docker-deployment-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | â |
-| 20 | `specialised` | `w95-accelerator-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `specialised` | `w99-r1-reconciliation-return.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | â |
-| 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | â |
-| 20 | `statistics` | `w64-3p-r01-retained-baseline.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `statistics` | `w64-3p-r02-id-discovery-graph.yml` | pull_request, workflow_dispatch | 1 | `keep` | â |
-| 20 | `statistics` | `w65-parallel-discovery-pulses.yml` | pull_request, workflow_dispatch, schedule | 5 | `keep` | â |
-| 30 | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | â |
-| 30 | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | â |
-| 30 | `delivery` | `cd.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 30 | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | â |
-| 30 | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | â |
-| 30 | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | â |
-| 30 | `delivery` | `release.yml` | push, workflow_dispatch | 2 | `keep` | â |
-| 30 | `delivery` | `remove-public-binaries.yml` | push | 1 | `keep` | â |
-| 30 | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | â |
-| 30 | `documentation` | `docs-build.yml` | push | 1 | `keep` | â |
-| 30 | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 30 | `documentation` | `pages.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 30 | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | â |
-| 30 | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | â |
-| 40 | `automation` | `auto-merge-prs.yml` | workflow_dispatch | 1 | `keep` | â |
-| 40 | `automation` | `branch-analysis.yml` | workflow_dispatch | 2 | `keep` | â |
-| 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | â |
-| 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | â |
-| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, workflow_dispatch | 1 | `keep` | â |
-| 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | â |
-| 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
-| 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | â |
-| 40 | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | â |
+| 10 | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | — |
+| 10 | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
+| 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
+| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
+| 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
+| 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 10 | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
+| 10 | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | — |
+| 10 | `core_test` | `smoke-test.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 10 | `core_test` | `tooling-ci.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | — |
+| 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
+| 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | — |
+| 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
+| 20 | `bridge_federation` | `gloob-causal-responder.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `bridge_federation` | `gm-i-a-coolprop-runtime-bridge.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `bridge_federation` | `w286-gloob-pandoc-p1.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dmaic` | `book-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dmaic` | `dmaic-commit-metrics.yml` | push, workflow_run, workflow_dispatch | 3 | `keep` | — |
+| 20 | `dmaic` | `dmaic-enterprise-ci.yml` | push, pull_request, workflow_dispatch | 7 | `keep` | — |
+| 20 | `dmaic` | `dmaic-phase-execution.yml` | none | 1 | `keep` | — |
+| 20 | `dmaic` | `dmaic-v3-cd.yml` | push, release, workflow_dispatch | 7 | `keep` | — |
+| 20 | `dmaic` | `dmaic-v3-ci.yml` | push, pull_request, schedule, workflow_dispatch | 9 | `keep` | — |
+| 20 | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 9 | `keep` | — |
+| 20 | `dmaic` | `recursive-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `background_orchestrator.yml` | schedule, workflow_dispatch | 2 | `keep` | — |
+| 20 | `dow` | `cycle2-temporal-pca-independent-consumer.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `dow-integration-ci-cd.yml` | push, workflow_dispatch | 8 | `keep` | — |
+| 20 | `dow` | `dow-integration.yml` | push, workflow_dispatch, schedule | 4 | `keep` | — |
+| 20 | `dow` | `dow-main-cicd.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `dow-monitoring.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
+| 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
+| 20 | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
+| 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `qps-triage-dow-contract.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | — |
+| 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `qps_m05_dow_independent_consumer.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
+| 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `governance.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
+| 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `runtime-verification.yml` | workflow_dispatch, workflow_run | 1 | `keep` | — |
+| 20 | `runtime_governance` | `triage-repo-census.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `runtime_governance` | `v5-w62-self-smoke.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `v5-w62-twelve-cluster-requalification.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validate-setup.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validate_docs.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `validation.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `w64-census-p3.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
+| 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
+| 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
+| 20 | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
+| 20 | `security` | `osv-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | — |
+| 20 | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
+| 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `mip-qps-external-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `mip-v2-federated-control.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps-canonicalization.yml` | [pull_request, push] | 1 | `keep` | — |
+| 20 | `specialised` | `qps-cost-roundtrip-contract.yml` | pull_request, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps-dow-w43-triage.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps-p05f-measured-sensitivity.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `qps-p05j-quantitative.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
+| 20 | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `specialised` | `qps-w111-power-utility-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | — |
+| 20 | `specialised` | `session_tuple_ci.yml` | push, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `v23-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `w102-qps-mip-reconciliation-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w105-qps-b1b2-mip-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w169-qplant-k8s-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w52-p2m-helium-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w52-p2r-alat-ts-strict-residual.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w52-p2t-hp-power-residual.yml` | pull_request | 1 | `keep` | — |
+| 20 | `specialised` | `w52-p2t-ts-runtime-receipt.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w53-p05t-qcell-jt-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w66-abacus-id-burndown-split.yml` | pull_request, workflow_dispatch, schedule | 2 | `keep` | — |
+| 20 | `specialised` | `w67-measured-id-pulse.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w67-pulse3-pca-promotion.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w70-measured-id-pulse-exact-sha.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w70-retain-measured-pulse.yml` | workflow_run, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w71-residual-lineage-census.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w72-clean-clone-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w72-versioned-semantic-backfill.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w72-zero-delta-wheel.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w74-qplant-k8s-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w77-phase-runtime-instrumentation.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w78-deterministic-work-census.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
+| 20 | `specialised` | `w79-deterministic-multivariate.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w81-repair-outcome-block.yml` | pull_request, workflow_dispatch | 5 | `keep` | — |
+| 20 | `specialised` | `w85-census-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w93-docker-deployment-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
+| 20 | `specialised` | `w95-accelerator-receiver.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w99-r1-reconciliation-return.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
+| 20 | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
+| 20 | `statistics` | `w64-3p-r01-retained-baseline.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `statistics` | `w64-3p-r02-id-discovery-graph.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `statistics` | `w65-parallel-discovery-pulses.yml` | pull_request, workflow_dispatch, schedule | 5 | `keep` | — |
+| 30 | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | — |
+| 30 | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | — |
+| 30 | `delivery` | `cd.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 30 | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |
+| 30 | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | — |
+| 30 | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | — |
+| 30 | `delivery` | `release.yml` | push, workflow_dispatch | 2 | `keep` | — |
+| 30 | `delivery` | `remove-public-binaries.yml` | push | 1 | `keep` | — |
+| 30 | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
+| 30 | `documentation` | `docs-build.yml` | push | 1 | `keep` | — |
+| 30 | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 30 | `documentation` | `pages.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 30 | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | — |
+| 30 | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 40 | `automation` | `auto-merge-prs.yml` | workflow_dispatch | 1 | `keep` | — |
+| 40 | `automation` | `branch-analysis.yml` | workflow_dispatch | 2 | `keep` | — |
+| 40 | `automation` | `branch-pruner.yml` | workflow_dispatch | 1 | `keep` | — |
+| 40 | `automation` | `ci-failure-debug-rerun.yml` | workflow_run | 1 | `keep` | — |
+| 40 | `automation` | `ci_monitor_and_issue_creator.yml` | workflow_run, workflow_dispatch | 1 | `keep` | — |
+| 40 | `automation` | `copilot-pr-creator.yml` | workflow_dispatch, workflow_call | 1 | `keep` | — |
+| 40 | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 40 | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
+| 40 | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 50 | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
 | 90 | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
 
 ## Repeated quality/test commands
 
-- `black --check --diff .` â `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
-- `pip install pytest` â `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
-- `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` â `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
-- `python -m pip install --quiet pytest numpy` â `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
-- `bandit -r . -f json -o bandit-report.json || true` â `ci-cd.yml`, `ci-pipeline.yml`
-- `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` â `ci-cd-tests.yml`, `ci-cd.yml`
-- `flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120` â `ci.yml`, `reusable-ci.yml`
-- `pip install bandit safety` â `ci-cd-tests.yml`, `ci-cd.yml`
-- `pip install flake8 black isort mypy pylint` â `ci-cd-tests.yml`, `ci-cd.yml`
-- `pip install flake8 mypy pylint black ruff` â `bridge-ci.yml`, `ci.yml`
-- `pip install pytest pytest-cov pyyaml` â `cd-unified.yml`, `dow-sprint6-cicd.yml`
-- `pip install pytest pytest-mock flake8 mypy pylint` â `bridge-ci.yml`, `ci.yml`
-- `pip install pytest pyyaml` â `codespace-federation.yml`, `dow-sprint6-cicd.yml`
-- `pip install ruff black pylint mypy` â `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
-- `pre-commit run --all-files || echo "Pre-commit completed"` â `ci-abacus.yml`, `ci-codex.yml`
-- `pylint **/*.py --exit-zero` â `ci-cd-tests.yml`, `ci-pipeline.yml`
-- `python -m pip install pytest numpy` â `leg5-federation-dashboard-proof.yml`, `mip-v2-federated-control.yml`
-- `python -m pytest DMAIC_V3/tests -q` â `reusable-ci.yml`, `w72-clean-clone-proof.yml`
-- `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` â `codespace-federation.yml`, `federation-notebook.yml`
-- `python -m pytest tests -v` â `governance.yml`, `validation.yml`
+- `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
+- `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
+- `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
+- `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
+- `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
+- `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py --max-line-length=120` — `ci.yml`, `reusable-ci.yml`
+- `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
+- `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
+- `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
+- `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
+- `pip install pytest pyyaml` — `codespace-federation.yml`, `dow-sprint6-cicd.yml`
+- `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
+- `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
+- `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `python -m pip install pytest numpy` — `leg5-federation-dashboard-proof.yml`, `mip-v2-federated-control.yml`
+- `python -m pytest DMAIC_V3/tests -q` — `reusable-ci.yml`, `w72-clean-clone-proof.yml`
+- `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
+- `python -m pytest tests -v` — `governance.yml`, `validation.yml`
 
 ## Control rule
 
