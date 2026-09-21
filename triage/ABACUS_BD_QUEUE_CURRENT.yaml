@@ -34,10 +34,10 @@ summary:
     - 1195
     - 1256
     - 581
-  open_after_pulse: 13
+  open_after_pulse: 12
   next_reconcile: 2
   control_watch: 1
-  local_or_external_return: 6
+  local_or_external_return: 5
   programme_parent: 4
 
 lanes:
@@ -82,9 +82,6 @@ lanes:
       blocked_by: Completed Phase 2 plus local OneDrive publication.
     - issue: 637
       blocked_by: Real Office review and source-side assimilation cycle.
-    - issue: 638
-      blocked_by: >-
-        Real release execution plus attestation and legacy-binary decisions.
     - issue: 1278
       blocked_by: OWNER_ADMIN_GATE
       next_action: >-
@@ -177,3 +174,12 @@ closed_this_pulse:
       Cold-edge Reader confirmed current reduced model/runtime reaches PROCEED_MDA
       with zero original MDA gates; stale traceability/Appendix 8.4 residual work
       transferred losslessly to successor #1313.
+
+  - issue: 638
+    disposition: SOURCE_SIDE_COMPLETE
+    proof: >-
+      Current-main S1/S2 scan found zero tracked binary/archive files in the
+      QPS source paths, no unintended legacy/stale source references, and CODEX
+      #251/#252 already bound attestation policy and the narrow legacy-binary
+      cleanup. Remaining real-release proof stays under #635 -> #636 -> #637
+      and programme parent #633.
