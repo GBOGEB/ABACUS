@@ -35,10 +35,13 @@ modes: []
 unresolved:
   - id: APPENDIX_8_4_SOURCE
     state: SOURCE_PENDING
-    need: Authoritative Appendix 8.4 mode/valve-state source content.
+    need: >-
+      Authoritative Appendix 8.4 mode/valve-state source content.
   - id: MODE_DEPENDENT_RECOVERY_PATH
     state: SOURCE_PENDING
-    need: Source-bound determination of which recovery path is physically available per mode.
+    need: >-
+      Source-bound recovery-path availability for each operating mode.
   - id: MODE_DEPENDENT_VEFF
     state: SOURCE_PENDING
-    need: Source-bound open/closed topology before changing connected effective volume by mode.
+    need: >-
+      Source-bound open/closed topology before changing connected volume.
