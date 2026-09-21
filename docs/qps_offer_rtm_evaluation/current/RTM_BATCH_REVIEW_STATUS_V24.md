@@ -74,3 +74,9 @@ Completion of these four review ranges plus the planned v24 rank/tier reconcilia
 - the QPS accepted-release gate has advanced.
 
 Further work is evidence acquisition/reconciliation against the governed RTM items, not a fifth generic RTM batch. The accepted-release HOLD remains independent and requires its own controlled PC/OneDrive receipt and raw-SHA parity evidence.
+
+## Current peer-review entry point
+
+For the LOOP / QCELL abnormal-event lane, use `LOOP_QCELL_ABNORMAL_EVENT_PEER_REVIEW_MATRIX.md` as the current owner-first-pass review surface. It cross-links the historic D2.1 QCELL behavioural bound, the 2026-08-28 site LOOP interface evidence, canonical RTM/OFFER anchors, bidder-native LKT/ALAT references, owner provisional dispositions, and FAT/SAT closure evidence.
+
+That matrix is review navigation only: it does not modify RTM wording, OFFER mapping, v24 prioritisation, bidder compliance credit or closure state.
