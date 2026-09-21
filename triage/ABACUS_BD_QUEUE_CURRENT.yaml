@@ -113,7 +113,8 @@ closed_this_pulse:
   - issue: 583
     disposition: VERIFIED_COMPLETE
     proof: >-
-      Generated scenario matrix, 21-point progress, RTM, and source traceability.
+      Generated scenario matrix, 21-point progress, RTM, and source
+      traceability.
   - issue: 645
     disposition: COMPLETED
     proof: PRs #1309 and #1310 reserve KEB for Knowledge Exchange Bridge.
