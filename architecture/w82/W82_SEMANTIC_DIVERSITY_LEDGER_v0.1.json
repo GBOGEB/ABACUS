@@ -1,0 +1,261 @@
+{
+  "schema_version": "MC2-W82-SEMANTIC-DIVERSITY-LEDGER-0.1.0",
+  "as_of": "2026-09-21",
+  "repository": "GBOGEB/ABACUS",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "source_probe": {
+    "pr": 1295,
+    "head_sha": "17067f6874009f198f24bad6d56faffa2df49833",
+    "workflow": "W78 Deterministic Work Census",
+    "run_id": 35576049753,
+    "disposition": "CLOSED_UNMERGED_AFTER_RECEIPT_HARVEST",
+    "draft_merge_prevention": true
+  },
+  "outcome_definition": {
+    "name": "docs_validation_failure",
+    "workflow": "Validate Docs (Markdown/YAML/JSON)",
+    "pass_label": 0,
+    "failure_label": 1,
+    "cancelled_policy": "missing_not_failure",
+    "purpose": "balanced independent machine outcome contrast only"
+  },
+  "states": [
+    {
+      "label": "p1281-pass",
+      "pr": 1281,
+      "source_sha": "7e8ee178f9d7e6d0d2797c754a7e8fbbde93057b",
+      "outcome": {
+        "run_id": 35352034494,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "probe": {
+        "job_id": 106258118161,
+        "artifact_id": 10628545783,
+        "artifact_digest": "sha256:a2718e33f5db8769f81fda7566db7c046b6ff7fb261efaf811453da9a5ee324e"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2804,
+        "scanned_text_bytes": 76598508,
+        "consumer_candidate_checks": 50469,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "186bf2dec5adae07edb92e9ef75c84d5a68c99cbfc14e0c10418b3aed8bf4d3a"
+    },
+    {
+      "label": "p1286-fail",
+      "pr": 1286,
+      "source_sha": "9b89aa3516209f18447f03de91e91b21b35c9304",
+      "outcome": {
+        "run_id": 35425352883,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "probe": {
+        "job_id": 106258118123,
+        "artifact_id": 10627766665,
+        "artifact_digest": "sha256:15149ac8e6dec28eed73f244aa322f9a8eed7fa134ad1224be3000d9fa0efed2"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2818,
+        "scanned_text_bytes": 76635129,
+        "consumer_candidate_checks": 50721,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "691cf2e0899d4d17cc97d6e45ca73d084777f7e304e2463eabeb5fec253944af"
+    },
+    {
+      "label": "p1288-fail",
+      "pr": 1288,
+      "source_sha": "a5a44635d5b10c6bb1984db131d254872efd8b0d",
+      "outcome": {
+        "run_id": 35428297185,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "probe": {
+        "job_id": 106258118114,
+        "artifact_id": 10628680519,
+        "artifact_digest": "sha256:930667989a0d6780bc0320a908e29ee4624f9f54a8e70dff8d30f5a3e14a4e94"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2819,
+        "scanned_text_bytes": 76637497,
+        "consumer_candidate_checks": 50739,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "8e61562b23e2170919c59c205dce2c64edf3f80997d7a1c1d89f40c75ea48aa5"
+    },
+    {
+      "label": "p1289-pass",
+      "pr": 1289,
+      "source_sha": "51e044499bcf8828f9bf92c4472f6c0419f58834",
+      "outcome": {
+        "run_id": 35428349640,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "probe": {
+        "job_id": 106258118081,
+        "artifact_id": 10627811749,
+        "artifact_digest": "sha256:877bba42c7a3faedda57386e4b9b59a6e103384bce81299955d90b5e8447f798"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2819,
+        "scanned_text_bytes": 76637837,
+        "consumer_candidate_checks": 50739,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "7b6ced1650f1f2de8d0047da78757e6cdf919d1d7cf31df0502fdb4931572836"
+    },
+    {
+      "label": "p1291-fail",
+      "pr": 1291,
+      "source_sha": "17f70d5398a710a3714de8dd50f400b3a6c27dee",
+      "outcome": {
+        "run_id": 35575389514,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "probe": {
+        "job_id": 106258118184,
+        "artifact_id": 10628541429,
+        "artifact_digest": "sha256:7c649628921c8f01cafa0ddbf27528942188d8aef9e0fd375388b6b63d33ecd7"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2822,
+        "scanned_text_bytes": 76649891,
+        "consumer_candidate_checks": 50793,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "07f35bc7e632cef8d00ed3618e939f4e56d00e7341188404c9cd9a9a23d250ee"
+    },
+    {
+      "label": "p1292-pass",
+      "pr": 1292,
+      "source_sha": "9c0e4cd1cf37ff7bebbda9b33734504c32787862",
+      "outcome": {
+        "run_id": 35575604789,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "probe": {
+        "job_id": 106258118152,
+        "artifact_id": 10628186969,
+        "artifact_digest": "sha256:b03dbc02fc7e790d1845d740665a9f89ef62d101c61b3361d64dce9cd6acd350"
+      },
+      "semantic_work_vector": {
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "semantic_work_vector_sha256": "cd64a4c48b08c82f3be90c5d75a69b85060492f5b801d8da84a80958bb42bf98",
+      "work_vector": {
+        "scanned_text_files": 2822,
+        "scanned_text_bytes": 76649936,
+        "consumer_candidate_checks": 50793,
+        "consumer_hits": 74,
+        "consumer_files_with_hits": 15,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector_sha256": "d489e4fb94412e77839e07ea4ebe7543718841d605496144753395626ac605f1"
+    }
+  ],
+  "invariants": {
+    "pca_refit_permitted": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt_permitted": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false,
+    "formal_credit_delta": 0
+  }
+}
