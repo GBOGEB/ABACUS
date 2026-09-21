@@ -89,6 +89,19 @@ Reconcile scope configuration, expansion readiness, total helium inventory basis
 
 Reconcile daily/instantaneous leak limits, EN 13185 methodology, leak-tightness qualification, LOOP critical loads, purge/conditioning, ≤1% abnormal-event loss, QRB.S recovery capacity and the restoration procedure. OFFER-20/21/22 have distinct roles and shall not be collapsed into one generic compliance statement.
 
+#### LOOP operational-interface delta — SCK CEN email 2026-08-28
+
+The new source-supported operational scenario materially sharpens the evidence tests for **RTM-258 / OFFER-21** and **RTM-260..262 / OFFER-22** while leaving all four RTMs open:
+
+- **RTM-258 / OFFER-21:** the critical-load strategy shall explicitly represent one HP compressor, a 15 min preferred / 30 min maximum energisation delay, automatic transfer to backup power, manual return to normal supply, and an approximately 1–2 h peak backup-demand window. The QPS Contractor shall confirm compatibility with the NA.ES02 interface rather than assuming that a diesel rating alone proves the LOOP function.
+- **RTM-260 / OFFER-22:** the ≤1% inventory-loss case must be demonstrated across the pre-compressor interval as well as the active-recovery interval. The delay before one HP compressor is available makes WSH/Line-S buffering, initial pressure, relief margin and utility availability part of the acceptance chain.
+- **RTM-261 / OFFER-22:** the contract-controlled abnormal/LOOP requirement remains ≥100 g/s without inventory loss. The email's approximate **100 g/s one-HP cap** is a site/interface evidence point, not permission to reduce the RTM and not proof of compliance. Bidder values above that point require explicit NA.ES02/load compatibility evidence before they can be credited for LOOP.
+- **RTM-262 / OFFER-22:** restoration evidence must include the manual operator-triggered retransfer to normal power and recovery of normal helium circulation after the initiating event has cleared.
+
+The older DEL2.1 curves referenced by the email are explicitly marked outdated and are retained only as order-of-magnitude transient evidence. They strengthen the need to prove the initial 15–30 min buffer/pressure response; they do not replace selected-design calculations or tests. See `LOOP_OPERATIONAL_SCENARIO_EMAIL_20260828_REVIEW_DELTA.md` for the full provenance and bidder-specific review effect.
+
+**Numerical control:** no v24 RTM rank/tier, BT/PCA value, OFFER score or formal compliance credit is changed by this evidence-only update.
+
 ### External LHe withdrawal / GHe recovery — RTM-263..280
 
 Reconcile installed-capacity constraint, Dewar Filling Station model and SAT evidence, 500 L interface and withdrawal demand, autonomous G20 acceptance/rejection, fluid envelope, purity limits, continuous monitoring, rejection discharge and physical interface equipment. OFFER-23 and OFFER-24 are direct but separate evidence interfaces.

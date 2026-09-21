@@ -87,6 +87,24 @@ The exact extraction additionally records Gate, Weighted S, BT Win %, BT λ inde
 
 These questions are evidence-structuring prompts only and do not add requirements.
 
+## LOOP abnormal-event control-system application
+
+The 2026-08-28 LOOP operational-interface evidence and the historical D2.1 QCELL/user-demand envelope create a specific control-system review path without adding new RTM requirements:
+
+- **RTM-298..299:** the QPS:CIS architecture shall contain the systems, I/O and support-system interfaces needed to execute the LOOP limited-service state, including emergency electrical supply, HP recovery, cooling-water availability, valve/actuator state and relevant user-interface signals.
+- **RTM-301:** autonomous operation is tested against the **automatic normal→backup transfer** and the controlled abnormal-event sequence. The source-supported **manual backup→normal retransfer** is treated as an explicit operator action within the recovery procedure, not silently automated.
+- **RTM-302:** instrument-health/alarm logic should distinguish the initiating LOOP event, unavailable utilities/support systems and failed recovery-path components so the event sequence is diagnosable.
+- **RTM-305:** abnormal-event interlock/load-shed thresholds remain protected parameters; D2.1 historic curves may inform engineering sensitivity but shall not become writable acceptance thresholds without controlled design approval.
+- **RTM-306..307:** any manual override or simulated/substituted value used during abnormal-event testing must preserve mode indication, permissions and fail-safe logic.
+- **RTM-308:** the historian should capture event chronology sufficient to reconstruct power loss, automatic transfer, user/QCELL response, load shedding, HP start, recovery flow, alarms/interlocks and manual retransfer.
+- **RTM-309:** automated QPS test functionality is a natural verification hook for repeatable LOOP sequence testing, including injected/simulated user-demand profiles where safe and approved.
+
+The **D2.1 role is historical behavioural stimulus**: an anticipated aggregate QCELL/user load/return profile to challenge the current control sequence. It is not control-setpoint authority. The current RTM, approved functional analysis/control sequences, selected-design transient model and approved test programme control acceptance.
+
+Related **OFFER-28 — Functional Analysis & Control Sequences** is a useful offer-stage evidence source for the abnormal-event state machine and cause/effect logic, but it shall not be inferred as a new canonical OFFER edge to RTM-281..309 because this governed batch has no canonical OFFER relationship.
+
+The external control-system boundary also remains relevant: **RTM-372** requires the QPS↔MIS hardwired slow-interlock interface defined by the applicable controls documentation. LOOP review shall therefore identify which abnormal-event status/interlock signals cross that boundary and which remain internal to QPS:CIS.
+
 ## Promotion rule
 
 No item may be promoted beyond `REVIEW / DERIVED EVIDENCE ONLY` unless canonical RTM identity/text are preserved, evidence ownership and verification route are explicit, any external-reference applicability is governed, and a reviewer explicitly approves promotion. v24 metadata must remain bound to the verified exact FULL v24 binary and exact-row extraction evidence.

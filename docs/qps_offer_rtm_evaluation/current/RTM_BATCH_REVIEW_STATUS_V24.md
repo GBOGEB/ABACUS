@@ -57,6 +57,12 @@ Accordingly, the `V24_LOOKUP_REQUIRED` placeholders in the two governed target b
 
 OFFER responses remain tender-stage evidence/request interfaces and do not replace RTM compliance or close requirements.
 
+## 2026-08-28 LOOP operational-interface evidence delta
+
+`LOOP_OPERATIONAL_SCENARIO_EMAIL_20260828_REVIEW_DELTA.md` adds source-supported SCK CEN operating-interface evidence to the completed item-level review. It refines the evidence questions for RTM-051, RTM-258, RTM-260, RTM-261, RTM-262, RTM-428 and RTM-436 and the OFFER-21/OFFER-22 review interfaces.
+
+The delta introduces no requirement wording, rank/tier, BT/PCA, bidder-score or formal compliance-credit change. Its principal control effect is to require the review to test a **time-sequenced LOOP architecture**: 15 min preferred / 30 min maximum before one HP compressor is energised, automatic transfer to backup, manual retransfer to normal supply, approximately 1–2 h peak backup demand, and an approximate one-HP cap of 100 g/s. Bidder claims remain subject to selected-design proof against that interface.
+
 ## Promotion gate
 
 Completion of these four review ranges plus the planned v24 rank/tier reconciliation means the planned **item-level review and prioritisation-metadata pass** is complete. It does **not** mean:
