@@ -88,7 +88,7 @@ jobs:
             'w64_dov': p3['w64_dov'],
           },sort_keys=True))
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: w64-census-p1-p2-p3-receipts
           path: architecture/w64/receipts/

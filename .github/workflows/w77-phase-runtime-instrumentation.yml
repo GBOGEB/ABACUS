@@ -85,7 +85,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W77 phase probe
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           # Repeat + target is unique within one workflow run.
           name: r${{ matrix.repeat }}-${{ matrix.target.label }}
@@ -129,7 +129,7 @@ jobs:
           cat architecture/w77/runtime/W77_FEATURE_STABILITY.json
 
       - name: Upload W77 stability evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w77-phase-stability-${{ github.sha }}
           path: architecture/w77/runtime/W77_FEATURE_STABILITY.json

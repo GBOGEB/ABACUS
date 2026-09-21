@@ -67,14 +67,14 @@ jobs:
           echo "ack=$ack" >> "$GITHUB_OUTPUT"
       - name: Upload causal return
         if: github.event_name == 'push' && github.ref_name != 'main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gloob-causal-return
           path: ${{ steps.emitted.outputs.return }}
           if-no-files-found: error
       - name: Upload delivery acknowledgement
         if: github.event_name == 'push' && github.ref_name != 'main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gloob-dispatch-ack
           path: ${{ steps.emitted.outputs.ack }}

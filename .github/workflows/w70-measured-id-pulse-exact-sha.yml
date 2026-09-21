@@ -40,7 +40,7 @@ jobs:
           print(json.dumps(d, sort_keys=True))
           PY
       - name: Upload exact-SHA measurement
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w70-measured-id-pulse-${{ env.SOURCE_SHA }}
           path: architecture/w70/receipts/${{ env.SOURCE_SHA }}/
