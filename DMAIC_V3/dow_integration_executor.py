@@ -48,7 +48,7 @@ class DOWIntegrationExecutor:
             (4, "Knowledge Extraction", lambda: self._run_agent(
                 "dow_knowledge_extractor", ["--target", target_dir, "--verbose"])),
             (5, "Recursive Self-Ranking", self._run_ranking),
-            (6, "Validation", self._run_validation),
+            (6, "Validation", lambda: self._run_validation(target_dir)),
         ]
 
         for stage_number, stage_name, runner in required:
@@ -118,14 +118,19 @@ class DOWIntegrationExecutor:
             }
         return self._run_script("recursive_self_ranking", ranking_path, [], timeout=300)
 
-    def _run_validation(self) -> Dict[str, Any]:
+    def _run_validation(self, target_dir: str) -> Dict[str, Any]:
         validation_candidates = [
             Path("DMAIC_V3/local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py"),
             Path("local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py"),
         ]
         for path in validation_candidates:
             if path.exists():
-                return self._run_script("smoke_test", path, [], timeout=180)
+                return self._run_script(
+                    "smoke_test",
+                    path,
+                    ["--target", target_dir],
+                    timeout=180,
+                )
         print("[X] Required validation mechanic not found in declared parent locations")
         return {
             "status": "blocked_missing_parent_mechanic",
