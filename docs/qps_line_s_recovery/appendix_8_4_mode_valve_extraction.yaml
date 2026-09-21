@@ -1,0 +1,44 @@
+schema: abacus.qps_line_s.appendix_8_4_mode_valve_extraction.v1
+status: SOURCE_PENDING
+authority_transfer: false
+formal_credit_delta: 0
+
+source:
+  source_id: SRC-D2-8-4
+  document: D2.1
+  section: Appendix 8.4 modes
+  extraction_issue: GBOGEB/ABACUS#1313
+  source_material_available_in_repo: false
+  source_ref: null
+  evidence_locator: null
+
+policy:
+  infer_valve_states: false
+  allowed_commanded_states:
+    - OPEN
+    - CLOSED
+    - UNKNOWN
+  allowed_fail_states:
+    - FAIL_OPEN
+    - FAIL_CLOSED
+    - UNKNOWN
+  extracted_row_requires:
+    - source_ref
+    - evidence_locator
+  rule: >-
+    Do not add or promote a mode/valve row from engineering inference alone.
+    A row may be EXTRACTED only when its authoritative source reference and
+    evidence locator are populated.
+
+modes: []
+
+unresolved:
+  - id: APPENDIX_8_4_SOURCE
+    state: SOURCE_PENDING
+    need: Authoritative Appendix 8.4 mode/valve-state source content.
+  - id: MODE_DEPENDENT_RECOVERY_PATH
+    state: SOURCE_PENDING
+    need: Source-bound determination of which recovery path is physically available per mode.
+  - id: MODE_DEPENDENT_VEFF
+    state: SOURCE_PENDING
+    need: Source-bound open/closed topology before changing connected effective volume by mode.
