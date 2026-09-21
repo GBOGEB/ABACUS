@@ -51,5 +51,9 @@ jobs:
           python -m models.qps_line_s.closure_contract
       - name: Zero-test guard
         run: |
-          python -m pytest --collect-only -q tests/test_line_s_buffer.py tests/test_runtime.py tests/test_recovery_model.py | tee /tmp/collect.txt
+          python -m pytest --collect-only -q \
+            tests/test_line_s_buffer.py \
+            tests/test_runtime.py \
+            tests/test_recovery_model.py \
+            | tee /tmp/collect.txt
           grep -q "test_" /tmp/collect.txt
