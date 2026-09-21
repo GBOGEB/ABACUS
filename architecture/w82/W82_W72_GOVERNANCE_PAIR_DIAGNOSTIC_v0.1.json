@@ -1,0 +1,141 @@
+{
+  "schema_version": "MC2-W82-W72-GOVERNANCE-PAIR-DIAGNOSTIC-0.1.0",
+  "as_of": "2026-09-21",
+  "repository": "GBOGEB/ABACUS",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "predecessor": {
+    "current": "handover/mc2/W81_CURRENT.json",
+    "state": "CONTROLLED_NEGATIVE_REPAIR_PAIR_DIAGNOSTIC",
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt": "WITHHELD"
+  },
+  "probe": {
+    "disposable_pr": 1294,
+    "draft": true,
+    "merged": false,
+    "probe_head_sha": "6bb7eae36e48db936b2b724b173115354102b8f9",
+    "workflow_run_id": 35575973785,
+    "producer": "tools/w78_deterministic_work_probe.py",
+    "workflow": "W78 Deterministic Work Census",
+    "temporary_workflow_persisted": false
+  },
+  "observed_pair": {
+    "name": "W72_CI_WORKFLOW_GOVERNANCE_REPAIR",
+    "before": {
+      "pr": 1174,
+      "source_sha": "6e0a8d3b0fd47bc6f0d44b3df8be1b3c6480e22a",
+      "observed_run_id": 34768461719,
+      "observed_workflow": "CI Workflow Governance",
+      "observed_outcome": "failure",
+      "probe_job_id": 106257888499,
+      "artifact_id": 10628485769,
+      "artifact_digest": "sha256:44837d4128479643a38ef60cbf50fd5099c060d1ac0119f289d999ce939c8486",
+      "semantic_work_vector": {
+        "consumer_hits": 73,
+        "consumer_files_with_hits": 14,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector": {
+        "scanned_text_files": 2693,
+        "scanned_text_bytes": 76073208,
+        "consumer_candidate_checks": 48471,
+        "consumer_hits": 73,
+        "consumer_files_with_hits": 14,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      }
+    },
+    "after": {
+      "pr": 1175,
+      "source_sha": "0de71a45531780a2e28e53b542cbc6788b121b28",
+      "observed_run_id": 34768595363,
+      "observed_workflow": "CI Workflow Governance",
+      "observed_outcome": "success",
+      "probe_job_id": 106257888567,
+      "artifact_id": 10627726656,
+      "artifact_digest": "sha256:84230f842aeacec5e606bd2e59a754f3d984d0b4072f33503816e39206bf3117",
+      "semantic_work_vector": {
+        "consumer_hits": 73,
+        "consumer_files_with_hits": 14,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      },
+      "work_vector": {
+        "scanned_text_files": 2693,
+        "scanned_text_bytes": 76073324,
+        "consumer_candidate_checks": 48471,
+        "consumer_hits": 73,
+        "consumer_files_with_hits": 14,
+        "semantic_entities": 18,
+        "semantic_references": 11,
+        "lineage_paths": 18,
+        "graph_nodes": 26,
+        "graph_edges": 29
+      }
+    }
+  },
+  "frozen_w79_projection": {
+    "semantic_pc1": {
+      "eigenvalue": 6.341340944864426,
+      "explained_variance_ratio": 0.9059058492663462,
+      "w79_in_sample_min": -6.0743141625331045,
+      "w79_in_sample_max": 1.9041921482931443,
+      "before": 2.2159389220827728,
+      "after": 2.2159389220827728,
+      "delta": 0,
+      "support_class": "OUT_OF_SAMPLE_ABOVE_W79_MAX"
+    },
+    "full_work_pc1": {
+      "eigenvalue": 9.08986535264184,
+      "explained_variance_ratio": 0.9089865352641843,
+      "w79_in_sample_min": -6.8170834526184265,
+      "w79_in_sample_max": 2.330551907662297,
+      "before": 2.6036731050703157,
+      "after": 2.603679940509547,
+      "delta": 0.000006835439231522855,
+      "support_class": "OUT_OF_SAMPLE_ABOVE_W79_MAX"
+    }
+  },
+  "disposition": {
+    "status": "CONTROLLED_NEGATIVE_W72_GOVERNANCE_PAIR_DIAGNOSTIC",
+    "measured_exact_source_states": 2,
+    "repair_pairs": 1,
+    "semantic_pair_discrimination": false,
+    "semantic_vector_unique_count": 1,
+    "pc1_predictive_validation": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "pairwise_events": [],
+    "bt": "WITHHELD",
+    "pca_refit_performed": false,
+    "timing_pca_reopened": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false
+  },
+  "cumulative_interpretation": {
+    "w81_high_tail_vector": "[74,15,18,11,18,26,29]",
+    "w82_high_tail_vector": "[73,14,18,11,18,26,29]",
+    "result": "TWO_DISTINCT_HIGH_TAIL_SEMANTIC_VECTORS_EACH_SHOW_ZERO_WITHIN_PAIR_PC1_DELTA",
+    "supported": "frozen semantic PC1 is insensitive to the tested governance/docs repair outcomes within both measured pair classes",
+    "not_supported": [
+      "PC1 predicts repair success",
+      "repair chronology creates Bradley-Terry evidence",
+      "full-work PC1 predicts repair success",
+      "general allocation authority"
+    ]
+  },
+  "next_frontier": "seek outcome states with materially different semantic topology and preferably within or below the original W79 PC1 support; do not spend more probes on near-identical high-tail repair vectors"
+}
