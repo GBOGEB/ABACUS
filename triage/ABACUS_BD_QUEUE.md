@@ -17,7 +17,7 @@ human-facing execution view.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
 There is currently no unambiguous code-only `EXECUTE_NOW` item. Phase-5
-#638 is source-side complete. Its physical release predicates remain
+Issue #638 is source-side complete. Its physical release predicates remain
 losslessly under #635/#636/#637 and #633. The next useful work is evidence
 reconciliation, not another speculative framework.
 
