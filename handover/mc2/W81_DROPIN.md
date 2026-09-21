@@ -11,29 +11,44 @@ Continue MC-2 measured outcome work from repository authority.
 ## Current state
 
 - W80 remains `CONTROLLED_NEGATIVE_DIAGNOSTIC_FINAL`.
-- W81 primary low-PC1 census found zero Actions runs for all four missing W80 states `s01..s04`; missing remains missing, never zero.
-- W81 measured two exact red->green repair pairs with four real hosted exact-source work receipts.
+- W81 found zero Actions runs for all four missing W80 states:
+  `s01..s04`. Missing remains missing, never zero.
+- W81 measured two exact red-to-green repair pairs using four real,
+  hosted, exact-source work receipts.
 - All four repair states have the same semantic-work vector.
-- Frozen W79 semantic PC1 projection is identical: `2.3131321337`.
-- Full-work PC1 changes are tiny: W77 `+0.0002570950`; W80 `+0.0040909488`.
-- All four projected states are above the W79 in-sample PC1 maximum, so treat them as extrapolative high-tail diagnostics.
+- Frozen W79 semantic PC1 is identical for all four:
+  `2.3131321337`.
+- Full-work PC1 changes are tiny:
+  W77 `+0.0002570950`; W80 `+0.0040909488`.
+- All four projected states exceed the W79 in-sample PC1 maximum.
+  Treat them as extrapolative high-tail diagnostics.
 - No PCA refit.
 - `PC1_PREDICTIVE_VALIDATION=false`.
-- pairwise accumulation remains false; `BT=WITHHELD`.
-- no allocation, engineering, compliance, release or formal-credit authority.
+- Pairwise accumulation remains false; `BT=WITHHELD`.
+- No allocation, engineering, compliance, release, or formal-credit
+  authority is created.
 
 ## Next admissible frontier
 
-Seek exact-source outcomes that are **semantically diverse**, not more instances of the same `[74,15,18,11,18,26,29]` semantic vector.
+Seek exact-source outcomes that are **semantically diverse**, not more
+instances of the same `[74,15,18,11,18,26,29]` semantic vector.
 
 Preferred evidence:
+
 - a distinct semantic-work vector;
 - an independently observed machine outcome;
 - exact source SHA and >0-step receipt;
-- enough support diversity to avoid the present high-PC1 extrapolation region.
+- enough support diversity to avoid the current high-PC1 extrapolation
+  region.
 
-Do not create BT pairs from repair order, PR chronology, or PC1 score alone.
+Do not create BT pairs from repair order, PR chronology, or PC1 score
+alone.
 
 ## REX
 
-PR #1290 was intended disposable but repository automation auto-merged it. The corrective transaction removes only the temporary W81 job from the W78 workflow and retains the measured receipts. Future disposable probes need an explicit merge-prevention mechanism stronger than PR text.
+PR #1290 was intended to be disposable, but repository automation
+auto-merged it. The corrective transaction removes only the temporary
+W81 job from the W78 workflow and retains the measured receipts.
+
+Future disposable probes need an explicit merge-prevention mechanism
+stronger than PR text.
