@@ -63,7 +63,7 @@ lanes:
 
   CONTROL_WATCH:
     - issue: 776
-      title: Control: arrest QPS-wave main fan-out queue regression
+      title: "Control: arrest QPS-wave main fan-out queue regression"
       evidence:
         - Original trigger was 148 queued and 5 active.
         - Current pulse observed 19 queued and 15 active.
