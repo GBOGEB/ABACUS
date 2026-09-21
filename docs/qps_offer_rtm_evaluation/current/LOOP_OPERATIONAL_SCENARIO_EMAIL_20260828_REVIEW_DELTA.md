@@ -13,6 +13,26 @@ Status: **SOURCE-SUPPORTED INTERFACE EVIDENCE — NO REQUIREMENT CLOSURE / NO SC
 
 The email explicitly states that the DEL2.1 curves are already outdated and are retained only to indicate orders of magnitude. They are not selected-design acceptance values.
 
+### D2.1 recursive-bound interpretation
+
+D2.1 is used here specifically as a **historic hook for anticipated Cryogenic User behaviour**: QCELLs treated as the combined user load/inventory seen by QPLANT during loss and recovery of services. The useful inheritance is the expected direction, timing and approximate magnitude of user-side return-flow / pressure / thermal demand, not the old plant design solution.
+
+Accordingly, D2.1 sits below the current authority layer:
+
+```text
+CONTROLLED: current Addendum II / RTM / approved current interface data
+    ↑ acceptance authority
+SOURCE-SUPPORTED: 2026-08-28 LOOP electrical/support-system interface email
+    ↑ current site-operational evidence
+HISTORIC_RECURSIVE_BOUND: D2.1 anticipated QCELL / combined-user response
+    ↑ behavioural prior / challenge profile
+BIDDER / DESIGN EVIDENCE: selected QPS topology, controls and calculations
+    ↑ implementation proof
+VERIFICATION: FAT / SAT / approved simulations and recorded results
+```
+
+This prevents two opposite errors: discarding D2.1 when its QCELL/user transient behaviour is still useful, or promoting D2.1 curves into current selected-design acceptance values.
+
 ## Operational sequence captured by the email
 
 1. Loss of normal power initiates diesel-generator backup service.
@@ -38,6 +58,12 @@ These statements define a review/acceptance interface. They do not themselves pr
 | RTM-428 | Existing backup cooling-water availability must be reconciled with the HP start delay, one-HP load, auxiliaries and continuous duty. | OPEN; no inference that 350 kW alone proves recovery. |
 | RTM-436 | Emergency one-HP operation remains subject to exhaust-duct availability and the compressor-room ambient heat-release boundary. | OPEN. |
 | RTM-433 | Email adds no instrument-air evidence. | UNCHANGED / OPEN. |
+| RTM-013..015 | Current operational scenarios, user interaction and control setpoints/interlocks are the controlled bridge from the historic QCELL behaviour to implementation. | OPEN / REVIEW. |
+| RTM-024 | Current Cryogenic User Transient Model remains the verification authority; D2.1 is a historical behavioural cross-check. | OPEN / REVIEW. |
+| RTM-298..309 | QPS:CIS must implement, diagnose, record and where applicable automatically test the abnormal-event sequence. | OPEN / REVIEW. |
+| RTM-372 | QPS↔MIS hardwired slow-interlock boundary must identify the LOOP/abnormal-event signals crossing the external controls interface. | OPEN / REVIEW. |
+| RTM-491..498 / OFFER-39 | Acceptance programme/FAT shall bind responsibilities, functional verification, instrumentation/wiring and evidence records for the abnormal-event sequence. | OPEN / REVIEW; test method to be approved. |
+| RTM-518 | SAT performance/capacity provides a site verification hook; a full live LOOP test is not inferred by this delta. | OPEN / REVIEW. |
 
 ## Bidder-specific review effect
 
@@ -74,6 +100,8 @@ The next evidence return from each Applicant should provide one integrated LOOP 
 5. Explicit confirmation of the accepted one-HP emergency-power flow point and electrical/cooling duty at that point.
 6. A verified post-LOOP restoration sequence satisfying RTM-262.
 7. FAT/SAT or equivalent verification hooks for transfer logic, compressor start timing, limited-service load shedding, sustained emergency operation and restoration.
+8. Cause/effect and state-machine trace from the D2.1/QCELL historical user-demand challenge profile through current QPS:CIS logic, including external MIS interlock/status boundaries.
+9. Historian/event-record evidence sufficient to reconstruct the abnormal-event chronology and compare measured user/QPS response with the current transient model and the historical D2.1 behavioural envelope.
 
 ## Control / anti-overclaim rules
 
