@@ -1,0 +1,199 @@
+{
+  "schema_version": "MC2-W83-NG1-NONGOVERNANCE-OUTCOME-DIAGNOSTIC-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
+  "authority": "derived_operational_analysis_only",
+  "measurement_basis": "harvested_exact_source_W83_non_governance_features_plus_independent_W80_docs_outcomes",
+  "sample_geometry": {
+    "state_count": 11,
+    "docs_failure_count": 8,
+    "docs_pass_count": 3,
+    "unique_semantic_vectors": 2,
+    "unique_consumer_graph_vectors": 6,
+    "variable_non_governance_feature_count": 16,
+    "exact_label_permutation_count": 165
+  },
+  "inference": {
+    "primary_outcome": "docs_validation_failure",
+    "test": "two-sided exact permutation of absolute AUC distance from 0.5",
+    "multiplicity": "Holm FWER",
+    "alpha": 0.05,
+    "minimum_auc_distance_from_chance_for_signal": 0.25,
+    "feature_results": [
+      {
+        "feature": "consumer_graph_distribution.consumer_entities_exactly_one_file",
+        "distinct_value_count": 2,
+        "auc": 0.770833,
+        "auc_distance_from_chance": 0.270833,
+        "exact_p": 0.151515,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.consumer_entities_multi_file",
+        "distinct_value_count": 3,
+        "auc": 0.354167,
+        "auc_distance_from_chance": 0.145833,
+        "exact_p": 0.563636,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.consumer_file_relations",
+        "distinct_value_count": 6,
+        "auc": 0.604167,
+        "auc_distance_from_chance": 0.104167,
+        "exact_p": 0.642424,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.consumer_file_relations_sq_sum",
+        "distinct_value_count": 6,
+        "auc": 0.604167,
+        "auc_distance_from_chance": 0.104167,
+        "exact_p": 0.642424,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.consumer_entities_with_hits",
+        "distinct_value_count": 4,
+        "auc": 0.604167,
+        "auc_distance_from_chance": 0.104167,
+        "exact_p": 0.660606,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.consumer_entities_five_plus_files",
+        "distinct_value_count": 2,
+        "auc": 0.395833,
+        "auc_distance_from_chance": 0.104167,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.max_consumer_files_per_entity",
+        "distinct_value_count": 2,
+        "auc": 0.395833,
+        "auc_distance_from_chance": 0.104167,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_degree_sq_sum",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_degree_sum",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_edges",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_isolated_nodes",
+        "distinct_value_count": 2,
+        "auc": 0.5625,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_nodes",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "consumer_graph_distribution.graph_nonisolated_nodes",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "semantic_composition.indexed_bindings",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "semantic_composition.lineage_bound_ids",
+        "distinct_value_count": 2,
+        "auc": 0.4375,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      },
+      {
+        "feature": "semantic_composition.manifest_index_symmetric_diff",
+        "distinct_value_count": 2,
+        "auc": 0.5625,
+        "auc_distance_from_chance": 0.0625,
+        "exact_p": 1,
+        "holm_adjusted_p": 1,
+        "signal_candidate": false
+      }
+    ],
+    "significant_feature_count": 0,
+    "signal_supported": false
+  },
+  "interpretation": {
+    "supported": "measured non-governance semantic/consumer-graph variation does not discriminate the independent docs outcome after exact multiplicity control",
+    "strongest_raw_feature": "consumer_graph_distribution.consumer_entities_exactly_one_file",
+    "strongest_raw_auc": 0.770833,
+    "strongest_raw_exact_p": 0.151515,
+    "strongest_holm_p": 1,
+    "causal_effect_claimed": false
+  },
+  "pca_fit_performed": false,
+  "timing_pca_reopened": false,
+  "pc1_predictive_validation": false,
+  "pairwise_outcome_accumulation_permitted": false,
+  "pairwise_events": [],
+  "bt_status": "WITHHELD_NO_CONNECTED_ELIGIBLE_OBSERVED_PAIRWISE_GRAPH",
+  "global_allocation_authority": false,
+  "engineering_compliance_release_authority": false,
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "math_skill_resolution": {
+    "schema": "gbogeb.skill.receipt.v1",
+    "skill": "math",
+    "task_id": "MC2_W83_NG1_EXACT_NONGOVERNANCE_OUTCOME_DISCRIMINATION",
+    "source_repo": "GBOGEB/ABACUS",
+    "source_ref": "75a2e880760af08d1f76674e7b39da570bf4485f",
+    "resolved_skill_path": "skills/math/SKILL.md",
+    "authority_transfer": false,
+    "status": "PASS_SKILL_RESOLUTION"
+  },
+  "next_frontier": "seek broader independent outcomes and/or change-delta features; do not fit PCA or BT to this negative small-sample block"
+}
