@@ -1,49 +1,163 @@
 # 21-Point Integration Progress Tracker
 
-Status refreshed after merged W001/W002 implementation review on 2026-08-28.
+Status reconciled on 2026-09-21 under issue #1313.
 
-| # | Work element | Status | Owner / helper | Notes |
-|---:|---|---|---|---|
-| 1 | Clear Applicant answer structure | started | assistant | Controlled Applicant package exists; final consolidation still gated by open evidence. |
-| 2 | Reduced model boundary | complete | assistant | Boundary defined around QCELL/QVE -> Line S -> recovery compressors -> HP path. |
-| 3 | Source register from D2.1 | complete | assistant | `source_register.md` exists. |
-| 4 | RTM traceability table | started | Agent A | `rtm_traceability.md` exists but still carries STARTED / OPEN_RFI states. |
-| 5 | Scenario matrix | complete | Agent A / runner | Canonical scenario inputs exist in `models/qps_line_s/scenarios.json`; generated scenario matrix is reproducible output. |
-| 6 | Pressure-build-up formula set | complete | assistant | Ideal-gas formula and recovery model are present. |
-| 7 | 100 / 112 / 150 / 200 g/s sensitivity | complete | assistant | Canonical scenario set contains all four principal flow cases plus mitigation cases. |
-| 8 | HP compressor start-delay sensitivity | started | assistant | Recovery model contains `comp_start_s`; contractor/plant timing basis remains RFI. |
-| 9 | Volume sensitivity | complete | Agent B / model | Canonical volume band `[9, 30, 120, 240] m3` exists and is model input. |
-| 10 | Temperature sensitivity | started | Agent B / model | Temperature is represented but current 300 K basis remains calibration-sensitive. |
-| 11 | Initial-condition sensitivity | started | assistant | Initial conditions represented; evidence closure remains open. |
-| 12 | Appendix 8.2 topology extraction | started | Agent A | PFD topology identified; detailed governed extraction remains pending. |
-| 13 | Appendix 8.3 model block map | started | assistant | SIMCRYOGENICS lineage captured at high level; detailed crosswalk remains incomplete. |
-| 14 | Appendix 8.4 mode/valve extraction plan | started | Agent A | Valve-state extraction remains pending. |
-| 15 | Excel block structure | complete | assistant | Excel-compatible outputs/build path exist; release integration is handled by GOV-001 roundtrip. |
-| 16 | Python block structure | complete | Agent B | `line_s_buffer.py`, `run_scenarios.py`, `recovery_model.py`, and runtime integration exist. |
-| 17 | CoolProp upgrade path | complete | Agent B | CoolProp 7.2.0 is pinned in model CI; independent HEPAK oracle remains separate and open. |
-| 18 | ABACUS repo scaffold plan | complete | assistant | W001/W002 implementation merged into `main`. |
-| 19 | CODEX reusable tooling plan | started | CODEX helper | Generic helper issue #237 remains open; QPS-specific manifests/index/glossary exist in ABACUS. |
-| 20 | PR text / branch plan | complete | assistant | W001/W002 PRs merged. |
-| 21 | Open issue / confirmation list | started | assistant | Open gates remain explicit: ASSUM-VEFF, ASSUM-PLIMIT, ASSUM-RECOV-PWR, ASSUM-ENERGY-MODEL. |
+The current Line-S assumptions/runtime state is the authority for MDA gate
+status.
+
+## Authority boundary
+
+The four original MDA gates are resolved in
+`assumptions_register.yaml`.
+
+The generated runtime verdict is `PROCEED_MDA` with zero open gates.
+
+This is a model/package state only. It is not engineering acceptance,
+compliance credit, or proof that all source/evidence work is complete.
+
+## Progress items
+
+1. **Clear Applicant answer structure — complete**
+   - Owner: assistant.
+   - Controlled Applicant and generated packages exist for MDA use.
+   - Engineering acceptance remains separate.
+
+2. **Reduced model boundary — complete**
+   - Owner: assistant.
+   - Boundary covers QCELL/QVE, Line S, recovery compressors, and HP path.
+
+3. **Source register from D2.1 — complete**
+   - Owner: assistant.
+   - `source_register.md` exists.
+   - Appendix 8.4 remains explicitly source-pending.
+
+4. **RTM traceability table — started**
+   - Owner: Agent A.
+   - Reconciled to current SSOT under #1313.
+   - RTM-262 recovery-path evidence remains source-pending.
+   - Exact RTM-292 wording/source trace remains pending.
+
+5. **Scenario matrix — complete**
+   - Owner: Agent A / runner.
+   - Canonical scenario inputs and reproducible generated matrix exist.
+
+6. **Pressure-build-up formula set — complete**
+   - Owner: assistant.
+   - Pressure/recovery model and current pressure-limit basis exist.
+
+7. **100 / 112 / 150 / 200 g/s sensitivity — complete**
+   - Owner: assistant.
+   - Principal flow cases and mitigation cases are represented.
+
+8. **HP compressor start-delay sensitivity — started**
+   - Owner: assistant.
+   - `comp_start_s` exists.
+   - Contractor/plant timing basis remains evidence-pending.
+
+9. **Volume sensitivity — complete**
+   - Owner: Agent B / model.
+   - Sensitivity exists.
+   - Authoritative MDA V_eff is 3.12 m3 in the assumptions SSOT.
+   - Isometric cross-check remains deferred.
+
+10. **Temperature sensitivity — started**
+    - Owner: Agent B / model.
+    - Temperature is represented.
+    - `T_GAS` remains `CALIBRATION_PENDING`.
+
+11. **Initial-condition sensitivity — started**
+    - Owner: assistant.
+    - Initial conditions are represented.
+    - Evidence/calibration closure remains open.
+
+12. **Appendix 8.2 topology extraction — started**
+    - Owner: Agent A.
+    - PFD topology is identified.
+    - Detailed governed extraction remains pending.
+
+13. **Appendix 8.3 model block map — started**
+    - Owner: assistant.
+    - SIMCRYOGENICS lineage exists at high level.
+    - Detailed crosswalk remains incomplete.
+
+14. **Appendix 8.4 mode/valve extraction — started**
+    - Owner: Agent A.
+    - A fail-closed extraction contract now exists.
+    - Source rows remain `SOURCE_PENDING`.
+    - No valve state is inferred.
+
+15. **Excel block structure — complete**
+    - Owner: assistant.
+    - Excel-compatible outputs/build path exists.
+    - Release integration remains separate.
+
+16. **Python block structure — complete**
+    - Owner: Agent B.
+    - Runtime and recovery Python modules exist.
+
+17. **CoolProp upgrade path — complete**
+    - Owner: Agent B.
+    - CoolProp 7.2.0 is exercised in model CI.
+    - Independent HEPAK low-T evidence remains separate/open.
+
+18. **ABACUS repo scaffold plan — complete**
+    - Owner: assistant.
+    - W001/W002 implementation is merged into `main`.
+
+19. **CODEX reusable tooling plan — complete**
+    - Owner: CODEX helper.
+    - CODEX helper issue #237 is closed.
+    - QPS package-specific tooling exists in ABACUS.
+
+20. **PR text / branch plan — complete**
+    - Owner: assistant.
+    - W001/W002 PRs are merged.
+    - Residual closure is governed by #1313.
+
+21. **Open issue / confirmation list — complete**
+    - Owner: assistant.
+    - MDA gates and remaining non-gate uncertainties are separated below.
 
 ## Current completion view
 
-- Complete: 10 / 21
-- Started: 11 / 21
+- Complete: 14 / 21
+- Started: 7 / 21
 - Not started: 0 / 21
 - Blocked: 0 / 21
 
-## Remaining evidence gates
+## MDA gate status
 
-The package is not promoted to closed/accepted model status. The current open-gate set remains:
+The original four MDA gates are resolved in
+`assumptions_register.yaml`:
 
-- `ASSUM-VEFF`
-- `ASSUM-PLIMIT`
-- `ASSUM-RECOV-PWR`
-- `ASSUM-ENERGY-MODEL`
+- `ASSUM-VEFF` — `RESOLVED`
+- `ASSUM-PLIMIT` — `RESOLVED`
+- `ASSUM-RECOV-PWR` — `RESOLVED`
+- `ASSUM-ENERGY-MODEL` — `RESOLVED`
 
-Independent HEPAK property validation also remains open. Completion of implementation tasks must not be read as engineering acceptance of unresolved assumptions.
+Generated `runtime_status.json` reports:
+
+- `verdict=PROCEED_MDA`
+- `n_open_gates=0`
+- no missing artefacts
+
+## Remaining non-gate evidence / calibration work
+
+These items remain open and must not become acceptance credit:
+
+- `MDOT_IN_PRE_HP_MAX` source trace — `UNRESOLVED`
+- `T_GAS` — `CALIBRATION_PENDING`
+- heat-load margin factor 1.44 pedigree — `UNRESOLVED`
+- `H2_heat_to_flow` — `CALIBRATION_PENDING`
+- independent HEPAK low-temperature reference — separate/open
+- exact RTM-292 wording/source citation — source trace pending
+- Appendix 8.4 mode/valve-state extraction — `SOURCE_PENDING`
 
 ## Front-heavy execution rule
 
-Prioritize governed source extraction, RTM closure, interface/pressure evidence and Applicant RFI closure before expanding into full SIMCRYOGENICS reproduction.
+Prioritize source extraction, RTM evidence closure, Appendix 8.4 lineage, and
+independent property evidence before full SIMCRYOGENICS reproduction.
+
+Authority transfer: false.
+
+Formal credit delta: 0.

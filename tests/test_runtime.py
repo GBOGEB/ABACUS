@@ -124,3 +124,102 @@ def test_provenance_header_accepts_deterministic_values():
     assert "Generated: 2026-06-20T00:00:00+00:00" in header
     assert "Register SHA256: abc123" in header
     assert "Git commit: deadbeef" in header
+
+
+from models.qps_line_s import closure_contract
+
+
+def test_line_s_closure_contract_matches_current_ssot():
+    summary = closure_contract.validate_current_contract()
+    assert summary["status"] == "PASS"
+    assert summary["open_mda_gates"] == 0
+    assert summary["runtime_verdict"] == "PROCEED_MDA"
+    assert summary["appendix_8_4_status"] == "SOURCE_PENDING"
+    assert summary["appendix_8_4_source_available"] is False
+    assert summary["authority_transfer"] is False
+    assert summary["formal_credit_delta"] == 0
+
+
+def test_appendix_8_4_rejects_inferred_rows_without_source():
+    data = closure_contract.load_extraction()
+    data["modes"] = [
+        {
+            "status": "EXTRACTED",
+            "mode_id": "INFERRED",
+            "mode_name": "must not pass",
+            "source_ref": "inference",
+            "evidence_locator": "none",
+            "recovery_path": "UNKNOWN",
+            "v_eff_consequence": "UNKNOWN",
+            "valves": [
+                {
+                    "valve_id": "V-INFERRED",
+                    "commanded_state": "UNKNOWN",
+                    "fail_state": "UNKNOWN",
+                    "source_ref": "inference",
+                    "evidence_locator": "none",
+                }
+            ],
+        }
+    ]
+    with pytest.raises(ValueError, match="no mode/valve rows may be inferred"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_extracted_rows_require_source_evidence():
+    data = closure_contract.load_extraction()
+    data["status"] = "EXTRACTED"
+    data["source"]["source_material_available_in_repo"] = True
+    data["source"]["source_ref"] = "D2.1"
+    data["source"]["evidence_locator"] = "Appendix 8.4"
+    data["modes"] = [
+        {
+            "status": "EXTRACTED",
+            "mode_id": "MODE-1",
+            "mode_name": "source-backed fixture",
+            "source_ref": "",
+            "evidence_locator": "Appendix 8.4 / fixture",
+            "recovery_path": "UNKNOWN",
+            "v_eff_consequence": "UNKNOWN",
+            "valves": [
+                {
+                    "valve_id": "V-1",
+                    "commanded_state": "UNKNOWN",
+                    "fail_state": "UNKNOWN",
+                    "source_ref": "D2.1",
+                    "evidence_locator": "Appendix 8.4 / fixture",
+                }
+            ],
+        }
+    ]
+    with pytest.raises(ValueError, match="mode\[0\]\.source_ref"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_allows_source_bound_unknown_states():
+    data = closure_contract.load_extraction()
+    data["status"] = "EXTRACTED"
+    data["source"]["source_material_available_in_repo"] = True
+    data["source"]["source_ref"] = "D2.1"
+    data["source"]["evidence_locator"] = "Appendix 8.4"
+    data["modes"] = [
+        {
+            "status": "EXTRACTED",
+            "mode_id": "MODE-1",
+            "mode_name": "source-backed fixture",
+            "source_ref": "D2.1",
+            "evidence_locator": "Appendix 8.4 / fixture",
+            "recovery_path": "UNKNOWN",
+            "v_eff_consequence": "UNKNOWN",
+            "valves": [
+                {
+                    "valve_id": "V-1",
+                    "commanded_state": "UNKNOWN",
+                    "fail_state": "UNKNOWN",
+                    "source_ref": "D2.1",
+                    "evidence_locator": "Appendix 8.4 / fixture",
+                }
+            ],
+        }
+    ]
+    assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
