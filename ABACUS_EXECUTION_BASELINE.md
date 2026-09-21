@@ -16,7 +16,7 @@ This baseline converts the validated lineage findings into runtime ownership and
 
 - `README.md` explicitly declares `DMAIC_V3/core/twelve_cluster_orchestrator.py` as the canonical orchestrator path and `local_mcp/agent_orchestrator_v3.0.py` as compatibility wrapper.
 - `TwelveClusterOrchestrator` is named "Canonical 12-Cluster Orchestrator V3.0 for DMAIC" in the module docstring.
-- `TwelveClusterOrchestrator` owns the cluster contract, phase sequence, KEB/GBOGEB optional initialization, temporal event capture, phase parallel execution, phase hook execution, and report generation.
+- `TwelveClusterOrchestrator` owns the cluster contract, phase sequence, ExecutionBackbone/GBOGEB optional initialization, temporal event capture, phase parallel execution, phase hook execution, and report generation.
 - `DMAIC_V3/tests/test_twelve_cluster_orchestrator.py` directly tests the canonical 12-cluster contract, parallel execution, temporal hooks, run scoping, failed phase behavior, and timeout enforcement.
 
 **Evidence:**
@@ -29,7 +29,7 @@ This baseline converts the validated lineage findings into runtime ownership and
 
 | Runtime | Status | References | Recommendation |
 | -------------------- | ------ | ---------- | -------------- |
-| Active SSOT: `DMAIC_V3/core/twelve_cluster_orchestrator.py` / `TwelveClusterOrchestrator` | Active SSOT | `README.md` canonical path; `docs_versioned/v2.3/migration/to_v33.md` names it central; direct tests in `DMAIC_V3/tests/test_twelve_cluster_orchestrator.py`; optional KEB/GBOGEB runtime initialization. | Retain as governance SSOT; do not create a new orchestrator. |
+| Active SSOT: `DMAIC_V3/core/twelve_cluster_orchestrator.py` / `TwelveClusterOrchestrator` | Active SSOT | `README.md` canonical path; `docs_versioned/v2.3/migration/to_v33.md` names it central; direct tests in `DMAIC_V3/tests/test_twelve_cluster_orchestrator.py`; optional ExecutionBackbone/GBOGEB runtime initialization. | Retain as governance SSOT; do not create a new orchestrator. |
 | Secondary Runtime: `DMAIC_V3/full_pipeline_orchestrator.py` / `FullPipelineOrchestrator` | Secondary operational runtime | Active DOW workflows run it; deployment docs use it; it imports and executes phase modules 0-9. | Retain as operational phase-runner until a later consolidation task aligns workflow entrypoints with the 12-cluster SSOT. |
 | Legacy Runtime: `local_mcp/agent_orchestrator_v3.0.py` / `AgentOrchestratorV3` | Compatibility / V2.3 lineage runtime | README labels it compatibility wrapper; V2.3 CI workflow executes it; it loads six V2.3 optimized agents and `KnowledgeIntegrationV23`. | Retain for compatibility and agent tests; do not promote it above 12-cluster SSOT. |
 | Experimental Runtime | None selected from the three requested candidates | The three analyzed candidates map to active SSOT, secondary operational runtime, and compatibility runtime. Separate corrupted/fixed copies of `full_pipeline_orchestrator` are deprecated lineage artifacts, not requested candidates. | Do not create or nominate an experimental orchestrator. |
@@ -49,7 +49,7 @@ This baseline converts the validated lineage findings into runtime ownership and
 
 - **Purpose:** canonical 12-cluster orchestration, temporal phase hooks, cluster contract, optional KEB/GBOGEB runtime integration.
 - **Invocation path:** `python DMAIC_V3/core/twelve_cluster_orchestrator.py --test`; imported by tests; named in README as canonical path.
-- **Dependencies:** optional `KEB` and `GBOGEB`; standard library concurrency; phase task factories supplied by callers.
+- **Dependencies:** optional `ExecutionBackbone` and `GBOGEB`; standard library concurrency; phase task factories supplied by callers.
 - **Active references:** README canonical orchestrator section, migration docs, tests, lineage docs.
 - **Downstream consumers:** tests, runtime reports, consumers requiring the canonical cluster contract and temporal hook events.
 - **Baseline decision:** Active Runtime SSOT.
@@ -82,13 +82,13 @@ This baseline converts the validated lineage findings into runtime ownership and
 
 ## Integration SSOT
 
-### KEB status
+### ExecutionBackbone status
 
 - **Status:** PARTIAL but consumed.
-- **Implementation SSOT:** `core/keb/keb.py`.
+- **Implementation SSOT:** `core/execution_backbone/backbone.py`.
 - **Consumption adapter:** `local_mcp/knowledge_integration_v2.3.py`.
 - **Evidence:** `KnowledgeIntegrationV23` imports and constructs `KEB`; `TwelveClusterOrchestrator` optionally constructs `KEB`; `.github/workflows/v23-cicd.yml` runs `local_mcp/knowledge_integration_v2.3.py`.
-- **Decision:** retain `core/keb/keb.py`; normalize imports and start/stop expectations before adding features.
+- **Decision:** retain `core/execution_backbone/backbone.py`; normalize imports and start/stop expectations before adding features.
 
 ### GBOGEB status
 
@@ -113,14 +113,14 @@ Evidence-backed only:
 1. **GBOGEB bridge path drift:** active workflow references root-level `GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py`, `test_integration_bridge.py`, and `UNIFIED_GLOB_CONFIG.yaml`, while the bridge implementation found in this repo is `staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py`.
 2. **Recursive hook retrieval parity:** historical `get_recursive_hooks(enabled_only=True)` is documented, but active runtime modules do not expose a dedicated retrieval API. Current equivalents are artifact-level `recursive_hooks` injection and phase-level temporal registration.
 3. **Runtime entrypoint split:** README declares `TwelveClusterOrchestrator` canonical, while active deployment/DOW workflows still execute `DMAIC_V3.dmaic_v3_engine` and `DMAIC_V3/full_pipeline_orchestrator.py`.
-4. **Integration import inconsistency:** `KnowledgeIntegrationV23` imports `core.keb.keb` and `core.gbogeb.gbogeb`; `TwelveClusterOrchestrator` uses top-level `from keb import KEB` / `from gbogeb import GBOGEB` after path insertion. This is import consolidation work, not a missing component.
+4. **Integration import inconsistency:** `KnowledgeIntegrationV23` imports `core.execution_backbone` and `core.gbogeb.gbogeb`; `TwelveClusterOrchestrator` uses top-level `from keb import KEB` / `from gbogeb import GBOGEB` after path insertion. This is import consolidation work, not a missing component.
 
 ## Deferred Work
 
 The following work is explicitly not required for this baseline:
 
 - Building a new orchestrator.
-- Building a new KEB adapter.
+- Building a new execution-backbone adapter.
 - Building a new GBOGEB connector.
 - Replacing `DOWRecursiveHooksInjector`.
 - Replacing the DMAIC phase runner.
@@ -132,8 +132,9 @@ The following work is explicitly not required for this baseline:
 Items that should **not** be developed as new architecture:
 
 - A second “Orchestrator V3.0” implementation.
-- A parallel KEB registry separate from `core/keb/keb.py` and `KnowledgeIntegrationV23`.
+- A parallel execution-backbone registry separate from `core/execution_backbone/backbone.py` and `KnowledgeIntegrationV23`.
 - A parallel GBOGEB metrics engine separate from `core/gbogeb/gbogeb.py`.
 - A new recursive hook engine separate from `DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py`.
 - Root-level duplicate GBOGEB bridge files unless the chosen remediation is to promote the existing `staging/` implementation with matching tests/config.
 - Corrupted/fixed duplicate full-pipeline copies as canonical runtime targets.
+\n\n## Terminology control\n\nKEB denotes the Knowledge Exchange Bridge only. Historical runtime references\nto Kernel Execution Backbone are superseded by `ExecutionBackbone`.\n
