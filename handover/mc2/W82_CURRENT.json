@@ -1,0 +1,15 @@
+{
+  "schema_version": "MC2-W82-CURRENT-0.1.0",
+  "status": "CONTROLLED_NEGATIVE_W72_GOVERNANCE_PAIR_DIAGNOSTIC",
+  "restart_policy": "repository_authority_only",
+  "predecessor": "handover/mc2/W81_CURRENT.json",
+  "current_receipt": "architecture/w82/W82_W72_GOVERNANCE_PAIR_DIAGNOSTIC_v0.1.json",
+  "current_dropin": "handover/mc2/W82_DROPIN.md",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "pc1_predictive_validation": false,
+  "pairwise_outcome_accumulation_permitted": false,
+  "bt": "WITHHELD",
+  "next_frontier": "materially different semantic topology with observed outcomes inside or below W79 support",
+  "reentry_requires_new_evidence": true
+}
