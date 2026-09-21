@@ -13,10 +13,10 @@ rules:
   - "A red detector is not prevention; merge-admission control is tracked separately."
 summary:
   open_before_pulse: 30
-  closed_this_pulse: [1186, 1187, 1188, 1195, 583]
-  open_after_pulse: 25
+  closed_this_pulse: [1186, 1187, 1188, 1195, 583, 1256]
+  open_after_pulse: 24
   execute_now: 4
-  verify_close: 5
+  verify_close: 4
   local_or_external_return: 6
   programme_parent: 10
 lanes:
@@ -75,14 +75,6 @@ lanes:
       evidence: ["Subsequent W64/W7x/W8x control work exists on current main."]
       next_action: "Reconcile exact requested cluster receipt against current controls; close or isolate the one residual red."
       closure_gate: "Synchronized green exact-head receipt, not registry existence alone."
-    - issue: 1256
-      title: "QPS v6 runtime support: freeze validated pin and release receipts"
-      evidence:
-        - "PR #1267 binds exact PASS to f55876e4d7985dd672304ff6e3945f24de9b9194 / run 35272680285."
-        - "5 target jobs PASS; pytest 402 passed / 0 failed; artifact 10518602763 with SHA-256 receipt."
-        - "PR #1276 refreshed cross-repo pointers."
-      next_action: "Verify MissionControl/QPS consumed this exact support pin; then close."
-      closure_gate: "Exact pin + receipt returned downstream; later main does not implicitly inherit PASS."
 
   EXTERNAL_OR_LOCAL_RETURN:
     - issue: 633
@@ -166,3 +158,6 @@ closed_this_pulse:
   - issue: 583
     disposition: VERIFIED_COMPLETE
     proof: "Generated scenario matrix + progress_21_point + RTM/source traceability on main"
+  - issue: 1256
+    disposition: VERIFIED_COMPLETE
+    proof: "Exact support pin consumed by QPS #1554 and MissionControl W275 receipts"
