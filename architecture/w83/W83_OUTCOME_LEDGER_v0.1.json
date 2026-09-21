@@ -1,0 +1,151 @@
+{
+  "schema_version": "MC2-W83-TYPED-BASIS-OUTCOME-LEDGER-0.1.0",
+  "as_of": "2026-09-21",
+  "repository": "GBOGEB/ABACUS",
+  "authority": "derived_operational_analysis_only",
+  "authority_transfer": false,
+  "source_probe": {
+    "pr": 1297,
+    "head_sha": "26c1be3e4e71802e3f340ecf53f02a72c8e768f4",
+    "merge_sha": "bfdc59d7f6898f5064efeea678f06f5636e15732",
+    "workflow": "W83 Disposable Semantic Basis Diversity",
+    "run_id": 35577332406,
+    "aggregate_job_id": 106262300145,
+    "aggregate_artifact_id": 10628574063,
+    "aggregate_artifact_digest": "sha256:c6415796547132f65b1e67b44fea36e5740bd20c8c774ba967d02b17e4d5a348",
+    "disposition": "HARVEST_THEN_REMOVE_DISPOSABLE_WORKFLOW"
+  },
+  "outcome_definition": {
+    "name": "docs_validation_failure",
+    "workflow": "Validate Docs (Markdown/YAML/JSON)",
+    "pass_label": 0,
+    "failure_label": 1,
+    "cancelled_policy": "missing_not_failure",
+    "source": "architecture/w82/W82_SEMANTIC_DIVERSITY_LEDGER_v0.1.json"
+  },
+  "variable_features": [
+    "workflow_governance_composition.keep_rules",
+    "workflow_governance_composition.pr_domain_rules",
+    "workflow_governance_composition.rule_count"
+  ],
+  "recent_semantic_composition_unique_count": 1,
+  "recent_consumer_graph_unique_count": 1,
+  "rows": [
+    {
+      "label": "p1281-pass",
+      "source_sha": "7e8ee178f9d7e6d0d2797c754a7e8fbbde93057b",
+      "outcome": {
+        "run_id": 35352034494,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "w83_probe": {
+        "artifact_id": 10628028095,
+        "artifact_digest": "sha256:7fb6b144b8891aca9a944df84250e44caca329c7b99872c12aa72b872f70f7c7"
+      },
+      "vector": {
+        "keep_rules": 17,
+        "pr_domain_rules": 13,
+        "rule_count": 21
+      }
+    },
+    {
+      "label": "p1286-fail",
+      "source_sha": "9b89aa3516209f18447f03de91e91b21b35c9304",
+      "outcome": {
+        "run_id": 35425352883,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "w83_probe": {
+        "artifact_id": 10628169452,
+        "artifact_digest": "sha256:0a69176766757d64e6eff2e2ce92f32fb22b4242fc8edc0019a6e406d8246ead"
+      },
+      "vector": {
+        "keep_rules": 17,
+        "pr_domain_rules": 13,
+        "rule_count": 21
+      }
+    },
+    {
+      "label": "p1288-fail",
+      "source_sha": "a5a44635d5b10c6bb1984db131d254872efd8b0d",
+      "outcome": {
+        "run_id": 35428297185,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "w83_probe": {
+        "artifact_id": 10628443942,
+        "artifact_digest": "sha256:d33e58a6a038f8f3da18cd1e1573fcdff1c80c5ff2a755eb39805e6d868d33d0"
+      },
+      "vector": {
+        "keep_rules": 20,
+        "pr_domain_rules": 16,
+        "rule_count": 24
+      }
+    },
+    {
+      "label": "p1289-pass",
+      "source_sha": "51e044499bcf8828f9bf92c4472f6c0419f58834",
+      "outcome": {
+        "run_id": 35428349640,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "w83_probe": {
+        "artifact_id": 10627673637,
+        "artifact_digest": "sha256:4d798af10abd7138a01359238d94618dffbfc058706fe40c28850f67d98bf237"
+      },
+      "vector": {
+        "keep_rules": 20,
+        "pr_domain_rules": 16,
+        "rule_count": 24
+      }
+    },
+    {
+      "label": "p1291-fail",
+      "source_sha": "17f70d5398a710a3714de8dd50f400b3a6c27dee",
+      "outcome": {
+        "run_id": 35575389514,
+        "conclusion": "failure",
+        "failure_label": 1
+      },
+      "w83_probe": {
+        "artifact_id": 10628643543,
+        "artifact_digest": "sha256:ad2b1845060e0fd7d0fd41c70e9ce6432e0c55bdb736e2a82239e9a4e41246c0"
+      },
+      "vector": {
+        "keep_rules": 20,
+        "pr_domain_rules": 16,
+        "rule_count": 24
+      }
+    },
+    {
+      "label": "p1292-pass",
+      "source_sha": "9c0e4cd1cf37ff7bebbda9b33734504c32787862",
+      "outcome": {
+        "run_id": 35575604789,
+        "conclusion": "success",
+        "failure_label": 0
+      },
+      "w83_probe": {
+        "artifact_id": 10628812569,
+        "artifact_digest": "sha256:02926838c89c72c3fcfe0717f9baca76b4c38dbcd98c3b6f9e20c29599bcab8e"
+      },
+      "vector": {
+        "keep_rules": 20,
+        "pr_domain_rules": 16,
+        "rule_count": 24
+      }
+    }
+  ],
+  "invariants": {
+    "pca_fit_permitted": false,
+    "pairwise_outcome_accumulation_permitted": false,
+    "bt_permitted": false,
+    "global_allocation_authority": false,
+    "engineering_compliance_release_authority": false,
+    "formal_credit_delta": 0
+  }
+}
