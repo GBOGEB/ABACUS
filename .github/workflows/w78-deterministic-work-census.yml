@@ -127,7 +127,7 @@ jobs:
           python-version: "3.11"
 
       - name: Download W78 receipts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: w78-r*-*
           path: architecture/w78/receipts

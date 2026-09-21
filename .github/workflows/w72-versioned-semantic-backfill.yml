@@ -295,13 +295,13 @@ jobs:
           python-version: "3.11"
 
       - name: Download exact-SHA runtime probes
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: w74-probe-*-${{ github.sha }}
           path: architecture/w74/probes
 
       - name: Download W73 semantic-topology evidence
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: w72-w73-semantic-pressure-${{ github.sha }}
           path: architecture/w74/semantic
