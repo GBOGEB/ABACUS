@@ -2,7 +2,7 @@
 
 EXECUTION_WAVE_TYPE = "PARTIAL"
 
-START HERE: Refresh GBOGEB/ABACUS main and run 35730355752 status; if the queued run has completed, classify its first real >0-step red together with the other current-main broad CI failures. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.
+START HERE: Refresh GBOGEB/ABACUS main, confirm no newer active CI supersedes this handover, then classify the current-main broad >0-step reds by root cause. Run 35730355752 is terminal CANCELLED with lint/Ubuntu PASS and later jobs NOT_EXECUTED. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.
 
 Read in order:
 1. handover/mc2/SESSION_CLOSE_CURRENT.json
@@ -19,7 +19,7 @@ Frozen snapshot:
 - functional head 6b935d54ea3c6688d7da1f6b76d507ebf371c43b
 - open PRs 0
 - open issues 12
-- queued run 35730355752
+- run 35730355752 terminal CANCELLED; lint/Ubuntu PASS, RHEL/DMAIC/release NOT_EXECUTED
 - QPS main df84ddc293efd3c9fdb2e8cb098c745d26bdac3a
 - MissionControl hub main 216e13914c0fd9d559f6fdc50c0f2a3df3f42cf1
 - QPS #923 OPEN

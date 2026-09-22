@@ -10,7 +10,7 @@ ABACUS main: 2c35a41e9cf9ecde1ca45abd8afc5f6382a901f9
 Latest functional head: 6b935d54ea3c6688d7da1f6b76d507ebf371c43b
 Open PRs: 0
 Open issues: 12
-Queued run: 35730355752 (DOW + Recursive DMAIC - Unified CD Pipeline), head 6b935d54ea3c6688d7da1f6b76d507ebf371c43b.
+Run 35730355752 (DOW + Recursive DMAIC - Unified CD Pipeline), head 6b935d54ea3c6688d7da1f6b76d507ebf371c43b, completed CANCELLED after partial execution.
 
 Current broad real reds:
 - 35730356021 — QPLANT presentation engine tests
@@ -72,14 +72,14 @@ Neither QPS W328 nor MissionControl document/style progress reopens MC-2 or comp
 MIP: Modernize PASS; Innovate PASS_DIAGNOSTIC_ONLY; Perpetuate PASS.
 
 ## Uncompleted
-1. Refresh ABACUS main and consume run 35730355752 when terminal.
+1. Run 35730355752 is terminal: Lint & Validate PASS and Ubuntu CI PASS with >0 steps; RHEL 8/9, DMAIC Full Cycle, Build Release Artifacts and Create GitHub Release were cancelled before execution. Treat cancellation as NOT_EXECUTED for those jobs.
 2. Group broad CI failures by current reproducible root cause; repair only the first current real red.
 3. Keep MC-2 predictive slice EVIDENCE_BLOCKED until its re-entry predicate is met.
 4. Keep QPS #923 independent and non-compensating.
 5. Synchronize ABACUS #1164 and QPS #1063 to this handover.
 
 ## Exact next starting line
-START HERE: Refresh GBOGEB/ABACUS main and run 35730355752 status; if the queued run has completed, classify its first real >0-step red together with the other current-main broad CI failures. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.
+START HERE: Refresh GBOGEB/ABACUS main, confirm no newer active CI supersedes this handover, then classify the current-main broad >0-step reds by root cause. Run 35730355752 is terminal CANCELLED with lint/Ubuntu PASS and later jobs NOT_EXECUTED. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.
 
 authority_transfer=false
 formal_credit_delta=0
