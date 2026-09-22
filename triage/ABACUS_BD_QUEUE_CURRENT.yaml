@@ -1,5 +1,5 @@
 schema: abacus-bd-queue/1.1
-as_of: 2026-09-21
+as_of: 2026-09-22
 repository: GBOGEB/ABACUS
 base_branch: main
 
@@ -14,7 +14,15 @@ rules:
   - Parent issues stay open only while they own a distinct live outcome.
   - A red detector is not prevention; merge admission is separate.
 
+reconciliation:
+  as_of: 2026-09-22
+  removed_closed_issue: 776
+  added_open_issue: 1313
+  live_open_issues: 12
+  note: Queue membership correction only; historical pulse receipts follow.
+
 summary:
+  historical_pulse_date: 2026-09-21
   open_before_pulse: 30
   closed_this_pulse:
     - 583
@@ -36,8 +44,8 @@ summary:
     - 581
   open_after_pulse: 12
   next_reconcile: 2
-  control_watch: 1
-  local_or_external_return: 5
+  control_watch: 0
+  local_or_external_return: 6
   programme_parent: 4
 
 lanes:
@@ -62,16 +70,7 @@ lanes:
         Exact-head synchronized green evidence exists, or one residual red is
         isolated as a bounded successor.
 
-  CONTROL_WATCH:
-    - issue: 776
-      title: "Control: arrest QPS-wave main fan-out queue regression"
-      evidence:
-        - Original trigger was 148 queued and 5 active.
-        - Current pulse observed 19 queued and 15 active.
-        - Follow-up observed 18 queued and 1 active.
-      next_action: >-
-        Keep open until another interval proves stable drainage with healthy
-        occupancy, or #981 absorbs this unique gate.
+  CONTROL_WATCH: []
 
   EXTERNAL_OR_LOCAL_RETURN:
     - issue: 633
@@ -87,6 +86,13 @@ lanes:
       next_action: >-
         Require policy-and-inventory for merges, then prove a red change is
         non-mergeable and a green distinct-source change is mergeable.
+
+    - issue: 1313
+      blocked_by: SOURCE_PENDING
+      next_action: >-
+        Return authoritative Appendix 8.4 mode/valve-state rows and calibration
+        source evidence. Do not infer modes, valve states, recovery paths, or
+        mode-dependent Veff from pending sources.
 
   PROGRAMME_PARENT:
     - issue: 667
