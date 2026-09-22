@@ -8,10 +8,45 @@
   "open_pr_count": 0,
   "open_issue_count": 12,
   "active_ci": {
-    "queued_run_id": 35730355752,
+    "run_id": 35730355752,
     "name": "DOW + Recursive DMAIC - Unified CD Pipeline",
-    "status": "queued",
-    "head_sha": "6b935d54ea3c6688d7da1f6b76d507ebf371c43b"
+    "status": "completed",
+    "conclusion": "cancelled",
+    "head_sha": "6b935d54ea3c6688d7da1f6b76d507ebf371c43b",
+    "executed_jobs": [
+      {
+        "name": "Lint & Validate",
+        "job_id": 106754110010,
+        "result": "PASS_GT_ZERO_STEPS"
+      },
+      {
+        "name": "CI - Ubuntu",
+        "job_id": 106754464320,
+        "result": "PASS_GT_ZERO_STEPS"
+      }
+    ],
+    "not_executed_cancelled_jobs": [
+      {
+        "name": "CI - RHEL 8",
+        "job_id": 106754464171
+      },
+      {
+        "name": "CI - RHEL 9",
+        "job_id": 106754464272
+      },
+      {
+        "name": "DMAIC Full Cycle",
+        "job_id": 106761151002
+      },
+      {
+        "name": "Build Release Artifacts",
+        "job_id": 106761152958
+      },
+      {
+        "name": "Create GitHub Release",
+        "job_id": 106761153750
+      }
+    ]
   },
   "mc2_state": "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
   "mc2_current": "handover/mc2/W83_CURRENT.json",
@@ -24,10 +59,16 @@
   "missioncontrol_hub_main": "216e13914c0fd9d559f6fdc50c0f2a3df3f42cf1",
   "handover": "handover/mc2/SC_2026-09-22_MC2_W83_QPS_TRIAGE_LOSSLESS_HANDOVER_v1.md",
   "next_agent_instruction": "handover/mc2/NEXT_AGENT_INSTRUCTION_2026-09-22.md",
-  "exact_starting_line": "START HERE: Refresh GBOGEB/ABACUS main and run 35730355752 status; if the queued run has completed, classify its first real >0-step red together with the other current-main broad CI failures. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.",
+  "exact_starting_line": "START HERE: Refresh GBOGEB/ABACUS main, confirm no newer active CI supersedes this handover, then classify the current-main broad >0-step reds by root cause. Run 35730355752 is terminal CANCELLED with lint/Ubuntu PASS and later jobs NOT_EXECUTED. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.",
   "chat_only_active_todos": 0,
   "chat_only_decisions": 0,
   "authority_transfer": false,
   "formal_credit_delta": 0,
-  "engineering_credit_delta": 0
+  "engineering_credit_delta": 0,
+  "uncompleted": [
+    "refresh and classify current-main broad ABACUS CI reds",
+    "treat cancelled non-executed jobs from run 35730355752 as NOT_EXECUTED, not application failures",
+    "re-enter W83 only on genuinely new exact-source outcome evidence",
+    "keep cryoplant-project#923 independent and non-compensating"
+  ]
 }
