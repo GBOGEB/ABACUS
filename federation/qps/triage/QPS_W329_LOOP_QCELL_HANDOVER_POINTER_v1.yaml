@@ -2,7 +2,7 @@ schema: qps-w329-abacus-handover-pointer/1.0
 as_of: '2026-09-22T15:11:00+02:00'
 repo: GBOGEB/ABACUS
 role: DOW_REVIEWER_POINTER_RECEIVER
-status: BOUND_TO_CHILD_HANDOVER_PENDING_CHILD_MERGE
+status: BOUND_TO_CHILD_HANDOVER_MERGED
 authority_transfer: false
 formal_credit_delta: 0
 child:
@@ -10,6 +10,7 @@ child:
   pr: 1638
   branch: qps/w329-loop-qcell-3pr-mip-handover
   head_sha: 672ad706b5dbe01df3adb3944fa646fb51d98164
+  merge_sha: d5d7f7ef65d8a3e6387ad5a039acb78269e6c603
   control: controls/QPS_LOOP_QCELL_PEER_REVIEW_CURRENT_v0.1.yaml
   handover: handover/session/SC_2026-09-22_W329_LOOP_QCELL_3PR_MIP_LOSSLESS_HANDOVER_v1.md
   dropin: handover/qps_recursive/QPS_W329_LOOP_QCELL_3PR_MIP_DROPIN_20260922_v1.md
