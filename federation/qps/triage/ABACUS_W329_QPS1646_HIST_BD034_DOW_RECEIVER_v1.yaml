@@ -1,0 +1,33 @@
+schema: abacus.qps.w329.hist_bd_034.dow_receiver/v1
+as_of: '2026-09-22'
+source_repo: GBOGEB/cryoplant-project
+source_pr: 1646
+source_head: eeed03ec4edb0fa8cb4969b2a6bd5f134133d433
+parent_issue: 1617
+state: EXACT_HEAD_QUANTIFIED_CHALLENGE_BOUND
+
+quantified_expectations:
+  physical_blockers_total: 5
+  physical_conversion_expected_now: 0
+  formal_credit_delta_expected: 0
+  authority_transfer_expected: false
+  BT0:
+    physical_conversion_expected: false
+    reason: external_owner_source_authority_not_materialized
+  BT2:
+    nonzero_residual_without_tolerance_accept_count: 0
+    over_source_tolerance_accept_count: 0
+  BT3:
+    population_relation: exact_set_equality
+  BT4:
+    psv_specific_locator_required: true
+
+noncompensation:
+  issue_923_runtime_gold: independent
+  public_sibling_execution_ne_private_runtime_gold: true
+  control_repair_ne_engineering_credit: true
+
+next:
+  - consume_QPS_1646_exact_head_review
+  - consume_exact_payload_execution_receipt
+  - record_quantified_ACCEPT_REJECT_DEFER
