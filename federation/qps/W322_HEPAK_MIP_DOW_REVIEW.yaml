@@ -1,0 +1,30 @@
+schema: w322-hepak-mip-dow-review/v1
+authority: DERIVED_PARENT_REVIEW
+child:
+  repository: GBOGEB/cryoplant-project
+  pr: 1608
+  exact_head: f4b9e15f512029453773e246cbc561da7c4b32b9
+purpose: quantified challenge of observed blocker conversion
+checks:
+  BT0:
+    metric: licensed_HEPAK_receipt_valid
+    expected_without_receipt: false
+  BT1:
+    metric: current_LineB_geometry_valid
+    historic_DN150_credit_allowed: false
+  BT2:
+    metric: per_QCELL_B_flow_population_valid
+  BT3:
+    metric: spatial_thermal_property_field_valid
+  BT4:
+    metric: applicant_specific_S_line_recovery_PSV_valid
+    historic_3x120_credit_allowed: false
+rollup:
+  physical_conversion_denominator: 5
+  formal_engineering_delta: 0
+  strict_numerical_delta: 0
+return_contract:
+  - report_converted_count_over_5
+  - identify_first_unconverted_blocker
+  - do_not_award_credit_for_control_instrumentation
+  - bind_all_findings_to_exact_child_head
