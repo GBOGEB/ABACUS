@@ -27,8 +27,8 @@ jobs:
           python3 tools/bd_workflow_frequency.py \
             --repo "$GITHUB_REPOSITORY" \
             --limit 500 \
-          --family 'base_validation_ci=.github/workflows/validate_docs.yml,.github/workflows/format-check.yml,.github/workflows/ci-abacus.yml,.github/workflows/abacus-cicd.yml,.github/workflows/codeql.yml,.github/workflows/yaml-validation.yml,.github/workflows/security-scan.yml' \\
-          --family 'dow_runtime_metrics=.github/workflows/dow-monitoring.yml,.github/workflows/dmaic-commit-metrics.yml,.github/workflows/cd-unified.yml' \\
+            --family 'base_validation_ci=.github/workflows/validate_docs.yml,.github/workflows/format-check.yml,.github/workflows/ci-abacus.yml,.github/workflows/abacus-cicd.yml,.github/workflows/codeql.yml,.github/workflows/yaml-validation.yml,.github/workflows/security-scan.yml' \
+            --family 'dow_runtime_metrics=.github/workflows/dow-monitoring.yml,.github/workflows/dmaic-commit-metrics.yml,.github/workflows/cd-unified.yml' \
             --out-json .artifacts/bd-workflow-frequency/metrics.json \
             --out-md .artifacts/bd-workflow-frequency/summary.md
           cat .artifacts/bd-workflow-frequency/summary.md >> "$GITHUB_STEP_SUMMARY"
