@@ -3,6 +3,7 @@ DOW Knowledge Extraction Agent
 Extracts knowledge from phase outputs
 """
 
+import hashlib
 import json
 import logging
 from datetime import datetime
@@ -42,12 +43,22 @@ class DOWKnowledgeExtractor:
             insights = self._generate_insights(data)
             learnings = self._capture_learnings(data)
             improvements = self._suggest_improvements(data)
+            typed_findings, finding_telemetry = self._build_typed_findings(
+                source_reference=str(file_path),
+                target=data.get("metadata", {}).get("phase", "unknown"),
+                input_hash=data.get("idempotency", {}).get("input_hash", ""),
+                insights=insights,
+                improvements=improvements,
+            )
 
             knowledge_gain = {
                 'patterns_discovered': patterns,
                 'insights_generated': insights,
                 'learnings_captured': learnings,
                 'improvements_suggested': improvements,
+                'typed_findings': typed_findings,
+                'finding_telemetry': finding_telemetry,
+                'child_disposition': None,
                 'extracted_at': datetime.now().isoformat()
             }
 
@@ -186,6 +197,74 @@ class DOWKnowledgeExtractor:
                 improvements.append("Improve quality score (current: {:.2f})".format(quality))
 
         return improvements
+
+    def _build_typed_findings(
+        self,
+        *,
+        source_reference: str,
+        target: str,
+        input_hash: str,
+        insights: List[str],
+        improvements: List[str],
+    ) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """Emit stable advisory findings and deterministic dedupe telemetry.
+
+        Findings are derived parent evidence only. They never self-promote child
+        engineering/compliance state; closure yield remains withheld until the
+        child supplies an explicit disposition.
+        """
+        candidates = [
+            ("OBSERVATION", text, 0.70, text)
+            for text in insights
+        ] + [
+            ("IMPROVEMENT", text, 0.80, text)
+            for text in improvements
+        ]
+
+        findings: List[Dict[str, Any]] = []
+        seen: set[str] = set()
+        duplicates_dropped = 0
+        for finding_type, text, confidence, proposed_action in candidates:
+            identity = {
+                "source_reference": source_reference,
+                "target": target,
+                "finding_type": finding_type,
+                "proposed_action": proposed_action,
+            }
+            finding_id = "DOW-" + hashlib.sha256(
+                json.dumps(identity, sort_keys=True).encode("utf-8")
+            ).hexdigest()[:16].upper()
+            if finding_id in seen:
+                duplicates_dropped += 1
+                continue
+            seen.add(finding_id)
+
+            finding = {
+                "finding_id": finding_id,
+                "source_reference": source_reference,
+                "target": target,
+                "finding_type": finding_type,
+                "confidence": confidence,
+                "proposed_action": proposed_action,
+                "authority_level": "DERIVED_ADVISORY",
+                "input_hash": input_hash,
+                "child_disposition": None,
+            }
+            finding["output_hash"] = hashlib.sha256(
+                json.dumps(finding, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            findings.append(finding)
+
+        telemetry = {
+            "candidate_findings": len(candidates),
+            "unique_findings": len(findings),
+            "duplicates_dropped": duplicates_dropped,
+            "remaining_semantic_debt": len(improvements),
+            "closure_yield": None,
+            "closure_yield_state": "WITHHELD_CHILD_DISPOSITION",
+            "authority_promotions": 0,
+        }
+        return findings, telemetry
 
     def _calculate_nested_depth(self, data: Any, current_depth: int = 0) -> int:
         """Calculate maximum nesting depth"""
