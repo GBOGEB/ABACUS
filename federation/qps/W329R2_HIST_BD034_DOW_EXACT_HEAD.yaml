@@ -1,0 +1,48 @@
+schema: qps-w329r2-hist-bd034-dow/v1
+authority: DERIVED_PARENT_REVIEW
+child:
+  repository: GBOGEB/cryoplant-project
+  pr: 1644
+  exact_head: 72395c96252b2ce6858653ec2eb111e5b86c48ba
+  issue: 1617
+semantic_root: SOURCE_RECEIPT_SUBSTANTIVE_VALIDATION_INCOMPLETE
+
+challenge_population:
+  total_predicates: 6
+  predicates:
+    - id: BT0_OWNER_PLUS_REPO_TRUST
+      expected: repo_anchor_and_owner_env_workbook_SHA_must_all_match
+    - id: BT0_PROVENANCE_LABEL_SEMANTICS
+      expected: explicit_test_synthetic_labels_reject_without_substring_false_positive
+    - id: BT2_SOURCE_AND_TOLERANCE
+      expected: source_locator_substantive_and_every_nonzero_residual_requires_exact_source_tolerance
+    - id: BT3_COMPLETE_SEGMENT_COVERAGE
+      expected: thermal_segment_set_equals_validated_selected_geometry_segment_set
+    - id: BT4_PSV_SOURCE_BINDING
+      expected: PSV_object_has_specific_source_locator
+    - id: NONCOMPENSATION
+      expected: physical_0_of_5_until_real_returns_and_issue_923_independent
+
+quantified_disposition:
+  evaluated_child_head: 72395c96252b2ce6858653ec2eb111e5b86c48ba
+  accepted_predicates_now: 0
+  rejected_predicates_now: 0
+  pending_exact_head_semantic_review: 6
+  rule: >-
+    This DOW receipt freezes the exact challenge population before review. It may
+    only promote individual predicates after evidence from this exact child head;
+    it cannot infer engineering or source acceptance from code presence.
+
+guards:
+  - BT1_PR1632_SEMANTICS_PRESERVED
+  - BT2_PR1636_AUTHORITY_ALLOWLIST_PRESERVED
+  - SOURCE_BOUND_ZERO_BFLOW_REMAINS_VALID
+  - FUTURE_ROWS_ABOVE_GOVERNED_MINIMUM_REMAIN_VALID
+  - NO_REAL_SOURCE_RETURN_NO_PHYSICAL_CONVERSION
+  - ZERO_STEP_NE_APPLICATION_FAILURE
+
+authority_transfer: false
+formal_credit_delta: 0
+engineering_credit_delta: 0
+strict_numerical_delta: 0
+runtime_gold_delta: 0
