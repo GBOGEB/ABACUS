@@ -3,6 +3,17 @@ name: Execution Spine Validation
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - ".github/workflows/validation.yml"
+      - "src/qplant_presentation_engine/**"
+      - "qplant_presentation_engine/**"
+      - "tests/test_dmaic.py"
+      - "tests/test_governance.py"
+      - "tests/test_release_gate.py"
+      - "tests/test_schema_validation.py"
+      - "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
+      - "DMAIC_V3/tests/test_rtm.py"
   workflow_dispatch:
 
 permissions:
