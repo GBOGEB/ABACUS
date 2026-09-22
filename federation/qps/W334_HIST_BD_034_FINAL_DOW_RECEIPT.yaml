@@ -15,7 +15,8 @@ proof:
   run: 35738152179
   job: 106780614008
   artifact_id: 10698440724
-  artifact_digest: sha256:9728770ca9e6d6025df9fd322c99a79aec62f3ab7dd6ca5985db936db9cb5b61
+  artifact_digest: >-
+    sha256:9728770ca9e6d6025df9fd322c99a79aec62f3ab7dd6ca5985db936db9cb5b61
   exact_payload_bind: PASS
   normal_suite: PASS
   optimized_suite: PASS
