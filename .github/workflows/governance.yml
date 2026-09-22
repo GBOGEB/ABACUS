@@ -3,6 +3,18 @@ name: Execution Spine Governance
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - ".github/workflows/governance.yml"
+      - "src/qplant_presentation_engine/**"
+      - "qplant_presentation_engine/**"
+      - "tests/test_dmaic.py"
+      - "tests/test_governance.py"
+      - "tests/test_release_gate.py"
+      - "tests/test_schema_validation.py"
+      - "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py"
+      - "DMAIC_V3/tests/test_rtm.py"
+      - "requirements-test.txt"
   workflow_dispatch:
 
 permissions:
@@ -83,7 +95,14 @@ jobs:
 
       - name: Run QPLANT presentation engine tests
         run: |
-          python -m pytest tests -v
+          python -m pytest \
+            tests/test_dmaic.py \
+            tests/test_governance.py \
+            tests/test_release_gate.py \
+            tests/test_schema_validation.py \
+            DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py \
+            DMAIC_V3/tests/test_rtm.py \
+            -v
 
       - name: Upload governance artifacts
         uses: actions/upload-artifact@v7
