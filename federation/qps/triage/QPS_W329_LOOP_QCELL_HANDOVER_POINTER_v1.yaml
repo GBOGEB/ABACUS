@@ -1,0 +1,31 @@
+schema: qps-w329-abacus-handover-pointer/1.0
+as_of: '2026-09-22T15:11:00+02:00'
+repo: GBOGEB/ABACUS
+role: DOW_REVIEWER_POINTER_RECEIVER
+status: BOUND_TO_CHILD_HANDOVER_MERGED
+authority_transfer: false
+formal_credit_delta: 0
+child:
+  repo: GBOGEB/cryoplant-project
+  pr: 1638
+  branch: qps/w329-loop-qcell-3pr-mip-handover
+  head_sha: 672ad706b5dbe01df3adb3944fa646fb51d98164
+  merge_sha: d5d7f7ef65d8a3e6387ad5a039acb78269e6c603
+  control: controls/QPS_LOOP_QCELL_PEER_REVIEW_CURRENT_v0.1.yaml
+  handover: handover/session/SC_2026-09-22_W329_LOOP_QCELL_3PR_MIP_LOSSLESS_HANDOVER_v1.md
+  dropin: handover/qps_recursive/QPS_W329_LOOP_QCELL_3PR_MIP_DROPIN_20260922_v1.md
+local_review_surface:
+  path: docs/qps_offer_rtm_evaluation/current/LOOP_QCELL_ABNORMAL_EVENT_PEER_REVIEW_MATRIX.md
+  state: OWNER_FROZEN_PEER_CONFIRMATION_OPEN
+control_parent:
+  repo: GBOGEB/cryoplant-project
+  issue: 1593
+rules:
+  - child_repo_retains_engineering_and_disposition_authority
+  - this_pointer_may_not_award_compliance_or_acceptance_credit
+  - peer_review_confirmation_ne_bidder_compliance
+  - preserve_bidder_native_references_and_canonical_RTM_hierarchy
+  - refresh_child_main_and_issue_1593_before_any_reentry
+next: >-
+  On a genuine peer confirmation/challenge or named-authority/bidder return, follow the child W329
+  restart order and re-enter only the affected LQ/RTM child. Otherwise retain pointer state and STOP.
