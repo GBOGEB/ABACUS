@@ -1,0 +1,80 @@
+schema: w329-r1-hist-bd-034-dow-review/v1
+authority: DERIVED_PARENT_REVIEW
+status: CANDIDATE_AWAITING_CHILD_AND_KEB_FINAL_MERGE
+authority_transfer: false
+formal_credit_delta: 0
+
+child:
+  repository: GBOGEB/cryoplant-project
+  root_issue: 1617
+  repair_pr: 1650
+  exact_head: 9ac6748a806ac7e260b37e1c9d95401670eed9d2
+  predecessor_merge: 0fa104517fd98c57903ddc37f3fd34958694c80c
+
+keb:
+  repository: GBOGEB/CODEX
+  review_pr: 824
+  exact_head: 0f5c097a74758a8e0dba9e90e4e0077010ab483a
+  role: SEMANTIC_PROVENANCE_CHALLENGE
+
+three_pr:
+  refresh:
+    result: PASS
+    basis: post_merge_1639_findings_plus_child_1650_candidate
+  probe:
+    result: PASS
+    retained_findings: 4
+    retained_findings_scope: BT0_TRUST_AND_BT2_EXACT_PROVENANCE
+  rank:
+    result: PASS_SINGLE_ROOT
+    root: SOURCE_RECEIPT_SUBSTANTIVE_VALIDATION_INCOMPLETE
+    second_root_admitted: false
+
+mip:
+  modernize:
+    - separate_code_guard_improvement_from_physical_receipt_conversion
+    - keep_parent_metrics_bound_to_exact_child_and_KEB_heads
+  innovate:
+    - quantify_semantic_guard_delta_without_awarding_engineering_credit
+    - preserve_machine_epsilon_only_for_reverse_cumulative_recomputation
+    - preserve_exact_source_tolerance_for_nonzero_mass_balance_residual
+  perpetuate:
+    state: HOLD_FINAL_BINDING
+    requires:
+      - child_PR_1650_final_merge
+      - CODEX_PR_824_final_merge
+      - exact_head_review_no_material_finding
+      - downstream_receipt_rebound_to_final_merge_SHAs
+
+quantified_challenge:
+  physical_conversion_denominator: 5
+  physical_conversion_delta_from_code_only_repair: 0
+  strict_numerical_delta: 0
+  runtime_gold_delta: 0
+  reviewed_guard_findings: 4
+  candidate_guard_repairs: 4
+  first_physical_gate_after_guard_repair: BT0_PROTECTED_OR_SIGNED_OWNER_HEPAK_ATTESTATION
+  private_runner_gate: ISSUE_923_INDEPENDENT_NON_COMPENSATING
+
+semantic_checks:
+  BT0:
+    repo_local_anchor_can_establish_owner_trust: false
+    protected_or_signed_owner_attestation_required: true
+  BT1:
+    metadata_descendants_can_satisfy_engineering_numeric: false
+  BT2:
+    minimum_populations_not_exact_cardinality: true
+    explicit_future_rows_allowed: true
+    reverse_cumulative_direction: FARTHEST_USER_TO_QRB_QDB
+    source_bound_zero_flow_allowed: true
+    decorated_placeholder_locator_allowed: false
+    authority_class_complete_allowlist_required: true
+    decimal_residual_semantics_exact: true
+    every_nonzero_residual_requires_source_tolerance: true
+    residual_must_be_lte_source_tolerance: true
+
+return_contract:
+  - no_parent_self_promotion
+  - no_physical_conversion_credit_from_validator_hardening
+  - bind_final_child_and_KEB_merge_SHAs_before_CONTROL
+  - keep_issue_923_independent
