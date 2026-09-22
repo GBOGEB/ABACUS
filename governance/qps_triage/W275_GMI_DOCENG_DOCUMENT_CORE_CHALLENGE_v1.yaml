@@ -1,0 +1,88 @@
+schema: qps.gmi_doceng.document_core_challenge/v1
+as_of: '2026-09-22'
+wave: GMI-W275
+mission: GMI_DOCENG_DOCUMENT_CORE_REENTRY
+role: ABACUS_DOW_RECEIVER_CHALLENGER
+status: ACCEPT_CHALLENGE_CONTRACT_ONLY
+receiver_credit_delta: 0
+
+parent_w274:
+  qps_pr: 1445
+  qps_merge_sha: >-
+    34f04bf08dc2f957f196f33ea1d73ae1a5b07070
+  source_bytes: ACCEPT
+  canonical_extraction: ACCEPT_UNLATCHED
+  canonical_lock: DEFER
+
+provider_w275:
+  repo: GBOGEB/DOCX_RTM_Automation
+  pr: 72
+  pr_head_sha: >-
+    03f427c28b35a7a41e0e7df3472b4b57e05f4ff9
+  merge_sha: >-
+    d295d8af67d513bd13cbbf05dd8ce11d1958dd92
+  hosted_run: 35729084213
+  normal_python_ci_run: 35729084201
+  hosted_result: PASS
+  workflow_artifact_id: 10694114200
+  workflow_artifact_digest: >-
+    sha256:0c0ce354f1d8c58827eaf2cc7d251ef6b79d22fd7cde94963d4e3110ab77d68f
+  receipt_sha256: >-
+    674f6cf764667e9a315b3613bc6d4d8d02b321a78a3c898b1722c4f396649f81
+  drive_proof_folder_id: 17iwX0cGtmZznUSTMxZlrsZ2P8D29pg97
+  drive_bundle_file_id: 1WQQ8LjFSDT_Fk8PzK5juMYQyYhQjn9zE
+
+accepted_provider_facts:
+  source_sha256: >-
+    ac6627f0a6cbe8c020941686cad249619184d8071a9efca721d0c960d41d63c9
+  canonical_sha256: >-
+    5bed44a7ae2c0bcbd875e1162cdde292a7d9c8dc717e7328cf4a6d6f0cc13051
+  canonical_record_count: 2692
+  document_core_schema: gmi.document_core.requirements/v1
+  document_core_record_count: 2692
+  section_path_count: 218
+  document_core_semantic_sha256: >-
+    0feff7dea41f274f44d4150c6e0ce8706df0f0b4def24fe33856cd6cea78a0be
+  llm_invoked: false
+  source_or_requirement_mutation: false
+  canonical_lock_or_tag_performed: false
+
+codex_consumer:
+  repo: GBOGEB/CODEX
+  pr: 808
+  head_sha: >-
+    fe5bb27f9c58b6ea75f9d544e2afc96e9748b588
+  guard_path: scripts/gmi_doceng_bridge_guard.py
+  test_path: tests/test_gmi_doceng_bridge_guard.py
+  expected_disposition: ACCEPT_DOCUMENT_CORE_PROVIDER_PROOF_BOUND
+  hosted_proof: PENDING
+
+challenge_contract:
+  w274_source_binding_must_remain_valid: REQUIRED
+  provider_hosted_proof_must_be_green: REQUIRED
+  canonical_sha_and_population_must_match_w274: REQUIRED
+  document_core_semantic_sha_must_match_provider_receipt: REQUIRED
+  missing_w274_source_binding_must_reject: REQUIRED
+  malformed_document_core_receipt_must_reject: REQUIRED
+  llm_invocation_in_ingress: FORBIDDEN
+  source_or_requirement_mutation_in_ingress: FORBIDDEN
+  canonical_lock_or_tag_in_ingress: FORBIDDEN
+  receiver_green_grants_qps_acceptance: FORBIDDEN
+  receiver_green_grants_formal_credit: FORBIDDEN
+
+withheld:
+  requirement_semantic_validation: DEFER
+  requirement_editing: DEFER
+  recursive_hold_reentry: DEFER
+  canonical_lock_or_tag: DEFER
+  replay_roundtrip_equivalence: DEFER
+  alexandria_graph_runtime: DEFER
+  qps_global_control: WITHHELD
+  gt_bdq_advancement: FORBIDDEN_FROM_THIS_LANE
+
+receiver_disposition:
+  provider_proof_visibility: PASS
+  non_compensation_boundary: PASS
+  child_engineering_acceptance: WITHHELD
+  receiver_credit_delta: 0
+  disposition: ACCEPT_CHALLENGE_CONTRACT_ONLY
