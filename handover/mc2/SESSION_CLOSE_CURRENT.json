@@ -1,0 +1,33 @@
+{
+  "schema": "gbogeb.mc2.session_close.v1",
+  "as_of": "2026-09-22T15:11:00+02:00",
+  "execution_wave_type": "PARTIAL",
+  "repository": "GBOGEB/ABACUS",
+  "abacus_main": "2c35a41e9cf9ecde1ca45abd8afc5f6382a901f9",
+  "latest_functional_head": "6b935d54ea3c6688d7da1f6b76d507ebf371c43b",
+  "open_pr_count": 0,
+  "open_issue_count": 12,
+  "active_ci": {
+    "queued_run_id": 35730355752,
+    "name": "DOW + Recursive DMAIC - Unified CD Pipeline",
+    "status": "queued",
+    "head_sha": "6b935d54ea3c6688d7da1f6b76d507ebf371c43b"
+  },
+  "mc2_state": "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
+  "mc2_current": "handover/mc2/W83_CURRENT.json",
+  "mc2_control": "architecture/w83/W83_NG1_CONTROL_v0.1.json",
+  "mc2_reentry_requires_new_evidence": true,
+  "bt": "WITHHELD",
+  "qps_main": "df84ddc293efd3c9fdb2e8cb098c745d26bdac3a",
+  "qps_issue_923_state": "OPEN",
+  "qps_issue_923_compensation_allowed": false,
+  "missioncontrol_hub_main": "216e13914c0fd9d559f6fdc50c0f2a3df3f42cf1",
+  "handover": "handover/mc2/SC_2026-09-22_MC2_W83_QPS_TRIAGE_LOSSLESS_HANDOVER_v1.md",
+  "next_agent_instruction": "handover/mc2/NEXT_AGENT_INSTRUCTION_2026-09-22.md",
+  "exact_starting_line": "START HERE: Refresh GBOGEB/ABACUS main and run 35730355752 status; if the queued run has completed, classify its first real >0-step red together with the other current-main broad CI failures. Do not reopen W83 unless new exact-source outcome evidence exists, and do not compensate cryoplant-project#923.",
+  "chat_only_active_todos": 0,
+  "chat_only_decisions": 0,
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
+}
