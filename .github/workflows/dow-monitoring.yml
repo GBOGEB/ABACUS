@@ -1,12 +1,23 @@
 name: DOW Monitoring Dashboard
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'DOW_DEPLOYMENT_ORCHESTRATOR.py'
+      - 'DMAIC_V3/tests/**'
+      - 'DMAIC_V3/local_mcp/agents/**'
+      - 'local_mcp/agents/**'
+      - '.github/workflows/dow-monitoring.yml'
   schedule:
-    - cron: '0 * * * *'
+    - cron: '17 3 * * *'
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 concurrency:
-  group: dow-monitoring-dashboard
+  group: dow-monitoring-dashboard-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -18,5 +29,12 @@ jobs:
         uses: actions/checkout@v7
       - name: Generate Dashboard
         run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
-      - name: Commit Dashboard
-        run: git add DOW_LOGS/* && git commit -m 'Update monitoring dashboard' || echo 'No changes'
+      - name: Upload dashboard evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dow-monitoring-dashboard-${{ github.run_id }}
+          path: |
+            DOW_LOGS/dashboard_*.json
+            DOW_LOGS/latest.json
+            DOW_LOGS/dashboard.md
+          if-no-files-found: error
