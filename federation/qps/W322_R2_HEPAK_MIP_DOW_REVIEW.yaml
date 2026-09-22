@@ -1,0 +1,40 @@
+schema: w322-r2-hepak-mip-dow-review/v1
+authority: DERIVED_PARENT_REVIEW
+child:
+  repository: GBOGEB/cryoplant-project
+  pr: 1616
+  exact_head: dad08cdbb002843cc0cccceafc43cda10feb1eca
+  predecessor_pr: 1608
+purpose: quantified challenge of residual BT1-BT4 blocker-conversion semantics
+checks:
+  BT1:
+    metric: current_LineB_geometry_semantically_valid
+    require_substantive_source_locator_revision: true
+    require_nonempty_segment_population: true
+    historic_DN150_credit_allowed: false
+  BT2:
+    metric: per_QCELL_B_flow_population_semantically_valid
+    required_modes: [2K_OP, 2K_SB]
+    required_configurations: [config24, config30]
+    require_substantive_numeric_and_provenance_cells: true
+    duplicate_identity_allowed: false
+  BT3:
+    metric: spatial_thermal_property_field_semantically_valid
+    governing_lowT_provider: HEPAK
+    require_substantive_numeric_and_provenance_cells: true
+    duplicate_segment_allowed: false
+  BT4:
+    metric: applicant_specific_S_line_recovery_PSV_semantically_valid
+    require_substantive_applicant_pressure_PSV_source_structures: true
+    operating_max_may_equal_PSV_setpoint: false
+    historic_3x120_credit_allowed: false
+rollup:
+  physical_conversion_denominator: 5
+  formal_engineering_delta: 0
+  strict_numerical_delta: 0
+return_contract:
+  - report_converted_count_over_5
+  - identify_first_unconverted_blocker
+  - reject_placeholder_or_header_only_conversion
+  - do_not_award_credit_for_control_instrumentation
+  - bind_all_findings_to_exact_child_head
