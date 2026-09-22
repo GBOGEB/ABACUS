@@ -1,0 +1,35 @@
+schema: w334-hist-bd034-final-dow-receipt/v1
+authority: DERIVED_PARENT_POINTER_ONLY
+child:
+  repository: GBOGEB/cryoplant-project
+  issue: 1617
+  repair_pr: 1663
+  exact_head: ffe279cf2483c94e208b37ae11264bbdca293f8e
+  merge: 9f6b38c951d25e09eca5c6f90bc0d086ba86e2b8
+  disposition: CLOSED_REPO_LOCAL_SEMANTIC_PROOF_DOD
+proof:
+  repository: GBOGEB/Q_engineering_tools
+  pr: 101
+  exact_head: 8060cd53e266d6544305fe93978edb415716c29f
+  merge: 1cf0dd8506c46a756e71efeb6dd4dce881ce8b40
+  run: 35738152179
+  job: 106780614008
+  artifact_id: 10698440724
+  artifact_digest: >-
+    sha256:9728770ca9e6d6025df9fd322c99a79aec62f3ab7dd6ca5985db936db9cb5b61
+  exact_payload_bind: PASS
+  normal_suite: PASS
+  optimized_suite: PASS
+  empty_source_noncompensation: PASS
+rollup:
+  repo_local_BDQ4_roots_after_closure: 0
+  physical_conversion_credit: 0
+  formal_engineering_delta: 0
+  strict_numerical_delta: 0
+  runtime_gold_delta: 0
+  issue_923_repository: GBOGEB/cryoplant-project
+  issue_923_number: 923
+  issue_923_compensated: false
+return_contract:
+  disposition: ACCEPT_POINTER_ONLY
+  authority_transfer: false
