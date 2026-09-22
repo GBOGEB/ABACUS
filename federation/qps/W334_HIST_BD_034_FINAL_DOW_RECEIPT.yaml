@@ -26,6 +26,8 @@ rollup:
   formal_engineering_delta: 0
   strict_numerical_delta: 0
   runtime_gold_delta: 0
+  issue_923_repository: GBOGEB/cryoplant-project
+  issue_923_number: 923
   issue_923_compensated: false
 return_contract:
   disposition: ACCEPT_POINTER_ONLY
