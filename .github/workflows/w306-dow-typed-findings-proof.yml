@@ -1,0 +1,40 @@
+name: W306 DOW Typed Findings Proof
+
+on:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/tests/test_dow_contract_emission.py'
+      - '.github/workflows/w306-dow-typed-findings-proof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py'
+      - 'DMAIC_V3/tests/test_dow_contract_emission.py'
+      - '.github/workflows/w306-dow-typed-findings-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typed-findings-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute exact DOW contract regression
+        run: |
+          python -m pytest DMAIC_V3/tests/test_dow_contract_emission.py -q
+      - name: Fail closed on authority promotion markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py").read_text(encoding="utf-8")
+          assert '"authority_level": "DERIVED_ADVISORY"' in text
+          assert '"closure_yield_state": "WITHHELD_CHILD_DISPOSITION"' in text
+          assert '"authority_promotions": 0' in text
+          print("PASS_W306_NONCOMPENSATING_GUARDS")
+          PY
