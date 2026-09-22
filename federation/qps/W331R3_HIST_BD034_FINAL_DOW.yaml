@@ -1,0 +1,29 @@
+schema: qps-w331r3-hist-bd034-final-dow/v1
+authority: DERIVED_PARENT_REVIEW
+child:
+  repository: GBOGEB/cryoplant-project
+  pr: 1654
+  exact_head: 73f45506b35a5b2d5742e854de45fa526a3af071
+quantified_challenge:
+  total_predicates: 10
+  pass_claimed_before_review: 0
+  pending_review: 10
+  predicates:
+    - BT2_decimal_underflow_nonzero
+    - BT2_decimal_exact_tolerance_boundary
+    - BT2_qualified_placeholder_locator
+    - BT4_exact_PSV_tag_locator
+    - BT4_exact_set_pressure_locator
+    - BT4_exact_reseat_pressure_locator
+    - current_test_harness_no_deleted_helper
+    - preserve_BT0_external_authority_boundary
+    - preserve_BT1_BT2_BT3_prior_controls
+    - preserve_W328_and_923_noncompensation
+  acceptance_rule: exact_child_evidence_only
+  no_cross_compensation: true
+physical_conversion_delta: 0
+formal_credit_delta: 0
+engineering_credit_delta: 0
+strict_numerical_delta: 0
+runtime_gold_delta: 0
+authority_transfer: false
