@@ -1,0 +1,40 @@
+name: BD Workflow Frequency Telemetry
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'
+  pull_request:
+    paths:
+      - tools/bd_workflow_frequency.py
+      - .github/workflows/bd-workflow-frequency-telemetry.yml
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Measure top workflow families
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .artifacts/bd-workflow-frequency
+          python3 tools/bd_workflow_frequency.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --limit 500 \
+          --family 'base_validation_ci=.github/workflows/validate_docs.yml,.github/workflows/format-check.yml,.github/workflows/ci-abacus.yml,.github/workflows/abacus-cicd.yml,.github/workflows/codeql.yml,.github/workflows/yaml-validation.yml,.github/workflows/security-scan.yml' \\
+          --family 'dow_runtime_metrics=.github/workflows/dow-monitoring.yml,.github/workflows/dmaic-commit-metrics.yml,.github/workflows/cd-unified.yml' \\
+            --out-json .artifacts/bd-workflow-frequency/metrics.json \
+            --out-md .artifacts/bd-workflow-frequency/summary.md
+          cat .artifacts/bd-workflow-frequency/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload frequency telemetry
+        uses: actions/upload-artifact@v4
+        with:
+          name: bd-workflow-frequency-${{ github.run_id }}
+          path: .artifacts/bd-workflow-frequency/
+          if-no-files-found: error
