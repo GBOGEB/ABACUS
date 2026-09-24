@@ -1,5 +1,5 @@
 schema: abacus-bd-queue/1.1
-as_of: 2026-09-21
+as_of: 2026-09-24
 repository: GBOGEB/ABACUS
 base_branch: main
 
@@ -16,6 +16,8 @@ rules:
 
 summary:
   open_before_pulse: 30
+  discovered_during_pulse:
+    - 1313
   closed_this_pulse:
     - 583
     - 645
@@ -34,24 +36,16 @@ summary:
     - 1195
     - 1256
     - 581
+    - 638
+    - 776
   open_after_pulse: 12
-  next_reconcile: 2
-  control_watch: 1
-  local_or_external_return: 5
+  next_reconcile: 1
+  control_watch: 0
+  local_or_external_return: 7
   programme_parent: 4
 
 lanes:
   NEXT_RECONCILE:
-    - issue: 644
-      title: >-
-        QPS OCD/ADR bridge: binary parsing feedback and federated roll-up
-        contract
-      next_action: >-
-        Reconcile requested binary bridge tuple against current parser,
-        round-trip, lineage, and federation implementations.
-      closure_gate: >-
-        Directly invokable sample path emits provenance-bound normalized
-        output consumable by cryoplant-project, or one residual gap is split.
     - issue: 1002
       title: >-
         TRIAGE conversion gate: control-plane green and cluster receipt
@@ -62,20 +56,19 @@ lanes:
         Exact-head synchronized green evidence exists, or one residual red is
         isolated as a bounded successor.
 
-  CONTROL_WATCH:
-    - issue: 776
-      title: "Control: arrest QPS-wave main fan-out queue regression"
-      evidence:
-        - Original trigger was 148 queued and 5 active.
-        - Current pulse observed 19 queued and 15 active.
-        - Follow-up observed 18 queued and 1 active.
-      next_action: >-
-        Keep open until another interval proves stable drainage with healthy
-        occupancy, or #981 absorbs this unique gate.
+  CONTROL_WATCH: []
 
   EXTERNAL_OR_LOCAL_RETURN:
     - issue: 633
       blocked_by: Real local Windows, evidence, and Office execution.
+    - issue: 644
+      blocked_by: >-
+        Reproducible execution against a governed QPS binary set and direct
+        cryoplant-project ingestion evidence.
+      next_action: >-
+        Run the merged bridge on governed inputs, preserve the source and
+        output receipts, and prove the normalized payload is directly
+        consumable without authority promotion.
     - issue: 635
       blocked_by: C:\DEV\REPOS plus governed private evidence vault.
     - issue: 636
@@ -87,6 +80,13 @@ lanes:
       next_action: >-
         Require policy-and-inventory for merges, then prove a red change is
         non-mergeable and a green distinct-source change is mergeable.
+    - issue: 1313
+      blocked_by: >-
+        Authoritative Appendix 8.4 mode/valve-state source extraction and
+        named source/calibration evidence.
+      next_action: >-
+        Re-enter only on source-bound mode, valve, recovery-path and V_eff
+        evidence; do not infer values from the reduced model.
 
   PROGRAMME_PARENT:
     - issue: 667
@@ -187,3 +187,11 @@ closed_this_pulse:
       legacy-binary
       cleanup. Remaining real-release proof stays under #635 -> #636 -> #637
       and programme parent #633.
+
+  - issue: 776
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1325 merged same-ref unified-CD concurrency; post-control main runs
+      35622333444 and 35623229375 proved the older run was cancelled when the
+      newer run arrived. Later recurrence remains programme control, not this
+      closed implementation gate.
