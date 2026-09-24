@@ -37,7 +37,8 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          text = Path("DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py").read_text(encoding="utf-8")
+          source = Path("DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py")
+          text = source.read_text(encoding="utf-8")
           assert '"authority_level": "DERIVED_ADVISORY"' in text
           assert '"closure_yield_state": "WITHHELD_CHILD_DISPOSITION"' in text
           assert '"authority_promotions": 0' in text

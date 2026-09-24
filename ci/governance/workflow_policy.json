@@ -34,7 +34,9 @@
         "format-check.yml",
         "yaml-validation.yml",
         "validate_docs.yml",
-        "v5-w62-self-smoke.yml"
+        "v5-w62-self-smoke.yml",
+        "governance.yml",
+        "validation.yml"
       ]
     },
     "full": {
@@ -48,7 +50,6 @@
         "dow-main-cicd.yml",
         "ariana-cicd.yml",
         "ci_monitor_and_issue_creator.yml",
-        "governance.yml",
         "cd.yml",
         "main.yml",
         "cd-unified.yml",
@@ -58,8 +59,7 @@
         "runtime-smoke.yml",
         "v23-cicd.yml",
         "ci-pipeline.yml",
-        "dow-integration.yml",
-        "validation.yml"
+        "dow-integration.yml"
       ]
     }
   },
@@ -212,7 +212,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger)\\.yml$",
+      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger|w306-dow-typed-findings-proof)\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",
       "disposition": "keep"
