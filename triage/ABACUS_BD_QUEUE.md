@@ -1,9 +1,10 @@
 # ABACUS current BD queue
 
-**As of:** 2026-09-21  
-**Repository:** `GBOGEB/ABACUS`  
-**Start of pulse:** 30 open issues  
-**Evidence-backed closures:** 18  
+**As of:** 2026-09-24
+**Repository:** `GBOGEB/ABACUS`
+**Start of pulse:** 30 open issues
+**Discovered during pulse:** 1 (#1313)
+**Evidence-backed closures:** 19
 **Current open count:** 12
 
 The YAML file is the machine-readable queue authority. This file is the
@@ -11,9 +12,10 @@ human-facing execution view.
 
 ## Current lanes
 
-- **NEXT_RECONCILE — 2:** #644, #1002.
-- **CONTROL_WATCH — 1:** #776.
-- **EXTERNAL / LOCAL RETURN — 5:** #633, #635, #636, #637, #1278.
+- **NEXT_RECONCILE — 1:** #1002.
+- **CONTROL_WATCH — 0:** none.
+- **EXTERNAL / LOCAL RETURN — 7:** #633, #635, #636, #637, #644, #1278,
+  #1313.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
 There is currently no unambiguous code-only `EXECUTE_NOW` item. Phase-5
@@ -26,7 +28,13 @@ reconciliation, not another speculative framework.
 Closed or retired with evidence:
 
 - #583, #645, #659, #672, #673, #674, #679, #683;
-- #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581, #638.
+- #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581, #638;
+- #776.
+
+Issue #644 received its repository-local bridge implementation through
+PRs #1365 and #1366, but remains open for its governed-binary execution and direct
+consumer-ingestion DoD. Issue #776 closed after PR #1325 and distinct
+post-control same-ref runs proved superseded unified-CD cancellation.
 
 The Wave-01 runtime now has a merged/default-branch receipt:
 
@@ -45,16 +53,16 @@ The stronger W04 real-source cycle remains the closure basis for #659:
 
 ## Next execution edge
 
-1. Reconcile #644 against the current binary/parser/round-trip/federation
-   implementation. Close it if the requested minimum bridge tuple is already
-   executable; otherwise split only the residual gap.
-2. Reconcile #1002 against current exact-head TRIAGE controls. Do not promote
+1. Reconcile #1002 against current exact-head TRIAGE controls. Do not promote
    registry presence into a synchronized-green claim.
-3. Keep #776 on measured control watch. The queue improved from 148/5 to a
-   current 19/15 checkpoint, but a follow-up 18/1 sample does not yet prove
-   repeated healthy occupancy.
+2. Execute #644 only when the governed binary set and cryoplant consumer are
+   available; public fixture proof does not satisfy its issue-level DoD.
+3. Keep #1313 outside coding capacity until authoritative Appendix 8.4 and
+   named calibration/source evidence returns. Do not infer mode/valve state.
 4. Leave #1278 outside coding capacity. Its remaining gate is owner/admin merge
    admission, not another code detector.
+5. Re-enter #635 only on the real Windows/evidence-vault production roundtrip;
+   public parser proof cannot substitute for that external evidence.
 
 ## Closure rule
 
