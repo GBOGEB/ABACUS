@@ -30,6 +30,7 @@ import zipfile
 SCHEMA = "abacus-binary-bridge/v1"
 PARSER_VERSION = "1.0.0"
 PRODUCER_REPOSITORY = "GBOGEB/ABACUS"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 NS = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
@@ -59,9 +60,10 @@ def canonical_sha256(value: object) -> str:
 
 
 def git_sha() -> str:
-    """Resolve the exact producer commit."""
+    """Resolve the exact producer commit from the ABACUS worktree."""
     value = subprocess.check_output(
         ["git", "rev-parse", "HEAD"],
+        cwd=REPOSITORY_ROOT,
         text=True,
     ).strip()
     if not re.fullmatch(r"[0-9a-f]{40}", value):
@@ -69,13 +71,32 @@ def git_sha() -> str:
     return value
 
 
-def _text(node: ET.Element, xpath: str, namespaces: dict[str, str]) -> str:
+def _inline_text(
+    node: ET.Element,
+    xpath: str,
+    namespaces: dict[str, str],
+) -> str:
+    """Join formatting runs without inventing whitespace between them."""
     parts = [
         item.text or ""
         for item in node.findall(xpath, namespaces)
         if item.text
     ]
-    return " ".join(" ".join(parts).split())
+    return " ".join("".join(parts).split())
+
+
+def _paragraph_text(
+    node: ET.Element,
+    paragraph_xpath: str,
+    text_xpath: str,
+    namespaces: dict[str, str],
+) -> str:
+    """Separate structural paragraphs while preserving inline run text."""
+    paragraphs = [
+        _inline_text(paragraph, text_xpath, namespaces)
+        for paragraph in node.findall(paragraph_xpath, namespaces)
+    ]
+    return " ".join(part for part in paragraphs if part)
 
 
 def _zip_xml(archive: zipfile.ZipFile, member: str) -> ET.Element:
@@ -92,7 +113,7 @@ def extract_docx(path: Path) -> dict[str, Any]:
     for child in root.findall(".//w:body/*", NS):
         local = child.tag.rsplit("}", 1)[-1]
         if local == "p":
-            text = _text(child, ".//w:t", NS)
+            text = _inline_text(child, ".//w:t", NS)
             if not text:
                 continue
             style = child.find("./w:pPr/w:pStyle", NS)
@@ -115,7 +136,7 @@ def extract_docx(path: Path) -> dict[str, Any]:
             for row in child.findall("./w:tr", NS):
                 rows.append(
                     [
-                        _text(cell, ".//w:t", NS)
+                        _paragraph_text(cell, ".//w:p", ".//w:t", NS)
                         for cell in row.findall("./w:tc", NS)
                     ]
                 )
@@ -144,7 +165,7 @@ def _xlsx_shared_strings(archive: zipfile.ZipFile) -> list[str]:
         return []
     root = _zip_xml(archive, member)
     return [
-        _text(item, ".//s:t", NS)
+        _inline_text(item, ".//s:t", NS)
         for item in root.findall("./s:si", NS)
     ]
 
@@ -185,7 +206,7 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
 
                 value: Any = None
                 if inline is not None:
-                    value = _text(inline, ".//s:t", NS)
+                    value = _inline_text(inline, ".//s:t", NS)
                 elif value_node is not None:
                     raw = value_node.text or ""
                     if cell_type == "s" and raw.isdigit():
@@ -202,6 +223,16 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
                         "value": value,
                         "formula": (
                             formula_node.text
+                            if formula_node is not None
+                            else None
+                        ),
+                        "formula_type": (
+                            formula_node.attrib.get("t")
+                            if formula_node is not None
+                            else None
+                        ),
+                        "formula_shared_index": (
+                            formula_node.attrib.get("si")
                             if formula_node is not None
                             else None
                         ),
@@ -244,7 +275,7 @@ def extract_pptx(path: Path) -> dict[str, Any]:
         for member in members:
             number = _slide_number(member)
             root = _zip_xml(archive, member)
-            text = _text(root, ".//a:t", NS)
+            text = _paragraph_text(root, ".//a:p", ".//a:t", NS)
             slides.append(
                 {
                     "anchor": f"slide:{number}",
@@ -329,12 +360,29 @@ def extract_pdf(path: Path) -> dict[str, Any]:
 class SemanticHTMLParser(HTMLParser):
     """Collect stable text blocks with heading and element anchors."""
 
+    CAPTURE_TAGS = {
+        "body",
+        "main",
+        "article",
+        "section",
+        "div",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "p",
+        "li",
+        "td",
+        "th",
+    }
+    IGNORED_TAGS = {"head", "script", "style", "template"}
+
     def __init__(self) -> None:
         super().__init__()
         self.blocks: list[dict[str, Any]] = []
-        self._tag: str | None = None
-        self._attrs: dict[str, str] = {}
-        self._parts: list[str] = []
+        self._stack: list[dict[str, Any]] = []
         self._index = 0
 
     def handle_starttag(
@@ -342,22 +390,42 @@ class SemanticHTMLParser(HTMLParser):
         tag: str,
         attrs: list[tuple[str, str | None]],
     ) -> None:
-        if tag in {"h1", "h2", "h3", "h4", "h5", "h6", "p", "li", "td", "th"}:
-            self._tag = tag
-            self._attrs = {key: value or "" for key, value in attrs}
-            self._parts = []
+        self._stack.append(
+            {
+                "tag": tag,
+                "attrs": {key: value or "" for key, value in attrs},
+                "parts": [],
+            }
+        )
 
     def handle_data(self, data: str) -> None:
-        if self._tag is not None:
-            self._parts.append(data)
+        if not data.strip():
+            return
+        if any(frame["tag"] in self.IGNORED_TAGS for frame in self._stack):
+            return
+        for frame in reversed(self._stack):
+            if frame["tag"] in self.CAPTURE_TAGS:
+                frame["parts"].append(data)
+                return
 
     def handle_endtag(self, tag: str) -> None:
-        if self._tag != tag:
+        matching = next(
+            (
+                index
+                for index in range(len(self._stack) - 1, -1, -1)
+                if self._stack[index]["tag"] == tag
+            ),
+            None,
+        )
+        if matching is None:
             return
-        text = " ".join(" ".join(self._parts).split())
+        frame = self._stack.pop(matching)
+        if tag not in self.CAPTURE_TAGS:
+            return
+        text = " ".join(" ".join(frame["parts"]).split())
         if text:
             self._index += 1
-            explicit = self._attrs.get("id")
+            explicit = frame["attrs"].get("id")
             anchor = explicit or f"{tag}:{self._index}"
             self.blocks.append(
                 {
@@ -366,9 +434,6 @@ class SemanticHTMLParser(HTMLParser):
                     "text": text,
                 }
             )
-        self._tag = None
-        self._attrs = {}
-        self._parts = []
 
 
 def extract_html(path: Path) -> dict[str, Any]:
