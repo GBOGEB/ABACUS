@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `19c722c59499cc7cf549ca2214f0e2d5d1626c8c5497d57b1c5fefff535a5c9b`
+Policy SHA-256: `095884c4437063a4b0fa21bcac11cd4c702ec997952785fee1f850763bc7a4c6`
 
 ## Outcome
 
@@ -229,6 +229,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install ruff black pylint mypy` — `dow-integration-ci-cd.yml`, `gbogeb-abacus-integration-ci-cd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pip install pytest numpy` — `leg5-federation-dashboard-proof.yml`, `mip-v2-federated-control.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `reusable-ci.yml`, `w72-clean-clone-proof.yml`
