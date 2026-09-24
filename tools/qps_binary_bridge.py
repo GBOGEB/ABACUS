@@ -28,7 +28,7 @@ import zipfile
 
 
 SCHEMA = "abacus-binary-bridge/v1"
-PARSER_VERSION = "1.0.0"
+PARSER_VERSION = "1.1.0"
 PRODUCER_REPOSITORY = "GBOGEB/ABACUS"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -85,6 +85,21 @@ def _inline_text(
     return " ".join("".join(parts).split())
 
 
+def _ooxml_text(
+    node: ET.Element,
+    text_tag: str,
+    separator_tags: set[str],
+) -> str:
+    """Preserve explicit OOXML tabs/breaks without splitting format runs."""
+    parts: list[str] = []
+    for item in node.iter():
+        if item.tag == text_tag and item.text:
+            parts.append(item.text)
+        elif item.tag in separator_tags:
+            parts.append(" ")
+    return " ".join("".join(parts).split())
+
+
 def _paragraph_text(
     node: ET.Element,
     paragraph_xpath: str,
@@ -93,7 +108,23 @@ def _paragraph_text(
 ) -> str:
     """Separate structural paragraphs while preserving inline run text."""
     paragraphs = [
-        _inline_text(paragraph, text_xpath, namespaces)
+        (
+            _ooxml_text(
+                paragraph,
+                f"{{{NS['a']}}}t",
+                {f"{{{NS['a']}}}br"},
+            )
+            if text_xpath == ".//a:t"
+            else _ooxml_text(
+                paragraph,
+                f"{{{NS['w']}}}t",
+                {
+                    f"{{{NS['w']}}}br",
+                    f"{{{NS['w']}}}cr",
+                    f"{{{NS['w']}}}tab",
+                },
+            )
+        )
         for paragraph in node.findall(paragraph_xpath, namespaces)
     ]
     return " ".join(part for part in paragraphs if part)
@@ -113,7 +144,15 @@ def extract_docx(path: Path) -> dict[str, Any]:
     for child in root.findall(".//w:body/*", NS):
         local = child.tag.rsplit("}", 1)[-1]
         if local == "p":
-            text = _inline_text(child, ".//w:t", NS)
+            text = _ooxml_text(
+                child,
+                f"{{{NS['w']}}}t",
+                {
+                    f"{{{NS['w']}}}br",
+                    f"{{{NS['w']}}}cr",
+                    f"{{{NS['w']}}}tab",
+                },
+            )
             if not text:
                 continue
             style = child.find("./w:pPr/w:pStyle", NS)
@@ -378,6 +417,22 @@ class SemanticHTMLParser(HTMLParser):
         "th",
     }
     IGNORED_TAGS = {"head", "script", "style", "template"}
+    VOID_TAGS = {
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    }
 
     def __init__(self) -> None:
         super().__init__()
@@ -390,6 +445,8 @@ class SemanticHTMLParser(HTMLParser):
         tag: str,
         attrs: list[tuple[str, str | None]],
     ) -> None:
+        if tag in self.VOID_TAGS:
+            return
         self._stack.append(
             {
                 "tag": tag,
