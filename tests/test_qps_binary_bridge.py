@@ -95,6 +95,33 @@ def test_docx_bridge_preserves_text_across_formatting_runs(tmp_path: Path) -> No
     assert item["hierarchy_node"]["blocks"][0]["text"] == "QPS"
 
 
+def test_docx_bridge_preserves_explicit_tabs_and_breaks(tmp_path: Path) -> None:
+    source = tmp_path / "breaks.docx"
+    write_zip(
+        source,
+        {
+            "word/document.xml": """<?xml version="1.0"?>
+<w:document
+ xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+ <w:body><w:p>
+  <w:r><w:t>A</w:t><w:tab/><w:t>B</w:t><w:br/><w:t>C</w:t></w:r>
+ </w:p></w:body>
+</w:document>""",
+        },
+    )
+
+    item = bridge.normalize_source(
+        source,
+        authority="CHILD_SSOT",
+        lifecycle_status="CURRENT",
+        trace_links=[],
+        supersedes=[],
+        producer_commit="a" * 40,
+    )
+
+    assert item["hierarchy_node"]["blocks"][0]["text"] == "A B C"
+
+
 def test_xlsx_bridge_extracts_sheet_cells_and_formula(tmp_path: Path) -> None:
     source = tmp_path / "sample.xlsx"
     write_zip(
@@ -201,7 +228,11 @@ def test_pptx_html_and_pdf_have_stable_family_anchors(
  xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
  <p:cSld><p:spTree><p:sp><p:txBody>
-  <a:p><a:r><a:t>Interface A</a:t></a:r></a:p>
+  <a:p>
+   <a:r><a:t>Interface</a:t></a:r>
+   <a:br/>
+   <a:r><a:t>A</a:t></a:r>
+  </a:p>
  </p:txBody></p:sp></p:spTree></p:cSld>
 </p:sld>""",
         },
@@ -308,6 +339,20 @@ def test_html_bridge_captures_visible_generic_container_text(
     ] == "callout"
 
 
+def test_html_bridge_does_not_retain_void_elements() -> None:
+    parser = bridge.SemanticHTMLParser()
+    parser.feed(
+        "<html><head><meta charset='utf-8'></head><body>"
+        "<div>A<br><img src='x'>B<input value='x'></div>"
+        "</body></html>"
+    )
+
+    assert parser._stack == []
+    assert parser.blocks == [
+        {"anchor": "div:1", "kind": "div", "text": "A B"}
+    ]
+
+
 def test_git_sha_is_resolved_from_abacus_root(monkeypatch) -> None:
     observed: dict[str, object] = {}
 
@@ -335,6 +380,7 @@ def test_bridge_payload_is_json_serializable(tmp_path: Path, monkeypatch) -> Non
 
     payload = json.dumps(result, sort_keys=True)
     assert result["schema"] == "abacus-binary-bridge/v1"
+    assert result["parser_version"] == "1.1.0"
     assert result["sources"][0]["trace_links"] == ["OFFER-01"]
     assert result["bridge_semantic_sha256"] in payload
 
