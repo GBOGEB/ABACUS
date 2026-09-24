@@ -228,7 +228,11 @@ def test_pptx_html_and_pdf_have_stable_family_anchors(
  xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
  <p:cSld><p:spTree><p:sp><p:txBody>
-  <a:p><a:r><a:t>Interface A</a:t></a:r></a:p>
+  <a:p>
+   <a:r><a:t>Interface</a:t></a:r>
+   <a:br/>
+   <a:r><a:t>A</a:t></a:r>
+  </a:p>
  </p:txBody></p:sp></p:spTree></p:cSld>
 </p:sld>""",
         },
