@@ -212,7 +212,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger)\\.yml$",
+      "pattern": "^(dow-integration-ci-cd|dow-integration|dow-main-cicd|dow-monitoring|dow-scheduled|dow-sprint6-cicd|dow-sut-pipeline|qps-dow-wave01-warmup|qps-w04-dow-receipt|qps-w05-bidder-eval-dow|qps-debug-dow-consumer|qps_m05_dow_independent_consumer|qps-triage-dow-contract|background_orchestrator|sprint-trigger|w306-dow-typed-findings-proof)\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",
       "disposition": "keep"
