@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 import zipfile
 
@@ -67,6 +68,33 @@ def test_docx_bridge_extracts_text_and_minimum_tuple(tmp_path: Path) -> None:
     assert item["producer_repository"] == "GBOGEB/ABACUS"
 
 
+def test_docx_bridge_preserves_text_across_formatting_runs(tmp_path: Path) -> None:
+    source = tmp_path / "formatted.docx"
+    write_zip(
+        source,
+        {
+            "word/document.xml": """<?xml version="1.0"?>
+<w:document
+ xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+ <w:body><w:p>
+  <w:r><w:t>Q</w:t></w:r><w:r><w:t>PS</w:t></w:r>
+ </w:p></w:body>
+</w:document>""",
+        },
+    )
+
+    item = bridge.normalize_source(
+        source,
+        authority="CHILD_SSOT",
+        lifecycle_status="CURRENT",
+        trace_links=[],
+        supersedes=[],
+        producer_commit="a" * 40,
+    )
+
+    assert item["hierarchy_node"]["blocks"][0]["text"] == "QPS"
+
+
 def test_xlsx_bridge_extracts_sheet_cells_and_formula(tmp_path: Path) -> None:
     source = tmp_path / "sample.xlsx"
     write_zip(
@@ -115,6 +143,50 @@ def test_xlsx_bridge_extracts_sheet_cells_and_formula(tmp_path: Path) -> None:
     assert sheet["cells"][0]["anchor"] == "RTM!A1"
     assert sheet["cells"][0]["value"] == "RTM-001"
     assert sheet["cells"][1]["formula"] == "1+1"
+
+
+def test_xlsx_bridge_retains_shared_formula_identity(tmp_path: Path) -> None:
+    source = tmp_path / "shared-formula.xlsx"
+    write_zip(
+        source,
+        {
+            "xl/workbook.xml": """<?xml version="1.0"?>
+<workbook
+ xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+ xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+ <sheets><sheet name="Calc" sheetId="1" r:id="rId1"/></sheets>
+</workbook>""",
+            "xl/_rels/workbook.xml.rels": """<?xml version="1.0"?>
+<Relationships
+ xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+ <Relationship Id="rId1" Type="worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>""",
+            "xl/worksheets/sheet1.xml": """<?xml version="1.0"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <sheetData><row r="1">
+  <c r="A1"><f t="shared" si="3">B1+1</f><v>2</v></c>
+  <c r="A2"><f t="shared" si="3"/><v>3</v></c>
+ </row></sheetData>
+</worksheet>""",
+        },
+    )
+
+    item = bridge.normalize_source(
+        source,
+        authority="RTM_PROJECTION",
+        lifecycle_status="CURRENT",
+        trace_links=[],
+        supersedes=[],
+        producer_commit="b" * 40,
+    )
+    cells = item["hierarchy_node"]["sheets"][0]["cells"]
+
+    assert cells[0]["formula"] == "B1+1"
+    assert cells[0]["formula_type"] == "shared"
+    assert cells[0]["formula_shared_index"] == "3"
+    assert cells[1]["formula"] is None
+    assert cells[1]["formula_type"] == "shared"
+    assert cells[1]["formula_shared_index"] == "3"
 
 
 def test_pptx_html_and_pdf_have_stable_family_anchors(
@@ -205,6 +277,48 @@ def test_semantic_hash_ignores_filename_for_identical_content(
 
     assert first["source_sha256"] == second["source_sha256"]
     assert first["semantic_sha256"] == second["semantic_sha256"]
+
+
+def test_html_bridge_captures_visible_generic_container_text(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "containers.html"
+    source.write_text(
+        "<html><body><div id='callout'>Direct callout"
+        "<p>Nested paragraph</p>Tail text</div></body></html>",
+        encoding="utf-8",
+    )
+
+    item = bridge.normalize_source(
+        source,
+        authority="DERIVED_INPUT",
+        lifecycle_status="CURRENT",
+        trace_links=[],
+        supersedes=[],
+        producer_commit="d" * 40,
+    )
+    blocks = item["hierarchy_node"]["blocks"]
+
+    assert {block["text"] for block in blocks} == {
+        "Direct callout Tail text",
+        "Nested paragraph",
+    }
+    assert next(block for block in blocks if block["kind"] == "div")[
+        "anchor"
+    ] == "callout"
+
+
+def test_git_sha_is_resolved_from_abacus_root(monkeypatch) -> None:
+    observed: dict[str, object] = {}
+
+    def fake_check_output(*args, **kwargs):
+        observed.update(kwargs)
+        return "f" * 40 + "\n"
+
+    monkeypatch.setattr(subprocess, "check_output", fake_check_output)
+
+    assert bridge.git_sha() == "f" * 40
+    assert observed["cwd"] == ROOT
 
 
 def test_bridge_payload_is_json_serializable(tmp_path: Path, monkeypatch) -> None:
