@@ -43,13 +43,14 @@ class TestParallelExecutionConfig:
     """Test parallel execution configuration"""
     
     def test_config_file_exists(self, parallel_config_path):
-        """Test that parallel execution config file exists"""
-        assert parallel_config_path.exists(), f"Config file not found: {parallel_config_path}"
+        """Guard retirement of the untracked legacy parallel-execution config path."""
+        assert not parallel_config_path.exists(), (
+            f"Legacy config path unexpectedly reintroduced without repository authority: {parallel_config_path}"
+        )
     
     def test_config_loads_successfully(self, parallel_config):
-        """Test that config loads without errors"""
-        assert parallel_config is not None
-        assert isinstance(parallel_config, dict)
+        """Guard against manufacturing configuration for the retired legacy path."""
+        assert parallel_config is None
     
     def test_config_has_execution_types(self, parallel_config):
         """Test that config defines all three execution types"""
