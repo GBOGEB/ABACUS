@@ -5,14 +5,14 @@
   "engineering_promotion_forbidden": true,
   "provider": {
     "repo": "GBOGEB/CoolProp",
-    "source_head_sha": "47cc8dced9278d50714ac39ef0a2edab7458c6a0",
-    "source_merge_sha": "9d10914924810c26a0d88f8aaea4db03b7a3d38e",
-    "attestation_commit_sha": "a71924147117c02ccc70c9b6436d89623897606c",
+    "source_head_sha": "a88d6e8cc24402868afab39a71fc49fcacec08c8",
+    "source_merge_sha": "e31433c4427be2aaad064294e6c6cab1843537df",
+    "attestation_commit_sha": "0b5147156e949a17ca1b4f01ea5cc5067c9628ed",
     "attestation_path": "qps/recon/federation/GM_I_A_FAST_HEAVY_FEDERATION_ATTESTATION_v1.json",
-    "attestation_sha256": "132ff84a3502f5ce39d4698fa772e98f7e8fba8e52587e698e8ea419197e1398",
-    "workflow_run_id": 35424686224,
-    "heavy_artifact_digest": "sha256:9cfeaa3d00ab1d41ba135a2f3f6d9e535aede7fc765027b8bd73251af8e344cf",
-    "fast_artifact_digest": "sha256:deb548d884f2dd4e8f0d077b3edc2259cf58b1bdd22c86167f2f67cbb2cda2b2"
+    "attestation_sha256": "4c32dca1a3f60b3b587d159702880a3c5c5987e878ebc228063650533c084ea6",
+    "workflow_run_id": 36226071145,
+    "heavy_artifact_digest": "sha256:f65cc08c99dafdf37afaea7da124b7e36e81c6fd5fc48a24f8af1cb668ac8cf4",
+    "fast_artifact_digest": "sha256:e432ed20b8053c9d9515a1d4bf127be88d9f0eccc447231da88757e0c9e447ae"
   },
   "bridge_role": "INDEPENDENT_RUNTIME_ECONOMICS_CONSUMER",
   "downstream_return": "GBOGEB/pipeline-automation-hub",
@@ -22,5 +22,6 @@
     "NO_QEQ_SAT_AUTHORITY_TRANSFER",
     "EXACT_PROVIDER_COMMIT_AND_DIGEST_REQUIRED",
     "FAST_MUST_HAVE_BUILD_INVOKED_FALSE_AND_SOURCE_CHECKOUT_FALSE"
-  ]
+  ],
+  "pulse_id": "GM-I-A-MCLOCK-P002"
 }
