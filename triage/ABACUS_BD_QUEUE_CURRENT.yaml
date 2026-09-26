@@ -1,5 +1,5 @@
 schema: abacus-bd-queue/1.1
-as_of: 2026-09-24
+as_of: 2026-09-26
 repository: GBOGEB/ABACUS
 base_branch: main
 
@@ -18,6 +18,7 @@ summary:
   open_before_pulse: 30
   discovered_during_pulse:
     - 1313
+    - 1369
   closed_this_pulse:
     - 583
     - 645
@@ -38,23 +39,32 @@ summary:
     - 581
     - 638
     - 776
+    - 1002
   open_after_pulse: 12
-  next_reconcile: 1
+  next_reconcile: 0
+  prove: 1
   control_watch: 0
   local_or_external_return: 7
   programme_parent: 4
 
 lanes:
-  NEXT_RECONCILE:
-    - issue: 1002
+  NEXT_RECONCILE: []
+
+  PROVE:
+    - issue: 1369
       title: >-
-        TRIAGE conversion gate: control-plane green and cluster receipt
+        synchronized exact-head TRIAGE cluster receipt for W62/W64/W7x/W8x
+      blocked_by: >-
+        Required proof workflows have no synchronized exact-main receipt on one
+        common SHA; path-filtered workflows require their existing
+        workflow_dispatch entry points.
       next_action: >-
-        Reconcile the requested synchronized exact-head cluster receipt against
-        current W62/W64/W7x/W8x controls.
+        Run the existing W62/W64/W70/W71/W85 and CI Governance workflows
+        unchanged on one exact current main SHA, then bind their run/artifact
+        identities into one retained cluster receipt.
       closure_gate: >-
-        Exact-head synchronized green evidence exists, or one residual red is
-        isolated as a bounded successor.
+        All required exact-head runs are green on one common SHA, or one
+        failing workflow is isolated as the next bounded defect.
 
   CONTROL_WATCH: []
 
@@ -195,3 +205,10 @@ closed_this_pulse:
       35622333444 and 35623229375 proved the older run was cancelled when the
       newer run arrived. Later recurrence remains programme control, not this
       closed implementation gate.
+
+  - issue: 1002
+    disposition: SUPERSEDED_WITH_REPLACEMENT
+    proof: >-
+      Current main contains the required W62/W64/W7x/W8x control surfaces, but
+      no synchronized exact-head cluster receipt exists. Residual proof-only
+      work transferred losslessly to successor #1369.

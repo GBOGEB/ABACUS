@@ -1,10 +1,10 @@
 # ABACUS current BD queue
 
-**As of:** 2026-09-24
+**As of:** 2026-09-26
 **Repository:** `GBOGEB/ABACUS`
 **Start of pulse:** 30 open issues
-**Discovered during pulse:** 1 (#1313)
-**Evidence-backed closures:** 19
+**Discovered during pulse:** 2 (#1313, #1369)
+**Evidence-backed closures:** 20
 **Current open count:** 12
 
 The YAML file is the machine-readable queue authority. This file is the
@@ -12,16 +12,16 @@ human-facing execution view.
 
 ## Current lanes
 
-- **NEXT_RECONCILE — 1:** #1002.
+- **NEXT_RECONCILE — 0:** none.
+- **PROVE — 1:** #1369.
 - **CONTROL_WATCH — 0:** none.
 - **EXTERNAL / LOCAL RETURN — 7:** #633, #635, #636, #637, #644, #1278,
   #1313.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
-There is currently no unambiguous code-only `EXECUTE_NOW` item. Phase-5
-Issue #638 is source-side complete. Its physical release predicates remain
-losslessly under #635/#636/#637 and #633. The next useful work is evidence
-reconciliation, not another speculative framework.
+There is currently no code-only `EXECUTE_NOW` item. The sole bounded active
+lane is proof-only #1369, which must execute existing W62/W64/W7x/W8x controls
+on one common exact `main` SHA. RETURN/HOLD lanes consume no coding capacity.
 
 ## Completed in this pulse
 
@@ -29,7 +29,7 @@ Closed or retired with evidence:
 
 - #583, #645, #659, #672, #673, #674, #679, #683;
 - #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581, #638;
-- #776.
+- #776, #1002.
 
 Issue #644 received its repository-local bridge implementation through
 PRs #1365 and #1366, but remains open for its governed-binary execution and direct
@@ -53,8 +53,8 @@ The stronger W04 real-source cycle remains the closure basis for #659:
 
 ## Next execution edge
 
-1. Reconcile #1002 against current exact-head TRIAGE controls. Do not promote
-   registry presence into a synchronized-green claim.
+1. Execute proof-only successor #1369 using the existing workflow-dispatch
+   entry points; do not mutate workflow semantics merely to force evidence.
 2. Execute #644 only when the governed binary set and cryoplant consumer are
    available; public fixture proof does not satisfy its issue-level DoD.
 3. Keep #1313 outside coding capacity until authoritative Appendix 8.4 and
@@ -75,3 +75,10 @@ An issue leaves this queue only as one of:
 
 Age, issue count, an unrelated green workflow, or a merged PR alone is not
 closure.
+
+## #1002 disposition
+
+Issue #1002 is `SUPERSEDED_WITH_REPLACEMENT`. Current `main` already contains the
+required control surfaces; the remaining gap is a synchronized exact-head
+cluster receipt. That proof-only residual moved to #1369 with no new
+architecture authority or engineering credit.
