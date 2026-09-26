@@ -29,12 +29,12 @@ compliance credit, or proof that all source/evidence work is complete.
 3. **Source register from D2.1 — complete**
    - Owner: assistant.
    - `source_register.md` exists.
-   - Appendix 8.4 remains explicitly source-pending.
+   - Appendix 8.4 source is bound; detailed state extraction remains partial.
 
 4. **RTM traceability table — started**
    - Owner: Agent A.
    - Reconciled to current SSOT under #1313.
-   - RTM-262 recovery-path evidence remains source-pending.
+   - RTM-262 is source-bound partial; recovery-path completion remains open.
    - Exact RTM-292 wording/source trace remains pending.
 
 5. **Scenario matrix — complete**
@@ -151,11 +151,12 @@ These items remain open and must not become acceptance credit:
 - `H2_heat_to_flow` — `CALIBRATION_PENDING`
 - independent HEPAK low-temperature reference — separate/open
 - exact RTM-292 wording/source citation — source trace pending
-- Appendix 8.4 mode/valve-state extraction — `SOURCE_PENDING`
+- Appendix 8.4 full state transcription — `PARTIAL_EXTRACTED`
 
 ## Front-heavy execution rule
 
-Prioritize source extraction, RTM evidence closure, Appendix 8.4 lineage, and
+Prioritize remaining state transcription, RTM evidence closure, and
+Appendix 8.4 lineage, plus
 independent property evidence before full SIMCRYOGENICS reproduction.
 
 Authority transfer: false.
