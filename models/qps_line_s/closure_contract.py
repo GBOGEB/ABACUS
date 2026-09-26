@@ -77,11 +77,21 @@ def validate_extraction(data: dict) -> dict:
 
     modes = data.get("modes")
     require(isinstance(modes, list), "modes must be a list")
-    source_available = source.get("source_material_available_in_repo")
+    source_available = source.get("source_material_available")
     require(
         isinstance(source_available, bool),
+        "source_material_available must be boolean",
+    )
+    in_repo = source.get("source_material_available_in_repo")
+    require(
+        isinstance(in_repo, bool),
         "source_material_available_in_repo must be boolean",
     )
+    if source_available:
+        require(
+            _nonempty(source.get("source_material_location")),
+            "available source requires source_material_location",
+        )
 
     if not source_available:
         require(
@@ -256,7 +266,13 @@ def validate_current_contract(root: Path = ROOT) -> dict:
         "open_mda_gates": 0,
         "runtime_verdict": runtime["verdict"],
         "appendix_8_4_status": extraction["status"],
-        "appendix_8_4_source_available": extraction["source"]["source_material_available_in_repo"],
+        "appendix_8_4_source_available": extraction["source"]["source_material_available"],
+        "appendix_8_4_source_available_in_repo": extraction["source"][
+            "source_material_available_in_repo"
+        ],
+        "appendix_8_4_source_location": extraction["source"][
+            "source_material_location"
+        ],
         "authority_transfer": False,
         "formal_credit_delta": 0,
     }
