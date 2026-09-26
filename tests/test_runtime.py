@@ -385,3 +385,27 @@ def test_appendix_8_4_receipt_rejects_formal_credit_delta():
     receipt["formal_credit_delta"] = 1
     with pytest.raises(ValueError, match="formal_credit_delta"):
         closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_extracted_rejects_missing_completion_blocker_record():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=True,
+    )
+    data["unresolved"] = [
+        row
+        for row in data["unresolved"]
+        if row.get("id") != "MODE_DEPENDENT_VEFF"
+    ]
+    with pytest.raises(
+        ValueError,
+        match="blocker record MODE_DEPENDENT_VEFF",
+    ):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_rejects_wrong_unresolved_container_type():
+    data = closure_contract.load_extraction()
+    data["unresolved"] = {}
+    with pytest.raises(ValueError, match="unresolved must be a list"):
+        closure_contract.validate_extraction(data)
