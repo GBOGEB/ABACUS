@@ -175,24 +175,28 @@ class TestSuperBridgeIntegration:
 
     # ------------------------------------------------------------------ phase 6-9: extended
 
+    @pytest.mark.phase6
     def test_phase6_returns_valid_contract(self, all_phases):
         success, result = all_phases['phase6'].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
         assert 'maturity_score' in result
 
+    @pytest.mark.phase7
     def test_phase7_returns_valid_contract(self, all_phases):
         success, result = all_phases['phase7'].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
         assert result.get('phase') == 'phase7_action_tracking'
 
+    @pytest.mark.phase8
     def test_phase8_returns_valid_contract(self, all_phases):
         success, result = all_phases['phase8'].execute(iteration=1)
         assert success is True
         assert isinstance(result, dict)
         assert result.get('phase') == 'phase8_todo_management'
 
+    @pytest.mark.phase9
     def test_phase9_skip_when_no_priors(self, all_phases):
         # Phase 9 skips gracefully when prior phases have not run
         success, result = all_phases['phase9'].execute(iteration=1)
