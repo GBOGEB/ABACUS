@@ -154,10 +154,21 @@ class TestCDWorkflowYAML:
         
         assert "Build universal handover archives" in step_names, \
             "cd.yml shall build the governed universal handover archives"
-        assert any(
-            "actions/upload-artifact" in str(step.get("uses", ""))
-            for step in steps
-        ), "cd.yml shall publish its governed handover artifacts"
+        upload_step = next(
+            (
+                step
+                for step in steps
+                if step.get("name") == "Upload universal archives"
+            ),
+            None,
+        )
+        assert upload_step is not None, \
+            "cd.yml shall retain the universal archive upload step"
+        assert "actions/upload-artifact" in str(upload_step.get("uses", "")), \
+            "universal archives shall be published with upload-artifact"
+        upload_paths = str(upload_step.get("with", {}).get("path", ""))
+        assert "handover/DMAIC_V3_3_HANDOVER_ALL.zip" in upload_paths
+        assert "handover/DMAIC_V3_3_HANDOVER_ALL.tar.gz" in upload_paths
 
 
 class TestYAMLSyntaxValidation:
