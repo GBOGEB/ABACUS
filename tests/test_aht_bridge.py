@@ -218,6 +218,100 @@ class TestFailedCheckThreshold:
             assert len(learnings) == 1
             assert learnings[0]["pull_request"] == "#967"
 
+    def test_zero_decisive_checks_fail_closed_unknown(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bridge = AHTStatisticsBridge(
+                learnings_db_path=Path(tmpdir) / "learnings.json"
+            )
+
+            result = bridge.classify_failed_check_threshold(
+                repository="GBOGEB/ABACUS",
+                pull_request="#1377",
+                head_sha="zero-denominator",
+                successful_checks=0,
+                failed_checks=0,
+            )
+
+            assert result["status"] == "UNKNOWN"
+            assert result["observed"]["total_decisive_checks"] == 0
+            assert result["observed"]["failure_rate"] is None
+            assert result["threshold"]["reached"] is False
+
+    def test_pending_only_population_never_clears_gate(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bridge = AHTStatisticsBridge(
+                learnings_db_path=Path(tmpdir) / "learnings.json"
+            )
+
+            result = bridge.classify_failed_check_threshold(
+                repository="GBOGEB/ABACUS",
+                pull_request="#1377",
+                head_sha="pending-only",
+                successful_checks=0,
+                failed_checks=0,
+                pending_checks=1,
+                queued_checks=2,
+                in_progress_checks=1,
+                waiting_checks=1,
+                requested_checks=1,
+                skipped_checks=3,
+                neutral_checks=2,
+                unobserved_checks=4,
+            )
+
+            assert result["status"] == "PENDING"
+            assert result["observed"]["total_decisive_checks"] == 0
+            assert result["observed"]["pending_like_checks"] == 6
+            assert result["observed"]["non_decisive_checks"] == 9
+            assert result["observed"]["failure_rate"] is None
+
+    def test_terminal_blockers_are_decisive_and_pending_is_separate(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bridge = AHTStatisticsBridge(
+                learnings_db_path=Path(tmpdir) / "learnings.json"
+            )
+
+            result = bridge.classify_failed_check_threshold(
+                repository="GBOGEB/ABACUS",
+                pull_request="#1377",
+                head_sha="mixed-population",
+                successful_checks=3,
+                failed_checks=1,
+                action_required_checks=1,
+                cancelled_checks=1,
+                timed_out_checks=1,
+                startup_failure_checks=1,
+                stale_checks=1,
+                pending_checks=2,
+                queued_checks=1,
+            )
+
+            assert result["status"] == "THRESHOLD_BREACHED"
+            assert result["observed"]["blocker_checks"] == 6
+            assert result["observed"]["total_decisive_checks"] == 9
+            assert result["observed"]["pending_like_checks"] == 3
+            assert result["observed"]["failure_rate"] == pytest.approx(6 / 9)
+
+    def test_pending_state_wins_when_blockers_are_below_threshold(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bridge = AHTStatisticsBridge(
+                learnings_db_path=Path(tmpdir) / "learnings.json"
+            )
+
+            result = bridge.classify_failed_check_threshold(
+                repository="GBOGEB/ABACUS",
+                pull_request="#1377",
+                head_sha="pending-below-threshold",
+                successful_checks=4,
+                failed_checks=1,
+                queued_checks=2,
+                threshold_failed_checks=2,
+            )
+
+            assert result["status"] == "PENDING"
+            assert result["threshold"]["reached"] is False
+            assert result["observed"]["failure_rate"] == pytest.approx(1 / 5)
+
 
 class TestConfidenceLevels:
     """Test different confidence levels"""
