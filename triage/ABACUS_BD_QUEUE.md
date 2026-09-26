@@ -24,8 +24,9 @@ human-facing execution view.
 There is currently no code-only `EXECUTE_NOW` or active `PROVE` item.
 Issue #1369 is an external execution-return gate because the required
 `workflow_dispatch` runs cannot be created by the connected execution surface.
-Issues #1379/#1380/#1381 are shared proof-hold children after merged PR #1384 and must
-not trigger new coding unless a material current-code first red appears.
+Issues #1379/#1380/#1381 are shared proof-hold children after merged PR
+#1384 and must not trigger new coding unless a material current-code first red
+appears.
 
 ## Completed in this pulse
 
