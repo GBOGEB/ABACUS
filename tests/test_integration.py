@@ -118,7 +118,7 @@ class TestDOWWorkflow:
                 for i in range(20):
                     f.write(f"test_b,{90 + np.random.randn()*5}\n")
             
-            from bootstrap_eval import load_from_csv, generate_markdown_report
+            from bootstrap_eval import load_from_csv
             
             df = load_from_csv(csv_path)
             assert len(df) == 40
