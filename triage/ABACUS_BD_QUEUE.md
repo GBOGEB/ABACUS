@@ -22,9 +22,9 @@ human-facing execution view.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
 There is currently no code-only `EXECUTE_NOW` or active `PROVE` item.
-#1369 is an external execution-return gate because the required
+Issue #1369 is an external execution-return gate because the required
 `workflow_dispatch` runs cannot be created by the connected execution surface.
-#1379/#1380/#1381 are shared proof-hold children after merged PR #1384 and must
+Issues #1379/#1380/#1381 are shared proof-hold children after merged PR #1384 and must
 not trigger new coding unless a material current-code first red appears.
 
 ## Completed in this pulse
@@ -87,7 +87,6 @@ Issue #1002 is `SUPERSEDED_WITH_REPLACEMENT`. Current `main` already contains th
 required control surfaces; the remaining gap is a synchronized exact-head
 cluster receipt. That proof-only residual moved to #1369 with no new
 architecture authority or engineering credit.
-
 
 ## Recent verified closures
 
