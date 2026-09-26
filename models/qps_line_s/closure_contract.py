@@ -75,6 +75,14 @@ def _nonempty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _is_integer_zero(value: Any) -> bool:
+    return (
+        isinstance(value, int)
+        and not isinstance(value, bool)
+        and value == 0
+    )
+
+
 def _is_sha256(value: Any) -> bool:
     return (
         isinstance(value, str)
@@ -127,8 +135,8 @@ def validate_extraction(data: dict) -> dict:
         "authority_transfer must remain false",
     )
     require(
-        data.get("formal_credit_delta") == 0,
-        "formal_credit_delta must remain zero",
+        _is_integer_zero(data.get("formal_credit_delta")),
+        "formal_credit_delta must remain integer zero",
     )
 
     source = data.get("source")
@@ -167,6 +175,25 @@ def validate_extraction(data: dict) -> dict:
 
     modes = data.get("modes")
     require(isinstance(modes, list), "modes must be a list")
+
+    unresolved = data.get("unresolved", [])
+    require(isinstance(unresolved, list), "unresolved must be a list")
+    unresolved_by_id: dict[str, dict] = {}
+    for index, row in enumerate(unresolved):
+        require(
+            isinstance(row, dict),
+            f"unresolved[{index}] must be a mapping",
+        )
+        row_id = row.get("id")
+        require(
+            _nonempty(row_id),
+            f"unresolved[{index}].id is required",
+        )
+        require(
+            row_id not in unresolved_by_id,
+            f"duplicate unresolved id: {row_id}",
+        )
+        unresolved_by_id[row_id] = row
 
     source_available = source.get("source_material_available")
     require(
@@ -394,25 +421,6 @@ def validate_extraction(data: dict) -> dict:
         "extraction-state coverage must equal the mode inventory",
     )
 
-    unresolved = data.get("unresolved", [])
-    require(isinstance(unresolved, list), "unresolved must be a list")
-    unresolved_by_id: dict[str, dict] = {}
-    for index, row in enumerate(unresolved):
-        require(
-            isinstance(row, dict),
-            f"unresolved[{index}] must be a mapping",
-        )
-        row_id = row.get("id")
-        require(
-            _nonempty(row_id),
-            f"unresolved[{index}].id is required",
-        )
-        require(
-            row_id not in unresolved_by_id,
-            f"duplicate unresolved id: {row_id}",
-        )
-        unresolved_by_id[row_id] = row
-
     if data.get("status") == "EXTRACTED":
         require(
             complete == expected,
@@ -456,8 +464,8 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         "source receipt authority_transfer must remain false",
     )
     require(
-        receipt.get("formal_credit_delta") == 0,
-        "source receipt formal_credit_delta must remain zero",
+        _is_integer_zero(receipt.get("formal_credit_delta")),
+        "source receipt formal_credit_delta must remain integer zero",
     )
     require(
         receipt.get("authority_transfer")
