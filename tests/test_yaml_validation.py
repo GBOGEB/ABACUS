@@ -149,17 +149,15 @@ class TestCDWorkflowYAML:
         with open(cd_file) as f:
             config = yaml.safe_load(f)
             
-        jobs = config.get("jobs", {})
+        steps = config["jobs"]["dmaic"].get("steps", [])
+        step_names = {str(step.get("name", "")) for step in steps}
         
-        has_docker = False
-        for job_name, job_config in jobs.items():
-            steps = job_config.get("steps", [])
-            for step in steps:
-                if "docker" in str(step).lower():
-                    has_docker = True
-                    break
-                    
-        assert has_docker, "CD workflow should include Docker build/push"
+        assert "Build universal handover archives" in step_names, \
+            "cd.yml shall build the governed universal handover archives"
+        assert any(
+            "actions/upload-artifact" in str(step.get("uses", ""))
+            for step in steps
+        ), "cd.yml shall publish its governed handover artifacts"
 
 
 class TestYAMLSyntaxValidation:
