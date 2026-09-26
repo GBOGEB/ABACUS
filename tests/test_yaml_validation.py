@@ -119,7 +119,7 @@ class TestCDWorkflowYAML:
             config = yaml.safe_load(f)
             
         assert "name" in config, "Missing workflow name"
-        assert "on" in config, "Missing trigger configuration"
+        assert "on" in config or True in config, "Missing trigger configuration"
         assert "jobs" in config, "Missing jobs section"
         
     def test_cd_workflow_deployment_jobs(self):
