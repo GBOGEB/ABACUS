@@ -437,3 +437,14 @@ def test_appendix_8_4_extraction_rejects_boolean_formal_credit_delta():
     data["formal_credit_delta"] = False
     with pytest.raises(ValueError, match="integer zero"):
         closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_receipt_rejects_boolean_extraction_credit_delta():
+    extraction = closure_contract.load_extraction()
+    extraction["formal_credit_delta"] = False
+    receipt = closure_contract.load_source_receipt()
+    with pytest.raises(
+        ValueError,
+        match="extraction formal_credit_delta must remain integer zero",
+    ):
+        closure_contract.validate_source_receipt(extraction, receipt)
