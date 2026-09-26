@@ -30,6 +30,9 @@ LIMITING_MARKERS = (
 )
 
 _EXCEPT_RE = re.compile(r"\bexcept\b")
+_NEGATIVE_COMPLIANCE_RE = re.compile(
+    r"\b(?:not\s+compliant|non[-\s]?compliant|does\s+not\s+comply|not\s+accepted|not\s+acceptable)\b"
+)
 
 
 @dataclass(frozen=True)
@@ -66,6 +69,8 @@ def classify_bidder_position(stated_status: str, text: str) -> str:
     """Conservatively classify a bidder position without granting compliance."""
     combined = f"{stated_status} {text}".lower()
 
+    if _NEGATIVE_COMPLIANCE_RE.search(combined):
+        return "DEVIATION"
     if "deviation" in combined or "not standard" in combined or "cannot" in combined:
         return "DEVIATION"
     if any(marker in combined for marker in ("excluded", "not included", "outside scope")):
