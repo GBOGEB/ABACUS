@@ -19,7 +19,7 @@ class TestCIWorkflowYAML:
         
     def test_ci_workflow_valid_yaml(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         assert config is not None, "CI workflow should be valid YAML"
@@ -27,7 +27,7 @@ class TestCIWorkflowYAML:
         
     def test_ci_workflow_structure(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         assert "name" in config, "Missing workflow name"
@@ -36,7 +36,7 @@ class TestCIWorkflowYAML:
 
     def test_ci_workflow_triggers(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         triggers = config.get("on", config.get(True, {}))
@@ -49,7 +49,7 @@ class TestCIWorkflowYAML:
 
     def test_ci_workflow_jobs(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -61,7 +61,7 @@ class TestCIWorkflowYAML:
             
     def test_ci_workflow_python_versions(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -75,7 +75,7 @@ class TestCIWorkflowYAML:
                 
     def test_ci_workflow_checkout_action(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -87,7 +87,7 @@ class TestCIWorkflowYAML:
             
     def test_ci_workflow_test_step(self):
         ci_file = Path(".github/workflows/ci.yml")
-        with open(ci_file) as f:
+        with open(ci_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -107,7 +107,7 @@ class TestCDWorkflowYAML:
         
     def test_cd_workflow_valid_yaml(self):
         cd_file = Path(".github/workflows/cd.yml")
-        with open(cd_file) as f:
+        with open(cd_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         assert config is not None, "CD workflow should be valid YAML"
@@ -115,7 +115,7 @@ class TestCDWorkflowYAML:
         
     def test_cd_workflow_structure(self):
         cd_file = Path(".github/workflows/cd.yml")
-        with open(cd_file) as f:
+        with open(cd_file, encoding="utf-8") as f:
             config = yaml.load(f, Loader=yaml.BaseLoader)
             
         assert "name" in config, "Missing workflow name"
@@ -124,7 +124,7 @@ class TestCDWorkflowYAML:
         
     def test_cd_workflow_deployment_jobs(self):
         cd_file = Path(".github/workflows/cd.yml")
-        with open(cd_file) as f:
+        with open(cd_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -134,7 +134,7 @@ class TestCDWorkflowYAML:
         
     def test_cd_workflow_environments(self):
         cd_file = Path(".github/workflows/cd.yml")
-        with open(cd_file) as f:
+        with open(cd_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         jobs = config.get("jobs", {})
@@ -146,7 +146,7 @@ class TestCDWorkflowYAML:
                     
     def test_cd_workflow_docker_build(self):
         cd_file = Path(".github/workflows/cd.yml")
-        with open(cd_file) as f:
+        with open(cd_file, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             
         steps = config["jobs"]["dmaic"].get("steps", [])
@@ -180,7 +180,7 @@ class TestYAMLSyntaxValidation:
         assert len(yaml_files) > 0, "Should have YAML workflow files"
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 try:
                     config = yaml.safe_load(f)
                     assert config is not None, f"{yaml_file.name} is empty"
@@ -191,7 +191,7 @@ class TestYAMLSyntaxValidation:
         compose_file = Path("docker-compose.yml")
         
         if compose_file.exists():
-            with open(compose_file) as f:
+            with open(compose_file, encoding="utf-8") as f:
                 try:
                     config = yaml.safe_load(f)
                     assert config is not None, "docker-compose.yml is empty"
@@ -212,7 +212,7 @@ class TestWorkflowSecurity:
         ]
         
         for yaml_file in yaml_files:
-            content = yaml_file.read_text().lower()
+            content = yaml_file.read_text(encoding="utf-8").lower()
             
             for pattern in forbidden_patterns:
                 if pattern in content:
@@ -223,10 +223,10 @@ class TestWorkflowSecurity:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
-            content = yaml_file.read_text()
+            content = yaml_file.read_text(encoding="utf-8")
             
             if "deploy" in yaml_file.name.lower() or "cd" in yaml_file.name.lower():
                 assert "secrets." in content or "GITHUB_TOKEN" in content, \
@@ -239,7 +239,7 @@ class TestWorkflowBestPractices:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             assert "name" in config, f"{yaml_file.name} should have a name"
@@ -249,7 +249,7 @@ class TestWorkflowBestPractices:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -263,7 +263,7 @@ class TestWorkflowBestPractices:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -283,7 +283,7 @@ class TestWorkflowDependencies:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -307,7 +307,7 @@ class TestWorkflowCaching:
         ci_file = Path(".github/workflows/ci.yml")
         
         if ci_file.exists():
-            with open(ci_file) as f:
+            with open(ci_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -330,7 +330,7 @@ class TestWorkflowArtifacts:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -352,7 +352,7 @@ class TestYAMLEditorCompatibility:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            content = yaml_file.read_text()
+            content = yaml_file.read_text(encoding="utf-8")
             lines = content.split('\n')
             
             for i, line in enumerate(lines, 1):
@@ -366,7 +366,7 @@ class TestYAMLEditorCompatibility:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            content = yaml_file.read_text()
+            content = yaml_file.read_text(encoding="utf-8")
             
             assert '\t' not in content, \
                 f"{yaml_file.name} contains tabs - use spaces for YAML"
@@ -375,7 +375,7 @@ class TestYAMLEditorCompatibility:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            content = yaml_file.read_text()
+            content = yaml_file.read_text(encoding="utf-8")
             
             assert '\r\n' not in content or True, \
                 f"{yaml_file.name} should use Unix line endings (LF)"
@@ -387,7 +387,7 @@ class TestWorkflowPerformance:
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
         
         for yaml_file in yaml_files:
-            with open(yaml_file) as f:
+            with open(yaml_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             jobs = config.get("jobs", {})
@@ -409,7 +409,7 @@ class TestDockerComposeYAML:
         compose_file = Path("docker-compose.yml")
         
         if compose_file.exists():
-            with open(compose_file) as f:
+            with open(compose_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             assert "version" in config, "docker-compose.yml should specify version"
@@ -422,7 +422,7 @@ class TestDockerComposeYAML:
         compose_file = Path("docker-compose.yml")
         
         if compose_file.exists():
-            with open(compose_file) as f:
+            with open(compose_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
                 
             services = config.get("services", {})
