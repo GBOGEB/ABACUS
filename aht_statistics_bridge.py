@@ -100,14 +100,53 @@ class AHTStatisticsBridge:
         successful_checks: int,
         failed_checks: int,
         action_required_checks: int = 0,
+        pending_checks: int = 0,
+        queued_checks: int = 0,
+        in_progress_checks: int = 0,
+        waiting_checks: int = 0,
+        requested_checks: int = 0,
+        cancelled_checks: int = 0,
+        timed_out_checks: int = 0,
+        startup_failure_checks: int = 0,
+        stale_checks: int = 0,
+        skipped_checks: int = 0,
+        neutral_checks: int = 0,
+        unobserved_checks: int = 0,
         threshold_failed_checks: int = 1,
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Embed CI failure-threshold status using the AHT learning format."""
-        total_decisive = successful_checks + failed_checks + action_required_checks
-        blocker_checks = failed_checks + action_required_checks
-        failure_rate = blocker_checks / total_decisive if total_decisive else 0.0
+        """Embed fail-closed CI threshold status using the AHT learning format."""
+        blocker_checks = (
+            failed_checks
+            + action_required_checks
+            + cancelled_checks
+            + timed_out_checks
+            + startup_failure_checks
+            + stale_checks
+        )
+        total_decisive = successful_checks + blocker_checks
+        pending_like_checks = (
+            pending_checks
+            + queued_checks
+            + in_progress_checks
+            + waiting_checks
+            + requested_checks
+        )
+        non_decisive_checks = skipped_checks + neutral_checks + unobserved_checks
+        failure_rate = (
+            blocker_checks / total_decisive if total_decisive else None
+        )
         threshold_reached = blocker_checks >= threshold_failed_checks
+
+        if threshold_reached:
+            status = "THRESHOLD_BREACHED"
+        elif pending_like_checks:
+            status = "PENDING"
+        elif total_decisive == 0:
+            status = "UNKNOWN"
+        else:
+            status = "SUPPORTED"
+
         result = {
             "hypothesis": "PR head remains below failed-check control threshold",
             "repository": repository,
@@ -115,17 +154,32 @@ class AHTStatisticsBridge:
             "head_sha": head_sha,
             "threshold": {
                 "failed_or_action_required_checks": threshold_failed_checks,
+                "blocker_checks": threshold_failed_checks,
                 "reached": threshold_reached,
             },
             "observed": {
                 "successful_checks": successful_checks,
                 "failed_checks": failed_checks,
                 "action_required_checks": action_required_checks,
+                "cancelled_checks": cancelled_checks,
+                "timed_out_checks": timed_out_checks,
+                "startup_failure_checks": startup_failure_checks,
+                "stale_checks": stale_checks,
+                "pending_checks": pending_checks,
+                "queued_checks": queued_checks,
+                "in_progress_checks": in_progress_checks,
+                "waiting_checks": waiting_checks,
+                "requested_checks": requested_checks,
+                "skipped_checks": skipped_checks,
+                "neutral_checks": neutral_checks,
+                "unobserved_checks": unobserved_checks,
                 "blocker_checks": blocker_checks,
+                "pending_like_checks": pending_like_checks,
+                "non_decisive_checks": non_decisive_checks,
                 "total_decisive_checks": total_decisive,
                 "failure_rate": failure_rate,
             },
-            "status": "THRESHOLD_BREACHED" if threshold_reached else "SUPPORTED",
+            "status": status,
             "context": context or {},
         }
         self._append_learning(result)
