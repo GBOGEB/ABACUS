@@ -41,7 +41,7 @@ def test_seed_runtime_pca_is_measured_but_allocation_is_withheld(tmp_path):
 
 def test_zero_step_application_fail_is_rejected(tmp_path):
     bad = json.loads(SEED.read_text())
-    row = next(item for item in bad if item["execution_state"] == "NOT_EXECUTED")
+    row = next(item for item in bad if item.get("execution_state") == "NOT_EXECUTED")
     row["execution_state"] = "FAIL"
     source = tmp_path / "bad.json"
     source.write_text(json.dumps(bad))
