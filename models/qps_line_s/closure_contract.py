@@ -147,7 +147,10 @@ def validate_extraction(data: dict) -> dict:
     for mode_index, mode in enumerate(modes):
         require(isinstance(mode, dict), f"mode[{mode_index}] must be a mapping")
         prefix = f"mode[{mode_index}]"
-        require(mode.get("status") == "EXTRACTED", f"{prefix} must be EXTRACTED")
+        require(
+            mode.get("status") == "SOURCE_BOUND",
+            f"{prefix} must be SOURCE_BOUND",
+        )
         extraction_state = mode.get("extraction_state")
         require(
             extraction_state in ALLOWED_EXTRACTION_STATES,
@@ -157,7 +160,20 @@ def validate_extraction(data: dict) -> dict:
         require(_nonempty(mode.get("mode_id")), f"{prefix}.mode_id is required")
         require(_nonempty(mode.get("mode_name")), f"{prefix}.mode_name is required")
         require(_nonempty(mode.get("source_ref")), f"{prefix}.source_ref is required")
-        require(_nonempty(mode.get("evidence_locator")), f"{prefix}.evidence_locator is required")
+        require(
+            _nonempty(mode.get("evidence_locator")),
+            f"{prefix}.evidence_locator is required",
+        )
+        figure_sha = mode.get("figure_sha256")
+        require(
+            isinstance(figure_sha, str)
+            and len(figure_sha) == 64
+            and all(
+                char in "0123456789abcdef"
+                for char in figure_sha.lower()
+            ),
+            f"{prefix}.figure_sha256 must be a 64-character SHA-256",
+        )
         require(_nonempty(mode.get("recovery_path")), f"{prefix}.recovery_path is required")
         require(_nonempty(mode.get("v_eff_consequence")), f"{prefix}.v_eff_consequence is required")
 
