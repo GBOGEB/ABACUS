@@ -28,17 +28,47 @@
 
 - D2.1 section: Appendix 8.4 modes.
 - Role: mode, valve-state, recovery-path, and mode-dependent V_eff evidence.
-- Status: `SOURCE_PENDING_EXTRACTION`.
-- Successor work-order: ABACUS #1313.
+- Status: `SOURCE_BOUND_PARTIAL_EXTRACTION`.
+- Work order: ABACUS #1313.
+- Source file: `D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx`.
+- Document reference: `DSBT-TN-24-37-3.0`.
+- Issue / revision: `2-1`.
+- Document date: `2024-06-13`.
+- Source custody: user Library locked source; not committed to this repository.
+- Source SHA-256:
+  `2700ea0af44f90dfe140fab8a4b7c203bedcf76ec7eee91b29c92d83d01196ba`.
+- Appendix figure inventory: 23 source figures, `image58.emf` through
+  `image80.emf`.
+
+## Appendix 8.4 extraction state
+
+The source itself is now bound and the complete 23-mode figure inventory is
+represented in the machine-readable extraction contract.
+
+Current extraction is deliberately `PARTIAL_EXTRACTED`:
+
+- 23 / 23 mode identities are source-bound.
+- 8 modes contain source-supported partial state/recovery evidence.
+- 15 modes remain mode-identified only.
+- 0 modes are claimed `STATE_COMPLETE`.
+- no mode-dependent V_eff is promoted from an inferred topology.
+
+The repository stores the source receipt, source digest, figure digests, and
+the controlled extraction. It does not store or redistribute the locked
+24.5 MB source document.
 
 ## Appendix 8.4 extraction rule
 
-The authoritative Appendix 8.4 content is not present as an extracted evidence
-table in this repository.
+No valve state, fail state, recovery path, or mode-dependent connected volume
+may be promoted from engineering inference alone.
 
-Until source evidence is attached, no valve state, fail state, recovery path,
-or mode-dependent connected volume may be inferred or promoted.
+`EXTRACTED` is permitted only when every source mode is
+`STATE_COMPLETE` with source/evidence lineage.
 
-Machine-readable intake contract:
+Machine-readable extraction:
 
 `docs/qps_line_s_recovery/appendix_8_4_mode_valve_extraction.yaml`
+
+Machine-readable source receipt:
+
+`docs/qps_line_s_recovery/appendix_8_4_source_receipt.json`
