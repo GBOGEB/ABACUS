@@ -39,6 +39,7 @@ policy:
   allowed_fail_states:
     - FAIL_OPEN
     - FAIL_CLOSED
+    - NOT_APPLICABLE
     - UNKNOWN
   allowed_extraction_states:
     - MODE_IDENTIFIED
@@ -57,6 +58,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image58.emf"
+    figure_ref: image58.emf
     figure_sha256: >-
       3b70b111e39992e8e6aae2031afb93efd40bc5a2f82b046e0e0516e4759dbd19
     recovery_path: >-
@@ -107,6 +109,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image59.emf"
+    figure_ref: image59.emf
     figure_sha256: >-
       80fbcfe74937b95e7b6e7fb75de897405abbddcfc1846e11a2179fb325a08d66
     recovery_path: >-
@@ -150,6 +153,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image60.emf"
+    figure_ref: image60.emf
     figure_sha256: >-
       cb8ee73692cca9770d49f7f0ec0c72f6f3d687e0a32423364a9d71c72e40c178
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -191,6 +195,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image61.emf"
+    figure_ref: image61.emf
     figure_sha256: >-
       527cff53cb6e5f701f816e3fc531ba4cf2d0a7c2722567af5f33f5876d141098
     recovery_path: >-
@@ -227,6 +232,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image62.emf"
+    figure_ref: image62.emf
     figure_sha256: >-
       1708f6be500b79b63f276420c65a99a151ce8ce46668fe79ef90647eaf2a25ac
     recovery_path: >-
@@ -262,6 +268,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image63.emf"
+    figure_ref: image63.emf
     figure_sha256: >-
       d6486ea74c37e34d959ddcaf808c137f224b06804c5c21203136f4c0781da1f3
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -303,6 +310,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image64.emf"
+    figure_ref: image64.emf
     figure_sha256: >-
       76fd34e6634bba8770462ee713d65f6dfb43de0ff5294ee9946596ae9a1252c6
     recovery_path: >-
@@ -351,6 +359,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image65.emf"
+    figure_ref: image65.emf
     figure_sha256: >-
       a6198ad67b9aa5644e01de00a6cabb2733eea805faa71e5e7ecb5d899b772a8d
     recovery_path: >-
@@ -399,6 +408,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image66.emf"
+    figure_ref: image66.emf
     figure_sha256: >-
       bf0d16b24241c3355bac5258d1ac518cc98322aba1269ede419a80215918adba
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -440,6 +450,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image67.emf"
+    figure_ref: image67.emf
     figure_sha256: >-
       62d791d40ab8c2b35c9dd60827ba105806c2047a1dc0c4c6ec27b4f5b00e7010
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -481,6 +492,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image68.emf"
+    figure_ref: image68.emf
     figure_sha256: >-
       fd1433ed8c43023e202287fb4fa1146cea2ff477947fc017d34c6c9df31c98b2
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -522,6 +534,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image69.emf"
+    figure_ref: image69.emf
     figure_sha256: >-
       1908f5e683d921eac5cbb0397a81fb39a317a5a2b922cd192959842aea7cbe9c
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -563,6 +576,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image70.emf"
+    figure_ref: image70.emf
     figure_sha256: >-
       159625ba3d7044652001229831caa8190daadc37d98c64f8333bf6b0ef4191c8
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -604,6 +618,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image71.emf"
+    figure_ref: image71.emf
     figure_sha256: >-
       7aa794247309a16ba995c3dcd71bf023f5ffd90e4ee124bac8c3cba510ff44bf
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -645,6 +660,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image72.emf"
+    figure_ref: image72.emf
     figure_sha256: >-
       8d1e7bcbd9a0506aa7c33dc8b32de637846da5b7baf6886c8958b4abda09bad4
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -686,6 +702,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image73.emf"
+    figure_ref: image73.emf
     figure_sha256: >-
       f2f1b695b6bf451c7faf89b40fb574f28b29d9427baaa25321e6cffafde25659
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -727,6 +744,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image74.emf"
+    figure_ref: image74.emf
     figure_sha256: >-
       3e0dd6c7666e504065ebb4861cc7f0e1acc43f040ae27507e59299416a870b8f
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -768,6 +786,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image75.emf"
+    figure_ref: image75.emf
     figure_sha256: >-
       cf4d19686f518600fc8ba6e48c0542e1ae5bffe6e5fd3e11ae5463c1f7e52d97
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -809,6 +828,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image76.emf"
+    figure_ref: image76.emf
     figure_sha256: >-
       9d37a907106a11f9261252f1fe7bf76deae26fe92a900570f1a3652c38ce484d
     recovery_path: >-
@@ -838,6 +858,7 @@ modes:
     extraction_state: STATE_PARTIAL
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image77.emf"
+    figure_ref: image77.emf
     figure_sha256: >-
       746d02042d4dad2c9669522a11d3ae5250695b7fef431338c22ae3d25fdc2727
     recovery_path: >-
@@ -868,6 +889,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image78.emf"
+    figure_ref: image78.emf
     figure_sha256: >-
       46a66b9216746b2d316c209341ea818ff1a958759d5a406da33a34377bdd34c1
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -909,6 +931,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image79.emf"
+    figure_ref: image79.emf
     figure_sha256: >-
       a29a21b2ffb55ce1d6e0032c0d139f8a1451f263adf1e2d89bf2d3d4b24d1f66
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
@@ -950,6 +973,7 @@ modes:
     extraction_state: MODE_IDENTIFIED
     source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
     evidence_locator: "Appendix 8.4 / image80.emf"
+    figure_ref: image80.emf
     figure_sha256: >-
       512ae941e528869a4c9298f3775dfca1f469654b12f39e9fe5522dc00dfeb4f0
     recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
