@@ -42,10 +42,10 @@ class TestCIWorkflowYAML:
         triggers = config.get("on", config.get(True, {}))
 
         if isinstance(triggers, dict):
-            assert "push" in triggers or "pull_request" in triggers, \
-                "Should trigger on push or pull_request"
-        elif isinstance(triggers, (list, bool)):
-            pass
+            assert set(triggers) == {"workflow_dispatch"}, \
+                "Legacy ci.yml must remain workflow_dispatch-only"
+        else:
+            pytest.fail("Legacy ci.yml requires explicit workflow_dispatch mapping")
 
     def test_ci_workflow_jobs(self):
         ci_file = Path(".github/workflows/ci.yml")
