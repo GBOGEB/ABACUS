@@ -129,6 +129,16 @@ def test_provenance_header_accepts_deterministic_values():
 from models.qps_line_s import closure_contract
 
 
+def _mode_by_id(data, mode_id):
+    return next(mode for mode in data["modes"] if mode["mode_id"] == mode_id)
+
+
+def _valve_by_id(mode, valve_id):
+    return next(
+        valve for valve in mode["valves"] if valve["valve_id"] == valve_id
+    )
+
+
 def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     monkeypatch.setattr(
         closure_contract,
@@ -139,105 +149,114 @@ def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     assert summary["status"] == "PASS"
     assert summary["open_mda_gates"] == 0
     assert summary["runtime_verdict"] == "PROCEED_MDA"
-    assert summary["appendix_8_4_status"] == "SOURCE_PENDING"
-    assert summary["appendix_8_4_source_available"] is False
+    assert summary["appendix_8_4_status"] == "PARTIAL_EXTRACTED"
+    assert summary["appendix_8_4_source_available"] is True
+    assert summary["appendix_8_4_source_available_in_repo"] is False
+    assert summary["appendix_8_4_source_location"] == (
+        "USER_LIBRARY_LOCKED_SOURCE"
+    )
     assert summary["authority_transfer"] is False
     assert summary["formal_credit_delta"] == 0
 
 
 def test_appendix_8_4_rejects_inferred_rows_without_source():
     data = closure_contract.load_extraction()
-    data["modes"] = [
-        {
-            "status": "EXTRACTED",
-            "mode_id": "INFERRED",
-            "mode_name": "must not pass",
-            "source_ref": "inference",
-            "evidence_locator": "none",
-            "recovery_path": "UNKNOWN",
-            "v_eff_consequence": "UNKNOWN",
-            "valves": [
-                {
-                    "valve_id": "V-INFERRED",
-                    "commanded_state": "UNKNOWN",
-                    "fail_state": "UNKNOWN",
-                    "source_ref": "inference",
-                    "evidence_locator": "none",
-                }
-            ],
-        }
-    ]
+    data["status"] = "SOURCE_PENDING"
+    data["source"]["source_material_available"] = False
+    data["source"]["source_material_location"] = None
     with pytest.raises(ValueError, match="no mode/valve rows may be inferred"):
         closure_contract.validate_extraction(data)
 
 
 def test_appendix_8_4_extracted_rows_require_source_evidence():
     data = closure_contract.load_extraction()
-    data["status"] = "EXTRACTED"
-    data["source"]["source_material_available_in_repo"] = True
-    data["source"]["source_ref"] = "D2.1"
-    data["source"]["evidence_locator"] = "Appendix 8.4"
-    data["modes"] = [
-        {
-            "status": "EXTRACTED",
-            "mode_id": "MODE-1",
-            "mode_name": "source-backed fixture",
-            "source_ref": "",
-            "evidence_locator": "Appendix 8.4 / fixture",
-            "recovery_path": "UNKNOWN",
-            "v_eff_consequence": "UNKNOWN",
-            "valves": [
-                {
-                    "valve_id": "V-1",
-                    "commanded_state": "UNKNOWN",
-                    "fail_state": "UNKNOWN",
-                    "source_ref": "D2.1",
-                    "evidence_locator": "Appendix 8.4 / fixture",
-                }
-            ],
-        }
-    ]
-    with pytest.raises(ValueError, match="mode\[0\]\.source_ref"):
+    data["modes"][0]["source_ref"] = ""
+    with pytest.raises(ValueError, match=r"mode\[0\]\.source_ref"):
         closure_contract.validate_extraction(data)
 
 
 def test_appendix_8_4_allows_source_bound_unknown_states():
     data = closure_contract.load_extraction()
-    data["status"] = "EXTRACTED"
-    data["source"]["source_material_available_in_repo"] = True
-    data["source"]["source_ref"] = "D2.1"
-    data["source"]["evidence_locator"] = "Appendix 8.4"
-    data["modes"] = [
-        {
-            "status": "EXTRACTED",
-            "mode_id": "MODE-1",
-            "mode_name": "source-backed fixture",
-            "source_ref": "D2.1",
-            "evidence_locator": "Appendix 8.4 / fixture",
-            "recovery_path": "UNKNOWN",
-            "v_eff_consequence": "UNKNOWN",
-            "valves": [
-                {
-                    "valve_id": "V-1",
-                    "commanded_state": "UNKNOWN",
-                    "fail_state": "UNKNOWN",
-                    "source_ref": "D2.1",
-                    "evidence_locator": "Appendix 8.4 / fixture",
-                }
-            ],
-        }
-    ]
-    assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
+    result = closure_contract.validate_extraction(data)
+    assert result["status"] == "PARTIAL_EXTRACTED"
+    assert len(result["modes"]) == 23
+    unknown = _mode_by_id(result, "A84-03")
+    assert unknown["extraction_state"] == "MODE_IDENTIFIED"
+    assert {
+        valve["commanded_state"] for valve in unknown["valves"]
+    } == {"UNKNOWN"}
 
 
 def test_appendix_8_4_rejects_extracted_empty_modes_when_source_available():
     data = closure_contract.load_extraction()
     data["status"] = "EXTRACTED"
-    data["source"]["source_material_available_in_repo"] = True
-    data["source"]["source_ref"] = "D2.1"
-    data["source"]["evidence_locator"] = "Appendix 8.4"
     data["modes"] = []
     with pytest.raises(ValueError, match="at least one mode row"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_inventory_is_exact_and_partial():
+    data = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    assert data["status"] == "PARTIAL_EXTRACTED"
+    assert data["coverage"]["mode_inventory_expected"] == 23
+    assert data["coverage"]["mode_rows_present"] == 23
+    assert data["coverage"]["state_complete_modes"] == 0
+    assert data["coverage"]["state_partial_modes"] == 8
+    assert data["coverage"]["mode_identified_only"] == 15
+    assert data["coverage"]["extraction_complete"] is False
+    assert {mode["status"] for mode in data["modes"]} == {"SOURCE_BOUND"}
+    assert all(len(mode["figure_sha256"]) == 64 for mode in data["modes"])
+    ids = [mode["mode_id"] for mode in data["modes"]]
+    assert len(ids) == len(set(ids)) == 23
+
+
+def test_appendix_8_4_rejects_invalid_figure_digest():
+    data = closure_contract.load_extraction()
+    data["modes"][0]["figure_sha256"] = "not-a-sha"
+    with pytest.raises(ValueError, match="figure_sha256"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_abnormal_fallback_states_are_source_bound():
+    data = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+
+    minor = _mode_by_id(data, "A84-05")
+    minor_supply = _valve_by_id(minor, "QVB_SUPPLY_INTERFACE")
+    minor_return = _valve_by_id(minor, "QVB_RETURN_INTERFACE")
+    assert (minor_supply["commanded_state"], minor_supply["fail_state"]) == (
+        "CLOSED",
+        "FAIL_CLOSED",
+    )
+    assert (minor_return["commanded_state"], minor_return["fail_state"]) == (
+        "OPEN",
+        "FAIL_OPEN",
+    )
+
+    utility = _mode_by_id(data, "A84-07")
+    utility_qrb = _valve_by_id(utility, "QRB_CRYOLINE_INTERFACE")
+    utility_return = _valve_by_id(utility, "QVB_RETURN_INTERFACE")
+    assert (utility_qrb["commanded_state"], utility_qrb["fail_state"]) == (
+        "CLOSED",
+        "FAIL_CLOSED",
+    )
+    assert (utility_return["commanded_state"], utility_return["fail_state"]) == (
+        "OPEN",
+        "FAIL_OPEN",
+    )
+
+
+def test_appendix_8_4_partial_inventory_cannot_claim_full_extraction():
+    data = closure_contract.load_extraction()
+    data["status"] = "EXTRACTED"
+    data["coverage"]["extraction_complete"] = True
+    with pytest.raises(
+        ValueError,
+        match="EXTRACTED requires every source mode to be STATE_COMPLETE",
+    ):
         closure_contract.validate_extraction(data)
 
 

@@ -56,13 +56,15 @@ QPS shall recover normal helium circulation after the abnormal event.
 
 HP/recovery capability is represented.
 
-Appendix 8.4 operating-mode and valve-state extraction is not source-bound.
+Appendix 8.4 is now source-bound to the locked D2.1 document.
 
-Recovery procedure evidence is not yet source-bound.
+The 23 / 23 mode inventory is bound to the embedded Appendix figures.
+Abnormal/fallback valve-state evidence is partially extracted, while the
+remaining mode topology and the full recovery procedure remain incomplete.
 
 ### RTM-262 status
 
-`SOURCE_PENDING`
+`SOURCE_BOUND_PARTIAL`
 
 ## RTM-292
 
@@ -123,14 +125,17 @@ Remaining source/calibration items are listed below.
 
 1. Bind exact RTM-292 wording/source location.
 2. Bind source pedigree for `MDOT_IN_PRE_HP_MAX = 112 g/s`.
-3. Extract Appendix 8.4 mode/valve states from authoritative source.
-4. Keep `T_GAS` calibration-pending until its basis is reconciled.
-5. Resolve or explicitly carry the 1.44 heat-load margin pedigree.
-6. Resolve `H2_heat_to_flow` calibration for credited transient use.
-7. Complete independent HEPAK low-temperature reference where required.
+3. Complete the remaining Appendix 8.4 state transcription: 15 modes are
+   mode-identified only and 8 modes remain partially extracted.
+4. Quantify mode-dependent V_eff only after the remaining topology is
+   source-bound.
+5. Keep `T_GAS` calibration-pending until its basis is reconciled.
+6. Resolve or explicitly carry the 1.44 heat-load margin pedigree.
+7. Resolve `H2_heat_to_flow` calibration for credited transient use.
+8. Complete independent HEPAK low-temperature reference where required.
 
-Mode-dependent recovery paths and connected V_eff shall not be frozen before
-Appendix 8.4 source extraction.
+Mode-dependent recovery paths and connected V_eff shall not be frozen until
+the relevant Appendix 8.4 topology is fully source-bound.
 
 No status above constitutes engineering acceptance or compliance closure
 merely because the MDA gate set is resolved.
