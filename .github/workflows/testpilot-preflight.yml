@@ -36,7 +36,7 @@ jobs:
       - name: Install developer dependencies
         run: python -m pip install -r requirements-dev.txt
       - name: Run bounded TestPilot fast preflight
-        run: python scripts/testpilot_preflight.py --mode fast --all
+        run: python scripts/testpilot_preflight.py --mode fast --parity
       - name: Upload TestPilot receipt
         if: always()
         uses: actions/upload-artifact@v7
