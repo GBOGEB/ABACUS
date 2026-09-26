@@ -76,10 +76,9 @@ An issue leaves this queue only as one of:
 Age, issue count, an unrelated green workflow, or a merged PR alone is not
 closure.
 
-
 ## #1002 disposition
 
-#1002 is `SUPERSEDED_WITH_REPLACEMENT`. Current `main` already contains the
+Issue #1002 is `SUPERSEDED_WITH_REPLACEMENT`. Current `main` already contains the
 required control surfaces; the remaining gap is a synchronized exact-head
 cluster receipt. That proof-only residual moved to #1369 with no new
 architecture authority or engineering credit.
