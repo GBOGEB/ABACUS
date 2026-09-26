@@ -129,13 +129,8 @@ class TestCDWorkflowYAML:
             
         jobs = config.get("jobs", {})
         
-        deployment_keywords = ["deploy", "build", "push"]
-        has_deployment = any(
-            any(keyword in job_name.lower() for keyword in deployment_keywords)
-            for job_name in jobs.keys()
-        )
-        
-        assert has_deployment, "Should have deployment-related jobs"
+        assert set(jobs) == {"dmaic"}, \
+            "cd.yml shall retain the single governed DMAIC handover/export job"
         
     def test_cd_workflow_environments(self):
         cd_file = Path(".github/workflows/cd.yml")
