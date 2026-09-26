@@ -77,10 +77,10 @@ jobs:
           pip install flake8 black mypy
       - name: Run flake8
         working-directory: ./rich_padding
-        run: flake8 ariana_trace_project/ --max-line-length=120 --extend-ignore=E203,W503
+        run: flake8 *.py --max-line-length=120 --extend-ignore=E203,W503
       - name: Run black check
         working-directory: ./rich_padding
-        run: black --check ariana_trace_project/
+        run: black --check *.py
 
   deploy:
     needs: [test, lint]
