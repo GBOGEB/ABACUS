@@ -7,7 +7,7 @@ import hashlib
 import json
 import os
 import re
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -94,7 +94,7 @@ def consume(binding: dict | None) -> dict:
     dow = {
         "schema": "abacus.dow.gg_math_temporal_pca_binding.v1",
         "receipt_id": "DOW-GG-MATH-TEMPORAL-PCA-001",
-        "created_utc": datetime.now(UTC).replace(microsecond=0).isoformat(),
+        "created_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "consumer": "ABACUS/DOW",
         "semantic_source": "CODEX/KEB",
         "provider": "GBOGEB/gg_MATH",
