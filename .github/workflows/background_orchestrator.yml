@@ -3,6 +3,10 @@ name: DOW-KEB-GBOGEB Background Orchestrator
 on:
   schedule:
     - cron: '0 */6 * * *'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/background_orchestrator.yml'
   workflow_dispatch:
     inputs:
       priority:
@@ -51,10 +55,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest pytest-cov black flake8 bandit
       
-      - name: Initialize DOW-KEB-GBOGEB Orchestrator
+      - name: Initialize Canonical 12-Cluster Runtime
         id: init_orchestrator
         run: |
-          python DOW_KEB_GBOGEB_INTEGRATION_ORCHESTRATOR.py --init-only
+          python DMAIC_V3/core/twelve_cluster_orchestrator.py --test --phase phase2 --tasks 12
           echo "orchestrator_initialized=true" >> $GITHUB_OUTPUT
       
       - name: Run Validation Suite
@@ -63,18 +67,16 @@ jobs:
           python scripts/validate_test_performance.py
           echo "✅ Validation suite completed"
       
-      - name: Execute Background Tasks
+      - name: Execute Governed Background Pipeline
         if: github.event.inputs.task_type == 'full_orchestration' || github.event_name == 'schedule'
         run: |
-          python DOW_KEB_GBOGEB_INTEGRATION_ORCHESTRATOR.py \
-            --priority ${{ github.event.inputs.priority || 'MEDIUM' }} \
-            --mode background \
-            --max-runtime 7200
+          python DMAIC_V3/full_pipeline_orchestrator.py --iteration 1 --no-git --quiet
       
       - name: Generate Artifacts
         if: always()
         run: |
           mkdir -p artifacts
+          cp -r DMAIC_V3_OUTPUT/* artifacts/ 2>/dev/null || true
           cp -r orchestrator_outputs/* artifacts/ 2>/dev/null || true
           cp -r test_validation_results/* artifacts/ 2>/dev/null || true
           cp -r local_mcp/logs/* artifacts/ 2>/dev/null || true
@@ -187,7 +189,8 @@ jobs:
           
           ## Documentation
           
-          - [Integration Orchestrator](../DOW_KEB_GBOGEB_INTEGRATION_ORCHESTRATOR.py)
+          - [Canonical 12-Cluster Orchestrator](../DMAIC_V3/core/twelve_cluster_orchestrator.py)
+          - [Operational Full Pipeline](../DMAIC_V3/full_pipeline_orchestrator.py)
           - [Validation Suite](../scripts/validate_test_performance.py)
           - [Test Metrics](../test_validation_results/)
           
