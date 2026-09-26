@@ -116,10 +116,10 @@ class TestCDWorkflowYAML:
     def test_cd_workflow_structure(self):
         cd_file = Path(".github/workflows/cd.yml")
         with open(cd_file) as f:
-            config = yaml.safe_load(f)
+            config = yaml.load(f, Loader=yaml.BaseLoader)
             
         assert "name" in config, "Missing workflow name"
-        assert "on" in config or True in config, "Missing trigger configuration"
+        assert "on" in config, "Missing trigger configuration"
         assert "jobs" in config, "Missing jobs section"
         
     def test_cd_workflow_deployment_jobs(self):
