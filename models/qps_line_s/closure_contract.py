@@ -473,6 +473,10 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
         "source receipt authority_transfer mismatch",
     )
     require(
+        _is_integer_zero(extraction.get("formal_credit_delta")),
+        "extraction formal_credit_delta must remain integer zero",
+    )
+    require(
         receipt.get("formal_credit_delta")
         == extraction.get("formal_credit_delta"),
         "source receipt formal_credit_delta mismatch",
