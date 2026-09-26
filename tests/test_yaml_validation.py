@@ -163,10 +163,12 @@ class TestCDWorkflowYAML:
             None,
         )
         assert build_step is not None
-        build_command = str(build_step.get("run", ""))
-        assert "scripts/archive_handover.py" in build_command
-        assert "--spec handover/GLOOB.yaml" in build_command
-        assert "--name DMAIC_V3_3_HANDOVER_ALL" in build_command
+        build_command = str(build_step.get("run", "")).strip()
+        assert build_command == (
+            "python scripts/archive_handover.py "
+            "--spec handover/GLOOB.yaml "
+            "--name DMAIC_V3_3_HANDOVER_ALL"
+        ), "cd.yml shall invoke the governed universal archive builder exactly"
         upload_step = next(
             (
                 step
