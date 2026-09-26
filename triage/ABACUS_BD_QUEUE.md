@@ -3,9 +3,9 @@
 **As of:** 2026-09-26
 **Repository:** `GBOGEB/ABACUS`
 **Start of pulse:** 30 open issues
-**Discovered during pulse:** 2 (#1313, #1369)
-**Evidence-backed closures:** 20
-**Current open count:** 12
+**Discovered during pulse:** 7 (#1313, #1369, #1377, #1379, #1380, #1381, #1391)
+**Evidence-backed closures:** 22
+**Current open count:** 15
 
 The YAML file is the machine-readable queue authority. This file is the
 human-facing execution view.
@@ -13,15 +13,19 @@ human-facing execution view.
 ## Current lanes
 
 - **NEXT_RECONCILE — 0:** none.
-- **PROVE — 1:** #1369.
+- **EXECUTE_NOW — 0:** none.
+- **PROVE — 0:** none.
+- **PROVE_HOLD — 3:** #1379, #1380, #1381.
 - **CONTROL_WATCH — 0:** none.
-- **EXTERNAL / LOCAL RETURN — 7:** #633, #635, #636, #637, #644, #1278,
-  #1313.
+- **EXTERNAL / LOCAL RETURN — 8:** #633, #635, #636, #637, #644, #1278,
+  #1313, #1369.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
-There is currently no code-only `EXECUTE_NOW` item. The sole bounded active
-lane is proof-only #1369, which must execute existing W62/W64/W7x/W8x controls
-on one common exact `main` SHA. RETURN/HOLD lanes consume no coding capacity.
+There is currently no code-only `EXECUTE_NOW` or active `PROVE` item.
+#1369 is an external execution-return gate because the required
+`workflow_dispatch` runs cannot be created by the connected execution surface.
+#1379/#1380/#1381 are shared proof-hold children after merged PR #1384 and must
+not trigger new coding unless a material current-code first red appears.
 
 ## Completed in this pulse
 
@@ -29,7 +33,7 @@ Closed or retired with evidence:
 
 - #583, #645, #659, #672, #673, #674, #679, #683;
 - #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581, #638;
-- #776, #1002.
+- #776, #1002, #1377, #1391.
 
 Issue #644 received its repository-local bridge implementation through
 PRs #1365 and #1366, but remains open for its governed-binary execution and direct
@@ -53,16 +57,17 @@ The stronger W04 real-source cycle remains the closure basis for #659:
 
 ## Next execution edge
 
-1. Execute proof-only successor #1369 using the existing workflow-dispatch
-   entry points; do not mutate workflow semantics merely to force evidence.
-2. Execute #644 only when the governed binary set and cryoplant consumer are
+1. Reconcile the shared #1379/#1380/#1381 proof-hold set against existing
+   merged PR #1384 evidence; close only when their requested proof set is
+   actually satisfied, and repair only on a material current-code first red.
+2. Re-enter #1369 only when seven real workflow-dispatch run IDs exist on one
+   unchanged main SHA. Reject mixed-SHA evidence.
+3. Execute #644 only when the governed binary set and cryoplant consumer are
    available; public fixture proof does not satisfy its issue-level DoD.
-3. Keep #1313 outside coding capacity until authoritative Appendix 8.4 and
-   named calibration/source evidence returns. Do not infer mode/valve state.
-4. Leave #1278 outside coding capacity. Its remaining gate is owner/admin merge
+4. Keep #1313 outside coding capacity until its source/calibration closure
+   predicates are satisfied; do not infer missing engineering values.
+5. Leave #1278 outside coding capacity. Its remaining gate is owner/admin merge
    admission, not another code detector.
-5. Re-enter #635 only on the real Windows/evidence-vault production roundtrip;
-   public parser proof cannot substitute for that external evidence.
 
 ## Closure rule
 
@@ -82,3 +87,15 @@ Issue #1002 is `SUPERSEDED_WITH_REPLACEMENT`. Current `main` already contains th
 required control surfaces; the remaining gap is a synchronized exact-head
 cluster receipt. That proof-only residual moved to #1369 with no new
 architecture authority or engineering credit.
+
+
+## Recent verified closures
+
+- **#1377 — VERIFIED_COMPLETE:** PR #1406 merged as
+  `7b6a39f96a4a48c5d7ff01733467ae15f2d12049`; Codex was clean and
+  post-merge run `36256707225` re-executed all bounded zero-denominator and
+  mixed-state AHT regressions successfully. Later suite reds were unrelated.
+- **#1391 — VERIFIED_COMPLETE / GREEN_CONTROL:** PR #1403 merged as
+  `1500fb73adfefe54d0549afc64986e1be0f54f96`; post-merge DMAIC run
+  `36254865597` reproduced **70.73%** coverage against the unchanged 70%
+  hard gate with non-coverage gates green.
