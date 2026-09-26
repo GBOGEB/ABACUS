@@ -1,0 +1,46 @@
+name: TestPilot Pre-GitHub Parity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/testpilot_preflight.py'
+      - 'scripts/testpilot.ps1'
+      - '.pre-commit-config.yaml'
+      - 'requirements-dev.txt'
+      - 'Makefile'
+      - 'docs/ci/TESTPILOT_PREFLIGHT.md'
+      - '.github/workflows/testpilot-preflight.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/testpilot_preflight.py'
+      - 'scripts/testpilot.ps1'
+      - '.pre-commit-config.yaml'
+      - 'requirements-dev.txt'
+      - 'Makefile'
+      - 'docs/ci/TESTPILOT_PREFLIGHT.md'
+      - '.github/workflows/testpilot-preflight.yml'
+  workflow_dispatch:
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install developer dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run bounded TestPilot fast preflight
+        run: python scripts/testpilot_preflight.py --mode fast --parity
+      - name: Upload TestPilot receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: testpilot-receipt-${{ github.sha }}
+          path: .testpilot/last_receipt.json
+          if-no-files-found: error
