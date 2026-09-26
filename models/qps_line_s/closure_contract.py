@@ -394,7 +394,7 @@ def validate_extraction(data: dict) -> dict:
         "extraction-state coverage must equal the mode inventory",
     )
 
-    unresolved = data.get("unresolved") or []
+    unresolved = data.get("unresolved", [])
     require(isinstance(unresolved, list), "unresolved must be a list")
     unresolved_by_id: dict[str, dict] = {}
     for index, row in enumerate(unresolved):
@@ -423,9 +423,11 @@ def validate_extraction(data: dict) -> dict:
             "EXTRACTED requires coverage.extraction_complete=true",
         )
         for blocker_id in sorted(EXTRACTION_BLOCKER_IDS):
-            blocker = unresolved_by_id.get(blocker_id)
-            if blocker is None:
-                continue
+            require(
+                blocker_id in unresolved_by_id,
+                f"EXTRACTED requires blocker record {blocker_id}",
+            )
+            blocker = unresolved_by_id[blocker_id]
             blocker_state = str(blocker.get("state", "")).upper()
             require(
                 blocker_state in RESOLVED_UNRESOLVED_STATES,
