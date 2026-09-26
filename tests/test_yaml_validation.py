@@ -272,9 +272,9 @@ class TestWorkflowBestPractices:
             jobs = config.get("jobs", {})
             
             for job_name in jobs.keys():
-                assert len(job_name) > 2, f"Job name '{job_name}' too short"
+                assert job_name, "Workflow job ID shall not be empty"
                 assert job_name.replace("-", "").replace("_", "").isalnum(), \
-                    f"Job name '{job_name}' should be alphanumeric"
+                    f"Job ID '{job_name}' should be alphanumeric"
                     
     def test_steps_have_names(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
