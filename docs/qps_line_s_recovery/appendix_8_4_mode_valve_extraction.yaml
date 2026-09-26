@@ -15,7 +15,8 @@ source:
   source_material_location: USER_LIBRARY_LOCKED_SOURCE
   source_material_available_in_repo: false
   source_ref: D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx
-  evidence_locator: Appendix 8.4 embedded figures image58.emf through image80.emf
+  evidence_locator: >-
+    Appendix 8.4 embedded figures image58.emf through image80.emf
   source_sha256: >-
     2700ea0af44f90dfe140fab8a4b7c203bedcf76ec7eee91b29c92d83d01196ba
 
