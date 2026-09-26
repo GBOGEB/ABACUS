@@ -1,19 +1,33 @@
-schema: abacus.qps_line_s.appendix_8_4_mode_valve_extraction.v1
-status: SOURCE_PENDING
+schema: abacus.qps_line_s.appendix_8_4_mode_valve_extraction.v2
+status: PARTIAL_EXTRACTED
 authority_transfer: false
 formal_credit_delta: 0
 
 source:
   source_id: SRC-D2-8-4
   document: D2.1
+  source_reference: DSBT-TN-24-37-3.0
+  issue_revision: 2-1
+  document_date: 2024-06-13
   section: Appendix 8.4 modes
   extraction_issue: GBOGEB/ABACUS#1313
-  source_material_available_in_repo: false
-  source_ref: null
-  evidence_locator: null
+  source_material_available_in_repo: true
+  source_ref: D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx
+  evidence_locator: Appendix 8.4 embedded figures image58.emf through image80.emf
+  source_sha256: 2700ea0af44f90dfe140fab8a4b7c203bedcf76ec7eee91b29c92d83d01196ba
+
+coverage:
+  mode_inventory_expected: 23
+  mode_rows_present: 23
+  state_complete_modes: 0
+  state_partial_modes: 8
+  mode_identified_only: 15
+  extraction_complete: false
 
 policy:
   infer_valve_states: false
+  allow_source_bound_unknown: true
+  extracted_status_requires_all_modes_complete: true
   allowed_commanded_states:
     - OPEN
     - CLOSED
@@ -22,26 +36,848 @@ policy:
     - FAIL_OPEN
     - FAIL_CLOSED
     - UNKNOWN
-  extracted_row_requires:
-    - source_ref
-    - evidence_locator
+  allowed_extraction_states:
+    - MODE_IDENTIFIED
+    - STATE_PARTIAL
+    - STATE_COMPLETE
   rule: >-
-    Do not add or promote a mode/valve row from engineering inference alone.
-    A row may be EXTRACTED only when its authoritative source reference and
-    evidence locator are populated.
+    Mode identity may be source-bound before every valve state is transcribed.
+    PARTIAL_EXTRACTED may retain UNKNOWN states. EXTRACTED is permitted only
+    after every Appendix mode is STATE_COMPLETE and source/evidence lineage
+    is present for each promoted valve state.
 
-modes: []
+modes:
+  - mode_id: A84-01
+    mode_name: "AM MAJOR FAULT CRYOLINE"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image58.emf"
+    figure_sha256: 3b70b111e39992e8e6aae2031afb93efd40bc5a2f82b046e0e0516e4759dbd19
+    recovery_path: "Cryoline safety-device releases route to Safety Valves GHe return (Line S); QCell low-rate releases may be recovered; large cryoline releases may still be lost. Warm compression can transfer inventory to warm storage during warm-up."
+    v_eff_consequence: "QRB and QVB process interfaces are isolated for the large cryoline fault; use segment-specific connected volume only."
+    notes: "D2.1 states cold-box interface valves and all QVB interface valves close for a large cryoline vacuum-loss event."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of vacuum in cryogenic distribution"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of vacuum in cryogenic distribution"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of vacuum in cryogenic distribution"
+
+  - mode_id: A84-02
+    mode_name: "AM CRYO LINE SMALL LEAK"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image59.emf"
+    figure_sha256: 80fbcfe74937b95e7b6e7fb75de897405abbddcfc1846e11a2179fb325a08d66
+    recovery_path: "Operation may continue for a small vacuum leak if the vacuum pumping system absorbs the leak; no dedicated Line-S transition is specified."
+    v_eff_consequence: "Normal topology may remain connected; exact mode-dependent V_eff is not explicitly stated."
+    notes: "D2.1 small-leak strategy does not prescribe a valve transition."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image59.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image59.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image59.emf"
+
+  - mode_id: A84-03
+    mode_name: "WU LINE U"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image60.emf"
+    figure_sha256: cb8ee73692cca9770d49f7f0ec0c72f6f3d687e0a32423364a9d71c72e40c178
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image60.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image60.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image60.emf"
+
+  - mode_id: A84-04
+    mode_name: "AM MAJOR FAULT QCELL"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image61.emf"
+    figure_sha256: 527cff53cb6e5f701f816e3fc531ba4cf2d0a7c2722567af5f33f5876d141098
+    recovery_path: "Burst disk / vent collector is the credited major-fault path; the safety-valve recovery line is stated not to be sized for the major QCELL window-loss event."
+    v_eff_consequence: "Affected QCELL process interfaces are isolated after detection; do not credit its volume to normal connected process headers."
+    notes: "D2.1 requires supply and return valves in the QVB to close for the major QCELL fault."
+    valves:
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / major fault in QCELL"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / major fault in QCELL"
+
+  - mode_id: A84-05
+    mode_name: "AM MINOR FAULT QCELL"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image62.emf"
+    figure_sha256: 1708f6be500b79b63f276420c65a99a151ce8ce46668fe79ef90647eaf2a25ac
+    recovery_path: "Return valves remain open to recover as much helium as possible from the affected QCELL; supply valves close."
+    v_eff_consequence: "Affected QCELL remains connected to return headers but is isolated from supply headers."
+    notes: "D2.1 explicitly states supply valves are Normally Closed and return valves Normally Open for this fallback strategy."
+    valves:
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: CLOSED
+        fail_state: FAIL_CLOSED
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / minor fault in QCELL"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: OPEN
+        fail_state: FAIL_OPEN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / minor fault in QCELL"
+
+  - mode_id: A84-06
+    mode_name: "AM STOP QCELL"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image63.emf"
+    figure_sha256: d6486ea74c37e34d959ddcaf808c137f224b06804c5c21203136f4c0781da1f3
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image63.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image63.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image63.emf"
+
+  - mode_id: A84-07
+    mode_name: "AM STOP UTILITIES STEP 1"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image64.emf"
+    figure_sha256: 76fd34e6634bba8770462ee713d65f6dfb43de0ff5294ee9946596ae9a1252c6
+    recovery_path: "Cryoplant/QVB fallback isolates supplies while return valves remain open. If the stop exceeds about one hour, helium is released through safety-valve circuits; Line S is sized around the utility-stop return case. Restart/recovery within the first hour is preferred."
+    v_eff_consequence: "QCells remain connected to return headers while supplies and Cryoplant cryoline interfaces fail closed; exact Line-S connected volume remains unquantified."
+    notes: "Appendix differentiates utility-stop step 1/2; D2.1 prose gives their common fallback positions but not the exact step-transition boundary."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: CLOSED
+        fail_state: FAIL_CLOSED
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: CLOSED
+        fail_state: FAIL_CLOSED
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: OPEN
+        fail_state: FAIL_OPEN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+
+  - mode_id: A84-08
+    mode_name: "AM STOP UTILITIES STEP 2"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image65.emf"
+    figure_sha256: a6198ad67b9aa5644e01de00a6cabb2733eea805faa71e5e7ecb5d899b772a8d
+    recovery_path: "Cryoplant/QVB fallback isolates supplies while return valves remain open. If the stop exceeds about one hour, helium is released through safety-valve circuits; Line S is sized around the utility-stop return case. Restart/recovery within the first hour is preferred."
+    v_eff_consequence: "QCells remain connected to return headers while supplies and Cryoplant cryoline interfaces fail closed; exact Line-S connected volume remains unquantified."
+    notes: "Appendix differentiates utility-stop step 1/2; D2.1 prose gives their common fallback positions but not the exact step-transition boundary."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: CLOSED
+        fail_state: FAIL_CLOSED
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: CLOSED
+        fail_state: FAIL_CLOSED
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: OPEN
+        fail_state: FAIL_OPEN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 abnormal events / loss of utility"
+
+  - mode_id: A84-09
+    mode_name: "CD 2K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image66.emf"
+    figure_sha256: bf0d16b24241c3355bac5258d1ac518cc98322aba1269ede419a80215918adba
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image66.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image66.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image66.emf"
+
+  - mode_id: A84-10
+    mode_name: "CD 4K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image67.emf"
+    figure_sha256: 62d791d40ab8c2b35c9dd60827ba105806c2047a1dc0c4c6ec27b4f5b00e7010
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image67.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image67.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image67.emf"
+
+  - mode_id: A84-11
+    mode_name: "CD 10K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image68.emf"
+    figure_sha256: fd1433ed8c43023e202287fb4fa1146cea2ff477947fc017d34c6c9df31c98b2
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image68.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image68.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image68.emf"
+
+  - mode_id: A84-12
+    mode_name: "CD 20K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image69.emf"
+    figure_sha256: 1908f5e683d921eac5cbb0397a81fb39a317a5a2b922cd192959842aea7cbe9c
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image69.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image69.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image69.emf"
+
+  - mode_id: A84-13
+    mode_name: "CD 40K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image70.emf"
+    figure_sha256: 159625ba3d7044652001229831caa8190daadc37d98c64f8333bf6b0ef4191c8
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image70.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image70.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image70.emf"
+
+  - mode_id: A84-14
+    mode_name: "CD 80K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image71.emf"
+    figure_sha256: 7aa794247309a16ba995c3dcd71bf023f5ffd90e4ee124bac8c3cba510ff44bf
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image71.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image71.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image71.emf"
+
+  - mode_id: A84-15
+    mode_name: "CD LHE FILLING"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image72.emf"
+    figure_sha256: 8d1e7bcbd9a0506aa7c33dc8b32de637846da5b7baf6886c8958b4abda09bad4
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image72.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image72.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image72.emf"
+
+  - mode_id: A84-16
+    mode_name: "OP 2K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image73.emf"
+    figure_sha256: f2f1b695b6bf451c7faf89b40fb574f28b29d9427baaa25321e6cffafde25659
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image73.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image73.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image73.emf"
+
+  - mode_id: A84-17
+    mode_name: "OP 4K SB"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image74.emf"
+    figure_sha256: 3e0dd6c7666e504065ebb4861cc7f0e1acc43f040ae27507e59299416a870b8f
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image74.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image74.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image74.emf"
+
+  - mode_id: A84-18
+    mode_name: "OP TS SB"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image75.emf"
+    figure_sha256: cf4d19686f518600fc8ba6e48c0542e1ae5bffe6e5fd3e11ae5463c1f7e52d97
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image75.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image75.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image75.emf"
+
+  - mode_id: A84-19
+    mode_name: "TEST CRYOLINE"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image76.emf"
+    figure_sha256: 9d37a907106a11f9261252f1fe7bf76deae26fe92a900570f1a3652c38ce484d
+    recovery_path: "Cryoline test can use QVE supply/return bypass paths; no abnormal Line-S relief path is credited by the text."
+    v_eff_consequence: "Test boundary depends on the selected QVE bypass configuration; exact connected volume is not quantified."
+    notes: "D2.1 identifies CV415/CV425/CV445 as QVE bypass valves usable for cryoline commissioning/test."
+    valves:
+      - valve_id: "QVE_BYPASS_SET"
+        members:
+          - CV415
+          - CV425
+          - CV445
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 cold end-box description / Appendix 8.4 image76.emf"
+
+  - mode_id: A84-20
+    mode_name: "TEST CRYOPLANT"
+    status: EXTRACTED
+    extraction_state: STATE_PARTIAL
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image77.emf"
+    figure_sha256: 746d02042d4dad2c9669522a11d3ae5250695b7fef431338c22ae3d25fdc2727
+    recovery_path: "Cryoplant test uses internal cold-box bypasses while the cryodistribution interface is isolated."
+    v_eff_consequence: "Cryodistribution/QCELL volume is excluded from the Cryoplant test boundary by closed QRB interface isolation valves."
+    notes: "D2.1 states the cryoplant-to-cryoline isolation valves are closed during Cryoplant tests and internal bypasses are used."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: CLOSED
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "D2.1 cold interfaces and valves / Appendix 8.4 image77.emf"
+
+  - mode_id: A84-21
+    mode_name: "WU 40K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image78.emf"
+    figure_sha256: 46a66b9216746b2d316c209341ea818ff1a958759d5a406da33a34377bdd34c1
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image78.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image78.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image78.emf"
+
+  - mode_id: A84-22
+    mode_name: "WU 80K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image79.emf"
+    figure_sha256: a29a21b2ffb55ce1d6e0032c0d139f8a1451f263adf1e2d89bf2d3d4b24d1f66
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image79.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image79.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image79.emf"
+
+  - mode_id: A84-23
+    mode_name: "WU 300K"
+    status: EXTRACTED
+    extraction_state: MODE_IDENTIFIED
+    source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+    evidence_locator: "Appendix 8.4 / image80.emf"
+    figure_sha256: 512ae941e528869a4c9298f3775dfca1f469654b12f39e9fe5522dc00dfeb4f0
+    recovery_path: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    v_eff_consequence: "UNKNOWN_FROM_CURRENT_EXTRACTION"
+    notes: "Mode title and figure identity are source-bound; detailed valve-state transcription remains pending."
+    valves:
+      - valve_id: "QRB_CRYOLINE_INTERFACE"
+        members:
+          - CV409
+          - CV411
+          - CV421
+          - CV429
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image80.emf"
+      - valve_id: "QVB_SUPPLY_INTERFACE"
+        members:
+          - CV501
+          - CV521
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image80.emf"
+      - valve_id: "QVB_RETURN_INTERFACE"
+        members:
+          - CV509
+          - CV529
+        commanded_state: UNKNOWN
+        fail_state: UNKNOWN
+        source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
+        evidence_locator: "Appendix 8.4 image80.emf"
 
 unresolved:
-  - id: APPENDIX_8_4_SOURCE
-    state: SOURCE_PENDING
-    need: >-
-      Authoritative Appendix 8.4 mode/valve-state source content.
+  - id: APPENDIX_8_4_FULL_STATE_TRANSCRIPTION
+    state: PARTIAL_EXTRACTED
+    need: "Complete source-bound valve-state transcription for modes still MODE_IDENTIFIED or STATE_PARTIAL."
   - id: MODE_DEPENDENT_RECOVERY_PATH
-    state: SOURCE_PENDING
-    need: >-
-      Source-bound recovery-path availability for each operating mode.
+    state: PARTIAL_EXTRACTED
+    need: "Resolve recovery-path availability for modes whose current row remains UNKNOWN_FROM_CURRENT_EXTRACTION."
   - id: MODE_DEPENDENT_VEFF
-    state: SOURCE_PENDING
-    need: >-
-      Source-bound open/closed topology before changing connected volume.
+    state: PARTIAL_EXTRACTED
+    need: "Quantify connected effective volume only after the remaining open/closed topology is source-bound."
+  - id: RTM_292_EXACT_WORDING
+    state: SOURCE_TRACE_PENDING
+    need: "Bind the exact RTM-292 wording/source citation separately from Appendix 8.4 mode extraction."
