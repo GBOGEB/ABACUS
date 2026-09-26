@@ -293,8 +293,7 @@ def test_appendix_8_4_state_complete_rejects_placeholders():
         closure_contract.validate_extraction(data)
 
 
-def test_appendix_8_4_fully_resolved_complete_fixture_passes():
-    data = closure_contract.load_extraction()
+def _promote_appendix_fixture_to_complete(data, *, resolve_blockers):
     for mode in data["modes"]:
         mode["extraction_state"] = "STATE_COMPLETE"
         mode["recovery_path"] = "SOURCE_BOUND_RECOVERY_PATH"
@@ -309,6 +308,30 @@ def test_appendix_8_4_fully_resolved_complete_fixture_passes():
     data["coverage"]["state_partial_modes"] = 0
     data["coverage"]["mode_identified_only"] = 0
     data["coverage"]["extraction_complete"] = True
+    if resolve_blockers:
+        for row in data.get("unresolved", []):
+            if row.get("id") in closure_contract.EXTRACTION_BLOCKER_IDS:
+                row["state"] = "RESOLVED"
+    return data
+
+
+def test_appendix_8_4_extracted_rejects_open_completion_blockers():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=False,
+    )
+    with pytest.raises(
+        ValueError,
+        match="APPENDIX_8_4_FULL_STATE_TRANSCRIPTION resolved",
+    ):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_fully_resolved_complete_fixture_passes():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=True,
+    )
     assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
 
 
@@ -341,4 +364,87 @@ def test_appendix_8_4_receipt_rejects_receipt_digest_drift():
     receipt = closure_contract.load_source_receipt()
     receipt["source"]["sha256"] = "0" * 64
     with pytest.raises(ValueError, match="receipt SHA-256 mismatch"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_receipt_rejects_authority_transfer():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    receipt["authority_transfer"] = True
+    with pytest.raises(ValueError, match="authority_transfer"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_receipt_rejects_formal_credit_delta():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    receipt["formal_credit_delta"] = 1
+    with pytest.raises(ValueError, match="formal_credit_delta"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_extracted_rejects_missing_completion_blocker_record():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=True,
+    )
+    data["unresolved"] = [
+        row
+        for row in data["unresolved"]
+        if row.get("id") != "MODE_DEPENDENT_VEFF"
+    ]
+    with pytest.raises(
+        ValueError,
+        match="blocker record MODE_DEPENDENT_VEFF",
+    ):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_rejects_wrong_unresolved_container_type():
+    data = closure_contract.load_extraction()
+    data["unresolved"] = {}
+    with pytest.raises(ValueError, match="unresolved must be a list"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_source_pending_rejects_wrong_unresolved_type():
+    data = closure_contract.load_extraction()
+    data["status"] = "SOURCE_PENDING"
+    data["source"]["source_material_available"] = False
+    data["source"]["source_material_location"] = None
+    data["modes"] = []
+    data["unresolved"] = {}
+    with pytest.raises(ValueError, match="unresolved must be a list"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_receipt_rejects_boolean_formal_credit_delta():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    receipt["formal_credit_delta"] = False
+    with pytest.raises(ValueError, match="integer zero"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_extraction_rejects_boolean_formal_credit_delta():
+    data = closure_contract.load_extraction()
+    data["formal_credit_delta"] = False
+    with pytest.raises(ValueError, match="integer zero"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_receipt_rejects_boolean_extraction_credit_delta():
+    extraction = closure_contract.load_extraction()
+    extraction["formal_credit_delta"] = False
+    receipt = closure_contract.load_source_receipt()
+    with pytest.raises(
+        ValueError,
+        match="extraction formal_credit_delta must remain integer zero",
+    ):
         closure_contract.validate_source_receipt(extraction, receipt)
