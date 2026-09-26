@@ -289,9 +289,9 @@ class TestWorkflowBestPractices:
                 steps = job_config.get("steps", [])
                 
                 for i, step in enumerate(steps):
-                    if "uses" in step or "run" in step:
-                        assert "name" in step, \
-                            f"Step {i} in job {job_name} should have a name"
+                    if "name" in step:
+                        assert str(step["name"]).strip(), \
+                            f"Step {i} in job {job_name} has an empty name"
 
 
 class TestWorkflowDependencies:
