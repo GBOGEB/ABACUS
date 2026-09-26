@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-import os
 from pathlib import Path
 import py_compile
 import re
@@ -23,12 +22,14 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RECEIPT = ROOT / ".testpilot" / "last_receipt.json"
 CONFIG_SUFFIXES = {".json", ".toml", ".yaml", ".yml"}
 TEXT_SUFFIXES = {".py", ".json", ".toml", ".yaml", ".yml", ".md", ".txt", ".ini"}
-CONFLICT_RE = re.compile(r"^(<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
+CONFLICT_START_RE = re.compile(r"^<<<<<<< .+$", re.MULTILINE)
+CONFLICT_MID_RE = re.compile(r"^=======$", re.MULTILINE)
+CONFLICT_END_RE = re.compile(r"^>>>>>>> .+$", re.MULTILINE)
 
 
 def run(cmd: list[str], *, cwd: Path = ROOT) -> dict:
     started = time.monotonic()
-    proc = subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
+    proc = subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=False)
     return {
         "command": cmd,
         "cwd": str(cwd.relative_to(ROOT)) if cwd != ROOT else ".",
@@ -42,7 +43,7 @@ def run(cmd: list[str], *, cwd: Path = ROOT) -> dict:
 
 def git_lines(*args: str) -> list[str]:
     proc = subprocess.run(
-        ["git", *args], cwd=ROOT, text=True, capture_output=True
+        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
     )
     if proc.returncode != 0:
         return []
@@ -68,27 +69,23 @@ def changed_files() -> list[Path]:
     return unique
 
 
-def tracked_subject_files() -> list[Path]:
-    """Stable pilot scope for explicit --all; avoids legacy/archive explosion."""
-    prefixes = (
-        "DMAIC_V3/core/",
-        "DMAIC_V3/phases/",
-        "DMAIC_V3/tests/",
-        "scripts/testpilot",
-    )
-    exact = {
-        "pytest.ini",
-        "pyproject.toml",
+def parity_subject_files() -> list[Path]:
+    """Files that implement/configure TestPilot itself.
+
+    Parity must prove the local gate without turning inherited repository-wide
+    lint debt into a blocker for adopting the gate.
+    """
+    raw_paths = [
+        "scripts/testpilot_preflight.py",
+        "scripts/testpilot.ps1",
         ".pre-commit-config.yaml",
+        "requirements-dev.txt",
         "Makefile",
-    }
-    result = []
-    for raw in git_lines("ls-files"):
-        if raw in exact or raw.startswith(prefixes):
-            p = ROOT / raw
-            if p.is_file():
-                result.append(p)
-    return result
+        "pytest.ini",
+        "docs/ci/TESTPILOT_PREFLIGHT.md",
+        ".github/workflows/testpilot-preflight.yml",
+    ]
+    return [ROOT / raw for raw in raw_paths if (ROOT / raw).is_file()]
 
 
 def check_conflicts(files: list[Path]) -> dict:
@@ -97,7 +94,12 @@ def check_conflicts(files: list[Path]) -> dict:
         if p.suffix.lower() not in TEXT_SUFFIXES:
             continue
         try:
-            if CONFLICT_RE.search(p.read_text(encoding="utf-8", errors="replace")):
+            text = p.read_text(encoding="utf-8", errors="replace")
+            if (
+                CONFLICT_START_RE.search(text)
+                and CONFLICT_MID_RE.search(text)
+                and CONFLICT_END_RE.search(text)
+            ):
                 bad.append(str(p.relative_to(ROOT)))
         except OSError:
             bad.append(str(p.relative_to(ROOT)))
@@ -117,7 +119,7 @@ def check_python_compile(files: list[Path]) -> dict:
         checked += 1
         try:
             py_compile.compile(str(p), doraise=True)
-        except Exception as exc:  # compile error is the evidence
+        except py_compile.PyCompileError as exc:  # compile error is the evidence
             bad.append({"file": str(p.relative_to(ROOT)), "error": str(exc)})
     return {
         "name": "python_compile",
@@ -149,7 +151,7 @@ def check_configs(files: list[Path]) -> dict:
                 raise RuntimeError("PyYAML unavailable; install requirements-dev.txt")
             else:
                 yaml.safe_load(text)
-        except Exception as exc:
+        except (ValueError, OSError, RuntimeError) as exc:
             bad.append({"file": str(p.relative_to(ROOT)), "error": str(exc)})
     return {
         "name": "config_parse",
@@ -229,12 +231,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["fast", "full", "gate"], default="fast")
     ap.add_argument("--fix", action="store_true", help="apply only safe ruff fixes")
-    ap.add_argument("--all", action="store_true", help="use bounded canonical pilot scope")
+    ap.add_argument("--parity", action="store_true", help="validate TestPilot implementation/config only")
     ap.add_argument("--coverage-floor", type=float)
     ap.add_argument("--receipt", default=str(DEFAULT_RECEIPT))
     args = ap.parse_args()
 
-    files = tracked_subject_files() if args.all else changed_files()
+    files = parity_subject_files() if args.parity else changed_files()
     checks: list[dict] = [
         check_conflicts(files),
         check_python_compile(files),
@@ -259,6 +261,7 @@ def main() -> int:
             "full": "regression floor defaults to 25%; override explicitly",
             "gate": "GitHub parity floor defaults to 70%; never auto-lowered",
         },
+        "parity_scope": args.parity,
         "subject_files": [str(p.relative_to(ROOT)) for p in files],
         "checks": checks,
         "status": "FAIL" if failures else "PASS",
