@@ -214,3 +214,6 @@ maturity_assessment.json
 venv*/
 *.msi
 *.vsix
+
+# Local TestPilot receipts
+.testpilot/
