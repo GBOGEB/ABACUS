@@ -12,6 +12,7 @@ on:
     paths:
       - 'DMAIC_V3/**'
       - 'ABACUS-UNIFIED/**'
+      - '.github/workflows/dmaic-v3-ci.yml'
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
