@@ -263,9 +263,12 @@ class TestRegressionTests:
     
     @pytest.mark.artifact(name="empty_data_handling", type="regression")
     def test_empty_data_handling_regression(self):
-        """Regression: ensure empty data is handled gracefully"""
-        with pytest.raises((ValueError, IndexError)):
-            bootstrap_ci_mean(np.array([]), alpha=0.05)
+        """Regression: ensure empty data follows the canonical bootstrap sentinel contract"""
+        ci_low, ci_high, boot_means = bootstrap_ci_mean(np.array([]), alpha=0.05)
+
+        assert np.isnan(ci_low)
+        assert np.isnan(ci_high)
+        assert len(boot_means) == 0
 
 
 @pytest.mark.security
