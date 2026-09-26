@@ -422,11 +422,22 @@ class CanonicalIndexSystem:
             if entry.canonical_name == canonical_name
         ]
 
-        # Sort by version (newest first)
-        entries.sort(
-            key=lambda e: CanonicalVersion.from_string(e.version),
-            reverse=True
-        )
+        # Sort by semantic version components (newest first).
+        # CanonicalVersion is a value object, not an orderable dataclass, so
+        # comparing instances directly raises TypeError when history has
+        # multiple versions.  Build metadata does not affect precedence;
+        # a release sorts after its prerelease for the same numeric version.
+        def version_key(entry: IndexEntry):
+            version = CanonicalVersion.from_string(entry.version)
+            return (
+                version.major,
+                version.minor,
+                version.patch,
+                version.prerelease is None,
+                version.prerelease or "",
+            )
+
+        entries.sort(key=version_key, reverse=True)
 
         return entries
 
