@@ -29,7 +29,8 @@ def test_check_compliance_retries_then_succeeds(monkeypatch, tmp_path):
 
 def test_schedule_agent_task_timeout_records_metric_in_fallback(monkeypatch, tmp_path):
     ki = KnowledgeIntegrationV23(workspace=str(tmp_path / "kb"))
-    ki.keb_enabled = False
+    # This test explicitly exercises the post-KEB fallback path.
+    ki.execution_backbone_enabled = False
     ki.gbogeb_enabled = False
 
     module_globals = _knowledge_globals()
@@ -53,7 +54,7 @@ def test_schedule_agent_task_timeout_records_metric_in_fallback(monkeypatch, tmp
 
 def test_schedule_agent_task_timeout_non_blocking_under_scale(tmp_path):
     ki = KnowledgeIntegrationV23(workspace=str(tmp_path / "kb"))
-    ki.keb_enabled = False
+    ki.execution_backbone_enabled = False
     ki.gbogeb_enabled = False
 
     def slow_task():
