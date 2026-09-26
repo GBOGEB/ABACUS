@@ -321,24 +321,34 @@ class TestWorkflowDependencies:
 class TestWorkflowCaching:
     
     def test_ci_uses_caching(self):
-        ci_file = Path(".github/workflows/ci.yml")
-        
-        if ci_file.exists():
-            with open(ci_file, encoding="utf-8") as f:
-                config = yaml.safe_load(f)
-                
-            jobs = config.get("jobs", {})
-            
-            has_cache = False
-            for job_name, job_config in jobs.items():
-                steps = job_config.get("steps", [])
-                
-                for step in steps:
-                    if "actions/cache" in str(step.get("uses", "")):
-                        has_cache = True
-                        break
-                        
-            assert has_cache, "CI workflow should use caching for dependencies"
+        policy_file = Path("ci/governance/workflow_policy.json")
+        policy = json.loads(policy_file.read_text(encoding="utf-8"))
+        canonical = policy["clusters"]["full_regression"]["canonical"]
+        ci_file = Path(".github/workflows") / canonical
+
+        assert ci_file.exists(), f"Canonical full-regression workflow {canonical} not found"
+
+        with open(ci_file, encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+
+        jobs = config.get("jobs", {})
+
+        has_cache = False
+        for job_config in jobs.values():
+            steps = job_config.get("steps", [])
+
+            for step in steps:
+                uses = str(step.get("uses", ""))
+                with_config = step.get("with") or {}
+                if "actions/cache" in uses or (
+                    "actions/setup-python" in uses
+                    and str(with_config.get("cache", "")).strip()
+                ):
+                    has_cache = True
+                    break
+
+        assert has_cache, \
+            f"Canonical full-regression workflow {canonical} should cache dependencies"
 
 
 class TestWorkflowArtifacts:
