@@ -326,7 +326,7 @@ def semantic_pc1(w79_source: dict, normalized_w79: list[dict]) -> dict:
         "eigenvalue": float(eigenvalues[0]),
         "explained_variance_ratio": float(eigenvalues[0] / eigenvalues.sum()),
         "scores": {
-            row["source_sha"]: float(score)
+            row["source_sha"]: round(float(score), 6)
             for row, score in zip(normalized_w79, scores)
         },
     }
