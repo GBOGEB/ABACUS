@@ -155,6 +155,9 @@ def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     assert summary["appendix_8_4_source_location"] == (
         "USER_LIBRARY_LOCKED_SOURCE"
     )
+    assert summary["appendix_8_4_receipt_status"] == (
+        "SOURCE_BOUND_PARTIAL_EXTRACTION"
+    )
     assert summary["authority_transfer"] is False
     assert summary["formal_credit_delta"] == 0
 
@@ -270,3 +273,72 @@ def test_line_s_closure_contract_rechecks_live_artefacts(monkeypatch):
     )
     with pytest.raises(ValueError, match="required Line-S artefacts missing"):
         closure_contract.validate_current_contract()
+
+
+def test_appendix_8_4_state_complete_rejects_placeholders():
+    data = closure_contract.load_extraction()
+    for mode in data["modes"]:
+        mode["extraction_state"] = "STATE_COMPLETE"
+        for valve in mode["valves"]:
+            if valve["commanded_state"] == "UNKNOWN":
+                valve["commanded_state"] = "CLOSED"
+            if valve["fail_state"] == "UNKNOWN":
+                valve["fail_state"] = "NOT_APPLICABLE"
+    data["status"] = "EXTRACTED"
+    data["coverage"]["state_complete_modes"] = 23
+    data["coverage"]["state_partial_modes"] = 0
+    data["coverage"]["mode_identified_only"] = 0
+    data["coverage"]["extraction_complete"] = True
+    with pytest.raises(ValueError, match="resolved recovery_path"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_fully_resolved_complete_fixture_passes():
+    data = closure_contract.load_extraction()
+    for mode in data["modes"]:
+        mode["extraction_state"] = "STATE_COMPLETE"
+        mode["recovery_path"] = "SOURCE_BOUND_RECOVERY_PATH"
+        mode["v_eff_consequence"] = "SOURCE_BOUND_VEFF_CONSEQUENCE"
+        for valve in mode["valves"]:
+            if valve["commanded_state"] == "UNKNOWN":
+                valve["commanded_state"] = "CLOSED"
+            if valve["fail_state"] == "UNKNOWN":
+                valve["fail_state"] = "NOT_APPLICABLE"
+    data["status"] = "EXTRACTED"
+    data["coverage"]["state_complete_modes"] = 23
+    data["coverage"]["state_partial_modes"] = 0
+    data["coverage"]["mode_identified_only"] = 0
+    data["coverage"]["extraction_complete"] = True
+    assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
+
+
+def test_appendix_8_4_source_receipt_matches_extraction():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    validated = closure_contract.validate_source_receipt(
+        extraction,
+        receipt,
+    )
+    assert validated["status"] == "SOURCE_BOUND_PARTIAL_EXTRACTION"
+
+
+def test_appendix_8_4_receipt_rejects_yaml_digest_drift():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    extraction["modes"][0]["figure_sha256"] = "0" * 64
+    receipt = closure_contract.load_source_receipt()
+    with pytest.raises(ValueError, match="digest mismatch"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_receipt_rejects_receipt_digest_drift():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    receipt["source"]["sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="receipt SHA-256 mismatch"):
+        closure_contract.validate_source_receipt(extraction, receipt)
