@@ -154,6 +154,21 @@ class TestCDWorkflowYAML:
         
         assert "Build universal handover archives" in step_names, \
             "cd.yml shall build the governed universal handover archives"
+        build_step = next(
+            (
+                step
+                for step in steps
+                if step.get("name") == "Build universal handover archives"
+            ),
+            None,
+        )
+        assert build_step is not None
+        build_command = str(build_step.get("run", "")).strip()
+        assert build_command == (
+            "python scripts/archive_handover.py "
+            "--spec handover/GLOOB.yaml "
+            "--name DMAIC_V3_3_HANDOVER_ALL"
+        ), "cd.yml shall invoke the governed universal archive builder exactly"
         upload_step = next(
             (
                 step
