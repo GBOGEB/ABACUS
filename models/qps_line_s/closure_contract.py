@@ -57,6 +57,12 @@ ALLOWED_EXTRACTION_STATES = {
     "STATE_COMPLETE",
 }
 UNKNOWN_PLACEHOLDER = "UNKNOWN_FROM_CURRENT_EXTRACTION"
+EXTRACTION_BLOCKER_IDS = {
+    "APPENDIX_8_4_FULL_STATE_TRANSCRIPTION",
+    "MODE_DEPENDENT_RECOVERY_PATH",
+    "MODE_DEPENDENT_VEFF",
+}
+RESOLVED_UNRESOLVED_STATES = {"RESOLVED", "CLOSED", "COMPLETE"}
 FIGURE_REF_PATTERN = re.compile(r"^image\d+\.emf$")
 
 
@@ -388,6 +394,25 @@ def validate_extraction(data: dict) -> dict:
         "extraction-state coverage must equal the mode inventory",
     )
 
+    unresolved = data.get("unresolved") or []
+    require(isinstance(unresolved, list), "unresolved must be a list")
+    unresolved_by_id: dict[str, dict] = {}
+    for index, row in enumerate(unresolved):
+        require(
+            isinstance(row, dict),
+            f"unresolved[{index}] must be a mapping",
+        )
+        row_id = row.get("id")
+        require(
+            _nonempty(row_id),
+            f"unresolved[{index}].id is required",
+        )
+        require(
+            row_id not in unresolved_by_id,
+            f"duplicate unresolved id: {row_id}",
+        )
+        unresolved_by_id[row_id] = row
+
     if data.get("status") == "EXTRACTED":
         require(
             complete == expected,
@@ -397,6 +422,15 @@ def validate_extraction(data: dict) -> dict:
             coverage.get("extraction_complete") is True,
             "EXTRACTED requires coverage.extraction_complete=true",
         )
+        for blocker_id in sorted(EXTRACTION_BLOCKER_IDS):
+            blocker = unresolved_by_id.get(blocker_id)
+            if blocker is None:
+                continue
+            blocker_state = str(blocker.get("state", "")).upper()
+            require(
+                blocker_state in RESOLVED_UNRESOLVED_STATES,
+                f"EXTRACTED requires {blocker_id} resolved",
+            )
     else:
         require(
             complete < expected,
@@ -414,6 +448,24 @@ def validate_source_receipt(extraction: dict, receipt: dict) -> dict:
     require(
         receipt.get("schema") == RECEIPT_SCHEMA,
         "Appendix 8.4 source receipt schema mismatch",
+    )
+    require(
+        receipt.get("authority_transfer") is False,
+        "source receipt authority_transfer must remain false",
+    )
+    require(
+        receipt.get("formal_credit_delta") == 0,
+        "source receipt formal_credit_delta must remain zero",
+    )
+    require(
+        receipt.get("authority_transfer")
+        is extraction.get("authority_transfer"),
+        "source receipt authority_transfer mismatch",
+    )
+    require(
+        receipt.get("formal_credit_delta")
+        == extraction.get("formal_credit_delta"),
+        "source receipt formal_credit_delta mismatch",
     )
 
     source = extraction["source"]
@@ -610,8 +662,8 @@ def validate_current_contract(root: Path = ROOT) -> dict:
             "source_material_location"
         ],
         "appendix_8_4_receipt_status": receipt["status"],
-        "authority_transfer": False,
-        "formal_credit_delta": 0,
+        "authority_transfer": receipt["authority_transfer"],
+        "formal_credit_delta": receipt["formal_credit_delta"],
     }
 
 
