@@ -25,4 +25,18 @@ patch-bundle:
 	@$(PYTHON) scripts/generate_docs_html.py
 	@echo "Patch bundle ready in $(DOCS_DIR)/"
 
-.PHONY: docs-zip test lint smoke patch-bundle
+.PHONY: docs-zip test lint smoke patch-bundle testpilot testpilot-fix testpilot-full testpilot-gate
+
+testpilot:
+	$(PYTHON) scripts/testpilot_preflight.py --mode fast
+
+testpilot-fix:
+	$(PYTHON) scripts/testpilot_preflight.py --mode fast --fix
+
+testpilot-full:
+	$(PYTHON) scripts/testpilot_preflight.py --mode full
+
+testpilot-gate:
+	$(PYTHON) scripts/testpilot_preflight.py --mode gate
+
+.PHONY: docs-zip test lint smoke patch-bundle testpilot testpilot-fix testpilot-full testpilot-gate
