@@ -206,8 +206,17 @@ def test_appendix_8_4_inventory_is_exact_and_partial():
     assert data["coverage"]["state_partial_modes"] == 8
     assert data["coverage"]["mode_identified_only"] == 15
     assert data["coverage"]["extraction_complete"] is False
+    assert {mode["status"] for mode in data["modes"]} == {"SOURCE_BOUND"}
+    assert all(len(mode["figure_sha256"]) == 64 for mode in data["modes"])
     ids = [mode["mode_id"] for mode in data["modes"]]
     assert len(ids) == len(set(ids)) == 23
+
+
+def test_appendix_8_4_rejects_invalid_figure_digest():
+    data = closure_contract.load_extraction()
+    data["modes"][0]["figure_sha256"] = "not-a-sha"
+    with pytest.raises(ValueError, match="figure_sha256"):
+        closure_contract.validate_extraction(data)
 
 
 def test_appendix_8_4_abnormal_fallback_states_are_source_bound():
