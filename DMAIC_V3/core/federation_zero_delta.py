@@ -49,7 +49,7 @@ def roundtrip_ssot(
 
     return FederationZeroDeltaReceipt(
         logical_id=logical_id,
-        authority_path=str(path.relative_to(root)),
+        authority_path=path.relative_to(root).as_posix(),
         payload_sha256=before,
         returned_payload_sha256=after,
         zero_delta=True,
