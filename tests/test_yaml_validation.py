@@ -290,7 +290,7 @@ class TestWorkflowBestPractices:
                 
                 for i, step in enumerate(steps):
                     if "name" in step:
-                        assert str(step["name"]).strip(), \
+                        assert isinstance(step["name"], str) and step["name"].strip(), \
                             f"Step {i} in job {job_name} has an empty name"
 
 
