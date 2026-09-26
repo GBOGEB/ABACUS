@@ -205,6 +205,7 @@ class TestSuperBridgeIntegration:
 
     # ------------------------------------------------------------------ end-to-end pipeline
 
+    @pytest.mark.e2e
     @pytest.mark.slow
     def test_full_pipeline_phases_1_to_6(self, config, state_manager, monkeypatch, tmp_path,
                                           sample_python_file):
