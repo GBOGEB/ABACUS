@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: abacus-testpilot-fast
+        name: ABACUS TestPilot fast preflight
+        entry: python scripts/testpilot_preflight.py --mode fast
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
