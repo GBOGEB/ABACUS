@@ -22,9 +22,9 @@ def workspace_root():
 
 
 @pytest.fixture
-def previous_sessions_path(workspace_root):
-    """Get previous sessions directory"""
-    return workspace_root / "11_PREVIOUS_SESSIONS"
+def session_authority_path(workspace_root):
+    """Get current repository-authoritative session handover directory."""
+    return workspace_root / "handover" / "mc2"
 
 
 @pytest.fixture
@@ -34,21 +34,23 @@ def handover_docs_path(workspace_root):
 
 
 class TestHistoricalSessionStructure:
-    """Test historical session directory structure"""
+    """Test repository-authoritative session handover structure."""
     
-    def test_previous_sessions_directory_exists(self, previous_sessions_path):
-        """Test that 11_PREVIOUS_SESSIONS directory exists"""
-        assert previous_sessions_path.exists(), f"Previous sessions directory not found: {previous_sessions_path}"
+    def test_session_authority_directory_exists(self, session_authority_path):
+        """Test that the governed MC2 handover directory exists."""
+        assert session_authority_path.is_dir(), f"Session authority directory not found: {session_authority_path}"
     
-    def test_cicd_sessions_exist(self, previous_sessions_path):
-        """Test that CICD sessions directory exists"""
-        cicd_path = previous_sessions_path / "cicd"
-        assert cicd_path.exists(), "CICD sessions directory not found"
+    def test_session_close_current_exists(self, session_authority_path):
+        """Test that the current session-close authority pointer exists."""
+        session_close = session_authority_path / "SESSION_CLOSE_CURRENT.json"
+        assert session_close.is_file(), f"Current session-close authority not found: {session_close}"
     
-    def test_quick_references_exist(self, previous_sessions_path):
-        """Test that quick references exist"""
-        quick_ref_path = previous_sessions_path / "quick_references"
-        assert quick_ref_path.exists(), "Quick references directory not found"
+    def test_restart_material_exists(self, session_authority_path):
+        """Test that current state pointers and restart/drop-in material exist."""
+        current_state = list(session_authority_path.glob("*_CURRENT.json"))
+        dropins = list(session_authority_path.glob("*DROPIN.md"))
+        assert current_state, "No current session authority pointers found"
+        assert dropins, "No session restart/drop-in material found"
 
 
 class TestSessionTupleValidation:
@@ -93,15 +95,11 @@ class TestHandoverDocumentation:
         
         assert len(manifest_files) >= 0
     
-    def test_cicd_handover_docs(self, previous_sessions_path):
-        """Test that CICD handover documentation exists"""
-        cicd_path = previous_sessions_path / "cicd"
-        
-        if cicd_path.exists():
-            cicd_docs = list(cicd_path.glob("*HANDOVER*.md"))
-            cicd_docs.extend(cicd_path.glob("*handover*.md"))
-            
-            assert len(cicd_docs) >= 0
+    def test_repository_handover_docs(self, session_authority_path):
+        """Test that repository-authoritative handover documentation exists."""
+        handover_docs = list(session_authority_path.glob("*HANDOVER*.md"))
+        handover_docs.extend(session_authority_path.glob("*handover*.md"))
+        assert handover_docs, "No repository-authoritative handover documentation found"
 
 
 if __name__ == '__main__':
