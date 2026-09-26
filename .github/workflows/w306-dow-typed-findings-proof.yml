@@ -21,7 +21,20 @@ jobs:
   typed-findings-proof:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact evaluated source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert evaluated source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          echo "expected=${EXPECTED_SHA}"
+          echo "actual=${ACTUAL_SHA}"
+          test "${ACTUAL_SHA}" = "${EXPECTED_SHA}"
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
