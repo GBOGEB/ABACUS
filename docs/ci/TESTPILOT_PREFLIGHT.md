@@ -64,3 +64,10 @@ change coverage scope, or reduce thresholds.
 
 Once #1391 reaches staged milestones, the full-mode regression floor should ratchet
 upward (40 -> 55 -> 70) and never move backward without an explicit governed decision.
+
+## Parity proof
+
+GitHub runs `--parity` only to prove the TestPilot implementation/configuration itself.
+Normal developer `fast` mode remains change-scoped. Repository-wide historical Ruff
+debt is therefore visible through its own controls but does not prevent adopting the
+pre-GitHub gate.
