@@ -409,3 +409,31 @@ def test_appendix_8_4_rejects_wrong_unresolved_container_type():
     data["unresolved"] = {}
     with pytest.raises(ValueError, match="unresolved must be a list"):
         closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_source_pending_rejects_wrong_unresolved_type():
+    data = closure_contract.load_extraction()
+    data["status"] = "SOURCE_PENDING"
+    data["source"]["source_material_available"] = False
+    data["source"]["source_material_location"] = None
+    data["modes"] = []
+    data["unresolved"] = {}
+    with pytest.raises(ValueError, match="unresolved must be a list"):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_receipt_rejects_boolean_formal_credit_delta():
+    extraction = closure_contract.validate_extraction(
+        closure_contract.load_extraction()
+    )
+    receipt = closure_contract.load_source_receipt()
+    receipt["formal_credit_delta"] = False
+    with pytest.raises(ValueError, match="integer zero"):
+        closure_contract.validate_source_receipt(extraction, receipt)
+
+
+def test_appendix_8_4_extraction_rejects_boolean_formal_credit_delta():
+    data = closure_contract.load_extraction()
+    data["formal_credit_delta"] = False
+    with pytest.raises(ValueError, match="integer zero"):
+        closure_contract.validate_extraction(data)
