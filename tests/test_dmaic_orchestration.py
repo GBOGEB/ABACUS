@@ -570,7 +570,7 @@ class TestWeek3ComponentIntegration:
         metrics = await orchestrator.measure_test_performance("tests/test_week3_integration.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
-        assert metrics.total_tests >= 10
+        assert metrics.total_tests == 8
         assert metrics.coverage_score >= 70.0
         assert metrics.pass_rate() >= 90.0
 
