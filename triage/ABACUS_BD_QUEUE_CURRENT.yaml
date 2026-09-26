@@ -19,6 +19,11 @@ summary:
   discovered_during_pulse:
     - 1313
     - 1369
+    - 1377
+    - 1379
+    - 1380
+    - 1381
+    - 1391
   closed_this_pulse:
     - 583
     - 645
@@ -40,35 +45,67 @@ summary:
     - 638
     - 776
     - 1002
-  open_after_pulse: 12
+    - 1377
+    - 1391
+  open_after_pulse: 15
   next_reconcile: 0
-  prove: 1
+  execute_now: 0
+  prove: 0
+  prove_hold: 3
   control_watch: 0
-  local_or_external_return: 7
+  local_or_external_return: 8
   programme_parent: 4
 
 lanes:
   NEXT_RECONCILE: []
 
-  PROVE:
-    - issue: 1369
+  EXECUTE_NOW: []
+
+  PROVE: []
+
+  PROVE_HOLD:
+    - issue: 1379
       title: >-
-        synchronized exact-head TRIAGE cluster receipt for W62/W64/W7x/W8x
+        reject incomplete STATE_COMPLETE Appendix rows
       blocked_by: >-
-        Required proof workflows have no synchronized exact-main receipt on one
-        common SHA; path-filtered workflows require their existing
-        workflow_dispatch entry points.
+        Shared repair PR #1384 is merged and final repair head review is clean,
+        but the issue-level requested exact-head closure evidence set has not
+        yet been observed in full.
       next_action: >-
-        Run the existing W62/W64/W70/W71/W85 and CI Governance workflows
-        unchanged on one exact current main SHA, then bind their run/artifact
-        identities into one retained cluster receipt.
-      closure_gate: >-
-        All required exact-head runs are green on one common SHA, or one
-        failing workflow is isolated as the next bounded defect.
+        Reconcile the existing merged repair against the required proof checks;
+        repair only if a material current-code first red appears.
+    - issue: 1380
+      title: >-
+        bind Appendix extraction digests to source receipt
+      blocked_by: >-
+        Shared repair PR #1384 is merged and final repair head review is clean,
+        but the issue-level requested exact-head closure evidence set has not
+        yet been observed in full.
+      next_action: >-
+        Reconcile the existing merged repair against the required proof checks;
+        repair only if a material current-code first red appears.
+    - issue: 1381
+      title: >-
+        reconcile Line-S progress tracker with source-bound Appendix state
+      blocked_by: >-
+        Shared repair PR #1384 is merged and final repair head review is clean,
+        but the issue-level requested exact-head closure evidence set has not
+        yet been observed in full.
+      next_action: >-
+        Reconcile the existing merged repair against the required proof checks;
+        repair only if a material current-code first red appears.
 
   CONTROL_WATCH: []
 
   EXTERNAL_OR_LOCAL_RETURN:
+    - issue: 1369
+      blocked_by: >-
+        Seven existing proof workflows require workflow_dispatch admission on
+        one unchanged main SHA; the connected execution surface cannot create
+        those dispatches.
+      next_action: >-
+        Re-enter only when seven real workflow_dispatch run IDs exist on one
+        exact main SHA; reject mixed-SHA evidence.
     - issue: 633
       blocked_by: Real local Windows, evidence, and Office execution.
     - issue: 644
@@ -212,3 +249,19 @@ closed_this_pulse:
       Current main contains the required W62/W64/W7x/W8x control surfaces, but
       no synchronized exact-head cluster receipt exists. Residual proof-only
       work transferred losslessly to successor #1369.
+
+  - issue: 1377
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1406 merged as 7b6a39f96a4a48c5d7ff01733467ae15f2d12049;
+      exact-head Codex review was clean and post-merge CI/CD Test Suite run
+      36256707225 re-executed all bounded AHT zero-denominator and mixed-state
+      regressions successfully on the merge SHA. Later suite reds were
+      unrelated pre-existing tests.
+
+  - issue: 1391
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1403 merged as 1500fb73adfefe54d0549afc64986e1be0f54f96;
+      post-merge DMAIC run 36254865597 reproduced 70.73 percent coverage with
+      the unchanged 70 percent hard gate and all non-coverage gates green.
