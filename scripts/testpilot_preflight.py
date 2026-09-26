@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Local TestPilot preflight.
 
 Purpose: catch deterministic defects before GitHub Actions without weakening
@@ -10,13 +9,15 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-from pathlib import Path
 import py_compile
 import re
 import subprocess
 import sys
 import time
 import tomllib
+from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RECEIPT = ROOT / ".testpilot" / "last_receipt.json"
@@ -132,10 +133,6 @@ def check_python_compile(files: list[Path]) -> dict:
 def check_configs(files: list[Path]) -> dict:
     bad = []
     checked = 0
-    yaml = None
-    if importlib.util.find_spec("yaml") is not None:
-        import yaml as _yaml
-        yaml = _yaml
     for p in files:
         suffix = p.suffix.lower()
         if suffix not in CONFIG_SUFFIXES:
@@ -147,11 +144,9 @@ def check_configs(files: list[Path]) -> dict:
                 json.loads(text)
             elif suffix == ".toml":
                 tomllib.loads(text)
-            elif yaml is None:
-                raise RuntimeError("PyYAML unavailable; install requirements-dev.txt")
             else:
                 yaml.safe_load(text)
-        except (ValueError, OSError, RuntimeError) as exc:
+        except (json.JSONDecodeError, tomllib.TOMLDecodeError, yaml.YAMLError, OSError) as exc:
             bad.append({"file": str(p.relative_to(ROOT)), "error": str(exc)})
     return {
         "name": "config_parse",
