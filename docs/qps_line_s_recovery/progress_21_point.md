@@ -83,8 +83,10 @@ compliance credit, or proof that all source/evidence work is complete.
 14. **Appendix 8.4 mode/valve extraction — started**
     - Owner: Agent A.
     - A fail-closed extraction contract now exists.
-    - Source rows remain `SOURCE_PENDING`.
-    - No valve state is inferred.
+    - Locked D2.1 source and all 23 mode figures are hash-bound.
+    - Current state is `PARTIAL_EXTRACTED`.
+    - Coverage: 8 STATE_PARTIAL, 15 MODE_IDENTIFIED, 0 STATE_COMPLETE.
+    - Unknown valve/topology states remain withheld rather than inferred.
 
 15. **Excel block structure — complete**
     - Owner: assistant.
