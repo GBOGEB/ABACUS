@@ -4,8 +4,8 @@
 **Repository:** `GBOGEB/ABACUS`
 **Start of pulse:** 30 open issues
 **Discovered during pulse:** 7 (#1313, #1369, #1377, #1379, #1380, #1381, #1391)
-**Evidence-backed closures:** 22
-**Current open count:** 15
+**Evidence-backed closures:** 25
+**Current open count:** 12
 
 The YAML file is the machine-readable queue authority. This file is the
 human-facing execution view.
@@ -15,18 +15,16 @@ human-facing execution view.
 - **NEXT_RECONCILE — 0:** none.
 - **EXECUTE_NOW — 0:** none.
 - **PROVE — 0:** none.
-- **PROVE_HOLD — 3:** #1379, #1380, #1381.
+- **PROVE_HOLD — 0:** none.
 - **CONTROL_WATCH — 0:** none.
 - **EXTERNAL / LOCAL RETURN — 8:** #633, #635, #636, #637, #644, #1278,
   #1313, #1369.
 - **PROGRAMME PARENT — 4:** #667, #785, #981, #1164.
 
-There is currently no code-only `EXECUTE_NOW` or active `PROVE` item.
-Issue #1369 is an external execution-return gate because the required
-`workflow_dispatch` runs cannot be created by the connected execution surface.
-Issues #1379/#1380/#1381 are shared proof-hold children after merged
-PR #1384 and must not trigger new coding unless a material current-code first
-red appears.
+There is currently no code-only `EXECUTE_NOW`, active `PROVE`, or
+`PROVE_HOLD` item. Issue #1369 is an external execution-return gate because
+the required `workflow_dispatch` runs cannot be created by the connected
+execution surface.
 
 ## Completed in this pulse
 
@@ -34,7 +32,7 @@ Closed or retired with evidence:
 
 - #583, #645, #659, #672, #673, #674, #679, #683;
 - #750, #818, #1180, #1186, #1187, #1188, #1195, #1256, #581, #638;
-- #776, #1002, #1377, #1391.
+- #776, #1002, #1377, #1379, #1380, #1381, #1391.
 
 Issue #644 received its repository-local bridge implementation through
 PRs #1365 and #1366, but remains open for its governed-binary execution and direct
@@ -58,16 +56,13 @@ The stronger W04 real-source cycle remains the closure basis for #659:
 
 ## Next execution edge
 
-1. Reconcile the shared #1379/#1380/#1381 proof-hold set against existing
-   merged PR #1384 evidence; close only when their requested proof set is
-   actually satisfied, and repair only on a material current-code first red.
-2. Re-enter #1369 only when seven real workflow-dispatch run IDs exist on one
+1. Re-enter #1369 only when seven real workflow-dispatch run IDs exist on one
    unchanged main SHA. Reject mixed-SHA evidence.
-3. Execute #644 only when the governed binary set and cryoplant consumer are
+2. Execute #644 only when the governed binary set and cryoplant consumer are
    available; public fixture proof does not satisfy its issue-level DoD.
-4. Keep #1313 outside coding capacity until its source/calibration closure
+3. Keep #1313 outside coding capacity until its source/calibration closure
    predicates are satisfied; do not infer missing engineering values.
-5. Leave #1278 outside coding capacity. Its remaining gate is owner/admin merge
+4. Leave #1278 outside coding capacity. Its remaining gate is owner/admin merge
    admission, not another code detector.
 
 ## Closure rule
@@ -99,3 +94,9 @@ architecture authority or engineering credit.
   `1500fb73adfefe54d0549afc64986e1be0f54f96`; post-merge DMAIC run
   `36254865597` reproduced **70.73%** coverage against the unchanged 70%
   hard gate with non-coverage gates green.
+
+- **#1379/#1380/#1381 — VERIFIED_COMPLETE:** superseding PR #1385 exact head
+  `17d22b8e3dac3755c308f223b1ee104f842d2189` passed qps-line-s validation,
+  Docs, YAML, Format, Ruff, canonicalization, W70/W71, CI matrix and CodeQL
+  with clean Codex review. The governed repair files and progress tracker
+  remain byte-identical on current main.

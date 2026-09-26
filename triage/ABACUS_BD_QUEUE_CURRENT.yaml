@@ -46,12 +46,15 @@ summary:
     - 776
     - 1002
     - 1377
+    - 1379
+    - 1380
+    - 1381
     - 1391
-  open_after_pulse: 15
+  open_after_pulse: 12
   next_reconcile: 0
   execute_now: 0
   prove: 0
-  prove_hold: 3
+  prove_hold: 0
   control_watch: 0
   local_or_external_return: 8
   programme_parent: 4
@@ -63,37 +66,7 @@ lanes:
 
   PROVE: []
 
-  PROVE_HOLD:
-    - issue: 1379
-      title: >-
-        reject incomplete STATE_COMPLETE Appendix rows
-      blocked_by: >-
-        Shared repair PR #1384 is merged and final repair head review is clean,
-        but the issue-level requested exact-head closure evidence set has not
-        yet been observed in full.
-      next_action: >-
-        Reconcile the existing merged repair against the required proof checks;
-        repair only if a material current-code first red appears.
-    - issue: 1380
-      title: >-
-        bind Appendix extraction digests to source receipt
-      blocked_by: >-
-        Shared repair PR #1384 is merged and final repair head review is clean,
-        but the issue-level requested exact-head closure evidence set has not
-        yet been observed in full.
-      next_action: >-
-        Reconcile the existing merged repair against the required proof checks;
-        repair only if a material current-code first red appears.
-    - issue: 1381
-      title: >-
-        reconcile Line-S progress tracker with source-bound Appendix state
-      blocked_by: >-
-        Shared repair PR #1384 is merged and final repair head review is clean,
-        but the issue-level requested exact-head closure evidence set has not
-        yet been observed in full.
-      next_action: >-
-        Reconcile the existing merged repair against the required proof checks;
-        repair only if a material current-code first red appears.
+  PROVE_HOLD: []
 
   CONTROL_WATCH: []
 
@@ -265,3 +238,27 @@ closed_this_pulse:
       PR #1403 merged as 1500fb73adfefe54d0549afc64986e1be0f54f96;
       post-merge DMAIC run 36254865597 reproduced 70.73 percent coverage with
       the unchanged 70 percent hard gate and all non-coverage gates green.
+
+  - issue: 1379
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1385 exact head 17d22b8e3dac3755c308f223b1ee104f842d2189
+      passed qps-line-s-validation, Docs, YAML, Format, Ruff, canonicalization,
+      W70/W71, CI matrix and CodeQL with clean Codex review; governed repair
+      blobs remain unchanged on current main.
+
+  - issue: 1380
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1385 exact head 17d22b8e3dac3755c308f223b1ee104f842d2189
+      passed qps-line-s-validation, Docs, YAML, Format, Ruff, canonicalization,
+      W70/W71, CI matrix and CodeQL with clean Codex review; governed repair
+      blobs remain unchanged on current main.
+
+  - issue: 1381
+    disposition: VERIFIED_COMPLETE
+    proof: >-
+      PR #1385 exact head 17d22b8e3dac3755c308f223b1ee104f842d2189
+      passed qps-line-s-validation, Docs, YAML, Format, Ruff, canonicalization,
+      W70/W71, CI matrix and CodeQL with clean Codex review; the governed
+      progress tracker remains byte-identical on current main.
