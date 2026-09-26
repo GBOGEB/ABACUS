@@ -235,17 +235,19 @@ class TestWorkflowSecurity:
                         f"Potential hardcoded secret in {yaml_file.name}"
                         
     def test_workflows_use_secrets(self):
-        yaml_files = list(Path(".github/workflows").glob("*.yml"))
-        
-        for yaml_file in yaml_files:
-            with open(yaml_file, encoding="utf-8") as f:
-                config = yaml.safe_load(f)
-                
-            content = yaml_file.read_text(encoding="utf-8")
-            
-            if "deploy" in yaml_file.name.lower() or "cd" in yaml_file.name.lower():
-                assert "secrets." in content or "GITHUB_TOKEN" in content, \
-                    f"Deployment workflow {yaml_file.name} should use secrets"
+        policy_file = Path("ci/governance/workflow_policy.json")
+        policy = json.loads(policy_file.read_text(encoding="utf-8"))
+        canonical_delivery = policy["clusters"]["delivery"]["canonical"]
+
+        assert canonical_delivery, "Delivery governance shall name a canonical workflow"
+
+        workflow_file = Path(".github/workflows") / canonical_delivery
+        assert workflow_file.exists(), \
+            f"Canonical delivery workflow {canonical_delivery} not found"
+
+        content = workflow_file.read_text(encoding="utf-8")
+        assert "secrets." in content or "GITHUB_TOKEN" in content, \
+            f"Canonical delivery workflow {canonical_delivery} should use secrets"
 
 
 class TestWorkflowBestPractices:
