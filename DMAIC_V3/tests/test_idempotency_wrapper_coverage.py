@@ -1,4 +1,6 @@
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier
 
 import pytest
 
@@ -175,6 +177,62 @@ def test_unsupported_result_skips_cache_without_changing_return(tmp_path):
     assert first is not second
     assert calls == [8, 8]
     assert not wrapper.config.get_cache_file("phase_unsupported", 8).exists()
+
+
+@pytest.mark.unit
+def test_recursive_result_skips_cache_without_changing_return(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    @wrapper.idempotent("phase_recursive")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        result = []
+        result.append(result)
+        return result
+
+    first = phase(iteration=9)
+    second = phase(iteration=9)
+
+    assert first[0] is first
+    assert second[0] is second
+    assert calls == [9, 9]
+    assert not wrapper.config.get_cache_file("phase_recursive", 9).exists()
+
+
+@pytest.mark.unit
+def test_concurrent_cache_writers_use_independent_temp_files(tmp_path, monkeypatch):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    cache_file = wrapper.config.get_cache_file("phase_concurrent", 10)
+    barrier = Barrier(2)
+    original_replace = Path.replace
+
+    def synchronized_replace(source, target):
+        if source.name.endswith(".tmp"):
+            barrier.wait(timeout=5)
+        return original_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", synchronized_replace)
+
+    def save(value):
+        return wrapper._save_cache(
+            cache_file,
+            {"value": value},
+            f"hash-{value}",
+        )
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes = list(pool.map(save, (1, 2)))
+
+    assert outcomes == [True, True]
+    loaded = wrapper._load_cache(cache_file)
+    assert loaded["input_hash"] in {"hash-1", "hash-2"}
+    assert wrapper._restore_cached_result(loaded) in ({"value": 1}, {"value": 2})
+    assert list(wrapper.config.cache_dir.glob(f".{cache_file.name}.*.tmp")) == []
 
 
 @pytest.mark.unit

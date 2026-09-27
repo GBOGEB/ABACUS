@@ -14,6 +14,7 @@ import base64
 import functools
 import hashlib
 import json
+import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 from datetime import datetime
@@ -136,13 +137,27 @@ class IdempotentPhaseWrapper:
                 'result': encoded_result
             }
             payload = json.dumps(cache_data, indent=2)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, RecursionError):
             return False
 
-        temp_file = cache_file.with_suffix(cache_file.suffix + '.tmp')
-        temp_file.write_text(payload, encoding='utf-8')
-        temp_file.replace(cache_file)
-        return True
+        temp_file = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode='w',
+                encoding='utf-8',
+                dir=cache_file.parent,
+                prefix=f".{cache_file.name}.",
+                suffix='.tmp',
+                delete=False,
+            ) as handle:
+                handle.write(payload)
+                temp_file = Path(handle.name)
+
+            temp_file.replace(cache_file)
+            return True
+        finally:
+            if temp_file is not None and temp_file.exists():
+                temp_file.unlink()
 
     def _restore_cached_result(self, cached: Dict) -> Any:
         """Restore the cached value without changing the public return contract."""
