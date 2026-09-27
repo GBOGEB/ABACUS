@@ -295,7 +295,7 @@ jobs:
       - name: Check test coverage threshold
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest tests/ --cov=core --cov-fail-under=70 --cov-report=term
+          pytest tests/ --cov=core --cov-fail-under=75 --cov-report=term
       
       - name: Upload quality reports
         if: always()
