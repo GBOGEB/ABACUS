@@ -125,6 +125,59 @@ def test_tuple_result_preserves_phase_return_contract_on_cache_hit(tmp_path):
 
 
 @pytest.mark.unit
+def test_nested_container_types_round_trip_recursively(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    @wrapper.idempotent("phase_nested")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return {
+            "rows": [("a", 1), ("b", 2)],
+            "path": tmp_path / "artifact.json",
+            "tags": {"x", "y"},
+            "payload": b"abc",
+        }
+
+    first = phase(iteration=7)
+    second = phase(iteration=7)
+
+    assert second == first
+    assert isinstance(second["rows"][0], tuple)
+    assert isinstance(second["path"], type(tmp_path))
+    assert isinstance(second["tags"], set)
+    assert isinstance(second["payload"], bytes)
+    assert calls == [7]
+
+
+@pytest.mark.unit
+def test_unsupported_result_skips_cache_without_changing_return(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    class Unsupported:
+        pass
+
+    @wrapper.idempotent("phase_unsupported")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return Unsupported()
+
+    first = phase(iteration=8)
+    second = phase(iteration=8)
+
+    assert isinstance(first, Unsupported)
+    assert isinstance(second, Unsupported)
+    assert first is not second
+    assert calls == [8, 8]
+    assert not wrapper.config.get_cache_file("phase_unsupported", 8).exists()
+
+
+@pytest.mark.unit
 def test_enable_idempotency_rebinds_global_configuration(tmp_path, capsys):
     original = idem.GLOBAL_IDEMPOTENCY
     try:
