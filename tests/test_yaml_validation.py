@@ -385,8 +385,11 @@ class TestYAMLEditorCompatibility:
 
             for token in yaml.scan(content):
                 if getattr(token, "style", None) in ("|", ">"):
+                    end_line = token.end_mark.line
+                    if token.end_mark.index == len(content) and not content.endswith("\n"):
+                        end_line += 1
                     block_scalar_content_lines.update(
-                        range(token.start_mark.line + 1, token.end_mark.line)
+                        range(token.start_mark.line + 1, end_line)
                     )
             
             for i, line in enumerate(lines, 1):
