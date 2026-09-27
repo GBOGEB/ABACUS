@@ -402,7 +402,7 @@ class TestYAMLEditorCompatibility:
                         and value[0] in "|>"
                         and all(char in "+-0123456789" for char in value[1:])
                     ):
-                        block_scalar_indent = leading_spaces
+                        block_scalar_indent = leading_spaces + (2 if stripped.startswith("- ") else 0)
                         
     def test_yaml_no_tabs(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
