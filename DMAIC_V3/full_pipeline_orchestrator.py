@@ -275,7 +275,7 @@ class FullPipelineOrchestrator:
 
             # Phase 9: Documentation Generation
             success, results = self._execute_phase_with_tracking(
-                Phase9DocumentationGeneration(self.config, self.state_mgr),
+                Phase9DocumentationGeneration(self.state_mgr),
                 "Phase 9: Documentation Generation",
                 iteration
             )
