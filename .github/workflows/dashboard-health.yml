@@ -54,7 +54,11 @@ jobs:
                 echo "⚠️  Missing JS: $f → $src"
               fi
             done
-            for href in $(grep -oP 'link.*href="\K[^"]+' "$f" | grep '\.css' | grep -v '^http'); do
+            for href in $(
+              grep -oP 'link.*href="\K[^"]+' "$f" |
+                grep '\.css' |
+                grep -v '^http'
+            ); do
               dir=$(dirname "$f")
               if [ ! -f "$dir/$href" ] && [ ! -f "$href" ]; then
                 echo "⚠️  Missing CSS: $f → $href"
@@ -82,7 +86,7 @@ jobs:
             while IFS= read -r href; do
               href="${href#"${href%%[![:space:]]*}"}"
               case "$href" in
-                ""|#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
+                ""|\#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
                   continue
                   ;;
               esac
@@ -109,8 +113,10 @@ jobs:
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           TOTAL=$(find docs -name '*.html' -type f | wc -l)
           echo "| HTML files | $TOTAL |" >> $GITHUB_STEP_SUMMARY
-          echo "| Missing dashboards | ${{ steps.check_files.outputs.missing_count }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Broken links | ${{ steps.link_check.outputs.broken_links }} |" >> $GITHUB_STEP_SUMMARY
+          MISSING="${{ steps.check_files.outputs.missing_count }}"
+          echo "| Missing dashboards | $MISSING |" >> "$GITHUB_STEP_SUMMARY"
+          BROKEN="${{ steps.link_check.outputs.broken_links }}"
+          echo "| Broken links | $BROKEN |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Run date | $(date -u) |" >> $GITHUB_STEP_SUMMARY
 
       - name: Open escalation issue on failure
@@ -120,9 +126,18 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const missing = '${{ steps.check_files.outputs.missing_count }}';
-            const broken  = '${{ steps.link_check.outputs.broken_links }}';
-            const runUrl  = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const missing =
+              '${{ steps.check_files.outputs.missing_count }}';
+            const broken =
+              '${{ steps.link_check.outputs.broken_links }}';
+            const runUrl = [
+              context.serverUrl,
+              context.repo.owner,
+              context.repo.repo,
+              'actions',
+              'runs',
+              context.runId,
+            ].join('/');
             const body = [
               '## 🚨 Dashboard Health Check Failed',
               '',
@@ -133,12 +148,16 @@ jobs:
               '',
               `**Workflow run:** ${runUrl}`,
               '',
-              '_Auto-opened by the daily dashboard health check. Please investigate and close when resolved._',
+              '_Auto-opened by the daily dashboard health check. ' +
+                'Please investigate and close when resolved._',
             ].join('\n');
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo:  context.repo.repo,
-              title: `🚨 Dashboard health check failure — ${new Date().toISOString().slice(0,10)}`,
+              title: [
+                '🚨 Dashboard health check failure —',
+                new Date().toISOString().slice(0, 10),
+              ].join(' '),
               body,
               labels: ['bug', 'dashboard'],
             });
@@ -146,5 +165,6 @@ jobs:
       - name: Fail job when dashboards are missing
         if: steps.check_files.outputs.missing_count != '0'
         run: |
-          echo "❌ ${{ steps.check_files.outputs.missing_count }} dashboard(s) missing — failing job."
+          MISSING="${{ steps.check_files.outputs.missing_count }}"
+          echo "❌ $MISSING dashboard(s) missing — failing job."
           exit 1
