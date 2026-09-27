@@ -31,6 +31,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -71,6 +83,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
@@ -118,6 +142,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -155,6 +191,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -198,6 +246,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -233,6 +293,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -268,6 +340,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "$actual_sha" != "$expected_sha" ]; then
+            echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
+            exit 1
+          fi
       
       - name: Set up Python
         uses: actions/setup-python@v7
