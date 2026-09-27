@@ -1,7 +1,7 @@
 # ABACUS TestPilot — pre-GitHub defect gate
 
 TestPilot shifts deterministic defect discovery left of GitHub Actions. It does **not**
-replace the authoritative CI suite and it never lowers the 70% DMAIC coverage gate.
+replace the authoritative CI suite and it never lowers the 75% DMAIC coverage gate.
 
 ## One-time setup
 
@@ -60,10 +60,10 @@ change coverage scope, or reduce thresholds.
 - `fast`: no coverage gate; appropriate for pre-commit.
 - `full`: full DMAIC suite with a default **25% regression floor** while #1391
   recovers coverage. This is a temporary anti-regression floor, not a quality target.
-- `gate`: full DMAIC suite with the authoritative **70%** floor.
+- `gate`: full DMAIC suite with the authoritative **75%** floor.
 
 Once #1391 reaches staged milestones, the full-mode regression floor should ratchet
-upward (40 -> 55 -> 70) and never move backward without an explicit governed decision.
+upward (40 -> 55 -> 70 -> 75) and never move backward without an explicit governed decision.
 
 ## Parity proof
 
