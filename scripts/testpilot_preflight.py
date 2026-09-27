@@ -254,7 +254,7 @@ def main() -> int:
         "coverage_policy": {
             "fast": "no coverage gate",
             "full": "regression floor defaults to 25%; override explicitly",
-            "gate": "GitHub parity floor defaults to 70%; never auto-lowered",
+            "gate": "GitHub parity floor defaults to 75%; never auto-lowered",
         },
         "parity_scope": args.parity,
         "subject_files": [str(p.relative_to(ROOT)) for p in files],
