@@ -64,14 +64,29 @@ class IdempotentPhaseWrapper:
             return None
 
     def _save_cache(self, cache_file: Path, result: Any, input_hash: str):
-        """Save results to cache"""
+        """Save results without changing the public return contract on cache hits."""
+        if isinstance(result, tuple):
+            serialized_result = list(result)
+            result_type = 'tuple'
+        else:
+            serialized_result = result
+            result_type = 'json'
+
         cache_data = {
             'timestamp': datetime.now().isoformat(),
             'input_hash': input_hash,
-            'result': result if isinstance(result, dict) else {'status': 'completed'}
+            'result_type': result_type,
+            'result': serialized_result
         }
         with open(cache_file, 'w') as f:
             json.dump(cache_data, f, indent=2)
+
+    def _restore_cached_result(self, cached: Dict) -> Any:
+        """Restore the cached value to the same top-level type returned originally."""
+        result = cached.get('result')
+        if cached.get('result_type') == 'tuple' and isinstance(result, list):
+            return tuple(result)
+        return result
 
     def idempotent(self, phase_name: str):
         """
@@ -96,7 +111,7 @@ class IdempotentPhaseWrapper:
                 if cached and cached.get('input_hash') == input_hash:
                     print(f"[IDEMPOTENCY] [OK] Cache hit for {phase_name} iteration {iteration}")
                     print(f"[IDEMPOTENCY] Skipping execution - returning cached result")
-                    return cached.get('result')
+                    return self._restore_cached_result(cached)
 
                 print(f"[IDEMPOTENCY] Cache miss - executing {phase_name}")
                 result = func(*args, **kwargs)
