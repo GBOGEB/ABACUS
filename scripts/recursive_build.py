@@ -66,7 +66,7 @@ def main():
     out.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     print(f"[WROTE] {out}")
 
-    if args.update-metrics:
+    if args.update_metrics:
         csv_path = Path("metrics/metrics.csv")
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         # Append minimal row; real KPIs are managed elsewhere
