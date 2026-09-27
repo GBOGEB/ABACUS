@@ -84,7 +84,7 @@ def test_disabled_decorator_always_executes_without_cache(tmp_path):
 
 
 @pytest.mark.unit
-def test_non_dict_result_uses_completed_cache_contract(tmp_path):
+def test_non_dict_result_preserves_same_output_on_cache_hit(tmp_path):
     wrapper = idem.IdempotentPhaseWrapper(
         idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
     )
@@ -95,9 +95,33 @@ def test_non_dict_result_uses_completed_cache_contract(tmp_path):
         calls.append(iteration)
         return "raw-result"
 
-    assert phase(iteration=5) == "raw-result"
-    assert phase(iteration=5) == {"status": "completed"}
+    first = phase(iteration=5)
+    second = phase(iteration=5)
+
+    assert first == "raw-result"
+    assert second == first
     assert calls == [5]
+
+
+@pytest.mark.unit
+def test_tuple_result_preserves_phase_return_contract_on_cache_hit(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    @wrapper.idempotent("phase0_init")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return True, {"iteration": iteration}
+
+    first = phase(iteration=6)
+    second = phase(iteration=6)
+
+    assert first == (True, {"iteration": 6})
+    assert second == first
+    assert isinstance(second, tuple)
+    assert calls == [6]
 
 
 @pytest.mark.unit
