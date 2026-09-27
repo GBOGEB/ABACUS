@@ -381,13 +381,28 @@ class TestYAMLEditorCompatibility:
         for yaml_file in yaml_files:
             content = yaml_file.read_text(encoding="utf-8")
             lines = content.split('\n')
+            block_scalar_indent = None
             
             for i, line in enumerate(lines, 1):
-                if line.strip() and not line.strip().startswith('#'):
-                    leading_spaces = len(line) - len(line.lstrip())
-                    
+                stripped = line.strip()
+                leading_spaces = len(line) - len(line.lstrip())
+
+                if block_scalar_indent is not None:
+                    if not stripped or leading_spaces > block_scalar_indent:
+                        continue
+                    block_scalar_indent = None
+
+                if stripped and not stripped.startswith('#'):
                     assert leading_spaces % 2 == 0, \
                         f"{yaml_file.name}:{i} - Indentation should be multiple of 2"
+
+                    value = stripped.split('#', 1)[0].rsplit(':', 1)[-1].strip()
+                    if (
+                        value
+                        and value[0] in "|>"
+                        and all(char in "+-0123456789" for char in value[1:])
+                    ):
+                        block_scalar_indent = leading_spaces
                         
     def test_yaml_no_tabs(self):
         yaml_files = list(Path(".github/workflows").glob("*.yml"))
