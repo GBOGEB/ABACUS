@@ -410,16 +410,30 @@ class TestYAMLEditorCompatibility:
             content = yaml_file.read_text(encoding="utf-8")
             block_scalar_content_lines = set()
 
-            for token in yaml.scan(content):
-                if getattr(token, "style", None) in ("|", ">"):
-                    end_line = token.end_mark.line
-                    if token.end_mark.index == len(content) and not content.endswith("\n"):
-                        end_line += 1
-                    block_scalar_content_lines.update(
-                        range(token.start_mark.line + 1, end_line)
-                    )
+            lines = content.split("\n")
 
-            for i, line in enumerate(content.split("\n"), 1):
+            try:
+                tokens = yaml.scan(content)
+                for token in tokens:
+                    if getattr(token, "style", None) in ("|", ">"):
+                        end_line = token.end_mark.line
+                        if token.end_mark.index == len(content) and not content.endswith("\n"):
+                            end_line += 1
+                        block_scalar_content_lines.update(
+                            range(token.start_mark.line + 1, end_line)
+                        )
+            except yaml.scanner.ScannerError as exc:
+                error_line = getattr(getattr(exc, "problem_mark", None), "line", None)
+                if (
+                    error_line is not None
+                    and error_line < len(lines)
+                    and "\t" in lines[error_line]
+                ):
+                    assert False, \
+                        f"{yaml_file.name}:{error_line + 1} contains tab outside block scalar content"
+                raise
+
+            for i, line in enumerate(lines, 1):
                 if i - 1 in block_scalar_content_lines:
                     continue
 
