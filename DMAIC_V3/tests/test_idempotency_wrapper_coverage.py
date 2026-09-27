@@ -180,6 +180,43 @@ def test_unsupported_result_skips_cache_without_changing_return(tmp_path):
 
 
 @pytest.mark.unit
+def test_temp_file_is_cleaned_when_cache_write_fails(tmp_path, monkeypatch):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    cache_file = wrapper.config.get_cache_file("phase_write_failure", 11)
+    real_named_temporary_file = idem.tempfile.NamedTemporaryFile
+
+    class FailingWriter:
+        def __init__(self, handle):
+            self._handle = handle
+            self.name = handle.name
+
+        def __enter__(self):
+            self._handle.__enter__()
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return self._handle.__exit__(exc_type, exc_value, traceback)
+
+        def write(self, payload):
+            self._handle.write(payload[:1])
+            self._handle.flush()
+            raise OSError("simulated cache write failure")
+
+    def failing_named_temporary_file(*args, **kwargs):
+        return FailingWriter(real_named_temporary_file(*args, **kwargs))
+
+    monkeypatch.setattr(idem.tempfile, "NamedTemporaryFile", failing_named_temporary_file)
+
+    with pytest.raises(OSError, match="simulated cache write failure"):
+        wrapper._save_cache(cache_file, {"value": 1}, "hash-write-failure")
+
+    assert not cache_file.exists()
+    assert list(wrapper.config.cache_dir.glob(f".{cache_file.name}.*.tmp")) == []
+
+
+@pytest.mark.unit
 def test_recursive_result_skips_cache_without_changing_return(tmp_path):
     wrapper = idem.IdempotentPhaseWrapper(
         idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")

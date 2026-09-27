@@ -150,8 +150,8 @@ class IdempotentPhaseWrapper:
                 suffix='.tmp',
                 delete=False,
             ) as handle:
-                handle.write(payload)
                 temp_file = Path(handle.name)
+                handle.write(payload)
 
             temp_file.replace(cache_file)
             return True
