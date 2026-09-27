@@ -241,7 +241,7 @@ def main() -> int:
     checks.extend(targeted_pytest())
 
     if args.mode in {"full", "gate"}:
-        default_floor = 25.0 if args.mode == "full" else 70.0
+        default_floor = 25.0 if args.mode == "full" else 75.0
         floor = args.coverage_floor if args.coverage_floor is not None else default_floor
         checks.append(coverage_check(floor))
 

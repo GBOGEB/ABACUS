@@ -36,7 +36,7 @@ GitHub-parity coverage gate:
 .\scripts\testpilot.ps1 -Mode gate
 ```
 
-The gate mode defaults to **70%**. Do not lower it to make a failing change green.
+The gate mode defaults to **75%**, matching the authoritative DMAIC CI hard gate. Do not lower it to make a failing change green.
 
 ## What fast mode catches before push
 
