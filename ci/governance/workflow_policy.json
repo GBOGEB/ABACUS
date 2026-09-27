@@ -300,6 +300,18 @@
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^gm-i-a-coolprop-runtime-bridge-p002\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^testpilot-preflight\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_fast",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
