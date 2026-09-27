@@ -6,6 +6,7 @@ on:
     paths:
       - '**/*.py'
       - '!ci/governance/**'
+      - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       - 'pyproject.toml'
       - 'setup.cfg'
@@ -19,6 +20,7 @@ on:
     paths:
       - '**/*.py'
       - '!ci/governance/**'
+      - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       - 'pyproject.toml'
       - 'setup.cfg'
