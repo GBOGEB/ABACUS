@@ -38,7 +38,7 @@ def test_cache_load_missing_corrupt_and_roundtrip(tmp_path):
     loaded = wrapper._load_cache(cache_file)
 
     assert loaded["input_hash"] == "abc123"
-    assert loaded["result"] == {"value": 7}
+    assert wrapper._restore_cached_result(loaded) == {"value": 7}
     assert "timestamp" in loaded
 
 
