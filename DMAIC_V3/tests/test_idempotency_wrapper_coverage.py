@@ -38,7 +38,7 @@ def test_cache_load_missing_corrupt_and_roundtrip(tmp_path):
     loaded = wrapper._load_cache(cache_file)
 
     assert loaded["input_hash"] == "abc123"
-    assert loaded["result"] == {"value": 7}
+    assert wrapper._restore_cached_result(loaded) == {"value": 7}
     assert "timestamp" in loaded
 
 
@@ -84,7 +84,7 @@ def test_disabled_decorator_always_executes_without_cache(tmp_path):
 
 
 @pytest.mark.unit
-def test_non_dict_result_uses_completed_cache_contract(tmp_path):
+def test_non_dict_result_preserves_same_output_on_cache_hit(tmp_path):
     wrapper = idem.IdempotentPhaseWrapper(
         idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
     )
@@ -95,9 +95,86 @@ def test_non_dict_result_uses_completed_cache_contract(tmp_path):
         calls.append(iteration)
         return "raw-result"
 
-    assert phase(iteration=5) == "raw-result"
-    assert phase(iteration=5) == {"status": "completed"}
+    first = phase(iteration=5)
+    second = phase(iteration=5)
+
+    assert first == "raw-result"
+    assert second == first
     assert calls == [5]
+
+
+@pytest.mark.unit
+def test_tuple_result_preserves_phase_return_contract_on_cache_hit(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    @wrapper.idempotent("phase0_init")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return True, {"iteration": iteration}
+
+    first = phase(iteration=6)
+    second = phase(iteration=6)
+
+    assert first == (True, {"iteration": 6})
+    assert second == first
+    assert isinstance(second, tuple)
+    assert calls == [6]
+
+
+@pytest.mark.unit
+def test_nested_container_types_round_trip_recursively(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    @wrapper.idempotent("phase_nested")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return {
+            "rows": [("a", 1), ("b", 2)],
+            "path": tmp_path / "artifact.json",
+            "tags": {"x", "y"},
+            "payload": b"abc",
+        }
+
+    first = phase(iteration=7)
+    second = phase(iteration=7)
+
+    assert second == first
+    assert isinstance(second["rows"][0], tuple)
+    assert isinstance(second["path"], type(tmp_path))
+    assert isinstance(second["tags"], set)
+    assert isinstance(second["payload"], bytes)
+    assert calls == [7]
+
+
+@pytest.mark.unit
+def test_unsupported_result_skips_cache_without_changing_return(tmp_path):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    calls = []
+
+    class Unsupported:
+        pass
+
+    @wrapper.idempotent("phase_unsupported")
+    def phase(*, iteration=1):
+        calls.append(iteration)
+        return Unsupported()
+
+    first = phase(iteration=8)
+    second = phase(iteration=8)
+
+    assert isinstance(first, Unsupported)
+    assert isinstance(second, Unsupported)
+    assert first is not second
+    assert calls == [8, 8]
+    assert not wrapper.config.get_cache_file("phase_unsupported", 8).exists()
 
 
 @pytest.mark.unit
