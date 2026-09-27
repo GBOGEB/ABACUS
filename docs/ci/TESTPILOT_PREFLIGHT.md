@@ -63,7 +63,7 @@ change coverage scope, or reduce thresholds.
 - `gate`: full DMAIC suite with the authoritative **75%** floor.
 
 Once #1391 reaches staged milestones, the full-mode regression floor should ratchet
-upward (40 -> 55 -> 70) and never move backward without an explicit governed decision.
+upward (40 -> 55 -> 70 -> 75) and never move backward without an explicit governed decision.
 
 ## Parity proof
 
