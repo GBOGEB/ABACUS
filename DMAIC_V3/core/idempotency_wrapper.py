@@ -10,6 +10,7 @@ Provides @idempotent decorator for phases with enable/disable option
 Bridges to existing ranking, self-ranking, and validation systems
 """
 
+import base64
 import functools
 import hashlib
 import json
@@ -63,30 +64,89 @@ class IdempotentPhaseWrapper:
         except Exception:
             return None
 
-    def _save_cache(self, cache_file: Path, result: Any, input_hash: str):
-        """Save results without changing the public return contract on cache hits."""
-        if isinstance(result, tuple):
-            serialized_result = list(result)
-            result_type = 'tuple'
-        else:
-            serialized_result = result
-            result_type = 'json'
+    def _encode_cache_value(self, value: Any) -> Any:
+        """Recursively encode supported Python values without losing container types."""
+        if value is None or isinstance(value, (bool, int, float, str)):
+            return value
+        if isinstance(value, bytes):
+            return {
+                '__dmaic_cache_type__': 'bytes',
+                'data': base64.b64encode(value).decode('ascii')
+            }
+        if isinstance(value, Path):
+            return {
+                '__dmaic_cache_type__': 'path',
+                'data': str(value)
+            }
+        if isinstance(value, tuple):
+            return {
+                '__dmaic_cache_type__': 'tuple',
+                'items': [self._encode_cache_value(item) for item in value]
+            }
+        if isinstance(value, list):
+            return {
+                '__dmaic_cache_type__': 'list',
+                'items': [self._encode_cache_value(item) for item in value]
+            }
+        if isinstance(value, set):
+            return {
+                '__dmaic_cache_type__': 'set',
+                'items': [self._encode_cache_value(item) for item in value]
+            }
+        if isinstance(value, dict):
+            return {
+                '__dmaic_cache_type__': 'dict',
+                'items': [
+                    [self._encode_cache_value(key), self._encode_cache_value(item)]
+                    for key, item in value.items()
+                ]
+            }
+        raise TypeError(f"Unsupported cache value type: {type(value).__name__}")
 
-        cache_data = {
-            'timestamp': datetime.now().isoformat(),
-            'input_hash': input_hash,
-            'result_type': result_type,
-            'result': serialized_result
-        }
-        with open(cache_file, 'w') as f:
-            json.dump(cache_data, f, indent=2)
+    def _decode_cache_value(self, value: Any) -> Any:
+        """Recursively restore values encoded by _encode_cache_value."""
+        if not isinstance(value, dict) or '__dmaic_cache_type__' not in value:
+            return value
+
+        value_type = value['__dmaic_cache_type__']
+        if value_type == 'bytes':
+            return base64.b64decode(value['data'].encode('ascii'))
+        if value_type == 'path':
+            return Path(value['data'])
+        if value_type == 'tuple':
+            return tuple(self._decode_cache_value(item) for item in value['items'])
+        if value_type == 'list':
+            return [self._decode_cache_value(item) for item in value['items']]
+        if value_type == 'set':
+            return {self._decode_cache_value(item) for item in value['items']}
+        if value_type == 'dict':
+            return {
+                self._decode_cache_value(key): self._decode_cache_value(item)
+                for key, item in value['items']
+            }
+        raise ValueError(f"Unknown cache value type: {value_type}")
+
+    def _save_cache(self, cache_file: Path, result: Any, input_hash: str) -> bool:
+        """Save supported results atomically; unsupported values remain uncached."""
+        try:
+            encoded_result = self._encode_cache_value(result)
+            cache_data = {
+                'timestamp': datetime.now().isoformat(),
+                'input_hash': input_hash,
+                'result': encoded_result
+            }
+            payload = json.dumps(cache_data, indent=2)
+        except (TypeError, ValueError):
+            return False
+
+        temp_file = cache_file.with_suffix(cache_file.suffix + '.tmp')
+        temp_file.write_text(payload, encoding='utf-8')
+        temp_file.replace(cache_file)
+        return True
 
     def _restore_cached_result(self, cached: Dict) -> Any:
-        """Restore the cached value to the same top-level type returned originally."""
-        result = cached.get('result')
-        if cached.get('result_type') == 'tuple' and isinstance(result, list):
-            return tuple(result)
-        return result
+        """Restore the cached value without changing the public return contract."""
+        return self._decode_cache_value(cached.get('result'))
 
     def idempotent(self, phase_name: str):
         """
