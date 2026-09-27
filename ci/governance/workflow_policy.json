@@ -53,7 +53,6 @@
         "cd.yml",
         "main.yml",
         "cd-unified.yml",
-        "dow-integration-ci-cd.yml",
         "dow-sprint6-cicd.yml",
         "session_tuple_ci.yml",
         "runtime-smoke.yml",
@@ -299,6 +298,18 @@
       "pattern": "^w286-gloob-pandoc-p1\\.yml$",
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^gm-i-a-coolprop-runtime-bridge-p002\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^testpilot-preflight\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_fast",
       "disposition": "keep"
     }
   ],
