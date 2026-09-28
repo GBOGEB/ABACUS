@@ -22,6 +22,12 @@ SOURCE_RECEIPT = (
     / "qps_line_s_recovery"
     / "appendix_8_4_source_receipt.json"
 )
+VISUAL_LEGEND_AUDIT = (
+    ROOT
+    / "docs"
+    / "qps_line_s_recovery"
+    / "appendix_8_4_visual_legend_audit.json"
+)
 ASSUMPTIONS = (
     ROOT
     / "docs"
@@ -38,6 +44,9 @@ RUNTIME_STATUS = (
 
 SCHEMA = "abacus.qps_line_s.appendix_8_4_mode_valve_extraction.v2"
 RECEIPT_SCHEMA = "abacus.qps_line_s.appendix_8_4_source_receipt.v1"
+VISUAL_LEGEND_AUDIT_SCHEMA = (
+    "abacus.qps_line_s.appendix_8_4_visual_legend_audit.v1"
+)
 MDA_GATE_IDS = {
     "ASSUM-VEFF",
     "ASSUM-PLIMIT",
@@ -99,6 +108,16 @@ def _is_unknown_placeholder(value: Any) -> bool:
     return normalized == "UNKNOWN" or normalized.startswith("UNKNOWN_")
 
 
+def _is_figure_only_locator(value: Any) -> bool:
+    if not _nonempty(value):
+        return False
+    normalized = value.strip().lower()
+    return (
+        "appendix 8.4" in normalized
+        and re.search(r"image\d+\.emf", normalized) is not None
+    )
+
+
 def load_extraction(path: Path = EXTRACTION) -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     require(
@@ -117,6 +136,17 @@ def load_source_receipt(path: Path = SOURCE_RECEIPT) -> dict:
     return data
 
 
+def load_visual_legend_audit(
+    path: Path = VISUAL_LEGEND_AUDIT,
+) -> dict:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    require(
+        isinstance(data, dict),
+        "Appendix 8.4 visual legend audit must be a mapping",
+    )
+    return data
+
+
 def missing_required_artefacts(root: Path = ROOT) -> list[str]:
     missing: list[str] = []
     for artefact in runtime_model.REQUIRED_ARTEFACTS:
@@ -126,7 +156,155 @@ def missing_required_artefacts(root: Path = ROOT) -> list[str]:
     return missing
 
 
-def validate_extraction(data: dict) -> dict:
+def validate_visual_legend_audit(
+    extraction: dict,
+    audit: dict,
+) -> dict:
+    require(
+        audit.get("schema") == VISUAL_LEGEND_AUDIT_SCHEMA,
+        "Appendix 8.4 visual legend audit schema mismatch",
+    )
+    require(
+        audit.get("authority_transfer") is False,
+        "visual legend audit authority_transfer must remain false",
+    )
+    require(
+        _is_integer_zero(audit.get("formal_credit_delta")),
+        "visual legend audit formal_credit_delta must remain integer zero",
+    )
+
+    source = extraction.get("source")
+    coverage = extraction.get("coverage")
+    unresolved = extraction.get("unresolved")
+    require(isinstance(source, dict), "extraction source must be a mapping")
+    require(
+        isinstance(coverage, dict),
+        "extraction coverage must be a mapping",
+    )
+    require(
+        isinstance(unresolved, list),
+        "extraction unresolved must be a list",
+    )
+
+    audit_source = audit.get("source")
+    require(
+        isinstance(audit_source, dict),
+        "visual legend audit source must be a mapping",
+    )
+    source_pairs = {
+        "document": source.get("source_ref"),
+        "reference": source.get("source_reference"),
+        "issue_revision": source.get("issue_revision"),
+        "date": source.get("document_date"),
+        "sha256": source.get("source_sha256"),
+    }
+    for key, expected in source_pairs.items():
+        require(
+            audit_source.get(key) == expected,
+            f"visual legend audit source {key} mismatch",
+        )
+    require(
+        audit_source.get("appendix") == "8.4",
+        "visual legend audit appendix mismatch",
+    )
+    require(
+        audit_source.get("figure_count")
+        == coverage.get("mode_inventory_expected"),
+        "visual legend audit figure_count mismatch",
+    )
+
+    review = audit.get("review")
+    require(
+        isinstance(review, dict),
+        "visual legend audit review must be a mapping",
+    )
+    current_coverage = review.get("current_coverage")
+    require(
+        isinstance(current_coverage, dict),
+        "visual legend audit current_coverage must be a mapping",
+    )
+    coverage_pairs = {
+        "modes": coverage.get("mode_rows_present"),
+        "state_complete": coverage.get("state_complete_modes"),
+        "state_partial": coverage.get("state_partial_modes"),
+        "mode_identified": coverage.get("mode_identified_only"),
+    }
+    for key, expected in coverage_pairs.items():
+        require(
+            current_coverage.get(key) == expected,
+            f"visual legend audit coverage {key} mismatch",
+        )
+
+    verified = review.get("visual_legend_verified")
+    require(
+        isinstance(verified, bool),
+        "visual_legend_verified must be boolean",
+    )
+
+    blocker = next(
+        (
+            row
+            for row in unresolved
+            if isinstance(row, dict)
+            and row.get("id") == "APPENDIX_8_4_VISUAL_STATE_LEGEND"
+        ),
+        None,
+    )
+    require(
+        isinstance(blocker, dict),
+        "visual legend blocker record is required",
+    )
+    blocker_state = str(blocker.get("state", "")).upper()
+
+    if verified:
+        require(
+            audit.get("status") == "VERIFIED",
+            "verified visual legend requires audit status VERIFIED",
+        )
+        require(
+            _nonempty(review.get("legend_evidence_locator")),
+            "verified visual legend requires legend_evidence_locator",
+        )
+        require(
+            _is_sha256(review.get("legend_sha256")),
+            "verified visual legend requires legend_sha256",
+        )
+    else:
+        require(
+            audit.get("status") == "SOURCE_EVIDENCE_REQUIRED",
+            "unverified visual legend requires SOURCE_EVIDENCE_REQUIRED",
+        )
+        require(
+            blocker_state not in RESOLVED_UNRESOLVED_STATES,
+            "unverified visual legend cannot resolve its blocker",
+        )
+        for mode_index, mode in enumerate(extraction.get("modes") or []):
+            if not isinstance(mode, dict):
+                continue
+            for valve_index, valve in enumerate(mode.get("valves") or []):
+                if not isinstance(valve, dict):
+                    continue
+                state_promoted = (
+                    valve.get("commanded_state") != "UNKNOWN"
+                    or valve.get("fail_state") != "UNKNOWN"
+                )
+                if not state_promoted:
+                    continue
+                locator = valve.get("evidence_locator")
+                require(
+                    not _is_figure_only_locator(locator),
+                    "unverified visual legend requires explicit "
+                    "non-figure evidence for "
+                    f"mode[{mode_index}].valves[{valve_index}]",
+                )
+
+    return audit
+
+
+def validate_extraction(
+    data: dict,
+    visual_legend_audit: dict | None = None,
+) -> dict:
     require(
         data.get("schema") == SCHEMA,
         "Appendix 8.4 extraction schema mismatch",
@@ -426,6 +604,13 @@ def validate_extraction(data: dict) -> dict:
         "extraction-state coverage must equal the mode inventory",
     )
 
+    audit = (
+        load_visual_legend_audit()
+        if visual_legend_audit is None
+        else visual_legend_audit
+    )
+    validate_visual_legend_audit(data, audit)
+
     if data.get("status") == "EXTRACTED":
         require(
             complete == expected,
@@ -606,6 +791,7 @@ def validate_current_contract(root: Path = ROOT) -> dict:
     runtime_path = root / RUNTIME_STATUS.relative_to(ROOT)
     extraction_path = root / EXTRACTION.relative_to(ROOT)
     receipt_path = root / SOURCE_RECEIPT.relative_to(ROOT)
+    legend_audit_path = root / VISUAL_LEGEND_AUDIT.relative_to(ROOT)
 
     assumptions = (
         yaml.safe_load(assumptions_path.read_text(encoding="utf-8"))
@@ -660,7 +846,11 @@ def validate_current_contract(root: Path = ROOT) -> dict:
         + ", ".join(live_missing),
     )
 
-    extraction = validate_extraction(load_extraction(extraction_path))
+    legend_audit = load_visual_legend_audit(legend_audit_path)
+    extraction = validate_extraction(
+        load_extraction(extraction_path),
+        visual_legend_audit=legend_audit,
+    )
     receipt = validate_source_receipt(
         extraction,
         load_source_receipt(receipt_path),
@@ -681,6 +871,10 @@ def validate_current_contract(root: Path = ROOT) -> dict:
             "source_material_location"
         ],
         "appendix_8_4_receipt_status": receipt["status"],
+        "appendix_8_4_visual_legend_status": legend_audit["status"],
+        "appendix_8_4_visual_legend_verified": legend_audit["review"][
+            "visual_legend_verified"
+        ],
         "authority_transfer": receipt["authority_transfer"],
         "formal_credit_delta": receipt["formal_credit_delta"],
     }
