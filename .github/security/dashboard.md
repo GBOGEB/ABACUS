@@ -1,22 +1,22 @@
 # ABACUS Security Dashboard
-> Auto-generated 2026-09-21T08:08:18Z · repo: `GBOGEB/ABACUS`  
-> **4801 open alerts** across 4 tools
+> Auto-generated 2026-09-28T08:14:20Z · repo: `GBOGEB/ABACUS`  
+> **4810 open alerts** across 4 tools
 
 ## Severity Overview
 
 | Severity | Count |
 |----------|------:|
-| Error | 85 |
-| Warning | 1124 |
+| Error | 87 |
+| Warning | 1131 |
 | Note | 3592 |
 
 ## Alerts by Tool
 
 | Tool | Open Alerts |
 |------|------------:|
-| Bandit | 3315 |
-| Semgrep OSS | 968 |
-| CodeQL | 514 |
+| Bandit | 3318 |
+| Semgrep OSS | 975 |
+| CodeQL | 513 |
 | Semgrep | 4 |
 
 ## REX Group Summary
@@ -27,10 +27,10 @@ _Groups are defined in [security.toml](security.toml)_
 | 🔴 SEC_SUBPROCESS | HIGH | 118 | Fix now |
 | 🔴 SEC_HARDCODED_SECRET | HIGH | 21 | Fix now |
 | 🟠 SEC_TEMPFILE | MEDIUM | 32 | Fix next sprint |
-| 🟠 SEC_WEAK_HASH | MEDIUM | 11 | Fix next sprint |
+| 🟠 SEC_WEAK_HASH | MEDIUM | 14 | Fix next sprint |
 | 🟡 SEC_ASSERT | LOW | 2911 | Suppress / defer |
 | 🟡 QUAL_DEAD_CODE | LOW | 252 | Suppress / defer |
-| ⚪ OTHER | INFO | 1456 | Suppress / defer |
+| ⚪ OTHER | INFO | 1462 | Suppress / defer |
 
 ## Hottest Files (most alerts)
 
@@ -147,7 +147,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [3675](https://github.com/GBOGEB/ABACUS/security/code-scanning/3675) | Bandit | `B108` | `build_temp_gradient_pdf.py` | 140 | warning |
 | … | _2 more — see alerts.yaml_ | | | | |
 
-### 🟠 SEC_WEAK_HASH (11 alerts)
+### 🟠 SEC_WEAK_HASH (14 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -156,6 +156,9 @@ _Groups are defined in [security.toml](security.toml)_
 | [2759](https://github.com/GBOGEB/ABACUS/security/code-scanning/2759) | Bandit | `B324` | `phase8_todo_management.py` | 40 | error |
 | [2757](https://github.com/GBOGEB/ABACUS/security/code-scanning/2757) | Bandit | `B324` | `phase7_action_tracking.py` | 37 | error |
 | [2704](https://github.com/GBOGEB/ABACUS/security/code-scanning/2704) | Bandit | `B324` | `canonical_refactoring.py` | 159 | error |
+| [775](https://github.com/GBOGEB/ABACUS/security/code-scanning/775) | Bandit | `B324` | `phase8_todo_management.py` | 40 | error |
+| [773](https://github.com/GBOGEB/ABACUS/security/code-scanning/773) | Bandit | `B324` | `phase7_action_tracking.py` | 37 | error |
+| [716](https://github.com/GBOGEB/ABACUS/security/code-scanning/716) | Bandit | `B324` | `canonical_refactoring.py` | 159 | error |
 | [7237](https://github.com/GBOGEB/ABACUS/security/code-scanning/7237) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1` | `w285_recompute_federation_depth.py` | 15 | warning |
 | [2489](https://github.com/GBOGEB/ABACUS/security/code-scanning/2489) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5` | `fast_metrics_collector.py` | 72 | warning |
 | [2488](https://github.com/GBOGEB/ABACUS/security/code-scanning/2488) | Semgrep OSS | `python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5` | `phase8_todo_management.py` | 40 | warning |
@@ -203,6 +206,13 @@ _Groups are defined in [security.toml](security.toml)_
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
+| [7427](https://github.com/GBOGEB/ABACUS/security/code-scanning/7427) | CodeQL | `py/unused-import` | `test_canonical_index_coverage.py` | 6 | note |
+| [7426](https://github.com/GBOGEB/ABACUS/security/code-scanning/7426) | CodeQL | `py/unused-import` | `test_models_metrics_coverage.py` | 1 | note |
+| [7263](https://github.com/GBOGEB/ABACUS/security/code-scanning/7263) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 15 | note |
+| [7262](https://github.com/GBOGEB/ABACUS/security/code-scanning/7262) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 13 | note |
+| [7261](https://github.com/GBOGEB/ABACUS/security/code-scanning/7261) | CodeQL | `py/unused-import` | `phase2_measure.py` | 15 | note |
+| [7260](https://github.com/GBOGEB/ABACUS/security/code-scanning/7260) | CodeQL | `py/unused-import` | `backbone.py` | 19 | note |
+| [7255](https://github.com/GBOGEB/ABACUS/security/code-scanning/7255) | CodeQL | `py/unused-local-variable` | `run_qps_w04_dow_return.py` | 285 | note |
 | [7094](https://github.com/GBOGEB/ABACUS/security/code-scanning/7094) | CodeQL | `py/unused-import` | `test_dmaic_orchestration.py` | 14 | note |
 | [7093](https://github.com/GBOGEB/ABACUS/security/code-scanning/7093) | CodeQL | `py/unused-import` | `test_dmaic_orchestration.py` | 13 | note |
 | [7056](https://github.com/GBOGEB/ABACUS/security/code-scanning/7056) | CodeQL | `py/unused-import` | `deterministic_census_authority_and_contract_check.py` | 2 | note |
@@ -211,7 +221,6 @@ _Groups are defined in [security.toml](security.toml)_
 | [7004](https://github.com/GBOGEB/ABACUS/security/code-scanning/7004) | CodeQL | `py/unused-import` | `test_docker_integration.py` | 17 | note |
 | [7003](https://github.com/GBOGEB/ABACUS/security/code-scanning/7003) | CodeQL | `py/unused-import` | `test_docker_integration.py` | 14 | note |
 | [7002](https://github.com/GBOGEB/ABACUS/security/code-scanning/7002) | CodeQL | `py/unused-import` | `test_docker_integration.py` | 12 | note |
-| [6997](https://github.com/GBOGEB/ABACUS/security/code-scanning/6997) | CodeQL | `py/unused-import` | `test_aht_bridge.py` | 5 | note |
 | [6996](https://github.com/GBOGEB/ABACUS/security/code-scanning/6996) | CodeQL | `py/unused-import` | `generic_3pm_burndown.py` | 8 | note |
 | [6991](https://github.com/GBOGEB/ABACUS/security/code-scanning/6991) | CodeQL | `py/unused-import` | `populate_package.py` | 16 | note |
 | [6990](https://github.com/GBOGEB/ABACUS/security/code-scanning/6990) | CodeQL | `py/unused-import` | `test_agent_manager_requalification.py` | 2 | note |
@@ -219,11 +228,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [6914](https://github.com/GBOGEB/ABACUS/security/code-scanning/6914) | CodeQL | `py/unused-import` | `test_rtm_core.py` | 19 | note |
 | [6861](https://github.com/GBOGEB/ABACUS/security/code-scanning/6861) | CodeQL | `py/unused-import` | `t0_deep_diagnostics.py` | 3 | note |
 | [6858](https://github.com/GBOGEB/ABACUS/security/code-scanning/6858) | CodeQL | `py/unused-import` | `mcp_capacity_fit.py` | 6 | note |
-| [6814](https://github.com/GBOGEB/ABACUS/security/code-scanning/6814) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 15 | note |
-| [6813](https://github.com/GBOGEB/ABACUS/security/code-scanning/6813) | CodeQL | `py/unused-import` | `test_keb_bridge.py` | 13 | note |
 | [6809](https://github.com/GBOGEB/ABACUS/security/code-scanning/6809) | CodeQL | `py/unused-import` | `validate_changed_docs.py` | 9 | note |
-| [6089](https://github.com/GBOGEB/ABACUS/security/code-scanning/6089) | CodeQL | `py/unused-import` | `smoke_test_runner_ULTRA_OPTIMIZED.py` | 9 | note |
-| [4668](https://github.com/GBOGEB/ABACUS/security/code-scanning/4668) | CodeQL | `py/unused-import` | `test_yaml_validation.py` | 11 | note |
 | [4667](https://github.com/GBOGEB/ABACUS/security/code-scanning/4667) | CodeQL | `py/unused-import` | `test_yaml_validation.py` | 10 | note |
 | [4666](https://github.com/GBOGEB/ABACUS/security/code-scanning/4666) | CodeQL | `py/unused-import` | `test_week3_integration.py` | 11 | note |
 | [4665](https://github.com/GBOGEB/ABACUS/security/code-scanning/4665) | CodeQL | `py/unused-import` | `test_user_library_rag.py` | 14 | note |
@@ -231,11 +236,9 @@ _Groups are defined in [security.toml](security.toml)_
 | [4663](https://github.com/GBOGEB/ABACUS/security/code-scanning/4663) | CodeQL | `py/unused-import` | `test_self_improvement.py` | 17 | note |
 | [4662](https://github.com/GBOGEB/ABACUS/security/code-scanning/4662) | CodeQL | `py/unused-import` | `test_self_improvement.py` | 13 | note |
 | [4661](https://github.com/GBOGEB/ABACUS/security/code-scanning/4661) | CodeQL | `py/unused-import` | `test_refactoring_engine_protocols.py` | 21 | note |
-| [4660](https://github.com/GBOGEB/ABACUS/security/code-scanning/4660) | CodeQL | `py/unused-import` | `test_refactoring_engine_protocols.py` | 16 | note |
-| [4659](https://github.com/GBOGEB/ABACUS/security/code-scanning/4659) | CodeQL | `py/unused-import` | `test_reader_engine.py` | 24 | note |
 | … | _222 more — see alerts.yaml_ | | | | |
 
-### ⚪ OTHER (1456 alerts)
+### ⚪ OTHER (1462 alerts)
 
 | # | Tool | Rule | File | Line | Severity |
 |---|------|------|------|-----:|---------:|
@@ -269,7 +272,7 @@ _Groups are defined in [security.toml](security.toml)_
 | [2505](https://github.com/GBOGEB/ABACUS/security/code-scanning/2505) | Semgrep OSS | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `main.yml` | 168 | error |
 | [2504](https://github.com/GBOGEB/ABACUS/security/code-scanning/2504) | Semgrep | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `gbogeb-abacus-integration-ci-cd.yml` | 551 | error |
 | [2503](https://github.com/GBOGEB/ABACUS/security/code-scanning/2503) | Semgrep | `yaml.github-actions.security.run-shell-injection.run-shell-injection` | `gbogeb-abacus-integration-ci-cd.yml` | 367 | error |
-| … | _1426 more — see alerts.yaml_ | | | | |
+| … | _1432 more — see alerts.yaml_ | | | | |
 
 ## Quick-Win Fix Order
 
@@ -282,4 +285,4 @@ _Groups are defined in [security.toml](security.toml)_
 | 5 | SEC_ASSERT | 2911 live / ~10 est. | Add `# noqa: S101` in pytest files, raise in prod |
 | 6 | QUAL_DEAD_CODE | 252 live / ~30 est. | `ruff check --fix --select F401,F841 DMAIC_V3/` |
 
-_Dashboard last updated: 2026-09-21T08:08:18Z_
+_Dashboard last updated: 2026-09-28T08:14:20Z_
