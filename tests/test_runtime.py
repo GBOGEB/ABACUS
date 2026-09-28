@@ -316,8 +316,12 @@ def test_appendix_8_4_state_complete_rejects_placeholders():
     data["coverage"]["state_partial_modes"] = 0
     data["coverage"]["mode_identified_only"] = 0
     data["coverage"]["extraction_complete"] = True
+    audit = _visual_legend_audit_for(data, verified=True)
     with pytest.raises(ValueError, match="resolved recovery_path"):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def _promote_appendix_fixture_to_complete(data, *, resolve_blockers):
