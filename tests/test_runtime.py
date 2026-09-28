@@ -504,11 +504,15 @@ def test_appendix_8_4_extracted_rejects_missing_completion_blocker_record():
         for row in data["unresolved"]
         if row.get("id") != "MODE_DEPENDENT_VEFF"
     ]
+    audit = _verified_visual_legend_audit(data)
     with pytest.raises(
         ValueError,
         match="blocker record MODE_DEPENDENT_VEFF",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_rejects_wrong_unresolved_container_type():
