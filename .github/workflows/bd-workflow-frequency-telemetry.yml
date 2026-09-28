@@ -33,7 +33,7 @@ jobs:
             --out-md .artifacts/bd-workflow-frequency/summary.md
           cat .artifacts/bd-workflow-frequency/summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload frequency telemetry
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bd-workflow-frequency-${{ github.run_id }}
           path: .artifacts/bd-workflow-frequency/

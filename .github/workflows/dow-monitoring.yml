@@ -30,7 +30,7 @@ jobs:
       - name: Generate Dashboard
         run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
       - name: Upload dashboard evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dow-monitoring-dashboard-${{ github.run_id }}
           path: |
