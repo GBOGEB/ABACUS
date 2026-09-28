@@ -48,9 +48,9 @@ jobs:
           -v --tb=short --junitxml=junit-integration.xml
 
       - name: Run Full Test Suite
-        working-directory: ./rich_padding
-        run: |
-          pytest tests/ --tb=short -v --junitxml=junit-full.xml
+        run: >-
+          pytest tests/
+          --tb=short -v --junitxml=rich_padding/junit-full.xml
 
       - name: Upload Test Results
         if: always()
