@@ -209,6 +209,10 @@ def test_appendix_8_4_inventory_is_exact_and_partial():
     assert data["coverage"]["state_partial_modes"] == 8
     assert data["coverage"]["mode_identified_only"] == 15
     assert data["coverage"]["extraction_complete"] is False
+    assert (
+        data["policy"]["figure_state_promotion_requires_verified_legend"]
+        is True
+    )
     assert {mode["status"] for mode in data["modes"]} == {"SOURCE_BOUND"}
     assert all(len(mode["figure_sha256"]) == 64 for mode in data["modes"])
     ids = [mode["mode_id"] for mode in data["modes"]]
@@ -333,6 +337,22 @@ def test_appendix_8_4_fully_resolved_complete_fixture_passes():
         resolve_blockers=True,
     )
     assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
+
+
+def test_appendix_8_4_extracted_rejects_unresolved_visual_state_legend():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=True,
+    )
+    for row in data["unresolved"]:
+        if row["id"] == "APPENDIX_8_4_VISUAL_STATE_LEGEND":
+            row["state"] = "SOURCE_EVIDENCE_REQUIRED"
+            break
+    with pytest.raises(
+        ValueError,
+        match="APPENDIX_8_4_VISUAL_STATE_LEGEND resolved",
+    ):
+        closure_contract.validate_extraction(data)
 
 
 def test_appendix_8_4_source_receipt_matches_extraction():

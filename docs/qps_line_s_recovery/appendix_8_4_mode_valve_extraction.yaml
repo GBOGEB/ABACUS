@@ -30,6 +30,7 @@ coverage:
 
 policy:
   infer_valve_states: false
+  figure_state_promotion_requires_verified_legend: true
   allow_source_bound_unknown: true
   extracted_status_requires_all_modes_complete: true
   allowed_commanded_states:
@@ -1010,6 +1011,13 @@ modes:
         evidence_locator: "Appendix 8.4 image80.emf"
 
 unresolved:
+  - id: APPENDIX_8_4_VISUAL_STATE_LEGEND
+    state: SOURCE_EVIDENCE_REQUIRED
+    need: >-
+      Bind the native Appendix mode drawing legend or another authoritative
+      source for each figure-derived OPEN/CLOSED interpretation. The locked
+      D2.1 report does not define a safe colour-to-state mapping, so colour
+      alone shall not promote valve state.
   - id: APPENDIX_8_4_FULL_STATE_TRANSCRIPTION
     state: PARTIAL_EXTRACTED
     need: >-

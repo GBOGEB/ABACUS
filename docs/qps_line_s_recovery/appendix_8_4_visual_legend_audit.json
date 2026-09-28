@@ -1,0 +1,60 @@
+{
+  "schema": "abacus.qps_line_s.appendix_8_4_visual_legend_audit.v1",
+  "status": "SOURCE_EVIDENCE_REQUIRED",
+  "as_of": "2026-09-28",
+  "issue": "GBOGEB/ABACUS#1459",
+  "parent": "GBOGEB/ABACUS#1313",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "source": {
+    "document": "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx",
+    "reference": "DSBT-TN-24-37-3.0",
+    "issue_revision": "2-1",
+    "date": "2024-06-13",
+    "sha256": "2700ea0af44f90dfe140fab8a4b7c203bedcf76ec7eee91b29c92d83d01196ba",
+    "appendix": "8.4",
+    "native_figure_inventory": "image58.emf..image80.emf",
+    "figure_count": 23
+  },
+  "review": {
+    "method": [
+      "locked native DOCX inspected",
+      "Appendix PDF rendered",
+      "embedded EMF figures inspected from native vector source",
+      "D2.1 prose searched for explicit valve/fallback statements"
+    ],
+    "current_coverage": {
+      "modes": 23,
+      "state_complete": 0,
+      "state_partial": 8,
+      "mode_identified": 15
+    },
+    "explicit_prose_anchors": [
+      {
+        "section": "5.6.2 Major fault in QCELL",
+        "disposition": "QVB supply and return valves close"
+      },
+      {
+        "section": "5.6.3 Minor fault in QCELL",
+        "disposition": "supply valves close; return valves open; supply NC; return NO"
+      },
+      {
+        "section": "5.6.5 Loss of utility",
+        "disposition": "Cryoplant interface valves close; QVB valves close except normally-open returns"
+      },
+      {
+        "section": "5.6.6 Cryoplant trip",
+        "disposition": "fallback positions apply; NO opens and NC closes"
+      }
+    ],
+    "visual_legend_verified": false,
+    "finding": "The locked D2.1 report and ABACUS repository do not provide a verified colour/symbol legend that safely maps Appendix 8.4 figure coloration to OPEN/CLOSED valve state.",
+    "safety_disposition": "Do not promote commanded_state or fail_state from figure colour alone."
+  },
+  "required_next_evidence": [
+    "original native Appendix 8.4 + Mode 1 boucle package with state semantics or legend",
+    "authoritative drawing legend identifying valve-state symbols/colours",
+    "or independent explicit source evidence for every state promoted without using colour interpretation"
+  ],
+  "no_state_rows_changed": true
+}
