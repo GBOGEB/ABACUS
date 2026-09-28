@@ -468,7 +468,18 @@ class TestWorkflowPerformance:
                     uses = step.get("uses", "")
                     
                     if uses:
-                        assert "@v" in uses or "@main" in uses or "@master" in uses, \
+                        if uses.startswith("docker://"):
+                            image_ref = uses.removeprefix("docker://")
+                            image_name = image_ref.rsplit("/", 1)[-1]
+                            has_version = "@" in image_ref or ":" in image_name
+                        else:
+                            has_version = (
+                                "@v" in uses
+                                or "@main" in uses
+                                or "@master" in uses
+                            )
+
+                        assert has_version, \
                             f"Action {uses} should specify version"
 
 
