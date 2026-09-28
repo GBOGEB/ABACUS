@@ -469,7 +469,7 @@ class TestWorkflowPerformance:
                     
                     if uses:
                         if uses.startswith("docker://"):
-                            image_ref = uses.removeprefix("docker://")
+                            image_ref = uses[len("docker://"):]
                             image_name = image_ref.rsplit("/", 1)[-1]
                             has_version = "@" in image_ref or ":" in image_name
                         else:
