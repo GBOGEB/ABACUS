@@ -139,6 +139,7 @@ def _valve_by_id(mode, valve_id):
     )
 
 
+# Keep synthetic audit coverage aligned with the synthetic extraction.
 def _visual_legend_audit_for(data, *, verified):
     audit = closure_contract.load_visual_legend_audit()
     coverage = data["coverage"]
