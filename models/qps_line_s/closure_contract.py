@@ -59,6 +59,7 @@ ALLOWED_EXTRACTION_STATES = {
 UNKNOWN_PLACEHOLDER = "UNKNOWN_FROM_CURRENT_EXTRACTION"
 EXTRACTION_BLOCKER_IDS = {
     "APPENDIX_8_4_FULL_STATE_TRANSCRIPTION",
+    "APPENDIX_8_4_VISUAL_STATE_LEGEND",
     "MODE_DEPENDENT_RECOVERY_PATH",
     "MODE_DEPENDENT_VEFF",
 }
@@ -156,6 +157,10 @@ def validate_extraction(data: dict) -> dict:
     require(
         policy.get("infer_valve_states") is False,
         "valve-state inference must remain disabled",
+    )
+    require(
+        policy.get("figure_state_promotion_requires_verified_legend") is True,
+        "figure-derived valve-state promotion requires a verified legend",
     )
     require(
         set(policy.get("allowed_commanded_states") or [])
