@@ -38,7 +38,7 @@ jobs:
       - name: Run DOW Module Tests
         working-directory: ./rich_padding
         run: |
-          pytest tests/test_dow_modules/ -v --tb=short --junitxml=junit-dow.xml
+          pytest ../DMAIC_V3/tests/test_dow_contract_emission.py -v --tb=short --junitxml=junit-dow.xml
       
       - name: Run Integration Tests
         working-directory: ./rich_padding
