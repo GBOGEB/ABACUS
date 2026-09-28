@@ -424,7 +424,7 @@ def test_appendix_8_4_extracted_rejects_unresolved_visual_state_legend():
         if row["id"] == "APPENDIX_8_4_VISUAL_STATE_LEGEND":
             row["state"] = "SOURCE_EVIDENCE_REQUIRED"
             break
-    audit = _visual_legend_audit_for(data, verified=False)
+    audit = _visual_legend_audit_for(data, verified=True)
     with pytest.raises(
         ValueError,
         match="APPENDIX_8_4_VISUAL_STATE_LEGEND resolved",
