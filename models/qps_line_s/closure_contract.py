@@ -195,7 +195,7 @@ def validate_visual_legend_audit(
         "document": source.get("source_ref"),
         "reference": source.get("source_reference"),
         "issue_revision": source.get("issue_revision"),
-        "date": source.get("document_date"),
+        "date": str(source.get("document_date")),
         "sha256": source.get("source_sha256"),
     }
     for key, expected in source_pairs.items():
