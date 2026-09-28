@@ -43,7 +43,7 @@ jobs:
       - name: Run Integration Tests
         working-directory: ./rich_padding
         run: |
-          pytest tests/test_integration/ -v --tb=short --junitxml=junit-integration.xml
+          pytest ../DMAIC_V3/tests/test_integration.py -v --tb=short --junitxml=junit-integration.xml
       
       - name: Run Full Test Suite
         working-directory: ./rich_padding
