@@ -139,6 +139,17 @@ def _valve_by_id(mode, valve_id):
     )
 
 
+def _verified_visual_legend_audit():
+    audit = closure_contract.load_visual_legend_audit()
+    audit["status"] = "VERIFIED"
+    audit["review"]["visual_legend_verified"] = True
+    audit["review"]["legend_evidence_locator"] = (
+        "authoritative Appendix 8.4 visual legend fixture"
+    )
+    audit["review"]["legend_sha256"] = "1" * 64
+    return audit
+
+
 def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     monkeypatch.setattr(
         closure_contract,
@@ -158,6 +169,10 @@ def test_line_s_closure_contract_matches_current_ssot(monkeypatch):
     assert summary["appendix_8_4_receipt_status"] == (
         "SOURCE_BOUND_PARTIAL_EXTRACTION"
     )
+    assert summary["appendix_8_4_visual_legend_status"] == (
+        "SOURCE_EVIDENCE_REQUIRED"
+    )
+    assert summary["appendix_8_4_visual_legend_verified"] is False
     assert summary["authority_transfer"] is False
     assert summary["formal_credit_delta"] == 0
 
@@ -336,7 +351,52 @@ def test_appendix_8_4_fully_resolved_complete_fixture_passes():
         closure_contract.load_extraction(),
         resolve_blockers=True,
     )
-    assert closure_contract.validate_extraction(data)["status"] == "EXTRACTED"
+    audit = _verified_visual_legend_audit()
+    assert (
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )["status"]
+        == "EXTRACTED"
+    )
+
+
+def test_appendix_8_4_rejects_resolved_blocker_with_unverified_audit():
+    data = _promote_appendix_fixture_to_complete(
+        closure_contract.load_extraction(),
+        resolve_blockers=True,
+    )
+    with pytest.raises(
+        ValueError,
+        match="unverified visual legend cannot resolve its blocker",
+    ):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_partial_rejects_figure_only_state_promotion():
+    data = closure_contract.load_extraction()
+    mode = _mode_by_id(data, "A84-03")
+    valve = _valve_by_id(mode, "QRB_CRYOLINE_INTERFACE")
+    valve["commanded_state"] = "CLOSED"
+    with pytest.raises(
+        ValueError,
+        match="explicit non-figure evidence",
+    ):
+        closure_contract.validate_extraction(data)
+
+
+def test_appendix_8_4_visual_legend_audit_rejects_source_digest_drift():
+    data = closure_contract.load_extraction()
+    audit = closure_contract.load_visual_legend_audit()
+    audit["source"]["sha256"] = "0" * 64
+    with pytest.raises(
+        ValueError,
+        match="visual legend audit source sha256 mismatch",
+    ):
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_extracted_rejects_unresolved_visual_state_legend():
