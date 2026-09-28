@@ -882,7 +882,7 @@ modes:
         fail_state: UNKNOWN
         source_ref: "D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx"
         evidence_locator: >-
-          D2.1 cold interfaces and valves / Appendix 8.4 image77.emf
+          D2.1 cold interfaces and valves / Cryoplant test isolation statement
 
   - mode_id: A84-21
     mode_name: "WU 40K"
