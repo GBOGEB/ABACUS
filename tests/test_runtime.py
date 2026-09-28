@@ -139,14 +139,22 @@ def _valve_by_id(mode, valve_id):
     )
 
 
-def _verified_visual_legend_audit():
+def _visual_legend_audit_for(data, *, verified):
     audit = closure_contract.load_visual_legend_audit()
-    audit["status"] = "VERIFIED"
-    audit["review"]["visual_legend_verified"] = True
-    audit["review"]["legend_evidence_locator"] = (
-        "authoritative Appendix 8.4 visual legend fixture"
-    )
-    audit["review"]["legend_sha256"] = "1" * 64
+    coverage = data["coverage"]
+    audit["review"]["current_coverage"] = {
+        "modes": coverage["mode_rows_present"],
+        "state_complete": coverage["state_complete_modes"],
+        "state_partial": coverage["state_partial_modes"],
+        "mode_identified": coverage["mode_identified_only"],
+    }
+    if verified:
+        audit["status"] = "VERIFIED"
+        audit["review"]["visual_legend_verified"] = True
+        audit["review"]["legend_evidence_locator"] = (
+            "authoritative Appendix 8.4 visual legend fixture"
+        )
+        audit["review"]["legend_sha256"] = "1" * 64
     return audit
 
 
@@ -339,11 +347,15 @@ def test_appendix_8_4_extracted_rejects_open_completion_blockers():
         closure_contract.load_extraction(),
         resolve_blockers=False,
     )
+    audit = _visual_legend_audit_for(data, verified=True)
     with pytest.raises(
         ValueError,
         match="APPENDIX_8_4_FULL_STATE_TRANSCRIPTION resolved",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_fully_resolved_complete_fixture_passes():
@@ -351,7 +363,7 @@ def test_appendix_8_4_fully_resolved_complete_fixture_passes():
         closure_contract.load_extraction(),
         resolve_blockers=True,
     )
-    audit = _verified_visual_legend_audit()
+    audit = _visual_legend_audit_for(data, verified=True)
     assert (
         closure_contract.validate_extraction(
             data,
@@ -366,11 +378,15 @@ def test_appendix_8_4_rejects_resolved_blocker_with_unverified_audit():
         closure_contract.load_extraction(),
         resolve_blockers=True,
     )
+    audit = _visual_legend_audit_for(data, verified=False)
     with pytest.raises(
         ValueError,
         match="unverified visual legend cannot resolve its blocker",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_partial_rejects_figure_only_state_promotion():
@@ -408,11 +424,15 @@ def test_appendix_8_4_extracted_rejects_unresolved_visual_state_legend():
         if row["id"] == "APPENDIX_8_4_VISUAL_STATE_LEGEND":
             row["state"] = "SOURCE_EVIDENCE_REQUIRED"
             break
+    audit = _visual_legend_audit_for(data, verified=False)
     with pytest.raises(
         ValueError,
         match="APPENDIX_8_4_VISUAL_STATE_LEGEND resolved",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_source_receipt_matches_extraction():
@@ -477,11 +497,15 @@ def test_appendix_8_4_extracted_rejects_missing_completion_blocker_record():
         for row in data["unresolved"]
         if row.get("id") != "MODE_DEPENDENT_VEFF"
     ]
+    audit = _visual_legend_audit_for(data, verified=True)
     with pytest.raises(
         ValueError,
         match="blocker record MODE_DEPENDENT_VEFF",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_rejects_wrong_unresolved_container_type():
