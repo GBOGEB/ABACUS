@@ -319,8 +319,12 @@ def test_appendix_8_4_state_complete_rejects_placeholders():
     data["coverage"]["state_partial_modes"] = 0
     data["coverage"]["mode_identified_only"] = 0
     data["coverage"]["extraction_complete"] = True
+    audit = _verified_visual_legend_audit(data)
     with pytest.raises(ValueError, match="resolved recovery_path"):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def _promote_appendix_fixture_to_complete(data, *, resolve_blockers):
@@ -427,11 +431,15 @@ def test_appendix_8_4_extracted_rejects_unresolved_visual_state_legend():
         if row["id"] == "APPENDIX_8_4_VISUAL_STATE_LEGEND":
             row["state"] = "SOURCE_EVIDENCE_REQUIRED"
             break
+    audit = _verified_visual_legend_audit(data)
     with pytest.raises(
         ValueError,
         match="APPENDIX_8_4_VISUAL_STATE_LEGEND resolved",
     ):
-        closure_contract.validate_extraction(data)
+        closure_contract.validate_extraction(
+            data,
+            visual_legend_audit=audit,
+        )
 
 
 def test_appendix_8_4_source_receipt_matches_extraction():
