@@ -98,7 +98,9 @@ class DMAICIntegrationLayer:
 
     def get_cycle_status(self) -> DMAICCycleStatus:
         if self.phases:
-            overall = sum(item.completion for item in self.phases.values()) / len(self.phases)
+            overall = sum(item.completion for item in self.phases.values()) / len(
+                self.phases
+            )
         else:
             overall = 0.0
         return DMAICCycleStatus(
