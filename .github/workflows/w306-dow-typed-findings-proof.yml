@@ -34,7 +34,7 @@ jobs:
           echo "actual_sha=$ACTUAL_SHA"
           test "$ACTUAL_SHA" = "$EXPECTED_SHA"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install focused proof dependency
