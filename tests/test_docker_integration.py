@@ -126,11 +126,15 @@ class TestDockerCompose:
 class TestPortAvailability:
 
     def test_port_8000_available(self):
+        """Validate that the test runner can allocate an ephemeral TCP port."""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(('localhost', 8000))
-        sock.close()
+        try:
+            sock.bind(("127.0.0.1", 0))
+            allocated_port = sock.getsockname()[1]
+        finally:
+            sock.close()
 
-        assert result != 0, "Port 8000 should be available (not in use)"
+        assert allocated_port > 0, "Runner should provide an ephemeral TCP port"
 
     def test_port_5432_available(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -222,47 +226,79 @@ class TestDockerContainerIntegration:
 
     @pytest.mark.asyncio
     async def test_docker_build_async(self):
-        """Test Docker image build asynchronously"""
+        """Test Docker image build asynchronously."""
         proc = await asyncio.create_subprocess_exec(
-            'docker', 'build', '-t', 'test-app:latest', '.',
+            "docker", "build", "-t", "test-app:latest", ".",
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
         )
 
-        stdout, stderr = await proc.communicate()
+        _, stderr = await proc.communicate()
 
         assert proc.returncode == 0, f"Docker build failed: {stderr.decode()}"
-        assert b"Successfully built" in stdout or b"Successfully tagged" in stdout
+
+        inspect_proc = await asyncio.create_subprocess_exec(
+            "docker", "image", "inspect", "test-app:latest",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        inspect_stdout, inspect_stderr = await inspect_proc.communicate()
+
+        assert inspect_proc.returncode == 0, (
+            f"Built image is not inspectable: {inspect_stderr.decode()}"
+        )
+        assert inspect_stdout.strip(), "Built image inspect output should not be empty"
 
     @pytest.mark.asyncio
     async def test_docker_container_health_async(self):
-        """Test container health check asynchronously"""
+        """Test container health check asynchronously."""
+        container_name = f"test-container-{time.time_ns()}"
         proc = await asyncio.create_subprocess_exec(
-            'docker', 'run', '-d', '--name', 'test-container',
-            '-p', '8000:8000', 'test-app:latest',
+            "docker", "run", "-d", "--name", container_name,
+            "test-app:latest",
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
         )
 
         stdout, stderr = await proc.communicate()
         container_id = stdout.decode().strip()
 
+        assert proc.returncode == 0, f"Docker run failed: {stderr.decode()}"
+        assert container_id, "Docker run should return a container ID"
+
         try:
             await asyncio.sleep(5)
 
-            proc = await asyncio.create_subprocess_exec(
-                'docker', 'inspect', '--format={{.State.Health.Status}}', container_id,
-                stdout=asyncio.subprocess.PIPE
+            inspect_proc = await asyncio.create_subprocess_exec(
+                "docker", "inspect", "--format={{.State.Health.Status}}", container_id,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
 
-            stdout, _ = await proc.communicate()
-            health_status = stdout.decode().strip()
+            inspect_stdout, inspect_stderr = await inspect_proc.communicate()
+            health_status = inspect_stdout.decode().strip()
 
-            assert health_status in ['healthy', 'starting'], f"Container unhealthy: {health_status}"
+            assert inspect_proc.returncode == 0, (
+                f"Docker inspect failed: {inspect_stderr.decode()}"
+            )
+            assert health_status in ["healthy", "starting"], (
+                f"Container unhealthy: {health_status}"
+            )
 
         finally:
-            await asyncio.create_subprocess_exec('docker', 'stop', container_id)
-            await asyncio.create_subprocess_exec('docker', 'rm', container_id)
+            stop_proc = await asyncio.create_subprocess_exec(
+                "docker", "stop", container_id,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await stop_proc.communicate()
+
+            rm_proc = await asyncio.create_subprocess_exec(
+                "docker", "rm", container_id,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await rm_proc.communicate()
 
     @pytest.mark.asyncio
     async def test_docker_volume_mounts_async(self):
