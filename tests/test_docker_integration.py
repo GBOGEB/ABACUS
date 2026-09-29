@@ -325,41 +325,93 @@ class TestDockerContainerIntegration:
 
     @pytest.mark.asyncio
     async def test_docker_network_connectivity_async(self):
-        """Test container network connectivity"""
-        proc1 = await asyncio.create_subprocess_exec(
-            'docker', 'run', '-d', '--name', 'test-app1',
-            '--network', 'bridge', 'test-app:latest',
-            stdout=asyncio.subprocess.PIPE
+        """Test container network connectivity in an isolated Docker network."""
+        suffix = time.time_ns()
+        network_name = f"test-network-{suffix}"
+        container1_name = f"test-app1-{suffix}"
+        container2_name = f"test-app2-{suffix}"
+        container_ids = []
+
+        network_proc = await asyncio.create_subprocess_exec(
+            "docker", "network", "create", network_name,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
-
-        stdout1, _ = await proc1.communicate()
-        container1_id = stdout1.decode().strip()
-
-        proc2 = await asyncio.create_subprocess_exec(
-            'docker', 'run', '-d', '--name', 'test-app2',
-            '--network', 'bridge', 'test-app:latest',
-            stdout=asyncio.subprocess.PIPE
+        _, network_stderr = await network_proc.communicate()
+        assert network_proc.returncode == 0, (
+            f"Docker network create failed: {network_stderr.decode()}"
         )
-
-        stdout2, _ = await proc2.communicate()
-        container2_id = stdout2.decode().strip()
 
         try:
+            for container_name in (container1_name, container2_name):
+                run_proc = await asyncio.create_subprocess_exec(
+                    "docker", "run", "-d", "--name", container_name,
+                    "--network", network_name, "test-app:latest",
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                run_stdout, run_stderr = await run_proc.communicate()
+                container_id = run_stdout.decode().strip()
+
+                assert run_proc.returncode == 0, (
+                    f"Docker run failed for {container_name}: {run_stderr.decode()}"
+                )
+                assert container_id, (
+                    f"Docker run should return an ID for {container_name}"
+                )
+                container_ids.append(container_id)
+
             await asyncio.sleep(2)
 
-            proc = await asyncio.create_subprocess_exec(
-                'docker', 'exec', container1_id,
-                'ping', '-c', '1', 'test-app2',
-                stdout=asyncio.subprocess.PIPE
+            connectivity_proc = await asyncio.create_subprocess_exec(
+                "docker", "exec", container_ids[0],
+                "python", "-c",
+                (
+                    "import socket,time; "
+                    "deadline=time.monotonic()+10; "
+                    "last=None; "
+                    f"host='{container2_name}'; "
+                    "port=8000; "
+                    "\nwhile time.monotonic() < deadline:\n"
+                    "    try:\n"
+                    "        s=socket.create_connection((host, port), timeout=1); "
+                    "s.close(); break\n"
+                    "    except OSError as exc:\n"
+                    "        last=exc; time.sleep(0.5)\n"
+                    "else:\n"
+                    "    raise SystemExit(f'connectivity timeout: {last}')"
+                ),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            _, connectivity_stderr = await connectivity_proc.communicate()
+
+            assert connectivity_proc.returncode == 0, (
+                f"Network connectivity failed: {connectivity_stderr.decode()}"
             )
 
-            stdout, _ = await proc.communicate()
-
-            assert proc.returncode == 0, "Network connectivity failed"
-
         finally:
-            await asyncio.create_subprocess_exec('docker', 'stop', container1_id, container2_id)
-            await asyncio.create_subprocess_exec('docker', 'rm', container1_id, container2_id)
+            for container_id in container_ids:
+                stop_proc = await asyncio.create_subprocess_exec(
+                    "docker", "stop", container_id,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                await stop_proc.communicate()
+
+                rm_proc = await asyncio.create_subprocess_exec(
+                    "docker", "rm", container_id,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                await rm_proc.communicate()
+
+            network_rm_proc = await asyncio.create_subprocess_exec(
+                "docker", "network", "rm", network_name,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await network_rm_proc.communicate()
 
 
 @pytest.mark.benchmark
