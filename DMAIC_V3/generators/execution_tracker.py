@@ -140,13 +140,12 @@ class ExecutionTracker:
     """
 
     def __init__(
-        """TODO: Add function description"""
-
         self,
         output_dir: Path,
         metrics_tracker: Optional[MetricsTracker] = None,
         timeout: int = 30
     ):
+        """Initialize the execution tracker."""
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
