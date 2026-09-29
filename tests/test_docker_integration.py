@@ -367,9 +367,19 @@ class TestDockerContainerIntegration:
                 "docker", "exec", container_ids[0],
                 "python", "-c",
                 (
-                    "import socket; "
-                    f"s=socket.create_connection(('{container2_name}', 8000), timeout=5); "
-                    "s.close()"
+                    "import socket,time; "
+                    "deadline=time.monotonic()+10; "
+                    "last=None; "
+                    f"host='{container2_name}'; "
+                    "port=8000; "
+                    "\nwhile time.monotonic() < deadline:\n"
+                    "    try:\n"
+                    "        s=socket.create_connection((host, port), timeout=1); "
+                    "s.close(); break\n"
+                    "    except OSError as exc:\n"
+                    "        last=exc; time.sleep(0.5)\n"
+                    "else:\n"
+                    "    raise SystemExit(f'connectivity timeout: {last}')"
                 ),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
