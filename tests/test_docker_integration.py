@@ -494,17 +494,17 @@ class TestDockerComposeDeploy:
     @pytest.mark.slow
     def test_docker_compose_up(self):
         result = subprocess.run(
-            ["docker-compose", "config"],
+            ["docker", "compose", "config"],
             capture_output=True,
             text=True
         )
         
-        assert result.returncode == 0, f"docker-compose config failed: {result.stderr}"
+        assert result.returncode == 0, f"docker compose config failed: {result.stderr}"
     
     @pytest.mark.slow
     def test_docker_compose_services_defined(self):
         result = subprocess.run(
-            ["docker-compose", "config", "--services"],
+            ["docker", "compose", "config", "--services"],
             capture_output=True,
             text=True
         )
