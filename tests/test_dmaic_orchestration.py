@@ -158,7 +158,8 @@ class DMAICTestOrchestrator:
         (run_dir / "stderr.log").write_text(result.stderr, encoding="utf-8")
         if result.returncode not in (0, 1):
             raise RuntimeError(
-                f"Measurement subprocess exited {result.returncode}; evidence: {run_dir}"
+                f"Measurement subprocess exited {result.returncode}; evidence: {run_dir}; "
+                f"stderr={result.stderr.strip()!r}; stdout={result.stdout.strip()!r}"
             )
         
         # Parse results
