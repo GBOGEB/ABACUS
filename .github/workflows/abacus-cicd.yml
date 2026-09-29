@@ -150,10 +150,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Download execution reports
+        uses: actions/download-artifact@v8
+        with:
+          name: dmaic-execution-reports
+          path: deploy/output/
+
       - name: Package Artifacts
         run: |
-          mkdir -p deploy/
-          cp -r ABACUS-v032/output/ deploy/
           tar -czf abacus-v032-artifacts.tar.gz deploy/
 
       - name: Upload to Release
