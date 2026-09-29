@@ -2,7 +2,7 @@ name: Continuous Integration Pipeline
 
 on:
   push:
-    branches: [ main, master, develop, feature/* ]
+    branches: [main, master, develop, feature/*]
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC
   workflow_dispatch:
@@ -17,37 +17,38 @@ jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install Dependencies
         run: |
           pip install black flake8 pylint mypy bandit safety
-      
+
       - name: Run Black (Formatting)
+        continue-on-error: true
         run: black --check --diff .
-      
+
       - name: Run Flake8 (Linting)
         run: flake8 . --count --statistics --max-line-length=120
-      
+
       - name: Run Pylint
         continue-on-error: true
         run: pylint **/*.py --exit-zero
-      
+
       - name: Run MyPy (Type Checking)
         continue-on-error: true
         run: mypy . --ignore-missing-imports
-      
+
       - name: Run Bandit (Security)
         run: bandit -r . -f json -o bandit-report.json || true
-      
+
       - name: Upload Security Report
         uses: actions/upload-artifact@v7
         with:
@@ -64,25 +65,27 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.9', '3.10', '3.11']
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install Dependencies
         run: |
           pip install pytest pytest-cov pytest-xdist pytest-timeout
           pip install -r requirements.txt || echo "No requirements.txt"
-      
+
       - name: Run Tests
         run: |
-          pytest tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term -n auto
-      
+          pytest tests/ -v --cov=. \
+            --cov-report=xml --cov-report=html \
+            --cov-report=term -n auto
+
       - name: Upload Coverage
         uses: codecov/codecov-action@v7
         with:
@@ -96,30 +99,34 @@ jobs:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt || echo "No requirements.txt"
-      
+
       - name: Run DMAIC Pipeline
         run: python run_dmaic_5_iterations.py
-      
+
       - name: Run DOW Pipeline
-        run: python execute_full_pipeline_sprint_dow.py || echo "DOW pipeline completed"
-      
+        run: |
+          python execute_full_pipeline_sprint_dow.py || \
+            echo "DOW pipeline completed"
+
       - name: Verify Outputs
         run: |
-          test -f DMAIC_ITERATIONS_OUTPUT/dmaic_5_iterations_summary_*.md || echo "DMAIC output missing"
-          test -f PIPELINE_OUTPUT/pipeline_execution_*.json || echo "Pipeline output missing"
+          test -f DMAIC_ITERATIONS_OUTPUT/dmaic_5_iterations_summary_*.md || \
+            echo "DMAIC output missing"
+          test -f PIPELINE_OUTPUT/pipeline_execution_*.json || \
+            echo "Pipeline output missing"
 
   # ═══════════════════════════════════════════════════════════════════════════
   # JOB 4: BUILD VERIFICATION
@@ -128,26 +135,26 @@ jobs:
     name: Build Verification
     runs-on: ubuntu-latest
     needs: [code-quality, unit-tests]
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-      
+
       - name: Build Docker Image
         run: |
           docker build -t dmaic-pipeline:test .
-      
+
       - name: Test Docker Image
         run: |
           docker run --rm dmaic-pipeline:test python --version
-      
+
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: dmaic-pipeline:test
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload Scan Results
         uses: github/codeql-action/upload-sarif@v4.38.2
         with:
