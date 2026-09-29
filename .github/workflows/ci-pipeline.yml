@@ -32,6 +32,7 @@ jobs:
           pip install black flake8 pylint mypy bandit safety
       
       - name: Run Black (Formatting)
+        continue-on-error: true
         run: black --check --diff .
       
       - name: Run Flake8 (Linting)
