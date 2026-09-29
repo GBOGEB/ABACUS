@@ -11,9 +11,7 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
   # JOB 1: CODE QUALITY
-  # ═══════════════════════════════════════════════════════════════════════════
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
@@ -55,9 +53,7 @@ jobs:
           name: security-report
           path: bandit-report.json
 
-  # ═══════════════════════════════════════════════════════════════════════════
   # JOB 2: UNIT TESTS
-  # ═══════════════════════════════════════════════════════════════════════════
   unit-tests:
     name: Unit Tests
     runs-on: ${{ matrix.os }}
@@ -92,9 +88,7 @@ jobs:
           files: ./coverage.xml
           flags: unittests-${{ matrix.os }}-py${{ matrix.python-version }}
 
-  # ═══════════════════════════════════════════════════════════════════════════
   # JOB 3: INTEGRATION TESTS
-  # ═══════════════════════════════════════════════════════════════════════════
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
@@ -123,14 +117,13 @@ jobs:
 
       - name: Verify Outputs
         run: |
-          test -f DMAIC_ITERATIONS_OUTPUT/dmaic_5_iterations_summary_*.md || \
+          test -f \
+            DMAIC_ITERATIONS_OUTPUT/dmaic_5_iterations_summary_*.md || \
             echo "DMAIC output missing"
           test -f PIPELINE_OUTPUT/pipeline_execution_*.json || \
             echo "Pipeline output missing"
 
-  # ═══════════════════════════════════════════════════════════════════════════
   # JOB 4: BUILD VERIFICATION
-  # ═══════════════════════════════════════════════════════════════════════════
   build-verification:
     name: Build Verification
     runs-on: ubuntu-latest
