@@ -26,7 +26,7 @@ class GitHubAzureDeploymentHelper:
             "steps": [],
             "status": "in_progress"
         }
-    
+
     def log(self, message: str, status: str = "INFO"):
         timestamp = datetime.now().strftime("%H:%M:%S")
         print(f"[{timestamp}] [{status}] {message}")
@@ -35,7 +35,7 @@ class GitHubAzureDeploymentHelper:
             "status": status,
             "message": message
         })
-    
+
     def run_command(self, cmd: List[str], check: bool = False) -> tuple:
         try:
             result = subprocess.run(
@@ -51,7 +51,7 @@ class GitHubAzureDeploymentHelper:
             return e.returncode, e.stdout, e.stderr
         except Exception as e:
             return -1, "", str(e)
-    
+
     def check_git_remote(self) -> Optional[str]:
         code, stdout, stderr = self.run_command(["git", "remote", "-v"])
         if code == 0 and stdout:
@@ -62,36 +62,36 @@ class GitHubAzureDeploymentHelper:
                     if len(parts) >= 2:
                         return parts[1]
         return None
-    
+
     def sync_with_github_pull(self):
         self.log("=" * 80, "INFO")
         self.log("STEP 1: PULL LATEST CHANGES FROM GITHUB", "INFO")
         self.log("=" * 80, "INFO")
-        
+
         remote = self.check_git_remote()
         if not remote:
             self.log("No remote repository configured", "WARNING")
             self.log("Run: git remote add origin <your-github-repo-url>", "INFO")
             return False
-        
+
         self.log(f"Remote repository: {remote}", "SUCCESS")
-        
+
         self.log("Fetching latest changes from GitHub...", "INFO")
         code, stdout, stderr = self.run_command(["git", "fetch", "origin"])
         if code != 0:
             self.log(f"Fetch failed: {stderr}", "ERROR")
             return False
-        
+
         self.log("Checking current branch...", "INFO")
         code, stdout, stderr = self.run_command(["git", "branch", "--show-current"])
         current_branch = stdout.strip() if code == 0 else "main"
         self.log(f"Current branch: {current_branch}", "INFO")
-        
+
         self.log("Pulling changes with rebase strategy...", "INFO")
         code, stdout, stderr = self.run_command([
             "git", "pull", "--rebase", "origin", current_branch
         ])
-        
+
         if code != 0:
             if "conflict" in stderr.lower() or "conflict" in stdout.lower():
                 self.log("MERGE CONFLICTS DETECTED!", "WARNING")
@@ -105,25 +105,25 @@ class GitHubAzureDeploymentHelper:
             else:
                 self.log(f"Pull failed: {stderr}", "ERROR")
                 return False
-        
+
         self.log("Successfully pulled latest changes from GitHub", "SUCCESS")
         return True
-    
+
     def prepare_local_changes(self):
         self.log("=" * 80, "INFO")
         self.log("STEP 2: PREPARE LOCAL CHANGES FOR PUSH", "INFO")
         self.log("=" * 80, "INFO")
-        
+
         self.log("Checking for local changes...", "INFO")
         code, stdout, stderr = self.run_command(["git", "status", "--short"])
-        
+
         if not stdout.strip():
             self.log("No local changes to commit", "INFO")
             return True
-        
+
         changes = stdout.strip().split('\n')
         self.log(f"Found {len(changes)} changed files", "INFO")
-        
+
         self.log("Adding ABACUS deployment files...", "INFO")
         files_to_add = [
             "ABACUS_V21_DEPLOYMENT_PACKAGE/",
@@ -131,18 +131,18 @@ class GitHubAzureDeploymentHelper:
             "ABACUS_V21_REALISTIC_DEPLOYMENT_ROADMAP.md",
             "abacus_v21_*.py"
         ]
-        
+
         for pattern in files_to_add:
             code, stdout, stderr = self.run_command(["git", "add", pattern])
             if code == 0:
                 self.log(f"Added: {pattern}", "SUCCESS")
-        
+
         self.log("Creating commit...", "INFO")
         commit_msg = f"ABACUS v2.1 Deployment Package - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
         code, stdout, stderr = self.run_command([
             "git", "commit", "-m", commit_msg
         ])
-        
+
         if code == 0:
             self.log(f"Commit created: {commit_msg}", "SUCCESS")
             return True
@@ -152,20 +152,20 @@ class GitHubAzureDeploymentHelper:
         else:
             self.log(f"Commit failed: {stderr}", "ERROR")
             return False
-    
+
     def push_to_github(self):
         self.log("=" * 80, "INFO")
         self.log("STEP 3: PUSH CHANGES TO GITHUB", "INFO")
         self.log("=" * 80, "INFO")
-        
+
         code, stdout, stderr = self.run_command(["git", "branch", "--show-current"])
         current_branch = stdout.strip() if code == 0 else "main"
-        
+
         self.log(f"Pushing to origin/{current_branch}...", "INFO")
         code, stdout, stderr = self.run_command([
             "git", "push", "origin", current_branch
         ])
-        
+
         if code != 0:
             if "rejected" in stderr.lower():
                 self.log("Push rejected - remote has changes you don't have", "WARNING")
@@ -174,15 +174,15 @@ class GitHubAzureDeploymentHelper:
             else:
                 self.log(f"Push failed: {stderr}", "ERROR")
                 return False
-        
+
         self.log("Successfully pushed to GitHub!", "SUCCESS")
         return True
-    
+
     def generate_azure_deployment_script(self):
         self.log("=" * 80, "INFO")
         self.log("STEP 4: GENERATE AZURE DEPLOYMENT SCRIPTS", "INFO")
         self.log("=" * 80, "INFO")
-        
+
         azure_script = """#!/usr/bin/env python3
 \"\"\"
 ABACUS v2.1 - Azure Cloud Deployment Script
@@ -201,7 +201,7 @@ class AzureDeployer:
         self.location = "westeurope"
         self.app_name = "abacus-v21"
         self.container_registry = "abacusv21registry"
-    
+
     def check_azure_cli(self):
         try:
             result = subprocess.run(
@@ -216,12 +216,12 @@ class AzureDeployer:
             print("❌ Azure CLI not found")
             print("Install from: https://docs.microsoft.com/cli/azure/install-azure-cli")
             return False
-    
+
     def login_azure(self):
         print("\\n🔐 Logging into Azure...")
         result = subprocess.run(["az", "login"], check=False)
         return result.returncode == 0
-    
+
     def create_resource_group(self):
         print(f"\\n📦 Creating resource group: {self.resource_group}")
         cmd = [
@@ -236,7 +236,7 @@ class AzureDeployer:
         else:
             print(f"⚠️  Resource group may already exist: {result.stderr}")
             return True
-    
+
     def create_container_registry(self):
         print(f"\\n🐳 Creating Azure Container Registry: {self.container_registry}")
         cmd = [
@@ -253,10 +253,10 @@ class AzureDeployer:
         else:
             print(f"⚠️  Registry may already exist: {result.stderr}")
             return True
-    
+
     def build_and_push_image(self):
         print("\\n🏗️  Building and pushing Docker image to Azure...")
-        
+
         # Build image locally
         print("Building Docker image...")
         build_cmd = [
@@ -268,7 +268,7 @@ class AzureDeployer:
         if result.returncode != 0:
             print("❌ Docker build failed")
             return False
-        
+
         # Login to ACR
         print("Logging into Azure Container Registry...")
         login_cmd = ["az", "acr", "login", "--name", self.container_registry]
@@ -276,7 +276,7 @@ class AzureDeployer:
         if result.returncode != 0:
             print("❌ ACR login failed")
             return False
-        
+
         # Push image
         print("Pushing image to ACR...")
         push_cmd = [
@@ -290,10 +290,10 @@ class AzureDeployer:
         else:
             print("❌ Image push failed")
             return False
-    
+
     def deploy_to_container_instances(self):
         print("\\n🚀 Deploying to Azure Container Instances...")
-        
+
         # Get ACR credentials
         creds_cmd = [
             "az", "acr", "credential", "show",
@@ -303,7 +303,7 @@ class AzureDeployer:
         ]
         result = subprocess.run(creds_cmd, capture_output=True, text=True)
         acr_password = result.stdout.strip()
-        
+
         # Deploy container
         deploy_cmd = [
             "az", "container", "create",
@@ -318,7 +318,7 @@ class AzureDeployer:
             "--dns-name-label", self.app_name,
             "--ports", "8000"
         ]
-        
+
         result = subprocess.run(deploy_cmd, capture_output=True, text=True)
         if result.returncode == 0:
             print("✅ Deployed to Azure Container Instances")
@@ -327,10 +327,10 @@ class AzureDeployer:
         else:
             print(f"❌ Deployment failed: {result.stderr}")
             return False
-    
+
     def deploy_to_app_service(self):
         print("\\n🚀 Deploying to Azure App Service...")
-        
+
         # Create App Service Plan
         print("Creating App Service Plan...")
         plan_cmd = [
@@ -341,7 +341,7 @@ class AzureDeployer:
             "--sku", "B1"
         ]
         subprocess.run(plan_cmd)
-        
+
         # Create Web App
         print("Creating Web App...")
         webapp_cmd = [
@@ -351,7 +351,7 @@ class AzureDeployer:
             "--name", self.app_name,
             "--deployment-container-image-name", f"{self.container_registry}.azurecr.io/abacus-v21:latest"
         ]
-        
+
         result = subprocess.run(webapp_cmd, capture_output=True, text=True)
         if result.returncode == 0:
             print("✅ Deployed to Azure App Service")
@@ -360,28 +360,28 @@ class AzureDeployer:
         else:
             print(f"❌ Deployment failed: {result.stderr}")
             return False
-    
+
     def run(self, deployment_type="container-instances"):
         print("╔══════════════════════════════════════════════════════════════════════════════╗")
         print("║              ABACUS v2.1 - Azure Cloud Deployment                           ║")
         print("╚══════════════════════════════════════════════════════════════════════════════╝\\n")
-        
+
         if not self.check_azure_cli():
             return False
-        
+
         if not self.login_azure():
             print("❌ Azure login failed")
             return False
-        
+
         if not self.create_resource_group():
             return False
-        
+
         if not self.create_container_registry():
             return False
-        
+
         if not self.build_and_push_image():
             return False
-        
+
         if deployment_type == "app-service":
             return self.deploy_to_app_service()
         else:
@@ -389,32 +389,32 @@ class AzureDeployer:
 
 if __name__ == "__main__":
     deployer = AzureDeployer()
-    
+
     print("\\nChoose deployment type:")
     print("1. Azure Container Instances (faster, simpler)")
     print("2. Azure App Service (more features)")
-    
+
     choice = input("\\nEnter choice (1 or 2): ").strip()
-    
+
     deployment_type = "app-service" if choice == "2" else "container-instances"
-    
+
     success = deployer.run(deployment_type)
-    
+
     if success:
         print("\\n✅ Deployment completed successfully!")
     else:
         print("\\n❌ Deployment failed. Check errors above.")
 """
-        
+
         azure_script_path = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / "azure_deployment.py"
         with open(azure_script_path, 'w', encoding='utf-8') as f:
             f.write(azure_script)
-        
+
         os.chmod(azure_script_path, 0o755)
         self.log(f"Created: {azure_script_path}", "SUCCESS")
-        
+
         return True
-    
+
     def generate_github_actions_azure_workflow(self):
         workflow = """name: Deploy to Azure
 
@@ -430,26 +430,26 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
+
     - name: Build Docker image
       run: |
         docker build -t abacus-v21:${{ github.sha }} ABACUS_V21_DEPLOYMENT_PACKAGE/
-        
+
     - name: Push to Azure Container Registry
       run: |
         az acr login --name abacusv21registry
         docker tag abacus-v21:${{ github.sha }} abacusv21registry.azurecr.io/abacus-v21:latest
         docker push abacusv21registry.azurecr.io/abacus-v21:latest
-        
+
     - name: Deploy to Azure Container Instances
       run: |
         az container create \\
@@ -462,22 +462,22 @@ jobs:
           --registry-password ${{ secrets.ACR_PASSWORD }} \\
           --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} \\
           --ports 8000
-          
+
     - name: Deployment summary
       run: |
         echo "✅ Deployed to Azure!"
         echo "🌐 URL: http://${{ env.AZURE_WEBAPP_NAME }}.westeurope.azurecontainer.io:8000"
 """
-        
+
         workflow_path = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / ".github" / "workflows" / "azure-deploy.yml"
         workflow_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(workflow_path, 'w', encoding='utf-8') as f:
             f.write(workflow)
-        
+
         self.log(f"Created: {workflow_path}", "SUCCESS")
         return True
-    
+
     def generate_instructions(self):
         instructions = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -523,7 +523,7 @@ Step 1: Set up Azure Service Principal
 
 Step 2: Add GitHub Secrets
    Go to: GitHub repo → Settings → Secrets → Actions
-   
+
    Add these secrets:
    - AZURE_CREDENTIALS: (output from Step 1)
    - ACR_PASSWORD: (from Azure Container Registry)
@@ -611,56 +611,56 @@ For detailed documentation, see:
 
 ═══════════════════════════════════════════════════════════════════════════════
 """
-        
+
         instructions_file = self.project_root / "GITHUB_AZURE_DEPLOYMENT_INSTRUCTIONS.txt"
         with open(instructions_file, 'w', encoding='utf-8') as f:
             f.write(instructions)
-        
+
         print(instructions)
         self.log(f"Instructions saved to: {instructions_file}", "SUCCESS")
-    
+
     def save_report(self):
         report_file = self.project_root / "GITHUB_SYNC_REPORT.json"
         self.results["status"] = "completed"
-        
+
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
-        
+
         self.log(f"Report saved: {report_file}", "SUCCESS")
-    
+
     def run(self):
         print("╔══════════════════════════════════════════════════════════════════════════════╗")
         print("║        ABACUS v2.1 - GitHub Sync & Azure Deployment Helper                 ║")
         print("╚══════════════════════════════════════════════════════════════════════════════╝\n")
-        
+
         # Step 1: Pull from GitHub
         if not self.sync_with_github_pull():
             self.log("GitHub pull failed or has conflicts - resolve manually", "WARNING")
             return False
-        
+
         # Step 2: Prepare local changes
         if not self.prepare_local_changes():
             self.log("Failed to prepare local changes", "ERROR")
             return False
-        
+
         # Step 3: Push to GitHub
         if not self.push_to_github():
             self.log("Failed to push to GitHub", "ERROR")
             return False
-        
+
         # Step 4: Generate Azure deployment scripts
         self.generate_azure_deployment_script()
         self.generate_github_actions_azure_workflow()
-        
+
         # Step 5: Generate instructions
         self.generate_instructions()
-        
+
         # Step 6: Save report
         self.save_report()
-        
+
         print("\n✅ GitHub sync and Azure deployment preparation completed!")
         print("📖 See GITHUB_AZURE_DEPLOYMENT_INSTRUCTIONS.txt for next steps")
-        
+
         return True
 
 if __name__ == "__main__":
