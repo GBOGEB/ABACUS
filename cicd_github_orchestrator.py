@@ -335,10 +335,10 @@ class CICDGitHubOrchestrator:
 
             return {
                 "has_changes": len(lines) > 0,
-                "modified": [l[3:] for l in lines if l.startswith(' M')],
-                "added": [l[3:] for l in lines if l.startswith('A ')],
-                "deleted": [l[3:] for l in lines if l.startswith(' D')],
-                "untracked": [l[3:] for l in lines if l.startswith('??')]
+                "modified": [line[3:] for line in lines if line.startswith(' M')],
+                "added": [line[3:] for line in lines if line.startswith('A ')],
+                "deleted": [line[3:] for line in lines if line.startswith(' D')],
+                "untracked": [line[3:] for line in lines if line.startswith('??')]
             }
         except Exception as e:
             return {"error": str(e), "has_changes": False}
@@ -575,7 +575,7 @@ def main():
 
     orchestrator = CICDGitHubOrchestrator(workspace)
 
-    results = orchestrator.execute_full_pipeline(dry_run=args.dry_run)
+    orchestrator.execute_full_pipeline(dry_run=args.dry_run)
 
     if not args.dry_run:
         print("\n[OK] CI/CD pipeline executed successfully")
