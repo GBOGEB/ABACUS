@@ -75,7 +75,7 @@ class IntegrationTestSuite:
             mode=IntegrationMode.UNIFIED,
             iterations=1
         )
-        bridge = GBOGEBAbacusDOWBridge(config=config)
+        GBOGEBAbacusDOWBridge(config=config)
         
         assert bridge is not None
         assert bridge.config.mode == IntegrationMode.UNIFIED
