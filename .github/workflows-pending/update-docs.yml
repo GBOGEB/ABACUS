@@ -35,28 +35,56 @@ jobs:
           import ast, json, pathlib, datetime, traceback
 
           modules = {}
-          for pattern in ["DMAIC_V3/**/*.py", "local_mcp/**/*.py", "staging/**/*.py"]:
+          patterns = [
+              "DMAIC_V3/**/*.py",
+              "local_mcp/**/*.py",
+              "staging/**/*.py",
+          ]
+          for pattern in patterns:
               for p in pathlib.Path(".").glob(pattern):
                   try:
-                      source = p.read_text(encoding="utf-8", errors="replace")
+                      source = p.read_text(
+                          encoding="utf-8",
+                          errors="replace",
+                      )
                       tree = ast.parse(source)
                       doc = ast.get_docstring(tree) or ""
                       classes = []
                       for node in ast.walk(tree):
-                          if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                          if isinstance(
+                              node,
+                              (ast.ClassDef, ast.FunctionDef),
+                          ):
                               cdoc = ast.get_docstring(node) or ""
-                              classes.append({"name": node.name, "doc": cdoc[:200]})
-                      modules[str(p)] = {"docstring": doc[:300], "members": classes}
+                              classes.append(
+                                  {"name": node.name, "doc": cdoc[:200]}
+                              )
+                      modules[str(p)] = {
+                          "docstring": doc[:300],
+                          "members": classes,
+                      }
                   except Exception as exc:
-                      print(f"Warning: failed to parse {p}: {type(exc).__name__}: {exc}")
-                      modules[str(p)] = {"docstring": f"Parse error: {type(exc).__name__}: {exc}", "members": []}
+                      print(
+                          "Warning: failed to parse "
+                          f"{p}: {type(exc).__name__}: {exc}"
+                      )
+                      modules[str(p)] = {
+                          "docstring": (
+                              "Parse error: "
+                              f"{type(exc).__name__}: {exc}"
+                          ),
+                          "members": [],
+                      }
 
           out = {
               "generated_at": datetime.datetime.now().isoformat(),
               "module_count": len(modules),
               "modules": modules,
           }
-          pathlib.Path("docs/api/modules.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+          pathlib.Path("docs/api/modules.json").write_text(
+              json.dumps(out, indent=2),
+              encoding="utf-8",
+          )
           print(f"Extracted {len(modules)} modules")
           PYEOF
 
@@ -87,7 +115,9 @@ jobs:
               "dashboard_count": len(dashboards),
               "dashboards": dashboards,
           }
-          pathlib.Path("docs/api/deployment_matrix.json").write_text(json.dumps(matrix, indent=2))
+          pathlib.Path("docs/api/deployment_matrix.json").write_text(
+              json.dumps(matrix, indent=2)
+          )
           print(f"Found {len(dashboards)} dashboards")
           PYEOF
 
@@ -105,9 +135,16 @@ jobs:
           git checkout -B "$BRANCH"
           git commit -m "docs: auto-update API docs and deployment matrix"
           git push origin "$BRANCH" --force-with-lease
-          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' 2>/dev/null || true)
+          EXISTING_PR=$(
+            gh pr list \
+              --head "$BRANCH" \
+              --state open \
+              --json number \
+              -q '.[0].number' 2>/dev/null || true
+          )
           if [ -n "$EXISTING_PR" ]; then
-            echo "PR #$EXISTING_PR already open for $BRANCH — skipping duplicate creation."
+            echo "PR #$EXISTING_PR already open for $BRANCH —" \
+              "skipping duplicate creation."
           elif gh pr create \
             --title "docs: auto-update API documentation" \
             --body "Automated documentation update triggered by code changes." \
@@ -115,13 +152,16 @@ jobs:
             --head "$BRANCH"; then
             echo "Created documentation PR for $BRANCH."
           else
-            echo "::warning::GitHub Actions PR creation is disabled; branch $BRANCH was pushed for owner recovery."
+            echo "::warning::GitHub Actions PR creation is disabled;" \
+              "branch $BRANCH was pushed for owner recovery."
             {
               echo "### Documentation update requires owner PR creation"
               echo "- Branch: $BRANCH"
               echo "- Base: main"
-              echo "- Generated documentation was committed and pushed successfully."
-              echo "- Repository policy blocked GitHub Actions from creating the pull request."
+              echo "- Generated documentation was committed"
+              echo "  and pushed successfully."
+              echo "- Repository policy blocked GitHub Actions"
+              echo "  from creating the pull request."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
         env:
