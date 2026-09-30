@@ -16,9 +16,9 @@ from datetime import datetime
 
 def generate_postcd_summary():
     """Generate comprehensive POST-CD summary"""
-    
+
     timestamp = datetime.now().isoformat()
-    
+
     summary = f"""# ABACUS v2.1 - POST-CD PHASE SUMMARY
 
 **Generated**: {timestamp}
@@ -393,15 +393,15 @@ The POST-CD phase has been successfully completed with all critical infrastructu
 *Report generated on {timestamp}*
 *ABACUS v2.1 - POST-CD Phase Complete*
 """
-    
+
     # Save summary
     output_dir = Path("ABACUS_V21_POSTCD_SUMMARY")
     output_dir.mkdir(exist_ok=True)
-    
+
     summary_path = output_dir / "POST_CD_SUMMARY.md"
     with open(summary_path, 'w', encoding='utf-8') as f:
         f.write(summary)
-    
+
     print("=" * 80)
     print("POST-CD PHASE SUMMARY GENERATED")
     print("=" * 80)
