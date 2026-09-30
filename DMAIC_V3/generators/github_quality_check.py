@@ -1,4 +1,3 @@
-from typing import Any
 #!/usr/bin/env python3
 """
 DMAIC V3 - GitHub Quality Check & Cleanup
@@ -6,12 +5,14 @@ Prepares repository for GitHub with quality checks, cleanup, and CI/CD validatio
 """
 
 import ast
-import sys
 import json
 import shutil
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
 
 class GitHubQualityCheck:
     """Comprehensive GitHub quality check and cleanup"""
@@ -361,7 +362,7 @@ logs/
         with open(gitignore_path, 'w', encoding='utf-8') as f:
             f.write(gitignore_content)
 
-        print(f"[CREATED] .gitignore")
+        print("[CREATED] .gitignore")
         self.report["git_status"]["gitignore_created"] = True
 
     def create_gitattributes(self) -> Any:
@@ -403,7 +404,7 @@ logs/
         with open(gitattributes_path, 'w', encoding='utf-8') as f:
             f.write(gitattributes_content)
 
-        print(f"[CREATED] .gitattributes")
+        print("[CREATED] .gitattributes")
         self.report["git_status"]["gitattributes_created"] = True
 
     def initialize_git_repo(self) -> Any:
@@ -631,12 +632,14 @@ setup(
         self.save_report()
         self.print_summary()
 
+
 def main() -> Any:
     """TODO: Add function description"""
 
     root_dir = Path(__file__).parent.parent.parent
     checker = GitHubQualityCheck(root_dir)
     checker.run_all_checks()
+
 
 if __name__ == "__main__":
     main()
