@@ -153,10 +153,10 @@ def chart_version_lineage():
     w = 0.5
 
     fig, ax = plt.subplots(figsize=(7, 4))
-    b1 = ax.bar(x, new_arts, w, label="New",     color=PALETTE["define"], zorder=3)
-    b2 = ax.bar(x, changed,  w, label="Changed", color=PALETTE["analyze"],
+    ax.bar(x, new_arts, w, label="New",     color=PALETTE["define"], zorder=3)
+    ax.bar(x, changed,  w, label="Changed", color=PALETTE["analyze"],
                 bottom=new_arts, zorder=3)
-    b3 = ax.bar(x, removed,  w, label="Removed", color=PALETTE["improve"],
+    ax.bar(x, removed,  w, label="Removed", color=PALETTE["improve"],
                 bottom=[a + b for a, b in zip(new_arts, changed)], zorder=3)
     ax.set_xticks(x)
     ax.set_xticklabels(versions)
