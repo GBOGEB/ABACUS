@@ -37,7 +37,10 @@ jobs:
           import json
           from pathlib import Path
           p = json.loads(Path("reports/dab_flake8_census.json").read_text())
-          required = {"E999","F821","F601","F811","F841","E722","E731","E741","W293"}
+          required = {
+              "E999", "F821", "F601", "F811", "F841",
+              "E722", "E731", "E741", "W293",
+          }
           assert required <= set(p["families"])
           assert p["total"] >= sum(p["families"].values())
           print("DAB census receipt PASS")
