@@ -445,7 +445,7 @@ def rebuild_numeric_slide(slide, new_title, chart_path, condensed_items, phase, 
     add_picture_fit(slide, chart_path, Emu(cx), Emu(cy), Emu(cw), Emu(ch))
     add_tag(slide, phase, style="layout")
     notes = "Full baseline bullet text (verbatim), condensed on-slide for readability:\n\n" + \
-            "\n".join(f"- {l}" for l in orig_lines)
+            "\n".join(f"- {line}" for line in orig_lines)
     set_notes(slide, notes)
     return body
 
@@ -590,7 +590,7 @@ add_step_chips(s, Emu(6250000), Emu(1950000), Emu(5350000), [
 ], color=TC.ACCENT_1, step_h=980000, gap=60000)
 add_tag(s, "MEASURE", style="layout")
 set_notes(s, "Applicant shall implement parametric scripts to estimate descent-rate and restart "
-              "criteria with liquid inventory.\n\nFull baseline text:\n" + "\n".join(f"- {l}" for l in orig_lines))
+              "criteria with liquid inventory.\n\nFull baseline text:\n" + "\n".join(f"- {line}" for line in orig_lines))
 print("pos12 done")
 
 # ---- pos14: CIS Autonomy and MCS Exchange (orig10) - integration diagram ------
@@ -643,7 +643,7 @@ add_takeaway(s, Emu(6450000), Emu(4600000), Emu(5500000), Emu(700000), "WHY IT M
              "This live link is what makes Slide 13's MTBF dossier and the CONTROL section's governance loop possible — the data has to flow before it can be tracked.",
              size=10.5, color=TC.ACCENT_2)
 add_tag(s, "DEFINE", style="layout")
-set_notes(s, "Full baseline text:\n" + "\n".join(f"- {l}" for l in orig_lines))
+set_notes(s, "Full baseline text:\n" + "\n".join(f"- {line}" for line in orig_lines))
 print("pos14 done")
 
 # ---- pos15: Utilities and Interfaces (orig11) - hub & spoke -------------------
@@ -695,7 +695,7 @@ for label, detail, dx, dy in spokes:
     ex, ey = cx + int(ddx * 0.80), cy + int(ddy * 0.80)     # end just short of the box, not on its text
     add_arrow(s, Emu(sx_), Emu(sy_), Emu(ex), Emu(ey), color=TC.ACCENT_1, weight=1.25)
 add_tag(s, "DEFINE", style="layout")
-set_notes(s, "Full baseline text:\n" + "\n".join(f"- {l}" for l in orig_lines))
+set_notes(s, "Full baseline text:\n" + "\n".join(f"- {line}" for line in orig_lines))
 print("pos15 done")
 
 # ---- pos19: Operational Philosophy (orig15) - state-flow diagram --------------
@@ -930,7 +930,7 @@ add_takeaway(s, Emu(7200000), Emu(3550000), Emu(4440000), Emu(750000), "SCOPE IN
              size=11, color=TC.ACCENT_1)
 add_tag(s, "DEFINE", style="layout")
 set_notes(s, "Full baseline bullet text (verbatim), condensed on-slide for readability:\n\n" +
-              "\n".join(f"- {l}" for l in orig_lines))
+              "\n".join(f"- {line}" for line in orig_lines))
 print("pos5 done")
 
 # -- pos6: Configuration Baseline (orig3) --
@@ -964,7 +964,7 @@ add_takeaway(s, Emu(7650000), Emu(3550000), Emu(4170000), Emu(950000), "WHY IT M
              size=10.5, color=TC.ACCENT_1)
 add_tag(s, "DEFINE", style="layout")
 set_notes(s, "Full baseline bullet text (verbatim), condensed on-slide for readability:\n\n" +
-              "\n".join(f"- {l}" for l in orig_lines))
+              "\n".join(f"- {line}" for line in orig_lines))
 print("pos6 done")
 
 # ---- deck-wide pass: recolor any remaining Phase-1-era flat-purple tags -------
