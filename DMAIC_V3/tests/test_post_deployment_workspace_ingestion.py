@@ -12,11 +12,11 @@ def live_workspace(tmp_path):
     """Create a live post-deployment workspace structure"""
     workspace = tmp_path / "live_workspace"
     workspace.mkdir()
-    
+
     # QPLANT inputs - new cases
     qplant_inputs = workspace / "qplant" / "inputs"
     qplant_inputs.mkdir(parents=True)
-    
+
     (qplant_inputs / "case_2025_001.txt").write_text(
         "QPLANT Case 2025-001\n"
         "Temperature: 4.2K\n"
@@ -29,11 +29,11 @@ def live_workspace(tmp_path):
         "Pressure: 1.3 bar\n"
         "Status: Pending"
     )
-    
+
     # Historic docs - immutable milestone deliverables
     historic_docs = workspace / "docs" / "historic"
     historic_docs.mkdir(parents=True)
-    
+
     (historic_docs / "milestone_v1_0.md").write_text(
         "# Milestone V1.0 - Initial Release\n"
         "Date: 2024-01-15\n"
@@ -50,11 +50,11 @@ def live_workspace(tmp_path):
         "- Enhanced monitoring\n"
         "- Performance improvements"
     )
-    
+
     # Current docs - editable working documents
     current_docs = workspace / "docs" / "current"
     current_docs.mkdir(parents=True)
-    
+
     (current_docs / "working_spec.md").write_text(
         "# Working Specification\n"
         "Status: In Progress\n"
@@ -68,18 +68,18 @@ def live_workspace(tmp_path):
         "- Decision 1: Use microservices\n"
         "- Decision 2: PostgreSQL for persistence"
     )
-    
+
     # Screenshots - UI-facing content
     screenshots = workspace / "screenshots"
     screenshots.mkdir()
-    
+
     (screenshots / "dashboard_v1.png").write_bytes(b"PNG_DASHBOARD_DATA")
     (screenshots / "metrics_view.png").write_bytes(b"PNG_METRICS_DATA")
-    
+
     # Snippets - code examples
     snippets = workspace / "snippets"
     snippets.mkdir()
-    
+
     (snippets / "api_example.py").write_text(
         "# API Usage Example\n"
         "from dmaic_v3 import DMAICEngine\n"
@@ -94,7 +94,7 @@ def live_workspace(tmp_path):
         "  - phase1\n"
         "  - phase2"
     )
-    
+
     return workspace
 
 
@@ -116,7 +116,7 @@ def mock_post_deploy_orchestrator():
 def test_dow_classification_on_live_workspace(live_workspace, mock_post_deploy_orchestrator):
     """
     Test DOW classification on live workspace documents
-    
+
     Validates:
     - Document classification (historic vs current)
     - SUT hierarchy mapping
@@ -150,19 +150,19 @@ def test_dow_classification_on_live_workspace(live_workspace, mock_post_deploy_o
             'subsystems': ['monitoring', 'orchestration', 'analysis']
         }
     }
-    
+
     # Execute DOW classification
     result = mock_post_deploy_orchestrator.classify_documents(live_workspace)
-    
+
     assert result['total_documents'] == 6
     assert result['classified']['historic']['count'] == 2
     assert result['classified']['current']['count'] == 2
     assert result['classified']['ui_content']['count'] == 2
-    
+
     # Verify immutability flags
     for doc in result['classified']['historic']['documents']:
         assert doc['immutable'] is True
-    
+
     # Verify editability flags
     for doc in result['classified']['current']['documents']:
         assert doc['editable'] is True
@@ -175,7 +175,7 @@ def test_dow_classification_on_live_workspace(live_workspace, mock_post_deploy_o
 def test_keb_metrics_extraction_from_qplant(live_workspace, mock_post_deploy_orchestrator):
     """
     Test KEB metrics extraction from QPLANT cases
-    
+
     Validates:
     - QPLANT case parsing
     - Cryo metrics extraction (temperature, pressure)
@@ -212,23 +212,23 @@ def test_keb_metrics_extraction_from_qplant(live_workspace, mock_post_deploy_orc
             'pending_cases': 1
         }
     }
-    
+
     # Execute KEB metrics extraction
     result = mock_post_deploy_orchestrator.extract_metrics(live_workspace / "qplant")
-    
+
     assert result['qplant_cases_processed'] == 2
     assert 'cryo_metrics' in result
     assert 'case_2025_001' in result['cryo_metrics']
     assert 'case_2025_002' in result['cryo_metrics']
-    
+
     # Verify temperature extraction
     assert result['cryo_metrics']['case_2025_001']['temperature'] == 4.2
     assert result['cryo_metrics']['case_2025_002']['temperature'] == 4.5
-    
+
     # Verify RTM mappings
     assert 'rtm_mappings' in result
     assert len(result['rtm_mappings']['case_2025_001']) > 0
-    
+
     # Verify metrics summary
     assert result['metrics_summary']['avg_temperature'] > 0
     assert result['metrics_summary']['avg_pressure'] > 0
@@ -240,7 +240,7 @@ def test_keb_metrics_extraction_from_qplant(live_workspace, mock_post_deploy_orc
 def test_gbogeb_knowledge_base_update(live_workspace, mock_post_deploy_orchestrator):
     """
     Test GBOGEB knowledge base update with workspace content
-    
+
     Validates:
     - Knowledge base ingestion
     - Document indexing
@@ -263,16 +263,16 @@ def test_gbogeb_knowledge_base_update(live_workspace, mock_post_deploy_orchestra
         'search_index_updated': True,
         'embedding_vectors_generated': 6
     }
-    
+
     # Execute knowledge base update
     result = mock_post_deploy_orchestrator.update_knowledge_base(live_workspace)
-    
+
     assert result['documents_indexed'] == 6
     assert result['knowledge_entries_created'] > 0
     assert result['knowledge_graph_nodes'] > 0
     assert result['knowledge_graph_edges'] > 0
     assert result['search_index_updated'] is True
-    
+
     # Verify content categorization
     indexed = result['indexed_content']
     assert indexed['milestones'] == 2
@@ -287,7 +287,7 @@ def test_gbogeb_knowledge_base_update(live_workspace, mock_post_deploy_orchestra
 def test_full_post_deployment_ingestion_pipeline(live_workspace, mock_post_deploy_orchestrator):
     """
     Test complete post-deployment ingestion pipeline
-    
+
     Validates:
     - End-to-end workspace ingestion
     - DOW + KEB + GBOGEB integration
@@ -331,22 +331,22 @@ def test_full_post_deployment_ingestion_pipeline(live_workspace, mock_post_deplo
             'avg_pressure': 1.25
         }
     }
-    
+
     # Execute full ingestion
     result = mock_post_deploy_orchestrator.ingest_workspace(live_workspace)
-    
+
     assert result['status'] == 'success'
     assert 'ingestion_steps' in result
-    
+
     # Verify all steps completed
     for step_name, step_result in result['ingestion_steps'].items():
         assert step_result['status'] == 'completed'
         assert step_result['duration'] > 0
-    
+
     # Verify dashboard links
     assert result['ingestion_steps']['dashboard_links']['links_generated'] > 0
     assert 'dashboard_url' in result
-    
+
     # Verify metrics summary
     assert result['metrics_summary']['total_documents'] == 6
     assert result['metrics_summary']['total_qplant_cases'] == 2
@@ -357,7 +357,7 @@ def test_full_post_deployment_ingestion_pipeline(live_workspace, mock_post_deplo
 def test_historic_document_immutability_enforcement(live_workspace, mock_post_deploy_orchestrator):
     """
     Test that historic documents are marked as immutable
-    
+
     Validates:
     - Immutability flags on historic docs
     - Edit protection mechanisms
@@ -378,9 +378,9 @@ def test_historic_document_immutability_enforcement(live_workspace, mock_post_de
             }
         }
     }
-    
+
     result = mock_post_deploy_orchestrator.classify_documents(live_workspace)
-    
+
     historic_docs = result['classified']['historic']['documents']
     for doc in historic_docs:
         assert doc['immutable'] is True
@@ -393,7 +393,7 @@ def test_historic_document_immutability_enforcement(live_workspace, mock_post_de
 def test_qplant_case_status_tracking(live_workspace, mock_post_deploy_orchestrator):
     """
     Test QPLANT case status tracking and updates
-    
+
     Validates:
     - Status extraction from cases
     - Status change tracking
@@ -414,9 +414,9 @@ def test_qplant_case_status_tracking(live_workspace, mock_post_deploy_orchestrat
         'status_changes': [],
         'notifications': []
     }
-    
+
     result = mock_post_deploy_orchestrator.extract_metrics(live_workspace / "qplant")
-    
+
     assert 'status_summary' in result
     assert result['status_summary']['Active'] == 1
     assert result['status_summary']['Pending'] == 1
@@ -426,7 +426,7 @@ def test_qplant_case_status_tracking(live_workspace, mock_post_deploy_orchestrat
 def test_dashboard_link_generation(live_workspace, mock_post_deploy_orchestrator):
     """
     Test dashboard/TKINTER link generation
-    
+
     Validates:
     - Link generation for documents
     - Link generation for metrics
@@ -454,9 +454,9 @@ def test_dashboard_link_generation(live_workspace, mock_post_deploy_orchestrator
             }
         }
     }
-    
+
     result = mock_post_deploy_orchestrator.ingest_workspace(live_workspace)
-    
+
     links = result['dashboard_links']
     assert len(links['documents']) > 0
     assert len(links['metrics']) > 0
@@ -470,7 +470,7 @@ def test_dashboard_link_generation(live_workspace, mock_post_deploy_orchestrator
 def test_incremental_workspace_updates(live_workspace, mock_post_deploy_orchestrator):
     """
     Test incremental workspace updates (new files added)
-    
+
     Validates:
     - Detection of new files
     - Incremental ingestion (only new content)
@@ -483,15 +483,15 @@ def test_incremental_workspace_updates(live_workspace, mock_post_deploy_orchestr
         'documents_indexed': 6,
         'is_incremental': False
     }
-    
+
     result1 = mock_post_deploy_orchestrator.ingest_workspace(live_workspace)
     assert result1['documents_indexed'] == 6
     assert result1['is_incremental'] is False
-    
+
     # Add new files
     (live_workspace / "docs" / "current" / "new_feature.md").write_text("# New Feature\nDescription")
     (live_workspace / "qplant" / "inputs" / "case_2025_003.txt").write_text("New QPLANT case")
-    
+
     # Incremental ingestion
     mock_post_deploy_orchestrator.ingest_workspace.return_value = {
         'status': 'success',
@@ -503,7 +503,7 @@ def test_incremental_workspace_updates(live_workspace, mock_post_deploy_orchestr
         ],
         'total_documents': 8
     }
-    
+
     result2 = mock_post_deploy_orchestrator.ingest_workspace(live_workspace, incremental=True)
     assert result2['is_incremental'] is True
     assert result2['documents_indexed'] == 2

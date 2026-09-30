@@ -25,7 +25,7 @@ class EnvironmentPreparation:
         self.timestamp = datetime.now().isoformat()
         self.output_dir = Path("ABACUS_V21_ENVIRONMENT_PREP")
         self.output_dir.mkdir(exist_ok=True)
-        
+
         self.results = {
             "stage": "2.1",
             "name": "Environment Preparation",
@@ -34,7 +34,7 @@ class EnvironmentPreparation:
             "configurations": [],
             "recommendations": []
         }
-    
+
     def check_python_environment(self) -> Dict[str, Any]:
         """Check Python version and environment"""
         check = {
@@ -42,11 +42,11 @@ class EnvironmentPreparation:
             "status": "PASS",
             "details": {}
         }
-        
+
         check["details"]["python_version"] = sys.version
         check["details"]["python_executable"] = sys.executable
         check["details"]["platform"] = sys.platform
-        
+
         major, minor = sys.version_info[:2]
         if major >= 3 and minor >= 8:
             check["status"] = "PASS"
@@ -54,9 +54,9 @@ class EnvironmentPreparation:
         else:
             check["status"] = "WARN"
             check["message"] = f"Python {major}.{minor} may not be optimal (recommend 3.8+)"
-        
+
         return check
-    
+
     def check_required_directories(self) -> Dict[str, Any]:
         """Check and create required directories"""
         check = {
@@ -64,7 +64,7 @@ class EnvironmentPreparation:
             "status": "PASS",
             "details": {}
         }
-        
+
         required_dirs = [
             "DMAIC_V3_OUTPUT",
             "ABACUS_V21_MIGRATION_OUTPUT",
@@ -76,10 +76,10 @@ class EnvironmentPreparation:
             "backups",
             "config"
         ]
-        
+
         created = []
         existing = []
-        
+
         for dir_name in required_dirs:
             dir_path = Path(dir_name)
             if dir_path.exists():
@@ -87,13 +87,13 @@ class EnvironmentPreparation:
             else:
                 dir_path.mkdir(exist_ok=True)
                 created.append(dir_name)
-        
+
         check["details"]["existing"] = existing
         check["details"]["created"] = created
         check["message"] = f"Created {len(created)} directories, {len(existing)} already exist"
-        
+
         return check
-    
+
     def check_configuration_files(self) -> Dict[str, Any]:
         """Check required configuration files"""
         check = {
@@ -101,32 +101,32 @@ class EnvironmentPreparation:
             "status": "PASS",
             "details": {}
         }
-        
+
         required_configs = [
             "DOW_IMPLEMENTATION_TRACKER.json",
             "ABACUS_V21_PROGRESS_TRACKER.yaml"
         ]
-        
+
         found = []
         missing = []
-        
+
         for config_file in required_configs:
             if Path(config_file).exists():
                 found.append(config_file)
             else:
                 missing.append(config_file)
-        
+
         check["details"]["found"] = found
         check["details"]["missing"] = missing
-        
+
         if missing:
             check["status"] = "WARN"
             check["message"] = f"Missing {len(missing)} configuration files"
         else:
             check["message"] = "All configuration files present"
-        
+
         return check
-    
+
     def check_core_modules(self) -> Dict[str, Any]:
         """Check core ABACUS modules"""
         check = {
@@ -134,34 +134,34 @@ class EnvironmentPreparation:
             "status": "PASS",
             "details": {}
         }
-        
+
         core_modules = [
             "execute_full_pipeline_sprint_dow.py",
             "dmaic_v3_orchestrator.py",
             "recursive_knowledge_engine.py",
             "temporal_session_analyzer.py"
         ]
-        
+
         found = []
         missing = []
-        
+
         for module in core_modules:
             if Path(module).exists():
                 found.append(module)
             else:
                 missing.append(module)
-        
+
         check["details"]["found"] = found
         check["details"]["missing"] = missing
-        
+
         if missing:
             check["status"] = "FAIL"
             check["message"] = f"Missing {len(missing)} core modules"
         else:
             check["message"] = "All core modules present"
-        
+
         return check
-    
+
     def create_environment_config(self) -> Dict[str, Any]:
         """Create production environment configuration"""
         config = {
@@ -169,7 +169,7 @@ class EnvironmentPreparation:
             "status": "CREATED",
             "details": {}
         }
-        
+
         env_config = {
             "environment": "production",
             "version": "2.1.0",
@@ -207,17 +207,17 @@ class EnvironmentPreparation:
                 "output": "output/"
             }
         }
-        
+
         config_path = self.output_dir / "production_environment_config.json"
         with open(config_path, 'w') as f:
             json.dump(env_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["settings"] = env_config
         config["message"] = "Production environment configuration created"
-        
+
         return config
-    
+
     def create_deployment_checklist(self) -> Dict[str, Any]:
         """Create deployment checklist"""
         checklist = {
@@ -225,7 +225,7 @@ class EnvironmentPreparation:
             "status": "CREATED",
             "details": {}
         }
-        
+
         deployment_checklist = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -251,17 +251,17 @@ class EnvironmentPreparation:
                 {"task": "Conduct team training", "status": "PENDING", "priority": "LOW"}
             ]
         }
-        
+
         checklist_path = self.output_dir / "deployment_checklist.json"
         with open(checklist_path, 'w') as f:
             json.dump(deployment_checklist, f, indent=2)
-        
+
         checklist["details"]["checklist_file"] = str(checklist_path)
         checklist["details"]["total_tasks"] = sum(len(deployment_checklist[phase]) for phase in ["pre_deployment", "deployment", "post_deployment"])
         checklist["message"] = f"Deployment checklist created with {checklist['details']['total_tasks']} tasks"
-        
+
         return checklist
-    
+
     def create_monitoring_config(self) -> Dict[str, Any]:
         """Create monitoring configuration"""
         config = {
@@ -269,7 +269,7 @@ class EnvironmentPreparation:
             "status": "CREATED",
             "details": {}
         }
-        
+
         monitoring_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -310,17 +310,17 @@ class EnvironmentPreparation:
                 ]
             }
         }
-        
+
         config_path = self.output_dir / "monitoring_config.json"
         with open(config_path, 'w') as f:
             json.dump(monitoring_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["metrics_count"] = len(monitoring_config["metrics"])
         config["message"] = "Monitoring configuration created"
-        
+
         return config
-    
+
     def generate_recommendations(self) -> List[Dict[str, Any]]:
         """Generate environment preparation recommendations"""
         recommendations = [
@@ -360,37 +360,37 @@ class EnvironmentPreparation:
                 "action": "Document deployment, monitoring, and troubleshooting procedures"
             }
         ]
-        
+
         return recommendations
-    
+
     def run_preparation(self):
         """Run complete environment preparation"""
         print("=" * 80)
         print("ABACUS v2.1 - Stage 2.1: Environment Preparation")
         print("=" * 80)
         print()
-        
+
         print("Running environment checks...")
         self.results["checks"].append(self.check_python_environment())
         self.results["checks"].append(self.check_required_directories())
         self.results["checks"].append(self.check_configuration_files())
         self.results["checks"].append(self.check_core_modules())
-        
+
         print("\nCreating configurations...")
         self.results["configurations"].append(self.create_environment_config())
         self.results["configurations"].append(self.create_deployment_checklist())
         self.results["configurations"].append(self.create_monitoring_config())
-        
+
         print("\nGenerating recommendations...")
         self.results["recommendations"] = self.generate_recommendations()
-        
+
         self.save_results()
         self.generate_report()
-        
+
         print("\n" + "=" * 80)
         print("Environment Preparation Complete")
         print("=" * 80)
-    
+
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "environment_preparation_results.json"
