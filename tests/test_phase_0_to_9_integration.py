@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from datetime import datetime
 
 class TestPhase0Initialization:
-    
+
     def test_environment_setup(self):
         env_config = {
             "python_version": "3.10+",
@@ -22,7 +22,7 @@ class TestPhase0Initialization:
         }
         assert env_config["dependencies_installed"] is True
         assert env_config["workspace_ready"] is True
-    
+
     def test_configuration_loading(self):
         config = {
             "github_token": "test_token",
@@ -32,7 +32,7 @@ class TestPhase0Initialization:
         }
         assert config["sync_enabled"] is True
         assert config["github_token"] is not None
-    
+
     def test_directory_structure(self, tmp_path):
         required_dirs = [
             tmp_path / "data",
@@ -43,7 +43,7 @@ class TestPhase0Initialization:
         for dir_path in required_dirs:
             dir_path.mkdir(parents=True, exist_ok=True)
             assert dir_path.exists()
-    
+
     def test_logging_initialization(self):
         log_config = {
             "level": "INFO",
@@ -54,7 +54,7 @@ class TestPhase0Initialization:
         assert "file" in log_config["output"]
 
 class TestPhase1BridgeInitialization:
-    
+
     def test_bridge_creation(self):
         bridge_config = {
             "name": "ArianaDOWBridge",
@@ -63,7 +63,7 @@ class TestPhase1BridgeInitialization:
         }
         assert bridge_config["status"] == "initialized"
         assert bridge_config["version"] == "1.0.0"
-    
+
     def test_dow_detection(self):
         dow_status = {
             "detected": True,
@@ -72,7 +72,7 @@ class TestPhase1BridgeInitialization:
         }
         assert dow_status["detected"] is True
         assert dow_status["level"] == 3
-    
+
     def test_bridge_health_check(self):
         health = {
             "status": "healthy",
@@ -84,7 +84,7 @@ class TestPhase1BridgeInitialization:
         }
         assert health["status"] == "healthy"
         assert all(health["checks"].values())
-    
+
     def test_bridge_registration(self):
         registration = {
             "agent_id": f"ariana_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
@@ -95,7 +95,7 @@ class TestPhase1BridgeInitialization:
         assert "ariana_" in registration["agent_id"]
 
 class TestPhase2AgentRegistration:
-    
+
     def test_agent_creation(self):
         agent = {
             "id": "ariana_agent_001",
@@ -105,7 +105,7 @@ class TestPhase2AgentRegistration:
         }
         assert agent["status"] == "active"
         assert len(agent["capabilities"]) > 0
-    
+
     def test_capability_registration(self):
         capabilities = {
             "github_sync": True,
@@ -114,7 +114,7 @@ class TestPhase2AgentRegistration:
             "trace_logging": True
         }
         assert all(capabilities.values())
-    
+
     def test_registry_update(self, tmp_path):
         registry_file = tmp_path / "AGENTS_REGISTRY.json"
         registry_data = {
@@ -130,7 +130,7 @@ class TestPhase2AgentRegistration:
         assert registry_file.exists()
         loaded = json.loads(registry_file.read_text())
         assert len(loaded["agents"]) == 1
-    
+
     def test_session_creation(self):
         session = {
             "session_id": f"session_{int(time.time())}",
@@ -142,7 +142,7 @@ class TestPhase2AgentRegistration:
         assert "session_" in session["session_id"]
 
 class TestPhase3HealthMonitoring:
-    
+
     def test_health_status_creation(self):
         health = {
             "status": "healthy",
@@ -155,7 +155,7 @@ class TestPhase3HealthMonitoring:
         }
         assert health["status"] == "healthy"
         assert all(v == "healthy" for v in health["components"].values())
-    
+
     def test_health_monitoring_interval(self):
         monitor_config = {
             "enabled": True,
@@ -164,7 +164,7 @@ class TestPhase3HealthMonitoring:
         }
         assert monitor_config["enabled"] is True
         assert monitor_config["interval_seconds"] > 0
-    
+
     def test_health_persistence(self, tmp_path):
         health_file = tmp_path / "ariana_health.json"
         health_data = {
@@ -174,7 +174,7 @@ class TestPhase3HealthMonitoring:
         }
         health_file.write_text(json.dumps(health_data, indent=2))
         assert health_file.exists()
-    
+
     def test_health_alerts(self):
         alert_config = {
             "enabled": True,
@@ -185,7 +185,7 @@ class TestPhase3HealthMonitoring:
         assert "error" in alert_config["severity_levels"]
 
 class TestPhase4StateSynchronization:
-    
+
     def test_sync_configuration(self):
         sync_config = {
             "enabled": True,
@@ -200,7 +200,7 @@ class TestPhase4StateSynchronization:
         }
         assert sync_config["enabled"] is True
         assert len(sync_config["sync_targets"]) > 0
-    
+
     def test_state_persistence(self, tmp_path):
         state_file = tmp_path / "state.json"
         state_data = {
@@ -212,7 +212,7 @@ class TestPhase4StateSynchronization:
         assert state_file.exists()
         loaded = json.loads(state_file.read_text())
         assert loaded["phase"] == 4
-    
+
     def test_sync_targets(self):
         targets = {
             "session_state": {"synced": True, "last_sync": time.time()},
@@ -220,7 +220,7 @@ class TestPhase4StateSynchronization:
             "health_status": {"synced": True, "last_sync": time.time()}
         }
         assert all(t["synced"] for t in targets.values())
-    
+
     @pytest.mark.asyncio
     async def test_async_sync_operation(self):
         sync_result = {
@@ -233,7 +233,7 @@ class TestPhase4StateSynchronization:
         assert sync_result["status"] == "completed"
 
 class TestPhase5TraceLogging:
-    
+
     def test_trace_log_creation(self, tmp_path):
         trace_file = tmp_path / "trace_log.json"
         trace_data = {
@@ -249,7 +249,7 @@ class TestPhase5TraceLogging:
         }
         trace_file.write_text(json.dumps(trace_data, indent=2))
         assert trace_file.exists()
-    
+
     def test_trace_entry_format(self):
         trace_entry = {
             "trace_id": f"trace_{int(time.time())}",
@@ -261,7 +261,7 @@ class TestPhase5TraceLogging:
         }
         assert trace_entry["status"] in ["success", "failure", "pending"]
         assert trace_entry["duration"] >= 0
-    
+
     def test_trace_aggregation(self):
         traces = [
             {"duration": 0.1, "status": "success"},
@@ -271,7 +271,7 @@ class TestPhase5TraceLogging:
         avg_duration = sum(t["duration"] for t in traces) / len(traces)
         assert avg_duration > 0
         assert all(t["status"] == "success" for t in traces)
-    
+
     def test_trace_filtering(self):
         all_traces = [
             {"level": "INFO", "message": "test1"},
@@ -282,7 +282,7 @@ class TestPhase5TraceLogging:
         assert len(error_traces) == 1
 
 class TestPhase6ExecutionFlow:
-    
+
     @pytest.mark.asyncio
     async def test_execution_pipeline(self):
         pipeline_steps = [
@@ -300,7 +300,7 @@ class TestPhase6ExecutionFlow:
             completed.append(step)
         assert len(completed) == len(pipeline_steps)
         assert completed[-1] == "complete"
-    
+
     def test_execution_context(self):
         context = {
             "session_id": "exec_001",
@@ -310,7 +310,7 @@ class TestPhase6ExecutionFlow:
         }
         assert context["session_id"] is not None
         assert context["environment"] == "test"
-    
+
     def test_execution_result(self):
         result = {
             "status": "completed",
@@ -320,7 +320,7 @@ class TestPhase6ExecutionFlow:
         }
         assert result["status"] == "completed"
         assert len(result["errors"]) == 0
-    
+
     @pytest.mark.asyncio
     async def test_parallel_execution(self):
         tasks = []
@@ -331,7 +331,7 @@ class TestPhase6ExecutionFlow:
         assert all(t.done() for t in tasks)
 
 class TestPhase7ResultPersistence:
-    
+
     def test_result_storage(self, tmp_path):
         result_file = tmp_path / "ariana_agent_result.json"
         result_data = {
@@ -344,7 +344,7 @@ class TestPhase7ResultPersistence:
         assert result_file.exists()
         loaded = json.loads(result_file.read_text())
         assert loaded["status"] == "completed"
-    
+
     def test_result_validation(self):
         result = {
             "status": "completed",
@@ -354,14 +354,14 @@ class TestPhase7ResultPersistence:
         assert "status" in result
         assert "data" in result
         assert result["data"]["items"] > 0
-    
+
     def test_result_archival(self, tmp_path):
         archive_dir = tmp_path / "archives"
         archive_dir.mkdir(exist_ok=True)
         archive_file = archive_dir / f"result_{int(time.time())}.json"
         archive_file.write_text(json.dumps({"archived": True}))
         assert archive_file.exists()
-    
+
     def test_result_retrieval(self, tmp_path):
         result_file = tmp_path / "result.json"
         test_data = {"id": 1, "value": "test"}
@@ -370,7 +370,7 @@ class TestPhase7ResultPersistence:
         assert retrieved == test_data
 
 class TestPhase8ErrorHandling:
-    
+
     def test_error_detection(self):
         try:
             raise ValueError("Test error")
@@ -382,44 +382,44 @@ class TestPhase8ErrorHandling:
             }
             assert error_info["handled"] is True
             assert error_info["type"] == "ValueError"
-    
+
     def test_fallback_mechanism(self):
         primary_available = False
         fallback_available = True
-        
+
         if not primary_available and fallback_available:
             mode = "fallback"
         else:
             mode = "primary"
-        
+
         assert mode == "fallback"
-    
+
     def test_error_recovery(self):
         max_retries = 3
         retry_count = 0
         success = False
-        
+
         while retry_count < max_retries and not success:
             retry_count += 1
             if retry_count == 2:
                 success = True
-        
+
         assert success is True
         assert retry_count <= max_retries
-    
+
     def test_graceful_degradation(self):
         services = {
             "critical": {"available": True, "required": True},
             "optional": {"available": False, "required": False}
         }
-        
+
         can_operate = all(
             s["available"] for s in services.values() if s["required"]
         )
         assert can_operate is True
 
 class TestPhase9EndToEndIntegration:
-    
+
     @pytest.mark.asyncio
     async def test_full_integration_flow(self):
         phases = [
@@ -434,15 +434,15 @@ class TestPhase9EndToEndIntegration:
             "Phase 8: Error Handling",
             "Phase 9: Integration Complete"
         ]
-        
+
         completed_phases = []
         for phase in phases:
             await asyncio.sleep(0.01)
             completed_phases.append(phase)
-        
+
         assert len(completed_phases) == 10
         assert "Phase 9" in completed_phases[-1]
-    
+
     def test_integration_validation(self):
         validation_results = {
             "bridge_initialized": True,
@@ -455,7 +455,7 @@ class TestPhase9EndToEndIntegration:
             "error_handling_tested": True
         }
         assert all(validation_results.values())
-    
+
     def test_system_metrics(self):
         metrics = {
             "bridge_init_time": 1.5,
@@ -466,7 +466,7 @@ class TestPhase9EndToEndIntegration:
         }
         assert metrics["total_e2e_time"] < 5.0
         assert metrics["memory_usage_mb"] < 100
-    
+
     def test_production_readiness(self):
         readiness_checks = {
             "all_tests_passing": True,
@@ -480,11 +480,11 @@ class TestPhase9EndToEndIntegration:
             "state_persistence_working": True,
             "cicd_pipeline_ready": True
         }
-        
+
         confidence_level = sum(readiness_checks.values()) / len(readiness_checks)
         assert confidence_level == 1.0
         assert all(readiness_checks.values())
-    
+
     @pytest.mark.asyncio
     async def test_github_roundtrip(self):
         roundtrip_steps = [
@@ -496,16 +496,16 @@ class TestPhase9EndToEndIntegration:
             "local_state_updated",
             "sync_verified"
         ]
-        
+
         completed = []
         for step in roundtrip_steps:
             await asyncio.sleep(0.01)
             completed.append(step)
-        
+
         assert len(completed) == len(roundtrip_steps)
         assert completed[0] == "local_change_detected"
         assert completed[-1] == "sync_verified"
-    
+
     def test_integration_points(self):
         integration_points = {
             "dow_hierarchy": {"status": "active", "level": 3},
@@ -521,7 +521,7 @@ class TestPhase9EndToEndIntegration:
             "result_persistence": {"status": "working"},
             "log_management": {"status": "active"}
         }
-        
+
         assert all("status" in point for point in integration_points.values())
         assert integration_points["dow_hierarchy"]["level"] == 3
 
