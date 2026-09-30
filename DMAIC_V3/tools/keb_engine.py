@@ -35,7 +35,7 @@ class CryoMetrics:
     pressure_unit: str
     status: CaseStatus
     case_id: str
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             'temperature': self.temperature,
@@ -49,25 +49,25 @@ class CryoMetrics:
 class KEBEngine:
     """
     Knowledge Engineering Base Engine
-    
+
     Responsibilities:
     - QPLANT case parsing
     - Cryo metrics extraction (temperature, pressure)
     - RTM (Requirements Traceability Matrix) mapping
     - Status tracking and updates
     """
-    
+
     def __init__(self):
         self.rtm_mappings = self._load_rtm_mappings()
         self.metrics_cache: Dict[str, CryoMetrics] = {}
-    
+
     def extract_metrics(self, qplant_path: Path) -> Dict[str, Any]:
         """
         Extract metrics from QPLANT cases
-        
+
         Args:
             qplant_path: Path to QPLANT inputs directory
-        
+
         Returns:
             Extracted metrics with RTM mappings
         """
@@ -92,30 +92,30 @@ class KEBEngine:
             'status_changes': [],
             'notifications': []
         }
-        
+
         # Process QPLANT case files
         if not qplant_path.exists():
             return results
-        
+
         case_files = list(qplant_path.rglob("*.txt"))
         temperatures = []
         pressures = []
-        
+
         for case_file in case_files:
             case_id = case_file.stem
             metrics = self._parse_qplant_case(case_file)
-            
+
             if metrics:
                 results['cryo_metrics'][case_id] = metrics.to_dict()
                 results['rtm_mappings'][case_id] = self._get_rtm_mapping(case_id)
                 results['qplant_cases_processed'] += 1
-                
+
                 temperatures.append(metrics.temperature)
                 pressures.append(metrics.pressure)
-                
+
                 # Update status summary
                 results['status_summary'][metrics.status.value] += 1
-                
+
                 if metrics.status == CaseStatus.ACTIVE:
                     results['metrics_summary']['active_cases'] += 1
                 elif metrics.status == CaseStatus.PENDING:
@@ -124,34 +124,34 @@ class KEBEngine:
                     results['metrics_summary']['completed_cases'] += 1
                 elif metrics.status == CaseStatus.FAILED:
                     results['metrics_summary']['failed_cases'] += 1
-        
+
         # Calculate averages
         if temperatures:
             results['metrics_summary']['avg_temperature'] = sum(temperatures) / len(temperatures)
         if pressures:
             results['metrics_summary']['avg_pressure'] = sum(pressures) / len(pressures)
-        
+
         return results
-    
+
     def _parse_qplant_case(self, case_file: Path) -> Optional[CryoMetrics]:
         """Parse a QPLANT case file"""
         try:
             content = case_file.read_text()
-            
+
             # Extract temperature
             temp_match = re.search(r'Temperature:\s*([\d.]+)\s*([KkCcFf])', content)
             if not temp_match:
                 return None
             temperature = float(temp_match.group(1))
             temp_unit = temp_match.group(2).upper()
-            
+
             # Extract pressure
             pressure_match = re.search(r'Pressure:\s*([\d.]+)\s*(\w+)', content)
             if not pressure_match:
                 return None
             pressure = float(pressure_match.group(1))
             pressure_unit = pressure_match.group(2)
-            
+
             # Extract status
             status_match = re.search(r'Status:\s*(\w+)', content)
             status = CaseStatus.ACTIVE
@@ -161,7 +161,7 @@ class KEBEngine:
                     status = CaseStatus(status_str)
                 except ValueError:
                     status = CaseStatus.ACTIVE
-            
+
             return CryoMetrics(
                 temperature=temperature,
                 temperature_unit=temp_unit,
@@ -170,11 +170,11 @@ class KEBEngine:
                 status=status,
                 case_id=case_file.stem
             )
-            
+
         except Exception as e:
             print(f"Error parsing {case_file}: {e}")
             return None
-    
+
     def _get_rtm_mapping(self, case_id: str) -> List[str]:
         """Get RTM mappings for a case"""
         # Simple mapping based on case ID
@@ -186,7 +186,7 @@ class KEBEngine:
             return ['REQ-003', 'REQ-007']
         else:
             return ['REQ-000']
-    
+
     def _load_rtm_mappings(self) -> Dict[str, List[str]]:
         """Load RTM mappings from configuration"""
         return {
