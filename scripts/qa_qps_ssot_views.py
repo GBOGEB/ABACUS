@@ -31,6 +31,7 @@ def check_xlsx(path: Path) -> list[dict[str, object]]:
     except Exception as exc:
         add("load_workbook", False, repr(exc))
         return checks
+    visible = [ws.title for ws in wb.worksheets if ws.sheet_state == "visible"]
     add("five_visible_sheets", visible == VISIBLE, str(visible))
     add("hidden_support_sheets", all(x in wb.sheetnames and wb[x].sheet_state != "visible" for x in HIDDEN))
     for s in ["MASTER_REVIEW", "NEG_RFI_RETURNS", "EVIDENCE_LINEAGE"]:

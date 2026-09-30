@@ -447,8 +447,6 @@ class TestDockerPerformance:
 
         result = benchmark(parse_compose)
         assert "services" in result, "Failed to parse docker-compose.yml"
-        
-        assert result.stdout.strip() == container_id, "Container should be running"
     
     @pytest.mark.slow
     def test_container_health(self, container_id):
