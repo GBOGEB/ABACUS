@@ -9,10 +9,10 @@ from datetime import datetime
 
 class MetricsCollector:
     """Collects and aggregates metrics"""
-    
+
     def __init__(self):
         self.metrics: Dict[str, Any] = {}
-        
+
     def record(self, key: str, value: Any):
         """Record a metric"""
         if key not in self.metrics:
@@ -21,11 +21,11 @@ class MetricsCollector:
             'value': value,
             'timestamp': datetime.now().isoformat()
         })
-        
+
     def get(self, key: str) -> List[Any]:
         """Get all values for a metric"""
         return self.metrics.get(key, [])
-        
+
     def aggregate(self) -> Dict[str, Any]:
         """Get all metrics"""
         return self.metrics
