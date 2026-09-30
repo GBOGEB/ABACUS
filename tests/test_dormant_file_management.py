@@ -150,10 +150,13 @@ class TestDormantFileDetection:
         thresholds = dormant_config['detection']['thresholds']
         inactive_days = thresholds['inactive_days']
         
-        file_age = datetime.now() - datetime.fromtimestamp(test_file.stat().st_mtime)
+        file_age = max(
+            datetime.now() - datetime.fromtimestamp(test_file.stat().st_mtime),
+            timedelta(0),
+        )
         
         assert test_file.exists()
-        assert file_age.days >= 0
+        assert file_age.days < inactive_days
     
     def test_exclusion_patterns(self, dormant_config):
         """Test that exclusion patterns are properly defined"""
