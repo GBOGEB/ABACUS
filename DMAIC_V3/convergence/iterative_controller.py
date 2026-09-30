@@ -3,7 +3,7 @@ Iterative Controller for DMAIC V3.3
 Manages iterative execution with convergence detection
 """
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from datetime import datetime

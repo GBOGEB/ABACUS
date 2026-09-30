@@ -18,13 +18,14 @@ import json
 import argparse
 import subprocess
 from datetime import datetime
+from typing import Dict, Optional
 
 try:
-    from github import Github
+    from github import Github, GithubException
 except ImportError:
     print("Installing required packages...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "PyGithub"])
-    from github import Github
+    from github import Github, GithubException
 
 
 def get_github_token():
