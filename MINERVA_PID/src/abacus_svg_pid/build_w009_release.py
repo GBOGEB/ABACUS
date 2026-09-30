@@ -252,7 +252,9 @@ def write_signoff(summary, seeds_doc, generated):
 
 def write_report(entries, summary, seeds_doc, generated):
     total = summary["total_design_tags"] or 1
-    pct = lambda n: 100.0 * n / total
+
+    def pct(n):
+        return 100.0 * n / total
     md = [
         "# W009 — Commissioning & Final Deliverables Report",
         "",
