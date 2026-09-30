@@ -53,7 +53,7 @@ def test_agent_invoke_returns_expected_structure():
     """Test agent invoke returns proper response structure."""
     agent = DummyAgentClient(provider="test-provider")
     result = agent.invoke("test prompt")
-    
+
     assert "provider" in result
     assert "prompt" in result
     assert "response" in result
@@ -66,7 +66,7 @@ def test_multiple_agents_can_coexist():
     agent1 = DummyAgentClient(provider="openai")
     agent2 = DummyAgentClient(provider="abacus")
     agent3 = DummyAgentClient(provider="codex_mcp")
-    
+
     assert agent1.hello() == "hello from openai"
     assert agent2.hello() == "hello from abacus"
     assert agent3.hello() == "hello from codex_mcp"
@@ -76,7 +76,7 @@ def test_agent_prompt_passthrough():
     """Test that prompts are correctly passed through to responses."""
     agent = DummyAgentClient(provider="test")
     prompts = ["analyze this", "generate code", "explain concept"]
-    
+
     for prompt in prompts:
         result = agent.invoke(prompt)
         assert result["prompt"] == prompt
