@@ -101,6 +101,7 @@ jobs:
             exit 0
           fi
           BRANCH="auto/update-api-docs"
+          git fetch origin "$BRANCH" || true
           git checkout -B "$BRANCH"
           git commit -m "docs: auto-update API docs and deployment matrix"
           git push origin "$BRANCH" --force-with-lease
