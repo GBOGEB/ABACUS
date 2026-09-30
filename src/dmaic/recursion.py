@@ -14,27 +14,27 @@ def should_stop(history: List[Dict[str, Any]],
                rules: List[Dict[str, Any]]) -> Tuple[bool, str]:
     """
     Determine if iteration should stop based on rules
-    
+
     Args:
         history: List of iteration metrics
         rules: List of stop rules (used to extract max_iterations and convergence_threshold)
-        
+
     Returns:
         Tuple of (should_stop, reason)
     """
     if not history:
         return False, "No history"
-    
+
     # Extract max iterations from rules, or use default
     max_iterations = next(
         (rule['value'] for rule in rules if rule.get('type') == 'max_iterations'), 
         DEFAULT_MAX_ITERATIONS
     )
-    
+
     # Check if max iterations reached
     if len(history) >= max_iterations:
         return True, "Maximum iterations reached"
-    
+
     # Check for convergence in metrics if available
     if len(history) >= 3:
         recent = history[-3:]
@@ -48,17 +48,17 @@ def should_stop(history: List[Dict[str, Any]],
             )
             if max(scores) - min(scores) < threshold:
                 return True, "Convergence detected"
-    
+
     return False, "Continue iteration"
 
 
 def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Analyze convergence from iteration history
-    
+
     Args:
         history: List of iteration metrics
-        
+
     Returns:
         Convergence analysis results
     """
@@ -68,9 +68,9 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             'iterations': 0,
             'trend': 'unknown'
         }
-    
+
     iterations = len(history)
-    
+
     # Simple analysis
     if iterations < 2:
         return {
@@ -78,13 +78,13 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             'iterations': iterations,
             'trend': 'insufficient_data'
         }
-    
+
     # Check if we have score metrics
     has_scores = all('score' in item for item in history)
     if has_scores:
         scores = [item['score'] for item in history]
         score_range = max(scores) - min(scores)
-        
+
         # Determine trend
         if scores[-1] > scores[0]:
             trend = 'improving'
@@ -92,7 +92,7 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             trend = 'declining'
         else:
             trend = 'stable'
-        
+
         return {
             'converged': score_range < DEFAULT_CONVERGENCE_THRESHOLD,
             'iterations': iterations,
@@ -100,7 +100,7 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             'score_range': score_range,
             'final_score': scores[-1]
         }
-    
+
     return {
         'converged': False,
         'iterations': iterations,
@@ -111,10 +111,10 @@ def analyze_convergence(history: List[Dict[str, Any]]) -> Dict[str, Any]:
 def generate_stop_rules(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Generate default stop rules from configuration
-    
+
     Args:
         config: Configuration dictionary
-        
+
     Returns:
         List of stop rules
     """
