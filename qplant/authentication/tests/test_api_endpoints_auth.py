@@ -26,10 +26,8 @@ def tmp_db(tmp_path):
 @pytest.fixture
 def auth_app(tmp_db):
     """Create a minimal FastAPI app with authentication middleware."""
-    from api_key_manager import APIKeyManager
     from rate_limiter import RateLimiter
     from fastapi import Security, HTTPException, status
-    from fastapi.security import APIKeyHeader
 
     mgr = APIKeyManager(keys_db_path=tmp_db)
     limiter = RateLimiter()
