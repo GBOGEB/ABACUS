@@ -13,10 +13,10 @@ from typing import Any, Callable, Dict
 def hash_json(data: Any) -> str:
     """
     Compute SHA256 hash of JSON-serializable data
-    
+
     Args:
         data: JSON-serializable data to hash
-        
+
     Returns:
         Hexadecimal hash string
     """
@@ -79,10 +79,10 @@ def idempotent(run_key_fn: Callable, cache_dir: Any = None) -> Callable:
 def compute_file_hash(file_path: Path) -> str:
     """
     Compute SHA256 hash of a file
-    
+
     Args:
         file_path: Path to file
-        
+
     Returns:
         Hexadecimal hash string
     """
