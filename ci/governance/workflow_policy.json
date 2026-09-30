@@ -307,6 +307,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^dab-flake8-census\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
