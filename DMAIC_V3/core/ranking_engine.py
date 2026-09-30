@@ -4,7 +4,6 @@
 # Description: Auto-generated version header
 """
 
-from typing import Any
 """
 DMAIC V3 - Ranking Engine
 Self-ranking and global ranking system for files, modules, and executions

@@ -4,7 +4,6 @@
 # Description: Auto-generated version header
 """
 
-from typing import Any
 """
 DMAIC V3 - Canonical Index System
 Global naming, versioning, and metadata standards for all artifacts
