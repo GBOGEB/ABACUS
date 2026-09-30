@@ -172,7 +172,7 @@ def get_github_token():
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
-    except:
+    except (subprocess.SubprocessError, OSError):
         pass
 
     token = os.environ.get('GITHUB_TOKEN')
@@ -221,7 +221,7 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except:
+        except (subprocess.SubprocessError, OSError):
             pass
 
     if not repo_name:
