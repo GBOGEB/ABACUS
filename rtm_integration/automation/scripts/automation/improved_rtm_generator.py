@@ -10,7 +10,7 @@ class ImprovedCryoplantRTMGenerator:
     def __init__(self):
         self.requirements = []
         self.sbs_structure = self._initialize_sbs_structure()
-        
+
     def _initialize_sbs_structure(self):
         """Initialize the hierarchical SBS structure as specified"""
         return {
@@ -29,7 +29,7 @@ class ImprovedCryoplantRTMGenerator:
                 "children": ["QPLANT", "QINFRA", "QCELL", "QDIST"],
                 "description": "Overall project requirements and constraints"
             },
-            
+
             # Level 1 - Major Subsystems
             "QPLANT": {
                 "name": "Cryoplant",
@@ -59,7 +59,7 @@ class ImprovedCryoplantRTMGenerator:
                 "children": [],
                 "description": "CSS cryogenic USER - distribution lines and headers"
             },
-            
+
             # Level 2 - Major Components
             "WCS": {
                 "name": "Warm Compressor Station",
@@ -75,7 +75,7 @@ class ImprovedCryoplantRTMGenerator:
                 "children": ["CC", "TURBINES", "BATH-4K", "BATH-2K"],
                 "description": "Cold box containing refrigeration equipment and heat exchangers"
             },
-            
+
             # Level 3 - Sub-Components  
             "PVPS": {
                 "name": "Pressure Vessel & Piping System",
@@ -123,11 +123,11 @@ class ImprovedCryoplantRTMGenerator:
 
     def extract_requirements_from_pdf_text(self):
         """Extract requirements directly from the PDF content we already read"""
-        
+
         # Read the PDF content that was already processed
         with open('/home/ubuntu/Uploads/cryoplant_requirements.pdf', 'r', errors='ignore') as f:
             content = f.read()
-        
+
         # Manual extraction of known RTM requirements from the document analysis
         requirements_data = [
             {
@@ -243,7 +243,7 @@ class ImprovedCryoplantRTMGenerator:
                 'numerical_value': '2,900 L LHe'
             }
         ]
-        
+
         # Convert to standardized format
         processed_requirements = []
         for req_data in requirements_data:
@@ -251,7 +251,7 @@ class ImprovedCryoplantRTMGenerator:
             verification_method = self._determine_verification_method(req_data['description'])
             acceptance_criteria = self._generate_acceptance_criteria(req_data['description'])
             req_type = self._determine_requirement_type(req_data['description'])
-            
+
             requirement = {
                 'req_id': req_data['req_id'],
                 'description': req_data['description'],
@@ -272,21 +272,21 @@ class ImprovedCryoplantRTMGenerator:
                 'category': req_data['category'],
                 'numerical_value': req_data['numerical_value']
             }
-            
+
             processed_requirements.append(requirement)
-        
+
         return processed_requirements
-    
+
     def _assign_to_sbs(self, req_id, req_text):
         """Assign requirement to SBS levels based on content analysis"""
         text_lower = req_text.lower()
-        
+
         # Level 0 assignment
         if any(keyword in text_lower for keyword in ['lifetime', 'project', 'overall', 'system']):
             l0 = 'QSYS-PR'
         else:
             l0 = 'QSYS'
-            
+
         # Level 1 assignment  
         if any(keyword in text_lower for keyword in ['compressor', 'compression', 'wcs']):
             l1 = 'QPLANT'
@@ -298,7 +298,7 @@ class ImprovedCryoplantRTMGenerator:
             l1 = 'QINFRA'
         else:
             l1 = 'QPLANT'
-            
+
         # Level 2 assignment
         if any(keyword in text_lower for keyword in ['warm compressor', 'wcs']):
             l2 = 'WCS'
@@ -306,7 +306,7 @@ class ImprovedCryoplantRTMGenerator:
             l2 = 'QRB'
         else:
             l2 = 'WCS' if l1 == 'QPLANT' else ''
-            
+
         # Level 3 assignment
         l3 = ''
         if l2 == 'WCS':
@@ -323,13 +323,13 @@ class ImprovedCryoplantRTMGenerator:
                 l3 = 'BATH-2K'
             elif any(keyword in text_lower for keyword in ['cold compressor', 'cc']):
                 l3 = 'CC'
-                
+
         return {'l0': l0, 'l1': l1, 'l2': l2, 'l3': l3}
-    
+
     def _determine_verification_method(self, req_text):
         """Determine verification method based on requirement content"""
         text_lower = req_text.lower()
-        
+
         if any(keyword in text_lower for keyword in ['test', 'testing', 'acceptance']):
             return 'Test'
         elif any(keyword in text_lower for keyword in ['analysis', 'calculation', 'design']):
@@ -340,14 +340,14 @@ class ImprovedCryoplantRTMGenerator:
             return 'Demonstration'
         else:
             return 'Test'  # Default for operational requirements
-    
+
     def _generate_acceptance_criteria(self, req_text):
         """Generate acceptance criteria based on requirement text"""
         text_lower = req_text.lower()
-        
+
         # Extract numerical values if present
         numbers = re.findall(r'(\d+(?:\.\d+)?)\s*([kmgtw]?[wvapk]?|bar|days?|years?|hours?|%|cycles?)', text_lower)
-        
+
         if numbers:
             criteria = []
             for num, unit in numbers[:3]:  # Limit to first 3 matches to avoid clutter
@@ -366,11 +366,11 @@ class ImprovedCryoplantRTMGenerator:
             return '; '.join(criteria) if criteria else "Compliance with requirement as specified"
         else:
             return "Compliance with requirement as specified"
-    
+
     def _determine_requirement_type(self, req_text):
         """Determine type of requirement"""
         text_lower = req_text.lower()
-        
+
         if any(keyword in text_lower for keyword in ['performance', 'capacity', 'power', 'efficiency', 'flow', 'rate']):
             return 'Performance'
         elif any(keyword in text_lower for keyword in ['safety', 'protection', 'interlock', 'purge']):
@@ -383,22 +383,22 @@ class ImprovedCryoplantRTMGenerator:
             return 'Design'
         else:
             return 'Functional'
-    
+
     def _determine_priority(self, req_text):
         """Determine requirement priority"""
         text_lower = req_text.lower()
-        
+
         if any(keyword in text_lower for keyword in ['critical', 'safety', 'shall', 'must']):
             return 'High'
         elif any(keyword in text_lower for keyword in ['should', 'recommended', 'may']):
             return 'Medium'
         else:
             return 'High'  # Default for QPLANT requirements
-    
+
     def _generate_rationale(self, req_text):
         """Generate rationale for the requirement"""
         text_lower = req_text.lower()
-        
+
         if 'safety' in text_lower or 'purge' in text_lower:
             return "Required for safe operation of cryogenic system"
         elif any(keyword in text_lower for keyword in ['performance', 'capacity', 'flow']):
@@ -419,7 +419,7 @@ class ImprovedCryoplantRTMGenerator:
             'transient': ['RTM-06', 'RTM-07', 'RTM-08', 'RTM-09', 'RTM-010', 'RTM-011', 'RTM-012'],
             'other_ops': ['RTM-013', 'RTM-014', 'RTM-015', 'RTM-016']
         }
-        
+
         # Establish relationships within groups
         for group_name, req_ids in operational_groups.items():
             if len(req_ids) > 1:
@@ -430,13 +430,13 @@ class ImprovedCryoplantRTMGenerator:
                         req['child_requirements'] = req_ids[1:]
                     elif req['req_id'] in req_ids[1:]:
                         req['parent_requirements'] = [parent_id]
-        
+
         return requirements
 
     def create_rtm_dataframe(self, requirements):
         """Create RTM DataFrame"""
         rtm_data = []
-        
+
         for req in requirements:
             rtm_data.append({
                 'Requirement ID': req['req_id'],
@@ -458,13 +458,13 @@ class ImprovedCryoplantRTMGenerator:
                 'Rationale': req['rationale'],
                 'Numerical Value': req.get('numerical_value', 'N/A')
             })
-        
+
         return pd.DataFrame(rtm_data)
 
     def create_sbs_dataframe(self):
         """Create SBS structure DataFrame"""
         sbs_data = []
-        
+
         for sbs_id, sbs_info in self.sbs_structure.items():
             sbs_data.append({
                 'SBS ID': sbs_id,
@@ -474,7 +474,7 @@ class ImprovedCryoplantRTMGenerator:
                 'Children': ', '.join(sbs_info['children']),
                 'Description': sbs_info['description']
             })
-        
+
         return pd.DataFrame(sbs_data)
 
     def generate_rtm_excel(self, requirements, output_path):
@@ -483,11 +483,11 @@ class ImprovedCryoplantRTMGenerator:
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_colwidth', None)
-        
+
         # Create DataFrames
         rtm_df = self.create_rtm_dataframe(requirements)
         sbs_df = self.create_sbs_dataframe()
-        
+
         # Create summary statistics
         summary_data = {
             'Metric': [
@@ -524,7 +524,7 @@ class ImprovedCryoplantRTMGenerator:
             ]
         }
         summary_df = pd.DataFrame(summary_data)
-        
+
         # Write to Excel with multiple sheets
         with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
             # Navigation sheet
@@ -540,31 +540,31 @@ class ImprovedCryoplantRTMGenerator:
             }
             nav_df = pd.DataFrame(nav_data)
             nav_df.to_excel(writer, sheet_name='Navigation', index=False)
-            
+
             # Main RTM sheet
             rtm_df.to_excel(writer, sheet_name='RTM', index=False)
-            
+
             # SBS structure sheet
             sbs_df.to_excel(writer, sheet_name='SBS', index=False)
-            
+
             # Summary statistics sheet
             summary_df.to_excel(writer, sheet_name='Summary', index=False)
-            
+
             # Requirements by SBS Level 1
             if len(rtm_df) > 0:
                 sbs_pivot = rtm_df.groupby(['SBS Level 1', 'Requirement Type']).size().unstack(fill_value=0)
                 sbs_pivot.to_excel(writer, sheet_name='BySystem')
-                
+
                 # Requirements by Type and Category
                 type_pivot = rtm_df.groupby(['Category', 'Requirement Type']).size().unstack(fill_value=0)
                 type_pivot.to_excel(writer, sheet_name='ByType')
-        
+
         print(f"RTM Excel workbook created: {output_path}")
         return output_path
 
     def create_markdown_document(self, requirements, output_path):
         """Create structured markdown document for engineering handover"""
-        
+
         markdown_content = f"""# QPLANT Cryogenic System - Requirements Traceability Matrix
 ## Engineering Handover Document
 
@@ -618,7 +618,7 @@ The QPLANT system is organized according to the following hierarchical structure
 ## Requirements Breakdown
 
 """
-        
+
         # Group requirements by category
         categories = {}
         for req in requirements:
@@ -626,10 +626,10 @@ The QPLANT system is organized according to the following hierarchical structure
             if cat not in categories:
                 categories[cat] = []
             categories[cat].append(req)
-        
+
         for category, reqs in categories.items():
             markdown_content += f"### {category} Requirements\n\n"
-            
+
             for req in reqs:
                 markdown_content += f"#### {req['req_id']}\n"
                 markdown_content += f"**Description:** {req['description']}\n\n"
@@ -642,14 +642,14 @@ The QPLANT system is organized according to the following hierarchical structure
                 markdown_content += f"**Verification Method:** {req['verification_method']}  \n"
                 markdown_content += f"**Acceptance Criteria:** {req['acceptance_criteria']}  \n"
                 markdown_content += f"**Rationale:** {req['rationale']}\n\n"
-                
+
                 if req['parent_requirements']:
                     markdown_content += f"**Parent Requirements:** {', '.join(req['parent_requirements'])}  \n"
                 if req['child_requirements']:
                     markdown_content += f"**Child Requirements:** {', '.join(req['child_requirements'])}  \n"
-                
+
                 markdown_content += "---\n\n"
-        
+
         # Add traceability matrix section
         markdown_content += """
 ## Traceability Matrix Summary
@@ -657,7 +657,7 @@ The QPLANT system is organized according to the following hierarchical structure
 | SBS Level 1 | Requirements Count | High Priority | Safety Critical |
 |-------------|-------------------|---------------|-----------------|
 """
-        
+
         sbs_summary = {}
         for req in requirements:
             sbs_l1 = req['sbs_l1']
@@ -668,10 +668,10 @@ The QPLANT system is organized according to the following hierarchical structure
                 sbs_summary[sbs_l1]['high'] += 1
             if req['requirement_type'] == 'Safety':
                 sbs_summary[sbs_l1]['safety'] += 1
-        
+
         for sbs, counts in sbs_summary.items():
             markdown_content += f"| {sbs} | {counts['total']} | {counts['high']} | {counts['safety']} |\n"
-        
+
         markdown_content += f"""
 
 ---
@@ -709,53 +709,53 @@ This RTM is prepared for integration with the existing GitHub infrastructure:
         # Write markdown file
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(markdown_content)
-        
+
         print(f"Markdown document created: {output_path}")
         return output_path
 
 def main():
     print("🚀 Improved Cryoplant RTM Generator Starting...")
-    
+
     # Initialize generator
     generator = ImprovedCryoplantRTMGenerator()
-    
+
     print("📖 Extracting requirements from documents...")
     # Extract requirements using improved method
     requirements = generator.extract_requirements_from_pdf_text()
-    
+
     print(f"✅ Found {len(requirements)} requirements")
-    
+
     # Establish relationships
     print("🔗 Establishing parent-child relationships...")
     requirements = generator.establish_parent_child_relationships(requirements)
-    
+
     # Generate Excel RTM
     print("📊 Generating Excel RTM workbook...")
     excel_path = "/home/ubuntu/QPLANT_Requirements_Traceability_Matrix_v2.xlsx"
     generator.generate_rtm_excel(requirements, excel_path)
-    
+
     # Generate Markdown document
     print("📝 Generating Markdown engineering handover document...")
     markdown_path = "/home/ubuntu/QPLANT_RTM_Engineering_Handover.md"
     generator.create_markdown_document(requirements, markdown_path)
-    
+
     # Save requirements as JSON for further processing
     json_path = "/home/ubuntu/qplant_requirements_v2.json"
     with open(json_path, 'w') as f:
         json.dump(requirements, f, indent=2)
-    
+
     print("✨ RTM Generation Complete!")
     print(f"📁 Excel RTM: {excel_path}")
     print(f"📁 Markdown Document: {markdown_path}")
     print(f"📁 JSON Data: {json_path}")
-    
+
     # Display summary
     print("\n📋 Summary:")
     print(f"   Total Requirements: {len(requirements)}")
     print(f"   High Priority: {len([r for r in requirements if r['priority'] == 'High'])}")
     print(f"   Safety Requirements: {len([r for r in requirements if r['requirement_type'] == 'Safety'])}")
     print(f"   Performance Requirements: {len([r for r in requirements if r['requirement_type'] == 'Performance'])}")
-    
+
     return requirements, excel_path, markdown_path
 
 if __name__ == "__main__":
