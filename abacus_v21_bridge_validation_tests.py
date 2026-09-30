@@ -31,7 +31,7 @@ class BridgeValidationSuite:
         self.failed = 0
         self.output_dir = Path("ABACUS_V21_BRIDGE_VALIDATION_OUTPUT")
         self.output_dir.mkdir(exist_ok=True)
-        
+
     def log(self, message: str, level: str = "INFO"):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         colors = {
@@ -43,34 +43,34 @@ class BridgeValidationSuite:
         }
         color = colors.get(level, "\033[0m")
         print(f"[{timestamp}] [{level}] {color}{message}\033[0m")
-    
+
     def test_dmaic_dow_bridge(self) -> bool:
         """Test 1.5.1: DMAIC-DOW Bridge Validation"""
         self.log("🧪 Test 1.5.1: DMAIC-DOW Bridge Validation", "TEST")
-        
+
         try:
             dmaic_output = Path("DMAIC_V3_OUTPUT")
             dow_tracker = Path("DOW_IMPLEMENTATION_TRACKER.json")
-            
+
             if not dmaic_output.exists():
                 raise FileNotFoundError("DMAIC output directory not found")
             if not dow_tracker.exists():
                 raise FileNotFoundError("DOW tracker not found")
-            
+
             with open(dow_tracker, 'r', encoding='utf-8') as f:
                 tracker = json.load(f)
-            
+
             dmaic_phases = ["Define", "Measure", "Analyze", "Improve", "Control"]
             dow_stages = tracker.get("stages", {})
-            
+
             bridge_connections = 0
             for phase in dmaic_phases:
                 phase_dir = dmaic_output / phase
                 if phase_dir.exists() and len(dow_stages) > 0:
                     bridge_connections += 1
-            
+
             bridge_score = (bridge_connections / len(dmaic_phases)) * 100
-            
+
             self.results.append({
                 "test_id": "1.5.1",
                 "test_name": "test_dmaic_dow_bridge",
@@ -86,7 +86,7 @@ class BridgeValidationSuite:
             self.passed += 1
             self.log(f"  ✅ PASS: Bridge score {bridge_score:.1f}%", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.5.1",
@@ -99,30 +99,30 @@ class BridgeValidationSuite:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_recursive_temporal_bridge(self) -> bool:
         """Test 1.5.2: Recursive-Temporal Bridge Validation"""
         self.log("🧪 Test 1.5.2: Recursive-Temporal Bridge Validation", "TEST")
-        
+
         try:
             migration_output = Path("ABACUS_V21_MIGRATION_OUTPUT")
             session_analysis = Path("ABACUS_SESSION_ANALYSIS")
-            
+
             if not migration_output.exists():
                 migration_output.mkdir(exist_ok=True)
                 self.log("  ℹ️  INFO: Created migration output directory", "INFO")
-            
+
             if not session_analysis.exists():
                 session_analysis.mkdir(exist_ok=True)
                 self.log("  ℹ️  INFO: Created session analysis directory", "INFO")
-            
+
             migration_artifacts = list(migration_output.glob("*.md"))
             session_artifacts = list(session_analysis.glob("*.md"))
-            
+
             total_artifacts = len(migration_artifacts) + len(session_artifacts)
-            
+
             bridge_active = migration_output.exists() and session_analysis.exists()
-            
+
             self.results.append({
                 "test_id": "1.5.2",
                 "test_name": "test_recursive_temporal_bridge",
@@ -138,7 +138,7 @@ class BridgeValidationSuite:
             self.passed += 1
             self.log(f"  ✅ PASS: {total_artifacts} knowledge artifacts tracked", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.5.2",
@@ -151,20 +151,20 @@ class BridgeValidationSuite:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_state_configuration_bridge(self) -> bool:
         """Test 1.5.3: State-Configuration Bridge Validation"""
         self.log("🧪 Test 1.5.3: State-Configuration Bridge Validation", "TEST")
-        
+
         try:
             config_files = [
                 "DOW_IMPLEMENTATION_TRACKER.json",
                 "ABACUS_V21_PROGRESS_TRACKER.yaml"
             ]
-            
+
             configs_found = 0
             configs_valid = 0
-            
+
             for config_file in config_files:
                 config_path = Path(config_file)
                 if config_path.exists():
@@ -178,9 +178,9 @@ class BridgeValidationSuite:
                             configs_valid += 1
                     except Exception as e:
                         self.log(f"  ⚠️  WARNING: Config {config_file} invalid: {e}", "WARNING")
-            
+
             bridge_score = (configs_valid / len(config_files)) * 100
-            
+
             self.results.append({
                 "test_id": "1.5.3",
                 "test_name": "test_state_configuration_bridge",
@@ -196,7 +196,7 @@ class BridgeValidationSuite:
             self.passed += 1
             self.log(f"  ✅ PASS: Bridge score {bridge_score:.1f}%", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.5.3",
@@ -209,11 +209,11 @@ class BridgeValidationSuite:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_output_artifact_bridge(self) -> bool:
         """Test 1.5.4: Output-Artifact Bridge Validation"""
         self.log("🧪 Test 1.5.4: Output-Artifact Bridge Validation", "TEST")
-        
+
         try:
             output_dirs = [
                 "DMAIC_V3_OUTPUT",
@@ -223,19 +223,19 @@ class BridgeValidationSuite:
                 "ABACUS_V21_SMOKE_TEST_OUTPUT",
                 "ABACUS_V21_DRY_RUN_OUTPUT"
             ]
-            
+
             dirs_exist = 0
             total_artifacts = 0
-            
+
             for dir_name in output_dirs:
                 dir_path = Path(dir_name)
                 if dir_path.exists():
                     dirs_exist += 1
                     artifacts = list(dir_path.glob("*"))
                     total_artifacts += len(artifacts)
-            
+
             bridge_score = (dirs_exist / len(output_dirs)) * 100
-            
+
             self.results.append({
                 "test_id": "1.5.4",
                 "test_name": "test_output_artifact_bridge",
@@ -251,7 +251,7 @@ class BridgeValidationSuite:
             self.passed += 1
             self.log(f"  ✅ PASS: {total_artifacts} artifacts across {dirs_exist} directories", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.5.4",
@@ -264,22 +264,22 @@ class BridgeValidationSuite:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def run_all_tests(self):
         """Execute all bridge validation tests"""
         self.log("=" * 60, "INFO")
         self.log("ABACUS v2.1 Bridge Validation Suite - Stage 1.5", "INFO")
         self.log("PRE-CD Phase Validation", "INFO")
         self.log("=" * 60, "INFO")
-        
+
         self.test_dmaic_dow_bridge()
         self.test_recursive_temporal_bridge()
         self.test_state_configuration_bridge()
         self.test_output_artifact_bridge()
-        
+
         duration = time.time() - self.start_time
         pass_rate = (self.passed / (self.passed + self.failed) * 100) if (self.passed + self.failed) > 0 else 0
-        
+
         self.log("=" * 60, "INFO")
         self.log("BRIDGE VALIDATION SUMMARY", "INFO")
         self.log("=" * 60, "INFO")
@@ -291,14 +291,14 @@ class BridgeValidationSuite:
             self.log(f"Failed: {self.failed} ❌", "INFO")
         self.log(f"Pass Rate: {pass_rate:.1f}%", "INFO")
         self.log(f"Duration: {duration:.3f}s", "INFO")
-        
+
         if self.failed == 0:
             self.log("Status: ✅ ALL BRIDGES VALIDATED", "SUCCESS")
         else:
             self.log("Status: ❌ SOME BRIDGES FAILED", "ERROR")
-        
+
         self.log("=" * 60, "INFO")
-        
+
         report = {
             "test_suite": "ABACUS v2.1 Bridge Validation",
             "stage": "1.5",
@@ -314,13 +314,13 @@ class BridgeValidationSuite:
             },
             "tests": self.results
         }
-        
+
         report_file = self.output_dir / "abacus_v21_bridge_validation_report.json"
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2)
-        
+
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
-        
+
         return self.failed == 0
 
 if __name__ == "__main__":
