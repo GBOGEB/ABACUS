@@ -11,7 +11,7 @@ def model_scenario(scenario_id, scenario):
     flow = scenario.get("hp_flow_gs", 0)
     n_units = specs["count"]
     per_unit = specs["per_unit_flow_gs"]
-    
+
     # How many compressors needed?
     units_needed = max(1, -(-flow // per_unit))  # ceiling division
     per_unit_actual = flow / min(units_needed, n_units) if units_needed > 0 else 0
@@ -19,9 +19,9 @@ def model_scenario(scenario_id, scenario):
     freq_hz = freq_ratio * specs["frequency_hz"]
     power_per_unit = specs["motor_power_kW"] * freq_ratio**3
     total_power = power_per_unit * min(units_needed, n_units)
-    
+
     capacity_margin = (n_units * per_unit - flow) / flow * 100 if flow > 0 else float("inf")
-    
+
     return {
         "scenario_id": scenario_id,
         "description": scenario["description"],
