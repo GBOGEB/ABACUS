@@ -157,7 +157,7 @@ class SelfImprovementAgent:
                                 'data': data
                             })
                             devoured['total_insights'] += 1
-                    except:
+                    except (OSError, json.JSONDecodeError):
                         pass
 
         # Devour agent registry
@@ -173,7 +173,7 @@ class SelfImprovementAgent:
                 with open(ranking_file) as f:
                     devoured['rankings'].append(json.load(f))
                     devoured['total_insights'] += 1
-            except:
+            except (OSError, json.JSONDecodeError):
                 pass
 
         return devoured

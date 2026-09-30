@@ -383,7 +383,7 @@ class TemporalMetadataEngine:
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        except:
+        except OSError:
             return "error_computing_hash"
 
     def _analyze_python_file(self,
@@ -415,7 +415,7 @@ class TemporalMetadataEngine:
             exports = functions + classes
 
             return dependencies, imports, exports, functions, classes
-        except:
+        except (OSError, IndexError):
             return [], [], [], [], []
 
     def _extract_folder_metadata(self, folder_path: Path) -> FolderMetadata:
