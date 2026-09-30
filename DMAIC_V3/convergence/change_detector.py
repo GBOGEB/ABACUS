@@ -250,7 +250,7 @@ class ChangeDetector:
                 'deleted': sum(1 for c in changes if c['change_type'] == 'deleted'),
                 'timestamp': data.get('timestamp', '')
             }
-        except:
+        except (OSError, json.JSONDecodeError, KeyError, TypeError):
             return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
 
     def get_changed_files(self, file_types=None):
@@ -291,5 +291,5 @@ class ChangeDetector:
             with open(self.changes_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             return data.get('total_changes', 0) > 0
-        except:
+        except (OSError, json.JSONDecodeError, TypeError):
             return True
