@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 
 def main():
     logger.info("Starting RTM generation (legacy wrapper)...")
-    
+
     try:
         generator = RTMGenerator()
         generator.generate_rtm()
         return True
-        
+
     except Exception as e:
         logger.error(f"RTM generation failed: {e}")
         return False
