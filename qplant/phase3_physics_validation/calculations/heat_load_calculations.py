@@ -75,7 +75,7 @@ def calc_shield_equivalent(Q_80K_W):
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
-    
+
     hl = calc_total_heat_load()
     results["calculations"].append({
         "name": "Total 4K Heat Load Summation",
@@ -84,7 +84,7 @@ def run_examples():
         "result": hl,
         "interpretation": f"Total 4K load: {hl['total_4K_W']} W (with 15% margin: {hl['total_with_margin_W']} W)"
     })
-    
+
     cop = calc_carnot_cop(4.5, 300)
     results["calculations"].append({
         "name": "COP at 4.5K Operating Point",
@@ -93,7 +93,7 @@ def run_examples():
         "result": cop,
         "interpretation": f"Carnot COP={cop['cop_carnot']:.4f}, Real COP={cop['cop_real']:.5f} (η=28%)"
     })
-    
+
     pwr = calc_required_power(hl["total_4K_W"], cop["cop_real"])
     results["calculations"].append({
         "name": "Required Compressor Power from Heat Load",
@@ -102,7 +102,7 @@ def run_examples():
         "result": pwr,
         "interpretation": f"Required: {pwr['W_comp_kW']} kW vs installed: {3*348.54:.0f} kW (3× FSD575)"
     })
-    
+
     lhe = calc_lhe_consumption(hl["total_4K_W"])
     results["calculations"].append({
         "name": "LHe Boil-off Rate",
@@ -111,7 +111,7 @@ def run_examples():
         "result": lhe,
         "interpretation": f"Boil-off: {lhe['boiloff_g_s']} g/s = {lhe['boiloff_L_h']} L/h = {lhe['boiloff_L_day']} L/day"
     })
-    
+
     shield = calc_shield_equivalent(heat["thermal_shield_80K_W"])
     results["calculations"].append({
         "name": "80K Shield Equivalent at 4K",
@@ -120,20 +120,20 @@ def run_examples():
         "result": shield,
         "interpretation": f"2500 W at 80K ≡ {shield['Q_4K_equivalent_W']} W at 4K"
     })
-    
+
     return results
 
 def test():
     hl = calc_total_heat_load()
     assert hl["total_4K_W"] == 280, f"Expected 280W total, got {hl['total_4K_W']}"
-    
+
     cop = calc_carnot_cop(4.5, 300)
     assert 0.01 < cop["cop_carnot"] < 0.02
     assert cop["cop_real"] < cop["cop_carnot"]
-    
+
     lhe = calc_lhe_consumption(200)
     assert 9 < lhe["boiloff_g_s"] < 10
-    
+
     print("✅ All heat load tests passed!")
 
 if __name__ == "__main__":

@@ -41,12 +41,12 @@ def test_db_schema_has_required_tables(tmp_path):
     conn = sqlite3.connect(db_file)
     try:
         apply_schema(conn)
-        
+
         cur = conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
         )
         tables = [row[0] for row in cur.fetchall()]
-        
+
         expected_tables = ["runs", "phases", "metrics"]
         for table in expected_tables:
             assert table in tables, f"Expected table '{table}' not found in schema"
@@ -60,13 +60,13 @@ def test_db_transaction_rollback(tmp_path):
     conn = sqlite3.connect(db_file)
     try:
         apply_schema(conn)
-        
+
         conn.execute(
             "INSERT INTO runs (name, created_at) VALUES (?, ?)",
             ("rollback-test", "2025-01-01T00:00:00Z"),
         )
         conn.rollback()
-        
+
         cur = conn.execute("SELECT COUNT(*) FROM runs")
         count = cur.fetchone()[0]
         assert count == 0, "Rollback should have prevented insert"
@@ -79,10 +79,10 @@ def test_db_foreign_key_constraints(tmp_path):
     db_file = tmp_path / "test.db"
     conn = sqlite3.connect(db_file)
     conn.execute("PRAGMA foreign_keys = ON")
-    
+
     try:
         apply_schema(conn)
-        
+
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
                 "INSERT INTO phases (run_id, name, status) VALUES (?, ?, ?)",

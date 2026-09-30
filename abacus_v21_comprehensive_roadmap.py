@@ -16,9 +16,9 @@ from datetime import datetime
 
 def generate_comprehensive_roadmap():
     """Generate complete roadmap with all phases and priorities"""
-    
+
     timestamp = datetime.now().isoformat()
-    
+
     roadmap = {
         "version": "2.1.0",
         "timestamp": timestamp,
@@ -427,15 +427,15 @@ def generate_comprehensive_roadmap():
             }
         }
     }
-    
+
     # Save roadmap
     output_dir = Path("ABACUS_V21_ROADMAP")
     output_dir.mkdir(exist_ok=True)
-    
+
     roadmap_path = output_dir / "COMPREHENSIVE_ROADMAP.json"
     with open(roadmap_path, 'w', encoding='utf-8') as f:
         json.dump(roadmap, f, indent=2)
-    
+
     # Generate markdown report
     report = f"""# ABACUS v2.1 - Comprehensive Phase Roadmap
 
@@ -912,11 +912,11 @@ ABACUS v2.1 has successfully completed the PRE-CD phase and is 83% through the P
 *Roadmap generated on {timestamp}*
 *ABACUS v2.1 - Comprehensive Phase Roadmap*
 """
-    
+
     report_path = output_dir / "COMPREHENSIVE_ROADMAP.md"
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write(report)
-    
+
     print("=" * 80)
     print("COMPREHENSIVE ROADMAP GENERATED")
     print("=" * 80)

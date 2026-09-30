@@ -57,15 +57,15 @@ def gas_mass_flow_kg_s(q_mbar_l_s: float, T_K: float, P_bar: float,
                         Z: float = 1.0) -> float:
     """
     Convert volumetric leak rate to mass flow.
-    
+
     ṁ = Q_throughput [Pa·m³/s] × M / (R × T)
-    
+
     Note: Q_throughput in mbar·L/s is already a PV throughput 
     (pressure × volume / time), so it encodes the amount of gas.
     At the measurement reference condition (usually ~room T, ~1 bar),
     Q = P_ref × V̇_ref.  For a fixed Q, the actual mass flow is:
     ṁ = Q [Pa·m³/s] × M / (R × T_ref)
-    
+
     For leaks specified at the *operating* temperature T:
     ṁ = Q [Pa·m³/s] × M / (Z × R × T)
     """
@@ -83,7 +83,7 @@ def liquid_volume_loss_L_s(mass_flow_kg_s: float,
 def compute_liquid_loss(state: LiquidHeState) -> dict:
     """
     Full liquid He loss calculation from a single leak point.
-    
+
     Returns dict with all derived quantities.
     """
     q = state.leak_rate_mbar_l_s
@@ -171,7 +171,7 @@ def inventory_depletion_timeseries(
 ) -> pd.DataFrame:
     """
     Time-series of liquid He inventory level for multiple leak rate scenarios.
-    
+
     Returns DataFrame with columns: day, and one column per leak rate 
     showing remaining liquid volume (L).
     """
@@ -223,7 +223,7 @@ def time_to_threshold(
     loss_L_day = result["liquid_loss_L_day"]
     if loss_L_day <= 0:
         return float("inf")
-    
+
     depletable = initial_volume_L * (1.0 - threshold_fraction)
     return depletable / loss_L_day
 

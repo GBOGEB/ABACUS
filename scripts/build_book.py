@@ -54,7 +54,7 @@ def build_pdf():
         "--variable=citecolor:green",
         "book.yaml",
     ] + BOOK_SOURCES
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode == 0:
         print("✅ PDF built successfully: build/DMAIC_V3_BOOK.pdf")
@@ -79,7 +79,7 @@ def build_html():
         "--self-contained",
         "book.yaml",
     ] + BOOK_SOURCES
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode == 0:
         print("✅ HTML built successfully: build/DMAIC_V3_BOOK.html")
@@ -101,7 +101,7 @@ def build_epub():
         "--number-sections",
         "book.yaml",
     ] + BOOK_SOURCES
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode == 0:
         print("✅ EPUB built successfully: build/DMAIC_V3_BOOK.epub")
@@ -114,27 +114,27 @@ def main():
     """Main build function"""
     print(f"DMAIC V3 Book Builder v{__version__}")
     print(f"Build started: {datetime.now()}")
-    
+
     Path("build").mkdir(exist_ok=True)
-    
+
     missing = [f for f in BOOK_SOURCES if not Path(f).exists()]
     if missing:
         print(f"❌ Missing source files: {missing}")
         sys.exit(1)
-    
+
     results = {
         "PDF": build_pdf(),
         "HTML": build_html(),
         "EPUB": build_epub(),
     }
-    
+
     print(f"\n{'='*60}")
     print(f"Build Summary ({datetime.now()})")
     print(f"{'='*60}")
     for format_name, success in results.items():
         status = "✅ SUCCESS" if success else "❌ FAILED"
         print(f"{format_name:10} {status}")
-    
+
     if all(results.values()):
         print(f"\n✅ All builds complete!")
         print("Output files:")
