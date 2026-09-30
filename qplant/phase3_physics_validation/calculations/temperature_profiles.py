@@ -36,7 +36,7 @@ def calc_cooldown_time(mass_kg, cp_avg, T_start, T_end, cooling_power_W):
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
-    
+
     # Temperature rise from transport heat
     dt1 = calc_temp_rise(heat["non_isothermal_transport_W"], 350, 5210)
     results["calculations"].append({
@@ -46,7 +46,7 @@ def run_examples():
         "result": dt1,
         "interpretation": f"ΔT = {dt1['dT_K']} K — SSOT specifies {heat['equivalent_delta_T_K']} K, {'consistent' if abs(dt1['dT_K'] - heat['equivalent_delta_T_K']) < 2 else 'deviation noted'}"
     })
-    
+
     # Cooldown estimate
     cd = calc_cooldown_time(50000, 400, 300, 4.5, 50000)
     results["calculations"].append({
@@ -56,7 +56,7 @@ def run_examples():
         "result": cd,
         "interpretation": f"Estimated cooldown: {cd['time_h']} hours ({cd['time_days']} days) — aligns with S4 scenario (72h target)"
     })
-    
+
     return results
 
 def test():
