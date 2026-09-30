@@ -90,7 +90,7 @@ class TestMasterDocToRAGIntegration:
 
     def test_document_registration_and_indexing(self, master_doc_manager, rag, sample_content):
         """Test registering document and indexing in RAG"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='ARCH-001',
             doc_type=DocumentType.OCD,
             title='System Architecture',
@@ -113,7 +113,7 @@ class TestMasterDocToRAGIntegration:
 
     def test_query_rag_for_master_doc(self, master_doc_manager, rag, sample_content):
         """Test querying RAG for master document content"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='ARCH-002',
             doc_type=DocumentType.SOR,
             title='Requirements',
@@ -136,7 +136,7 @@ class TestActionToMasterDocLinkage:
     
     def test_create_action_linked_to_document(self, master_doc_manager, action_tracker):
         """Test creating action linked to document"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='DOC-001',
             doc_type=DocumentType.OCD,
             title='Test Document',
@@ -164,7 +164,7 @@ class TestActionToMasterDocLinkage:
 
     def test_multiple_actions_per_document(self, master_doc_manager, action_tracker):
         """Test multiple actions linked to single document"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='DOC-003',
             doc_type=DocumentType.RTM,
             title='Multi-Action Doc',
@@ -200,7 +200,7 @@ class TestEPICTopicConsistency:
         epic = 'GLOOB'
         topics = ['Phase2', 'Week3']
 
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='EPIC-001',
             doc_type=DocumentType.OCD,
             title='EPIC Test',
@@ -237,7 +237,7 @@ class TestFullWorkflow:
     
     def test_document_creation_to_action_completion(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test full workflow from document creation to action completion"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='WF-001',
             doc_type=DocumentType.ADR,
             title='Workflow Test',
@@ -247,7 +247,7 @@ class TestFullWorkflow:
             author='test_user'
         )
         
-        chunk_ids = rag.index_document(
+        rag.index_document(
             doc_id='WF-001',
             content=sample_content,
             epic='GLOOB',
@@ -287,7 +287,7 @@ class TestPersistenceConsistency:
     
     def test_save_and_load_all_components(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test saving and loading all component states"""
-        doc_metadata = master_doc_manager.register_document(
+        master_doc_manager.register_document(
             doc_id='PERSIST-001',
             doc_type=DocumentType.OCD,
             title='Persistence Test',
@@ -301,7 +301,7 @@ class TestPersistenceConsistency:
         rag.index_document(doc_id='PERSIST-001', content=sample_content, epic='GLOOB', topics=['Phase2'])
         rag.save_index()
         
-        action = action_tracker.create_action(
+        action_tracker.create_action(
             action_id='PERSIST-ACT-001',
             title='Persistence Action',
             description='Test persistence',
@@ -329,7 +329,7 @@ class TestCrossComponentReporting:
     def test_generate_all_reports(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test generating reports from all components"""
         for i in range(3):
-            doc_metadata = master_doc_manager.register_document(
+            master_doc_manager.register_document(
                 doc_id=f'RPT-{i+1:03d}',
                 doc_type=DocumentType.OCD,
                 title=f'Report Test {i+1}',
