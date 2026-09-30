@@ -64,17 +64,17 @@ def run_monte_carlo(config: ScenarioConfig, n_runs: int = N_SIMULATIONS) -> pd.D
     for i in range(n_runs):
         # ── Sample helium price ──
         he_price = RNG.triangular(config.he_price_min, config.he_price_mode, config.he_price_max)
-        
+
         # ── Geopolitical disruption ──
         geo_event = RNG.random() < config.geopolitical_disruption_prob
         if geo_event:
             he_price *= config.geopolitical_price_multiplier
-        
+
         total_he_loss_kg = 0.0
         total_replacement_cost = 0.0
         total_downtime_hours = 0.0
         total_failures = 0
-        
+
         for seg in config.fleet:
             # ── He mass loss ──
             he_loss = _he_mass_loss_kg_year(
@@ -83,30 +83,30 @@ def run_monte_carlo(config: ScenarioConfig, n_runs: int = N_SIMULATIONS) -> pd.D
             # Add ±20% variation
             he_loss *= RNG.uniform(0.8, 1.2)
             total_he_loss_kg += he_loss
-            
+
             # ── Valve failures (Poisson from MTBF) ──
             mtbf_sample = max(1000, RNG.normal(seg.mtbf_hours, seg.mtbf_std))
             mtbf_sample /= config.failure_rate_multiplier
             failure_rate = config.operating_hours_per_year / mtbf_sample
             n_failures = RNG.poisson(failure_rate * seg.count)
             total_failures += n_failures
-            
+
             # ── Replacement cost with ±20% variation ──
             cost_per = seg.replacement_cost_eur * RNG.uniform(0.8, 1.2)
             total_replacement_cost += n_failures * cost_per
-            
+
             # ── Downtime ──
             mttr = seg.mttr_hours * config.mttr_multiplier
             total_downtime_hours += n_failures * mttr
-        
+
         # ── Costs ──
         he_cost = total_he_loss_kg * he_price
         total_cost = he_cost + total_replacement_cost
-        
+
         # ── Beam availability impact ──
         beam_hours_year = config.operating_hours_per_year
         availability = max(0, (beam_hours_year - total_downtime_hours) / beam_hours_year * 100)
-        
+
         results.append({
             "run": i,
             "he_price_eur_kg": he_price,
@@ -119,7 +119,7 @@ def run_monte_carlo(config: ScenarioConfig, n_runs: int = N_SIMULATIONS) -> pd.D
             "downtime_hours": total_downtime_hours,
             "beam_availability_pct": availability,
         })
-    
+
     return pd.DataFrame(results)
 
 
@@ -149,34 +149,34 @@ def compute_statistics(df: pd.DataFrame) -> Dict[str, Any]:
 def sensitivity_tornado(df: pd.DataFrame, config: ScenarioConfig) -> pd.DataFrame:
     """Compute sensitivity of total cost to each input variable."""
     base_cost = df["total_cost_eur"].median()
-    
+
     sensitivities = []
-    
+
     # He price sensitivity
     low_he = df[df["he_price_eur_kg"] <= df["he_price_eur_kg"].quantile(0.1)]["total_cost_eur"].median()
     high_he = df[df["he_price_eur_kg"] >= df["he_price_eur_kg"].quantile(0.9)]["total_cost_eur"].median()
     sensitivities.append({"variable": "Helium Price (€/kg)", "low": low_he, "high": high_he, "base": base_cost})
-    
+
     # Failure count sensitivity
     low_f = df[df["total_failures"] <= df["total_failures"].quantile(0.1)]["total_cost_eur"].median()
     high_f = df[df["total_failures"] >= df["total_failures"].quantile(0.9)]["total_cost_eur"].median()
     sensitivities.append({"variable": "Valve Failures (#/yr)", "low": low_f, "high": high_f, "base": base_cost})
-    
+
     # He loss sensitivity
     low_l = df[df["total_he_loss_kg"] <= df["total_he_loss_kg"].quantile(0.1)]["total_cost_eur"].median()
     high_l = df[df["total_he_loss_kg"] >= df["total_he_loss_kg"].quantile(0.9)]["total_cost_eur"].median()
     sensitivities.append({"variable": "He Loss (kg/yr)", "low": low_l, "high": high_l, "base": base_cost})
-    
+
     # Downtime sensitivity
     low_d = df[df["downtime_hours"] <= df["downtime_hours"].quantile(0.1)]["total_cost_eur"].median()
     high_d = df[df["downtime_hours"] >= df["downtime_hours"].quantile(0.9)]["total_cost_eur"].median()
     sensitivities.append({"variable": "Downtime (hrs/yr)", "low": low_d, "high": high_d, "base": base_cost})
-    
+
     # Geopolitical sensitivity
     no_geo = df[~df["geopolitical_event"]]["total_cost_eur"].median()
     yes_geo = df[df["geopolitical_event"]]["total_cost_eur"].median() if df["geopolitical_event"].any() else base_cost
     sensitivities.append({"variable": "Geopolitical Disruption", "low": no_geo, "high": yes_geo, "base": base_cost})
-    
+
     sdf = pd.DataFrame(sensitivities)
     sdf["range"] = sdf["high"] - sdf["low"]
     return sdf.sort_values("range", ascending=True)
