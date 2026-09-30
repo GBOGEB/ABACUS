@@ -30,7 +30,7 @@ from typing import Dict, List, Any
 
 class ABACUSv21SmokeTests:
     """ABACUS v2.1 Smoke Test Suite"""
-    
+
     def __init__(self):
         self.results: List[Dict[str, Any]] = []
         self.passed = 0
@@ -38,16 +38,16 @@ class ABACUSv21SmokeTests:
         self.start_time = time.time()
         self.output_dir = Path("ABACUS_V21_SMOKE_TEST_OUTPUT")
         self.output_dir.mkdir(exist_ok=True)
-        
+
     def log(self, message: str, level: str = "INFO"):
         """Log message with timestamp"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{timestamp}] [{level}] {message}")
-        
+
     def test_smoke_basic_import(self) -> bool:
         """Test 1: Validate core module imports"""
         self.log("🧪 Test 1: Basic Import Validation", "TEST")
-        
+
         try:
             # Test Python standard library imports
             import os
@@ -55,7 +55,7 @@ class ABACUSv21SmokeTests:
             import json
             import pathlib
             from datetime import datetime
-            
+
             # Test that critical directories exist
             critical_dirs = [
                 "DMAIC_V3",
@@ -63,15 +63,15 @@ class ABACUSv21SmokeTests:
                 "ABACUS_V21_DEPLOYMENT_OUTPUT",
                 "ABACUS_SESSION_ANALYSIS"
             ]
-            
+
             missing_dirs = []
             for dir_name in critical_dirs:
                 if not Path(dir_name).exists():
                     missing_dirs.append(dir_name)
-            
+
             if missing_dirs:
                 raise AssertionError(f"Missing critical directories: {missing_dirs}")
-            
+
             self.results.append({
                 "test_id": "1.3.1",
                 "test_name": "test_smoke_basic_import",
@@ -83,7 +83,7 @@ class ABACUSv21SmokeTests:
             self.passed += 1
             self.log("  ✅ PASS: Basic imports validated", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.3.1",
@@ -96,32 +96,32 @@ class ABACUSv21SmokeTests:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_smoke_config_load(self) -> bool:
         """Test 2: Validate configuration loading"""
         self.log("🧪 Test 2: Configuration Load Validation", "TEST")
-        
+
         try:
             # Test YAML progress tracker
             yaml_file = Path("ABACUS_V21_PROGRESS_TRACKER.yaml")
             if not yaml_file.exists():
                 raise FileNotFoundError(f"Progress tracker not found: {yaml_file}")
-            
+
             # Test JSON tracker
             json_file = Path("DOW_IMPLEMENTATION_TRACKER.json")
             if not json_file.exists():
                 raise FileNotFoundError(f"DOW tracker not found: {json_file}")
-            
+
             # Load and validate JSON
             with open(json_file, 'r', encoding='utf-8') as f:
                 tracker_data = json.load(f)
-            
+
             # Validate structure (actual structure has "meta" and "stages")
             required_keys = ["meta", "stages"]
             missing_keys = [key for key in required_keys if key not in tracker_data]
             if missing_keys:
                 raise AssertionError(f"Missing keys in tracker: {missing_keys}")
-            
+
             self.results.append({
                 "test_id": "1.3.2",
                 "test_name": "test_smoke_config_load",
@@ -134,7 +134,7 @@ class ABACUSv21SmokeTests:
             self.passed += 1
             self.log("  ✅ PASS: Configuration loading validated", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.3.2",
@@ -147,11 +147,11 @@ class ABACUSv21SmokeTests:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_smoke_dow_integration(self) -> bool:
         """Test 3: Validate DOW integration"""
         self.log("🧪 Test 3: DOW Integration Validation", "TEST")
-        
+
         try:
             # Check DOW tracker exists
             tracker_file = Path("DOW_IMPLEMENTATION_TRACKER.json")
@@ -205,17 +205,17 @@ class ABACUSv21SmokeTests:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_smoke_dmaic_engine(self) -> bool:
         """Test 4: Validate DMAIC V3 engine"""
         self.log("🧪 Test 4: DMAIC V3 Engine Validation", "TEST")
-        
+
         try:
             # Check DMAIC V3 directory
             dmaic_dir = Path("DMAIC_V3")
             if not dmaic_dir.exists():
                 raise FileNotFoundError("DMAIC_V3 directory not found")
-            
+
             # Check for core DMAIC files
             expected_files = [
                 "DMAIC_V3/tests/test_phase1_define.py",
@@ -313,7 +313,7 @@ class ABACUSv21SmokeTests:
             knowledge = report["knowledge_preservation"]
             if knowledge.get("artifacts_lost", 1) > 0:
                 raise AssertionError(f"Knowledge loss detected: {knowledge['artifacts_lost']} artifacts lost")
-            
+
             self.results.append({
                 "test_id": "1.3.5",
                 "test_name": "test_smoke_recursive_engine",
@@ -327,7 +327,7 @@ class ABACUSv21SmokeTests:
             self.passed += 1
             self.log("  ✅ PASS: Recursive engine validated", "SUCCESS")
             return True
-            
+
         except Exception as e:
             self.results.append({
                 "test_id": "1.3.5",
@@ -340,7 +340,7 @@ class ABACUSv21SmokeTests:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def test_smoke_temporal_engine(self) -> bool:
         """Test 6: Validate Temporal Engine"""
         self.log("🧪 Test 6: Temporal Engine Validation", "TEST")
@@ -418,14 +418,14 @@ class ABACUSv21SmokeTests:
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
-    
+
     def run_all_tests(self):
         """Execute all smoke tests"""
         self.log("=" * 80, "INFO")
         self.log("ABACUS v2.1 Smoke Test Suite - Stage 1.3", "INFO")
         self.log("PRE-CD Phase Validation", "INFO")
         self.log("=" * 80, "INFO")
-        
+
         # Run all tests
         self.test_smoke_basic_import()
         self.test_smoke_config_load()
@@ -433,12 +433,12 @@ class ABACUSv21SmokeTests:
         self.test_smoke_dmaic_engine()
         self.test_smoke_recursive_engine()
         self.test_smoke_temporal_engine()
-        
+
         # Calculate summary
         total_tests = self.passed + self.failed
         pass_rate = (self.passed / total_tests * 100) if total_tests > 0 else 0
         duration = time.time() - self.start_time
-        
+
         # Generate summary
         summary = {
             "test_suite": "ABACUS v2.1 Smoke Tests",
@@ -455,15 +455,15 @@ class ABACUSv21SmokeTests:
             },
             "tests": self.results
         }
-        
+
         # Save JSON report
         json_report = self.output_dir / "abacus_v21_smoke_test_report.json"
         with open(json_report, 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=2)
-        
+
         # Generate markdown report
         self.generate_markdown_report(summary)
-        
+
         # Print summary
         self.log("=" * 80, "INFO")
         self.log("SMOKE TEST SUMMARY", "INFO")
@@ -477,27 +477,27 @@ class ABACUSv21SmokeTests:
                 "SUCCESS" if self.failed == 0 else "ERROR")
         self.log("=" * 80, "INFO")
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
-        
+
         return self.failed == 0
-    
+
     def generate_markdown_report(self, summary: Dict[str, Any]):
         """Generate markdown report"""
         md_report = self.output_dir / "abacus_v21_smoke_test_report.md"
-        
+
         with open(md_report, 'w', encoding='utf-8') as f:
             f.write("# ABACUS v2.1 Smoke Test Report\n\n")
             f.write(f"**Stage:** 1.3 - Smoke Test Validation\n")
             f.write(f"**Phase:** PRE-CD (Pre-Continuous Deployment)\n")
             f.write(f"**Timestamp:** {summary['timestamp']}\n")
             f.write(f"**Duration:** {summary['duration_seconds']:.3f}s\n\n")
-            
+
             f.write("## Summary\n\n")
             f.write(f"- **Total Tests:** {summary['summary']['total_tests']}\n")
             f.write(f"- **Passed:** {summary['summary']['passed']} ✅\n")
             f.write(f"- **Failed:** {summary['summary']['failed']} ❌\n")
             f.write(f"- **Pass Rate:** {summary['summary']['pass_rate']:.1f}%\n")
             f.write(f"- **Status:** {summary['summary']['status']}\n\n")
-            
+
             f.write("## Test Results\n\n")
             for test in summary['tests']:
                 status_icon = "✅" if test['status'] == "PASS" else "❌"
@@ -506,7 +506,7 @@ class ABACUSv21SmokeTests:
                 f.write(f"- **Status:** {test['status']}\n")
                 f.write(f"- **Message:** {test['message']}\n")
                 f.write(f"- **Duration:** {test['duration_seconds']:.3f}s\n\n")
-            
+
             f.write("---\n\n")
             f.write("*Generated by ABACUS v2.1 Smoke Test Suite*\n")
 

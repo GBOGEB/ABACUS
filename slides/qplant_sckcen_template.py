@@ -55,10 +55,10 @@ SLIDE_HEIGHT = Inches(7.5)
 def _text_box(slide, left, top, width, height, text="", font_size=18, bold=False,
               color=TEXT_COLOR, align=PP_ALIGN.LEFT):
     """Create a formatted text box on a slide.
-    
+
     This is a helper function that simplifies adding text to slides with
     consistent formatting. It handles font styling, sizing, and alignment.
-    
+
     Args:
         slide: The slide object to add the text box to
         left: Distance from left edge (in Inches)
@@ -70,7 +70,7 @@ def _text_box(slide, left, top, width, height, text="", font_size=18, bold=False
         bold: Whether to make text bold (default: False)
         color: RGB color for the text (default: TEXT_COLOR)
         align: Text alignment (default: left-aligned)
-    
+
     Returns:
         TextFrame object that can be further customized if needed
     """
@@ -89,11 +89,11 @@ def _text_box(slide, left, top, width, height, text="", font_size=18, bold=False
 
 def _add_footer(slide, doc_number, slide_idx, total_slides):
     """Add a standard footer with document code and page numbers.
-    
+
     Creates a thin blue line above the footer area, then adds the document
     code on the left and page numbers (X/Y format) on the right. This footer
     appears on every slide for consistency.
-    
+
     Args:
         slide: The slide object to add the footer to
         doc_number: Document code (e.g., "SCK CEN/1427")
@@ -126,7 +126,7 @@ def _add_footer(slide, doc_number, slide_idx, total_slides):
         font_size=12,
         color=PRIMARY_COLOR,
     )
-    
+
     # Page numbers on the right side (e.g., "3/6")
     _text_box(
         slide,
@@ -143,10 +143,10 @@ def _add_footer(slide, doc_number, slide_idx, total_slides):
 
 def _title_block(slide, title, subtitle=""):
     """Create the blue header band at the top of a slide.
-    
+
     This creates the distinctive SCK CEN slide header with a deep blue
     background, white title text, and optional lighter subtitle text.
-    
+
     Args:
         slide: The slide object to add the title block to
         title: Main title text (large, bold, white)
@@ -195,14 +195,14 @@ def _title_block(slide, title, subtitle=""):
 
 def _agenda_slide(prs, doc_number):
     """Generate the opening agenda slide.
-    
+
     Creates a slide with a numbered list of typical presentation sections.
     Users can customize this list for their specific presentation needs.
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -221,15 +221,15 @@ def _agenda_slide(prs, doc_number):
 
 def _status_slide(prs, doc_number):
     """Generate a two-column status update slide.
-    
+
     Creates a slide with "Highlights" on the left (recent achievements)
     and "KPI snapshot" on the right (key metrics). Both sections use
     colored backgrounds to visually separate the content.
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -254,7 +254,7 @@ def _status_slide(prs, doc_number):
     left_tf.paragraphs[0].font.bold = True
     left_tf.paragraphs[0].font.name = TITLE_FONT
     left_tf.paragraphs[0].font.color.rgb = PRIMARY_COLOR
-    
+
     # Sample highlight bullets (replace with actual project highlights)
     for bullet in [
         "Cryogenic loop sizing validated against SCK CEN purge parameters.",
@@ -286,7 +286,7 @@ def _status_slide(prs, doc_number):
     right_tf.paragraphs[0].font.bold = True
     right_tf.paragraphs[0].font.name = TITLE_FONT
     right_tf.paragraphs[0].font.color.rgb = PRIMARY_COLOR
-    
+
     # Sample KPI metrics (replace with actual project metrics)
     for label, value in [
         ("Design maturity", "82% complete"),
@@ -305,15 +305,15 @@ def _status_slide(prs, doc_number):
 
 def _architecture_slide(prs, doc_number):
     """Generate a system architecture placeholder slide.
-    
+
     Creates a slide with a large canvas area and sample component blocks.
     Users should replace these with actual architecture diagrams (Visio,
     draw.io exports, etc.).
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -344,7 +344,7 @@ def _architecture_slide(prs, doc_number):
         block.fill.solid()
         block.fill.fore_color.rgb = RGBColor(220, 235, 247)  # Light blue
         block.line.color.rgb = ACCENT_COLOR
-        
+
         # Add component label
         tf = block.text_frame
         tf.text = title
@@ -370,15 +370,15 @@ def _architecture_slide(prs, doc_number):
 
 def _timeline_slide(prs, doc_number):
     """Generate a schedule and milestones slide.
-    
+
     Creates a slide with quarterly milestones and a hyperlink to dependencies.
     The milestone format shows quarter labels on the left with descriptions
     on the right.
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -396,7 +396,7 @@ def _timeline_slide(prs, doc_number):
     # Create milestone entries with quarter labels and descriptions
     for idx, (label, desc) in enumerate(milestones):
         top = Inches(2.0 + idx * 0.9)
-        
+
         # Quarter label (e.g., "Q1")
         _text_box(
             slide,
@@ -409,7 +409,7 @@ def _timeline_slide(prs, doc_number):
             bold=True,
             color=PRIMARY_COLOR,
         )
-        
+
         # Milestone description
         _text_box(
             slide,
@@ -432,7 +432,7 @@ def _timeline_slide(prs, doc_number):
         font_size=14,
         color=ACCENT_COLOR,
     )
-    
+
     # Add hyperlink to the note
     run = note.paragraphs[0].add_run()
     run.text = "  https://sharepoint.sckcen.be/qplant/interfaces"
@@ -445,15 +445,15 @@ def _timeline_slide(prs, doc_number):
 
 def _risk_slide(prs, doc_number):
     """Generate a risk and mitigation register slide.
-    
+
     Creates a three-column table showing risks, their impacts, and
     mitigation strategies. The table format makes it easy to track
     and communicate risk management activities.
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -476,7 +476,7 @@ def _risk_slide(prs, doc_number):
         prs.slide_width - Inches(1.2),
         Inches(3.6)
     ).table
-    
+
     # Set column widths for balanced display
     table.columns[0].width = Inches(2.2)
     table.columns[1].width = Inches(3.0)
@@ -507,14 +507,14 @@ def _risk_slide(prs, doc_number):
 
 def _closing_slide(prs, doc_number):
     """Generate a next actions checklist slide.
-    
+
     Creates the final slide with action items, owners, and due dates.
     This helps ensure clear follow-up from presentations.
-    
+
     Args:
         prs: Presentation object
         doc_number: Document code for the footer
-    
+
     Returns:
         The created slide object
     """
@@ -558,15 +558,15 @@ def _closing_slide(prs, doc_number):
 
 def build_template(output_path: Path, doc_number: str = "SCK CEN/0000") -> None:
     """Build the complete PowerPoint template.
-    
+
     Creates a new presentation with all standard slides and applies consistent
     formatting, colors, and footers throughout. This is the main entry point
     for template generation.
-    
+
     Args:
         output_path: Path where the .pptx file should be saved
         doc_number: Document code to display in footers (default: "SCK CEN/0000")
-    
+
     The generated presentation includes:
         1. Agenda slide
         2. Project status slide (highlights & KPIs)
