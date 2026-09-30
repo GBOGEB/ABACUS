@@ -32,21 +32,21 @@ def _write_if_changed(path: Path, content: str) -> str:
 
 class KnowledgePackageInitializer:
     """Initialize and manage knowledge packages for AI agents"""
-    
+
     def __init__(self, workspace_root: Path = Path(".")):
         self.workspace_root = workspace_root
         self.knowledge_dir = workspace_root / "knowledge_packages"
         self.knowledge_dir.mkdir(exist_ok=True)
-        
+
     def create_dmaic_knowledge_package(self) -> Dict[str, Any]:
         """Create comprehensive DMAIC knowledge package"""
-        
+
         package = {
             "package_name": "DMAIC_V3_Core_Knowledge",
             "version": VERSION,
             "created": datetime.now().isoformat(),
             "description": "Core DMAIC V3.3 process knowledge for AI agents",
-            
+
             "process_overview": {
                 "methodology": "DMAIC (Define, Measure, Analyze, Improve, Control)",
                 "version": "3.3.0",
@@ -95,14 +95,14 @@ class KnowledgePackageInitializer:
                     }
                 ]
             },
-            
+
             "key_concepts": {
                 "idempotency": "All operations can be safely re-executed without side effects",
                 "ranking": "Artifacts are classified and prioritized based on importance",
                 "metrics": "Comprehensive KPIs track process health and progress",
                 "change_detection": "Only modified components are re-processed"
             },
-            
+
             "file_structure": {
                 "DMAIC_V3/": "Core engine and phase implementations",
                 "DMAIC_V3_OUTPUT/": "Execution results and metrics",
@@ -110,14 +110,14 @@ class KnowledgePackageInitializer:
                 "artifacts/": "Generated artifacts and reports",
                 "knowledge_packages/": "AI agent knowledge bases"
             },
-            
+
             "quality_gates": {
                 "complexity_threshold": 500,
                 "file_size_limit": 500,
                 "import_limit": 20,
                 "test_coverage_minimum": 80
             },
-            
+
             "best_practices": [
                 "Always run Phase 0 before other phases",
                 "Review metrics after each execution",
@@ -125,14 +125,14 @@ class KnowledgePackageInitializer:
                 "Maintain idempotency in all operations",
                 "Document all changes and decisions"
             ],
-            
+
             "common_commands": {
                 "dry_run": "python -m DMAIC_V3.dmaic_v3_engine --mode dry-run",
                 "full_cycle": "python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1",
                 "single_phase": "python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase1_define",
                 "check_metrics": "python scripts/check_convergence.py"
             },
-            
+
             "troubleshooting": {
                 "version_error": "Check python_min_version in DMAIC_V3/config.py",
                 "import_error": "Verify all dependencies in requirements.txt",
@@ -140,17 +140,17 @@ class KnowledgePackageInitializer:
                 "metrics_missing": "Ensure ENABLE_METRICS=true in environment"
             }
         }
-        
+
         return package
-    
+
     def create_agent_context(self) -> Dict[str, Any]:
         """Create agent-specific context and guidelines"""
-        
+
         context = {
             "agent_role": "DMAIC Process Assistant",
             "version": VERSION,
             "created": datetime.now().isoformat(),
-            
+
             "capabilities": [
                 "Execute DMAIC phases",
                 "Analyze code quality",
@@ -158,7 +158,7 @@ class KnowledgePackageInitializer:
                 "Provide improvement recommendations",
                 "Update artifact rankings"
             ],
-            
+
             "guidelines": {
                 "code_analysis": [
                     "Focus on maintainability and readability",
@@ -179,14 +179,14 @@ class KnowledgePackageInitializer:
                     "Align with project goals"
                 ]
             },
-            
+
             "response_templates": {
                 "phase_completion": "Phase {phase} completed successfully. {summary}",
                 "issue_found": "Issue detected in {location}: {description}. Recommendation: {action}",
                 "metric_alert": "Metric {metric} exceeded threshold: {value} > {threshold}",
                 "improvement_suggestion": "Improvement opportunity: {description}. Expected benefit: {benefit}"
             },
-            
+
             "knowledge_sources": [
                 "DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
                 "DMAIC_V3_3_IMPLEMENTATION_SUMMARY.md",
@@ -194,14 +194,14 @@ class KnowledgePackageInitializer:
                 "CONVERGENCE_QUICK_REFERENCE.md"
             ]
         }
-        
+
         return context
-    
+
     def initialize_all_packages(self):
         """Initialize all knowledge packages (idempotent writes)"""
         print(f"🚀 Initializing Knowledge Packages v{VERSION}")
         print(f"📁 Output directory: {self.knowledge_dir}")
-        
+
         dmaic_package = self.create_dmaic_knowledge_package()
         agent_context = self.create_agent_context()
 
@@ -279,7 +279,7 @@ For questions or updates, refer to:
 """
         res = _write_if_changed(readme_path, readme_content)
         print(f"✅ {res.title()}: {readme_path}")
-        
+
         print(f"\n✅ Knowledge package initialization complete!")
         print(f"📦 {len(list(self.knowledge_dir.glob('*')))} files present")
 
