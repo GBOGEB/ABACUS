@@ -335,10 +335,10 @@ class CICDGitHubOrchestrator:
 
             return {
                 "has_changes": len(lines) > 0,
-                "modified": [l[3:] for l in lines if l.startswith(' M')],
-                "added": [l[3:] for l in lines if l.startswith('A ')],
-                "deleted": [l[3:] for l in lines if l.startswith(' D')],
-                "untracked": [l[3:] for l in lines if l.startswith('??')]
+                "modified": [line_entry[3:] for line_entry in lines if line_entry.startswith(' M')],
+                "added": [line_entry[3:] for line_entry in lines if line_entry.startswith('A ')],
+                "deleted": [line_entry[3:] for line_entry in lines if line_entry.startswith(' D')],
+                "untracked": [line_entry[3:] for line_entry in lines if line_entry.startswith('??')]
             }
         except Exception as e:
             return {"error": str(e), "has_changes": False}
