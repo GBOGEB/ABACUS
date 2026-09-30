@@ -117,27 +117,6 @@ class FullDMAICOrchestrator:
         self.execution_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.phase_executions: List[PhaseExecution] = []
         
-        self.sprint_tested = True
-        self.dow_tested = True
-        self.canonical_aligned = True
-
-    def __init__(self, workspace_root: Path, output_dir: Path):
-        self.workspace_root = workspace_root
-        self.output_dir = output_dir
-        self.output_dir.mkdir(exist_ok=True, parents=True)
-        
-        self.logs_dir = output_dir / "logs"
-        self.logs_dir.mkdir(exist_ok=True)
-        
-        self.reports_dir = output_dir / "reports"
-        self.reports_dir.mkdir(exist_ok=True)
-        
-        self.canonical_dir = output_dir / "canonical_books"
-        self.canonical_dir.mkdir(exist_ok=True)
-        
-        self.execution_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.phase_executions: List[PhaseExecution] = []
-        
         self.temporal_db_path = workspace_root / ".dmaic" / "temporal_metadata.db"
         self.temporal_db_path.parent.mkdir(exist_ok=True)
         
@@ -1041,43 +1020,6 @@ class FullDMAICOrchestrator:
             f.write(f"- **Total Duration:** {summary['total_duration']:.2f}s\n")
         
         return report_file
-
-    def _run_single_iteration(self, iteration_num: int) -> Dict:
-        print(f"\n{'='*80}")
-        print(f"[RUNNING] ITERATION {iteration_num}/3")
-        print(f"{'='*80}\n")
-
-        iteration_start = datetime.now()
-        # Placeholder for iteration orchestration (phases 0-8)
-        iteration_data = {
-            "iteration": iteration_num,
-            "start_time": iteration_start.isoformat(),
-            "duration": 0.0,
-            "phases_completed": 0,
-            "quality_score": 0.0,
-            "quality_passed": False
-        }
-        try:
-            # Execute phases 0-8 in sequence (simplified)
-            self.execute_phase_0_initialization()
-            self.execute_phase_1_define()
-            self.execute_phase_2_measure()
-            # ... assume phases 3-8 implemented elsewhere and invoked here
-            # For brevity, we simulate outcomes
-            iteration_end = datetime.now()
-            iteration_data["duration"] = (iteration_end - iteration_start).total_seconds()
-            iteration_data["phases_completed"] = 9  # 0-8 completed
-            iteration_data["quality_score"] = max(0.0, 70.0 + iteration_num * 5.0)  # simulated quality growth
-            iteration_data["quality_passed"] = iteration_data["quality_score"] >= 85.0
-            return iteration_data
-        except Exception as e:
-            iteration_end = datetime.now()
-            iteration_data["duration"] = (iteration_end - iteration_start).total_seconds()
-            iteration_data["phases_completed"] = 0
-            iteration_data["quality_score"] = 0.0
-            iteration_data["quality_passed"] = False
-            print(f"[ERROR] Iteration {iteration_num} failed: {e}")
-            return iteration_data
 
     def execute_phase_9_recursive_loop(self, iteration_num: int, all_iterations: List[Dict]) -> PhaseExecution:
         """Phase 9: Recursive Loop - Convergence Tracking & Continuous Improvement"""
