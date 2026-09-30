@@ -43,7 +43,7 @@ class ConvergenceMetrics:
     convergence_score: float
     converged: bool
     maturity_level: int
-    
+
     def to_dict(self):
         return asdict(self)
 
@@ -69,7 +69,7 @@ def load_config() -> Dict:
                 }
             }
         }
-    
+
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
@@ -103,19 +103,19 @@ def scan_workspace_files() -> Tuple[int, int]:
         '.log',
         '.git'
     ]
-    
+
     workspace = Path('.')
     all_files = []
-    
+
     for file in workspace.rglob('*.py'):
         # Check if file should be excluded
         if any(pattern in str(file) for pattern in exclude_patterns):
             continue
         if file.is_file():
             all_files.append(file)
-    
+
     total_files = len(all_files)
-    
+
     # Load previous hashes if available
     hash_file = Path('DMAIC_V3_OUTPUT/.file_hashes.json')
     previous_hashes = {}
@@ -128,36 +128,36 @@ def scan_workspace_files() -> Tuple[int, int]:
                     previous_hashes = history[-3].get('hashes', {})
         except Exception as e:
             print(f"Warning: Could not load previous hashes: {e}")
-    
+
     # Calculate current hashes and compare
     current_hashes = {}
     stable_files = 0
-    
+
     for file in all_files:
         file_hash = calculate_file_hash(file)
         file_str = str(file.relative_to(workspace))
         current_hashes[file_str] = file_hash
-        
+
         # File is stable if it existed 3 iterations ago and hash matches
         if file_str in previous_hashes and previous_hashes[file_str] == file_hash:
             stable_files += 1
-    
+
     # Save current hashes
     hash_file.parent.mkdir(parents=True, exist_ok=True)
     history = []
     if hash_file.exists():
         with open(hash_file, 'r') as f:
             history = json.load(f)
-    
+
     history.append({
         'timestamp': datetime.now().isoformat(),
         'iteration': len(history) + 1,
         'hashes': current_hashes
     })
-    
+
     with open(hash_file, 'w') as f:
         json.dump(history, f, indent=2)
-    
+
     return total_files, stable_files
 
 
@@ -189,14 +189,14 @@ def check_knowledge_growth() -> Tuple[int, int]:
     knowledge_dir = Path('DMAIC_V3_OUTPUT/knowledge')
     if not knowledge_dir.exists():
         return 0, 0
-    
+
     # Count knowledge pack files
     packs = list(knowledge_dir.glob('*.json'))
     total = len(packs)
-    
+
     # Estimate new packs (in production, track with timestamps)
     new = max(1, int(total * 0.1))  # Assume 10% new
-    
+
     return total, new
 
 
@@ -210,9 +210,9 @@ def calculate_convergence_score(
 ) -> float:
     """Calculate weighted convergence score"""
     weights = config['convergence_calculation']['weights']
-    
+
     regression_score = 100.0 if regressions == 0 else 0.0
-    
+
     score = (
         weights['file_stability'] * file_stability_pct +
         weights['test_stability'] * test_stability_pct +
@@ -220,14 +220,14 @@ def calculate_convergence_score(
         weights['knowledge_growth'] * min(knowledge_growth_pct, 100.0) +
         weights['zero_regressions'] * regression_score
     )
-    
+
     return round(score, 2)
 
 
 def determine_maturity_level(score: float, config: Dict) -> int:
     """Determine maturity level based on convergence score"""
     thresholds = config['convergence_calculation']['thresholds']
-    
+
     if score >= thresholds['converged']:
         return 3  # Production
     elif score >= thresholds['stable']:
