@@ -90,7 +90,7 @@ class PhaseExecution:
     output_files: List[str] = None
     sprint_tested: bool = False
     dow_tested: bool = False
-    
+
     def __post_init__(self):
         if self.agents_involved is None:
             self.agents_involved = []
@@ -104,33 +104,33 @@ class FullDMAICOrchestrator:
         self.workspace_root = workspace_root
         self.output_dir = output_dir
         self.output_dir.mkdir(exist_ok=True, parents=True)
-        
+
         self.logs_dir = output_dir / "logs"
         self.logs_dir.mkdir(exist_ok=True)
-        
+
         self.reports_dir = output_dir / "reports"
         self.reports_dir.mkdir(exist_ok=True)
-        
+
         self.canonical_dir = output_dir / "canonical_books"
         self.canonical_dir.mkdir(exist_ok=True)
-        
+
         self.execution_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.phase_executions: List[PhaseExecution] = []
-        
+
         self.temporal_db_path = workspace_root / ".dmaic" / "temporal_metadata.db"
         self.temporal_db_path.parent.mkdir(exist_ok=True)
-        
+
         print(f"[DEPLOY] ABACUS v033 - Full DMAIC Orchestrator Initialized")
         print(f"   Workspace: {workspace_root}")
         print(f"   Output: {output_dir}")
         print(f"   Execution ID: {self.execution_id}")
         print()
-    
+
     def execute_phase_0_initialization(self) -> PhaseExecution:
         print("\n" + "=" * 80)
         print("PHASE 0: INITIALIZATION - Agent Discovery & Orchestrator Setup")
         print("=" * 80)
-        
+
         start_time = datetime.now()
         phase = PhaseExecution(
             phase_number=0,
@@ -138,50 +138,50 @@ class FullDMAICOrchestrator:
             status="running",
             start_time=start_time.isoformat()
         )
-        
+
         try:
             print("[Step 1/5] Discovering agents...")
             agents = self._discover_agents()
             phase.agents_involved = agents
             print(f"   [OK] Found {len(agents)} agents")
-            
+
             print("[Step 2/5] Initializing temporal metadata engine...")
             temporal_initialized = self._initialize_temporal_engine()
             print(f"   [OK] Temporal engine: {'Active' if temporal_initialized else 'Inactive'}")
-            
+
             print("[Step 3/5] Loading configuration...")
             config = self._load_configuration()
             phase.metrics['config_loaded'] = len(config)
             print(f"   [OK] Loaded {len(config)} configuration items")
-            
+
             print("[Step 4/5] Setting up output directories...")
             self._setup_output_directories()
             print(f"   [OK] Output directories ready")
-            
+
             print("[Step 5/5] Initializing orchestrators...")
             orchestrators = self._initialize_orchestrators()
             phase.metrics['orchestrators'] = len(orchestrators)
             print(f"   [OK] Initialized {len(orchestrators)} orchestrators")
-            
+
             phase.status = "completed"
             phase.end_time = datetime.now().isoformat()
             phase.duration_seconds = (datetime.now() - start_time).total_seconds()
-            
+
             print(f"\n[PASS] Phase 0 completed in {phase.duration_seconds:.2f}s")
-            
+
         except Exception as e:
             phase.status = "failed"
             phase.metrics['error'] = str(e)
             print(f"\n[ERROR] Phase 0 failed: {e}")
-        
+
         self.phase_executions.append(phase)
         return phase
-    
+
     def execute_phase_1_define(self) -> PhaseExecution:
         print("\n" + "=" * 80)
         print("PHASE 1: DEFINE - Artifact Discovery & Indexing")
         print("=" * 80)
-        
+
         start_time = datetime.now()
         phase = PhaseExecution(
             phase_number=1,
@@ -189,33 +189,33 @@ class FullDMAICOrchestrator:
             status="running",
             start_time=start_time.isoformat()
         )
-        
+
         try:
             print("[Step 1/3] Scanning workspace for artifacts...")
             artifacts = self._scan_artifacts()
             phase.artifacts_processed = len(artifacts)
             print(f"   [OK] Found {len(artifacts)} artifacts")
-            
+
             print("[Step 2/3] Creating canonical index...")
             index_file = self._create_canonical_index(artifacts)
             phase.output_files.append(str(index_file))
             print(f"   [OK] Index created: {index_file}")
-            
+
             print("[Step 3/3] Updating temporal metadata...")
             self._update_temporal_metadata(artifacts, "phase1")
             print(f"   [OK] Temporal metadata updated")
-            
+
             phase.status = "completed"
             phase.end_time = datetime.now().isoformat()
             phase.duration_seconds = (datetime.now() - start_time).total_seconds()
-            
+
             print(f"\n[PASS] Phase 1 completed in {phase.duration_seconds:.2f}s")
-            
+
         except Exception as e:
             phase.status = "failed"
             phase.metrics['error'] = str(e)
             print(f"\n[ERROR] Phase 1 failed: {e}")
-        
+
         self.phase_executions.append(phase)
         return phase
 
@@ -431,7 +431,7 @@ class FullDMAICOrchestrator:
         print("PHASE 6: KNOWLEDGE DEVOUR - DOW (Devourer of Worlds) - MasterAI Integration")
         print("Principle: KNOWLEDGE MUST GROW, NEVER DILUTE")
         print("=" * 80)
-        
+
         start_time = datetime.now()
         phase = PhaseExecution(
             phase_number=6,
@@ -439,55 +439,55 @@ class FullDMAICOrchestrator:
             status="running",
             start_time=start_time.isoformat()
         )
-        
+
         try:
             print("[Step 1/7] Extracting learning from previous phases...")
             learning = self._extract_learning()
             phase.metrics['knowledge_items'] = len(learning)
             print(f"   [OK] Extracted {len(learning)} knowledge items")
-            
+
             print("[Step 2/7] Creating knowledge packs...")
             knowledge_packs = self._create_knowledge_packs(learning)
             phase.metrics['knowledge_packs'] = len(knowledge_packs)
             print(f"   [OK] Created {len(knowledge_packs)} knowledge packs")
-            
+
             print("[Step 3/7] Building knowledge index...")
             knowledge_index = self._build_knowledge_index(knowledge_packs)
             print(f"   [OK] Knowledge index built")
-            
+
             print("[Step 4/7] Establishing recall mechanisms...")
             recall_keys = self._establish_recall_mechanisms(knowledge_packs)
             phase.metrics['recall_keys'] = len(recall_keys)
             print(f"   [OK] Established {len(recall_keys)} recall keys")
-            
+
             print("[Step 5/7] Testing recall system...")
             recall_accuracy = self._test_recall_system(recall_keys)
             phase.metrics['recall_accuracy'] = recall_accuracy
             print(f"   [OK] Recall accuracy: {recall_accuracy:.1f}%")
-            
+
             print("[Step 6/7] Preserving knowledge for next iteration...")
             preservation_dir = self._preserve_knowledge(knowledge_packs, knowledge_index)
             phase.output_files.append(str(preservation_dir))
             print(f"   [OK] Preserved to: {preservation_dir}")
-            
+
             print("[Step 7/7] Generating Phase 6 report...")
             report_file = self._generate_phase_6_report(phase)
             phase.output_files.append(str(report_file))
             print(f"   [OK] Report: {report_file}")
-            
+
             phase.status = "completed"
             phase.end_time = datetime.now().isoformat()
             phase.duration_seconds = (datetime.now() - start_time).total_seconds()
-            
+
             print(f"\n[PASS] Phase 6 completed in {phase.duration_seconds:.2f}s")
             print(f"   Knowledge Growth: {phase.metrics['knowledge_items']} items")
             print(f"   Recall Accuracy: {phase.metrics['recall_accuracy']:.1f}%")
-            
+
         except Exception as e:
             phase.status = "failed"
             phase.metrics['error'] = str(e)
             print(f"\n[ERROR] Phase 6 failed: {e}")
-        
+
         self.phase_executions.append(phase)
         return phase
 
@@ -554,7 +554,7 @@ class FullDMAICOrchestrator:
         print("\n" + "=" * 80)
         print("PHASE 8: RESULTS & REPORTS - Agent Involvement Tracking")
         print("=" * 80)
-        
+
         start_time = datetime.now()
         phase = PhaseExecution(
             phase_number=8,
@@ -562,74 +562,74 @@ class FullDMAICOrchestrator:
             status="running",
             start_time=start_time.isoformat()
         )
-        
+
         try:
             print("[Step 1/6] Generating execution summary...")
             summary = self._generate_execution_summary()
             print(f"   [OK] Summary generated")
-            
+
             print("[Step 2/6] Creating agent involvement report...")
             agent_report = self._create_agent_involvement_report()
             phase.output_files.append(str(agent_report))
             print(f"   [OK] Agent report: {agent_report}")
-            
+
             print("[Step 3/6] Generating canonical governance books...")
             governance_books = self._generate_canonical_governance_books()
             phase.output_files.extend([str(b) for b in governance_books])
             print(f"   [OK] Generated {len(governance_books)} governance books")
-            
+
             print("[Step 4/6] Creating changelog...")
             changelog = self._create_changelog()
             phase.output_files.append(str(changelog))
             print(f"   [OK] Changelog: {changelog}")
-            
+
             print("[Step 5/6] Updating artifact maturity tracking...")
             maturity_report = self._update_artifact_maturity()
             phase.output_files.append(str(maturity_report))
             print(f"   [OK] Maturity report: {maturity_report}")
-            
+
             print("[Step 6/6] Generating final execution report...")
             final_report = self._generate_final_execution_report()
             phase.output_files.append(str(final_report))
             print(f"   [OK] Final report: {final_report}")
-            
+
             phase.status = "completed"
             phase.end_time = datetime.now().isoformat()
             phase.duration_seconds = (datetime.now() - start_time).total_seconds()
-            
+
             print(f"\n[PASS] Phase 8 completed in {phase.duration_seconds:.2f}s")
             print(f"   Generated {len(phase.output_files)} output files")
-            
+
         except Exception as e:
             phase.status = "failed"
             phase.metrics['error'] = str(e)
             print(f"\n[ERROR] Phase 8 failed: {e}")
-        
+
         self.phase_executions.append(phase)
         return phase
-    
+
     def _discover_agents(self) -> List[str]:
         agents = []
         agent_dirs = [
             self.workspace_root / "DMAIC_V3" / "agents",
             self.workspace_root / "local_mcp" / "agents"
         ]
-        
+
         for agent_dir in agent_dirs:
             if agent_dir.exists():
                 for file in agent_dir.glob("*.py"):
                     if not file.name.startswith("__"):
                         agents.append(file.stem)
-        
+
         return agents
-    
+
     def _initialize_temporal_engine(self) -> bool:
         try:
             self.temporal_db_path.parent.mkdir(exist_ok=True)
             return True
         except:
             return False
-    
+
     def _load_configuration(self) -> Dict:
         config = {
             "workspace_root": str(self.workspace_root),
@@ -638,7 +638,7 @@ class FullDMAICOrchestrator:
             "version": "v032"
         }
         return config
-    
+
     def _setup_output_directories(self):
         dirs = [
             self.logs_dir,
@@ -650,10 +650,10 @@ class FullDMAICOrchestrator:
         ]
         for d in dirs:
             d.mkdir(exist_ok=True, parents=True)
-    
+
     def _initialize_orchestrators(self) -> List[str]:
         return ["FullPipelineOrchestrator", "RecursiveDMAICOrchestrator", "MasterIntegrationOrchestrator"]
-    
+
     def _scan_artifacts(self) -> List[Dict]:
         artifacts = []
         for ext in [".py", ".md", ".json", ".yaml", ".yml"]:
@@ -666,7 +666,7 @@ class FullDMAICOrchestrator:
                         "modified": datetime.fromtimestamp(file.stat().st_mtime).isoformat()
                     })
         return artifacts
-    
+
     def _create_canonical_index(self, artifacts: List[Dict]) -> Path:
         index_file = self.output_dir / "canonical.index.json"
         index = {
@@ -679,7 +679,7 @@ class FullDMAICOrchestrator:
         with open(index_file, 'w') as f:
             json.dump(index, f, indent=2)
         return index_file
-    
+
     def _update_temporal_metadata(self, artifacts: List[Dict], phase: str):
         metadata_file = self.output_dir / f"temporal_metadata_{phase}.json"
         metadata = {
@@ -690,7 +690,7 @@ class FullDMAICOrchestrator:
         }
         with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2)
-    
+
     def _extract_learning(self) -> List[Dict]:
         learning = []
         for phase_exec in self.phase_executions:
@@ -701,7 +701,7 @@ class FullDMAICOrchestrator:
                 "status": phase_exec.status
             })
         return learning
-    
+
     def _create_knowledge_packs(self, learning: List[Dict]) -> List[Dict]:
         packs = []
         for i, item in enumerate(learning):
@@ -714,7 +714,7 @@ class FullDMAICOrchestrator:
             }
             packs.append(pack)
         return packs
-    
+
     def _build_knowledge_index(self, knowledge_packs: List[Dict]) -> Dict:
         index = {
             "total_packs": len(knowledge_packs),
@@ -722,29 +722,29 @@ class FullDMAICOrchestrator:
             "created_at": datetime.now().isoformat()
         }
         return index
-    
+
     def _establish_recall_mechanisms(self, knowledge_packs: List[Dict]) -> List[str]:
         recall_keys = []
         for pack in knowledge_packs:
             key = f"recall_{pack['pack_id']}"
             recall_keys.append(key)
         return recall_keys
-    
+
     def _test_recall_system(self, recall_keys: List[str]) -> float:
         return 95.0  # Simulated recall accuracy
-    
+
     def _preserve_knowledge(self, knowledge_packs: List[Dict], knowledge_index: Dict) -> Path:
         preservation_dir = self.output_dir / "knowledge" / f"iteration_{self.execution_id}"
         preservation_dir.mkdir(exist_ok=True, parents=True)
-        
+
         with open(preservation_dir / "knowledge_packs.json", 'w') as f:
             json.dump(knowledge_packs, f, indent=2)
-        
+
         with open(preservation_dir / "knowledge_index.json", 'w') as f:
             json.dump(knowledge_index, f, indent=2)
-        
+
         return preservation_dir
-    
+
     def _generate_phase_6_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_6_knowledge_devour_{self.execution_id}.md"
         with open(report_file, 'w') as f:
@@ -756,7 +756,7 @@ class FullDMAICOrchestrator:
                 f.write(f"- **{key}:** {value}\n")
             f.write(f"\n## Status: {phase.status.upper()}\n")
         return report_file
-    
+
     def _generate_execution_summary(self) -> Dict:
         summary = {
             "execution_id": self.execution_id,
@@ -766,21 +766,21 @@ class FullDMAICOrchestrator:
             "total_duration": sum(p.duration_seconds for p in self.phase_executions)
         }
         return summary
-    
+
     def _create_agent_involvement_report(self) -> Path:
         report_file = self.reports_dir / f"agent_involvement_{self.execution_id}.json"
         agent_involvement = {}
-        
+
         for phase in self.phase_executions:
             for agent in phase.agents_involved:
                 if agent not in agent_involvement:
                     agent_involvement[agent] = {"phases": [], "total_invocations": 0}
                 agent_involvement[agent]["phases"].append(phase.phase_name)
                 agent_involvement[agent]["total_invocations"] += 1
-        
+
         with open(report_file, 'w') as f:
             json.dump(agent_involvement, f, indent=2)
-        
+
     def _analyze_artifact_complexity(self) -> Dict:
         return {"avg_complexity": 3.5, "max_complexity": 8, "min_complexity": 1}
 
@@ -947,13 +947,13 @@ class FullDMAICOrchestrator:
             for key, value in phase.metrics.items():
                 f.write(f"- **{key}:** {value}\n")
         return report_file
-    
+
     def _generate_canonical_governance_books(self) -> List[Path]:
         books = []
-        
+
         # Generate governance book for each Python file
         python_files = list(self.workspace_root.rglob("*.py"))
-        
+
         for py_file in python_files[:10]:  # Limit to first 10 for demo
             if ".git" not in str(py_file) and "venv" not in str(py_file):
                 book_file = self.canonical_dir / f"{py_file.stem}_governance.md"
@@ -965,9 +965,9 @@ class FullDMAICOrchestrator:
                     f.write(f"## Maturity Level\n\nLevel 3 - Conditional Autonomy\n\n")
                     f.write(f"## Version\n\nv032\n\n")
                 books.append(book_file)
-        
+
         return books
-    
+
     def _create_changelog(self) -> Path:
         changelog_file = self.output_dir / f"CHANGELOG_{self.execution_id}.md"
         with open(changelog_file, 'w') as f:
@@ -980,7 +980,7 @@ class FullDMAICOrchestrator:
                 f.write(f"- Duration: {phase.duration_seconds:.2f}s\n")
                 f.write(f"- Artifacts: {phase.artifacts_processed}\n\n")
         return changelog_file
-    
+
     def _update_artifact_maturity(self) -> Path:
         maturity_file = self.output_dir / f"artifact_maturity_{self.execution_id}.json"
         maturity = {
@@ -997,7 +997,7 @@ class FullDMAICOrchestrator:
         with open(maturity_file, 'w') as f:
             json.dump(maturity, f, indent=2)
         return maturity_file
-    
+
     def _generate_final_execution_report(self) -> Path:
         report_file = self.reports_dir / f"EXECUTION_REPORT_{self.execution_id}.md"
         with open(report_file, 'w') as f:
@@ -1011,14 +1011,14 @@ class FullDMAICOrchestrator:
                 f.write(f"- **Duration:** {phase.duration_seconds:.2f}s\n")
                 f.write(f"- **Artifacts:** {phase.artifacts_processed}\n")
                 f.write(f"- **Agents:** {len(phase.agents_involved)}\n\n")
-            
+
             summary = self._generate_execution_summary()
             f.write(f"## Overall Summary\n\n")
             f.write(f"- **Total Phases:** {summary['total_phases']}\n")
             f.write(f"- **Completed:** {summary['completed_phases']}\n")
             f.write(f"- **Failed:** {summary['failed_phases']}\n")
             f.write(f"- **Total Duration:** {summary['total_duration']:.2f}s\n")
-        
+
         return report_file
 
     def execute_phase_9_recursive_loop(self, iteration_num: int, all_iterations: List[Dict]) -> PhaseExecution:
@@ -1369,7 +1369,7 @@ class FullDMAICOrchestrator:
             f.write(f"**Next Action:** {convergence_status.get('recommendation', 'N/A')}\n")
 
         return report_file
-    
+
     def _run_single_iteration(self, iteration_num: int, all_iterations: List[Dict] = None) -> Dict:
         if all_iterations is None:
             all_iterations = []
@@ -1676,7 +1676,7 @@ class FullDMAICOrchestrator:
 
         print(f"   [OK] Final report: {report_file}")
         return report_file
-    
+
     def execute_all_phases(self):
         print("\n" + "=" * 80)
         print("[DEPLOY] ABACUS v033 - ITERATIVE DMAIC EXECUTION WITH CONVERGENCE (MAX 5 ITERATIONS)")
