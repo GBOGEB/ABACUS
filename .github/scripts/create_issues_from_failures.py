@@ -134,19 +134,6 @@ class CIIssueCreator:
             return None
 
     def close_issue_for_test(self, test_name: str) -> int:
-        """Close matching open issues when a test passes again."""
-        closed_count = 0
-        for issue in self.get_existing_issues(test_name):
-            issue.create_comment(
-                f"✅ Closing automatically because `{test_name}` is passing again in CI."
-            )
-            issue.edit(state="closed")
-            self.closed_issues.append(issue.number)
-            closed_count += 1
-
-        return closed_count
-    
-    def close_issue_for_test(self, test_name: str) -> int:
         """Close any open CI-failure issues for a test that is now passing.
 
         Returns:

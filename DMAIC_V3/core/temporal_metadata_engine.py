@@ -4,7 +4,6 @@
 # Description: Auto-generated version header
 """
 
-from typing import Any
 """
 DMAIC V3 - Temporal Metadata Engine
 Comprehensive tracking system for file/folder hierarchy, execution metadata, and digital twin

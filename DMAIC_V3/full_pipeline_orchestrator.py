@@ -5,7 +5,6 @@
 # Description: Auto-generated version header
 """
 
-from typing import Any
 """
 DMAIC V3.3 - FULL PIPELINE ORCHESTRATOR
 =============================================================================
