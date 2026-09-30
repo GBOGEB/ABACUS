@@ -59,7 +59,7 @@ class TestBootstrapIntegration:
 @pytest.mark.hypothesis
 class TestAHTIntegration:
     """AHT hypothesis testing integration tests"""
-    
+
     @pytest.fixture
     def aht_bridge(self):
         """Provide AHT bridge for testing"""
@@ -68,34 +68,34 @@ class TestAHTIntegration:
                 learnings_db_path=Path(tmpdir) / "integration_learnings.json"
             )
             yield bridge
-    
+
     @pytest.mark.artifact(name="api_sla", type="sla_check")
     def test_api_sla_hypothesis(self, aht_bridge):
         """Test API SLA hypothesis"""
         response_times = np.random.normal(95, 8, 50).tolist()
-        
+
         result = aht_bridge.test_hypothesis_with_bootstrap(
             hypothesis="API meets 95% SLA target",
             observed_data=response_times,
             expected_value=95.0,
             context={"service": "user_api", "environment": "production"}
         )
-        
+
         assert result['status'] in ['SUPPORTED', 'ACCEPTED', 'EXCEEDED']
-    
+
     @pytest.mark.artifact(name="new_algorithm", type="optimization")
     def test_algorithm_improvement_hypothesis(self, aht_bridge):
         """Test algorithm improvement hypothesis"""
         old_performance = np.random.normal(80, 10, 40).tolist()
         new_performance = np.random.normal(90, 8, 40).tolist()
-        
+
         result = aht_bridge.test_hypothesis_with_bootstrap(
             hypothesis="New algorithm improves performance by 10%",
             observed_data=new_performance,
             reference_group=old_performance,
             context={"algorithm": "v2", "baseline": "v1"}
         )
-        
+
         assert 'comparison' in result
 
 
@@ -103,13 +103,13 @@ class TestAHTIntegration:
 @pytest.mark.workflow
 class TestDOWWorkflow:
     """DOW Phase 2/3 workflow integration tests"""
-    
+
     @pytest.mark.artifact(name="dow_phase2", type="analysis_phase")
     def test_dow_phase2_workflow(self):
         """Test DOW Phase 2 complete workflow"""
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            
+
             csv_path = tmpdir / "test_results.csv"
             with open(csv_path, "w") as f:
                 f.write("group,score\n")
@@ -117,12 +117,12 @@ class TestDOWWorkflow:
                     f.write(f"test_a,{85 + np.random.randn()*5}\n")
                 for i in range(20):
                     f.write(f"test_b,{90 + np.random.randn()*5}\n")
-            
+
             from bootstrap_eval import load_from_csv
-            
+
             df = load_from_csv(csv_path)
             assert len(df) == 40
-            
+
             results = {}
             for group in df['group'].unique():
                 group_data = df[df['group'] == group]['score'].values
@@ -136,7 +136,7 @@ class TestDOWWorkflow:
                 }
 
             assert len(results) == 2
-    
+
     @pytest.mark.artifact(name="report_generation", type="reporting")
     def test_report_generation_workflow(self):
         """Test report generation workflow"""
@@ -149,7 +149,7 @@ class TestDOWWorkflow:
                 "ci_bootstrap_upper": 88.5
             }
         }
-        
+
         assert 'mean' in analysis_results['test_a']
         assert analysis_results['test_a']['mean'] > 80
 
@@ -158,7 +158,7 @@ class TestDOWWorkflow:
 @pytest.mark.gate
 class TestCICDGates:
     """CI/CD pipeline gate tests"""
-    
+
     @pytest.mark.artifact(name="quality_gate", type="ci_gate")
     def test_quality_gate_performance(self):
         """Test quality gate for performance metrics"""
@@ -193,7 +193,7 @@ class TestCICDGates:
 @pytest.mark.benchmark
 class TestPerformanceBenchmarks:
     """Performance benchmark tests"""
-    
+
     @pytest.mark.artifact(name="bootstrap_speed", type="benchmark")
     def test_bootstrap_computation_speed(self, benchmark):
         """Benchmark bootstrap computation speed"""
@@ -218,14 +218,14 @@ class TestPerformanceBenchmarks:
 @pytest.mark.smoke
 class TestSmokeTests:
     """Smoke tests for basic functionality"""
-    
+
     @pytest.mark.artifact(name="basic_bootstrap", type="smoke_test")
     def test_basic_bootstrap_works(self):
         """Smoke test: basic bootstrap works"""
         data = np.array([1, 2, 3, 4, 5])
         ci_low, ci_high, boot_means = bootstrap_ci_mean(data, alpha=0.05)
         assert ci_low is not None and ci_high is not None
-    
+
     @pytest.mark.artifact(name="basic_aht", type="smoke_test")
     def test_basic_aht_works(self):
         """Smoke test: basic AHT works"""
@@ -244,7 +244,7 @@ class TestSmokeTests:
 @pytest.mark.regression
 class TestRegressionTests:
     """Regression tests for known issues"""
-    
+
     @pytest.mark.artifact(name="unicode_handling", type="regression")
     def test_unicode_handling_regression(self):
         """Regression: ensure unicode characters don't break system"""
@@ -252,15 +252,15 @@ class TestRegressionTests:
             bridge = AHTStatisticsBridge(
                 learnings_db_path=Path(tmpdir) / "unicode_test.json"
             )
-            
+
             result = bridge.test_hypothesis_with_bootstrap(
                 hypothesis="Test with special chars: ≤ ≥ ± →",
                 observed_data=[85, 87, 86],
                 expected_value=85.0
             )
-            
+
             assert result is not None
-    
+
     @pytest.mark.artifact(name="empty_data_handling", type="regression")
     def test_empty_data_handling_regression(self):
         """Regression: ensure empty data follows the canonical bootstrap sentinel contract"""
@@ -274,21 +274,21 @@ class TestRegressionTests:
 @pytest.mark.security
 class TestSecurityTests:
     """Security-related tests"""
-    
+
     @pytest.mark.artifact(name="injection_prevention", type="security")
     def test_sql_injection_prevention(self):
         """Test SQL injection prevention in data loading"""
         malicious_input = "'; DROP TABLE scores; --"
-        
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
             f.write("group,score\n")
             f.write(f"{malicious_input},100\n")
             temp_path = f.name
-        
+
         try:
             from bootstrap_eval import load_from_csv
             df = load_from_csv(temp_path)
-            
+
             assert malicious_input in df['group'].values
         finally:
             Path(temp_path).unlink()
