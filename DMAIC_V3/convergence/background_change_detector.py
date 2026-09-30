@@ -73,7 +73,7 @@ class BackgroundChangeDetector:
             try:
                 with open(self.snapshot_file, 'r') as f:
                     prev_snapshot = json.load(f)
-            except:
+            except (OSError, json.JSONDecodeError):
                 pass
 
         # Quick scan of key directories only
@@ -113,7 +113,7 @@ class BackgroundChangeDetector:
                     if file_count > 10000:
                         break
 
-                except:
+                except (OSError, ValueError):
                     pass
 
         # Detect deletions
@@ -135,7 +135,7 @@ class BackgroundChangeDetector:
                 }
                 with open(self.changes_file, 'w') as f:
                     json.dump(change_data, f, indent=2)
-        except:
+        except (OSError, TypeError):
             pass
 
     def get_summary(self) -> Dict[str, Any]:
@@ -155,5 +155,5 @@ class BackgroundChangeDetector:
                 'deleted': sum(1 for c in changes if c['type'] == 'deleted'),
                 'timestamp': data.get('timestamp', '')
             }
-        except:
+        except (OSError, json.JSONDecodeError, KeyError, TypeError):
             return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
