@@ -11,6 +11,15 @@ on:
       - 'requirements*.txt'
       - 'pyproject.toml'
       - '.github/workflows/dow-main-cicd.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'DMAIC_V3/**'
+      - 'TESTING_SUITE/**'
+      - 'demo_integrated_system.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/dow-main-cicd.yml'
   schedule:
     - cron: '0 3 * * 1'
   workflow_dispatch:
