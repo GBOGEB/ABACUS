@@ -36,7 +36,7 @@ class ArtifactInfo:
     imports: List[str]
     tests: List[str]
     dependencies: List[str]
-    
+
     def to_dict(self):
         return asdict(self)
 
@@ -46,7 +46,7 @@ class GlobalIndexGenerator:
         self.workspace = Path('.')
         self.output_dir = Path('DMAIC_V3_OUTPUT')
         self.output_dir.mkdir(exist_ok=True)
-        
+
         self.exclude_patterns = [
             '__pycache__',
             '.pyc',
@@ -59,9 +59,9 @@ class GlobalIndexGenerator:
             '.log',
             '.git'
         ]
-        
+
         self.maturity_mapping = self._load_maturity_mapping()
-    
+
     def _load_maturity_mapping(self) -> Dict[str, int]:
         mapping = {
             'DMAIC_V3/core/': 1,
@@ -77,7 +77,7 @@ class GlobalIndexGenerator:
             'DMAIC_V3/integrations/': 2,
         }
         return mapping
-    
+
     def calculate_file_hash(self, file_path: Path) -> str:
         sha256 = hashlib.sha256()
         try:
@@ -87,33 +87,33 @@ class GlobalIndexGenerator:
             return sha256.hexdigest()
         except Exception:
             return "ERROR"
-    
+
     def determine_maturity_level(self, file_path: str) -> int:
         for pattern, level in self.maturity_mapping.items():
             if pattern in file_path:
                 return level
         return 0
-    
+
     def get_stable_iterations(self, file_path: str) -> int:
         hash_file = self.output_dir / '.file_hashes.json'
         if not hash_file.exists():
             return 0
-        
+
         try:
             with open(hash_file, 'r') as f:
                 history = json.load(f)
-                
+
                 if len(history) < 2:
                     return 0
-                
+
                 current_hash = None
                 stable_count = 0
-                
+
                 for entry in reversed(history):
                     file_hash = entry['hashes'].get(file_path)
                     if file_hash is None:
                         break
-                    
+
                     if current_hash is None:
                         current_hash = file_hash
                         stable_count = 1
@@ -121,22 +121,22 @@ class GlobalIndexGenerator:
                         stable_count += 1
                     else:
                         break
-                
+
                 return stable_count
         except Exception:
             return 0
-    
+
     def extract_code_elements(self, file_path: Path) -> Dict[str, List[str]]:
         result = {
             'functions': [],
             'classes': [],
             'imports': []
         }
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 tree = ast.parse(f.read())
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
                         result['functions'].append(node.name)
@@ -150,55 +150,55 @@ class GlobalIndexGenerator:
                             result['imports'].append(node.module)
         except Exception:
             pass
-        
+
         return result
-    
+
     def find_test_files(self, file_path: str) -> List[str]:
         tests = []
         file_name = Path(file_path).stem
-        
+
         test_patterns = [
             f"tests/test_{file_name}.py",
             f"test_{file_name}.py",
             f"{file_name}_test.py"
         ]
-        
+
         for pattern in test_patterns:
             test_file = self.workspace / pattern
             if test_file.exists():
                 tests.append(str(test_file.relative_to(self.workspace)))
-        
+
         return tests
-    
+
     def analyze_dependencies(self, imports: List[str]) -> List[str]:
         dependencies = []
-        
+
         for imp in imports:
             if imp.startswith('DMAIC_V3'):
                 dependencies.append(imp)
-        
+
         return dependencies
-    
+
     def scan_artifacts(self) -> List[ArtifactInfo]:
         artifacts = []
         artifact_counter = 1
-        
+
         for file in self.workspace.rglob('*.py'):
             if any(pattern in str(file) for pattern in self.exclude_patterns):
                 continue
-            
+
             if not file.is_file():
                 continue
-            
+
             file_str = str(file.relative_to(self.workspace))
-            
+
             maturity_level = self.determine_maturity_level(file_str)
             stable_iterations = self.get_stable_iterations(file_str)
-            
+
             status = "STABLE" if stable_iterations >= 3 else "ACTIVE" if stable_iterations > 0 else "NEW"
-            
+
             code_elements = self.extract_code_elements(file)
-            
+
             artifact = ArtifactInfo(
                 id=f"ARTF_{datetime.now().strftime('%Y%m%d')}_{artifact_counter:04d}",
                 path=file_str,
@@ -214,17 +214,17 @@ class GlobalIndexGenerator:
                 tests=self.find_test_files(file_str),
                 dependencies=self.analyze_dependencies(code_elements['imports'])
             )
-            
+
             artifacts.append(artifact)
             artifact_counter += 1
-        
+
         return artifacts
-    
+
     def get_convergence_metrics(self) -> Optional[Dict]:
         metrics_file = self.output_dir / '.convergence_history.json'
         if not metrics_file.exists():
             return None
-        
+
         try:
             with open(metrics_file, 'r') as f:
                 history = json.load(f)
@@ -232,57 +232,57 @@ class GlobalIndexGenerator:
                     return history[-1]
         except Exception:
             return None
-        
+
         return None
-    
+
     def get_knowledge_summary(self) -> Dict[str, int]:
         knowledge_dir = self.output_dir / 'knowledge'
         if not knowledge_dir.exists():
             return {'total_packs': 0, 'total_iterations': 0}
-        
+
         packs = list(knowledge_dir.glob('**/*.json'))
         iterations = set()
-        
+
         for pack in packs:
             if 'ITERATION_' in str(pack):
                 iteration = str(pack).split('ITERATION_')[1].split('/')[0]
                 iterations.add(iteration)
-        
+
         return {
             'total_packs': len(packs),
             'total_iterations': len(iterations)
         }
-    
+
     def generate_index(self) -> Path:
         print("=" * 80)
         print("DMAIC V3 - GLOBAL INDEX GENERATOR")
         print("=" * 80)
         print()
-        
+
         print("[1/4] Scanning workspace for artifacts...")
         artifacts = self.scan_artifacts()
         print(f"      Found {len(artifacts)} artifacts")
-        
+
         print("[2/4] Loading convergence metrics...")
         convergence = self.get_convergence_metrics()
         if convergence:
             print(f"      Convergence score: {convergence['convergence_score']:.1f}%")
         else:
             print(f"      No convergence data available")
-        
+
         print("[3/4] Loading knowledge summary...")
         knowledge = self.get_knowledge_summary()
         print(f"      Knowledge packs: {knowledge['total_packs']}")
-        
+
         print("[4/4] Generating GLOBAL index...")
-        
+
         maturity_stats = {0: 0, 1: 0, 2: 0, 3: 0}
         status_stats = {'NEW': 0, 'ACTIVE': 0, 'STABLE': 0}
-        
+
         for artifact in artifacts:
             maturity_stats[artifact.maturity_level] += 1
             status_stats[artifact.status] += 1
-        
+
         index = {
             'metadata': {
                 'version': '3.2.0',
@@ -317,11 +317,11 @@ class GlobalIndexGenerator:
                 3: [a.path for a in artifacts if a.maturity_level == 3]
             }
         }
-        
+
         index_path = self.workspace / 'GLOBAL_index.json'
         with open(index_path, 'w', encoding='utf-8') as f:
             json.dump(index, f, indent=2)
-        
+
         print()
         print("=" * 80)
         print("GLOBAL INDEX GENERATED")
@@ -338,7 +338,7 @@ class GlobalIndexGenerator:
         print(f"  ACTIVE: {status_stats['ACTIVE']}")
         print(f"  STABLE: {status_stats['STABLE']}")
         print("=" * 80)
-        
+
         return index_path
 
 

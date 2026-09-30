@@ -39,7 +39,7 @@ class DOWArianaIntegration:
     Integrates DOW pipeline with Ariana agent and test system bridge
     Manages agent orchestration after Phase 0 initialization
     """
-    
+
     def __init__(self, config: DMAICConfig, state_manager: StateManager,
                  test_bridge: TestSystemBridge):
         self.config = config
@@ -68,11 +68,11 @@ class DOWArianaIntegration:
 
         self._initialize_dow_system()
         self._initialize_ariana_agent()
-    
+
     def _initialize_dow_system(self):
         """Initialize DOW (Document of Work) system"""
         print("\n[DOW INTEGRATION] Initializing DOW system...")
-        
+
         dow_config = {
             'version': self.config.version,
             'timestamp': datetime.now().isoformat(),
@@ -84,14 +84,14 @@ class DOWArianaIntegration:
             'test_bridge_enabled': True,
             'parallel_execution': True
         }
-        
+
         self.dow_config_file.write_text(json.dumps(dow_config, indent=2))
         print(f"  ✅ DOW config: {self.dow_config_file}")
-    
+
     def _initialize_ariana_agent(self):
         """Initialize Ariana agent for tracing and monitoring"""
         print("\n[ARIANA AGENT] Initializing Ariana agent...")
-        
+
         ariana_health = {
             'agent_name': 'ariana',
             'version': '1.0.0',
@@ -112,10 +112,10 @@ class DOWArianaIntegration:
                 'agent_manager': True
             }
         }
-        
+
         self.ariana_health_file.write_text(json.dumps(ariana_health, indent=2))
         print(f"  ✅ Ariana health: {self.ariana_health_file}")
-        
+
         ariana_sync = {
             'sync_enabled': True,
             'sync_interval_seconds': 30,
@@ -124,10 +124,10 @@ class DOWArianaIntegration:
             'etcd_enabled': False,
             'log_level': 'INFO'
         }
-        
+
         self.ariana_sync_file.write_text(json.dumps(ariana_sync, indent=2))
         print(f"  ✅ Ariana sync config: {self.ariana_sync_file}")
-    
+
     def register_agent_orchestration_event(self, event_type: str, agent_name: str, 
                                           phase: str, metadata: Dict[str, Any] = None):
         """Register agent orchestration event for tracking"""
@@ -138,14 +138,14 @@ class DOWArianaIntegration:
             'phase': phase,
             'metadata': metadata or {}
         }
-        
+
         if self.metrics:
             self.metrics.agent_orchestration_events.append(event)
-        
+
         print(f"  [AGENT EVENT] {event_type}: {agent_name} in {phase}")
-        
+
         return event
-    
+
     def track_phase_transition(self, from_phase: str, to_phase: str, 
                               agents_involved: List[str], metadata: Dict[str, Any] = None):
         """Track phase transitions with agent involvement"""
@@ -156,30 +156,30 @@ class DOWArianaIntegration:
             'agents_involved': agents_involved,
             'metadata': metadata or {}
         }
-        
+
         if self.metrics:
             self.metrics.phase_transitions.append(transition)
-        
+
         print(f"\n[PHASE TRANSITION] {from_phase} → {to_phase}")
         print(f"  Agents involved: {', '.join(agents_involved)}")
-        
+
         return transition
-    
+
     def execute_dow_pipeline_with_ariana(self, phase: int, iteration: int) -> Dict[str, Any]:
         """Execute DOW pipeline with Ariana agent monitoring"""
         print(f"\n{'='*70}")
         print(f"DOW PIPELINE EXECUTION - Phase {phase}, Iteration {iteration}")
         print(f"{'='*70}")
-        
+
         start_time = time.time()
-        
+
         self.register_agent_orchestration_event(
             'pipeline_start',
             'ariana',
             f'phase{phase}',
             {'iteration': iteration}
         )
-        
+
         pipeline_result = {
             'phase': phase,
             'iteration': iteration,
@@ -189,71 +189,71 @@ class DOWArianaIntegration:
             'test_results': {},
             'status': 'running'
         }
-        
+
         try:
             dow_artifacts = self._execute_dow_phase(phase, iteration)
             pipeline_result['dow_artifacts'] = dow_artifacts
-            
+
             ariana_traces = self._collect_ariana_traces(phase)
             pipeline_result['ariana_traces'] = ariana_traces
-            
+
             test_results = self._run_integration_tests(phase, iteration)
             pipeline_result['test_results'] = test_results
-            
+
             pipeline_result['status'] = 'completed'
             pipeline_result['success'] = test_results.get('all_passed', False)
-            
+
         except Exception as e:
             pipeline_result['status'] = 'failed'
             pipeline_result['error'] = str(e)
             pipeline_result['success'] = False
-        
+
         duration = time.time() - start_time
         pipeline_result['duration_seconds'] = duration
         pipeline_result['end_time'] = datetime.now().isoformat()
-        
+
         self.register_agent_orchestration_event(
             'pipeline_complete',
             'ariana',
             f'phase{phase}',
             {'duration': duration, 'success': pipeline_result['success']}
         )
-        
+
         self._save_pipeline_result(pipeline_result, phase, iteration)
-        
+
         return pipeline_result
-    
+
     def _execute_dow_phase(self, phase: int, iteration: int) -> List[str]:
         """Execute DOW phase and return generated artifacts"""
         print(f"\n[DOW PHASE {phase}] Executing...")
-        
+
         artifacts = []
-        
+
         phase_output_dir = self.output_root / f'iteration_{iteration}' / f'phase{phase}_dow'
         phase_output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         phase_report = {
             'phase': phase,
             'iteration': iteration,
             'timestamp': datetime.now().isoformat(),
             'artifacts_generated': []
         }
-        
+
         report_file = phase_output_dir / f'phase{phase}_dow_report.json'
         report_file.write_text(json.dumps(phase_report, indent=2))
         artifacts.append(str(report_file))
-        
+
         print(f"  ✅ DOW phase {phase} completed")
         print(f"  📄 Artifacts: {len(artifacts)}")
-        
+
         return artifacts
-    
+
     def _collect_ariana_traces(self, phase: int) -> List[Dict[str, Any]]:
         """Collect Ariana agent traces for the phase"""
         print(f"\n[ARIANA TRACES] Collecting for phase {phase}...")
-        
+
         traces = []
-        
+
         ariana_trace_dir = self.workspace_root / '.ariana'
         if ariana_trace_dir.exists():
             trace_log = ariana_trace_dir / 'trace_log.json'
@@ -266,15 +266,15 @@ class DOWArianaIntegration:
                             traces.append(trace)
                 except Exception as e:
                     print(f"  ⚠️  Error reading traces: {e}")
-        
+
         print(f"  ✅ Collected {len(traces)} Ariana traces")
-        
+
         return traces
-    
+
     def _run_integration_tests(self, phase: int, iteration: int) -> Dict[str, Any]:
         """Run integration tests for DOW-Ariana integration"""
         print(f"\n[INTEGRATION TESTS] Running for phase {phase}...")
-        
+
         test_configs = [
             {
                 'name': f'dow_phase{phase}_integration',
@@ -287,11 +287,11 @@ class DOWArianaIntegration:
                 'timeout': 30
             }
         ]
-        
+
         results = self.test_bridge.run_tests_parallel(test_configs, max_workers=2)
-        
+
         all_passed = all(r.success for r in results.values())
-        
+
         test_summary = {
             'total_tests': len(results),
             'passed': sum(1 for r in results.values() if r.success),
@@ -300,17 +300,17 @@ class DOWArianaIntegration:
             'results': {name: {'success': r.success, 'duration': r.duration_seconds} 
                        for name, r in results.items()}
         }
-        
+
         print(f"  ✅ Integration tests: {test_summary['passed']}/{test_summary['total']} passed")
-        
+
         return test_summary
-    
+
     def _save_pipeline_result(self, result: Dict[str, Any], phase: int, iteration: int):
         """Save pipeline execution result"""
         output_file = self.dow_dir / f'phase{phase}_iteration{iteration}_result.json'
         output_file.write_text(json.dumps(result, indent=2))
         print(f"\n  💾 Pipeline result saved: {output_file}")
-    
+
     def show_agent_orchestration_after_phase0(self) -> Dict[str, Any]:
         """
         Show agent and orchestrator involvement after Phase 0 initialization
@@ -440,9 +440,9 @@ class DOWArianaIntegration:
         print(f"\n{'='*70}")
         print("✅ AGENT ORCHESTRATION COMPLETE")
         print(f"{'='*70}\n")
-        
+
         return orchestration_report
-    
+
     def _load_agents_registry(self) -> Dict[str, Any]:
         """Load agents registry from Phase 0"""
         if self.agents_registry_file.exists():
@@ -468,13 +468,13 @@ class DOWArianaIntegration:
                     return agent
 
         return None
-    
+
     def _save_orchestration_report(self, report: Dict[str, Any]):
         """Save orchestration report"""
         report_file = self.dow_dir / 'AGENT_ORCHESTRATION_REPORT.json'
         report_file.write_text(json.dumps(report, indent=2))
         print(f"\n  💾 Orchestration report saved: {report_file}")
-    
+
     def generate_integration_metrics(self) -> DOWArianaMetrics:
         """Generate comprehensive integration metrics"""
         self.metrics.timestamp = datetime.now().isoformat()
@@ -482,7 +482,7 @@ class DOWArianaIntegration:
         self.metrics.ariana_agent_status = 'monitoring'
 
         return self.metrics
-    
+
     def save_integration_report(self, output_path: Path = None):
         """Save comprehensive integration report"""
         if output_path is None:

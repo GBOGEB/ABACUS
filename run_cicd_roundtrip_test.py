@@ -31,17 +31,17 @@ logger = logging.getLogger(__name__)
 
 class CICDTestRunner:
     """Local CI/CD test runner simulating GitHub Actions"""
-    
+
     def __init__(self):
         self.test_results = []
         self.start_time = datetime.now()
         self.workspace_root = Path.cwd()
-        
+
     def run_command(self, command: str, description: str) -> Tuple[bool, str]:
         """Run a shell command and capture output"""
         logger.info(f"Running: {description}")
         logger.debug(f"Command: {command}")
-        
+
         try:
             result = subprocess.run(
                 command,
@@ -50,37 +50,37 @@ class CICDTestRunner:
                 text=True,
                 timeout=300
             )
-            
+
             success = result.returncode == 0
             output = result.stdout + result.stderr
-            
+
             if success:
                 logger.info(f"✓ {description} - PASSED")
             else:
                 logger.error(f"✗ {description} - FAILED")
                 logger.error(f"Output: {output}")
-            
+
             return success, output
-            
+
         except subprocess.TimeoutExpired:
             logger.error(f"✗ {description} - TIMEOUT")
             return False, "Command timed out"
         except Exception as e:
             logger.error(f"✗ {description} - ERROR: {e}")
             return False, str(e)
-    
+
     def job_validate_setup(self) -> Dict:
         """Job: Validate Integration Setup"""
         logger.info("\n" + "="*80)
         logger.info("JOB: Validate Integration Setup")
         logger.info("="*80)
-        
+
         job_results = {
             "name": "validate-setup",
             "steps": [],
             "status": "running"
         }
-        
+
         # Step 1: Verify integration files exist
         step1_success = True
         required_files = [
@@ -89,19 +89,19 @@ class CICDTestRunner:
             "UNIFIED_GLOB_CONFIG.yaml",
             "INTEGRATION_GUIDE.md"
         ]
-        
+
         for file in required_files:
             if not Path(file).exists():
                 logger.error(f"✗ Required file missing: {file}")
                 step1_success = False
             else:
                 logger.info(f"✓ Found: {file}")
-        
+
         job_results["steps"].append({
             "name": "Verify integration files",
             "success": step1_success
         })
-        
+
         # Step 2: Validate YAML configuration
         success, output = self.run_command(
             "python -c \"import yaml; yaml.safe_load(open('UNIFIED_GLOB_CONFIG.yaml'))\"",
@@ -111,7 +111,7 @@ class CICDTestRunner:
             "name": "Validate YAML",
             "success": success
         })
-        
+
         # Step 3: Check Python syntax
         success, output = self.run_command(
             "python -m py_compile GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
@@ -121,26 +121,26 @@ class CICDTestRunner:
             "name": "Check Python syntax",
             "success": success
         })
-        
+
         job_results["status"] = "passed" if all(s["success"] for s in job_results["steps"]) else "failed"
         return job_results
-    
+
     def job_test_integration_bridge(self) -> Dict:
         """Job: Test Integration Bridge"""
         logger.info("\n" + "="*80)
         logger.info("JOB: Test Integration Bridge")
         logger.info("="*80)
-        
+
         job_results = {
             "name": "test-integration-bridge",
             "steps": [],
             "status": "running"
         }
-        
+
         # Create required directories
         for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT", "gbogeg_handover"]:
             Path(dir_path).mkdir(parents=True, exist_ok=True)
-        
+
         # Run integration test suite
         success, output = self.run_command(
             "python test_integration_bridge.py",
@@ -151,26 +151,26 @@ class CICDTestRunner:
             "success": success,
             "output": output[:500]
         })
-        
+
         job_results["status"] = "passed" if success else "failed"
         return job_results
-    
+
     def job_test_dow_only_mode(self) -> Dict:
         """Job: Test DOW-Only Mode"""
         logger.info("\n" + "="*80)
         logger.info("JOB: Test DOW-Only Mode")
         logger.info("="*80)
-        
+
         job_results = {
             "name": "test-dow-only-mode",
             "steps": [],
             "status": "running"
         }
-        
+
         # Create required directories
         Path("DOW/outputs").mkdir(parents=True, exist_ok=True)
         Path("INTEGRATED_OUTPUT").mkdir(parents=True, exist_ok=True)
-        
+
         # Execute DOW-only mode
         test_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode
@@ -180,7 +180,7 @@ results = bridge.execute_integrated_pipeline()
 print(f'Status: {results["status"]}')
 assert results['status'] in ['completed', 'failed']
 """
-        
+
         success, output = self.run_command(
             f'python -c "{test_code}"',
             "Execute DOW-only mode"
@@ -190,26 +190,26 @@ assert results['status'] in ['completed', 'failed']
             "success": success,
             "output": output[:500]
         })
-        
+
         job_results["status"] = "passed" if success else "failed"
         return job_results
-    
+
     def job_test_unified_mode(self) -> Dict:
         """Job: Test Unified Mode"""
         logger.info("\n" + "="*80)
         logger.info("JOB: Test Unified Mode")
         logger.info("="*80)
-        
+
         job_results = {
             "name": "test-unified-mode",
             "steps": [],
             "status": "running"
         }
-        
+
         # Create required directories
         for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT"]:
             Path(dir_path).mkdir(parents=True, exist_ok=True)
-        
+
         # Execute unified mode
         test_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode
@@ -224,7 +224,7 @@ results = bridge.execute_integrated_pipeline()
 print(f'Status: {results["status"]}')
 print(f'Duration: {results.get("duration_seconds", 0):.2f}s')
 """
-        
+
         success, output = self.run_command(
             f'python -c "{test_code}"',
             "Execute unified mode"
@@ -234,26 +234,26 @@ print(f'Duration: {results.get("duration_seconds", 0):.2f}s')
             "success": success,
             "output": output[:500]
         })
-        
+
         job_results["status"] = "passed" if success else "failed"
         return job_results
-    
+
     def job_integration_roundtrip_test(self) -> Dict:
         """Job: Integration Roundtrip Test"""
         logger.info("\n" + "="*80)
         logger.info("JOB: Integration Roundtrip Test")
         logger.info("="*80)
-        
+
         job_results = {
             "name": "integration-roundtrip-test",
             "steps": [],
             "status": "running"
         }
-        
+
         # Create required directories
         for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT", "gbogeg_handover"]:
             Path(dir_path).mkdir(parents=True, exist_ok=True)
-        
+
         # Test 1: DOW-only mode
         test1_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode
@@ -271,7 +271,7 @@ print('✓ DOW-only mode test passed')
             "name": "Test DOW-only mode",
             "success": success1
         })
-        
+
         # Test 2: Unified mode
         test2_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode
@@ -288,7 +288,7 @@ print('✓ Unified mode test passed')
             "name": "Test unified mode",
             "success": success2
         })
-        
+
         # Test 3: Configuration validation
         test3_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import IntegrationConfig, IntegrationMode
@@ -311,7 +311,7 @@ print('✓ Configuration validation passed')
             "name": "Test configuration",
             "success": success3
         })
-        
+
         # Test 4: Metrics tracking
         test4_code = """
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge
@@ -407,57 +407,57 @@ print('✓ Metrics tracking test passed')
         logger.info(f"Report saved to: {report_file}")
 
         return report
-        
+
         logger.info(f"Report saved to: {report_file}")
-        
+
         return report
-    
+
     def run_full_pipeline(self):
         """Run full CI/CD pipeline"""
         logger.info("\n" + "="*80)
         logger.info("STARTING LOCAL CI/CD PIPELINE")
         logger.info("="*80)
-        
+
         all_results = []
-        
+
         # Job 1: Validate Setup
         result1 = self.job_validate_setup()
         all_results.append(result1)
-        
+
         if result1["status"] != "passed":
             logger.error("Setup validation failed - stopping pipeline")
             self.generate_roundtrip_report(all_results)
             return False
-        
+
         # Job 2: Test Integration Bridge
         result2 = self.job_test_integration_bridge()
         all_results.append(result2)
-        
+
         # Job 3: Test DOW-Only Mode
         result3 = self.job_test_dow_only_mode()
         all_results.append(result3)
-        
+
         # Job 4: Test Unified Mode
         result4 = self.job_test_unified_mode()
         all_results.append(result4)
-        
+
         # Job 5: Integration Roundtrip Test
         result5 = self.job_integration_roundtrip_test()
         all_results.append(result5)
-        
+
         # Generate report
         self.generate_roundtrip_report(all_results)
-        
+
         # Summary
         total_passed = sum(1 for r in all_results if r["status"] == "passed")
         total_jobs = len(all_results)
-        
+
         logger.info("\n" + "="*80)
         logger.info("CI/CD PIPELINE COMPLETE")
         logger.info(f"Passed: {total_passed}/{total_jobs}")
         logger.info(f"Duration: {(datetime.now() - self.start_time).total_seconds():.2f}s")
         logger.info("="*80)
-        
+
         return total_passed == total_jobs
 
 
@@ -465,7 +465,7 @@ def main():
     """Main execution"""
     runner = CICDTestRunner()
     success = runner.run_full_pipeline()
-    
+
     if success:
         logger.info("✅ ALL CI/CD TESTS PASSED")
         return 0

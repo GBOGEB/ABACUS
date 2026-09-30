@@ -23,7 +23,7 @@ class MonitoringIntegration:
         self.timestamp = datetime.now().isoformat()
         self.output_dir = Path("ABACUS_V21_MONITORING")
         self.output_dir.mkdir(exist_ok=True)
-        
+
         self.results = {
             "stage": "2.3",
             "name": "Monitoring Integration",
@@ -33,7 +33,7 @@ class MonitoringIntegration:
             "alerts": [],
             "recommendations": []
         }
-    
+
     def create_logging_config(self) -> Dict[str, Any]:
         """Create comprehensive logging configuration"""
         config = {
@@ -41,7 +41,7 @@ class MonitoringIntegration:
             "status": "CREATED",
             "details": {}
         }
-        
+
         logging_config = {
             "version": 1,
             "disable_existing_loggers": False,
@@ -90,17 +90,17 @@ class MonitoringIntegration:
                 "handlers": ["console", "file"]
             }
         }
-        
+
         config_path = self.output_dir / "logging_config.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(logging_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["handlers"] = list(logging_config["handlers"].keys())
         config["message"] = f"Logging configuration created with {len(logging_config['handlers'])} handlers"
-        
+
         return config
-    
+
     def create_metrics_config(self) -> Dict[str, Any]:
         """Create metrics collection configuration"""
         config = {
@@ -108,7 +108,7 @@ class MonitoringIntegration:
             "status": "CREATED",
             "details": {}
         }
-        
+
         metrics_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -186,17 +186,17 @@ class MonitoringIntegration:
                 }
             }
         }
-        
+
         config_path = self.output_dir / "metrics_config.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(metrics_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["metric_categories"] = list(metrics_config["metrics"].keys())
         config["message"] = "Metrics configuration created"
-        
+
         return config
-    
+
     def create_alert_rules(self) -> Dict[str, Any]:
         """Create alerting rules"""
         config = {
@@ -204,7 +204,7 @@ class MonitoringIntegration:
             "status": "CREATED",
             "details": {}
         }
-        
+
         alert_rules = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -277,17 +277,17 @@ class MonitoringIntegration:
                 }
             }
         }
-        
+
         config_path = self.output_dir / "alert_rules.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(alert_rules, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["rule_count"] = len(alert_rules["rules"])
         config["message"] = f"Alert rules created with {len(alert_rules['rules'])} rules"
-        
+
         return config
-    
+
     def create_dashboard_config(self) -> Dict[str, Any]:
         """Create monitoring dashboard configuration"""
         config = {
@@ -295,7 +295,7 @@ class MonitoringIntegration:
             "status": "CREATED",
             "details": {}
         }
-        
+
         dashboard = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -338,17 +338,17 @@ class MonitoringIntegration:
                 }
             ]
         }
-        
+
         config_path = self.output_dir / "dashboard_config.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(dashboard, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["dashboard_count"] = len(dashboard["dashboards"])
         config["message"] = f"Dashboard configuration created with {len(dashboard['dashboards'])} dashboards"
-        
+
         return config
-    
+
     def create_health_check_script(self) -> Dict[str, Any]:
         """Create health check script"""
         config = {
@@ -356,7 +356,7 @@ class MonitoringIntegration:
             "status": "CREATED",
             "details": {}
         }
-        
+
         health_check = """#!/usr/bin/env python3
 \"\"\"
 ABACUS v2.1 Health Check Script
@@ -376,7 +376,7 @@ def check_core_modules():
         "recursive_knowledge_engine",
         "temporal_session_analyzer"
     ]
-    
+
     results = []
     for module in modules:
         try:
@@ -384,7 +384,7 @@ def check_core_modules():
             results.append({"module": module, "status": "OK"})
         except ImportError as e:
             results.append({"module": module, "status": "FAIL", "error": str(e)})
-    
+
     return results
 
 def check_directories():
@@ -395,12 +395,12 @@ def check_directories():
         "logs",
         "config"
     ]
-    
+
     results = []
     for dir_name in dirs:
         exists = Path(dir_name).exists()
         results.append({"directory": dir_name, "status": "OK" if exists else "MISSING"})
-    
+
     return results
 
 def check_configuration():
@@ -409,7 +409,7 @@ def check_configuration():
         "DOW_IMPLEMENTATION_TRACKER.json",
         "ABACUS_V21_PROGRESS_TRACKER.yaml"
     ]
-    
+
     results = []
     for config_file in configs:
         path = Path(config_file)
@@ -417,13 +417,13 @@ def check_configuration():
             results.append({"config": config_file, "status": "OK"})
         else:
             results.append({"config": config_file, "status": "MISSING"})
-    
+
     return results
 
 def main():
     print("ABACUS v2.1 Health Check")
     print("=" * 50)
-    
+
     health = {
         "timestamp": datetime.now().isoformat(),
         "status": "HEALTHY",
@@ -433,36 +433,36 @@ def main():
             "configuration": check_configuration()
         }
     }
-    
+
     # Determine overall health
     all_checks = (
         health["checks"]["modules"] +
         health["checks"]["directories"] +
         health["checks"]["configuration"]
     )
-    
+
     failed = [c for c in all_checks if c.get("status") not in ["OK", "HEALTHY"]]
     if failed:
         health["status"] = "UNHEALTHY"
         health["failed_checks"] = len(failed)
-    
+
     print(json.dumps(health, indent=2))
-    
+
     return 0 if health["status"] == "HEALTHY" else 1
 
 if __name__ == "__main__":
     sys.exit(main())
 """
-        
+
         script_path = self.output_dir / "health_check.py"
         with open(script_path, 'w', encoding='utf-8') as f:
             f.write(health_check)
-        
+
         config["details"]["script_file"] = str(script_path)
         config["message"] = "Health check script created"
-        
+
         return config
-    
+
     def generate_recommendations(self) -> List[Dict[str, Any]]:
         """Generate monitoring recommendations"""
         recommendations = [
@@ -502,75 +502,75 @@ if __name__ == "__main__":
                 "action": "Integrate application performance monitoring tools"
             }
         ]
-        
+
         return recommendations
-    
+
     def run_integration(self):
         """Run complete monitoring integration"""
         print("=" * 80)
         print("ABACUS v2.1 - Stage 2.3: Monitoring Integration")
         print("=" * 80)
         print()
-        
+
         print("Creating monitoring configurations...")
         self.results["monitoring_systems"].append(self.create_logging_config())
         self.results["monitoring_systems"].append(self.create_metrics_config())
-        
+
         print("\nCreating alert rules...")
         self.results["alerts"].append(self.create_alert_rules())
-        
+
         print("\nCreating dashboards...")
         self.results["dashboards"].append(self.create_dashboard_config())
-        
+
         print("\nCreating health check script...")
         self.results["monitoring_systems"].append(self.create_health_check_script())
-        
+
         print("\nGenerating recommendations...")
         self.results["recommendations"] = self.generate_recommendations()
-        
+
         self.save_results()
         self.generate_report()
-        
+
         print("\n" + "=" * 80)
         print("Monitoring Integration Complete")
         print("=" * 80)
-    
+
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "monitoring_integration_results.json"
         with open(results_path, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
-    
+
     def generate_report(self):
         """Generate markdown report"""
         report_path = self.output_dir / "MONITORING_INTEGRATION_REPORT.md"
-        
+
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# ABACUS v2.1 - Monitoring Integration Report\n\n")
             f.write(f"**Stage**: 2.3 - Monitoring Integration\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
             f.write(f"**Phase**: POST-CD\n\n")
             f.write("---\n\n")
-            
+
             f.write("## Monitoring Systems\n\n")
             for system in self.results["monitoring_systems"]:
                 f.write(f"### [CREATED] {system['name']}\n\n")
                 f.write(f"**Status**: {system['status']}\n")
                 f.write(f"**Message**: {system['message']}\n\n")
-            
+
             f.write("## Alert Configuration\n\n")
             for alert in self.results["alerts"]:
                 f.write(f"### [CREATED] {alert['name']}\n\n")
                 f.write(f"**Status**: {alert['status']}\n")
                 f.write(f"**Message**: {alert['message']}\n\n")
-            
+
             f.write("## Dashboards\n\n")
             for dashboard in self.results["dashboards"]:
                 f.write(f"### [CREATED] {dashboard['name']}\n\n")
                 f.write(f"**Status**: {dashboard['status']}\n")
                 f.write(f"**Message**: {dashboard['message']}\n\n")
-            
+
             f.write("## Recommendations\n\n")
             for rec in self.results["recommendations"]:
                 priority_icon = "HIGH" if rec["priority"] == "HIGH" else "MEDIUM"
@@ -578,7 +578,7 @@ if __name__ == "__main__":
                 f.write(f"**Category**: {rec['category']}\n")
                 f.write(f"**Description**: {rec['description']}\n")
                 f.write(f"**Action**: {rec['action']}\n\n")
-            
+
             f.write("---\n\n")
             f.write("## Next Steps\n\n")
             f.write("1. Deploy monitoring infrastructure (Prometheus, Grafana)\n")
@@ -588,7 +588,7 @@ if __name__ == "__main__":
             f.write("5. Proceed to Stage 2.4: Production Deployment\n\n")
             f.write("---\n\n")
             f.write(f"*Report generated on {self.timestamp}*\n")
-        
+
         print(f"Report saved to: {report_path}")
 
 if __name__ == "__main__":
