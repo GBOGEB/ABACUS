@@ -51,7 +51,7 @@ EQUATIONS = {
 
 def calc_volumetric_flow(mass_flow_gs, T_K, P_bar):
     """Calculate volumetric flow rate from mass flow.
-    
+
     Q_vol = m_dot * R * T / (P * M)
     """
     m_dot = mass_flow_gs / 1000  # kg/s
@@ -86,7 +86,7 @@ def calc_n_minus_1_capacity(n_total, per_unit_gs, demand_gs):
 # ─── FILLED EXAMPLES ────────────────────────────────────────────────────────
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
-    
+
     # 1. Design flow volumetric conversion
     vf = calc_volumetric_flow(350, 300, 14)
     results["calculations"].append({
@@ -96,7 +96,7 @@ def run_examples():
         "result": vf,
         "interpretation": f"At HP outlet (14 bar, 300K): 350 g/s = {vf['m3_per_h']} m³/h"
     })
-    
+
     # 2. Compressor station capacity
     cc = calc_compressor_capacity(3, 575)
     results["calculations"].append({
@@ -106,7 +106,7 @@ def run_examples():
         "result": cc,
         "interpretation": f"Calculated per-unit: {cc['per_unit_gs']} g/s vs SSOT: {specs['per_unit_flow_gs']} g/s"
     })
-    
+
     # 3. VFD at partial load (expected 304 g/s with 3 units)
     vfd = calc_vfd_operating_point(304/3, specs["per_unit_flow_gs"], specs["frequency_hz"], specs["motor_power_kW"])
     results["calculations"].append({
@@ -116,7 +116,7 @@ def run_examples():
         "result": vfd,
         "interpretation": f"Each unit runs at {vfd['frequency_hz']} Hz, {vfd['power_kw']} kW to deliver 304 g/s total"
     })
-    
+
     # 4. N-1 capacity check
     nm1 = calc_n_minus_1_capacity(3, specs["per_unit_flow_gs"], flows["wcs_hp_expected_flow"]["value"])
     results["calculations"].append({
@@ -126,7 +126,7 @@ def run_examples():
         "result": nm1,
         "interpretation": f"N-1 ({nm1['n_minus_1_units']} units) = {nm1['capacity_gs']} g/s, {'CAN' if nm1['can_meet_demand'] else 'CANNOT'} meet {nm1['demand_gs']} g/s ({nm1['margin_pct']:+.1f}% margin)"
     })
-    
+
     # 5. N-1 against design flow
     nm1d = calc_n_minus_1_capacity(3, specs["per_unit_flow_gs"], flows["wcs_hp_design_flow"]["value"])
     results["calculations"].append({
@@ -136,47 +136,47 @@ def run_examples():
         "result": nm1d,
         "interpretation": f"N-1 = {nm1d['capacity_gs']} g/s vs 350 g/s design: {nm1d['margin_pct']:+.1f}% — {'OK' if nm1d['can_meet_demand'] else 'SHORTFALL: VFD ramp-up or load shedding needed'}"
     })
-    
+
     return results
 
 # ─── UNIT TESTS ──────────────────────────────────────────────────────────────
 def test():
     print("Running unit tests...")
-    
+
     # Test volumetric flow
     vf = calc_volumetric_flow(350, 300, 14)
     assert vf["m3_per_s"] > 0, "Volumetric flow must be positive"
     assert 0.1 < vf["m3_per_s"] < 1.0, f"Expected 0.1-1.0 m³/s, got {vf['m3_per_s']}"
-    
+
     # Test compressor capacity
     cc = calc_compressor_capacity(3, 575)
     assert abs(cc["per_unit_gs"] - 26.14) < 1, f"Expected ~26 g/s from Nm³/h, got {cc['per_unit_gs']}"
     # Note: actual per_unit is 112.54 g/s (from vendor test, not just from Nm³/h × ρ_STP)
-    
+
     # Test VFD scaling
     vfd = calc_vfd_operating_point(112.54, 112.54, 72, 315)
     assert abs(vfd["frequency_hz"] - 72) < 0.1, "At rated flow, freq should be rated"
     assert abs(vfd["power_kw"] - 315) < 0.1, "At rated flow, power should be rated"
-    
+
     # Test half-speed power (should be 1/8 of rated)
     vfd_half = calc_vfd_operating_point(56.27, 112.54, 72, 315)
     assert abs(vfd_half["power_kw"] - 315/8) < 1, f"Half speed power should be ~{315/8:.1f} kW"
-    
+
     # Test N-1
     nm1 = calc_n_minus_1_capacity(3, 112.54, 304)
     assert nm1["n_minus_1_units"] == 2
     assert not nm1["can_meet_demand"], "2 units (225 g/s) cannot meet 304 g/s"
-    
+
     print("✅ All flow calculation tests passed!")
 
 if __name__ == "__main__":
     test()
     results = run_examples()
-    
+
     out_path = os.path.join(os.path.dirname(__file__), "..", "flow_results.json")
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"\n{'='*60}")
     for calc in results["calculations"]:
         print(f"\n📊 {calc['name']}")
