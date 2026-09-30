@@ -97,9 +97,9 @@ class Phase2Measure:
 
             # Basic metrics
             lines = content.split('\n')
-            loc = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
+            loc = len([line for line in lines if line.strip() and not line.strip().startswith('#')])
             total_lines = len(lines)
-            comment_lines = len([l for l in lines if l.strip().startswith('#')])
+            comment_lines = len([line for line in lines if line.strip().startswith('#')])
 
             # AST analysis
             try:
