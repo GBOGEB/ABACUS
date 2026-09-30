@@ -25,7 +25,7 @@ class SecurityHardening:
         self.timestamp = datetime.now().isoformat()
         self.output_dir = Path("ABACUS_V21_SECURITY")
         self.output_dir.mkdir(exist_ok=True)
-        
+
         self.results = {
             "stage": "2.4",
             "name": "Security Hardening",
@@ -36,7 +36,7 @@ class SecurityHardening:
             "audit_logs": [],
             "recommendations": []
         }
-    
+
     def create_rbac_config(self) -> Dict[str, Any]:
         """Create Role-Based Access Control configuration"""
         config = {
@@ -44,7 +44,7 @@ class SecurityHardening:
             "status": "CREATED",
             "details": {}
         }
-        
+
         rbac_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -133,18 +133,18 @@ class SecurityHardening:
                 }
             }
         }
-        
+
         config_path = self.output_dir / "rbac_config.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(rbac_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["roles"] = len(rbac_config["roles"])
         config["details"]["users"] = len(rbac_config["users"])
         config["message"] = f"RBAC configuration created with {len(rbac_config['roles'])} roles"
-        
+
         return config
-    
+
     def create_secrets_management(self) -> Dict[str, Any]:
         """Create secrets management configuration"""
         config = {
@@ -152,7 +152,7 @@ class SecurityHardening:
             "status": "CREATED",
             "details": {}
         }
-        
+
         secrets_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -196,11 +196,11 @@ class SecurityHardening:
                 "audit_all_access": True
             }
         }
-        
+
         config_path = self.output_dir / "secrets_management.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(secrets_config, f, indent=2)
-        
+
         # Generate sample .env.template
         env_template = """# ABACUS v2.1 Environment Variables Template
 # DO NOT commit actual secrets to version control
@@ -224,17 +224,17 @@ APP_ENV=production
 LOG_LEVEL=INFO
 DEBUG=false
 """
-        
+
         env_path = self.output_dir / ".env.template"
         with open(env_path, 'w', encoding='utf-8') as f:
             f.write(env_template)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["secret_categories"] = len(secrets_config["secrets"])
         config["message"] = "Secrets management configuration created"
-        
+
         return config
-    
+
     def create_security_policies(self) -> Dict[str, Any]:
         """Create security policies"""
         config = {
@@ -242,7 +242,7 @@ DEBUG=false
             "status": "CREATED",
             "details": {}
         }
-        
+
         policies = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -337,17 +337,17 @@ DEBUG=false
                 }
             }
         }
-        
+
         config_path = self.output_dir / "security_policies.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(policies, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["policy_categories"] = len(policies) - 2
         config["message"] = "Security policies created"
-        
+
         return config
-    
+
     def create_audit_logging(self) -> Dict[str, Any]:
         """Create audit logging configuration"""
         config = {
@@ -355,7 +355,7 @@ DEBUG=false
             "status": "CREATED",
             "details": {}
         }
-        
+
         audit_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -417,17 +417,17 @@ DEBUG=false
                 }
             }
         }
-        
+
         config_path = self.output_dir / "audit_logging.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(audit_config, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["event_categories"] = len(audit_config["events"])
         config["message"] = "Audit logging configuration created"
-        
+
         return config
-    
+
     def create_security_checklist(self) -> Dict[str, Any]:
         """Create security implementation checklist"""
         config = {
@@ -435,7 +435,7 @@ DEBUG=false
             "status": "CREATED",
             "details": {}
         }
-        
+
         checklist = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -508,19 +508,19 @@ DEBUG=false
                 }
             ]
         }
-        
+
         config_path = self.output_dir / "security_checklist.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(checklist, f, indent=2)
-        
+
         total_tasks = sum(len(cat["tasks"]) for cat in checklist["categories"])
         config["details"]["config_file"] = str(config_path)
         config["details"]["categories"] = len(checklist["categories"])
         config["details"]["total_tasks"] = total_tasks
         config["message"] = f"Security checklist created with {total_tasks} tasks"
-        
+
         return config
-    
+
     def generate_recommendations(self) -> List[Dict[str, Any]]:
         """Generate security recommendations"""
         recommendations = [
@@ -589,83 +589,83 @@ DEBUG=false
                 "impact": "Reduces human error and social engineering risks"
             }
         ]
-        
+
         return recommendations
-    
+
     def run_hardening(self):
         """Run complete security hardening"""
         print("=" * 80)
         print("ABACUS v2.1 - Stage 2.4: Security Hardening")
         print("=" * 80)
         print()
-        
+
         print("Creating access control configurations...")
         self.results["access_controls"].append(self.create_rbac_config())
-        
+
         print("\nCreating secrets management...")
         self.results["secrets_management"].append(self.create_secrets_management())
-        
+
         print("\nCreating security policies...")
         self.results["security_measures"].append(self.create_security_policies())
-        
+
         print("\nCreating audit logging...")
         self.results["audit_logs"].append(self.create_audit_logging())
-        
+
         print("\nCreating security checklist...")
         self.results["security_measures"].append(self.create_security_checklist())
-        
+
         print("\nGenerating recommendations...")
         self.results["recommendations"] = self.generate_recommendations()
-        
+
         self.save_results()
         self.generate_report()
-        
+
         print("\n" + "=" * 80)
         print("Security Hardening Complete")
         print("=" * 80)
-    
+
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "security_hardening_results.json"
         with open(results_path, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
-    
+
     def generate_report(self):
         """Generate markdown report"""
         report_path = self.output_dir / "SECURITY_HARDENING_REPORT.md"
-        
+
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# ABACUS v2.1 - Security Hardening Report\n\n")
             f.write(f"**Stage**: 2.4 - Security Hardening\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
             f.write(f"**Phase**: POST-CD\n\n")
             f.write("---\n\n")
-            
+
             f.write("## Access Controls\n\n")
             for control in self.results["access_controls"]:
                 f.write(f"### [CREATED] {control['name']}\n\n")
                 f.write(f"**Status**: {control['status']}\n")
                 f.write(f"**Message**: {control['message']}\n\n")
-            
+
             f.write("## Secrets Management\n\n")
             for secret in self.results["secrets_management"]:
                 f.write(f"### [CREATED] {secret['name']}\n\n")
                 f.write(f"**Status**: {secret['status']}\n")
                 f.write(f"**Message**: {secret['message']}\n\n")
-            
+
             f.write("## Security Measures\n\n")
             for measure in self.results["security_measures"]:
                 f.write(f"### [CREATED] {measure['name']}\n\n")
                 f.write(f"**Status**: {measure['status']}\n")
                 f.write(f"**Message**: {measure['message']}\n\n")
-            
+
             f.write("## Audit Logging\n\n")
             for audit in self.results["audit_logs"]:
                 f.write(f"### [CREATED] {audit['name']}\n\n")
                 f.write(f"**Status**: {audit['status']}\n")
                 f.write(f"**Message**: {audit['message']}\n\n")
-            
+
             f.write("## Recommendations\n\n")
             for rec in self.results["recommendations"]:
                 priority_icon = rec["priority"]
@@ -674,7 +674,7 @@ DEBUG=false
                 f.write(f"**Description**: {rec['description']}\n")
                 f.write(f"**Action**: {rec['action']}\n")
                 f.write(f"**Impact**: {rec['impact']}\n\n")
-            
+
             f.write("---\n\n")
             f.write("## Next Steps\n\n")
             f.write("1. Review and approve security policies\n")
@@ -685,7 +685,7 @@ DEBUG=false
             f.write("6. Proceed to Stage 2.5: Backup & Recovery\n\n")
             f.write("---\n\n")
             f.write(f"*Report generated on {self.timestamp}*\n")
-        
+
         print(f"Report saved to: {report_path}")
 
 if __name__ == "__main__":
