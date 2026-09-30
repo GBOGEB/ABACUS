@@ -47,7 +47,7 @@ class MetricsSnapshot:
     version_headers: int
     file_hashes: Dict[str, str]
     directory_structure: Dict[str, int]
-    
+
 @dataclass
 class RefactoringPlan:
     """Plan for code refactoring and reorganization"""
@@ -58,7 +58,7 @@ class RefactoringPlan:
 
 class CICDGitHubOrchestrator:
     """Orchestrates complete CI/CD pipeline with GitHub roundtrip"""
-    
+
     def __init__(self, workspace: Path):
         self.workspace = Path(workspace)
         self.output_dir = self.workspace / "DMAIC_INTEGRATION_OUTPUT" / "cicd_github"
@@ -129,7 +129,7 @@ class CICDGitHubOrchestrator:
         print(f"   VS Code extensions configured: {verification['vscode_extensions']['extensions_json_exists']}")
 
         return verification
-    
+
     def collect_metrics(self, label: str) -> MetricsSnapshot:
         """Collect comprehensive codebase metrics (optimized for large codebases)"""
         import random
@@ -219,29 +219,29 @@ class CICDGitHubOrchestrator:
         print(f"   [OK] Version headers: {metrics.version_headers}")
 
         return metrics
-    
+
     def save_metrics(self, metrics: MetricsSnapshot, label: str):
         """Save metrics to JSON"""
         output_file = self.output_dir / f"metrics_{label}_{self.execution_id}.json"
-        
+
         metrics_dict = asdict(metrics)
         if len(str(metrics_dict.get('file_hashes', {}))) > 100000:
             metrics_dict['file_hashes'] = f"<{len(metrics.file_hashes)} files>"
-        
+
         output_file.write_text(json.dumps(metrics_dict, indent=2), encoding='utf-8')
         print(f"   [OK] Saved: {output_file.relative_to(self.workspace)}")
-    
+
     def analyze_refactoring_needs(self) -> RefactoringPlan:
         """Analyze codebase and create refactoring plan"""
         print("\n[SCAN] Analyzing refactoring needs...")
-        
+
         plan = RefactoringPlan(
             moves=[],
             renames=[],
             consolidations=[],
             deletions=[]
         )
-        
+
         misc_dir = self.workspace / "12_ORGANIZED_BY_CATEGORY" / "MISC_SCRIPTS"
         if misc_dir.exists():
             misc_scripts = list(misc_dir.glob("*.py"))
@@ -258,27 +258,27 @@ class CICDGitHubOrchestrator:
                         "to": f"12_ORGANIZED_BY_CATEGORY/VALIDATION/{script.name}",
                         "reason": "Move validation files to VALIDATION"
                     })
-        
+
         ranking_engines = list(self.workspace.rglob("ranking_engine.py"))
         ranking_engines = [f for f in ranking_engines if "13_CORE_SYSTEMS" not in str(f) and ".git" not in str(f) and "BACKUPS" not in str(f)]
-        
+
         if len(ranking_engines) > 0:
             primary = self.workspace / "13_CORE_SYSTEMS/DMAIC/DMAIC_V3/core/ranking_engine.py"
             if primary.exists():
                 for dup in ranking_engines:
                     plan.deletions.append(str(dup.relative_to(self.workspace)))
-        
+
         print(f"   Moves planned: {len(plan.moves)}")
         print(f"   Renames planned: {len(plan.renames)}")
         print(f"   Consolidations planned: {len(plan.consolidations)}")
         print(f"   Deletions planned: {len(plan.deletions)}")
-        
+
         return plan
-    
+
     def execute_refactoring(self, plan: RefactoringPlan, dry_run: bool = False) -> Dict:
         """Execute refactoring plan"""
         print(f"\n[REFACTOR] Executing refactoring {'(DRY RUN)' if dry_run else '(LIVE)'}...")
-        
+
         results = {
             "moves_executed": [],
             "renames_executed": [],
@@ -286,40 +286,40 @@ class CICDGitHubOrchestrator:
             "deletions_executed": [],
             "errors": []
         }
-        
+
         for move in plan.moves:
             try:
                 src = self.workspace / move["from"]
                 dst = self.workspace / move["to"]
-                
+
                 if src.exists():
                     if not dry_run:
                         dst.parent.mkdir(parents=True, exist_ok=True)
                         src.rename(dst)
-                    
+
                     results["moves_executed"].append(move)
                     print(f"   [OK] Moved: {move['from']} -> {move['to']}")
             except Exception as e:
                 error = f"Move failed: {move['from']} - {str(e)}"
                 results["errors"].append(error)
                 print(f"   [ERROR] {error}")
-        
+
         for deletion in plan.deletions:
             try:
                 file_path = self.workspace / deletion
                 if file_path.exists():
                     if not dry_run:
                         file_path.unlink()
-                    
+
                     results["deletions_executed"].append(deletion)
                     print(f"   [OK] Deleted: {deletion}")
             except Exception as e:
                 error = f"Deletion failed: {deletion} - {str(e)}"
                 results["errors"].append(error)
                 print(f"   [ERROR] {error}")
-        
+
         return results
-    
+
     def git_status(self) -> Dict:
         """Get git status"""
         try:
@@ -330,9 +330,9 @@ class CICDGitHubOrchestrator:
                 text=True,
                 timeout=30
             )
-            
+
             lines = result.stdout.strip().split('\n') if result.stdout.strip() else []
-            
+
             return {
                 "has_changes": len(lines) > 0,
                 "modified": [l[3:] for l in lines if l.startswith(' M')],
@@ -342,15 +342,15 @@ class CICDGitHubOrchestrator:
             }
         except Exception as e:
             return {"error": str(e), "has_changes": False}
-    
+
     def git_commit_push(self, message: str) -> Dict:
         """Commit and push changes to GitHub"""
         print(f"\n[PUSH] Committing and pushing to GitHub...")
-        
+
         try:
             subprocess.run(["git", "add", "."], cwd=self.workspace, check=True, timeout=30)
             print("   [OK] Staged changes")
-            
+
             subprocess.run(
                 ["git", "commit", "-m", message],
                 cwd=self.workspace,
@@ -358,7 +358,7 @@ class CICDGitHubOrchestrator:
                 timeout=30
             )
             print("   [OK] Committed changes")
-            
+
             result = subprocess.run(
                 ["git", "push"],
                 cwd=self.workspace,
@@ -366,23 +366,23 @@ class CICDGitHubOrchestrator:
                 text=True,
                 timeout=120
             )
-            
+
             if result.returncode == 0:
                 print("   [OK] Pushed to GitHub")
                 return {"success": True, "output": result.stdout}
             else:
                 print(f"   [ERROR] Push failed: {result.stderr}")
                 return {"success": False, "error": result.stderr}
-        
+
         except subprocess.TimeoutExpired:
             return {"success": False, "error": "Git operation timed out"}
         except Exception as e:
             return {"success": False, "error": str(e)}
-    
+
     def git_pull(self) -> Dict:
         """Pull latest changes from GitHub"""
         print(f"\n[PULL] Pulling from GitHub...")
-        
+
         try:
             result = subprocess.run(
                 ["git", "pull"],
@@ -391,26 +391,26 @@ class CICDGitHubOrchestrator:
                 text=True,
                 timeout=120
             )
-            
+
             if result.returncode == 0:
                 print("   [OK] Pulled from GitHub")
                 return {"success": True, "output": result.stdout}
             else:
                 print(f"   [ERROR] Pull failed: {result.stderr}")
                 return {"success": False, "error": result.stderr}
-        
+
         except subprocess.TimeoutExpired:
             return {"success": False, "error": "Git pull timed out"}
         except Exception as e:
             return {"success": False, "error": str(e)}
-    
+
     def compare_metrics(self) -> Dict:
         """Compare pre and post metrics"""
         print("\n[METRICS] Comparing metrics...")
-        
+
         if not self.pre_metrics or not self.post_metrics:
             return {"error": "Missing metrics"}
-        
+
         comparison = {
             "files_changed": self.post_metrics.total_files - self.pre_metrics.total_files,
             "lines_changed": self.post_metrics.total_lines - self.pre_metrics.total_lines,
@@ -419,35 +419,35 @@ class CICDGitHubOrchestrator:
             "version_headers_added": self.post_metrics.version_headers - self.pre_metrics.version_headers,
             "improvements": []
         }
-        
+
         if comparison["duplicates_removed"] > 0:
             comparison["improvements"].append(f"Removed {comparison['duplicates_removed']} duplicate files")
-        
+
         if comparison["import_issues_fixed"] > 0:
             comparison["improvements"].append(f"Fixed {comparison['import_issues_fixed']} import issues")
-        
+
         if comparison["version_headers_added"] > 0:
             comparison["improvements"].append(f"Added {comparison['version_headers_added']} version headers")
-        
+
         print(f"   Files: {comparison['files_changed']:+d}")
         print(f"   Lines: {comparison['lines_changed']:+d}")
         print(f"   Duplicates removed: {comparison['duplicates_removed']}")
         print(f"   Import issues fixed: {comparison['import_issues_fixed']}")
         print(f"   Version headers added: {comparison['version_headers_added']}")
-        
+
         return comparison
-    
+
     def validate_post_roundtrip(self) -> Dict:
         """Validate codebase after GitHub roundtrip"""
         print("\n[OK] Validating post-roundtrip...")
-        
+
         validations = {
             "imports_valid": False,
             "no_duplicates": False,
             "structure_intact": False,
             "errors": []
         }
-        
+
         try:
             ranking_module = import_module("13_CORE_SYSTEMS.DMAIC.DMAIC_V3.core.ranking_engine")
             if hasattr(ranking_module, 'RankingEngine'):
@@ -456,28 +456,28 @@ class CICDGitHubOrchestrator:
         except Exception as e:
             validations["errors"].append(f"Import validation failed: {str(e)}")
             print(f"   [ERROR] Import validation failed")
-        
+
         if self.post_metrics and self.post_metrics.duplicate_files == 0:
             validations["no_duplicates"] = True
             print("   [OK] No duplicates")
         else:
             print(f"   [WARN] {self.post_metrics.duplicate_files if self.post_metrics else 0} duplicates found")
-        
+
         critical_dirs = [
             "13_CORE_SYSTEMS/DMAIC",
             "13_CORE_SYSTEMS/CENTRAL_LIBRARY",
             "12_ORGANIZED_BY_CATEGORY"
         ]
-        
+
         all_exist = all((self.workspace / d).exists() for d in critical_dirs)
         if all_exist:
             validations["structure_intact"] = True
             print("   [OK] Structure intact")
         else:
             print("   [ERROR] Structure compromised")
-        
+
         return validations
-    
+
     def execute_full_pipeline(self, dry_run: bool = False) -> Dict:
         """Execute complete CI/CD pipeline"""
         print("\n" + "=" * 80)
@@ -507,26 +507,26 @@ class CICDGitHubOrchestrator:
             "duplicates": self.pre_metrics.duplicate_files,
             "import_issues": self.pre_metrics.import_issues
         }
-        
+
         git_status = self.git_status()
         pipeline_results["stages"]["git_status_before"] = git_status
         print(f"\n[METRICS] Git status: {git_status.get('has_changes', False)}")
-        
+
         refactoring_plan = self.analyze_refactoring_needs()
         pipeline_results["stages"]["refactoring_plan"] = asdict(refactoring_plan)
-        
+
         refactoring_results = self.execute_refactoring(refactoring_plan, dry_run=dry_run)
         pipeline_results["stages"]["refactoring_results"] = refactoring_results
-        
+
         if not dry_run and git_status.get('has_changes', False):
             commit_msg = f"CI/CD: Refactoring and reconciliation - {self.execution_id}"
             push_result = self.git_commit_push(commit_msg)
             pipeline_results["stages"]["git_push"] = push_result
-            
+
             if push_result.get("success"):
                 pull_result = self.git_pull()
                 pipeline_results["stages"]["git_pull"] = pull_result
-        
+
         self.post_metrics = self.collect_metrics("POST")
         self.save_metrics(self.post_metrics, "post")
         pipeline_results["stages"]["post_metrics"] = {
@@ -536,47 +536,47 @@ class CICDGitHubOrchestrator:
             "duplicates": self.post_metrics.duplicate_files,
             "import_issues": self.post_metrics.import_issues
         }
-        
+
         comparison = self.compare_metrics()
         pipeline_results["stages"]["metrics_comparison"] = comparison
-        
+
         validation = self.validate_post_roundtrip()
         pipeline_results["stages"]["post_validation"] = validation
-        
+
         report_file = self.output_dir / f"cicd_pipeline_{self.execution_id}.json"
         report_file.write_text(json.dumps(pipeline_results, indent=2), encoding='utf-8')
-        
+
         print("\n" + "=" * 80)
         print("PIPELINE COMPLETE")
         print("=" * 80)
         print(f"Report: {report_file.relative_to(self.workspace)}")
         print(f"Improvements: {len(comparison.get('improvements', []))}")
         print("=" * 80)
-        
+
         if comparison.get('improvements'):
             print("\n[SUCCESS] IMPROVEMENTS DETECTED:")
             for improvement in comparison['improvements']:
                 print(f"   - {improvement}")
-        
+
         return pipeline_results
 
 
 def main():
     """Main entry point"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="CI/CD GitHub Roundtrip Orchestrator")
     parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode")
     parser.add_argument("--workspace", default=".", help="Workspace directory")
-    
+
     args = parser.parse_args()
-    
+
     workspace = Path(args.workspace).resolve()
-    
+
     orchestrator = CICDGitHubOrchestrator(workspace)
-    
+
     results = orchestrator.execute_full_pipeline(dry_run=args.dry_run)
-    
+
     if not args.dry_run:
         print("\n[OK] CI/CD pipeline executed successfully")
     else:
