@@ -68,21 +68,21 @@ PROJECT_ROOT = SCRIPT_DIR.parent
 class BootstrapBridge:
     """
     Bridge for integrating Bootstrap Statistical Tests with DMAIC orchestration
-    
+
     Provides:
     - Test execution via pytest
     - Metrics collection and reporting
     - DOW compliance validation
     - DMAIC phase integration
     """
-    
+
     def __init__(self, report_dir: Path = None):
         self.script_dir = SCRIPT_DIR
         self.project_root = PROJECT_ROOT
         self.test_file = SCRIPT_DIR / "test_bootstrap_eval.py"
         self.report_dir = report_dir or (PROJECT_ROOT / "test_reports" / "bootstrap")
         self.report_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.test_results = {
             "bridge": "bootstrap_statistics",
             "version": __version__,
@@ -93,7 +93,7 @@ class BootstrapBridge:
             "status": "unknown",
             "metrics": {}
         }
-    
+
     def validate_prerequisites(self) -> Tuple[bool, List[str]]:
         """
         Validate that all prerequisites are met
@@ -131,22 +131,22 @@ class BootstrapBridge:
             messages.append(f"[PASS] conftest.py found")
 
         return success, messages
-    
+
     def run_tests(self, markers: str = None, verbose: bool = True) -> Dict[str, Any]:
         """
         Execute bootstrap tests via pytest
-        
+
         Args:
             markers: Pytest marker expression (e.g., "bootstrap_stats", "integration")
             verbose: Enable verbose output
-        
+
         Returns:
             Test execution results with metrics
         """
         print("\n" + "="*80)
         print("BOOTSTRAP BRIDGE: Running Tests")
         print("="*80 + "\n")
-        
+
         # Build pytest command
         cmd = [
             sys.executable, "-m", "pytest",
@@ -158,13 +158,13 @@ class BootstrapBridge:
             f"--html={self.report_dir / 'report.html'}",
             "--self-contained-html"
         ]
-        
+
         if markers:
             cmd.extend(["-m", markers])
-        
+
         # Remove empty strings
         cmd = [c for c in cmd if c]
-        
+
         print(f"Command: {' '.join(cmd)}\n")
 
         try:
@@ -204,14 +204,14 @@ class BootstrapBridge:
             self.test_results["status"] = "error"
             self.test_results["error"] = str(e)
             return self.test_results
-    
+
     def _parse_pytest_output(self, output: str) -> Dict[str, Any]:
         """
         Parse pytest output to extract metrics
-        
+
         Args:
             output: Pytest stdout/stderr
-        
+
         Returns:
             Parsed metrics dictionary
         """
@@ -223,32 +223,32 @@ class BootstrapBridge:
             "errors": 0,
             "duration": 0.0
         }
-        
+
         # Parse test summary line
         # Example: "28 passed in 2.34s"
         import re
-        
+
         summary_pattern = r"(\d+)\s+passed"
         failed_pattern = r"(\d+)\s+failed"
         skipped_pattern = r"(\d+)\s+skipped"
         duration_pattern = r"in\s+([\d.]+)s"
-        
+
         if match := re.search(summary_pattern, output):
             metrics["passed"] = int(match.group(1))
-        
+
         if match := re.search(failed_pattern, output):
             metrics["failed"] = int(match.group(1))
-        
+
         if match := re.search(skipped_pattern, output):
             metrics["skipped"] = int(match.group(1))
-        
+
         if match := re.search(duration_pattern, output):
             metrics["duration"] = float(match.group(1))
-        
+
         metrics["total"] = metrics["passed"] + metrics["failed"] + metrics["skipped"]
-        
+
         return metrics
-    
+
     def run_by_marker(self, marker: str) -> Dict[str, Any]:
         """
         Run tests filtered by specific marker
@@ -271,25 +271,25 @@ class BootstrapBridge:
         """
         print("\n[TEST] Running all 28 bootstrap statistical tests")
         return self.run_tests(markers=None, verbose=True)
-    
+
     def generate_dmaic_report(self) -> Dict[str, Any]:
         """
         Generate DMAIC-aligned report for bootstrap tests
-        
+
         Returns:
             DMAIC phase report
         """
         print("\n" + "="*80)
         print("DMAIC REPORT: Bootstrap Statistics")
         print("="*80 + "\n")
-        
+
         dmaic_report = {
             "timestamp": datetime.now().isoformat(),
             "bridge": "bootstrap_statistics",
             "test_file": str(self.test_file),
             "phases": {}
         }
-        
+
         # Phase 1: Define
         dmaic_report["phases"]["define"] = {
             "objectives": [
@@ -303,7 +303,7 @@ class BootstrapBridge:
             "test_count": 28,
             "markers": ["bootstrap_stats", "data_loading", "integration", "edge_cases"]
         }
-        
+
         # Phase 2: Measure (run tests)
         print("[DMAIC] Phase: Measure")
         measure_results = self.run_all_bootstrap_tests()
@@ -330,52 +330,52 @@ class BootstrapBridge:
             json.dump(dmaic_report, f, indent=2)
 
         print(f"\n[SUCCESS] DMAIC report saved: {report_file}")
-        
+
         return dmaic_report
-    
+
     def _analyze_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze test results for DMAIC reporting"""
         metrics = results.get("metrics", {})
         total = metrics.get("total", 0)
         passed = metrics.get("passed", 0)
-        
+
         pass_rate = (passed / total * 100) if total > 0 else 0
-        
+
         analysis = {
             "pass_rate": pass_rate,
             "health_status": "excellent" if pass_rate >= 95 else "good" if pass_rate >= 80 else "poor",
             "coverage": "complete" if total >= 28 else "incomplete",
             "performance": "acceptable" if metrics.get("duration", 0) < 60 else "slow"
         }
-        
+
         print(f"  Pass Rate: {pass_rate:.1f}% ({passed}/{total})")
         print(f"  Health: {analysis['health_status']}")
         print(f"  Coverage: {analysis['coverage']}")
-        
+
         return analysis
-    
+
     def _generate_improvements(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """Generate improvement recommendations"""
         improvements = []
-        
+
         if analysis.get("pass_rate", 0) < 100:
             improvements.append("Fix failing tests to achieve 100% pass rate")
-        
+
         if analysis.get("coverage") == "incomplete":
             improvements.append("Add tests to achieve complete coverage (28 tests)")
-        
+
         if analysis.get("performance") == "slow":
             improvements.append("Optimize test execution time")
-        
+
         if not improvements:
             improvements.append("Maintain current excellent test health")
-        
+
         print("  Recommendations:")
         for i, rec in enumerate(improvements, 1):
             print(f"    {i}. {rec}")
-        
+
         return {"recommendations": improvements}
-    
+
     def _generate_control_plan(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """Generate control plan for continuous monitoring"""
         control_plan = {
@@ -392,11 +392,11 @@ class BootstrapBridge:
             },
             "status": results.get("status", "unknown")
         }
-        
+
         print("  Control Measures:")
         for measure in control_plan["monitoring"]:
             print(f"    - {measure}")
-        
+
         return control_plan
 
 
