@@ -77,10 +77,7 @@ jobs:
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Run Tests
-        run: |
-          pytest tests/ -v --cov=. \
-            --cov-report=xml --cov-report=html \
-            --cov-report=term -n auto
+        run: pytest tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term -n auto
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v7
