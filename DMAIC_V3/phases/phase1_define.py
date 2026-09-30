@@ -583,8 +583,7 @@ class Phase1Define:
                 'file_relationships': [],
                 'folders_scanned': 0,
                 'artifact_rankings': {},
-                'changes': {},
-                'duration': 0.0
+                'changes': {}
             }
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
