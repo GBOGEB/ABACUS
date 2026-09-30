@@ -496,7 +496,7 @@ tqdm>=4.66.0
         with open(requirements_path, 'w', encoding='utf-8') as f:
             f.write(requirements_content)
 
-        print(f"[CREATED] requirements.txt")
+        print("[CREATED] requirements.txt")
         self.report["git_status"]["requirements_created"] = True
 
     def create_setup_py(self) -> Any:
@@ -553,7 +553,7 @@ setup(
         with open(setup_path, 'w', encoding='utf-8') as f:
             f.write(setup_content)
 
-        print(f"[CREATED] setup.py")
+        print("[CREATED] setup.py")
         self.report["git_status"]["setup_created"] = True
 
     def save_report(self) -> Any:
@@ -575,15 +575,15 @@ setup(
         print("GITHUB QUALITY CHECK SUMMARY")
         print("="*80)
 
-        print(f"\nCleanup:")
+        print("\nCleanup:")
         print(f"  Removed files: {len(self.report['removed_files'])}")
         print(f"  Kept core files: {len(self.report['kept_files'])}")
 
-        print(f"\nQuality Checks:")
+        print("\nQuality Checks:")
         for key, value in self.report["quality_checks"].items():
             print(f"  {key}: {value}")
 
-        print(f"\nGit Status:")
+        print("\nGit Status:")
         for key, value in self.report["git_status"].items():
             print(f"  {key}: {value}")
 
