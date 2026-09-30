@@ -23,7 +23,7 @@ class BackupRecovery:
         self.timestamp = datetime.now().isoformat()
         self.output_dir = Path("ABACUS_V21_BACKUP")
         self.output_dir.mkdir(exist_ok=True)
-        
+
         self.results = {
             "stage": "2.5",
             "name": "Backup & Recovery",
@@ -33,7 +33,7 @@ class BackupRecovery:
             "disaster_recovery": [],
             "recommendations": []
         }
-    
+
     def create_backup_strategy(self) -> Dict[str, Any]:
         """Create comprehensive backup strategy"""
         config = {
@@ -41,7 +41,7 @@ class BackupRecovery:
             "status": "CREATED",
             "details": {}
         }
-        
+
         backup_strategy = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -158,18 +158,18 @@ class BackupRecovery:
                 "integrity_check": "sha256"
             }
         }
-        
+
         config_path = self.output_dir / "backup_strategy.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(backup_strategy, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["backup_types"] = len(backup_strategy["backup_types"])
         config["details"]["backup_targets"] = len(backup_strategy["backup_targets"])
         config["message"] = f"Backup strategy created with {len(backup_strategy['backup_types'])} backup types"
-        
+
         return config
-    
+
     def create_recovery_procedures(self) -> Dict[str, Any]:
         """Create recovery procedures"""
         config = {
@@ -177,7 +177,7 @@ class BackupRecovery:
             "status": "CREATED",
             "details": {}
         }
-        
+
         recovery_procedures = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -272,17 +272,17 @@ class BackupRecovery:
                 "monitoring": "nagios, prometheus"
             }
         }
-        
+
         config_path = self.output_dir / "recovery_procedures.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(recovery_procedures, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["scenarios"] = len(recovery_procedures["recovery_scenarios"])
         config["message"] = f"Recovery procedures created with {len(recovery_procedures['recovery_scenarios'])} scenarios"
-        
+
         return config
-    
+
     def create_disaster_recovery_plan(self) -> Dict[str, Any]:
         """Create disaster recovery plan"""
         config = {
@@ -290,7 +290,7 @@ class BackupRecovery:
             "status": "CREATED",
             "details": {}
         }
-        
+
         dr_plan = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
@@ -346,17 +346,17 @@ class BackupRecovery:
                 "backup_restore_test": "monthly"
             }
         }
-        
+
         config_path = self.output_dir / "disaster_recovery_plan.json"
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(dr_plan, f, indent=2)
-        
+
         config["details"]["config_file"] = str(config_path)
         config["details"]["dr_sites"] = 2
         config["message"] = "Disaster recovery plan created"
-        
+
         return config
-    
+
     def create_backup_scripts(self) -> Dict[str, Any]:
         """Create backup automation scripts"""
         config = {
@@ -364,7 +364,7 @@ class BackupRecovery:
             "status": "CREATED",
             "details": {}
         }
-        
+
         backup_script = """#!/bin/bash
 # ABACUS v2.1 Automated Backup Script
 
@@ -424,11 +424,11 @@ echo "Backup completed successfully!"
 echo "Location: $BACKUP_DIR/$TIMESTAMP"
 echo "========================================="
 """
-        
+
         backup_script_path = self.output_dir / "backup.sh"
         with open(backup_script_path, 'w', encoding='utf-8') as f:
             f.write(backup_script)
-        
+
         restore_script = """#!/bin/bash
 # ABACUS v2.1 Restore Script
 
@@ -487,24 +487,24 @@ echo "========================================="
 echo "Restore completed successfully!"
 echo "========================================="
 """
-        
+
         restore_script_path = self.output_dir / "restore.sh"
         with open(restore_script_path, 'w', encoding='utf-8') as f:
             f.write(restore_script)
-        
+
         # Make scripts executable
         try:
             os.chmod(backup_script_path, 0o755)
             os.chmod(restore_script_path, 0o755)
         except:
             pass
-        
+
         config["details"]["backup_script"] = str(backup_script_path)
         config["details"]["restore_script"] = str(restore_script_path)
         config["message"] = "Backup and restore scripts created"
-        
+
         return config
-    
+
     def generate_recommendations(self) -> List[Dict[str, Any]]:
         """Generate backup and recovery recommendations"""
         recommendations = [
@@ -557,74 +557,74 @@ echo "========================================="
                 "impact": "Enables faster recovery during incidents"
             }
         ]
-        
+
         return recommendations
-    
+
     def run_backup_setup(self):
         """Run complete backup and recovery setup"""
         print("=" * 80)
         print("ABACUS v2.1 - Stage 2.5: Backup & Recovery")
         print("=" * 80)
         print()
-        
+
         print("Creating backup strategy...")
         self.results["backup_strategies"].append(self.create_backup_strategy())
-        
+
         print("\nCreating recovery procedures...")
         self.results["recovery_procedures"].append(self.create_recovery_procedures())
-        
+
         print("\nCreating disaster recovery plan...")
         self.results["disaster_recovery"].append(self.create_disaster_recovery_plan())
-        
+
         print("\nCreating backup scripts...")
         self.results["backup_strategies"].append(self.create_backup_scripts())
-        
+
         print("\nGenerating recommendations...")
         self.results["recommendations"] = self.generate_recommendations()
-        
+
         self.save_results()
         self.generate_report()
-        
+
         print("\n" + "=" * 80)
         print("Backup & Recovery Setup Complete")
         print("=" * 80)
-    
+
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "backup_recovery_results.json"
         with open(results_path, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
-    
+
     def generate_report(self):
         """Generate markdown report"""
         report_path = self.output_dir / "BACKUP_RECOVERY_REPORT.md"
-        
+
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# ABACUS v2.1 - Backup & Recovery Report\n\n")
             f.write(f"**Stage**: 2.5 - Backup & Recovery\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
             f.write(f"**Phase**: POST-CD\n\n")
             f.write("---\n\n")
-            
+
             f.write("## Backup Strategies\n\n")
             for strategy in self.results["backup_strategies"]:
                 f.write(f"### [CREATED] {strategy['name']}\n\n")
                 f.write(f"**Status**: {strategy['status']}\n")
                 f.write(f"**Message**: {strategy['message']}\n\n")
-            
+
             f.write("## Recovery Procedures\n\n")
             for procedure in self.results["recovery_procedures"]:
                 f.write(f"### [CREATED] {procedure['name']}\n\n")
                 f.write(f"**Status**: {procedure['status']}\n")
                 f.write(f"**Message**: {procedure['message']}\n\n")
-            
+
             f.write("## Disaster Recovery\n\n")
             for dr in self.results["disaster_recovery"]:
                 f.write(f"### [CREATED] {dr['name']}\n\n")
                 f.write(f"**Status**: {dr['status']}\n")
                 f.write(f"**Message**: {dr['message']}\n\n")
-            
+
             f.write("## Recommendations\n\n")
             for rec in self.results["recommendations"]:
                 priority_icon = rec["priority"]
@@ -633,7 +633,7 @@ echo "========================================="
                 f.write(f"**Description**: {rec['description']}\n")
                 f.write(f"**Action**: {rec['action']}\n")
                 f.write(f"**Impact**: {rec['impact']}\n\n")
-            
+
             f.write("---\n\n")
             f.write("## Next Steps\n\n")
             f.write("1. Configure backup storage locations\n")
@@ -644,7 +644,7 @@ echo "========================================="
             f.write("6. Proceed to Stage 2.6: Production Deployment\n\n")
             f.write("---\n\n")
             f.write(f"*Report generated on {self.timestamp}*\n")
-        
+
         print(f"Report saved to: {report_path}")
 
 if __name__ == "__main__":

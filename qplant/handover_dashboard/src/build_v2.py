@@ -311,7 +311,7 @@ def plot_leak_vs_loss_enhanced():
     leak_rates = np.logspace(-10, -3, 80)
     temps = [4, 20, 80, 300]
     temp_colors = {4: "#1E3A8A", 20: "#7C3AED", 80: "#059669", 300: "#DC2626"}
-    
+
     fig = go.Figure()
     for t in temps:
         g_year = [leak_rate_to_mass_flow_g_year(lr, t, 5.0) for lr in leak_rates]
@@ -321,7 +321,7 @@ def plot_leak_vs_loss_enhanced():
             hovertemplate="Leak: %{x:.1e} mbar·L/s<br>Loss: %{y:.3g} g/yr<br>T=%{text} K<extra></extra>",
             text=[str(t)] * len(leak_rates),
         ))
-    
+
     # Supplier zones
     fig.add_vrect(x0=1e-10, x1=1e-9, fillcolor="#10B981", opacity=0.08, line_width=0,
                   annotation_text="Ultra-tight\n(1e-9 spec)", annotation_position="top left",
@@ -329,12 +329,12 @@ def plot_leak_vs_loss_enhanced():
     fig.add_vrect(x0=1e-6, x1=1e-4, fillcolor="#F59E0B", opacity=0.08, line_width=0,
                   annotation_text="Derogation zone\n(Meca Inox)", annotation_position="top right",
                   annotation=dict(font_size=10, font_color="#92400E"))
-    
+
     # RTM limit
     fig.add_hline(y=65000, line_dash="dash", line_color="#EF4444", line_width=1.5,
                   annotation_text="RTM-048 Cap ≈ 65 kg/yr", annotation_position="bottom right",
                   annotation=dict(font_size=11, font_color="#EF4444"))
-    
+
     fig.update_xaxes(type="log", title="Leak Rate (mbar·L/s)", gridcolor="#E5E7EB",
                      showline=True, linecolor="#9CA3AF")
     fig.update_yaxes(type="log", title="He Mass Loss (g/year)", gridcolor="#E5E7EB",
@@ -350,12 +350,12 @@ def plot_leak_vs_loss_enhanced():
 def plot_monte_carlo_distribution(mc_results):
     """Cost distribution histogram from Monte Carlo."""
     df = mc_results["baseline"]["df"]
-    
+
     fig = make_subplots(rows=2, cols=2,
         subplot_titles=("Total Annual Cost Distribution", "Helium Price Sampled",
                         "Beam Availability", "He Loss vs Cost"),
         vertical_spacing=0.12, horizontal_spacing=0.1)
-    
+
     # 1: Cost histogram
     stats = mc_results["baseline"]["stats"]["total_cost_eur"]
     fig.add_trace(go.Histogram(x=df["total_cost_eur"], nbinsx=60, name="Total Cost",
@@ -363,21 +363,21 @@ def plot_monte_carlo_distribution(mc_results):
     for pct, val, color in [("P10", stats["p10"], "#10B981"), ("P50", stats["p50"], "#F59E0B"), ("P90", stats["p90"], "#EF4444")]:
         fig.add_vline(x=val, line_dash="dash", line_color=color, row=1, col=1,
                       annotation_text=f"{pct}: €{val:,.0f}", annotation=dict(font_size=10, font_color=color))
-    
+
     # 2: He price
     fig.add_trace(go.Histogram(x=df["he_price_eur_kg"], nbinsx=50, name="He Price",
         marker_color="#7C3AED", opacity=0.8, showlegend=False), row=1, col=2)
-    
+
     # 3: Availability
     fig.add_trace(go.Histogram(x=df["beam_availability_pct"], nbinsx=40, name="Availability",
         marker_color="#059669", opacity=0.8, showlegend=False), row=2, col=1)
-    
+
     # 4: Scatter He loss vs cost
     fig.add_trace(go.Scatter(x=df["total_he_loss_kg"], y=df["total_cost_eur"],
         mode="markers", marker=dict(size=3, color=df["he_price_eur_kg"],
         colorscale="Viridis", showscale=True, colorbar=dict(title="He €/kg", len=0.4, y=0.2)),
         name="Runs", showlegend=False), row=2, col=2)
-    
+
     fig.update_layout(height=700, title=dict(text=f"Monte Carlo Cost Analysis — {len(df):,} Simulations", font=dict(size=16)))
     return _save_plot(fig, "monte_carlo_cost_distribution")
 
@@ -386,7 +386,7 @@ def plot_tornado(mc_results):
     """Sensitivity tornado chart."""
     tornado = mc_results["baseline"]["tornado"]
     base = tornado["base"].iloc[0]
-    
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
         y=tornado["variable"], x=tornado["low"] - base,
@@ -411,20 +411,20 @@ def plot_supplier_comparison():
     """Supplier comparison bar chart."""
     data = SUPPLIER_COMPARISON
     suppliers = [d["supplier"] for d in data]
-    
+
     fig = make_subplots(rows=1, cols=2, subplot_titles=("Cost Comparison (€)", "Leak Rate Comparison"))
-    
+
     fig.add_trace(go.Bar(x=suppliers, y=[d["cost_eur"] for d in data],
         marker_color=["#1E3A8A", "#7C3AED"], text=[f"€{d['cost_eur']:,}" for d in data],
         textposition="outside", name="CAPEX"), row=1, col=1)
-    
+
     # Leak rates
     lr_labels = ["To Ambient", "Across Restriction"]
     fig.add_trace(go.Bar(x=lr_labels, y=[1e-5, 1e-4], name="Meca Inox",
         marker_color="#1E3A8A", opacity=0.8), row=1, col=2)
     fig.add_trace(go.Bar(x=lr_labels, y=[1e-9, 1e-4], name="Swagelok",
         marker_color="#7C3AED", opacity=0.8), row=1, col=2)
-    
+
     fig.update_yaxes(type="log", row=1, col=2, title="mbar·L/s")
     fig.update_layout(height=400, title=dict(text="Supplier Comparison — Meca Inox vs Swagelok", font=dict(size=16)))
     return _save_plot(fig, "supplier_comparison")
@@ -433,7 +433,7 @@ def plot_supplier_comparison():
 def plot_risk_heatmap():
     """Risk matrix heatmap (likelihood × impact)."""
     risks = risk_matrix_data()
-    
+
     # Build 5x5 matrix
     matrix = np.zeros((5, 5))
     labels = [["" for _ in range(5)] for _ in range(5)]
@@ -441,7 +441,7 @@ def plot_risk_heatmap():
         li, im = r["likelihood"] - 1, r["impact"] - 1
         matrix[li][im] += 1
         labels[li][im] += r["id"].split("-")[1] + " "
-    
+
     fig = go.Figure(go.Heatmap(
         z=matrix, x=["1-Negligible", "2-Minor", "3-Moderate", "4-Major", "5-Critical"],
         y=["1-Rare", "2-Unlikely", "3-Possible", "4-Likely", "5-Almost Certain"],
@@ -462,7 +462,7 @@ def plot_waterfall_cost(mc_results):
     he_cost = stats["he_cost_eur"]["p50"]
     repl_cost = stats["replacement_cost_eur"]["p50"]
     total = stats["total_cost_eur"]["p50"]
-    
+
     fig = go.Figure(go.Waterfall(
         x=["Helium Loss", "Valve Replacements", "Total Annual Cost"],
         y=[he_cost, repl_cost, total],
@@ -488,7 +488,7 @@ def plot_scenario_comparison(mc_results):
         d["scenario"] = data["config"].name
         dfs.append(d)
     combined = pd.concat(dfs)
-    
+
     fig = go.Figure()
     colors = {"Baseline": "#1E3A8A", "Geopolitical Crisis": "#EF4444",
               "Supply Chain Disruption": "#F59E0B", "Accelerated Failure": "#7C3AED"}
@@ -496,7 +496,7 @@ def plot_scenario_comparison(mc_results):
         vals = combined[combined["scenario"] == scenario]["total_cost_eur"]
         fig.add_trace(go.Box(y=vals, name=scenario, marker_color=colors.get(scenario, "#6B7280"),
                              boxmean="sd"))
-    
+
     fig.update_layout(
         title=dict(text="Scenario Comparison — Total Cost Distribution", font=dict(size=16)),
         yaxis_title="Total Annual Cost (€)", height=450,
@@ -518,7 +518,7 @@ def plot_gantt_maintenance():
     ]
     df = pd.DataFrame(tasks)
     colors = {"Preventive": "#1E3A8A", "Corrective": "#EF4444", "Inspection": "#F59E0B", "Drill": "#7C3AED"}
-    
+
     fig = px.timeline(df, x_start="Start", x_end="Finish", y="Task", color="Resource",
                       color_discrete_map=colors)
     fig.update_layout(
@@ -653,7 +653,7 @@ def build_hero_control():
         vc_html += f"<tr><td><strong>{vc['sub_class']}</strong></td><td>{vc['temp_range_k']} K</td>"
         vc_html += f"<td>{vc['actuation']}</td><td>{vc['electrical_valve']}</td>"
         vc_html += f"<td>{vc['position_control']}</td><td>{_badge('required') if vc.get('radiation_hardness')=='required' else _badge('review')}{note}</td></tr>"
-    
+
     body = f"""
 {_breadcrumb("CONTROL")}
 {_tier_nav(("1","Tier 1 — Overview"),("2","Tier 2 — Actuation"),("3","Tier 3 — Fail-Safe Logic"))}
@@ -721,7 +721,7 @@ def build_hero_design(mc_results):
     grid_short = grid[["leak_rate_mbar_l_s", "temperature_K", "pressure_bar_abs",
                         "mass_flow_g_year"]].copy()
     grid_short.columns = ["Leak Rate (mbar·L/s)", "Temperature (K)", "Pressure (bar)", "Mass Loss (g/yr)"]
-    
+
     body = f"""
 {_breadcrumb("DESIGN")}
 {_tier_nav(("1","Tier 1 — Overview"),("2","Tier 2 — Leak Classes"),("3","Tier 3 — Calculations"))}
@@ -788,7 +788,7 @@ def build_hero_design(mc_results):
 
 def build_hero_cost(mc_results):
     stats = mc_results["baseline"]["stats"]
-    
+
     # Scenario comparison table
     scenario_rows = ""
     for key, data in mc_results.items():
@@ -796,7 +796,7 @@ def build_hero_cost(mc_results):
         scenario_rows += f"""<tr><td><strong>{data['config'].name}</strong></td>
           <td>€{s['p10']:,.0f}</td><td>€{s['p50']:,.0f}</td><td>€{s['p90']:,.0f}</td>
           <td>€{s['mean']:,.0f}</td><td>€{s['std']:,.0f}</td></tr>"""
-    
+
     body = f"""
 {_breadcrumb("COST")}
 {_tier_nav(("1","Tier 1 — Executive"),("2","Tier 2 — Monte Carlo"),("3","Tier 3 — Sensitivity"))}
@@ -855,12 +855,12 @@ def build_hero_materials():
     props_html = "".join(f"<tr><td>{k.replace('_',' ').title()}</td><td>{v}</td></tr>"
                          for k, v in mat["properties"].items())
     comp_html = "".join(f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in mat["composition"].items())
-    
+
     codes_html = "".join(f"<tr><td><strong>{c['code']}</strong></td><td>{c['title']}</td><td>{c['scope']}</td></tr>"
                          for c in CODES_STANDARDS)
-    
+
     weld = WELDING_SPECS["orbital_tig"]
-    
+
     body = f"""
 {_breadcrumb("MATERIALS")}
 {_tier_nav(("1","Tier 1 — Overview"),("2","Tier 2 — Specifications"),("3","Tier 3 — Codes & Welding"))}
@@ -922,7 +922,7 @@ def build_hero_risk():
           <td><strong>{r['title']}</strong></td><td>{r['likelihood']}</td><td>{r['impact']}</td>
           <td style="font-weight:700;color:{'#EF4444' if r['risk_score']>=15 else '#F59E0B' if r['risk_score']>=9 else '#10B981'}">{r['risk_score']}</td>
           <td>{r['owner']}</td></tr>"""
-    
+
     body = f"""
 {_breadcrumb("RISK")}
 {_tier_nav(("1","Tier 1 — Overview"),("2","Tier 2 — Register"),("3","Tier 3 — Scenarios"))}
@@ -1031,7 +1031,7 @@ def build_hero_operations():
 
 def write_speaker_notes(mc_results):
     stats = mc_results["baseline"]["stats"]
-    
+
     notes = {
         "slide_001_title": f"""# QPLANT Cryogenic Dashboard — Title Slide
 ## Key Talking Points
@@ -1141,7 +1141,7 @@ def write_speaker_notes(mc_results):
 - LOOP recovery drill: annual
 """,
     }
-    
+
     for name, content in notes.items():
         (NOTES / f"{name}.md").write_text(content)
     return list(notes.keys())
@@ -1156,23 +1156,23 @@ def build():
     print(f"  OUTPUT_2_DMAIC_REFINED v{VERSION}")
     print(f"  Building MAPPING_HEROES Dashboard")
     print(f"{'='*60}")
-    
+
     # CSS & JS
     print("  [1/8] Writing CSS & JS assets...")
     write_css()
     write_js()
-    
+
     # Monte Carlo
     print("  [2/8] Running Monte Carlo simulations (10,000 × 4 scenarios)...")
     mc_results = run_all_scenarios()
-    
+
     # Save MC data
     for key, data in mc_results.items():
         data["df"].to_json(str(DATA_OUT / f"mc_{key}.json"), orient="records", indent=2)
         pd.DataFrame([data["stats"]]).to_json(str(DATA_OUT / f"mc_{key}_stats.json"), indent=2)
         data["tornado"].to_json(str(DATA_OUT / f"mc_{key}_tornado.json"), orient="records", indent=2)
     print(f"    ✓ Monte Carlo data saved to {DATA_OUT}")
-    
+
     # Plots
     print("  [3/8] Generating enhanced Plotly visualizations...")
     plot_leak_vs_loss_enhanced()
@@ -1185,7 +1185,7 @@ def build():
     plot_gantt_maintenance()
     plot_helium_sankey()
     print(f"    ✓ 9 interactive charts saved to {VIZ}")
-    
+
     # Hero pages
     print("  [4/8] Building MAPPING_HEROES pages...")
     pages = {
@@ -1200,16 +1200,16 @@ def build():
     for name, html in pages.items():
         (HEROES / f"{name}.html").write_text(html)
     print(f"    ✓ 7 hero pages saved to {HEROES}")
-    
+
     # Index
     print("  [5/8] Building navigation hub...")
     (DOCS / "index.html").write_text(build_index(mc_results))
-    
+
     # Speaker notes
     print("  [6/8] Generating speaker notes...")
     note_names = write_speaker_notes(mc_results)
     print(f"    ✓ {len(note_names)} speaker note files saved to {NOTES}")
-    
+
     # VERSION.json update
     print("  [7/8] Updating VERSION.json...")
     version_data = {
@@ -1231,7 +1231,7 @@ def build():
         ],
     }
     (ROOT / "VERSION.json").write_text(json.dumps(version_data, indent=2))
-    
+
     # Summary
     print("  [8/8] Build complete!")
     print(f"\n{'='*60}")
@@ -1241,7 +1241,7 @@ def build():
     print(f"  ✓ Notes:     {NOTES} (8 files)")
     print(f"  ✓ Data:      {DATA_OUT}")
     print(f"{'='*60}")
-    
+
     return mc_results
 
 
