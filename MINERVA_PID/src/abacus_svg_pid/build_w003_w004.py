@@ -206,10 +206,10 @@ def phase2_pairing(models):
         for e in m.elements:
             if e.shape != "dot" or e.cx is None:
                 continue
-            cand = [l for l in lines]
+            cand = list(lines)
             if not cand:
                 continue
-            nearest = min(cand, key=lambda l: _dist(e.cx, e.cy, l.cx, l.cy))
+            nearest = min(cand, key=lambda line_obj: _dist(e.cx, e.cy, line_obj.cx, line_obj.cy))
             d = _dist(e.cx, e.cy, nearest.cx, nearest.cy)
             colour_match = (e.process_code == nearest.process_code
                             and e.process_code in PROC_CODES)
@@ -227,10 +227,10 @@ def phase2_pairing(models):
             size = max(e.width_px or 0, e.height_px or 0)
             if size < HEAT_LOAD_MIN_PX or e.process_code not in PROC_CODES:
                 continue
-            cand = [l for l in lines if l.process_code == e.process_code] or lines
+            cand = [line_obj for line_obj in lines if line_obj.process_code == e.process_code] or lines
             if not cand or e.cx is None:
                 continue
-            nearest = min(cand, key=lambda l: _dist(e.cx, e.cy, l.cx, l.cy))
+            nearest = min(cand, key=lambda line_obj: _dist(e.cx, e.cy, line_obj.cx, line_obj.cy))
             result["triangles_to_lines"].append({
                 "sheet": key, "triangle_id": e.eid, "colour": e.colour,
                 "process_code": e.process_code, "size_px": round(size, 1),
@@ -246,7 +246,7 @@ def phase2_pairing(models):
             cand = lines
             if not cand:
                 continue
-            nearest = min(cand, key=lambda l: _dist(e.cx, e.cy, l.cx, l.cy))
+            nearest = min(cand, key=lambda line_obj: _dist(e.cx, e.cy, line_obj.cx, line_obj.cy))
             d = _dist(e.cx, e.cy, nearest.cx, nearest.cy)
             result["arrows_to_lines"].append({
                 "sheet": key, "arrow_id": e.eid, "arrow_code": e.process_code,
@@ -427,16 +427,16 @@ def phase5_flow_topology(models):
         for a in arrows:
             if not lines:
                 break
-            d = min(_dist(a.cx, a.cy, l.cx, l.cy) for l in lines)
+            d = min(_dist(a.cx, a.cy, line_obj.cx, line_obj.cy) for line_obj in lines)
             if d > 30:
                 floating.append({"arrow_id": a.eid, "code": a.process_code,
                                  "nearest_line_px": round(d, 1)})
         # joints: line endpoints that cluster (T/elbow/cross) - approximate by
         # endpoint proximity within 5px
         endpoints = []
-        for l in lines:
-            endpoints.append((l.x0, l.y0, l.eid))
-            endpoints.append((l.x1, l.y1, l.eid))
+        for line_obj in lines:
+            endpoints.append((line_obj.x0, line_obj.y0, line_obj.eid))
+            endpoints.append((line_obj.x1, line_obj.y1, line_obj.eid))
         joints = 0
         used = [False] * len(endpoints)
         for i in range(len(endpoints)):
