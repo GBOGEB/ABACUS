@@ -246,7 +246,7 @@ def main():
     print("DMAIC V3.3 - Generating Handover Package")
     print("="*80)
     print()
-    
+
     # Generate handover summary
     print("[1/3] Generating handover summary...")
     summary = generate_handover_summary()
@@ -254,7 +254,7 @@ def main():
     handover_file.parent.mkdir(parents=True, exist_ok=True)
     handover_file.write_text(summary, encoding='utf-8')
     print(f"  ✅ Saved to: {handover_file}")
-    
+
     # Generate checklist
     print("[2/3] Generating handover checklist...")
     checklist = generate_handover_checklist()
@@ -263,13 +263,13 @@ def main():
     with open(checklist_json, 'w', encoding='utf-8') as f:
         json.dump(checklist, f, indent=2)
     print(f"  ✅ Saved to: {checklist_json}")
-    
+
     checklist_yaml = Path('artifacts/yaml/handover_checklist.yaml')
     checklist_yaml.parent.mkdir(parents=True, exist_ok=True)
     with open(checklist_yaml, 'w', encoding='utf-8') as f:
         yaml.dump(checklist, f, default_flow_style=False, sort_keys=False)
     print(f"  ✅ Saved to: {checklist_yaml}")
-    
+
     # Generate execution script
     print("[3/3] Generating execution script...")
     exec_script = Path('scripts/execute_phase4_enhanced.sh')
@@ -321,7 +321,7 @@ echo "  - Execution report: artifacts/markdown/PHASE4_EXECUTION_RESULTS.md"
 echo ""
 """, encoding='utf-8')
     print(f"  ✅ Saved to: {exec_script}")
-    
+
     print()
     print("="*80)
     print("✅ HANDOVER PACKAGE GENERATED")
