@@ -41,7 +41,7 @@ def calc_pressure_drop(m_dot_gs, D_m, L_m, rho, mu, T_K=300, P_bar=14):
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
-    
+
     # QRB to WCS line (allowed 50 mbar)
     dp = calc_pressure_drop(350, 0.15, 50, 2.19, 20.1e-6)
     results["calculations"].append({
@@ -50,7 +50,7 @@ def run_examples():
         "result": dp,
         "interpretation": f"Calculated ΔP = {dp['dP_mbar']} mbar vs allowed 50 mbar — {'OK' if dp['dP_mbar'] < 50 else 'EXCEEDS LIMIT'}"
     })
-    
+
     # Cold return line (allowed 26 mbar)
     dp2 = calc_pressure_drop(350, 0.20, 30, 8.54, 9.8e-6)
     results["calculations"].append({
@@ -59,7 +59,7 @@ def run_examples():
         "result": dp2,
         "interpretation": f"Calculated ΔP = {dp2['dP_mbar']} mbar vs allowed 26 mbar — {'OK' if dp2['dP_mbar'] < 26 else 'REVIEW NEEDED'}"
     })
-    
+
     return results
 
 def test():
@@ -68,11 +68,11 @@ def test():
     assert Re < 2300, "Should be laminar"
     f = calc_friction_factor(Re)
     assert abs(f - 64/Re) < 0.001
-    
+
     # Turbulent flow
     Re2 = calc_reynolds(2.19, 10, 0.15, 20.1e-6)
     assert Re2 > 4000
-    
+
     print("✅ Pressure drop tests passed!")
 
 if __name__ == "__main__":

@@ -21,15 +21,15 @@ except ImportError as e:
     sys.exit(1)
 def main():
     logger.info("Starting RTM generation (via new package)...")
-    
+
     generator = RTMGenerator()
     success = generator.generate_rtm(output_dir="docs/rtm")
-    
+
     if success:
         logger.info("RTM generation completed successfully")
     else:
         logger.error("RTM generation failed")
-    
+
     return success
 
 if __name__ == "__main__":
