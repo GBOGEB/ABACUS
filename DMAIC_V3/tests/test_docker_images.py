@@ -57,7 +57,7 @@ def test_docker_hello_world_image():
     """Test pulling and running hello-world image (if enabled)."""
     if os.environ.get("DMAIC_DOCKER_PULL_TESTS", "0") != "1":
         pytest.skip("DMAIC_DOCKER_PULL_TESTS != 1; skipping image pull test")
-    
+
     result = subprocess.run(
         ["docker", "run", "--rm", "hello-world"],
         capture_output=True,
