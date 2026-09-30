@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T07:22:03.317580",
+  "generated_at": "2026-09-30T11:52:18.427324",
   "module_count": 190,
   "modules": {
     "DMAIC_V3/quick_output_analysis.py": {
@@ -1904,12 +1904,138 @@
       ]
     },
     "DMAIC_V3/generators/master_reconciliation.py": {
-      "docstring": "Parse error: SyntaxError: invalid syntax (<unknown>, line 47)",
-      "members": []
+      "docstring": "DMAIC V3 - Master Reconciliation System\nVersion: 3.1.0\nDMAIC Version: V3\nIntegration Mode: BIDIRECTIONAL\nLast Updated: 2025-11-10\nParent: master_document_handler\n\nThis script performs comprehensive reconciliation of the entire DMAIC V3 system:\n1. Fixes all Python execution errors (Unicode, imports, ",
+      "members": [
+        {
+          "name": "MasterReconciliationSystem",
+          "doc": "Master reconciliation system for DMAIC V3"
+        },
+        {
+          "name": "main",
+          "doc": "TODO: Add function description"
+        },
+        {
+          "name": "__init__",
+          "doc": "TODO: Add function description"
+        },
+        {
+          "name": "log",
+          "doc": "Log a message"
+        },
+        {
+          "name": "fix_python_unicode_errors",
+          "doc": "Fix Unicode encoding errors in Python files"
+        },
+        {
+          "name": "generate_dmaic_metrics_per_phase",
+          "doc": "Generate DMAIC metrics for each phase"
+        },
+        {
+          "name": "reconcile_markdown_files",
+          "doc": "Reconcile all markdown files with execution framework"
+        },
+        {
+          "name": "create_markdown_as_code",
+          "doc": "Create markdown-as-code with ASCII instructions"
+        },
+        {
+          "name": "create_index_and_helpers",
+          "doc": "Create index and helper artifacts"
+        },
+        {
+          "name": "update_victory_conditions",
+          "doc": "Update victory conditions with REAL status"
+        },
+        {
+          "name": "generate_final_report",
+          "doc": "Generate final reconciliation report"
+        },
+        {
+          "name": "run_full_reconciliation",
+          "doc": "Run full reconciliation process"
+        }
+      ]
     },
     "DMAIC_V3/generators/execution_tracker.py": {
-      "docstring": "Parse error: SyntaxError: invalid syntax (<unknown>, line 143)",
-      "members": []
+      "docstring": "DMAIC V3 - Execution Tracker\n=============================\n\nTracks execution of all Python and VBA code with comprehensive statistics.\n\nFeatures:\n- Execute Python files and capture output/errors\n- Validate VBA files (.bas) for syntax\n- Classify error types (SyntaxError, ImportError, RuntimeError, et",
+      "members": [
+        {
+          "name": "ErrorType",
+          "doc": "Classification of error types"
+        },
+        {
+          "name": "ExecutionStatus",
+          "doc": "Execution status"
+        },
+        {
+          "name": "ExecutionResult",
+          "doc": "Result of code execution"
+        },
+        {
+          "name": "ExecutionStatistics",
+          "doc": "Aggregate execution statistics"
+        },
+        {
+          "name": "ExecutionTracker",
+          "doc": "Track execution of Python and VBA code with comprehensive statistics\n\nVictory Conditions:\n1. python_execution: All Python files execute without errors\n2. vba_validation: All VBA files validate success"
+        },
+        {
+          "name": "__post_init__",
+          "doc": "TODO: Add function description"
+        },
+        {
+          "name": "to_dict",
+          "doc": "Convert to dictionary"
+        },
+        {
+          "name": "__post_init__",
+          "doc": "TODO: Add function description"
+        },
+        {
+          "name": "to_dict",
+          "doc": "Convert to dictionary"
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute_python_file",
+          "doc": "Execute a Python file and capture results"
+        },
+        {
+          "name": "validate_vba_file",
+          "doc": "Validate a VBA file (.bas) for syntax"
+        },
+        {
+          "name": "_classify_error",
+          "doc": "Classify error type from error message"
+        },
+        {
+          "name": "scan_and_execute",
+          "doc": "Scan directory and execute all Python/VBA files"
+        },
+        {
+          "name": "_check_victory_conditions",
+          "doc": "Check if victory conditions are met"
+        },
+        {
+          "name": "export_json",
+          "doc": "Export execution results to JSON"
+        },
+        {
+          "name": "export_yaml",
+          "doc": "Export execution results to YAML"
+        },
+        {
+          "name": "export_markdown",
+          "doc": "Export execution results to Markdown"
+        },
+        {
+          "name": "print_summary",
+          "doc": "Print execution summary to console"
+        }
+      ]
     },
     "DMAIC_V3/generators/github_quality_check.py": {
       "docstring": "DMAIC V3 - GitHub Quality Check & Cleanup\nPrepares repository for GitHub with quality checks, cleanup, and CI/CD validation",
@@ -2956,10 +3082,6 @@
         },
         {
           "name": "test_execute_with_phase1_output",
-          "doc": ""
-        },
-        {
-          "name": "test_execute_normalizes_nested_tuple_result",
           "doc": ""
         },
         {
@@ -4029,6 +4151,10 @@
         },
         {
           "name": "test_compatibility_phase_view_does_not_claim_execution",
+          "doc": ""
+        },
+        {
+          "name": "runner",
           "doc": ""
         },
         {
@@ -5768,8 +5894,77 @@
       ]
     },
     "DMAIC_V3/infrastructure/docker_manager.py": {
-      "docstring": "Parse error: SyntaxError: invalid syntax (<unknown>, line 1)",
-      "members": []
+      "docstring": "DMAIC V3 - Docker Infrastructure Manager\nManages Docker containers, ports, and service lifecycle\n\nITERATION 4 - CDCII/CICD Integration\nVersion: 3.3.0\nDate: 2025-01-26\nPurpose: Docker orchestration for DMAIC V3 services",
+      "members": [
+        {
+          "name": "ServiceType",
+          "doc": "Types of services in DMAIC V3 infrastructure"
+        },
+        {
+          "name": "ServiceConfig",
+          "doc": "Configuration for a DMAIC service"
+        },
+        {
+          "name": "PortManager",
+          "doc": "Manages port allocation for DMAIC V3 services\n\nPort Ranges:\n- 8000-8099: API services (listening)\n- 8100-8199: Monitoring services\n- 8200-8299: Quality assurance services\n- 8300-8399: Debugging servic"
+        },
+        {
+          "name": "DockerInfrastructureManager",
+          "doc": "Manages Docker infrastructure for DMAIC V3\n\nResponsibilities:\n- Container lifecycle management\n- Port allocation and management\n- Service health monitoring\n- Resource cleanup"
+        },
+        {
+          "name": "create_infrastructure_manager",
+          "doc": "Factory function to create infrastructure manager"
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "allocate_port",
+          "doc": "Allocate a port for a service"
+        },
+        {
+          "name": "release_port",
+          "doc": "Release a port allocation"
+        },
+        {
+          "name": "get_port",
+          "doc": "Get allocated port for a service"
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "register_service",
+          "doc": "Register a service configuration"
+        },
+        {
+          "name": "start_service",
+          "doc": "Start a Docker service"
+        },
+        {
+          "name": "stop_service",
+          "doc": "Stop a Docker service"
+        },
+        {
+          "name": "get_service_status",
+          "doc": "Get status of a service"
+        },
+        {
+          "name": "get_service_logs",
+          "doc": "Get logs from a service"
+        },
+        {
+          "name": "cleanup_all",
+          "doc": "Stop and remove all managed containers"
+        },
+        {
+          "name": "_wait_for_health",
+          "doc": "Wait for container to become healthy"
+        }
+      ]
     },
     "DMAIC_V3/core/integrity.py": {
       "docstring": "Canonical ABACUS integrity primitives for release and federation receipts.\n\nLegacy helpers remain available elsewhere for compatibility, but new release-control\ncode should use this module so JSON canonicalization and Git identity semantics are\nexplicit and testable.",
@@ -7594,10 +7789,6 @@
         {
           "name": "MaturityAssessment",
           "doc": "Maturity assessment result"
-        },
-        {
-          "name": "MaturityLevelStatus",
-          "doc": "Per-level maturity progress."
         },
         {
           "name": "MaturityLevelStatus",
