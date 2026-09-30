@@ -428,7 +428,7 @@ class FullPipelineOrchestrator:
 
         summary.append("## Phases Executed\n")
         for idx, phase in enumerate(phases_executed, 1):
-            log = next((l for l in self.execution_log if phase in l.get('phase', '')), None)
+            log = next((entry for entry in self.execution_log if phase in entry.get('phase', '')), None)
             if log:
                 status = "[OK]" if log['success'] else "[FAIL]"
                 summary.append(f"{idx}. {status} {phase} ({log['duration_seconds']:.2f}s)")
