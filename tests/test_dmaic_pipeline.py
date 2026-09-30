@@ -24,7 +24,7 @@ def test_output_directories_exist():
         "PIPELINE_OUTPUT",
         "DMAIC_ITERATIONS_OUTPUT"
     ]
-    
+
     for dir_name in required_dirs:
         dir_path = base_path / dir_name
         assert dir_path.exists() or True, f"Directory {dir_name} should exist or be creatable"
@@ -36,7 +36,7 @@ def test_dmaic_execution_script_exists():
         "run_dmaic_5_iterations.py",
         "run_dmaic.py"
     ]
-    
+
     for script in scripts:
         script_path = base_path / script
         if script_path.exists():
@@ -61,7 +61,7 @@ def test_ci_cd_workflows_exist():
     """Test that CI/CD workflow files exist"""
     base_path = Path(__file__).parent.parent
     workflows_dir = base_path / ".github" / "workflows"
-    
+
     if workflows_dir.exists():
         workflow_files = list(workflows_dir.glob("*.yml"))
         assert len(workflow_files) > 0, "At least one workflow file should exist"
