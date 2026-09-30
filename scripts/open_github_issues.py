@@ -278,26 +278,26 @@ def main():
     print("🚀 Opening GitHub Issue Creation Pages...\n")
     print(f"Repository: {REPO}\n")
     print("=" * 70)
-    
+
     for i, issue in enumerate(ISSUES, 1):
         print(f"\n{i}. [{issue['priority']}] {issue['title']}")
         print(f"   Labels: {', '.join(issue['labels'])}")
-        
+
         url = create_github_issue_url(issue['title'], issue['body'], issue['labels'])
-        
+
         print(f"   Opening in browser...")
-        
+
         try:
             webbrowser.open(url)
             print(f"   ✅ Opened!")
-            
+
             if i < len(ISSUES):
                 print(f"   ⏳ Waiting 3 seconds before opening next issue...")
                 time.sleep(3)
         except Exception as e:
             print(f"   ❌ Error: {e}")
             print(f"   📋 Manual URL: {url[:100]}...")
-    
+
     print("\n" + "=" * 70)
     print("\n✅ All issue creation pages opened!")
     print("\n📝 For each browser tab:")
