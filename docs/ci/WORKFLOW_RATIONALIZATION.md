@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `59fdc8642dd562f191a2ab038a597579afbb4cf0016ebab9bef368689c28b645`
+Policy SHA-256: `f79c682c47f563b0ec344cc3499b8ada1c47179bc2494de198b1d8f9bb5ae7b3`
 
 ## Outcome
 
-The repository currently contains **149 workflow definitions**. All **149** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **150 workflow definitions**. All **150** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -37,7 +37,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 41 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 42 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -140,6 +140,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `dab-flake8-census.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `specialised` | `mip-qps-external-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
