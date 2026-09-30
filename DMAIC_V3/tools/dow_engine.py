@@ -40,7 +40,7 @@ class DocumentMetadata:
     date: Optional[str] = None
     author: Optional[str] = None
     tags: List[str] = None
-    
+
     def __post_init__(self):
         if self.tags is None:
             self.tags = []
@@ -49,25 +49,25 @@ class DocumentMetadata:
 class DOWEngine:
     """
     Document-Oriented Workspace Engine
-    
+
     Responsibilities:
     - Document classification (historic vs current)
     - SUT (System Under Test) hierarchy mapping
     - Metadata extraction
     - Immutability enforcement
     """
-    
+
     def __init__(self):
         self.classification_rules = self._load_classification_rules()
         self.sut_hierarchy = self._load_sut_hierarchy()
-    
+
     def classify_documents(self, workspace_path: Path) -> Dict[str, Any]:
         """
         Classify all documents in a workspace
-        
+
         Args:
             workspace_path: Path to workspace root
-        
+
         Returns:
             Classification results with document metadata
         """
@@ -80,7 +80,7 @@ class DOWEngine:
             },
             'sut_hierarchy': self.sut_hierarchy
         }
-        
+
         # Classify historic documents
         historic_path = workspace_path / "docs" / "historic"
         if historic_path.exists():
@@ -89,7 +89,7 @@ class DOWEngine:
                 results['classified']['historic']['documents'].append(metadata)
                 results['classified']['historic']['count'] += 1
                 results['total_documents'] += 1
-        
+
         # Classify current documents
         current_path = workspace_path / "docs" / "current"
         if current_path.exists():
@@ -98,7 +98,7 @@ class DOWEngine:
                 results['classified']['current']['documents'].append(metadata)
                 results['classified']['current']['count'] += 1
                 results['total_documents'] += 1
-        
+
         # Classify UI content
         screenshots_path = workspace_path / "screenshots"
         if screenshots_path.exists():
@@ -106,20 +106,20 @@ class DOWEngine:
                 results['classified']['ui_content']['screenshots'].append(str(screenshot))
                 results['classified']['ui_content']['count'] += 1
                 results['total_documents'] += 1
-        
+
         snippets_path = workspace_path / "snippets"
         if snippets_path.exists():
             for snippet in snippets_path.rglob("*.py"):
                 results['classified']['ui_content']['snippets'].append(str(snippet))
                 results['classified']['ui_content']['count'] += 1
                 results['total_documents'] += 1
-        
+
         return results
-    
+
     def _classify_document(self, doc_path: Path, immutable: bool) -> Dict[str, Any]:
         """Classify a single document"""
         doc_type = self._determine_document_type(doc_path)
-        
+
         return {
             'path': str(doc_path),
             'type': doc_type.value,
@@ -128,11 +128,11 @@ class DOWEngine:
             'protection_level': 'read_only' if immutable else 'read_write',
             'audit_enabled': immutable
         }
-    
+
     def _determine_document_type(self, doc_path: Path) -> DocumentType:
         """Determine document type from path and content"""
         name_lower = doc_path.name.lower()
-        
+
         if 'milestone' in name_lower:
             return DocumentType.MILESTONE
         elif 'spec' in name_lower:
@@ -147,7 +147,7 @@ class DOWEngine:
             return DocumentType.REPORT
         else:
             return DocumentType.UNKNOWN
-    
+
     def _load_classification_rules(self) -> Dict[str, Any]:
         """Load document classification rules"""
         return {
@@ -160,7 +160,7 @@ class DOWEngine:
                 'immutable': False
             }
         }
-    
+
     def _load_sut_hierarchy(self) -> Dict[str, Any]:
         """Load SUT hierarchy definition"""
         return {

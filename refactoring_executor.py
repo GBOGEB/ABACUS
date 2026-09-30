@@ -42,7 +42,7 @@ class RefactoringExecutor:
             "batches_processed": 0,
             "errors": []
         }
-    
+
     def backup_file(self, file_path: Path):
         """Backup file before modification"""
         if not self.dry_run:
@@ -50,7 +50,7 @@ class RefactoringExecutor:
             backup_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(file_path, backup_path)
             print(f"   [BACKUP] {file_path} -> {backup_path}")
-    
+
     def remove_duplicates(self):
         """Remove duplicate files in batches, keeping primary with smart selection"""
         print("\n[REFACTOR] Removing duplicates with smart selection (batched)...")
@@ -128,44 +128,44 @@ class RefactoringExecutor:
 
         print(f"\n[OK] Removed {self.stats['duplicates_removed']} duplicate files in {self.stats['batches_processed']} batches")
         return self.stats["duplicates_removed"]
-    
+
     def fix_import_paths(self):
         """Fix import paths to use canonical paths"""
         print("\n[REFACTOR] Fixing import paths...")
-        
+
         import_issues = self.metrics.get("import_issues", [])
         fixed_count = 0
-        
+
         for file_path_str in import_issues:
             file_path = Path(file_path_str)
             if not file_path.exists():
                 continue
-            
+
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
-                
+
                 # Fix relative imports
                 original_content = content
                 content = content.replace('from ...', 'from 13_CORE_SYSTEMS.')
                 content = content.replace('from ..', 'from 13_CORE_SYSTEMS.')
-                
+
                 if content != original_content:
                     print(f"   [FIX] {file_path}")
-                    
+
                     if not self.dry_run:
                         self.backup_file(file_path)
                         with open(file_path, 'w', encoding='utf-8') as f:
                             f.write(content)
-                    
+
                     fixed_count += 1
-            
+
             except Exception as e:
                 print(f"   [ERROR] Failed to fix {file_path}: {e}")
-        
+
         print(f"[OK] Fixed {fixed_count} import paths")
         return fixed_count
-    
+
     def add_version_headers(self, max_files: int = 5000):
         """Add version headers to files missing them (batched)"""
         print(f"\n[REFACTOR] Adding version headers (target: {max_files} files)...")
