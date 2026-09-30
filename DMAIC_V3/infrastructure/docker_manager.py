@@ -47,7 +47,7 @@ class ServiceConfig:
 class PortManager:
     """
     Manages port allocation for DMAIC V3 services
-    
+
     Port Ranges:
     - 8000-8099: API services (listening)
     - 8100-8199: Monitoring services
@@ -57,7 +57,7 @@ class PortManager:
     - 8500-8599: Reporting services
     - 8600-8699: Housekeeping services
     """
-    
+
     PORT_RANGES = {
         ServiceType.LISTENING: (8000, 8099),
         ServiceType.MONITORING: (8100, 8199),
@@ -70,32 +70,32 @@ class PortManager:
         ServiceType.RECONCILING: (8800, 8899),
         ServiceType.TURN_BASED: (8900, 8999)
     }
-    
+
     def __init__(self):
         self.allocated_ports: Dict[str, int] = {}
         self.port_usage: Dict[int, str] = {}
-    
+
     def allocate_port(self, service_name: str, service_type: ServiceType) -> int:
         """Allocate a port for a service"""
         if service_name in self.allocated_ports:
             return self.allocated_ports[service_name]
-        
+
         start, end = self.PORT_RANGES[service_type]
         for port in range(start, end + 1):
             if port not in self.port_usage:
                 self.allocated_ports[service_name] = port
                 self.port_usage[port] = service_name
                 return port
-        
+
         raise RuntimeError(f"No available ports for service type {service_type}")
-    
+
     def release_port(self, service_name: str):
         """Release a port allocation"""
         if service_name in self.allocated_ports:
             port = self.allocated_ports[service_name]
             del self.allocated_ports[service_name]
             del self.port_usage[port]
-    
+
     def get_port(self, service_name: str) -> Optional[int]:
         """Get allocated port for a service"""
         return self.allocated_ports.get(service_name)
@@ -104,14 +104,14 @@ class PortManager:
 class DockerInfrastructureManager:
     """
     Manages Docker infrastructure for DMAIC V3
-    
+
     Responsibilities:
     - Container lifecycle management
     - Port allocation and management
     - Service health monitoring
     - Resource cleanup
     """
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         try:
@@ -121,15 +121,15 @@ class DockerInfrastructureManager:
             self.logger.warning(f"Docker not available: {e}")
             self.docker_available = False
             self.client = None
-        
+
         self.port_manager = PortManager()
         self.services: Dict[str, ServiceConfig] = {}
         self.containers: Dict[str, docker.models.containers.Container] = {}
-    
+
     def register_service(self, config: ServiceConfig):
         """Register a service configuration"""
         self.services[config.name] = config
-        
+
         # Allocate ports
         for internal_port, external_port in config.ports.items():
             if external_port == 0:  # Auto-allocate
@@ -138,26 +138,26 @@ class DockerInfrastructureManager:
                     config.service_type
                 )
                 config.ports[internal_port] = external_port
-    
+
     def start_service(self, service_name: str) -> bool:
         """Start a Docker service"""
         if not self.docker_available:
             self.logger.warning("Docker not available, cannot start service")
             return False
-        
+
         if service_name not in self.services:
             self.logger.error(f"Service {service_name} not registered")
             return False
-        
+
         config = self.services[service_name]
-        
+
         try:
             # Check if container already exists
             existing = self.client.containers.list(
                 all=True,
                 filters={"name": config.name}
             )
-            
+
             if existing:
                 container = existing[0]
                 if container.status != "running":
@@ -165,13 +165,13 @@ class DockerInfrastructureManager:
                 self.containers[service_name] = container
                 self.logger.info(f"Started existing container: {service_name}")
                 return True
-            
+
             # Create new container
             port_bindings = {
                 f"{internal}/tcp": external
                 for internal, external in config.ports.items()
             }
-            
+
             container = self.client.containers.run(
                 config.image,
                 name=config.name,
@@ -181,43 +181,43 @@ class DockerInfrastructureManager:
                 detach=True,
                 restart_policy={"Name": config.restart_policy}
             )
-            
+
             self.containers[service_name] = container
             self.logger.info(f"Started new container: {service_name}")
-            
+
             # Wait for health check
             if config.health_check:
                 self._wait_for_health(container, config.health_check)
-            
+
             return True
-            
+
         except Exception as e:
             self.logger.error(f"Failed to start service {service_name}: {e}")
             return False
-    
+
     def stop_service(self, service_name: str, remove: bool = False):
         """Stop a Docker service"""
         if service_name not in self.containers:
             return
-        
+
         try:
             container = self.containers[service_name]
             container.stop()
-            
+
             if remove:
                 container.remove()
                 del self.containers[service_name]
-            
+
             self.logger.info(f"Stopped service: {service_name}")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to stop service {service_name}: {e}")
-    
+
     def get_service_status(self, service_name: str) -> Optional[str]:
         """Get status of a service"""
         if service_name not in self.containers:
             return None
-        
+
         try:
             container = self.containers[service_name]
             container.reload()
@@ -225,34 +225,34 @@ class DockerInfrastructureManager:
         except Exception as e:
             self.logger.error(f"Failed to get status for {service_name}: {e}")
             return None
-    
+
     def get_service_logs(self, service_name: str, tail: int = 100) -> str:
         """Get logs from a service"""
         if service_name not in self.containers:
             return ""
-        
+
         try:
             container = self.containers[service_name]
             return container.logs(tail=tail).decode('utf-8')
         except Exception as e:
             self.logger.error(f"Failed to get logs for {service_name}: {e}")
             return ""
-    
+
     def cleanup_all(self):
         """Stop and remove all managed containers"""
         for service_name in list(self.containers.keys()):
             self.stop_service(service_name, remove=True)
-        
+
         self.containers.clear()
         self.logger.info("Cleaned up all containers")
-    
+
     def _wait_for_health(self, container, health_check: Dict, timeout: int = 30):
         """Wait for container to become healthy"""
         start_time = time.time()
-        
+
         while time.time() - start_time < timeout:
             container.reload()
-            
+
             if container.status == "running":
                 # Check health if specified
                 if "test" in health_check:
@@ -261,9 +261,9 @@ class DockerInfrastructureManager:
                         return True
                 else:
                     return True
-            
+
             time.sleep(1)
-        
+
         raise TimeoutError(f"Container {container.name} did not become healthy")
 
 
@@ -347,9 +347,9 @@ DMAIC_SERVICES = {
 def create_infrastructure_manager() -> DockerInfrastructureManager:
     """Factory function to create infrastructure manager"""
     manager = DockerInfrastructureManager()
-    
+
     # Register all predefined services
     for service_config in DMAIC_SERVICES.values():
         manager.register_service(service_config)
-    
+
     return manager
