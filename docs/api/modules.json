@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T19:04:56.939661",
+  "generated_at": "2026-09-30T07:22:03.317580",
   "module_count": 190,
   "modules": {
     "DMAIC_V3/quick_output_analysis.py": {
@@ -1912,7 +1912,7 @@
       "members": []
     },
     "DMAIC_V3/generators/github_quality_check.py": {
-      "docstring": "",
+      "docstring": "DMAIC V3 - GitHub Quality Check & Cleanup\nPrepares repository for GitHub with quality checks, cleanup, and CI/CD validation",
       "members": [
         {
           "name": "GitHubQualityCheck",
