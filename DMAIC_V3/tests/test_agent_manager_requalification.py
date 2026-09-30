@@ -12,7 +12,8 @@ def manager(tmp_path):
 
 def test_representative_execution_is_deterministic(tmp_path):
     mgr=manager(tmp_path)
-    runner=lambda payload:{"value":payload["value"]*2}
+    def runner(payload):
+        return {"value": payload["value"] * 2}
     a=mgr.execute_callable("analysis_cryo_dm",runner,{"value":3})
     b=mgr.execute_callable("analysis_cryo_dm",runner,{"value":3})
     assert a==b
