@@ -179,7 +179,7 @@ class ExecutionTracker:
                 elif isinstance(node, ast.ImportFrom):
                     imports.append(node.module if node.module else '')
 
-            lines_of_code = len([l for l in content.split('\n') if l.strip() and not l.strip().startswith('#')])
+            lines_of_code = len([line for line in content.split('\n') if line.strip() and not line.strip().startswith('#')])
 
             result = subprocess.run(
                 [sys.executable, str(file_path)],
@@ -274,7 +274,7 @@ class ExecutionTracker:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
 
-            lines_of_code = len([l for l in content.split('\n') if l.strip() and not l.strip().startswith("'")])
+            lines_of_code = len([line for line in content.split('\n') if line.strip() and not line.strip().startswith("'")])
 
             functions = re.findall(r'(?:Public|Private)?\s*(?:Sub|Function)\s+(\w+)',
                 content,
