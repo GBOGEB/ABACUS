@@ -100,14 +100,28 @@ jobs:
             echo "No documentation changes detected — skipping PR creation."
             exit 0
           fi
-          BRANCH="auto/update-docs-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b "$BRANCH"
+          BRANCH="auto/update-api-docs"
+          git checkout -B "$BRANCH"
           git commit -m "docs: auto-update API docs and deployment matrix"
-          git push origin "$BRANCH"
-          gh pr create \
+          git push origin "$BRANCH" --force-with-lease
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' 2>/dev/null || true)
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already open for $BRANCH — skipping duplicate creation."
+          elif gh pr create \
             --title "docs: auto-update API documentation" \
             --body "Automated documentation update triggered by code changes." \
             --base main \
-            --head "$BRANCH"
+            --head "$BRANCH"; then
+            echo "Created documentation PR for $BRANCH."
+          else
+            echo "::warning::GitHub Actions PR creation is disabled; branch $BRANCH was pushed for owner recovery."
+            {
+              echo "### Documentation update requires owner PR creation"
+              echo "- Branch: $BRANCH"
+              echo "- Base: main"
+              echo "- Generated documentation was committed and pushed successfully."
+              echo "- Repository policy blocked GitHub Actions from creating the pull request."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
