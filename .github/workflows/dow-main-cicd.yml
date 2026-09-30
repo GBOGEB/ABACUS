@@ -11,15 +11,6 @@ on:
       - 'requirements*.txt'
       - 'pyproject.toml'
       - '.github/workflows/dow-main-cicd.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'DMAIC_V3/**'
-      - 'TESTING_SUITE/**'
-      - 'demo_integrated_system.py'
-      - 'requirements*.txt'
-      - 'pyproject.toml'
-      - '.github/workflows/dow-main-cicd.yml'
   schedule:
     - cron: '0 3 * * 1'
   workflow_dispatch:
@@ -63,7 +54,9 @@ jobs:
               raise SystemExit(result.returncode)
           match = re.search(r"(\d+) tests? collected", output)
           if not match:
-              raise SystemExit("DOW_TEST_SURFACE_FAIL: collected-test count not found")
+              raise SystemExit(
+                  "DOW_TEST_SURFACE_FAIL: collected-test count not found"
+              )
           count = int(match.group(1))
           if count <= 0:
               raise SystemExit("DOW_TEST_SURFACE_FAIL: zero tests collected")
