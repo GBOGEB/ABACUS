@@ -517,10 +517,11 @@ class ExecutionTracker:
             if self.statistics.error_breakdown:
                 f.write("---\n\n")
                 f.write("## Error Breakdown\n\n")
-                for error_type,
-                    count in sorted(self.statistics.error_breakdown.items(),
+                for error_type, count in sorted(
+                    self.statistics.error_breakdown.items(),
                     key=lambda x: x[1],
-                    reverse=True):
+                    reverse=True,
+                ):
                     f.write(f"- **{error_type}**: {count}\n")
                 f.write("\n")
 
