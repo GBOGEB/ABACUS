@@ -12,6 +12,7 @@ def manager(tmp_path):
 
 def test_representative_execution_is_deterministic(tmp_path):
     mgr=manager(tmp_path)
+
     def runner(payload):
         return {"value": payload["value"] * 2}
     a=mgr.execute_callable("analysis_cryo_dm",runner,{"value":3})
