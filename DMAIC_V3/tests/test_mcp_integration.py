@@ -93,14 +93,14 @@ def test_mcp_list_available_tools():
 def test_mcp_multiple_calls_same_client():
     """Test multiple tool calls on same client instance."""
     client = DummyMcpClient()
-    
+
     resp1 = client.call_tool("echo", {"msg": "first"})
     assert resp1["ok"] is True
-    
+
     resp2 = client.call_tool("add", {"a": 10, "b": 20})
     assert resp2["ok"] is True
     assert resp2["result"] == 30
-    
+
     resp3 = client.call_tool("concat", {"strings": ["a", "b", "c"]})
     assert resp3["ok"] is True
     assert resp3["result"] == "abc"
