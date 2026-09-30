@@ -26,32 +26,32 @@ WINDOWS_DOCKER_LINUX_BASE_REASON = (
 
 
 class TestDockerConfiguration:
-    
+
     def test_dockerfile_exists(self):
         dockerfile = Path("Dockerfile")
         assert dockerfile.exists(), "Dockerfile not found"
-        
+
     def test_dockerfile_syntax(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
-        
+
         assert "FROM python:" in content, "Missing base image"
         assert "WORKDIR" in content, "Missing WORKDIR"
         assert "COPY" in content, "Missing COPY instruction"
         assert "EXPOSE" in content, "Missing EXPOSE instruction"
         assert "CMD" in content or "ENTRYPOINT" in content, "Missing CMD/ENTRYPOINT"
-        
+
     def test_dockerfile_security(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
-        
+
         assert "useradd" in content or "USER" in content, "Should run as non-root user"
         assert "HEALTHCHECK" in content, "Missing health check"
-        
+
     def test_dockerignore_exists(self):
         dockerignore = Path(".dockerignore")
         assert dockerignore.exists(), ".dockerignore not found"
-        
+
     def test_dockerignore_content(self):
         dockerignore = Path(".dockerignore")
         content = dockerignore.read_text()
@@ -88,28 +88,28 @@ class TestDockerCompose:
 
     def test_docker_compose_syntax(self):
         import yaml
-        
+
         compose_file = Path("docker-compose.yml")
         with open(compose_file) as f:
             config = yaml.safe_load(f)
-            
+
         assert "services" in config, "Missing services section"
         assert "version" in config, "Missing version"
-        
+
     def test_docker_compose_services(self):
         import yaml
-        
+
         compose_file = Path("docker-compose.yml")
         with open(compose_file) as f:
             config = yaml.safe_load(f)
-            
+
         services = config.get("services", {})
         assert "app" in services, "Missing app service"
-        
+
         app_service = services["app"]
         assert "build" in app_service or "image" in app_service, "Missing build/image"
         assert "ports" in app_service, "Missing port mapping"
-        
+
     def test_docker_compose_health_checks(self):
         import yaml
 
@@ -416,7 +416,7 @@ class TestDockerContainerIntegration:
 
 @pytest.mark.integration
 class TestDockerComposeDeploy:
-    
+
     @pytest.mark.slow
     def test_docker_compose_up(self):
         result = subprocess.run(
@@ -424,9 +424,9 @@ class TestDockerComposeDeploy:
             capture_output=True,
             text=True
         )
-        
+
         assert result.returncode == 0, f"docker compose config failed: {result.stderr}"
-    
+
     @pytest.mark.slow
     def test_docker_compose_services_defined(self):
         result = subprocess.run(
@@ -434,43 +434,43 @@ class TestDockerComposeDeploy:
             capture_output=True,
             text=True
         )
-        
+
         if result.returncode == 0:
             services = result.stdout.strip().split('\n')
             assert "app" in services, "App service should be defined"
 
 
 class TestDockerVolumes:
-    
+
     def test_volume_directories_exist(self):
         data_dir = Path("data")
         logs_dir = Path("logs")
-        
+
         assert data_dir.exists() or True, "Data directory should exist or be creatable"
         assert logs_dir.exists() or True, "Logs directory should exist or be creatable"
-    
+
     def test_docker_compose_volumes(self):
         import yaml
-        
+
         compose_file = Path("docker-compose.yml")
         with open(compose_file) as f:
             config = yaml.safe_load(f)
-            
+
         volumes = config.get("volumes", {})
         assert len(volumes) > 0, "Should define named volumes"
 
 
 class TestDockerNetworking:
-    
+
     def test_docker_compose_networks(self):
         import yaml
-        
+
         compose_file = Path("docker-compose.yml")
         with open(compose_file) as f:
             config = yaml.safe_load(f)
-            
+
         services = config.get("services", {})
-        
+
         for service_name, service_config in services.items():
             if "depends_on" in service_config:
                 assert isinstance(service_config["depends_on"], list), \
@@ -478,59 +478,59 @@ class TestDockerNetworking:
 
 
 class TestDockerSecurity:
-    
+
     def test_no_hardcoded_secrets(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
-        
+
         forbidden_patterns = [
             "password=",
             "secret=",
             "token=",
             "api_key="
         ]
-        
+
         for pattern in forbidden_patterns:
             assert pattern.lower() not in content.lower(), \
                 f"Hardcoded secret pattern found: {pattern}"
-    
+
     def test_environment_variables_used(self):
         compose_file = Path("docker-compose.yml")
         content = compose_file.read_text()
-        
+
         assert "${" in content or "environment:" in content, \
             "Should use environment variables"
-    
+
     def test_docker_compose_env_file(self):
         compose_file = Path("docker-compose.yml")
         content = compose_file.read_text()
-        
+
         sensitive_vars = ["PASSWORD", "SECRET", "KEY"]
-        
+
         for var in sensitive_vars:
             if var in content:
                 assert "${" in content, "Sensitive vars should use env substitution"
 
 
 class TestDockerPerformance:
-    
+
     def test_dockerfile_layer_optimization(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
         lines = content.split('\n')
-        
+
         copy_count = sum(1 for line in lines if line.strip().startswith('COPY'))
         assert copy_count <= 3, "Too many COPY layers, consider optimization"
-        
+
     def test_dockerfile_uses_cache(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
-        
+
         assert "requirements.txt" in content, "Should copy requirements.txt separately for caching"
-        
+
         lines = content.split('\n')
         req_line = next((i for i, line in enumerate(lines) if 'requirements.txt' in line), None)
         copy_all_line = next((i for i, line in enumerate(lines) if 'COPY . .' in line), None)
-        
+
         if req_line and copy_all_line:
             assert req_line < copy_all_line, "requirements.txt should be copied before source code"
