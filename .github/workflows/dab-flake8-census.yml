@@ -9,6 +9,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '**/*.py'
       - 'scripts/dab_flake8_census.py'
       - '.github/workflows/dab-flake8-census.yml'
   workflow_dispatch:
