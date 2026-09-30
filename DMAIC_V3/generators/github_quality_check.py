@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 
-
 class GitHubQualityCheck:
     """Comprehensive GitHub quality check and cleanup"""
 
