@@ -44,7 +44,7 @@ class MasterReconciliationSystem:
 
         self.reconciliation_log = []
 
-    def log(self, message -> Any: str, level: str = "INFO"):
+    def log(self, message: str, level: str = "INFO"):
         """Log a message"""
         timestamp = datetime.now().isoformat()
         log_entry = f"[{timestamp}] [{level}] {message}"

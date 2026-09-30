@@ -95,7 +95,7 @@ idempotent_phase = IdempotentPhase(phase4, bridge, "improve")
 results = idempotent_phase.execute(iteration=1)
 
 # Finish run
-bridge.finish_run("success", results.get('statistics', {}))
+bridge.finish_run("success", results.get('statistics', {{}}))
 ```
 
 ---

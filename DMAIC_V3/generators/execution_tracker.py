@@ -140,8 +140,6 @@ class ExecutionTracker:
     """
 
     def __init__(
-        """TODO: Add function description"""
-
         self,
         output_dir: Path,
         metrics_tracker: Optional[MetricsTracker] = None,

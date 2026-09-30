@@ -1,4 +1,4 @@
-lsq"""
+"""
 DMAIC V3 - Docker Infrastructure Manager
 Manages Docker containers, ports, and service lifecycle
 
