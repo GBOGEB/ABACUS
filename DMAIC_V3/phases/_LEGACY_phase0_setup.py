@@ -522,9 +522,7 @@ if __name__ == "__main__":
     print("Testing Phase 0: Setup & Initialization")
     print()
 
-    # Import config
-    import sys
-    from pathlib import Path
+    # Import config using module-level sys and Path imports
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
     from config import DMAICConfig
