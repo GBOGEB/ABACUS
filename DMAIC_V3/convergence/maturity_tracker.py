@@ -305,7 +305,7 @@ class MaturityTracker:
             with open(self.convergence_file, "r") as f:
                 data = json.load(f)
             return float(data.get("score", 0))
-        except:
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
             return 0.0
 
     def _load_completed_tasks(self) -> List[str]:

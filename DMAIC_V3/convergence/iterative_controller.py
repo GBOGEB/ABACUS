@@ -291,7 +291,7 @@ class IterativeController:
         try:
             with open(self.convergence_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except (OSError, json.JSONDecodeError):
             return {'is_converged': False, 'maturity_level': 'initial'}
 
     def generate_convergence_report(self) -> str:
