@@ -28,3 +28,14 @@ def test_dashboard_artifacts_are_strict_and_evidence_is_preserved():
     assert "name: test-dashboard" in block
     assert block.count("if-no-files-found: error") == 2
     assert "if: always()" in block
+
+
+def test_unit_test_junit_path_uses_cross_platform_bash():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    start = text.index("      - name: Run Unit Tests")
+    end = text.index("      - name: Upload Test Results", start)
+    step = text[start:end]
+
+    assert "shell: bash" in step
+    assert 'junit_path="junit/test-results-' in step
+    assert '--junitxml="${junit_path}"' in step
