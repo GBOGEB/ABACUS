@@ -15,6 +15,7 @@ import functools
 import hashlib
 import json
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 from datetime import datetime
@@ -127,6 +128,18 @@ class IdempotentPhaseWrapper:
             }
         raise ValueError(f"Unknown cache value type: {value_type}")
 
+    @staticmethod
+    def _replace_with_retry(source: Path, target: Path, attempts: int = 6) -> None:
+        """Atomically replace target, retrying transient Windows file-lock races."""
+        for attempt in range(attempts):
+            try:
+                source.replace(target)
+                return
+            except PermissionError:
+                if attempt == attempts - 1:
+                    raise
+                time.sleep(0.01 * (2 ** attempt))
+
     def _save_cache(self, cache_file: Path, result: Any, input_hash: str) -> bool:
         """Save supported results atomically; unsupported values remain uncached."""
         try:
@@ -153,7 +166,7 @@ class IdempotentPhaseWrapper:
                 temp_file = Path(handle.name)
                 handle.write(payload)
 
-            temp_file.replace(cache_file)
+            self._replace_with_retry(temp_file, cache_file)
             return True
         finally:
             if temp_file is not None and temp_file.exists():
