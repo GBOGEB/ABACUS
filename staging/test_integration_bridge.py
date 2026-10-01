@@ -75,7 +75,8 @@ class IntegrationTestSuite:
             mode=IntegrationMode.UNIFIED,
             iterations=1
         )
-        GBOGEBAbacusDOWBridge(config=config)
+        bridge = GBOGEBAbacusDOWBridge(config=config)
+
         assert bridge is not None
         assert bridge.config.mode == IntegrationMode.UNIFIED
         assert bridge.dow_runner is not None
@@ -139,7 +140,7 @@ class IntegrationTestSuite:
         """Test output directory creation"""
         test_output_dir = "TEST_INTEGRATED_OUTPUT"
         config = IntegrationConfig(output_dir=test_output_dir)
-        bridge = GBOGEBAbacusDOWBridge(config=config)
+        GBOGEBAbacusDOWBridge(config=config)
 
         assert Path(test_output_dir).exists()
 
