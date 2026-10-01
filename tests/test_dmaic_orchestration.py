@@ -308,15 +308,33 @@ class DMAICTestOrchestrator:
         }
 
     def _parse_coverage_report(self, coverage_file: Path) -> Dict:
-        """Parse coverage JSON report"""
+        """Parse coverage JSON while keeping the legacy metric line-based.
+
+        Governed CI now enables branch coverage. coverage.py percent_covered
+        therefore mixes line and branch opportunities. DMAIC coverage_score
+        historically represented line coverage, so derive it explicitly from
+        covered_lines/num_statements and expose the combined figure separately.
+        """
         if not coverage_file.exists():
-            return {'coverage_percent': 0.0}
+            return {
+                'coverage_percent': 0.0,
+                'combined_coverage_percent': 0.0,
+            }
 
         with open(coverage_file) as f:
             data = json.load(f)
 
+        totals = data.get('totals', {})
+        statements = int(totals.get('num_statements', 0) or 0)
+        covered_lines = int(totals.get('covered_lines', 0) or 0)
+        line_percent = (
+            (covered_lines / statements) * 100.0 if statements else 0.0
+        )
         return {
-            'coverage_percent': data.get('totals', {}).get('percent_covered', 0.0)
+            'coverage_percent': line_percent,
+            'combined_coverage_percent': totals.get(
+                'percent_covered', line_percent
+            ),
         }
 
     def _calculate_quality_score(self, test_data: Dict, coverage_data: Dict) -> float:
@@ -564,6 +582,29 @@ class TestWeek3ComponentIntegration:
         assert metrics.total_tests >= 10
         assert metrics.coverage_score >= 80.0
         assert metrics.pass_rate() >= 95.0
+
+    def test_parse_coverage_report_keeps_line_metric_under_branch_coverage(self, tmp_path):
+        """Branch coverage must not silently redefine DMAIC line coverage."""
+        report = tmp_path / "coverage.json"
+        report.write_text(
+            json.dumps(
+                {
+                    "totals": {
+                        "num_statements": 100,
+                        "covered_lines": 75,
+                        "num_branches": 50,
+                        "covered_branches": 20,
+                        "percent_covered": 63.3333333333,
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        metrics = DMAICTestOrchestrator()._parse_coverage_report(report)
+
+        assert metrics["coverage_percent"] == 75.0
+        assert metrics["combined_coverage_percent"] == 63.3333333333
 
     @pytest.mark.asyncio
     async def test_week3_integration_metrics(self):
