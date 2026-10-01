@@ -10,6 +10,8 @@ on:
       - "scripts/test_admission_census.py"
       - "scripts/test_evidence_census.py"
       - "scripts/coverage_dab_census.py"
+      - "scripts/post_b0_coverage_union.py"
+      - "scripts/mip_v2_federated_controller.py"
       - "scripts/pytest_test_state_plugin.py"
       - "DMAIC_V3/tests/**"
       - "integration/*/tests/**"
@@ -38,6 +40,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
+      - name: Run canonical exact-head coverage surface
+        env:
+          COVERAGE_FILE: test_reports/post-b0/.coverage-canonical
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/post-b0 test_reports/b0
+          python -m pytest -p scripts.pytest_test_state_plugin -q             --govern-test-states             --benchmark-disable             --cov=.             --cov-branch             --cov-report=             --junitxml=test_reports/post-b0/canonical-junit.xml
+
+          python scripts/test_evidence_census.py             --junit test_reports/post-b0/canonical-junit.xml             --out test_reports/post-b0/canonical-test-evidence.json             --max-skips 5             --max-xfails 0
+
+          python -m coverage json             --show-contexts             -o test_reports/post-b0/canonical-contexts.json
+
       - name: Collect and execute excluded suites as report-only evidence
         env:
           COVERAGE_FILE: test_reports/b0/.coverage
@@ -59,12 +73,26 @@ jobs:
             --exact-sha "${GITHUB_SHA}" \
             --out test_reports/b0/coverage-dab.json
 
+      - name: Build exact-head post-B0 coverage union
+        run: |
+          set -euo pipefail
+          python scripts/post_b0_coverage_union.py             --coverage-surface canonical=test_reports/post-b0/canonical-contexts.json             --coverage-surface b0_report_only=test_reports/b0/coverage-contexts.json             --criticality governance/coverage/criticality_manifest.json             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json             --test-evidence test_reports/post-b0/canonical-test-evidence.json             --exact-sha "${GITHUB_SHA}"             --out test_reports/post-b0/coverage-dab.json
+
+      - name: Consume post-B0 pressure through MIP
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python scripts/mip_v2_federated_controller.py             --summary test_reports/post-b0/mip-pressure.json             --coverage-census test_reports/post-b0/coverage-dab.json             --coverage-limit 40
+
       - name: Upload B0 report-only evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: b0-test-admission-${{ github.sha }}
-          path: test_reports/b0/
+          path: |
+            test_reports/b0/
+            test_reports/post-b0/
           if-no-files-found: error
 
   false-green-census:
@@ -86,6 +114,7 @@ jobs:
           python scripts/ci_false_green_lint.py \
             --root .github/workflows \
             --mode census \
+            --max-unguarded 267 \
             --out test_reports/b1/false-green-census.json
 
       - name: Upload B1 census
