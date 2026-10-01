@@ -24,3 +24,35 @@ packages = ["DMAIC_V3"]
 
 # Product release identity lives in [project].version.
 # DMAIC_V3/config.py VERSION remains the independent engine-generation/API version.
+
+
+[tool.coverage.run]
+source = ["."]
+branch = true
+dynamic_context = "test_function"
+omit = [
+  "tests/*",
+  "*/tests/*",
+  "/tmp/*",
+  "*/pytest-of-*/*",
+  "*/venv/*",
+  "*/__pycache__/*",
+  "*/site-packages/*",
+  "*/BACKUPS/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
