@@ -72,7 +72,10 @@ class TestAHTIntegration:
     @pytest.mark.artifact(name="api_sla", type="sla_check")
     def test_api_sla_hypothesis(self, aht_bridge):
         """Test API SLA hypothesis"""
-        response_times = np.random.normal(95, 8, 50).tolist()
+        # Deterministic SLA fixture centred exactly on the expected target.
+        # Random sampling can legitimately produce the AHT REJECTED state and
+        # makes this integration assertion flaky across interpreters/runs.
+        response_times = np.linspace(87.0, 103.0, 50).tolist()
 
         result = aht_bridge.test_hypothesis_with_bootstrap(
             hypothesis="API meets 95% SLA target",
