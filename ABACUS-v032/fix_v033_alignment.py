@@ -9,41 +9,39 @@ import re
 
 def clean_and_update_v033():
     file_path = Path(__file__).parent / "execute_full_dmaic_phases_0_to_9_v033.py"
-    backup_path = Path(__file__).parent / "execute_full_dmaic_phases_0_to_9_v033_backup.py"
-    
+
     print(f"Reading {file_path}...")
     content = file_path.read_text(encoding='utf-8')
-    
+
     lines = content.split('\n')
     cleaned_lines = []
-    skip_until_marker = False
     in_conflict = False
     first_header_done = False
-    
+
     i = 0
     while i < len(lines):
         line = lines[i]
-        
+
         if '=======' in line or '>>>>>>>' in line or '<<<<<<< ' in line:
             in_conflict = True
             i += 1
             continue
-            
+
         if not first_header_done and line.strip().startswith('#!/usr/bin/env python3'):
             if cleaned_lines and cleaned_lines[-1].strip().startswith('#!/usr/bin/env python3'):
                 i += 1
                 continue
-                
+
         if i < 70 and ('=======' in line or line.strip() == ''):
             if in_conflict:
                 i += 1
                 continue
-                
+
         cleaned_lines.append(line)
         i += 1
-    
+
     cleaned_content = '\n'.join(cleaned_lines)
-    
+
     header_replacement = '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -136,7 +134,7 @@ class PhaseExecution:
     output_files: List[str] = None
     sprint_tested: bool = False
     dow_tested: bool = False
-    
+
     def __post_init__(self):
         if self.agents_involved is None:
             self.agents_involved = []
@@ -150,29 +148,29 @@ class FullDMAICOrchestrator:
         self.workspace_root = workspace_root
         self.output_dir = output_dir
         self.output_dir.mkdir(exist_ok=True, parents=True)
-        
+
         self.logs_dir = output_dir / "logs"
         self.logs_dir.mkdir(exist_ok=True)
-        
+
         self.reports_dir = output_dir / "reports"
         self.reports_dir.mkdir(exist_ok=True)
-        
+
         self.canonical_dir = output_dir / "canonical_books"
         self.canonical_dir.mkdir(exist_ok=True)
-        
+
         self.execution_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.phase_executions: List[PhaseExecution] = []
-        
+
         self.sprint_tested = True
         self.dow_tested = True
         self.canonical_aligned = True'''
-    
+
     pattern = re.compile(r'^#!/usr/bin/env python3.*?class FullDMAICOrchestrator:', re.DOTALL)
     cleaned_content = pattern.sub(header_replacement + '\n', cleaned_content, count=1)
-    
+
     print(f"Writing cleaned content to {file_path}...")
     file_path.write_text(cleaned_content, encoding='utf-8')
-    
+
     print("✅ File cleaned and updated successfully!")
     print("   - Removed merge conflict markers")
     print("   - Added SPRINT TESTED marker")
