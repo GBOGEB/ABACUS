@@ -1,0 +1,35 @@
+name: GM14 Residual Census
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  residual-census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install flake8
+        run: python -m pip install --upgrade pip flake8
+      - name: Measure F601 and W293 residuals
+        shell: bash
+        run: |
+          set -uo pipefail
+          python -m flake8 . --select F601,W293 --format='%(path)s:%(row)d:%(col)d: %(code)s %(text)s' > gm14_residual_census.txt || true
+          F601_COUNT="$(grep -c ' F601 ' gm14_residual_census.txt || true)"
+          W293_COUNT="$(grep -c ' W293 ' gm14_residual_census.txt || true)"
+          echo "F601_COUNT=${F601_COUNT}"
+          echo "W293_COUNT=${W293_COUNT}"
+          {
+            echo "## GM14 residual census"
+            echo
+            echo "- F601: ${F601_COUNT}"
+            echo "- W293: ${W293_COUNT}"
+            echo "- scope: repository root"
+            echo "- selector: F601,W293"
+            echo "- sha: ${GITHUB_SHA}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "${F601_COUNT}" -eq 0
