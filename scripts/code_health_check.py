@@ -63,7 +63,7 @@ def count_lines(file_path: Path) -> dict:
             'comments': comments,
             'blank': blank
         }
-    except Exception as e:
+    except Exception:
         return {'total': 0, 'code': 0, 'comments': 0, 'blank': 0}
 
 def main():
