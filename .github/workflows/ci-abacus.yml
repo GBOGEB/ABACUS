@@ -49,7 +49,9 @@ jobs:
           secondary="3.10"
 
           if [[ "${EVENT_NAME}" == "pull_request" ]]; then
-            mapfile -t changed < <(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")
+            mapfile -t changed < <(
+              git diff --name-only "${BASE_SHA}" "${HEAD_SHA}"
+            )
             compatibility_sensitive=false
             python_delta=false
 
@@ -66,7 +68,8 @@ jobs:
 
             if [[ "${compatibility_sensitive}" == "true" ]]; then
               mode="full"
-              reason="dependency, packaging, interpreter, shared action, or this CI workflow changed"
+              reason="dependency, packaging, interpreter, shared action, or "
+              reason+="this CI workflow changed"
             elif [[ "${python_delta}" == "true" ]]; then
               mode="sampled"
               if (( ${PR_NUMBER:-0} % 2 == 0 )); then
@@ -74,10 +77,13 @@ jobs:
               else
                 secondary="3.11"
               fi
-              reason="Python changed: run 3.12 sentinel plus deterministic compatibility sample"
+              reason="Python changed: run 3.12 sentinel plus deterministic "
+              reason+="compatibility sample"
             else
               mode="sentinel"
-              reason="no Python compatibility-sensitive delta: run 3.12 sentinel; full matrix is recertified after merge and weekly"
+              reason="no Python compatibility-sensitive delta: run 3.12 "
+              reason+="sentinel; full matrix is recertified after merge "
+              reason+="and weekly"
             fi
 
             {
@@ -90,15 +96,15 @@ jobs:
               echo
               if [[ "${mode}" == "sentinel" ]]; then
                 echo "- Python 3.12: **EXECUTED / SENTINEL**"
-                echo "- Python 3.10: **DEFERRED_TO_MAIN_OR_SCHEDULED_RECERTIFICATION**"
-                echo "- Python 3.11: **DEFERRED_TO_MAIN_OR_SCHEDULED_RECERTIFICATION**"
+                echo "- Python 3.10: DEFERRED; recertify main/schedule"
+                echo "- Python 3.11: DEFERRED; recertify main/schedule"
               elif [[ "${mode}" == "sampled" ]]; then
                 echo "- Python 3.12: **EXECUTED / SENTINEL**"
-                echo "- Python ${secondary}: **EXECUTED / DETERMINISTIC_COMPATIBILITY_SAMPLE**"
+                echo "- Python ${secondary}: EXECUTED compatibility sample"
                 if [[ "${secondary}" == "3.10" ]]; then
-                  echo "- Python 3.11: **DEFERRED_TO_MAIN_OR_SCHEDULED_RECERTIFICATION**"
+                  echo "- Python 3.11: DEFERRED; recertify main/schedule"
                 else
-                  echo "- Python 3.10: **DEFERRED_TO_MAIN_OR_SCHEDULED_RECERTIFICATION**"
+                  echo "- Python 3.10: DEFERRED; recertify main/schedule"
                 fi
               else
                 echo "- Python 3.10 / 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
@@ -180,10 +186,18 @@ jobs:
           mkdir -p ~/.config/pip
           {
             echo "[global]"
-            if [ -n "${{ secrets.PIP_INDEX_URL }}" ]; then echo "index-url = ${{ secrets.PIP_INDEX_URL }}"; fi
-            if [ -n "${{ secrets.PIP_EXTRA_INDEX_URL }}" ]; then echo "extra-index-url = ${{ secrets.PIP_EXTRA_INDEX_URL }}"; fi
-            if [ -n "${{ secrets.PIP_TRUSTED_HOST }}" ]; then echo "trusted-host = ${{ secrets.PIP_TRUSTED_HOST }}"; fi
-            if [ -n "${{ secrets.PIP_CERT }}" ]; then echo "cert = ${{ secrets.PIP_CERT }}"; fi
+            if [ -n "${{ secrets.PIP_INDEX_URL }}" ]; then
+              echo "index-url = ${{ secrets.PIP_INDEX_URL }}"
+            fi
+            if [ -n "${{ secrets.PIP_EXTRA_INDEX_URL }}" ]; then
+              echo "extra-index-url = ${{ secrets.PIP_EXTRA_INDEX_URL }}"
+            fi
+            if [ -n "${{ secrets.PIP_TRUSTED_HOST }}" ]; then
+              echo "trusted-host = ${{ secrets.PIP_TRUSTED_HOST }}"
+            fi
+            if [ -n "${{ secrets.PIP_CERT }}" ]; then
+              echo "cert = ${{ secrets.PIP_CERT }}"
+            fi
           } > ~/.config/pip/pip.conf
 
       - name: Install tooling
@@ -207,7 +221,8 @@ jobs:
 
       - name: Phase0 smoke test
         run: |
-          python scripts/runners/phase0_runner.py --smoke || echo "Phase0 smoke test completed"
+          python scripts/runners/phase0_runner.py --smoke ||
+            echo "Phase0 smoke test completed"
 
       - name: Detect artifact payload
         id: artifact_payload
@@ -235,7 +250,8 @@ jobs:
               echo
               echo "#### Artifact payload"
               echo
-              echo "No runtime artifact payload was produced by this job; upload is intentionally skipped without warning."
+              echo "No runtime artifact payload was produced by this job;"
+              echo "upload intentionally skipped without warning."
             } >> "${GITHUB_STEP_SUMMARY}"
           fi
 
@@ -275,8 +291,10 @@ jobs:
             echo "- reason: ${REASON}"
           } >> "${GITHUB_STEP_SUMMARY}"
 
-          if [[ "${PLAN_RESULT}" != "success" || "${MATRIX_RESULT}" != "success" ]]; then
-            echo "::error::Selected ABACUS compatibility proof did not complete successfully."
+          if [[ "${PLAN_RESULT}" != "success" ||
+                "${MATRIX_RESULT}" != "success" ]]; then
+            msg="ABACUS compatibility proof did not complete successfully."
+            echo "::error::${msg}"
             exit 1
           fi
 
