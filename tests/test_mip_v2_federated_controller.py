@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from scripts import mip_v2_federated_controller as control
 
 
@@ -428,3 +430,291 @@ def test_post_b0_coverage_pressure_accepts_union_schema_and_zero_queue():
     ]
     assert result["formal_credit_delta"] == 0
     assert result["authority_transfer"] is False
+
+
+
+def _valid_baseline_payloads():
+    return {
+        control.SCOPE_PATH: {
+            "scope_id": "mip_v2_federated_closed_loop_control",
+            "fixed_goalpost": {"gate_count": 10},
+            "contract_bindings": {
+                "keb": {"schema": "qps-triage-keb-contract/1.0.0"},
+                "child": {"schema": "qps-triage-child-contract/1.1.0"},
+            },
+        },
+        control.V1_ACCEPTANCE_PATH: {
+            "fixed_goalpost": {
+                "closed_gate_count": 8,
+                "status": "PASS",
+            }
+        },
+        control.V1_CLEANUP_PATH: {
+            "fixed_tranche": {"status": "CONTROL"},
+            "broader_global_dov": "WITHHELD",
+        },
+        control.DOW_CONTRACT_PATH: {
+            "schema": "qps-triage-dow-contract/1.0.0",
+            "repo": "GBOGEB/ABACUS",
+            "authority": {"final_qps_disposition": False},
+        },
+    }
+
+
+def test_baseline_guards_fail_closed(monkeypatch):
+    mutations = [
+        lambda p: p[control.SCOPE_PATH].update(scope_id="wrong"),
+        lambda p: p[control.SCOPE_PATH]["fixed_goalpost"].update(gate_count=9),
+        lambda p: p[control.V1_ACCEPTANCE_PATH]["fixed_goalpost"].update(
+            closed_gate_count=7
+        ),
+        lambda p: p[control.V1_ACCEPTANCE_PATH]["fixed_goalpost"].update(
+            status="FAIL"
+        ),
+        lambda p: p[control.V1_CLEANUP_PATH]["fixed_tranche"].update(
+            status="OPEN"
+        ),
+        lambda p: p[control.V1_CLEANUP_PATH].update(
+            broader_global_dov="PASS"
+        ),
+        lambda p: p[control.DOW_CONTRACT_PATH].update(schema="wrong"),
+        lambda p: p[control.DOW_CONTRACT_PATH].update(repo="GBOGEB/WRONG"),
+        lambda p: p[control.DOW_CONTRACT_PATH]["authority"].update(
+            final_qps_disposition=True
+        ),
+        lambda p: p[control.SCOPE_PATH]["contract_bindings"]["keb"].update(
+            schema="wrong"
+        ),
+        lambda p: p[control.SCOPE_PATH]["contract_bindings"]["child"].update(
+            schema="wrong"
+        ),
+    ]
+
+    import copy
+
+    for mutate in mutations:
+        payloads = copy.deepcopy(_valid_baseline_payloads())
+        mutate(payloads)
+        monkeypatch.setattr(
+            control,
+            "load_json",
+            lambda path, payloads=payloads: payloads[path],
+        )
+        with pytest.raises(SystemExit):
+            control.validate_baseline()
+
+
+def test_load_json_rejects_non_object_and_git_head_is_normalized(
+    tmp_path, monkeypatch
+):
+    bad = tmp_path / "bad.json"
+    bad.write_text("[]", encoding="utf-8")
+    with pytest.raises(ValueError):
+        control.load_json(bad)
+
+    monkeypatch.setattr(
+        control.subprocess,
+        "check_output",
+        lambda *args, **kwargs: HEAD + "\n",
+    )
+    assert control.git_head() == HEAD
+
+
+@pytest.mark.parametrize(
+    ("challenge_value", "expected"),
+    [
+        ({"challenge_or_execution": "x", "result": "GREEN"}, False),
+        ({"challenge_or_execution": "", "result": "PASS", "executed_steps": 1}, False),
+        ({"challenge_or_execution": "x", "result": "PASS", "executed_steps": 0}, False),
+        ({"challenge_or_execution": "x", "result": "FAIL", "executed_steps": 0}, True),
+        ({"challenge_or_execution": "x", "result": "DEFER", "executed_steps": 0}, True),
+    ],
+)
+def test_dow_disposition_guard_matrix(challenge_value, expected):
+    receipt = keb_receipt()
+    value, valid = control.dow_disposition(receipt, challenge_value, HEAD)
+    assert valid is expected
+    if expected:
+        assert value["disposition"] in {"REJECT", "DEFER"}
+        assert value["authority_transfer"] is False
+    else:
+        assert value == {}
+
+
+def test_coverage_pressure_fail_closed_shapes_and_limit():
+    wrong = {
+        "schema": "wrong",
+        "exact_sha": HEAD,
+        "rows": "not-a-list",
+    }
+    withheld = control.build_coverage_pressure(wrong, HEAD)
+    assert withheld["status"] == "WITHHELD"
+    assert set(withheld["errors"]) == {"rows", "schema"}
+
+    measured = {
+        "schema": "abacus-coverage-dab/1.0.0",
+        "exact_sha": HEAD,
+        "pressure_order": "not-a-list",
+        "rows": [
+            "not-a-row",
+            {
+                "path": "src/green.py",
+                "source_class": "ACTIVE_SOURCE",
+                "statements": 5,
+                "covered_statements": 5,
+                "missed_statements": 0,
+            },
+            {
+                "path": "src/zero.py",
+                "source_class": "ACTIVE_SOURCE",
+                "statements": 5,
+                "covered_statements": 0,
+                "missed_statements": 5,
+            },
+            {
+                "path": "tests/test_x.py",
+                "source_class": "TEST_SUPPORT",
+                "statements": 5,
+                "covered_statements": 0,
+                "missed_statements": 5,
+            },
+        ],
+    }
+    result = control.build_coverage_pressure(measured, HEAD, limit=0)
+    assert result["status"] == "MEASURED"
+    assert result["priority_queue"] == []
+    assert result["zero_coverage_disposition_queue"][0]["path"] == "src/zero.py"
+
+
+def test_test_pressure_fail_closed_and_limit():
+    wrong = {
+        "schema": "wrong",
+        "exact_sha": HEAD,
+        "rows": "not-a-list",
+    }
+    withheld = control.build_test_pressure(wrong, HEAD)
+    assert withheld["status"] == "WITHHELD"
+    assert set(withheld["errors"]) == {"rows", "schema"}
+
+    measured = {
+        "schema": "abacus-test-evidence-census/1.0.0",
+        "exact_sha": HEAD,
+        "rows": [
+            "not-a-row",
+            {"test": "ok", "outcome": "pass", "test_state": "TEST_GREEN"},
+            {
+                "test": "blocked",
+                "outcome": "skip",
+                "test_state": "TEST_BLOCKED_SOURCE_MISSING",
+            },
+        ],
+    }
+    result = control.build_test_pressure(measured, HEAD, limit=0)
+    assert result["status"] == "MEASURED"
+    assert result["priority_queue"] == []
+
+
+def test_child_feedback_guard_matrix_and_terminal_dispositions():
+    partial = control.evaluate(keb_receipt(), challenge(), head_sha=HEAD)
+    dow = partial["dow_receipt"]
+
+    invalid = {
+        "parent_repo": "WRONG",
+        "parent_head_sha": "wrong",
+        "parent_receipt_sha256": "wrong",
+        "disposition": "GREEN",
+        "reason": "invalid",
+    }
+    valid, errors = control.validate_child_feedback(invalid, dow)
+    assert valid is False
+    assert {
+        "parent_repo",
+        "parent_head_sha",
+        "parent_receipt_sha256",
+        "disposition",
+    }.issubset(errors)
+
+    for disposition, state in [
+        ("ACCEPT", "REPEAT_DISTINCT_SHA"),
+        ("DEFER", "ROUTE_FIRST_RED"),
+        ("REJECT", "REPAIR_OR_WITHDRAW"),
+    ]:
+        child = {
+            "parent_repo": "GBOGEB/ABACUS",
+            "parent_head_sha": HEAD,
+            "parent_receipt_sha256": dow["receipt_sha256"],
+            "disposition": disposition,
+            "reason": "controlled",
+        }
+        result = control.evaluate(
+            keb_receipt(),
+            challenge(),
+            child,
+            head_sha=HEAD,
+        )
+        assert result["controller_state"] == state
+
+
+def test_evaluate_rejects_invalid_child_feedback():
+    partial = control.evaluate(keb_receipt(), challenge(), head_sha=HEAD)
+    dow = partial["dow_receipt"]
+    child = {
+        "parent_repo": "GBOGEB/ABACUS",
+        "parent_head_sha": HEAD,
+        "parent_receipt_sha256": dow["receipt_sha256"],
+        "disposition": "GREEN",
+        "reason": "invalid",
+    }
+    result = control.evaluate(
+        keb_receipt(),
+        challenge(),
+        child,
+        head_sha=HEAD,
+    )
+    assert result["controller_state"] == "REPAIR_OR_WITHDRAW"
+    assert result["first_red"] == "CHILD_REENTRY_CONTRACT"
+
+
+def test_main_reads_all_receipts_and_enforces_expected_sha(
+    tmp_path, monkeypatch
+):
+    keb_path = tmp_path / "keb.json"
+    challenge_path = tmp_path / "challenge.json"
+    child_path = tmp_path / "child.json"
+    summary_path = tmp_path / "summary.json"
+
+    keb_path.write_text(json.dumps(keb_receipt()), encoding="utf-8")
+    challenge_path.write_text(json.dumps(challenge()), encoding="utf-8")
+
+    partial = control.evaluate(keb_receipt(), challenge(), head_sha=HEAD)
+    child_path.write_text(
+        json.dumps(
+            {
+                "parent_repo": "GBOGEB/ABACUS",
+                "parent_head_sha": HEAD,
+                "parent_receipt_sha256": partial["dow_receipt"]["receipt_sha256"],
+                "disposition": "ACCEPT",
+                "reason": "controlled",
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(control, "git_head", lambda: HEAD)
+    monkeypatch.setenv("EXPECTED_SHA", "d" * 40)
+
+    with pytest.raises(SystemExit, match="exact-SHA mismatch"):
+        control.main(
+            [
+                "--summary",
+                str(summary_path),
+                "--keb-receipt",
+                str(keb_path),
+                "--challenge",
+                str(challenge_path),
+                "--child-feedback",
+                str(child_path),
+            ]
+        )
+
+    written = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert written["controller_state"] == "REPEAT_DISTINCT_SHA"
