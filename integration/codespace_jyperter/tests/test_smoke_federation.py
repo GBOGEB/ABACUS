@@ -75,7 +75,7 @@ def test_integration_manifest_lists_self():
 
 @pytest.mark.smoke
 def test_global_manifest_includes_codespace_jyperter():
-    """The global federation/manifest.yaml must list GBOGEB/codespace_jyperter."""
+    """The global manifest must list the authoritative notebook repository identity."""
     try:
         import yaml
     except ImportError:
@@ -83,8 +83,9 @@ def test_global_manifest_includes_codespace_jyperter():
 
     data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
     member_names = [m.get("name") for m in data["federation"].get("member_repos", [])]
-    assert "GBOGEB/codespace_jyperter" in member_names, (
-        "federation/manifest.yaml must list GBOGEB/codespace_jyperter in member_repos"
+    assert "GBOGEB/CODESPACES_jyperter" in member_names, (
+        "federation/manifest.yaml must list the authoritative "
+        "GBOGEB/CODESPACES_jyperter repository in member_repos"
     )
 
 
