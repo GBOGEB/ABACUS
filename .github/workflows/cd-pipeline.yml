@@ -306,6 +306,18 @@ jobs:
           # Restore from backup
           echo "Rollback completed"
 
+      - name: Prepare Release Artifact References
+        id: release-artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          VERSION: ${{ needs.build-and-test.outputs.version }}
+        run: |
+          echo "image=${DOCKER_REGISTRY}/${IMAGE_NAME}:${VERSION}" \
+            >> "$GITHUB_OUTPUT"
+          echo "tarball=dmaic-pipeline-${VERSION}.tar.gz" \
+            >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
@@ -325,13 +337,8 @@ jobs:
             - ✅ Production: Deployed
 
             ### Artifacts
-            - Docker Image:
-              `${{ env.DOCKER_REGISTRY }}/`
-              `${{ env.IMAGE_NAME }}:`
-              `${{ needs.build-and-test.outputs.version }}`
-            - Tarball:
-              `dmaic-pipeline-`
-              `${{ needs.build-and-test.outputs.version }}.tar.gz`
+            - Docker Image: `${{ steps.release-artifacts.outputs.image }}`
+            - Tarball: `${{ steps.release-artifacts.outputs.tarball }}`
           draft: false
           prerelease: false
         env:
