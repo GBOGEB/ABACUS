@@ -20,22 +20,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install formatter and census tools
-        run: python -m pip install --upgrade pip autopep8 flake8
-      - name: Apply bounded formatter
+      - name: Install Ruff and census tools
+        run: python -m pip install --upgrade pip ruff flake8
+      - name: Apply bounded F541 fix
         shell: bash
         run: |
           set -euo pipefail
           FILES=(
-          "qplant/handover_dashboard/src/build_dense_slides.py"
-          "qplant/handover_dashboard/src/generate_visuals_v3.py"
-          "qplant/handover_dashboard/src/build_v3_1.py"
-          "MINERVA_PID/standards/build_legend_library.py"
-          "qplant/handover_dashboard/src/build_v2.py"
+          "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+          "ABACUS-v031/run_direct_improvements.py"
           "qplant/handover_dashboard/src/generate_standards_stats.py"
+          "DMAIC_V3/convergence/convergence_analyzer.py"
+          "DMAIC_V3/debug_pipeline.py"
+          "DMAIC_V3/phases/phase8_todo_management.py"
+          "DMAIC_V3/phases/phase7_action_tracking.py"
+          "abacus_v21_migration_test_comprehensive.py"
+          "abacus_v21_deployment_execution.py"
+          "abacus_v21_session_tuple_analyzer.py"
+          "DMAIC_V3/phases/phase1_define.py"
           "qplant/handover_dashboard/src/verify_triage.py"
+          "DMAIC_V3/generators/test_integration_pipeline.py"
+          "DMAIC_V3/phases/phase2_measure.py"
+          "DMAIC_V3/phases/phase9_documentation_generation.py"
+          "abacus_v21_postdeployment_validation.py"
           )
-          autopep8 --in-place --select=E501 --max-line-length=120 "${FILES[@]}"
+          ruff check --fix --select F541 "${FILES[@]}"
           git diff --check
           git diff --quiet -- "${FILES[@]}" && { echo "No worker changes produced"; exit 1; }
           python -m py_compile "${FILES[@]}"
@@ -47,7 +56,7 @@ jobs:
           BASE_SHA: 6c7a3b8c9e45d52b70b508f4f4d28d3af06e88b5
           BASE_TOTAL: '5876'
           BASELINE_JSON: '{"E111":60,"E125":1,"E127":51,"E128":144,"E129":1,"E131":5,"E203":4,"E221":71,"E225":628,"E227":3,"E228":1,"E231":1452,"E261":2,"E265":1,"E301":13,"E302":332,"E303":13,"E305":114,"E306":5,"E401":37,"E402":622,"E501":949,"E701":138,"E702":294,"E703":1,"E712":10,"E722":16,"E741":9,"E999":1,"F401":336,"F541":315,"F841":31,"W291":108,"W292":11,"W293":88,"W391":9}'
-          TARGET_CODES_JSON: '["E501"]'
+          TARGET_CODES_JSON: '["F541"]'
         run: |
           set -euo pipefail
           flake8 . --count --exit-zero --statistics --max-line-length=120 > /tmp/bd8k_fast_dab.txt
@@ -78,34 +87,32 @@ jobs:
               errors.append(f"target families did not improve: {before} -> {after}")
           if total >= int(os.environ["BASE_TOTAL"]):
               errors.append(f"total did not improve: {os.environ['BASE_TOTAL']} -> {total}")
-          receipt={
-              "worker":os.environ["WORKER_ID"],
-              "base_sha":os.environ["BASE_SHA"],
-              "base_total":int(os.environ["BASE_TOTAL"]),
-              "total":total,
-              "target_codes":sorted(targets),
-              "target_before":before,
-              "target_after":after,
-              "families":dict(sorted(counts.items())),
-              "errors":errors,
-          }
+          receipt={"worker":os.environ["WORKER_ID"],"base_sha":os.environ["BASE_SHA"],"base_total":int(os.environ["BASE_TOTAL"]),"total":total,"target_codes":sorted(targets),"target_before":before,"target_after":after,"families":dict(sorted(counts.items())),"errors":errors}
           Path("/tmp/bd8k_fast_dab.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
           print(json.dumps(receipt,indent=2))
-          if errors:
-              raise SystemExit("\n".join(errors))
+          if errors: raise SystemExit("\n".join(errors))
           PY
       - name: Commit admitted patch
         shell: bash
         run: |
           set -euo pipefail
           FILES=(
-          "qplant/handover_dashboard/src/build_dense_slides.py"
-          "qplant/handover_dashboard/src/generate_visuals_v3.py"
-          "qplant/handover_dashboard/src/build_v3_1.py"
-          "MINERVA_PID/standards/build_legend_library.py"
-          "qplant/handover_dashboard/src/build_v2.py"
+          "ABACUS-v032/execute_full_dmaic_phases_0_to_9_v033.py"
+          "ABACUS-v031/run_direct_improvements.py"
           "qplant/handover_dashboard/src/generate_standards_stats.py"
+          "DMAIC_V3/convergence/convergence_analyzer.py"
+          "DMAIC_V3/debug_pipeline.py"
+          "DMAIC_V3/phases/phase8_todo_management.py"
+          "DMAIC_V3/phases/phase7_action_tracking.py"
+          "abacus_v21_migration_test_comprehensive.py"
+          "abacus_v21_deployment_execution.py"
+          "abacus_v21_session_tuple_analyzer.py"
+          "DMAIC_V3/phases/phase1_define.py"
           "qplant/handover_dashboard/src/verify_triage.py"
+          "DMAIC_V3/generators/test_integration_pipeline.py"
+          "DMAIC_V3/phases/phase2_measure.py"
+          "DMAIC_V3/phases/phase9_documentation_generation.py"
+          "abacus_v21_postdeployment_validation.py"
           )
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
