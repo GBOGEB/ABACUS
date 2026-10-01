@@ -35,10 +35,10 @@ jobs:
 
       - name: Run Flake8
         run: |
+          # rex-allow: ADVISORY_EXPLICIT legacy ABACUS-v032 lint telemetry; DAB owns measured Flake8 debt.
           flake8 ABACUS-v032/ \
             --max-line-length=120 \
             --ignore=E501,W503 \
-            # rex-allow: ADVISORY_EXPLICIT legacy ABACUS-v032 lint telemetry; DAB owns measured Flake8 debt.
             || echo "Linting issues found"
 
       - name: Run Pylint
