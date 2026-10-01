@@ -60,10 +60,11 @@
   ],
   "verification": {
     "unit_test": "tests/test_qps_binary_bridge.py",
-    "current_qps_static_sample": "docs/qps_offer_rtm_evaluation/current/DELIVERABLES_INDEX.html",
+    "current_qps_static_sample": "NONE_PUBLIC_PRIVATE_BYTES_WITHHELD",
     "binary_family_test_mode": "runtime-generated minimal OOXML/PDF fixtures",
-    "private_binary_limitation": "governed private QPS binary bytes are intentionally not committed to ABACUS",
-    "extraction_quality_rule": "Each source reports STRUCTURED or FALLBACK parser status; fallback is visible and non-authoritative."
+    "private_binary_limitation": "governed private QPS binary and tender/handover bytes are intentionally not committed to ABACUS",
+    "extraction_quality_rule": "Each source reports STRUCTURED or FALLBACK parser status; fallback is visible and non-authoritative.",
+    "qps_html_test_fixture": "runtime-generated in tests/test_qps_binary_bridge.py::test_qps_html_fixture_emits_provenance_tuple"
   },
   "federation": {
     "producer_repository": "GBOGEB/ABACUS",

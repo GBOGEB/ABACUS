@@ -385,15 +385,15 @@ def test_bridge_payload_is_json_serializable(tmp_path: Path, monkeypatch) -> Non
     assert result["bridge_semantic_sha256"] in payload
 
 
-def test_current_qps_html_sample_emits_provenance_tuple() -> None:
-    source = (
-        ROOT
-        / "docs"
-        / "qps_offer_rtm_evaluation"
-        / "current"
-        / "DELIVERABLES_INDEX.html"
+def test_qps_html_fixture_emits_provenance_tuple(tmp_path: Path) -> None:
+    source = tmp_path / "DELIVERABLES_INDEX.html"
+    source.write_text(
+        "<html><body>"
+        "<h1 id='deliverables'>QPS Offer/RTM Deliverables Index</h1>"
+        "<p>Governed private source bytes are not committed to ABACUS.</p>"
+        "</body></html>",
+        encoding="utf-8",
     )
-    assert source.is_file()
 
     item = bridge.normalize_source(
         source,
