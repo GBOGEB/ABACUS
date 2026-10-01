@@ -30,14 +30,14 @@ jobs:
 
       - name: Run Black formatter check
         run: |
-          # rex-allow: ADVISORY_EXPLICIT legacy ABACUS-v032 formatter
-          # telemetry; not a merge-admission gate.
+          # Legacy ABACUS-v032 formatter telemetry; non-blocking by design.
+          # rex-allow: ADVISORY_EXPLICIT
           black --check ABACUS-v032/ || echo "Formatting issues found"
 
       - name: Run Flake8
         run: |
-          # rex-allow: ADVISORY_EXPLICIT legacy ABACUS-v032 lint
-          # telemetry; DAB owns measured Flake8 debt.
+          # Legacy ABACUS-v032 lint telemetry; DAB owns measured debt.
+          # rex-allow: ADVISORY_EXPLICIT
           flake8 ABACUS-v032/ \
             --max-line-length=120 \
             --ignore=E501,W503 \
@@ -45,8 +45,8 @@ jobs:
 
       - name: Run Pylint
         run: |
-          # rex-allow: ADVISORY_EXPLICIT legacy ABACUS-v032 pylint
-          # telemetry; no blocking semantics intended.
+          # Legacy ABACUS-v032 pylint telemetry; non-blocking by design.
+          # rex-allow: ADVISORY_EXPLICIT
           pylint ABACUS-v032/*.py \
             --disable=C0111,C0103 \
             || echo "Pylint issues found"
