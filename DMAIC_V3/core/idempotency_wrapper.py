@@ -15,7 +15,6 @@ import functools
 import hashlib
 import json
 import tempfile
-import time
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 from datetime import datetime
@@ -131,6 +130,8 @@ class IdempotentPhaseWrapper:
     @staticmethod
     def _replace_with_retry(source: Path, target: Path, attempts: int = 6) -> None:
         """Atomically replace target, retrying transient Windows file-lock races."""
+        import time
+
         for attempt in range(attempts):
             try:
                 source.replace(target)
