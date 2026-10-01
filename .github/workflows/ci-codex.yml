@@ -46,7 +46,9 @@ jobs:
             echo "::error::Phase0 smoke runner is missing; proof WITHHELD."
             exit 1
           fi
-          python scripts/runners/phase0_runner.py --smoke
+          mkdir -p test_reports/phase0
+          python scripts/runners/phase0_runner.py --smoke \
+            --receipt test_reports/phase0/receipt.json
         shell: bash
 
       - name: Upload artifacts
