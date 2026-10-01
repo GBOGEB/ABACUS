@@ -342,8 +342,9 @@ class TemporalMetadataEngine:
         file_type = self._determine_file_type(file_path)
         hash_val = self._compute_file_hash(file_path)
 
-        parent = str(file_path.parent.relative_to(self.workspace_root))
-        depth = len(file_path.relative_to(self.workspace_root).parts) - 1
+        relative_path = file_path.relative_to(self.workspace_root)
+        parent = relative_path.parent.as_posix()
+        depth = len(relative_path.parts) - 1
 
         is_main = file_path.name in ['main.py', '__main__.py', 'app.py', 'run.py']
 
@@ -353,7 +354,7 @@ class TemporalMetadataEngine:
             dependencies, imports, exports, functions, classes = [], [], [], [], []
 
         return FileMetadata(
-            file_path=str(file_path.relative_to(self.workspace_root)),
+            file_path=relative_path.as_posix(),
             file_type=file_type,
             size_bytes=stat.st_size,
             hash_sha256=hash_val,
@@ -428,7 +429,8 @@ class TemporalMetadataEngine:
 
         total_size = sum(f.stat().st_size for f in files if f.is_file())
 
-        depth = len(folder_path.relative_to(self.workspace_root).parts)
+        relative_folder = folder_path.relative_to(self.workspace_root)
+        depth = len(relative_folder.parts)
 
         folder_name = folder_path.name.lower()
         is_venv = 'venv' in folder_name or 'env' in folder_name
@@ -441,7 +443,7 @@ class TemporalMetadataEngine:
         purpose = self._determine_folder_purpose(folder_path)
 
         return FolderMetadata(
-            folder_path=str(folder_path.relative_to(self.workspace_root)),
+            folder_path=relative_folder.as_posix(),
             depth_level=depth,
             file_count=file_count,
             subfolder_count=subfolder_count,
