@@ -32,6 +32,8 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: Classify change risk and select Python proof
         id: plan
@@ -263,6 +265,7 @@ jobs:
             --cov=. \
             --cov-branch \
             --cov-report=term-missing \
+            --cov-report=xml:"${evidence_dir}/coverage.xml" \
             --junitxml="${evidence_dir}/junit.xml" \
             || pytest_rc=$?
 
@@ -285,6 +288,13 @@ jobs:
             --exact-sha "${GITHUB_SHA}" \
             --out "${evidence_dir}/coverage-dab.json"
 
+          diff_rc=0
+          python -m pip install "diff-cover>=9,<10"
+          diff-cover "${evidence_dir}/coverage.xml" \
+            --compare-branch=origin/main \
+            --fail-under=80 \
+            || diff_rc=$?
+
           if (( pytest_rc != 0 )); then
             echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
             exit "${pytest_rc}"
@@ -292,6 +302,10 @@ jobs:
           if (( census_rc != 0 )); then
             echo "::error::test evidence ratchet failed; see test-evidence.json."
             exit "${census_rc}"
+          fi
+          if (( diff_rc != 0 )); then
+            echo "::error::changed-line coverage is below the 80% B9 floor."
+            exit "${diff_rc}"
           fi
 
       - name: Run functional compatibility proof
