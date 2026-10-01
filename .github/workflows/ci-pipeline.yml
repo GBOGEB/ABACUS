@@ -72,8 +72,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Dependencies
+        shell: bash
         run: |
-          pip install pytest pytest-cov pytest-benchmark pytest-xdist pytest-timeout
+          set -euo pipefail
+          pip install \
+            pytest \
+            pytest-cov \
+            pytest-benchmark \
+            pytest-xdist \
+            pytest-timeout
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Build Docker test image
@@ -81,7 +88,14 @@ jobs:
         run: docker build -t test-app:latest .
 
       - name: Run Tests
-        run: pytest --benchmark-disable tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term -n auto
+        shell: bash
+        run: |
+          pytest --benchmark-disable tests/ -v \
+            --cov=. \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term \
+            -n auto
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v7
