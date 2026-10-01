@@ -43,7 +43,7 @@ def cmd_execute(args):
 
     patterns = args.patterns if args.patterns else ['**/*.py', '**/*.bas']
 
-    stats = tracker.scan_and_execute(args.root, patterns=patterns)
+    tracker.scan_and_execute(args.root, patterns=patterns)
 
     tracker.print_summary()
 

@@ -1188,7 +1188,6 @@ class FullDMAICOrchestrator:
         items_by_iteration = []
 
         for iteration in all_iterations:
-            iter_num = iteration.get('iteration', 0)
             iter_knowledge_dir = knowledge_dir / f"iteration_{self.execution_id}"
 
             if iter_knowledge_dir.exists():

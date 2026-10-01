@@ -410,7 +410,6 @@ class MaturityTracker:
         if pending:
             recs.append(f"Complete pending tasks: {', '.join(pending[:3])}")
 
-        level_def = self.MATURITY_LEVELS[level]
         next_level = level + 1
 
         if level < 5:

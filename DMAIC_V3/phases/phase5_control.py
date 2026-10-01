@@ -91,13 +91,10 @@ class Phase5Control:
             iteration_dir = self.config.paths.output_root / f"iteration_{iteration}"
 
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
-            input_source = str(phase4_file) if phase4_file.exists() else None
-
             if not phase4_file.exists():
                 print(f"  ⚠️ Phase 4 results not found, skipping control")
                 return True, self._create_skip_result(iteration)
 
-            input_source = str(phase4_file)
             with open(phase4_file, "r") as f:
                 phase4_data = json.load(f)
 
