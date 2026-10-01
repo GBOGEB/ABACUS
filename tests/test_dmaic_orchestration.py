@@ -150,7 +150,11 @@ class DMAICTestOrchestrator:
         ]
 
         start_time = time.time()
-        env = {**os.environ, "COVERAGE_FILE": str(run_dir / ".coverage")}
+        env = dict(os.environ)
+        for key in list(env):
+            if key.startswith("COV_CORE_") or key == "COVERAGE_PROCESS_START":
+                env.pop(key, None)
+        env["COVERAGE_FILE"] = str(run_dir / ".coverage")
         result = subprocess.run(
             cmd, capture_output=True, text=True, cwd=self.workspace_path,
             env=env, timeout=300,
