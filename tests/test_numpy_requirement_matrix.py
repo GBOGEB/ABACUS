@@ -50,3 +50,26 @@ def test_numpy_25_is_not_selected_for_python_311():
     assert py312 == [
         "numpy>=2.5.3,<3.0.0; python_version >= '3.12'"
     ]
+
+
+
+def _markdown_lines(path: Path) -> list[str]:
+    return [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip().startswith("markdown>=")
+    ]
+
+
+def test_markdown_311_is_not_selected_for_python_310():
+    canonical = _markdown_lines(CANONICAL)
+    generators = _markdown_lines(GENERATORS)
+
+    assert canonical == [
+        "markdown>=3.3.0,<3.11; python_version < '3.11'",
+        "markdown>=3.11,<4.0.0; python_version >= '3.11'",
+    ]
+    assert generators == [
+        "markdown>=3.3.0,<3.11; python_version < '3.11'",
+        "markdown>=3.11; python_version >= '3.11'",
+    ]
