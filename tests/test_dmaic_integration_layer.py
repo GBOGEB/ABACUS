@@ -192,7 +192,7 @@ def test_error_handling_invalid_phase(dmaic_layer):
         with pytest.raises((ValueError, AttributeError)):
             invalid_phase = "invalid_phase"
             dmaic_layer.execute_phase(invalid_phase)
-    except Exception as e:
+    except Exception:
         assert True
 
 

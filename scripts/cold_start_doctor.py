@@ -43,7 +43,7 @@ def main():
         sys.path.insert(0, str(ROOT))
         import DMAIC_V3  # noqa
         report["checks"]["import_DMAIC_V3"] = True
-    except Exception as e:
+    except Exception:
         report["checks"]["import_DMAIC_V3"] = False
         report["actions"].append("Create package marker: DMAIC_V3/__init__.py")
         report["actions"].append("Run from repo root: cd {}".format(report["root"]))

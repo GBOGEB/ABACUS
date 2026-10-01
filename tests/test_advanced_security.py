@@ -96,7 +96,7 @@ class SASTScanner:
                                 recommendation=self._get_recommendation(pattern_name)
                             )
                             findings.append(finding)
-            except Exception as e:
+            except Exception:
                 continue
 
         self.findings = findings
