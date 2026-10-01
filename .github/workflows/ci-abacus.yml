@@ -248,6 +248,19 @@ jobs:
           # rex-allow: advisory formatter/lint hook; correctness is gated separately below.
           pre-commit run --all-files || echo "Pre-commit advisory completed"
 
+          if ! git diff --quiet || ! git diff --cached --quiet; then
+            {
+              echo
+              echo "#### Advisory pre-commit mutations"
+              echo
+              echo "Pre-commit modified tracked files in the ephemeral runner."
+              echo "Those advisory mutations are restored before coverage diffing."
+              echo
+              git status --short
+            } >> "${GITHUB_STEP_SUMMARY}"
+            git restore --staged --worktree .
+          fi
+
       - name: Run canonical coverage and emit governed evidence
         if: matrix.python-version == '3.12'
         shell: bash
