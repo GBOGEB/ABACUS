@@ -133,7 +133,7 @@ class TestMasterDocToRAGIntegration:
 
 class TestActionToMasterDocLinkage:
     """Test Action Tracker and Master Doc Manager integration"""
-    
+
     def test_create_action_linked_to_document(self, master_doc_manager, action_tracker):
         """Test creating action linked to document"""
         master_doc_manager.register_document(
@@ -194,7 +194,7 @@ class TestActionToMasterDocLinkage:
 
 class TestEPICTopicConsistency:
     """Test EPIC/TOPIC consistency across components"""
-    
+
     def test_epic_consistency(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test EPIC consistency across all components"""
         epic = 'GLOOB'
@@ -209,9 +209,9 @@ class TestEPICTopicConsistency:
             topics=topics,
             author='test_user'
         )
-        
+
         rag.index_document(doc_id='EPIC-001', content=sample_content, epic=epic, topics=topics)
-        
+
         action = action_tracker.create_action(
             action_id='EPIC-ACT-001',
             title='EPIC Test Action',
@@ -222,11 +222,11 @@ class TestEPICTopicConsistency:
             topics=topics,
             assignee='test_user'
         )
-        
+
         doc = master_doc_manager.get_document('EPIC-001')
         chunks = rag.get_by_epic(epic)
         action = action_tracker.get_action('EPIC-ACT-001')
-        
+
         assert doc.epic == epic
         assert all(c.epic == epic for c in chunks)
         assert action.epic == epic
@@ -234,7 +234,7 @@ class TestEPICTopicConsistency:
 
 class TestFullWorkflow:
     """Test complete end-to-end workflows"""
-    
+
     def test_document_creation_to_action_completion(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test full workflow from document creation to action completion"""
         master_doc_manager.register_document(
@@ -246,14 +246,14 @@ class TestFullWorkflow:
             topics=['Phase2', 'Week3'],
             author='test_user'
         )
-        
+
         rag.index_document(
             doc_id='WF-001',
             content=sample_content,
             epic='GLOOB',
             topics=['Phase2', 'Week3']
         )
-        
+
         action = action_tracker.create_action(
             action_id='WF-ACT-001',
             title='Review and Approve',
@@ -266,25 +266,25 @@ class TestFullWorkflow:
             due_date=datetime.now() + timedelta(days=7)
         )
         action_tracker.link_document('WF-ACT-001', 'WF-001')
-        
+
         results = rag.query('architecture', epic='GLOOB', top_k=5)
         assert any('WF-001' in r.chunk.doc_id for r in results)
-        
+
         action_tracker.update_status('WF-ACT-001', ActionStatus.IN_PROGRESS, 'test_user', 'Started review')
         action_tracker.update_status('WF-ACT-001', ActionStatus.COMPLETED, 'test_user', 'Approved')
-        
+
         master_doc_manager.promote_status('WF-001', DocumentStatus.APPROVED, 'test_user')
-        
+
         doc = master_doc_manager.get_document('WF-001')
         action = action_tracker.get_action('WF-ACT-001')
-        
+
         assert doc.status == DocumentStatus.APPROVED
         assert action.status == ActionStatus.COMPLETED
 
 
 class TestPersistenceConsistency:
     """Test persistence consistency"""
-    
+
     def test_save_and_load_all_components(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test saving and loading all component states"""
         master_doc_manager.register_document(
@@ -297,10 +297,10 @@ class TestPersistenceConsistency:
             author='test_user'
         )
         master_doc_manager.save_registry()
-        
+
         rag.index_document(doc_id='PERSIST-001', content=sample_content, epic='GLOOB', topics=['Phase2'])
         rag.save_index()
-        
+
         action_tracker.create_action(
             action_id='PERSIST-ACT-001',
             title='Persistence Action',
@@ -313,11 +313,11 @@ class TestPersistenceConsistency:
         )
         action_tracker.link_document('PERSIST-ACT-001', 'PERSIST-001')
         action_tracker.save_tracker()
-        
+
         new_manager = MasterDocumentManager(workspace_root=master_doc_manager.workspace_root)
         new_rag = UserLibraryRAG(workspace_root=rag.workspace_root)
         new_tracker = ActionTracker(workspace_root=action_tracker.workspace_root)
-        
+
         assert 'PERSIST-001' in new_manager.documents
         assert 'PERSIST-001' in new_rag.doc_to_chunks
         assert 'PERSIST-ACT-001' in new_tracker.actions
@@ -325,7 +325,7 @@ class TestPersistenceConsistency:
 
 class TestCrossComponentReporting:
     """Test reporting across components"""
-    
+
     def test_generate_all_reports(self, master_doc_manager, rag, action_tracker, sample_content):
         """Test generating reports from all components"""
         for i in range(3):
