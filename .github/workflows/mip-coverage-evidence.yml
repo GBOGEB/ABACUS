@@ -114,6 +114,7 @@ jobs:
           python scripts/ci_false_green_lint.py \
             --root .github/workflows \
             --mode census \
+            --max-unguarded 267 \
             --out test_reports/b1/false-green-census.json
 
       - name: Upload B1 census
