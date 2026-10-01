@@ -12,9 +12,15 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+def _ensure_repo_root_on_path() -> Path:
+    root = Path(__file__).resolve().parents[2]
+    root_text = str(root)
+    if root_text not in sys.path:
+        sys.path.insert(0, root_text)
+    return root
+
+
+ROOT = _ensure_repo_root_on_path()
 
 from DMAIC_V3.config import DMAICConfig, PathConfig
 from DMAIC_V3.core.state import StateManager
