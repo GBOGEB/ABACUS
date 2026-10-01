@@ -103,6 +103,7 @@ jobs:
         shell: bash
 
       - name: Run Unit Tests
+        shell: bash
         run: |
           junit_path="junit/test-results-${{ matrix.os }}-"
           junit_path+="${{ matrix.python-version }}.xml"
