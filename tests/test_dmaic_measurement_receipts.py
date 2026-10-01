@@ -39,3 +39,30 @@ async def test_real_measurement_and_repeat(tmp_path):
         metrics = await orchestrator.measure_test_performance("test_sample.py")
         assert metrics.total_tests == metrics.passed_tests == 1
     assert len(list(orchestrator.metrics_dir.glob("*/test_report.json"))) == 2
+
+
+@pytest.mark.asyncio
+async def test_measurement_scrubs_parent_pytest_cov_environment(tmp_path, monkeypatch):
+    orchestrator = DMAICTestOrchestrator(tmp_path)
+    monkeypatch.setenv("COV_CORE_SOURCE", "outer-source")
+    monkeypatch.setenv("COV_CORE_CONFIG", "outer-config")
+    monkeypatch.setenv("COV_CORE_DATAFILE", "outer-data")
+    monkeypatch.setenv("COVERAGE_PROCESS_START", "outer-start")
+
+    def run(cmd, **kwargs):
+        child_env = kwargs["env"]
+        assert "COVERAGE_PROCESS_START" not in child_env
+        assert not any(key.startswith("COV_CORE_") for key in child_env)
+        assert Path(child_env["COVERAGE_FILE"]).parent.parent == orchestrator.metrics_dir
+
+        report = Path(next(x.split("=", 1)[1] for x in cmd if x.startswith("--json-report-file=")))
+        report.write_text(json.dumps({"summary": {"total": 1, "passed": 1, "failed": 0, "skipped": 0}}))
+        coverage = Path(next(x.split("json:", 1)[1] for x in cmd if x.startswith("--cov-report=")))
+        coverage.write_text(json.dumps({"totals": {"num_statements": 10, "covered_lines": 9, "percent_covered": 90.0}}))
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    metrics = await orchestrator.measure_test_performance("test_sample.py")
+    assert metrics.total_tests == 1
+    assert metrics.passed_tests == 1
+    assert metrics.coverage_score == 90.0
