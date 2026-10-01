@@ -161,7 +161,11 @@ def _validate_manifest(errors: List[str]) -> None:
             )
             externalized_ids.add(artifact_id)
             expected = REQUIRED_EXTERNALIZED_ARTIFACTS.get(artifact_id)
-            if expected:
+            if expected is None:
+                errors.append(
+                    f"{artifact_id} is not an approved externalized artifact"
+                )
+            else:
                 for field, expected_value in expected.items():
                     if artifact.get(field) != expected_value:
                         errors.append(
