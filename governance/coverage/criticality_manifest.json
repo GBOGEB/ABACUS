@@ -1,0 +1,52 @@
+{
+  "schema": "abacus-coverage-criticality/1.0.0",
+  "basis": "USER_DIRECTED_B0_B10_20261001",
+  "files": {
+    "src/dmaic/contract.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/dmaic/provenance.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/dmaic/idempotency.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/dmaic/recursion.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/qplant_presentation_engine/runtime.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/qplant_presentation_engine/validate.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "src/qplant_presentation_engine/truth_score.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "models/qps_line_s/recovery_model.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B3 remeasurement target"
+    },
+    "models/qps_line_s/t_available_grid.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B3 remeasurement target"
+    },
+    "models/qps_line_s/run_scenarios.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B10 target cluster"
+    },
+    "scripts/mip_v2_federated_controller.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "B6 MIP self-improvement"
+    }
+  },
+  "authority_transfer": false,
+  "formal_credit_delta": 0
+}

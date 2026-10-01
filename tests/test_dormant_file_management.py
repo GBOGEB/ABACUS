@@ -44,6 +44,7 @@ def temp_workspace(tmp_path):
     return workspace
 
 
+@pytest.mark.TEST_BLOCKED_CONFIG
 class TestDormantConfigValidation:
     """Test dormant configuration validation"""
     
@@ -59,7 +60,7 @@ class TestDormantConfigValidation:
     def test_detection_thresholds(self, dormant_config):
         """Test dormant detection thresholds are defined"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         detection = dormant_config.get('detection', {})
         thresholds = detection.get('thresholds', {})
@@ -72,7 +73,7 @@ class TestDormantConfigValidation:
     def test_file_type_filters(self, dormant_config):
         """Test file type filters are defined"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         detection = dormant_config.get('detection', {})
         file_types = detection.get('file_types', {})
@@ -87,13 +88,14 @@ class TestDormantConfigValidation:
         assert '*.md' in file_types['docs']
 
 
+@pytest.mark.TEST_BLOCKED_CONFIG
 class TestDormantRankingSystem:
     """Test dormant file ranking system"""
     
     def test_ranking_weights(self, dormant_config):
         """Test ranking weights sum to 1.0"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         ranking = dormant_config.get('ranking', {})
         weights = ranking.get('weights', {})
@@ -104,7 +106,7 @@ class TestDormantRankingSystem:
     def test_ranking_tiers(self, dormant_config):
         """Test ranking tiers are defined"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         ranking = dormant_config.get('ranking', {})
         tiers = ranking.get('tiers', {})
@@ -122,7 +124,7 @@ class TestDormantRankingSystem:
     def test_tier_score_ranges(self, dormant_config):
         """Test tier score ranges are contiguous and valid"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         ranking = dormant_config.get('ranking', {})
         tiers = ranking.get('tiers', {})
@@ -136,13 +138,14 @@ class TestDormantRankingSystem:
         assert tier3['score_min'] >= 0.5
 
 
+@pytest.mark.TEST_BLOCKED_CONFIG
 class TestDormantFileDetection:
     """Test dormant file detection logic"""
     
     def test_inactive_file_detection(self, temp_workspace, dormant_config):
         """Test detection of inactive files"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         test_file = temp_workspace / "old_file.py"
         test_file.write_text("# Old code")
@@ -161,7 +164,7 @@ class TestDormantFileDetection:
     def test_exclusion_patterns(self, dormant_config):
         """Test that exclusion patterns are properly defined"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         detection = dormant_config.get('detection', {})
         exclusions = detection.get('exclusions', {})
@@ -171,13 +174,14 @@ class TestDormantFileDetection:
         assert '*.pyc' in exclusions['files']
 
 
+@pytest.mark.TEST_BLOCKED_CONFIG
 class TestDormantIntegrationActions:
     """Test dormant file integration actions"""
     
     def test_integration_action_mapping(self, dormant_config):
         """Test that each tier has an integration action"""
         if dormant_config is None:
-            pytest.skip("Config file not found")
+            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
         
         ranking = dormant_config.get('ranking', {})
         tiers = ranking.get('tiers', {})

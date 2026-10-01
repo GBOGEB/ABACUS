@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -69,7 +69,9 @@ class UserLibraryRAG:
                 {
                     "chunk_index": idx,
                     "total_chunks": total,
-                    "indexed_date": datetime.utcnow().isoformat(),
+                    "indexed_date": datetime.now(timezone.utc)
+                    .replace(tzinfo=None)
+                    .isoformat(),
                 }
             )
             chunk = DocumentChunk(

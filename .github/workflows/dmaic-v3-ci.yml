@@ -106,12 +106,12 @@ jobs:
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-          pip install pytest-cov pytest-xdist
+          pip install pytest-cov pytest-benchmark pytest-xdist
       
       - name: Run unit tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest tests/ -v -m "unit" --tb=short \
+          pytest --benchmark-disable tests/ -v -m "unit" --tb=short \
             --cov=core --cov-report=xml --cov-report=html \
             -n auto
       
@@ -363,7 +363,7 @@ jobs:
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-          pip install pytest-cov pylint mypy
+          pip install pytest-cov pytest-benchmark pylint mypy
       
       - name: Run linting
         run: |
@@ -379,7 +379,7 @@ jobs:
       - name: Check test coverage threshold
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest tests/ --cov=core --cov-fail-under=75 --cov-report=term
+          pytest --benchmark-disable tests/ --cov=core --cov-fail-under=75 --cov-report=term
       
       - name: Upload quality reports
         if: always()

@@ -167,6 +167,198 @@ def false_value() -> bool:
     """Make the authority boundary explicit in emitted receipts."""
     return False
 
+def build_coverage_pressure(
+    census: dict[str, Any],
+    head_sha: str,
+    limit: int = 20,
+) -> dict[str, Any]:
+    """Project measured DAB coverage evidence into a fail-closed MIP queue."""
+
+    errors: list[str] = []
+    if census.get("schema") != "abacus-coverage-dab/1.0.0":
+        errors.append("schema")
+
+    census_sha = str(census.get("exact_sha", ""))
+    if census_sha != head_sha:
+        errors.append("exact_sha")
+
+    rows = census.get("rows")
+    if not isinstance(rows, list):
+        errors.append("rows")
+        rows = []
+
+    if errors:
+        return {
+            "status": "WITHHELD",
+            "errors": sorted(set(errors)),
+            "controller_head_sha": head_sha,
+            "census_head_sha": census_sha or "MISSING",
+            "priority_queue": [],
+            "expected_gain": "WITHHELD",
+            "authority_transfer": False,
+            "formal_credit_delta": 0,
+            "engineering_credit_delta": 0,
+        }
+
+    by_path = {
+        str(row.get("path")): row
+        for row in rows
+        if isinstance(row, dict) and row.get("path")
+    }
+    preferred = census.get("pressure_order")
+    if not isinstance(preferred, list):
+        preferred = []
+
+    ordered_paths: list[str] = []
+    seen: set[str] = set()
+    for value in preferred:
+        path = str(value)
+        if path in by_path and path not in seen:
+            ordered_paths.append(path)
+            seen.add(path)
+    for path in sorted(by_path):
+        if path not in seen:
+            ordered_paths.append(path)
+
+    queue: list[dict[str, Any]] = []
+    for path in ordered_paths:
+        row = by_path[path]
+        if row.get("source_class") != "ACTIVE_SOURCE":
+            continue
+        missed = int(row.get("missed_statements", 0) or 0)
+        if missed <= 0:
+            continue
+        queue.append(
+            {
+                "path": path,
+                "evidence_class": row.get("evidence_class", "MEASURED"),
+                "source_class": row.get("source_class"),
+                "disposition": row.get("disposition"),
+                "test_state": row.get("test_state", "NO_TEST"),
+                "existing_test_surface": row.get("existing_test_surface", []),
+                "existing_test_surface_evidence": row.get(
+                    "existing_test_surface_evidence", "NONE_MEASURED"
+                ),
+                "statements": int(row.get("statements", 0) or 0),
+                "missed_statements": missed,
+                "coverage_pct": row.get("coverage_pct"),
+                "criticality": row.get("criticality", "WITHHELD"),
+                "criticality_source": row.get("criticality_source", "WITHHELD"),
+                "skip_dependencies": row.get("skip_dependencies", []),
+                "warning_dependencies": row.get("warning_dependencies", []),
+                "maximum_statement_gain": missed,
+                "expected_gain": "WITHHELD",
+                "authority_transfer": False,
+                "formal_credit_delta": 0,
+                "engineering_credit_delta": 0,
+            }
+        )
+        if len(queue) >= max(0, limit):
+            break
+
+    return {
+        "status": "MEASURED",
+        "controller_head_sha": head_sha,
+        "census_head_sha": census_sha,
+        "active_source": census.get("active_source", {}),
+        "priority_queue": queue,
+        "expected_gain": "WITHHELD",
+        "authority_transfer": False,
+        "formal_credit_delta": 0,
+        "engineering_credit_delta": 0,
+    }
+
+
+TEST_PRESSURE_ORDER = {
+    "TEST_FAILING": 0,
+    "TEST_BLOCKED_CONFIG": 1,
+    "TEST_BLOCKED_DEPENDENCY": 2,
+    "TEST_BLOCKED_SOURCE_MISSING": 3,
+    "TEST_NOT_IMPLEMENTED": 4,
+    "TEST_EXISTS_UNCOLLECTED": 5,
+    "NO_TEST": 6,
+    "TEST_GREEN": 9,
+}
+
+
+def build_test_pressure(
+    census: dict[str, Any],
+    head_sha: str,
+    limit: int = 50,
+) -> dict[str, Any]:
+    """Project measured test outcomes into the same fail-closed MIP queue."""
+
+    errors: list[str] = []
+    if census.get("schema") != "abacus-test-evidence-census/1.0.0":
+        errors.append("schema")
+    census_sha = str(census.get("exact_sha", ""))
+    if census_sha != head_sha:
+        errors.append("exact_sha")
+
+    rows = census.get("rows")
+    if not isinstance(rows, list):
+        errors.append("rows")
+        rows = []
+
+    if errors:
+        return {
+            "status": "WITHHELD",
+            "errors": sorted(set(errors)),
+            "controller_head_sha": head_sha,
+            "census_head_sha": census_sha or "MISSING",
+            "priority_queue": [],
+            "outcomes": census.get("outcomes", {}),
+            "states": census.get("states", {}),
+            "authority_transfer": False,
+            "formal_credit_delta": 0,
+            "engineering_credit_delta": 0,
+        }
+
+    pressure_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        state = str(row.get("test_state") or "NO_TEST")
+        if state == "TEST_GREEN":
+            continue
+        pressure_rows.append(
+            {
+                "test": str(row.get("test", "")),
+                "outcome": str(row.get("outcome", "")),
+                "test_state": state,
+                "test_state_source": row.get("test_state_source", "derived"),
+                "xfail": bool(row.get("xfail", False)),
+                "evidence_class": "MEASURED",
+                "authority_transfer": False,
+                "formal_credit_delta": 0,
+                "engineering_credit_delta": 0,
+            }
+        )
+
+    pressure_rows.sort(
+        key=lambda row: (
+            TEST_PRESSURE_ORDER.get(row["test_state"], 8),
+            row["test"],
+        )
+    )
+    queue = pressure_rows[: max(0, limit)]
+
+    return {
+        "status": "MEASURED",
+        "controller_head_sha": head_sha,
+        "census_head_sha": census_sha,
+        "outcomes": census.get("outcomes", {}),
+        "states": census.get("states", {}),
+        "skip_count": int(census.get("skip_count", 0) or 0),
+        "xfail_count": int(census.get("xfail_count", 0) or 0),
+        "uncategorized_skips": census.get("uncategorized_skips", []),
+        "priority_queue": queue,
+        "authority_transfer": False,
+        "formal_credit_delta": 0,
+        "engineering_credit_delta": 0,
+    }
+
+
 
 def validate_child_feedback(
     feedback: dict[str, Any], dow_receipt: dict[str, Any]
@@ -312,18 +504,36 @@ def evaluate(
     return summary
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--summary", type=Path, required=True)
     parser.add_argument("--keb-receipt", type=Path)
     parser.add_argument("--challenge", type=Path)
     parser.add_argument("--child-feedback", type=Path)
-    args = parser.parse_args()
+    parser.add_argument("--coverage-census", type=Path)
+    parser.add_argument("--coverage-limit", type=int, default=20)
+    parser.add_argument("--test-evidence-census", type=Path)
+    parser.add_argument("--test-pressure-limit", type=int, default=50)
+    args = parser.parse_args(argv)
 
     keb = load_json(args.keb_receipt) if args.keb_receipt else None
     challenge = load_json(args.challenge) if args.challenge else None
     child = load_json(args.child_feedback) if args.child_feedback else None
     result = evaluate(keb, challenge, child)
+    if args.coverage_census:
+        coverage_census = load_json(args.coverage_census)
+        result["coverage_pressure"] = build_coverage_pressure(
+            coverage_census,
+            result["controller_head_sha"],
+            limit=args.coverage_limit,
+        )
+    if args.test_evidence_census:
+        test_census = load_json(args.test_evidence_census)
+        result["test_pressure"] = build_test_pressure(
+            test_census,
+            result["controller_head_sha"],
+            limit=args.test_pressure_limit,
+        )
     args.summary.parent.mkdir(parents=True, exist_ok=True)
     args.summary.write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",

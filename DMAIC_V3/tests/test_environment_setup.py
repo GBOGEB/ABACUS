@@ -3,6 +3,8 @@ import shutil
 import sys
 import pytest
 
+pytestmark = pytest.mark.TEST_BLOCKED_CONFIG
+
 pytestmark = [pytest.mark.env]
 
 
@@ -18,7 +20,7 @@ def test_venv_presence_or_skip():
     environment exists. This is advisory, not a hard failure.
     """
     if not (os.path.isdir("venv") or os.path.isdir(".venv")):
-        pytest.skip("No venv/.venv directory found; env likely managed elsewhere")
+        pytest.skip("TEST_BLOCKED_CONFIG: No venv/.venv directory found; env likely managed elsewhere")
 
 
 def test_docker_cli_installed_or_skip():
@@ -26,7 +28,7 @@ def test_docker_cli_installed_or_skip():
     Ensure 'docker' CLI is installed if docker tests are expected.
     """
     if os.environ.get("DMAIC_DOCKER_TESTS", "0") != "1":
-        pytest.skip("DMAIC_DOCKER_TESTS != 1; skipping docker CLI check")
+        pytest.skip("TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; skipping docker CLI check")
 
     if shutil.which("docker") is None:
         pytest.fail("DMAIC_DOCKER_TESTS=1 but 'docker' binary not found in PATH")

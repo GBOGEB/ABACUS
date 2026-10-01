@@ -31,7 +31,9 @@ class RankingCategory(Enum):
 
 @dataclass
 class TestRanking:
-    """Individual test ranking"""
+    """Individual test ranking."""
+
+    __test__ = False
     test_name: str
     category: RankingCategory
     score: float

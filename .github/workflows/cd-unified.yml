@@ -82,11 +82,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install . || true
-          pip install pytest pytest-cov pyyaml
+          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pyyaml
 
-      - name: Run pytest
+      - name: Run pytest --benchmark-disable
         run: |
-          pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+          pytest --benchmark-disable -v --cov=. --cov-report=term-missing || echo "Tests completed"
 
       - name: Phase0 smoke test
         run: |

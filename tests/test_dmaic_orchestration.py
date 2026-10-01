@@ -35,7 +35,9 @@ class DMAICPhase(Enum):
 
 @dataclass
 class TestMetrics:
-    """Comprehensive test metrics"""
+    """Comprehensive test metrics."""
+
+    __test__ = False
     test_name: str
     phase: str
     duration: float

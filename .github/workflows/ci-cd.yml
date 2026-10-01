@@ -118,10 +118,10 @@ jobs:
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
     
     - name: Run smoke tests
-      run: pytest -m smoke -v
+      run: pytest --benchmark-disable -m smoke -v
     
     - name: Run unit tests
-      run: pytest tests/test_bootstrap_eval.py tests/test_aht_bridge.py -v --cov --cov-report=xml
+      run: pytest --benchmark-disable tests/test_bootstrap_eval.py tests/test_aht_bridge.py -v --cov --cov-report=xml
     
     - name: Run integration tests
       run: pytest tests/test_integration.py -v

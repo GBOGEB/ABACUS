@@ -307,6 +307,17 @@ class TestUserLibraryRAG:
             assert 'total_chunks' in chunk.metadata
             assert 'indexed_date' in chunk.metadata
 
+    def test_indexed_date_format_remains_legacy_naive_iso(self, rag, sample_document):
+        """Pin the historical UTC-naive ISO serialization contract."""
+        from datetime import datetime
+
+        chunk_ids = rag.index_document(**sample_document)
+        value = rag.chunks[chunk_ids[0]].metadata["indexed_date"]
+
+        assert not value.endswith("Z")
+        assert "+00:00" not in value
+        assert datetime.fromisoformat(value).tzinfo is None
+
     def test_large_document_chunking(self, rag):
         """Test chunking of large documents"""
         large_content = "This is a test sentence. " * 200

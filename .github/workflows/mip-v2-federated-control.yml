@@ -37,11 +37,14 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        run: python -m pip install pytest numpy
+        run: python -m pip install pytest pytest-cov numpy
 
-      - name: Exercise controller transition tests
+      - name: Exercise controller transition tests with B6 coverage floor
         run: >-
           python -m pytest -q
+          --cov=scripts.mip_v2_federated_controller
+          --cov-report=term-missing
+          --cov-fail-under=90
           tests/test_mip_v2_federated_controller.py
           tests/test_qps_triage_dow_contract.py
 
