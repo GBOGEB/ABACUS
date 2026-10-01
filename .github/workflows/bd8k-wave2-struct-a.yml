@@ -42,7 +42,7 @@ jobs:
           )
           python - <<'PY'
           from pathlib import Path
-          files=["rtm_integration/automation/scripts/automation/improved_rtm_generator.py","scripts/create_github_issues.py","tests/test_week3_integration.py","tests/test_dmaic_integration_layer.py","deploy_full_integration.py","scripts/export_summary_md.py","scripts/handover_generator.py","abacus_v21_session_tuple_analyzer.py","ABACUS-v032/bulk_resolve_github_issues.py","tests/test_performance_monitoring.py","github/scripts/create_issues_from_failures.py","abacus_v21_migration_test_comprehensive.py"]
+          files=["rtm_integration/automation/scripts/automation/improved_rtm_generator.py","scripts/create_github_issues.py","tests/test_week3_integration.py","tests/test_dmaic_integration_layer.py","deploy_full_integration.py","scripts/export_summary_md.py","scripts/handover_generator.py","abacus_v21_session_tuple_analyzer.py","ABACUS-v032/bulk_resolve_github_issues.py","tests/test_performance_monitoring.py",".github/scripts/create_issues_from_failures.py","abacus_v21_migration_test_comprehensive.py"]
           for name in files:
               p=Path(name)
               text=p.read_text(encoding="utf-8")
@@ -114,7 +114,7 @@ jobs:
           "abacus_v21_session_tuple_analyzer.py"
           "ABACUS-v032/bulk_resolve_github_issues.py"
           "tests/test_performance_monitoring.py"
-          "github/scripts/create_issues_from_failures.py"
+          ".github/scripts/create_issues_from_failures.py"
           "abacus_v21_migration_test_comprehensive.py"
           )
           git config user.name "github-actions[bot]"
