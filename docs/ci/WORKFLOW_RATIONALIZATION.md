@@ -7,7 +7,7 @@ Policy SHA-256: `f79c682c47f563b0ec344cc3499b8ada1c47179bc2494de198b1d8f9bb5ae7b
 
 ## Outcome
 
-The repository currently contains **150 workflow definitions**. All **150** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **149 workflow definitions**. All **149** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -31,7 +31,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 11 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 18 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
@@ -101,7 +101,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `dow-monitoring.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
-| 20 | `dow` | `dow-sut-pipeline.yml` | workflow_dispatch, schedule, push | 6 | `keep` | — |
 | 20 | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
