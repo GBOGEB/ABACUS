@@ -231,9 +231,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
-- `python -m pytest -q \\` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
+- `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
-- `python -m pytest \\` — `governance.yml`, `validation.yml`
+- `python -m pytest \` — `governance.yml`, `validation.yml`
 
 ## Control rule
 
