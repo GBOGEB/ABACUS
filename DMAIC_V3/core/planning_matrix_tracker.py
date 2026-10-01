@@ -196,7 +196,6 @@ class PlanningMatrixTracker:
             'blocked': []
         }
 
-        planned_ids = {item['id'] for item in self.matrix['planned']}
         actual_ids = {item['id'] for item in self.matrix['actual']}
 
         for planned in self.matrix['planned']:
