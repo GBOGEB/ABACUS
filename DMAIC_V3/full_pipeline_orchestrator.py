@@ -32,21 +32,21 @@ import subprocess
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from DMAIC_V3.config import DMAICConfig  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.core.state import StateManager  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.core.idempotency_wrapper import enable_idempotency  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.core.planning_matrix_tracker import PlanningMatrixTracker  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.convergence.background_change_detector import BackgroundChangeDetector  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase0_init import Phase0Init  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase1_define import Phase1Define  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase2_measure import Phase2Measure  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase3_analyze import Phase3Analyze  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase4_improve import Phase4Improve  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase5_control import Phase5Control  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase7_action_tracking import Phase7ActionTracking  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement  # noqa: E402 - direct-execution sys.path bootstrap required above
-from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration as Phase9DocumentationGeneration  # noqa: E402 - direct-execution sys.path bootstrap required above
+from DMAIC_V3.config import DMAICConfig  # noqa: E402 - path bootstrap
+from DMAIC_V3.core.state import StateManager  # noqa: E402 - path bootstrap
+from DMAIC_V3.core.idempotency_wrapper import enable_idempotency  # noqa: E402 - path bootstrap
+from DMAIC_V3.core.planning_matrix_tracker import PlanningMatrixTracker  # noqa: E402 - path bootstrap
+from DMAIC_V3.convergence.background_change_detector import BackgroundChangeDetector  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase0_init import Phase0Init  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase1_define import Phase1Define  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase2_measure import Phase2Measure  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase3_analyze import Phase3Analyze  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase4_improve import Phase4Improve  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase5_control import Phase5Control  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase7_action_tracking import Phase7ActionTracking  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement  # noqa: E402 - path bootstrap
+from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration as Phase9DocumentationGeneration  # noqa: E402 - path bootstrap
 
 # Duplicate Phase6Knowledge removed from this orchestrator file.
 # The Phase6Knowledge implementation is provided by:
