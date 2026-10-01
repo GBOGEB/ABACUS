@@ -221,6 +221,7 @@ def test_main_smoke_writes_coverage_pressure_receipt(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setattr(control, "git_head", lambda: HEAD)
+    monkeypatch.setenv("EXPECTED_SHA", HEAD)
 
     exit_code = control.main(
         [
