@@ -33,7 +33,6 @@ def test_unmapped_reduction():
 
 
 def test_pairing():
-    d = _load("paired_elements.json")["stats"] if "stats" in _load("paired_elements.json") else _load("paired_elements.json")
     # tolerate either flat or nested shape
     flat = _load("w003_w004_stats.json")["phase2"]
     assert flat["text_to_component_pairs"] == 315

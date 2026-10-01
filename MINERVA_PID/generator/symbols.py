@@ -564,7 +564,6 @@ def cloud(cx, cy, w, h, color="#000000", fill="#ffffff", sw=0.7, bumps=7):
     """Scalloped 'cloud' callout outline (off-sheet / area reference)."""
     import math as _m
     x0, y0 = cx - w / 2.0, cy - h / 2.0
-    pts = []
     # build a ring of bump centres around the rectangle perimeter
     perim = []
     nx = max(3, int(bumps))

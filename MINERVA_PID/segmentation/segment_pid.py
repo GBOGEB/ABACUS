@@ -453,12 +453,10 @@ def segment_model(model):
     for t in model.texts:
         layer = t["layer"]
         # 1) classify each tspan token as a potential instrument/equipment tag
-        token_was_tag = False
         for tok in t.get("tokens", []):
             toktxt = tok["text"]
             tag = classify_tag(toktxt)
             if tag:
-                token_was_tag = True
                 rec = {**tag, "x": tok["x"], "y": tok["y"], "layer": layer}
                 # de-duplicate identical tag at identical location
                 key = (tag["tag"], tok["x"], tok["y"])
