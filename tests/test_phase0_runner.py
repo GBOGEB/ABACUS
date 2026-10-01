@@ -44,3 +44,4 @@ def test_phase0_smoke_direct_cli_from_repo_root(tmp_path: Path):
     payload = json.loads(receipt_path.read_text(encoding="utf-8"))
     assert payload["status"] == "PASS"
     assert payload["executed_steps"] == 3
+    assert payload["authority_transfer"] is False
