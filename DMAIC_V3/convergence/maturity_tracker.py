@@ -351,7 +351,8 @@ class MaturityTracker:
     def _determine_level(self, convergence: float, completed: List[str]) -> int:
         """Determine current maturity level"""
         for level in range(5, -1, -1):
-    
+            level_def = self.MATURITY_LEVELS[level]
+
             # Check convergence requirement
             if convergence < level_def.convergence_min:
                 continue
@@ -409,7 +410,6 @@ class MaturityTracker:
         if pending:
             recs.append(f"Complete pending tasks: {', '.join(pending[:3])}")
 
-        level_def = self.MATURITY_LEVELS[level]
         next_level = level + 1
 
         if level < 5:
