@@ -129,16 +129,15 @@ def risk_matrix_data() -> List[Dict[str, Any]]:
 
 def beam_impact_analysis() -> Dict[str, Any]:
     """Calculate beam availability impact from valve failures."""
-    beam_hours_year = 8000
     experiments_per_hour = 0.5  # simplified
-    
+
     scenarios = {}
     for ops in OPERATIONAL_SCENARIOS:
         lost_hours = ops["beam_trips_per_year"] * ops["mdt_hours"]
         lost_experiments = lost_hours * experiments_per_hour
         cost_per_lost_hour = 15000  # estimated €/hour of beam time
         financial_impact = lost_hours * cost_per_lost_hour
-        
+
         scenarios[ops["id"]] = {
             "name": ops["name"],
             "beam_trips": ops["beam_trips_per_year"],
@@ -148,5 +147,5 @@ def beam_impact_analysis() -> Dict[str, Any]:
             "financial_impact_eur": financial_impact,
             "availability_pct": ops["availability_pct"],
         }
-    
+
     return scenarios
