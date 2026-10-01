@@ -116,10 +116,11 @@ jobs:
           # Package the current governed DOW integration surfaces.
           cp -r integration_DOW_KEB_MASTER/ dist/
           cp staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py dist/
-          cp -r runners/ dist/
+          # Runner implementations are already packaged with DMAIC_V3/.
+          # No separate root runners/ tree exists on current main.
           cp -r config/ dist/ || echo "No config directory"
           cp RTM_INTEGRATION_DASHBOARD.html dist/ || echo "No dashboard"
-          cp TOTAL_GLOBAL_TRACKER.md dist/
+          cp TOTAL_PROGRESS_SUMMARY.md dist/
 
           # Create version file
           echo "${{ steps.version.outputs.version }}" > dist/VERSION
