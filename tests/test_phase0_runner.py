@@ -7,6 +7,20 @@ import sys
 from scripts.runners import phase0_runner
 
 
+def test_phase0_repo_root_bootstrap_covers_missing_path(monkeypatch):
+    root_text = str(phase0_runner.ROOT)
+    monkeypatch.setattr(
+        sys,
+        "path",
+        [entry for entry in sys.path if entry != root_text],
+    )
+
+    resolved = phase0_runner._ensure_repo_root_on_path()
+
+    assert resolved == phase0_runner.ROOT
+    assert sys.path[0] == root_text
+
+
 def test_phase0_smoke_executes_real_nonmutating_steps(tmp_path: Path):
     receipt = phase0_runner.run_smoke(phase0_runner.ROOT, tmp_path)
 
