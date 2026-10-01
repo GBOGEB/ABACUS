@@ -538,7 +538,6 @@ def draw_instruments(insts, style, default_fam, roles, mono):
         cx, cy = cpt(inst["x"], inst["y"])
         prefix = (inst.get("prefix") or "").upper()
         number = inst.get("number") or ""
-        tag = inst.get("tag") or (prefix + number)
         is_safety = bool(inst.get("is_safety"))
         if prefix == "HL":
             bub.append(SYM.heat_load(cx, cy, "#000000" if mono else "#008000"))
@@ -1005,9 +1004,6 @@ def build_frame(sheet_meta, sheet, style_name, style, mono):
     rcw = (cx[3] - cx[2])
     for i, row in enumerate(revs):
         yy = ry + i * mm(5.6)
-        wcol = [0.10, 0.22, 0.78, 1.0]
-        for j, txt in enumerate(row):
-            xx = cx[2] + wcol[j] * 0  # placeholder
         p.append(SYM._text(cx[2] + mm(1.2), yy, row[0], size=T_SMALL,
                             anchor="start", weight="bold" if i == 0 else "normal"))
         p.append(SYM._text(cx[2] + rcw * 0.13, yy, row[1], size=T_SMALL,
@@ -1250,7 +1246,6 @@ def build_one(key, sheet, style_name, mono, ex, seg, defs, scope_holder):
     style = STYLES[style_name]
     fam = sheet_meta["fam"]
     is_instr = sheet["kind"] in ("Instrumentation",)
-    is_process = sheet["kind"] in ("Cryogenic", "Process")
     faded = is_instr           # process is a faded backdrop on instrumentation sheets
 
     # ---- bin geometry ----
