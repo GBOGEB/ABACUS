@@ -273,6 +273,30 @@ def test_concurrent_cache_writers_use_independent_temp_files(tmp_path, monkeypat
 
 
 @pytest.mark.unit
+def test_save_cache_retries_transient_permission_error(tmp_path, monkeypatch):
+    wrapper = idem.IdempotentPhaseWrapper(
+        idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
+    )
+    cache_file = wrapper.config.get_cache_file("phase_retry", 11)
+    original_replace = Path.replace
+    calls = []
+
+    def flaky_replace(source, target):
+        calls.append((source, target))
+        if len(calls) == 1:
+            raise PermissionError("transient Windows file lock")
+        return original_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", flaky_replace)
+    monkeypatch.setattr(idem.time, "sleep", lambda _delay: None)
+
+    assert wrapper._save_cache(cache_file, {"value": 11}, "hash-11") is True
+    assert len(calls) == 2
+    loaded = wrapper._load_cache(cache_file)
+    assert loaded["input_hash"] == "hash-11"
+
+
+@pytest.mark.unit
 def test_enable_idempotency_rebinds_global_configuration(tmp_path, capsys):
     original = idem.GLOBAL_IDEMPOTENCY
     try:
