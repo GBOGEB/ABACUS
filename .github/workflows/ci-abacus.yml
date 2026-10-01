@@ -285,6 +285,7 @@ jobs:
             --coverage-json "${evidence_dir}/coverage-contexts.json" \
             --criticality governance/coverage/criticality_manifest.json \
             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
+            --test-evidence "${evidence_dir}/test-evidence.json" \
             --exact-sha "${GITHUB_SHA}" \
             --out "${evidence_dir}/coverage-dab.json"
 
