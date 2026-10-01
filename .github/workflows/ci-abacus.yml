@@ -57,7 +57,37 @@ jobs:
 
             for path in "${changed[@]}"; do
               case "${path}" in
-                .github/workflows/ci-abacus.yml|.github/actions/*|requirements.txt|requirements/*.txt|requirements-*.txt|constraints*.txt|pyproject.toml|setup.py|setup.cfg|tox.ini|noxfile.py|Pipfile|Pipfile.lock|poetry.lock|uv.lock|.python-version)
+                .github/workflows/*|.github/actions/*)
+                  compatibility_sensitive=true
+                  ;;
+                requirements.txt|*/requirements.txt)
+                  compatibility_sensitive=true
+                  ;;
+                requirements/*.txt|*/requirements/*.txt)
+                  compatibility_sensitive=true
+                  ;;
+                requirements-*.txt|*/requirements-*.txt)
+                  compatibility_sensitive=true
+                  ;;
+                constraints*.txt|*/constraints*.txt)
+                  compatibility_sensitive=true
+                  ;;
+                pyproject.toml|*/pyproject.toml)
+                  compatibility_sensitive=true
+                  ;;
+                setup.py|*/setup.py|setup.cfg|*/setup.cfg)
+                  compatibility_sensitive=true
+                  ;;
+                tox.ini|*/tox.ini|noxfile.py|*/noxfile.py)
+                  compatibility_sensitive=true
+                  ;;
+                Pipfile|*/Pipfile|Pipfile.lock|*/Pipfile.lock)
+                  compatibility_sensitive=true
+                  ;;
+                poetry.lock|*/poetry.lock|uv.lock|*/uv.lock)
+                  compatibility_sensitive=true
+                  ;;
+                .python-version|*/.python-version)
                   compatibility_sensitive=true
                   ;;
                 *.py|*.pyi|scripts/*|tests/*|src/*|abacus/*|qplant/*)
@@ -219,10 +249,9 @@ jobs:
         if: matrix.python-version == '3.12'
         run: python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
 
-      - name: Phase0 smoke test
+      - name: Recursive build smoke test
         run: |
-          python scripts/runners/phase0_runner.py --smoke ||
-            echo "Phase0 smoke test completed"
+          python scripts/recursive_build.py --smoke --index GLOBAL_index.json
 
       - name: Detect artifact payload
         id: artifact_payload
@@ -314,11 +343,11 @@ jobs:
       - name: Install canary tooling
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install . || true
+          pip install -r requirements.txt
+          pip install .
           pip install pytest pyyaml
 
       - name: Run migration-sensitive smoke proof
         run: |
           python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
-          python scripts/runners/phase0_runner.py --smoke
+          python scripts/recursive_build.py --smoke --index GLOBAL_index.json
