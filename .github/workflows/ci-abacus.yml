@@ -32,8 +32,6 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-        with:
-          fetch-depth: 0
 
       - name: Classify change risk and select Python proof
         id: plan
