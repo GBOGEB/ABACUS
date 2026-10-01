@@ -22,9 +22,9 @@ def _ensure_repo_root_on_path() -> Path:
 
 ROOT = _ensure_repo_root_on_path()
 
-from DMAIC_V3.config import DMAICConfig, PathConfig
-from DMAIC_V3.core.state import StateManager
-from DMAIC_V3.phases.phase0_init import Phase0Init
+from DMAIC_V3.config import DMAICConfig, PathConfig  # noqa: E402
+from DMAIC_V3.core.state import StateManager  # noqa: E402
+from DMAIC_V3.phases.phase0_init import Phase0Init  # noqa: E402
 
 
 def _head_sha(workspace: Path) -> str:
