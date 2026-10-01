@@ -73,7 +73,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pytest-xdist pytest-timeout
+          pip install pytest pytest-cov pytest-benchmark pytest-xdist pytest-timeout
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Build Docker test image
