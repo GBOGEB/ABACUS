@@ -248,7 +248,8 @@ jobs:
           # rex-allow: advisory formatter/lint hook; correctness is gated separately below.
           pre-commit run --all-files || echo "Pre-commit advisory completed"
 
-      - name: Run pytest and emit governed evidence
+      - name: Run canonical coverage and emit governed evidence
+        if: matrix.python-version == '3.12'
         shell: bash
         run: |
           set -euo pipefail
@@ -260,6 +261,7 @@ jobs:
             --govern-test-states \
             --benchmark-disable \
             --cov=. \
+            --cov-branch \
             --cov-report=term-missing \
             --junitxml="${evidence_dir}/junit.xml" \
             || pytest_rc=$?
@@ -282,6 +284,38 @@ jobs:
             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
             --exact-sha "${GITHUB_SHA}" \
             --out "${evidence_dir}/coverage-dab.json"
+
+          if (( pytest_rc != 0 )); then
+            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            exit "${pytest_rc}"
+          fi
+          if (( census_rc != 0 )); then
+            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            exit "${census_rc}"
+          fi
+
+      - name: Run functional compatibility proof
+        if: matrix.python-version != '3.12'
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          mkdir -p "${evidence_dir}"
+
+          pytest_rc=0
+          python -m pytest -v \
+            --govern-test-states \
+            --benchmark-disable \
+            --junitxml="${evidence_dir}/junit.xml" \
+            || pytest_rc=$?
+
+          census_rc=0
+          python scripts/test_evidence_census.py \
+            --junit "${evidence_dir}/junit.xml" \
+            --out "${evidence_dir}/test-evidence.json" \
+            --max-skips 17 \
+            --max-xfails 0 \
+            || census_rc=$?
 
           if (( pytest_rc != 0 )); then
             echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
@@ -381,6 +415,71 @@ jobs:
             echo "::error::${msg}"
             exit 1
           fi
+
+  benchmark-baseline:
+    name: Benchmark baseline - Python 3.12 - no coverage
+    if: github.repository == 'GBOGEB/ABACUS'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install benchmark dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Run isolated microbenchmarks
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/benchmark
+          python -m pytest -q \
+            --benchmark-only \
+            --benchmark-min-rounds=50 \
+            --benchmark-json=test_reports/benchmark/benchmark.json \
+            tests/test_docker_integration.py::TestDockerConfiguration::test_dockerfile_layer_optimization \
+            tests/test_integration.py::TestPerformanceBenchmarks::test_bootstrap_computation_speed
+
+          python - <<'PY'
+          import json
+          import platform
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          receipt = {
+              "schema": "abacus-benchmark-baseline/1.0.0",
+              "status": "BASELINE_ONLY_NO_REGRESSION_CLAIM",
+              "commit": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "python": sys.version,
+              "platform": platform.platform(),
+              "coverage_enabled": False,
+              "minimum_rounds": 50,
+              "benchmark_json": "benchmark.json",
+              "authority_transfer": False,
+              "formal_credit_delta": 0,
+              "engineering_credit_delta": 0,
+          }
+          Path("test_reports/benchmark/receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload benchmark baseline
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-baseline-${{ github.sha }}
+          path: test_reports/benchmark/
+          if-no-files-found: error
 
   runner-migration-canary:
     name: Runner migration canary - ubuntu-latest - Python 3.12
