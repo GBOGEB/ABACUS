@@ -17,7 +17,10 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from scripts import coverage_dab_census as dab
+try:
+    from scripts import coverage_dab_census as dab
+except ModuleNotFoundError:  # direct execution: python scripts/post_b0_coverage_union.py
+    import coverage_dab_census as dab
 
 
 def _load_json(path: Path) -> dict[str, Any]:
