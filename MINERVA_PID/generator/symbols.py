@@ -602,20 +602,17 @@ def terminal_point_edge(xedge, y, direction, system, dwg_ref, line_no,
     cloud_h = 30 * s
     stub = 16 * s
     incoming = (direction == "in")
-    arrow_col = color
     # geometry: assembly grows inward from the edge
     if incoming:
         # cloud hugs the left edge; pipe continues to the right
         cl_cx = xedge + cloud_w / 2.0
         dia_cx = xedge + cloud_w + 20 * s
         pipe_x2 = dia_cx + stub
-        arrow_dir = 1     # arrow points right (into sheet)
         verb = "FROM"
     else:
         cl_cx = xedge - cloud_w / 2.0
         dia_cx = xedge - cloud_w - 20 * s
         pipe_x2 = dia_cx - stub
-        arrow_dir = 1     # still drawn pointing right (outgoing to area)
         verb = "TO"
     parts = []
     # connecting pipe stub (diamond <-> edge), routed through the cloud centre line
@@ -648,7 +645,6 @@ def terminal_point_edge(xedge, y, direction, system, dwg_ref, line_no,
                  f'height="{rb_h:.2f}" fill="#ffffff" stroke="{color}" '
                  f'stroke-width="0.4"/>')
     # little flow arrow at the leading edge of the ref box
-    axx = rbx + (rb_w - 3 * s if not incoming else 3 * s)
     parts.append(_text(cl_cx, y + ts * 0.34, f'{dwg_ref}  {line_no}', size=ts * 0.86,
                        weight="bold", fill="#000000"))
     parts.append(_text(cl_cx, y + cloud_h * 0.30, f'{verb} {next_sys}'[:28],
