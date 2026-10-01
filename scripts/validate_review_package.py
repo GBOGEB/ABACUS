@@ -12,9 +12,20 @@ REQUIRED_DOCS = (
     "docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md",
     "docs/Q3_Q4_Q5/COMPENDIUM.md",
     "docs/Q3_Q4_Q5/MANAGEMENT_SUMMARY.md",
-    "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md",
     "docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md",
 )
+REQUIRED_EXTERNALIZED_ARTIFACTS = {
+    "tender-alat-intent": {
+        "state": "externalized_private",
+        "external_repo": "GBOGEB/cryoplant-project",
+        "original_path": "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md",
+        "provenance_path": "tender_library/PROVENANCE.csv",
+        "sha256": (
+            "03a0d496913d642102358492a2000363"
+            "e61fde352159dfc67fa43559584c3a45"
+        ),
+    }
+}
 REQUIRED_SSOT_IDS = {"SSOT-Q3", "SSOT-Q4", "SSOT-Q5", "SSOT-CG"}
 REQUIRED_GAP_IDS = {f"CG-{index:02d}" for index in range(1, 9)}
 REQUIRED_DOMAINS = {
@@ -124,20 +135,50 @@ def _validate_manifest(errors: List[str]) -> None:
     artifacts = manifest.get("artifacts", [])
     domains = set()
     paths = []
+    externalized_ids = set()
     for artifact in artifacts:
         if not isinstance(artifact, dict):
             errors.append("Manifest artifact entries must be mappings")
             continue
-        _require_fields(
-            errors,
-            artifact.get("id", "artifact"),
-            artifact,
-            ("id", "domain", "path"),
-        )
+
+        artifact_id = artifact.get("id", "artifact")
+        _require_fields(errors, artifact_id, artifact, ("id", "domain"))
+
         if artifact.get("domain"):
             domains.add(artifact["domain"])
+
+        if artifact.get("state") == "externalized_private":
+            _require_fields(
+                errors,
+                artifact_id,
+                artifact,
+                (
+                    "external_repo",
+                    "original_path",
+                    "provenance_path",
+                    "sha256",
+                ),
+            )
+            externalized_ids.add(artifact_id)
+            expected = REQUIRED_EXTERNALIZED_ARTIFACTS.get(artifact_id)
+            if expected:
+                for field, expected_value in expected.items():
+                    if artifact.get(field) != expected_value:
+                        errors.append(
+                            f"{artifact_id} has unexpected {field}"
+                        )
+            continue
+
+        _require_fields(errors, artifact_id, artifact, ("path",))
         if artifact.get("path"):
             paths.append(artifact["path"])
+
+    for missing_id in sorted(
+        set(REQUIRED_EXTERNALIZED_ARTIFACTS) - externalized_ids
+    ):
+        errors.append(
+            f"Manifest is missing externalized artifact: {missing_id}"
+        )
     for missing_domain in sorted(REQUIRED_DOMAINS - domains):
         errors.append(f"Manifest is missing domain: {missing_domain}")
     _validate_paths(errors, paths)
