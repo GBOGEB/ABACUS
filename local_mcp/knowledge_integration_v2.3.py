@@ -63,26 +63,26 @@ class KnowledgeIntegrationV23:
     Knowledge Integration Layer for V2.3 Agents
     Provides unified access to execution and GBOGEB knowledge services
     """
-    
+
     def __init__(self, workspace: str = "knowledge_workspace_v2.3"):
         self.workspace = Path(workspace)
         self.workspace.mkdir(exist_ok=True)
-        
+
         self.execution_backbone_enabled = EXECUTION_BACKBONE_AVAILABLE
         self.gbogeb_enabled = EXECUTION_BACKBONE_AVAILABLE
-        
+
         if self.execution_backbone_enabled:
             self.execution_backbone = ExecutionBackbone(max_workers=2, max_memory_mb=2048)
             self.gbogeb = GBOGEB(workspace=str(self.workspace / "gbogeb"))
         else:
             self.execution_backbone = None
             self.gbogeb = None
-        
+
         self.knowledge_cache = []
         self.metrics_cache = []
-        
+
         self._init_knowledge_base()
-        
+
         print("=" * 80)
         print("Knowledge Integration V2.3 - Initialized")
         print("=" * 80)
@@ -90,7 +90,7 @@ class KnowledgeIntegrationV23:
         print(f"Execution Backbone Enabled: {self.execution_backbone_enabled}")
         print(f"GBOGEB Enabled: {self.gbogeb_enabled}")
         print("=" * 80)
-    
+
     def _init_knowledge_base(self):
         """Initialize knowledge base with canonical entries"""
         canonical_knowledge = [
@@ -131,7 +131,7 @@ class KnowledgeIntegrationV23:
                 "tags": {"domain": "cryogenics", "type": "domain"}
             }
         ]
-        
+
         for entry in canonical_knowledge:
             self.add_knowledge_entry(
                 entry_id=entry["entry_id"],
@@ -141,9 +141,9 @@ class KnowledgeIntegrationV23:
                 confidence=entry["confidence"],
                 tags=entry["tags"]
             )
-    
-    def add_knowledge_entry(self, entry_id: str, source: str, category: str, 
-                           content: Any, confidence: float = 1.0, 
+
+    def add_knowledge_entry(self, entry_id: str, source: str, category: str,
+                           content: Any, confidence: float = 1.0,
                            tags: Dict[str, str] = None):
         """Add knowledge entry to the knowledge base"""
         entry = KnowledgeEntry(
@@ -155,10 +155,10 @@ class KnowledgeIntegrationV23:
             confidence=confidence,
             tags=tags or {}
         )
-        
+
         self.knowledge_cache.append(entry)
         self._save_knowledge_entry(entry)
-        
+
         if self.gbogeb_enabled:
             self.gbogeb.collect_metric(
                 agent="knowledge_integration",
@@ -166,27 +166,27 @@ class KnowledgeIntegrationV23:
                 metric_value=1,
                 tags={"category": category, "source": source}
             )
-    
-    def query_knowledge(self, category: Optional[str] = None, 
+
+    def query_knowledge(self, category: Optional[str] = None,
                        source: Optional[str] = None,
                        tags: Optional[Dict[str, str]] = None) -> List[KnowledgeEntry]:
         """Query knowledge base"""
         results = self.knowledge_cache
-        
+
         if category:
             results = [e for e in results if e.category == category]
-        
+
         if source:
             results = [e for e in results if e.source == source]
-        
+
         if tags:
             results = [e for e in results if all(
                 e.tags.get(k) == v for k, v in tags.items()
             )]
-        
+
         return results
-    
-    def collect_agent_metric(self, agent_name: str, metric_name: str, 
+
+    def collect_agent_metric(self, agent_name: str, metric_name: str,
                             metric_value: Any, tags: Dict[str, str] = None):
         """Collect metric from agent"""
         if self.gbogeb_enabled:
@@ -206,7 +206,7 @@ class KnowledgeIntegrationV23:
             }
             self.metrics_cache.append(metric)
             print(f"[METRIC] {agent_name}.{metric_name} = {metric_value}")
-    
+
     def schedule_agent_task(self, task_id: str, agent_name: str,
                            task_func: callable, priority: int = 5,
                            args: tuple = (), kwargs: dict = None,
@@ -263,16 +263,16 @@ class KnowledgeIntegrationV23:
                 print(f"[COMPLIANCE] {rule_name}: ERROR - {e}")
                 return False
         return False
-    
+
     def get_knowledge_summary(self) -> Dict[str, Any]:
         """Get knowledge base summary"""
         categories = {}
         sources = {}
-        
+
         for entry in self.knowledge_cache:
             categories[entry.category] = categories.get(entry.category, 0) + 1
             sources[entry.source] = sources.get(entry.source, 0) + 1
-        
+
         return {
             "total_entries": len(self.knowledge_cache),
             "categories": categories,
@@ -281,16 +281,16 @@ class KnowledgeIntegrationV23:
             "gbogeb_enabled": self.gbogeb_enabled,
             "metrics_collected": len(self.metrics_cache)
         }
-    
+
     def _save_knowledge_entry(self, entry: KnowledgeEntry):
         """Save knowledge entry to disk"""
         kb_dir = self.workspace / "knowledge_base"
         kb_dir.mkdir(exist_ok=True)
-        
+
         entry_file = kb_dir / f"{entry.entry_id}.json"
         with open(entry_file, 'w') as f:
             json.dump(asdict(entry), f, indent=2)
-    
+
     def export_knowledge_base(self, output_file: str = "knowledge_export.json"):
         """Export entire knowledge base"""
         export_data = {
@@ -299,11 +299,11 @@ class KnowledgeIntegrationV23:
             "entries": [asdict(e) for e in self.knowledge_cache],
             "metrics": self.metrics_cache
         }
-        
+
         export_path = self.workspace / output_file
         with open(export_path, 'w') as f:
             json.dump(export_data, f, indent=2)
-        
+
         print(f"Knowledge base exported to: {export_path}")
         return export_path
 
@@ -313,9 +313,9 @@ def main():
     print("\n" + "=" * 80)
     print("KNOWLEDGE INTEGRATION V2.3 - TEST")
     print("=" * 80 + "\n")
-    
+
     ki = KnowledgeIntegrationV23()
-    
+
     print("\n[TEST 1] Adding custom knowledge entry")
     ki.add_knowledge_entry(
         entry_id="test_001",
@@ -325,13 +325,13 @@ def main():
         confidence=0.95,
         tags={"test": "true", "version": "v2.3"}
     )
-    
+
     print("\n[TEST 2] Querying knowledge base")
     results = ki.query_knowledge(category="methodology")
     print(f"Found {len(results)} methodology entries")
     for entry in results:
         print(f"  - {entry.entry_id}: {entry.content.get('name', 'N/A')}")
-    
+
     print("\n[TEST 3] Collecting metrics")
     ki.collect_agent_metric(
         agent_name="test_agent",
@@ -339,21 +339,21 @@ def main():
         metric_value=100,
         tags={"test": "true"}
     )
-    
+
     print("\n[TEST 4] Compliance check")
     ki.check_compliance(
         rule_name="memory_limit",
         check_func=lambda: True,
         severity="warning"
     )
-    
+
     print("\n[TEST 5] Knowledge summary")
     summary = ki.get_knowledge_summary()
     print(json.dumps(summary, indent=2))
-    
+
     print("\n[TEST 6] Exporting knowledge base")
-    export_path = ki.export_knowledge_base()
-    
+    ki.export_knowledge_base()
+
     print("\n" + "=" * 80)
     print("KNOWLEDGE INTEGRATION V2.3 - TEST COMPLETE")
     print("=" * 80 + "\n")
