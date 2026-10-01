@@ -241,3 +241,126 @@ def test_main_smoke_writes_coverage_pressure_receipt(tmp_path, monkeypatch):
     )
     assert written["global_project_dov"] == "WITHHELD"
     assert written["authority_transfer"] is False
+
+
+
+def test_test_pressure_ranks_measured_non_green_states():
+    census = {
+        "schema": "abacus-test-evidence-census/1.0.0",
+        "exact_sha": HEAD,
+        "outcomes": {"pass": 2, "fail": 1, "skip": 2},
+        "states": {
+            "TEST_GREEN": 2,
+            "TEST_FAILING": 1,
+            "TEST_BLOCKED_CONFIG": 1,
+            "TEST_BLOCKED_DEPENDENCY": 1,
+        },
+        "skip_count": 2,
+        "xfail_count": 0,
+        "uncategorized_skips": [],
+        "rows": [
+            {
+                "test": "tests.test_ok::test_ok",
+                "outcome": "pass",
+                "test_state": "TEST_GREEN",
+            },
+            {
+                "test": "tests.test_cfg::test_cfg",
+                "outcome": "skip",
+                "test_state": "TEST_BLOCKED_CONFIG",
+            },
+            {
+                "test": "tests.test_dep::test_dep",
+                "outcome": "skip",
+                "test_state": "TEST_BLOCKED_DEPENDENCY",
+            },
+            {
+                "test": "tests.test_bad::test_bad",
+                "outcome": "fail",
+                "test_state": "TEST_FAILING",
+            },
+        ],
+    }
+
+    result = control.build_test_pressure(census, HEAD)
+
+    assert result["status"] == "MEASURED"
+    assert [row["test_state"] for row in result["priority_queue"]] == [
+        "TEST_FAILING",
+        "TEST_BLOCKED_CONFIG",
+        "TEST_BLOCKED_DEPENDENCY",
+    ]
+    assert result["skip_count"] == 2
+    assert result["xfail_count"] == 0
+    assert result["formal_credit_delta"] == 0
+    assert result["engineering_credit_delta"] == 0
+    assert result["authority_transfer"] is False
+
+
+def test_test_pressure_withholds_on_wrong_sha():
+    census = {
+        "schema": "abacus-test-evidence-census/1.0.0",
+        "exact_sha": "d" * 40,
+        "rows": [],
+    }
+
+    result = control.build_test_pressure(census, HEAD)
+
+    assert result["status"] == "WITHHELD"
+    assert result["priority_queue"] == []
+    assert "exact_sha" in result["errors"]
+    assert result["formal_credit_delta"] == 0
+
+
+def test_main_smoke_writes_test_pressure_receipt(tmp_path, monkeypatch):
+    census_path = tmp_path / "test-evidence.json"
+    summary_path = tmp_path / "summary.json"
+    census_path.write_text(
+        json.dumps(
+            {
+                "schema": "abacus-test-evidence-census/1.0.0",
+                "exact_sha": HEAD,
+                "outcomes": {"pass": 1, "skip": 1},
+                "states": {
+                    "TEST_GREEN": 1,
+                    "TEST_BLOCKED_CONFIG": 1,
+                },
+                "skip_count": 1,
+                "xfail_count": 0,
+                "uncategorized_skips": [],
+                "rows": [
+                    {
+                        "test": "tests.test_cfg::test_cfg",
+                        "outcome": "skip",
+                        "test_state": "TEST_BLOCKED_CONFIG",
+                    },
+                    {
+                        "test": "tests.test_ok::test_ok",
+                        "outcome": "pass",
+                        "test_state": "TEST_GREEN",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(control, "git_head", lambda: HEAD)
+    monkeypatch.setenv("EXPECTED_SHA", HEAD)
+
+    exit_code = control.main(
+        [
+            "--summary",
+            str(summary_path),
+            "--test-evidence-census",
+            str(census_path),
+        ]
+    )
+
+    assert exit_code == 0
+    written = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert written["test_pressure"]["status"] == "MEASURED"
+    assert written["test_pressure"]["priority_queue"][0]["test_state"] == (
+        "TEST_BLOCKED_CONFIG"
+    )
+    assert written["global_project_dov"] == "WITHHELD"
+    assert written["authority_transfer"] is False
