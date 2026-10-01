@@ -7,7 +7,7 @@ python-docx>=0.8.11
 openpyxl>=3.1.2
 python-pptx>=1.0.2
 PyYAML>=6.0.3
-markdown>=3.5.1
+markdown>=3.11
 
 # PDF handling
 PyPDF2>=3.0.1
