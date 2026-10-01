@@ -175,7 +175,12 @@ def build_coverage_pressure(
     """Project measured DAB coverage evidence into a fail-closed MIP queue."""
 
     errors: list[str] = []
-    if census.get("schema") != "abacus-coverage-dab/1.0.0":
+    accepted_schemas = {
+        "abacus-coverage-dab/1.0.0",
+        "abacus-post-b0-coverage-dab/1.0.0",
+    }
+    census_schema = str(census.get("schema", ""))
+    if census_schema not in accepted_schemas:
         errors.append("schema")
 
     census_sha = str(census.get("exact_sha", ""))
@@ -194,6 +199,7 @@ def build_coverage_pressure(
             "controller_head_sha": head_sha,
             "census_head_sha": census_sha or "MISSING",
             "priority_queue": [],
+            "zero_coverage_disposition_queue": [],
             "expected_gain": "WITHHELD",
             "authority_transfer": False,
             "formal_credit_delta": 0,
@@ -256,12 +262,40 @@ def build_coverage_pressure(
         if len(queue) >= max(0, limit):
             break
 
+    zero_coverage = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if row.get("source_class") != "ACTIVE_SOURCE":
+            continue
+        statements = int(row.get("statements", 0) or 0)
+        covered = int(row.get("covered_statements", 0) or 0)
+        if statements <= 0 or covered != 0:
+            continue
+        zero_coverage.append(
+            {
+                "path": str(row.get("path", "")),
+                "current_disposition": row.get("disposition", "UNKNOWN"),
+                "required_disposition": "ADMIT|QUARANTINE|DELETE|UNKNOWN",
+                "evidence_class": row.get("evidence_class", "MEASURED"),
+                "authority_transfer": False,
+                "formal_credit_delta": 0,
+                "engineering_credit_delta": 0,
+            }
+        )
+
     return {
         "status": "MEASURED",
         "controller_head_sha": head_sha,
         "census_head_sha": census_sha,
+        "census_schema": census_schema,
+        "measurement": census.get("measurement", {}),
         "active_source": census.get("active_source", {}),
         "priority_queue": queue,
+        "zero_coverage_disposition_queue": sorted(
+            zero_coverage,
+            key=lambda row: row["path"],
+        ),
         "expected_gain": "WITHHELD",
         "authority_transfer": False,
         "formal_credit_delta": 0,
