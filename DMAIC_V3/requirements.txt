@@ -22,7 +22,13 @@ typing-extensions>=4.15.0
 
 # Data manipulation and analysis
 pandas>=2.1.0,<4.0.0
-numpy>=2.5.3,<3.0.0
+# NumPy release lines follow the repository's compatibility matrix.
+# 2.5.x requires Python >=3.12; preserve 3.10/3.11 proof and Docker lanes.
+numpy>=1.24.4,<3.0.0; python_version < '3.9'
+numpy>=2.0.2,<3.0.0; python_version >= '3.9' and python_version < '3.10'
+numpy>=2.2.6,<3.0.0; python_version >= '3.10' and python_version < '3.11'
+numpy>=2.4.6,<3.0.0; python_version >= '3.11' and python_version < '3.12'
+numpy>=2.5.3,<3.0.0; python_version >= '3.12'
 
 # ============================================================================
 # VISUALIZATION
