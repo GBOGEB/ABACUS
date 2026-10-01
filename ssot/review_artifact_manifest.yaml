@@ -8,9 +8,6 @@ artifacts:
   - id: tender-management-summary
     domain: tender_review_package
     path: docs/Q3_Q4_Q5/MANAGEMENT_SUMMARY.md
-  - id: tender-alat-intent
-    domain: tender_review_package
-    path: docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md
   - id: tender-gap-summary
     domain: contractual_gap_register
     path: docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md
