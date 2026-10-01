@@ -299,8 +299,6 @@ class Phase2Measure:
 
             elif self.use_execution_backbone and self.execution_backbone:
                 self.execution_backbone.start()
-                analysis_results = {}
-
                 for chunk_idx in range(num_chunks):
                     start_idx = chunk_idx * chunk_size
                     end_idx = min(start_idx + chunk_size, total_files)
