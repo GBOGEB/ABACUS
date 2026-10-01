@@ -17,7 +17,7 @@ class GitHubDeploymentOrchestrator:
             "steps": [],
             "status": "in_progress"
         }
-    
+
     def log_step(self, step: str, status: str, details: str = ""):
         step_info = {
             "step": step,
@@ -29,10 +29,10 @@ class GitHubDeploymentOrchestrator:
         print(f"[{status.upper()}] {step}")
         if details:
             print(f"  → {details}")
-    
+
     def check_git_status(self) -> bool:
         try:
-            result = subprocess.run(
+            subprocess.run(
                 ["git", "status"],
                 capture_output=True,
                 text=True,
@@ -43,34 +43,34 @@ class GitHubDeploymentOrchestrator:
         except subprocess.CalledProcessError:
             self.log_step("Git Status Check", "warning", "Not a git repository - will initialize")
             return False
-    
+
     def initialize_git_repo(self):
         try:
             if not self.check_git_status():
                 subprocess.run(["git", "init"], check=True)
                 self.log_step("Git Initialization", "success", "Git repository initialized")
-            
+
             subprocess.run(["git", "config", "user.name", "ABACUS Team"], check=False)
             subprocess.run(["git", "config", "user.email", "abacus@example.com"], check=False)
-            
+
         except Exception as e:
             self.log_step("Git Initialization", "error", str(e))
-    
+
     def create_deployment_structure(self):
         try:
             files_created = []
-            
+
             if self.deployment_package.exists():
                 files_created.append(str(self.deployment_package))
-            
+
             self.log_step(
-                "Deployment Structure", 
-                "success", 
+                "Deployment Structure",
+                "success",
                 f"Created {len(files_created)} deployment files"
             )
         except Exception as e:
             self.log_step("Deployment Structure", "error", str(e))
-    
+
     def stage_files_for_commit(self):
         try:
             files_to_add = [
@@ -79,35 +79,35 @@ class GitHubDeploymentOrchestrator:
                 "ABACUS_V21_DEPLOYMENT_PACKAGE/",
                 ".gitignore"
             ]
-            
+
             for pattern in files_to_add:
                 try:
                     subprocess.run(["git", "add", pattern], check=False)
                 except:
                     pass
-            
+
             self.log_step("Stage Files", "success", "Files staged for commit")
         except Exception as e:
             self.log_step("Stage Files", "error", str(e))
-    
+
     def create_commit(self):
         try:
             commit_message = f"ABACUS v2.1 Deployment Package - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-            
+
             result = subprocess.run(
                 ["git", "commit", "-m", commit_message],
                 capture_output=True,
                 text=True,
                 check=False
             )
-            
+
             if result.returncode == 0:
                 self.log_step("Git Commit", "success", commit_message)
             else:
                 self.log_step("Git Commit", "info", "No changes to commit or already committed")
         except Exception as e:
             self.log_step("Git Commit", "error", str(e))
-    
+
     def prepare_github_push_instructions(self):
         instructions = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -219,17 +219,17 @@ git remote -v
 
 ═══════════════════════════════════════════════════════════════════════════════
 """
-        
+
         instructions_file = self.project_root / "GITHUB_DEPLOYMENT_INSTRUCTIONS.txt"
         with open(instructions_file, 'w', encoding='utf-8') as f:
             f.write(instructions)
-        
+
         print(instructions)
         self.log_step("GitHub Instructions", "success", f"Saved to {instructions_file}")
-    
+
     def generate_deployment_report(self):
         report_file = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / "DEPLOYMENT_REPORT.json"
-        
+
         self.results["status"] = "completed"
         self.results["summary"] = {
             "total_steps": len(self.results["steps"]),
@@ -237,27 +237,27 @@ git remote -v
             "warnings": len([s for s in self.results["steps"] if s["status"] == "warning"]),
             "errors": len([s for s in self.results["steps"] if s["status"] == "error"])
         }
-        
+
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
-        
+
         print(f"\n📊 Deployment Report: {report_file}")
         print(f"   ✅ Successful: {self.results['summary']['successful']}")
         print(f"   ⚠️  Warnings: {self.results['summary']['warnings']}")
         print(f"   ❌ Errors: {self.results['summary']['errors']}")
-    
+
     def run(self):
         print("╔══════════════════════════════════════════════════════════════════════════════╗")
         print("║          ABACUS v2.1 - GitHub Deployment Orchestrator                       ║")
         print("╚══════════════════════════════════════════════════════════════════════════════╝\n")
-        
+
         self.initialize_git_repo()
         self.create_deployment_structure()
         self.stage_files_for_commit()
         self.create_commit()
         self.prepare_github_push_instructions()
         self.generate_deployment_report()
-        
+
         print("\n✅ Deployment preparation completed!")
         print("📖 Follow the instructions in GITHUB_DEPLOYMENT_INSTRUCTIONS.txt")
 
