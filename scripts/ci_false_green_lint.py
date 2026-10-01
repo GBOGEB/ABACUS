@@ -55,6 +55,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--paths", nargs="*", type=Path)
     parser.add_argument("--mode", choices=("census", "enforce"), default="enforce")
     parser.add_argument("--out", type=Path)
+    parser.add_argument(
+        "--max-unguarded",
+        type=int,
+        help="Fail if the unguarded finding count rises above this accepted baseline.",
+    )
     args = parser.parse_args(argv)
 
     paths = list(args.paths or [])
@@ -64,12 +69,38 @@ def main(argv: list[str] | None = None) -> int:
 
     rows = [row for path in paths for row in scan_file(path)]
     violations = [row for row in rows if not row["allowed"]]
+    pressure: dict[str, dict[str, Any]] = {}
+    for row in violations:
+        entry = pressure.setdefault(
+            row["path"],
+            {
+                "path": row["path"],
+                "unguarded_count": 0,
+                "patterns": {},
+            },
+        )
+        entry["unguarded_count"] += 1
+        for pattern in row["patterns"]:
+            entry["patterns"][pattern] = entry["patterns"].get(pattern, 0) + 1
+
+    pressure_queue = sorted(
+        pressure.values(),
+        key=lambda item: (-item["unguarded_count"], item["path"]),
+    )
+    ratchet_exceeded = (
+        args.max_unguarded is not None
+        and len(violations) > args.max_unguarded
+    )
     report = {
-        "schema": "abacus-ci-false-green-census/1.0.0",
+        "schema": "abacus-ci-false-green-census/1.1.0",
         "mode": args.mode,
         "scanned_files": len(paths),
         "finding_count": len(rows),
+        "allowed_count": len(rows) - len(violations),
         "unguarded_count": len(violations),
+        "max_unguarded": args.max_unguarded,
+        "ratchet_status": "FAIL" if ratchet_exceeded else "PASS",
+        "pressure_queue": pressure_queue,
         "findings": rows,
         "authority_transfer": False,
         "formal_credit_delta": 0,
@@ -78,6 +109,8 @@ def main(argv: list[str] | None = None) -> int:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps(report, indent=2, sort_keys=True))
+    if ratchet_exceeded:
+        return 1
     return 1 if args.mode == "enforce" and violations else 0
 
 
