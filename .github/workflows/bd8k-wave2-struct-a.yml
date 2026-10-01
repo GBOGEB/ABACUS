@@ -1,0 +1,122 @@
+name: BD8K Wave2 STRUCT-A fast preflight
+
+on:
+  push:
+    branches:
+      - bd8k-wave2-struct-a-20261001
+
+permissions:
+  contents: write
+
+jobs:
+  worker:
+    if: startsWith(github.event.head_commit.message, 'BD8K Wave2 seed STRUCT-A')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: bd8k-wave2-struct-a-20261001
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install formatter and census tools
+        run: python -m pip install --upgrade pip autopep8 flake8
+      - name: Apply bounded formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+          "qplant/handover_dashboard/src/build_dense_slides.py"
+          "qplant/handover_dashboard/src/generate_visuals_v3.py"
+          "qplant/handover_dashboard/src/build_v3_1.py"
+          "MINERVA_PID/standards/build_legend_library.py"
+          "qplant/handover_dashboard/src/build_v2.py"
+          "qplant/handover_dashboard/src/generate_standards_stats.py"
+          "qplant/handover_dashboard/src/verify_triage.py"
+          )
+          autopep8 --in-place --select=E501 --max-line-length=120 "${FILES[@]}"
+          git diff --check
+          git diff --quiet -- "${FILES[@]}" && { echo "No worker changes produced"; exit 1; }
+          python -m py_compile "${FILES[@]}"
+          git diff --stat -- "${FILES[@]}" | tee /tmp/bd8k_worker_summary.txt
+      - name: Fast DAB and regression guard
+        shell: bash
+        env:
+          WORKER_ID: STRUCT-A
+          BASE_SHA: 6c7a3b8c9e45d52b70b508f4f4d28d3af06e88b5
+          BASE_TOTAL: '5876'
+          BASELINE_JSON: '{"E111":60,"E125":1,"E127":51,"E128":144,"E129":1,"E131":5,"E203":4,"E221":71,"E225":628,"E227":3,"E228":1,"E231":1452,"E261":2,"E265":1,"E301":13,"E302":332,"E303":13,"E305":114,"E306":5,"E401":37,"E402":622,"E501":949,"E701":138,"E702":294,"E703":1,"E712":10,"E722":16,"E741":9,"E999":1,"F401":336,"F541":315,"F841":31,"W291":108,"W292":11,"W293":88,"W391":9}'
+          TARGET_CODES_JSON: '["E501"]'
+        run: |
+          set -euo pipefail
+          flake8 . --count --exit-zero --statistics --max-line-length=120 > /tmp/bd8k_fast_dab.txt
+          python - <<'PY'
+          import json, os, re
+          from collections import Counter
+          from pathlib import Path
+          baseline=json.loads(os.environ["BASELINE_JSON"])
+          targets=set(json.loads(os.environ["TARGET_CODES_JSON"]))
+          counts=Counter()
+          pat=re.compile(r":\d+:\d+: ([A-Z]\d{3}) ")
+          for line in Path("/tmp/bd8k_fast_dab.txt").read_text(encoding="utf-8").splitlines():
+              m=pat.search(line)
+              if m:
+                  counts[m.group(1)] += 1
+          total=sum(counts.values())
+          protected={"E999":1,"F821":0,"F601":0,"F811":0,"E731":0}
+          errors=[]
+          for code,expected in protected.items():
+              if counts.get(code,0) != expected:
+                  errors.append(f"protected {code}: {counts.get(code,0)} != {expected}")
+          for code,current in counts.items():
+              if code not in targets and current > baseline.get(code,0):
+                  errors.append(f"non-target regression {code}: {baseline.get(code,0)} -> {current}")
+          before=sum(baseline.get(code,0) for code in targets)
+          after=sum(counts.get(code,0) for code in targets)
+          if after >= before:
+              errors.append(f"target families did not improve: {before} -> {after}")
+          if total >= int(os.environ["BASE_TOTAL"]):
+              errors.append(f"total did not improve: {os.environ['BASE_TOTAL']} -> {total}")
+          receipt={
+              "worker":os.environ["WORKER_ID"],
+              "base_sha":os.environ["BASE_SHA"],
+              "base_total":int(os.environ["BASE_TOTAL"]),
+              "total":total,
+              "target_codes":sorted(targets),
+              "target_before":before,
+              "target_after":after,
+              "families":dict(sorted(counts.items())),
+              "errors":errors,
+          }
+          Path("/tmp/bd8k_fast_dab.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(receipt,indent=2))
+          if errors:
+              raise SystemExit("\n".join(errors))
+          PY
+      - name: Commit admitted patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+          "qplant/handover_dashboard/src/build_dense_slides.py"
+          "qplant/handover_dashboard/src/generate_visuals_v3.py"
+          "qplant/handover_dashboard/src/build_v3_1.py"
+          "MINERVA_PID/standards/build_legend_library.py"
+          "qplant/handover_dashboard/src/build_v2.py"
+          "qplant/handover_dashboard/src/generate_standards_stats.py"
+          "qplant/handover_dashboard/src/verify_triage.py"
+          )
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "${FILES[@]}"
+          git commit -m "BD8K Wave2 autofix STRUCT-A"
+          git push origin HEAD:bd8k-wave2-struct-a-20261001
+      - name: Upload fast preflight receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: bd8k-wave2-struct-a-preflight
+          path: |
+            /tmp/bd8k_fast_dab.json
+            /tmp/bd8k_fast_dab.txt
+            /tmp/bd8k_worker_summary.txt
