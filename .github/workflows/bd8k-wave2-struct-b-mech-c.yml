@@ -44,7 +44,7 @@ jobs:
           "scripts/code_health_check.py"
           "scripts/validate_triage_census.py"
           )
-          autopep8 --in-place --select=E231,E225,E302,E702,W291,W293 --max-line-length=120 "${FILES[@]}"
+          autopep8 --in-place --select=E111,E231,E225,E302,E702,W291,W293 --max-line-length=120 "${FILES[@]}"
           git diff --check
           git diff --quiet -- "${FILES[@]}" && { echo "No worker changes produced"; exit 1; }
           python -m py_compile "${FILES[@]}"
@@ -56,7 +56,7 @@ jobs:
           BASE_SHA: 6c7a3b8c9e45d52b70b508f4f4d28d3af06e88b5
           BASE_TOTAL: '5876'
           BASELINE_JSON: '{"E111":60,"E125":1,"E127":51,"E128":144,"E129":1,"E131":5,"E203":4,"E221":71,"E225":628,"E227":3,"E228":1,"E231":1452,"E261":2,"E265":1,"E301":13,"E302":332,"E303":13,"E305":114,"E306":5,"E401":37,"E402":622,"E501":949,"E701":138,"E702":294,"E703":1,"E712":10,"E722":16,"E741":9,"E999":1,"F401":336,"F541":315,"F841":31,"W291":108,"W292":11,"W293":88,"W391":9}'
-          TARGET_CODES_JSON: '["E231","E225","E302","E702","W291","W293"]'
+          TARGET_CODES_JSON: '["E111","E231","E225","E302","E702","W291","W293"]'
         run: |
           set -euo pipefail
           flake8 . --count --exit-zero --statistics --max-line-length=120 > /tmp/bd8k_fast_dab.txt
