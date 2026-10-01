@@ -391,16 +391,9 @@ class TestDockerContainerIntegration:
             )
 
         finally:
-            for container_id in container_ids:
-                stop_proc = await asyncio.create_subprocess_exec(
-                    "docker", "stop", container_id,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-                await stop_proc.communicate()
-
+            for container_name in (container1_name, container2_name):
                 rm_proc = await asyncio.create_subprocess_exec(
-                    "docker", "rm", container_id,
+                    "docker", "rm", "-f", container_name,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
