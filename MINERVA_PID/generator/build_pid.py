@@ -354,7 +354,6 @@ def build_vacuum_labels(seg):
 
 def build_legend(tb_origin):
     fx1 = SHEET_W - PAPER_MARGIN
-    px = fx1 - 4 - (RIGHT_PANEL_W + 2 * FRAME_PAD) + 0  # align with title block x
     # right legend panel spans from top frame to just above title block
     px0 = fx1 - 4 - RIGHT_PANEL_W - FRAME_PAD
     py0 = PAPER_MARGIN + 4
@@ -425,7 +424,6 @@ def build_legend(tb_origin):
 def build_class_legend(tb_origin):
     """Process-line class legend in the bottom band (left of title block)."""
     fx0 = PAPER_MARGIN
-    fy1 = SHEET_H - PAPER_MARGIN
     bx0 = fx0 + 6
     bx1 = tb_origin[0] - 8
     by0 = tb_origin[1]

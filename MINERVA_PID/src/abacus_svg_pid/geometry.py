@@ -101,7 +101,6 @@ def path_points(d):
     start = None
     nums = []
     tokens = _TOKEN.findall(d or "")
-    i = 0
 
     def flush(letter, vals):
         nonlocal cx, cy, start
