@@ -114,8 +114,9 @@ jobs:
           # Copy essential files
           cp -r DMAIC_V3/ dist/
           # Package the current governed DOW integration surfaces.
+          # Package only the tested DOW compatibility surface.
+          # The staging bridge remains PARTIAL and is not artifact-ready.
           cp -r integration_DOW_KEB_MASTER/ dist/
-          cp staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py dist/
           # Runner implementations are already packaged with DMAIC_V3/.
           # No separate root runners/ tree exists on current main.
           cp -r config/ dist/ || echo "No config directory"
