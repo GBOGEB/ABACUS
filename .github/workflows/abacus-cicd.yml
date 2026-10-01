@@ -37,18 +37,18 @@ jobs:
       - name: Run Flake8
         run: |
           # Legacy ABACUS-v032 lint telemetry; DAB owns measured debt.
-          # rex-allow: ADVISORY_EXPLICIT
           flake8 ABACUS-v032/ \
             --max-line-length=120 \
             --ignore=E501,W503 \
+            # rex-allow: ADVISORY_EXPLICIT
             || echo "Linting issues found"
 
       - name: Run Pylint
         run: |
           # Legacy ABACUS-v032 pylint telemetry; non-blocking by design.
-          # rex-allow: ADVISORY_EXPLICIT
           pylint ABACUS-v032/*.py \
             --disable=C0111,C0103 \
+            # rex-allow: ADVISORY_EXPLICIT
             || echo "Pylint issues found"
 
   test-phases:
