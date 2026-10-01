@@ -25,24 +25,30 @@ jobs:
       - name: Install tooling
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install . || true
-          pip install pre-commit pytest pytest-cov
+          pip install -r requirements.txt
+          pip install .
+          pip install pre-commit pytest pytest-cov pytest-benchmark
         shell: bash
 
       - name: Run pre-commit hooks
         run: |
-          pre-commit run --all-files || echo "Pre-commit completed"
+          pre-commit run --all-files
         shell: bash
 
-      - name: Run pytest
+      - name: Run pytest --benchmark-disable
         run: |
-          pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+          pytest --benchmark-disable -v --cov=. --cov-report=term-missing
         shell: bash
 
       - name: Phase0 smoke test
         run: |
-          python scripts/runners/phase0_runner.py --smoke || echo "Phase0 smoke test completed"
+          if [[ ! -f scripts/runners/phase0_runner.py ]]; then
+            echo "::error::Phase0 smoke runner is missing; proof WITHHELD."
+            exit 1
+          fi
+          mkdir -p test_reports/phase0
+          python scripts/runners/phase0_runner.py --smoke \
+            --receipt test_reports/phase0/receipt.json
         shell: bash
 
       - name: Upload artifacts

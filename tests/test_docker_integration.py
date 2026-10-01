@@ -186,6 +186,7 @@ class TestDockerBuild:
 
 
 @pytest.mark.integration
+@pytest.mark.TEST_BLOCKED_DEPENDENCY
 class TestDockerContainer:
 
     @pytest.fixture
@@ -203,7 +204,7 @@ class TestDockerContainer:
             subprocess.run(["docker", "stop", container_id], capture_output=True)
             subprocess.run(["docker", "rm", container_id], capture_output=True)
         else:
-            pytest.skip("Docker container failed to start")
+            pytest.skip("TEST_BLOCKED_DEPENDENCY: Docker container failed to start")
 
     @pytest.mark.slow
     def test_container_starts(self, container_id):

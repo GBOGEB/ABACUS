@@ -1,8 +1,13 @@
 import pytest
 
-pytest.importorskip("CoolProp.CoolProp")
+pytest.importorskip(
+    "CoolProp.CoolProp",
+    reason="TEST_BLOCKED_DEPENDENCY: CoolProp.CoolProp is unavailable",
+)
 
 from models.qps_line_s.recovery_model import Config, simulate
+
+
 
 
 def test_50_g_s_recovers_without_relief():
@@ -42,3 +47,4 @@ def test_higher_peak_not_later_relief():
     high = simulate(0.25, cfg)
     assert high["verdict"] == "RELIEF"
     assert high["t_relief_min"] <= low["t_relief_min"]
+

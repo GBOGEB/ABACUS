@@ -1,3 +1,5 @@
+import json
+
 from scripts import mip_v2_federated_controller as control
 
 
@@ -100,3 +102,265 @@ def test_one_real_step_remains_sufficient_for_pass():
     assert result["controller_state"] == "WAIT_CHILD_REENTRY"
     assert result["dow_receipt"]["disposition"] == "ACCEPT"
     assert result["global_project_dov"] == "WITHHELD"
+
+
+
+def test_coverage_pressure_requires_exact_sha():
+    census = {
+        "schema": "abacus-coverage-dab/1.0.0",
+        "exact_sha": "d" * 40,
+        "rows": [],
+    }
+
+    result = control.build_coverage_pressure(census, HEAD)
+
+    assert result["status"] == "WITHHELD"
+    assert "exact_sha" in result["errors"]
+    assert result["priority_queue"] == []
+    assert result["formal_credit_delta"] == 0
+    assert result["engineering_credit_delta"] == 0
+
+
+def test_coverage_pressure_preserves_measured_order_and_zero_credit():
+    census = {
+        "schema": "abacus-coverage-dab/1.0.0",
+        "exact_sha": HEAD,
+        "active_source": {
+            "statements": 30,
+            "covered_statements": 10,
+            "missed_statements": 20,
+            "coverage_pct": 33.3333,
+        },
+        "pressure_order": ["src/a.py", "src/b.py"],
+        "rows": [
+            {
+                "path": "src/b.py",
+                "source_class": "ACTIVE_SOURCE",
+                "missed_statements": 5,
+                "statements": 10,
+                "coverage_pct": 50.0,
+                "criticality": "MEDIUM",
+                "evidence_class": "MEASURED",
+            },
+            {
+                "path": "src/a.py",
+                "source_class": "ACTIVE_SOURCE",
+                "missed_statements": 15,
+                "statements": 20,
+                "coverage_pct": 25.0,
+                "criticality": "USER_DIRECTED_HIGH",
+                "evidence_class": "MEASURED",
+                "existing_test_surface": [
+                    "tests.test_a::test_path|run",
+                ],
+                "existing_test_surface_evidence": "DYNAMIC_CONTEXT (MEASURED)",
+            },
+        ],
+    }
+
+    result = control.build_coverage_pressure(census, HEAD)
+
+    assert result["status"] == "MEASURED"
+    assert [row["path"] for row in result["priority_queue"]] == [
+        "src/a.py",
+        "src/b.py",
+    ]
+    assert result["priority_queue"][0]["maximum_statement_gain"] == 15
+    assert result["priority_queue"][0]["expected_gain"] == "WITHHELD"
+    assert result["priority_queue"][0]["formal_credit_delta"] == 0
+    assert result["priority_queue"][0]["engineering_credit_delta"] == 0
+    assert result["authority_transfer"] is False
+
+
+def test_keb_validation_parametrizes_negative_fields():
+    invalid = [
+        ("producer_repo", "GBOGEB/WRONG"),
+        ("downstream_consumer", "GBOGEB/CODEX"),
+        ("child_reentry_target", "GBOGEB/WRONG"),
+        ("result", "GREEN"),
+        ("producer_head_sha", "not-a-sha"),
+        ("receipt_sha256", "not-a-digest"),
+    ]
+
+    for field, value in invalid:
+        receipt = keb_receipt()
+        receipt[field] = value
+        valid, errors = control.validate_keb_receipt(receipt)
+        assert valid is False, field
+        assert field in errors, field
+
+
+def test_main_smoke_writes_coverage_pressure_receipt(tmp_path, monkeypatch):
+    census_path = tmp_path / "coverage-census.json"
+    summary_path = tmp_path / "summary.json"
+    census_path.write_text(
+        json.dumps(
+            {
+                "schema": "abacus-coverage-dab/1.0.0",
+                "exact_sha": HEAD,
+                "pressure_order": ["src/dmaic/contract.py"],
+                "active_source": {
+                    "statements": 93,
+                    "covered_statements": 10,
+                    "missed_statements": 83,
+                    "coverage_pct": 10.75,
+                },
+                "rows": [
+                    {
+                        "path": "src/dmaic/contract.py",
+                        "source_class": "ACTIVE_SOURCE",
+                        "missed_statements": 83,
+                        "statements": 93,
+                        "coverage_pct": 10.75,
+                        "criticality": "USER_DIRECTED_HIGH",
+                        "evidence_class": "MEASURED",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(control, "git_head", lambda: HEAD)
+    monkeypatch.setenv("EXPECTED_SHA", HEAD)
+
+    exit_code = control.main(
+        [
+            "--summary",
+            str(summary_path),
+            "--coverage-census",
+            str(census_path),
+        ]
+    )
+
+    assert exit_code == 0
+    written = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert written["controller_state"] == "WAIT_KEB_RECEIPT"
+    assert written["coverage_pressure"]["status"] == "MEASURED"
+    assert written["coverage_pressure"]["priority_queue"][0]["path"] == (
+        "src/dmaic/contract.py"
+    )
+    assert written["global_project_dov"] == "WITHHELD"
+    assert written["authority_transfer"] is False
+
+
+
+def test_test_pressure_ranks_measured_non_green_states():
+    census = {
+        "schema": "abacus-test-evidence-census/1.0.0",
+        "exact_sha": HEAD,
+        "outcomes": {"pass": 2, "fail": 1, "skip": 2},
+        "states": {
+            "TEST_GREEN": 2,
+            "TEST_FAILING": 1,
+            "TEST_BLOCKED_CONFIG": 1,
+            "TEST_BLOCKED_DEPENDENCY": 1,
+        },
+        "skip_count": 2,
+        "xfail_count": 0,
+        "uncategorized_skips": [],
+        "rows": [
+            {
+                "test": "tests.test_ok::test_ok",
+                "outcome": "pass",
+                "test_state": "TEST_GREEN",
+            },
+            {
+                "test": "tests.test_cfg::test_cfg",
+                "outcome": "skip",
+                "test_state": "TEST_BLOCKED_CONFIG",
+            },
+            {
+                "test": "tests.test_dep::test_dep",
+                "outcome": "skip",
+                "test_state": "TEST_BLOCKED_DEPENDENCY",
+            },
+            {
+                "test": "tests.test_bad::test_bad",
+                "outcome": "fail",
+                "test_state": "TEST_FAILING",
+            },
+        ],
+    }
+
+    result = control.build_test_pressure(census, HEAD)
+
+    assert result["status"] == "MEASURED"
+    assert [row["test_state"] for row in result["priority_queue"]] == [
+        "TEST_FAILING",
+        "TEST_BLOCKED_CONFIG",
+        "TEST_BLOCKED_DEPENDENCY",
+    ]
+    assert result["skip_count"] == 2
+    assert result["xfail_count"] == 0
+    assert result["formal_credit_delta"] == 0
+    assert result["engineering_credit_delta"] == 0
+    assert result["authority_transfer"] is False
+
+
+def test_test_pressure_withholds_on_wrong_sha():
+    census = {
+        "schema": "abacus-test-evidence-census/1.0.0",
+        "exact_sha": "d" * 40,
+        "rows": [],
+    }
+
+    result = control.build_test_pressure(census, HEAD)
+
+    assert result["status"] == "WITHHELD"
+    assert result["priority_queue"] == []
+    assert "exact_sha" in result["errors"]
+    assert result["formal_credit_delta"] == 0
+
+
+def test_main_smoke_writes_test_pressure_receipt(tmp_path, monkeypatch):
+    census_path = tmp_path / "test-evidence.json"
+    summary_path = tmp_path / "summary.json"
+    census_path.write_text(
+        json.dumps(
+            {
+                "schema": "abacus-test-evidence-census/1.0.0",
+                "exact_sha": HEAD,
+                "outcomes": {"pass": 1, "skip": 1},
+                "states": {
+                    "TEST_GREEN": 1,
+                    "TEST_BLOCKED_CONFIG": 1,
+                },
+                "skip_count": 1,
+                "xfail_count": 0,
+                "uncategorized_skips": [],
+                "rows": [
+                    {
+                        "test": "tests.test_cfg::test_cfg",
+                        "outcome": "skip",
+                        "test_state": "TEST_BLOCKED_CONFIG",
+                    },
+                    {
+                        "test": "tests.test_ok::test_ok",
+                        "outcome": "pass",
+                        "test_state": "TEST_GREEN",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(control, "git_head", lambda: HEAD)
+    monkeypatch.setenv("EXPECTED_SHA", HEAD)
+
+    exit_code = control.main(
+        [
+            "--summary",
+            str(summary_path),
+            "--test-evidence-census",
+            str(census_path),
+        ]
+    )
+
+    assert exit_code == 0
+    written = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert written["test_pressure"]["status"] == "MEASURED"
+    assert written["test_pressure"]["priority_queue"][0]["test_state"] == (
+        "TEST_BLOCKED_CONFIG"
+    )
+    assert written["global_project_dov"] == "WITHHELD"
+    assert written["authority_transfer"] is False

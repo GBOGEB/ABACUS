@@ -32,6 +32,8 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: Classify change risk and select Python proof
         id: plan
@@ -231,19 +233,129 @@ jobs:
           } > ~/.config/pip/pip.conf
 
       - name: Install tooling
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install . || true
-          pip install pre-commit pytest pytest-cov pyyaml
+          python -m pip install -r requirements-dev.txt
+          if [[ "${{ matrix.python-version }}" != "3.10" ]]; then
+            python -m pip install .
+          else
+            echo "Python 3.10 is a source-tree compatibility proof; pyproject requires >=3.11."
+          fi
 
       - name: Run pre-commit hooks
+        shell: bash
         run: |
-          pre-commit run --all-files || echo "Pre-commit completed"
+          # rex-allow: advisory formatter/lint hook; correctness is gated separately below.
+          pre-commit run --all-files || echo "Pre-commit advisory completed"
 
-      - name: Run pytest
+      - name: Run canonical coverage and emit governed evidence
+        if: matrix.python-version == '3.12'
+        shell: bash
         run: |
-          pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          mkdir -p "${evidence_dir}"
+
+          pytest_rc=0
+          python -m pytest -p scripts.pytest_test_state_plugin -v \
+            --govern-test-states \
+            --benchmark-disable \
+            --cov=. \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-report=xml:"${evidence_dir}/coverage.xml" \
+            --junitxml="${evidence_dir}/junit.xml" \
+            || pytest_rc=$?
+
+          census_rc=0
+          python scripts/test_evidence_census.py \
+            --junit "${evidence_dir}/junit.xml" \
+            --out "${evidence_dir}/test-evidence.json" \
+            --max-skips 17 \
+            --max-xfails 0 \
+            || census_rc=$?
+
+          python -m coverage json \
+            --show-contexts \
+            -o "${evidence_dir}/coverage-contexts.json"
+
+          python scripts/coverage_dab_census.py \
+            --coverage-json "${evidence_dir}/coverage-contexts.json" \
+            --criticality governance/coverage/criticality_manifest.json \
+            --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
+            --test-evidence "${evidence_dir}/test-evidence.json" \
+            --exact-sha "${GITHUB_SHA}" \
+            --out "${evidence_dir}/coverage-dab.json"
+
+          diff_rc=0
+          python -m pip install "diff-cover>=9,<10"
+          diff-cover "${evidence_dir}/coverage.xml" \
+            --compare-branch=origin/main \
+            --fail-under=80 \
+            || diff_rc=$?
+
+          if (( pytest_rc != 0 )); then
+            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            exit "${pytest_rc}"
+          fi
+          if (( census_rc != 0 )); then
+            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            exit "${census_rc}"
+          fi
+          if (( diff_rc != 0 )); then
+            echo "::error::changed-line coverage is below the 80% B9 floor."
+            exit "${diff_rc}"
+          fi
+
+      - name: Run functional compatibility proof
+        if: matrix.python-version != '3.12'
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          mkdir -p "${evidence_dir}"
+
+          pytest_rc=0
+          python -m pytest -p scripts.pytest_test_state_plugin -v \
+            --govern-test-states \
+            --benchmark-disable \
+            --junitxml="${evidence_dir}/junit.xml" \
+            || pytest_rc=$?
+
+          census_rc=0
+          python scripts/test_evidence_census.py \
+            --junit "${evidence_dir}/junit.xml" \
+            --out "${evidence_dir}/test-evidence.json" \
+            --max-skips 17 \
+            --max-xfails 0 \
+            || census_rc=$?
+
+          if (( pytest_rc != 0 )); then
+            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            exit "${pytest_rc}"
+          fi
+          if (( census_rc != 0 )); then
+            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            exit "${census_rc}"
+          fi
+
+      - name: Upload governed test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-evidence-py${{ matrix.python-version }}-${{ github.sha }}
+          path: test_reports/python-${{ matrix.python-version }}/
+          if-no-files-found: warn
+
+      - name: Run truthful Phase0 smoke proof
+        if: matrix.python-version == '3.12'
+        run: |
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          python scripts/runners/phase0_runner.py --smoke \
+            --receipt "${evidence_dir}/phase0-smoke.json"
 
       - name: Test QPS W08 DOW contract (fail closed)
         if: matrix.python-version == '3.12'
@@ -326,6 +438,71 @@ jobs:
             echo "::error::${msg}"
             exit 1
           fi
+
+  benchmark-baseline:
+    name: Benchmark baseline - Python 3.12 - no coverage
+    if: github.repository == 'GBOGEB/ABACUS'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install benchmark dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Run isolated microbenchmarks
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/benchmark
+          python -m pytest -q \
+            --benchmark-only \
+            --benchmark-min-rounds=50 \
+            --benchmark-json=test_reports/benchmark/benchmark.json \
+            tests/test_docker_integration.py::TestDockerConfiguration::test_dockerfile_layer_optimization \
+            tests/test_integration.py::TestPerformanceBenchmarks::test_bootstrap_computation_speed
+
+          python - <<'PY'
+          import json
+          import platform
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          receipt = {
+              "schema": "abacus-benchmark-baseline/1.0.0",
+              "status": "BASELINE_ONLY_NO_REGRESSION_CLAIM",
+              "commit": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "python": sys.version,
+              "platform": platform.platform(),
+              "coverage_enabled": False,
+              "minimum_rounds": 50,
+              "benchmark_json": "benchmark.json",
+              "authority_transfer": False,
+              "formal_credit_delta": 0,
+              "engineering_credit_delta": 0,
+          }
+          Path("test_reports/benchmark/receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload benchmark baseline
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-baseline-${{ github.sha }}
+          path: test_reports/benchmark/
+          if-no-files-found: error
 
   runner-migration-canary:
     name: Runner migration canary - ubuntu-latest - Python 3.12

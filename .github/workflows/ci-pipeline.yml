@@ -73,7 +73,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest pytest-cov pytest-xdist pytest-timeout
+          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pytest-xdist pytest-timeout
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Build Docker test image
@@ -81,7 +81,7 @@ jobs:
         run: docker build -t test-app:latest .
 
       - name: Run Tests
-        run: pytest tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term -n auto
+        run: pytest --benchmark-disable tests/ -v --cov=. --cov-report=xml --cov-report=html --cov-report=term -n auto
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v7

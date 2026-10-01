@@ -29,6 +29,7 @@ def test_output_directories_exist():
         dir_path = base_path / dir_name
         assert dir_path.exists() or True, f"Directory {dir_name} should exist or be creatable"
 
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_dmaic_execution_script_exists():
     """Test that main execution scripts exist"""
     base_path = Path(__file__).parent.parent
@@ -43,7 +44,7 @@ def test_dmaic_execution_script_exists():
             assert script_path.is_file()
             break
     else:
-        pytest.skip("No DMAIC execution scripts found")
+        pytest.skip("TEST_BLOCKED_SOURCE_MISSING: No DMAIC execution scripts found")
 
 def test_requirements_file_exists():
     """Test that requirements.txt exists"""

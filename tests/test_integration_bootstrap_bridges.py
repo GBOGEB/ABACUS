@@ -81,6 +81,7 @@ class TestBootstrapBridgeIntegration:
         assert "test_bootstrap_eval.py" in validation_checks or "Test file" in validation_checks
         assert "pytest" in validation_checks
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_bootstrap_bridge_dmaic_report_structure(self):
         """Test bootstrap bridge generates valid DMAIC report structure"""
         from bootstrap_bridge import BootstrapBridge
@@ -110,8 +111,9 @@ class TestBootstrapBridgeIntegration:
             assert phases["define"]["test_count"] == 28
 
         except Exception as e:
-            pytest.skip(f"Prerequisites not met for full DMAIC execution: {e}")
+            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met for full DMAIC execution: {e}")
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_comprehensive_bridge_includes_bootstrap(self):
         """Test that comprehensive_bridge_test_suite includes bootstrap bridge"""
         try:
@@ -123,9 +125,10 @@ class TestBootstrapBridgeIntegration:
             assert "bootstrap" in content or "statistical" in content.lower()
 
         except FileNotFoundError:
-            pytest.skip("comprehensive_bridge_test_suite.py not found")
+            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: comprehensive_bridge_test_suite.py not found")
 
     @pytest.mark.slow
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_bootstrap_bridge_test_execution(self):
         """Test bootstrap bridge can execute tests (marker-based)"""
         from bootstrap_bridge import BootstrapBridge
@@ -136,7 +139,7 @@ class TestBootstrapBridgeIntegration:
         success, messages = bridge.validate_prerequisites()
 
         if not success:
-            pytest.skip(f"Prerequisites not met: {messages}")
+            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met: {messages}")
 
         # Try to run tests with bootstrap_stats marker (subset)
         try:
@@ -147,7 +150,7 @@ class TestBootstrapBridgeIntegration:
             assert results["bridge"] == "bootstrap_statistics"
 
         except Exception as e:
-            pytest.skip(f"Test execution not available: {e}")
+            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Test execution not available: {e}")
 
     def test_cross_bridge_compatibility(self):
         """Test bootstrap bridge is compatible with other bridge structures"""
@@ -196,12 +199,13 @@ class TestBootstrapBridgeIntegration:
         except Exception as e:
             pytest.fail(f"Report directory not writable: {e}")
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_integrated_test_runner_includes_bootstrap(self):
         """Test that run_integrated_tests.py includes bootstrap mode"""
         runner_path = PROJECT_ROOT / "run_integrated_tests.py"
 
         if not runner_path.exists():
-            pytest.skip("run_integrated_tests.py not found")
+            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: run_integrated_tests.py not found")
 
         with open(runner_path, "r") as f:
             content = f.read()
@@ -210,12 +214,13 @@ class TestBootstrapBridgeIntegration:
         assert "bootstrap" in content.lower()
         assert "run_bootstrap_tests" in content or "bootstrap_bridge" in content
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_pytest_markers_registered(self):
         """Test that all required pytest markers are registered"""
         pytest_ini = PROJECT_ROOT / "pytest.ini"
 
         if not pytest_ini.exists():
-            pytest.skip("pytest.ini not found")
+            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: pytest.ini not found")
 
         with open(pytest_ini, "r") as f:
             content = f.read()
@@ -227,12 +232,13 @@ class TestBootstrapBridgeIntegration:
         assert "bridge" in content
         assert "dmaic" in content
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_conftest_fixtures_available(self):
         """Test that conftest.py provides bootstrap fixtures"""
         conftest_path = SCRIPT_DIR / "conftest.py"
 
         if not conftest_path.exists():
-            pytest.skip("conftest.py not found")
+            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: conftest.py not found")
 
         with open(conftest_path, "r") as f:
             content = f.read()
@@ -262,12 +268,13 @@ class TestBootstrapBridgeHealthCheck:
         bootstrap_bridge = SCRIPT_DIR / "bootstrap_bridge.py"
         assert bootstrap_bridge.exists(), "bootstrap_bridge.py not found"
 
+    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_test_suite_book_includes_bootstrap(self):
         """Verify TEST_SUITE_BOOK.md includes bootstrap chapter"""
         book_path = PROJECT_ROOT / "TEST_SUITE_BOOK.md"
 
         if not book_path.exists():
-            pytest.skip("TEST_SUITE_BOOK.md not found")
+            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: TEST_SUITE_BOOK.md not found")
 
         with open(book_path, "r") as f:
             content = f.read()

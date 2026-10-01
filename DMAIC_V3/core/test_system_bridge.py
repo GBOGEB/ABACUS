@@ -68,6 +68,8 @@ class MCPControlPoint:
 
 
 class TestSystemBridge:
+    # Production bridge class; never collect as a pytest test class.
+    __test__ = False
     def __init__(self, config: DMAICConfig, state_manager: StateManager,
                  handover_bridge: HandoverBridge):
         self.config = config

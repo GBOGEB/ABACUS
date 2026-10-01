@@ -2,6 +2,8 @@ import pathlib
 import sqlite3
 import pytest
 
+pytestmark = pytest.mark.TEST_BLOCKED_SOURCE_MISSING
+
 pytestmark = [pytest.mark.db, pytest.mark.integration]
 
 SCHEMA_PATH = pathlib.Path("testdata/db_schema.sql")
