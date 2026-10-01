@@ -6,6 +6,7 @@ ssot_items:
     status: draft-review
     linked_artifacts:
       - docs/Q3_Q4_Q5/MAIN_QA_REGISTER.md
+      - ssot/review_artifact_manifest.yaml#tender-alat-intent
   - id: SSOT-Q4
     name: Line S Design Basis
     source: docs/Q3_Q4_Q5/COMPENDIUM.md#q4
