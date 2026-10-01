@@ -59,25 +59,25 @@ def get_github_token():
 
 class LocalCIMonitor:
     """Monitor CI/CD status and create issues locally"""
-    
+
     def __init__(self, token: str, repo_name: str, pr_number: int):
         self.github = Github(token)
         self.repo = self.github.get_repo(repo_name)
         self.pr_number = pr_number
         self.pr = self.repo.get_pull(pr_number)
-        
+
     def get_ci_status(self) -> Dict:
         """Get current CI/CD status"""
         # Get the latest commit
         commits = list(self.pr.get_commits())
         if not commits:
             return {"status": "unknown", "checks": []}
-        
+
         latest_commit = commits[-1]
-        
+
         # Get check runs
         check_runs = latest_commit.get_check_runs()
-        
+
         status = {
             "commit": latest_commit.sha[:7],
             "status": "pending",
@@ -87,7 +87,7 @@ class LocalCIMonitor:
             "failed": 0,
             "pending": 0
         }
-        
+
         for check in check_runs:
             check_info = {
                 "name": check.name,
@@ -97,14 +97,14 @@ class LocalCIMonitor:
             }
             status["checks"].append(check_info)
             status["total"] += 1
-            
+
             if check.conclusion == "success":
                 status["passed"] += 1
             elif check.conclusion == "failure":
                 status["failed"] += 1
             else:
                 status["pending"] += 1
-        
+
         # Overall status
         if status["failed"] > 0:
             status["status"] = "failed"
@@ -112,9 +112,9 @@ class LocalCIMonitor:
             status["status"] = "pending"
         elif status["passed"] == status["total"]:
             status["status"] = "success"
-        
+
         return status
-    
+
     def display_status(self, status: Dict):
         """Display CI/CD status in terminal"""
         print("\n" + "=" * 70)
@@ -128,15 +128,15 @@ class LocalCIMonitor:
         print(f"   ✅ Passed: {status['passed']}")
         print(f"   ❌ Failed: {status['failed']}")
         print(f"   ⏳ Pending: {status['pending']}")
-        
+
         if status['checks']:
             print(f"\n🔧 Check Details:")
             for check in status['checks']:
                 icon = self._get_check_icon(check['conclusion'])
                 print(f"   {icon} {check['name']}: {check['conclusion'] or check['status']}")
-        
+
         print("=" * 70)
-    
+
     def _format_status(self, status: str) -> str:
         """Format status with emoji"""
         if status == "success":
@@ -147,7 +147,7 @@ class LocalCIMonitor:
             return "⏳ PENDING"
         else:
             return "❓ UNKNOWN"
-    
+
     def _get_check_icon(self, conclusion: Optional[str]) -> str:
         """Get icon for check conclusion"""
         if conclusion == "success":
@@ -160,25 +160,25 @@ class LocalCIMonitor:
             return "⏭️"
         else:
             return "⏳"
-    
+
     def fetch_test_results(self) -> Optional[Dict]:
         """Fetch test results from CI artifacts"""
         print("\n🔍 Fetching test results from CI artifacts...")
-        
+
         # Get workflow runs for this PR
         commits = list(self.pr.get_commits())
         if not commits:
             print("⚠️  No commits found")
             return None
-        
+
         latest_commit = commits[-1]
-        
+
         # Get workflow runs
         runs = self.repo.get_workflow_runs(
             head_sha=latest_commit.sha,
             status="completed"
         )
-        
+
         for run in runs:
             # Get artifacts
             artifacts = run.get_artifacts()
@@ -187,40 +187,40 @@ class LocalCIMonitor:
                     print(f"   Found artifact: {artifact.name}")
                     # Note: Downloading artifacts requires additional authentication
                     # For now, we'll rely on the GitHub Actions workflow
-        
+
         return None
-    
+
     def create_issues_from_failures(self, status: Dict):
         """Create GitHub issues for failing checks"""
         if status['failed'] == 0:
             print("\n✅ No failures to create issues for")
             return
-        
+
         print(f"\n🔧 Creating issues for {status['failed']} failing check(s)...")
-        
+
         for check in status['checks']:
             if check['conclusion'] == 'failure':
                 self._create_issue_for_check(check)
-    
+
     def _create_issue_for_check(self, check: Dict):
         """Create issue for a failing check"""
         check_name = check['name']
-        
+
         # Check for existing issues
         query = f'repo:{self.repo.full_name} is:issue is:open label:ci-failure "{check_name}"'
         existing = list(self.github.search_issues(query))
-        
+
         if existing:
             print(f"   ℹ️  Issue already exists for {check_name}: #{existing[0].number}")
             return
-        
+
         # Create issue
         title = f"🔴 CI Failure: {check_name}"
         body = f"""## 🔴 CI/CD Check Failure
 
-**Check:** `{check_name}`  
-**Status:** {check['conclusion']}  
-**PR:** #{self.pr_number}  
+**Check:** `{check_name}`
+**Status:** {check['conclusion']}
+**PR:** #{self.pr_number}
 **Detected:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
 
 ### 🔗 Links
@@ -259,7 +259,7 @@ class LocalCIMonitor:
 
 **Note:** This issue was automatically created by the local CI monitoring system.
 """
-        
+
         try:
             issue = self.repo.create_issue(
                 title=title,
@@ -267,33 +267,33 @@ class LocalCIMonitor:
                 labels=['ci-failure', 'automated', 'priority:high']
             )
             print(f"   ✅ Created issue #{issue.number}: {title}")
-            
+
             # Add comment to PR
             self.pr.create_issue_comment(f"🔗 Created issue #{issue.number} for failing check: {check_name}")
-            
+
         except GithubException as e:
             print(f"   ❌ Failed to create issue: {e}")
-    
+
     def watch_ci(self, interval: int = 30):
         """Watch CI/CD status continuously"""
         print(f"\n👀 Watching CI/CD status (checking every {interval}s)...")
         print("Press Ctrl+C to stop\n")
-        
+
         try:
             while True:
                 status = self.get_ci_status()
                 self.display_status(status)
-                
+
                 if status['status'] == 'success':
                     print("\n🎉 All checks passed!")
                     break
                 elif status['status'] == 'failed':
                     print("\n⚠️  Some checks failed. Run with --create-issues to create GitHub issues.")
                     break
-                
+
                 print(f"\n⏳ Waiting {interval}s before next check...")
                 time.sleep(interval)
-                
+
         except KeyboardInterrupt:
             print("\n\n👋 Stopped watching")
 
