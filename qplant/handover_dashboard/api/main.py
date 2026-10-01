@@ -22,11 +22,10 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 # ── Ensure project root is on sys.path ──────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -42,7 +41,6 @@ if str(QPLANT_ROOT) not in sys.path:
 from authentication.fastapi_middleware import verify_api_key
 
 from api.models import (
-    AudienceType,
     BatchLeakRateRequest,
     BuildStatus,
     CompressorConfigRequest,
@@ -58,21 +56,13 @@ from api.models import (
 )
 
 # ── Import Python engine modules ────────────────────────────────────
-from src.config_loader import ConfigLoader, cfg
+from src.config_loader import cfg
 from src.calc_leak_rate import (
     mbar_l_s_to_pa_m3_s,
     leak_rate_to_molar_flow_mol_s,
 )
-from src.monte_carlo import (
-    ScenarioConfig,
-    ValveFleet,
-    N_SIMULATIONS,
-)
 from src.compressor_reliability import (
-    CompressorConfig,
-    FSD575_MOTOR_KW,
     FSD575_PACKAGE_KW,
-    FSD575_PER_UNIT_FLOW_GS,
     FSD575_CAPITAL_EUR,
     FSD575_MTBF,
     FSD575_MTTR,
