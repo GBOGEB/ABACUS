@@ -218,7 +218,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
 - `pip install pytest pyyaml` — `ci-abacus.yml`, `codespace-federation.yml`, `dow-sprint6-cicd.yml`
-- `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
 - `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `bandit -r . -f json -o bandit-report.json || true` — `ci-cd.yml`, `ci-pipeline.yml`
@@ -227,14 +226,14 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install bandit safety` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 black isort mypy pylint` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
-- `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
+- `pip install pytest pytest-cov pytest-benchmark pytest-mock` — `bridge-ci.yml`, `main.yml`
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
-- `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
-- `python -m pip install pytest numpy` — `leg5-federation-dashboard-proof.yml`, `mip-v2-federated-control.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
+- `python -m pytest -q \\` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
+- `python -m pytest \\` — `governance.yml`, `validation.yml`
 
 ## Control rule
 
