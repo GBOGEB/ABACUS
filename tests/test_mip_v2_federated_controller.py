@@ -364,3 +364,67 @@ def test_main_smoke_writes_test_pressure_receipt(tmp_path, monkeypatch):
     )
     assert written["global_project_dov"] == "WITHHELD"
     assert written["authority_transfer"] is False
+
+
+def test_post_b0_coverage_pressure_accepts_union_schema_and_zero_queue():
+    census = {
+        "schema": "abacus-post-b0-coverage-dab/1.0.0",
+        "exact_sha": HEAD,
+        "measurement": {
+            "coverage_union": "EXECUTED_LINE_AND_BRANCH_SET_UNION",
+            "surfaces": ["canonical", "b0_report_only"],
+        },
+        "active_source": {
+            "statements": 30,
+            "covered_statements": 10,
+            "missed_statements": 20,
+            "coverage_pct": 33.3333,
+        },
+        "pressure_order": ["src/a.py", "src/zero.py"],
+        "rows": [
+            {
+                "path": "src/a.py",
+                "source_class": "ACTIVE_SOURCE",
+                "statements": 20,
+                "covered_statements": 10,
+                "missed_statements": 10,
+                "coverage_pct": 50.0,
+                "criticality": "USER_DIRECTED_HIGH",
+                "evidence_class": "MEASURED",
+            },
+            {
+                "path": "src/zero.py",
+                "source_class": "ACTIVE_SOURCE",
+                "statements": 10,
+                "covered_statements": 0,
+                "missed_statements": 10,
+                "coverage_pct": 0.0,
+                "criticality": "WITHHELD",
+                "disposition": "ADMISSION_PENDING",
+                "evidence_class": "MEASURED",
+            },
+        ],
+    }
+
+    result = control.build_coverage_pressure(census, HEAD)
+
+    assert result["status"] == "MEASURED"
+    assert result["census_schema"] == "abacus-post-b0-coverage-dab/1.0.0"
+    assert result["measurement"]["surfaces"] == [
+        "canonical",
+        "b0_report_only",
+    ]
+    assert result["priority_queue"][0]["path"] == "src/a.py"
+    assert result["zero_coverage_disposition_queue"] == [
+        {
+            "path": "src/zero.py",
+            "current_disposition": "ADMISSION_PENDING",
+            "required_disposition": "ADMIT|QUARANTINE|DELETE|UNKNOWN",
+            "evidence_class": "MEASURED",
+            "authority_transfer": False,
+            "formal_credit_delta": 0,
+            "engineering_credit_delta": 0,
+        }
+    ]
+    assert result["formal_credit_delta"] == 0
+    assert result["authority_transfer"] is False
