@@ -117,6 +117,8 @@ def main(argv: list[str] | None = None) -> int:
                 sys.executable,
                 "-m",
                 "pytest",
+                "-p",
+                "scripts.pytest_test_state_plugin",
                 "--collect-only",
                 "-q",
                 rel,
