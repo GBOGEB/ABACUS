@@ -19,7 +19,7 @@ jobs:
           for f in $(git ls-files 'docs/**/*.md'); do
             base=$(basename "$f" .md)
             docker run --rm -v "$PWD:/data" pandoc/latex:3.1 \
-              "$f" -o "out/${base}.pdf"
+              --pdf-engine=xelatex "$f" -o "out/${base}.pdf"
             docker run --rm -v "$PWD:/data" pandoc/core:3.1 \
               "$f" -o "out/${base}.docx"
           done
