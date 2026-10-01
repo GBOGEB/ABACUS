@@ -274,6 +274,8 @@ def test_concurrent_cache_writers_use_independent_temp_files(tmp_path, monkeypat
 
 @pytest.mark.unit
 def test_save_cache_retries_transient_permission_error(tmp_path, monkeypatch):
+    import time
+
     wrapper = idem.IdempotentPhaseWrapper(
         idem.IdempotencyConfig(enabled=True, cache_dir=tmp_path / "cache")
     )
@@ -288,7 +290,7 @@ def test_save_cache_retries_transient_permission_error(tmp_path, monkeypatch):
         return original_replace(source, target)
 
     monkeypatch.setattr(Path, "replace", flaky_replace)
-    monkeypatch.setattr(idem.time, "sleep", lambda _delay: None)
+    monkeypatch.setattr(time, "sleep", lambda _delay: None)
 
     assert wrapper._save_cache(cache_file, {"value": 11}, "hash-11") is True
     assert len(calls) == 2
