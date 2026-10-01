@@ -40,16 +40,14 @@ jobs:
           flake8 ABACUS-v032/ \
             --max-line-length=120 \
             --ignore=E501,W503 \
-            # rex-allow: ADVISORY_EXPLICIT
-            || echo "Linting issues found"
+            || echo "Linting issues found" # rex-allow: ADVISORY_EXPLICIT
 
       - name: Run Pylint
         run: |
           # Legacy ABACUS-v032 pylint telemetry; non-blocking by design.
           pylint ABACUS-v032/*.py \
             --disable=C0111,C0103 \
-            # rex-allow: ADVISORY_EXPLICIT
-            || echo "Pylint issues found"
+            || echo "Pylint issues found" # rex-allow: ADVISORY_EXPLICIT
 
   test-phases:
     name: Test DMAIC Phases
