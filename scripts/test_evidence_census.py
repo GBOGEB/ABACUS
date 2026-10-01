@@ -11,7 +11,11 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from scripts.pytest_test_state_plugin import BLOCKING_STATES, TEST_STATES
+try:
+    from scripts.pytest_test_state_plugin import BLOCKING_STATES, TEST_STATES
+except ModuleNotFoundError:
+    # Direct execution sets sys.path[0] to scripts/, so import the sibling module.
+    from pytest_test_state_plugin import BLOCKING_STATES, TEST_STATES
 
 
 def _properties(case: ET.Element) -> dict[str, str]:
