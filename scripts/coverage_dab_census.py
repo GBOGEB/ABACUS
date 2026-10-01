@@ -66,6 +66,25 @@ def classify_source(path: str, overrides: dict[str, Any]) -> str:
     return "UNKNOWN"
 
 
+def _normalise_test_key(value: str) -> str:
+    return value.split("|", 1)[0].replace("::", ".").strip()
+
+
+def _test_outcome_index(test_evidence: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    index: dict[str, dict[str, Any]] = {}
+    rows = test_evidence.get("rows", [])
+    if not isinstance(rows, list):
+        return index
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        test = str(row.get("test", "")).strip()
+        if not test:
+            continue
+        index[_normalise_test_key(test)] = row
+    return index
+
+
 def measured_contexts(file_data: dict[str, Any]) -> list[str]:
     contexts = file_data.get("contexts", {})
     values: set[str] = set()
@@ -93,6 +112,7 @@ def build_census(
     coverage: dict[str, Any],
     criticality: dict[str, Any] | None = None,
     matrix_baseline: dict[str, Any] | None = None,
+    test_evidence: dict[str, Any] | None = None,
     exact_sha: str | None = None,
 ) -> dict[str, Any]:
     criticality = criticality or {}
@@ -100,6 +120,7 @@ def build_census(
     if not isinstance(entries, dict):
         entries = {}
 
+    outcome_index = _test_outcome_index(test_evidence or {})
     rows: list[dict[str, Any]] = []
     for raw_path, data in sorted(coverage.get("files", {}).items()):
         path = normalize_path(raw_path)
@@ -113,9 +134,27 @@ def build_census(
         metadata = entries.get(path, {}) if isinstance(entries.get(path, {}), dict) else {}
         tier = str(metadata.get("criticality", "WITHHELD"))
 
+        matched_outcomes = [
+            outcome_index[_normalise_test_key(context)]
+            for context in contexts
+            if _normalise_test_key(context) in outcome_index
+        ]
+        matched_states = sorted(
+            {
+                str(row.get("test_state"))
+                for row in matched_outcomes
+                if row.get("test_state")
+            }
+        )
+        if "TEST_FAILING" in matched_states:
+            test_state: str | None = "TEST_FAILING"
+        elif matched_states and all(state == "TEST_GREEN" for state in matched_states):
+            test_state = "TEST_GREEN"
+        else:
+            test_state = None
+
         if source_class == "ACTIVE_SOURCE" and contexts:
             disposition = "ACTIVE_MEASURED"
-            test_state = "TEST_GREEN"
             surface_evidence = "DYNAMIC_CONTEXT (MEASURED)"
         elif source_class == "ACTIVE_SOURCE" and statements and covered == 0:
             disposition = "ADMISSION_PENDING"
@@ -123,8 +162,8 @@ def build_census(
             surface_evidence = "NONE_MEASURED"
         elif source_class == "ACTIVE_SOURCE":
             disposition = "ACTIVE_MEASURED"
-            test_state = "NO_TEST" if not contexts else "TEST_GREEN"
-            surface_evidence = "NONE_MEASURED" if not contexts else "DYNAMIC_CONTEXT (MEASURED)"
+            test_state = "NO_TEST"
+            surface_evidence = "NONE_MEASURED"
         elif source_class == "LEGACY_QUARANTINED":
             disposition = "REVIEW_QUARANTINE"
             test_state = "NO_TEST"
@@ -144,8 +183,21 @@ def build_census(
                 "source_class": source_class,
                 "disposition": disposition,
                 "test_state": test_state,
+                "test_state_evidence": (
+                    "JUNIT_CONTEXT_JOIN (MEASURED)"
+                    if matched_outcomes
+                    else "WITHHELD"
+                ),
                 "existing_test_surface": contexts,
                 "existing_test_surface_evidence": surface_evidence,
+                "existing_test_outcomes": [
+                    {
+                        "test": row.get("test"),
+                        "outcome": row.get("outcome"),
+                        "test_state": row.get("test_state"),
+                    }
+                    for row in matched_outcomes
+                ],
                 "criticality": tier,
                 "criticality_source": metadata.get("source", "WITHHELD"),
                 "skip_dependencies": metadata.get("skip_dependencies", []),
@@ -213,6 +265,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--coverage-json", type=Path, required=True)
     parser.add_argument("--criticality", type=Path)
     parser.add_argument("--matrix-baseline", type=Path)
+    parser.add_argument("--test-evidence", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--exact-sha")
     args = parser.parse_args(argv)
@@ -220,10 +273,12 @@ def main(argv: list[str] | None = None) -> int:
     coverage = _load_json(args.coverage_json)
     criticality = _load_json(args.criticality)
     matrix_baseline = _load_json(args.matrix_baseline)
+    test_evidence = _load_json(args.test_evidence)
     census = build_census(
         coverage,
         criticality=criticality,
         matrix_baseline=matrix_baseline,
+        test_evidence=test_evidence,
         exact_sha=args.exact_sha,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
