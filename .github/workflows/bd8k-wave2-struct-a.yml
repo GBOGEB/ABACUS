@@ -37,7 +37,7 @@ jobs:
           "abacus_v21_session_tuple_analyzer.py"
           "ABACUS-v032/bulk_resolve_github_issues.py"
           "tests/test_performance_monitoring.py"
-          "github/scripts/create_issues_from_failures.py"
+          ".github/scripts/create_issues_from_failures.py"
           "abacus_v21_migration_test_comprehensive.py"
           )
           python - <<'PY'
