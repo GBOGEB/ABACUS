@@ -98,8 +98,12 @@ jobs:
         shell: bash
       
       - name: Run Unit Tests
+        shell: bash
         run: |
-          pytest tests/ -m "not integration" -v --tb=short --junitxml=junit/test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
+          junit_path="junit/test-results-${{ matrix.os }}-"
+          junit_path+="${{ matrix.python-version }}.xml"
+          pytest tests/ -m "not integration" -v --tb=short \
+            --junitxml="${junit_path}"
       - name: Upload Test Results
         uses: actions/upload-artifact@v7
         if: always()
@@ -260,22 +264,51 @@ jobs:
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
       
       - name: Run Comprehensive Tests
+        shell: bash
         run: |
-          python scripts/run_comprehensive_tests.py full > test_output.log 2>&1
-        continue-on-error: true
-      
+          set -euo pipefail
+          mkdir -p dashboard
+          python -m pytest tests/ --benchmark-disable -q \
+            2>&1 | tee test_output.log
+          python - <<'PY'
+          import html
+          import os
+          from pathlib import Path
+
+          log = Path("test_output.log").read_text(
+              encoding="utf-8",
+              errors="replace",
+          )
+          sha = os.environ.get("GITHUB_SHA", "UNKNOWN")
+          body = (
+              "<!doctype html><html><head><meta charset='utf-8'>"
+              "<title>ABACUS test dashboard</title></head><body>"
+              "<h1>ABACUS comprehensive test proof</h1>"
+              f"<p>Commit: <code>{html.escape(sha)}</code></p>"
+              "<pre>"
+              + html.escape(log)
+              + "</pre></body></html>\n"
+          )
+          Path("dashboard/index.html").write_text(
+              body,
+              encoding="utf-8",
+          )
+          PY
+
       - name: Upload Test Output
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: comprehensive-test-output
           path: test_output.log
-      
+          if-no-files-found: error
+
       - name: Upload Dashboard
         uses: actions/upload-artifact@v7
-        if: always()
         with:
           name: test-dashboard
           path: dashboard/
+          if-no-files-found: error
 
   security-scan:
     name: Security Scanning
