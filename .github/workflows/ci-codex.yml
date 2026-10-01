@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt || true
           pip install . || true
-          pip install pre-commit pytest pytest-cov
+          pip install pre-commit pytest pytest-cov pytest-benchmark
         shell: bash
 
       - name: Run pre-commit hooks
@@ -35,9 +35,9 @@ jobs:
           pre-commit run --all-files || echo "Pre-commit completed"
         shell: bash
 
-      - name: Run pytest
+      - name: Run pytest --benchmark-disable
         run: |
-          pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+          pytest --benchmark-disable -v --cov=. --cov-report=term-missing || echo "Tests completed"
         shell: bash
 
       - name: Phase0 smoke test

@@ -257,12 +257,12 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install pytest pytest-asyncio pytest-cov pyyaml
+          pip install pytest pytest-asyncio pytest-cov pytest-benchmark pyyaml
       
       - name: Run cognitive orchestrator tests
         run: |
           cd ${{ env.DMAIC_PATH }}
-          pytest test_cognitive_orchestrator.py -v --cov=core --cov-report=xml --cov-report=term
+          pytest --benchmark-disable test_cognitive_orchestrator.py -v --cov=core --cov-report=xml --cov-report=term
       
       - name: Upload coverage
         uses: codecov/codecov-action@v7

@@ -231,19 +231,74 @@ jobs:
           } > ~/.config/pip/pip.conf
 
       - name: Install tooling
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install . || true
-          pip install pre-commit pytest pytest-cov pyyaml
+          python -m pip install -r requirements-dev.txt
+          if [[ "${{ matrix.python-version }}" != "3.10" ]]; then
+            python -m pip install .
+          else
+            echo "Python 3.10 is a source-tree compatibility proof; pyproject requires >=3.11."
+          fi
 
       - name: Run pre-commit hooks
+        shell: bash
         run: |
-          pre-commit run --all-files || echo "Pre-commit completed"
+          # rex-allow: advisory formatter/lint hook; correctness is gated separately below.
+          pre-commit run --all-files || echo "Pre-commit advisory completed"
 
-      - name: Run pytest
+      - name: Run pytest and emit governed evidence
+        shell: bash
         run: |
-          pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          mkdir -p "${evidence_dir}"
+
+          pytest_rc=0
+          python -m pytest -v \
+            --govern-test-states \
+            --benchmark-disable \
+            --cov=. \
+            --cov-report=term-missing \
+            --junitxml="${evidence_dir}/junit.xml" \
+            || pytest_rc=$?
+
+          census_rc=0
+          python scripts/test_evidence_census.py \
+            --junit "${evidence_dir}/junit.xml" \
+            --out "${evidence_dir}/test-evidence.json" \
+            --max-skips 17 \
+            --max-xfails 0 \
+            || census_rc=$?
+
+          python -m coverage json \
+            --show-contexts \
+            -o "${evidence_dir}/coverage-contexts.json"
+
+          python scripts/coverage_dab_census.py \
+            --coverage-json "${evidence_dir}/coverage-contexts.json" \
+            --criticality governance/coverage/criticality_manifest.json \
+            --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
+            --exact-sha "${GITHUB_SHA}" \
+            --out "${evidence_dir}/coverage-dab.json"
+
+          if (( pytest_rc != 0 )); then
+            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            exit "${pytest_rc}"
+          fi
+          if (( census_rc != 0 )); then
+            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            exit "${census_rc}"
+          fi
+
+      - name: Upload governed test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-evidence-py${{ matrix.python-version }}-${{ github.sha }}
+          path: test_reports/python-${{ matrix.python-version }}/
+          if-no-files-found: warn
 
       - name: Test QPS W08 DOW contract (fail closed)
         if: matrix.python-version == '3.12'

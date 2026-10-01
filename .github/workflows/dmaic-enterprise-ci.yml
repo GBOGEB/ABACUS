@@ -60,7 +60,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-mock pytest-asyncio pytest-xdist
+        pip install pytest pytest-cov pytest-benchmark pytest-mock pytest-asyncio pytest-xdist
     
     - name: Install dev dependencies
       run: |
@@ -73,10 +73,10 @@ jobs:
       run: |
         python -c 'import glob, py_compile; [py_compile.compile(path, doraise=True) for pattern in ("DMAIC_V3/agents/*.py", "DMAIC_V3/convergence/*.py", "DMAIC_V3/core/*.py") for path in glob.glob(pattern)]'
     
-    - name: Run pytest with coverage
+    - name: Run pytest --benchmark-disable with coverage
       shell: bash
       run: |
-        pytest DMAIC_V3/tests/ -v \
+        pytest --benchmark-disable DMAIC_V3/tests/ -v \
           --cov=DMAIC_V3 \
           --cov-report=xml \
           --cov-report=term-missing \

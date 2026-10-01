@@ -76,8 +76,8 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install . || true
-          pip install pytest pytest-cov pytest-xdist
-      - run: pytest -v -n auto --cov=. --cov-report=term-missing --cov-report=xml || echo "Tests completed"
+          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pytest-xdist
+      - run: pytest --benchmark-disable -v -n auto --cov=. --cov-report=term-missing --cov-report=xml || echo "Tests completed"
       - run: python -m pytest DMAIC_V3/tests/ -v || echo "DMAIC tests completed"
 
   test-rhel-8:

@@ -1,0 +1,39 @@
+{
+  "schema": "abacus-python-matrix-baseline/1.0.0",
+  "evidence_class": "MEASURED_FROM_CI_LOGS",
+  "coverage": {
+    "statements": 41408,
+    "missed": 25956,
+    "percent": 37
+  },
+  "python": {
+    "3.10.21": {
+      "passed": 938,
+      "skipped": 17,
+      "warnings": 2,
+      "suite_runtime_seconds": 253.74,
+      "docker_layer_mean_us": 3.2176,
+      "bootstrap_mean_us": 418.0358
+    },
+    "3.11.16": {
+      "passed": 938,
+      "skipped": 17,
+      "warnings": 2,
+      "suite_runtime_seconds": 233.13,
+      "docker_layer_mean_us": 4.6304,
+      "bootstrap_mean_us": 683.8409
+    },
+    "3.12.14": {
+      "passed": 938,
+      "skipped": 17,
+      "warnings": 104,
+      "suite_runtime_seconds": 244.86,
+      "docker_layer_mean_us": 4.9068,
+      "bootstrap_mean_us": 728.3062
+    }
+  },
+  "benchmark_claim": "WITHHELD_COVERAGE_TRACING_CONFOUNDED",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
+}

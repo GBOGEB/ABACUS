@@ -1,0 +1,96 @@
+name: MIP B0 Test Admission and Coverage Evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "pytest.ini"
+      - "requirements*.txt"
+      - "pyproject.toml"
+      - "scripts/test_admission_census.py"
+      - "scripts/test_evidence_census.py"
+      - "scripts/coverage_dab_census.py"
+      - "scripts/pytest_test_state_plugin.py"
+      - "DMAIC_V3/tests/**"
+      - "integration/*/tests/**"
+      - "tests/**"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  b0-report-only:
+    name: B0 report-only admission census
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install governed test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Collect and execute excluded suites as report-only evidence
+        env:
+          COVERAGE_FILE: test_reports/b0/.coverage
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/b0/junit
+          python scripts/test_admission_census.py \
+            --out test_reports/b0/admission-census.json \
+            --coverage-out test_reports/b0/coverage-contexts.json \
+            --junit-dir test_reports/b0/junit
+
+      - name: Build DAB census from measured B0 contexts
+        run: |
+          set -euo pipefail
+          python scripts/coverage_dab_census.py \
+            --coverage-json test_reports/b0/coverage-contexts.json \
+            --criticality governance/coverage/criticality_manifest.json \
+            --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
+            --exact-sha "${GITHUB_SHA}" \
+            --out test_reports/b0/coverage-dab.json
+
+      - name: Upload B0 report-only evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: b0-test-admission-${{ github.sha }}
+          path: test_reports/b0/
+          if-no-files-found: error
+
+  false-green-census:
+    name: B1 false-green census
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Census workflow false-green constructs
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/b1
+          python scripts/ci_false_green_lint.py \
+            --root .github/workflows \
+            --mode census \
+            --out test_reports/b1/false-green-census.json
+
+      - name: Upload B1 census
+        uses: actions/upload-artifact@v7
+        with:
+          name: b1-false-green-census-${{ github.sha }}
+          path: test_reports/b1/
+          if-no-files-found: error

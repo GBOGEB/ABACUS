@@ -48,13 +48,13 @@ jobs:
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-          pip install pytest-cov pylint mypy radon
+          pip install pytest-cov pytest-benchmark pylint mypy radon
       
       - name: Run all tests with coverage
         id: test-run
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3/core --cov-report=xml --cov-report=term \
+          pytest --benchmark-disable DMAIC_V3/tests/ -v --cov=DMAIC_V3/core --cov-report=xml --cov-report=term \
             --junitxml=test-results.xml || echo "TESTS_FAILED=true" >> $GITHUB_ENV
       
       - name: Check coverage threshold
