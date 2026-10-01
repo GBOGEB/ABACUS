@@ -119,7 +119,8 @@ flake8>=7.3.0
 pylint>=2.12.0,<3.0.0
 
 # Type checking
-mypy>=2.3.1
+mypy>=1.19.1,<2.0.0; python_version < "3.10"
+mypy>=2.3.1; python_version >= "3.10"
 
 # Documentation
 # Sphinx 8.x requires Python >=3.10 and 9.x requires Python >=3.12.
