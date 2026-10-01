@@ -1,203 +1,166 @@
 #!/usr/bin/env python3
-"""
-Parallel Execution System Tests - Phase 2B
-Version: 1.0.0
-Date: 2025-12-04
+"""Parallel execution authority tests for the current ABACUS runtime.
 
-Tests for the parallel execution system including config validation,
-execution types (DOW/KEB/GBOGEB), knowledge bridge, and orchestration.
+The retired rich_padding parallel_execution YAML must remain absent. Parallel
+execution authority is the canonical TwelveClusterOrchestrator contract.
 """
 
-import pytest
-import yaml
-from pathlib import Path
 from datetime import datetime
 import json
-from typing import Dict, List, Any
+from pathlib import Path
+
+import pytest
+
+from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
 
 
 @pytest.fixture
 def parallel_config_path():
-    """Path to parallel execution config"""
-    return Path(__file__).parent.parent / "rich_padding" / "parallel_execution" / "parallel_execution_config.yaml"
+    """Retired legacy path retained only as a non-regression guard."""
+    return (
+        Path(__file__).parent.parent
+        / "rich_padding"
+        / "parallel_execution"
+        / "parallel_execution_config.yaml"
+    )
 
 
 @pytest.fixture
-def parallel_config(parallel_config_path):
-    """Load parallel execution config"""
-    if parallel_config_path.exists():
-        with open(parallel_config_path, 'r', encoding='utf-8') as f:
-            return yaml.safe_load(f)
-    return None
+def orchestrator():
+    """Current parallel execution authority without optional external engines."""
+    return TwelveClusterOrchestrator(
+        max_workers=4,
+        use_keb=False,
+        use_gbogeb=False,
+    )
 
 
 @pytest.fixture
 def temp_workspace(tmp_path):
-    """Create temporary workspace"""
+    """Create temporary workspace."""
     workspace = tmp_path / "parallel_execution_workspace"
     workspace.mkdir()
     return workspace
 
 
-class TestParallelExecutionConfig:
-    """Test parallel execution configuration"""
+class TestRetiredParallelConfig:
+    """Guard the retirement boundary for the old configuration contract."""
 
-    def test_config_file_exists(self, parallel_config_path):
-        """Guard retirement of the untracked legacy parallel-execution config path."""
+    def test_config_file_remains_retired(self, parallel_config_path):
         assert not parallel_config_path.exists(), (
-            f"Legacy config path unexpectedly reintroduced without repository authority: {parallel_config_path}"
+            "Legacy parallel_execution_config.yaml was reintroduced without "
+            f"repository authority: {parallel_config_path}"
         )
 
-    def test_config_loads_successfully(self, parallel_config):
-        """Guard against manufacturing configuration for the retired legacy path."""
-        assert parallel_config is None
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_config_has_execution_types(self, parallel_config):
-        """Test that config defines all three execution types"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        assert 'type_1_session_handover' in parallel_config
-        assert 'type_2_persistent_ai' in parallel_config
-        assert 'type_3_implementation_struct' in parallel_config
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_config_knowledge_bridge_settings(self, parallel_config):
-        """Test knowledge bridge configuration"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        assert 'knowledge_bridge' in parallel_config
-        kb_config = parallel_config['knowledge_bridge']
-        assert kb_config['enabled'] is True
-        assert 'workspace_path' in kb_config
-        assert 'state_file' in kb_config
-
-
-class TestExecutionTypeDOW:
-    """Test Type 1: Session Handover Integration (DOW engine)"""
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type1_configuration(self, parallel_config):
-        """Test Type 1 session handover configuration"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type1 = parallel_config.get('type_1_session_handover')
-        assert type1 is not None
-        assert type1['type_id'] == 'TYPE_1_SESSION_HANDOVER'
-        assert type1['engine'] == 'DOW'
-        assert type1['priority'] == 1
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type1_integration_points(self, parallel_config):
-        """Test Type 1 has required integration points"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type1 = parallel_config.get('type_1_session_handover')
-        integration_points = type1.get('integration_points', [])
-
-        assert 'WORKSPACE_MASTER_INDEX.md' in integration_points
-        assert 'SESSION_TUPLE_TEMPLATE_v2.md' in integration_points
-        assert '00_CANONICAL_START_HOOK.md' in integration_points
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type1_devops_gates(self, parallel_config):
-        """Test Type 1 has all required DevOps gates"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type1 = parallel_config.get('type_1_session_handover')
-        gates = type1.get('devops_gates', [])
-
-        required_gates = [
-            'G1_CODE_TESTS',
-            'G2_DOC_ALIGNMENT',
-            'G3_CI_PIPELINE_GREEN',
-            'G4_VALIDATION_CLAIMS_CHECKED',
-            'G5_INTEGRATION_DOW',
-            'G6_MANIFEST_COMPLETE'
+    def test_current_authority_is_code_contract(self):
+        assert TwelveClusterOrchestrator.PHASE_SEQUENCE == [
+            "phase1",
+            "phase2",
+            "phase3",
+            "phase4",
+            "phase5",
+            "phase6",
+            "phase7",
+            "phase8",
         ]
 
-        for gate in required_gates:
-            assert gate in gates
+
+class TestCanonicalParallelContract:
+    """Nine executable replacements for the nine legacy config-blocked tests."""
+
+    def test_contract_has_exactly_twelve_clusters(self, orchestrator):
+        contract = orchestrator.get_cluster_contract()
+        assert len(contract) == 12
+        assert [row["cluster_id"] for row in contract] == list(range(1, 13))
+
+    def test_contract_covers_every_canonical_phase(self, orchestrator):
+        phases = {row["phase"] for row in orchestrator.get_cluster_contract()}
+        assert phases == set(TwelveClusterOrchestrator.PHASE_SEQUENCE)
+
+    def test_define_phase_has_two_scanner_clusters(self, orchestrator):
+        rows = [
+            row
+            for row in orchestrator.get_cluster_contract()
+            if row["phase"] == "phase1"
+        ]
+        assert [row["cluster_id"] for row in rows] == [1, 2]
+        assert all("Define-Scanner" in row["name"] for row in rows)
+
+    def test_measure_phase_has_two_analyzer_clusters(self, orchestrator):
+        rows = [
+            row
+            for row in orchestrator.get_cluster_contract()
+            if row["phase"] == "phase2"
+        ]
+        assert [row["cluster_id"] for row in rows] == [3, 4]
+        assert all("Measure-Analyzer" in row["name"] for row in rows)
+
+    def test_knowledge_dow_cluster_is_phase6(self, orchestrator):
+        row = next(
+            row
+            for row in orchestrator.get_cluster_contract()
+            if row["cluster_id"] == 8
+        )
+        assert row == {
+            "cluster_id": 8,
+            "name": "Knowledge-DOW",
+            "phase": "phase6",
+            "priority": 7,
+        }
+
+    def test_priorities_are_bounded_and_phase_ordered(self, orchestrator):
+        priorities = [row["priority"] for row in orchestrator.get_cluster_contract()]
+        assert all(1 <= value <= 10 for value in priorities)
+        assert priorities == sorted(priorities, reverse=True)
+
+    def test_parallel_execution_preserves_each_task_result(self, orchestrator):
+        tasks = [
+            {
+                "task_id": f"task-{index}",
+                "func": (lambda value=index: {"value": value}),
+            }
+            for index in range(4)
+        ]
+        result = orchestrator.execute_phase_parallel(
+            "phase2",
+            tasks,
+            iteration=1,
+        )
+        assert result["success"] is True
+        assert result["tasks_executed"] == 4
+        assert result["tasks_failed"] == 0
+        assert set(result["results_map"]) == {
+            "task-0",
+            "task-1",
+            "task-2",
+            "task-3",
+        }
+
+    def test_unknown_phase_fails_closed(self, orchestrator):
+        with pytest.raises(ValueError, match="Unknown or unmapped phase"):
+            orchestrator.execute_phase_parallel(
+                "phase99",
+                [{"task_id": "invalid"}],
+                iteration=1,
+            )
+
+    def test_cluster_status_is_complete_and_idle(self, orchestrator):
+        status = orchestrator.get_cluster_status()
+        assert status["total_clusters"] == 12
+        assert len(status["clusters"]) == 12
+        assert all(row["status"] == "idle" for row in status["clusters"])
 
 
-class TestExecutionTypeKEB:
-    """Test Type 2: Persistent AI Integration (KEB engine)"""
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type2_configuration(self, parallel_config):
-        """Test Type 2 persistent AI configuration"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type2 = parallel_config.get('type_2_persistent_ai')
-        assert type2 is not None
-        assert type2['type_id'] == 'TYPE_2_PERSISTENT_AI'
-        assert type2['engine'] == 'KEB'
-        assert type2['priority'] == 2
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type2_knowledge_bridge_enabled(self, parallel_config):
-        """Test Type 2 has knowledge bridge enabled"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type2 = parallel_config.get('type_2_persistent_ai')
-        kb = type2.get('knowledge_bridge')
-
-        assert kb is not None
-        assert kb['enabled'] is True
-        assert kb['sync_mode'] == 'bidirectional'
-        assert kb['persistence'] is True
-
-
-class TestExecutionTypeGBOGEB:
-    """Test Type 3: Implementation Structure (GBOGEB engine)"""
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type3_configuration(self, parallel_config):
-        """Test Type 3 implementation structure configuration"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type3 = parallel_config.get('type_3_implementation_struct')
-        assert type3 is not None
-        assert type3['type_id'] == 'TYPE_3_IMPLEMENTATION_STRUCT'
-        assert type3['engine'] == 'GBOGEB'
-        assert type3['priority'] == 3
-
-    @pytest.mark.TEST_BLOCKED_CONFIG
-    def test_type3_devops_mapping(self, parallel_config):
-        """Test Type 3 has DevOps lifecycle mapping"""
-        if parallel_config is None:
-            pytest.skip("TEST_BLOCKED_CONFIG: Config file not found")
-
-        type3 = parallel_config.get('type_3_implementation_struct')
-        devops_mapping = type3.get('devops_mapping')
-
-        assert devops_mapping is not None
-        assert 'prototype' in devops_mapping
-        assert 'mvp' in devops_mapping
-        assert 'production' in devops_mapping
-
-
-class TestKnowledgeBridge:
-    """Test Knowledge Bridge functionality"""
+class TestKnowledgeBridgePersistence:
+    """Local persistence behavior retained independently of the retired YAML."""
 
     def test_knowledge_bridge_workspace_setup(self, temp_workspace):
-        """Test knowledge bridge workspace initialization"""
         kb_path = temp_workspace / ".knowledge_bridge"
         kb_path.mkdir(exist_ok=True)
-
         assert kb_path.exists()
         assert kb_path.is_dir()
 
     def test_knowledge_bridge_state_persistence(self, temp_workspace):
-        """Test knowledge bridge state file persistence"""
         kb_path = temp_workspace / ".knowledge_bridge"
         kb_path.mkdir(exist_ok=True)
 
@@ -205,19 +168,12 @@ class TestKnowledgeBridge:
         test_state = {
             "timestamp": datetime.now().isoformat(),
             "status": "active",
-            "executions": []
+            "executions": [],
         }
-
-        with open(state_file, 'w') as f:
-            json.dump(test_state, f)
-
-        assert state_file.exists()
-
-        with open(state_file, 'r') as f:
-            loaded_state = json.load(f)
-
-        assert loaded_state['status'] == 'active'
+        state_file.write_text(json.dumps(test_state), encoding="utf-8")
+        loaded_state = json.loads(state_file.read_text(encoding="utf-8"))
+        assert loaded_state["status"] == "active"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))
