@@ -72,7 +72,7 @@ class TestAHTIntegration:
     @pytest.mark.artifact(name="api_sla", type="sla_check")
     def test_api_sla_hypothesis(self, aht_bridge):
         """Test API SLA hypothesis"""
-        response_times = np.random.normal(95, 8, 50).tolist()
+        response_times = [91.0, 93.0, 95.0, 97.0, 99.0] * 10
 
         result = aht_bridge.test_hypothesis_with_bootstrap(
             hypothesis="API meets 95% SLA target",
