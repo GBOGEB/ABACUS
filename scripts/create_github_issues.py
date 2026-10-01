@@ -292,23 +292,23 @@ def generate_issue_files():
     """Generate markdown files for each issue"""
     output_dir = Path("github_issues")
     output_dir.mkdir(exist_ok=True)
-    
+
     print("📝 Generating GitHub Issue Files...\n")
-    
+
     for i, issue in enumerate(ISSUES, 1):
         filename = output_dir / f"issue_{i:02d}_{issue['title'].lower().replace(' ', '_').replace('-', '_')[:50]}.md"
-        
+
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(f"# {issue['title']}\n\n")
             f.write(issue['body'])
             f.write(f"\n\n## Labels\n\n")
             f.write(", ".join(f"`{label}`" for label in issue['labels']))
-        
+
         print(f"✅ Created: {filename}")
-    
+
     print(f"\n📊 Total issues created: {len(ISSUES)}")
     print(f"📁 Location: {output_dir}/")
-    
+
     # Generate summary
     summary_file = output_dir / "README.md"
     with open(summary_file, 'w', encoding='utf-8') as f:
@@ -316,12 +316,12 @@ def generate_issue_files():
         f.write("## Summary\n\n")
         f.write(f"Total issues: {len(ISSUES)}\n\n")
         f.write("## Issues\n\n")
-        
+
         for i, issue in enumerate(ISSUES, 1):
             priority = [l for l in issue['labels'] if l.startswith('P')]
             priority_str = priority[0] if priority else "P2"
             f.write(f"{i}. **{issue['title']}** - Priority: {priority_str}\n")
-        
+
         f.write("\n## How to Create Issues on GitHub\n\n")
         f.write("### Option 1: Manual Creation\n\n")
         f.write("1. Go to: https://github.com/GBOGEB/ABACUS/issues/new\n")
@@ -329,7 +329,7 @@ def generate_issue_files():
         f.write("3. Copy body from issue file\n")
         f.write("4. Add labels\n")
         f.write("5. Click 'Submit new issue'\n\n")
-        
+
         f.write("### Option 2: GitHub CLI (if installed)\n\n")
         f.write("```bash\n")
         for i, issue in enumerate(ISSUES, 1):
@@ -340,50 +340,50 @@ def generate_issue_files():
             f.write(f"  --label \"{labels_str}\" \\\n")
             f.write(f"  --body-file github_issues/issue_{i:02d}_*.md\n\n")
         f.write("```\n\n")
-        
+
         f.write("### Option 3: Bulk Import\n\n")
         f.write("Use the GitHub API or a tool like `gh` to bulk import all issues.\n")
-    
+
     print(f"✅ Created summary: {summary_file}")
-    
+
     # Generate quick reference
     quick_ref = output_dir / "QUICK_REFERENCE.md"
     with open(quick_ref, 'w', encoding='utf-8') as f:
         f.write("# Quick Reference - Failed Checks\n\n")
         f.write("## Priority Order\n\n")
-        
+
         # Sort by priority
         p0_issues = [i for i in ISSUES if 'P0' in i['labels']]
         p1_issues = [i for i in ISSUES if 'P1' in i['labels']]
         p2_issues = [i for i in ISSUES if 'P2' in i['labels']]
-        
+
         if p0_issues:
             f.write("### 🔴 P0 - Critical (Fix First)\n\n")
             for issue in p0_issues:
                 f.write(f"- **{issue['title']}**\n")
-        
+
         if p1_issues:
             f.write("\n### 🟡 P1 - Important (Fix Soon)\n\n")
             for issue in p1_issues:
                 f.write(f"- **{issue['title']}**\n")
-        
+
         if p2_issues:
             f.write("\n### 🟢 P2 - Nice to Have (Fix Later)\n\n")
             for issue in p2_issues:
                 f.write(f"- **{issue['title']}**\n")
-        
+
         f.write("\n## Common Root Causes\n\n")
         f.write("1. **Missing `dmaic` module** - Most test failures\n")
         f.write("2. **flake8 compatibility** - Static analysis failure\n")
         f.write("3. **Import path issues** - Module not found errors\n\n")
-        
+
         f.write("## Quick Fixes\n\n")
         f.write("### Fix 1: Add dmaic to requirements\n")
         f.write("```python\n")
         f.write("# In requirements.txt\n")
         f.write("dmaic>=1.0.0\n")
         f.write("```\n\n")
-        
+
         f.write("### Fix 2: Update flake8 compatibility\n")
         f.write("```python\n")
         f.write("# In requirements.txt\n")
@@ -391,7 +391,7 @@ def generate_issue_files():
         f.write("# OR\n")
         f.write("flake8>=7.0.0\n")
         f.write("```\n\n")
-        
+
         f.write("### Fix 3: Install package in editable mode\n")
         f.write("```yaml\n")
         f.write("# In workflow files\n")
@@ -400,7 +400,7 @@ def generate_issue_files():
         f.write("    pip install -e .\n")
         f.write("    pip install -r DMAIC_V3/requirements.txt\n")
         f.write("```\n")
-    
+
     print(f"✅ Created quick reference: {quick_ref}")
     print("\n🎉 Done! Check the 'github_issues/' directory for all files.")
 
