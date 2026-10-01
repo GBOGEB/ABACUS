@@ -349,6 +349,14 @@ jobs:
           path: test_reports/python-${{ matrix.python-version }}/
           if-no-files-found: warn
 
+      - name: Run truthful Phase0 smoke proof
+        if: matrix.python-version == '3.12'
+        run: |
+          set -euo pipefail
+          evidence_dir="test_reports/python-${{ matrix.python-version }}"
+          python scripts/runners/phase0_runner.py --smoke \
+            --receipt "${evidence_dir}/phase0-smoke.json"
+
       - name: Test QPS W08 DOW contract (fail closed)
         if: matrix.python-version == '3.12'
         run: python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
