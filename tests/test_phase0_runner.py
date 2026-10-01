@@ -1,4 +1,5 @@
 import json
+import runpy
 from pathlib import Path
 import subprocess
 import sys
@@ -44,3 +45,16 @@ def test_phase0_runner_executes_directly_like_ci(tmp_path: Path):
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     assert receipt["status"] == "PASS"
     assert receipt["executed_steps"] == 3
+
+def test_phase0_runner_bootstraps_repo_root(monkeypatch):
+    root = str(phase0_runner.ROOT)
+    reduced_path = [entry for entry in sys.path if entry != root]
+    monkeypatch.setattr(sys, "path", reduced_path)
+
+    runpy.run_path(
+        str(phase0_runner.ROOT / "scripts" / "runners" / "phase0_runner.py"),
+        run_name="phase0_runner_bootstrap_probe",
+    )
+
+    assert sys.path[0] == root
+
