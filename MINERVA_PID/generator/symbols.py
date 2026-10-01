@@ -373,6 +373,7 @@ def signal_line(x1, y1, x2, y2, kind="electric", color="#000000", w=0.95):
 def bellows(cx, cy, length=22.0, amp=4.0, n=5, color="#000000", w=1.0,
             horizontal=True):
     """Mechanical bellows / expansion element (anti thermal short-circuit)."""
+    pts = []
     if horizontal:
         x0 = cx - length / 2.0
         step = length / n
