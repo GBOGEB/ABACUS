@@ -45,8 +45,8 @@ jobs:
           COVERAGE_FILE: test_reports/post-b0/.coverage-canonical
         run: |
           set -euo pipefail
-          mkdir -p test_reports/post-b0
-          python -m pytest -q             --govern-test-states             --benchmark-disable             --cov=.             --cov-branch             --cov-report=             --junitxml=test_reports/post-b0/canonical-junit.xml
+          mkdir -p test_reports/post-b0 test_reports/b0
+          python -m pytest -p scripts.pytest_test_state_plugin -q             --govern-test-states             --benchmark-disable             --cov=.             --cov-branch             --cov-report=             --junitxml=test_reports/post-b0/canonical-junit.xml
 
           python scripts/test_evidence_census.py             --junit test_reports/post-b0/canonical-junit.xml             --out test_reports/post-b0/canonical-test-evidence.json             --max-skips 5             --max-xfails 0
 
