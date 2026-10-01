@@ -70,13 +70,21 @@ def orphan(root):
     isolated=[i for i in nodes if indeg[i]==0 and outdeg[i]==0]
     roots=[i for i in nodes if indeg[i]==0 and outdeg[i]>0]
     drops=[i for i in nodes if indeg[i]>0 and outdeg[i]==0]
-    return base("orphan_drop", root, {"nodes": len(nodes), "isolated": len(isolated), "roots": len(roots), "drops": len(drops),
-        "isolated_ids": sorted(isolated), "drop_ids": sorted(drops), "drop_rate": round(len(drops)/max(1, len(nodes)), 4)})
+    return base(
+        "orphan_drop",
+        root,
+        {
+            "nodes": len(nodes), "isolated": len(isolated), "roots": len(roots), "drops": len(drops),
+            "isolated_ids": sorted(isolated), "drop_ids": sorted(drops),
+            "drop_rate": round(len(drops)/max(1, len(nodes)), 4),
+        },
+    )
 def converge(root, inputs):
     rs=[load(Path(x)) for x in inputs]; by={r["method"]: r for r in rs}
     td=by.get("top_down", {}).get("payload", {}); bu=by.get("bottom_up", {}).get("payload", {}); fr=by.get("frontier", {}).get("payload", {}); od=by.get("orphan_drop", {}).get("payload", {})
     features={"top_down_penetration": td.get("penetration", 0), "bottom_up_association": bu.get("association_rate", 0),
-      "frontier_coverage": fr.get("coverage", 0), "drop_rate": od.get("drop_rate", 0), "isolated": od.get("isolated", 0),
+      "frontier_coverage": fr.get("coverage", 0), "drop_rate": od.get("drop_rate", 0),
+      "isolated": od.get("isolated", 0),
       "terminal": td.get("terminal", 0), "orphan_assets": bu.get("orphan", 0)}
     # PCA-ready means standardized feature contract; actual loadings require >=3 comparable pulses.
     pressure=[("drop_repair", features["drop_rate"]), ("orphan_asset_binding", features["orphan_assets"]),
