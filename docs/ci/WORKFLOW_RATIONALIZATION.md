@@ -65,7 +65,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | — |
 | 10 | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
-| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
+| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
 | 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -216,6 +216,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 - `black --check --diff .` — `ci-cd-tests.yml`, `ci-cd.yml`, `ci-pipeline.yml`
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
+- `pip install pytest pyyaml` — `ci-abacus.yml`, `codespace-federation.yml`, `dow-sprint6-cicd.yml`
 - `pytest -v --cov=. --cov-report=term-missing || echo "Tests completed"` — `cd-unified.yml`, `ci-abacus.yml`, `ci-codex.yml`
 - `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`, `w72-clean-clone-proof.yml`
@@ -227,7 +228,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
 - `pip install pytest pytest-cov pyyaml` — `cd-unified.yml`, `dow-sprint6-cicd.yml`
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
-- `pip install pytest pyyaml` — `codespace-federation.yml`, `dow-sprint6-cicd.yml`
 - `pre-commit run --all-files || echo "Pre-commit completed"` — `ci-abacus.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
