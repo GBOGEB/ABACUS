@@ -6,7 +6,7 @@ This directory contains the provisional review package for ALAT clarification qu
 - `MAIN_QA_REGISTER.md` preserves the tender-question register and draft applicant-facing answers.
 - `COMPENDIUM.md` consolidates the Q3/Q4/Q5 technical interpretation.
 - `MANAGEMENT_SUMMARY.md` highlights highest-risk clarification items.
-- `WHAT_ALAT_IS_REALLY_ASKING.md` records the review intent behind each question.
+- Detailed ALAT review-intent material is retained outside the public ABACUS review package under private engineering authority.
 - `CONTRACTUAL_GAPS.md` summarizes gaps mirrored in `ssot/contractual_gap_register.yaml`.
 
 ## Governance and Validation
