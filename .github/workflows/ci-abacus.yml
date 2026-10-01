@@ -10,19 +10,169 @@ on:
     branches:
       - main
       - develop
+  schedule:
+    - cron: "23 3 * * 1"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
+  plan:
+    name: ABACUS CI proof planner
+    if: github.repository == 'GBOGEB/ABACUS'
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      mode: ${{ steps.plan.outputs.mode }}
+      reason: ${{ steps.plan.outputs.reason }}
+      secondary: ${{ steps.plan.outputs.secondary }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Classify change risk and select Python proof
+        id: plan
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          mode="full"
+          reason="non-PR events retain full compatibility recertification"
+          secondary="3.10"
+
+          if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            mapfile -t changed < <(
+              git diff --name-only "${BASE_SHA}" "${HEAD_SHA}"
+            )
+            compatibility_sensitive=false
+            python_delta=false
+
+            for path in "${changed[@]}"; do
+              case "${path}" in
+                .github/workflows/ci-abacus.yml|.github/actions/*|requirements.txt|requirements/*.txt|requirements-*.txt|constraints*.txt|pyproject.toml|setup.py|setup.cfg|tox.ini|noxfile.py|Pipfile|Pipfile.lock|poetry.lock|uv.lock|.python-version)
+                  compatibility_sensitive=true
+                  ;;
+                *.py|*.pyi|scripts/*|tests/*|src/*|abacus/*|qplant/*)
+                  python_delta=true
+                  ;;
+              esac
+            done
+
+            if [[ "${compatibility_sensitive}" == "true" ]]; then
+              mode="full"
+              reason="dependency, packaging, interpreter, shared action, or "
+              reason+="this CI workflow changed"
+            elif [[ "${python_delta}" == "true" ]]; then
+              mode="sampled"
+              if (( ${PR_NUMBER:-0} % 2 == 0 )); then
+                secondary="3.10"
+              else
+                secondary="3.11"
+              fi
+              reason="Python changed: run 3.12 sentinel plus deterministic "
+              reason+="compatibility sample"
+            else
+              mode="sentinel"
+              reason="no Python compatibility-sensitive delta: run 3.12 "
+              reason+="sentinel; full matrix is recertified after merge "
+              reason+="and weekly"
+            fi
+
+            {
+              echo "### ABACUS CI proof plan"
+              echo
+              echo "- event: \`${EVENT_NAME}\`"
+              echo "- mode: \`${mode}\`"
+              echo "- reason: ${reason}"
+              echo "- changed files: ${#changed[@]}"
+              echo
+              if [[ "${mode}" == "sentinel" ]]; then
+                echo "- Python 3.12: **EXECUTED / SENTINEL**"
+                echo "- Python 3.10: DEFERRED; recertify main/schedule"
+                echo "- Python 3.11: DEFERRED; recertify main/schedule"
+              elif [[ "${mode}" == "sampled" ]]; then
+                echo "- Python 3.12: **EXECUTED / SENTINEL**"
+                echo "- Python ${secondary}: EXECUTED compatibility sample"
+                if [[ "${secondary}" == "3.10" ]]; then
+                  echo "- Python 3.11: DEFERRED; recertify main/schedule"
+                else
+                  echo "- Python 3.10: DEFERRED; recertify main/schedule"
+                fi
+              else
+                echo "- Python 3.10 / 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+              fi
+              echo
+              echo "<details><summary>Changed paths</summary>"
+              echo
+              for path in "${changed[@]:0:100}"; do
+                echo "- \`${path}\`"
+              done
+              if (( ${#changed[@]} > 100 )); then
+                echo "- ... $(("${#changed[@]}" - 100)) more"
+              fi
+              echo
+              echo "</details>"
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            {
+              echo "### ABACUS CI proof plan"
+              echo
+              echo "- event: \`${EVENT_NAME}\`"
+              echo "- mode: **full**"
+              echo "- Python 3.10 / 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+              echo "- reason: ${reason}"
+            } >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
+          case "${mode}" in
+            sentinel)
+              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"sentinel"}]}'
+              ;;
+            sampled)
+              matrix="{\"include\":[{\"os\":\"ubuntu-24.04\",\"python-version\":\"3.12\",\"proof-role\":\"sentinel\"},{\"os\":\"ubuntu-24.04\",\"python-version\":\"${secondary}\",\"proof-role\":\"compatibility-sample\"}]}"
+              ;;
+            full)
+              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.10","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.11","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"full-matrix"}]}'
+              ;;
+            *)
+              echo "::error::Unknown CI proof mode: ${mode}"
+              exit 1
+              ;;
+          esac
+
+          echo "matrix=${matrix}" >> "${GITHUB_OUTPUT}"
+          echo "mode=${mode}" >> "${GITHUB_OUTPUT}"
+          echo "reason=${reason}" >> "${GITHUB_OUTPUT}"
+          echo "secondary=${secondary}" >> "${GITHUB_OUTPUT}"
+
   abacus:
     name: ABACUS - ${{ matrix.os }} - Python ${{ matrix.python-version }}
     if: github.repository == 'GBOGEB/ABACUS'
+    needs: plan
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
+      - name: Record proof role
+        shell: bash
+        run: |
+          {
+            echo "### Python ${{ matrix.python-version }} proof"
+            echo
+            echo "- runner: \`${{ matrix.os }}\`"
+            echo "- role: \`${{ matrix.proof-role }}\`"
+            echo "- planner mode: \`${{ needs.plan.outputs.mode }}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
       - name: Checkout
         uses: actions/checkout@v7
 
@@ -36,10 +186,18 @@ jobs:
           mkdir -p ~/.config/pip
           {
             echo "[global]"
-            if [ -n "${{ secrets.PIP_INDEX_URL }}" ]; then echo "index-url = ${{ secrets.PIP_INDEX_URL }}"; fi
-            if [ -n "${{ secrets.PIP_EXTRA_INDEX_URL }}" ]; then echo "extra-index-url = ${{ secrets.PIP_EXTRA_INDEX_URL }}"; fi
-            if [ -n "${{ secrets.PIP_TRUSTED_HOST }}" ]; then echo "trusted-host = ${{ secrets.PIP_TRUSTED_HOST }}"; fi
-            if [ -n "${{ secrets.PIP_CERT }}" ]; then echo "cert = ${{ secrets.PIP_CERT }}"; fi
+            if [ -n "${{ secrets.PIP_INDEX_URL }}" ]; then
+              echo "index-url = ${{ secrets.PIP_INDEX_URL }}"
+            fi
+            if [ -n "${{ secrets.PIP_EXTRA_INDEX_URL }}" ]; then
+              echo "extra-index-url = ${{ secrets.PIP_EXTRA_INDEX_URL }}"
+            fi
+            if [ -n "${{ secrets.PIP_TRUSTED_HOST }}" ]; then
+              echo "trusted-host = ${{ secrets.PIP_TRUSTED_HOST }}"
+            fi
+            if [ -n "${{ secrets.PIP_CERT }}" ]; then
+              echo "cert = ${{ secrets.PIP_CERT }}"
+            fi
           } > ~/.config/pip/pip.conf
 
       - name: Install tooling
@@ -63,9 +221,42 @@ jobs:
 
       - name: Phase0 smoke test
         run: |
-          python scripts/runners/phase0_runner.py --smoke || echo "Phase0 smoke test completed"
+          python scripts/runners/phase0_runner.py --smoke ||
+            echo "Phase0 smoke test completed"
+
+      - name: Detect artifact payload
+        id: artifact_payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          files=(data/output/* logs/*)
+          if [[ -f governance/session_trace/session_trace.jsonl ]]; then
+            files+=(governance/session_trace/session_trace.jsonl)
+          fi
+
+          if (( ${#files[@]} > 0 )); then
+            echo "present=true" >> "${GITHUB_OUTPUT}"
+            {
+              echo
+              echo "#### Artifact payload"
+              echo
+              echo "Uploading ${#files[@]} matching artifact path(s)."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "present=false" >> "${GITHUB_OUTPUT}"
+            {
+              echo
+              echo "#### Artifact payload"
+              echo
+              echo "No runtime artifact payload was produced by this job;"
+              echo "upload intentionally skipped without warning."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          fi
 
       - name: Upload artifacts
+        if: steps.artifact_payload.outputs.present == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: abacus-${{ matrix.os }}-py${{ matrix.python-version }}
@@ -73,4 +264,61 @@ jobs:
             data/output/*
             governance/session_trace/session_trace.jsonl
             logs/*
-          if-no-files-found: warn
+          if-no-files-found: error
+
+  compatibility-gate:
+    name: ABACUS compatibility gate
+    if: always() && github.repository == 'GBOGEB/ABACUS'
+    needs:
+      - plan
+      - abacus
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce selected proof set
+        shell: bash
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          MATRIX_RESULT: ${{ needs.abacus.result }}
+          MODE: ${{ needs.plan.outputs.mode }}
+          REASON: ${{ needs.plan.outputs.reason }}
+        run: |
+          {
+            echo "### ABACUS compatibility gate"
+            echo
+            echo "- planner: \`${PLAN_RESULT}\`"
+            echo "- selected matrix: \`${MATRIX_RESULT}\`"
+            echo "- mode: \`${MODE}\`"
+            echo "- reason: ${REASON}"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          if [[ "${PLAN_RESULT}" != "success" ||
+                "${MATRIX_RESULT}" != "success" ]]; then
+            msg="ABACUS compatibility proof did not complete successfully."
+            echo "::error::${msg}"
+            exit 1
+          fi
+
+  runner-migration-canary:
+    name: Runner migration canary - ubuntu-latest - Python 3.12
+    if: github.event_name == 'schedule' && github.repository == 'GBOGEB/ABACUS'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install canary tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install . || true
+          pip install pytest pyyaml
+
+      - name: Run migration-sensitive smoke proof
+        run: |
+          python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
+          python scripts/runners/phase0_runner.py --smoke
