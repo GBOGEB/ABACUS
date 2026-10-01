@@ -88,7 +88,7 @@ class FastMetricsCollector:
                     "size": py_file.stat().st_size
                 }
                 
-            except Exception as e:
+            except Exception:
                 continue
         
         # Identify duplicates
