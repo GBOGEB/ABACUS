@@ -257,7 +257,7 @@ jobs:
           mkdir -p "${evidence_dir}"
 
           pytest_rc=0
-          python -m pytest -v \
+          python -m pytest -p scripts.pytest_test_state_plugin -v \
             --govern-test-states \
             --benchmark-disable \
             --cov=. \
@@ -303,7 +303,7 @@ jobs:
           mkdir -p "${evidence_dir}"
 
           pytest_rc=0
-          python -m pytest -v \
+          python -m pytest -p scripts.pytest_test_state_plugin -v \
             --govern-test-states \
             --benchmark-disable \
             --junitxml="${evidence_dir}/junit.xml" \
