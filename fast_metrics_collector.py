@@ -30,7 +30,7 @@ class FastMetricsCollector:
         self.output_suffix = output_suffix
         self.output_dir = Path("DMAIC_INTEGRATION_OUTPUT/cicd_github")
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
     def collect_fast_metrics(self):
         """Collect essential metrics quickly"""
         print("\n" + "="*80)
@@ -39,7 +39,7 @@ class FastMetricsCollector:
         print(f"Workspace: {self.workspace}")
         print(f"Execution ID: {self.execution_id}")
         print("="*80 + "\n")
-        
+
         metrics = {
             "execution_id": self.execution_id,
             "timestamp": datetime.now().isoformat(),
@@ -50,59 +50,59 @@ class FastMetricsCollector:
             "version_headers": {},
             "summary": {}
         }
-        
+
         # Collect file statistics
         print("[SCAN] Collecting file statistics...")
         python_files = list(self.workspace.rglob("*.py"))
         print(f"   Found {len(python_files)} Python files")
-        
+
         file_hashes = defaultdict(list)
         files_with_headers = 0
         total_lines = 0
-        
+
         for idx, py_file in enumerate(python_files, 1):
             if idx % 1000 == 0:
                 print(f"   Progress: {idx}/{len(python_files)} files...")
-            
+
             try:
                 rel_path = str(py_file.relative_to(self.workspace))
-                
+
                 # Calculate hash
                 with open(py_file, 'rb') as f:
                     file_hash = hashlib.md5(f.read()).hexdigest()[:12]
                 file_hashes[file_hash].append(rel_path)
-                
+
                 # Count lines and check for version header
                 with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                     lines = content.count('\n')
                     total_lines += lines
-                    
+
                     # Check for version header
                     if re.search(r'__version__|VERSION|@version', content[:500]):
                         files_with_headers += 1
-                
+
                 metrics["files"][rel_path] = {
                     "hash": file_hash,
                     "lines": lines,
                     "size": py_file.stat().st_size
                 }
-                
+
             except Exception:
                 continue
-        
+
         # Identify duplicates
         print("\n[ANALYZE] Identifying duplicates...")
         duplicates = {h: files for h, files in file_hashes.items() if len(files) > 1}
         print(f"   Found {len(duplicates)} duplicate groups")
-        
+
         metrics["duplicates"] = duplicates
-        
+
         # Sample import issues (check 500 files)
         print("\n[ANALYZE] Sampling import issues (500 files)...")
         sample_files = python_files[:500] if len(python_files) > 500 else python_files
         import_issues = []
-        
+
         for py_file in sample_files:
             try:
                 with open(py_file, 'r', encoding='utf-8', errors='ignore') as f:
@@ -113,10 +113,10 @@ class FastMetricsCollector:
                         import_issues.append(rel_path)
             except Exception:
                 continue
-        
+
         print(f"   Found {len(import_issues)} potential import issues in sample")
         metrics["import_issues"] = import_issues
-        
+
         # Summary
         metrics["summary"] = {
             "total_files": len(python_files),
@@ -127,7 +127,7 @@ class FastMetricsCollector:
             "version_header_percentage": round(files_with_headers / len(python_files) * 100, 2) if python_files else 0,
             "estimated_import_issues": int(len(import_issues) * (len(python_files) / len(sample_files)))
         }
-        
+
         print("\n[SUMMARY]")
         print(f"   Total Python files: {metrics['summary']['total_files']}")
         print(f"   Total lines: {metrics['summary']['total_lines']:,}")
@@ -135,14 +135,14 @@ class FastMetricsCollector:
         print(f"   Duplicate files: {metrics['summary']['duplicate_files']}")
         print(f"   Version headers: {files_with_headers} ({metrics['summary']['version_header_percentage']}%)")
         print(f"   Estimated import issues: {metrics['summary']['estimated_import_issues']}")
-        
+
         # Save metrics
         output_file = self.output_dir / f"metrics_{self.output_suffix}_{self.execution_id}.json"
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(metrics, f, indent=2)
-        
+
         print(f"\n[SAVE] Metrics saved to {output_file}")
-        
+
         return metrics
 
 def main():
@@ -155,8 +155,8 @@ def main():
     args = parser.parse_args()
 
     collector = FastMetricsCollector(Path(args.workspace), output_suffix=args.output_suffix)
-    metrics = collector.collect_fast_metrics()
-    
+    collector.collect_fast_metrics()
+
     print("\n" + "="*80)
     print("METRICS COLLECTION COMPLETE")
     print("="*80)
