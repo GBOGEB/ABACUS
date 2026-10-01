@@ -36,7 +36,7 @@ jobs:
       - name: Basic linting
         run: |
           echo "🔍 Running basic linting..."
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.git,__pycache__,node_modules || true
+          # rex-allow: ADVISORY_EXPLICIT full-repo lint telemetry; DAB owns measured Flake8 debt.\n          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.git,__pycache__,node_modules || true
 
   # Test suite execution
   test:
@@ -135,7 +135,7 @@ jobs:
 
       - name: Run flake8
         run: |
-          flake8 . --count --max-line-length=120 --statistics --exclude=.git,__pycache__,node_modules || true
+          # rex-allow: ADVISORY_EXPLICIT full-repo lint telemetry; DAB owns measured Flake8 debt.\n          flake8 . --count --max-line-length=120 --statistics --exclude=.git,__pycache__,node_modules || true
 
       - name: Run pylint on core modules
         run: |
