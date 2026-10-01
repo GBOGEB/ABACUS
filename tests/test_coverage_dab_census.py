@@ -111,3 +111,51 @@ def test_pressure_order_is_deterministic_and_credit_stays_zero():
     assert result["engineering_credit_delta"] == 0
     assert result["measurement"]["branch_coverage"] is True
     assert result["measurement"]["dynamic_context"] == "test_function"
+
+
+
+def test_census_joins_contexts_to_junit_outcomes():
+    evidence = {
+        "rows": [
+            {
+                "test": "tests.test_contract::test_valid",
+                "outcome": "pass",
+                "test_state": "TEST_GREEN",
+            }
+        ]
+    }
+
+    result = census.build_census(
+        _coverage(),
+        test_evidence=evidence,
+        exact_sha="c" * 40,
+    )
+    row = {
+        item["path"]: item
+        for item in result["rows"]
+    }["src/dmaic/contract.py"]
+
+    assert row["test_state"] == "TEST_GREEN"
+    assert row["test_state_evidence"] == "JUNIT_CONTEXT_JOIN (MEASURED)"
+    assert row["existing_test_outcomes"] == [
+        {
+            "test": "tests.test_contract::test_valid",
+            "outcome": "pass",
+            "test_state": "TEST_GREEN",
+        }
+    ]
+
+
+def test_context_without_junit_join_does_not_claim_green():
+    result = census.build_census(
+        _coverage(),
+        exact_sha="d" * 40,
+    )
+    row = {
+        item["path"]: item
+        for item in result["rows"]
+    }["src/dmaic/contract.py"]
+
+    assert row["existing_test_surface_evidence"] == "DYNAMIC_CONTEXT (MEASURED)"
+    assert row["test_state"] is None
+    assert row["test_state_evidence"] == "WITHHELD"
