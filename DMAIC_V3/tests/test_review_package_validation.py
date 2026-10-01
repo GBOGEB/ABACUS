@@ -33,3 +33,27 @@ def test_w000_validator_tracks_required_bootstrap_domains():
         "ci_cd_scaffolding",
         "tender_review_package",
     }
+
+
+
+def test_w000_externalized_alat_intent_is_provenance_bound():
+    validator = _load_validator()
+
+    assert (
+        "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md"
+        not in validator.REQUIRED_DOCS
+    )
+    assert validator.REQUIRED_EXTERNALIZED_ARTIFACTS[
+        "tender-alat-intent"
+    ] == {
+        "state": "externalized_private",
+        "external_repo": "GBOGEB/cryoplant-project",
+        "original_path": (
+            "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md"
+        ),
+        "provenance_path": "tender_library/PROVENANCE.csv",
+        "sha256": (
+            "03a0d496913d642102358492a2000363"
+            "e61fde352159dfc67fa43559584c3a45"
+        ),
+    }
