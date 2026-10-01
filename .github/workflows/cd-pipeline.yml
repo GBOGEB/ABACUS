@@ -108,7 +108,9 @@ jobs:
           
           # Copy essential files
           cp -r DMAIC_V3/ dist/
-          cp -r DOW/ dist/
+          # Package the current governed DOW integration surfaces.
+          cp -r integration_DOW_KEB_MASTER/ dist/
+          cp staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py dist/
           cp -r runners/ dist/
           cp -r config/ dist/ || echo "No config directory"
           cp RTM_INTEGRATION_DASHBOARD.html dist/ || echo "No dashboard"
