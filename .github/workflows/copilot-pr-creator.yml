@@ -95,7 +95,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          git fetch origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
 
           echo "=== Copilot PR Creator ==="
           echo "  Base branch  : ${BASE}"
@@ -124,10 +124,12 @@ jobs:
 
             # Skip branches with no shared history if requested
             if [[ "${SKIP_NO_BASE}" == "true" ]]; then
-              merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null || echo "")
+              if ! merge_base=$(git merge-base "origin/${BASE}" "${remote}" 2>/dev/null); then
+                merge_base=""
+              fi
               if [[ -z "$merge_base" ]]; then
                 echo "SKIP (no shared history with ${BASE}): ${branch}"
-                (( skipped++ )) || true
+                ((++skipped))
                 continue
               fi
             fi
@@ -136,12 +138,16 @@ jobs:
             ahead=$(git rev-list --count "origin/${BASE}..${remote}" 2>/dev/null || echo 0)
             if [[ "$ahead" -lt "$MIN_AHEAD" ]]; then
               echo "SKIP (${ahead} ahead < ${MIN_AHEAD}): ${branch}"
-              (( skipped++ )) || true
+              ((++skipped))
               continue
             fi
 
-            last_commit=$(git log -1 --format="%s" "${remote}" 2>/dev/null || echo "(unknown)")
-            last_date=$(git log -1 --format="%ci" "${remote}" 2>/dev/null || echo "")
+            if ! last_commit=$(git log -1 --format="%s" "${remote}" 2>/dev/null); then
+              last_commit="(unknown)"
+            fi
+            if ! last_date=$(git log -1 --format="%ci" "${remote}" 2>/dev/null); then
+              last_date=""
+            fi
             behind=$(git rev-list --count "${remote}..origin/${BASE}" 2>/dev/null || echo 0)
 
             echo "---"
@@ -150,15 +156,20 @@ jobs:
 
             if [[ "$DRY_RUN" == "true" ]]; then
               echo "  [DRY RUN] Would create PR: '${last_commit}' <- ${branch} -> ${BASE}"
-              (( created++ )) || true
+              ((++created))
               continue
             fi
 
             # Check for existing open PR
-            existing_pr=$(gh pr list --head "${branch}" --base "${BASE}" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+            existing_pr=$(gh pr list \
+              --head "${branch}" \
+              --base "${BASE}" \
+              --state open \
+              --json number \
+              --jq '.[0].number')
             if [[ -n "$existing_pr" ]]; then
               echo "  SKIP: open PR #${existing_pr} already exists"
-              (( existing++ )) || true
+              ((++existing))
               continue
             fi
 
@@ -187,19 +198,18 @@ jobs:
             title=$(echo "${branch}" | sed 's|copilot/||;s|feature/||;s|-| |g;s|fix ||Fix: |')
 
             echo "  Creating PR: '${title}'"
-            pr_url=$(gh pr create \
+            if ! pr_url=$(gh pr create \
               --base "${BASE}" \
               --head "${branch}" \
               --title "${title}" \
               --body "${body}" \
-              --draft 2>&1 || echo "FAILED")
-
-            if [[ "$pr_url" == FAILED* ]]; then
-              echo "  ERROR creating PR: ${pr_url}"
-            else
-              echo "  Created: ${pr_url}"
-              (( created++ )) || true
+              --draft 2>&1); then
+              echo "  ERROR creating PR: ${pr_url}" >&2
+              exit 1
             fi
+
+            echo "  Created: ${pr_url}"
+            ((++created))
 
           done < <(git for-each-ref --format='%(refname:short)' refs/remotes/origin/)
 
