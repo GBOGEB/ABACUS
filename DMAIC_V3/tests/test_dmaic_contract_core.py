@@ -4,7 +4,13 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT_DIR / "src"))
 
-from dmaic.contract import ensure_contract, validate_contract  # noqa: E402
+from dmaic.contract import (  # noqa: E402
+    DOWNSTREAM_CONSUMERS,
+    ensure_contract,
+    get_downstream_consumer,
+    register_downstream_consumer,
+    validate_contract,
+)
 from dmaic.idempotency import hash_json, idempotent  # noqa: E402
 from dmaic import provenance  # noqa: E402
 
@@ -76,3 +82,92 @@ def test_provenance_persists_runs(tmp_path, monkeypatch):
     assert run is not None
     assert run["status"] == "success"
     assert Path(db_path).exists()
+
+
+
+def test_ensure_contract_appends_current_version_to_history():
+    enriched = ensure_contract(
+        {},
+        iteration=0,
+        phase="phase0",
+        version="3.3.0",
+        version_history=["3.2.0", ""],
+    )
+
+    assert enriched["lineage"]["version_history"] == ["3.2.0", "3.3.0"]
+    assert enriched["recursive_hooks"]["version_history"] == [
+        "3.2.0",
+        "3.3.0",
+    ]
+
+
+def test_contract_error_branches_are_fail_closed():
+    assert validate_contract([]) == ["payload is not an object"]
+
+    missing = validate_contract({})
+    for field in (
+        "metadata",
+        "idempotency",
+        "lineage",
+        "recursive_hooks",
+        "convergence_metrics",
+        "knowledge_gain",
+    ):
+        assert f"missing top-level field: {field}" in missing
+    assert "metadata is not an object" in missing
+    assert "idempotency is not an object" in missing
+    assert "lineage is not an object" in missing
+    assert "recursive_hooks is not an object" in missing
+
+    incomplete = validate_contract(
+        {
+            "metadata": {},
+            "idempotency": {},
+            "lineage": {},
+            "recursive_hooks": {},
+            "convergence_metrics": {},
+            "knowledge_gain": {},
+        }
+    )
+
+    for key in (
+        "version",
+        "timestamp",
+        "iteration",
+        "phase",
+        "contract_version",
+    ):
+        assert f"metadata missing: {key}" in incomplete
+    assert "idempotency missing: enabled" in incomplete
+    assert "idempotency missing: input_hash" in incomplete
+    assert "idempotency missing: output_hash" in incomplete
+    assert "lineage missing: iteration_lineage" in incomplete
+    assert "lineage missing: version_history" in incomplete
+    assert "recursive_hooks missing: consumed_from" in incomplete
+    assert "recursive_hooks missing: feeds_into" in incomplete
+    assert "recursive_hooks missing: iteration_lineage" in incomplete
+
+
+def test_downstream_consumer_registry_defaults_and_lookup():
+    name = "unit_test_consumer"
+    DOWNSTREAM_CONSUMERS.pop(name, None)
+
+    try:
+        entry = register_downstream_consumer(
+            name,
+            "GBOGEB/unit-test",
+        )
+
+        assert entry == {
+            "repo": "GBOGEB/unit-test",
+            "plane": "auxiliary",
+            "federation_moniker": "DELTA_1",
+            "contract_path": "",
+            "consumes_phases": [],
+            "produces_for_phases": [],
+            "tuple_source": "GBOGEB/unit-test",
+        }
+        assert get_downstream_consumer(name) is entry
+        assert get_downstream_consumer("missing-consumer") is None
+    finally:
+        DOWNSTREAM_CONSUMERS.pop(name, None)
