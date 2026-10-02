@@ -18,7 +18,7 @@
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
 **Current Version:** v4.4.0 release baseline — active mainline hardening and completeness-census evolution  
 **Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)  
-**Live-State Reference:** `main@3aeae479bd8b801e3a914dc8cb8dd457048df5cc`  
+**Live-State Reference:** `main@329562a6da8d8d6f724036ed11267f51a1855483`  
 **Last Updated:** 2026-10-02
 
 > A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
@@ -31,8 +31,9 @@
 
 The v4.4.0 release remains the published release baseline, but the repository has continued to evolve on `main`. Current work is governed by exact-head evidence rather than by the historical May completion percentages below.
 
-- **Current main:** `090f2a2b90794b6fdcee64affa3ca39a53d0061a` (`#1666`, semantic TC4 false-green ranking merged after exact-head admission).
-- **Open PRs at this refresh:** none before this documentation refresh.
+- **Current main:** `329562a6da8d8d6f724036ed11267f51a1855483` (`#1667`, root-state coherence refresh merged after `#1666`).
+- **Open execution PR:** `#1671` is the single authoritative rank-1 `ci-enhanced.yml` repair lane; overlapping `#1670` was closed as superseded.
+- **Current admission state:** `#1671` exact-head MIP B1 is green; B0 and Python 3.10/3.11/3.12 matrix proof are executing. The Enhanced CI lane is queued/executing and no engineering red is admitted until a real current-head failure completes.
 - **TC0–TC4 completeness census:** merged through `#1666`, combining inventory/completeness, source↔test dynamic context, workflow executability/trigger coverage, semantic false-green classification, coverage DAB and static-analysis debt into one ranked residual while retaining the raw syntactic TC4 count separately.
 - **Completed census repairs:** `#1661` removed parser false positives; `#1665` removed the measured `cd-unified.yml` false-green defect; `#1666` added semantic TC4 classification without erasing raw debt.
 - **Exact-head proof state:** `#1666` merged only after B0/B1, Python 3.10/3.11/3.12 and compatibility were green; changed-line coverage was 100% (55/55), raw TC4 remained 239, `TEST_EXISTS_UNCOLLECTED` remained 2, and the unified ranked residual improved 310 → 309.
@@ -56,8 +57,8 @@ REFRESH LIVE MAIN
 
 ### Next execution order
 
-1. Preserve the merged `#1666` post-merge readback and exact-main parity at `090f2a2b90794b6fdcee64affa3ca39a53d0061a`.
-2. Consume the measured rank-1 **INFRA/CHECK** residual in `.github/workflows/ci-enhanced.yml` through bounded fail-closed slices; do not convert semantic false-greens into renamed advisory masks.
+1. Preserve exact-main parity at `329562a6da8d8d6f724036ed11267f51a1855483` and keep `#1671` as the only authoritative `ci-enhanced.yml` rank-1 lane.
+2. Complete `#1671` exact-head admission: B0/B1, canonical Python 3.10/3.11/3.12 compatibility and Enhanced CI. Repair only the first genuine material repo-local red, if one appears; otherwise merge and perform post-merge recensus.
 3. Consume **TEST_ADMISSION** gaps next; no uncollected or failing governed test surface may be silently treated as green.
 4. Consume **NO_TEST** source gaps, prioritizing `USER_DIRECTED_HIGH` and `HIGH` criticality.
 5. Consume measured **COVERAGE** residuals while preserving configured changed-line and canonical coverage ratchets.
@@ -433,21 +434,26 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 
 ## ⚠️ HISTORICAL GAPS & BLOCKERS (V2.3 ERA)
 
-### 🔴 Critical (Historical, now resolved in v4.4.0)
-1. **No V3.0 Orchestrator** - Cannot run V2.3 agents in production
-2. **Incomplete Agent Upgrades** - 2/6 agents still at v2.0/v2.1
-3. **No KEB/GBOGEB Integration** - Knowledge bases not connected
+These items are retained for lineage. They are **not** the current execution queue. Current work is governed by the exact-head TC0-TC4/DAB evidence above.
 
-### 🟡 High Priority (Historical backlog)
-4. **Folder Structure Chaos** - 581 files in root, no version control
-5. **Recursive Hooks Not Ported** - V2.3 may lose V2.2 capabilities
-6. **No Deployment Active** - CI/CD exists but not deploying
+### ✅ Historical gaps resolved by later baselines
+1. **No V3.0 Orchestrator** — resolved; the canonical V3 orchestrator is operational.
+2. **Incomplete Agent Upgrades** — resolved; 6/6 agent upgrades were previously verified.
+3. **No KEB/GBOGEB Integration** — resolved; runtime integration was previously verified.
+4. **Recursive Hooks Not Ported** — superseded by the current DMAIC/temporal orchestration architecture.
+5. **Dashboard generation** — resolved as a capability; multiple GitHub Pages/dashboard surfaces now exist.
+6. **DMAIC tracking and metrics/KPI collection** — implemented as capabilities; current correctness is governed by live census evidence rather than the V2.3 checklist.
 
-### 🟢 Medium Priority
-7. Dashboard generation
-8. DMAIC tracking across all agents
-9. Metrics/KPI collection
+### 🚧 Historical items that remain current proof gates
+7. **Folder/refactor completion** — still unproven as a repository-wide closure claim. Do not infer completion from partial cleanup.
+8. **End-to-end deployment readiness** — CI/CD execution exists, but production/deployment readiness remains a separate evidence gate.
+9. **Production readiness** — not promoted from historical targets; requires current branch-protection, deployment, test/admission, coverage and release evidence.
 
+### Current blocker interpretation
+- **Immediate blocker:** none admitted yet; `#1671` is waiting on exact-head workflow execution, not on a design decision.
+- **Rank-1 measured debt:** semantic false-green constructs in `.github/workflows/ci-enhanced.yml`.
+- **Next blocker classes after rank-1 closure:** `TEST_ADMISSION` → `NO_TEST` → `COVERAGE` → `STATIC_ANALYSIS`.
+- **Separate non-code gates:** branch protection, repository refactor closure, end-to-end deployment proof and production-readiness proof.
 ---
 
 ## 📊 METRICS SNAPSHOT
@@ -489,9 +495,9 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - [x] Integrate KEB/GBOGEB knowledge bases
 
 ### Phase snapshot — week 2 (historical)
-- [x] Activate CI/CD deployment
-- [ ] Generate dashboards
-- [ ] Complete folder refactoring
+- [x] Establish CI/CD execution and deployment-capable workflows (historical capability)
+- [x] Generate dashboard surfaces (later baseline capability)
+- [ ] Complete repository-wide folder/refactor closure (still a current proof gate)
 
 ---
 
@@ -538,7 +544,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - ✅ Orchestrator v3.0 operational
 - ✅ KEB/GBOGEB integration operational
 
-### Current Validation Snapshot (2026-05-29)
+### Historical Validation Snapshot (2026-05-29)
 - ✅ 6/6 agents upgraded and loading
 - ✅ Orchestrator v3.0 operational
 - ✅ KEB/GBOGEB runtime integration active
@@ -547,7 +553,7 @@ python tools_v2.3/code_index_generator_v2.3.py --scan
 - ❌ End-to-end deployment readiness pending
 - ❌ Production readiness pending
 
-See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, dependency sequence, and actionable tasks.
+This snapshot remains historical evidence only. See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for its original dependency sequence; use the current exact-head queue above for present work.
 
 ---
 
@@ -578,8 +584,8 @@ See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, 
 
 **Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag  
 **Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** Active exact-head MIP/CI hardening; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
-**Last Major Update:** 2026-10-02 (semantic TC4 ranking merged; current rank-1 `ci-enhanced.yml` false-green debt measured)
+**Git Status:** Active exact-head MIP/CI hardening; `#1671` is the sole current rank-1 `ci-enhanced.yml` lane; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
+**Last Major Update:** 2026-10-02 (`#1667` merged; duplicate `#1670` superseded; `#1671` executing exact-head admission for the measured rank-1 false-green debt)
 
 ---
 
@@ -623,10 +629,10 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 4. Read [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md) (5 min)
 
 ### Returning Developer?
-1. Check [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md) for latest status
-2. Review [V2.3_IMMEDIATE_ACTION_PLAN](docs_versioned/v2.3_active/V2.3_IMMEDIATE_ACTION_PLAN_20251111.md) for current sprint
-3. Run tests to validate environment
-4. Pick next task from action plan
+1. Start with **CURRENT EXECUTION STATE** near the top of this README for the live main SHA and active PR edge.
+2. Treat V2.3 status/action-plan documents as historical lineage, not as the current sprint authority.
+3. Read the latest TC0-TC4/DAB evidence and current open PR before selecting work.
+4. Consume only the next measured residual; do not replay completed or superseded slices.
 
 ### Need Help?
 - **Documentation issues?** Check [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
@@ -637,8 +643,8 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 ---
 
 **Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence  
-**Current Focus:** Consume the measured `ci-enhanced.yml` rank-1 INFRA/CHECK residual without relaxing test, coverage or raw false-green controls  
-**Next Milestone:** Post-merge recensus with zero new infrastructure/admission regressions, followed by measured NO_TEST/COVERAGE/STATIC_ANALYSIS burn-down and separately proved branch-protection/refactor/deployment gates  
+**Current Focus:** Admit and close `#1671`, the sole measured `ci-enhanced.yml` rank-1 INFRA/CHECK lane, without relaxing test, coverage or raw false-green controls  
+**Next Milestone:** `#1671` exact-head GREEN → merge → post-merge TC0-TC4/DAB recensus → consume the next measured `TEST_ADMISSION`/`NO_TEST`/`COVERAGE`/`STATIC_ANALYSIS` residual; prove branch-protection/refactor/deployment gates separately  
 **Last Updated:** 2026-10-02
 
 ---
