@@ -16,13 +16,55 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** v4.4.0 — Release Published; Workflow Activation Pending  
-**Quality Score:** 92.1/100  
-**Last Updated:** 2026-05-18
+**Current Version:** v4.4.0 release baseline — active mainline hardening and completeness-census evolution  
+**Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)  
+**Live-State Reference:** `main@3aeae479bd8b801e3a914dc8cb8dd457048df5cc`  
+**Last Updated:** 2026-10-02
 
 > A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
 
 ### 🎉 v4.4.0 Released — [Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0) | [Announcement](ANNOUNCEMENT_v4.4.0.md) | [Final Status Dashboard](docs/final_status_v4.4.0.html)
+
+---
+
+## 🚦 CURRENT EXECUTION STATE — 2026-10-02
+
+The v4.4.0 release remains the published release baseline, but the repository has continued to evolve on `main`. Current work is governed by exact-head evidence rather than by the historical May completion percentages below.
+
+- **Current main:** `3aeae479bd8b801e3a914dc8cb8dd457048df5cc` (`#1661`, MIP workflow-census parser repair).
+- **Open PRs at this refresh:** none.
+- **TC0–TC4 completeness census:** merged through `#1659`, combining inventory/completeness, source↔test dynamic context, workflow executability/trigger coverage, false-green semantics, coverage DAB and static-analysis debt into one ranked residual.
+- **First census repair:** `#1661` removed false `INFRA/CHECK` positives caused by quoted YAML `'on'` keys and indentationless valid `steps` sequences.
+- **Exact-head proof state:** B1 false-green census is green on the `#1661` head; the B0 canonical/report-only coverage census and Python compatibility matrix are still executing/queued. Engineering residual promotion remains withheld until those measurements complete.
+- **Root documentation:** this section supersedes stale “workflow activation pending” language and historical counts as the current operating pointer.
+
+### Execution invariant
+
+```text
+REFRESH LIVE MAIN
+→ READ OPEN/MERGED PR STATE
+→ RECOVER EXACT-HEAD TEST/CHECK EVIDENCE
+→ REGENERATE TC0–TC4 + DAB RESIDUAL
+→ REPAIR FIRST MATERIAL REPO-LOCAL RED ONLY
+→ PRESERVE TEST/COVERAGE/FALSE-GREEN RATCHETS
+→ FULL COMPATIBILITY / CI PROOF
+→ MERGE ONLY ON ADMISSIBLE EXACT-HEAD EVIDENCE
+→ POST-MERGE MAIN READBACK
+→ RE-CENSUS BEFORE PROMOTING THE NEXT RESIDUAL
+```
+
+### Next execution order
+
+1. Complete/read back the exact-head B0 + TC0–TC4 census and compatibility matrix for the current `#1661` tree.
+2. Consume genuine **INFRA/CHECK** defects first; distinguish parser/census false positives from real workflow defects.
+3. Consume **TEST_ADMISSION** gaps next; no uncollected or failing governed test surface may be silently treated as green.
+4. Consume **NO_TEST** source gaps, prioritizing `USER_DIRECTED_HIGH` and `HIGH` criticality.
+5. Consume measured **COVERAGE** residuals while preserving configured changed-line and canonical coverage ratchets.
+6. Continue measured **STATIC_ANALYSIS** debt reduction through the DAB queue; do not substitute raw bulk lint counts for ranked evidence.
+7. Keep root status, handover, workflow rationalization and release-facing documentation synchronized with the exact live state.
+8. Treat branch protection, folder refactoring, end-to-end deployment readiness and production-readiness claims as separate proof gates; promote them only when current evidence supports the claim.
+
+> Historical V2.2/V2.3 plans and the v4.4.0 release score remain useful lineage, but they are not the authority for current-main readiness.
 
 ---
 
@@ -178,11 +220,12 @@ Explicit links between validated tuples, handoff logs, and metadata workflows. S
 A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. Built for the 12-cluster cryoplant analysis workflow.
 
 ### Current Status
-- **v4.4.0:** ✅ Production release live (95% complete, quality score 92.5/100)
+- **v4.4.0:** ✅ Published release baseline; historical completion/quality figures remain release-only evidence
+- **Current mainline:** 🚧 Active MIP hardening, test/check completeness census and measured residual burn-down
 - **V2.2:** ✅ Archived historical baseline
 - **V2.3:** ✅ Historical implementation milestone (superseded by v4.4.0)
-- **Workflows:** ✅ 37 active in `.github/workflows/`
-- **Next Milestones:** Branch protection and optional documentation polish
+- **Workflow authority:** use `.github/workflows/`, `ci/governance/workflow_policy.json` and `docs/ci/WORKFLOW_RATIONALIZATION.md`; do not rely on a frozen workflow count
+- **Next Milestones:** finish current exact-head census → consume ranked residuals → prove branch protection/refactor/deployment readiness separately
 
 ### Get Started Now
 1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
@@ -321,8 +364,6 @@ Master_Input/
 1. Maintain green core + integration pipelines (`v23-cicd.yml`, bridge/federation/integration workflows)
 2. Continue end-to-end validation for broader DMAIC pipelines
 3. Keep status docs synchronized with live runtime/CI evidence
->>>>>>> refs/remotes/origin/main
-
 ---
 
 ## 🔥 CRITICAL DOCUMENTS (READ THESE FIRST)
@@ -534,10 +575,10 @@ See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, 
 
 ## 🔄 VERSION CONTROL
 
-**Current Version:** v4.4.0  
+**Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag  
 **Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** Release published; 37 workflows active, branch protection pending  
-**Last Major Update:** 2026-05-20 (workflow activation + post-merge status sync)
+**Git Status:** Active exact-head MIP/CI hardening; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
+**Last Major Update:** 2026-10-02 (TC0–TC4 completeness census + workflow-census parser repair)
 
 ---
 
@@ -594,10 +635,10 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** ✅ v4.4.0 released / ✅ workflow activation complete  
-**Current Focus:** Apply branch protection and roll out the cleanup toolkit to sister repos  
-**Next Milestone:** Sustain 95%+ quality with the active workflow set and complete branch protection
-**Last Updated:** 2026-05-20
+**Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence  
+**Current Focus:** Complete the TC0–TC4/DAB readback, then consume the first measured residual without relaxing test, coverage or false-green controls  
+**Next Milestone:** Post-merge recensus with zero new infrastructure/admission regressions, followed by measured NO_TEST/COVERAGE/STATIC_ANALYSIS burn-down and separately proved branch-protection/refactor/deployment gates  
+**Last Updated:** 2026-10-02
 
 ---
 
