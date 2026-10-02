@@ -56,6 +56,7 @@ jobs:
 
       - name: Run test suite on PR branch
         id: run_tests
+        # rex-allow: advisory branch analysis captures pytest outcome as data; admission is enforced elsewhere.
         continue-on-error: true
         run: |
           set -uo pipefail
@@ -334,7 +335,7 @@ jobs:
           python -m pip install --upgrade pip
           grep -vi '^sphinx' DMAIC_V3/requirements.txt > /tmp/requirements-no-sphinx.txt
           python -m pip install -r /tmp/requirements-no-sphinx.txt
-          python -m pip install pytest pytest-cov pytest-mock pyyaml 2>/dev/null || true
+          python -m pip install pytest pytest-cov pytest-mock pyyaml
 
       - name: Analyse all unmerged branches
         env:
