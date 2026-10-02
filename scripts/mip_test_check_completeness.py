@@ -180,6 +180,8 @@ BENIGN_FALSE_GREEN_KINDS = {
     "OPTIONAL_ARTIFACT",
     "DEFAULT_VALUE_TELEMETRY",
     "IDEMPOTENT_NOOP",
+    "DIAGNOSTIC_BEST_EFFORT",
+    "CAPTURED_OUTCOME_FAIL_CLOSED",
 }
 
 
@@ -196,6 +198,49 @@ def workflow_step_name(root: Path, row: dict[str, Any]) -> str:
             return match.group(1).strip().strip("'\"")
     return "WITHHELD"
 
+
+def workflow_step_id(root: Path, row: dict[str, Any]) -> str | None:
+    path = root / str(row.get("path", ""))
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    index = max(0, int(row.get("line", 1) or 1) - 1)
+    step_start = None
+    for cursor in range(index, -1, -1):
+        if re.match(r"^\s*-\s+name:\s*.+?\s*$", lines[cursor]):
+            step_start = cursor
+            break
+    if step_start is None:
+        return None
+    for cursor in range(step_start + 1, min(len(lines), index + 1)):
+        match = re.match(r"^\s+id:\s*([A-Za-z0-9_-]+)\s*$", lines[cursor])
+        if match:
+            return match.group(1)
+    return None
+
+
+def workflow_captures_outcome_fail_closed(root: Path, row: dict[str, Any]) -> bool:
+    path = root / str(row.get("path", ""))
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    step_id = workflow_step_id(root, row)
+    if not step_id:
+        return False
+    mapping = re.search(
+        rf"^\s*([A-Z][A-Z0-9_]*)\s*:\s*.*steps\.{re.escape(step_id)}\.outcome.*$",
+        text,
+        flags=re.MULTILINE,
+    )
+    if not mapping:
+        return False
+    if not re.search(r"(?im)^\s*-\s+name:\s*.*fail[- ]closed.*$", text):
+        return False
+    outcome_var = mapping.group(1)
+    pattern = r"test\s+[\"\']?\$" + re.escape(outcome_var) + r"[\"\']?\s*=\s*success\b"
+    return bool(re.search(pattern, text))
 
 def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]:
     text = str(row.get("text", ""))
@@ -215,6 +260,8 @@ def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]
         and "|| true" in lower
     ):
         kind = "OPTIONAL_ARTIFACT"
+    elif re.search(r"\bkubectl\s+(?:get|describe|logs)\b", lower) and "|| true" in lower:
+        kind = "DIAGNOSTIC_BEST_EFFORT"
     elif re.search(r"\|\|\s*echo\s+['\"]?0\b", lower) or (
         ("grep -c" in lower or "wc -l" in lower) and "|| true" in lower
     ):
@@ -245,6 +292,11 @@ def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]
         kind = "ASSERTION_MASK"
     elif "git push" in lower or "gh release" in lower or "gh pr " in lower:
         kind = "PUBLISH_MASK"
+    elif (
+        ("continue_on_error" in patterns or "shell_set_plus_e" in patterns)
+        and workflow_captures_outcome_fail_closed(root, row)
+    ):
+        kind = "CAPTURED_OUTCOME_FAIL_CLOSED"
     elif "continue_on_error" in patterns:
         kind = "CONTINUE_ON_ERROR"
     elif "shell_set_plus_e" in patterns:
