@@ -8,6 +8,9 @@ __version__ = "3.3.0"
 from pathlib import Path
 from typing import Dict, List
 import ast
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DependencyGraphAgent:
@@ -36,8 +39,8 @@ class DependencyGraphAgent:
                                 imports.append(node.module)
 
                     graph[str(file_path)] = imports
-                except (OSError, UnicodeError, SyntaxError):
-                    pass
+                except (OSError, UnicodeError, SyntaxError) as exc:
+                    logger.warning("Skipping dependency parsing for %s: %s", file_path, exc)
 
         return graph
 
