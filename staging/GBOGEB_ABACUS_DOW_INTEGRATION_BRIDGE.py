@@ -382,9 +382,9 @@ class GBOGEBAbacusDOWBridge:
 
         report = f"""# GBOGEB/ABACUS ↔ DOW Integration Report
 
-**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
-**Integration Mode:** {results['integration_mode']}  
-**Status:** {results['status'].upper()}  
+**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+**Integration Mode:** {results['integration_mode']}
+**Status:** {results['status'].upper()}
 **Duration:** {results.get('duration_seconds', 0):.2f} seconds
 
 ---
