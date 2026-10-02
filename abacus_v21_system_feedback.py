@@ -321,8 +321,8 @@ class SystemFeedbackGenerator:
 
 ## Executive Summary
 
-**Generated**: {report['report_metadata']['generated']}  
-**Phase**: {report['report_metadata']['phase']}  
+**Generated**: {report['report_metadata']['generated']}
+**Phase**: {report['report_metadata']['phase']}
 **Version**: {report['report_metadata']['version']}
 
 ### System Health: {health['health_status']}
@@ -342,7 +342,7 @@ class SystemFeedbackGenerator:
         for summary in summaries:
             md += f"""### Stage {summary['stage']}: {summary['name']}
 
-**Status**: {summary['status']}  
+**Status**: {summary['status']}
 **Description**: {summary['description']}
 
 - Tests: {summary['passed']}/{summary['tests']} passed ({summary['pass_rate']:.1f}%)
