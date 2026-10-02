@@ -14,6 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def get_workflow_runs():
     """Get recent workflow runs from git log"""
     try:
@@ -35,6 +36,7 @@ def get_workflow_runs():
     except subprocess.CalledProcessError as e:
         print(f"❌ Error getting commit SHA: {e}")
         return None
+
 
 def analyze_workflow_files():
     """Analyze workflow files for common issues"""
@@ -105,6 +107,7 @@ def analyze_workflow_files():
 
     return issues_found
 
+
 def check_required_files():
     """Check for required files that workflows might need"""
     print("\n📋 Checking for required files...\n")
@@ -140,6 +143,7 @@ def check_required_files():
             print(f"  {item}")
 
     return missing
+
 
 def generate_report():
     """Generate a comprehensive error report"""
