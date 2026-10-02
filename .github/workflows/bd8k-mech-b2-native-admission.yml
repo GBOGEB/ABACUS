@@ -1,0 +1,72 @@
+name: BD8K MECH-B2 native admission
+on:
+  push:
+    branches: [bd8k-wave2-mech-b2-20261002]
+jobs:
+  validate:
+    if: startsWith(github.event.head_commit.message, 'BD8K validate MECH-B2')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: bd8k-wave2-mech-b2-20261002
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --upgrade pip flake8
+      - name: Native DAB
+        run: python scripts/dab_flake8_census.py --json-out /tmp/dab.json --text-out /tmp/dab.txt
+      - name: Guard DAB, AST and workflow hygiene
+        env:
+          BASE_SHA: 5ae48ced30c83de16af775a57317738a88df0287
+          BASE_TOTAL: '4992'
+          BASELINE_JSON: '{"E111":60,"E125":1,"E127":51,"E128":144,"E129":1,"E131":5,"E203":4,"E221":71,"E225":499,"E227":3,"E228":1,"E231":863,"E261":2,"E265":1,"E301":13,"E302":314,"E303":16,"E305":114,"E306":5,"E401":37,"E402":623,"E501":941,"E701":138,"E702":225,"E703":1,"E712":10,"E722":16,"E741":9,"E999":1,"F401":336,"F541":315,"F841":19,"W291":108,"W292":11,"W293":26,"W391":8}'
+          TARGET_CODES_JSON: '["E111","E128","E225","E231","E302","E702","W291","W293"]'
+          FILES_JSON: '["scripts/t0_deep_diagnostics.py","tools/w64_authority_family_discovery.py","tools/w65_parallel_discovery.py","triage/requirements/creq_ci_gate.py","triage/run_repo_census.py"]'
+        run: |
+          python - <<'PY'
+          import ast, json, os, subprocess
+          from pathlib import Path
+          baseline=json.loads(os.environ["BASELINE_JSON"])
+          targets=set(json.loads(os.environ["TARGET_CODES_JSON"]))
+          files=json.loads(os.environ["FILES_JSON"])
+          payload=json.loads(Path("/tmp/dab.json").read_text())
+          counts=payload["all_families"]
+          errors=[]
+          for code,expected in {"E999":1,"F821":0,"F601":0,"F811":0,"E731":0}.items():
+              if counts.get(code,0)!=expected:
+                  errors.append(f"protected {code}: {counts.get(code,0)} != {expected}")
+          for code,current in counts.items():
+              if code not in targets and current > baseline.get(code,0):
+                  errors.append(f"non-target regression {code}: {baseline.get(code,0)} -> {current}")
+          before=sum(baseline.get(c,0) for c in targets)
+          after=sum(counts.get(c,0) for c in targets)
+          if after>=before:
+              errors.append(f"target families did not improve: {before} -> {after}")
+          if payload["total"]>=int(os.environ["BASE_TOTAL"]):
+              errors.append(f"total did not improve: {os.environ['BASE_TOTAL']} -> {payload['total']}")
+          ast_rows=[]
+          for name in files:
+              old=subprocess.check_output(["git","show",f"{os.environ['BASE_SHA']}:{name}"],text=True)
+              new=Path(name).read_text()
+              same=ast.dump(ast.parse(old,filename=name),include_attributes=False)==ast.dump(ast.parse(new,filename=name),include_attributes=False)
+              ast_rows.append({"path":name,"ast_equal":same})
+              if not same:
+                  errors.append(f"AST changed: {name}")
+          wf=Path(".github/workflows/dmaic-v3-ci.yml").read_text()
+          if "rm -f .coverage .coverage.* coverage.xml" not in wf:
+              errors.append("coverage cleanup missing")
+          receipt={"worker":"MECH-B2","base_total":4992,"total":payload["total"],"target_before":before,"target_after":after,"families":counts,"ast":ast_rows,"errors":errors}
+          Path("/tmp/admission.json").write_text(json.dumps(receipt,indent=2)+"\n")
+          print(json.dumps(receipt,indent=2))
+          if errors: raise SystemExit("\n".join(errors))
+          PY
+          python -m py_compile "scripts/t0_deep_diagnostics.py" "tools/w64_authority_family_discovery.py" "tools/w65_parallel_discovery.py" "triage/requirements/creq_ci_gate.py" "triage/run_repo_census.py"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bd8k-mech-b2-admission
+          path: |
+            /tmp/dab.json
+            /tmp/dab.txt
+            /tmp/admission.json
