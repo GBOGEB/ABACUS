@@ -379,6 +379,7 @@ jobs:
       - name: Check test coverage threshold
         run: |
           cd ${{ env.DMAIC_ROOT }}
+          rm -f .coverage .coverage.* coverage.xml
           pytest --benchmark-disable tests/ --cov=core --cov-fail-under=75 --cov-report=term
       
       - name: Upload quality reports
