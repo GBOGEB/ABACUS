@@ -141,7 +141,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `dab-flake8-census.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
-| 20 | `specialised` | `mip-coverage-evidence.yml` | workflow_dispatch, pull_request | 2 | `keep` | — |
+| 20 | `specialised` | `mip-coverage-evidence.yml` | workflow_dispatch, push, pull_request | 2 | `keep` | — |
 | 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `specialised` | `mip-qps-external-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `mip-v2-federated-control.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
@@ -228,12 +228,14 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install flake8 mypy pylint black ruff` — `bridge-ci.yml`, `ci.yml`
 - `pip install pytest pytest-cov pytest-benchmark pytest-mock` — `bridge-ci.yml`, `main.yml`
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
+- `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
+- `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
 - `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
 - `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
-- `python -m pytest \` — `governance.yml`, `validation.yml`
+
 
 ## Control rule
 
