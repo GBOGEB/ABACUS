@@ -128,7 +128,7 @@ class DOWArianaIntegration:
         self.ariana_sync_file.write_text(json.dumps(ariana_sync, indent=2))
         print(f"  ✅ Ariana sync config: {self.ariana_sync_file}")
 
-    def register_agent_orchestration_event(self, event_type: str, agent_name: str,
+    def register_agent_orchestration_event(self, event_type: str, agent_name: str, 
                                           phase: str, metadata: Dict[str, Any] = None):
         """Register agent orchestration event for tracking"""
         event = {
@@ -146,7 +146,7 @@ class DOWArianaIntegration:
 
         return event
 
-    def track_phase_transition(self, from_phase: str, to_phase: str,
+    def track_phase_transition(self, from_phase: str, to_phase: str, 
                               agents_involved: List[str], metadata: Dict[str, Any] = None):
         """Track phase transitions with agent involvement"""
         transition = {
@@ -297,7 +297,7 @@ class DOWArianaIntegration:
             'passed': sum(1 for r in results.values() if r.success),
             'failed': sum(1 for r in results.values() if not r.success),
             'all_passed': all_passed,
-            'results': {name: {'success': r.success, 'duration': r.duration_seconds}
+            'results': {name: {'success': r.success, 'duration': r.duration_seconds} 
                        for name, r in results.items()}
         }
 
