@@ -34,10 +34,9 @@ jobs:
         run: black --check --diff .
 
       - name: Run Flake8 (Linting)
-        run: |
-          # Whole-repo static-analysis debt is measured and governed by DAB.
-          # rex-allow: ADVISORY_EXPLICIT
-          flake8 . --count --statistics --max-line-length=120 || echo "Flake8 findings reported to DAB"
+        # rex-allow: ADVISORY_EXPLICIT
+        continue-on-error: true
+        run: flake8 . --count --statistics --max-line-length=120
 
       - name: Run Pylint
         continue-on-error: true
