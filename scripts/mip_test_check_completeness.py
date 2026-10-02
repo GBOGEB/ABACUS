@@ -175,6 +175,91 @@ def false_green_census(root: Path, workflow_paths: list[str]) -> dict[str, Any]:
     }
 
 
+BENIGN_FALSE_GREEN_KINDS = {
+    "CLEANUP_BEST_EFFORT",
+    "OPTIONAL_ARTIFACT",
+    "DEFAULT_VALUE_TELEMETRY",
+    "IDEMPOTENT_NOOP",
+}
+
+
+def workflow_step_name(root: Path, row: dict[str, Any]) -> str:
+    path = root / str(row.get("path", ""))
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return "WITHHELD"
+    index = max(0, int(row.get("line", 1) or 1) - 1)
+    for cursor in range(index, max(-1, index - 25), -1):
+        match = re.match(r"^\s*-\s+name:\s*(.+?)\s*$", lines[cursor])
+        if match:
+            return match.group(1).strip().strip("'\"")
+    return "WITHHELD"
+
+
+def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]:
+    text = str(row.get("text", ""))
+    lower = text.lower()
+    patterns = set(row.get("patterns", []))
+    step_name = workflow_step_name(root, row)
+    step_lower = step_name.lower()
+
+    if "trap " in lower or (
+        ("kill " in lower or "docker rm " in lower or "docker logs " in lower)
+        and "|| true" in lower
+    ):
+        kind = "CLEANUP_BEST_EFFORT"
+    elif (
+        ("cp " in lower or "mkdir " in lower)
+        and ("artifact" in lower or "logs/" in lower or "output" in lower)
+        and "|| true" in lower
+    ):
+        kind = "OPTIONAL_ARTIFACT"
+    elif re.search(r"\|\|\s*echo\s+['\"]?0\b", lower) or (
+        ("grep -c" in lower or "wc -l" in lower) and "|| true" in lower
+    ):
+        kind = "DEFAULT_VALUE_TELEMETRY"
+    elif "git commit " in lower and ("no changes" in lower or "nothing to commit" in lower):
+        kind = "IDEMPOTENT_NOOP"
+    elif "pip install" in lower or "uv sync" in lower or "poetry install" in lower:
+        kind = "DEPENDENCY_MASK"
+    elif "pytest" in lower or "unittest" in lower or "tox " in lower or "nox " in lower:
+        kind = "TEST_MASK"
+    elif any(
+        token in lower
+        for token in ("ruff ", "flake8 ", "black ", "pylint ", "mypy ", "pre-commit ")
+    ):
+        kind = "STATIC_ANALYSIS_MASK"
+    elif any(
+        token in lower
+        for token in ("bandit ", "semgrep ", "trivy ", "codeql", "osv", "safety ")
+    ):
+        kind = "SECURITY_MASK"
+    elif (
+        "test -f" in lower
+        or "grep -q" in lower
+        or "assert" in lower
+        or "verify" in step_lower
+        or "validate" in step_lower
+    ):
+        kind = "ASSERTION_MASK"
+    elif "git push" in lower or "gh release" in lower or "gh pr " in lower:
+        kind = "PUBLISH_MASK"
+    elif "continue_on_error" in patterns:
+        kind = "CONTINUE_ON_ERROR"
+    elif "shell_set_plus_e" in patterns:
+        kind = "ERROR_MODE_DISABLED"
+    else:
+        kind = "UNKNOWN_MASK"
+
+    return {
+        **row,
+        "step_name": step_name,
+        "semantic_kind": kind,
+        "semantic_false_green": kind not in BENIGN_FALSE_GREEN_KINDS,
+    }
+
+
 def state_counts(rows: list[dict[str, Any]], field: str) -> dict[str, int]:
     counts: dict[str, int] = {}
     for row in rows:
@@ -216,9 +301,11 @@ def build_report(
     workflow_rows = [workflow_shape(root / rel, root) for rel in inventory["workflow_paths"]]
     tc4 = false_green_report or false_green_census(root, inventory["workflow_paths"])
     unguarded = [
-        row for row in tc4.get("findings", [])
+        semantic_false_green_kind(row, root)
+        for row in tc4.get("findings", [])
         if isinstance(row, dict) and not row.get("allowed", False)
     ]
+    semantic_false_green = [row for row in unguarded if row["semantic_false_green"]]
     coverage_rows = [row for row in coverage_dab.get("rows", []) if isinstance(row, dict)]
     active = [row for row in coverage_rows if row.get("source_class") == "ACTIVE_SOURCE"]
     with_context = [row for row in active if row.get("existing_test_surface")]
@@ -242,15 +329,36 @@ def build_report(
                 magnitude=1500,
             )
         )
-    false_by_path: dict[str, int] = {}
-    for finding in unguarded:
+    false_by_path: dict[str, dict[str, Any]] = {}
+    for finding in semantic_false_green:
         path = str(finding.get("path", "WITHHELD"))
-        false_by_path[path] = false_by_path.get(path, 0) + 1
-    for path, count in false_by_path.items():
+        entry = false_by_path.setdefault(
+            path, {"count": 0, "semantic_counts": {}, "findings": []}
+        )
+        entry["count"] += 1
+        kind = str(finding["semantic_kind"])
+        entry["semantic_counts"][kind] = entry["semantic_counts"].get(kind, 0) + 1
+        entry["findings"].append(
+            {
+                "line": finding.get("line"),
+                "step_name": finding.get("step_name"),
+                "semantic_kind": kind,
+                "text": finding.get("text"),
+            }
+        )
+    for path, entry in false_by_path.items():
+        count = int(entry["count"])
         queue.append(
             residual(
-                "INFRA/CHECK", path, f"{count} unguarded false-green construct(s)",
-                magnitude=count, evidence={"unguarded_count": count},
+                "INFRA/CHECK",
+                path,
+                f"{count} semantic false-green construct(s)",
+                magnitude=count,
+                evidence={
+                    "semantic_false_green_count": count,
+                    "semantic_counts": entry["semantic_counts"],
+                    "findings": entry["findings"][:20],
+                },
             )
         )
 
@@ -377,7 +485,10 @@ def build_report(
         "tc4_false_green": {
             "finding_count": tc4.get("finding_count", len(tc4.get("findings", []))),
             "allowed_count": tc4.get("allowed_count", 0),
-            "unguarded_count": tc4.get("unguarded_count", len(unguarded)),
+            "syntactic_unguarded_count": tc4.get("unguarded_count", len(unguarded)),
+            "semantic_false_green_count": len(semantic_false_green),
+            "semantic_benign_count": len(unguarded) - len(semantic_false_green),
+            "semantic_counts": state_counts(unguarded, "semantic_kind"),
             "ratchet_status": tc4.get("ratchet_status", "WITHHELD"),
         },
         "coverage_dab": {
