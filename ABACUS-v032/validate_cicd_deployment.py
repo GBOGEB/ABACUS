@@ -287,7 +287,7 @@ class CICDValidator:
         for category, checks in self.results.items():
             if category != "overall" and isinstance(checks, dict):
                 all_checks.extend([
-                    v for v in checks.values() 
+                    v for v in checks.values()
                     if isinstance(v, bool)
                 ])
 
