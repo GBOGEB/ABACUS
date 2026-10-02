@@ -46,7 +46,7 @@ def main():
                 try:
                     metrics = json.loads(metrics_json)
                     metrics_preview = f"σ={metrics.get('score_sigma', 'N/A')}"
-                except:
+                except json.JSONDecodeError:
                     pass
 
             f.write(f"| `{rid}` | {started} | {status} | `{git_sha}` | {metrics_preview} |\n")
