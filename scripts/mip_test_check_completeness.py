@@ -90,9 +90,11 @@ def discover_inventory(root: Path) -> dict[str, Any]:
     ]
     known = set(canonical) | set(report_only)
     orphan = [path for path in test_like if path not in known]
+    test_set = set(test_like)
     source = [
         path for path in files
         if path.suffix == ".py"
+        and path not in test_set
         and dab.classify_source(path.relative_to(root).as_posix(), {}) == "ACTIVE_SOURCE"
     ]
     return {
@@ -158,11 +160,12 @@ def workflow_shape(path: Path, root: Path) -> dict[str, Any]:
 
 
 def false_green_census(root: Path, workflow_paths: list[str]) -> dict[str, Any]:
-    findings = [
-        row
-        for rel in workflow_paths
-        for row in false_green.scan_file(root / rel)
-    ]
+    findings: list[dict[str, Any]] = []
+    for rel in workflow_paths:
+        for raw in false_green.scan_file(root / rel):
+            row = dict(raw)
+            row["path"] = rel
+            findings.append(row)
     violations = [row for row in findings if not row["allowed"]]
     return {
         "finding_count": len(findings),
