@@ -23,7 +23,7 @@ class ImprovedCryoplantRTMGenerator:
                 "description": "Complete cryogenic system including plant, infrastructure, and distribution"
             },
             "QSYS-PR": {
-                "name": "Project Requirements", 
+                "name": "Project Requirements",
                 "level": 0,
                 "parent": None,
                 "children": ["QPLANT", "QINFRA", "QCELL", "QDIST"],
@@ -33,15 +33,15 @@ class ImprovedCryoplantRTMGenerator:
             # Level 1 - Major Subsystems
             "QPLANT": {
                 "name": "Cryoplant",
-                "level": 1, 
+                "level": 1,
                 "parent": "QSYS-PR",
                 "children": ["WCS", "QRB"],
                 "description": "Main cryogenic refrigeration plant including compressors and cold box"
             },
             "QINFRA": {
-                "name": "Cryogenic Infrastructure", 
+                "name": "Cryogenic Infrastructure",
                 "level": 1,
-                "parent": "QSYS-PR", 
+                "parent": "QSYS-PR",
                 "children": ["WCS", "QRB"],
                 "description": "CSS cryogenic supply system infrastructure"
             },
@@ -54,7 +54,7 @@ class ImprovedCryoplantRTMGenerator:
             },
             "QDIST": {
                 "name": "Cryogenic Distribution",
-                "level": 1, 
+                "level": 1,
                 "parent": "QSYS-PR",
                 "children": [],
                 "description": "CSS cryogenic USER - distribution lines and headers"
@@ -69,18 +69,18 @@ class ImprovedCryoplantRTMGenerator:
                 "description": "Warm compression system including LP to HP and VLP to LP compressors"
             },
             "QRB": {
-                "name": "Refrigeration Cold Box", 
+                "name": "Refrigeration Cold Box",
                 "level": 2,
                 "parent": "QPLANT",
                 "children": ["CC", "TURBINES", "BATH-4K", "BATH-2K"],
                 "description": "Cold box containing refrigeration equipment and heat exchangers"
             },
 
-            # Level 3 - Sub-Components  
+            # Level 3 - Sub-Components
             "PVPS": {
                 "name": "Pressure Vessel & Piping System",
                 "level": 3,
-                "parent": "WCS", 
+                "parent": "WCS",
                 "children": [],
                 "description": "Pressure vessels, piping, and associated safety systems for WCS"
             },
@@ -93,7 +93,7 @@ class ImprovedCryoplantRTMGenerator:
             },
             "CC": {
                 "name": "Cold Compressors",
-                "level": 3, 
+                "level": 3,
                 "parent": "QRB",
                 "children": [],
                 "description": "Cold compression equipment within refrigeration cold box"
@@ -108,7 +108,7 @@ class ImprovedCryoplantRTMGenerator:
             "BATH-4K": {
                 "name": "4K Bath System",
                 "level": 3,
-                "parent": "QRB", 
+                "parent": "QRB",
                 "children": [],
                 "description": "4K temperature helium bath and associated equipment"
             },
@@ -138,7 +138,7 @@ class ImprovedCryoplantRTMGenerator:
                 'numerical_value': '90 days'
             },
             {
-                'req_id': 'RTM-02', 
+                'req_id': 'RTM-02',
                 'description': 'The maintenance schedule shall take into account the following constraints: ≥ 6 months: ≤ 10 days in 2K standby; ≥ 1 year: ≤ 20 days in 4.5K standby; ≥ 5 years: ≤ 60 days in warm stop; ≥ 10 years: ≤ 120 days in warm stop',
                 'section': '3.2.1 Lifetime and annual maintenance schedule',
                 'category': 'Maintenance',
@@ -154,7 +154,7 @@ class ImprovedCryoplantRTMGenerator:
             {
                 'req_id': 'RTM-04',
                 'description': 'The QPLANT shall support ≥ 50 warm-up/cool-down cycles (300 K ↔ 2 K)',
-                'section': '3.2.1 Lifetime and annual maintenance schedule', 
+                'section': '3.2.1 Lifetime and annual maintenance schedule',
                 'category': 'Operational',
                 'numerical_value': '50 cycles'
             },
@@ -211,7 +211,7 @@ class ImprovedCryoplantRTMGenerator:
                 'req_id': 'RTM-012',
                 'description': 'The QPLANT shall support the transition shown in Figure 6 for the warming-up of the cryogenic users, whether passively or actively (with QCELL heaters if available)',
                 'section': '3.2.3 Transient operational scenarios',
-                'category': 'Operational', 
+                'category': 'Operational',
                 'numerical_value': 'Multiple warming transitions'
             },
             {
@@ -257,7 +257,7 @@ class ImprovedCryoplantRTMGenerator:
                 'description': req_data['description'],
                 'full_description': req_data['description'],
                 'sbs_l0': sbs_assignment['l0'],
-                'sbs_l1': sbs_assignment['l1'], 
+                'sbs_l1': sbs_assignment['l1'],
                 'sbs_l2': sbs_assignment['l2'],
                 'sbs_l3': sbs_assignment['l3'],
                 'requirement_type': req_type,
@@ -287,7 +287,7 @@ class ImprovedCryoplantRTMGenerator:
         else:
             l0 = 'QSYS'
 
-        # Level 1 assignment  
+        # Level 1 assignment
         if any(keyword in text_lower for keyword in ['compressor', 'compression', 'wcs']):
             l1 = 'QPLANT'
         elif any(keyword in text_lower for keyword in ['distribution', 'line', 'header']):
@@ -318,7 +318,7 @@ class ImprovedCryoplantRTMGenerator:
             if any(keyword in text_lower for keyword in ['turbine', 'expander']):
                 l3 = 'TURBINES'
             elif '4k' in text_lower or '4.5k' in text_lower:
-                l3 = 'BATH-4K'  
+                l3 = 'BATH-4K'
             elif '2k' in text_lower:
                 l3 = 'BATH-2K'
             elif any(keyword in text_lower for keyword in ['cold compressor', 'cc']):
@@ -333,7 +333,7 @@ class ImprovedCryoplantRTMGenerator:
         if any(keyword in text_lower for keyword in ['test', 'testing', 'acceptance']):
             return 'Test'
         elif any(keyword in text_lower for keyword in ['analysis', 'calculation', 'design']):
-            return 'Analysis'  
+            return 'Analysis'
         elif any(keyword in text_lower for keyword in ['inspection', 'review', 'document']):
             return 'Inspection'
         elif any(keyword in text_lower for keyword in ['demonstration', 'operation', 'functional']):
@@ -402,7 +402,7 @@ class ImprovedCryoplantRTMGenerator:
         if 'safety' in text_lower or 'purge' in text_lower:
             return "Required for safe operation of cryogenic system"
         elif any(keyword in text_lower for keyword in ['performance', 'capacity', 'flow']):
-            return "Required to meet operational performance targets"  
+            return "Required to meet operational performance targets"
         elif 'lifetime' in text_lower:
             return "Required to meet project lifetime objectives"
         elif any(keyword in text_lower for keyword in ['operational', 'operation', 'scenario']):
@@ -440,11 +440,11 @@ class ImprovedCryoplantRTMGenerator:
         for req in requirements:
             rtm_data.append({
                 'Requirement ID': req['req_id'],
-                'Description': req['description'], 
+                'Description': req['description'],
                 'Full Description': req['full_description'],
                 'SBS Level 0': req['sbs_l0'],
                 'SBS Level 1': req['sbs_l1'],
-                'SBS Level 2': req['sbs_l2'], 
+                'SBS Level 2': req['sbs_l2'],
                 'SBS Level 3': req['sbs_l3'],
                 'Requirement Type': req['requirement_type'],
                 'Category': req.get('category', 'General'),
@@ -468,7 +468,7 @@ class ImprovedCryoplantRTMGenerator:
         for sbs_id, sbs_info in self.sbs_structure.items():
             sbs_data.append({
                 'SBS ID': sbs_id,
-                'Name': sbs_info['name'], 
+                'Name': sbs_info['name'],
                 'Level': sbs_info['level'],
                 'Parent': sbs_info['parent'] if sbs_info['parent'] else '',
                 'Children': ', '.join(sbs_info['children']),
@@ -492,7 +492,7 @@ class ImprovedCryoplantRTMGenerator:
         summary_data = {
             'Metric': [
                 'Total Requirements',
-                'High Priority Requirements', 
+                'High Priority Requirements',
                 'Medium Priority Requirements',
                 'Safety Requirements',
                 'Performance Requirements',
@@ -511,7 +511,7 @@ class ImprovedCryoplantRTMGenerator:
                 len([r for r in requirements if r['priority'] == 'High']),
                 len([r for r in requirements if r['priority'] == 'Medium']),
                 len([r for r in requirements if r['requirement_type'] == 'Safety']),
-                len([r for r in requirements if r['requirement_type'] == 'Performance']), 
+                len([r for r in requirements if r['requirement_type'] == 'Performance']),
                 len([r for r in requirements if r['requirement_type'] == 'Functional']),
                 len([r for r in requirements if r['requirement_type'] == 'Design']),
                 len([r for r in requirements if r['requirement_type'] == 'Interface']),
@@ -532,7 +532,7 @@ class ImprovedCryoplantRTMGenerator:
                 'Sheet Name': ['Requirements_Traceability_Matrix', 'SBS_Structure', 'Summary_Statistics', 'Requirements_by_SBS', 'Requirements_by_Type'],
                 'Description': [
                     'Complete RTM with all requirements and traceability',
-                    'System Breakdown Structure hierarchy', 
+                    'System Breakdown Structure hierarchy',
                     'Summary statistics and metrics',
                     'Requirements organized by SBS levels',
                     'Requirements organized by type and category'
@@ -568,9 +568,9 @@ class ImprovedCryoplantRTMGenerator:
         markdown_content = f"""# QPLANT Cryogenic System - Requirements Traceability Matrix
 ## Engineering Handover Document
 
-**Document Version:** 1.0  
-**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
-**Project:** MYRRHA Phase 1 - Cryoplant Technical Requirements  
+**Document Version:** 1.0
+**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+**Project:** MYRRHA Phase 1 - Cryoplant Technical Requirements
 **Document ID:** QPLANT-RTM-001
 
 ---
@@ -595,7 +595,7 @@ The QPLANT system is organized according to the following hierarchical structure
 - **QSYS**: Complete Cryogenic System
 - **QSYS-PR**: Project Requirements
 
-### Level 1 - Major Subsystems  
+### Level 1 - Major Subsystems
 - **QPLANT**: Main cryogenic refrigeration plant
 - **QINFRA**: CSS cryogenic supply system infrastructure
 - **QCELL**: CSS cryogenic USER - individual cryomodule and valve box combinations
@@ -681,7 +681,7 @@ The QPLANT system is organized according to the following hierarchical structure
 This RTM is prepared for integration with the existing GitHub infrastructure:
 
 - **GBOGEB/DOCX_RTM_Automation**: Ready for automated RTM updates
-- **GBOGEB/ABACUS**: Compatible with existing project structure  
+- **GBOGEB/ABACUS**: Compatible with existing project structure
 - **pipeline-automation-hub**: Ready for CI/CD integration
 - **KEB Digital Twin**: Requirements mapped to system components
 - **HEPAK projects**: Traceability established for cryogenic properties
