@@ -60,18 +60,22 @@ jobs:
 
       - name: Run Black
         run: black --check --diff .
+        # rex-allow: ADVISORY_EXPLICIT - Format Check owns formatter gating.
         continue-on-error: true
 
       - name: Run isort
         run: isort --check-only --diff .
+        # rex-allow: ADVISORY_EXPLICIT - Format Check owns import-order gating.
         continue-on-error: true
 
       - name: Run Flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # rex-allow: ADVISORY_EXPLICIT - DAB owns repository Flake8 gating.
         continue-on-error: true
 
       - name: Run Pylint
         run: pylint **/*.py --exit-zero
+        # rex-allow: ADVISORY_EXPLICIT - Pylint is code-smell telemetry here.
         continue-on-error: true
 
   unit-tests:
@@ -146,6 +150,7 @@ jobs:
       - name: Check Coverage Threshold
         run: |
           coverage report --fail-under=${{ env.COVERAGE_THRESHOLD }}
+        # rex-allow: ADVISORY_EXPLICIT - MIP/Matrix own the 75% coverage gate.
         continue-on-error: true
 
       - name: Upload Coverage to Codecov
@@ -154,6 +159,7 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+        # rex-allow: ADVISORY_EXPLICIT - external coverage upload is non-gating.
         continue-on-error: true
 
       - name: Upload Coverage HTML
@@ -249,6 +255,7 @@ jobs:
       - name: Run Benchmark Tests
         run: |
           pytest -m benchmark --benchmark-only --benchmark-json=benchmark.json
+        # rex-allow: ADVISORY_EXPLICIT - benchmark telemetry is report-only.
         continue-on-error: true
 
       - name: Upload Benchmark Results
@@ -346,10 +353,12 @@ jobs:
 
       - name: Run Bandit
         run: bandit -r . -f json -o bandit-report.json
+        # rex-allow: ADVISORY_EXPLICIT - CodeQL/Semgrep own security gating.
         continue-on-error: true
 
       - name: Run Safety Check
         run: safety check --json > safety-report.json
+        # rex-allow: ADVISORY_EXPLICIT - OSV owns dependency gating.
         continue-on-error: true
 
       - name: Upload Security Reports
@@ -381,6 +390,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dashboard
           publish_branch: gh-pages
+        # rex-allow: ADVISORY_EXPLICIT - Pages deploy is governed elsewhere.
         continue-on-error: true
 
   notification:
