@@ -83,7 +83,7 @@ class GitHubDeploymentOrchestrator:
             for pattern in files_to_add:
                 try:
                     subprocess.run(["git", "add", pattern], check=False)
-                except:
+                except OSError:
                     pass
 
             self.log_step("Stage Files", "success", "Files staged for commit")
