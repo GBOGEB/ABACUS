@@ -627,7 +627,7 @@ class FullDMAICOrchestrator:
         try:
             self.temporal_db_path.parent.mkdir(exist_ok=True)
             return True
-        except:
+        except OSError:
             return False
 
     def _load_configuration(self) -> Dict:

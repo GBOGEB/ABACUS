@@ -315,13 +315,18 @@ echo "========================================="
             f.write(deploy_script)
 
         # Make script executable (Unix-like systems)
+        chmod_warning = None
         try:
             os.chmod(deploy_script_path, 0o755)
-        except:
-            pass
+        except OSError as e:
+            chmod_warning = f"Could not set executable permissions: {e}"
 
         config["details"]["script_file"] = str(deploy_script_path)
-        config["message"] = "Deployment script created"
+        if chmod_warning:
+            config["details"]["chmod_warning"] = chmod_warning
+            config["message"] = "Deployment script created (permissions not updated)"
+        else:
+            config["message"] = "Deployment script created"
 
         return config
 

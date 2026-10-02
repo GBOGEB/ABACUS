@@ -404,8 +404,10 @@ class Phase8TODOManagement:
                 try:
                     phase_num = int(re.search(r'\d+', phase).group())
                     score += (10 - phase_num)  # Earlier phases get higher scores
-                except:
-                    pass
+                except (AttributeError, TypeError, ValueError):
+                    # Phase is missing or malformed; skip phase-based scoring and continue.
+                    # Other prioritization factors still determine the final score.
+                    score += 0
 
             # Factor 3: Status (pending = higher priority than completed)
             status = todo.get('status', 'pending')

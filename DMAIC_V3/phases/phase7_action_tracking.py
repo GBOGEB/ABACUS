@@ -231,8 +231,8 @@ class Phase7ActionTracking:
                                     action['phase'] = f"phase{phase_num}"
                                     action['source_file'] = str(json_file)
                                     actions.append(action)
-                        except:
-                            pass
+                        except (OSError, json.JSONDecodeError, TypeError) as e:
+                            print(f"  [WARNING] Skipping invalid action file {json_file}: {e}")
 
         phase4_file = output_root / "phase4_improvements.json"
         if phase4_file.exists():

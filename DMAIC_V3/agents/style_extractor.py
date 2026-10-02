@@ -32,7 +32,7 @@ class StyleExtractorAgent:
                 'has_docstrings': any(ast.get_docstring(node) for node in ast.walk(tree)
                                      if isinstance(node, (ast.FunctionDef, ast.ClassDef)))
             }
-        except:
+        except (OSError, UnicodeError, SyntaxError):
             return {}
 
     def get_info(self) -> Dict[str, str]:
