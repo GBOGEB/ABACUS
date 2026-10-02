@@ -9,6 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+
 def test_fix_1_workspace_scope():
     """Test FIX-1: Workspace scope expansion"""
     print("\n[TEST 1] Verifying workspace scope...")
@@ -26,6 +27,7 @@ def test_fix_1_workspace_scope():
     else:
         print("  ❌ FAIL: Workspace still pointing to DMAIC_V3")
         return False
+
 
 def test_fix_2_chunking():
     """Test FIX-2: Chunking implementation"""
@@ -47,6 +49,7 @@ def test_fix_2_chunking():
         print("  ❌ FAIL: Chunking not properly implemented")
         return False
 
+
 def test_fix_3_improvements():
     """Test FIX-3: Increased improvement count"""
     print("\n[TEST 3] Verifying improvement count...")
@@ -66,6 +69,7 @@ def test_fix_3_improvements():
     else:
         print("  ❌ FAIL: Improvement count not increased")
         return False
+
 
 def test_fix_4_quality_gates():
     """Test FIX-4: Quality gate enforcement"""
@@ -89,6 +93,7 @@ def test_fix_4_quality_gates():
         print("  ❌ FAIL: Quality gate enforcement not implemented")
         return False
 
+
 def test_fix_5_knowledge_extraction():
     """Test FIX-5: Knowledge extraction"""
     print("\n[TEST 5] Verifying knowledge extraction...")
@@ -110,6 +115,7 @@ def test_fix_5_knowledge_extraction():
     else:
         print("  ❌ FAIL: Knowledge extraction not implemented")
         return False
+
 
 def test_fix_6_action_collection():
     """Test FIX-6: Action collection"""
@@ -133,6 +139,7 @@ def test_fix_6_action_collection():
         print("  ❌ FAIL: Action collection not implemented")
         return False
 
+
 def test_fix_7_todo_scanning():
     """Test FIX-7: TODO scanning"""
     print("\n[TEST 7] Verifying TODO scanning...")
@@ -154,6 +161,7 @@ def test_fix_7_todo_scanning():
     else:
         print("  ❌ FAIL: TODO scanning not implemented")
         return False
+
 
 def main():
     """Run all verification tests"""
@@ -195,6 +203,7 @@ def main():
     else:
         print(f"\n❌ {total - passed} FIXES FAILED - Review implementation")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
