@@ -565,7 +565,7 @@ class FullDMAICOrchestrator:
 
         try:
             print("[Step 1/6] Generating execution summary...")
-            summary = self._generate_execution_summary()
+            self._generate_execution_summary()
             print(f"   [OK] Summary generated")
 
             print("[Step 2/6] Creating agent involvement report...")
