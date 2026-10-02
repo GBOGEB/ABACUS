@@ -208,7 +208,7 @@ def _base_grid() -> pd.DataFrame:
 
 
 def build_charts() -> list[dict[str, str]]:
-    grid = _base_grid()
+    _base_grid()
     catalog: list[dict[str, str]] = []
 
     # 1. Enhanced Leak Rate vs He Loss (Log-Log)
