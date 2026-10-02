@@ -7,12 +7,14 @@ on:
       - 'scripts/**'
       - 'tools_v2.3/**'
       - 'local_mcp/**'
+      - '.github/workflows/tooling-ci.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'scripts/**'
       - 'tools_v2.3/**'
       - 'local_mcp/**'
+      - '.github/workflows/tooling-ci.yml'
   workflow_dispatch:
 
 permissions:
