@@ -16,6 +16,7 @@ from pathlib import Path
 
 API = "https://api.github.com"
 
+
 def api_json(url: str, token: str) -> dict:
     req = urllib.request.Request(url)
     req.add_header("Accept", "application/vnd.github+json")
@@ -23,6 +24,7 @@ def api_json(url: str, token: str) -> dict:
     req.add_header("X-GitHub-Api-Version", "2022-11-28")
     with urllib.request.urlopen(req, timeout=45) as response:
         return json.loads(response.read().decode("utf-8"))
+
 
 def fetch_runs(repo: str, token: str, limit: int) -> list[dict]:
     runs: list[dict] = []
@@ -37,6 +39,7 @@ def fetch_runs(repo: str, token: str, limit: int) -> list[dict]:
             break
     return runs[:limit]
 
+
 def parse_family(value: str) -> tuple[str, list[str]]:
     if "=" not in value:
         raise argparse.ArgumentTypeError("family must be NAME=path1,path2")
@@ -46,8 +49,10 @@ def parse_family(value: str) -> tuple[str, list[str]]:
         raise argparse.ArgumentTypeError("family requires a name and >=1 path")
     return name.strip(), paths
 
+
 def ratio(num: int, den: int) -> float:
     return round(num / den, 6) if den else 0.0
+
 
 def metrics_for_family(name: str, paths: list[str], runs: list[dict]) -> dict:
     selected = [r for r in runs if r.get("path") in paths]
@@ -109,6 +114,7 @@ def metrics_for_family(name: str, paths: list[str], runs: list[dict]) -> dict:
         "per_workflow": per_workflow,
     }
 
+
 def render_markdown(payload: dict) -> str:
     lines = [
         "# BD Workflow Frequency Telemetry",
@@ -138,6 +144,7 @@ def render_markdown(payload: dict) -> str:
         "",
     ]
     return "\n".join(lines)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
