@@ -46,8 +46,9 @@ def main():
                 try:
                     metrics = json.loads(metrics_json)
                     metrics_preview = f"σ={metrics.get('score_sigma', 'N/A')}"
-                except json.JSONDecodeError:
-                    pass
+                except json.JSONDecodeError as e:
+                    metrics_preview = "invalid metrics JSON"
+                    print(f"Warning: failed to parse metrics JSON for run {rid}: {e}")
 
             f.write(f"| `{rid}` | {started} | {status} | `{git_sha}` | {metrics_preview} |\n")
 
