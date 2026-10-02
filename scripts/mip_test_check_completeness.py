@@ -111,7 +111,7 @@ def discover_inventory(root: Path) -> dict[str, Any]:
 
 
 def top_level_block(lines: list[str], key: str) -> list[str]:
-    pattern = re.compile(rf"^{re.escape(key)}:\s*(.*)$")
+    pattern = re.compile(rf"^['\"]?{re.escape(key)}['\"]?:\s*(.*)$")
     for index, line in enumerate(lines):
         if not pattern.match(line):
             continue
@@ -145,7 +145,7 @@ def workflow_shape(path: Path, root: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
     jobs = top_level_block(text.splitlines(), "jobs")
     job_count = sum(bool(re.match(r"^  [A-Za-z0-9_.-]+:\s*(?:#.*)?$", line)) for line in jobs[1:])
-    step_count = sum(bool(re.match(r"^\s{6,}-\s+(?:name|uses|run):", line)) for line in jobs[1:])
+    step_count = sum(bool(re.match(r"^\s{4,}-\s+(?:name|uses|run):", line)) for line in jobs[1:])
     reusable = sum(bool(re.match(r"^\s{4}uses:\s+", line)) for line in jobs[1:])
     triggers = workflow_triggers(text)
     return {

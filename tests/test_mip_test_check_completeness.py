@@ -49,6 +49,31 @@ jobs:
     assert row["manual_only"] is False
 
 
+def test_workflow_shape_accepts_quoted_on_and_indentationless_steps(tmp_path):
+    workflow = tmp_path / ".github" / "workflows" / "serialized.yml"
+    write(
+        workflow,
+        """name: Serialized workflow
+'on':
+  workflow_dispatch:
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+    - name: prove
+      run: echo ok
+""",
+    )
+
+    row = mip.workflow_shape(workflow, tmp_path.resolve())
+
+    assert row["triggers"] == ["workflow_dispatch"]
+    assert row["job_count"] == 1
+    assert row["static_step_count"] == 1
+    assert row["static_executable"] is True
+    assert row["manual_only"] is True
+
+
 def test_false_green_census_uses_repo_relative_paths(tmp_path):
     rel = ".github/workflows/masked.yml"
     write(
