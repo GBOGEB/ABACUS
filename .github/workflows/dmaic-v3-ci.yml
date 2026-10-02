@@ -1,14 +1,15 @@
+# yamllint disable rule:line-length
 name: DMAIC V3 Test Suite - Continuous Integration
 
 on:
   push:
-    branches: [ main, develop, feature/** ]
+    branches: [main, develop, feature/**]
     paths:
       - 'DMAIC_V3/**'
       - 'ABACUS-UNIFIED/**'
       - '.github/workflows/dmaic-v3-ci.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'DMAIC_V3/**'
       - 'ABACUS-UNIFIED/**'
@@ -22,12 +23,12 @@ env:
   DMAIC_ROOT: 'DMAIC_V3'
 
 jobs:
-  
+
   smoke-tests:
     name: Smoke Tests (Quick Validation)
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -43,23 +44,23 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-      
+
       - name: Run smoke tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest tests/ -v -m "smoke" --tb=short --maxfail=3
-      
+
       - name: Upload smoke test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -68,18 +69,18 @@ jobs:
           path: ${{ env.DMAIC_ROOT }}/test-results/
           retention-days: 7
 
-  
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: smoke-tests
     timeout-minutes: 15
-    
+
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12']
       fail-fast: false
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -95,33 +96,33 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
           pip install pytest-cov pytest-benchmark pytest-xdist
-      
+
       - name: Run unit tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest --benchmark-disable tests/ -v -m "unit" --tb=short \
             --cov=core --cov-report=xml --cov-report=html \
             -n auto
-      
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           files: ${{ env.DMAIC_ROOT }}/coverage.xml
           flags: unit-tests
           name: unit-tests-py${{ matrix.python-version }}
-      
+
       - name: Upload unit test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -132,13 +133,13 @@ jobs:
             ${{ env.DMAIC_ROOT }}/htmlcov/
           retention-days: 14
 
-  
+
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
     timeout-minutes: 20
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -154,25 +155,25 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
           pip install pytest-timeout
-      
+
       - name: Run integration tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest tests/ -v -m "integration" --tb=short \
             --timeout=300
-      
+
       - name: Upload integration test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -181,13 +182,13 @@ jobs:
           path: ${{ env.DMAIC_ROOT }}/test-results/
           retention-days: 14
 
-  
+
   dow-core-tests:
     name: DOW Core Tests (SUT_CORE_DOW)
     runs-on: ubuntu-latest
     needs: smoke-tests
     timeout-minutes: 15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -203,23 +204,23 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-      
+
       - name: Run live DOW core contract tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest tests/test_dow_contract_emission.py tests/test_twelve_cluster_requalification.py -v --tb=short
-      
+
       - name: Upload DOW core test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -228,21 +229,21 @@ jobs:
           path: ${{ env.DMAIC_ROOT }}/test-results/
           retention-days: 14
 
-  
+
   phase-tests:
     name: DOW Phase Tests (0-9)
     runs-on: ubuntu-latest
     needs: unit-tests
     timeout-minutes: 30
-    
+
     strategy:
       matrix:
-        phase-group: 
+        phase-group:
           - 'phase0 or phase1 or phase2'
           - 'phase3 or phase4 or phase5'
           - 'phase6 or phase7 or phase8 or phase9'
       fail-fast: false
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -258,23 +259,23 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-      
+
       - name: Run phase tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest tests/ -v -m "${{ matrix.phase-group }}" --tb=short
-      
+
       - name: Upload phase test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -283,13 +284,13 @@ jobs:
           path: ${{ env.DMAIC_ROOT }}/test-results/
           retention-days: 14
 
-  
+
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     needs: [integration-tests, dow-core-tests]
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -305,23 +306,23 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
-      
+
       - name: Run end-to-end tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest tests/ -v -m "e2e" --tb=short
-      
+
       - name: Upload e2e test results
         if: always()
         uses: actions/upload-artifact@v7
@@ -330,13 +331,13 @@ jobs:
           path: ${{ env.DMAIC_ROOT }}/test-results/
           retention-days: 14
 
-  
+
   quality-gates:
     name: Quality Gates
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, dow-core-tests]
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -352,35 +353,45 @@ jobs:
             echo "checkout identity mismatch: expected=$expected_sha actual=$actual_sha" >&2
             exit 1
           fi
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
           pip install pytest-cov pytest-benchmark pylint mypy
-      
+
       - name: Run linting
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pylint core/ --exit-zero --output-format=text > pylint-report.txt
           cat pylint-report.txt
-      
+
       - name: Run type checking
         run: |
           cd ${{ env.DMAIC_ROOT }}
           mypy core/ --ignore-missing-imports --no-strict-optional || true
-      
+
       - name: Check test coverage threshold
+        env:
+          COVERAGE_FILE: ${{ github.workspace }}/DMAIC_V3/.coverage.quality-gates
+          COVERAGE_RCFILE: ${{ github.workspace }}/pyproject.toml
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest --benchmark-disable tests/ --cov=core --cov-fail-under=75 --cov-report=term
-      
+          python -m coverage erase
+          pytest --benchmark-disable tests/ \
+            --cov=core \
+            --cov-branch \
+            --cov-config=../pyproject.toml \
+            --cov-fail-under=75 \
+            --cov-report=term \
+            --cov-report=xml:coverage.xml
+
       - name: Upload quality reports
         if: always()
         uses: actions/upload-artifact@v7
@@ -391,19 +402,19 @@ jobs:
             ${{ env.DMAIC_ROOT }}/coverage.xml
           retention-days: 30
 
-  
+
   test-summary:
     name: Test Summary Report
     runs-on: ubuntu-latest
     needs: [smoke-tests, unit-tests, integration-tests, dow-core-tests, phase-tests, e2e-tests, quality-gates]
     if: always()
-    
+
     steps:
       - name: Download all test results
         uses: actions/download-artifact@v8
         with:
           path: test-results/
-      
+
       - name: Generate test summary
         run: |
           echo "# DMAIC V3 Test Suite - CI Summary" >> $GITHUB_STEP_SUMMARY
@@ -422,13 +433,13 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Workflow Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
 
-  
+
   notify:
     name: Notify Results
     runs-on: ubuntu-latest
     needs: test-summary
     if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-    
+
     steps:
       - name: Send notification
         run: |
