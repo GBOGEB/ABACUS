@@ -82,7 +82,7 @@ class BenchmarkTracker:
         self.benchmarks.append(benchmark)
         self._save_benchmarks()
 
-    def get_benchmarks(self, name: str = None, category: str = None, 
+    def get_benchmarks(self, name: str = None, category: str = None,
                       limit: int = None) -> List[PerformanceBenchmark]:
         filtered = self.benchmarks
 
@@ -195,7 +195,7 @@ class PerformanceBudgetManager:
         violations = []
 
         if benchmark.execution_time_ms > budget.max_execution_time_ms:
-            exceeded_by = ((benchmark.execution_time_ms - budget.max_execution_time_ms) / 
+            exceeded_by = ((benchmark.execution_time_ms - budget.max_execution_time_ms) /
                           budget.max_execution_time_ms * 100)
             violations.append({
                 "metric": "execution_time_ms",
@@ -205,7 +205,7 @@ class PerformanceBudgetManager:
             })
 
         if benchmark.memory_usage_mb > budget.max_memory_mb:
-            exceeded_by = ((benchmark.memory_usage_mb - budget.max_memory_mb) / 
+            exceeded_by = ((benchmark.memory_usage_mb - budget.max_memory_mb) /
                           budget.max_memory_mb * 100)
             violations.append({
                 "metric": "memory_usage_mb",
@@ -215,7 +215,7 @@ class PerformanceBudgetManager:
             })
 
         if benchmark.cpu_usage_percent > budget.max_cpu_percent:
-            exceeded_by = ((benchmark.cpu_usage_percent - budget.max_cpu_percent) / 
+            exceeded_by = ((benchmark.cpu_usage_percent - budget.max_cpu_percent) /
                           budget.max_cpu_percent * 100)
             violations.append({
                 "metric": "cpu_usage_percent",
@@ -252,7 +252,7 @@ class RegressionAlertSystem:
         self.alerts.append(alert)
         self._save_alerts()
 
-    def check_for_regressions(self, tracker: BenchmarkTracker, 
+    def check_for_regressions(self, tracker: BenchmarkTracker,
                              budget_manager: PerformanceBudgetManager,
                              benchmark_name: str) -> List[PerformanceAlert]:
         benchmarks = tracker.get_benchmarks(name=benchmark_name)
