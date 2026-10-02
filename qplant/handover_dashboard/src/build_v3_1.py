@@ -434,7 +434,7 @@ def export_data():
     comp_df.to_csv(DATA_DIR / "compressor_comparison.csv", index=False)
 
     # VFD savings
-    build_vfd_savings_table()
+    vfd_df = build_vfd_savings_table()
     vfd_df.to_csv(TABLES_DIR / "vfd_savings.csv", index=False)
     vfd_df.to_csv(DATA_DIR / "vfd_savings.csv", index=False)
 
@@ -987,7 +987,7 @@ def _build_all_slides():
     # Load data for slide content
     comp_df = build_comparison_table()
     liq_df = build_leak_rate_liquid_loss_table()
-    vfd_df = build_vfd_savings_table()
+    build_vfd_savings_table()
     budget_df = build_leak_budget_table()
     int_df = build_interlock_table()
     scn_df = build_scenario_table()
