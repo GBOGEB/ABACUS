@@ -120,6 +120,16 @@ jobs:
           set -euo pipefail
           python scripts/mip_v2_federated_controller.py             --summary test_reports/post-b0/mip-pressure.json             --coverage-census test_reports/post-b0/coverage-dab.json             --coverage-limit 40
 
+      - name: Build exact-head false-green census
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/b1
+          python scripts/ci_false_green_lint.py \
+            --root .github/workflows \
+            --mode census \
+            --max-unguarded 267 \
+            --out test_reports/b1/false-green-census.json
+
       - name: Build exact-head static-analysis census
         run: |
           set -euo pipefail
