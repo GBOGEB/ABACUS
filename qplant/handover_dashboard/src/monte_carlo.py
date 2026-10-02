@@ -20,6 +20,7 @@ HE_PRICE_MAX = 300.0       # €/kg  (crisis scenario)
 
 N_SIMULATIONS = 10_000
 
+
 @dataclass
 class ValveFleet:
     """Represents a valve population segment."""
@@ -32,6 +33,7 @@ class ValveFleet:
     mttr_hours: float = 4.0             # mean time to repair
     replacement_cost_eur: float = 5_000.0
     mtbf_std: float = 10_000.0          # std dev for MTBF variation
+
 
 @dataclass
 class ScenarioConfig:
@@ -48,6 +50,7 @@ class ScenarioConfig:
     failure_rate_multiplier: float = 1.0
     operating_hours_per_year: float = 8_000.0
 
+
 def _he_mass_loss_kg_year(leak_rate: float, temp_k: float, press_bar: float, count: int) -> float:
     """Calculate annual He mass loss for a valve segment using ideal gas."""
     R = 8.314462618
@@ -57,6 +60,7 @@ def _he_mass_loss_kg_year(leak_rate: float, temp_k: float, press_bar: float, cou
     m_dot_kg_s = n_dot * M_He
     seconds_per_year = 365.25 * 86400
     return m_dot_kg_s * seconds_per_year * count
+
 
 def run_monte_carlo(config: ScenarioConfig, n_runs: int = N_SIMULATIONS) -> pd.DataFrame:
     """Run Monte Carlo simulation returning per-run results."""
