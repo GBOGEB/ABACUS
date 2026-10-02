@@ -473,7 +473,7 @@ class ABACUSv21SmokeTests:
         self.log(f"Failed: {self.failed} ❌", "ERROR" if self.failed > 0 else "INFO")
         self.log(f"Pass Rate: {pass_rate:.1f}%", "INFO")
         self.log(f"Duration: {duration:.3f}s", "INFO")
-        self.log(f"Status: {'✅ ALL TESTS PASSED' if self.failed == 0 else '❌ SOME TESTS FAILED'}",
+        self.log(f"Status: {'✅ ALL TESTS PASSED' if self.failed == 0 else '❌ SOME TESTS FAILED'}", 
                 "SUCCESS" if self.failed == 0 else "ERROR")
         self.log("=" * 80, "INFO")
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
