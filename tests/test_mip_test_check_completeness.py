@@ -166,5 +166,33 @@ jobs:
     assert report["tc2_dynamic_context_crosswalk"]["user_directed_high_without_context"] == [
         "src/critical.py"
     ]
-    assert report["tc4_false_green"]["unguarded_count"] == 1
+    assert report["tc4_false_green"]["syntactic_unguarded_count"] == 1
+    assert report["tc4_false_green"]["semantic_false_green_count"] == 1
+    assert report["tc4_false_green"]["semantic_counts"]["TEST_MASK"] == 1
     assert report["ranked_residual"][0]["rank"] == 1
+
+
+def test_semantic_false_green_distinguishes_test_mask_from_cleanup(tmp_path):
+    rel = ".github/workflows/semantic.yml"
+    write(
+        tmp_path / rel,
+        """on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: pytest -q || echo "tests completed"
+      - name: Cleanup
+        run: trap 'kill "$pid" 2>/dev/null || true' EXIT
+""",
+    )
+    rows = mip.false_green_census(tmp_path.resolve(), [rel])["findings"]
+    test_row = mip.semantic_false_green_kind(rows[0], tmp_path.resolve())
+    cleanup_row = mip.semantic_false_green_kind(rows[1], tmp_path.resolve())
+
+    assert test_row["semantic_kind"] == "TEST_MASK"
+    assert test_row["semantic_false_green"] is True
+    assert test_row["step_name"] == "Run tests"
+    assert cleanup_row["semantic_kind"] == "CLEANUP_BEST_EFFORT"
+    assert cleanup_row["semantic_false_green"] is False
