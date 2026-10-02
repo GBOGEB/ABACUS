@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 name: DMAIC V3 Test Suite - Continuous Integration
 
 on:
@@ -377,9 +378,19 @@ jobs:
           mypy core/ --ignore-missing-imports --no-strict-optional || true
       
       - name: Check test coverage threshold
+        env:
+          COVERAGE_FILE: ${{ github.workspace }}/DMAIC_V3/.coverage.quality-gates
+          COVERAGE_RCFILE: ${{ github.workspace }}/pyproject.toml
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest --benchmark-disable tests/ --cov=core --cov-fail-under=75 --cov-report=term
+          python -m coverage erase
+          pytest --benchmark-disable tests/ \
+            --cov=core \
+            --cov-branch \
+            --cov-config=../pyproject.toml \
+            --cov-fail-under=75 \
+            --cov-report=term \
+            --cov-report=xml:coverage.xml
       
       - name: Upload quality reports
         if: always()
