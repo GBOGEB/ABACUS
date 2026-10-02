@@ -164,7 +164,7 @@ class KnowledgePreservationSuite:
                 "test_name": "generate_knowledge_index",
                 "status": "PASS",
                 "message": "Knowledge index generated successfully",
-                "components": len(knowledge_index["components"]["core_engines"]) + 
+                "components": len(knowledge_index["components"]["core_engines"]) +
                             len(knowledge_index["components"]["integration_layer"]) +
                             len(knowledge_index["components"]["test_suites"]),
                 "artifacts": len(knowledge_index["artifacts"]["documentation"]) +
