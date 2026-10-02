@@ -369,7 +369,7 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except:
+        except OSError:
             pass
 
     if not repo_name:
