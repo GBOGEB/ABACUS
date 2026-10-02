@@ -231,7 +231,7 @@ class Phase7ActionTracking:
                                     action['phase'] = f"phase{phase_num}"
                                     action['source_file'] = str(json_file)
                                     actions.append(action)
-                        except:
+                        except (OSError, json.JSONDecodeError, TypeError):
                             pass
 
         phase4_file = output_root / "phase4_improvements.json"
