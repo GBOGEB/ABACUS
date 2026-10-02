@@ -196,27 +196,27 @@ class ConvergenceAnalyzer:
                 history = json.load(f)
                 iteration = len(history) + 1
 
-        print(f"[1/5] Scanning workspace files...")
+        print("[1/5] Scanning workspace files...")
         total_files, stable_files = self.scan_workspace_files()
         file_stability_pct = (stable_files / total_files * 100) if total_files > 0 else 0
         print(f"      Files: {stable_files}/{total_files} stable ({file_stability_pct:.1f}%)")
 
-        print(f"[2/5] Checking test stability...")
+        print("[2/5] Checking test stability...")
         total_tests, passing_tests = self.check_test_stability()
         test_stability_pct = (passing_tests / total_tests * 100) if total_tests > 0 else 0
         print(f"      Tests: {passing_tests}/{total_tests} passing ({test_stability_pct:.1f}%)")
 
-        print(f"[3/5] Checking metric stability...")
+        print("[3/5] Checking metric stability...")
         tracked_metrics, stable_metrics = self.check_metric_stability()
         metric_stability_pct = (stable_metrics / tracked_metrics * 100) if tracked_metrics > 0 else 0
         print(f"      Metrics: {stable_metrics}/{tracked_metrics} stable ({metric_stability_pct:.1f}%)")
 
-        print(f"[4/5] Checking knowledge growth...")
+        print("[4/5] Checking knowledge growth...")
         knowledge_total, knowledge_new = self.check_knowledge_growth()
         knowledge_growth_pct = (knowledge_new / knowledge_total * 100) if knowledge_total > 0 else 0
         print(f"      Knowledge: {knowledge_new}/{knowledge_total} new packs ({knowledge_growth_pct:.1f}%)")
 
-        print(f"[5/5] Checking for regressions...")
+        print("[5/5] Checking for regressions...")
         regressions = 0
         print(f"      Regressions: {regressions} detected")
 
@@ -303,26 +303,26 @@ class ConvergenceAnalyzer:
             f.write("### File Stability\n")
             f.write(f"- **Score:** {metrics.file_stability_pct:.1f}%\n")
             f.write(f"- **Stable Files:** {metrics.stable_files}/{metrics.total_files}\n")
-            f.write(f"- **Target:** ≥95%\n\n")
+            f.write("- **Target:** ≥95%\n\n")
 
             f.write("### Test Stability\n")
             f.write(f"- **Score:** {metrics.test_stability_pct:.1f}%\n")
             f.write(f"- **Passing Tests:** {metrics.passing_tests}/{metrics.total_tests}\n")
-            f.write(f"- **Target:** 100%\n\n")
+            f.write("- **Target:** 100%\n\n")
 
             f.write("### Metric Stability\n")
             f.write(f"- **Score:** {metrics.metric_stability_pct:.1f}%\n")
             f.write(f"- **Stable Metrics:** {metrics.stable_metrics}/{metrics.tracked_metrics}\n")
-            f.write(f"- **Target:** ≥95%\n\n")
+            f.write("- **Target:** ≥95%\n\n")
 
             f.write("### Knowledge Growth\n")
             f.write(f"- **Score:** {metrics.knowledge_growth_pct:.1f}%\n")
             f.write(f"- **New Packs:** {metrics.knowledge_packs_new}/{metrics.knowledge_packs_total}\n")
-            f.write(f"- **Target:** >0%\n\n")
+            f.write("- **Target:** >0%\n\n")
 
             f.write("### Regressions\n")
             f.write(f"- **Detected:** {metrics.regressions_detected}\n")
-            f.write(f"- **Target:** 0\n\n")
+            f.write("- **Target:** 0\n\n")
 
             trend = self.get_trend()
             if trend is not None:
