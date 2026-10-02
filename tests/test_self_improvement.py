@@ -314,7 +314,7 @@ class SelfImprovementEngine:
             with open(coverage_file) as f:
                 data = json.load(f)
             return data.get('totals', {}).get('percent_covered', 0.0)
-        except:
+        except (OSError, json.JSONDecodeError, TypeError):
             return 0.0
 
     def _calculate_complexity_score(self, test_results: List[Dict]) -> float:
