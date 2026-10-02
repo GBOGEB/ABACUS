@@ -96,7 +96,8 @@ jobs:
           python scripts/test_admission_census.py \
             --out test_reports/b0/admission-census.json \
             --coverage-out test_reports/b0/coverage-contexts.json \
-            --junit-dir test_reports/b0/junit
+            --junit-dir test_reports/b0/junit \
+            --exact-sha "$EXACT_SHA"
 
       - name: Build DAB census from measured B0 contexts
         run: |
