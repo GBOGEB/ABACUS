@@ -60,19 +60,15 @@ jobs:
 
       - name: Run Black
         run: black --check --diff .
-        continue-on-error: true
 
       - name: Run isort
         run: isort --check-only --diff .
-        continue-on-error: true
 
       - name: Run Flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        continue-on-error: true
 
       - name: Run Pylint
         run: pylint **/*.py --exit-zero
-        continue-on-error: true
 
   unit-tests:
     name: Unit Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
@@ -146,7 +142,6 @@ jobs:
       - name: Check Coverage Threshold
         run: |
           coverage report --fail-under=${{ env.COVERAGE_THRESHOLD }}
-        continue-on-error: true
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -154,7 +149,6 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
-        continue-on-error: true
 
       - name: Upload Coverage HTML
         uses: actions/upload-artifact@v7
@@ -249,7 +243,6 @@ jobs:
       - name: Run Benchmark Tests
         run: |
           pytest -m benchmark --benchmark-only --benchmark-json=benchmark.json
-        continue-on-error: true
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v7
@@ -346,11 +339,9 @@ jobs:
 
       - name: Run Bandit
         run: bandit -r . -f json -o bandit-report.json
-        continue-on-error: true
 
       - name: Run Safety Check
         run: safety check --json > safety-report.json
-        continue-on-error: true
 
       - name: Upload Security Reports
         uses: actions/upload-artifact@v7
@@ -381,7 +372,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dashboard
           publish_branch: gh-pages
-        continue-on-error: true
 
   notification:
     name: Test Results Notification
