@@ -199,6 +199,7 @@ jobs:
     assert cleanup_row["semantic_kind"] == "CLEANUP_BEST_EFFORT"
     assert cleanup_row["semantic_false_green"] is False
 
+
 def test_workflow_step_name_withholds_missing_file(tmp_path):
     row = {"path": ".github/workflows/missing.yml", "line": 1}
 
@@ -240,7 +241,6 @@ jobs:
         assert result["semantic_kind"] == expected_kind
         assert result["semantic_false_green"] is expected_false_green
         assert result["step_name"] == "Exercise classifier"
-
 
 
 @pytest.mark.parametrize(
