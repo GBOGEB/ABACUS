@@ -64,10 +64,14 @@ jobs:
           pip install pytest pytest-cov pytest-benchmark pytest-mock pytest-asyncio pytest-xdist
 
       - name: Install dev dependencies
+        shell: bash
         run: |
-          pip install -r requirements-dev.txt || echo "No dev requirements"
+          if [[ -f requirements-dev.txt ]]; then
+            pip install -r requirements-dev.txt
+          else
+            echo "No dev requirements file"
+          fi
           pip install ruff black isort mypy
-        continue-on-error: true
 
       - name: Verify Python syntax
         shell: bash
@@ -128,21 +132,25 @@ jobs:
       - name: Check formatting with black
         run: |
           black --check --diff DMAIC_V3/
+        # rex-allow: ADVISORY_EXPLICIT - Format Check owns formatter gating.
         continue-on-error: true
 
       - name: Check imports with isort
         run: |
           isort --check-only --diff DMAIC_V3/
+        # rex-allow: ADVISORY_EXPLICIT - Format Check owns import-order gating.
         continue-on-error: true
 
       - name: Lint with ruff
         run: |
           ruff check DMAIC_V3/ --output-format=github
+        # rex-allow: ADVISORY_EXPLICIT - Security Scan Ruff owns lint gating.
         continue-on-error: true
 
       - name: Type check with mypy
         run: |
           mypy DMAIC_V3/ --ignore-missing-imports --show-error-codes
+        # rex-allow: ADVISORY_EXPLICIT - mypy remains scoped telemetry here.
         continue-on-error: true
 
   security:
@@ -164,10 +172,12 @@ jobs:
       - name: Check dependencies for vulnerabilities
         run: |
           pip install -r requirements.txt
+          # rex-allow: ADVISORY_EXPLICIT - OSV owns dependency gating.
           safety check --json || true
 
       - name: Run bandit security scan
         run: |
+          # rex-allow: ADVISORY_EXPLICIT - CodeQL owns security gating.
           bandit -r DMAIC_V3/ -f json -o bandit-report.json || true
 
       - name: Upload security reports
@@ -234,7 +244,6 @@ jobs:
       - name: Run integration tests
         run: |
           pytest DMAIC_V3/tests/test_integration.py -v --tb=short
-        continue-on-error: true
 
   docs:
     name: Build Documentation
@@ -256,7 +265,6 @@ jobs:
       - name: Build docs
         run: |
           echo "Documentation build placeholder"
-        continue-on-error: true
 
   summary:
     name: CI Summary
