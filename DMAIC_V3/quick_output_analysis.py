@@ -34,7 +34,8 @@ def analyze_iteration(iteration_dir: Path) -> Dict[str, Any]:
             phase_info = {
                 'directory': str(phase_dir),
                 'file_count': len(file_list),
-                'files': []
+                'files': [],
+                'skipped_files': []
             }
 
             for f in file_list:
@@ -46,8 +47,12 @@ def analyze_iteration(iteration_dir: Path) -> Dict[str, Any]:
                         'size_bytes': size
                     })
                     analysis['total_size_bytes'] += size
-                except (OSError, ValueError):
-                    pass
+                except (OSError, ValueError) as e:
+                    phase_info['skipped_files'].append({
+                        'name': f.name,
+                        'path': str(f),
+                        'error': str(e)
+                    })
 
             analysis['phases'][phase_name] = phase_info
             analysis['total_files'] += len(file_list)
