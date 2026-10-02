@@ -434,7 +434,7 @@ def export_data():
     comp_df.to_csv(DATA_DIR / "compressor_comparison.csv", index=False)
 
     # VFD savings
-    vfd_df = build_vfd_savings_table()
+    build_vfd_savings_table()
     vfd_df.to_csv(TABLES_DIR / "vfd_savings.csv", index=False)
     vfd_df.to_csv(DATA_DIR / "vfd_savings.csv", index=False)
 
