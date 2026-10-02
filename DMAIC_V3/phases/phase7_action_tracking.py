@@ -219,7 +219,6 @@ class Phase7ActionTracking:
         output_root = Path(f"DMAIC_V3_OUTPUT/iteration_{iteration}")
 
         for phase_num in range(0, 7):
-            phase_dir = output_root / f"phase{phase_num}_*"
             for phase_path in output_root.glob(f"phase{phase_num}_*"):
                 if phase_path.is_dir():
                     for json_file in phase_path.glob("*.json"):
