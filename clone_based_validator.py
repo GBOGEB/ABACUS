@@ -26,6 +26,7 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
+
 @dataclass
 class DependencyNode:
     file_path: str
@@ -35,6 +36,7 @@ class DependencyNode:
     size_bytes: int
     last_modified: str
 
+
 @dataclass
 class CodeChecksum:
     total_files: int
@@ -43,6 +45,7 @@ class CodeChecksum:
     circular_dependencies: List[Tuple[str, str]]
     orphaned_files: List[str]
     entry_points: List[str]
+
 
 class CloneBasedValidator:
     def __init__(self, repo_url: str, branch: str = "main"):
@@ -303,6 +306,7 @@ class CloneBasedValidator:
             raise
         finally:
             self.cleanup()
+
 
 def main():
     import argparse
