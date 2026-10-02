@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from scripts import mip_test_check_completeness as mip
 
 
@@ -239,3 +241,46 @@ jobs:
         assert result["semantic_false_green"] is expected_false_green
         assert result["step_name"] == "Exercise classifier"
 
+
+
+@pytest.mark.parametrize(
+    ("text", "patterns", "expected_kind", "is_false_green"),
+    [
+        ("cp report.json artifacts/output/ || true", ["shell_or_true"], "OPTIONAL_ARTIFACT", False),
+        ("grep -c ERROR app.log || true", ["shell_or_true"], "DEFAULT_VALUE_TELEMETRY", False),
+        ('git commit -m "snapshot" || echo "no changes"', ["shell_or_echo"], "IDEMPOTENT_NOOP", False),
+        ("pip install . || true", ["shell_or_true"], "DEPENDENCY_MASK", True),
+        ("ruff check . || true", ["shell_or_true"], "STATIC_ANALYSIS_MASK", True),
+        ("semgrep scan || true", ["shell_or_true"], "SECURITY_MASK", True),
+        ('test -f output.json || echo "missing"', ["shell_or_echo"], "ASSERTION_MASK", True),
+        ("git push || true", ["shell_or_true"], "PUBLISH_MASK", True),
+        ("custom advisory command", ["continue_on_error"], "CONTINUE_ON_ERROR", True),
+        ("set +e", ["shell_set_plus_e"], "ERROR_MODE_DISABLED", True),
+        ("custom-check || true", ["shell_or_true"], "UNKNOWN_MASK", True),
+    ],
+)
+def test_semantic_false_green_classification_matrix(
+    tmp_path, text, patterns, expected_kind, is_false_green
+):
+    row = {
+        "path": ".github/workflows/missing.yml",
+        "line": 1,
+        "text": text,
+        "patterns": patterns,
+    }
+
+    result = mip.semantic_false_green_kind(row, tmp_path.resolve())
+
+    assert result["step_name"] == "WITHHELD"
+    assert result["semantic_kind"] == expected_kind
+    assert result["semantic_false_green"] is is_false_green
+
+
+def test_workflow_step_name_missing_file_is_withheld(tmp_path):
+    assert (
+        mip.workflow_step_name(
+            tmp_path.resolve(),
+            {"path": ".github/workflows/does-not-exist.yml", "line": 7},
+        )
+        == "WITHHELD"
+    )
