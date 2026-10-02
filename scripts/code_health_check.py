@@ -28,7 +28,7 @@ def run_pylint_check(file_path: Path) -> dict:
         if result.stdout:
             try:
                 return json.loads(result.stdout)
-            except:
+            except json.JSONDecodeError:
                 return []
         return []
     except Exception as e:
