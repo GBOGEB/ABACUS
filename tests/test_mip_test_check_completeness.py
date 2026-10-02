@@ -199,6 +199,7 @@ jobs:
     assert cleanup_row["semantic_kind"] == "CLEANUP_BEST_EFFORT"
     assert cleanup_row["semantic_false_green"] is False
 
+
 def test_semantic_false_green_recognizes_captured_fail_closed_and_kubectl_diagnostics(
     tmp_path,
 ):
@@ -224,6 +225,8 @@ jobs:
         env:
           CLUSTER_OUTCOME: steps.cluster.outcome
         run: test "$CLUSTER_OUTCOME" = success
+      - name: Validate runtime inventory
+        run: kubectl get pods -n runtime -o json || true
 """,
     )
 
@@ -233,7 +236,10 @@ jobs:
 
     assert kinds.count("CAPTURED_OUTCOME_FAIL_CLOSED") == 2
     assert kinds.count("DIAGNOSTIC_BEST_EFFORT") == 1
-    assert all(row["semantic_false_green"] is False for row in classified)
+    assert kinds.count("ASSERTION_MASK") == 1
+    assert sum(row["semantic_false_green"] is False for row in classified) == 3
+    assert sum(row["semantic_false_green"] is True for row in classified) == 1
+
 
 def test_workflow_step_name_withholds_missing_file(tmp_path):
     row = {"path": ".github/workflows/missing.yml", "line": 1}
