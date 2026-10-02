@@ -26,6 +26,7 @@ OUT_SLIDES = ROOT / "slides.html"
 OUT_DIR = ROOT / "slides"
 OUT_DIR.mkdir(exist_ok=True)
 
+
 # ---------- minimal YAML loader (front-matter subset) ----------
 def parse_frontmatter(block: str) -> dict:
     out, key, buf = {}, None, []
@@ -45,6 +46,7 @@ def parse_frontmatter(block: str) -> dict:
     if key is not None:
         out[key] = "\n".join(buf).rstrip()
     return out
+
 
 # ---------- minimal markdown → HTML ----------
 def md_to_html(md: str) -> str:
@@ -83,12 +85,14 @@ def md_to_html(md: str) -> str:
         out.append("<p>" + inline(" ".join(para)) + "</p>")
     return "\n".join(out)
 
+
 def inline(s: str) -> str:
     s = html.escape(s, quote=False)
     s = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
     s = re.sub(r'\*(.+?)\*', r'<em>\1</em>', s)
     s = re.sub(r'`(.+?)`', r'<code>\1</code>', s)
     return s
+
 
 # ---------- slide parsing ----------
 def parse_slides(md_text: str) -> list[dict]:
@@ -107,6 +111,7 @@ def parse_slides(md_text: str) -> list[dict]:
         else:
             i += 1
     return slides
+
 
 # ---------- HTML rendering ----------
 def load_config():
@@ -150,6 +155,7 @@ pre.ascii {{ background:#0e1116; color:#e6edf3; padding:16px; border-radius:8px;
 .layout-4-quadrants {{ display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:16px; }}
 """
 
+
 def render_slide(s: dict, idx: int, total: int) -> str:
     layout = s.get("layout", "text-only")
     title = html.escape(s.get("title", ""))
@@ -174,6 +180,7 @@ def render_slide(s: dict, idx: int, total: int) -> str:
   {notes_html}
 </section>"""
 
+
 def render_deck(slides: list[dict], cfg: dict) -> str:
     css = CSS_TEMPLATE.format(**cfg)
     body = "\n".join(render_slide(s, i, len(slides)) for i, s in enumerate(slides))
@@ -187,6 +194,7 @@ def render_deck(slides: list[dict], cfg: dict) -> str:
 <small>Rendered from <code>master/slides.md</code></small></header>
 {body}
 </div></body></html>"""
+
 
 def main():
     cfg = load_config()
