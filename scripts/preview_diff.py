@@ -45,7 +45,7 @@ def main() -> None:
             print(f"[DIFF] {path} hash changed")
             # best-effort content context for text files
             try:
-                text = path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                path.read_text(encoding="utf-8", errors="ignore").splitlines()
                 print("(content changed; run hash_update after review)")
             except Exception:
                 print("(binary or unreadable content changed)")

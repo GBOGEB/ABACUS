@@ -210,7 +210,6 @@ class ConfigValidator:
                 continue
 
             # Type check
-            expected_type = float if rule["type"] == "float" else int
             if not isinstance(value, (int, float)):
                 results.append(ValidationResult(
                     path=path, level="error", check="type",

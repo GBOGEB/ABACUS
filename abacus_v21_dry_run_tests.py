@@ -52,7 +52,7 @@ class DryRunTestSuite:
                 raise FileNotFoundError("DOW tracker not found")
 
             with open(tracker_file, 'r', encoding='utf-8') as f:
-                tracker = json.load(f)
+                json.load(f)
 
             workflows_tested = 0
             workflows_passed = 0

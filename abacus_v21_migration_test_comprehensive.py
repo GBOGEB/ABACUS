@@ -262,7 +262,7 @@ class ABACUSv21MigrationTest(unittest.TestCase):
 
                             if any(marker in content for marker in improved_markers):
                                 results["status_tracking"][KnowledgeStatus.IMPROVED].append(str(py_file.relative_to(self.workspace_root)))
-                    except Exception as e:
+                    except Exception:
                         pass
 
         results["status"] = "completed"

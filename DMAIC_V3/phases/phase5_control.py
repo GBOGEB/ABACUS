@@ -148,23 +148,6 @@ class Phase5Control:
                 audit_file = self.gbogeb.generate_audit_trail()
                 print(f"  ✅ Audit trail: {audit_file}")
 
-            # Create summary of control metrics
-            summary = {
-                "total_quality_gates": len(quality_gates),
-                "gates_passed": sum(1 for g in quality_gates.values() if g["passed"]),
-                "gates_failed": sum(
-                    1 for g in quality_gates.values() if not g["passed"]
-                ),
-                "total_checkpoints": len(validation_checkpoints),
-                "checkpoints_passed": sum(
-                    1 for c in validation_checkpoints if c["passed"]
-                ),
-                "checkpoints_failed": sum(
-                    1 for c in validation_checkpoints if not c["passed"]
-                ),
-                "all_gates_passed": all_passed,
-            }
-
             results = {
                 "phase": "CONTROL",
                 "iteration": iteration,

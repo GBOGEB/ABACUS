@@ -64,7 +64,7 @@ class Phase6Knowledge:
             hooks_registered = 0
             if self.temporal_tracker:
                 try:
-                    hook_id = self.temporal_tracker.register_recursive_hook(
+                    self.temporal_tracker.register_recursive_hook(
                         hook_name=f"DMAIC_Iteration_{iteration}_Knowledge",
                         hook_type="knowledge_preservation",
                         trigger_condition=f"iteration=={iteration}",
