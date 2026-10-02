@@ -317,7 +317,7 @@ echo "========================================="
         # Make script executable (Unix-like systems)
         try:
             os.chmod(deploy_script_path, 0o755)
-        except:
+        except OSError:
             pass
 
         config["details"]["script_file"] = str(deploy_script_path)
