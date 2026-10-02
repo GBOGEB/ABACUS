@@ -987,7 +987,7 @@ def _build_all_slides():
     # Load data for slide content
     comp_df = build_comparison_table()
     liq_df = build_leak_rate_liquid_loss_table()
-    vfd_df = build_vfd_savings_table()
+    build_vfd_savings_table()
     budget_df = build_leak_budget_table()
     int_df = build_interlock_table()
     scn_df = build_scenario_table()
