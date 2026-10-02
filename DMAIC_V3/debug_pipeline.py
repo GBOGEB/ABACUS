@@ -167,7 +167,7 @@ class PipelineDebugger:
             })
             print(f"  ✗ Missing directories: {len(missing_dirs)}")
         else:
-            print(f"  ✓ All required directories present")
+            print("  ✓ All required directories present")
 
         return result
 
@@ -201,7 +201,7 @@ class PipelineDebugger:
         if result['errors']:
             result['status'] = 'error'
         else:
-            print(f"  ✓ All phase files compile successfully")
+            print("  ✓ All phase files compile successfully")
 
         return result
 
@@ -268,7 +268,7 @@ class PipelineDebugger:
         if not self.output_root.exists():
             self.output_root.mkdir(parents=True, exist_ok=True)
             self.fixes_applied.append("Created DMAIC_V3_OUTPUT directory")
-            print(f"  ✓ Created output directory")
+            print("  ✓ Created output directory")
 
         # Check for iteration directories
         iteration_dirs = sorted(self.output_root.glob('iteration_*'))
@@ -311,7 +311,7 @@ class PipelineDebugger:
         if valid_iterations:
             print(f"  ✓ Found {valid_iterations} valid iteration(s)")
         else:
-            print(f"  ⚠ No valid iterations found")
+            print("  ⚠ No valid iterations found")
 
         return result
 
@@ -379,7 +379,7 @@ class PipelineDebugger:
             result['status'] = 'warning'
             print(f"  ⚠ Found {len(result['empty_phases'])} empty/invalid phase outputs")
         else:
-            print(f"  ✓ All phase outputs valid")
+            print("  ✓ All phase outputs valid")
 
     def _check_failed_iterations(self) -> Dict[str, Any]:
         """Check for failed iterations"""
@@ -415,7 +415,7 @@ class PipelineDebugger:
             result['status'] = 'warning'
             print(f"  ⚠ Found {len(result['failures'])} incomplete iterations")
         else:
-            print(f"  ✓ All iterations complete")
+            print("  ✓ All iterations complete")
 
         return result
 
@@ -469,10 +469,10 @@ class PipelineDebugger:
                         'category': 'imports',
                         'message': 'phase1_define.py missing ensure_directory import'
                     })
-                    print(f"  ✗ phase1_define.py: Missing ensure_directory import")
+                    print("  ✗ phase1_define.py: Missing ensure_directory import")
 
         if not result['errors']:
-            print(f"  ✓ No common errors detected")
+            print("  ✓ No common errors detected")
 
         return result
 
@@ -509,7 +509,7 @@ class PipelineDebugger:
             result['status'] = 'warning'
             print(f"  ⚠ Found {len(result['recent_errors'])} recent errors")
         else:
-            print(f"  ✓ No recent errors in logs")
+            print("  ✓ No recent errors in logs")
 
         return result
 
@@ -623,7 +623,7 @@ class PipelineDebugger:
         if not self.output_root.exists():
             self.output_root.mkdir(parents=True, exist_ok=True)
             fixes.append("Created DMAIC_V3_OUTPUT directory")
-            print(f"  ✓ Fixed: Created output directory")
+            print("  ✓ Fixed: Created output directory")
 
         print(f"\n✓ Applied {len(fixes)} fixes")
         print("="*80 + "\n")
