@@ -80,8 +80,8 @@ class IterationComparator:
             metrics['high_issues'] = summary.get('high_issues', 0)
             metrics['medium_issues'] = summary.get('medium_issues', 0)
             metrics['total_issues'] = (
-                metrics.get('critical_issues', 0) + 
-                metrics.get('high_issues', 0) + 
+                metrics.get('critical_issues', 0) +
+                metrics.get('high_issues', 0) +
                 metrics.get('medium_issues', 0)
             )
 
