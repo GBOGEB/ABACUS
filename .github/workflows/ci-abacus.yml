@@ -1,4 +1,3 @@
-# yamllint disable rule:line-length
 name: CI - ABACUS Matrix
 
 on:
@@ -305,31 +304,11 @@ jobs:
 
           diff_rc=0
           python -m pip install "diff-cover>=9,<10"
-          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
-            base_sha="${{ github.event.pull_request.base.sha }}"
-            if git diff --ignore-space-at-eol --quiet \
-              "${base_sha}" HEAD -- '*.py' '*.pyi'; then
-              {
-                echo
-                echo "#### Changed-line coverage"
-                echo
-                echo "No substantive Python diff after end-of-line whitespace normalization."
-                echo "The 80% B9 changed-line floor is not applicable to this diff."
-              } >> "${GITHUB_STEP_SUMMARY}"
-            else
-              diff-cover "${evidence_dir}/coverage.xml" \
-                --compare-branch="${base_sha}" \
-                --fail-under=80 \
-                || diff_rc=$?
-            fi
-          else
-            {
-              echo
-              echo "#### Changed-line coverage"
-              echo
-              echo "Push/scheduled proof: changed-line PR floor is not applicable."
-            } >> "${GITHUB_STEP_SUMMARY}"
-          fi
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          diff-cover "${evidence_dir}/coverage.xml" \
+            --compare-branch=origin/main \
+            --fail-under=80 \
+            || diff_rc=$?
 
           if (( pytest_rc != 0 )); then
             echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
