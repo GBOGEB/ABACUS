@@ -12,6 +12,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from datetime import datetime
 
+
 class TestPhase0Initialization:
 
     def test_environment_setup(self):
@@ -53,6 +54,7 @@ class TestPhase0Initialization:
         assert log_config["level"] in ["DEBUG", "INFO", "WARNING", "ERROR"]
         assert "file" in log_config["output"]
 
+
 class TestPhase1BridgeInitialization:
 
     def test_bridge_creation(self):
@@ -93,6 +95,7 @@ class TestPhase1BridgeInitialization:
         }
         assert registration["registered"] is True
         assert "ariana_" in registration["agent_id"]
+
 
 class TestPhase2AgentRegistration:
 
@@ -141,6 +144,7 @@ class TestPhase2AgentRegistration:
         assert session["status"] == "active"
         assert "session_" in session["session_id"]
 
+
 class TestPhase3HealthMonitoring:
 
     def test_health_status_creation(self):
@@ -183,6 +187,7 @@ class TestPhase3HealthMonitoring:
         }
         assert alert_config["enabled"] is True
         assert "error" in alert_config["severity_levels"]
+
 
 class TestPhase4StateSynchronization:
 
@@ -231,6 +236,7 @@ class TestPhase4StateSynchronization:
         sync_result["status"] = "completed"
         sync_result["completed"] = time.time()
         assert sync_result["status"] == "completed"
+
 
 class TestPhase5TraceLogging:
 
@@ -281,6 +287,7 @@ class TestPhase5TraceLogging:
         error_traces = [t for t in all_traces if t["level"] == "ERROR"]
         assert len(error_traces) == 1
 
+
 class TestPhase6ExecutionFlow:
 
     @pytest.mark.asyncio
@@ -330,6 +337,7 @@ class TestPhase6ExecutionFlow:
         await asyncio.gather(*tasks)
         assert all(t.done() for t in tasks)
 
+
 class TestPhase7ResultPersistence:
 
     def test_result_storage(self, tmp_path):
@@ -368,6 +376,7 @@ class TestPhase7ResultPersistence:
         result_file.write_text(json.dumps(test_data))
         retrieved = json.loads(result_file.read_text())
         assert retrieved == test_data
+
 
 class TestPhase8ErrorHandling:
 
@@ -417,6 +426,7 @@ class TestPhase8ErrorHandling:
             s["available"] for s in services.values() if s["required"]
         )
         assert can_operate is True
+
 
 class TestPhase9EndToEndIntegration:
 

@@ -36,6 +36,7 @@ EQUATIONS = {
     },
 }
 
+
 def calc_total_heat_load():
     """Sum all heat load components."""
     components = {
@@ -47,6 +48,7 @@ def calc_total_heat_load():
     total = sum(components.values())
     return {"components_W": components, "total_4K_W": total, "total_with_margin_W": round(total * 1.15)}
 
+
 def calc_carnot_cop(T_cold_K, T_hot_K):
     """Calculate ideal and real COP."""
     cop_carnot = T_cold_K / (T_hot_K - T_cold_K)
@@ -55,10 +57,12 @@ def calc_carnot_cop(T_cold_K, T_hot_K):
     return {"cop_carnot": round(cop_carnot, 5), "eta_carnot": eta_carnot,
             "cop_real": round(cop_real, 5), "T_cold_K": T_cold_K, "T_hot_K": T_hot_K}
 
+
 def calc_required_power(Q_total_W, cop_real):
     """Calculate required compressor power."""
     W = Q_total_W / cop_real
     return {"Q_total_W": Q_total_W, "cop_real": cop_real, "W_comp_W": round(W), "W_comp_kW": round(W/1000, 1)}
+
 
 def calc_lhe_consumption(Q_total_W, h_vap_J_g=20.72):
     """Calculate LHe boil-off."""
@@ -67,11 +71,13 @@ def calc_lhe_consumption(Q_total_W, h_vap_J_g=20.72):
     return {"Q_W": Q_total_W, "h_vap_J_g": h_vap_J_g, "boiloff_g_s": round(m_dot_gs, 3),
             "boiloff_L_h": round(m_dot_Lh, 2), "boiloff_L_day": round(m_dot_Lh * 24, 1)}
 
+
 def calc_shield_equivalent(Q_80K_W):
     """Calculate 80K shield load equivalent at 4K."""
     factor = 0.05
     Q_4K_eq = Q_80K_W * factor
     return {"Q_80K_W": Q_80K_W, "conversion_factor": factor, "Q_4K_equivalent_W": round(Q_4K_eq, 1)}
+
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
@@ -122,6 +128,7 @@ def run_examples():
     })
 
     return results
+
 
 def test():
     hl = calc_total_heat_load()
