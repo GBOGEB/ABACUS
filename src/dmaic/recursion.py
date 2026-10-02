@@ -10,7 +10,7 @@ DEFAULT_MAX_ITERATIONS = 10
 DEFAULT_CONVERGENCE_THRESHOLD = 0.01
 
 
-def should_stop(history: List[Dict[str, Any]], 
+def should_stop(history: List[Dict[str, Any]],
                rules: List[Dict[str, Any]]) -> Tuple[bool, str]:
     """
     Determine if iteration should stop based on rules
@@ -27,7 +27,7 @@ def should_stop(history: List[Dict[str, Any]],
 
     # Extract max iterations from rules, or use default
     max_iterations = next(
-        (rule['value'] for rule in rules if rule.get('type') == 'max_iterations'), 
+        (rule['value'] for rule in rules if rule.get('type') == 'max_iterations'),
         DEFAULT_MAX_ITERATIONS
     )
 
@@ -43,7 +43,7 @@ def should_stop(history: List[Dict[str, Any]],
             scores = [item['score'] for item in recent]
             # Extract convergence threshold from rules, or use default
             threshold = next(
-                (rule['value'] for rule in rules if rule.get('type') == 'convergence_threshold'), 
+                (rule['value'] for rule in rules if rule.get('type') == 'convergence_threshold'),
                 DEFAULT_CONVERGENCE_THRESHOLD
             )
             if max(scores) - min(scores) < threshold:
