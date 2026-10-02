@@ -31,7 +31,7 @@ def self_test():
     if not os.path.exists(output_dir):
         try:
             os.makedirs(output_dir)
-        except:
+        except OSError:
             checks["output_dirs_writable"] = False
 
     # Check for phase files using the orchestrator approach

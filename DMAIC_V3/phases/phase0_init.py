@@ -170,7 +170,7 @@ class Phase0Init:
         try:
             subprocess.run(['git', '--version'], capture_output=True, check=True)
             return True
-        except:
+        except (OSError, subprocess.SubprocessError):
             return False
 
     def _check_dependencies(self) -> Dict[str, bool]:
