@@ -90,7 +90,7 @@ def test_github_tracking_feedback_path_executes(tmp_path, monkeypatch):
 
     fake_github.Github = FakeGithub
     monkeypatch.setitem(sys.modules, "github", fake_github)
-    sys.modules.pop("github_tracking_manager", None)
+    monkeypatch.delitem(sys.modules, "github_tracking_manager", raising=False)
     tracking_module = importlib.import_module("github_tracking_manager")
     manager = object.__new__(tracking_module.GitHubTrackingManager)
     manager.repo_name = "GBOGEB/ABACUS"
