@@ -99,6 +99,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--coverage-out", type=Path, required=True)
     parser.add_argument("--junit-dir", type=Path, required=True)
     parser.add_argument("--roots", nargs="*", type=Path)
+    parser.add_argument(
+        "--exact-sha",
+        default=os.environ.get("GITHUB_SHA", "WITHHELD"),
+    )
     args = parser.parse_args(argv)
 
     roots = [path.resolve() for path in (args.roots or list(DEFAULT_ROOTS))]
@@ -206,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
 
     report = {
         "schema": "abacus-test-admission-census/1.0.0",
-        "exact_sha": os.environ.get("GITHUB_SHA", "WITHHELD"),
+        "exact_sha": args.exact_sha,
         "report_only": True,
         "baseline_test_count_credit": 0,
         "coverage_export_returncode": coverage_cmd.returncode,
