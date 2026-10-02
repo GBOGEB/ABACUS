@@ -181,7 +181,7 @@ class GitHubBulkResolver:
 
         return duplicate_issues, duplicate_prs
 
-    def close_duplicates(self, duplicate_issues: Dict, duplicate_prs: Dict, 
+    def close_duplicates(self, duplicate_issues: Dict, duplicate_prs: Dict,
                         comment: str = None, dry_run: bool = True):
         """Close duplicate issues and PRs."""
         if dry_run:
@@ -252,7 +252,7 @@ If you want to continue working on this fix, please use PR #{prs[0]['number']}.
 
         print(f"\n✅ Successfully closed {closed_count} duplicates")
 
-    def add_comment_to_all(self, duplicate_issues: Dict, duplicate_prs: Dict, 
+    def add_comment_to_all(self, duplicate_issues: Dict, duplicate_prs: Dict,
                           comment: str, dry_run: bool = True):
         """Add a comment to all duplicate issues and PRs."""
         if dry_run:
@@ -289,7 +289,7 @@ If you want to continue working on this fix, please use PR #{prs[0]['number']}.
 
         print(f"\n✅ Successfully added {comment_count} comments")
 
-    def export_report(self, duplicate_issues: Dict, duplicate_prs: Dict, 
+    def export_report(self, duplicate_issues: Dict, duplicate_prs: Dict,
                      output_file: str = "duplicate_report.json"):
         """Export duplicate report to JSON."""
         report = {
@@ -363,12 +363,12 @@ Examples:
     )
 
     parser.add_argument('--repo', required=True, help='Repository name (e.g., GBOGEB/ABACUS)')
-    parser.add_argument('--action', required=True, 
+    parser.add_argument('--action', required=True,
                        choices=['check', 'close', 'comment', 'export'],
                        help='Action to perform')
     parser.add_argument('--token', help='GitHub token (or set GITHUB_TOKEN env var)')
     parser.add_argument('--message', help='Comment message (for comment action)')
-    parser.add_argument('--dry-run', action='store_true', 
+    parser.add_argument('--dry-run', action='store_true',
                        help='Dry run mode (no changes made)')
     parser.add_argument('--output', default='duplicate_report.json',
                        help='Output file for export action')
@@ -406,7 +406,7 @@ Examples:
                 print("❌ Operation cancelled")
                 return
 
-        resolver.add_comment_to_all(duplicate_issues, duplicate_prs, 
+        resolver.add_comment_to_all(duplicate_issues, duplicate_prs,
                                    args.message, dry_run=args.dry_run)
 
     elif args.action == 'export':
