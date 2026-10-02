@@ -174,9 +174,9 @@ class CIIssueCreator:
         """Create detailed issue body"""
         body = f"""## 🔴 CI/CD Test Failure
 
-**Test:** `{test_name}`
-**File:** `{test_file}`
-**Duration:** {duration:.2f}s
+**Test:** `{test_name}`<br>
+**File:** `{test_file}`<br>
+**Duration:** {duration:.2f}s<br>
 **Detected:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
 
 """
@@ -220,7 +220,7 @@ class CIIssueCreator:
 
 This issue was automatically created by the CI monitoring system. The test failed during automated checks.
 
-**Workflow:** CI Monitor & Auto Issue Creator
+**Workflow:** CI Monitor & Auto Issue Creator<br>
 **Trigger:** Test failure detected in PR #{pr_number if pr_number else 'N/A'}
 
 ### 🔗 Related Links
