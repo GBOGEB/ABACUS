@@ -36,7 +36,7 @@ class DependencyGraphAgent:
                                 imports.append(node.module)
 
                     graph[str(file_path)] = imports
-                except:
+                except (OSError, UnicodeError, SyntaxError):
                     pass
 
         return graph
