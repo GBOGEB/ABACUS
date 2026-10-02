@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from threading import Barrier
+from threading import Barrier, Lock
 
 import pytest
 
@@ -246,10 +246,18 @@ def test_concurrent_cache_writers_use_independent_temp_files(tmp_path, monkeypat
     )
     cache_file = wrapper.config.get_cache_file("phase_concurrent", 10)
     barrier = Barrier(2)
+    barrier_lock = Lock()
+    synchronized_sources = set()
     original_replace = Path.replace
 
     def synchronized_replace(source, target):
+        wait_at_barrier = False
         if source.name.endswith(".tmp"):
+            with barrier_lock:
+                if source not in synchronized_sources:
+                    synchronized_sources.add(source)
+                    wait_at_barrier = True
+        if wait_at_barrier:
             barrier.wait(timeout=5)
         return original_replace(source, target)
 
