@@ -214,7 +214,7 @@ class LicenseComplianceChecker:
         self.licenses: List[LicenseInfo] = []
 
         self.approved_licenses = {
-            "MIT", "Apache-2.0", "BSD-3-Clause", "BSD-2-Clause", 
+            "MIT", "Apache-2.0", "BSD-3-Clause", "BSD-2-Clause",
             "ISC", "Python-2.0", "PSF"
         }
 

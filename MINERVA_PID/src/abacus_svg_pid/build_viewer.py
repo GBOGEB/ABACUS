@@ -878,7 +878,7 @@ function makePanel(sheet){
   return wrap;
 }
 function zoomBySheet(sheet,f){
-  PANELS.forEach(function(p){ if(p.wrap.parentNode.getAttribute('data-sheet')===sheet){ 
+  PANELS.forEach(function(p){ if(p.wrap.parentNode.getAttribute('data-sheet')===sheet){
     if(f===0){p.scale=1;p.tx=0;p.ty=0;} else {p.scale=Math.min(12,Math.max(0.2,p.scale*f));} applyPan(p);
   }});
 }
