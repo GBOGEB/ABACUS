@@ -47,7 +47,7 @@ def test_layers_contract_is_21():
     layers = _load_layers(LAYERS_YAML)
     assert len(layers) == 21, "layer contract must expose 21 named layers"
     # idx is dense 0..20 and maps directly to the lyr-NN class scheme
-    assert [l["idx"] for l in layers] == list(range(21))
+    assert [layer["idx"] for layer in layers] == list(range(21))
     assert layers[18]["id"].startswith("11_Text"), "lyr-18 is the text layer"
 
 

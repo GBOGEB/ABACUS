@@ -31,7 +31,7 @@ LINES = [
 ]
 
 # fast lookup by key
-LINE_BY_KEY = {l[0]: l for l in LINES}
+LINE_BY_KEY = {line[0]: line for line in LINES}
 
 # Mapping from extracted SVG stroke-colour classes (svg_extract CLASS_COLORS)
 # to the v5 line keys.  The geometry only distinguishes a handful of classes;

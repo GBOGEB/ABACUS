@@ -990,7 +990,7 @@ def generate_markdown(report: dict) -> str:
         for req in sec["requirements"]:
             for ev in req["evidence"]:
                 if "file" in ev:
-                    detail = ", ".join(str(l) for l in ev.get("matching_lines", [])) if ev.get("matching_lines") else f"{ev.get('size_bytes', '—')} bytes"
+                    detail = ", ".join(str(line_no) for line_no in ev.get("matching_lines", [])) if ev.get("matching_lines") else f"{ev.get('size_bytes', '—')} bytes"
                     lines.append(f"| {req['id']} | `{ev['file']}` | {detail} | {req['verification']} |")
                 elif "note" in ev:
                     lines.append(f"| {req['id']} | — | {ev['note']} | {req['verification']} |")

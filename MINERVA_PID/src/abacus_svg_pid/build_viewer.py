@@ -140,7 +140,7 @@ def _load_layers(path):
         try:
             import yaml  # type: ignore
             doc = yaml.safe_load(open(path))
-            layers = [l["id"] for l in doc.get("layers", [])]
+            layers = [layer["id"] for layer in doc.get("layers", [])]
         except Exception:
             ids = re.findall(r'id:\s*"([^"]+)"', open(path).read())
             # keep only layer ids (NN_ / NNA_ prefix), preserve order, dedupe

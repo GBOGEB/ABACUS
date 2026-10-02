@@ -148,7 +148,7 @@ class DocQualityAnalyser:
         lines = content.split("\n")
 
         # Headers
-        headers = [l for l in lines if l.startswith("#")]
+        headers = [line for line in lines if line.startswith("#")]
         report.headers = len(headers)
 
         # Code blocks
@@ -163,7 +163,7 @@ class DocQualityAnalyser:
         report.images = len(images)
 
         # Tables
-        table_lines = [l for l in lines if l.strip().startswith("|") and "|" in l[1:]]
+        table_lines = [line for line in lines if line.strip().startswith("|") and "|" in line[1:]]
         report.tables = max(0, len(table_lines) // 3)  # Approximate
 
         # Check completeness

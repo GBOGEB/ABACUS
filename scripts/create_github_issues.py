@@ -318,7 +318,7 @@ def generate_issue_files():
         f.write("## Issues\n\n")
 
         for i, issue in enumerate(ISSUES, 1):
-            priority = [l for l in issue['labels'] if l.startswith('P')]
+            priority = [label for label in issue['labels'] if label.startswith('P')]
             priority_str = priority[0] if priority else "P2"
             f.write(f"{i}. **{issue['title']}** - Priority: {priority_str}\n")
 

@@ -57,7 +57,7 @@ def assign_lines(models, instruments):
             x, y = inst.get("x"), inst.get("y")
             code, colour, dist = "TBD", None, None
             if lines and x is not None and y is not None:
-                nearest = min(lines, key=lambda l: _dist(x, y, l.cx, l.cy))
+                nearest = min(lines, key=lambda line: _dist(x, y, line.cx, line.cy))
                 d = _dist(x, y, nearest.cx, nearest.cy)
                 if d < 60:
                     code = nearest.process_code

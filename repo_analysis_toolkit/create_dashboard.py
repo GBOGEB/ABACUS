@@ -162,8 +162,8 @@ def render(repo_name: str, baseline: dict, summary: dict, rows: list[dict],
         for tag, count in sorted(summary.items(), key=lambda kv: -kv[1])
     )
     lang_rows = "".join(
-        f"<tr><td>{html.escape(l)}</td><td>{c}</td></tr>"
-        for l, c in (files.get("languages_by_count") or [])[:12]
+        f"<tr><td>{html.escape(language)}</td><td>{count}</td></tr>"
+        for language, count in (files.get("languages_by_count") or [])[:12]
     )
     doc_rows = "".join(
         f"<tr><td>{html.escape(k)}</td><td>{'✅' if v else '❌'}</td></tr>"
