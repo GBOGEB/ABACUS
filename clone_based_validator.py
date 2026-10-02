@@ -184,12 +184,12 @@ class CloneBasedValidator:
         orphaned = self.find_orphaned_files(dependency_graph)
 
         total_checksums = {
-            file_path: node.checksum 
+            file_path: node.checksum
             for file_path, node in dependency_graph.items()
         }
 
         entry_points = [
-            f for f in orphaned 
+            f for f in orphaned
             if '__main__' in open(clone_path / f, 'r', encoding='utf-8', errors='ignore').read()
         ]
 
@@ -217,7 +217,7 @@ class CloneBasedValidator:
             workspace_checksums[rel_path] = self.calculate_file_checksum(py_file)
 
         clone_checksums = {
-            file_path: node.checksum 
+            file_path: node.checksum
             for file_path, node in self.dependency_graph.items()
         }
 
