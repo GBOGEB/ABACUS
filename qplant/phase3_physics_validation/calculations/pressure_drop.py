@@ -19,14 +19,17 @@ EQUATIONS = {
     },
 }
 
+
 def calc_reynolds(rho, v, D, mu):
     return rho * v * D / mu
+
 
 def calc_friction_factor(Re, epsilon_D=0.00004):
     """Swamee-Jain approximation of Colebrook."""
     if Re < 2300:
         return 64 / Re
     return 0.25 / (math.log10(epsilon_D/3.7 + 5.74/Re**0.9))**2
+
 
 def calc_pressure_drop(m_dot_gs, D_m, L_m, rho, mu, T_K=300, P_bar=14):
     """Calculate pressure drop in a pipe section."""
@@ -38,6 +41,7 @@ def calc_pressure_drop(m_dot_gs, D_m, L_m, rho, mu, T_K=300, P_bar=14):
     dP = f * (L_m / D_m) * rho * v**2 / 2
     return {"velocity_m_s": round(v, 2), "Re": round(Re), "friction_factor": round(f, 6),
             "dP_Pa": round(dP, 1), "dP_mbar": round(dP/100, 2), "flow_regime": "laminar" if Re < 2300 else "turbulent"}
+
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
@@ -61,6 +65,7 @@ def run_examples():
     })
 
     return results
+
 
 def test():
     # Laminar flow test

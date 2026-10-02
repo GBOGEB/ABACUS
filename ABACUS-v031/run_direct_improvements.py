@@ -9,6 +9,7 @@ from dow_engine.core.dmaic import DMAICEngine
 import json
 import re
 
+
 def improve_markdown_quality(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -40,6 +41,7 @@ def improve_markdown_quality(file_path: Path) -> bool:
     except Exception as e:
         print(f"       ✗ Error improving {file_path}: {e}")
         return False
+
 
 def add_documentation_header(file_path: Path, artifact_type: str) -> bool:
     try:
@@ -74,6 +76,7 @@ def add_documentation_header(file_path: Path, artifact_type: str) -> bool:
         print(f"       ✗ Error adding header to {file_path}: {e}")
         return False
 
+
 def improve_code_quality(file_path: Path) -> bool:
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -102,6 +105,7 @@ def improve_code_quality(file_path: Path) -> bool:
     except Exception as e:
         print(f"       ✗ Error improving code {file_path}: {e}")
         return False
+
 
 def main():
     print("\n" + "=" * 80)

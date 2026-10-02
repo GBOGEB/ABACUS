@@ -21,11 +21,13 @@ EQUATIONS = {
     },
 }
 
+
 def calc_temp_rise(Q_W, m_dot_gs, cp_J_kgK=5193):
     """Temperature rise from heat load."""
     m_dot = m_dot_gs / 1000
     dT = Q_W / (m_dot * cp_J_kgK)
     return {"Q_W": Q_W, "m_dot_gs": m_dot_gs, "cp": cp_J_kgK, "dT_K": round(dT, 4)}
+
 
 def calc_cooldown_time(mass_kg, cp_avg, T_start, T_end, cooling_power_W):
     """Estimate cooldown time."""
@@ -33,6 +35,7 @@ def calc_cooldown_time(mass_kg, cp_avg, T_start, T_end, cooling_power_W):
     t_s = Q_total / cooling_power_W
     return {"mass_kg": mass_kg, "T_range": f"{T_start}→{T_end} K", "Q_total_MJ": round(Q_total/1e6, 1),
             "time_h": round(t_s/3600, 1), "time_days": round(t_s/86400, 2)}
+
 
 def run_examples():
     results = {"calculations": [], "equations": EQUATIONS}
@@ -58,6 +61,7 @@ def run_examples():
     })
 
     return results
+
 
 def test():
     dt = calc_temp_rise(100, 100, 5193)

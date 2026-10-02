@@ -8,6 +8,7 @@ import pytest
 import sys
 from pathlib import Path
 
+
 def test_dmaic_pipeline_imports():
     """Test that core DMAIC modules can be imported"""
     try:
@@ -15,6 +16,7 @@ def test_dmaic_pipeline_imports():
         assert True
     except ImportError as e:
         pytest.fail(f"Failed to import DMAIC modules: {e}")
+
 
 def test_output_directories_exist():
     """Test that required output directories exist"""
@@ -28,6 +30,7 @@ def test_output_directories_exist():
     for dir_name in required_dirs:
         dir_path = base_path / dir_name
         assert dir_path.exists() or True, f"Directory {dir_name} should exist or be creatable"
+
 
 @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_dmaic_execution_script_exists():
@@ -46,17 +49,20 @@ def test_dmaic_execution_script_exists():
     else:
         pytest.skip("TEST_BLOCKED_SOURCE_MISSING: No DMAIC execution scripts found")
 
+
 def test_requirements_file_exists():
     """Test that requirements.txt exists"""
     base_path = Path(__file__).parent.parent
     req_file = base_path / "requirements.txt"
     assert req_file.exists(), "requirements.txt should exist"
 
+
 def test_dockerfile_exists():
     """Test that Dockerfile exists"""
     base_path = Path(__file__).parent.parent
     dockerfile = base_path / "Dockerfile"
     assert dockerfile.exists(), "Dockerfile should exist"
+
 
 def test_ci_cd_workflows_exist():
     """Test that CI/CD workflow files exist"""
