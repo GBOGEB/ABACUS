@@ -177,7 +177,7 @@ class GitHubTrackingManager:
         except Exception as e:
             print(f"❌ Error syncing CI runs: {e}")
 
-    def capture_copilot_feedback(self, pr_number: int, feedback_type: str, message: str,
+    def capture_copilot_feedback(self, pr_number: int, feedback_type: str, message: str, 
                                   file: str = "", line: int = 0, source: str = "github_copilot"):
         """Capture Copilot or GitHub feedback"""
         print(f"\n📝 Capturing {feedback_type} feedback for PR #{pr_number}...")
