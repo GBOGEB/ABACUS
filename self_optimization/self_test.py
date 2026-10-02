@@ -35,7 +35,6 @@ def self_test():
             checks["output_dirs_writable"] = False
 
     # Check for phase files using the orchestrator approach
-    phase_check_passed = True
 
     # Check if full_pipeline_orchestrator.py exists (main entry point)
     orchestrator_file = "DMAIC_V3/full_pipeline_orchestrator.py"

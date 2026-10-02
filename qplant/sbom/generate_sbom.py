@@ -238,7 +238,6 @@ def generate_sbom_report(sbom: Dict[str, Any], output: str = "sbom_report.md") -
     licenses = summary.get("licenses", {})
 
     direct = [c for c in components if c.get("scope") == "required"]
-    transitive = [c for c in components if c.get("scope") == "transitive"]
 
     lic_rows = ""
     for lic, count in sorted(licenses.items(), key=lambda x: -x[1]):

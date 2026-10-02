@@ -126,7 +126,7 @@ class ImprovedCryoplantRTMGenerator:
 
         # Read the PDF content that was already processed
         with open('/home/ubuntu/Uploads/cryoplant_requirements.pdf', 'r', errors='ignore') as f:
-            content = f.read()
+            f.read()
 
         # Manual extraction of known RTM requirements from the document analysis
         requirements_data = [
