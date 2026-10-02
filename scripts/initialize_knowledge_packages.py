@@ -225,7 +225,7 @@ class KnowledgePackageInitializer:
         readme_path = self.knowledge_dir / "README.md"
         readme_content = f"""# DMAIC V3.3 Knowledge Packages
 
-**Version:** {VERSION}  
+**Version:** {VERSION}
 **Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 ## Overview
