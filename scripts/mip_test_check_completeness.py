@@ -242,6 +242,36 @@ def workflow_captures_outcome_fail_closed(root: Path, row: dict[str, Any]) -> bo
     pattern = r"test\s+[\"\']?\$" + re.escape(outcome_var) + r"[\"\']?\s*=\s*success\b"
     return bool(re.search(pattern, text))
 
+def workflow_preserves_return_code_around_finding(root: Path, row: dict[str, Any]) -> bool:
+    path = root / str(row.get("path", ""))
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return False
+    index = max(0, int(row.get("line", 1) or 1) - 1)
+    step_start = None
+    step_indent = None
+    for cursor in range(index, -1, -1):
+        if re.match(r"^\s*-\s+name:\s*.+?\s*$", lines[cursor]):
+            step_start = cursor
+            step_indent = len(lines[cursor]) - len(lines[cursor].lstrip())
+            break
+    if step_start is None or step_indent is None:
+        return False
+    step_end = len(lines)
+    for cursor in range(step_start + 1, len(lines)):
+        if re.match(r"^\s*-\s+name:\s*.+?\s*$", lines[cursor]):
+            indent = len(lines[cursor]) - len(lines[cursor].lstrip())
+            if indent == step_indent:
+                step_end = cursor
+                break
+    before = "\n".join(lines[step_start : index + 1])
+    after = "\n".join(lines[index:step_end])
+    return bool(
+        re.search(r"\brc\s*=\s*\$\?", before)
+        and re.search(r"\bexit\s+[\"\']?\$rc[\"\']?", after)
+    )
+
 def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]:
     text = str(row.get("text", ""))
     lower = text.lower()
@@ -260,7 +290,14 @@ def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]
         and "|| true" in lower
     ):
         kind = "OPTIONAL_ARTIFACT"
-    elif re.search(r"\bkubectl\s+(?:get|describe|logs)\b", lower) and "|| true" in lower:
+    elif (
+        re.search(r"\bkubectl\s+(?:get|describe|logs)\b", lower)
+        and "|| true" in lower
+        and (
+            "diagnostic" in step_lower
+            or workflow_preserves_return_code_around_finding(root, row)
+        )
+    ):
         kind = "DIAGNOSTIC_BEST_EFFORT"
     elif re.search(r"\|\|\s*echo\s+['\"]?0\b", lower) or (
         ("grep -c" in lower or "wc -l" in lower) and "|| true" in lower
