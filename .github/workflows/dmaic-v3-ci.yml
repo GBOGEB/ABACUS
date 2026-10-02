@@ -1,4 +1,6 @@
 # yamllint disable rule:line-length
+# yamllint disable rule:trailing-spaces
+# yamllint disable rule:brackets
 name: DMAIC V3 Test Suite - Continuous Integration
 
 on:
