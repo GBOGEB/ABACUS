@@ -16,6 +16,7 @@ from pathlib import Path
 from datetime import datetime
 import sys
 
+
 def run_pylint_check(file_path: Path) -> dict:
     """Run pylint on a Python file"""
     try:
@@ -35,6 +36,7 @@ def run_pylint_check(file_path: Path) -> dict:
         print(f"Error checking {file_path}: {e}")
         return []
 
+
 def run_syntax_check(file_path: Path) -> tuple:
     """Check Python syntax"""
     try:
@@ -45,6 +47,7 @@ def run_syntax_check(file_path: Path) -> tuple:
         return False, f"Line {e.lineno}: {e.msg}"
     except Exception as e:
         return False, str(e)
+
 
 def count_lines(file_path: Path) -> dict:
     """Count lines of code"""
@@ -65,6 +68,7 @@ def count_lines(file_path: Path) -> dict:
         }
     except Exception:
         return {'total': 0, 'code': 0, 'comments': 0, 'blank': 0}
+
 
 def main():
     print("="*80)

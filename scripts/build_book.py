@@ -32,6 +32,7 @@ BOOK_SOURCES = [
     "DMAIC_V3_DOCUMENTATION_INDEX.md",
 ]
 
+
 def build_pdf():
     """Build PDF version of the book"""
     print("Building PDF...")
@@ -63,6 +64,7 @@ def build_pdf():
         print(f"❌ PDF build failed: {result.stderr}")
         return False
 
+
 def build_html():
     """Build HTML version of the book"""
     print("Building HTML...")
@@ -88,6 +90,7 @@ def build_html():
         print(f"❌ HTML build failed: {result.stderr}")
         return False
 
+
 def build_epub():
     """Build EPUB version of the book"""
     print("Building EPUB...")
@@ -109,6 +112,7 @@ def build_epub():
     else:
         print(f"❌ EPUB build failed: {result.stderr}")
         return False
+
 
 def main():
     """Main build function"""
