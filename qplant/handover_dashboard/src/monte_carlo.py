@@ -126,7 +126,7 @@ def run_monte_carlo(config: ScenarioConfig, n_runs: int = N_SIMULATIONS) -> pd.D
 def compute_statistics(df: pd.DataFrame) -> Dict[str, Any]:
     """Compute summary statistics from Monte Carlo results."""
     stats = {}
-    for col in ["total_cost_eur", "he_cost_eur", "replacement_cost_eur", 
+    for col in ["total_cost_eur", "he_cost_eur", "replacement_cost_eur",
                  "total_he_loss_kg", "downtime_hours", "beam_availability_pct"]:
         vals = df[col]
         stats[col] = {
