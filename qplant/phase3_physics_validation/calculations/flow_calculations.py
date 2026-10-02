@@ -49,6 +49,7 @@ EQUATIONS = {
     },
 }
 
+
 def calc_volumetric_flow(mass_flow_gs, T_K, P_bar):
     """Calculate volumetric flow rate from mass flow.
 
@@ -61,11 +62,13 @@ def calc_volumetric_flow(mass_flow_gs, T_K, P_bar):
     Q = m_dot * R * T_K / (P * M)
     return {"m3_per_s": round(Q, 6), "m3_per_h": round(Q * 3600, 2), "L_per_s": round(Q * 1000, 3)}
 
+
 def calc_compressor_capacity(n_units, capacity_nm3h, rho_stp=0.1636):
     """Calculate total compressor station mass flow."""
     mass_per_unit_gs = capacity_nm3h * rho_stp / 3.6  # g/s
     total_gs = n_units * mass_per_unit_gs
     return {"per_unit_gs": round(mass_per_unit_gs, 2), "total_gs": round(total_gs, 2), "units": n_units}
+
 
 def calc_vfd_operating_point(target_flow_gs, rated_flow_gs, rated_freq_hz, rated_power_kw):
     """Calculate VFD operating frequency and power for target flow."""
@@ -75,6 +78,7 @@ def calc_vfd_operating_point(target_flow_gs, rated_flow_gs, rated_freq_hz, rated
     return {"target_gs": target_flow_gs, "frequency_hz": round(freq, 1),
             "power_kw": round(power, 1), "freq_ratio": round(freq_ratio, 3)}
 
+
 def calc_n_minus_1_capacity(n_total, per_unit_gs, demand_gs):
     """Calculate N-1 capacity and margin."""
     n_minus_1_cap = (n_total - 1) * per_unit_gs
@@ -82,6 +86,7 @@ def calc_n_minus_1_capacity(n_total, per_unit_gs, demand_gs):
     can_meet = n_minus_1_cap >= demand_gs
     return {"n_minus_1_units": n_total - 1, "capacity_gs": round(n_minus_1_cap, 2),
             "demand_gs": demand_gs, "margin_pct": round(margin, 2), "can_meet_demand": can_meet}
+
 
 # ─── FILLED EXAMPLES ────────────────────────────────────────────────────────
 def run_examples():
@@ -138,6 +143,7 @@ def run_examples():
     })
 
     return results
+
 
 # ─── UNIT TESTS ──────────────────────────────────────────────────────────────
 def test():
