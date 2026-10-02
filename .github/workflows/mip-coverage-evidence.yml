@@ -2,6 +2,25 @@ name: MIP B0 Test Admission and Coverage Evidence
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "pytest.ini"
+      - "requirements*.txt"
+      - "pyproject.toml"
+      - "scripts/test_admission_census.py"
+      - "scripts/test_evidence_census.py"
+      - "scripts/coverage_dab_census.py"
+      - "scripts/post_b0_coverage_union.py"
+      - "scripts/mip_v2_federated_controller.py"
+      - "scripts/mip_test_check_completeness.py"
+      - "scripts/pytest_test_state_plugin.py"
+      - "scripts/ci_false_green_lint.py"
+      - "scripts/dab_flake8_census.py"
+      - "DMAIC_V3/tests/**"
+      - "integration/*/tests/**"
+      - "tests/**"
+      - ".github/workflows/**"
   pull_request:
     paths:
       - "pytest.ini"
@@ -12,7 +31,10 @@ on:
       - "scripts/coverage_dab_census.py"
       - "scripts/post_b0_coverage_union.py"
       - "scripts/mip_v2_federated_controller.py"
+      - "scripts/mip_test_check_completeness.py"
       - "scripts/pytest_test_state_plugin.py"
+      - "scripts/ci_false_green_lint.py"
+      - "scripts/dab_flake8_census.py"
       - "DMAIC_V3/tests/**"
       - "integration/*/tests/**"
       - "tests/**"
@@ -20,14 +42,27 @@ on:
 
 permissions:
   contents: read
+  actions: read
+
+env:
+  EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   b0-report-only:
     name: B0 report-only admission census
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout exact head
         uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
         uses: actions/setup-python@v7
@@ -70,26 +105,55 @@ jobs:
             --coverage-json test_reports/b0/coverage-contexts.json \
             --criticality governance/coverage/criticality_manifest.json \
             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
-            --exact-sha "${GITHUB_SHA}" \
+            --exact-sha "${EXACT_SHA}" \
             --out test_reports/b0/coverage-dab.json
 
       - name: Build exact-head post-B0 coverage union
         run: |
           set -euo pipefail
-          python scripts/post_b0_coverage_union.py             --coverage-surface canonical=test_reports/post-b0/canonical-contexts.json             --coverage-surface b0_report_only=test_reports/b0/coverage-contexts.json             --criticality governance/coverage/criticality_manifest.json             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json             --test-evidence test_reports/post-b0/canonical-test-evidence.json             --exact-sha "${GITHUB_SHA}"             --out test_reports/post-b0/coverage-dab.json
+          python scripts/post_b0_coverage_union.py             --coverage-surface canonical=test_reports/post-b0/canonical-contexts.json             --coverage-surface b0_report_only=test_reports/b0/coverage-contexts.json             --criticality governance/coverage/criticality_manifest.json             --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json             --test-evidence test_reports/post-b0/canonical-test-evidence.json             --exact-sha "${EXACT_SHA}"             --out test_reports/post-b0/coverage-dab.json
 
       - name: Consume post-B0 pressure through MIP
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ env.EXACT_SHA }}
         run: |
           set -euo pipefail
           python scripts/mip_v2_federated_controller.py             --summary test_reports/post-b0/mip-pressure.json             --coverage-census test_reports/post-b0/coverage-dab.json             --coverage-limit 40
+
+      - name: Build exact-head false-green census
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/b1
+          python scripts/ci_false_green_lint.py \
+            --root .github/workflows \
+            --mode census \
+            --max-unguarded 267 \
+            --out test_reports/b1/false-green-census.json
+
+      - name: Build exact-head static-analysis census
+        run: |
+          set -euo pipefail
+          python scripts/dab_flake8_census.py \
+            --json-out test_reports/post-b0/flake8-census.json \
+            --text-out test_reports/post-b0/flake8-census.txt
+
+      - name: Build unified TC0-TC4 residual
+        run: |
+          set -euo pipefail
+          python scripts/mip_test_check_completeness.py \
+            --coverage-dab test_reports/post-b0/coverage-dab.json \
+            --test-evidence test_reports/post-b0/canonical-test-evidence.json \
+            --admission-census test_reports/b0/admission-census.json \
+            --false-green-census test_reports/b1/false-green-census.json \
+            --static-census test_reports/post-b0/flake8-census.json \
+            --exact-sha "$EXACT_SHA" \
+            --out test_reports/post-b0/test-check-completeness.json
 
       - name: Upload B0 report-only evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: b0-test-admission-${{ github.sha }}
+          name: b0-test-admission-${{ env.EXACT_SHA }}
           path: |
             test_reports/b0/
             test_reports/post-b0/
@@ -99,8 +163,17 @@ jobs:
     name: B1 false-green census
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout exact head
         uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python
         uses: actions/setup-python@v7
@@ -120,6 +193,6 @@ jobs:
       - name: Upload B1 census
         uses: actions/upload-artifact@v7
         with:
-          name: b1-false-green-census-${{ github.sha }}
+          name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1/
           if-no-files-found: error
