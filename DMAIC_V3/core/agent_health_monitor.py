@@ -144,7 +144,7 @@ class AgentHealthMonitor:
         if len(exec_times) < 2:
             return None
 
-        intervals = [(exec_times[i+1] - exec_times[i]).total_seconds() 
+        intervals = [(exec_times[i+1] - exec_times[i]).total_seconds()
                     for i in range(len(exec_times)-1)]
 
         if len(intervals) < 2:
