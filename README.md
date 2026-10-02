@@ -31,11 +31,12 @@
 
 The v4.4.0 release remains the published release baseline, but the repository has continued to evolve on `main`. Current work is governed by exact-head evidence rather than by the historical May completion percentages below.
 
-- **Current main:** `3aeae479bd8b801e3a914dc8cb8dd457048df5cc` (`#1661`, MIP workflow-census parser repair).
-- **Open PRs at this refresh:** none.
-- **TC0–TC4 completeness census:** merged through `#1659`, combining inventory/completeness, source↔test dynamic context, workflow executability/trigger coverage, false-green semantics, coverage DAB and static-analysis debt into one ranked residual.
-- **First census repair:** `#1661` removed false `INFRA/CHECK` positives caused by quoted YAML `'on'` keys and indentationless valid `steps` sequences.
-- **Exact-head proof state:** B1 false-green census is green on the `#1661` head; the B0 canonical/report-only coverage census and Python compatibility matrix are still executing/queued. Engineering residual promotion remains withheld until those measurements complete.
+- **Current main:** `090f2a2b90794b6fdcee64affa3ca39a53d0061a` (`#1666`, semantic TC4 false-green ranking merged after exact-head admission).
+- **Open PRs at this refresh:** none before this documentation refresh.
+- **TC0–TC4 completeness census:** merged through `#1666`, combining inventory/completeness, source↔test dynamic context, workflow executability/trigger coverage, semantic false-green classification, coverage DAB and static-analysis debt into one ranked residual while retaining the raw syntactic TC4 count separately.
+- **Completed census repairs:** `#1661` removed parser false positives; `#1665` removed the measured `cd-unified.yml` false-green defect; `#1666` added semantic TC4 classification without erasing raw debt.
+- **Exact-head proof state:** `#1666` merged only after B0/B1, Python 3.10/3.11/3.12 and compatibility were green; changed-line coverage was 100% (55/55), raw TC4 remained 239, `TEST_EXISTS_UNCOLLECTED` remained 2, and the unified ranked residual improved 310 → 309.
+- **Current rank-1 measured residual:** `.github/workflows/ci-enhanced.yml` with 25 semantic false-green constructs; consume it only through bounded fail-closed repairs and exact-head proof.
 - **Root documentation:** this section supersedes stale “workflow activation pending” language and historical counts as the current operating pointer.
 
 ### Execution invariant
@@ -55,8 +56,8 @@ REFRESH LIVE MAIN
 
 ### Next execution order
 
-1. Complete/read back the exact-head B0 + TC0–TC4 census and compatibility matrix for the current `#1661` tree.
-2. Consume genuine **INFRA/CHECK** defects first; distinguish parser/census false positives from real workflow defects.
+1. Preserve the merged `#1666` post-merge readback and exact-main parity at `090f2a2b90794b6fdcee64affa3ca39a53d0061a`.
+2. Consume the measured rank-1 **INFRA/CHECK** residual in `.github/workflows/ci-enhanced.yml` through bounded fail-closed slices; do not convert semantic false-greens into renamed advisory masks.
 3. Consume **TEST_ADMISSION** gaps next; no uncollected or failing governed test surface may be silently treated as green.
 4. Consume **NO_TEST** source gaps, prioritizing `USER_DIRECTED_HIGH` and `HIGH` criticality.
 5. Consume measured **COVERAGE** residuals while preserving configured changed-line and canonical coverage ratchets.
@@ -578,7 +579,7 @@ See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for evidence, 
 **Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag  
 **Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
 **Git Status:** Active exact-head MIP/CI hardening; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
-**Last Major Update:** 2026-10-02 (TC0–TC4 completeness census + workflow-census parser repair)
+**Last Major Update:** 2026-10-02 (semantic TC4 ranking merged; current rank-1 `ci-enhanced.yml` false-green debt measured)
 
 ---
 
@@ -636,7 +637,7 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 ---
 
 **Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence  
-**Current Focus:** Complete the TC0–TC4/DAB readback, then consume the first measured residual without relaxing test, coverage or false-green controls  
+**Current Focus:** Consume the measured `ci-enhanced.yml` rank-1 INFRA/CHECK residual without relaxing test, coverage or raw false-green controls  
 **Next Milestone:** Post-merge recensus with zero new infrastructure/admission regressions, followed by measured NO_TEST/COVERAGE/STATIC_ANALYSIS burn-down and separately proved branch-protection/refactor/deployment gates  
 **Last Updated:** 2026-10-02
 
