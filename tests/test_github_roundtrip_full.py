@@ -12,6 +12,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
 
+
 class TestGitHubRoundtripIntegration:
 
     @pytest.fixture
@@ -207,6 +208,7 @@ class TestGitHubRoundtripIntegration:
         assert roundtrip_log[0] == "local_created"
         assert roundtrip_log[-1] == "sync_verified"
 
+
 class TestBidirectionalSync:
 
     @pytest.fixture
@@ -275,6 +277,7 @@ class TestBidirectionalSync:
         assert len(results) == 4
         assert all(r["status"] == "synced" for r in results)
 
+
 class TestIntegrationResilience:
 
     def test_network_failure_handling(self):
@@ -335,6 +338,7 @@ class TestIntegrationResilience:
 
         assert success is True
         assert attempt <= max_attempts
+
 
 class TestComprehensiveValidation:
 
