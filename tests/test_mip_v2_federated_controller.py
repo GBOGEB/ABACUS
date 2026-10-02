@@ -107,7 +107,6 @@ def test_one_real_step_remains_sufficient_for_pass():
     assert result["global_project_dov"] == "WITHHELD"
 
 
-
 def test_coverage_pressure_requires_exact_sha():
     census = {
         "schema": "abacus-coverage-dab/1.0.0",
@@ -244,7 +243,6 @@ def test_main_smoke_writes_coverage_pressure_receipt(tmp_path, monkeypatch):
     )
     assert written["global_project_dov"] == "WITHHELD"
     assert written["authority_transfer"] is False
-
 
 
 def test_test_pressure_ranks_measured_non_green_states():
