@@ -502,7 +502,7 @@ class PipelineDebugger:
                                     'file': str(json_file.relative_to(self.output_root)),
                                     'error': data.get('message', 'Unknown failure')
                                 })
-                except:
+                except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
                     pass
 
         if result['recent_errors']:
