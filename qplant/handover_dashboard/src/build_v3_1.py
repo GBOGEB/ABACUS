@@ -830,9 +830,6 @@ def build_wcs_hp_protection():
 
 def build_navigator():
     """Build the 40-slide master navigator."""
-    # Read existing v3 slides for reference
-    existing_v3 = (DOC_DIR / "index_v3.html").read_text(encoding="utf-8") if (DOC_DIR / "index_v3.html").exists() else ""
-
     # Build slide content
     slides = _build_all_slides()
 

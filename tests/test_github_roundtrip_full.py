@@ -77,7 +77,7 @@ class TestGitHubRoundtripIntegration:
 
         from github import Github
         client = Github("test_token")
-        repo = client.get_repo("test_owner/test_repo")
+        client.get_repo("test_owner/test_repo")
 
         push_result = {
             "file": test_file.name,

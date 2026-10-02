@@ -212,7 +212,7 @@ class TestDockerContainer:
 
         time.sleep(5)
 
-        result = subprocess.run(
+        subprocess.run(
             ["docker", "ps", "-q", "-f", f"id={container_id}"],
             capture_output=True,
             text=True
