@@ -369,8 +369,8 @@ def main():
                 if 'github.com' in url:
                     parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
                     repo_name = parts
-        except OSError:
-            pass
+        except OSError as e:
+            print(f"⚠️ Could not determine repository from git remote: {e}", file=sys.stderr)
 
     if not repo_name:
         print("❌ Repository name required. Set GITHUB_REPOSITORY env var or use --repo")
