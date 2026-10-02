@@ -282,7 +282,7 @@ def main() -> int:
         )
 
     request = load(REQUEST)
-    qa = load(QA)
+    load(QA)
     requested = request.get("requested_DOW_operations")
     if (
         not isinstance(requested, list)
