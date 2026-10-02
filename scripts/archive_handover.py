@@ -18,6 +18,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "handover"
 
+
 def expand_globs(patterns: Iterable[str]) -> List[Path]:
     files: Set[Path] = set()
     for pat in patterns:
@@ -27,12 +28,14 @@ def expand_globs(patterns: Iterable[str]) -> List[Path]:
                 files.add(p)
     return sorted(files)
 
+
 def expand_exclusions(files: List[Path], excludes: Iterable[str]) -> List[Path]:
     ex: Set[Path] = set()
     for pat in excludes:
         for m in glob.glob(str(ROOT / pat), recursive=True):
             ex.add(Path(m))
     return [f for f in files if f not in ex]
+
 
 def load_spec(spec_path: Path) -> List[Path]:
     spec = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
@@ -43,6 +46,7 @@ def load_spec(spec_path: Path) -> List[Path]:
     files = expand_exclusions(files, exclude)
     return files
 
+
 def load_copy_list(copy_list_path: Path) -> List[Path]:
     pats: List[str] = []
     for line in copy_list_path.read_text(encoding="utf-8").splitlines():
@@ -52,17 +56,20 @@ def load_copy_list(copy_list_path: Path) -> List[Path]:
         pats.append(line)
     return expand_globs(pats)
 
+
 def write_zip(files: List[Path], out_zip: Path) -> None:
     out_zip.parent.mkdir(parents=True, exist_ok=True)
     with ZipFile(out_zip, "w", compression=ZIP_DEFLATED) as zf:
         for f in files:
             zf.write(f, f.relative_to(ROOT))
 
+
 def write_targz(files: List[Path], out_tgz: Path) -> None:
     out_tgz.parent.mkdir(parents=True, exist_ok=True)
     with tarfile.open(out_tgz, "w:gz") as tf:
         for f in files:
             tf.add(f, arcname=str(f.relative_to(ROOT)))
+
 
 def main():
     ap = argparse.ArgumentParser(description="Build handover archives (.zip and .tar.gz) with correct relative paths.")
