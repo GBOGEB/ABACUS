@@ -496,8 +496,18 @@ echo "========================================="
         try:
             os.chmod(backup_script_path, 0o755)
             os.chmod(restore_script_path, 0o755)
-        except:
-            pass
+        except OSError as e:
+            config["details"]["chmod_warning"] = (
+                f"Could not set executable permissions on generated scripts: {e}"
+            )
+            self.results["recommendations"].append({
+                "priority": "MEDIUM",
+                "category": "PERMISSIONS",
+                "title": "Verify script execute permissions",
+                "description": "Generated backup/restore scripts may not be executable.",
+                "action": f"Run chmod +x on scripts manually. Error: {e}",
+                "impact": "Prevents automation failures when invoking scripts directly"
+            })
 
         config["details"]["backup_script"] = str(backup_script_path)
         config["details"]["restore_script"] = str(restore_script_path)
