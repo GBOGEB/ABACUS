@@ -496,7 +496,7 @@ echo "========================================="
         try:
             os.chmod(backup_script_path, 0o755)
             os.chmod(restore_script_path, 0o755)
-        except:
+        except OSError:
             pass
 
         config["details"]["backup_script"] = str(backup_script_path)
