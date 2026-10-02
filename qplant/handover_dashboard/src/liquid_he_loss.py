@@ -60,7 +60,7 @@ def gas_mass_flow_kg_s(q_mbar_l_s: float, T_K: float, P_bar: float,
 
     ṁ = Q_throughput [Pa·m³/s] × M / (R × T)
 
-    Note: Q_throughput in mbar·L/s is already a PV throughput 
+    Note: Q_throughput in mbar·L/s is already a PV throughput
     (pressure × volume / time), so it encodes the amount of gas.
     At the measurement reference condition (usually ~room T, ~1 bar),
     Q = P_ref × V̇_ref.  For a fixed Q, the actual mass flow is:
@@ -172,7 +172,7 @@ def inventory_depletion_timeseries(
     """
     Time-series of liquid He inventory level for multiple leak rate scenarios.
 
-    Returns DataFrame with columns: day, and one column per leak rate 
+    Returns DataFrame with columns: day, and one column per leak rate
     showing remaining liquid volume (L).
     """
     if leak_rates is None:
