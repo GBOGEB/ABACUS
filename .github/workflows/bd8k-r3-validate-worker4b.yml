@@ -1,0 +1,76 @@
+name: BD8K R3 WORKER4B native admission
+
+on:
+  push:
+    branches:
+      - bd8k-wave2r3f-worker4b-20261002
+
+jobs:
+  validate:
+    if: startsWith(github.event.head_commit.message, 'BD8K R3 validate WORKER4B')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: bd8k-wave2r3f-worker4b-20261002
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native census dependency
+        run: python -m pip install --upgrade pip flake8
+      - name: Run repository-native DAB census
+        run: python scripts/dab_flake8_census.py --json-out /tmp/dab.json --text-out /tmp/dab.txt
+      - name: Guard census and prove AST equivalence
+        env:
+          BASE_SHA: 0e6d88a3f2c8247a591d2b20261f35d0bbdac7a6
+          BASE_TOTAL: '5804'
+          BASELINE_JSON: '{"E111":60,"E125":1,"E127":51,"E128":144,"E129":1,"E131":5,"E203":4,"E221":71,"E225":628,"E227":3,"E228":1,"E231":1452,"E261":2,"E265":1,"E301":13,"E302":332,"E303":16,"E305":114,"E306":5,"E401":37,"E402":623,"E501":948,"E701":138,"E702":294,"E703":1,"E712":10,"E722":16,"E741":9,"E999":1,"F401":336,"F541":315,"F601":0,"F811":0,"F821":0,"F841":19,"W291":108,"W292":11,"W293":26,"W391":8,"E731":0}'
+          TARGET_CODES_JSON: '["W291","W293"]'
+          FILES_JSON: '["ABACUS-v032/bulk_resolve_github_issues.py","scripts/export_summary_md.py","tests/test_dmaic_integration_layer.py","tests/test_performance_monitoring.py"]'
+          WORKER_ID: 'WORKER4B'
+        run: |
+          python - <<'PY'
+          import ast, json, os, subprocess
+          from pathlib import Path
+          baseline=json.loads(os.environ["BASELINE_JSON"])
+          targets=set(json.loads(os.environ["TARGET_CODES_JSON"]))
+          files=json.loads(os.environ["FILES_JSON"])
+          payload=json.loads(Path("/tmp/dab.json").read_text(encoding="utf-8"))
+          counts=payload["all_families"]
+          errors=[]
+          protected={"E999":1,"F821":0,"F601":0,"F811":0,"E731":0}
+          for code,expected in protected.items():
+              if counts.get(code,0) != expected:
+                  errors.append(f"protected {code}: {counts.get(code,0)} != {expected}")
+          for code,current in counts.items():
+              if code not in targets and current > baseline.get(code,0):
+                  errors.append(f"non-target regression {code}: {baseline.get(code,0)} -> {current}")
+          before=sum(baseline.get(code,0) for code in targets)
+          after=sum(counts.get(code,0) for code in targets)
+          if after >= before:
+              errors.append(f"target families did not improve: {before} -> {after}")
+          if payload["total"] >= int(os.environ["BASE_TOTAL"]):
+              errors.append(f"total did not improve: {os.environ['BASE_TOTAL']} -> {payload['total']}")
+          ast_rows=[]
+          for name in files:
+              old=subprocess.check_output(["git","show",f"{os.environ['BASE_SHA']}:{name}"],text=True)
+              new=Path(name).read_text(encoding="utf-8")
+              same=ast.dump(ast.parse(old,filename=name),include_attributes=False)==ast.dump(ast.parse(new,filename=name),include_attributes=False)
+              ast_rows.append({"path":name,"ast_equal":same})
+              if not same:
+                  errors.append(f"AST changed: {name}")
+          receipt={"worker":os.environ["WORKER_ID"],"base_sha":os.environ["BASE_SHA"],"base_total":int(os.environ["BASE_TOTAL"]),"total":payload["total"],"targets":sorted(targets),"target_before":before,"target_after":after,"families":counts,"ast":ast_rows,"errors":errors}
+          Path("/tmp/admission.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(receipt,indent=2))
+          if errors:
+              raise SystemExit("\n".join(errors))
+          PY
+          python -m py_compile "ABACUS-v032/bulk_resolve_github_issues.py" "scripts/export_summary_md.py" "tests/test_dmaic_integration_layer.py" "tests/test_performance_monitoring.py"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bd8k-r3-worker4b-admission
+          path: |
+            /tmp/dab.json
+            /tmp/dab.txt
+            /tmp/admission.json
