@@ -46,7 +46,7 @@ def analyze_iteration(iteration_dir: Path) -> Dict[str, Any]:
                         'size_bytes': size
                     })
                     analysis['total_size_bytes'] += size
-                except:
+                except (OSError, ValueError):
                     pass
 
             analysis['phases'][phase_name] = phase_info
