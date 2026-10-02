@@ -39,7 +39,7 @@ def _badge(status: str) -> str:
 
 def _dmaic_block(define: str, measure: str, analyze: str, improve: str, control: str) -> str:
     return f"""
-<section class=\"card\"> 
+<section class=\"card\">
   <h3>DMAIC view note</h3>
   <p><strong>DEFINE:</strong> {define}</p>
   <p><strong>MEASURE:</strong> {measure}</p>
