@@ -9,8 +9,6 @@ from models.qps_line_s import recovery_model
 from models.qps_line_s.recovery_model import Config, simulate
 
 
-
-
 def test_50_g_s_recovers_without_relief():
     row = simulate(0.05, Config())
     assert row["verdict"] == "RECOVERED"
@@ -48,8 +46,6 @@ def test_higher_peak_not_later_relief():
     high = simulate(0.25, cfg)
     assert high["verdict"] == "RELIEF"
     assert high["t_relief_min"] <= low["t_relief_min"]
-
-
 
 
 def test_require_coolprop_fails_closed(monkeypatch):
