@@ -39,7 +39,7 @@ class ContainerRegistryManager:
         self.namespace = namespace
         self.images: List[ContainerImage] = []
 
-    def build_image(self, dockerfile_path: Path, image_name: str, tag: str = "latest", 
+    def build_image(self, dockerfile_path: Path, image_name: str, tag: str = "latest",
                    platform: Optional[str] = None) -> Dict[str, Any]:
         try:
             cmd = ["docker", "build", "-t", f"{image_name}:{tag}"]

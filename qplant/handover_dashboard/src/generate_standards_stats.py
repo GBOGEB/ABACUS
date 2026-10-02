@@ -1080,7 +1080,7 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
 
     slides.append(_slide("Helium Compressibility Factor", f"""
     {_iframe("visualizations_v3/chart_compressibility.html")}
-    <p>At high temperatures (≥50K) and moderate pressures, helium behaves very close to an ideal gas (Z≈1). 
+    <p>At high temperatures (≥50K) and moderate pressures, helium behaves very close to an ideal gas (Z≈1).
     At 4K and 12 bar (supercritical), Z drops to ~0.62 — significant deviation requiring real-gas corrections.</p>
     """, "helium"))
 
@@ -1158,7 +1158,7 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
     {_iframe("visualizations_v3/chart_biplot.html")}
     <h3>Variable Loadings</h3>
     """ + _table_html(loadings.reset_index().rename(columns={"index": "Variable"}), "tblLoadings") + """
-    <p>Red arrows show how each input variable projects onto the first two principal components. 
+    <p>Red arrows show how each input variable projects onto the first two principal components.
     Variables pointing in similar directions are correlated; orthogonal variables are independent.</p>
     """, "stats"))
 
