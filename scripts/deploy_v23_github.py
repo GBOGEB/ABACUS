@@ -458,7 +458,7 @@ This PR delivers the complete V2.3 system with all agents upgraded, orchestrator
                 results[step_name] = False
 
         # Generate report
-        report = self.generate_deployment_report()
+        self.generate_deployment_report()
 
         # Summary
         self.log("\n" + "=" * 80)
