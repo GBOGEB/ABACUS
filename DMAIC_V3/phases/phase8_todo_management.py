@@ -404,7 +404,7 @@ class Phase8TODOManagement:
                 try:
                     phase_num = int(re.search(r'\d+', phase).group())
                     score += (10 - phase_num)  # Earlier phases get higher scores
-                except:
+                except (AttributeError, TypeError, ValueError):
                     pass
 
             # Factor 3: Status (pending = higher priority than completed)
