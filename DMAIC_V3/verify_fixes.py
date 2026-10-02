@@ -204,5 +204,6 @@ def main():
         print(f"\n❌ {total - passed} FIXES FAILED - Review implementation")
         return 1
 
+
 if __name__ == "__main__":
     sys.exit(main())
