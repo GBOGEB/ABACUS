@@ -6,11 +6,13 @@ behaviors without weakening the changed-line coverage floor.
 """
 
 from datetime import datetime, timedelta
+import importlib
+import sys
+import types
 
 from abacus_v21_smoke_tests import ABACUSv21SmokeTests
 from DMAIC_V3.core.agent_health_monitor import AgentHealthMonitor
 from DMAIC_V3.core.dow_ariana_integration import DOWArianaIntegration, DOWArianaMetrics
-from github_tracking_manager import GitHubTrackingManager
 
 
 def test_smoke_summary_status_line_executes(tmp_path, monkeypatch):
@@ -81,7 +83,16 @@ def test_dow_ariana_event_and_transition_paths_execute():
 
 
 def test_github_tracking_feedback_path_executes(tmp_path, monkeypatch):
-    manager = object.__new__(GitHubTrackingManager)
+    fake_github = types.ModuleType("github")
+
+    class FakeGithub:
+        pass
+
+    fake_github.Github = FakeGithub
+    monkeypatch.setitem(sys.modules, "github", fake_github)
+    sys.modules.pop("github_tracking_manager", None)
+    tracking_module = importlib.import_module("github_tracking_manager")
+    manager = object.__new__(tracking_module.GitHubTrackingManager)
     manager.repo_name = "GBOGEB/ABACUS"
     manager.json_file = tmp_path / "state.json"
     manager.yaml_file = tmp_path / "state.yaml"
