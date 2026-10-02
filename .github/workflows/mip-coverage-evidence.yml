@@ -23,8 +23,6 @@ on:
       - ".github/workflows/**"
       - "ci/governance/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
-      - "ci/governance/**"
-      - "docs/ci/WORKFLOW_RATIONALIZATION.md"
   pull_request:
     paths:
       - "pytest.ini"
