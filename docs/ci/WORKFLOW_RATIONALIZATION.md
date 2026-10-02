@@ -236,7 +236,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
 
-
 ## Control rule
 
 A workflow change fails CI governance when a definition is unclassified, a canonical owner is missing, or the generated report no longer matches the policy. This report is derived; `ci/governance/workflow_policy.json` is the SSOT.
