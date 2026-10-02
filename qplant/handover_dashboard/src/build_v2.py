@@ -222,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => { setTier && setTier('1'); }
 # ═══════════════════════════════════════════════════════════
 
 def _nav_html(active_hero: str = "", is_hero: bool = False) -> str:
-    prefix = "" if not is_hero else ""
     links = []
     for h in HERO_TABS:
         cls = ' class="active"' if h["id"] == active_hero else ""
