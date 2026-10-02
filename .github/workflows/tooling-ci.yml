@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "🔍 Validating Python scripts in scripts/ directory..."
           if [ -d "scripts" ]; then
-            python -m py_compile scripts/*.py 2>/dev/null || true
+            python -m py_compile scripts/*.py
             echo "✅ Script syntax validation complete"
           else
             echo "⚠️ No scripts directory found"
@@ -77,7 +77,7 @@ jobs:
         run: |
           echo "🔍 Validating tools in tools_v2.3/ directory..."
           if [ -d "tools_v2.3" ]; then
-            python -m py_compile tools_v2.3/*.py 2>/dev/null || true
+            python -m py_compile tools_v2.3/*.py
             echo "✅ Tools validation complete"
           else
             echo "⚠️ No tools_v2.3 directory found"
@@ -112,7 +112,7 @@ jobs:
         run: |
           echo "🔍 Validating MCP components in local_mcp/ directory..."
           if [ -d "local_mcp" ]; then
-            python -m py_compile local_mcp/*.py 2>/dev/null || true
+            python -m py_compile local_mcp/*.py
             echo "✅ MCP validation complete"
           else
             echo "⚠️ No local_mcp directory found"
@@ -128,7 +128,7 @@ jobs:
         run: |
           if [ -d "local_mcp/agents" ]; then
             echo "🔍 Validating MCP agents..."
-            python -m py_compile local_mcp/agents/*.py 2>/dev/null || true
+            python -m py_compile local_mcp/agents/*.py
             flake8 local_mcp/agents/ --max-line-length=120 || true
           fi
 
@@ -158,13 +158,13 @@ jobs:
           
           # Test recursive build
           if [ -f "scripts/recursive_build.py" ]; then
-            python scripts/recursive_build.py --help || true
+            python scripts/recursive_build.py --help
             echo "✅ recursive_build.py is callable"
           fi
           
           # Test code health check
           if [ -f "scripts/code_health_check.py" ]; then
-            python scripts/code_health_check.py --help || true
+            python scripts/code_health_check.py --help
             echo "✅ code_health_check.py is callable"
           fi
 
@@ -172,29 +172,29 @@ jobs:
         run: |
           if [ -f "local_mcp/agent_orchestrator_v3.0.py" ]; then
             echo "🧪 Testing MCP orchestrator..."
-            python local_mcp/agent_orchestrator_v3.0.py --help || true
+            python local_mcp/agent_orchestrator_v3.0.py --help
             echo "✅ MCP orchestrator is callable"
           fi
 
       - name: Verify tool imports
         run: |
           echo "🔍 Verifying tool imports..."
-          python -c "
+          python - <<'PY'
+          import importlib.util
           import sys
-          sys.path.insert(0, 'tools_v2.3')
-          try:
-              # Try importing common tools
-              import importlib.util
-              tools = ['task_tracker_v2.3_20251111', 'create_chatready_code_v2.3_20251111', 'code_index_generator_v2.3']
-              for tool in tools:
-                  spec = importlib.util.find_spec(tool)
-                  if spec is not None:
-                      print(f'✅ {tool} is importable')
-                  else:
-                      print(f'⚠️ {tool} not found')
-          except Exception as e:
-              print(f'⚠️ Import check failed: {e}')
-          " || true
+
+          sys.path.insert(0, "tools_v2.3")
+          tools = [
+              "task_tracker_v2.3_20251111",
+              "create_chatready_code_v2.3_20251111",
+              "code_index_generator_v2.3",
+          ]
+          missing = [tool for tool in tools if importlib.util.find_spec(tool) is None]
+          if missing:
+              raise SystemExit(f"Tool import check failed; missing: {', '.join(missing)}")
+          for tool in tools:
+              print(f"✅ {tool} is importable")
+          PY
 
   integration-check:
     runs-on: ubuntu-latest
