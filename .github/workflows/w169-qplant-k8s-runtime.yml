@@ -43,10 +43,10 @@ jobs:
 
       - name: Create real Kubernetes API
         id: cluster
-        continue-on-error: true
+        continue-on-error: true # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - outcome is captured and the terminal gate fails closed.
         shell: bash
         run: |
-          set +e
+          set +e # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - capture rc/outcome before the terminal gate.
           start=$(date +%s%3N)
           curl -fsSLo /tmp/kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64
           chmod +x /tmp/kind
@@ -64,10 +64,10 @@ jobs:
       - name: K8S-02 server-side admission
         id: admission
         if: steps.cluster.outcome == 'success'
-        continue-on-error: true
+        continue-on-error: true # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - outcome is captured and the terminal gate fails closed.
         shell: bash
         run: |
-          set +e
+          set +e # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - capture rc/outcome before the terminal gate.
           start=$(date +%s%3N)
           kubectl apply -f qplant/deployment/k8s/namespace.yaml
           rc=$?
@@ -91,10 +91,10 @@ jobs:
 
       - name: Build canonical QPLANT image
         id: image
-        continue-on-error: true
+        continue-on-error: true # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - outcome is captured and the terminal gate fails closed.
         shell: bash
         run: |
-          set +e
+          set +e # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - capture rc/outcome before the terminal gate.
           start=$(date +%s%3N)
           docker build --pull \
             -t qplant/api-server:v4.4.0 \
@@ -113,10 +113,10 @@ jobs:
       - name: K8S-03 load image and execute workload
         id: rollout
         if: steps.cluster.outcome == 'success' && steps.image.outcome == 'success'
-        continue-on-error: true
+        continue-on-error: true # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - outcome is captured and the terminal gate fails closed.
         shell: bash
         run: |
-          set +e
+          set +e # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - capture rc/outcome before the terminal gate.
           start=$(date +%s%3N)
           kind load docker-image qplant/api-server:v4.4.0 --name qplant-w169
           rc=$?
@@ -136,28 +136,28 @@ jobs:
           fi
           end=$(date +%s%3N)
           echo "$((end-start))" > /tmp/w169_rollout_ms
-          kubectl get pods -n qplant-production -o json > /tmp/w169_pods.json 2>/dev/null || true
-          kubectl get all -n qplant-production -o wide || true
-          kubectl get events -n qplant-production --sort-by='.lastTimestamp' || true
+          kubectl get pods -n qplant-production -o json > /tmp/w169_pods.json 2>/dev/null || true # rex-allow: POST_RC_TELEMETRY - primary rollout rc is already captured and is returned below.
+          kubectl get all -n qplant-production -o wide || true # rex-allow: POST_RC_TELEMETRY - primary rollout rc is already captured and is returned below.
+          kubectl get events -n qplant-production --sort-by='.lastTimestamp' || true # rex-allow: POST_RC_TELEMETRY - primary rollout rc is already captured and is returned below.
           exit "$rc"
 
       - name: Retain rollout first-red diagnostics
         if: always() && steps.cluster.outcome == 'success' && steps.rollout.outcome != 'success'
         shell: bash
         run: |
-          set +e
+          set +e # rex-allow: BEST_EFFORT_DIAGNOSTICS - diagnostic capture must not hide the separately retained first red.
           out=architecture/w169/runtime/diagnostics
           mkdir -p "$out"
-          kubectl get deployment qplant-api-server -n qplant-production -o yaml > "$out/deployment.yaml" 2>&1 || true
-          kubectl get replicasets -n qplant-production -o yaml > "$out/replicasets.yaml" 2>&1 || true
-          kubectl get pods -n qplant-production -o wide > "$out/pods-wide.txt" 2>&1 || true
-          kubectl get pods -n qplant-production -o json > "$out/pods.json" 2>&1 || true
-          kubectl get events -n qplant-production --sort-by='.lastTimestamp' > "$out/events.txt" 2>&1 || true
+          kubectl get deployment qplant-api-server -n qplant-production -o yaml > "$out/deployment.yaml" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+          kubectl get replicasets -n qplant-production -o yaml > "$out/replicasets.yaml" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+          kubectl get pods -n qplant-production -o wide > "$out/pods-wide.txt" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+          kubectl get pods -n qplant-production -o json > "$out/pods.json" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+          kubectl get events -n qplant-production --sort-by='.lastTimestamp' > "$out/events.txt" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
           for pod in $(kubectl get pods -n qplant-production -o name 2>/dev/null); do
             safe=$(printf '%s' "$pod" | tr '/' '_')
-            kubectl describe -n qplant-production "$pod" > "$out/${safe}-describe.txt" 2>&1 || true
-            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true > "$out/${safe}-logs.txt" 2>&1 || true
-            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true --previous > "$out/${safe}-previous-logs.txt" 2>&1 || true
+            kubectl describe -n qplant-production "$pod" > "$out/${safe}-describe.txt" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true > "$out/${safe}-logs.txt" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
+            kubectl logs -n qplant-production "$pod" --all-containers=true --prefix=true --previous > "$out/${safe}-previous-logs.txt" 2>&1 || true # rex-allow: BEST_EFFORT_DIAGNOSTICS - telemetry/diagnostic collection is non-authoritative.
           done
           if [ -f /tmp/w169_image_id ]; then
             cp /tmp/w169_image_id "$out/image-id.txt"
@@ -167,14 +167,14 @@ jobs:
       - name: Measure health, cold start and request latency
         id: measure
         if: steps.rollout.outcome == 'success'
-        continue-on-error: true
+        continue-on-error: true # rex-allow: EVIDENCE_CAPTURE_THEN_FAIL_CLOSED - outcome is captured and the terminal gate fails closed.
         shell: bash
         run: |
           set -euo pipefail
           kubectl port-forward -n qplant-production svc/qplant-api-service 18100:80 \
             >/tmp/w169-port-forward.log 2>&1 &
           pf=$!
-          trap 'kill "$pf" 2>/dev/null || true' EXIT
+          trap 'kill "$pf" 2>/dev/null || true' EXIT # rex-allow: CLEANUP_BEST_EFFORT - trap cleanup must not override the measured result.
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:18100/api/v1/health >/dev/null; then
               break
