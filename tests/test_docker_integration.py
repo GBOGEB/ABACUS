@@ -163,7 +163,7 @@ class TestDockerBuild:
 
     @pytest.mark.slow
     def test_docker_build_success(self):
-        result = subprocess.run(
+        subprocess.run(
             ["docker", "build", "-t", "test-master-input", "."],
             capture_output=True,
             text=True,
