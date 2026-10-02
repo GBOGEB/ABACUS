@@ -196,3 +196,46 @@ jobs:
     assert test_row["step_name"] == "Run tests"
     assert cleanup_row["semantic_kind"] == "CLEANUP_BEST_EFFORT"
     assert cleanup_row["semantic_false_green"] is False
+
+def test_workflow_step_name_withholds_missing_file(tmp_path):
+    row = {"path": ".github/workflows/missing.yml", "line": 1}
+
+    assert mip.workflow_step_name(tmp_path.resolve(), row) == "WITHHELD"
+
+
+def test_semantic_false_green_classifies_remaining_kinds(tmp_path):
+    rel = ".github/workflows/classification.yml"
+    write(
+        tmp_path / rel,
+        """on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Exercise classifier
+        run: echo ok
+""",
+    )
+    base = {"path": rel, "line": 7}
+    cases = [
+        ("cp result.json artifacts/result.json || true", [], "OPTIONAL_ARTIFACT", False),
+        ("COUNT=$(grep -c foo report.txt || true)", [], "DEFAULT_VALUE_TELEMETRY", False),
+        ("git commit -m snapshot || echo 'nothing to commit'", [], "IDEMPOTENT_NOOP", False),
+        ("pip install -r requirements.txt || true", [], "DEPENDENCY_MASK", True),
+        ("ruff check . || true", [], "STATIC_ANALYSIS_MASK", True),
+        ("semgrep --config auto . || true", [], "SECURITY_MASK", True),
+        ("test -f receipt.json || true", [], "ASSERTION_MASK", True),
+        ("git push origin main || true", [], "PUBLISH_MASK", True),
+        ("echo tolerated", ["continue_on_error"], "CONTINUE_ON_ERROR", True),
+        ("echo tolerated", ["shell_set_plus_e"], "ERROR_MODE_DISABLED", True),
+        ("custom-tool || true", [], "UNKNOWN_MASK", True),
+    ]
+
+    for text, patterns, expected_kind, expected_false_green in cases:
+        row = {**base, "text": text, "patterns": patterns}
+        result = mip.semantic_false_green_kind(row, tmp_path.resolve())
+
+        assert result["semantic_kind"] == expected_kind
+        assert result["semantic_false_green"] is expected_false_green
+        assert result["step_name"] == "Exercise classifier"
+
