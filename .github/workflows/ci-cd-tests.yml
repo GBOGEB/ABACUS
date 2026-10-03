@@ -59,16 +59,45 @@ jobs:
           fi
 
       - name: Run Black
+        id: black
+        continue-on-error: true
         run: black --check --diff .
 
       - name: Run isort
+        id: isort
+        continue-on-error: true
         run: isort --check-only --diff .
 
       - name: Run Flake8
+        id: flake8
+        continue-on-error: true
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Run Pylint
+        id: pylint
         run: pylint **/*.py --exit-zero
+
+      - name: Enforce code-quality red roots
+        shell: bash
+        env:
+          BLACK: ${{ steps.black.outcome }}
+          ISORT: ${{ steps.isort.outcome }}
+          FLAKE8: ${{ steps.flake8.outcome }}
+        run: |
+          {
+            echo "### Code-quality full-red surface"
+            echo
+            echo "- Black: \`$BLACK\`"
+            echo "- isort: \`$ISORT\`"
+            echo "- Flake8 critical: \`$FLAKE8\`"
+            echo "- Pylint: telemetry / exit-zero"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$BLACK" != "success" ||
+                "$ISORT" != "success" ||
+                "$FLAKE8" != "success" ]]; then
+            echo "::error::One or more code-quality roots are red."
+            exit 1
+          fi
 
   unit-tests:
     name: Unit Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
@@ -140,10 +169,30 @@ jobs:
             --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: Check Coverage Threshold
+        id: coverage_threshold
+        continue-on-error: true
         run: |
           coverage report --fail-under=${{ env.COVERAGE_THRESHOLD }}
 
+      - name: Record coverage measurement
+        if: always()
+        run: |
+          coverage json -o coverage-summary.json
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          p = json.loads(Path("coverage-summary.json").read_text())
+          total = p["totals"]
+          print("### Broad-suite coverage")
+          print()
+          print(f"- statements: {total['num_statements']}")
+          print(f"- missing: {total['missing_lines']}")
+          print(f"- percent: **{total['percent_covered']:.2f}%**")
+          print("- threshold: **75%**")
+          PY
+
       - name: Upload Coverage to Codecov
+        if: always()
         uses: codecov/codecov-action@v7
         with:
           file: ./coverage.xml
@@ -151,15 +200,31 @@ jobs:
           name: codecov-umbrella
 
       - name: Upload Coverage HTML
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: htmlcov/
+          path: |
+            htmlcov/
+            coverage.xml
+            coverage-summary.json
+
+      - name: Enforce coverage threshold
+        if: always()
+        shell: bash
+        env:
+          THRESHOLD_RESULT: ${{ steps.coverage_threshold.outcome }}
+        run: |
+          if [[ "$THRESHOLD_RESULT" != "success" ]]; then
+            echo "::error::Coverage remains below the governed 75% threshold."
+            exit 1
+          fi
 
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: lint-and-format
+    if: always()
 
     steps:
       - uses: actions/checkout@v7
@@ -192,6 +257,7 @@ jobs:
     name: Docker Integration Tests
     runs-on: ubuntu-latest
     needs: lint-and-format
+    if: always()
 
     steps:
       - uses: actions/checkout@v7
@@ -254,6 +320,7 @@ jobs:
     name: Comprehensive Test Suite
     runs-on: ubuntu-latest
     needs: [lint-and-format, unit-tests]
+    if: always() && needs.unit-tests.result == 'success'
 
     steps:
       - uses: actions/checkout@v7
@@ -338,18 +405,119 @@ jobs:
           pip install bandit safety
 
       - name: Run Bandit
+        id: bandit
+        continue-on-error: true
         run: bandit -r . -f json -o bandit-report.json
 
       - name: Run Safety Check
+        id: safety
+        continue-on-error: true
         run: safety check --json > safety-report.json
 
       - name: Upload Security Reports
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: security-reports
           path: |
             bandit-report.json
             safety-report.json
+          if-no-files-found: warn
+
+      - name: Enforce security red roots
+        if: always()
+        shell: bash
+        env:
+          BANDIT: ${{ steps.bandit.outcome }}
+          SAFETY: ${{ steps.safety.outcome }}
+        run: |
+          {
+            echo "### Security full-red surface"
+            echo
+            echo "- Bandit: \`$BANDIT\`"
+            echo "- Safety: \`$SAFETY\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$BANDIT" != "success" || "$SAFETY" != "success" ]]; then
+            echo "::error::One or more security roots are red."
+            exit 1
+          fi
+
+  full-red-summary:
+    name: Full Red Proof Summary
+    if: always()
+    needs:
+      - lint-and-format
+      - unit-tests
+      - coverage
+      - integration-tests
+      - docker-tests
+      - performance-tests
+      - comprehensive-test-suite
+      - security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit full-red summary
+        shell: bash
+        env:
+          LINT: ${{ needs.lint-and-format.result }}
+          UNIT: ${{ needs.unit-tests.result }}
+          COVERAGE: ${{ needs.coverage.result }}
+          INTEGRATION: ${{ needs.integration-tests.result }}
+          DOCKER: ${{ needs.docker-tests.result }}
+          PERFORMANCE: ${{ needs.performance-tests.result }}
+          COMPREHENSIVE: ${{ needs.comprehensive-test-suite.result }}
+          SECURITY: ${{ needs.security-scan.result }}
+        run: |
+          mkdir -p test_reports/full-red
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          results = {
+              "lint_and_format": os.environ["LINT"],
+              "unit_tests": os.environ["UNIT"],
+              "coverage": os.environ["COVERAGE"],
+              "integration_tests": os.environ["INTEGRATION"],
+              "docker_tests": os.environ["DOCKER"],
+              "performance_tests": os.environ["PERFORMANCE"],
+              "comprehensive_test_suite": os.environ["COMPREHENSIVE"],
+              "security_scan": os.environ["SECURITY"],
+          }
+          debt = {
+              name: value
+              for name, value in results.items()
+              if value != "success"
+          }
+          payload = {
+              "schema": "abacus-full-red-proof-summary/1.0.0",
+              "exact_sha": os.environ["GITHUB_SHA"],
+              "results": results,
+              "proof_debt": debt,
+              "status": "PASS" if not debt else "RED_DEBT_PRESENT",
+          }
+          Path("test_reports/full-red/summary.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as out:
+              out.write("### Full-red proof summary\n\n")
+              for name, value in results.items():
+                  out.write(f"- {name}: `{value}`\n")
+              out.write(f"- proof-debt jobs: **{len(debt)}**\n")
+          if debt:
+              raise SystemExit(
+                  "full-red proof debt remains: " + ", ".join(debt)
+              )
+          PY
+
+      - name: Upload full-red summary
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: full-red-summary-${{ github.sha }}
+          path: test_reports/full-red/summary.json
+          if-no-files-found: error
 
   deploy-dashboard:
     name: Deploy Test Dashboard

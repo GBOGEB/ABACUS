@@ -21,6 +21,9 @@ SCOPE_PATH = ROOT / "MIP" / "V2_FEDERATED_CONTROL_SCOPE.json"
 V1_ACCEPTANCE_PATH = ROOT / "MIP" / "N2_CROSS_REPO_ACCEPTANCE_20260912.json"
 V1_CLEANUP_PATH = ROOT / "MIP" / "FINAL_CLEANUP_20260912.json"
 DOW_CONTRACT_PATH = ROOT / "governance" / "qps_triage" / "DOW_CONTRACT_v1.json"
+PROPOSAL_CONTRACT_PATH = (
+    ROOT / "governance" / "proposals" / "PROPOSAL_COMPATIBILITY_CONTRACT.json"
+)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -432,6 +435,14 @@ def evaluate(
         "gate_count": 10,
         "gate_observations": gates,
         "global_project_dov": "WITHHELD",
+        "proposal_compatibility": {
+            "schema": "abacus-proposal-compatibility/1.0.0",
+            "contract_path": str(PROPOSAL_CONTRACT_PATH.relative_to(ROOT)),
+            "method": "MIP",
+            "source_sha": current_head,
+            "mutation_mode": "READ_ONLY_PROPOSAL",
+            "mutation_writer_count": 1,
+        },
         "authority_transfer": False,
     }
 
