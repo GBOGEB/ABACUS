@@ -5,23 +5,40 @@ on:
     paths:
       - '**/*.py'
       - 'scripts/dab_flake8_census.py'
+      - 'scripts/dab_proposal_queue.py'
+      - 'scripts/proposal_compatibility.py'
+      - 'governance/dab/**'
+      - 'governance/proposals/**'
       - '.github/workflows/dab-flake8-census.yml'
   push:
     branches: [main]
-    paths:
-      - '**/*.py'
-      - 'scripts/dab_flake8_census.py'
-      - '.github/workflows/dab-flake8-census.yml'
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   census:
     name: Full Repository Census
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact SHA
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
 
-      - uses: actions/setup-python@v5
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
 
@@ -29,28 +46,88 @@ jobs:
         run: python -m pip install --upgrade flake8
 
       - name: Run exact DAB census
-        run: python scripts/dab_flake8_census.py
+        run: |
+          python scripts/dab_flake8_census.py --exact-sha "$EXACT_SHA"
+
+      - name: Build governed proposal queue
+        run: |
+          python scripts/dab_proposal_queue.py \
+            --census reports/dab_flake8_census.json \
+            --text reports/dab_flake8_census.txt \
+            --source-sha "$EXACT_SHA" \
+            --out reports/dab_proposal_queue.json
+
+      - name: Validate proposal compatibility
+        run: |
+          python scripts/proposal_compatibility.py validate \
+            --input reports/dab_proposal_queue.json
 
       - name: Verify receipt
         run: |
           test -s reports/dab_flake8_census.json
           test -s reports/dab_flake8_census.txt
+          test -s reports/dab_proposal_queue.json
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
-          p = json.loads(Path("reports/dab_flake8_census.json").read_text())
+
+          census = json.loads(
+              Path("reports/dab_flake8_census.json").read_text()
+          )
+          queue = json.loads(
+              Path("reports/dab_proposal_queue.json").read_text()
+          )
           required = {
               "E999", "F821", "F601", "F811", "F841",
               "E722", "E731", "E741", "W293",
           }
-          assert required <= set(p["families"])
-          assert p["total"] >= sum(p["families"].values())
+          assert census["exact_sha"] == os.environ["EXACT_SHA"]
+          assert queue["source_sha"] == os.environ["EXACT_SHA"]
+          assert required <= set(census["families"])
+          assert census["total"] >= sum(census["families"].values())
+          assert queue["protected_holds"]["E999"]["count"] <= 1
           print("DAB census receipt PASS")
           PY
 
-      - uses: actions/upload-artifact@v4
+      - name: Publish DAB control summary
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          census = json.loads(
+              Path("reports/dab_flake8_census.json").read_text()
+          )
+          queue = json.loads(
+              Path("reports/dab_proposal_queue.json").read_text()
+          )
+          gates = queue["measurement"]["gate_status"]
+          print("### Continuous DAB control")
+          print()
+          print(f"- exact SHA: `{census['exact_sha']}`")
+          print(f"- full red total: **{census['total']}**")
+          print(
+              f"- E999 hold: **{queue['protected_holds']['E999']['count']}**"
+          )
+          print(f"- active gate: **{gates['active_gate']}**")
+          print(f"- compatible proposals: **{len(queue['proposals'])}**")
+          print("- proposal workers: read-only / scalable")
+          print("- mutation writer: exactly 1")
+          for name in ("G1", "G2", "G3"):
+              gate = gates[name]
+              print(
+                  f"- {name}: total < {gate['threshold_exclusive']} "
+                  f"=> `{gate['status']}`"
+              )
+          PY
+
+      - uses: actions/upload-artifact@v7
         with:
-          name: dab-flake8-census
+          name: dab-flake8-census-${{ env.EXACT_SHA }}
           path: |
             reports/dab_flake8_census.json
             reports/dab_flake8_census.txt
+            reports/dab_proposal_queue.json
+          if-no-files-found: error
