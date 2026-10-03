@@ -1,11 +1,13 @@
 import importlib.util
 import pathlib
+import sys
 import unittest
 
 
 MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "pr_feedback_gate.py"
 SPEC = importlib.util.spec_from_file_location("pr_feedback_gate", MODULE_PATH)
 gate = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = gate
 assert SPEC.loader is not None
 SPEC.loader.exec_module(gate)
 
