@@ -75,10 +75,12 @@ jobs:
 
       - name: Run Black (code formatting)
         run: black --check --diff .
+        # rex-allow: ADVISORY_EXPLICIT - Format Check owns this gate.
         continue-on-error: true
 
       - name: Run isort (import sorting)
         run: isort --check-only --diff .
+        # rex-allow: ADVISORY_EXPLICIT - import ordering is advisory here.
         continue-on-error: true
 
       - name: Run Flake8 (style check)
@@ -88,7 +90,8 @@ jobs:
         run: |
           pylint bootstrap_eval.py dow_phase2_statistics.py \
                  dow_phase3_reporting.py aht_statistics_bridge.py \
-                 --disable=C0103,C0114,C0115,C0116 || true
+                 --disable=C0103,C0114,C0115,C0116
+        # rex-allow: ADVISORY_EXPLICIT - Pylint is telemetry here.
         continue-on-error: true
 
   test:
@@ -251,10 +254,13 @@ jobs:
           pip install bandit safety
 
       - name: Run Bandit (security linter)
-        run: bandit -r . -f json -o bandit-report.json || true
+        run: bandit -r . -f json -o bandit-report.json
+        # rex-allow: ADVISORY_EXPLICIT - CodeQL owns security gating.
+        continue-on-error: true
 
       - name: Run Safety (dependency checker)
-        run: safety check --json > safety-report.json || true
+        run: safety check --json > safety-report.json
+        # rex-allow: ADVISORY_EXPLICIT - OSV owns dependency gating.
         continue-on-error: true
 
       - name: Upload security reports
@@ -333,7 +339,7 @@ jobs:
           git config user.email "actions@github.com"
           VERSION=$(date +"%Y.%m.%d-%H%M")
           git tag -a "v$VERSION" -m "Production release $VERSION"
-          git push origin "v$VERSION" || true
+          git push origin "v$VERSION"
 
       - name: Upload deployment package
         uses: actions/upload-artifact@v7
