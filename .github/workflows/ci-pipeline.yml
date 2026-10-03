@@ -125,7 +125,7 @@ jobs:
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Run DMAIC Pipeline
-        run: python run_dmaic_5_iterations.py
+        run: python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1
 
       - name: Run DOW Pipeline
         run: |
