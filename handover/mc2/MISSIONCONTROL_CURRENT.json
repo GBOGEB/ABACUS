@@ -1,10 +1,13 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.1.0",
+  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.1.1",
   "mission": "MissionControl live lossless restart with PR feedback control",
   "status": "CURRENT_REVIEW_CONTROL_REFRESH",
   "restart_policy": "repository_authority_only",
   "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003_v1.1.md",
   "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md",
+  "predecessor_session_close": "handover/mc2/SESSION_CLOSE_CURRENT.json",
+  "predecessor_mc2_current": "handover/mc2/W83_CURRENT.json",
+  "predecessor_mc2_control": "architecture/w83/W83_NG1_CONTROL_v0.1.json",
   "historical_receipt": "handover/mc2/MISSIONCONTROL_LOSSLESS_RECEIPT_20261003.json",
   "current_review_amendment": "handover/mc2/MISSIONCONTROL_REVIEW_AMENDMENT_20261003.json",
   "pr_feedback_control": "handover/mc2/PR_FEEDBACK_CONTROL.md",
@@ -16,6 +19,13 @@
     "1730": "d7539ba6bda902fb2444295873285381526a5bab",
     "1731": "29988c4f8c62ff131a1d106c77f8ea72c43b7f90",
     "1732": "f61d2aaebb4d652acc8175097f53cfb016432a56"
+  },
+  "analytical_predecessor_guard": {
+    "session_close_required": true,
+    "mc2_current": "handover/mc2/W83_CURRENT.json",
+    "mc2_control": "architecture/w83/W83_NG1_CONTROL_v0.1.json",
+    "mc2_reentry_requires_new_evidence": true,
+    "instruction": "Do not reopen W83/W83-NG1 diagnostics without genuinely new exact-source outcome evidence."
   },
   "historical_checkpoint": {
     "w80_current": "handover/mc2/W80_CURRENT.json",
@@ -38,5 +48,5 @@
     "material_future_red_requires_durable_disposition": true,
     "historical_w80_handover_immutable": true
   },
-  "restart_instruction": "Refresh repositories, current PR heads, Codex reviews, Codex security reviews, GitHub reviews/threads/comments, and exact-head execution evidence before acting."
+  "restart_instruction": "Read SESSION_CLOSE_CURRENT.json before acting; then refresh repositories, active PR heads, Codex code/security reviews, GitHub reviews/threads/comments, and exact-head execution evidence."
 }
