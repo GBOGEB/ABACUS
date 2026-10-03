@@ -19,6 +19,9 @@ class FeedbackGateTests(unittest.TestCase):
             {
                 "body": (
                     "<!-- codex-pull-request-review-summary -->\n"
+                    '<!-- codex-security-review:v1 '
+                    '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
+                    '"status":"completed"} -->\n'
                     "| Review | Status | Commit | Review trigger |\n"
                     "| --- | --- | --- | --- |\n"
                     "| 📝 **Code Review** | ✅ **Completed** now | "
@@ -28,8 +31,10 @@ class FeedbackGateTests(unittest.TestCase):
             }
         ]
         self.assertTrue(gate.codex_code_review_complete(comments, head))
-        other = "1234567890abcdef1234567890abcdef12345678"
-        self.assertFalse(gate.codex_code_review_complete(comments, other))
+        colliding_prefix = "abcdef0fffffffffffffffffffffffffffffffff"
+        self.assertFalse(
+            gate.codex_code_review_complete(comments, colliding_prefix)
+        )
 
     def test_security_marker_requires_exact_head(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
