@@ -21,7 +21,6 @@ except ImportError:
     print("Warning: GBOGEB not available, observability disabled")
 
 
-
 class Phase5Control:
     """Phase 5: Control - Quality gates and observability"""
 
