@@ -125,7 +125,9 @@ jobs:
           pip install -r requirements.txt || echo "No requirements.txt"
 
       - name: Run DMAIC Pipeline
-        run: python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1
+        run: |
+          python DMAIC_V3/full_pipeline_orchestrator.py \
+            --iteration 1 --no-git --quiet
 
       - name: Run DOW Pipeline
         run: |
@@ -134,9 +136,9 @@ jobs:
 
       - name: Verify Outputs
         run: |
-          test -f \
-            DMAIC_ITERATIONS_OUTPUT/dmaic_5_iterations_summary_*.md || \
-            echo "DMAIC output missing"
+          test -f DMAIC_V3_OUTPUT/iteration_1/EXECUTION_SUMMARY.md
+          grep -Fq "**Status:** SUCCESS" \
+            DMAIC_V3_OUTPUT/iteration_1/EXECUTION_SUMMARY.md
           test -f PIPELINE_OUTPUT/pipeline_execution_*.json || \
             echo "Pipeline output missing"
 
