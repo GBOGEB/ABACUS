@@ -35,7 +35,6 @@ def test_w000_validator_tracks_required_bootstrap_domains():
     }
 
 
-
 def test_w000_externalized_alat_intent_is_provenance_bound():
     validator = _load_validator()
 
