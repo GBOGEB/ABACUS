@@ -62,6 +62,12 @@ permissions:
   contents: read
   actions: read
 
+# Preserve only the newest in-flight proof for a PR/ref. Completed evidence
+# remains durable; superseded exact-head runs are cancelled to free runners.
+concurrency:
+  group: mip-b0-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -86,6 +92,11 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
 
       - name: Install governed test dependencies
         run: |
