@@ -436,8 +436,12 @@ def deferred_comment_evidence(
     return tuple(evidence)
 
 
-def evaluate(github: GitHub, number: int) -> Evidence | None:
-    pull = github.pull(number)
+def evaluate(
+    github: GitHub,
+    number: int,
+    pull: dict[str, Any] | None = None,
+) -> Evidence | None:
+    pull = pull or github.pull(number)
     if pull.get("state") != "open":
         return None
     if pull.get("base", {}).get("ref") != "main":
@@ -560,20 +564,47 @@ def main() -> int:
         return 0
 
     for number in numbers:
-        evidence = evaluate(github, number)
-        if evidence is None:
+        pull = github.pull(number)
+        if pull.get("state") != "open":
             continue
-        title, summary, text = render(number, evidence)
-        print(summary)
-        print(text)
+        if pull.get("base", {}).get("ref") != "main":
+            continue
+        head_sha = pull["head"]["sha"]
+
         if not args.dry_run:
             github.publish_gate(
-                evidence.head_sha,
-                evidence.state,
-                title,
-                summary,
-                text,
+                head_sha,
+                "pending",
+                f"PR #{number} feedback gate: EVALUATING",
+                f"head={head_sha}\nstate=pending",
+                "Current-head evidence census is in progress.",
             )
+
+        try:
+            evidence = evaluate(github, number, pull=pull)
+            if evidence is None:
+                continue
+            title, summary, text = render(number, evidence)
+            print(summary)
+            print(text)
+            if not args.dry_run:
+                github.publish_gate(
+                    evidence.head_sha,
+                    evidence.state,
+                    title,
+                    summary,
+                    text,
+                )
+        except Exception as exc:
+            if not args.dry_run:
+                github.publish_gate(
+                    head_sha,
+                    "failure",
+                    f"PR #{number} feedback gate: EVALUATION ERROR",
+                    f"head={head_sha}\nstate=failure",
+                    f"Evidence evaluation aborted: {exc}",
+                )
+            raise
     return 0
 
 
