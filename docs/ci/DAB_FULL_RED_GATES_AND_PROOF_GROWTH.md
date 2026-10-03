@@ -31,10 +31,10 @@ remains the measured static-analysis reference for this proposal.
 ## DAB G1-G3 ladder
 
 | Gate | Static budget | Companion proof |
-|---|---:|---|
-| G1 | total < 3000 | exact-SHA census, protected-hold non-regression, compatible proposal envelope |
-| G2 | total < 2500 | G1 + Python proof-role completeness + no unclassified matrix skip + coverage non-regression |
-| G3 | total < 2000 | G2 + no unclassified critical-job skip + full red-root visibility + coverage/check growth |
+| --- | ---: | --- |
+| G1 | total < 3000 | exact SHA; hold; compatible proposal |
+| G2 | total < 2500 | G1 + Python role/skip audit + coverage non-regression |
+| G3 | total < 2000 | G2 + critical-skip audit + red-root visibility + growth |
 
 At the reference state, none of G1-G3 is closed because **3112 > 3000**.
 
