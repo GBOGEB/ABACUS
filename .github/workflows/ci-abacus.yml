@@ -250,13 +250,15 @@ jobs:
           if [[ "${{ matrix.python-version }}" != "3.10" ]]; then
             python -m pip install .
           else
-            echo "Python 3.10 is a source-tree compatibility proof; pyproject requires >=3.11."
+            echo "Python 3.10 is a source-tree compatibility proof;"
+            echo "pyproject requires >=3.11."
           fi
 
       - name: Run pre-commit hooks
         shell: bash
         run: |
-          # rex-allow: advisory formatter/lint hook; correctness is gated separately below.
+          # rex-allow: advisory formatter/lint hook.
+          # Correctness is gated separately below.
           pre-commit run --all-files || echo "Pre-commit advisory completed"
 
           if ! git diff --quiet || ! git diff --cached --quiet; then
@@ -265,7 +267,8 @@ jobs:
               echo "#### Advisory pre-commit mutations"
               echo
               echo "Pre-commit modified tracked files in the ephemeral runner."
-              echo "Those advisory mutations are restored before coverage diffing."
+              echo "Those advisory mutations are restored before"
+              echo "coverage diffing."
               echo
               git status --short
             } >> "${GITHUB_STEP_SUMMARY}"
@@ -307,7 +310,8 @@ jobs:
           python scripts/coverage_dab_census.py \
             --coverage-json "${evidence_dir}/coverage-contexts.json" \
             --criticality governance/coverage/criticality_manifest.json \
-            --matrix-baseline governance/coverage/python_matrix_baseline_20261001.json \
+            --matrix-baseline \
+            governance/coverage/python_matrix_baseline_20261001.json \
             --test-evidence "${evidence_dir}/test-evidence.json" \
             --exact-sha "${GITHUB_SHA}" \
             --out "${evidence_dir}/coverage-dab.json"
@@ -321,11 +325,13 @@ jobs:
             || diff_rc=$?
 
           if (( pytest_rc != 0 )); then
-            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            echo "::error::pytest failed with exit code ${pytest_rc};"
+            echo "::error::evidence was preserved."
             exit "${pytest_rc}"
           fi
           if (( census_rc != 0 )); then
-            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            echo "::error::test evidence ratchet failed;"
+            echo "::error::see test-evidence.json."
             exit "${census_rc}"
           fi
           if (( diff_rc != 0 )); then
@@ -358,11 +364,13 @@ jobs:
             || census_rc=$?
 
           if (( pytest_rc != 0 )); then
-            echo "::error::pytest failed with exit code ${pytest_rc}; evidence was preserved."
+            echo "::error::pytest failed with exit code ${pytest_rc};"
+            echo "::error::evidence was preserved."
             exit "${pytest_rc}"
           fi
           if (( census_rc != 0 )); then
-            echo "::error::test evidence ratchet failed; see test-evidence.json."
+            echo "::error::test evidence ratchet failed;"
+            echo "::error::see test-evidence.json."
             exit "${census_rc}"
           fi
 
@@ -648,12 +656,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p test_reports/benchmark
+          docker_benchmark="tests/test_docker_integration.py::"
+          docker_benchmark+="TestDockerConfiguration::"
+          docker_benchmark+="test_dockerfile_layer_optimization"
+          performance_benchmark="tests/test_integration.py::"
+          performance_benchmark+="TestPerformanceBenchmarks::"
+          performance_benchmark+="test_bootstrap_computation_speed"
           python -m pytest -q \
             --benchmark-only \
             --benchmark-min-rounds=50 \
             --benchmark-json=test_reports/benchmark/benchmark.json \
-            tests/test_docker_integration.py::TestDockerConfiguration::test_dockerfile_layer_optimization \
-            tests/test_integration.py::TestPerformanceBenchmarks::test_bootstrap_computation_speed
+            "${docker_benchmark}" \
+            "${performance_benchmark}"
 
           python - <<'PY'
           import json
