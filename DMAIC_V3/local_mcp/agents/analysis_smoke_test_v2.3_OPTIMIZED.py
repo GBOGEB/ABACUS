@@ -9,6 +9,7 @@ Implement the actual agent logic here.
 
 __version__ = "0.0.0-stub"
 
+
 class SmokeTestAgent:
     """Stub implementation for smoke_test agent"""
 
