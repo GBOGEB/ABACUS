@@ -1,23 +1,21 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.0.0",
-  "mission": "MissionControl live lossless restart",
-  "status": "CURRENT_CUT_STAGED_PENDING_PR_ADMISSION",
+  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.1.0",
+  "mission": "MissionControl live lossless restart with PR feedback control",
+  "status": "CURRENT_REVIEW_CONTROL_REFRESH",
   "restart_policy": "repository_authority_only",
-  "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003.md",
-  "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN.md",
-  "current_receipt": "handover/mc2/MISSIONCONTROL_LOSSLESS_RECEIPT_20261003.json",
+  "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003_v1.1.md",
+  "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md",
+  "historical_receipt": "handover/mc2/MISSIONCONTROL_LOSSLESS_RECEIPT_20261003.json",
+  "current_review_amendment": "handover/mc2/MISSIONCONTROL_REVIEW_AMENDMENT_20261003.json",
+  "pr_feedback_control": "handover/mc2/PR_FEEDBACK_CONTROL.md",
   "authority_snapshot": {
-    "abacus_main": "fd5cad73fbee0c3d46eaa45484ef47385930a206",
+    "abacus_main": "055bb5c1d787e1fe0d7e52f1e04fc5cea08a06d4",
     "codex_main": "c8bdedd2912ceb456f4582988ab9aa72eea844de"
   },
   "active_execution": {
-    "primary_pr": 1732,
-    "primary_head": "dea25f536d93136030d8950a643f7be6b9b21040",
-    "primary_first_red": "CI_GOVERNANCE_DERIVED_INVENTORY_STALE",
-    "parallel_pr": 1731,
-    "parallel_head": "bd1608fb34f1047714b03a351d10ae2580a01e5e",
-    "older_pending_pr": 1730,
-    "older_pending_head": "d7539ba6bda902fb2444295873285381526a5bab"
+    "1730": "d7539ba6bda902fb2444295873285381526a5bab",
+    "1731": "29988c4f8c62ff131a1d106c77f8ea72c43b7f90",
+    "1732": "f61d2aaebb4d652acc8175097f53cfb016432a56"
   },
   "historical_checkpoint": {
     "w80_current": "handover/mc2/W80_CURRENT.json",
@@ -29,9 +27,16 @@
     "engineering_credit_delta": 0,
     "repository_authority_over_chat_memory": true,
     "cross_sha_evidence_substitution": false,
+    "cross_sha_review_substitution": false,
     "first_completed_attributable_red_only": true,
     "no_second_residual_before_recensus": true,
+    "codex_code_review_required": true,
+    "codex_security_review_required": true,
+    "github_comment_census_required": true,
+    "github_review_thread_census_required": true,
+    "unresolved_material_review_blocks_merge": true,
+    "material_future_red_requires_durable_disposition": true,
     "historical_w80_handover_immutable": true
   },
-  "restart_instruction": "Refresh ABACUS and CODEX before use; if live state differs, live repository authority supersedes this snapshot while this cut remains historical evidence."
+  "restart_instruction": "Refresh repositories, current PR heads, Codex reviews, Codex security reviews, GitHub reviews/threads/comments, and exact-head execution evidence before acting."
 }
