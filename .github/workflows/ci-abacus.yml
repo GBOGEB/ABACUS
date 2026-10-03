@@ -264,6 +264,7 @@ jobs:
           fi
 
       - name: Run canonical coverage and emit governed evidence
+        id: canonical_coverage
         if: matrix.python-version == '3.12'
         shell: bash
         run: |
@@ -324,6 +325,7 @@ jobs:
           fi
 
       - name: Run functional compatibility proof
+        id: functional_compatibility
         if: matrix.python-version != '3.12'
         shell: bash
         run: |
@@ -364,6 +366,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Run truthful Phase0 smoke proof
+        id: phase0
         if: matrix.python-version == '3.12'
         run: |
           set -euo pipefail
@@ -372,10 +375,12 @@ jobs:
             --receipt "${evidence_dir}/phase0-smoke.json"
 
       - name: Test QPS W08 DOW contract (fail closed)
+        id: qps_w08
         if: matrix.python-version == '3.12'
         run: python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
 
       - name: Recursive build smoke test
+        id: recursive_build
         run: |
           python scripts/recursive_build.py --smoke --index GLOBAL_index.json
 
@@ -411,6 +416,7 @@ jobs:
           fi
 
       - name: Upload artifacts
+        id: artifact_upload
         if: steps.artifact_payload.outputs.present == 'true'
         uses: actions/upload-artifact@v7
         with:
@@ -421,12 +427,166 @@ jobs:
             logs/*
           if-no-files-found: error
 
+      - name: Write Python proof manifest
+        if: always()
+        shell: bash
+        env:
+          VERSION: ${{ matrix.python-version }}
+          PROOF_ROLE: ${{ matrix.proof-role }}
+          MODE: ${{ needs.plan.outputs.mode }}
+          CANONICAL: ${{ steps.canonical_coverage.outcome }}
+          FUNCTIONAL: ${{ steps.functional_compatibility.outcome }}
+          PHASE0: ${{ steps.phase0.outcome }}
+          QPS_W08: ${{ steps.qps_w08.outcome }}
+          RECURSIVE: ${{ steps.recursive_build.outcome }}
+          PAYLOAD_PRESENT: ${{ steps.artifact_payload.outputs.present }}
+          ARTIFACT_UPLOAD: ${{ steps.artifact_upload.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/proof-manifests
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          version = os.environ["VERSION"]
+
+          def classify(outcome: str, required: bool) -> str:
+              if required:
+                  if outcome == "success":
+                      return "EXECUTED_PASS"
+                  return "UNCLASSIFIED_" + (outcome or "MISSING").upper()
+              if outcome == "skipped":
+                  return "CLASSIFIED_ROLE_SKIP"
+              if outcome == "success":
+                  return "EXECUTED_PASS"
+              return "UNCLASSIFIED_" + (outcome or "MISSING").upper()
+
+          checks = {
+              "canonical_coverage": classify(
+                  os.environ.get("CANONICAL", ""),
+                  version == "3.12",
+              ),
+              "functional_compatibility": classify(
+                  os.environ.get("FUNCTIONAL", ""),
+                  version != "3.12",
+              ),
+              "phase0": classify(
+                  os.environ.get("PHASE0", ""),
+                  version == "3.12",
+              ),
+              "qps_w08": classify(
+                  os.environ.get("QPS_W08", ""),
+                  version == "3.12",
+              ),
+              "recursive_build": classify(
+                  os.environ.get("RECURSIVE", ""),
+                  True,
+              ),
+          }
+          if os.environ.get("PAYLOAD_PRESENT") == "true":
+              checks["artifact_upload"] = classify(
+                  os.environ.get("ARTIFACT_UPLOAD", ""),
+                  True,
+              )
+          else:
+              checks["artifact_upload"] = "OPTIONAL_NO_PAYLOAD"
+
+          payload = {
+              "schema": "abacus-python-proof-manifest/1.0.0",
+              "exact_sha": os.environ["GITHUB_SHA"],
+              "python_version": version,
+              "proof_role": os.environ["PROOF_ROLE"],
+              "planner_mode": os.environ["MODE"],
+              "checks": checks,
+          }
+          out = Path(
+              f"test_reports/proof-manifests/python-{version}-proof.json"
+          )
+          out.write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload Python proof manifest
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: proof-manifest-py${{ matrix.python-version }}-${{ github.sha }}
+          path: test_reports/proof-manifests/
+          if-no-files-found: error
+
+  proof-completeness:
+    name: Python proof completeness
+    if: always() && github.repository == 'GBOGEB/ABACUS'
+    needs:
+      - plan
+      - abacus
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Download Python proof manifests
+        uses: actions/download-artifact@v8
+        with:
+          pattern: proof-manifest-py*-${{ github.sha }}
+          path: test_reports/proof-manifests
+          merge-multiple: true
+
+      - name: Audit executed and classified-skipped proof roles
+        run: |
+          set -euo pipefail
+          python scripts/ci_matrix_proof_audit.py \
+            --dir test_reports/proof-manifests \
+            --mode "${{ needs.plan.outputs.mode }}" \
+            --secondary "${{ needs.plan.outputs.secondary }}" \
+            --out test_reports/python-proof-audit.json
+
+      - name: Publish proof completeness summary
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          p = json.loads(
+              Path("test_reports/python-proof-audit.json").read_text()
+          )
+          print("### Python proof completeness")
+          print()
+          print(f"- status: **{p['status']}**")
+          print(f"- mode: `{p['mode']}`")
+          for row in p["versions"]:
+              print(f"- Python {row['python']}:")
+              for name, value in row["checks"].items():
+                  print(f"  - {name}: `{value}`")
+          if p["errors"]:
+              print("- proof debt:")
+              for error in p["errors"]:
+                  print(f"  - `{error}`")
+          PY
+
+      - name: Upload proof completeness receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: python-proof-audit-${{ github.sha }}
+          path: test_reports/python-proof-audit.json
+          if-no-files-found: error
+
   compatibility-gate:
     name: ABACUS compatibility gate
     if: always() && github.repository == 'GBOGEB/ABACUS'
     needs:
       - plan
       - abacus
+      - proof-completeness
     runs-on: ubuntu-24.04
     steps:
       - name: Enforce selected proof set
@@ -434,6 +594,7 @@ jobs:
         env:
           PLAN_RESULT: ${{ needs.plan.result }}
           MATRIX_RESULT: ${{ needs.abacus.result }}
+          PROOF_COMPLETENESS: ${{ needs.proof-completeness.result }}
           MODE: ${{ needs.plan.outputs.mode }}
           REASON: ${{ needs.plan.outputs.reason }}
         run: |
@@ -442,12 +603,14 @@ jobs:
             echo
             echo "- planner: \`${PLAN_RESULT}\`"
             echo "- selected matrix: \`${MATRIX_RESULT}\`"
+            echo "- proof completeness: \`${PROOF_COMPLETENESS}\`"
             echo "- mode: \`${MODE}\`"
             echo "- reason: ${REASON}"
           } >> "${GITHUB_STEP_SUMMARY}"
 
           if [[ "${PLAN_RESULT}" != "success" ||
-                "${MATRIX_RESULT}" != "success" ]]; then
+                "${MATRIX_RESULT}" != "success" ||
+                "${PROOF_COMPLETENESS}" != "success" ]]; then
             msg="ABACUS compatibility proof did not complete successfully."
             echo "::error::${msg}"
             exit 1
