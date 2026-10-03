@@ -7,13 +7,18 @@ Use repository authority only.
 2. Refresh GBOGEB/ABACUS main.
 3. Refresh GBOGEB/CODEX main.
 4. Refresh ABACUS PRs #1732, #1731, and #1730 if still open.
-5. Bind all CI/MIP/DAB evidence to the exact current head that produced it.
-6. For #1732, preserve the current first-red chain unless refreshed evidence supersedes it:
-   CI governance -> stale docs/ci/WORKFLOW_RATIONALIZATION.md.
+5. Bind all CI/MIP/DAB evidence to the exact current head.
+   Evidence belongs only to the exact head that produced it.
+6. For #1732, preserve the current first-red chain unless
+   refreshed evidence supersedes it:
+   CI governance ->
+   stale docs/ci/WORKFLOW_RATIONALIZATION.md.
 7. Repair only the first completed attributable red.
-8. Rerun exact-head proof and recensus before consuming any second residual.
+8. Rerun exact-head proof and recensus before consuming any
+   second residual.
 9. Never substitute #1731 DAB evidence for #1732.
-10. Preserve W80_CURRENT.json and the W80 handover chain unchanged.
+10. Preserve W80_CURRENT.json and the W80 handover chain.
+    Keep the historical chain unchanged.
 ```
 
 Hard guards:
