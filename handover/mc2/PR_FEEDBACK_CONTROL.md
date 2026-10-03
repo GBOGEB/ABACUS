@@ -28,12 +28,18 @@ the new head. Refresh review and comment evidence after each material push.
 
 ## Default Codex request
 
-For every active head, request both:
+For every active head, request both reviews as separate PR comments:
 
 ```text
+comment 1:
 @codex review
+
+comment 2:
 @codex security review
 ```
+
+Do not combine the two commands into one comment. The observed GitHub
+integration may start only one review from a combined request.
 
 A previous-head review may remain useful history, but it cannot satisfy the
 current-head review requirement.
