@@ -393,7 +393,6 @@ def build_test_pressure(
     }
 
 
-
 def validate_child_feedback(
     feedback: dict[str, Any], dow_receipt: dict[str, Any]
 ) -> tuple[bool, list[str]]:
