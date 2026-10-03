@@ -142,12 +142,19 @@ class GitHub:
 
     def actions_runs(self, head_sha: str) -> list[dict[str, Any]]:
         encoded = urllib.parse.quote(head_sha)
-        data = self.request(
-            "GET",
-            f"/repos/{self.repository}/actions/runs"
-            f"?head_sha={encoded}&per_page=100",
-        )
-        return list(data.get("workflow_runs", []))
+        runs: list[dict[str, Any]] = []
+        page = 1
+        while True:
+            data = self.request(
+                "GET",
+                f"/repos/{self.repository}/actions/runs"
+                f"?head_sha={encoded}&per_page=100&page={page}",
+            )
+            batch = list(data.get("workflow_runs", []))
+            runs.extend(batch)
+            if len(batch) < 100:
+                return runs
+            page += 1
 
     def review_threads(self, number: int) -> list[dict[str, Any]]:
         query = """
