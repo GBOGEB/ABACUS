@@ -9,6 +9,7 @@ Implement the actual agent logic here.
 
 __version__ = "0.0.0-stub"
 
+
 class CryoDmAgent:
     """Stub implementation for cryo_dm agent"""
 
