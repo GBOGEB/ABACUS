@@ -65,6 +65,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Mark feedback gate pending
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --mark-pending-only
+
       - name: Run unit tests
         run: python -m unittest ci.governance.tests.test_pr_feedback_gate
 
@@ -78,3 +90,16 @@ jobs:
             args+=(--pr-number "$INPUT_PR_NUMBER")
           fi
           python ci/governance/pr_feedback_gate.py "${args[@]}"
+
+      - name: Fail gate if evaluator workflow failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --mark-failure-only
