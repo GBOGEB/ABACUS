@@ -65,7 +65,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | — |
 | 10 | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 10 | `core_test` | `ariana-cicd.yml` | push, workflow_dispatch | 2 | `keep` | — |
-| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, schedule, workflow_dispatch | 5 | `keep` | — |
+| 10 | `core_test` | `ci-abacus.yml` | push, pull_request, schedule, workflow_dispatch | 6 | `keep` | — |
 | 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
 | 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -112,7 +112,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `w306-dow-typed-findings-proof.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
-| 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 10 | `canonical` | — |
+| 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 11 | `canonical` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `governance.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -139,7 +139,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `specialised` | `dab-flake8-census.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `dab-flake8-census.yml` | pull_request, push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `mip-coverage-evidence.yml` | workflow_dispatch, push, pull_request | 2 | `keep` | — |
 | 20 | `specialised` | `mip-n2-self-index.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |

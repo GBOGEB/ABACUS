@@ -1,5 +1,7 @@
 schema_version: TRIAGE-3P-ORCHESTRATION-DOD-1.0.0
-purpose: define agent responsibilities, scope boundaries, parallel variant execution, and definition of done
+purpose: >-
+  define agent responsibilities, scope boundaries, parallel variant execution,
+  and definition of done
 
 roles:
   coordinator:
@@ -22,25 +24,49 @@ roles:
   discrimination_runner:
     owns: [3PC, AUT, RSK]
     scope: read_only_role_authority_lifecycle_consumer_classification
-    outputs: [classification, counterevidence, ambiguity, consumer_risk, BT_priority]
+    outputs:
+      - classification
+      - counterevidence
+      - ambiguity
+      - consumer_risk
+      - BT_priority
     may_not: [delete, mutate_authority, final_disposition]
   proof_runner:
     owns: [3PV, INF]
     scope: same_boundary_validation_and_information_preservation_proof
-    outputs: [information_atoms, reintroduction_targets, proof_status, loss_risk]
+    outputs:
+      - information_atoms
+      - reintroduction_targets
+      - proof_status
+      - loss_risk
     may_not: [delete, claim_reintroduction_without_test, final_disposition]
   semantic_orchestrator_CODEX:
-    owns: [variant_selection_semantics, cross_repo_receipt_validation, reverse_pressure]
-    may_recommend: [repeat, switch_variant, scale_pool, hold, narrow, expand_coverage]
+    owns:
+      - variant_selection_semantics
+      - cross_repo_receipt_validation
+      - reverse_pressure
+    may_recommend:
+      - repeat
+      - switch_variant
+      - scale_pool
+      - hold
+      - narrow
+      - expand_coverage
     may_not: [engineering_truth_mutation, formal_compliance_promotion]
   evidence_executor_ABACUS:
     owns: [runner_execution, timing, evidence_receipts, history, DMAIC_rollup]
     may_not: [engineering_truth_mutation, local_QPS_acceptance]
   engineering_authority_cryoplant:
-    owns: [engineering_accept_reject_defer, RTM_truth, bidder_scope_truth, reentry_acceptance]
+    owns:
+      - engineering_accept_reject_defer
+      - RTM_truth
+      - bidder_scope_truth
+      - reentry_acceptance
     may_not_delegate: [formal_engineering_disposition]
   P3_single_writer:
-    owns: [terminal_disposition_receipt, merge_quarantine_remove_eligible_or_defer]
+    owns:
+      - terminal_disposition_receipt
+      - merge_quarantine_remove_eligible_or_defer
     prerequisite: all_required_child_receipts_present
 
 parallel_variant_test:
@@ -122,3 +148,33 @@ stop_conditions:
   - information_loss_unbounded
   - evidence_provenance_missing_for_authority_change
   - runner_rework_or_false_positive_rate_exceeds_control_limit
+proposal_compatibility:
+  schema: abacus-proposal-compatibility/1.0.0
+  contract: governance/proposals/PROPOSAL_COMPATIBILITY_CONTRACT.json
+  method: 3PSTAR
+  exact_source_sha_required: true
+  invalidate_on_source_sha_change: true
+  compatible_inputs: [DAB, MIP, DOW, CI_PROOF]
+  proposal_workers:
+    mode: READ_ONLY
+    scalable: true
+    minimum: 2
+    maximum: 8
+    duplicate_scope_forbidden: true
+  mutation_writer:
+    count: 1
+    role: P3_single_writer
+  batch_limits:
+    source: governance/dab/DAB_FULL_RED_GATES.json
+    low_mechanical: up_to_12_findings_across_3_files_same_family
+    medium: up_to_4_findings_in_1_file
+    high_or_protected: 1_finding_only_no_auto_merge
+  coverage_growth:
+    required_per_proposal: true
+    rule: >-
+      increase_or_strengthen_test_check_coverage_or_record_non_applicable_
+      mechanical_reason
+  hidden_proof_debt:
+    classified_role_skip_allowed: true
+    unclassified_skip_is_debt: true
+    upstream_failure_skip_is_debt: true

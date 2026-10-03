@@ -1,0 +1,97 @@
+{
+  "schema": "abacus-proposal-compatibility/1.0.0",
+  "purpose": "One proposal envelope for DAB, MIP, 3P*, DOW and CI proof methods.",
+  "compatible_methods": [
+    "DAB",
+    "MIP",
+    "3PSTAR",
+    "DOW",
+    "CI_PROOF"
+  ],
+  "required_fields": [
+    "schema_version",
+    "proposal_id",
+    "method",
+    "source_sha",
+    "proposal_type",
+    "risk_class",
+    "scope",
+    "mutation_mode",
+    "worker_model",
+    "protected_holds",
+    "evidence_receipts",
+    "admission",
+    "coverage_growth",
+    "authority"
+  ],
+  "source_sha": {
+    "format": "40-char lowercase git SHA",
+    "freshness": "INVALIDATE_ON_SOURCE_SHA_CHANGE"
+  },
+  "proposal_types": [
+    "STATIC_REPAIR",
+    "PRESSURE_QUEUE",
+    "DISCOVERY",
+    "DISCRIMINATION",
+    "PROOF",
+    "CONTROL_REPAIR"
+  ],
+  "risk_classes": [
+    "LOW_MECHANICAL",
+    "MEDIUM",
+    "HIGH_OR_PROTECTED",
+    "MEASURED"
+  ],
+  "mutation_modes": [
+    "READ_ONLY_PROPOSAL",
+    "SINGLE_WRITER_MUTATION"
+  ],
+  "worker_model": {
+    "proposal_workers": {
+      "mode": "READ_ONLY",
+      "scalable": true,
+      "min": 1,
+      "max": 8
+    },
+    "mutation_writer": {
+      "count": 1,
+      "required_for_mutation": true
+    },
+    "duplicate_scope_forbidden": true
+  },
+  "skip_classification": {
+    "allowed": [
+      "EXECUTED_PASS",
+      "CLASSIFIED_ROLE_SKIP",
+      "OPTIONAL_NO_PAYLOAD",
+      "NOT_APPLICABLE"
+    ],
+    "debt": [
+      "UNCLASSIFIED_SKIP",
+      "UPSTREAM_FAILURE_SKIP",
+      "ZERO_STEP_UNEXPLAINED",
+      "MISSING_SUMMARY"
+    ]
+  },
+  "coverage_growth": {
+    "required_fields": [
+      "applicability",
+      "baseline_receipt",
+      "target",
+      "result"
+    ],
+    "semantic_or_workflow_change": "MUST_INCREASE_OR_STRENGTHEN_CHECK_TEST_COVERAGE_OR_FAIL_CLOSED_VISIBILITY",
+    "mechanical_only": "MUST_NOT_REGRESS; NOT_APPLICABLE_ALLOWED_WITH_REASON"
+  },
+  "admission": {
+    "exact_head_required": true,
+    "first_completed_attributable_red_only": true,
+    "protected_hold_non_regression": true,
+    "post_merge_recensus_required": true
+  },
+  "authority": {
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "abacus-dab-full-red-gates/1.0.0",
+  "purpose": "Govern repository-wide static red debt together with proof completeness; static-count reduction alone never closes a gate.",
+  "reference_snapshot": {
+    "source_sha": "3f16d6ffc92d4c4d3994e264971c5dd32e7032a7",
+    "measured_total": 3112,
+    "e303": 1,
+    "e999_hold": 1,
+    "workflow_run": 37113810834,
+    "artifact_id": 11271181698,
+    "artifact_sha256": "ac39b8f8aa16fbfab5ff8c2e4da54523071ff655461e512a5102e9522faa1491"
+  },
+  "gates": {
+    "G1": {
+      "static_total_exclusive_max": 3000,
+      "required": [
+        "exact_sha_census",
+        "protected_family_non_regression",
+        "proposal_contract_valid"
+      ],
+      "meaning": "first scaled-burndown control boundary"
+    },
+    "G2": {
+      "static_total_exclusive_max": 2500,
+      "required": [
+        "G1",
+        "python_310_311_312_proof_roles_classified",
+        "no_unclassified_matrix_skip",
+        "coverage_non_regression"
+      ],
+      "meaning": "proof-complete intermediate control boundary"
+    },
+    "G3": {
+      "static_total_exclusive_max": 2000,
+      "required": [
+        "G2",
+        "no_unclassified_critical_job_skip",
+        "broad_test_red_roots_visible",
+        "coverage_growth_or_explicit_non_applicability"
+      ],
+      "meaning": "full-red debt below 2000 with hidden-proof debt exposed"
+    }
+  },
+  "protected_holds": {
+    "E999": {
+      "max_count": 1,
+      "disposition": "HOLD_SOURCE_BOUND",
+      "auto_batch": false
+    }
+  },
+  "batch_policy": {
+    "LOW_MECHANICAL": {
+      "families": [
+        "E302",
+        "E303",
+        "W291"
+      ],
+      "max_findings": 12,
+      "max_files": 3,
+      "same_family": true,
+      "proposal_workers": {
+        "min": 2,
+        "max": 8,
+        "mode": "READ_ONLY"
+      },
+      "mutation_writers": 1
+    },
+    "MEDIUM": {
+      "max_findings": 4,
+      "max_files": 1,
+      "proposal_workers": {
+        "min": 1,
+        "max": 4,
+        "mode": "READ_ONLY"
+      },
+      "mutation_writers": 1
+    },
+    "HIGH_OR_PROTECTED": {
+      "max_findings": 1,
+      "max_files": 1,
+      "proposal_workers": {
+        "min": 1,
+        "max": 2,
+        "mode": "READ_ONLY"
+      },
+      "mutation_writers": 1,
+      "auto_merge": false
+    }
+  },
+  "coverage_growth": {
+    "mechanical_only": "NON_REGRESSION_REQUIRED; explicit NOT_APPLICABLE is allowed only when no executable semantics change",
+    "semantic_source_change": "REQUIRED; add or strengthen test/check evidence or provide measured existing-line coverage proof",
+    "workflow_change": "REQUIRED; increase executed-check visibility or classify every intentional skip",
+    "per_batch_control": "record before/after coverage evidence and check-surface delta"
+  },
+  "governance": {
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  }
+}

@@ -17,6 +17,11 @@ on:
       - "scripts/pytest_test_state_plugin.py"
       - "scripts/ci_false_green_lint.py"
       - "scripts/dab_flake8_census.py"
+      - "scripts/dab_proposal_queue.py"
+      - "scripts/proposal_compatibility.py"
+      - "scripts/ci_matrix_proof_audit.py"
+      - "governance/dab/**"
+      - "governance/proposals/**"
       - "DMAIC_V3/**/*.py"
       - "MINERVA_PID/**/*.py"
       - "tools/**/*.py"
@@ -40,6 +45,11 @@ on:
       - "scripts/pytest_test_state_plugin.py"
       - "scripts/ci_false_green_lint.py"
       - "scripts/dab_flake8_census.py"
+      - "scripts/dab_proposal_queue.py"
+      - "scripts/proposal_compatibility.py"
+      - "scripts/ci_matrix_proof_audit.py"
+      - "governance/dab/**"
+      - "governance/proposals/**"
       - "DMAIC_V3/**/*.py"
       - "MINERVA_PID/**/*.py"
       - "tools/**/*.py"
@@ -185,6 +195,16 @@ jobs:
             --static-census test_reports/post-b0/flake8-census.json \
             --exact-sha "$EXACT_SHA" \
             --out test_reports/post-b0/test-check-completeness.json
+
+      - name: Emit shared MIP proposal envelope
+        run: |
+          set -euo pipefail
+          python scripts/proposal_compatibility.py emit-mip \
+            --source-sha "$EXACT_SHA" \
+            --evidence test_reports/post-b0/test-check-completeness.json \
+            --out test_reports/post-b0/mip-proposal-envelope.json
+          python scripts/proposal_compatibility.py validate \
+            --input test_reports/post-b0/mip-proposal-envelope.json
 
       - name: Upload B0 report-only evidence
         if: always()
