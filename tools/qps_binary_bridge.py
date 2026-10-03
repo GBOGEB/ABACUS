@@ -26,7 +26,6 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-
 SCHEMA = "abacus-binary-bridge/v1"
 PARSER_VERSION = "1.1.0"
 PRODUCER_REPOSITORY = "GBOGEB/ABACUS"
