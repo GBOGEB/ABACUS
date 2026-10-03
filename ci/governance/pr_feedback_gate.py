@@ -271,10 +271,15 @@ class GitHub:
                 "output": output,
             }
         if existing:
+            update_payload = {
+                key: value
+                for key, value in payload.items()
+                if key != "head_sha"
+            }
             self.request(
                 "PATCH",
                 f"/repos/{self.repository}/check-runs/{existing[0]['id']}",
-                payload,
+                update_payload,
             )
         else:
             if state == "pending":
