@@ -84,7 +84,6 @@ def test_provenance_persists_runs(tmp_path, monkeypatch):
     assert Path(db_path).exists()
 
 
-
 def test_ensure_contract_appends_current_version_to_history():
     enriched = ensure_contract(
         {},
