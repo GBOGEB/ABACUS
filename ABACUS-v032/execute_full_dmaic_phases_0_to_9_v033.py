@@ -76,6 +76,7 @@ except Exception:
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
 @dataclass
 class PhaseExecution:
     phase_number: int
@@ -98,6 +99,7 @@ class PhaseExecution:
             self.metrics = {}
         if self.output_files is None:
             self.output_files = []
+
 
 class FullDMAICOrchestrator:
     def __init__(self, workspace_root: Path, output_dir: Path):
@@ -1733,6 +1735,7 @@ class FullDMAICOrchestrator:
             print(f"{'='*80}")
 
         return all_iterations
+
 
 def main():
     workspace_root = Path(__file__).parent

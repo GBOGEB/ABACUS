@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+
 class CICDValidator:
     """Validates CI/CD configuration and deployment readiness."""
 
@@ -349,6 +350,7 @@ class CICDValidator:
         self.save_report()
 
         return all(results)
+
 
 def main():
     """Main entry point."""
