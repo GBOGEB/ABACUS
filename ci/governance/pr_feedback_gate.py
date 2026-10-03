@@ -545,6 +545,9 @@ def main() -> int:
     parser.add_argument("--event-path", type=Path)
     parser.add_argument("--pr-number", type=int)
     parser.add_argument("--dry-run", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--mark-pending-only", action="store_true")
+    mode.add_argument("--mark-failure-only", action="store_true")
     args = parser.parse_args()
 
     repository = os.environ.get("GITHUB_REPOSITORY")
@@ -570,6 +573,28 @@ def main() -> int:
         if pull.get("base", {}).get("ref") != "main":
             continue
         head_sha = pull["head"]["sha"]
+
+        if args.mark_pending_only:
+            if not args.dry_run:
+                github.publish_gate(
+                    head_sha,
+                    "pending",
+                    f"PR #{number} feedback gate: PREPARING",
+                    f"head={head_sha}\nstate=pending",
+                    "Validation has started; stale success is invalidated.",
+                )
+            continue
+
+        if args.mark_failure_only:
+            if not args.dry_run:
+                github.publish_gate(
+                    head_sha,
+                    "failure",
+                    f"PR #{number} feedback gate: EVALUATOR FAILED",
+                    f"head={head_sha}\nstate=failure",
+                    "The feedback-gate workflow failed before a final result.",
+                )
+            continue
 
         if not args.dry_run:
             github.publish_gate(
