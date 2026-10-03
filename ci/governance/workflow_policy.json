@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.6",
+  "schema_version": "1.0.7",
   "policy_id": "ABACUS-CI-SSOT-001",
   "purpose": "Single source of truth for GitHub Actions grouping, lifecycle ordering, canonical ownership and consolidation decisions.",
   "baseline_snapshot": {
@@ -157,6 +157,12 @@
     {
       "pattern": "^bd-workflow-frequency-telemetry\\.yml$",
       "cluster": "ci_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^pr-feedback-gate\\.yml$",
+      "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },

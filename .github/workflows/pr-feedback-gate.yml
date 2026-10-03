@@ -1,0 +1,105 @@
+name: PR Feedback Gate Evaluator
+
+on:
+  issue_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+  workflow_run:
+    workflows:
+      - CI - ABACUS Matrix
+      - ABACUS v032 - CI/CD Pipeline
+      - qps-canonicalization
+      - Security Scan — Ruff
+      - DELTA_1 CodeQL
+      - DELTA_1 Dependency Review
+      - OSV-Scanner
+      - Validate Docs (Markdown/YAML/JSON)
+      - Format Check
+      - YAML Validation
+      - smoke-test
+      - W70 Exact-SHA Measured ID Pulse
+      - W71 Residual Generated-Lineage Census
+      - DAB Flake8 Census
+      - MIP Coverage Evidence
+    types: [requested, in_progress, completed]
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Optional PR number; otherwise evaluate all open main PRs
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  checks: write
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: >-
+    pr-feedback-gate-${{ github.event.issue.number ||
+    github.event.pull_request.number || github.event.workflow_run.head_sha ||
+    'sweep' }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    name: Evaluate PR feedback gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Mark feedback gate pending
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --mark-pending-only
+
+      - name: Run unit tests
+        run: python -m unittest ci.governance.tests.test_pr_feedback_gate
+
+      - name: Evaluate and publish gate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          python ci/governance/pr_feedback_gate.py "${args[@]}"
+
+      - name: Fail gate if evaluator workflow failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --mark-failure-only
