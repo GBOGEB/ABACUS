@@ -1,5 +1,5 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.0",
+  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.1",
   "created_local": "2026-10-03T16:25:00+02:00",
   "classification": "POSTMERGE_REVIEW_CONTROL_AMENDMENT",
   "repository": "GBOGEB/ABACUS",
@@ -25,7 +25,8 @@
       "source_comment": 5968209913,
       "observation": "No dependency snapshots were found for PR #1734 head 71359854577d95e270503a30de4e7a1f90553da0.",
       "vulnerability_result": "NO_VULNERABILITIES_OR_LICENSE_ISSUES_REPORTED",
-      "disposition": "TRACK_AS_IMPROVEMENT_NOT_SECURITY_PASS_SUBSTITUTE"
+      "disposition": "DEFERRED_WITH_TRACKED_ISSUE",
+      "tracked_issue": 1736
     }
   },
   "live_authority_at_amendment": {
