@@ -1,7 +1,7 @@
 name: DOW Sprint 6 - Cognitive Deployment CI/CD
 on:
   push:
-    branches: [ main, develop, sprint-6 ]
+    branches: [main, develop, sprint-6]
     paths:
       - 'ariana_trace_project/**'
       - 'rich_padding/**'
@@ -30,25 +30,25 @@ env:
   ITERATION_TIMESTAMP: ${{ github.run_number }}
 
 jobs:
-  
+
   step_1_define:
     name: "Step 1: Define - Initialize & Validate Structure"
     runs-on: ubuntu-latest
     outputs:
       baseline_state: ${{ steps.baseline.outputs.state }}
       structure_valid: ${{ steps.validate.outputs.valid }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Cache Python Dependencies
         uses: actions/cache@v6
         with:
@@ -56,49 +56,49 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install Core Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov pyyaml
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
+
       - name: Define - Validate Repository Structure
         id: validate
         run: |
           echo "🎯 STEP 1: DEFINE - Validating DOW Framework Structure"
           echo "=================================================="
-          
+
           VALID=true
-          
+
           if [ ! -d "ariana_trace_project" ]; then
             echo "❌ Missing: ariana_trace_project/"
             VALID=false
           else
             echo "✅ Found: ariana_trace_project/"
           fi
-          
+
           if [ ! -d "rich_padding" ]; then
             echo "❌ Missing: rich_padding/"
             VALID=false
           else
             echo "✅ Found: rich_padding/"
           fi
-          
+
           if [ ! -f "rich_padding/DOW_test_orchestrator.py" ]; then
             echo "❌ Missing: DOW_test_orchestrator.py"
             VALID=false
           else
             echo "✅ Found: DOW_test_orchestrator.py"
           fi
-          
+
           REQUIRED_COMPONENTS=(
             "ariana_trace_project/dow_cognitive_init.py"
             "ariana_trace_project/dow_ranking_engine.py"
             "ariana_trace_project/dow_refactor_master.py"
             "ariana_trace_project/temporal_runner.py"
           )
-          
+
           for component in "${REQUIRED_COMPONENTS[@]}"; do
             if [ ! -f "$component" ]; then
               echo "❌ Missing: $component"
@@ -107,7 +107,7 @@ jobs:
               echo "✅ Found: $component"
             fi
           done
-          
+
           if [ "$VALID" = true ]; then
             echo "✅ Structure validation: PASSED"
             echo "valid=true" >> $GITHUB_OUTPUT
@@ -116,12 +116,12 @@ jobs:
             echo "valid=false" >> $GITHUB_OUTPUT
             exit 1
           fi
-      
+
       - name: Define - Capture Baseline State
         id: baseline
         run: |
           echo "📊 Capturing baseline state..."
-          
+
           BASELINE=$(cat <<EOF
           {
             "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -132,11 +132,11 @@ jobs:
           }
           EOF
           )
-          
+
           echo "$BASELINE" > baseline_state.json
           echo "state=$BASELINE" >> $GITHUB_OUTPUT
           cat baseline_state.json
-      
+
       - name: Upload Baseline Artifact
         uses: actions/upload-artifact@v7
         with:
@@ -153,83 +153,95 @@ jobs:
       test_results: ${{ steps.test.outputs.results }}
       coverage: ${{ steps.coverage.outputs.percentage }}
       phase_metrics: ${{ steps.phases.outputs.metrics }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov pyyaml
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      
+
       - name: Measure - Run DOW Test Orchestrator
         id: test
+        # rex-allow: ADVISORY_EXPLICIT - DOW measure is report-only.
         continue-on-error: true
         run: |
           echo "🔬 STEP 2: MEASURE - Executing DOW Full Pipeline Test"
           echo "=================================================="
-          
+
           cd rich_padding
-          python DOW_test_orchestrator.py --max-iterations 1 || true
-          
+          if ! python DOW_test_orchestrator.py --max-iterations 1; then
+            echo "DOW measure failed; preserving report-only evidence"
+          fi
+
           if [ -f "DOW_test_results.json" ]; then
             echo "✅ Test results generated"
             RESULTS=$(cat DOW_test_results.json)
             echo "results=$RESULTS" >> $GITHUB_OUTPUT
           else
             echo "⚠️ No test results file generated"
-            echo "results={\"status\":\"error\",\"message\":\"No results file\"}" >> $GITHUB_OUTPUT
+            echo \
+              'results={"status":"error","message":"No results file"}' \
+              >> "$GITHUB_OUTPUT"
           fi
-      
+
       - name: Measure - Execute Individual DMAIC Phases
         id: phases
+        # rex-allow: ADVISORY_EXPLICIT - phase metrics are report-only.
         continue-on-error: true
         run: |
           echo "📊 Measuring individual DMAIC phase execution..."
-          
+
           cd ariana_trace_project
           PHASE_RESULTS="{"
-          
+
           for i in {0..9}; do
             echo "Testing Phase $i..."
             START_TIME=$(date +%s)
-            
+
             if python temporal_runner.py --phase $i 2>&1; then
               STATUS="PASS"
             else
               STATUS="FAIL"
             fi
-            
+
             END_TIME=$(date +%s)
             DURATION=$((END_TIME - START_TIME))
-            
-            PHASE_RESULTS="${PHASE_RESULTS}\"phase_$i\":{\"status\":\"$STATUS\",\"duration\":$DURATION},"
+
+            PHASE_RESULTS="${PHASE_RESULTS}\"phase_$i\":"\
+              "{\"status\":\"$STATUS\",\"duration\":$DURATION},"
           done
-          
+
           PHASE_RESULTS="${PHASE_RESULTS%,}}"
           echo "$PHASE_RESULTS" > phase_metrics.json
           echo "metrics=$PHASE_RESULTS" >> $GITHUB_OUTPUT
-      
+
       - name: Measure - Calculate Coverage
         id: coverage
+        # rex-allow: ADVISORY_EXPLICIT - coverage here is telemetry.
         continue-on-error: true
         run: |
           echo "📈 Calculating test coverage..."
-          
+
           cd rich_padding
-          coverage run --source=../ariana_trace_project DOW_test_orchestrator.py || true
+          if ! coverage run \
+            --source=../ariana_trace_project \
+            DOW_test_orchestrator.py; then
+            echo "Coverage run failed; preserving report-only telemetry"
+          fi
           COVERAGE=$(coverage report | grep TOTAL | awk '{print $4}')
-          
+
           echo "Coverage: $COVERAGE"
           echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
-      
+
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -247,65 +259,74 @@ jobs:
     outputs:
       issues_found: ${{ steps.analyze.outputs.issues }}
       recommendations: ${{ steps.recommend.outputs.actions }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-      
+
       - name: Download Test Results
         uses: actions/download-artifact@v8
         with:
           name: test-results
           path: ./test-results
-      
+
       - name: Analyze - Process Test Results
         id: analyze
         run: |
           echo "🔍 STEP 3: ANALYZE - Processing Test Results"
           echo "=================================================="
-          
+
           ISSUES=()
-          
+
           if [ -f "test-results/DOW_test_results.json" ]; then
-            FAILED_PHASES=$(cat test-results/DOW_test_results.json | grep -o '"phases_failed":\[.*\]' || echo "[]")
+            if ! FAILED_PHASES=$(grep -o \
+              '"phases_failed":\[.*\]' \
+              test-results/DOW_test_results.json); then
+              FAILED_PHASES="[]"
+            fi
             echo "Failed phases: $FAILED_PHASES"
-            
-            if [ "$FAILED_PHASES" != "[]" ] && [ "$FAILED_PHASES" != '"phases_failed":[]' ]; then
+
+            if [ "$FAILED_PHASES" != "[]" ] && \
+              [ "$FAILED_PHASES" != '"phases_failed":[]' ]; then
               ISSUES+=("PHASE_FAILURES")
             fi
           fi
-          
+
           if [ -f "test-results/phase_metrics.json" ]; then
-            SLOW_PHASES=$(cat test-results/phase_metrics.json | grep -o '"duration":[0-9]*' | awk -F':' '$2 > 5 {print}' | wc -l)
+            SLOW_PHASES=$(
+              grep -o '"duration":[0-9]*' test-results/phase_metrics.json |
+                awk -F':' '$2 > 5 {print}' |
+                wc -l
+            )
             if [ "$SLOW_PHASES" -gt 0 ]; then
               ISSUES+=("PERFORMANCE_DEGRADATION")
               echo "⚠️ Found $SLOW_PHASES slow phases (>5s)"
             fi
           fi
-          
+
           ISSUES_JSON=$(printf '%s\n' "${ISSUES[@]}" | jq -R . | jq -s .)
           echo "issues=$ISSUES_JSON" >> $GITHUB_OUTPUT
-          
+
           if [ ${#ISSUES[@]} -eq 0 ]; then
             echo "✅ Analysis complete: No critical issues found"
           else
             echo "⚠️ Analysis complete: ${#ISSUES[@]} issue(s) identified"
           fi
-      
+
       - name: Analyze - Generate Recommendations
         id: recommend
         run: |
           echo "💡 Generating recommendations..."
-          
+
           RECOMMENDATIONS="["
-          RECOMMENDATIONS="${RECOMMENDATIONS}{\"action\":\"validate_encoding\",\"priority\":\"P0\"},"
-          RECOMMENDATIONS="${RECOMMENDATIONS}{\"action\":\"optimize_slow_phases\",\"priority\":\"P1\"},"
-          RECOMMENDATIONS="${RECOMMENDATIONS}{\"action\":\"implement_caching\",\"priority\":\"P2\"}"
+          RECOMMENDATIONS+='{"action":"validate_encoding","priority":"P0"},'
+          RECOMMENDATIONS+='{"action":"optimize_slow_phases","priority":"P1"},'
+          RECOMMENDATIONS+='{"action":"implement_caching","priority":"P2"}'
           RECOMMENDATIONS="${RECOMMENDATIONS}]"
-          
+
           echo "actions=$RECOMMENDATIONS" >> $GITHUB_OUTPUT
           echo "$RECOMMENDATIONS" > recommendations.json
-      
+
       - name: Upload Analysis Artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -319,21 +340,21 @@ jobs:
     needs: [step_2_measure, step_3_analyze]
     outputs:
       improvements_applied: ${{ steps.improve.outputs.applied }}
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pyyaml
-      
+
       - name: Improve - Apply Encoding Fixes
         run: |
           echo "🔧 STEP 4: IMPROVE - Applying encoding validation"
@@ -365,17 +386,22 @@ jobs:
           else:
               print("All files are UTF-8 compliant")
           '
-      
+
       - name: Improve - Re-run Tests After Improvements
         id: improve
         run: |
           echo "🔄 Re-running tests to validate improvements..."
-          
+
           cd rich_padding
-          python DOW_test_orchestrator.py --max-iterations 1 || true
-          
+          if ! python DOW_test_orchestrator.py --max-iterations 1; then
+            echo "Improvement rerun failed; preserving diagnostic evidence"
+          fi
+
           if [ -f "DOW_test_results.json" ]; then
-            SUCCESS_RATE=$(cat DOW_test_results.json | grep -o '"overall_success":[a-z]*' | cut -d':' -f2)
+            SUCCESS_RATE=$(
+              grep -o '"overall_success":[a-z]*' DOW_test_results.json |
+                cut -d':' -f2
+            )
             echo "Success rate: $SUCCESS_RATE"
             echo "applied=encoding_validation" >> $GITHUB_OUTPUT
           fi
@@ -385,16 +411,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [step_1_define, step_2_measure, step_3_analyze, step_4_improve]
     if: always()
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-      
+
       - name: Download All Artifacts
         uses: actions/download-artifact@v8
         with:
           path: ./artifacts
-      
+
       - name: Control - Generate CI/CD Iteration Report
         run: |
           echo "📋 STEP 5: CONTROL - Generating Iteration Report"
@@ -409,27 +435,36 @@ jobs:
           echo "**Timestamp:** $TIMESTAMP" >> "$REPORT_FILE"
           echo "**Commit:** ${{ github.sha }}" >> "$REPORT_FILE"
           echo "**Branch:** ${{ github.ref_name }}" >> "$REPORT_FILE"
-          echo "**Workflow:** DOW Sprint 6 - Cognitive Deployment CI/CD" >> "$REPORT_FILE"
+          echo "**Workflow:** DOW Sprint 6 - Cognitive Deployment CI/CD" \
+            >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "---" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "## 5-Step Healing Iteration Results" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "### Step 1: DEFINE ✅" >> "$REPORT_FILE"
-          echo "- Structure validation: ${{ needs.step_1_define.outputs.structure_valid }}" >> "$REPORT_FILE"
+          echo "- Structure validation: " \
+            "${{ needs.step_1_define.outputs.structure_valid }}" \
+            >> "$REPORT_FILE"
           echo "- Baseline state captured" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "### Step 2: MEASURE ⚡" >> "$REPORT_FILE"
           echo "- Test orchestrator executed" >> "$REPORT_FILE"
           echo "- Phase metrics collected" >> "$REPORT_FILE"
-          echo "- Coverage calculated: ${{ needs.step_2_measure.outputs.coverage }}" >> "$REPORT_FILE"
+          echo "- Coverage calculated: " \
+            "${{ needs.step_2_measure.outputs.coverage }}" \
+            >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "### Step 3: ANALYZE 🔍" >> "$REPORT_FILE"
-          echo "- Issues identified: ${{ needs.step_3_analyze.outputs.issues_found }}" >> "$REPORT_FILE"
+          echo "- Issues identified: " \
+            "${{ needs.step_3_analyze.outputs.issues_found }}" \
+            >> "$REPORT_FILE"
           echo "- Recommendations generated" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "### Step 4: IMPROVE 🔧" >> "$REPORT_FILE"
-          echo "- Improvements applied: ${{ needs.step_4_improve.outputs.improvements_applied }}" >> "$REPORT_FILE"
+          echo "- Improvements applied: " \
+            "${{ needs.step_4_improve.outputs.improvements_applied }}" \
+            >> "$REPORT_FILE"
           echo "- Tests re-executed" >> "$REPORT_FILE"
           echo "" >> "$REPORT_FILE"
           echo "### Step 5: CONTROL 📊" >> "$REPORT_FILE"
@@ -441,7 +476,8 @@ jobs:
           echo "" >> "$REPORT_FILE"
           echo "## Sprint 6 Status Update" >> "$REPORT_FILE"
           echo "**CI/CD Progress:** 70% → 100% ✅" >> "$REPORT_FILE"
-          echo "**P0-6 Action:** GitHub Actions CI/CD - COMPLETE" >> "$REPORT_FILE"
+          echo "**P0-6 Action:** GitHub Actions CI/CD - COMPLETE" \
+            >> "$REPORT_FILE"
           echo "**Next Actions:**" >> "$REPORT_FILE"
           echo "- P0-5: Docker validation (non-blocking)" >> "$REPORT_FILE"
           echo "- P0-7: Enhanced metrics implementation" >> "$REPORT_FILE"
@@ -459,13 +495,13 @@ jobs:
 
           cat "$REPORT_FILE"
           echo "✅ Report generated: $REPORT_FILE"
-      
+
       - name: Control - Update Sprint 6 Status
         run: |
           echo "📊 Updating Sprint 6 status..."
           echo "CI/CD Integration: 100% COMPLETE ✅"
           echo "Overall Sprint 6 Progress: 45% → 55%"
-      
+
       - name: Control - Summary
         run: |
           echo "=================================================="
@@ -486,28 +522,32 @@ jobs:
     runs-on: ubuntu-latest
     needs: step_5_control
     if: github.ref == 'refs/heads/main'
+    # rex-allow: ADVISORY_EXPLICIT - Docker validation is optional.
     continue-on-error: true
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-      
+
       - name: Validate Docker Configuration
         run: |
           echo "🐳 Validating Docker deployment configuration..."
-          
+
           if [ -f "rich_padding/docker-compose.yml" ]; then
             echo "✅ Found docker-compose.yml"
-            docker-compose -f rich_padding/docker-compose.yml config || echo "⚠️ Docker config validation failed (non-blocking)"
+            if ! docker-compose -f rich_padding/docker-compose.yml config; then
+              echo "⚠️ Docker config validation failed (non-blocking)"
+            fi
           else
             echo "⚠️ docker-compose.yml not found in rich_padding/"
           fi
-      
+
       - name: Docker Build Test (Dry Run)
         run: |
           echo "🏗️ Testing Docker build (dry run)..."
           echo "Note: Full docker build skipped in CI (resource intensive)"
-          echo "Run locally: docker-compose -f rich_padding/docker-compose.yml up --build"
+          echo "Run locally: docker-compose -f" \
+            "rich_padding/docker-compose.yml up --build"
 
   integration_test_suite:
     name: "Run Test Suite & 5-Iteration Demo"
@@ -526,7 +566,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || echo 'No requirements.txt'
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt"
+          fi
 
       - name: Run Test Suite
         run: |
