@@ -50,6 +50,11 @@ class Evidence:
                 f"{self.unresolved_threads} unresolved review thread(s)"
             )
         reasons.extend(self.ci_failed)
+        reasons.extend(
+            item
+            for item in self.deferred_comments
+            if "has no open issue" in item
+        )
         return tuple(reasons)
 
     @property
