@@ -492,7 +492,6 @@ def note_box(x, y, lines, w=130, color="#005500", title=None, text_size=6.0):
     return "".join(parts), h
 
 
-
 # ===========================================================================
 # v4 additions
 #   * tag_with_box      - white-boxed text tag (anti-overlap, front layer)
