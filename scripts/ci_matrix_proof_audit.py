@@ -50,15 +50,39 @@ def expected_versions(mode: str, secondary: str) -> list[str]:
     raise ValueError(f"unknown mode: {mode}")
 
 
-def audit(directory: Path, mode: str, secondary: str) -> dict[str, Any]:
+def audit(
+    directory: Path,
+    mode: str,
+    secondary: str,
+    expected_sha: str,
+) -> dict[str, Any]:
     errors: list[str] = []
     rows: list[dict[str, Any]] = []
-    for version in expected_versions(mode, secondary):
+    versions = expected_versions(mode, secondary)
+
+    if len(expected_sha) != 40 or any(
+        ch not in "0123456789abcdef" for ch in expected_sha
+    ):
+        errors.append("EXPECTED_SHA_INVALID")
+
+    for version in versions:
         path = directory / f"python-{version}-proof.json"
         if not path.exists():
             errors.append(f"{version}:MISSING_SUMMARY")
             continue
         payload = load_json(path)
+        if payload.get("exact_sha") != expected_sha:
+            errors.append(f"{version}:exact_sha")
+        if payload.get("python_version") != version:
+            errors.append(f"{version}:python_version")
+        if mode == "full":
+            role = "full-matrix"
+        elif mode == "sampled":
+            role = "sentinel" if version == "3.12" else "compatibility-sample"
+        else:
+            role = "sentinel"
+        if payload.get("proof_role") != role:
+            errors.append(f"{version}:proof_role")
         checks = payload.get("checks", {})
         for name, expected in EXPECTED[version].items():
             actual = checks.get(name)
@@ -89,10 +113,11 @@ def main() -> int:
     parser.add_argument("--dir", type=Path, required=True)
     parser.add_argument("--mode", required=True)
     parser.add_argument("--secondary", default="3.10")
+    parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
-    result = audit(args.dir, args.mode, args.secondary)
+    result = audit(args.dir, args.mode, args.secondary, args.expected_sha)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2, sort_keys=True))

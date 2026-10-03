@@ -564,6 +564,7 @@ jobs:
             --dir test_reports/proof-manifests \
             --mode "${{ needs.plan.outputs.mode }}" \
             --secondary "${{ needs.plan.outputs.secondary }}" \
+            --expected-sha "${{ github.sha }}" \
             --out test_reports/python-proof-audit.json
 
       - name: Publish proof completeness summary

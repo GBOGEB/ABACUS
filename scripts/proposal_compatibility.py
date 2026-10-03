@@ -42,14 +42,67 @@ def validate_envelope(
 
     if envelope.get("risk_class") not in contract.get("risk_classes", []):
         errors.append("risk_class")
+    if envelope.get("proposal_type") not in contract.get("proposal_types", []):
+        errors.append("proposal_type")
     if envelope.get("mutation_mode") not in contract.get("mutation_modes", []):
         errors.append("mutation_mode")
 
     worker = envelope.get("worker_model", {})
     if not isinstance(worker, dict):
         errors.append("worker_model")
-    elif int(worker.get("mutation_writer_count", 0) or 0) != 1:
-        errors.append("mutation_writer_count")
+    else:
+        worker_contract = contract.get("worker_model", {})
+        proposal_workers = worker.get("proposal_workers")
+        expected_workers = worker_contract.get("proposal_workers", {})
+        if not isinstance(proposal_workers, dict):
+            errors.append("proposal_workers")
+        else:
+            minimum = proposal_workers.get("min")
+            maximum = proposal_workers.get("max")
+            if (
+                isinstance(minimum, bool)
+                or not isinstance(minimum, int)
+                or minimum < expected_workers.get("min", 1)
+            ):
+                errors.append("proposal_workers.min")
+            if (
+                isinstance(maximum, bool)
+                or not isinstance(maximum, int)
+                or maximum > expected_workers.get("max", 8)
+            ):
+                errors.append("proposal_workers.max")
+            if (
+                isinstance(minimum, int)
+                and not isinstance(minimum, bool)
+                and isinstance(maximum, int)
+                and not isinstance(maximum, bool)
+                and minimum > maximum
+            ):
+                errors.append("proposal_workers.range")
+            if proposal_workers.get("mode") != expected_workers.get("mode"):
+                errors.append("proposal_workers.mode")
+            if proposal_workers.get("scalable") is not expected_workers.get(
+                "scalable"
+            ):
+                errors.append("proposal_workers.scalable")
+
+        mutation_writer = worker.get("mutation_writer")
+        expected_writer = worker_contract.get("mutation_writer", {})
+        if not isinstance(mutation_writer, dict):
+            errors.append("mutation_writer")
+        else:
+            writer_count = mutation_writer.get("count")
+            expected_count = expected_writer.get("count", 1)
+            if (
+                isinstance(writer_count, bool)
+                or not isinstance(writer_count, int)
+                or writer_count != expected_count
+            ):
+                errors.append("mutation_writer.count")
+            if mutation_writer.get("required_for_mutation") is not expected_writer.get(
+                "required_for_mutation", True
+            ):
+                errors.append("mutation_writer.required_for_mutation")
 
     authority = envelope.get("authority", {})
     if authority.get("authority_transfer") is not False:
@@ -67,11 +120,90 @@ def validate_envelope(
     return sorted(set(errors))
 
 
-def iter_envelopes(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def iter_envelopes(payload: dict[str, Any]) -> list[Any]:
     proposals = payload.get("proposals")
     if isinstance(proposals, list):
-        return [value for value in proposals if isinstance(value, dict)]
+        return proposals
     return [payload]
+
+
+def valid_empty_queue(payload: dict[str, Any]) -> bool:
+    if payload.get("schema_version") != "abacus-dab-proposal-queue/1.0.0":
+        return False
+    source_sha = payload.get("source_sha")
+    if not isinstance(source_sha, str) or len(source_sha) != 40 or any(
+        ch not in "0123456789abcdef" for ch in source_sha
+    ):
+        return False
+
+    measurement = payload.get("measurement")
+    if not isinstance(measurement, dict):
+        return False
+    total = measurement.get("total")
+    families = measurement.get("families")
+    holds = payload.get("protected_holds")
+    if (
+        isinstance(total, bool)
+        or not isinstance(total, int)
+        or total < 0
+        or not isinstance(families, dict)
+        or not isinstance(holds, dict)
+    ):
+        return False
+    if any(
+        isinstance(count, bool) or not isinstance(count, int) or count < 0
+        for count in families.values()
+    ):
+        return False
+    if sum(families.values()) != total:
+        return False
+    worker_model = payload.get("worker_model")
+    if not isinstance(worker_model, dict):
+        return False
+    workers = worker_model.get("proposal_workers")
+    writer_count = worker_model.get("mutation_writer_count")
+    if (
+        not isinstance(workers, dict)
+        or workers.get("min") != 2
+        or workers.get("max") != 8
+        or workers.get("mode") != "READ_ONLY"
+        or isinstance(writer_count, bool)
+        or not isinstance(writer_count, int)
+        or writer_count != 1
+        or worker_model.get("parallel_proposals_allowed") is not True
+        or worker_model.get("parallel_mutation_for_same_scope_allowed") is not False
+    ):
+        return False
+    governance = payload.get("governance")
+    if (
+        not isinstance(governance, dict)
+        or governance.get("authority_transfer") is not False
+        or governance.get("formal_credit_delta") != 0
+        or governance.get("engineering_credit_delta") != 0
+    ):
+        return False
+    hold_counts = []
+    for family, hold in holds.items():
+        if not isinstance(hold, dict):
+            return False
+        count = hold.get("count")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            return False
+        if count and families.get(family) != count:
+            return False
+        hold_counts.append(count)
+    if sum(hold_counts) != sum(
+        count for family, count in families.items() if family in holds
+    ):
+        return False
+    if total == 0:
+        return True
+
+    for family, count in families.items():
+        hold = holds.get(family)
+        if not isinstance(hold, dict) or hold.get("count") != count:
+            return False
+    return bool(families)
 
 
 def emit_mip(source_sha: str, evidence: Path) -> dict[str, Any]:
@@ -85,8 +217,13 @@ def emit_mip(source_sha: str, evidence: Path) -> dict[str, Any]:
         "scope": {"paths": [], "finding_count": 0},
         "mutation_mode": "READ_ONLY_PROPOSAL",
         "worker_model": {
-            "proposal_workers": "SCALABLE_READ_ONLY",
-            "mutation_writer_count": 1,
+            "proposal_workers": {
+                "min": 2,
+                "max": 8,
+                "mode": "READ_ONLY",
+                "scalable": True,
+            },
+            "mutation_writer": {"count": 1, "required_for_mutation": True},
         },
         "protected_holds": {"source_bound_holds": "PRESERVE"},
         "evidence_receipts": [
@@ -145,9 +282,12 @@ def main() -> int:
     payload = load_json(args.input)
     errors: list[str] = []
     envelopes = iter_envelopes(payload)
-    if not envelopes:
-        errors.append("no_proposals")
+    if not envelopes and not valid_empty_queue(payload):
+        errors.append("empty_queue_receipt")
     for index, envelope in enumerate(envelopes):
+        if not isinstance(envelope, dict):
+            errors.append(f"{index}:not_object")
+            continue
         for error in validate_envelope(envelope, contract):
             errors.append(f"{index}:{error}")
     if errors:

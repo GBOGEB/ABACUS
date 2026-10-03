@@ -13,6 +13,7 @@ def test_gate_ladder_uses_full_red_thresholds():
     assert result["active_gate"] == "G1"
     assert result["G1"]["static_budget_pass"] is False
     assert gate_status(1999, policy)["G3"]["static_budget_pass"] is True
+    assert gate_status(1999, policy)["active_gate"] == "G1"
 
 
 def test_queue_batches_low_risk_and_preserves_e999():

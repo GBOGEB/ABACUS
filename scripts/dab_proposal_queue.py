@@ -64,7 +64,6 @@ def risk_for(code: str, policy: dict[str, Any]) -> str:
 
 def gate_status(total: int, policy: dict[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {}
-    active = None
     for name in ("G1", "G2", "G3"):
         gate = policy["gates"][name]
         threshold = int(gate["static_total_exclusive_max"])
@@ -75,9 +74,7 @@ def gate_status(total: int, policy: dict[str, Any]) -> dict[str, Any]:
             "companion_proof": "REQUIRED",
             "status": "STATIC_PASS_COMPANION_PENDING" if static_pass else "OPEN",
         }
-        if active is None and not static_pass:
-            active = name
-    result["active_gate"] = active or "G3_PLUS_CONTROL"
+    result["active_gate"] = "G1"
     return result
 
 
@@ -106,8 +103,13 @@ def _proposal(
         },
         "mutation_mode": "READ_ONLY_PROPOSAL",
         "worker_model": {
-            "proposal_workers": "SCALABLE_READ_ONLY",
-            "mutation_writer_count": 1,
+            "proposal_workers": {
+                "min": 2,
+                "max": 8,
+                "mode": "READ_ONLY",
+                "scalable": True,
+            },
+            "mutation_writer": {"count": 1, "required_for_mutation": True},
         },
         "protected_holds": protected_holds,
         "evidence_receipts": ["reports/dab_flake8_census.json"],
