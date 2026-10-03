@@ -99,3 +99,23 @@ parallel_arms:
     same_frozen_root_ids: true
     metrics: [wall_time_ms, AHT_ms, evidence_yield, edge_yield, disagreement_rate, rework_rate, coverage_depth]
     rule: no_arm_may_mutate_source_truth
+proposal_compatibility:
+  contract: governance/proposals/PROPOSAL_COMPATIBILITY_CONTRACT.json
+  proposal_worker:
+    count: scalable_2_to_8
+    scope: read_only
+    owns:
+      - build_exact_sha_candidate_envelope
+      - attach_measurement_receipts
+      - classify_risk_and_batch_eligibility
+      - declare_coverage_growth_plan
+    prohibited:
+      - mutate_repository
+      - reuse_stale_source_sha
+      - suppress_unclassified_skips
+      - override_protected_holds
+  P3_writer:
+    compatible_envelope_required: true
+    writer_count: 1
+    must_revalidate_source_sha_before_mutation: true
+    must_require_post_merge_recensus: true
