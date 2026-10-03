@@ -7,7 +7,6 @@ from pathlib import Path
 import zipfile
 
 
-
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "tools" / "qps_binary_bridge.py"
 SPEC = importlib.util.spec_from_file_location("qps_binary_bridge", MODULE_PATH)
