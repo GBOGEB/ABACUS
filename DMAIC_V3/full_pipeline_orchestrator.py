@@ -56,6 +56,7 @@ from DMAIC_V3.phases.phase9_documentation_generation import Phase9_Documentation
 #
 # No local class definition is required here.
 
+
 class Phase7AdvancedAnalytics:
     """Phase 7 STUB: Advanced Analytics (Future expansion) - DEPRECATED
 
