@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-30T16:19:40.545177",
-  "module_count": 190,
+  "generated_at": "2026-10-03T18:34:05.617170",
+  "module_count": 191,
   "modules": {
     "DMAIC_V3/quick_output_analysis.py": {
       "docstring": "Quick Analysis of DMAIC V3 Outputs\nAnalyzes existing iteration outputs without running full pipeline",
@@ -53,7 +53,7 @@
       ]
     },
     "DMAIC_V3/full_pipeline_orchestrator.py": {
-      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header",
+      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header\n\nDMAIC V3.3 - FULL PIPELINE ORCHESTRATOR\n=============================================================================\nPhase 0:     Initialization (12-agent orchestration)\nPhases 1-5:  DMAIC Core (Define, Measure, Analy",
       "members": [
         {
           "name": "Phase7AdvancedAnalytics",
@@ -3597,6 +3597,43 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_quality_gate_coverage_recovery.py": {
+      "docstring": "",
+      "members": [
+        {
+          "name": "test_agent_manager_loads_existing_agent_config",
+          "doc": ""
+        },
+        {
+          "name": "test_metrics_exporter_uses_default_phase_and_csv_names",
+          "doc": ""
+        },
+        {
+          "name": "test_mcp_detects_parent_mutation_outside_worker_isolation",
+          "doc": ""
+        },
+        {
+          "name": "test_canonical_name_collapses_consecutive_separators",
+          "doc": ""
+        },
+        {
+          "name": "test_state_missing_phase_and_completed_resume_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_state_save_failure_is_reported_without_masking",
+          "doc": ""
+        },
+        {
+          "name": "mutate_outer_parent",
+          "doc": ""
+        },
+        {
+          "name": "fail_dump",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_temporal_metadata_engine_coverage.py": {
       "docstring": "",
       "members": [
@@ -4336,6 +4373,14 @@
         {
           "name": "test_w000_validator_tracks_required_bootstrap_domains",
           "doc": ""
+        },
+        {
+          "name": "test_w000_externalized_alat_intent_is_provenance_bound",
+          "doc": ""
+        },
+        {
+          "name": "test_w000_rejects_unregistered_externalized_artifact",
+          "doc": ""
         }
       ]
     },
@@ -4459,6 +4504,18 @@
         },
         {
           "name": "test_provenance_persists_runs",
+          "doc": ""
+        },
+        {
+          "name": "test_ensure_contract_appends_current_version_to_history",
+          "doc": ""
+        },
+        {
+          "name": "test_contract_error_branches_are_fail_closed",
+          "doc": ""
+        },
+        {
+          "name": "test_downstream_consumer_registry_defaults_and_lookup",
           "doc": ""
         },
         {
@@ -5287,6 +5344,10 @@
           "doc": ""
         },
         {
+          "name": "test_save_cache_retries_transient_permission_error",
+          "doc": ""
+        },
+        {
           "name": "test_enable_idempotency_rebinds_global_configuration",
           "doc": ""
         },
@@ -5344,6 +5405,10 @@
         },
         {
           "name": "save",
+          "doc": ""
+        },
+        {
+          "name": "flaky_replace",
           "doc": ""
         },
         {
@@ -6633,6 +6698,10 @@
         {
           "name": "_decode_cache_value",
           "doc": "Recursively restore values encoded by _encode_cache_value."
+        },
+        {
+          "name": "_replace_with_retry",
+          "doc": "Atomically replace target, retrying transient Windows file-lock races."
         },
         {
           "name": "_save_cache",
