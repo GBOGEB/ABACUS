@@ -1,5 +1,5 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.1",
+  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.2",
   "created_local": "2026-10-03T16:25:00+02:00",
   "classification": "POSTMERGE_REVIEW_CONTROL_AMENDMENT",
   "repository": "GBOGEB/ABACUS",
@@ -20,6 +20,19 @@
       "codex_code_review": "RUNNING_WHEN_PR1734_MERGED",
       "codex_security_review": "NO_BOUND_RESULT_OBSERVED_BEFORE_MERGE",
       "disposition": "PROCESS_GAP_NOW_GOVERNED_BY_PR_FEEDBACK_CONTROL"
+    },
+    "latest_mc2_checkpoint_omitted": {
+      "source": "Codex review thread 4172780131",
+      "finding": "The restart chain bypassed SESSION_CLOSE_CURRENT.json and the W83/W83-NG1 re-entry guard.",
+      "disposition": "FIXED_IN_CURRENT_HEAD",
+      "fix_paths": [
+        "handover/mc2/MISSIONCONTROL_CURRENT.json",
+        "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003_v1.1.md",
+        "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md"
+      ],
+      "predecessor_session_close": "handover/mc2/SESSION_CLOSE_CURRENT.json",
+      "predecessor_mc2_current": "handover/mc2/W83_CURRENT.json",
+      "predecessor_mc2_control": "architecture/w83/W83_NG1_CONTROL_v0.1.json"
     },
     "dependency_review_warning": {
       "source_comment": 5968209913,
@@ -47,7 +60,14 @@
     "dependency_review_warning_census_required": true,
     "current_head_refresh_required": true,
     "unresolved_material_thread_blocks_merge": true,
-    "material_future_red_requires_durable_disposition": true
+    "material_future_red_requires_durable_disposition": true,
+    "separate_codex_request_comments_required": true
+  },
+  "analytical_predecessor_guard": {
+    "session_close": "handover/mc2/SESSION_CLOSE_CURRENT.json",
+    "mc2_current": "handover/mc2/W83_CURRENT.json",
+    "mc2_control": "architecture/w83/W83_NG1_CONTROL_v0.1.json",
+    "reentry_requires_new_evidence": true
   },
   "invariants": {
     "authority_transfer": false,
