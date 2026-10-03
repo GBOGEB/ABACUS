@@ -156,7 +156,6 @@ class ValidateSsotStyleTests(unittest.TestCase):
         self.assertEqual(report["penetration_score"], 100.0)
         self.assertEqual(report["by_kind"]["graph"], {"depth": 4, "max_depth": 4})
 
-
     def test_handoff_policy_blocks_startup_failure_and_stale(self) -> None:
         manifest = copy.deepcopy(self.manifest)
         policy = manifest["federation_wave"]["handoff_check_policy"]
