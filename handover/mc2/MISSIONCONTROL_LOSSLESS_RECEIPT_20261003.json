@@ -1,0 +1,76 @@
+{
+  "schema_version": "MC2-MISSIONCONTROL-LOSSLESS-RECEIPT-1.0.0",
+  "created_local": "2026-10-03T12:14:00+02:00",
+  "classification": "LOSSLESS_CURRENT_FRONTIER_CUT",
+  "repository": "GBOGEB/ABACUS",
+  "subject_authority": {
+    "abacus_main": "fd5cad73fbee0c3d46eaa45484ef47385930a206",
+    "codex_main": "c8bdedd2912ceb456f4582988ab9aa72eea844de"
+  },
+  "historical_preservation": {
+    "w80_current": "handover/mc2/W80_CURRENT.json",
+    "w80_handover": "handover/mc2/W80_LOSSLESS_HANDOVER_20260918.md",
+    "w80_dropin": "handover/mc2/W80_DROPIN.md",
+    "w80_immutable": true
+  },
+  "current_frontier": {
+    "primary": {
+      "pr": 1732,
+      "head": "dea25f536d93136030d8950a643f7be6b9b21040",
+      "first_completed_attributable_red": {
+        "workflow": "CI Workflow Governance",
+        "run": 37115520651,
+        "job": 111181483152,
+        "class": "CI_GOVERNANCE_DERIVED_INVENTORY_STALE",
+        "path": "docs/ci/WORKFLOW_RATIONALIZATION.md",
+        "diagnostic_artifact": 11271344036,
+        "diagnostic_artifact_sha256": "23d70e50317384218478f5be64a0c6c217dd28e5a6c8f64b6407e1a29f30222e"
+      },
+      "secondary_observed_withheld": {
+        "workflow": "Validate Docs (Markdown/YAML/JSON)",
+        "run": 37115520636,
+        "job": 111181483121,
+        "class": "MD047_SINGLE_TRAILING_NEWLINE",
+        "path": "docs/ci/WORKFLOW_RATIONALIZATION.md",
+        "disposition": "WITHHELD_UNTIL_FIRST_RED_REPAIR_AND_RECENSUS"
+      }
+    },
+    "parallel": {
+      "pr": 1731,
+      "head": "bd1608fb34f1047714b03a351d10ae2580a01e5e",
+      "dab_run": 37115644282,
+      "dab_job": 111181826679,
+      "dab_conclusion": "success",
+      "dab_artifact": 11271234872,
+      "dab_artifact_sha256": "df7e437a53d0984e6ee1ca300b3d190aaa9f4c12627d9fad065009284489799d",
+      "mip_run": 37115644162,
+      "mip_state": "in_progress",
+      "matrix_run": 37115644244,
+      "matrix_state": "in_progress"
+    },
+    "older_pending": {
+      "pr": 1730,
+      "head": "d7539ba6bda902fb2444295873285381526a5bab",
+      "mip_run": 37113888399,
+      "mip_conclusion": "success",
+      "matrix_run": 37113888378,
+      "matrix_conclusion": "success",
+      "bootstrap_run": 37113888437,
+      "bootstrap_conclusion": "failure",
+      "disposition": "CLASSIFY_ON_OWN_EXACT_HEAD"
+    }
+  },
+  "guards": {
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0,
+    "repository_authority_over_chat_memory": true,
+    "cross_sha_evidence_substitution": false,
+    "first_completed_attributable_red_only": true,
+    "no_second_residual_before_recensus": true,
+    "historical_w80_handover_immutable": true
+  },
+  "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003.md",
+  "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN.md",
+  "status": "CUT_STAGED_PENDING_PR_ADMISSION"
+}
