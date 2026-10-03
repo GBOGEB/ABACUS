@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 from dmaic.contract import ensure_contract
 from dmaic import idempotency
 
+
 class DOWConvergenceCalculator:
     """Agent to calculate convergence metrics"""
 
@@ -137,6 +138,7 @@ class DOWConvergenceCalculator:
             return 'converged'
         else:
             return 'degrading'
+
 
 def main():
     """Main entry point"""
