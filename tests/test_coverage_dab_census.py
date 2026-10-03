@@ -113,7 +113,6 @@ def test_pressure_order_is_deterministic_and_credit_stays_zero():
     assert result["measurement"]["dynamic_context"] == "test_function"
 
 
-
 def test_census_joins_contexts_to_junit_outcomes():
     evidence = {
         "rows": [
