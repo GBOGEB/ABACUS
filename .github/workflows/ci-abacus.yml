@@ -90,6 +90,15 @@ jobs:
                 .python-version|*/.python-version)
                   compatibility_sensitive=true
                   ;;
+                governance/dab/*|governance/proposals/*)
+                  compatibility_sensitive=true
+                  ;;
+                scripts/dab_flake8_census.py|scripts/dab_proposal_queue.py)
+                  compatibility_sensitive=true
+                  ;;
+                scripts/proposal_compatibility.py|scripts/ci_matrix_proof_audit.py)
+                  compatibility_sensitive=true
+                  ;;
                 *.py|*.pyi|scripts/*|tests/*|src/*|abacus/*|qplant/*)
                   python_delta=true
                   ;;
