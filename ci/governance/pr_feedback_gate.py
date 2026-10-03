@@ -29,6 +29,10 @@ GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
 DEFERRED_COMMENT_RULES = (
     ("No snapshots were found for the head SHA", 1736),
 )
+CODEX_BOT_LOGIN = "chatgpt-codex-connector[bot]"
+CODEX_BOT_ID = 199175422
+CODEX_APP_ID = 1144995
+CODEX_APP_SLUG = "chatgpt-codex-connector"
 
 
 @dataclass(frozen=True)
@@ -291,13 +295,25 @@ class GitHub:
             )
 
 
+def is_trusted_codex_comment(comment: dict[str, Any]) -> bool:
+    user = comment.get("user") or {}
+    app = comment.get("performed_via_github_app") or {}
+    return (
+        user.get("login") == CODEX_BOT_LOGIN
+        and user.get("id") == CODEX_BOT_ID
+        and app.get("id") == CODEX_APP_ID
+        and app.get("slug") == CODEX_APP_SLUG
+    )
+
+
 def latest_codex_summary(
     comments: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
     candidates = [
         comment
         for comment in comments
-        if "codex-pull-request-review-summary" in comment.get("body", "")
+        if is_trusted_codex_comment(comment)
+        and "codex-pull-request-review-summary" in comment.get("body", "")
     ]
     if not candidates:
         return None
@@ -351,6 +367,8 @@ def codex_security_review_complete(
         or "",
         reverse=True,
     ):
+        if not is_trusted_codex_comment(comment):
+            continue
         match = marker.search(comment.get("body", ""))
         if not match:
             continue
