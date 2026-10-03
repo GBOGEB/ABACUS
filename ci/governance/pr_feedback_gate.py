@@ -317,22 +317,26 @@ def codex_code_review_complete(
     if not summary:
         return False
     body = summary.get("body", "")
+    metadata_match = re.search(
+        r"codex-security-review:v1\s+(\{.*?\})\s*-->",
+        body,
+    )
+    if not metadata_match:
+        return False
+    try:
+        metadata = json.loads(metadata_match.group(1))
+    except json.JSONDecodeError:
+        return False
+    if metadata.get("headSha") != head_sha:
+        return False
+
     short = head_sha[:7]
     pattern = re.compile(
         r"\|\s*📝\s*\*\*Code Review\*\*\s*"
         r"\|\s*✅\s*\*\*Completed\*\*[^\n]*"
         + re.escape(chr(96) + short + chr(96))
     )
-    if pattern.search(body):
-        return True
-    marker = "**Reviewed commit:** " + chr(96) + head_sha[:10] + chr(96)
-    for comment in comments:
-        text = comment.get("body", "")
-        if "Codex Review: Didn't find any major issues" not in text:
-            continue
-        if marker in text:
-            return True
-    return False
+    return bool(pattern.search(body))
 
 
 def codex_security_review_complete(
