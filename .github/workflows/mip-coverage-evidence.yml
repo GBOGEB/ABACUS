@@ -62,12 +62,18 @@ permissions:
   contents: read
   actions: read
 
+# Keep only the newest in-flight proof for a PR/ref. A newer exact head
+# supersedes unfinished work; completed evidence remains in Actions history.
+concurrency:
+  group: mip-b0-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  b0-report-only:
-    name: B0 report-only admission census
+  canonical-coverage:
+    name: B0 canonical coverage producer
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact head
@@ -86,6 +92,11 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
 
       - name: Install governed test dependencies
         run: |
@@ -98,7 +109,7 @@ jobs:
           COVERAGE_FILE: test_reports/post-b0/.coverage-canonical
         run: |
           set -euo pipefail
-          mkdir -p test_reports/post-b0 test_reports/b0
+          mkdir -p test_reports/post-b0
           python -m pytest \
             -p scripts.pytest_test_state_plugin \
             -q \
@@ -118,6 +129,49 @@ jobs:
           python -m coverage json \
             --show-contexts \
             -o test_reports/post-b0/canonical-contexts.json
+
+      - name: Upload canonical coverage producer evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: b0-canonical-${{ env.EXACT_SHA }}
+          path: |
+            test_reports/post-b0/canonical-junit.xml
+            test_reports/post-b0/canonical-test-evidence.json
+            test_reports/post-b0/canonical-contexts.json
+          if-no-files-found: error
+
+  report-only-producer:
+    name: B0 report-only producer
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
+
+      - name: Install governed test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
 
       - name: Collect and execute excluded suites as report-only evidence
         env:
@@ -142,78 +196,11 @@ jobs:
             --exact-sha "${EXACT_SHA}" \
             --out test_reports/b0/coverage-dab.json
 
-      - name: Build exact-head post-B0 coverage union
-        run: |
-          set -euo pipefail
-          python scripts/post_b0_coverage_union.py \
-            --coverage-surface \
-            canonical=test_reports/post-b0/canonical-contexts.json \
-            --coverage-surface \
-            b0_report_only=test_reports/b0/coverage-contexts.json \
-            --criticality governance/coverage/criticality_manifest.json \
-            --matrix-baseline \
-            governance/coverage/python_matrix_baseline_20261001.json \
-            --test-evidence test_reports/post-b0/canonical-test-evidence.json \
-            --exact-sha "${EXACT_SHA}" \
-            --out test_reports/post-b0/coverage-dab.json
-
-      - name: Consume post-B0 pressure through MIP
-        env:
-          EXPECTED_SHA: ${{ env.EXACT_SHA }}
-        run: |
-          set -euo pipefail
-          python scripts/mip_v2_federated_controller.py \
-            --summary test_reports/post-b0/mip-pressure.json \
-            --coverage-census test_reports/post-b0/coverage-dab.json \
-            --coverage-limit 40
-
-      - name: Build exact-head false-green census
-        run: |
-          set -euo pipefail
-          mkdir -p test_reports/b1
-          python scripts/ci_false_green_lint.py \
-            --root .github/workflows \
-            --mode census \
-            --max-unguarded 267 \
-            --out test_reports/b1/false-green-census.json
-
-      - name: Build exact-head static-analysis census
-        run: |
-          set -euo pipefail
-          python scripts/dab_flake8_census.py \
-            --json-out test_reports/post-b0/flake8-census.json \
-            --text-out test_reports/post-b0/flake8-census.txt
-
-      - name: Build unified TC0-TC4 residual
-        run: |
-          set -euo pipefail
-          python scripts/mip_test_check_completeness.py \
-            --coverage-dab test_reports/post-b0/coverage-dab.json \
-            --test-evidence test_reports/post-b0/canonical-test-evidence.json \
-            --admission-census test_reports/b0/admission-census.json \
-            --false-green-census test_reports/b1/false-green-census.json \
-            --static-census test_reports/post-b0/flake8-census.json \
-            --exact-sha "$EXACT_SHA" \
-            --out test_reports/post-b0/test-check-completeness.json
-
-      - name: Emit shared MIP proposal envelope
-        run: |
-          set -euo pipefail
-          python scripts/proposal_compatibility.py emit-mip \
-            --source-sha "$EXACT_SHA" \
-            --evidence test_reports/post-b0/test-check-completeness.json \
-            --out test_reports/post-b0/mip-proposal-envelope.json
-          python scripts/proposal_compatibility.py validate \
-            --input test_reports/post-b0/mip-proposal-envelope.json
-
-      - name: Upload B0 report-only evidence
-        if: always()
+      - name: Upload report-only producer evidence
         uses: actions/upload-artifact@v7
         with:
-          name: b0-test-admission-${{ env.EXACT_SHA }}
-          path: |
-            test_reports/b0/
-            test_reports/post-b0/
+          name: b0-report-only-producer-${{ env.EXACT_SHA }}
+          path: test_reports/b0/
           if-no-files-found: error
 
   false-green-census:
@@ -252,4 +239,174 @@ jobs:
         with:
           name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1/
+          if-no-files-found: error
+
+  static-analysis:
+    name: B0 static/DAB census producer
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            pyproject.toml
+
+      - name: Install governed static-analysis dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Build exact-head static-analysis census
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/post-b0
+          python scripts/dab_flake8_census.py \
+            --json-out test_reports/post-b0/flake8-census.json \
+            --text-out test_reports/post-b0/flake8-census.txt
+
+      - name: Upload static/DAB producer evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: b0-static-dab-${{ env.EXACT_SHA }}
+          path: |
+            test_reports/post-b0/flake8-census.json
+            test_reports/post-b0/flake8-census.txt
+          if-no-files-found: error
+
+  b0-report-only:
+    name: B0 report-only admission census
+    if: ${{ always() }}
+    needs:
+      - canonical-coverage
+      - report-only-producer
+      - false-green-census
+      - static-analysis
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all exact-SHA producers GREEN
+        env:
+          CANONICAL_RESULT: ${{ needs.canonical-coverage.result }}
+          REPORT_ONLY_RESULT: ${{ needs.report-only-producer.result }}
+          FALSE_GREEN_RESULT: ${{ needs.false-green-census.result }}
+          STATIC_RESULT: ${{ needs.static-analysis.result }}
+        run: |
+          set -euo pipefail
+          test "$CANONICAL_RESULT" = "success"
+          test "$REPORT_ONLY_RESULT" = "success"
+          test "$FALSE_GREEN_RESULT" = "success"
+          test "$STATIC_RESULT" = "success"
+
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Download canonical coverage evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: b0-canonical-${{ env.EXACT_SHA }}
+          path: test_reports/post-b0
+
+      - name: Download report-only evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: b0-report-only-producer-${{ env.EXACT_SHA }}
+          path: test_reports/b0
+
+      - name: Download B1 false-green evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: b1-false-green-census-${{ env.EXACT_SHA }}
+          path: test_reports/b1
+
+      - name: Download static/DAB evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: b0-static-dab-${{ env.EXACT_SHA }}
+          path: test_reports/post-b0
+
+      - name: Build exact-head post-B0 coverage union
+        run: |
+          set -euo pipefail
+          python scripts/post_b0_coverage_union.py \
+            --coverage-surface \
+            canonical=test_reports/post-b0/canonical-contexts.json \
+            --coverage-surface \
+            b0_report_only=test_reports/b0/coverage-contexts.json \
+            --criticality governance/coverage/criticality_manifest.json \
+            --matrix-baseline \
+            governance/coverage/python_matrix_baseline_20261001.json \
+            --test-evidence test_reports/post-b0/canonical-test-evidence.json \
+            --exact-sha "${EXACT_SHA}" \
+            --out test_reports/post-b0/coverage-dab.json
+
+      - name: Consume post-B0 pressure through MIP
+        env:
+          EXPECTED_SHA: ${{ env.EXACT_SHA }}
+        run: |
+          set -euo pipefail
+          python scripts/mip_v2_federated_controller.py \
+            --summary test_reports/post-b0/mip-pressure.json \
+            --coverage-census test_reports/post-b0/coverage-dab.json \
+            --coverage-limit 40
+
+      - name: Build unified TC0-TC4 residual
+        run: |
+          set -euo pipefail
+          python scripts/mip_test_check_completeness.py \
+            --coverage-dab test_reports/post-b0/coverage-dab.json \
+            --test-evidence test_reports/post-b0/canonical-test-evidence.json \
+            --admission-census test_reports/b0/admission-census.json \
+            --false-green-census test_reports/b1/false-green-census.json \
+            --static-census test_reports/post-b0/flake8-census.json \
+            --exact-sha "$EXACT_SHA" \
+            --out test_reports/post-b0/test-check-completeness.json
+
+      - name: Emit shared MIP proposal envelope
+        run: |
+          set -euo pipefail
+          python scripts/proposal_compatibility.py emit-mip \
+            --source-sha "$EXACT_SHA" \
+            --evidence test_reports/post-b0/test-check-completeness.json \
+            --out test_reports/post-b0/mip-proposal-envelope.json
+          python scripts/proposal_compatibility.py validate \
+            --input test_reports/post-b0/mip-proposal-envelope.json
+
+      - name: Upload B0 report-only evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: b0-test-admission-${{ env.EXACT_SHA }}
+          path: |
+            test_reports/b0/
+            test_reports/post-b0/
           if-no-files-found: error
