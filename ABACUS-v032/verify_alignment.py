@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+
 def verify_alignment():
     workspace = Path(__file__).parent
 
