@@ -8,9 +8,9 @@ This control joins three previously separate views:
 2. Python 3.10/3.11/3.12 proof completeness,
 3. executed test/check coverage.
 
-A reduction in static-analysis count is not sufficient to close a gate when proof
-coverage regresses, a required job is skipped without classification, or a protected
-hold changes without source-bound authority.
+A reduction in static-analysis count is not sufficient to close a gate when
+proof coverage regresses, a required job is skipped without classification,
+or a protected hold changes without source-bound authority.
 
 ## Measured reference state
 
@@ -39,7 +39,8 @@ remains the measured static-analysis reference for this proposal.
 At the reference state, none of G1-G3 is closed because **3112 > 3000**.
 
 The thresholds are intentionally progressive. G3 is the requested **below 2000**
-full-red control boundary; it is not a substitute for terminal zero-debt cleanup.
+full-red control boundary; it is not a substitute for terminal zero-debt
+cleanup.
 
 ## Python 3.10/3.11/3.12 main audit
 
@@ -60,8 +61,8 @@ step-level proof is deliberately asymmetric:
 
 The new Python proof manifest makes each of those skips machine-visible as
 `CLASSIFIED_ROLE_SKIP` or `OPTIONAL_NO_PAYLOAD`. Missing manifests,
-unexpected skips, upstream-failure skips and unexplained zero-step jobs are proof
-debt.
+unexpected skips, upstream-failure skips and unexplained zero-step jobs are
+proof debt.
 
 ## Hidden red roots found outside the green matrix
 
