@@ -1,7 +1,7 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.1.1",
+  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.2.0",
   "mission": "MissionControl live lossless restart with PR feedback control",
-  "status": "CURRENT_REVIEW_CONTROL_REFRESH",
+  "status": "PR_FEEDBACK_HARD_GATE_STAGED",
   "restart_policy": "repository_authority_only",
   "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003_v1.1.md",
   "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md",
@@ -12,13 +12,11 @@
   "current_review_amendment": "handover/mc2/MISSIONCONTROL_REVIEW_AMENDMENT_20261003.json",
   "pr_feedback_control": "handover/mc2/PR_FEEDBACK_CONTROL.md",
   "authority_snapshot": {
-    "abacus_main": "055bb5c1d787e1fe0d7e52f1e04fc5cea08a06d4",
+    "abacus_main": "efee3f2515b76ca5ee1039a5d442d8e3f3eca884",
     "codex_main": "c8bdedd2912ceb456f4582988ab9aa72eea844de"
   },
   "active_execution": {
-    "1730": "d7539ba6bda902fb2444295873285381526a5bab",
-    "1731": "29988c4f8c62ff131a1d106c77f8ea72c43b7f90",
-    "1732": "f61d2aaebb4d652acc8175097f53cfb016432a56"
+    "1740": "9f5c72c7869c301b176b3e9207e5dd3cee858718"
   },
   "analytical_predecessor_guard": {
     "session_close_required": true,
@@ -46,7 +44,18 @@
     "github_review_thread_census_required": true,
     "unresolved_material_review_blocks_merge": true,
     "material_future_red_requires_durable_disposition": true,
-    "historical_w80_handover_immutable": true
+    "historical_w80_handover_immutable": true,
+    "pr_feedback_gate_required": true
   },
-  "restart_instruction": "Read SESSION_CLOSE_CURRENT.json before acting; then refresh repositories, active PR heads, Codex code/security reviews, GitHub reviews/threads/comments, and exact-head execution evidence."
+  "restart_instruction": "Read SESSION_CLOSE_CURRENT.json; refresh ABACUS/CODEX and active PR heads; require exact-head Codex code/security reviews, zero unresolved material threads, terminal GREEN current-head CI, and PR Feedback Gate GREEN before merge. Until branch protection is enabled, treat owner_bind_pending=true as a governance HOLD.",
+  "pr_feedback_hard_gate": {
+    "evaluator": "ci/governance/pr_feedback_gate.py",
+    "tests": "ci/governance/tests/test_pr_feedback_gate.py",
+    "workflow": ".github/workflows/pr-feedback-gate.yml",
+    "check_name": "PR Feedback Gate",
+    "repository_protection_required": true,
+    "repository_protection_observed": false,
+    "ruleset_observed": false,
+    "owner_bind_pending": true
+  }
 }
