@@ -118,3 +118,70 @@ authority_transfer=false
 formal_credit_delta=0
 engineering_credit_delta=0
 ```
+
+## Hard-gate implementation
+
+The repository now stages a single merge-gate check named:
+
+```text
+PR Feedback Gate
+```
+
+It is produced only by trusted default-branch code:
+
+```text
+ci/governance/pr_feedback_gate.py
+ci/governance/tests/test_pr_feedback_gate.py
+.github/workflows/pr-feedback-gate.yml
+```
+
+The evaluator is fail-closed for the current PR head. It requires:
+
+```text
+Codex code review complete on exact head
+Codex security review complete on exact head
+zero unresolved review threads
+current-head GitHub Actions terminal
+current-head GitHub Actions green
+known deferred warnings linked to durable open issues
+```
+
+The evaluator must not check out or execute PR-supplied code with write
+credentials. Review/comment and workflow-run events execute the workflow
+definition from the trusted default branch.
+
+### Required GitHub owner bind
+
+Repository settings are a separate owner/admin control. The live readback
+on 2026-10-03 showed:
+
+```text
+main.protected = false
+active rulesets = none
+PR Feedback Gate mergeGateEnabled = false
+```
+
+After this workflow is merged and has produced the check at least once,
+configure GitHub Settings so `main` requires the exact status check:
+
+```text
+PR Feedback Gate
+```
+
+Also require strict/up-to-date branches, conversation resolution, no
+ordinary bypass/admin exemption, and block force-push/deletion.
+
+Until that settings bind is proven by live readback, the hard gate is
+implemented but not non-bypassable.
+
+### Merge interpretation
+
+```text
+PR Feedback Gate GREEN
++ branch protection/ruleset requires PR Feedback Gate
+= HARD merge block active
+
+PR Feedback Gate GREEN
++ main.protected=false
+= evidence only; merge remains bypassable
+```
