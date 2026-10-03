@@ -4,7 +4,8 @@ on:
   workflow_call:
     inputs:
       exact_sha:
-        description: 'Exact commit SHA to census when invoked as a reusable workflow'
+        description: >-
+          Exact commit SHA to census when invoked as a reusable workflow
         required: false
         type: string
   pull_request:
@@ -26,7 +27,8 @@ permissions:
   contents: read
 
 env:
-  EXACT_SHA: ${{ inputs.exact_sha || github.event.pull_request.head.sha || github.sha }}
+  EXACT_SHA: >-
+    ${{ inputs.exact_sha || github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   census:
