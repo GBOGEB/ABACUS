@@ -25,6 +25,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
 
+
 class MasterReconciliationSystem:
     """Master reconciliation system for DMAIC V3"""
 
@@ -757,6 +758,7 @@ python DMAIC_V3/generators/test_real_execution.py
         self.log("  3. Implement VBA execution with real input")
         self.log("  4. Populate DMAIC metrics with real data")
         self.log("="*80)
+
 
 def main() -> Any:
     """TODO: Add function description"""

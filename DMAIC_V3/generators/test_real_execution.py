@@ -13,6 +13,7 @@ import json
 import time
 from datetime import datetime
 
+
 def run_python_file(file_path: Path, root_dir: Path) -> dict:
     """Run a Python file and capture results."""
     print(f"\n{'='*80}")
@@ -104,6 +105,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
             "exit_code": -1,
             "error": str(e)
         }
+
 
 def main():
     print("="*80)
