@@ -43,8 +43,6 @@ class IdempotentPhase:
         return result
 
 
-
-
 class HandoverBridge:
     """
     Bridge between handover pipeline and V3 architecture
