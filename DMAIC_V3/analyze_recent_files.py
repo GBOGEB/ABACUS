@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import re
 
+
 class RecentFilesAnalyzer:
     def __init__(self, base_path, days=7):
         self.base_path = Path(base_path)
