@@ -1,0 +1,62 @@
+{
+  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.0",
+  "created_local": "2026-10-03T16:25:00+02:00",
+  "classification": "POSTMERGE_REVIEW_CONTROL_AMENDMENT",
+  "repository": "GBOGEB/ABACUS",
+  "amends": {
+    "pr": 1734,
+    "merge": "9b24fdf3af658e621f1f973636713fbb8cd3881e",
+    "historical_receipt": "handover/mc2/MISSIONCONTROL_LOSSLESS_RECEIPT_20261003.json",
+    "historical_receipt_immutable": true
+  },
+  "defects_observed_after_original_cut": {
+    "receipt_timestamp": {
+      "source": "Copilot review thread 4172761175",
+      "finding": "The receipt timestamp predates DAB evidence included in the same snapshot.",
+      "disposition": "CORRECTED_BY_THIS_AMENDMENT_NOT_BY_REWRITING_HISTORICAL_RECEIPT",
+      "corrected_cut_time_basis": "All evidence recorded by the amendment predates 2026-10-03T16:25:00+02:00."
+    },
+    "merge_before_review_closure": {
+      "codex_code_review": "RUNNING_WHEN_PR1734_MERGED",
+      "codex_security_review": "NO_BOUND_RESULT_OBSERVED_BEFORE_MERGE",
+      "disposition": "PROCESS_GAP_NOW_GOVERNED_BY_PR_FEEDBACK_CONTROL"
+    },
+    "dependency_review_warning": {
+      "source_comment": 5968209913,
+      "observation": "No dependency snapshots were found for PR #1734 head 71359854577d95e270503a30de4e7a1f90553da0.",
+      "vulnerability_result": "NO_VULNERABILITIES_OR_LICENSE_ISSUES_REPORTED",
+      "disposition": "TRACK_AS_IMPROVEMENT_NOT_SECURITY_PASS_SUBSTITUTE"
+    }
+  },
+  "live_authority_at_amendment": {
+    "abacus_main": "055bb5c1d787e1fe0d7e52f1e04fc5cea08a06d4",
+    "codex_main": "c8bdedd2912ceb456f4582988ab9aa72eea844de",
+    "active_prs": {
+      "1730": "d7539ba6bda902fb2444295873285381526a5bab",
+      "1731": "29988c4f8c62ff131a1d106c77f8ea72c43b7f90",
+      "1732": "f61d2aaebb4d652acc8175097f53cfb016432a56"
+    }
+  },
+  "new_control": {
+    "path": "handover/mc2/PR_FEEDBACK_CONTROL.md",
+    "codex_code_review_required": true,
+    "codex_security_review_required": true,
+    "github_comment_census_required": true,
+    "github_review_thread_census_required": true,
+    "dependency_review_warning_census_required": true,
+    "current_head_refresh_required": true,
+    "unresolved_material_thread_blocks_merge": true,
+    "material_future_red_requires_durable_disposition": true
+  },
+  "invariants": {
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0,
+    "repository_authority_over_chat_memory": true,
+    "cross_sha_evidence_substitution": false,
+    "cross_sha_review_substitution": false,
+    "first_completed_attributable_red_only": true,
+    "no_second_residual_before_recensus": true,
+    "historical_w80_handover_immutable": true
+  }
+}
