@@ -1,6 +1,6 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.2",
-  "created_local": "2026-10-03T16:25:00+02:00",
+  "schema_version": "MC2-MISSIONCONTROL-REVIEW-AMENDMENT-1.0.3",
+  "created_local": "2026-10-03T16:33:00+02:00",
   "classification": "POSTMERGE_REVIEW_CONTROL_AMENDMENT",
   "repository": "GBOGEB/ABACUS",
   "amends": {
@@ -14,7 +14,7 @@
       "source": "Copilot review thread 4172761175",
       "finding": "The receipt timestamp predates DAB evidence included in the same snapshot.",
       "disposition": "CORRECTED_BY_THIS_AMENDMENT_NOT_BY_REWRITING_HISTORICAL_RECEIPT",
-      "corrected_cut_time_basis": "All evidence recorded by the amendment predates 2026-10-03T16:25:00+02:00."
+      "corrected_cut_time_basis": "All evidence recorded by this amendment predates 2026-10-03T16:33:00+02:00; the latest incorporated W83 repair evidence was present by 2026-10-03T16:32:32+02:00."
     },
     "merge_before_review_closure": {
       "codex_code_review": "RUNNING_WHEN_PR1734_MERGED",
@@ -79,5 +79,6 @@
     "first_completed_attributable_red_only": true,
     "no_second_residual_before_recensus": true,
     "historical_w80_handover_immutable": true
-  }
+  },
+  "last_recorded_evidence_at_local": "2026-10-03T16:32:32+02:00"
 }
