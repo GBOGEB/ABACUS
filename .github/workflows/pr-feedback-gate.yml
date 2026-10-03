@@ -42,7 +42,10 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: pr-feedback-gate-${{ github.event.issue.number || github.event.pull_request.number || github.event.workflow_run.head_sha || 'sweep' }}
+  group: >-
+    pr-feedback-gate-${{ github.event.issue.number ||
+    github.event.pull_request.number || github.event.workflow_run.head_sha ||
+    'sweep' }}
   cancel-in-progress: true
 
 jobs:
