@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
 
+
 class SelfImprovementAgent:
     """
     DMAIC Self-Improvement Agent
@@ -476,6 +477,7 @@ class SelfImprovementAgent:
             json.dump(result, f, indent=2)
 
         print(f"\n✅ Self-improvement cycle saved: {output_file}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="DMAIC V4.0 Self-Improvement Agent")
