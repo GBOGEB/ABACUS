@@ -36,6 +36,25 @@ class FeedbackGateTests(unittest.TestCase):
             gate.codex_code_review_complete(comments, colliding_prefix)
         )
 
+    def test_code_review_rejects_colliding_display_prefix(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        other = "abcdef0fffffffffffffffffffffffffffffffff"
+        comments = [
+            {
+                "body": (
+                    "<!-- codex-pull-request-review-summary -->\n"
+                    "<!-- codex-security-review:v1 "
+                    + '{"headSha":"' + other + '","status":"completed"} -->\n'
+                    "| Review | Status | Commit | Review trigger |\n"
+                    "| --- | --- | --- | --- |\n"
+                    "| 📝 **Code Review** | ✅ **Completed** now | "
+                    "`abcdef0` | Manual request |\n"
+                ),
+                "updated_at": "2026-10-03T10:00:00Z",
+            }
+        ]
+        self.assertFalse(gate.codex_code_review_complete(comments, head))
+
     def test_security_marker_requires_exact_head(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
         comments = [
