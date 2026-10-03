@@ -244,6 +244,9 @@ jobs:
   static-analysis:
     name: B0 static/DAB census producer
     runs-on: ubuntu-24.04
+    outputs:
+      proposal_matrix: ${{ steps.proposal_matrix.outputs.matrix }}
+      proposal_count: ${{ steps.proposal_matrix.outputs.count }}
     steps:
       - name: Checkout exact head
         uses: actions/checkout@v7
@@ -281,6 +284,52 @@ jobs:
             --json-out test_reports/post-b0/flake8-census.json \
             --text-out test_reports/post-b0/flake8-census.txt
 
+      - name: Build governed DAB proposal queue
+        run: |
+          set -euo pipefail
+          python scripts/dab_proposal_queue.py \
+            --census test_reports/post-b0/flake8-census.json \
+            --text test_reports/post-b0/flake8-census.txt \
+            --source-sha "${EXACT_SHA}" \
+            --out test_reports/post-b0/dab-proposal-queue.json
+          python scripts/proposal_compatibility.py validate \
+            --input test_reports/post-b0/dab-proposal-queue.json
+
+      - name: Build read-only proposal worker matrix
+        id: proposal_matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          queue = json.loads(
+              Path(
+                  "test_reports/post-b0/dab-proposal-queue.json"
+              ).read_text(encoding="utf-8")
+          )
+          proposals = queue.get("proposals", [])[:8]
+          matrix = {
+              "include": [
+                  {
+                      "proposal_index": index,
+                      "proposal_id": proposal["proposal_id"],
+                  }
+                  for index, proposal in enumerate(proposals)
+              ]
+          }
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          with output.open("a", encoding="utf-8") as handle:
+              handle.write(
+                  "matrix="
+                  + json.dumps(matrix, separators=(",", ":"))
+                  + "\n"
+              )
+              handle.write(f"count={len(proposals)}\n")
+          PY
+
       - name: Upload static/DAB producer evidence
         uses: actions/upload-artifact@v7
         with:
@@ -288,6 +337,109 @@ jobs:
           path: |
             test_reports/post-b0/flake8-census.json
             test_reports/post-b0/flake8-census.txt
+            test_reports/post-b0/dab-proposal-queue.json
+          if-no-files-found: error
+
+  proposal-workers:
+    name: DAB proposal worker ${{ matrix.proposal_id }}
+    if: ${{ needs.static-analysis.outputs.proposal_count != '0' }}
+    needs: static-analysis
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJSON(needs.static-analysis.outputs.proposal_matrix) }}
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+
+      - name: Verify exact checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXACT_SHA"
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Download proposal queue
+        uses: actions/download-artifact@v8
+        with:
+          name: b0-static-dab-${{ env.EXACT_SHA }}
+          path: test_reports/post-b0
+
+      - name: Extract read-only proposal envelope
+        env:
+          PROPOSAL_INDEX: ${{ matrix.proposal_index }}
+          PROPOSAL_ID: ${{ matrix.proposal_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          queue_path = Path(
+              "test_reports/post-b0/dab-proposal-queue.json"
+          )
+          queue = json.loads(queue_path.read_text(encoding="utf-8"))
+          proposal = queue["proposals"][int(os.environ["PROPOSAL_INDEX"])]
+          if proposal["proposal_id"] != os.environ["PROPOSAL_ID"]:
+              raise SystemExit("proposal worker identity mismatch")
+          if proposal["mutation_mode"] != "READ_ONLY_PROPOSAL":
+              raise SystemExit("proposal worker mutation mode is not read-only")
+          Path("proposal.json").write_text(
+              json.dumps(proposal, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Validate proposal compatibility contract
+        run: |
+          set -euo pipefail
+          python scripts/proposal_compatibility.py validate \
+            --input proposal.json
+
+      - name: Emit read-only worker receipt
+        env:
+          PROPOSAL_ID: ${{ matrix.proposal_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          proposal = json.loads(
+              Path("proposal.json").read_text(encoding="utf-8")
+          )
+          receipt = {
+              "proposal_id": os.environ["PROPOSAL_ID"],
+              "source_sha": proposal["source_sha"],
+              "mutation_mode": "READ_ONLY_PROPOSAL",
+              "worker_status": "VALIDATED",
+              "authority_transfer": False,
+              "formal_credit_delta": 0,
+              "engineering_credit_delta": 0,
+          }
+          Path("proposal-worker-receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload proposal worker receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: dab-proposal-worker-${{ matrix.proposal_id }}
+          path: |
+            proposal.json
+            proposal-worker-receipt.json
           if-no-files-found: error
 
   b0-report-only:
