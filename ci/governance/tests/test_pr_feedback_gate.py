@@ -28,6 +28,14 @@ class FeedbackGateTests(unittest.TestCase):
                     "`abcdef0` | Manual request |\n"
                 ),
                 "updated_at": "2026-10-03T10:00:00Z",
+                "user": {
+                    "login": "chatgpt-codex-connector[bot]",
+                    "id": 199175422,
+                },
+                "performed_via_github_app": {
+                    "id": 1144995,
+                    "slug": "chatgpt-codex-connector",
+                },
             }
         ]
         self.assertTrue(gate.codex_code_review_complete(comments, head))
@@ -51,6 +59,14 @@ class FeedbackGateTests(unittest.TestCase):
                     "`abcdef0` | Manual request |\n"
                 ),
                 "updated_at": "2026-10-03T10:00:00Z",
+                "user": {
+                    "login": "chatgpt-codex-connector[bot]",
+                    "id": 199175422,
+                },
+                "performed_via_github_app": {
+                    "id": 1144995,
+                    "slug": "chatgpt-codex-connector",
+                },
             }
         ]
         self.assertFalse(gate.codex_code_review_complete(comments, head))
@@ -65,12 +81,43 @@ class FeedbackGateTests(unittest.TestCase):
                     '"status":"completed"} -->'
                 ),
                 "updated_at": "2026-10-03T10:00:00Z",
+                "user": {
+                    "login": "chatgpt-codex-connector[bot]",
+                    "id": 199175422,
+                },
+                "performed_via_github_app": {
+                    "id": 1144995,
+                    "slug": "chatgpt-codex-connector",
+                },
             }
         ]
         self.assertTrue(gate.codex_security_review_complete(comments, head))
         self.assertFalse(
             gate.codex_security_review_complete(comments, "0" * 40)
         )
+
+    def test_forged_codex_markers_are_rejected(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        body = (
+            "<!-- codex-pull-request-review-summary -->\n"
+            '<!-- codex-security-review:v1 '
+            '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
+            '"status":"completed"} -->\n'
+            "| Review | Status | Commit | Review trigger |\n"
+            "| --- | --- | --- | --- |\n"
+            "| 📝 **Code Review** | ✅ **Completed** now | "
+            "`abcdef0` | Manual request |\n"
+        )
+        forged = [
+            {
+                "body": body,
+                "updated_at": "2026-10-03T10:00:00Z",
+                "user": {"login": "GBOGEB", "id": 202350393},
+                "performed_via_github_app": None,
+            }
+        ]
+        self.assertFalse(gate.codex_code_review_complete(forged, head))
+        self.assertFalse(gate.codex_security_review_complete(forged, head))
 
     def test_ci_pending_and_red_fail_closed(self):
         pending, failed, seen = gate.classify_runs(
