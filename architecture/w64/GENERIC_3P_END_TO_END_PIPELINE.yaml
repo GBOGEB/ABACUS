@@ -229,3 +229,24 @@ convergence_control:
     - no_unowned_blockers
     - POST_no_regression
     - required_CI_or_acceptance_gate_green
+proposal_contract:
+  schema: abacus-proposal-compatibility/1.0.0
+  path: governance/proposals/PROPOSAL_COMPATIBILITY_CONTRACT.json
+  analyze_to_improve_boundary:
+    exact_sha_required: true
+    compatible_methods: [DAB, MIP, 3PSTAR, DOW, CI_PROOF]
+    read_only_proposals_may_run_in_parallel: true
+    mutation_requires_single_writer: true
+    source_sha_change_invalidates_pending_proposal: true
+  control_requirements:
+    - post_merge_DAB_recensus
+    - Python_proof_role_summary
+    - no_unclassified_critical_skip
+    - coverage_non_regression
+    - test_or_check_coverage_growth_for_semantic_or_workflow_change
+  coverage_growth_choices:
+    - add_or_strengthen_test
+    - increase_executed_workflow_check_surface
+    - convert_hidden_skip_to_classified_role_skip
+    - make_advisory_result_explicit_and_governed
+    - mechanical_only_non_regression_with_explicit_not_applicable_reason
