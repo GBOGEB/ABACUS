@@ -30,7 +30,11 @@ def parse_statistics(stdout: str) -> tuple[int, dict[str, int]]:
     return total, counts
 
 
-def run_census() -> tuple[str, dict]:
+def git_head() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+
+
+def run_census(exact_sha: str | None = None) -> tuple[str, dict]:
     cmd = [
         "flake8",
         ".",
@@ -43,7 +47,8 @@ def run_census() -> tuple[str, dict]:
     raw = result.stdout
     total, counts = parse_statistics(raw)
     payload = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
+        "exact_sha": exact_sha or git_head(),
         "command": " ".join(cmd),
         "exit_code": result.returncode,
         "total": total,
@@ -64,18 +69,20 @@ def main() -> None:
     parser.add_argument("--json-out", type=Path, default=Path("reports/dab_flake8_census.json"))
     parser.add_argument("--text-out", type=Path, default=Path("reports/dab_flake8_census.txt"))
     parser.add_argument("--parse-fixture", type=Path)
+    parser.add_argument("--exact-sha")
     args = parser.parse_args()
 
     if args.parse_fixture:
         raw = args.parse_fixture.read_text(encoding="utf-8")
         total, counts = parse_statistics(raw)
         payload = {
+            "exact_sha": args.exact_sha or "PARSE_FIXTURE",
             "total": total,
             "families": {code: counts.get(code, 0) for code in TRACKED},
             "all_families": dict(sorted(counts.items())),
         }
     else:
-        raw, payload = run_census()
+        raw, payload = run_census(args.exact_sha)
 
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.text_out.parent.mkdir(parents=True, exist_ok=True)
