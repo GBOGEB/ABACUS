@@ -13,7 +13,7 @@ on:
       - 'tests/test_bootstrap_eval.py'
       - 'tests/bootstrap_bridge.py'
       - 'tests/test_integration_bootstrap_bridges.py'
-      - 'comprehensive_bridge_test_suite.py'
+      - 'deploy_integrated_tests.sh'
       - 'tests/conftest.py'
       - 'pytest.ini'
       - '.github/workflows/bootstrap-integration.yml'
@@ -25,7 +25,7 @@ on:
       - 'tests/test_bootstrap_eval.py'
       - 'tests/bootstrap_bridge.py'
       - 'tests/test_integration_bootstrap_bridges.py'
-      - 'comprehensive_bridge_test_suite.py'
+      - 'deploy_integrated_tests.sh'
       - 'tests/conftest.py'
       - 'pytest.ini'
       - '.github/workflows/bootstrap-integration.yml'
@@ -173,10 +173,10 @@ jobs:
           pip install pytest pytest-cov pytest-benchmark pytest-html numpy scipy pandas pyyaml
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Bridge Orchestrator
+      - name: Run Governed Bootstrap Integration Suite
         run: |
-          echo "🌉 Running Comprehensive Bridge Test Suite"
-          python comprehensive_bridge_test_suite.py
+          echo "🌉 Running governed bootstrap integration suite"
+          bash deploy_integrated_tests.sh full
 
       - name: Generate Coverage Report
         run: |
@@ -246,11 +246,14 @@ jobs:
           python -m py_compile tests/bootstrap_bridge.py
           echo "✅ Python scripts valid"
 
-      - name: Check Documentation
+      - name: Check Governed Integration Surfaces
         run: |
-          echo "📚 Checking documentation files"
-          [ -f "TEST_SUITE_BOOK.md" ] && echo "✅ TEST_SUITE_BOOK.md exists" || echo "❌ Missing TEST_SUITE_BOOK.md"
-          grep -q "Chapter 09" TEST_SUITE_BOOK.md && echo "✅ Bootstrap chapter present" || echo "❌ Bootstrap chapter missing"
+          echo "📚 Checking governed bootstrap integration surfaces"
+          test -f deploy_integrated_tests.sh
+          test -f tests/bootstrap_bridge.py
+          test -f tests/test_integration_bootstrap_bridges.py
+          grep -q "bootstrap)" deploy_integrated_tests.sh
+          grep -q "bridges)" deploy_integrated_tests.sh
 
   summary:
     name: Test Suite Summary
