@@ -1,7 +1,7 @@
 {
-  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.2.0",
+  "schema_version": "MC2-MISSIONCONTROL-CURRENT-POINTER-1.3.0",
   "mission": "MissionControl live lossless restart with PR feedback control",
-  "status": "PR_FEEDBACK_HARD_GATE_STAGED",
+  "status": "PR_FEEDBACK_HARD_GATE_CORRECTIVE_PENDING_CODEX_QUOTA",
   "restart_policy": "repository_authority_only",
   "current_handover": "handover/mc2/MISSIONCONTROL_LOSSLESS_HANDOVER_20261003_v1.1.md",
   "current_dropin": "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md",
@@ -12,11 +12,13 @@
   "current_review_amendment": "handover/mc2/MISSIONCONTROL_REVIEW_AMENDMENT_20261003.json",
   "pr_feedback_control": "handover/mc2/PR_FEEDBACK_CONTROL.md",
   "authority_snapshot": {
-    "abacus_main": "efee3f2515b76ca5ee1039a5d442d8e3f3eca884",
-    "codex_main": "c8bdedd2912ceb456f4582988ab9aa72eea844de"
+    "abacus_main": "74eb0ca2a3f7727932a217e2a4f599a04a70ac80",
+    "codex_main": "bb171b534943cd76fe761b988c936fbd09cf96ca"
   },
   "active_execution": {
-    "1740": "9f5c72c7869c301b176b3e9207e5dd3cee858718"
+    "1740": "9f5c72c7869c301b176b3e9207e5dd3cee858718",
+    "1759": "71f4b81f4396f91d8c5eeb760b7816489e134fd6",
+    "1761": "ff0bf8d4075b976317d45982e7de3f2b10fa1d74"
   },
   "analytical_predecessor_guard": {
     "session_close_required": true,
@@ -47,7 +49,7 @@
     "historical_w80_handover_immutable": true,
     "pr_feedback_gate_required": true
   },
-  "restart_instruction": "Read SESSION_CLOSE_CURRENT.json; refresh ABACUS/CODEX and active PR heads; require exact-head Codex code/security reviews, zero unresolved material threads, terminal GREEN current-head CI, and PR Feedback Gate GREEN before merge. Until branch protection is enabled, treat owner_bind_pending=true as a governance HOLD.",
+  "restart_instruction": "Read SESSION_CLOSE_CURRENT.json; refresh ABACUS/CODEX and active PR heads; require exact-head Codex code review COMPLETE, exact-head Codex security review COMPLETE, zero unresolved material threads, terminal GREEN current-head CI, and PR Feedback Gate GREEN before merge. Codex quota/credit exhaustion is an external HOLD, never a waiver. Until branch protection is enabled, treat owner_bind_pending=true as a governance HOLD.",
   "pr_feedback_hard_gate": {
     "evaluator": "ci/governance/pr_feedback_gate.py",
     "tests": "ci/governance/tests/test_pr_feedback_gate.py",
@@ -56,6 +58,8 @@
     "repository_protection_required": true,
     "repository_protection_observed": false,
     "ruleset_observed": false,
-    "owner_bind_pending": true
+    "owner_bind_pending": true,
+    "codex_mandatory_restoration_pending": true,
+    "external_codex_quota_hold": true
   }
 }
