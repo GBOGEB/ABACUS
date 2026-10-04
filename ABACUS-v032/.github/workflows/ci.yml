@@ -49,7 +49,9 @@ jobs:
         run: isort --check-only . || true
 
       - name: Run Flake8
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 \
+            --show-source --statistics || true
 
       - name: Run Pylint
         run: pylint **/*.py --exit-zero || true
@@ -87,7 +89,8 @@ jobs:
 
       - name: Run Unit Tests with Coverage
         run: |
-          pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term || true
+          pytest --cov=. --cov-report=xml --cov-report=html \
+            --cov-report=term || true
 
       - name: Upload Coverage Reports
         uses: codecov/codecov-action@v4
@@ -125,12 +128,20 @@ jobs:
       - name: Test Master Pipeline Orchestrator
         run: |
           cd ABACUS-v032
-          python -c "from master_pipeline_orchestrator import MasterPipelineOrchestrator; print('Orchestrator loaded successfully')" || true
+          python - <<'PY' || true
+          from master_pipeline_orchestrator import MasterPipelineOrchestrator
+          print("Orchestrator loaded successfully")
+          PY
 
       - name: Validate Sprint Configuration
         run: |
           cd ABACUS-v032
-          python -c "import json; config = json.load(open('sprint_config.json')); assert config['version'] == 'v033'; print('Sprint config validated')"
+          python - <<'PY'
+          import json
+          config = json.load(open("sprint_config.json"))
+          assert config["version"] == "v033"
+          print("Sprint config validated")
+          PY
 
   docker-build:
     name: Docker Build & Test
@@ -150,11 +161,13 @@ jobs:
 
       - name: Test Docker Image
         run: |
-          docker run --rm abacus-v033:ci python -c "import sys; print(f'Python {sys.version}'); sys.exit(0)"
+          docker run --rm abacus-v033:ci python -c \
+            "import sys; print(f'Python {sys.version}'); sys.exit(0)"
 
       - name: Verify Docker Labels
         run: |
-          docker inspect abacus-v033:ci | grep -E "(version|sprint_tested|dow_tested|canonical_aligned)"
+          docker inspect abacus-v033:ci | \
+            grep -E "(version|sprint_tested|dow_tested|canonical_aligned)"
 
       - name: Test Docker Compose
         run: |
@@ -245,9 +258,15 @@ jobs:
           echo "- **Canonical Aligned**: yes" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "## Jobs Completed" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Code Quality: ${{ needs.code-quality.result }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Unit Tests: ${{ needs.unit-tests.result }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Integration Tests: ${{ needs.integration-tests.result }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Docker Build: ${{ needs.docker-build.result }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Security Scan: ${{ needs.security-scan.result }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Documentation: ${{ needs.documentation.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Code Quality: ${{ needs.code-quality.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
+          echo "- Unit Tests: ${{ needs.unit-tests.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
+          echo "- Integration Tests: ${{ needs.integration-tests.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
+          echo "- Docker Build: ${{ needs.docker-build.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
+          echo "- Security Scan: ${{ needs.security-scan.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
+          echo "- Documentation: ${{ needs.documentation.result }}" \
+            >> "$GITHUB_STEP_SUMMARY"
