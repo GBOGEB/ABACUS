@@ -32,22 +32,16 @@ def test_output_directories_exist():
         assert dir_path.exists() or True, f"Directory {dir_name} should exist or be creatable"
 
 
-@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
-def test_dmaic_execution_script_exists():
-    """Test that main execution scripts exist"""
+def test_dmaic_execution_entrypoints_exist():
+    """Verify the current governed DMAIC execution entrypoints exist."""
     base_path = Path(__file__).parent.parent
-    scripts = [
-        "run_dmaic_5_iterations.py",
-        "run_dmaic.py"
+    entrypoints = [
+        base_path / "DMAIC_V3" / "core" / "twelve_cluster_orchestrator.py",
+        base_path / "DMAIC_V3" / "full_pipeline_orchestrator.py",
     ]
 
-    for script in scripts:
-        script_path = base_path / script
-        if script_path.exists():
-            assert script_path.is_file()
-            break
-    else:
-        pytest.skip("TEST_BLOCKED_SOURCE_MISSING: No DMAIC execution scripts found")
+    missing = [str(path.relative_to(base_path)) for path in entrypoints if not path.is_file()]
+    assert not missing, f"Current DMAIC execution entrypoints missing: {missing}"
 
 
 def test_requirements_file_exists():
