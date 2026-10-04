@@ -182,7 +182,7 @@ class FeedbackGateTests(unittest.TestCase):
     def test_required_workflows_follow_changed_paths(self):
         self.assertEqual(
             gate.required_workflows_for_paths(["README.md"]),
-            ("CI - ABACUS Matrix",),
+            tuple(sorted(gate.ALWAYS_REQUIRED_WORKFLOWS)),
         )
         required = gate.required_workflows_for_paths(
             ["DMAIC_V3/phases/phase6_knowledge.py"]
@@ -197,6 +197,16 @@ class FeedbackGateTests(unittest.TestCase):
     def test_top_level_python_triggers_dab(self):
         required = gate.required_workflows_for_paths(["tool.py"])
         self.assertIn("DAB Flake8 Census", required)
+
+    def test_only_path_filtered_workflows_are_conditional(self):
+        conditional = set(gate.CONDITIONAL_WORKFLOW_PATHS)
+        blocking = set(gate.BLOCKING_IF_PRESENT_WORKFLOWS)
+        required = set(gate.ALWAYS_REQUIRED_WORKFLOWS)
+        self.assertEqual(
+            blocking - required,
+            conditional,
+        )
+        self.assertTrue(required.isdisjoint(conditional))
 
     def test_actions_globstar_matches_zero_or_more_directories(self):
         self.assertTrue(
@@ -304,7 +314,7 @@ class FeedbackGateTests(unittest.TestCase):
         ]
         pending, failed, _ = gate.classify_runs(
             runs,
-            required_workflows=("CI - ABACUS Matrix",),
+            required_workflows=gate.ALWAYS_REQUIRED_WORKFLOWS,
         )
         self.assertEqual(pending, ())
         self.assertEqual(failed, ())
