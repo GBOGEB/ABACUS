@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 from dmaic.contract import ensure_contract
 from dmaic import idempotency
 
+
 class DOWRecursiveHooksInjector:
     """Agent to inject recursive hooks into JSON files"""
 
@@ -139,6 +140,7 @@ class DOWRecursiveHooksInjector:
         if not versions:
             versions = ["3.3.0"]
         return sorted(set(versions))
+
 
 def main():
     """Main entry point"""
