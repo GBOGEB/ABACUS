@@ -167,7 +167,7 @@ class FeedbackGateTests(unittest.TestCase):
     def blocking_runs(self, overrides=None):
         overrides = overrides or {}
         runs = []
-        for name in gate.BLOCKING_WORKFLOWS:
+        for name in gate.BLOCKING_IF_PRESENT_WORKFLOWS:
             run = {
                 "name": name,
                 "event": "pull_request",
@@ -178,6 +178,25 @@ class FeedbackGateTests(unittest.TestCase):
             run.update(overrides.get(name, {}))
             runs.append(run)
         return runs
+
+    def test_required_workflows_follow_changed_paths(self):
+        self.assertEqual(
+            gate.required_workflows_for_paths(["README.md"]),
+            ("CI - ABACUS Matrix",),
+        )
+        required = gate.required_workflows_for_paths(
+            ["DMAIC_V3/phases/phase6_knowledge.py"]
+        )
+        self.assertIn("CI - ABACUS Matrix", required)
+        self.assertIn("DAB Flake8 Census", required)
+        self.assertIn(
+            "MIP B0 Test Admission and Coverage Evidence",
+            required,
+        )
+
+    def test_top_level_python_triggers_dab(self):
+        required = gate.required_workflows_for_paths(["tool.py"])
+        self.assertIn("DAB Flake8 Census", required)
 
     def test_ci_pending_and_red_fail_closed(self):
         runs = self.blocking_runs(
@@ -192,7 +211,7 @@ class FeedbackGateTests(unittest.TestCase):
             }
         )
         pending, failed, seen = gate.classify_runs(runs)
-        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS))
+        self.assertEqual(seen, len(gate.BLOCKING_IF_PRESENT_WORKFLOWS))
         self.assertEqual(len(pending), 1)
         self.assertEqual(len(failed), 1)
 
@@ -208,20 +227,46 @@ class FeedbackGateTests(unittest.TestCase):
             }
         )
         pending, failed, seen = gate.classify_runs(runs)
-        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS))
+        self.assertEqual(seen, len(gate.BLOCKING_IF_PRESENT_WORKFLOWS))
         self.assertEqual(pending, ())
         self.assertEqual(failed, ())
 
-    def test_missing_blocking_workflow_fails_closed_as_pending(self):
+    def test_missing_required_workflow_fails_closed_as_pending(self):
         runs = self.blocking_runs()
         runs = [
             run
             for run in runs
             if run["name"] != "DAB Flake8 Census"
         ]
-        pending, failed, seen = gate.classify_runs(runs)
-        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS) - 1)
+        pending, failed, seen = gate.classify_runs(
+            runs,
+            required_workflows=(
+                "CI - ABACUS Matrix",
+                "DAB Flake8 Census",
+            ),
+        )
+        self.assertEqual(
+            seen,
+            len(gate.BLOCKING_IF_PRESENT_WORKFLOWS) - 1,
+        )
         self.assertIn("CI missing: DAB Flake8 Census", pending)
+        self.assertEqual(failed, ())
+
+    def test_missing_nonapplicable_workflow_does_not_deadlock(self):
+        runs = [
+            run
+            for run in self.blocking_runs()
+            if run["name"]
+            not in {
+                "DAB Flake8 Census",
+                "MIP B0 Test Admission and Coverage Evidence",
+            }
+        ]
+        pending, failed, _ = gate.classify_runs(
+            runs,
+            required_workflows=("CI - ABACUS Matrix",),
+        )
+        self.assertEqual(pending, ())
         self.assertEqual(failed, ())
 
     def test_gate_state_order_is_failure_then_pending_then_success(self):
