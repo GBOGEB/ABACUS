@@ -25,6 +25,23 @@ IGNORED_WORKFLOWS = {
     "Post-Merge PR Summary",
     "Running Copilot Code Review",
 }
+BLOCKING_WORKFLOWS = (
+    "CI - ABACUS Matrix",
+    "ABACUS v032 - CI/CD Pipeline",
+    "qps-canonicalization",
+    "Security Scan — Ruff",
+    "DELTA_1 CodeQL",
+    "DELTA_1 Dependency Review",
+    "OSV-Scanner",
+    "Validate Docs (Markdown/YAML/JSON)",
+    "Format Check",
+    "YAML Validation",
+    "smoke-test",
+    "W70 Exact-SHA Measured ID Pulse",
+    "W71 Residual Generated-Lineage Census",
+    "DAB Flake8 Census",
+    "MIP B0 Test Admission and Coverage Evidence",
+)
 GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
 DEFERRED_COMMENT_RULES = (
     ("No snapshots were found for the head SHA", 1736),
@@ -390,7 +407,11 @@ def classify_runs(
     for run in runs:
         name = run.get("name") or ""
         event = run.get("event") or ""
-        if name in IGNORED_WORKFLOWS or event == "dynamic":
+        if (
+            name in IGNORED_WORKFLOWS
+            or name not in BLOCKING_WORKFLOWS
+            or event == "dynamic"
+        ):
             continue
         key = (name, event)
         candidate = latest.get(key)
@@ -405,7 +426,10 @@ def classify_runs(
 
     pending: list[str] = []
     failed: list[str] = []
+    seen_names: set[str] = set()
+
     for (name, event), run in sorted(latest.items()):
+        seen_names.add(name)
         label = f"{name} [{event}]"
         if run.get("status") != "completed":
             pending.append(f"CI pending: {label}")
@@ -413,7 +437,12 @@ def classify_runs(
         conclusion = run.get("conclusion")
         if conclusion not in GOOD_CONCLUSIONS:
             failed.append(f"CI not green: {label} = {conclusion}")
-    return tuple(pending), tuple(failed), len(latest)
+
+    for name in BLOCKING_WORKFLOWS:
+        if name not in seen_names:
+            pending.append(f"CI missing: {name}")
+
+    return tuple(pending), tuple(failed), len(seen_names)
 
 
 def deferred_comment_evidence(

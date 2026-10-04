@@ -164,28 +164,65 @@ class FeedbackGateTests(unittest.TestCase):
         comment["performed_via_github_app"]["id"] = 1
         self.assertFalse(gate.codex_security_review_complete([comment], head))
 
+    def blocking_runs(self, overrides=None):
+        overrides = overrides or {}
+        runs = []
+        for name in gate.BLOCKING_WORKFLOWS:
+            run = {
+                "name": name,
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "success",
+                "run_started_at": "2026-10-03T10:00:00Z",
+            }
+            run.update(overrides.get(name, {}))
+            runs.append(run)
+        return runs
+
     def test_ci_pending_and_red_fail_closed(self):
-        pending, failed, seen = gate.classify_runs(
-            [
-                {
-                    "name": "CI - ABACUS Matrix",
-                    "event": "pull_request",
+        runs = self.blocking_runs(
+            {
+                "CI - ABACUS Matrix": {
                     "status": "in_progress",
                     "conclusion": None,
-                    "run_started_at": "2026-10-03T10:00:00Z",
                 },
-                {
-                    "name": "CodeQL",
-                    "event": "pull_request",
-                    "status": "completed",
+                "DELTA_1 CodeQL": {
                     "conclusion": "failure",
-                    "run_started_at": "2026-10-03T10:00:00Z",
                 },
-            ]
+            }
         )
-        self.assertEqual(seen, 2)
+        pending, failed, seen = gate.classify_runs(runs)
+        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS))
         self.assertEqual(len(pending), 1)
         self.assertEqual(len(failed), 1)
+
+    def test_advisory_workflow_failure_does_not_poison_gate(self):
+        runs = self.blocking_runs()
+        runs.append(
+            {
+                "name": "CI/CD Test Suite",
+                "event": "pull_request",
+                "status": "completed",
+                "conclusion": "failure",
+                "run_started_at": "2026-10-03T10:00:00Z",
+            }
+        )
+        pending, failed, seen = gate.classify_runs(runs)
+        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS))
+        self.assertEqual(pending, ())
+        self.assertEqual(failed, ())
+
+    def test_missing_blocking_workflow_fails_closed_as_pending(self):
+        runs = self.blocking_runs()
+        runs = [
+            run
+            for run in runs
+            if run["name"] != "DAB Flake8 Census"
+        ]
+        pending, failed, seen = gate.classify_runs(runs)
+        self.assertEqual(seen, len(gate.BLOCKING_WORKFLOWS) - 1)
+        self.assertIn("CI missing: DAB Flake8 Census", pending)
+        self.assertEqual(failed, ())
 
     def test_gate_state_order_is_failure_then_pending_then_success(self):
         base = dict(
