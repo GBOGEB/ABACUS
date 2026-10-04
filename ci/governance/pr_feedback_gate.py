@@ -25,6 +25,145 @@ IGNORED_WORKFLOWS = {
     "Post-Merge PR Summary",
     "Running Copilot Code Review",
 }
+BLOCKING_IF_PRESENT_WORKFLOWS = (
+    "CI - ABACUS Matrix",
+    "ABACUS v032 - CI/CD Pipeline",
+    "qps-canonicalization",
+    "Security Scan — Ruff",
+    "DELTA_1 CodeQL",
+    "DELTA_1 Dependency Review",
+    "OSV-Scanner",
+    "Validate Docs (Markdown/YAML/JSON)",
+    "Format Check",
+    "YAML Validation",
+    "smoke-test",
+    "W70 Exact-SHA Measured ID Pulse",
+    "W71 Residual Generated-Lineage Census",
+    "DAB Flake8 Census",
+    "MIP B0 Test Admission and Coverage Evidence",
+)
+ALWAYS_REQUIRED_WORKFLOWS = (
+    "CI - ABACUS Matrix",
+    "ABACUS v032 - CI/CD Pipeline",
+    "qps-canonicalization",
+    "Security Scan — Ruff",
+    "DELTA_1 CodeQL",
+    "DELTA_1 Dependency Review",
+    "OSV-Scanner",
+    "Validate Docs (Markdown/YAML/JSON)",
+    "Format Check",
+    "YAML Validation",
+    "smoke-test",
+    "W70 Exact-SHA Measured ID Pulse",
+    "W71 Residual Generated-Lineage Census",
+)
+TRUSTED_WORKFLOW_IDENTITIES = {
+    "ABACUS v032 - CI/CD Pipeline": (
+        207346559,
+        ".github/workflows/abacus-cicd.yml",
+    ),
+    "CI - ABACUS Matrix": (
+        208410566,
+        ".github/workflows/ci-abacus.yml",
+    ),
+    "DAB Flake8 Census": (
+        371038481,
+        ".github/workflows/dab-flake8-census.yml",
+    ),
+    "DELTA_1 CodeQL": (
+        280454283,
+        ".github/workflows/codeql.yml",
+    ),
+    "DELTA_1 Dependency Review": (
+        280454278,
+        ".github/workflows/dependency-review.yml",
+    ),
+    "Format Check": (
+        207346558,
+        ".github/workflows/format-check.yml",
+    ),
+    "MIP B0 Test Admission and Coverage Evidence": (
+        372055739,
+        ".github/workflows/mip-coverage-evidence.yml",
+    ),
+    "OSV-Scanner": (
+        293893643,
+        ".github/workflows/osv-scanner.yml",
+    ),
+    "qps-canonicalization": (
+        350890474,
+        ".github/workflows/qps-canonicalization.yml",
+    ),
+    "Security Scan — Ruff": (
+        293888672,
+        ".github/workflows/security-scan.yml",
+    ),
+    "smoke-test": (
+        207346551,
+        ".github/workflows/smoke-test.yml",
+    ),
+    "Validate Docs (Markdown/YAML/JSON)": (
+        207346550,
+        ".github/workflows/validate_docs.yml",
+    ),
+    "W70 Exact-SHA Measured ID Pulse": (
+        352923312,
+        ".github/workflows/w70-measured-id-pulse-exact-sha.yml",
+    ),
+    "W71 Residual Generated-Lineage Census": (
+        352939017,
+        ".github/workflows/w71-residual-lineage-census.yml",
+    ),
+    "YAML Validation": (
+        289633215,
+        ".github/workflows/yaml-validation.yml",
+    ),
+} 
+
+TRUSTED_WORKFLOW_INPUTS = {
+    "DELTA_1 CodeQL": (
+        ".github/codeql/codeql-config.yml",
+    ),
+}
+
+CONDITIONAL_WORKFLOW_PATHS = {
+    "DAB Flake8 Census": (
+        "**/*.py",
+        "scripts/dab_flake8_census.py",
+        "scripts/dab_proposal_queue.py",
+        "scripts/proposal_compatibility.py",
+        "governance/dab/**",
+        "governance/proposals/**",
+        ".github/workflows/dab-flake8-census.yml",
+    ),
+    "MIP B0 Test Admission and Coverage Evidence": (
+        "pytest.ini",
+        "requirements*.txt",
+        "pyproject.toml",
+        "scripts/test_admission_census.py",
+        "scripts/test_evidence_census.py",
+        "scripts/coverage_dab_census.py",
+        "scripts/post_b0_coverage_union.py",
+        "scripts/mip_v2_federated_controller.py",
+        "scripts/mip_test_check_completeness.py",
+        "scripts/pytest_test_state_plugin.py",
+        "scripts/ci_false_green_lint.py",
+        "scripts/dab_flake8_census.py",
+        "scripts/dab_proposal_queue.py",
+        "scripts/proposal_compatibility.py",
+        "scripts/ci_matrix_proof_audit.py",
+        "governance/dab/**",
+        "governance/proposals/**",
+        "DMAIC_V3/**/*.py",
+        "MINERVA_PID/**/*.py",
+        "tools/**/*.py",
+        "integration_DOW_KEB_MASTER/**/*.py",
+        "DMAIC_V3/tests/**",
+        "integration/*/tests/**",
+        "tests/**",
+        ".github/workflows/**",
+    ),
+}
 GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
 DEFERRED_COMMENT_RULES = (
     ("No snapshots were found for the head SHA", 1736),
@@ -64,14 +203,19 @@ class Evidence:
     @property
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if not self.code_review_complete:
-            reasons.append("Codex code review is not complete on current head")
-        if not self.security_review_complete:
-            reasons.append("Codex security review is not complete on current head")
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
         return tuple(reasons)
+
+    @property
+    def supplemental_review_status(self) -> tuple[str, ...]:
+        status: list[str] = []
+        if not self.code_review_complete:
+            status.append("Codex code review unavailable/incomplete on current head")
+        if not self.security_review_complete:
+            status.append("Codex security review unavailable/incomplete on current head")
+        return tuple(status)
 
     @property
     def state(self) -> str:
@@ -138,6 +282,14 @@ class GitHub:
             "GET",
             f"/repos/{self.repository}/pulls/{number}",
         )
+
+    def pull_files(self, number: int) -> list[str]:
+        return [
+            item["filename"]
+            for item in self.paged(
+                f"/repos/{self.repository}/pulls/{number}/files"
+            )
+        ]
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -274,7 +426,15 @@ class GitHub:
                 "completed_at": now,
                 "output": output,
             }
-        if existing:
+        reusable = existing[0] if existing else None
+        if (
+            state == "pending"
+            and reusable is not None
+            and reusable.get("status") == "completed"
+        ):
+            reusable = None
+
+        if reusable is not None:
             update_payload = {
                 key: value
                 for key, value in payload.items()
@@ -282,7 +442,7 @@ class GitHub:
             }
             self.request(
                 "PATCH",
-                f"/repos/{self.repository}/check-runs/{existing[0]['id']}",
+                f"/repos/{self.repository}/check-runs/{reusable['id']}",
                 update_payload,
             )
         else:
@@ -383,15 +543,99 @@ def codex_security_review_complete(
     return False
 
 
+def github_path_pattern_regex(pattern: str) -> re.Pattern[str]:
+    """Translate the Actions path-filter glob subset used by this repo."""
+    parts = ["^"]
+    index = 0
+    while index < len(pattern):
+        if pattern.startswith("**/", index):
+            parts.append("(?:.*/)?")
+            index += 3
+            continue
+        if pattern.startswith("**", index):
+            parts.append(".*")
+            index += 2
+            continue
+        char = pattern[index]
+        if char == "*":
+            parts.append("[^/]*")
+        elif char == "?":
+            parts.append("[^/]")
+        else:
+            parts.append(re.escape(char))
+        index += 1
+    parts.append("$")
+    return re.compile("".join(parts))
+
+
+def github_path_match(path: str, pattern: str) -> bool:
+    return bool(github_path_pattern_regex(pattern).match(path))
+
+
+def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
+    required = set(ALWAYS_REQUIRED_WORKFLOWS)
+    for workflow, patterns in CONDITIONAL_WORKFLOW_PATHS.items():
+        if any(
+            github_path_match(path, pattern)
+            for path in paths
+            for pattern in patterns
+        ):
+            required.add(workflow)
+    return tuple(sorted(required))
+
+
+def required_workflow_definition_changes(
+    changed_paths: list[str],
+    required_workflows: tuple[str, ...],
+) -> tuple[str, ...]:
+    protected_paths = {
+        TRUSTED_WORKFLOW_IDENTITIES[name][1]
+        for name in required_workflows
+        if name in TRUSTED_WORKFLOW_IDENTITIES
+    }
+    for name in required_workflows:
+        protected_paths.update(TRUSTED_WORKFLOW_INPUTS.get(name, ()))
+    return tuple(sorted(set(changed_paths) & protected_paths))
+
+
 def classify_runs(
     runs: list[dict[str, Any]],
+    *,
+    required_workflows: tuple[str, ...] = ALWAYS_REQUIRED_WORKFLOWS,
+    pr_number: int | None = None,
 ) -> tuple[tuple[str, ...], tuple[str, ...], int]:
     latest: dict[tuple[str, str], dict[str, Any]] = {}
+    identity_failures: list[str] = []
     for run in runs:
         name = run.get("name") or ""
         event = run.get("event") or ""
-        if name in IGNORED_WORKFLOWS or event == "dynamic":
+        if (
+            name in IGNORED_WORKFLOWS
+            or name not in BLOCKING_IF_PRESENT_WORKFLOWS
+            or event != "pull_request"
+        ):
             continue
+
+        if pr_number is not None:
+            associated_prs = {
+                int(item["number"])
+                for item in (run.get("pull_requests") or [])
+                if item.get("number") is not None
+            }
+            if pr_number not in associated_prs:
+                continue
+
+        expected_id, expected_path = TRUSTED_WORKFLOW_IDENTITIES[name]
+        actual_id = run.get("workflow_id")
+        actual_path = run.get("path")
+        if actual_id != expected_id or actual_path != expected_path:
+            identity_failures.append(
+                "CI identity mismatch: "
+                f"{name} expected id={expected_id} path={expected_path}; "
+                f"got id={actual_id} path={actual_path}"
+            )
+            continue
+
         key = (name, event)
         candidate = latest.get(key)
         candidate_time = (
@@ -404,8 +648,11 @@ def classify_runs(
             latest[key] = run
 
     pending: list[str] = []
-    failed: list[str] = []
+    failed: list[str] = list(identity_failures)
+    seen_names: set[str] = set()
+
     for (name, event), run in sorted(latest.items()):
+        seen_names.add(name)
         label = f"{name} [{event}]"
         if run.get("status") != "completed":
             pending.append(f"CI pending: {label}")
@@ -413,7 +660,12 @@ def classify_runs(
         conclusion = run.get("conclusion")
         if conclusion not in GOOD_CONCLUSIONS:
             failed.append(f"CI not green: {label} = {conclusion}")
-    return tuple(pending), tuple(failed), len(latest)
+
+    for name in required_workflows:
+        if name not in seen_names:
+            pending.append(f"CI missing: {name}")
+
+    return tuple(pending), tuple(failed), len(seen_names)
 
 
 def deferred_comment_evidence(
@@ -450,7 +702,21 @@ def evaluate(
     comments = github.issue_comments(number)
     threads = github.review_threads(number)
     runs = github.actions_runs(head_sha)
-    pending, failed, seen = classify_runs(runs)
+    changed_paths = github.pull_files(number)
+    required_workflows = required_workflows_for_paths(changed_paths)
+    pending, failed, seen = classify_runs(
+        runs,
+        required_workflows=required_workflows,
+        pr_number=number,
+    )
+    definition_changes = required_workflow_definition_changes(
+        changed_paths,
+        required_workflows,
+    )
+    failed = tuple(failed) + tuple(
+        f"required workflow definition modified by PR: {path}"
+        for path in definition_changes
+    )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
     return Evidence(
@@ -491,12 +757,14 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "Pending reasons:",
         *(f"- {item}" for item in evidence.pending_reasons),
         "",
+        "Supplemental review status:",
+        *(f"- {item}" for item in evidence.supplemental_review_status),
+        "",
         "Deferred evidence:",
         *(f"- {item}" for item in evidence.deferred_comments),
         "",
         "Required invariants:",
-        "- exact-head Codex code review complete",
-        "- exact-head Codex security review complete",
+        "- repository-native current-head admission evidence terminal and green",
         "- zero unresolved review threads",
         "- current-head GitHub Actions terminal and green",
         "- known deferred warnings remain linked to open issues",
@@ -506,6 +774,9 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
     if not evidence.pending_reasons:
         pending_index = lines.index("Pending reasons:")
         lines[pending_index] = "Pending reasons: none"
+    if not evidence.supplemental_review_status:
+        review_index = lines.index("Supplemental review status:")
+        lines[review_index] = "Supplemental review status: complete"
     return title, summary, "\n".join(lines)
 
 

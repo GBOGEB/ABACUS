@@ -23,7 +23,7 @@ on:
       - W70 Exact-SHA Measured ID Pulse
       - W71 Residual Generated-Lineage Census
       - DAB Flake8 Census
-      - MIP Coverage Evidence
+      - MIP B0 Test Admission and Coverage Evidence
     types: [requested, in_progress, completed]
   schedule:
     - cron: "*/5 * * * *"

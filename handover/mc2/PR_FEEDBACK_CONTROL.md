@@ -41,8 +41,12 @@ comment 2:
 Do not combine the two commands into one comment. The observed GitHub
 integration may start only one review from a combined request.
 
-A previous-head review may remain useful history, but it cannot satisfy the
-current-head review requirement.
+A previous-head review may remain useful history, but it cannot substitute
+for current-head review evidence when that service is available. Codex review
+is supplemental evidence: lack of review capacity, quota, credits, or service
+availability does not by itself block an otherwise admitted exact head. Do not
+retry unavailable reviews repeatedly; record the unavailable state and proceed
+with repository-native admission evidence.
 
 ## Finding disposition contract
 
@@ -69,17 +73,19 @@ Before merge, require:
 ```text
 exact-head CI / MIP / DAB census
 +
-Codex code review complete for current head
-+
-Codex security review complete for current head
+current-head GitHub Actions terminal and green
 +
 GitHub comment and review-thread census refreshed
 +
-all material findings explicitly disposed
+all available material findings explicitly disposed
 +
 no unresolved material review thread
 =
 PR feedback gate eligible
+
+Codex code/security reviews are supplemental. Request them when available and
+consume their findings, but unavailable/incomplete Codex review alone is not
+a merge-blocking predicate.
 ```
 
 If a material review finding is found, treat it as attributable evidence.
@@ -107,7 +113,8 @@ refresh exact head
 
 ```text
 repository authority > chat memory
-review evidence is exact-head evidence
+review evidence is exact-head evidence when available
+Codex review completion is supplemental, not primary admission authority
 no cross-SHA review substitution
 CI green does not erase review findings
 security green does not erase code-review findings
@@ -135,16 +142,19 @@ ci/governance/tests/test_pr_feedback_gate.py
 .github/workflows/pr-feedback-gate.yml
 ```
 
-The evaluator is fail-closed for the current PR head. It requires:
+The evaluator is fail-closed for repository-native admission and material
+review findings. It requires:
 
 ```text
-Codex code review complete on exact head
-Codex security review complete on exact head
 zero unresolved review threads
 current-head GitHub Actions terminal
 current-head GitHub Actions green
 known deferred warnings linked to durable open issues
 ```
+
+Codex code/security completion is reported as supplemental review status, not
+as a hard pending reason. If Codex review evidence exists, its material
+findings remain attributable evidence and must be dispositioned before merge.
 
 The evaluator must not check out or execute PR-supplied code with write
 credentials. Review/comment and workflow-run events execute the workflow
