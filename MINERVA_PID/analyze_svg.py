@@ -7,8 +7,10 @@ import xml.etree.ElementTree as ET
 SVG_NS = "http://www.w3.org/2000/svg"
 INK_NS = "http://www.inkscape.org/namespaces/inkscape"
 
+
 def localname(tag):
     return tag.split('}')[-1] if '}' in tag else tag
+
 
 def analyze(path):
     size = os.path.getsize(path)
