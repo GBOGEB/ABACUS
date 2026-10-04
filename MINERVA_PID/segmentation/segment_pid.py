@@ -138,6 +138,7 @@ TAG_RE = re.compile(r"^([A-Z]{2})\s?[-]?\s?([0-9x]{1,4}[A-Za-z]?)$")
 # Transform handling -> absolute coordinates
 # ---------------------------------------------------------------------------
 
+
 def parse_transform(t):
     """Return a 2x3 affine matrix [a,b,c,d,e,f] for an SVG transform string."""
     m = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]

@@ -56,6 +56,7 @@ STRUCTURE_COLORS = {
 # Transform handling
 # ---------------------------------------------------------------------------
 
+
 def transform_to_matrix(name, n):
     if name == "matrix" and len(n) == 6:
         return n[:]
