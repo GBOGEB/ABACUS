@@ -35,6 +35,7 @@ from datetime import datetime
 from dataclasses import dataclass, asdict
 from importlib import import_module
 
+
 @dataclass
 class MetricsSnapshot:
     """Snapshot of codebase metrics"""
@@ -48,6 +49,7 @@ class MetricsSnapshot:
     file_hashes: Dict[str, str]
     directory_structure: Dict[str, int]
 
+
 @dataclass
 class RefactoringPlan:
     """Plan for code refactoring and reorganization"""
@@ -55,6 +57,7 @@ class RefactoringPlan:
     renames: List[Dict[str, str]]
     consolidations: List[Dict[str, List[str]]]
     deletions: List[str]
+
 
 class CICDGitHubOrchestrator:
     """Orchestrates complete CI/CD pipeline with GitHub roundtrip"""
