@@ -48,6 +48,8 @@ levels = [
     (2.0, "2 K",   "Line B - 2 K superfluid helium",     "#00A6BD"),
 ]
 import math
+
+
 def ypos(t):
     # log scale between 2 and 300
     lo, hi = math.log10(2.0), math.log10(300.0)
