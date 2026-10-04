@@ -31,6 +31,8 @@ INK = "{http://www.inkscape.org/namespaces/inkscape}"
 # ---------------------------------------------------------------------------
 # Affine transform maths (reused approach from segment_pid.py)
 # ---------------------------------------------------------------------------
+
+
 def parse_transform(t):
     m = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
     if not t:
