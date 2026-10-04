@@ -11,6 +11,7 @@ from typing import Dict, Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
 def analyze_iteration(iteration_dir: Path) -> Dict[str, Any]:
     """Analyze a single iteration directory"""
     analysis = {
@@ -59,6 +60,7 @@ def analyze_iteration(iteration_dir: Path) -> Dict[str, Any]:
 
     return analysis
 
+
 def load_json_file(file_path: Path) -> Dict[str, Any]:
     """Safely load JSON file"""
     try:
@@ -66,6 +68,7 @@ def load_json_file(file_path: Path) -> Dict[str, Any]:
             return json.load(f)
     except Exception as e:
         return {'error': str(e)}
+
 
 def main():
     output_root = Path('DMAIC_V3_OUTPUT')
