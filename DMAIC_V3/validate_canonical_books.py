@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict
 from datetime import datetime
 
+
 class CanonicalBooksValidator:
     def __init__(self, canonical_dir: Path = Path("CANONICAL_KNOWLEDGE")):
         self.canonical_dir = canonical_dir
@@ -220,6 +221,7 @@ class CanonicalBooksValidator:
 
         print(f"\nReport saved: {report_path}")
         print("="*80)
+
 
 def main():
     validator = CanonicalBooksValidator()
