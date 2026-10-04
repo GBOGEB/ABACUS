@@ -20,6 +20,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+
 class ProductionDeployment:
     def __init__(self):
         self.timestamp = datetime.now().isoformat()
@@ -751,6 +752,7 @@ class ProductionDeployment:
     def _format_next_steps(self, steps: List[str]) -> str:
         """Format next steps section"""
         return "\n".join([f"{i}. {step}" for i, step in enumerate(steps, 1)])
+
 
 def main():
     """Main execution function"""
