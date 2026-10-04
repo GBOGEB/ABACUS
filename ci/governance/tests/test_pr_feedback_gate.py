@@ -198,6 +198,46 @@ class FeedbackGateTests(unittest.TestCase):
         required = gate.required_workflows_for_paths(["tool.py"])
         self.assertIn("DAB Flake8 Census", required)
 
+    def test_actions_globstar_matches_zero_or_more_directories(self):
+        self.assertTrue(
+            gate.github_path_match(
+                "DMAIC_V3/foo.py",
+                "DMAIC_V3/**/*.py",
+            )
+        )
+        self.assertTrue(
+            gate.github_path_match(
+                "DMAIC_V3/phases/deep/foo.py",
+                "DMAIC_V3/**/*.py",
+            )
+        )
+
+    def test_actions_single_star_does_not_cross_separator(self):
+        pattern = "integration/*/tests/**"
+        self.assertTrue(
+            gate.github_path_match(
+                "integration/alpha/tests/test_one.py",
+                pattern,
+            )
+        )
+        self.assertFalse(
+            gate.github_path_match(
+                "integration/alpha/beta/tests/test_one.py",
+                pattern,
+            )
+        )
+
+    def test_ci_governance_is_not_mip_pr_trigger(self):
+        required = gate.required_workflows_for_paths(
+            ["ci/governance/pr_feedback_gate.py"]
+        )
+        self.assertIn("CI - ABACUS Matrix", required)
+        self.assertIn("DAB Flake8 Census", required)
+        self.assertNotIn(
+            "MIP B0 Test Admission and Coverage Evidence",
+            required,
+        )
+
     def test_ci_pending_and_red_fail_closed(self):
         runs = self.blocking_runs(
             {
