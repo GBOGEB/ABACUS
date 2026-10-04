@@ -88,7 +88,9 @@ jobs:
       - name: Lint tools directory
         run: |
           if [ -d "tools_v2.3" ]; then
-            flake8 tools_v2.3/ --max-line-length=120 --exclude=__pycache__ || true
+            flake8 tools_v2.3/ \
+              --max-line-length=120 \
+              --exclude=__pycache__ || true
           fi
 
   validate-mcp:
@@ -123,7 +125,9 @@ jobs:
       - name: Lint MCP directory
         run: |
           if [ -d "local_mcp" ]; then
-            flake8 local_mcp/ --max-line-length=120 --exclude=__pycache__,agents || true
+            flake8 local_mcp/ \
+              --max-line-length=120 \
+              --exclude=__pycache__,agents || true
           fi
 
       - name: Validate MCP agents
@@ -157,13 +161,13 @@ jobs:
       - name: Test script utilities
         run: |
           echo "🧪 Testing script utilities..."
-          
+
           # Test recursive build
           if [ -f "scripts/recursive_build.py" ]; then
             python scripts/recursive_build.py --help
             echo "✅ recursive_build.py is callable"
           fi
-          
+
           # Test code health check
           if [ -f "scripts/code_health_check.py" ]; then
             python scripts/code_health_check.py --help
@@ -183,19 +187,31 @@ jobs:
           echo "🔍 Verifying tool imports..."
           python - <<'PY'
           import importlib.util
-          import sys
+          from pathlib import Path
 
-          sys.path.insert(0, "tools_v2.3")
           tools = [
-              "task_tracker_v2.3_20251111",
-              "create_chatready_code_v2.3_20251111",
-              "code_index_generator_v2.3",
+              Path("tools_v2.3/task_tracker_v2.3_20251111.py"),
+              Path("tools_v2.3/code_index_generator_v2.3.py"),
           ]
-          missing = [tool for tool in tools if importlib.util.find_spec(tool) is None]
-          if missing:
-              raise SystemExit(f"Tool import check failed; missing: {', '.join(missing)}")
-          for tool in tools:
-              print(f"✅ {tool} is importable")
+          invalid = []
+          for index, tool_path in enumerate(tools):
+              if not tool_path.is_file():
+                  invalid.append(str(tool_path))
+                  continue
+              spec = importlib.util.spec_from_file_location(
+                  f"abacus_tool_{index}",
+                  tool_path,
+              )
+              if spec is None or spec.loader is None:
+                  invalid.append(str(tool_path))
+
+          if invalid:
+              details = ", ".join(invalid)
+              raise SystemExit(
+                  f"Tool import-spec check failed; invalid: {details}"
+              )
+          for tool_path in tools:
+              print(f"✅ {tool_path} has a valid import spec")
           PY
 
   integration-check:
@@ -228,4 +244,5 @@ jobs:
           echo "- ✅ MCP components" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Utility tests" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "All tooling validation checks completed successfully! 🎉" >> $GITHUB_STEP_SUMMARY
+          echo "All tooling validation checks completed successfully! 🎉" \
+            >> "$GITHUB_STEP_SUMMARY"
