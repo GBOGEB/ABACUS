@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator
 from DMAIC_V3.config import DMAICConfig
 
+
 class TestAndDocumentRunner:
     def __init__(self):
         self.config = DMAICConfig()
@@ -272,6 +273,7 @@ Generated: {datetime.now().isoformat()}
         print(f"  - ARCHITECTURE_DIAGRAM.txt")
         print(f"  - EXECUTION_REPORT.md")
         print(f"  - test_results.json")
+
 
 def main():
     runner = TestAndDocumentRunner()
