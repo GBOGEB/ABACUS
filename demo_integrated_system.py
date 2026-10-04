@@ -23,6 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any
 
+
 class Colors:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -33,6 +34,7 @@ class Colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     END = '\033[0m'
+
 
 class IntegratedDMAICDOW:
     """Unified DMAIC Sprint System + DOW Core Engine"""
@@ -460,6 +462,7 @@ class IntegratedDMAICDOW:
             json.dump(self.metrics, f, indent=2)
 
         self.print_success(f"\nReport saved to: {report_file}")
+
 
 def main():
     """Main demonstration execution"""
