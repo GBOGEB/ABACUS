@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+
 def generate_postcd_summary():
     """Generate comprehensive POST-CD summary"""
 
