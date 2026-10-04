@@ -118,6 +118,12 @@ TRUSTED_WORKFLOW_IDENTITIES = {
         289633215,
         ".github/workflows/yaml-validation.yml",
     ),
+} 
+
+TRUSTED_WORKFLOW_INPUTS = {
+    "DELTA_1 CodeQL": (
+        ".github/codeql/codeql-config.yml",
+    ),
 }
 
 CONDITIONAL_WORKFLOW_PATHS = {
@@ -582,6 +588,8 @@ def required_workflow_definition_changes(
         for name in required_workflows
         if name in TRUSTED_WORKFLOW_IDENTITIES
     }
+    for name in required_workflows:
+        protected_paths.update(TRUSTED_WORKFLOW_INPUTS.get(name, ()))
     return tuple(sorted(set(changed_paths) & protected_paths))
 
 
