@@ -33,6 +33,7 @@ from DMAIC_V3.phases.phase6_knowledge import Phase6Knowledge
 from DMAIC_V3.phases.phase7_action_tracking import Phase7ActionTracking
 from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement
 
+
 class TemporalPhaseRunner:
     """
     Individual Phase Runner with Temporal Engine Integration
@@ -269,6 +270,7 @@ class TemporalPhaseRunner:
             json.dump(summary, f, indent=2)
 
         print(f"\n✅ Execution summary saved: {output_file}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="DMAIC V4.0 Individual Phase Runner")
