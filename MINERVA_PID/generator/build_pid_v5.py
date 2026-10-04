@@ -57,6 +57,7 @@ MM = SHEET_W / 420.0        # user-units per millimetre (~3.779)
 
 # millimetre helper -> user units
 
+
 def mm(v):
     return v * MM
 
@@ -164,6 +165,7 @@ STYLES = {
 }
 
 # Signal patterns must stay >=0.25 mm but be readable; min 0.9 uu for plot.
+
 
 def signal_width(style):
     return max(mm(0.25), 0.9)
