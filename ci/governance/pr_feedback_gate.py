@@ -203,19 +203,14 @@ class Evidence:
     @property
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
+        if not self.code_review_complete:
+            reasons.append("Codex code review is not complete on current head")
+        if not self.security_review_complete:
+            reasons.append("Codex security review is not complete on current head")
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
         return tuple(reasons)
-
-    @property
-    def supplemental_review_status(self) -> tuple[str, ...]:
-        status: list[str] = []
-        if not self.code_review_complete:
-            status.append("Codex code review unavailable/incomplete on current head")
-        if not self.security_review_complete:
-            status.append("Codex security review unavailable/incomplete on current head")
-        return tuple(status)
 
     @property
     def state(self) -> str:
@@ -757,13 +752,12 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "Pending reasons:",
         *(f"- {item}" for item in evidence.pending_reasons),
         "",
-        "Supplemental review status:",
-        *(f"- {item}" for item in evidence.supplemental_review_status),
-        "",
         "Deferred evidence:",
         *(f"- {item}" for item in evidence.deferred_comments),
         "",
         "Required invariants:",
+        "- exact-head Codex code review complete",
+        "- exact-head Codex security review complete",
         "- repository-native current-head admission evidence terminal and green",
         "- zero unresolved review threads",
         "- current-head GitHub Actions terminal and green",
@@ -774,9 +768,6 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
     if not evidence.pending_reasons:
         pending_index = lines.index("Pending reasons:")
         lines[pending_index] = "Pending reasons: none"
-    if not evidence.supplemental_review_status:
-        review_index = lines.index("Supplemental review status:")
-        lines[review_index] = "Supplemental review status: complete"
     return title, summary, "\n".join(lines)
 
 
