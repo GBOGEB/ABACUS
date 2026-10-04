@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import fnmatch
 import json
 import os
 import re
@@ -80,7 +79,6 @@ CONDITIONAL_WORKFLOW_PATHS = {
         "integration/*/tests/**",
         "tests/**",
         ".github/workflows/**",
-        "ci/governance/**",
     ),
 }
 GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
@@ -449,12 +447,33 @@ def codex_security_review_complete(
     return False
 
 
+def github_path_pattern_regex(pattern: str) -> re.Pattern[str]:
+    """Translate the Actions path-filter glob subset used by this repo."""
+    parts = ["^"]
+    index = 0
+    while index < len(pattern):
+        if pattern.startswith("**/", index):
+            parts.append("(?:.*/)?")
+            index += 3
+            continue
+        if pattern.startswith("**", index):
+            parts.append(".*")
+            index += 2
+            continue
+        char = pattern[index]
+        if char == "*":
+            parts.append("[^/]*")
+        elif char == "?":
+            parts.append("[^/]")
+        else:
+            parts.append(re.escape(char))
+        index += 1
+    parts.append("$")
+    return re.compile("".join(parts))
+
+
 def github_path_match(path: str, pattern: str) -> bool:
-    if fnmatch.fnmatchcase(path, pattern):
-        return True
-    if pattern.startswith("**/"):
-        return fnmatch.fnmatchcase(path, pattern[3:])
-    return False
+    return bool(github_path_pattern_regex(pattern).match(path))
 
 
 def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
