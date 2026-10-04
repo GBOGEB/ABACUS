@@ -168,8 +168,11 @@ class FeedbackGateTests(unittest.TestCase):
         overrides = overrides or {}
         runs = []
         for name in gate.BLOCKING_IF_PRESENT_WORKFLOWS:
+            workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[name]
             run = {
                 "name": name,
+                "workflow_id": workflow_id,
+                "path": path,
                 "event": "pull_request",
                 "status": "completed",
                 "conclusion": "success",
@@ -264,6 +267,44 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(seen, len(gate.BLOCKING_IF_PRESENT_WORKFLOWS))
         self.assertEqual(len(pending), 1)
         self.assertEqual(len(failed), 1)
+
+    def test_spoofed_required_workflow_identity_fails_closed(self):
+        runs = self.blocking_runs(
+            {
+                "DELTA_1 CodeQL": {
+                    "workflow_id": 1,
+                    "path": ".github/workflows/codeql.yml",
+                },
+            }
+        )
+        pending, failed, _ = gate.classify_runs(runs)
+        self.assertIn("CI missing: DELTA_1 CodeQL", pending)
+        self.assertTrue(
+            any(
+                item.startswith("CI identity mismatch: DELTA_1 CodeQL")
+                for item in failed
+            )
+        )
+
+    def test_required_workflow_definition_changes_fail_closed(self):
+        changed = gate.required_workflow_definition_changes(
+            [
+                "README.md",
+                ".github/workflows/codeql.yml",
+            ],
+            gate.ALWAYS_REQUIRED_WORKFLOWS,
+        )
+        self.assertEqual(
+            changed,
+            (".github/workflows/codeql.yml",),
+        )
+
+    def test_gate_workflow_can_change_without_self_certifying_required_ci(self):
+        changed = gate.required_workflow_definition_changes(
+            [".github/workflows/pr-feedback-gate.yml"],
+            gate.ALWAYS_REQUIRED_WORKFLOWS,
+        )
+        self.assertEqual(changed, ())
 
     def test_advisory_workflow_failure_does_not_poison_gate(self):
         runs = self.blocking_runs()
