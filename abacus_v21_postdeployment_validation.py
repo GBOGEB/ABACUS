@@ -20,6 +20,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 
+
 class PostDeploymentValidation:
     def __init__(self):
         self.timestamp = datetime.now().isoformat()
@@ -1042,6 +1043,7 @@ class PostDeploymentValidation:
 **Priority**: {next_phase.get('priority', 'N/A')}
 **Estimated Start**: {next_phase.get('estimated_start', 'N/A')}
 """
+
 
 def main():
     """Main execution function"""
