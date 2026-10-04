@@ -268,6 +268,51 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(len(pending), 1)
         self.assertEqual(len(failed), 1)
 
+    def test_push_run_cannot_satisfy_required_pr_workflow(self):
+        runs = self.blocking_runs()
+        runs = [
+            run
+            for run in runs
+            if run["name"] != "CI - ABACUS Matrix"
+        ]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
+            "CI - ABACUS Matrix"
+        ]
+        runs.append(
+            {
+                "name": "CI - ABACUS Matrix",
+                "workflow_id": workflow_id,
+                "path": path,
+                "event": "push",
+                "status": "completed",
+                "conclusion": "success",
+                "run_started_at": "2026-10-03T10:00:00Z",
+            }
+        )
+        pending, failed, _ = gate.classify_runs(runs)
+        self.assertIn("CI missing: CI - ABACUS Matrix", pending)
+        self.assertEqual(failed, ())
+
+    def test_push_failure_does_not_poison_green_pr_run(self):
+        runs = self.blocking_runs()
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
+            "CI - ABACUS Matrix"
+        ]
+        runs.append(
+            {
+                "name": "CI - ABACUS Matrix",
+                "workflow_id": workflow_id,
+                "path": path,
+                "event": "push",
+                "status": "completed",
+                "conclusion": "failure",
+                "run_started_at": "2026-10-03T10:01:00Z",
+            }
+        )
+        pending, failed, _ = gate.classify_runs(runs)
+        self.assertEqual(pending, ())
+        self.assertEqual(failed, ())
+
     def test_spoofed_required_workflow_identity_fails_closed(self):
         runs = self.blocking_runs(
             {
