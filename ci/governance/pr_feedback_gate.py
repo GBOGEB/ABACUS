@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fnmatch
 import json
 import os
 import re
@@ -25,7 +26,7 @@ IGNORED_WORKFLOWS = {
     "Post-Merge PR Summary",
     "Running Copilot Code Review",
 }
-BLOCKING_WORKFLOWS = (
+BLOCKING_IF_PRESENT_WORKFLOWS = (
     "CI - ABACUS Matrix",
     "ABACUS v032 - CI/CD Pipeline",
     "qps-canonicalization",
@@ -42,6 +43,46 @@ BLOCKING_WORKFLOWS = (
     "DAB Flake8 Census",
     "MIP B0 Test Admission and Coverage Evidence",
 )
+ALWAYS_REQUIRED_WORKFLOWS = ("CI - ABACUS Matrix",)
+CONDITIONAL_WORKFLOW_PATHS = {
+    "DAB Flake8 Census": (
+        "**/*.py",
+        "scripts/dab_flake8_census.py",
+        "scripts/dab_proposal_queue.py",
+        "scripts/proposal_compatibility.py",
+        "governance/dab/**",
+        "governance/proposals/**",
+        ".github/workflows/dab-flake8-census.yml",
+    ),
+    "MIP B0 Test Admission and Coverage Evidence": (
+        "pytest.ini",
+        "requirements*.txt",
+        "pyproject.toml",
+        "scripts/test_admission_census.py",
+        "scripts/test_evidence_census.py",
+        "scripts/coverage_dab_census.py",
+        "scripts/post_b0_coverage_union.py",
+        "scripts/mip_v2_federated_controller.py",
+        "scripts/mip_test_check_completeness.py",
+        "scripts/pytest_test_state_plugin.py",
+        "scripts/ci_false_green_lint.py",
+        "scripts/dab_flake8_census.py",
+        "scripts/dab_proposal_queue.py",
+        "scripts/proposal_compatibility.py",
+        "scripts/ci_matrix_proof_audit.py",
+        "governance/dab/**",
+        "governance/proposals/**",
+        "DMAIC_V3/**/*.py",
+        "MINERVA_PID/**/*.py",
+        "tools/**/*.py",
+        "integration_DOW_KEB_MASTER/**/*.py",
+        "DMAIC_V3/tests/**",
+        "integration/*/tests/**",
+        "tests/**",
+        ".github/workflows/**",
+        "ci/governance/**",
+    ),
+}
 GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
 DEFERRED_COMMENT_RULES = (
     ("No snapshots were found for the head SHA", 1736),
@@ -155,6 +196,14 @@ class GitHub:
             "GET",
             f"/repos/{self.repository}/pulls/{number}",
         )
+
+    def pull_files(self, number: int) -> list[str]:
+        return [
+            item["filename"]
+            for item in self.paged(
+                f"/repos/{self.repository}/pulls/{number}/files"
+            )
+        ]
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -400,8 +449,30 @@ def codex_security_review_complete(
     return False
 
 
+def github_path_match(path: str, pattern: str) -> bool:
+    if fnmatch.fnmatchcase(path, pattern):
+        return True
+    if pattern.startswith("**/"):
+        return fnmatch.fnmatchcase(path, pattern[3:])
+    return False
+
+
+def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
+    required = set(ALWAYS_REQUIRED_WORKFLOWS)
+    for workflow, patterns in CONDITIONAL_WORKFLOW_PATHS.items():
+        if any(
+            github_path_match(path, pattern)
+            for path in paths
+            for pattern in patterns
+        ):
+            required.add(workflow)
+    return tuple(sorted(required))
+
+
 def classify_runs(
     runs: list[dict[str, Any]],
+    *,
+    required_workflows: tuple[str, ...] = ALWAYS_REQUIRED_WORKFLOWS,
 ) -> tuple[tuple[str, ...], tuple[str, ...], int]:
     latest: dict[tuple[str, str], dict[str, Any]] = {}
     for run in runs:
@@ -409,7 +480,7 @@ def classify_runs(
         event = run.get("event") or ""
         if (
             name in IGNORED_WORKFLOWS
-            or name not in BLOCKING_WORKFLOWS
+            or name not in BLOCKING_IF_PRESENT_WORKFLOWS
             or event == "dynamic"
         ):
             continue
@@ -438,7 +509,7 @@ def classify_runs(
         if conclusion not in GOOD_CONCLUSIONS:
             failed.append(f"CI not green: {label} = {conclusion}")
 
-    for name in BLOCKING_WORKFLOWS:
+    for name in required_workflows:
         if name not in seen_names:
             pending.append(f"CI missing: {name}")
 
@@ -479,7 +550,12 @@ def evaluate(
     comments = github.issue_comments(number)
     threads = github.review_threads(number)
     runs = github.actions_runs(head_sha)
-    pending, failed, seen = classify_runs(runs)
+    changed_paths = github.pull_files(number)
+    required_workflows = required_workflows_for_paths(changed_paths)
+    pending, failed, seen = classify_runs(
+        runs,
+        required_workflows=required_workflows,
+    )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
     return Evidence(
