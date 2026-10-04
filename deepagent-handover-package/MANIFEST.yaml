@@ -4,7 +4,6 @@
 # Date: November 2025
 # Project: DeepAgent Apps Framework v2.0 + QSYS Analysis
 
----
 manifest_metadata:
   version: "1.0"
   created: "2025-11-24"
@@ -21,7 +20,6 @@ contact:
   support_url: "https://github.com/GBOGEB/ABACUS/issues"
   license: "MIT"
 
----
 # ARTIFACT COLLECTIONS WITH GLOB PATTERNS
 artifact_collections:
 
@@ -595,7 +593,6 @@ artifact_collections:
           - "documentation/ (framework summary)"
           - "handover/ (handover docs)"
 
----
 # PPT WORKFLOW METHODOLOGY
 # Special focus area as requested
 ppt_workflow:
@@ -993,7 +990,6 @@ ppt_workflow:
         - "Elasticsearch for indexing"
         - "Sentence transformers for embeddings"
 
----
 # HANDOVER INSTRUCTIONS
 handover_instructions:
   overview: "Instructions for receiving and using this handover package"
@@ -1058,7 +1054,6 @@ handover_instructions:
     - step: 3
       action: "Extract documentation patterns for reuse"
 
----
 # GLOB PATTERN REFERENCE
 glob_patterns_reference:
   description: "Quick reference for finding files using glob patterns"
@@ -1092,7 +1087,6 @@ glob_patterns_reference:
       matches: "All markdown files recursively"
       count: 10
 
----
 # VALIDATION CHECKLIST
 validation_checklist:
   pre_handover:
@@ -1127,6 +1121,5 @@ validation_checklist:
     - item: "Templates can be customized"
       status: "⏳ Pending"
 
----
 # END OF HANDOVER MANIFEST
 # For questions or support, contact the technical lead or refer to handover documentation.
