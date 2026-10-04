@@ -191,6 +191,105 @@ jobs:
           print("- threshold: **75%**")
           PY
 
+      - name: Rank broad coverage debt
+        if: always()
+        run: |
+          mkdir -p test_reports/coverage
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = Path("coverage-summary.json")
+          data = json.loads(source.read_text(encoding="utf-8"))
+          rows = []
+          for path, item in data.get("files", {}).items():
+              summary = item.get("summary", {})
+              statements = int(summary.get("num_statements", 0) or 0)
+              missing = int(summary.get("missing_lines", 0) or 0)
+              covered = int(summary.get("covered_lines", 0) or 0)
+              percent = float(summary.get("percent_covered", 100.0) or 0.0)
+              if statements <= 0:
+                  continue
+              rows.append(
+                  {
+                      "path": path,
+                      "statements": statements,
+                      "covered": covered,
+                      "missing": missing,
+                      "percent_covered": round(percent, 4),
+                  }
+              )
+
+          rows.sort(
+              key=lambda row: (
+                  -row["missing"],
+                  row["percent_covered"],
+                  -row["statements"],
+                  row["path"],
+              )
+          )
+          totals = data.get("totals", {})
+          payload = {
+              "schema": "abacus-broad-coverage-ranking/1.0.0",
+              "exact_sha": __import__("os").environ.get(
+                  "GITHUB_SHA",
+                  "UNKNOWN",
+              ),
+              "threshold_percent": 75.0,
+              "totals": {
+                  "statements": int(totals.get("num_statements", 0) or 0),
+                  "missing": int(totals.get("missing_lines", 0) or 0),
+                  "branches": int(
+                      totals.get("num_branches", 0) or 0
+                  ),
+                  "partial_branches": int(
+                      totals.get("num_partial_branches", 0) or 0
+                  ),
+                  "percent_covered": round(
+                      float(totals.get("percent_covered", 0.0) or 0.0),
+                      4,
+                  ),
+              },
+              "ranking_rule": (
+                  "descending missing executable statements; "
+                  "then lower coverage; then larger statement "
+                  "count; then path"
+              ),
+              "files": rows,
+          }
+          out = Path("test_reports/coverage/broad-coverage-ranking.json")
+          out.write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+
+          top = rows[:25]
+          summary_path = Path(
+              __import__("os").environ["GITHUB_STEP_SUMMARY"]
+          )
+          with summary_path.open("a") as summary:
+              summary.write("\n### Broad coverage priority queue\n\n")
+              summary.write(
+                  "| rank | file | statements | missed | coverage |\n"
+                  "|---:|---|---:|---:|---:|\n"
+              )
+              for idx, row in enumerate(top, 1):
+                  summary.write(
+                      f"| {idx} | \`{row['path']}\` | {row['statements']} | "
+                      f"{row['missing']} | {row['percent_covered']:.2f}% |\n"
+                  )
+          PY
+
+      - name: Upload broad coverage campaign evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: broad-coverage-ranking-${{ github.sha }}
+          path: |
+            coverage-summary.json
+            test_reports/coverage/broad-coverage-ranking.json
+          if-no-files-found: error
+
       - name: Upload Coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v7
