@@ -2,17 +2,14 @@ import pathlib
 import sqlite3
 import pytest
 
-pytestmark = pytest.mark.TEST_BLOCKED_SOURCE_MISSING
-
 pytestmark = [pytest.mark.db, pytest.mark.integration]
 
-SCHEMA_PATH = pathlib.Path("testdata/db_schema.sql")
+SCHEMA_PATH = pathlib.Path(__file__).resolve().parents[2] / "testdata" / "db_schema.sql"
 
 
 def apply_schema(conn):
     """Apply database schema from testdata/db_schema.sql."""
-    if not SCHEMA_PATH.exists():
-        pytest.skip(f"Schema file not found: {SCHEMA_PATH}")
+    assert SCHEMA_PATH.is_file(), f"Schema file not found: {SCHEMA_PATH}"
     sql = SCHEMA_PATH.read_text()
     conn.executescript(sql)
     conn.commit()
