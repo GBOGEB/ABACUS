@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 from dmaic.contract import ensure_contract
 from dmaic import idempotency
 
+
 class DOWMetadataInjector:
     """Agent to inject DOW metadata into JSON files"""
 
@@ -82,6 +83,7 @@ class DOWMetadataInjector:
         elif 'phase6' in name:
             return 'phase6'
         return 'unknown'
+
 
 def main():
     """Main entry point"""
