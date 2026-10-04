@@ -481,8 +481,17 @@ class FeedbackGateTests(unittest.TestCase):
         )
         self.assertEqual(gate.Evidence(**base).state, "success")
 
+        supplemental = dict(base)
+        supplemental["code_review_complete"] = False
+        supplemental["security_review_complete"] = False
+        self.assertEqual(gate.Evidence(**supplemental).state, "success")
+        self.assertEqual(
+            len(gate.Evidence(**supplemental).supplemental_review_status),
+            2,
+        )
+
         pending = dict(base)
-        pending["code_review_complete"] = False
+        pending["ci_pending"] = ("CI pending: test",)
         self.assertEqual(gate.Evidence(**pending).state, "pending")
 
         failed = dict(pending)
