@@ -174,6 +174,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "workflow_id": workflow_id,
                 "path": path,
                 "event": "pull_request",
+                "pull_requests": [{"number": 1760}],
                 "status": "completed",
                 "conclusion": "success",
                 "run_started_at": "2026-10-03T10:00:00Z",
@@ -310,6 +311,58 @@ class FeedbackGateTests(unittest.TestCase):
             }
         )
         pending, failed, _ = gate.classify_runs(runs)
+        self.assertEqual(pending, ())
+        self.assertEqual(failed, ())
+
+    def test_other_pr_same_sha_cannot_satisfy_required_workflow(self):
+        runs = [
+            run
+            for run in self.blocking_runs()
+            if run["name"] != "CI - ABACUS Matrix"
+        ]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
+            "CI - ABACUS Matrix"
+        ]
+        runs.append(
+            {
+                "name": "CI - ABACUS Matrix",
+                "workflow_id": workflow_id,
+                "path": path,
+                "event": "pull_request",
+                "pull_requests": [{"number": 9999}],
+                "status": "completed",
+                "conclusion": "success",
+                "run_started_at": "2026-10-03T10:01:00Z",
+            }
+        )
+        pending, failed, _ = gate.classify_runs(
+            runs,
+            pr_number=1760,
+        )
+        self.assertIn("CI missing: CI - ABACUS Matrix", pending)
+        self.assertEqual(failed, ())
+
+    def test_other_pr_same_sha_failure_does_not_poison_current_pr(self):
+        runs = self.blocking_runs()
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
+            "CI - ABACUS Matrix"
+        ]
+        runs.append(
+            {
+                "name": "CI - ABACUS Matrix",
+                "workflow_id": workflow_id,
+                "path": path,
+                "event": "pull_request",
+                "pull_requests": [{"number": 9999}],
+                "status": "completed",
+                "conclusion": "failure",
+                "run_started_at": "2026-10-03T10:01:00Z",
+            }
+        )
+        pending, failed, _ = gate.classify_runs(
+            runs,
+            pr_number=1760,
+        )
         self.assertEqual(pending, ())
         self.assertEqual(failed, ())
 
