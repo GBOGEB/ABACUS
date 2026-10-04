@@ -481,13 +481,18 @@ class FeedbackGateTests(unittest.TestCase):
         )
         self.assertEqual(gate.Evidence(**base).state, "success")
 
-        supplemental = dict(base)
-        supplemental["code_review_complete"] = False
-        supplemental["security_review_complete"] = False
-        self.assertEqual(gate.Evidence(**supplemental).state, "success")
-        self.assertEqual(
-            len(gate.Evidence(**supplemental).supplemental_review_status),
-            2,
+        missing_reviews = dict(base)
+        missing_reviews["code_review_complete"] = False
+        missing_reviews["security_review_complete"] = False
+        evidence = gate.Evidence(**missing_reviews)
+        self.assertEqual(evidence.state, "pending")
+        self.assertIn(
+            "Codex code review is not complete on current head",
+            evidence.pending_reasons,
+        )
+        self.assertIn(
+            "Codex security review is not complete on current head",
+            evidence.pending_reasons,
         )
 
         pending = dict(base)
