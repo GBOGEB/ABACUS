@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Evaluate PR feedback evidence and publish a merge-gate check."""
 
 from __future__ import annotations
