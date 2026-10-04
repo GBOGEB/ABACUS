@@ -397,6 +397,16 @@ class FeedbackGateTests(unittest.TestCase):
             (".github/workflows/codeql.yml",),
         )
 
+    def test_codeql_config_change_fails_closed_as_trusted_input(self):
+        changed = gate.required_workflow_definition_changes(
+            [".github/codeql/codeql-config.yml"],
+            gate.ALWAYS_REQUIRED_WORKFLOWS,
+        )
+        self.assertEqual(
+            changed,
+            (".github/codeql/codeql-config.yml",),
+        )
+
     def test_gate_workflow_can_change_without_self_certifying_required_ci(self):
         changed = gate.required_workflow_definition_changes(
             [".github/workflows/pr-feedback-gate.yml"],
