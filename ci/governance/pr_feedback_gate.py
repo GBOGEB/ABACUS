@@ -57,6 +57,69 @@ ALWAYS_REQUIRED_WORKFLOWS = (
     "W70 Exact-SHA Measured ID Pulse",
     "W71 Residual Generated-Lineage Census",
 )
+TRUSTED_WORKFLOW_IDENTITIES = {
+    "ABACUS v032 - CI/CD Pipeline": (
+        207346559,
+        ".github/workflows/abacus-cicd.yml",
+    ),
+    "CI - ABACUS Matrix": (
+        208410566,
+        ".github/workflows/ci-abacus.yml",
+    ),
+    "DAB Flake8 Census": (
+        371038481,
+        ".github/workflows/dab-flake8-census.yml",
+    ),
+    "DELTA_1 CodeQL": (
+        280454283,
+        ".github/workflows/codeql.yml",
+    ),
+    "DELTA_1 Dependency Review": (
+        280454278,
+        ".github/workflows/dependency-review.yml",
+    ),
+    "Format Check": (
+        207346558,
+        ".github/workflows/format-check.yml",
+    ),
+    "MIP B0 Test Admission and Coverage Evidence": (
+        372055739,
+        ".github/workflows/mip-coverage-evidence.yml",
+    ),
+    "OSV-Scanner": (
+        293893643,
+        ".github/workflows/osv-scanner.yml",
+    ),
+    "qps-canonicalization": (
+        350890474,
+        ".github/workflows/qps-canonicalization.yml",
+    ),
+    "Security Scan — Ruff": (
+        293888672,
+        ".github/workflows/security-scan.yml",
+    ),
+    "smoke-test": (
+        207346551,
+        ".github/workflows/smoke-test.yml",
+    ),
+    "Validate Docs (Markdown/YAML/JSON)": (
+        207346550,
+        ".github/workflows/validate_docs.yml",
+    ),
+    "W70 Exact-SHA Measured ID Pulse": (
+        352923312,
+        ".github/workflows/w70-measured-id-pulse-exact-sha.yml",
+    ),
+    "W71 Residual Generated-Lineage Census": (
+        352939017,
+        ".github/workflows/w71-residual-lineage-census.yml",
+    ),
+    "YAML Validation": (
+        289633215,
+        ".github/workflows/yaml-validation.yml",
+    ),
+}
+
 CONDITIONAL_WORKFLOW_PATHS = {
     "DAB Flake8 Census": (
         "**/*.py",
@@ -510,12 +573,25 @@ def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
     return tuple(sorted(required))
 
 
+def required_workflow_definition_changes(
+    changed_paths: list[str],
+    required_workflows: tuple[str, ...],
+) -> tuple[str, ...]:
+    protected_paths = {
+        TRUSTED_WORKFLOW_IDENTITIES[name][1]
+        for name in required_workflows
+        if name in TRUSTED_WORKFLOW_IDENTITIES
+    }
+    return tuple(sorted(set(changed_paths) & protected_paths))
+
+
 def classify_runs(
     runs: list[dict[str, Any]],
     *,
     required_workflows: tuple[str, ...] = ALWAYS_REQUIRED_WORKFLOWS,
 ) -> tuple[tuple[str, ...], tuple[str, ...], int]:
     latest: dict[tuple[str, str], dict[str, Any]] = {}
+    identity_failures: list[str] = []
     for run in runs:
         name = run.get("name") or ""
         event = run.get("event") or ""
@@ -525,6 +601,18 @@ def classify_runs(
             or event == "dynamic"
         ):
             continue
+
+        expected_id, expected_path = TRUSTED_WORKFLOW_IDENTITIES[name]
+        actual_id = run.get("workflow_id")
+        actual_path = run.get("path")
+        if actual_id != expected_id or actual_path != expected_path:
+            identity_failures.append(
+                "CI identity mismatch: "
+                f"{name} expected id={expected_id} path={expected_path}; "
+                f"got id={actual_id} path={actual_path}"
+            )
+            continue
+
         key = (name, event)
         candidate = latest.get(key)
         candidate_time = (
@@ -537,7 +625,7 @@ def classify_runs(
             latest[key] = run
 
     pending: list[str] = []
-    failed: list[str] = []
+    failed: list[str] = list(identity_failures)
     seen_names: set[str] = set()
 
     for (name, event), run in sorted(latest.items()):
@@ -596,6 +684,14 @@ def evaluate(
     pending, failed, seen = classify_runs(
         runs,
         required_workflows=required_workflows,
+    )
+    definition_changes = required_workflow_definition_changes(
+        changed_paths,
+        required_workflows,
+    )
+    failed = tuple(failed) + tuple(
+        f"required workflow definition modified by PR: {path}"
+        for path in definition_changes
     )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
