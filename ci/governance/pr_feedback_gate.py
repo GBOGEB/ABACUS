@@ -589,6 +589,7 @@ def classify_runs(
     runs: list[dict[str, Any]],
     *,
     required_workflows: tuple[str, ...] = ALWAYS_REQUIRED_WORKFLOWS,
+    pr_number: int | None = None,
 ) -> tuple[tuple[str, ...], tuple[str, ...], int]:
     latest: dict[tuple[str, str], dict[str, Any]] = {}
     identity_failures: list[str] = []
@@ -601,6 +602,15 @@ def classify_runs(
             or event != "pull_request"
         ):
             continue
+
+        if pr_number is not None:
+            associated_prs = {
+                int(item["number"])
+                for item in (run.get("pull_requests") or [])
+                if item.get("number") is not None
+            }
+            if pr_number not in associated_prs:
+                continue
 
         expected_id, expected_path = TRUSTED_WORKFLOW_IDENTITIES[name]
         actual_id = run.get("workflow_id")
@@ -684,6 +694,7 @@ def evaluate(
     pending, failed, seen = classify_runs(
         runs,
         required_workflows=required_workflows,
+        pr_number=number,
     )
     definition_changes = required_workflow_definition_changes(
         changed_paths,
