@@ -42,7 +42,21 @@ BLOCKING_IF_PRESENT_WORKFLOWS = (
     "DAB Flake8 Census",
     "MIP B0 Test Admission and Coverage Evidence",
 )
-ALWAYS_REQUIRED_WORKFLOWS = ("CI - ABACUS Matrix",)
+ALWAYS_REQUIRED_WORKFLOWS = (
+    "CI - ABACUS Matrix",
+    "ABACUS v032 - CI/CD Pipeline",
+    "qps-canonicalization",
+    "Security Scan — Ruff",
+    "DELTA_1 CodeQL",
+    "DELTA_1 Dependency Review",
+    "OSV-Scanner",
+    "Validate Docs (Markdown/YAML/JSON)",
+    "Format Check",
+    "YAML Validation",
+    "smoke-test",
+    "W70 Exact-SHA Measured ID Pulse",
+    "W71 Residual Generated-Lineage Census",
+)
 CONDITIONAL_WORKFLOW_PATHS = {
     "DAB Flake8 Census": (
         "**/*.py",
