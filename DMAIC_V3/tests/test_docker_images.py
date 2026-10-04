@@ -3,9 +3,11 @@ import shutil
 import subprocess
 import pytest
 
-pytestmark = pytest.mark.TEST_BLOCKED_CONFIG
-
-pytestmark = [pytest.mark.docker, pytest.mark.integration]
+pytestmark = [
+    pytest.mark.TEST_BLOCKED_CONFIG,
+    pytest.mark.docker,
+    pytest.mark.integration,
+]
 
 
 def docker_enabled():

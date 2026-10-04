@@ -21,7 +21,7 @@ Test Coverage:
 
 Related Files:
   - tests/bootstrap_bridge.py: Bootstrap bridge implementation
-  - comprehensive_bridge_test_suite.py: DMAIC orchestrator
+  - deploy_integrated_tests.sh: governed bootstrap/integration runner
   - tests/test_bootstrap_eval.py: Bootstrap tests
   - tests/conftest.py: Shared fixtures
 """
@@ -113,19 +113,15 @@ class TestBootstrapBridgeIntegration:
         except Exception as e:
             pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met for full DMAIC execution: {e}")
 
-    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
-    def test_comprehensive_bridge_includes_bootstrap(self):
-        """Test that comprehensive_bridge_test_suite includes bootstrap bridge"""
-        try:
-            with open(PROJECT_ROOT / "comprehensive_bridge_test_suite.py", "r") as f:
-                content = f.read()
+    def test_governed_runner_includes_bootstrap_bridge(self):
+        """Test that the governed integration runner includes bootstrap bridge modes."""
+        runner_path = PROJECT_ROOT / "deploy_integrated_tests.sh"
+        assert runner_path.is_file(), "deploy_integrated_tests.sh not found"
 
-            # Check for bootstrap integration
-            assert "bootstrap_bridge" in content.lower()
-            assert "bootstrap" in content or "statistical" in content.lower()
-
-        except FileNotFoundError:
-            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: comprehensive_bridge_test_suite.py not found")
+        content = runner_path.read_text()
+        assert "tests/test_bootstrap_eval.py" in content
+        assert "tests/test_integration_bootstrap_bridges.py" in content
+        assert "tests/bootstrap_bridge.py" in content
 
     @pytest.mark.slow
     @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
@@ -199,20 +195,14 @@ class TestBootstrapBridgeIntegration:
         except Exception as e:
             pytest.fail(f"Report directory not writable: {e}")
 
-    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_integrated_test_runner_includes_bootstrap(self):
-        """Test that run_integrated_tests.py includes bootstrap mode"""
-        runner_path = PROJECT_ROOT / "run_integrated_tests.py"
+        """Test that the current integration runner exposes bootstrap execution modes."""
+        runner_path = PROJECT_ROOT / "deploy_integrated_tests.sh"
+        assert runner_path.is_file(), "deploy_integrated_tests.sh not found"
 
-        if not runner_path.exists():
-            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: run_integrated_tests.py not found")
-
-        with open(runner_path, "r") as f:
-            content = f.read()
-
-        # Check for bootstrap integration
-        assert "bootstrap" in content.lower()
-        assert "run_bootstrap_tests" in content or "bootstrap_bridge" in content
+        content = runner_path.read_text()
+        for mode in ("smoke", "bootstrap", "bridges", "full"):
+            assert f"{mode})" in content
 
     @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
     def test_pytest_markers_registered(self):
@@ -268,20 +258,15 @@ class TestBootstrapBridgeHealthCheck:
         bootstrap_bridge = SCRIPT_DIR / "bootstrap_bridge.py"
         assert bootstrap_bridge.exists(), "bootstrap_bridge.py not found"
 
-    @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
-    def test_test_suite_book_includes_bootstrap(self):
-        """Verify TEST_SUITE_BOOK.md includes bootstrap chapter"""
-        book_path = PROJECT_ROOT / "TEST_SUITE_BOOK.md"
+    def test_bootstrap_workflow_documents_current_runner(self):
+        """Verify the bootstrap workflow is bound to current integration surfaces."""
+        workflow_path = PROJECT_ROOT / ".github" / "workflows" / "bootstrap-integration.yml"
+        assert workflow_path.is_file(), "bootstrap-integration.yml not found"
 
-        if not book_path.exists():
-            pytest.skip("TEST_BLOCKED_SOURCE_MISSING: TEST_SUITE_BOOK.md not found")
-
-        with open(book_path, "r") as f:
-            content = f.read()
-
-        # Check for Chapter 09 (Bootstrap)
-        assert "bootstrap" in content.lower()
-        assert "statistical" in content.lower()
+        content = workflow_path.read_text()
+        assert "tests/test_bootstrap_eval.py" in content
+        assert "tests/test_integration_bootstrap_bridges.py" in content
+        assert "deploy_integrated_tests.sh" in content
 
 
 if __name__ == "__main__":
