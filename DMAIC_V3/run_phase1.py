@@ -9,6 +9,7 @@ from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
 from DMAIC_V3.phases.phase1_define import Phase1Define
 
+
 def main():
     print(f"=== DMAIC V3.3 - Phase 1: Define ===")
     print(f"Version: {__version__}")
