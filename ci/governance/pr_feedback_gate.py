@@ -352,7 +352,15 @@ class GitHub:
                 "completed_at": now,
                 "output": output,
             }
-        if existing:
+        reusable = existing[0] if existing else None
+        if (
+            state == "pending"
+            and reusable is not None
+            and reusable.get("status") == "completed"
+        ):
+            reusable = None
+
+        if reusable is not None:
             update_payload = {
                 key: value
                 for key, value in payload.items()
@@ -360,7 +368,7 @@ class GitHub:
             }
             self.request(
                 "PATCH",
-                f"/repos/{self.repository}/check-runs/{existing[0]['id']}",
+                f"/repos/{self.repository}/check-runs/{reusable['id']}",
                 update_payload,
             )
         else:
