@@ -251,8 +251,9 @@ jobs:
                   ),
               },
               "ranking_rule": (
-                  "descending missing executable statements; then lower coverage; "
-                  "then larger statement count; then path"
+                  "descending missing executable statements; "
+                  "then lower coverage; then larger statement "
+                  "count; then path"
               ),
               "files": rows,
           }
