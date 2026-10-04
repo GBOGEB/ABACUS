@@ -231,13 +231,20 @@ jobs:
           totals = data.get("totals", {})
           payload = {
               "schema": "abacus-broad-coverage-ranking/1.0.0",
-              "exact_sha": __import__("os").environ.get("GITHUB_SHA", "UNKNOWN"),
+              "exact_sha": __import__("os").environ.get(
+                  "GITHUB_SHA",
+                  "UNKNOWN",
+              ),
               "threshold_percent": 75.0,
               "totals": {
                   "statements": int(totals.get("num_statements", 0) or 0),
                   "missing": int(totals.get("missing_lines", 0) or 0),
-                  "branches": int(totals.get("num_branches", 0) or 0),
-                  "partial_branches": int(totals.get("num_partial_branches", 0) or 0),
+                  "branches": int(
+                      totals.get("num_branches", 0) or 0
+                  ),
+                  "partial_branches": int(
+                      totals.get("num_partial_branches", 0) or 0
+                  ),
                   "percent_covered": round(
                       float(totals.get("percent_covered", 0.0) or 0.0),
                       4,
@@ -256,7 +263,10 @@ jobs:
           )
 
           top = rows[:25]
-          with Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+          summary_path = Path(
+              __import__("os").environ["GITHUB_STEP_SUMMARY"]
+          )
+          with summary_path.open("a") as summary:
               summary.write("\n### Broad coverage priority queue\n\n")
               summary.write(
                   "| rank | file | statements | missed | coverage |\n"
