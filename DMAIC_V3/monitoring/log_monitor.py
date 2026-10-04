@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
+
 class LogMonitor:
 
     def __init__(self, log_dir: Optional[Path] = None):
