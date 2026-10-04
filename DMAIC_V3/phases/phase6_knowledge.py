@@ -15,6 +15,7 @@ try:
 except ImportError:
     TEMPORAL_AVAILABLE = False
 
+
 @dataclass
 class KnowledgeReference:
     book_name: str
@@ -22,6 +23,7 @@ class KnowledgeReference:
     document_count: int
     size_bytes: int
     book_path: str
+
 
 class Phase6Knowledge:
     """
