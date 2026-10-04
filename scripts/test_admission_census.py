@@ -15,6 +15,12 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROOTS = (ROOT / "DMAIC_V3" / "tests", ROOT / "integration")
+BLOCKING_TEST_STATES = (
+    "TEST_BLOCKED_DEPENDENCY",
+    "TEST_BLOCKED_CONFIG",
+    "TEST_BLOCKED_SOURCE_MISSING",
+    "TEST_NOT_IMPLEMENTED",
+)
 
 
 def discover_tests(roots: list[Path]) -> list[Path]:
@@ -40,21 +46,73 @@ def run_command(args: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-def junit_counts(path: Path) -> dict[str, int]:
+def junit_counts_and_states(path: Path) -> tuple[dict[str, int], dict[str, int]]:
     counts = {"pass": 0, "fail": 0, "error": 0, "skip": 0}
+    state_counts: dict[str, int] = {}
     if not path.exists():
-        return counts
+        return counts, state_counts
+
     root = ET.parse(path).getroot()
     for case in root.iter("testcase"):
         if case.find("error") is not None:
             counts["error"] += 1
-        elif case.find("failure") is not None:
+            continue
+        if case.find("failure") is not None:
             counts["fail"] += 1
-        elif case.find("skipped") is not None:
-            counts["skip"] += 1
-        else:
+            continue
+
+        skipped = case.find("skipped")
+        if skipped is None:
             counts["pass"] += 1
-    return counts
+            continue
+
+        counts["skip"] += 1
+        explicit_state = None
+        properties = case.find("properties")
+        if properties is not None:
+            for prop in properties.findall("property"):
+                if prop.attrib.get("name") == "test_state":
+                    explicit_state = prop.attrib.get("value")
+                    break
+
+        if explicit_state is None:
+            skip_text = " ".join(
+                part
+                for part in (
+                    skipped.attrib.get("message", ""),
+                    skipped.text or "",
+                )
+                if part
+            )
+            explicit_state = next(
+                (state for state in BLOCKING_TEST_STATES if state in skip_text),
+                None,
+            )
+
+        if explicit_state:
+            state_counts[explicit_state] = state_counts.get(explicit_state, 0) + 1
+
+    return counts, state_counts
+
+
+def classify_report_only_state(
+    counts: dict[str, int],
+    state_counts: dict[str, int],
+    returncode: int,
+) -> str:
+    if counts["fail"] or counts["error"] or returncode not in {0, 5}:
+        return "TEST_FAILING"
+    if counts["pass"]:
+        return "TEST_GREEN"
+    if counts["skip"]:
+        blocking = {
+            state: count
+            for state, count in state_counts.items()
+            if state in BLOCKING_TEST_STATES
+        }
+        if len(blocking) == 1 and sum(blocking.values()) == counts["skip"]:
+            return next(iter(blocking))
+    return "TEST_EXISTS_UNCOLLECTED"
 
 
 def _estimated_candidates(test_file: Path) -> list[str]:
@@ -164,15 +222,8 @@ def main(argv: list[str] | None = None) -> int:
                 rel,
             ]
         )
-        counts = junit_counts(junit)
-        if counts["fail"] or counts["error"] or run.returncode not in {0, 5}:
-            state = "TEST_FAILING"
-        elif counts["pass"]:
-            state = "TEST_GREEN"
-        elif counts["skip"]:
-            state = "TEST_EXISTS_UNCOLLECTED"
-        else:
-            state = "TEST_EXISTS_UNCOLLECTED"
+        counts, state_counts = junit_counts_and_states(junit)
+        state = classify_report_only_state(counts, state_counts, run.returncode)
 
         row.update(
             {
@@ -180,6 +231,7 @@ def main(argv: list[str] | None = None) -> int:
                 "run_returncode": run.returncode,
                 "run_output": run.stdout[-4000:],
                 "outcomes": counts,
+                "governed_state_counts": state_counts,
                 "test_state": state,
             }
         )
