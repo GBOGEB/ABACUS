@@ -23,6 +23,7 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
+
 class FastMetricsCollector:
     def __init__(self, workspace_path: Path, output_suffix: str = "pre"):
         self.workspace = workspace_path
@@ -144,6 +145,7 @@ class FastMetricsCollector:
         print(f"\n[SAVE] Metrics saved to {output_file}")
 
         return metrics
+
 
 def main():
     import argparse

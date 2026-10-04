@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, Any
 from datetime import datetime
 
+
 class IterationComparator:
     def __init__(self, output_dir: Path = None):
         self.output_dir = output_dir or Path.cwd() / 'DMAIC_V3_OUTPUT' / 'sprints'
@@ -213,6 +214,7 @@ class IterationComparator:
 
         print(f"[*] Comparison report saved: {output_file}")
         return output_file
+
 
 def main():
     import argparse
