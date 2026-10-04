@@ -598,7 +598,7 @@ def classify_runs(
         if (
             name in IGNORED_WORKFLOWS
             or name not in BLOCKING_IF_PRESENT_WORKFLOWS
-            or event == "dynamic"
+            or event != "pull_request"
         ):
             continue
 
