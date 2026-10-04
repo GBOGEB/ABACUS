@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 from dmaic.contract import ensure_contract
 from dmaic import idempotency
 
+
 class DOWKnowledgeExtractor:
     """Agent to extract knowledge from JSON files"""
 
@@ -282,6 +283,7 @@ class DOWKnowledgeExtractor:
             return max(self._calculate_nested_depth(item, current_depth + 1) for item in data)
 
         return current_depth
+
 
 def main():
     """Main entry point"""
