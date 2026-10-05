@@ -128,7 +128,10 @@ def iter_envelopes(payload: dict[str, Any]) -> list[Any]:
 
 
 def valid_empty_queue(payload: dict[str, Any]) -> bool:
-    if payload.get("schema_version") != "abacus-dab-proposal-queue/1.0.0":
+    if payload.get("schema_version") not in {
+        "abacus-dab-proposal-queue/1.0.0",
+        "abacus-dab-proposal-queue/1.1.0",
+    }:
         return False
     source_sha = payload.get("source_sha")
     if not isinstance(source_sha, str) or len(source_sha) != 40 or any(
