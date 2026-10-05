@@ -59,3 +59,5 @@ def test_analyze_logs_finds_error_and_failed_success_payloads(tmp_path):
 
     assert result["status"] == "warning"
     assert {item["error"] for item in result["recent_errors"]} == {"boom", "not good"}
+
+# Wave 4 exact-main broad coverage recensus trigger.
