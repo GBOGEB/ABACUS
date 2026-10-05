@@ -67,3 +67,5 @@ jobs:
             }
           done
           echo "All JSON files valid."
+
+# MC2 #1750 HARD-GATE FAILURE PROBE — intentionally modifies a required workflow definition; DO NOT MERGE.
