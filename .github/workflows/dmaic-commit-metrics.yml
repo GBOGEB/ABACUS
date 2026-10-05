@@ -326,7 +326,8 @@ jobs:
           METRICS_BRANCH: automation/dmaic-metrics
         run: |
           if [ -z "$GH_TOKEN" ]; then
-            echo "::error::METRICS_PR_TOKEN is required for governed PR publication."
+            echo "::error::METRICS_PR_TOKEN is required for governed PR" \
+              "publication."
             exit 1
           fi
           gh auth setup-git
