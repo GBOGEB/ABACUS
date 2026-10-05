@@ -118,7 +118,7 @@ class TestBootstrapBridgeIntegration:
         runner_path = PROJECT_ROOT / "deploy_integrated_tests.sh"
         assert runner_path.is_file(), "deploy_integrated_tests.sh not found"
 
-        content = runner_path.read_text()
+        content = runner_path.read_text(encoding="utf-8")
         assert "tests/test_bootstrap_eval.py" in content
         assert "tests/test_integration_bootstrap_bridges.py" in content
         assert "tests/bootstrap_bridge.py" in content
@@ -212,7 +212,7 @@ class TestBootstrapBridgeIntegration:
         if not pytest_ini.exists():
             pytest.skip("TEST_BLOCKED_SOURCE_MISSING: pytest.ini not found")
 
-        with open(pytest_ini, "r") as f:
+        with open(pytest_ini, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Check for bootstrap-related markers
@@ -230,7 +230,7 @@ class TestBootstrapBridgeIntegration:
         if not conftest_path.exists():
             pytest.skip("TEST_BLOCKED_SOURCE_MISSING: conftest.py not found")
 
-        with open(conftest_path, "r") as f:
+        with open(conftest_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Check for bootstrap fixtures
@@ -263,7 +263,7 @@ class TestBootstrapBridgeHealthCheck:
         workflow_path = PROJECT_ROOT / ".github" / "workflows" / "bootstrap-integration.yml"
         assert workflow_path.is_file(), "bootstrap-integration.yml not found"
 
-        content = workflow_path.read_text()
+        content = workflow_path.read_text(encoding="utf-8")
         assert "tests/test_bootstrap_eval.py" in content
         assert "tests/test_integration_bootstrap_bridges.py" in content
         assert "deploy_integrated_tests.sh" in content
