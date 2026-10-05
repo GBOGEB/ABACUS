@@ -5,6 +5,9 @@ name: DMAIC Metrics — Per-Commit Tracking & Feedback Loop
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/api/dmaic_metrics.json"
+      - "docs/api/dmaic_metrics_chart.html"
   workflow_run:
     workflows: ["Deploy Documentation to GitHub Pages"]
     types: [completed]
@@ -18,7 +21,7 @@ on:
 permissions:
   contents: write
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   collect-metrics:
@@ -243,8 +246,12 @@ jobs:
           print("Chart generated → docs/api/dmaic_metrics_chart.html")
           PYEOF
 
-      - name: Commit metrics artefacts
+      - name: Publish metrics artefacts through governed PR
+        if: github.event_name != 'workflow_run'
         id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          METRICS_BRANCH: automation/dmaic-metrics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -254,8 +261,26 @@ jobs:
             echo "child_committed=false" >> "$GITHUB_OUTPUT"
             echo "child_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           else
+            git checkout -B "$METRICS_BRANCH"
             git commit -m "metrics: update DMAIC metrics for ${{ github.sha }}"
-            git push origin HEAD
+            git push --force origin "HEAD:refs/heads/$METRICS_BRANCH"
+
+            PR_NUMBER="$(gh pr list \
+              --head "$METRICS_BRANCH" \
+              --base main \
+              --state open \
+              --json number \
+              --jq '.[0].number // empty')"
+            if [ -z "$PR_NUMBER" ]; then
+              PR_URL="$(gh pr create \
+                --base main \
+                --head "$METRICS_BRANCH" \
+                --title "metrics: refresh DMAIC commit metrics" \
+                --body "Automated metrics publication from source main SHA \`${{ github.sha }}\`. Generated artefacts are routed through the normal PR admission and PR Feedback Gate; this workflow does not push generated content directly to protected \`main\`.")"
+              PR_NUMBER="${PR_URL##*/}"
+            fi
+
+            echo "Metrics publication PR: #$PR_NUMBER"
             echo "child_committed=true" >> "$GITHUB_OUTPUT"
             echo "child_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
