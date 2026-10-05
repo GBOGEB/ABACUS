@@ -6,6 +6,7 @@ BASELINE = json.load(open(os.path.join(os.path.dirname(__file__), "..", "enginee
 scenarios = BASELINE["figure_6_scenarios"]
 specs = BASELINE["compressor_specifications"]
 
+
 def model_scenario(scenario_id, scenario):
     """Model a single operational scenario."""
     flow = scenario.get("hp_flow_gs", 0)
@@ -36,12 +37,14 @@ def model_scenario(scenario_id, scenario):
         "feasible": flow <= n_units * per_unit
     }
 
+
 def run_all_scenarios():
     results = []
     for sid, scenario in scenarios.items():
         r = model_scenario(sid, scenario)
         results.append(r)
     return results
+
 
 def test():
     r = model_scenario("S1", scenarios["S1_nominal"])

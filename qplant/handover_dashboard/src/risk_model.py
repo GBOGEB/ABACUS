@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Dict, List, Any
 from dataclasses import dataclass
 
+
 @dataclass
 class RiskItem:
     id: str
@@ -115,6 +116,7 @@ OPERATIONAL_SCENARIOS: List[Dict[str, Any]] = [
     },
 ]
 
+
 def risk_matrix_data() -> List[Dict[str, Any]]:
     """Return risk register as list of dicts for visualization."""
     return [
@@ -126,6 +128,7 @@ def risk_matrix_data() -> List[Dict[str, Any]]:
         }
         for r in RISK_REGISTER
     ]
+
 
 def beam_impact_analysis() -> Dict[str, Any]:
     """Calculate beam availability impact from valve failures."""
