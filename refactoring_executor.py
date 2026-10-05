@@ -23,6 +23,7 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
+
 class RefactoringExecutor:
     def __init__(self, metrics_file: Path, dry_run: bool = False, batch_size: int = 1000):
         self.metrics_file = metrics_file
@@ -313,6 +314,7 @@ class RefactoringExecutor:
         print("="*80)
 
         return results
+
 
 def main():
     import argparse
