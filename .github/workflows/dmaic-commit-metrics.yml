@@ -309,14 +309,7 @@ jobs:
             git commit -m "metrics: update DMAIC metrics for ${{ github.sha }}"
             git push --force origin "HEAD:refs/heads/$METRICS_BRANCH"
 
-            PR_NUMBER="$(gh pr list \
-              --head "$METRICS_BRANCH" \
-              --base main \
-              --state open \
-              --json number \
-              --jq '.[0].number // empty')"
-            if [ -z "$PR_NUMBER" ]; then
-              PR_BODY="$(cat <<'EOF'
+            PR_BODY="$(cat <<'EOF'
           Automated metrics publication from source main SHA
           `${{ github.sha }}`.
 
@@ -325,12 +318,22 @@ jobs:
           directly to protected `main`.
           EOF
           )"
+
+            PR_NUMBER="$(gh pr list \
+              --head "$METRICS_BRANCH" \
+              --base main \
+              --state open \
+              --json number \
+              --jq '.[0].number // empty')"
+            if [ -z "$PR_NUMBER" ]; then
               PR_URL="$(gh pr create \
                 --base main \
                 --head "$METRICS_BRANCH" \
                 --title "metrics: refresh DMAIC commit metrics" \
                 --body "$PR_BODY")"
               PR_NUMBER="${PR_URL##*/}"
+            else
+              gh pr edit "$PR_NUMBER" --body "$PR_BODY"
             fi
 
             echo "Metrics publication PR: #$PR_NUMBER"
