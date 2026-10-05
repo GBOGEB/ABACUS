@@ -21,27 +21,18 @@ on:
         default: 'all'
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
 
 jobs:
   collect-metrics:
     name: Collect DMAIC Commit Metrics
     runs-on: ubuntu-latest
-    concurrency:
-      group: >-
-        dmaic-metrics-${{
-          github.event_name == 'push' &&
-          'publisher' || github.run_id
-        }}
-      cancel-in-progress: true
+    permissions:
+      contents: read
     outputs:
       quality_score: ${{ steps.metrics.outputs.quality_score }}
       phase_health: ${{ steps.metrics.outputs.phase_health }}
       escalate: ${{ steps.metrics.outputs.escalate }}
-      child_sha: ${{ steps.commit.outputs.child_sha }}
-      child_committed: ${{ steps.commit.outputs.child_committed }}
 
     steps:
       - uses: actions/checkout@v7
@@ -291,8 +282,44 @@ jobs:
           print("Chart generated → docs/api/dmaic_metrics_chart.html")
           PYEOF
 
-      - name: Publish metrics artefacts through governed PR
+      - name: Stage metrics publication payload
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmaic-metrics-publication-${{ github.run_id }}
+          path: |
+            docs/api/dmaic_metrics.json
+            docs/api/dmaic_metrics_chart.html
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-metrics:
+    name: Publish DMAIC Metrics Through Governed PR
+    needs: collect-metrics
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      group: dmaic-metrics-publisher
+      cancel-in-progress: true
+    outputs:
+      child_sha: ${{ steps.commit.outputs.child_sha }}
+      child_committed: ${{ steps.commit.outputs.child_committed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download metrics publication payload
+        uses: actions/download-artifact@v4
+        with:
+          name: dmaic-metrics-publication-${{ github.run_id }}
+          path: docs/api
+
+      - name: Publish metrics artefacts through governed PR
         id: commit
         env:
           GH_TOKEN: ${{ secrets.METRICS_PR_TOKEN }}
@@ -349,17 +376,20 @@ jobs:
 
   exact-child-dab:
     name: Exact-child DAB receipt
-    needs: collect-metrics
-    if: needs.collect-metrics.outputs.child_committed == 'true'
+    needs: publish-metrics
+    if: needs.publish-metrics.outputs.child_committed == 'true'
     uses: ./.github/workflows/dab-flake8-census.yml
     with:
-      exact_sha: ${{ needs.collect-metrics.outputs.child_sha }}
+      exact_sha: ${{ needs.publish-metrics.outputs.child_sha }}
 
   escalate:
     name: Escalate on Quality Regression
     needs: collect-metrics
     if: needs.collect-metrics.outputs.escalate == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v7
 
@@ -439,6 +469,8 @@ jobs:
   post-deploy-feedback:
     name: Post-Deploy DMAIC Feedback Loop
     needs: collect-metrics
+    permissions:
+      contents: read
     if: >-
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success'
