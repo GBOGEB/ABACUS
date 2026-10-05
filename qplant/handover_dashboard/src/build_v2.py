@@ -83,6 +83,7 @@ HERO_TABS = [
 # CSS & JS
 # ═══════════════════════════════════════════════════════════
 
+
 def write_css():
     css = """
 :root {
@@ -296,6 +297,7 @@ PLOT_TEMPLATE = dict(
         hoverlabel=dict(bgcolor="#1E3A8A", font_color="#fff", font_size=12),
     )
 )
+
 
 def _save_plot(fig: go.Figure, name: str):
     fig.update_layout(template="plotly_white")
