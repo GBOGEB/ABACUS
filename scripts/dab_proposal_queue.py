@@ -68,6 +68,11 @@ def value_lane_for(code: str, policy: dict[str, Any]) -> dict[str, Any]:
     for name, config in lanes.items():
         if code in set(config.get("families", [])):
             return {"name": name, **config}
+    # Pycodestyle E/W families are formatting/layout by default unless
+    # explicitly promoted above for demonstrated semantic value.
+    if code.startswith(("E", "W")) and "P3_STYLE" in lanes:
+        return {"name": "P3_STYLE", **lanes["P3_STYLE"]}
+    # Unclassified Pyflakes F-families retain maintainability priority.
     default_name = value_policy.get("default_lane", "P2_MAINTAINABILITY")
     config = lanes.get(default_name, {})
     return {"name": default_name, **config}
