@@ -32,8 +32,9 @@ jobs:
     concurrency:
       group: >-
         dmaic-metrics-${{
-          github.event_name == 'workflow_run' &&
-          github.run_id || 'publisher'
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/main' &&
+          'publisher' || github.run_id
         }}
       cancel-in-progress: true
     outputs:
