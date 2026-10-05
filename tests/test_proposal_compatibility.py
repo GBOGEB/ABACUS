@@ -127,6 +127,8 @@ def test_empty_queue_is_valid_only_with_clean_or_protected_receipt():
         "proposals": [],
     }
     assert valid_empty_queue(queue)
+    queue["schema_version"] = "abacus-dab-proposal-queue/1.1.0"
+    assert valid_empty_queue(queue)
     queue["measurement"] = {"total": 1, "families": {"E999": 1}}
     queue["protected_holds"] = {"E999": {"count": 1}}
     assert valid_empty_queue(queue)
