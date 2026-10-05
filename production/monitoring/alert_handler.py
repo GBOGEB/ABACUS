@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+
 def trigger_alert(rule_name, severity, message):
     alert = {
         'timestamp': datetime.now().isoformat(),
