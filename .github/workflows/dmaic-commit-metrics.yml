@@ -29,6 +29,13 @@ jobs:
   collect-metrics:
     name: Collect DMAIC Commit Metrics
     runs-on: ubuntu-latest
+    concurrency:
+      group: >-
+        dmaic-metrics-${{
+          github.event_name == 'workflow_run' &&
+          github.run_id || 'publisher'
+        }}
+      cancel-in-progress: true
     outputs:
       quality_score: ${{ steps.metrics.outputs.quality_score }}
       phase_health: ${{ steps.metrics.outputs.phase_health }}
@@ -284,7 +291,7 @@ jobs:
           PYEOF
 
       - name: Publish metrics artefacts through governed PR
-        if: github.event_name != 'workflow_run'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: commit
         env:
           GH_TOKEN: ${{ github.token }}
