@@ -73,6 +73,10 @@ def test_value_lane_keeps_style_but_ranks_it_low():
     assert style["name"] == "P3_STYLE"
     assert style["promotion_mode"] == "SLOW_BURN_OR_VICINITY"
     assert style["dedicated_pr_default"] is False
+    for code in ("E111", "E125", "E127"):
+        inferred = value_lane_for(code, policy)
+        assert inferred["name"] == "P3_STYLE"
+        assert inferred["dedicated_pr_default"] is False
 
 
 def test_queue_prioritises_execution_over_style_and_preserves_e999():
