@@ -14,7 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       phase:
-        description: 'DMAIC phase to focus on (all|define|measure|analyze|improve|control)'
+        description: >-
+          DMAIC phase to focus on
+          (all|define|measure|analyze|improve|control)
         required: false
         default: 'all'
 
@@ -28,10 +30,10 @@ jobs:
     name: Collect DMAIC Commit Metrics
     runs-on: ubuntu-latest
     outputs:
-      quality_score:   ${{ steps.metrics.outputs.quality_score }}
-      phase_health:    ${{ steps.metrics.outputs.phase_health }}
-      escalate:        ${{ steps.metrics.outputs.escalate }}
-      child_sha:       ${{ steps.commit.outputs.child_sha }}
+      quality_score: ${{ steps.metrics.outputs.quality_score }}
+      phase_health: ${{ steps.metrics.outputs.phase_health }}
+      escalate: ${{ steps.metrics.outputs.escalate }}
+      child_sha: ${{ steps.commit.outputs.child_sha }}
       child_committed: ${{ steps.commit.outputs.child_committed }}
 
     steps:
@@ -61,7 +63,11 @@ jobs:
               ["git", "log", "--oneline", "--since=30 days ago"],
               capture_output=True, text=True
           )
-          recent_commits = [l.strip() for l in result.stdout.splitlines() if l.strip()]
+          recent_commits = [
+              line.strip()
+              for line in result.stdout.splitlines()
+              if line.strip()
+          ]
           total_commits  = int(subprocess.run(
               ["git", "rev-list", "--count", "HEAD"],
               capture_output=True, text=True
@@ -73,7 +79,10 @@ jobs:
           total_loc  = 0
           for f in py_files:
               try:
-                  total_loc += len(f.read_text(encoding="utf-8", errors="replace").splitlines())
+                  content = f.read_text(
+                      encoding="utf-8", errors="replace"
+                  )
+                  total_loc += len(content.splitlines())
               except OSError:
                   pass
 
@@ -89,10 +98,17 @@ jobs:
           for phase, cfg in dmaic_phases.items():
               matched = list(repo_root.glob(f'{cfg["pattern"]}/**/*.py'))
               score   = min(100, len(matched) * 5)
-              phase_scores[phase] = {"files": len(matched), "score": score, "weight": cfg["weight"]}
+              phase_scores[phase] = {
+                  "files": len(matched),
+                  "score": score,
+                  "weight": cfg["weight"],
+              }
 
           # ── Composite quality score ───────────────────────────────────────
-          raw_q = sum(v["score"] * v["weight"] / 100 for v in phase_scores.values())
+          raw_q = sum(
+              value["score"] * value["weight"] / 100
+              for value in phase_scores.values()
+          )
           # Normalise: additional bonus for recent commit activity
           activity_bonus = min(10, len(recent_commits) * 0.5)
           quality_score  = round(min(100, raw_q + activity_bonus), 1)
@@ -160,19 +176,31 @@ jobs:
             <title>DMAIC Metrics – {ts[:10]}</title>
             <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
             <style>body{{font-family:system-ui,sans-serif;margin:0;background:#0d1117;color:#e6edf3}}
-            .header{{padding:1.5rem 2rem;background:#161b22;border-bottom:1px solid #30363d}}
+            .header{{
+              padding:1.5rem 2rem;
+              background:#161b22;
+              border-bottom:1px solid #30363d
+            }}
             h1{{margin:0;font-size:1.5rem}}
             .sub{{color:#8b949e;font-size:.9rem;margin-top:.3rem}}
             .qs{{font-size:2rem;font-weight:700;color:#58a6ff;display:inline-block;margin-left:1rem}}
-            .charts{{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem 2rem}}
+            .charts{{
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:1.5rem;
+              padding:1.5rem 2rem
+            }}
             @media(max-width:700px){{.charts{{grid-template-columns:1fr}}}}</style>
           </head><body>
           <div class="header">
             <h1>DMAIC Phase Metrics
               <span class="qs">{qs}/100</span>
             </h1>
-            <div class="sub">SHA: {metrics["sha"]} · Generated: {ts[:19].replace("T"," ")} UTC
-              · Commits (30d): {metrics["recent_commits"]} / {metrics["total_commits"]} total
+            <div class="sub">
+              SHA: {metrics["sha"]} ·
+              Generated: {ts[:19].replace("T"," ")} UTC ·
+              Commits (30d): {metrics["recent_commits"]} /
+              {metrics["total_commits"]} total
             </div>
           </div>
           <div class="charts">
@@ -189,8 +217,13 @@ jobs:
           const radarLabels = [...phases, phases[0]];
 
           Plotly.newPlot('radar', [{{
-            type:'scatterpolar', r:radarScores, theta:radarLabels, fill:'toself',
-            line:{{color:'#58a6ff'}}, fillcolor:'rgba(88,166,255,0.2)', name:'Phase score'
+            type:'scatterpolar',
+            r:radarScores,
+            theta:radarLabels,
+            fill:'toself',
+            line:{{color:'#58a6ff'}},
+            fillcolor:'rgba(88,166,255,0.2)',
+            name:'Phase score'
           }}], {{
             polar:{{radialaxis:{{visible:true,range:[0,100]}}}},
             paper_bgcolor:'#161b22', font:{{color:'#e6edf3'}},
@@ -233,9 +266,13 @@ jobs:
             marker:{{color:'#58a6ff'}}, orientation:'v'
           }}], {{
             paper_bgcolor:'#161b22', plot_bgcolor:'#0d1117',
-            font:{{color:'#e6edf3'}}, xaxis:{{gridcolor:'#30363d',tickangle:-30}},
+            font:{{color:'#e6edf3'}},
+            xaxis:{{gridcolor:'#30363d',tickangle:-30}},
             yaxis:{{gridcolor:'#30363d'}},
-            title:{{text:'Repository Activity Snapshot', font:{{color:'#e6edf3'}}}}
+            title:{{
+              text:'Repository Activity Snapshot',
+              font:{{color:'#e6edf3'}}
+            }}
           }}, {{responsive:true}});
           </script>
           </body></html>"""
@@ -272,11 +309,20 @@ jobs:
               --json number \
               --jq '.[0].number // empty')"
             if [ -z "$PR_NUMBER" ]; then
+              PR_BODY="$(cat <<'EOF'
+          Automated metrics publication from source main SHA
+          `${{ github.sha }}`.
+
+          Generated artefacts are routed through the normal PR admission and
+          PR Feedback Gate. This workflow does not push generated content
+          directly to protected `main`.
+          EOF
+          )"
               PR_URL="$(gh pr create \
                 --base main \
                 --head "$METRICS_BRANCH" \
                 --title "metrics: refresh DMAIC commit metrics" \
-                --body "Automated metrics publication from source main SHA \`${{ github.sha }}\`. Generated artefacts are routed through the normal PR admission and PR Feedback Gate; this workflow does not push generated content directly to protected \`main\`.")"
+                --body "$PR_BODY")"
               PR_NUMBER="${PR_URL##*/}"
             fi
 
@@ -304,17 +350,29 @@ jobs:
       - name: Read metrics
         id: read
         run: |
-          QS=$(python3 -c "import json; m=json.load(open('docs/api/dmaic_metrics.json')); print(m['quality_score'])" 2>/dev/null || echo "unknown")
+          QS="$(
+            python3 - <<'PYEOF' 2>/dev/null || echo "unknown"
+          import json
+
+          with open("docs/api/dmaic_metrics.json", encoding="utf-8") as handle:
+              print(json.load(handle)["quality_score"])
+          PYEOF
+          )"
           echo "quality_score=$QS" >> "$GITHUB_OUTPUT"
 
       - name: Open escalation issue
         uses: actions/github-script@v9
         with:
           script: |
-            const qs      = '${{ needs.collect-metrics.outputs.quality_score }}';
-            const sha     = '${{ github.sha }}'.slice(0,12);
-            const runUrl  = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const chartUrl = `https://${context.repo.owner.toLowerCase()}.github.io/${context.repo.repo}/api/dmaic_metrics_chart.html`;
+            const qs =
+              '${{ needs.collect-metrics.outputs.quality_score }}';
+            const sha = '${{ github.sha }}'.slice(0,12);
+            const runUrl =
+              `${context.serverUrl}/${context.repo.owner}/` +
+              `${context.repo.repo}/actions/runs/${context.runId}`;
+            const chartUrl =
+              `https://${context.repo.owner.toLowerCase()}.github.io/` +
+              `${context.repo.repo}/api/dmaic_metrics_chart.html`;
 
             const body = [
               '## ⚠️ DMAIC Quality Regression Detected',
@@ -326,13 +384,16 @@ jobs:
               '### Recommended Actions',
               '- [ ] Review failing DMAIC phases in the metrics chart',
               '- [ ] Add/fix tests to improve Measure phase score',
-              '- [ ] Check new commits for missing docstrings or broken imports',
-              '- [ ] Re-run DMAIC pipeline: `python -m pytest DMAIC_V3/tests -v`',
+              '- [ ] Check new commits for missing docstrings ' +
+                'or broken imports',
+              '- [ ] Re-run DMAIC pipeline: ' +
+                '`python -m pytest DMAIC_V3/tests -v`',
               '',
               `**Metrics chart:** ${chartUrl}`,
               `**Workflow run:** ${runUrl}`,
               '',
-              '_Auto-opened by DMAIC commit metrics workflow. Close when quality is restored._',
+              '_Auto-opened by DMAIC commit metrics workflow. ' +
+                'Close when quality is restored._',
             ].join('\n');
 
             // Avoid duplicate open issues for the same branch
@@ -346,25 +407,35 @@ jobs:
             if (!alreadyOpen) {
               await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
-                title: `⚠️ DMAIC quality regression on ${{ github.ref_name }} (score: ${qs})`,
+                title:
+                  `⚠️ DMAIC quality regression on ` +
+                  `${{ github.ref_name }} (score: ${qs})`,
                 body,
                 labels: ['dmaic-regression', 'quality'],
               });
             } else {
-              console.log('Escalation issue already open for this branch — skipping duplicate.');
+              console.log(
+                'Escalation issue already open for this branch — ' +
+                'skipping duplicate.'
+              );
             }
 
   post-deploy-feedback:
     name: Post-Deploy DMAIC Feedback Loop
     needs: collect-metrics
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
       - name: Verify deployed pages & collect post-deploy signal
         run: |
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          OWNER="$(
+            echo "${{ github.repository_owner }}" |
+              tr '[:upper:]' '[:lower:]'
+          )"
           REPO="${{ github.event.repository.name }}"
           BASE="https://${OWNER}.github.io/${REPO}"
           echo "=== Post-Deploy Verification for $BASE ==="
@@ -381,7 +452,10 @@ jobs:
           PASS=0; FAIL=0
           for path in "${PAGES[@]}"; do
             URL="${BASE}${path}"
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
+            STATUS="$(
+              curl -s -o /dev/null -w "%{http_code}" \
+                --max-time 10 "$URL" || echo "000"
+            )"
             if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
               echo "✅ $URL → $STATUS"
               PASS=$((PASS+1))
@@ -399,7 +473,8 @@ jobs:
             URL="${BASE}${path:-/}"
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
             ICON=$( [ "$STATUS" = "200" ] && echo "✅" || echo "❌" )
-            echo "| \`${path:-/}\` | $ICON HTTP $STATUS |" >> "$GITHUB_STEP_SUMMARY"
+            printf '| \`%s\` | %s HTTP %s |\n' \
+              "${path:-/}" "$ICON" "$STATUS" >> "$GITHUB_STEP_SUMMARY"
           done
           if [ $FAIL -gt 0 ]; then
             echo "⚠️  $FAIL page(s) unreachable — see summary above."
