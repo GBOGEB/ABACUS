@@ -6,9 +6,9 @@ handover:
   producers:
     - DMAIC V3 Team
   consumers:
-    - >-
-      MCP/Agent: consumes knowledge_packages/*.json|yaml,
-      DMAIC_V3_OUTPUT/reports/*.json
+    - MCP/Agent: >-
+        consumes knowledge_packages/*.json|yaml,
+        DMAIC_V3_OUTPUT/reports/*.json
     - IDE/Engineer: reads PDF/MD, runs engine/scripts locally
     - CI/CD: validates docs, builds artifacts, uploads handover bundles
   formats:
