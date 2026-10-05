@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a governed DAB repair proposal queue from an exact Flake8 census."""
+"""Build a governed, value-weighted DAB repair proposal queue from an exact Flake8 census."""
 
 from __future__ import annotations
 
@@ -62,6 +62,22 @@ def risk_for(code: str, policy: dict[str, Any]) -> str:
     return "MEDIUM"
 
 
+def value_lane_for(code: str, policy: dict[str, Any]) -> dict[str, Any]:
+    value_policy = policy.get("value_priority", {})
+    lanes = value_policy.get("lanes", {})
+    for name, config in lanes.items():
+        if code in set(config.get("families", [])):
+            return {"name": name, **config}
+    # Pycodestyle E/W families are formatting/layout by default unless
+    # explicitly promoted above for demonstrated semantic value.
+    if code.startswith(("E", "W")) and "P3_STYLE" in lanes:
+        return {"name": "P3_STYLE", **lanes["P3_STYLE"]}
+    # Unclassified Pyflakes F-families retain maintainability priority.
+    default_name = value_policy.get("default_lane", "P2_MAINTAINABILITY")
+    config = lanes.get(default_name, {})
+    return {"name": default_name, **config}
+
+
 def gate_status(total: int, policy: dict[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for name in ("G1", "G2", "G3"):
@@ -83,11 +99,13 @@ def _proposal(
     source_sha: str,
     family: str,
     risk: str,
+    value_lane: dict[str, Any],
     findings: list[dict[str, Any]],
     protected_holds: dict[str, Any],
     index: int,
 ) -> dict[str, Any]:
     paths = sorted({item["path"] for item in findings})
+    is_style = value_lane["name"] == "P3_STYLE"
     return {
         "schema_version": "abacus-proposal-envelope/1.0.0",
         "proposal_id": f"DAB-{source_sha[:12]}-{family}-{index:03d}",
@@ -96,6 +114,13 @@ def _proposal(
         "proposal_type": "STATIC_REPAIR",
         "risk_class": risk,
         "family": family,
+        "value_priority": {
+            "lane": value_lane["name"],
+            "rank": int(value_lane.get("rank", 2)),
+            "promotion_mode": value_lane.get("promotion_mode", "NORMAL_BURNDOWN"),
+            "dedicated_pr_default": bool(value_lane.get("dedicated_pr_default", True)),
+            "value_basis": value_lane.get("value_basis", "unclassified maintainability value"),
+        },
         "scope": {
             "paths": paths,
             "finding_count": len(findings),
@@ -120,7 +145,7 @@ def _proposal(
         },
         "coverage_growth": {
             "applicability": "NOT_APPLICABLE_MECHANICAL_ONLY"
-            if risk == "LOW_MECHANICAL"
+            if is_style
             else "REQUIRED_OR_JUSTIFIED",
             "baseline_receipt": "MIP_OR_MATRIX_EXACT_HEAD",
             "target": "NON_REGRESSION_AND_CHECK_SURFACE_GROWTH",
@@ -146,20 +171,30 @@ def build_queue(
         code: {
             "count": int(census.get("all_families", {}).get(code, 0) or 0),
             "disposition": rule.get("disposition", "HOLD"),
+            "value_lane": rule.get("value_lane"),
+            "value_basis": rule.get("value_basis"),
         }
         for code, rule in protected.items()
     }
 
-    grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    grouped: dict[tuple[int, str, str], list[dict[str, Any]]] = defaultdict(list)
+    lane_by_key: dict[tuple[int, str, str], dict[str, Any]] = {}
     for finding in findings:
-        risk = risk_for(str(finding["code"]), policy)
+        code = str(finding["code"])
+        risk = risk_for(code, policy)
         if risk == "HIGH_OR_PROTECTED":
             continue
-        grouped[(risk, str(finding["code"]))].append(finding)
+        lane = value_lane_for(code, policy)
+        key = (int(lane.get("rank", 2)), risk, code)
+        grouped[key].append(finding)
+        lane_by_key[key] = lane
 
     proposals: list[dict[str, Any]] = []
     index = 1
-    for (risk, family), rows in sorted(grouped.items()):
+    for key in sorted(grouped):
+        _, risk, family = key
+        rows = grouped[key]
+        lane = lane_by_key[key]
         cfg = policy["batch_policy"][risk]
         max_findings = int(cfg["max_findings"])
         max_files = int(cfg["max_files"])
@@ -176,6 +211,7 @@ def build_queue(
                     source_sha=source_sha,
                     family=family,
                     risk=risk,
+                    value_lane=lane,
                     findings=batch,
                     protected_holds=protected_receipt,
                     index=index,
@@ -197,13 +233,26 @@ def build_queue(
             batch_paths.add(path)
         flush()
 
+    style_count = sum(
+        p["scope"]["finding_count"]
+        for p in proposals
+        if p["value_priority"]["lane"] == "P3_STYLE"
+    )
     return {
-        "schema_version": "abacus-dab-proposal-queue/1.0.0",
+        "schema_version": "abacus-dab-proposal-queue/1.1.0",
         "source_sha": source_sha,
         "measurement": {
             "total": int(census.get("total", 0) or 0),
             "families": census.get("all_families", {}),
             "gate_status": gate_status(int(census.get("total", 0) or 0), policy),
+        },
+        "value_policy": {
+            "objective": policy.get("value_priority", {}).get(
+                "objective", "EFFORT_WEIGHTED_BY_ENGINEERING_VALUE"
+            ),
+            "style_findings_remain_measured": True,
+            "style_findings_in_queue": style_count,
+            "style_blocks_higher_value_work": False,
         },
         "protected_holds": protected_receipt,
         "worker_model": {
