@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import os
 
+
 class ImprovedCryoplantRTMGenerator:
     def __init__(self):
         self.requirements = []
@@ -712,6 +713,7 @@ This RTM is prepared for integration with the existing GitHub infrastructure:
 
         print(f"Markdown document created: {output_path}")
         return output_path
+
 
 def main():
     print("🚀 Improved Cryoplant RTM Generator Starting...")
