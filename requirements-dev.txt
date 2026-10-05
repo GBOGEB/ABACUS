@@ -1,4 +1,5 @@
 # Dev/test dependencies — install with: pip install -r requirements-dev.txt
+# Exact-main six-lane recensus trigger; no dependency change.
 -r requirements.txt
 
 pytest>=7.4.0
