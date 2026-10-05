@@ -6,7 +6,9 @@ handover:
   producers:
     - DMAIC V3 Team
   consumers:
-    - MCP/Agent: consumes knowledge_packages/*.json|yaml, DMAIC_V3_OUTPUT/reports/*.json
+    - >-
+      MCP/Agent: consumes knowledge_packages/*.json|yaml,
+      DMAIC_V3_OUTPUT/reports/*.json
     - IDE/Engineer: reads PDF/MD, runs engine/scripts locally
     - CI/CD: validates docs, builds artifacts, uploads handover bundles
   formats:
@@ -26,4 +28,19 @@ checks:
       run: "python -m DMAIC_V3.dmaic_v3_engine --version"
       expect_contains: "DMAIC V3 Engine 3.3.0"
     - name: json_validate
-      run: "python - << 'PY'\nimport json,glob\nbad=[]\nfor f in glob.glob('**/*.json',recursive=True):\n  try:\n    json.load(open(f,'r',encoding='utf-8'))\n  except Exception as e:\n    bad.append((f,str(e)))\nif bad:\n  print('Invalid JSON files:')\n  [print('-',b[0],b[1]) for b in bad]\n  raise SystemExit(1)\nprint('All JSON valid.')\nPY"
+      run: |
+        python - << 'PY'
+        import json, glob
+
+        bad = []
+        for f in glob.glob('**/*.json', recursive=True):
+          try:
+            json.load(open(f, 'r', encoding='utf-8'))
+          except Exception as e:
+            bad.append((f, str(e)))
+        if bad:
+          print('Invalid JSON files:')
+          [print('-', b[0], b[1]) for b in bad]
+          raise SystemExit(1)
+        print('All JSON valid.')
+        PY
