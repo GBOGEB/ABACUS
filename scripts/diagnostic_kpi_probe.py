@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Low-impact local diagnostic probe. Does not dispatch Actions work."""
-import json, os, subprocess, time, urllib.request
+import json, os, shlex, subprocess, time, urllib.request
 
 
 def timed(name, fn):
@@ -13,7 +13,7 @@ def timed(name, fn):
 
 
 def cmd(c):
-    p = subprocess.run(c, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=120)
+    argv = shlex.split(c) if isinstance(c, str) else c\n    p = subprocess.run(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=120)
     if p.returncode: raise RuntimeError('nonzero')
     return p.returncode
 
