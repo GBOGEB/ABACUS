@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 from datetime import datetime
 
+
 def check_metrics():
     metrics_file = Path('production/monitoring/current_metrics.json')
     if metrics_file.exists():
@@ -11,6 +12,7 @@ def check_metrics():
             metrics = json.load(f)
         return metrics
     return {}
+
 
 def log_status(message):
     log_file = Path('production/logs/monitoring.log')
