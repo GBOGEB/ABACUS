@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pre-commit ruff black pylint mypy pytest
+          pip install pre-commit ruff black pylint mypy pytest jsonschema
 
       - name: Run pre-commit hooks
         run: |
