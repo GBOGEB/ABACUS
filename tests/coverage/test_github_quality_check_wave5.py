@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 import DMAIC_V3.generators.github_quality_check as quality_module
-from DMAIC_V3.generators.github_quality_check import GitHubQualityCheck
+GitHubQualityCheck = quality_module.GitHubQualityCheck
 
 
 @pytest.mark.unit
