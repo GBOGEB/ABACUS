@@ -16,6 +16,7 @@ from rtm_generator.generator import RTMGenerator
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def main():
     logger.info("Starting RTM generation (legacy wrapper)...")
 

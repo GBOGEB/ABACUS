@@ -12,6 +12,7 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def validate_requirements(json_path):
     """Validate requirements data"""
     try:
@@ -58,6 +59,7 @@ def validate_requirements(json_path):
     except Exception as e:
         logger.error(f"Validation failed: {e}")
         return False
+
 
 def main():
     json_path = Path("data/rtm/requirements.json")
