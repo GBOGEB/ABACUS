@@ -471,7 +471,10 @@ jobs:
           echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
           for path in "${PAGES[@]}"; do
             URL="${BASE}${path:-/}"
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
+            STATUS="$(
+              curl -s -o /dev/null -w "%{http_code}" \
+                --max-time 10 "$URL" || echo "000"
+            )"
             ICON=$( [ "$STATUS" = "200" ] && echo "✅" || echo "❌" )
             printf '| \`%s\` | %s HTTP %s |\n' \
               "${path:-/}" "$ICON" "$STATUS" >> "$GITHUB_STEP_SUMMARY"
