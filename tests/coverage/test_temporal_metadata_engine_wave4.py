@@ -71,3 +71,5 @@ def test_scan_workspace_returns_file_and_folder_metadata(tmp_path):
 
     assert any(item.file_path == "src/a.py" for item in files)
     assert any(item.folder_path == "src" for item in folders)
+
+# Wave 5 exact-main broad coverage recensus trigger.
