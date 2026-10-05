@@ -116,6 +116,7 @@ app.add_middleware(
 # HEALTH & STATUS
 # ═══════════════════════════════════════════════════════════════════════
 
+
 @app.get("/api/v1/health", response_model=HealthResponse, tags=["System"])
 async def health_check():
     """System health check with build status and config validation."""
