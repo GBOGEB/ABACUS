@@ -6,9 +6,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from dow_engine import DOWEngine
 from dow_engine.core.dmaic import DMAICEngine
-import json
-import re
-
 
 def improve_markdown_quality(file_path: Path) -> bool:
     try:
