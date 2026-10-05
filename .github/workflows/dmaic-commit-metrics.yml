@@ -23,6 +23,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: >-
+    dmaic-metrics-${{
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      'publisher' || github.run_id
+    }}
+  cancel-in-progress: true
+
 jobs:
   collect-metrics:
     name: Collect DMAIC Commit Metrics
@@ -301,9 +310,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    concurrency:
-      group: dmaic-metrics-publisher
-      cancel-in-progress: true
     outputs:
       child_sha: ${{ steps.commit.outputs.child_sha }}
       child_committed: ${{ steps.commit.outputs.child_committed }}
