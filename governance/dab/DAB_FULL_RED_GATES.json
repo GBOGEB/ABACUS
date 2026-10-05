@@ -1,6 +1,6 @@
 {
-  "schema": "abacus-dab-full-red-gates/1.0.0",
-  "purpose": "Govern repository-wide static red debt together with proof completeness; static-count reduction alone never closes a gate.",
+  "schema": "abacus-dab-full-red-gates/1.1.0",
+  "purpose": "Govern repository-wide static red debt together with proof completeness while prioritising engineering effort by execution, semantic, security/test and maintainability value rather than raw score reduction.",
   "reference_snapshot": {
     "source_sha": "3f16d6ffc92d4c4d3994e264971c5dd32e7032a7",
     "measured_total": 3112,
@@ -13,79 +13,95 @@
   "gates": {
     "G1": {
       "static_total_exclusive_max": 3000,
-      "required": [
-        "exact_sha_census",
-        "protected_family_non_regression",
-        "proposal_contract_valid"
-      ],
+      "required": ["exact_sha_census", "protected_family_non_regression", "proposal_contract_valid"],
       "meaning": "first scaled-burndown control boundary"
     },
     "G2": {
       "static_total_exclusive_max": 2500,
-      "required": [
-        "G1",
-        "python_310_311_312_proof_roles_classified",
-        "no_unclassified_matrix_skip",
-        "coverage_non_regression"
-      ],
+      "required": ["G1", "python_310_311_312_proof_roles_classified", "no_unclassified_matrix_skip", "coverage_non_regression"],
       "meaning": "proof-complete intermediate control boundary"
     },
     "G3": {
       "static_total_exclusive_max": 2000,
-      "required": [
-        "G2",
-        "no_unclassified_critical_job_skip",
-        "broad_test_red_roots_visible",
-        "coverage_growth_or_explicit_non_applicability"
-      ],
+      "required": ["G2", "no_unclassified_critical_job_skip", "broad_test_red_roots_visible", "coverage_growth_or_explicit_non_applicability"],
       "meaning": "full-red debt below 2000 with hidden-proof debt exposed"
+    }
+  },
+  "value_priority": {
+    "objective": "EFFORT_WEIGHTED_BY_ENGINEERING_VALUE",
+    "default_lane": "P2_MAINTAINABILITY",
+    "lanes": {
+      "P0_EXECUTION": {
+        "rank": 0,
+        "families": ["F821", "F823"],
+        "promotion_mode": "IMMEDIATE_GOVERNED",
+        "dedicated_pr_default": true,
+        "value_basis": "runtime failure, invalid binding or execution blocker"
+      },
+      "P1_SEMANTIC": {
+        "rank": 1,
+        "families": ["F601", "F811", "E722"],
+        "promotion_mode": "VALUE_FIRST_GOVERNED",
+        "dedicated_pr_default": true,
+        "value_basis": "likely defect, ambiguous behaviour or unsafe semantic pattern"
+      },
+      "P2_MAINTAINABILITY": {
+        "rank": 2,
+        "families": ["F401", "F841", "E731", "E741"],
+        "promotion_mode": "NORMAL_BURNDOWN",
+        "dedicated_pr_default": true,
+        "value_basis": "maintainability, dead code or clarity with plausible engineering benefit"
+      },
+      "P3_STYLE": {
+        "rank": 3,
+        "families": ["E302", "E303", "E305", "E501", "W291", "W293"],
+        "promotion_mode": "SLOW_BURN_OR_VICINITY",
+        "dedicated_pr_default": false,
+        "value_basis": "formatting/readability only; keep measured, repair opportunistically or during housekeeping"
+      }
     }
   },
   "protected_holds": {
     "E999": {
       "max_count": 1,
       "disposition": "HOLD_SOURCE_BOUND",
-      "auto_batch": false
+      "auto_batch": false,
+      "value_lane": "P0_EXECUTION",
+      "value_basis": "syntax/parser failure; highest-value defect but source-bound and not auto-mutated"
     }
   },
   "batch_policy": {
     "LOW_MECHANICAL": {
-      "families": [
-        "E302",
-        "E303",
-        "W291"
-      ],
+      "families": ["E302", "E303", "E305", "E501", "W291", "W293"],
       "max_findings": 12,
       "max_files": 3,
       "same_family": true,
-      "proposal_workers": {
-        "min": 2,
-        "max": 8,
-        "mode": "READ_ONLY"
-      },
+      "proposal_workers": {"min": 2, "max": 8, "mode": "READ_ONLY"},
       "mutation_writers": 1
     },
     "MEDIUM": {
       "max_findings": 4,
       "max_files": 1,
-      "proposal_workers": {
-        "min": 1,
-        "max": 4,
-        "mode": "READ_ONLY"
-      },
+      "proposal_workers": {"min": 1, "max": 4, "mode": "READ_ONLY"},
       "mutation_writers": 1
     },
     "HIGH_OR_PROTECTED": {
       "max_findings": 1,
       "max_files": 1,
-      "proposal_workers": {
-        "min": 1,
-        "max": 2,
-        "mode": "READ_ONLY"
-      },
+      "proposal_workers": {"min": 1, "max": 2, "mode": "READ_ONLY"},
       "mutation_writers": 1,
       "auto_merge": false
     }
+  },
+  "promotion_policy": {
+    "style_only": {
+      "count_in_census": true,
+      "remain_proposable": true,
+      "blocks_higher_value_work": false,
+      "dedicated_pr_default": false,
+      "preferred_consumption": ["FIX_IN_VICINITY", "SLOW_BURN_HOUSEKEEPING", "FORMATTER_BASELINE_MIGRATION"]
+    },
+    "engineering_credit": "VALUE_BEARING_OUTCOME_REQUIRED; raw static-count reduction alone earns no engineering credit"
   },
   "coverage_growth": {
     "mechanical_only": "NON_REGRESSION_REQUIRED; explicit NOT_APPLICABLE is allowed only when no executable semantics change",
