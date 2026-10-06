@@ -36,7 +36,8 @@
         "validate_docs.yml",
         "v5-w62-self-smoke.yml",
         "governance.yml",
-        "validation.yml"
+        "validation.yml",
+        "a10-guard.yml"
       ]
     },
     "full": {
@@ -321,6 +322,12 @@
     {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
+      "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^a10-guard\\.yml$",
+      "cluster": "security",
       "lifecycle": "pr_fast",
       "disposition": "keep"
     }

@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `6575adc8815d298bc8e9414a329c2ad6057d483bec7a772674691d08d28e9dcb`
+Policy SHA-256: `26db55130c62c12110eee1e4bb17501e4996aca92ae36c3190bcdf9711b00a3a`
 
 ## Outcome
 
-The repository currently contains **151 workflow definitions**. All **151** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **152 workflow definitions**. All **152** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -33,7 +33,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 19 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 9 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 10 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 8 | Repository maintenance, reporting, branch and PR automation. |
@@ -74,6 +74,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `core_test` | `smoke-test.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `testpilot-preflight.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `tooling-ci.yml` | push, pull_request, workflow_dispatch | 5 | `keep` | — |
+| 10 | `security` | `a10-guard.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |

@@ -1,0 +1,3 @@
+#!/bin/sh
+# A10.8 pre-commit: refuse to commit tender material to this public repo
+exec python tools/a10_guard.py --staged
