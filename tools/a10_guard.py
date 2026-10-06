@@ -24,6 +24,7 @@ import os
 import re
 import subprocess  # nosec B404
 import sys
+import unicodedata
 import zipfile
 import zlib
 
@@ -124,8 +125,38 @@ def git_ok(*a):
     return subprocess.run(["git", *a], capture_output=True).returncode == 0  # nosec
 
 
+def normalize(text):
+    """NFKC-fold and drop invisible format characters (zero-width joiners etc.)."""
+    text = unicodedata.normalize("NFKC", text)
+    return "".join(c for c in text if unicodedata.category(c) != "Cf")
+
+
+def decode_text(data):
+    """Strict decode: UTF-8 (BOM optional) or BOM-marked UTF-16/32.
+
+    Returns None for anything else, including NUL-padded text (BOM-less
+    UTF-16), so the caller fails closed instead of replacement-decoding.
+    """
+    for bom, enc in (
+        (b"\xff\xfe\x00\x00", "utf-32"),
+        (b"\x00\x00\xfe\xff", "utf-32"),
+        (b"\xff\xfe", "utf-16"),
+        (b"\xfe\xff", "utf-16"),
+    ):
+        if data.startswith(bom):
+            try:
+                return data.decode(enc)
+            except UnicodeDecodeError:
+                return None
+    try:
+        text = data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return None
+    return None if "\x00" in text else text
+
+
 def hit_terms(text):
-    words = re.findall(r"[a-z0-9]+", text.lower())
+    words = re.findall(r"[a-z0-9]+", normalize(text).lower())
     for n in (1, 2, 3):
         for i in range(len(words) - n + 1):
             if (
@@ -143,11 +174,14 @@ def doc_text(ext, data):
     if ext in ZIP_DOC_EXT:
         try:
             z = zipfile.ZipFile(io.BytesIO(data))
-            return " ".join(
-                re.sub(r"<[^>]+>", " ", z.read(n).decode("utf-8", "replace"))
-                for n in z.namelist()
-                if n.endswith(".xml")
-            )
+            parts = []
+            for n in z.namelist():
+                if n.endswith(".xml"):
+                    xml = decode_text(z.read(n))
+                    if xml is None:
+                        return None
+                    parts.append(re.sub(r"<[^>]+>", " ", xml))
+            return " ".join(parts)
         except (zipfile.BadZipFile, KeyError, RuntimeError):
             return None
     if ext == ".pdf":
@@ -156,10 +190,10 @@ def doc_text(ext, data):
             try:
                 parts.append(zlib.decompress(m.group(1)).decode("latin-1"))
             except zlib.error:
-                # Some PDF streams are not valid zlib data; skip unreadable streams and continue scanning.
+                # Some PDF streams are not zlib data; skip them and keep scanning.
                 continue
         return " ".join(parts)
-    return data.decode("utf-8", "replace")
+    return decode_text(data)
 
 
 def reason(path, data):
@@ -179,6 +213,8 @@ def reason(path, data):
     if ext in TEXT_EXT or ext in ZIP_DOC_EXT or ext == ".pdf":
         text = doc_text(ext, data)
         if text is None:
+            if ext in TEXT_EXT:
+                return "unsupported text encoding (fail closed; save as UTF-8)"
             return "document that cannot be opened (fail closed)"
         if hit_terms(text):
             return "restricted term in content"
@@ -211,9 +247,7 @@ def main():
     if os.path.exists(ALLOW_FILE):
         with open(ALLOW_FILE, encoding="utf-8") as f:
             allow = {
-                l.strip()
-                for l in f
-                if l.strip() and not l.startswith("#")
+                line.strip() for line in f if line.strip() and not line.startswith("#")
             }
     if staged:
         paths = (
