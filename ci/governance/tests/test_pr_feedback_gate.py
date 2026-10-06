@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import pathlib
 import sys
 import unittest
@@ -578,6 +579,118 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertFalse(
             gate.security_sensitive_change(["docs/ordinary-note.md"])
         )
+
+    def test_review_deferral_requires_classifications_and_exact_open_issue(self):
+        head = "a" * 40
+        issue_body = (
+            '<!-- abacus-deferred-security:v1 '
+            + json.dumps({"pr": 42, "headSha": head, "status": "OPEN"})
+            + " -->"
+        )
+
+        class FakeGitHub:
+            def __init__(self, body):
+                self.body = body
+
+            def issue(self, number):
+                return {
+                    "number": number,
+                    "state": "open",
+                    "body": self.body,
+                }
+
+        marker = {
+            "headSha": head,
+            "trackingIssue": 1846,
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [{"threadId": "THREAD-1", "classification": "S2"}],
+        }
+        comment = {
+            "author_association": "OWNER",
+            "body": (
+                "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+                "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+                "<!-- abacus-review-disposition:v2 "
+                + json.dumps(marker)
+                + " -->"
+            ),
+        }
+        threads = [{"id": "THREAD-1", "isResolved": False}]
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertTrue(evidence[0])
+        self.assertEqual(evidence[1], ())
+
+        unmarked_comment = dict(comment)
+        unmarked_comment["body"] = comment["body"].replace(
+            "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n",
+            "",
+        )
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [unmarked_comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("DEFERRED_BUDGET", evidence[2][0])
+
+        stale_issue = issue_body.replace(head, "b" * 40)
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(stale_issue),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("no open issue", evidence[2][0])
+
+        wrong_pr_issue = issue_body.replace('"pr": 42', '"pr": 43')
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(wrong_pr_issue),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("no open issue", evidence[2][0])
+
+        marker["items"] = []
+        comment["body"] = (
+            "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+            "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+            "<!-- abacus-review-disposition:v2 "
+            + json.dumps(marker)
+            + " -->"
+        )
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("every unresolved", evidence[2][0])
 
 
 if __name__ == "__main__":

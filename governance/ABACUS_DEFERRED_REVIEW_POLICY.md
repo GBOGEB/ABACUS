@@ -12,19 +12,34 @@ be deferred when the obligation is captured losslessly.
 
 ## Classification
 
-| Class | Meaning | Merge disposition |
-| --- | --- | --- |
-| S0 | known exploitable vulnerability, secret exposure, auth/permission bypass, unsafe workflow execution, supply-chain compromise, or genuinely RED security evidence | BLOCK |
-| S1 | credible material security defect attributable to the changed code | BLOCK unless repaired or explicitly accepted by the owner as a separate risk decision |
-| S2 | security hardening, question, or review obligation not shown to invalidate the PR | ALLOW only after exact-head durable deferral |
-| S3 | style, advisory, stale, broader-repository debt, or unrelated review | NON-BLOCKING; retain when useful |
+### S0
+
+Known exploitable vulnerability, secret exposure, auth/permission bypass,
+unsafe workflow execution, supply-chain compromise, or genuinely RED security
+evidence. **Merge disposition: BLOCK.**
+
+### S1
+
+Credible material security defect attributable to the changed code.
+**Merge disposition: BLOCK.**
+
+### S2
+
+Security hardening, question, or review obligation not shown to invalidate
+the PR. **Merge disposition: ALLOW only after exact-head durable deferral.**
+
+### S3
+
+Style, advisory, stale, broader-repository debt, or unrelated review.
+**Merge disposition: NON-BLOCKING; retain when useful.**
 
 ## Exact-head deferral contract
 
 Unavailable Codex quota, credits, token budget, or service capacity is never
-recorded as PASS. Use:
+recorded as PASS. Mark each deferred review explicitly:
 
 ```text
+CODEX_CODE_REVIEW=DEFERRED_BUDGET
 CODEX_SECURITY_REVIEW=DEFERRED_BUDGET
 ```
 
@@ -32,7 +47,17 @@ A trusted repository collaborator records one exact-head disposition comment
 on the PR. The machine-readable marker is:
 
 ```html
-<!-- abacus-review-disposition:v2 {"headSha":"<40-char SHA>","trackingIssue":<issue>,"codexCodeReviewRequired":true,"codexSecurityReviewRequired":true,"items":[{"threadId":"<GraphQL thread id>","classification":"S2"}]} -->
+<!-- abacus-review-disposition:v2
+{
+  "headSha": "<40-char SHA>",
+  "trackingIssue": <issue>,
+  "codexCodeReviewRequired": true,
+  "codexSecurityReviewRequired": true,
+  "items": [
+    {"threadId": "<GraphQL thread id>", "classification": "S2"}
+  ]
+}
+-->
 ```
 
 Every unresolved thread must appear in `items` as S0, S1, S2, or S3.
@@ -42,7 +67,9 @@ S0/S1 remains blocking. If S2 is present, or either Codex review is deferred,
 The open tracking issue must contain:
 
 ```html
-<!-- abacus-deferred-security:v1 {"pr":<PR>,"headSha":"<40-char SHA>","status":"OPEN"} -->
+<!-- abacus-deferred-security:v1
+{"pr": <PR>, "headSha": "<40-char SHA>", "status": "OPEN"}
+-->
 ```
 
 and preserve, in human-readable form:
@@ -89,7 +116,8 @@ review debt.
 When Codex capacity becomes available:
 
 1. enumerate open deferred-review issues/records;
-2. process S2 security review before S3/advisory debt, oldest/highest-risk first;
+2. process S2 security review before S3/advisory debt, oldest/highest-risk
+   first;
 3. run Codex review against the recorded source SHA or its current successor
    with lineage preserved;
 4. repair only material, attributable, repo-local findings;
