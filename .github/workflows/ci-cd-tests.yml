@@ -83,7 +83,6 @@ jobs:
           BLACK: ${{ steps.black.outcome }}
           ISORT: ${{ steps.isort.outcome }}
           FLAKE8: ${{ steps.flake8.outcome }}
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -96,13 +95,8 @@ jobs:
           if [[ "$BLACK" != "success" ||
                 "$ISORT" != "success" ||
                 "$FLAKE8" != "success" ]]; then
-            if [[ "$EVENT_NAME" == "pull_request" ]]; then
-              echo "::warning::Broad code-quality baseline debt remains."
-              echo "Dedicated PR format/DAB gates remain authoritative."
-            else
-              echo "::error::One or more code-quality roots are red."
-              exit 1
-            fi
+            echo "::error::One or more code-quality roots are red."
+            exit 1
           fi
 
   unit-tests:
@@ -550,7 +544,6 @@ jobs:
         env:
           BANDIT: ${{ steps.bandit.outcome }}
           SAFETY: ${{ steps.safety.outcome }}
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           {
             echo "### Security full-red surface"
@@ -559,13 +552,8 @@ jobs:
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
           if [[ "$BANDIT" != "success" || "$SAFETY" != "success" ]]; then
-            if [[ "$EVENT_NAME" == "pull_request" ]]; then
-              echo "::warning::Broad security baseline debt remains."
-              echo "Dedicated PR security gates remain authoritative."
-            else
-              echo "::error::One or more security roots are red."
-              exit 1
-            fi
+            echo "::error::One or more security roots are red."
+            exit 1
           fi
 
   full-red-summary:
