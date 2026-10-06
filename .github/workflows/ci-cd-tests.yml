@@ -145,9 +145,6 @@ jobs:
     name: Code Coverage
     runs-on: ubuntu-latest
     needs: unit-tests
-    env:
-      COVERAGE_FILE: ${{ runner.temp }}/abacus-broad-coverage/.coverage
-      COVERAGE_RCFILE: ${{ github.workspace }}/pyproject.toml
 
     steps:
       - uses: actions/checkout@v7
@@ -166,9 +163,16 @@ jobs:
             pip install -r requirements-test.txt
           fi
 
+      - name: Prepare isolated coverage data
+        shell: bash
+        run: |
+          coverage_dir="$RUNNER_TEMP/abacus-broad-coverage"
+          mkdir -p "$coverage_dir"
+          echo "COVERAGE_FILE=$coverage_dir/.coverage" >> "$GITHUB_ENV"
+          echo "COVERAGE_RCFILE=$GITHUB_WORKSPACE/pyproject.toml" >> "$GITHUB_ENV"
+
       - name: Run Tests with Coverage
         run: |
-          mkdir -p "$(dirname "$COVERAGE_FILE")"
           python -m coverage erase
           pytest --benchmark-disable --cov=. \
             --cov-branch \
