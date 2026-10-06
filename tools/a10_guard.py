@@ -156,7 +156,8 @@ def doc_text(ext, data):
             try:
                 parts.append(zlib.decompress(m.group(1)).decode("latin-1"))
             except zlib.error:
-                pass
+                # Some PDF streams are not valid zlib data; skip unreadable streams and continue scanning.
+                continue
         return " ".join(parts)
     return data.decode("utf-8", "replace")
 
