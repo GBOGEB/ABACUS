@@ -952,7 +952,7 @@ QPLANT helium system at MYRRHA/SCK&bull;CEN. Content is derived from:</p>
 <li><strong>Gistau Baguer, G.</strong> — <em>Cryogenic Engineering for Scientists and Engineers</em>, Chapter&nbsp;15:
 Engineering Tools (thermodynamic tables, calculator methods, design charts)</li>
 <li><strong>QPLANT provider control:</strong> HEPAK 3.40 is the governing low-temperature property engine for 2.0–4.5 K inclusive; licensed runtime execution is GREEN, while governing promotion remains withheld pending stable-source SHA-256 attestation.</li>
-<li><strong>CoolProp / HEOS:</strong> operational WORKING / CONTROL as the independent-check engine and the runtime provider outside the QPLANT HEPAK band unless a narrower child rule applies.</li>
+<li><strong>CoolProp / HEOS:</strong> operational WORKING / CONTROL as the independent-check engine and the runtime provider outside the QPLANT HEPAK band, within its enforced 1.8–300 K envelope, unless a narrower child rule applies; temperatures outside that envelope are rejected.</li>
 <li><strong>NIST REFPROP 10 / published helium references:</strong> validation/reference evidence only; never a silent substitute for the governing low-temperature HEPAK receipt.</li>
 <li>CODEX repository: <code>engineering_tools/hbhs_ep/</code> — HBHS-EP engineering-method / SSoT context.</li>
 <li>Canonical human surface: <code>GBOGEB/cryoplant-project/docs/QPS_HELIUM_PROPERTIES_WORKBENCH_CURRENT.html</code>. The focused <code>docs/hepak_workbench.html</code> remains subordinate technical/playground tooling.</li>
@@ -988,13 +988,14 @@ operating window. Source: <code>CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wc
 <p>Helium-4 is the working fluid at 4.2 K (normal boiling point) and 2 K (superfluid bath) throughout the QPLANT
 cryogenic system. Chapter 15 provides engineering methods, tables and charts, but it is <strong>not</strong> an independent property authority.
 For QPLANT governing calculations from 2.0–4.5 K inclusive, HEPAK 3.40 governs. CoolProp / HEOS is the operational
-independent-check engine and the outside-band runtime unless a narrower rule applies. NIST / REFPROP values below remain
+independent-check engine and the outside-band runtime only within its enforced 1.8–300 K envelope; temperatures outside
+that envelope are rejected. A narrower child rule may also apply. NIST / REFPROP values below remain
 reference and validation anchors only.</p>
 <br>
 <table>
 <tr><th>Provider / source</th><th>Role</th><th>Current execution state</th><th>Promotion state</th></tr>
 <tr><td><strong>HEPAK 3.40</strong></td><td>Governing QPLANT low-T engine, 2.0–4.5 K inclusive</td><td><strong>EXECUTED / GREEN</strong></td><td>WITHHELD pending stable-source SHA-256 rerun and repository receipt return</td></tr>
-<tr><td><strong>CoolProp / HEOS</strong></td><td>Independent check; outside-band runtime</td><td><strong>WORKING / CONTROL</strong></td><td>May not silently replace HEPAK inside the governing low-T band</td></tr>
+<tr><td><strong>CoolProp / HEOS</strong></td><td>Independent check; outside-band runtime within 1.8–300 K only</td><td><strong>WORKING / CONTROL</strong></td><td>Rejects temperatures outside 1.8–300 K; may not silently replace HEPAK inside the governing low-T band</td></tr>
 <tr><td>NIST / REFPROP / published tables</td><td>Reference / validation</td><td>Available as reference evidence</td><td>Not governing runtime authority</td></tr>
 </table>
 <br>
@@ -1147,7 +1148,7 @@ to the canonical QPLANT Helium Properties Workbench, which consumes governed pro
 <tr><td>Leak rate mbar·L/s → std cm³/s</td><td>× 0.9869</td><td>At 0 °C, 101.325 kPa (STP)</td></tr>
 <tr><td>kPa (abs) → barg</td><td>(P_kPa − 101.325) / 100</td><td>P_atm = 101.325 kPa</td></tr>
 <tr><td>barg → kPa (abs)</td><td>P_barg × 100 + 101.325</td><td>—</td></tr>
-<tr><td>Provider route at T</td><td>2.0 ≤ T ≤ 4.5 K → HEPAK governing; otherwise CoolProp runtime unless a narrower child rule applies</td><td>NIST / REFPROP remain validation/reference only</td></tr>
+<tr><td>Provider route at T</td><td>2.0 ≤ T ≤ 4.5 K → HEPAK governing; otherwise CoolProp runtime only for 1.8 ≤ T ≤ 300 K; outside 1.8–300 K is rejected. A narrower child rule may apply.</td><td>NIST / REFPROP remain validation/reference only</td></tr>
 </table>
 <br>
 <h2>15.6 QPLANT System Block Diagram</h2>
@@ -1471,7 +1472,9 @@ function ch15Calc() {
     if (T >= 2.0 && T <= 4.5) {
       out = 'HEPAK 3.40 → GOVERNING low-T route; runtime EXECUTED/GREEN; promotion WITHHELD pending stable-source SHA-256 attestation';
     } else {
-      out = 'CoolProp / HEOS → operational runtime route outside the QPLANT 2.0–4.5 K HEPAK governing band; validate any narrower child rule';
+      out = T >= 1.8 && T <= 300
+        ? 'CoolProp / HEOS → operational runtime route within its enforced 1.8–300 K envelope outside the QPLANT 2.0–4.5 K HEPAK governing band; validate any narrower child rule'
+        : 'Rejected: CoolProp / HEOS runtime supports only 1.8–300 K';
     }
     unit = 'NIST / REFPROP = validation/reference only';
   }
