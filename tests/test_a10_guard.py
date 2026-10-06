@@ -58,3 +58,26 @@ def test_broken_docx_fails_closed():
 def test_blob_key_is_stable_and_short():
     assert guard.blob_key("abc") == guard.blob_key("abc")
     assert len(guard.blob_key("abc")) == 20
+
+
+def test_utf16_with_bom_is_decoded_and_blocked():
+    data = "some zebra quokka text".encode("utf-16")
+    assert guard.reason("docs/notes.txt", data) == "restricted term in content"
+
+
+def test_utf16_without_bom_fails_closed():
+    data = "some zebra quokka text".encode("utf-16-le")
+    assert "fail closed" in guard.reason("docs/notes.csv", data)
+
+
+def test_invalid_utf8_fails_closed():
+    assert "fail closed" in guard.reason("docs/notes.txt", b"caf\xe9 zebra")
+
+
+def test_zero_width_and_fullwidth_tricks_are_blocked():
+    data = "zeb​ra ｑｕｏｋｋａ".encode("utf-8")
+    assert guard.reason("docs/notes.md", data) == "restricted term in content"
+
+
+def test_clean_utf16_passes():
+    assert guard.reason("docs/notes.txt", "hello".encode("utf-16")) == ""
