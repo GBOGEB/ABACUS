@@ -42,10 +42,13 @@ Do not combine the two commands into one comment. The observed GitHub
 integration may start only one review from a combined request.
 
 A previous-head review may remain useful history, but it cannot substitute
-for current-head review evidence. Exact-head Codex code review and exact-head
-Codex security review are mandatory merge predicates. Lack of review capacity,
-quota, credits, or service availability is an external HOLD and does not grant
-permission to merge without those reviews.
+for current-head evidence. For ABACUS, exact-head Codex review is satisfied
+either by completed review or by the controlled S2/S3 deferral contract in
+`governance/ABACUS_DEFERRED_REVIEW_POLICY.md`. Lack of review capacity,
+quota, credits, or service availability is never PASS: it is
+`DEFERRED_BUDGET` and must be bound to durable exact-head debt. S0/S1 remains
+blocking. Codex security review remains mandatory before merge for sensitive
+control-plane paths defined by that policy.
 
 ## Finding disposition contract
 
@@ -72,17 +75,19 @@ Before merge, require:
 ```text
 exact-head CI / MIP / DAB census
 +
-exact-head Codex code review complete
+exact-head Codex review complete OR valid exact-head S2/S3 deferral
 +
-exact-head Codex security review complete
+Codex security review complete for sensitive control-plane changes
 +
 current-head GitHub Actions terminal and green
 +
 GitHub comment and review-thread census refreshed
 +
-all material findings explicitly disposed
+all unresolved threads explicitly classified
 +
-no unresolved material review thread
+S0 = 0 and S1 = 0
++
+every S2/Codex deferral bound to durable open debt
 =
 PR feedback gate eligible
 ```
@@ -113,7 +118,7 @@ refresh exact head
 ```text
 repository authority > chat memory
 review evidence is exact-head evidence
-Codex code/security review completion is a mandatory admission predicate
+Codex review completion or valid exact-head S2/S3 deferral is an admission predicate
 no cross-SHA review substitution
 CI green does not erase review findings
 security green does not erase code-review findings
@@ -145,16 +150,19 @@ The evaluator is fail-closed for repository-native admission and review
 evidence. It requires:
 
 ```text
-exact-head Codex code review complete
-exact-head Codex security review complete
-zero unresolved review threads
+exact-head Codex review complete or valid exact-head S2/S3 deferral
+Codex security review complete for sensitive control-plane changes
+zero unresolved S0/S1 review items
+all unresolved S2/S3 threads explicitly classified
 current-head GitHub Actions terminal
 current-head GitHub Actions green
-known deferred warnings linked to durable open issues
+all deferred review obligations linked to durable open issues
 ```
 
-If Codex review capacity or credits are unavailable, the gate remains PENDING.
-No older-SHA review may be substituted.
+If Codex review capacity or credits are unavailable, the gate remains PENDING
+until a trusted collaborator records the exact-head deferred-review marker and
+durable tracking issue required by the ABACUS deferred-review policy. This is
+DEFERRED_WITH_DURABLE_DEBT, not PASS. No older-SHA review may be substituted.
 
 The evaluator must not check out or execute PR-supplied code with write
 credentials. Review/comment and workflow-run events execute the workflow
@@ -178,8 +186,10 @@ configure GitHub Settings so `main` requires the exact status check:
 PR Feedback Gate
 ```
 
-Also require strict/up-to-date branches, conversation resolution, no
-ordinary bypass/admin exemption, and block force-push/deletion.
+Also require strict/up-to-date branches, no ordinary bypass/admin exemption,
+and block force-push/deletion. For ABACUS, do **not** require GitHub's global
+conversation-resolution gate; material review disposition is enforced by the
+repository-native PR Feedback Gate instead.
 
 Until that settings bind is proven by live readback, the hard gate is
 implemented but not non-bypassable.
