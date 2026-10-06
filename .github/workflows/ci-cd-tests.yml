@@ -168,8 +168,10 @@ jobs:
         run: |
           coverage_dir="$RUNNER_TEMP/abacus-broad-coverage"
           mkdir -p "$coverage_dir"
-          echo "COVERAGE_FILE=$coverage_dir/.coverage" >> "$GITHUB_ENV"
-          echo "COVERAGE_RCFILE=$GITHUB_WORKSPACE/pyproject.toml" >> "$GITHUB_ENV"
+          {
+            echo "COVERAGE_FILE=$coverage_dir/.coverage"
+            echo "COVERAGE_RCFILE=$GITHUB_WORKSPACE/pyproject.toml"
+          } >> "$GITHUB_ENV"
 
       - name: Run Tests with Coverage
         run: |
