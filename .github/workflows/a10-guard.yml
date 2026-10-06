@@ -1,0 +1,28 @@
+name: a10-guard
+# A10.8 tender guard: blocks new tender material in this public repo.
+# Restricted terms are stored as salted hashes (no names published).
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  a10-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        # actions/checkout v7 (pinned)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        # actions/setup-python v7 (pinned)
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Tender guard (new or changed files only)
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python tools/a10_guard.py --diff "$BASE"
