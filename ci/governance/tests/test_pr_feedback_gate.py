@@ -504,5 +504,81 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(gate.Evidence(**failed).state, "failure")
 
 
+    def test_deferred_review_can_satisfy_non_sensitive_pending_review(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=2,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=False,
+            blocking_review_items=(),
+            review_deferral_details=("tracked by issue",),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "success")
+        self.assertEqual(evidence.failure_reasons, ())
+        self.assertEqual(evidence.pending_reasons, ())
+
+    def test_s0_s1_remain_blocking_even_with_deferral(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=1,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=False,
+            blocking_review_items=("S1 review item remains open",),
+            review_deferral_details=(),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "failure")
+        self.assertIn("S1 review item remains open", evidence.failure_reasons)
+
+    def test_sensitive_change_still_requires_security_review(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=0,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=True,
+            blocking_review_items=(),
+            review_deferral_details=(),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "pending")
+        self.assertTrue(
+            any("mandatory pre-merge" in item for item in evidence.pending_reasons)
+        )
+
+    def test_security_sensitive_path_classifier(self):
+        self.assertTrue(
+            gate.security_sensitive_change(
+                [".github/workflows/pr-feedback-gate.yml"]
+            )
+        )
+        self.assertTrue(
+            gate.security_sensitive_change(
+                ["ci/governance/pr_feedback_gate.py"]
+            )
+        )
+        self.assertFalse(
+            gate.security_sensitive_change(["docs/ordinary-note.md"])
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
