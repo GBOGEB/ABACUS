@@ -208,11 +208,12 @@ def main():
         base = None
     allow = set()
     if os.path.exists(ALLOW_FILE):
-        allow = {
-            l.strip()
-            for l in open(ALLOW_FILE, encoding="utf-8")
-            if l.strip() and not l.startswith("#")
-        }
+        with open(ALLOW_FILE, encoding="utf-8") as f:
+            allow = {
+                l.strip()
+                for l in f
+                if l.strip() and not l.startswith("#")
+            }
     if staged:
         paths = (
             git("diff", "--cached", "--name-only", "--diff-filter=ACMR")
