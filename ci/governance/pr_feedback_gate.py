@@ -295,10 +295,11 @@ class GitHub:
             f"/repos/{self.repository}/pulls/{number}",
         )
 
+    def pull_file_records(self, number: int) -> list[dict[str, Any]]:
+        return self.paged(f"/repos/{self.repository}/pulls/{number}/files")
+
     def pull_files(self, number: int) -> list[str]:
-        return changed_paths_from_files(
-            self.paged(f"/repos/{self.repository}/pulls/{number}/files")
-        )
+        return changed_paths_from_files(self.pull_file_records(number))
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -612,6 +613,24 @@ def security_sensitive_change(paths: list[str]) -> bool:
         github_path_match(path, pattern)
         for path in paths
         for pattern in sensitive_patterns
+    )
+
+
+def file_census_complete(
+    records: list[dict[str, Any]],
+    pull: dict[str, Any],
+) -> bool:
+    """True only when the listed files cover every file the PR changes.
+
+    GitHub caps the PR files listing (3,000 files). A truncated census could
+    hide a protected-path change, so callers must fail closed when the record
+    count does not match ``pull.changed_files``.
+    """
+    expected = pull.get("changed_files")
+    return (
+        isinstance(expected, int)
+        and not isinstance(expected, bool)
+        and expected == len(records)
     )
 
 
@@ -1003,8 +1022,21 @@ def evaluate(
     comments = github.issue_comments(number)
     threads = github.review_threads(number)
     runs = github.actions_runs(head_sha)
-    changed_paths = github.pull_files(number)
-    required_workflows = required_workflows_for_paths(changed_paths)
+    file_records = github.pull_file_records(number)
+    changed_paths = changed_paths_from_files(file_records)
+    census_complete = file_census_complete(file_records, pull)
+    required_workflows = (
+        required_workflows_for_paths(changed_paths)
+        if census_complete
+        # Fail closed: an incomplete census cannot prove a workflow is
+        # not applicable, so every conditional workflow is required.
+        else tuple(
+            sorted(
+                set(ALWAYS_REQUIRED_WORKFLOWS)
+                | set(CONDITIONAL_WORKFLOW_PATHS)
+            )
+        )
+    )
     pending, failed, seen = classify_runs(
         runs,
         required_workflows=required_workflows,
@@ -1046,7 +1078,11 @@ def evaluate(
         ci_seen=seen,
         deferred_comments=deferred,
         review_deferral_valid=deferral_valid,
-        security_sensitive=security_sensitive_change(changed_paths),
+        # Fail closed: an incomplete file census is treated as sensitive, so
+        # no Codex review can be waived for it.
+        security_sensitive=(
+            not census_complete or security_sensitive_change(changed_paths)
+        ),
         blocking_review_items=blocking_items,
         review_deferral_details=deferral_details,
     )
