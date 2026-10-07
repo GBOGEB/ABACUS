@@ -118,7 +118,10 @@ head and create/update exact-head debt evidence.
 
 Changes touching these paths remain strict for **Codex security review**.
 A renamed file is classified by both its new path and its previous path, so
-moving a file out of a protected directory is still a sensitive change:
+moving a file out of a protected directory is still a sensitive change. If
+the PR file listing is incomplete (GitHub caps it at 3,000 files, so the
+record count differs from `changed_files`), the PR is treated as sensitive
+and every conditional CI workflow is required:
 
 ```text
 .github/workflows/**

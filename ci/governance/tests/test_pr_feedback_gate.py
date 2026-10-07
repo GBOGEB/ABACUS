@@ -871,6 +871,55 @@ class FeedbackGateTests(unittest.TestCase):
             workflow,
         )
 
+    def test_incomplete_file_census_fails_closed(self):
+        records = [{"filename": "docs/note.md"}]
+        self.assertTrue(
+            gate.file_census_complete(records, {"changed_files": 1})
+        )
+        self.assertFalse(
+            gate.file_census_complete(records, {"changed_files": 3001})
+        )
+        self.assertFalse(gate.file_census_complete(records, {}))
+        self.assertFalse(
+            gate.file_census_complete(records, {"changed_files": True})
+        )
+
+    def test_truncated_census_blocks_deferral_and_requires_all_ci(self):
+        head = "a" * 40
+
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return []
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return []
+
+            def pull_file_records(self, number):
+                return [{"filename": "docs/note.md"}]
+
+            def check_runs(self, head_sha):
+                return []
+
+            def issue(self, number):
+                return {}
+
+        pull = {
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": head},
+            "changed_files": 3001,
+        }
+        evidence = gate.evaluate(FakeGitHub(), 42, pull)
+        self.assertTrue(evidence.security_sensitive)
+        for workflow in gate.CONDITIONAL_WORKFLOW_PATHS:
+            self.assertTrue(
+                any(workflow in item for item in evidence.ci_pending),
+                workflow,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
