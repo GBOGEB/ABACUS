@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import pathlib
 import sys
 import unittest
@@ -502,6 +503,422 @@ class FeedbackGateTests(unittest.TestCase):
         failed = dict(pending)
         failed["unresolved_threads"] = 1
         self.assertEqual(gate.Evidence(**failed).state, "failure")
+
+
+    def test_deferred_review_can_satisfy_non_sensitive_pending_review(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=2,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=False,
+            blocking_review_items=(),
+            review_deferral_details=("tracked by issue",),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "success")
+        self.assertEqual(evidence.failure_reasons, ())
+        self.assertEqual(evidence.pending_reasons, ())
+
+    def test_s0_s1_remain_blocking_even_with_deferral(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=1,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=False,
+            blocking_review_items=("S1 review item remains open",),
+            review_deferral_details=(),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "failure")
+        self.assertIn("S1 review item remains open", evidence.failure_reasons)
+
+    def test_sensitive_change_still_requires_security_review(self):
+        base = dict(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=0,
+            ci_pending=(),
+            ci_failed=(),
+            ci_seen=12,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=True,
+            blocking_review_items=(),
+            review_deferral_details=(),
+        )
+        evidence = gate.Evidence(**base)
+        self.assertEqual(evidence.state, "pending")
+        self.assertTrue(
+            any("mandatory pre-merge" in item for item in evidence.pending_reasons)
+        )
+
+    def test_security_sensitive_path_classifier(self):
+        self.assertTrue(
+            gate.security_sensitive_change(
+                [".github/workflows/pr-feedback-gate.yml"]
+            )
+        )
+        self.assertTrue(
+            gate.security_sensitive_change(
+                ["ci/governance/pr_feedback_gate.py"]
+            )
+        )
+        self.assertFalse(
+            gate.security_sensitive_change(["docs/ordinary-note.md"])
+        )
+
+    def test_review_deferral_requires_classifications_and_exact_open_issue(self):
+        head = "a" * 40
+        issue_body = (
+            '<!-- abacus-deferred-security:v1 '
+            + json.dumps(self.full_debt_metadata(head))
+            + " -->"
+        )
+
+        class FakeGitHub:
+            def __init__(self, body, association="OWNER"):
+                self.body = body
+                self.association = association
+
+            def issue(self, number):
+                return {
+                    "number": number,
+                    "state": "open",
+                    "body": self.body,
+                    "author_association": self.association,
+                }
+
+        marker = {
+            "headSha": head,
+            "trackingIssue": 1846,
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [{"threadId": "THREAD-1", "classification": "S2"}],
+        }
+        comment = {
+            "author_association": "OWNER",
+            "body": (
+                "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+                "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+                "<!-- abacus-review-disposition:v2 "
+                + json.dumps(marker)
+                + " -->"
+            ),
+        }
+        threads = [{"id": "THREAD-1", "isResolved": False}]
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertTrue(evidence[0])
+        self.assertEqual(evidence[1], ())
+
+        unmarked_comment = dict(comment)
+        unmarked_comment["body"] = comment["body"].replace(
+            "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n",
+            "",
+        )
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [unmarked_comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("DEFERRED_BUDGET", evidence[2][0])
+
+        stale_issue = issue_body.replace(head, "b" * 40)
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(stale_issue),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("no open issue", evidence[2][0])
+
+        wrong_pr_issue = issue_body.replace('"pr": 42', '"pr": 43')
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(wrong_pr_issue),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("no open issue", evidence[2][0])
+
+        marker["items"] = []
+        comment["body"] = (
+            "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+            "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+            "<!-- abacus-review-disposition:v2 "
+            + json.dumps(marker)
+            + " -->"
+        )
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [comment],
+            threads,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("every unresolved", evidence[2][0])
+
+    @staticmethod
+    def full_debt_metadata(head):
+        return {
+            "pr": 42,
+            "headSha": head,
+            "status": "OPEN",
+            "reason": "Codex capacity unavailable (DEFERRED_BUDGET)",
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [
+                {
+                    "threadId": "THREAD-1",
+                    "classification": "S2",
+                    "source": "chatgpt-codex-connector",
+                    "finding": "hardening suggestion",
+                    "rationale": "does not invalidate the PR",
+                }
+            ],
+        }
+
+    def deferral_result(self, metadata, association="OWNER"):
+        head = "a" * 40
+        body = (
+            "<!-- abacus-deferred-security:v1 " + json.dumps(metadata) + " -->"
+        )
+
+        class FakeGitHub:
+            def issue(self, number):
+                return {
+                    "number": number,
+                    "state": "open",
+                    "body": body,
+                    "author_association": association,
+                }
+
+        marker = {
+            "headSha": head,
+            "trackingIssue": 1846,
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [{"threadId": "THREAD-1", "classification": "S2"}],
+        }
+        comment = {
+            "author_association": "OWNER",
+            "body": (
+                "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+                "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+                "<!-- abacus-review-disposition:v2 "
+                + json.dumps(marker)
+                + " -->"
+            ),
+        }
+        return gate.review_deferral_evidence(
+            FakeGitHub(),
+            42,
+            head,
+            [comment],
+            [{"id": "THREAD-1", "isResolved": False}],
+            False,
+            False,
+        )
+
+    def test_marker_only_tracking_issue_is_rejected(self):
+        head = "a" * 40
+        evidence = self.deferral_result(
+            {"pr": 42, "headSha": head, "status": "OPEN"}
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("deferral reason", evidence[2][0])
+
+    def test_tracking_issue_must_retain_each_obligation(self):
+        head = "a" * 40
+        self.assertTrue(self.deferral_result(self.full_debt_metadata(head))[0])
+
+        no_security = self.full_debt_metadata(head)
+        no_security["codexSecurityReviewRequired"] = False
+        evidence = self.deferral_result(no_security)
+        self.assertFalse(evidence[0])
+        self.assertIn("codexSecurityReviewRequired", evidence[2][0])
+
+        thin_item = self.full_debt_metadata(head)
+        del thin_item["items"][0]["finding"]
+        evidence = self.deferral_result(thin_item)
+        self.assertFalse(evidence[0])
+        self.assertIn("finding", evidence[2][0])
+
+        downgraded = self.full_debt_metadata(head)
+        downgraded["items"][0]["classification"] = "S3"
+        evidence = self.deferral_result(downgraded)
+        self.assertFalse(evidence[0])
+        self.assertIn("downgrades S2", evidence[2][0])
+
+        duplicated = self.full_debt_metadata(head)
+        duplicated["items"].append(dict(duplicated["items"][0]))
+        duplicated["items"][1]["classification"] = "S3"
+        evidence = self.deferral_result(duplicated)
+        self.assertFalse(evidence[0])
+        self.assertIn("more than once", evidence[2][0])
+
+        missing_s2 = self.full_debt_metadata(head)
+        missing_s2["items"] = []
+        evidence = self.deferral_result(missing_s2)
+        self.assertFalse(evidence[0])
+        self.assertIn("THREAD-1", evidence[2][0])
+
+    def test_tracking_issue_from_untrusted_author_is_rejected(self):
+        evidence = self.deferral_result(
+            self.full_debt_metadata("a" * 40), association="NONE"
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("trusted", evidence[2][0])
+
+    def test_rename_out_of_sensitive_path_is_sensitive(self):
+        paths = gate.changed_paths_from_files(
+            [
+                {
+                    "filename": "tools/pr_feedback_gate.py",
+                    "previous_filename": "ci/governance/pr_feedback_gate.py",
+                    "status": "renamed",
+                },
+                {"filename": "docs/note.md", "status": "modified"},
+            ]
+        )
+        self.assertEqual(
+            paths,
+            [
+                "tools/pr_feedback_gate.py",
+                "ci/governance/pr_feedback_gate.py",
+                "docs/note.md",
+            ],
+        )
+        self.assertTrue(gate.security_sensitive_change(paths))
+        self.assertFalse(
+            gate.security_sensitive_change(
+                gate.changed_paths_from_files([{"filename": "docs/note.md"}])
+            )
+        )
+
+    def test_tracking_issue_change_recensuses_all_open_prs(self):
+        class FakeGitHub:
+            def open_pulls(self):
+                return [{"number": 1847}, {"number": 42}]
+
+        closed_issue = {
+            "action": "closed",
+            "issue": {"number": 1849, "state": "closed"},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), closed_issue, None),
+            [42, 1847],
+        )
+        pr_comment_deleted = {
+            "action": "deleted",
+            "issue": {"number": 1847, "pull_request": {"url": "x"}},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), pr_comment_deleted, None),
+            [1847],
+        )
+
+    def test_workflow_subscribes_to_tracking_issue_lifecycle(self):
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[3]
+            / ".github"
+            / "workflows"
+            / "pr-feedback-gate.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "issues:\n    types: [edited, closed, reopened, deleted, "
+            "transferred]",
+            workflow,
+        )
+        self.assertIn(
+            "issue_comment:\n    types: [created, edited, deleted]",
+            workflow,
+        )
+
+    def test_incomplete_file_census_fails_closed(self):
+        records = [{"filename": "docs/note.md"}]
+        self.assertTrue(
+            gate.file_census_complete(records, {"changed_files": 1})
+        )
+        self.assertFalse(
+            gate.file_census_complete(records, {"changed_files": 3001})
+        )
+        self.assertFalse(gate.file_census_complete(records, {}))
+        self.assertFalse(
+            gate.file_census_complete(records, {"changed_files": True})
+        )
+
+    def test_truncated_census_blocks_deferral_and_requires_all_ci(self):
+        head = "a" * 40
+
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return []
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return []
+
+            def pull_file_records(self, number):
+                return [{"filename": "docs/note.md"}]
+
+            def check_runs(self, head_sha):
+                return []
+
+            def issue(self, number):
+                return {}
+
+        pull = {
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": head},
+            "changed_files": 3001,
+        }
+        evidence = gate.evaluate(FakeGitHub(), 42, pull)
+        self.assertTrue(evidence.security_sensitive)
+        for workflow in gate.CONDITIONAL_WORKFLOW_PATHS:
+            self.assertTrue(
+                any(workflow in item for item in evidence.ci_pending),
+                workflow,
+            )
 
 
 if __name__ == "__main__":

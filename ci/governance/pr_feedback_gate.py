@@ -183,15 +183,25 @@ class Evidence:
     ci_failed: tuple[str, ...]
     ci_seen: int
     deferred_comments: tuple[str, ...]
+    review_deferral_valid: bool = False
+    security_sensitive: bool = False
+    blocking_review_items: tuple[str, ...] = ()
+    review_deferral_details: tuple[str, ...] = ()
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if self.unresolved_threads:
+        reasons.extend(self.blocking_review_items)
+        if self.unresolved_threads and not self.review_deferral_valid:
             reasons.append(
                 f"{self.unresolved_threads} unresolved review thread(s)"
             )
         reasons.extend(self.ci_failed)
+        reasons.extend(
+            item
+            for item in self.review_deferral_details
+            if "has no open issue" in item
+        )
         reasons.extend(
             item
             for item in self.deferred_comments
@@ -202,10 +212,18 @@ class Evidence:
     @property
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if not self.code_review_complete:
+        if not self.code_review_complete and not self.review_deferral_valid:
             reasons.append("Codex code review is not complete on current head")
-        if not self.security_review_complete:
+        if (
+            not self.security_review_complete
+            and not self.review_deferral_valid
+        ):
             reasons.append("Codex security review is not complete on current head")
+        if self.security_sensitive and not self.security_review_complete:
+            reasons.append(
+                "Codex security review is mandatory pre-merge for "
+                "security-sensitive changes"
+            )
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
@@ -277,13 +295,11 @@ class GitHub:
             f"/repos/{self.repository}/pulls/{number}",
         )
 
+    def pull_file_records(self, number: int) -> list[dict[str, Any]]:
+        return self.paged(f"/repos/{self.repository}/pulls/{number}/files")
+
     def pull_files(self, number: int) -> list[str]:
-        return [
-            item["filename"]
-            for item in self.paged(
-                f"/repos/{self.repository}/pulls/{number}/files"
-            )
-        ]
+        return changed_paths_from_files(self.pull_file_records(number))
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -566,6 +582,58 @@ def github_path_match(path: str, pattern: str) -> bool:
     return bool(github_path_pattern_regex(pattern).match(path))
 
 
+TRUSTED_AUTHOR_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
+
+
+def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
+    """Return every path a PR touches, including the source of a rename.
+
+    A rename out of a protected directory changes protected code even though
+    the destination path is not protected, so ``previous_filename`` must be
+    classified alongside ``filename``.
+    """
+    paths: list[str] = []
+    for item in files:
+        for key in ("filename", "previous_filename"):
+            value = item.get(key)
+            if isinstance(value, str) and value and value not in paths:
+                paths.append(value)
+    return paths
+
+
+def security_sensitive_change(paths: list[str]) -> bool:
+    sensitive_patterns = (
+        ".github/workflows/**",
+        ".github/codeql/**",
+        "ci/governance/**",
+        "runtime/federation/**",
+        ".githooks/**",
+    )
+    return any(
+        github_path_match(path, pattern)
+        for path in paths
+        for pattern in sensitive_patterns
+    )
+
+
+def file_census_complete(
+    records: list[dict[str, Any]],
+    pull: dict[str, Any],
+) -> bool:
+    """True only when the listed files cover every file the PR changes.
+
+    GitHub caps the PR files listing (3,000 files). A truncated census could
+    hide a protected-path change, so callers must fail closed when the record
+    count does not match ``pull.changed_files``.
+    """
+    expected = pull.get("changed_files")
+    return (
+        isinstance(expected, int)
+        and not isinstance(expected, bool)
+        and expected == len(records)
+    )
+
+
 def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
     required = set(ALWAYS_REQUIRED_WORKFLOWS)
     for workflow, patterns in CONDITIONAL_WORKFLOW_PATHS.items():
@@ -682,6 +750,264 @@ def deferred_comment_evidence(
     return tuple(evidence)
 
 
+def review_deferral_evidence(
+    github: GitHub,
+    number: int,
+    head_sha: str,
+    comments: list[dict[str, Any]],
+    threads: list[dict[str, Any]],
+    code_review_complete: bool,
+    security_review_complete: bool,
+) -> tuple[bool, tuple[str, ...], tuple[str, ...]]:
+    marker = re.compile(
+        r"<!--\s*abacus-review-disposition:v2\s+(\{.*?\})\s*-->",
+        re.DOTALL,
+    )
+    candidates = [
+        (comment, match)
+        for comment in comments
+        if (comment.get("author_association") or "").upper()
+        in TRUSTED_AUTHOR_ASSOCIATIONS
+        for match in [marker.search(comment.get("body", ""))]
+        if match
+    ]
+    if not candidates:
+        return False, (), ()
+
+    comment, match = max(
+        candidates,
+        key=lambda item: item[0].get("updated_at")
+        or item[0].get("created_at")
+        or "",
+    )
+    try:
+        disposition = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False, (), ("review deferral marker contains invalid JSON",)
+    if not isinstance(disposition, dict):
+        return False, (), ("review deferral marker must be a JSON object",)
+    if disposition.get("headSha") != head_sha:
+        return False, (), ("review deferral marker does not match current head",)
+
+    if (
+        type(disposition.get("codexCodeReviewRequired")) is not bool
+        or not disposition["codexCodeReviewRequired"]
+        or type(disposition.get("codexSecurityReviewRequired")) is not bool
+        or not disposition["codexSecurityReviewRequired"]
+    ):
+        return False, (), ("review deferral must retain both Codex obligations",)
+
+    items = disposition.get("items")
+    if not isinstance(items, list):
+        return False, (), ("review deferral items must be a list",)
+    classifications: dict[str, str] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            return False, (), ("review deferral item must be an object",)
+        thread_id = item.get("threadId")
+        classification = item.get("classification")
+        if (
+            not isinstance(thread_id, str)
+            or not thread_id
+            or not isinstance(classification, str)
+            or classification not in {"S0", "S1", "S2", "S3"}
+            or thread_id in classifications
+        ):
+            return False, (), ("review deferral has an invalid or duplicate item",)
+        classifications[thread_id] = classification
+
+    unresolved_threads = [
+        thread
+        for thread in threads
+        if not thread.get("isResolved")
+    ]
+    unresolved_ids = {
+        thread.get("id")
+        for thread in unresolved_threads
+        if isinstance(thread.get("id"), str)
+    }
+    if len(unresolved_ids) != len(unresolved_threads):
+        return False, (), ("unresolved review thread is missing its identifier",)
+    if not unresolved_ids.issubset(classifications):
+        return (
+            False,
+            (),
+            ("every unresolved review thread must be classified",),
+        )
+
+    blocking_items = tuple(
+        f"{classifications[thread_id]} review item remains open: {thread_id}"
+        for thread_id in sorted(unresolved_ids)
+        if classifications[thread_id] in {"S0", "S1"}
+    )
+    deferred_code_review = not code_review_complete
+    deferred_security_review = not security_review_complete
+    body = comment.get("body", "")
+    if deferred_code_review and "CODEX_CODE_REVIEW=DEFERRED_BUDGET" not in body:
+        return (
+            False,
+            blocking_items,
+            ("deferred Codex code review must be marked DEFERRED_BUDGET",),
+        )
+    if (
+        deferred_security_review
+        and "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET" not in body
+    ):
+        return (
+            False,
+            blocking_items,
+            ("deferred Codex security review must be marked DEFERRED_BUDGET",),
+        )
+
+    requires_tracking = (
+        deferred_code_review
+        or deferred_security_review
+        or any(
+            classifications[thread_id] == "S2"
+            for thread_id in unresolved_ids
+        )
+    )
+    if not requires_tracking:
+        return True, blocking_items, ()
+
+    issue_number = disposition.get("trackingIssue")
+    if (
+        isinstance(issue_number, bool)
+        or not isinstance(issue_number, int)
+        or issue_number <= 0
+    ):
+        return (
+            False,
+            blocking_items,
+            ("review deferral requires a valid open tracking issue",),
+        )
+    issue = github.issue(issue_number)
+    issue_marker = re.search(
+        r"<!--\s*abacus-deferred-security:v1\s+(\{.*?\})\s*-->",
+        issue.get("body") or "",
+        re.DOTALL,
+    )
+    try:
+        issue_metadata = json.loads(issue_marker.group(1)) if issue_marker else {}
+    except json.JSONDecodeError:
+        issue_metadata = {}
+    source_pr = (
+        issue_metadata.get("pr") if isinstance(issue_metadata, dict) else None
+    )
+    issue_matches = (
+        issue.get("state") == "open"
+        and issue.get("number", issue_number) == issue_number
+        and not issue.get("pull_request")
+        and isinstance(issue_metadata, dict)
+        and isinstance(source_pr, int)
+        and not isinstance(source_pr, bool)
+        and source_pr == number
+        and issue_metadata.get("headSha") == head_sha
+        and issue_metadata.get("status") == "OPEN"
+    )
+    if not issue_matches:
+        return (
+            False,
+            blocking_items,
+            (
+                f"review deferral has no open issue #{issue_number} "
+                f"bound to PR #{number} and the current head",
+            ),
+        )
+    if (
+        (issue.get("author_association") or "").upper()
+        not in TRUSTED_AUTHOR_ASSOCIATIONS
+    ):
+        return (
+            False,
+            blocking_items,
+            (
+                f"review deferral issue #{issue_number} must be opened by a "
+                "trusted repository collaborator",
+            ),
+        )
+    debt_problem = deferred_debt_problem(
+        issue_metadata,
+        deferred_code_review=deferred_code_review,
+        deferred_security_review=deferred_security_review,
+        s2_thread_ids={
+            thread_id
+            for thread_id in unresolved_ids
+            if classifications[thread_id] == "S2"
+        },
+    )
+    if debt_problem:
+        return (
+            False,
+            blocking_items,
+            (f"review deferral issue #{issue_number} {debt_problem}",),
+        )
+    return True, blocking_items, (f"tracked by open issue #{issue_number}",)
+
+
+def _non_empty_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def deferred_debt_problem(
+    metadata: dict[str, Any],
+    *,
+    deferred_code_review: bool,
+    deferred_security_review: bool,
+    s2_thread_ids: set[str],
+) -> str | None:
+    """Return why the tracking issue does not durably retain the debt.
+
+    The issue is the only record consumed at burn-down time, so it must carry
+    the obligation itself, not merely a pointer back to the PR.
+    """
+    if not _non_empty_text(metadata.get("reason")):
+        return "must record a non-empty deferral reason"
+    for flag, deferred in (
+        ("codexCodeReviewRequired", deferred_code_review),
+        ("codexSecurityReviewRequired", deferred_security_review),
+    ):
+        if deferred and metadata.get(flag) is not True:
+            return f"must retain {flag}=true for the deferred Codex review"
+    items = metadata.get("items")
+    if not isinstance(items, list):
+        return "must list deferred review items"
+    recorded: dict[str, str] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            return "has a deferred item that is not an object"
+        thread_id = item.get("threadId")
+        if (
+            not _non_empty_text(thread_id)
+            or item.get("classification") not in {"S2", "S3"}
+            or not all(
+                _non_empty_text(item.get(field))
+                for field in ("source", "finding", "rationale")
+            )
+        ):
+            return (
+                "has a deferred item missing threadId, S2/S3 classification, "
+                "source, finding or rationale"
+            )
+        if thread_id in recorded:
+            return f"records thread {thread_id} more than once"
+        recorded[thread_id] = item["classification"]
+    missing = sorted(s2_thread_ids - recorded.keys())
+    if missing:
+        return "does not retain S2 item(s): " + ", ".join(missing)
+    downgraded = sorted(
+        thread_id
+        for thread_id in s2_thread_ids
+        if recorded[thread_id] != "S2"
+    )
+    if downgraded:
+        return (
+            "downgrades S2 item(s) from the PR disposition: "
+            + ", ".join(downgraded)
+        )
+    return None
+
+
 def evaluate(
     github: GitHub,
     number: int,
@@ -696,8 +1022,21 @@ def evaluate(
     comments = github.issue_comments(number)
     threads = github.review_threads(number)
     runs = github.actions_runs(head_sha)
-    changed_paths = github.pull_files(number)
-    required_workflows = required_workflows_for_paths(changed_paths)
+    file_records = github.pull_file_records(number)
+    changed_paths = changed_paths_from_files(file_records)
+    census_complete = file_census_complete(file_records, pull)
+    required_workflows = (
+        required_workflows_for_paths(changed_paths)
+        if census_complete
+        # Fail closed: an incomplete census cannot prove a workflow is
+        # not applicable, so every conditional workflow is required.
+        else tuple(
+            sorted(
+                set(ALWAYS_REQUIRED_WORKFLOWS)
+                | set(CONDITIONAL_WORKFLOW_PATHS)
+            )
+        )
+    )
     pending, failed, seen = classify_runs(
         runs,
         required_workflows=required_workflows,
@@ -713,21 +1052,39 @@ def evaluate(
     )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
+    code_review_complete = codex_code_review_complete(comments, head_sha)
+    security_review_complete = codex_security_review_complete(
+        comments,
+        head_sha,
+    )
+    deferral_valid, blocking_items, deferral_details = (
+        review_deferral_evidence(
+            github,
+            number,
+            head_sha,
+            comments,
+            threads,
+            code_review_complete,
+            security_review_complete,
+        )
+    )
     return Evidence(
         head_sha=head_sha,
-        code_review_complete=codex_code_review_complete(
-            comments,
-            head_sha,
-        ),
-        security_review_complete=codex_security_review_complete(
-            comments,
-            head_sha,
-        ),
+        code_review_complete=code_review_complete,
+        security_review_complete=security_review_complete,
         unresolved_threads=unresolved,
         ci_pending=pending,
         ci_failed=failed,
         ci_seen=seen,
         deferred_comments=deferred,
+        review_deferral_valid=deferral_valid,
+        # Fail closed: an incomplete file census is treated as sensitive, so
+        # no Codex review can be waived for it.
+        security_sensitive=(
+            not census_complete or security_sensitive_change(changed_paths)
+        ),
+        blocking_review_items=blocking_items,
+        review_deferral_details=deferral_details,
     )
 
 
@@ -753,14 +1110,15 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "",
         "Deferred evidence:",
         *(f"- {item}" for item in evidence.deferred_comments),
+        *(f"- {item}" for item in evidence.review_deferral_details),
         "",
         "Required invariants:",
-        "- exact-head Codex code review complete",
-        "- exact-head Codex security review complete",
+        "- exact-head Codex code review complete or valid durable deferral",
+        "- exact-head Codex security review complete for sensitive changes",
         "- repository-native current-head admission evidence terminal and green",
-        "- zero unresolved review threads",
+        "- no unresolved S0/S1 items; all other threads explicitly classified",
         "- current-head GitHub Actions terminal and green",
-        "- known deferred warnings remain linked to open issues",
+        "- S2/Codex deferrals linked to open exact-head issues",
     ]
     if not evidence.failure_reasons:
         lines[2] = "Failure reasons: none"
@@ -783,6 +1141,11 @@ def event_pr_numbers(
     issue = event.get("issue")
     if issue and issue.get("pull_request"):
         return [int(issue["number"])]
+    if issue:
+        # A plain issue changed (e.g. a deferral tracking issue was closed or
+        # edited). Its marker may already be gone, so it cannot be trusted to
+        # name the source PR: re-census every open PR instead.
+        return sorted(int(item["number"]) for item in github.open_pulls())
     workflow_run = event.get("workflow_run")
     if workflow_run:
         pulls = workflow_run.get("pull_requests") or []
