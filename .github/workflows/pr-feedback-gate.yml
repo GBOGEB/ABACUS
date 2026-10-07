@@ -2,7 +2,14 @@ name: PR Feedback Gate Evaluator
 
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
+  # A deferral is only valid while its tracking issue stays open with intact
+  # debt evidence. Re-census on every tracking-issue lifecycle change so a
+  # closed or edited issue cannot leave a stale green check behind. Non-PR
+  # issue events fall through to a sweep of all open main PRs, which does not
+  # depend on the (possibly removed) marker to find the source PR.
+  issues:
+    types: [edited, closed, reopened, deleted, transferred]
   pull_request_review:
     types: [submitted, dismissed]
   pull_request_review_comment:

@@ -819,6 +819,45 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
 
+    def test_tracking_issue_change_recensuses_all_open_prs(self):
+        class FakeGitHub:
+            def open_pulls(self):
+                return [{"number": 1847}, {"number": 42}]
+
+        closed_issue = {
+            "action": "closed",
+            "issue": {"number": 1849, "state": "closed"},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), closed_issue, None),
+            [42, 1847],
+        )
+        pr_comment_deleted = {
+            "action": "deleted",
+            "issue": {"number": 1847, "pull_request": {"url": "x"}},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), pr_comment_deleted, None),
+            [1847],
+        )
+
+    def test_workflow_subscribes_to_tracking_issue_lifecycle(self):
+        workflow = (
+            pathlib.Path(__file__).resolve().parents[3]
+            / ".github"
+            / "workflows"
+            / "pr-feedback-gate.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "issues:\n    types: [edited, closed, reopened, deleted, "
+            "transferred]",
+            workflow,
+        )
+        self.assertIn(
+            "issue_comment:\n    types: [created, edited, deleted]",
+            workflow,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
