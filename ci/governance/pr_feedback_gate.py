@@ -1093,6 +1093,11 @@ def event_pr_numbers(
     issue = event.get("issue")
     if issue and issue.get("pull_request"):
         return [int(issue["number"])]
+    if issue:
+        # A plain issue changed (e.g. a deferral tracking issue was closed or
+        # edited). Its marker may already be gone, so it cannot be trusted to
+        # name the source PR: re-census every open PR instead.
+        return sorted(int(item["number"]) for item in github.open_pulls())
     workflow_run = event.get("workflow_run")
     if workflow_run:
         pulls = workflow_run.get("pull_requests") or []

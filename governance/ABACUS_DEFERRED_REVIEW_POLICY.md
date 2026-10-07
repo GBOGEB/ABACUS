@@ -105,6 +105,11 @@ and preserve, in human-readable form:
 - `CODEX_SECURITY_REVIEW_REQUIRED=true` where applicable;
 - closure evidence when later consumed.
 
+The gate re-evaluates on every tracking-issue lifecycle event (edited,
+closed, reopened, deleted, transferred) and on deleted PR comments, so closing
+the issue or removing its debt evidence withdraws the deferral immediately
+rather than at the next scheduled sweep.
+
 A material head change invalidates the old disposition. Re-census the new
 head and create/update exact-head debt evidence.
 
