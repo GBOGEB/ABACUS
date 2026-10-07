@@ -296,12 +296,9 @@ class GitHub:
         )
 
     def pull_files(self, number: int) -> list[str]:
-        return [
-            item["filename"]
-            for item in self.paged(
-                f"/repos/{self.repository}/pulls/{number}/files"
-            )
-        ]
+        return changed_paths_from_files(
+            self.paged(f"/repos/{self.repository}/pulls/{number}/files")
+        )
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -584,6 +581,25 @@ def github_path_match(path: str, pattern: str) -> bool:
     return bool(github_path_pattern_regex(pattern).match(path))
 
 
+TRUSTED_AUTHOR_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
+
+
+def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
+    """Return every path a PR touches, including the source of a rename.
+
+    A rename out of a protected directory changes protected code even though
+    the destination path is not protected, so ``previous_filename`` must be
+    classified alongside ``filename``.
+    """
+    paths: list[str] = []
+    for item in files:
+        for key in ("filename", "previous_filename"):
+            value = item.get(key)
+            if isinstance(value, str) and value and value not in paths:
+                paths.append(value)
+    return paths
+
+
 def security_sensitive_change(paths: list[str]) -> bool:
     sensitive_patterns = (
         ".github/workflows/**",
@@ -732,7 +748,7 @@ def review_deferral_evidence(
         (comment, match)
         for comment in comments
         if (comment.get("author_association") or "").upper()
-        in {"OWNER", "MEMBER", "COLLABORATOR"}
+        in TRUSTED_AUTHOR_ASSOCIATIONS
         for match in [marker.search(comment.get("body", ""))]
         if match
     ]
@@ -879,7 +895,86 @@ def review_deferral_evidence(
                 f"bound to PR #{number} and the current head",
             ),
         )
+    if (
+        (issue.get("author_association") or "").upper()
+        not in TRUSTED_AUTHOR_ASSOCIATIONS
+    ):
+        return (
+            False,
+            blocking_items,
+            (
+                f"review deferral issue #{issue_number} must be opened by a "
+                "trusted repository collaborator",
+            ),
+        )
+    debt_problem = deferred_debt_problem(
+        issue_metadata,
+        deferred_code_review=deferred_code_review,
+        deferred_security_review=deferred_security_review,
+        s2_thread_ids={
+            thread_id
+            for thread_id in unresolved_ids
+            if classifications[thread_id] == "S2"
+        },
+    )
+    if debt_problem:
+        return (
+            False,
+            blocking_items,
+            (f"review deferral issue #{issue_number} {debt_problem}",),
+        )
     return True, blocking_items, (f"tracked by open issue #{issue_number}",)
+
+
+def _non_empty_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def deferred_debt_problem(
+    metadata: dict[str, Any],
+    *,
+    deferred_code_review: bool,
+    deferred_security_review: bool,
+    s2_thread_ids: set[str],
+) -> str | None:
+    """Return why the tracking issue does not durably retain the debt.
+
+    The issue is the only record consumed at burn-down time, so it must carry
+    the obligation itself, not merely a pointer back to the PR.
+    """
+    if not _non_empty_text(metadata.get("reason")):
+        return "must record a non-empty deferral reason"
+    for flag, deferred in (
+        ("codexCodeReviewRequired", deferred_code_review),
+        ("codexSecurityReviewRequired", deferred_security_review),
+    ):
+        if deferred and metadata.get(flag) is not True:
+            return f"must retain {flag}=true for the deferred Codex review"
+    items = metadata.get("items")
+    if not isinstance(items, list):
+        return "must list deferred review items"
+    recorded: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict):
+            return "has a deferred item that is not an object"
+        thread_id = item.get("threadId")
+        if (
+            not _non_empty_text(thread_id)
+            or item.get("classification") not in {"S2", "S3"}
+            or not all(
+                _non_empty_text(item.get(field))
+                for field in ("source", "finding", "rationale")
+            )
+        ):
+            return (
+                "has a deferred item missing threadId, S2/S3 classification, "
+                "source, finding or rationale"
+            )
+        recorded.add(thread_id)
+    missing = sorted(s2_thread_ids - recorded)
+    if missing:
+        return "does not retain S2 item(s): " + ", ".join(missing)
+    return None
 
 
 def evaluate(

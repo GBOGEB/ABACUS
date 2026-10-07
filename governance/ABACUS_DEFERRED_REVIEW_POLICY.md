@@ -64,13 +64,35 @@ Every unresolved thread must appear in `items` as S0, S1, S2, or S3.
 S0/S1 remains blocking. If S2 is present, or either Codex review is deferred,
 `trackingIssue` is mandatory.
 
-The open tracking issue must contain:
+The open tracking issue must be opened by a trusted repository collaborator
+(OWNER, MEMBER or COLLABORATOR) and contain:
 
 ```html
 <!-- abacus-deferred-security:v1
-{"pr": <PR>, "headSha": "<40-char SHA>", "status": "OPEN"}
+{
+  "pr": <PR>,
+  "headSha": "<40-char SHA>",
+  "status": "OPEN",
+  "reason": "<why the review is deferred, e.g. DEFERRED_BUDGET>",
+  "codexCodeReviewRequired": true,
+  "codexSecurityReviewRequired": true,
+  "items": [
+    {
+      "threadId": "<GraphQL thread id>",
+      "classification": "S2",
+      "source": "<reviewer or comment URL>",
+      "finding": "<finding text or faithful summary>",
+      "rationale": "<why S2/S3 and why deferral is safe>"
+    }
+  ]
+}
 -->
 ```
+
+The gate rejects a marker-only issue. It requires a non-empty `reason`,
+`codex*ReviewRequired=true` for every deferred Codex review, and a complete
+`items` entry for every unresolved S2 thread, so the issue alone carries the
+obligation at burn-down time.
 
 and preserve, in human-readable form:
 
@@ -88,7 +110,9 @@ head and create/update exact-head debt evidence.
 
 ## Sensitive control-plane exception
 
-Changes touching these paths remain strict for **Codex security review**:
+Changes touching these paths remain strict for **Codex security review**.
+A renamed file is classified by both its new path and its previous path, so
+moving a file out of a protected directory is still a sensitive change:
 
 ```text
 .github/workflows/**

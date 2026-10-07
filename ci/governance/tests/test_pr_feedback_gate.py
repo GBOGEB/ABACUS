@@ -584,19 +584,21 @@ class FeedbackGateTests(unittest.TestCase):
         head = "a" * 40
         issue_body = (
             '<!-- abacus-deferred-security:v1 '
-            + json.dumps({"pr": 42, "headSha": head, "status": "OPEN"})
+            + json.dumps(self.full_debt_metadata(head))
             + " -->"
         )
 
         class FakeGitHub:
-            def __init__(self, body):
+            def __init__(self, body, association="OWNER"):
                 self.body = body
+                self.association = association
 
             def issue(self, number):
                 return {
                     "number": number,
                     "state": "open",
                     "body": self.body,
+                    "author_association": self.association,
                 }
 
         marker = {
@@ -691,6 +693,131 @@ class FeedbackGateTests(unittest.TestCase):
         )
         self.assertFalse(evidence[0])
         self.assertIn("every unresolved", evidence[2][0])
+
+    @staticmethod
+    def full_debt_metadata(head):
+        return {
+            "pr": 42,
+            "headSha": head,
+            "status": "OPEN",
+            "reason": "Codex capacity unavailable (DEFERRED_BUDGET)",
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [
+                {
+                    "threadId": "THREAD-1",
+                    "classification": "S2",
+                    "source": "chatgpt-codex-connector",
+                    "finding": "hardening suggestion",
+                    "rationale": "does not invalidate the PR",
+                }
+            ],
+        }
+
+    def deferral_result(self, metadata, association="OWNER"):
+        head = "a" * 40
+        body = (
+            "<!-- abacus-deferred-security:v1 " + json.dumps(metadata) + " -->"
+        )
+
+        class FakeGitHub:
+            def issue(self, number):
+                return {
+                    "number": number,
+                    "state": "open",
+                    "body": body,
+                    "author_association": association,
+                }
+
+        marker = {
+            "headSha": head,
+            "trackingIssue": 1846,
+            "codexCodeReviewRequired": True,
+            "codexSecurityReviewRequired": True,
+            "items": [{"threadId": "THREAD-1", "classification": "S2"}],
+        }
+        comment = {
+            "author_association": "OWNER",
+            "body": (
+                "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
+                "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
+                "<!-- abacus-review-disposition:v2 "
+                + json.dumps(marker)
+                + " -->"
+            ),
+        }
+        return gate.review_deferral_evidence(
+            FakeGitHub(),
+            42,
+            head,
+            [comment],
+            [{"id": "THREAD-1", "isResolved": False}],
+            False,
+            False,
+        )
+
+    def test_marker_only_tracking_issue_is_rejected(self):
+        head = "a" * 40
+        evidence = self.deferral_result(
+            {"pr": 42, "headSha": head, "status": "OPEN"}
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("deferral reason", evidence[2][0])
+
+    def test_tracking_issue_must_retain_each_obligation(self):
+        head = "a" * 40
+        self.assertTrue(self.deferral_result(self.full_debt_metadata(head))[0])
+
+        no_security = self.full_debt_metadata(head)
+        no_security["codexSecurityReviewRequired"] = False
+        evidence = self.deferral_result(no_security)
+        self.assertFalse(evidence[0])
+        self.assertIn("codexSecurityReviewRequired", evidence[2][0])
+
+        thin_item = self.full_debt_metadata(head)
+        del thin_item["items"][0]["finding"]
+        evidence = self.deferral_result(thin_item)
+        self.assertFalse(evidence[0])
+        self.assertIn("finding", evidence[2][0])
+
+        missing_s2 = self.full_debt_metadata(head)
+        missing_s2["items"] = []
+        evidence = self.deferral_result(missing_s2)
+        self.assertFalse(evidence[0])
+        self.assertIn("THREAD-1", evidence[2][0])
+
+    def test_tracking_issue_from_untrusted_author_is_rejected(self):
+        evidence = self.deferral_result(
+            self.full_debt_metadata("a" * 40), association="NONE"
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("trusted", evidence[2][0])
+
+    def test_rename_out_of_sensitive_path_is_sensitive(self):
+        paths = gate.changed_paths_from_files(
+            [
+                {
+                    "filename": "tools/pr_feedback_gate.py",
+                    "previous_filename": "ci/governance/pr_feedback_gate.py",
+                    "status": "renamed",
+                },
+                {"filename": "docs/note.md", "status": "modified"},
+            ]
+        )
+        self.assertEqual(
+            paths,
+            [
+                "tools/pr_feedback_gate.py",
+                "ci/governance/pr_feedback_gate.py",
+                "docs/note.md",
+            ],
+        )
+        self.assertTrue(gate.security_sensitive_change(paths))
+        self.assertFalse(
+            gate.security_sensitive_change(
+                gate.changed_paths_from_files([{"filename": "docs/note.md"}])
+            )
+        )
 
 
 if __name__ == "__main__":
