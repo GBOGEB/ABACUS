@@ -91,7 +91,8 @@ The open tracking issue must be opened by a trusted repository collaborator
 
 The gate rejects a marker-only issue. It requires a non-empty `reason`,
 `codex*ReviewRequired=true` for every deferred Codex review, and a complete
-`items` entry for every unresolved S2 thread, so the issue alone carries the
+`items` entry for every unresolved S2 thread, recorded as S2 (a downgrade to
+S3 or a duplicate thread entry is rejected), so the issue alone carries the
 obligation at burn-down time.
 
 and preserve, in human-readable form:

@@ -780,6 +780,19 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertFalse(evidence[0])
         self.assertIn("finding", evidence[2][0])
 
+        downgraded = self.full_debt_metadata(head)
+        downgraded["items"][0]["classification"] = "S3"
+        evidence = self.deferral_result(downgraded)
+        self.assertFalse(evidence[0])
+        self.assertIn("downgrades S2", evidence[2][0])
+
+        duplicated = self.full_debt_metadata(head)
+        duplicated["items"].append(dict(duplicated["items"][0]))
+        duplicated["items"][1]["classification"] = "S3"
+        evidence = self.deferral_result(duplicated)
+        self.assertFalse(evidence[0])
+        self.assertIn("more than once", evidence[2][0])
+
         missing_s2 = self.full_debt_metadata(head)
         missing_s2["items"] = []
         evidence = self.deferral_result(missing_s2)

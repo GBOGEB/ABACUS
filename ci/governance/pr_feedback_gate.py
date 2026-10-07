@@ -953,7 +953,7 @@ def deferred_debt_problem(
     items = metadata.get("items")
     if not isinstance(items, list):
         return "must list deferred review items"
-    recorded: set[str] = set()
+    recorded: dict[str, str] = {}
     for item in items:
         if not isinstance(item, dict):
             return "has a deferred item that is not an object"
@@ -970,10 +970,22 @@ def deferred_debt_problem(
                 "has a deferred item missing threadId, S2/S3 classification, "
                 "source, finding or rationale"
             )
-        recorded.add(thread_id)
-    missing = sorted(s2_thread_ids - recorded)
+        if thread_id in recorded:
+            return f"records thread {thread_id} more than once"
+        recorded[thread_id] = item["classification"]
+    missing = sorted(s2_thread_ids - recorded.keys())
     if missing:
         return "does not retain S2 item(s): " + ", ".join(missing)
+    downgraded = sorted(
+        thread_id
+        for thread_id in s2_thread_ids
+        if recorded[thread_id] != "S2"
+    )
+    if downgraded:
+        return (
+            "downgrades S2 item(s) from the PR disposition: "
+            + ", ".join(downgraded)
+        )
     return None
 
 
