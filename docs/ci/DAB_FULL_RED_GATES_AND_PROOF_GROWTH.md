@@ -89,28 +89,31 @@ Ubuntu/RHEL/DMAIC/release jobs were skipped.
 Those skipped surfaces are now treated as **proof debt**, not as green or absent
 evidence.
 
-## PR admission: new-debt ratchet
+## PR admission: new-debt ratchet (proposal, #1859)
 
-The full-repository Black/isort/Flake8, Bandit/Safety and coverage scans in
-`ci-cd-tests.yml` keep running on every event, and on main pushes, schedules
-and manual runs they keep enforcing the red roots above. On a `pull_request`
-event they report the repository-wide totals in the job summary without
-failing, and admission is decided by checks scoped to what the PR changes:
+Status: proposal pending an owner decision in #1860. It changes PR admission
+only; main pushes, schedules and manual runs keep enforcing every red root
+above, and the G1-G3 ladder and 75% target are unchanged.
 
-- `scripts/ci_pr_debt_ratchet.py --tools black isort flake8` and
-  `--tools bandit` compare each changed Python file at the PR base and at the
-  head. A file clean at the base must stay clean, a new file must be clean,
-  and a file's Flake8-critical (E9, F63, F7, F82) or Bandit finding count must
-  not rise. B101 is not counted in test files.
-- Safety still fails the PR when the PR changes dependency manifests
-  (`requirements*.txt`, `pyproject.toml`, `setup.cfg`, `setup.py`).
+On a `pull_request` event the full-repository Black/isort/Flake8, Bandit and
+coverage scans still run and report their totals, and admission for those
+three tools moves to checks scoped to what the PR changes:
+
+- `scripts/ci_pr_debt_ratchet.py` compares each changed Python file at the
+  PR base and at the head. A file clean at the base must stay clean and a
+  new file must be clean; for Flake8-critical (E9, F63, F7, F82) codes and
+  for Bandit test id and severity, no per-file count may rise, so removing
+  one finding cannot pay for a different new one. B101 is not counted in
+  test files. A renamed file is compared with its original path.
+- The ratchet fails closed: a missing tool, a crash or unparseable output
+  fails the PR. A PR that changes lint configuration (`pyproject.toml`,
+  `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`, `.bandit`) is not
+  admitted by the ratchet, because such a change can alter every file's
+  result; the full-repository scan decides.
+- Safety is not relaxed and stays enforced on pull requests.
 - `diff-cover` measures coverage of the lines the PR adds or changes and
-  reports it in the job summary next to the repository-wide figure. No PR
-  coverage threshold is enforced until the owner approves one.
-
-This does not lower the G1-G3 ladder or the 75% target; it stops a PR from
-being charged for debt it did not create while refusing any it adds. Debt
-reduction stays a separate, measured wave against the main-branch totals.
+  reports it next to the repository-wide figure. No PR coverage threshold is
+  enforced until the owner sets one.
 
 ## Coverage/check growth rule for every proposal
 
