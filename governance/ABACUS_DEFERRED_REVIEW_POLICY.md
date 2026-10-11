@@ -121,24 +121,20 @@ head and create/update exact-head debt evidence.
 
 ## Sensitive control-plane exception
 
-Changes touching these paths remain strict for **Codex security review**.
-A renamed file is classified by both its new path and its previous path, so
-moving a file out of a protected directory is still a sensitive change. If
+Codex **security review** can be deferred only for PRs whose every changed
+path is non-executable content: `*.md`, `*.rst`, `*.png`, `*.jpg`, `*.jpeg`,
+`*.gif`, `*.svg` or `*.pdf`. Any other path is sensitive. ABACUS runs many
+workflows with write tokens that execute repository code after merge
+(`.github/scripts/**`, `scripts/**`, installed packages), so a list of
+"privileged" paths cannot be kept complete; the classifier is an allowlist
+and fails closed.
+
+A renamed file is classified by both its new path and its previous path. If
 the PR file listing is incomplete (GitHub caps it at 3,000 files, so the
 record count differs from `changed_files`), the PR is treated as sensitive
-and every conditional CI workflow is required:
+and every conditional CI workflow is required.
 
-```text
-.github/workflows/**
-.github/actions/**
-.github/scripts/**
-.github/codeql/**
-ci/governance/**
-runtime/federation/**
-.githooks/**
-```
-
-For these paths, unavailable Codex security capacity remains a pre-merge HOLD.
+For sensitive changes, unavailable Codex security capacity remains a pre-merge HOLD.
 This prevents the mechanism that defines the gate from self-waiving its own
 security review.
 

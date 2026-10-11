@@ -900,12 +900,18 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
 
-    def test_privileged_workflow_inputs_are_sensitive(self):
+    def test_executable_paths_are_sensitive_by_default(self):
         for path in (
             ".github/scripts/security_dashboard.py",
             ".github/actions/runtime-guard/action.yml",
+            "scripts/generate_iteration_report.py",
+            "requirements.txt",
+            "src/dmaic/federation.py",
+            "docs/api/metrics.json",
         ):
             self.assertTrue(gate.security_sensitive_change([path]), path)
+        for path in ("README.md", "docs/guide.rst", "docs/img/flow.SVG"):
+            self.assertFalse(gate.security_sensitive_change([path]), path)
 
     def test_tracking_issue_change_recensuses_only_named_prs(self):
         class FakeGitHub:
