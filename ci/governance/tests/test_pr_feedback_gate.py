@@ -3,6 +3,7 @@ import json
 import pathlib
 import sys
 import unittest
+from unittest import mock
 
 
 MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "pr_feedback_gate.py"
@@ -1145,6 +1146,62 @@ class FeedbackGateTests(unittest.TestCase):
 
         self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, None), [7])
         self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, 8), [])
+
+    def test_deferral_success_is_revalidated_before_publication(self):
+        def evidence(**changes):
+            base = {
+                "head_sha": "a" * 40,
+                "code_review_complete": False,
+                "security_review_complete": False,
+                "unresolved_threads": 0,
+                "ci_pending": (),
+                "ci_failed": (),
+                "ci_seen": 1,
+                "deferred_comments": (),
+                "review_deferral_valid": True,
+            }
+            base.update(changes)
+            return gate.Evidence(**base)
+
+        deferred = evidence()
+        self.assertEqual(deferred.state, "success")
+        closed = evidence(
+            review_deferral_valid=False,
+            review_deferral_details=(
+                (
+                    "review deferral has no open issue #9 bound to PR #1 "
+                    "and the current head"
+                ),
+            ),
+        )
+        # The tracker closed mid-census: the stale success is not published.
+        with mock.patch.object(gate, "evaluate", return_value=closed):
+            result = gate.revalidated_evidence(object(), 1, deferred)
+        self.assertEqual(result, closed)
+        self.assertEqual(result.state, "failure")
+        # An unchanged re-census confirms the success.
+        with mock.patch.object(gate, "evaluate", return_value=deferred):
+            self.assertEqual(
+                gate.revalidated_evidence(object(), 1, deferred), deferred
+            )
+        # Evidence that keeps changing never publishes success.
+        flapping = [evidence(ci_seen=n) for n in range(2, 6)]
+        with mock.patch.object(gate, "evaluate", side_effect=flapping):
+            self.assertEqual(
+                gate.revalidated_evidence(object(), 1, deferred).state,
+                "pending",
+            )
+        # A success that rests on completed reviews needs no re-census.
+        reviewed = evidence(
+            code_review_complete=True,
+            security_review_complete=True,
+            review_deferral_valid=False,
+        )
+        with mock.patch.object(gate, "evaluate") as evaluate:
+            self.assertEqual(
+                gate.revalidated_evidence(object(), 1, reviewed), reviewed
+            )
+        evaluate.assert_not_called()
 
     def test_incomplete_file_census_fails_closed(self):
         records = [{"filename": "docs/note.md"}]

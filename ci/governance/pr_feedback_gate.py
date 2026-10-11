@@ -11,7 +11,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -1219,6 +1219,41 @@ def evaluate(
     )
 
 
+DEFERRAL_RECHECKS = 3
+
+
+def revalidated_evidence(
+    github: GitHub,
+    number: int,
+    evidence: Evidence | None,
+) -> Evidence | None:
+    """Re-census a deferral-backed success just before it is published.
+
+    A tracking-issue close or edit re-censuses the PR in a run that queues
+    behind this one, so it cannot invalidate the check until this run has
+    published. Deferral evidence is mutable, so a success that rests on it
+    is only published if an immediate re-census reproduces it exactly.
+    """
+    for _ in range(DEFERRAL_RECHECKS):
+        if (
+            evidence is None
+            or evidence.state != "success"
+            or not evidence.review_deferral_valid
+        ):
+            return evidence
+        fresh = evaluate(github, number)
+        if fresh == evidence:
+            return evidence
+        evidence = fresh
+    if evidence is None or evidence.state != "success":
+        return evidence
+    return replace(
+        evidence,
+        ci_pending=evidence.ci_pending
+        + ("review deferral evidence changed during the census",),
+    )
+
+
 def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
     state = evidence.state.upper()
     title = f"PR #{number} feedback gate: {state}"
@@ -1444,7 +1479,11 @@ def main() -> int:
             )
 
         try:
-            evidence = evaluate(github, number, pull=pull)
+            evidence = revalidated_evidence(
+                github,
+                number,
+                evaluate(github, number, pull=pull),
+            )
             if evidence is None:
                 continue
             title, summary, text = render(number, evidence)
