@@ -56,12 +56,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  evaluate:
-    name: Evaluate PR feedback gate
+  route:
+    name: Route PRs to evaluate
     runs-on: ubuntu-latest
+    outputs:
+      prs: ${{ steps.route.outputs.prs }}
     steps:
-      # One census stamp per run orders this run's pending, result and
-      # failure publications against overlapping runs for the same PR.
+      - name: Checkout trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: List PRs this event re-censuses
+        id: route
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          prs=$(python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --list-prs)
+          echo "prs=$prs" >> "$GITHUB_OUTPUT"
+
+  evaluate:
+    name: Evaluate PR feedback gate (#${{ matrix.pr }})
+    needs: route
+    if: needs.route.outputs.prs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.route.outputs.prs) }}
+    # Every census of one PR runs in that PR's group, whatever triggered it
+    # (PR event, tracking issue, CI run or sweep), so two censuses never
+    # read and write the same check at once. A newer queued census replaces
+    # an older queued one; this group never cancels a running census.
+    concurrency:
+      group: pr-feedback-gate-pr-${{ matrix.pr }}
+      cancel-in-progress: false
+    steps:
+      # One census stamp per job orders this job's pending, result and
+      # failure publications against any earlier census of the same PR.
       - name: Stamp census start
         run: |
           stamp=$(date -u +%Y-%m-%dT%H:%M:%S.%6NZ)
@@ -82,13 +127,11 @@ jobs:
       - name: Mark feedback gate pending
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
           args+=(--census-started "$CENSUS_STARTED")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py \
             "${args[@]}" --mark-pending-only
 
@@ -98,25 +141,21 @@ jobs:
       - name: Evaluate and publish gate
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
           args+=(--census-started "$CENSUS_STARTED")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py "${args[@]}"
 
       - name: Fail gate if evaluator workflow failed
         if: failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
           args+=(--census-started "$CENSUS_STARTED")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py \
             "${args[@]}" --mark-failure-only

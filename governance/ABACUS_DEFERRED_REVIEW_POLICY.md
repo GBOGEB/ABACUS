@@ -163,13 +163,15 @@ is unacceptable, or bridge the webhook into `repository_dispatch` through a
 GitHub App before disabling it.
 
 Overlapping evaluator runs for one PR (for example a tracking-issue event and
-a CI `workflow_run`) are ordered by the `census_started` stamp on the check:
-a run never publishes over a result from a census that started later. The
-stamp is taken once per workflow run, so its pending mark, its result and its
-failure publication all carry the same start time. The
-read and the write are separate API calls, so two runs that publish within
-the same instant can still race; the later census then corrects the check
-when it finishes its own evaluation.
+a CI `workflow_run`) cannot interleave: the workflow first routes the event to
+its PRs, then evaluates each PR in its own job inside the
+`pr-feedback-gate-pr-<number>` concurrency group, so only one census of a PR
+reads and writes its check at a time. A newer queued census replaces an older
+queued one, and a running census is not cancelled by that group. As a second
+guard, censuses are ordered by the `census_started` stamp on the check: a
+census never publishes over a result from one that started later. The stamp is
+taken once per job, so its pending mark, its result and its failure
+publication all carry the same start time.
 
 Do not remove the required `PR Feedback Gate` status check merely to bypass
 review debt.

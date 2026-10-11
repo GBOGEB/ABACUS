@@ -1115,6 +1115,32 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(
             workflow.count('args+=(--census-started "$CENSUS_STARTED")'), 3
         )
+        # Every census of one PR, whatever its trigger, shares that PR's
+        # job concurrency group, so two censuses cannot interleave their
+        # read and write of the check.
+        self.assertIn(
+            "group: pr-feedback-gate-pr-${{ matrix.pr }}\n"
+            "      cancel-in-progress: false",
+            workflow,
+        )
+        self.assertEqual(
+            workflow.count('args+=(--pr-number "$PR_NUMBER")'), 3
+        )
+
+    def test_list_prs_routes_only_open_main_pulls(self):
+        class FakeGitHub:
+            def pull(self, number):
+                return {
+                    7: {"state": "open", "base": {"ref": "main"}},
+                    8: {"state": "closed", "base": {"ref": "main"}},
+                    9: {"state": "open", "base": {"ref": "dev"}},
+                }[number]
+
+            def open_pulls(self):
+                return [{"number": 9}, {"number": 8}, {"number": 7}]
+
+        self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, None), [7])
+        self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, 8), [])
 
     def test_incomplete_file_census_fails_closed(self):
         records = [{"filename": "docs/note.md"}]
