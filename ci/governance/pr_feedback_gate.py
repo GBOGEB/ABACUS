@@ -631,21 +631,24 @@ def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
     return paths
 
 
+# Only non-executable content may defer Codex security review. Any other
+# path is sensitive: with many workflows holding write tokens, a deny-list
+# of "privileged" code paths cannot be kept complete, so classify fail-closed.
+NON_SENSITIVE_SUFFIXES = (
+    ".md",
+    ".rst",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".pdf",
+)
+
+
 def security_sensitive_change(paths: list[str]) -> bool:
-    sensitive_patterns = (
-        ".github/workflows/**",
-        # Composite actions and scripts that workflows run with write tokens.
-        ".github/actions/**",
-        ".github/scripts/**",
-        ".github/codeql/**",
-        "ci/governance/**",
-        "runtime/federation/**",
-        ".githooks/**",
-    )
     return any(
-        github_path_match(path, pattern)
-        for path in paths
-        for pattern in sensitive_patterns
+        not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths
     )
 
 
