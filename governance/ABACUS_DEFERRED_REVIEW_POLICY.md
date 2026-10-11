@@ -65,9 +65,9 @@ S0/S1 remains blocking. If S2 is present, or either Codex review is deferred,
 `trackingIssue` is mandatory.
 
 A classification covers only the thread content it was made against. If any
-comment in an unresolved thread is created or edited after the disposition
-comment was last updated, the deferral is invalid until the disposition is
-re-issued.
+comment in an unresolved thread is created or edited after, or in the same
+second as, the disposition comment's last update, the deferral is invalid
+until the disposition is re-issued.
 
 The open tracking issue must be opened by a trusted repository collaborator
 (OWNER, MEMBER or COLLABORATOR) and contain:
@@ -123,7 +123,8 @@ head and create/update exact-head debt evidence.
 
 Codex **security review** can be deferred only for PRs whose every changed
 path is non-executable content: `*.md`, `*.rst`, `*.png`, `*.jpg`, `*.jpeg`,
-`*.gif`, `*.svg` or `*.pdf`. Any other path is sensitive. ABACUS runs many
+`*.gif` or `*.pdf`. Any other path is sensitive, including `*.svg`, which can
+carry script and is published to GitHub Pages from `docs/**`. ABACUS runs many
 workflows with write tokens that execute repository code after merge
 (`.github/scripts/**`, `scripts/**`, installed packages), so a list of
 "privileged" paths cannot be kept complete; the classifier is an allowlist
@@ -157,6 +158,8 @@ GitHub App before disabling it.
 Overlapping evaluator runs for one PR (for example a tracking-issue event and
 a CI `workflow_run`) are ordered by the `census_started` stamp on the check:
 a run never publishes over a result from a census that started later. The
+stamp is taken once per workflow run, so its pending mark, its result and its
+failure publication all carry the same start time. The
 read and the write are separate API calls, so two runs that publish within
 the same instant can still race; the later census then corrects the check
 when it finishes its own evaluation.

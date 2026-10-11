@@ -60,6 +60,13 @@ jobs:
     name: Evaluate PR feedback gate
     runs-on: ubuntu-latest
     steps:
+      # One census stamp per run orders this run's pending, result and
+      # failure publications against overlapping runs for the same PR.
+      - name: Stamp census start
+        run: |
+          stamp=$(date -u +%Y-%m-%dT%H:%M:%S.%6NZ)
+          echo "CENSUS_STARTED=$stamp" >> "$GITHUB_ENV"
+
       - name: Checkout trusted default branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
@@ -78,6 +85,7 @@ jobs:
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
+          args+=(--census-started "$CENSUS_STARTED")
           if [ -n "$INPUT_PR_NUMBER" ]; then
             args+=(--pr-number "$INPUT_PR_NUMBER")
           fi
@@ -93,6 +101,7 @@ jobs:
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
+          args+=(--census-started "$CENSUS_STARTED")
           if [ -n "$INPUT_PR_NUMBER" ]; then
             args+=(--pr-number "$INPUT_PR_NUMBER")
           fi
@@ -105,6 +114,7 @@ jobs:
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
+          args+=(--census-started "$CENSUS_STARTED")
           if [ -n "$INPUT_PR_NUMBER" ]; then
             args+=(--pr-number "$INPUT_PR_NUMBER")
           fi
