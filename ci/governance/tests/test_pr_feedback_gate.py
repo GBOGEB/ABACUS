@@ -551,6 +551,27 @@ class FeedbackGateTests(unittest.TestCase):
         }
         self.assertFalse(gate.codex_unavailable([forged], self.HEAD_AT))
 
+    def test_head_time_comes_from_server_runs_not_commit_metadata(self):
+        runs = [
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:05:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "push", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T10:00:00Z", "pull_requests": []},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T09:00:00Z", "pull_requests": [{"number": 8}]},
+            {"event": "pull_request", "head_sha": "f" * 40,
+             "created_at": "2026-10-11T08:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        self.assertEqual(
+            gate.head_first_seen_at(runs, self.HEAD, 7), "2026-10-11T19:00:00Z"
+        )
+
+    def test_no_server_head_time_keeps_fallback_closed(self):
+        self.assertEqual(gate.head_first_seen_at([], self.HEAD, 7), "")
+        self.assertFalse(gate.codex_unavailable([self.outage()], ""))
+
     def test_review_quoting_outage_text_is_not_an_outage(self):
         quoting = self.trusted_codex_comment(
             "### Codex Review\nThe gate matches 'You have reached your Codex "
@@ -608,7 +629,9 @@ class FeedbackGateTests(unittest.TestCase):
                 return []
 
             def actions_runs(self, head_sha):
-                return []
+                return self._runs
+
+            _runs: list = []
 
             def pull_files(self, number):
                 return ["README.md"]
@@ -616,12 +639,18 @@ class FeedbackGateTests(unittest.TestCase):
             def issue(self, number):
                 return {"state": "open"}
 
-            def commit_date(self, sha):
-                return FeedbackGateTests.HEAD_AT
-
         pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
         attested = self.owner_comment(self.valid_payload())
 
+        FakeGitHub._runs = [
+            {
+                "name": "Advisory lint",  # not a required workflow
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": self.HEAD_AT,
+                "pull_requests": [{"number": 1}],
+            }
+        ]
         without_outage = gate.evaluate(FakeGitHub([attested]), 1, pull)
         self.assertEqual(without_outage.review_source, "codex")
         self.assertFalse(without_outage.security_review_complete)

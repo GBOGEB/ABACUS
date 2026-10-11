@@ -278,10 +278,6 @@ class GitHub:
             f"/repos/{self.repository}/pulls/{number}",
         )
 
-    def commit_date(self, sha: str) -> str:
-        commit = self.request("GET", f"/repos/{self.repository}/commits/{sha}")
-        return ((commit.get("commit") or {}).get("committer") or {}).get("date") or ""
-
     def pull_files(self, number: int) -> list[str]:
         return [
             item["filename"]
@@ -588,6 +584,34 @@ def _stamp(comment: dict[str, Any]) -> str:
     return comment.get("updated_at") or comment.get("created_at") or ""
 
 
+def head_first_seen_at(
+    runs: list[dict[str, Any]],
+    head_sha: str,
+    pr_number: int,
+) -> str:
+    """Server-recorded time GitHub first saw this head on this PR.
+
+    Uses the earliest Actions run GitHub created for the exact head SHA from a
+    pull_request event of this PR. Unlike Git committer dates, this timestamp
+    is set by GitHub at push time and cannot be backdated by a contributor.
+    Returns "" when no such run exists, which keeps the fallback closed.
+    """
+    stamps = [
+        run.get("created_at") or ""
+        for run in runs
+        if run.get("head_sha") == head_sha
+        and run.get("event") == "pull_request"
+        and pr_number
+        in {
+            int(item["number"])
+            for item in (run.get("pull_requests") or [])
+            if item.get("number") is not None
+        }
+        and run.get("created_at")
+    ]
+    return min(stamps) if stamps else ""
+
+
 def current_codex_outage(
     comments: list[dict[str, Any]],
     head_committed_at: str,
@@ -844,7 +868,9 @@ def evaluate(
     review_source = "codex"
     outage = None
     if not (code_ok and security_ok):
-        outage = current_codex_outage(comments, github.commit_date(head_sha))
+        outage = current_codex_outage(
+            comments, head_first_seen_at(runs, head_sha, number)
+        )
     if outage is not None and owner_attestation_complete(
         comments, head_sha, not_before=outage
     ):
