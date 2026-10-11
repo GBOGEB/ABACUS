@@ -559,10 +559,28 @@ OWNER_ATTESTORS = frozenset({"GBOGEB"})
 OWNER_ATTESTATION_MARKER = re.compile(
     r"owner-security-attestation:v1\s+(\{.*?\})\s*-->"
 )
-CODEX_UNAVAILABLE_PATTERNS = (
-    "reached your Codex usage limits",
-    "exhausted its Codex",
-)
+# Codex's outage replies carry no machine marker, so they are matched as the
+# exact, complete comment body (whitespace-trimmed). A review that merely
+# quotes these sentences is not an outage. If Codex rewords them, the fallback
+# stops activating (fail-closed) until these strings are updated.
+CODEX_UNAVAILABLE_BODIES = frozenset({
+    "You have reached your Codex usage limits for code reviews. You can see "
+    "your limits in the [Codex usage dashboard]"
+    "(https://chatgpt.com/codex/cloud/settings/usage).",
+    "This security review couldn\u2019t start because the paying account has "
+    "exhausted its Codex allowance and has insufficient available credits. "
+    "The payer can check their balance and add credits in the [Codex usage "
+    "dashboard](https://chatgpt.com/codex/cloud/settings/usage), then try "
+    "again. If you do not manage the paying account, contact this "
+    "repository's admins.",
+})
+
+
+def is_codex_outage_notice(comment: dict[str, Any]) -> bool:
+    return (
+        is_trusted_codex_comment(comment)
+        and (comment.get("body") or "").strip() in CODEX_UNAVAILABLE_BODIES
+    )
 OWNER_ATTESTATION_SCOPE = "code+security"
 
 
@@ -585,7 +603,7 @@ def current_codex_outage(
     if not trusted or not head_committed_at:
         return None
     latest = max(trusted, key=_stamp)
-    if not any(p in latest.get("body", "") for p in CODEX_UNAVAILABLE_PATTERNS):
+    if not is_codex_outage_notice(latest):
         return None
     stamp = latest.get("created_at") or _stamp(latest)
     if stamp < head_committed_at:
