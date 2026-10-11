@@ -586,9 +586,9 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
 
-      # On a pull request, admission is the new-debt ratchet: the PR's
-      # changed Python files must not gain Bandit findings, and Safety is
-      # enforced only when the PR changes the dependency surface.
+      # On a pull request, Bandit admission is the new-debt ratchet: the
+      # PR's changed Python files must not gain Bandit findings. Safety is
+      # not relaxed: its outcome is enforced on every event.
       - name: PR new-debt ratchet (Bandit)
         if: github.event_name == 'pull_request'
         env:
@@ -604,7 +604,6 @@ jobs:
           BANDIT: ${{ steps.bandit.outcome }}
           SAFETY: ${{ steps.safety.outcome }}
           EVENT: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           {
             echo "### Security full-red surface"
@@ -613,14 +612,12 @@ jobs:
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
           if [[ "$EVENT" == "pull_request" ]]; then
-            deps=$(git diff --name-only "$BASE_SHA" HEAD -- \
-              'requirements*.txt' pyproject.toml setup.cfg setup.py)
-            if [[ -n "$deps" && "$SAFETY" != "success" ]]; then
-              echo "::error::Safety is red and this PR changes dependencies."
+            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+              >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$SAFETY" != "success" ]]; then
+              echo "::error::Safety is red."
               exit 1
             fi
-            echo "- PR admission: Bandit ratchet above; Safety enforced" \
-              "only when dependencies change" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           if [[ "$BANDIT" != "success" || "$SAFETY" != "success" ]]; then
