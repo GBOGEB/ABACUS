@@ -26,24 +26,26 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 _INTEGRATION_MANIFEST = (
     _REPO_ROOT / "integration" / "cryoplant_project" / "federation" / "manifest.yaml"
 )
-_FEDERATION_SPEC = _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+_FEDERATION_SPEC = (
+    _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+)
 _GLOBAL_MANIFEST = _REPO_ROOT / "federation" / "manifest.yaml"
 
 
 @pytest.mark.smoke
 def test_integration_manifest_exists():
     """integration/cryoplant_project/federation/manifest.yaml must be present."""
-    assert _INTEGRATION_MANIFEST.is_file(), (
-        f"Missing cryoplant-project integration manifest: {_INTEGRATION_MANIFEST}"
-    )
+    assert (
+        _INTEGRATION_MANIFEST.is_file()
+    ), f"Missing cryoplant-project integration manifest: {_INTEGRATION_MANIFEST}"
 
 
 @pytest.mark.smoke
 def test_federation_spec_exists():
     """runtime/federation/codex-abacus-federation.yaml must be present."""
-    assert _FEDERATION_SPEC.is_file(), (
-        f"Missing DELTA_1 federation spec: {_FEDERATION_SPEC}"
-    )
+    assert (
+        _FEDERATION_SPEC.is_file()
+    ), f"Missing DELTA_1 federation spec: {_FEDERATION_SPEC}"
 
 
 @pytest.mark.smoke
@@ -70,9 +72,9 @@ def test_integration_manifest_lists_self():
 
     data = yaml.safe_load(_INTEGRATION_MANIFEST.read_text(encoding="utf-8"))
     member_self = data["federation"].get("member_self", {})
-    assert member_self.get("name") == "GBOGEB/cryoplant-project", (
-        "member_self.name must be 'GBOGEB/cryoplant-project'"
-    )
+    assert (
+        member_self.get("name") == "GBOGEB/cryoplant-project"
+    ), "member_self.name must be 'GBOGEB/cryoplant-project'"
     assert member_self.get("plane") == "auxiliary"
 
 
@@ -86,9 +88,9 @@ def test_global_manifest_includes_cryoplant_project():
 
     data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
     member_names = [m.get("name") for m in data["federation"].get("member_repos", [])]
-    assert "GBOGEB/cryoplant-project" in member_names, (
-        "federation/manifest.yaml must list GBOGEB/cryoplant-project in member_repos"
-    )
+    assert (
+        "GBOGEB/cryoplant-project" in member_names
+    ), "federation/manifest.yaml must list GBOGEB/cryoplant-project in member_repos"
 
 
 @pytest.mark.smoke
@@ -107,7 +109,10 @@ def test_assimilate_returns_ok():
 
 
 _RECIPROCAL_EVIDENCE = (
-    _REPO_ROOT / "integration" / "cryoplant_project" / "federation"
+    _REPO_ROOT
+    / "integration"
+    / "cryoplant_project"
+    / "federation"
     / "reciprocal_smoke.json"
 )
 
@@ -124,15 +129,14 @@ def test_active_membership_has_reciprocal_evidence():
 
     data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
     entry = next(
-        m for m in data["federation"]["member_repos"]
+        m
+        for m in data["federation"]["member_repos"]
         if m.get("name") == "GBOGEB/cryoplant-project"
     )
     if entry.get("status") != "active":
         return
     evidence = json.loads(_RECIPROCAL_EVIDENCE.read_text(encoding="utf-8"))
-    assert evidence["direction"] == (
-        "GBOGEB/ABACUS -> GBOGEB/cryoplant-project"
-    )
+    assert evidence["direction"] == ("GBOGEB/ABACUS -> GBOGEB/cryoplant-project")
     assert evidence["status"] == "ok"
     assert evidence["checks"] and all(evidence["checks"].values())
     assert len(evidence["member_main_sha"]) == 40
@@ -140,9 +144,7 @@ def test_active_membership_has_reciprocal_evidence():
 
 @pytest.mark.smoke
 def test_reciprocal_checks_reject_inactive_or_foreign_member():
-    from integration.cryoplant_project.scripts.reciprocal_smoke import (
-        checks_for,
-    )
+    from integration.cryoplant_project.scripts.reciprocal_smoke import checks_for
 
     good = {
         "federation": {

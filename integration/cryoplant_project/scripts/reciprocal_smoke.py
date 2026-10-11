@@ -26,8 +26,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[3]
 EVIDENCE = (
-    ROOT / "integration" / "cryoplant_project" / "federation"
-    / "reciprocal_smoke.json"
+    ROOT / "integration" / "cryoplant_project" / "federation" / "reciprocal_smoke.json"
 )
 MEMBER = "GBOGEB/cryoplant-project"
 HUB = "GBOGEB/ABACUS"
@@ -43,9 +42,7 @@ def api(path: str, token: str) -> dict:
         },
     )
     # Fixed https://api.github.com base; no caller-controlled scheme.
-    with urllib.request.urlopen(  # nosec B310
-        request, timeout=30
-    ) as response:
+    with urllib.request.urlopen(request, timeout=30) as response:  # nosec B310
         return json.load(response)
 
 
@@ -65,8 +62,7 @@ def checks_for(manifest: dict) -> dict[str, bool]:
 def main() -> int:
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
-        print("GITHUB_TOKEN or GH_TOKEN with read access is required",
-              file=sys.stderr)
+        print("GITHUB_TOKEN or GH_TOKEN with read access is required", file=sys.stderr)
         return 2
     head = api(f"/repos/{MEMBER}/commits/main", token)["sha"]
     content = api(
@@ -77,16 +73,13 @@ def main() -> int:
     status = "ok" if all(checks.values()) else "failed"
     evidence = {
         "direction": f"{HUB} -> {MEMBER}",
-        "checked_at": datetime.now(UTC).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        ),
+        "checked_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "member_main_sha": head,
         "checks": checks,
         "status": status,
     }
     EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
-    EVIDENCE.write_text(json.dumps(evidence, indent=2) + "\n",
-                        encoding="utf-8")
+    EVIDENCE.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(evidence, indent=2))
     return 0 if status == "ok" else 1
 
