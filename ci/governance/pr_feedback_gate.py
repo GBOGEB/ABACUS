@@ -1340,6 +1340,23 @@ def event_pr_numbers(
     return sorted(int(item["number"]) for item in github.open_pulls())
 
 
+def evaluable_pr_numbers(
+    github: GitHub,
+    event: dict[str, Any],
+    explicit: int | None,
+) -> list[int]:
+    """Open main-targeting PRs this event should re-census."""
+    numbers = []
+    for number in event_pr_numbers(github, event, explicit):
+        pull = github.pull(number)
+        if pull.get("state") != "open":
+            continue
+        if pull.get("base", {}).get("ref") != "main":
+            continue
+        numbers.append(number)
+    return numbers
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-path", type=Path)
@@ -1352,6 +1369,10 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--mark-pending-only", action="store_true")
     mode.add_argument("--mark-failure-only", action="store_true")
+    # Route only: print the PRs to evaluate as a JSON list, so the workflow
+    # can fan out one job per PR, each serialized in that PR's own
+    # concurrency group.
+    mode.add_argument("--list-prs", action="store_true")
     args = parser.parse_args()
 
     repository = os.environ.get("GITHUB_REPOSITORY")
@@ -1364,6 +1385,10 @@ def main() -> int:
     event: dict[str, Any] = {}
     if args.event_path and args.event_path.exists():
         event = json.loads(args.event_path.read_text(encoding="utf-8"))
+
+    if args.list_prs:
+        print(json.dumps(evaluable_pr_numbers(github, event, args.pr_number)))
+        return 0
 
     numbers = event_pr_numbers(github, event, args.pr_number)
     if not numbers:
