@@ -577,7 +577,7 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
         self.assertFalse(
-            gate.security_sensitive_change(["docs/ordinary-note.md"])
+            gate.security_sensitive_change(["docs/img/ordinary-figure.png"])
         )
 
     def test_review_deferral_requires_classifications_and_exact_open_issue(self):
@@ -599,7 +599,11 @@ class FeedbackGateTests(unittest.TestCase):
                     "state": "open",
                     "body": self.body,
                     "author_association": self.association,
+                    "user": {"login": "owner"},
                 }
+
+            def can_write(self, login):
+                return login == "owner"
 
         marker = {
             "headSha": head,
@@ -610,6 +614,7 @@ class FeedbackGateTests(unittest.TestCase):
         }
         comment = {
             "author_association": "OWNER",
+            "user": {"login": "owner"},
             "body": (
                 "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
                 "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
@@ -784,7 +789,13 @@ class FeedbackGateTests(unittest.TestCase):
             ],
         }
 
-    def deferral_result(self, metadata, association="OWNER"):
+    def deferral_result(
+        self,
+        metadata,
+        association="OWNER",
+        issue_author="owner",
+        comment_author="owner",
+    ):
         head = "a" * 40
         body = (
             "<!-- abacus-deferred-security:v1 " + json.dumps(metadata) + " -->"
@@ -797,7 +808,11 @@ class FeedbackGateTests(unittest.TestCase):
                     "state": "open",
                     "body": body,
                     "author_association": association,
+                    "user": {"login": issue_author},
                 }
+
+            def can_write(self, login):
+                return login == "owner"
 
         marker = {
             "headSha": head,
@@ -808,6 +823,7 @@ class FeedbackGateTests(unittest.TestCase):
         }
         comment = {
             "author_association": "OWNER",
+            "user": {"login": "owner"},
             "body": (
                 "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
                 "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
@@ -816,6 +832,7 @@ class FeedbackGateTests(unittest.TestCase):
                 + " -->"
             ),
         }
+        comment["user"]["login"] = comment_author
         return gate.review_deferral_evidence(
             FakeGitHub(),
             42,
@@ -874,7 +891,49 @@ class FeedbackGateTests(unittest.TestCase):
             self.full_debt_metadata("a" * 40), association="NONE"
         )
         self.assertFalse(evidence[0])
-        self.assertIn("trusted", evidence[2][0])
+        self.assertIn("write access", evidence[2][0])
+
+    def test_read_only_collaborators_cannot_defer(self):
+        metadata = self.full_debt_metadata("a" * 40)
+        self.assertTrue(self.deferral_result(metadata)[0])
+        # Association alone is not authorization: a read- or triage-only
+        # collaborator can open the issue or post the disposition.
+        evidence = self.deferral_result(
+            metadata, association="COLLABORATOR", issue_author="reader"
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("write access", evidence[2][0])
+        evidence = self.deferral_result(metadata, comment_author="reader")
+        self.assertEqual(evidence, (False, (), ()))
+
+    def test_write_permission_lookup_fails_closed(self):
+        class FakeGitHub(gate.GitHub):
+            def __init__(self, responses):
+                super().__init__("token", "GBOGEB/ABACUS")
+                self.responses = responses
+                self.calls = 0
+
+            def request(self, method, path, payload=None):
+                self.calls += 1
+                response = self.responses[path.rsplit("/", 2)[-2]]
+                if isinstance(response, Exception):
+                    raise response
+                return response
+
+        github = FakeGitHub(
+            {
+                "writer": {"permission": "write", "role_name": "write"},
+                "maintainer": {"permission": "write", "role_name": "maintain"},
+                "triager": {"permission": "read", "role_name": "triage"},
+                "outsider": RuntimeError("GitHub API GET failed: 404"),
+            }
+        )
+        self.assertTrue(github.can_write("writer"))
+        self.assertTrue(github.can_write("maintainer"))
+        self.assertFalse(github.can_write("triager"))
+        self.assertFalse(github.can_write("outsider"))
+        self.assertTrue(github.can_write("writer"))
+        self.assertEqual(github.calls, 4)
 
     def test_rename_out_of_sensitive_path_is_sensitive(self):
         paths = gate.changed_paths_from_files(
@@ -884,7 +943,7 @@ class FeedbackGateTests(unittest.TestCase):
                     "previous_filename": "ci/governance/pr_feedback_gate.py",
                     "status": "renamed",
                 },
-                {"filename": "docs/note.md", "status": "modified"},
+                {"filename": "docs/img/figure.png", "status": "modified"},
             ]
         )
         self.assertEqual(
@@ -892,13 +951,15 @@ class FeedbackGateTests(unittest.TestCase):
             [
                 "tools/pr_feedback_gate.py",
                 "ci/governance/pr_feedback_gate.py",
-                "docs/note.md",
+                "docs/img/figure.png",
             ],
         )
         self.assertTrue(gate.security_sensitive_change(paths))
         self.assertFalse(
             gate.security_sensitive_change(
-                gate.changed_paths_from_files([{"filename": "docs/note.md"}])
+                gate.changed_paths_from_files(
+                    [{"filename": "docs/img/figure.png"}]
+                )
             )
         )
 
@@ -911,13 +972,16 @@ class FeedbackGateTests(unittest.TestCase):
             "src/dmaic/federation.py",
             "docs/api/metrics.json",
             "handover/pipelines/SAMPLE_MARKDOWN_PIPELINE.md",
+            # Pandoc passes raw HTML in Markdown/reST into published output.
+            "README.md",
+            "docs/guide.rst",
             # SVG can carry script and docs/** deploys to Pages.
             "docs/img/flow.SVG",
             # PDF can carry JavaScript, embedded files and launch actions.
             "docs/report.PDF",
         ):
             self.assertTrue(gate.security_sensitive_change([path]), path)
-        for path in ("README.md", "docs/guide.rst", "docs/img/flow.PNG"):
+        for path in ("docs/img/flow.PNG", "assets/logo.jpg", "a/b.gif"):
             self.assertFalse(gate.security_sensitive_change([path]), path)
 
     def test_tracking_issue_change_recensuses_only_named_prs(self):

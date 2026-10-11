@@ -289,6 +289,29 @@ class GitHub:
                 return items
             page += 1
 
+    def can_write(self, login: str) -> bool:
+        """Whether login holds write-or-higher on this repository.
+
+        Author association is not authorization: MEMBER and COLLABORATOR
+        include read- and triage-only users.
+        """
+        cache = self.__dict__.setdefault("_can_write", {})
+        if login not in cache:
+            try:
+                data = self.request(
+                    "GET",
+                    f"/repos/{self.repository}/collaborators/"
+                    f"{urllib.parse.quote(login, safe='')}/permission",
+                )
+            except RuntimeError:
+                # Not a collaborator (404) or lookup failed: fail closed.
+                data = {}
+            cache[login] = (data or {}).get("permission") in {
+                "admin",
+                "write",
+            } or (data or {}).get("role_name") in WRITE_ROLES
+        return cache[login]
+
     def pull(self, number: int) -> dict[str, Any]:
         return self.request(
             "GET",
@@ -627,6 +650,18 @@ def github_path_match(path: str, pattern: str) -> bool:
 
 
 TRUSTED_AUTHOR_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
+WRITE_ROLES = frozenset({"admin", "maintain", "write"})
+
+
+def trusted_writer(github: GitHub, item: dict[str, Any]) -> bool:
+    """Association pre-filter, then the author's effective permission."""
+    if (
+        (item.get("author_association") or "").upper()
+        not in TRUSTED_AUTHOR_ASSOCIATIONS
+    ):
+        return False
+    login = (item.get("user") or {}).get("login")
+    return isinstance(login, str) and bool(login) and github.can_write(login)
 
 
 def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
@@ -645,12 +680,14 @@ def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
     return paths
 
 
-# Only non-executable content may defer Codex security review. Any other
-# path is sensitive: with many workflows holding write tokens, a deny-list
-# of "privileged" code paths cannot be kept complete, so classify fail-closed.
+# Only inert raster images may defer Codex security review. Any other path is
+# sensitive: with many workflows holding write tokens, a deny-list of
+# "privileged" code paths cannot be kept complete, so classify fail-closed.
+# Markdown and reST are excluded too: Markdown pipelines execute fenced code
+# (scripts/markdown_exec_runner.py) and Pandoc builds (book-build.yml,
+# export-docs.yml) pass raw HTML in docs/**/*.md and root *.md through into
+# published HTML/EPUB.
 NON_SENSITIVE_SUFFIXES = (
-    ".md",
-    ".rst",
     ".png",
     ".jpg",
     ".jpeg",
@@ -658,19 +695,9 @@ NON_SENSITIVE_SUFFIXES = (
 )
 
 
-# Allowlisted suffixes that are nonetheless executed: Markdown pipelines run
-# by scripts/markdown_exec_runner.py (fenced Bash/Python blocks).
-EXECUTABLE_CONTENT_PATTERNS = ("handover/pipelines/**",)
-
-
 def security_sensitive_change(paths: list[str]) -> bool:
     return any(
-        not path.lower().endswith(NON_SENSITIVE_SUFFIXES)
-        or any(
-            github_path_match(path, pattern)
-            for pattern in EXECUTABLE_CONTENT_PATTERNS
-        )
-        for path in paths
+        not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths
     )
 
 
@@ -824,10 +851,8 @@ def review_deferral_evidence(
     candidates = [
         (comment, match)
         for comment in comments
-        if (comment.get("author_association") or "").upper()
-        in TRUSTED_AUTHOR_ASSOCIATIONS
         for match in [marker.search(comment.get("body", ""))]
-        if match
+        if match and trusted_writer(github, comment)
     ]
     if not candidates:
         return False, (), ()
@@ -1013,16 +1038,13 @@ def review_deferral_evidence(
                 f"bound to PR #{number} and the current head",
             ),
         )
-    if (
-        (issue.get("author_association") or "").upper()
-        not in TRUSTED_AUTHOR_ASSOCIATIONS
-    ):
+    if not trusted_writer(github, issue):
         return (
             False,
             blocking_items,
             (
                 f"review deferral issue #{issue_number} must be opened by a "
-                "trusted repository collaborator",
+                "repository collaborator with write access",
             ),
         )
     debt_problem = deferred_debt_problem(

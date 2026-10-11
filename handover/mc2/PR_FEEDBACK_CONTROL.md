@@ -48,7 +48,7 @@ either by completed review or by the controlled S2/S3 deferral contract in
 quota, credits, or service availability is never PASS: it is
 `DEFERRED_BUDGET` and must be bound to durable exact-head debt. S0/S1 remains
 blocking. Codex security review remains mandatory before merge for every
-change except the non-executable content allowlisted by that policy.
+change except the inert raster images allowlisted by that policy.
 
 ## Finding disposition contract
 
