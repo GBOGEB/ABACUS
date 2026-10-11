@@ -584,16 +584,19 @@ def _stamp(comment: dict[str, Any]) -> str:
     return comment.get("updated_at") or comment.get("created_at") or ""
 
 
-def head_first_seen_at(
+def head_current_since(
     runs: list[dict[str, Any]],
     head_sha: str,
     pr_number: int,
 ) -> str:
-    """Server-recorded time GitHub first saw this head on this PR.
+    """Server-recorded time this SHA most recently became the PR head.
 
-    Uses the earliest Actions run GitHub created for the exact head SHA from a
-    pull_request event of this PR. Unlike Git committer dates, this timestamp
-    is set by GitHub at push time and cannot be backdated by a contributor.
+    Uses the latest Actions run GitHub created for the exact head SHA from a
+    pull_request event of this PR. These timestamps are set by GitHub when the
+    head moves (they cannot be backdated like Git committer dates), and taking
+    the latest one binds the outage to the current head transition: a PR
+    force-pushed back to an older SHA gets fresh runs, so the SHA's historical
+    runs no longer count. Extra or late runs only make the fallback stricter.
     Returns "" when no such run exists, which keeps the fallback closed.
     """
     stamps = [
@@ -609,7 +612,7 @@ def head_first_seen_at(
         }
         and run.get("created_at")
     ]
-    return min(stamps) if stamps else ""
+    return max(stamps) if stamps else ""
 
 
 def current_codex_outage(
@@ -869,7 +872,7 @@ def evaluate(
     outage = None
     if not (code_ok and security_ok):
         outage = current_codex_outage(
-            comments, head_first_seen_at(runs, head_sha, number)
+            comments, head_current_since(runs, head_sha, number)
         )
     if outage is not None and owner_attestation_complete(
         comments, head_sha, not_before=outage
