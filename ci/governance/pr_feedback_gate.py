@@ -1265,12 +1265,14 @@ DEFERRAL_MARKER = re.compile(
 )
 
 
-def tracking_issue_pr_numbers(event: dict[str, Any]) -> list[int]:
+def tracking_issue_pr_numbers(
+    github: GitHub,
+    event: dict[str, Any],
+) -> list[int]:
     issue = event.get("issue") or {}
-    if (
-        (issue.get("author_association") or "").upper()
-        not in TRUSTED_AUTHOR_ASSOCIATIONS
-    ):
+    # Same authorization as the deferral itself: otherwise a read- or
+    # triage-only member could churn marker issues to hold a PR pending.
+    if not trusted_writer(github, issue):
         return []
     bodies = [issue.get("body") or ""]
     previous = (event.get("changes") or {}).get("body") or {}
@@ -1319,7 +1321,7 @@ def event_pr_numbers(
         # its current body or, for an edit, its previous body, so an edit
         # that strips the marker still reaches the source PR. Other issue
         # events are ignored; the scheduled sweep remains the backstop.
-        return tracking_issue_pr_numbers(event)
+        return tracking_issue_pr_numbers(github, event)
     workflow_run = event.get("workflow_run")
     if workflow_run:
         pulls = workflow_run.get("pull_requests") or []
