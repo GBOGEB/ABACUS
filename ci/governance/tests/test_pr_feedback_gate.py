@@ -493,7 +493,10 @@ class FeedbackGateTests(unittest.TestCase):
 
     def outage(self, at="2026-10-11T19:30:00Z"):
         comment = self.trusted_codex_comment(
-            "You have reached your Codex usage limits for code reviews.", at
+            "You have reached your Codex usage limits for code reviews. You can "
+            "see your limits in the [Codex usage dashboard]"
+            "(https://chatgpt.com/codex/cloud/settings/usage).\n",
+            at,
         )
         comment["created_at"] = at
         return comment
@@ -547,6 +550,28 @@ class FeedbackGateTests(unittest.TestCase):
             "user": {"login": "GBOGEB", "id": 1},
         }
         self.assertFalse(gate.codex_unavailable([forged], self.HEAD_AT))
+
+    def test_review_quoting_outage_text_is_not_an_outage(self):
+        quoting = self.trusted_codex_comment(
+            "### Codex Review\nThe gate matches 'You have reached your Codex "
+            "usage limits for code reviews. You can see your limits in the "
+            "[Codex usage dashboard](https://chatgpt.com/codex/cloud/settings/"
+            "usage).' as an outage.",
+            "2026-10-11T19:30:00Z",
+        )
+        self.assertFalse(gate.codex_unavailable([quoting], self.HEAD_AT))
+
+    def test_security_allowance_notice_is_an_outage(self):
+        notice = self.trusted_codex_comment(
+            "This security review couldn\u2019t start because the paying account "
+            "has exhausted its Codex allowance and has insufficient available "
+            "credits. The payer can check their balance and add credits in the "
+            "[Codex usage dashboard](https://chatgpt.com/codex/cloud/settings/"
+            "usage), then try again. If you do not manage the paying account, "
+            "contact this repository's admins.",
+            "2026-10-11T19:30:00Z",
+        )
+        self.assertTrue(gate.codex_unavailable([notice], self.HEAD_AT))
 
     def test_outage_from_earlier_push_does_not_carry_over(self):
         stale = self.outage(at="2026-10-11T18:00:00Z")
