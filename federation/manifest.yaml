@@ -54,10 +54,11 @@ federation:
     - name: GBOGEB/cryoplant-project
       plane: auxiliary
       status: active
-      # Activated 2026-10-11 after the pairwise smoke ran from both directions:
-      # cryoplant-project scripts/federation_smoke.py (all targets reachable,
-      # status ok) and integration/cryoplant_project/tests/test_smoke_federation.py
-      # here (6 passed, main@53688f2). Registration history below.
+      # Activated 2026-10-11 after the pairwise smoke ran from both
+      # directions: cryoplant-project scripts/federation_smoke.py (all
+      # targets reachable, status ok) and
+      # integration/cryoplant_project/tests/test_smoke_federation.py here
+      # (6 passed, main@53688f2). Registration history below.
       # Self-declared on the cryoplant-project side (see its own
       # federation/manifest.yaml, branch
       # federation/delta1-auxiliary-member-20260831). Registered here on
@@ -67,7 +68,8 @@ federation:
       role: cryoplant_engineering_auxiliary_plane
 
   dev_snapshots:
-    # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
+    # DEV snapshot folders registered here for provenance;
+    # NOT integrated into main src tree.
     - path: ABACUS-v031/
       status: legacy
       note: Pre-V3 baseline snapshot
