@@ -908,6 +908,7 @@ class FeedbackGateTests(unittest.TestCase):
             "requirements.txt",
             "src/dmaic/federation.py",
             "docs/api/metrics.json",
+            "handover/pipelines/SAMPLE_MARKDOWN_PIPELINE.md",
         ):
             self.assertTrue(gate.security_sensitive_change([path]), path)
         for path in ("README.md", "docs/guide.rst", "docs/img/flow.SVG"):

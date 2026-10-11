@@ -127,7 +127,9 @@ path is non-executable content: `*.md`, `*.rst`, `*.png`, `*.jpg`, `*.jpeg`,
 workflows with write tokens that execute repository code after merge
 (`.github/scripts/**`, `scripts/**`, installed packages), so a list of
 "privileged" paths cannot be kept complete; the classifier is an allowlist
-and fails closed.
+and fails closed. Allowlisted file types that are themselves executed stay
+sensitive: Markdown pipelines under `handover/pipelines/**` run through
+`scripts/markdown_exec_runner.py`.
 
 A renamed file is classified by both its new path and its previous path. If
 the PR file listing is incomplete (GitHub caps it at 3,000 files, so the

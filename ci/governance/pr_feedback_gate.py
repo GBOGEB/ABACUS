@@ -646,9 +646,19 @@ NON_SENSITIVE_SUFFIXES = (
 )
 
 
+# Allowlisted suffixes that are nonetheless executed: Markdown pipelines run
+# by scripts/markdown_exec_runner.py (fenced Bash/Python blocks).
+EXECUTABLE_CONTENT_PATTERNS = ("handover/pipelines/**",)
+
+
 def security_sensitive_change(paths: list[str]) -> bool:
     return any(
-        not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths
+        not path.lower().endswith(NON_SENSITIVE_SUFFIXES)
+        or any(
+            github_path_match(path, pattern)
+            for pattern in EXECUTABLE_CONTENT_PATTERNS
+        )
+        for path in paths
     )
 
 
