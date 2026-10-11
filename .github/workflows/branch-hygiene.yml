@@ -31,12 +31,14 @@ concurrency:
   group: branch-hygiene
   cancel-in-progress: false
 
+# Actions are pinned by commit SHA: checkout v7.0.1, setup-python v7.0.0,
+# upload-artifact v7.0.1 (the same pins as the other ABACUS workflows).
 jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
       - run: python -m pip install pytest
@@ -53,8 +55,8 @@ jobs:
       contents: write
       pull-requests: read
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
       - name: Apply list
@@ -87,7 +89,7 @@ jobs:
           PY
           exit "$status"
       - if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: branch-hygiene-receipt-${{ github.run_id }}
           path: ${{ runner.temp }}/branch-hygiene-receipt.json
