@@ -89,6 +89,28 @@ Ubuntu/RHEL/DMAIC/release jobs were skipped.
 Those skipped surfaces are now treated as **proof debt**, not as green or absent
 evidence.
 
+## PR admission: new-debt ratchet
+
+The full-repository Black/isort/Flake8, Bandit/Safety and coverage scans in
+`ci-cd-tests.yml` keep running on every event, and on main pushes, schedules
+and manual runs they keep enforcing the red roots above. On a `pull_request`
+event they report the repository-wide totals in the job summary without
+failing, and admission is decided by checks scoped to what the PR changes:
+
+- `scripts/ci_pr_debt_ratchet.py --tools black isort flake8` and
+  `--tools bandit` compare each changed Python file at the PR base and at the
+  head. A file clean at the base must stay clean, a new file must be clean,
+  and a file's Flake8-critical (E9, F63, F7, F82) or Bandit finding count must
+  not rise. B101 is not counted in test files.
+- Safety still fails the PR when the PR changes dependency manifests
+  (`requirements*.txt`, `pyproject.toml`, `setup.cfg`, `setup.py`).
+- `diff-cover` requires the lines the PR adds or changes to meet the governed 75%
+  threshold, instead of the repository-wide 29% figure.
+
+This does not lower the G1-G3 ladder or the 75% target; it stops a PR from
+being charged for debt it did not create while refusing any it adds. Debt
+reduction stays a separate, measured wave against the main-branch totals.
+
 ## Coverage/check growth rule for every proposal
 
 Every compatible DAB/MIP/3P*/DOW/CI proposal must declare one coverage-growth
