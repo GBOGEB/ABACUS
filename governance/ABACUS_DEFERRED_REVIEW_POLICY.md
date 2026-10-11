@@ -167,7 +167,10 @@ a CI `workflow_run`) cannot interleave: the workflow first routes the event to
 its PRs, then evaluates each PR in its own job inside the
 `pr-feedback-gate-pr-<number>` concurrency group, so only one census of a PR
 reads and writes its check at a time. A newer queued census replaces an older
-queued one, and a running census is not cancelled by that group. As a second
+queued one, and a running census is never cancelled. There is no
+workflow-level concurrency group, so an unrelated no-op event (such as a
+public comment on a tracking issue) cannot cancel or displace a run that has
+PRs to re-census. As a second
 guard, censuses are ordered by the `census_started` stamp on the check: a
 census never publishes over a result from one that started later. The stamp is
 taken once per job, so its pending mark, its result and its failure
