@@ -278,6 +278,10 @@ class GitHub:
             f"/repos/{self.repository}/pulls/{number}",
         )
 
+    def commit_date(self, sha: str) -> str:
+        commit = self.request("GET", f"/repos/{self.repository}/commits/{sha}")
+        return ((commit.get("commit") or {}).get("committer") or {}).get("date") or ""
+
     def pull_files(self, number: int) -> list[str]:
         return [
             item["filename"]
@@ -562,20 +566,51 @@ CODEX_UNAVAILABLE_PATTERNS = (
 OWNER_ATTESTATION_SCOPE = "code+security"
 
 
-def codex_unavailable(comments: list[dict[str, Any]]) -> bool:
-    """True when the trusted Codex app itself reported it could not run."""
-    return any(
-        is_trusted_codex_comment(comment)
-        and any(p in comment.get("body", "") for p in CODEX_UNAVAILABLE_PATTERNS)
-        for comment in comments
-    )
+def _stamp(comment: dict[str, Any]) -> str:
+    return comment.get("updated_at") or comment.get("created_at") or ""
+
+
+def current_codex_outage(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> str | None:
+    """Timestamp of a Codex outage that applies to the current head, else None.
+
+    The outage counts only if (a) the most recent trusted Codex activity on the
+    PR is itself an "could not run" notice, so any later successful Codex
+    activity cancels it, and (b) that notice is newer than the head commit, so
+    a notice from an earlier push never carries over to new commits.
+    """
+    trusted = [c for c in comments if is_trusted_codex_comment(c)]
+    if not trusted or not head_committed_at:
+        return None
+    latest = max(trusted, key=_stamp)
+    if not any(p in latest.get("body", "") for p in CODEX_UNAVAILABLE_PATTERNS):
+        return None
+    stamp = latest.get("created_at") or _stamp(latest)
+    if stamp < head_committed_at:
+        return None
+    return stamp
+
+
+def codex_unavailable(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> bool:
+    """True when the trusted Codex app reported it could not run on this head."""
+    return current_codex_outage(comments, head_committed_at) is not None
 
 
 def owner_attestation_complete(
     comments: list[dict[str, Any]],
     head_sha: str,
+    not_before: str = "",
 ) -> bool:
-    """Latest owner attestation must bind this exact head and full scope."""
+    """Latest owner attestation must bind this exact head and full scope.
+
+    With not_before set, the attestation must also post-date that moment (the
+    outage notice), so it answers the current failed review attempt.
+    """
     for comment in sorted(
         comments,
         key=lambda item: item.get("updated_at")
@@ -598,8 +633,10 @@ def owner_attestation_complete(
             payload = json.loads(match.group(1))
         except json.JSONDecodeError:
             continue
+        posted = comment.get("created_at") or _stamp(comment)
         return (
-            payload.get("headSha") == head_sha
+            posted >= not_before
+            and payload.get("headSha") == head_sha
             and payload.get("status") == "completed"
             and payload.get("scope") == OWNER_ATTESTATION_SCOPE
             and payload.get("reason") == "codex_unavailable"
@@ -787,10 +824,11 @@ def evaluate(
     code_ok = codex_code_review_complete(comments, head_sha)
     security_ok = codex_security_review_complete(comments, head_sha)
     review_source = "codex"
-    if (
-        not (code_ok and security_ok)
-        and codex_unavailable(comments)
-        and owner_attestation_complete(comments, head_sha)
+    outage = None
+    if not (code_ok and security_ok):
+        outage = current_codex_outage(comments, github.commit_date(head_sha))
+    if outage is not None and owner_attestation_complete(
+        comments, head_sha, not_before=outage
     ):
         code_ok = security_ok = True
         review_source = "owner_attestation"
