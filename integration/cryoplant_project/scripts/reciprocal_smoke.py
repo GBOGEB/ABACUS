@@ -19,10 +19,13 @@ import json
 import os
 import sys
 import urllib.request
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
+
+# datetime.UTC needs Python 3.11; the Unit Tests matrix still runs 3.10.
+UTC = timezone.utc  # noqa: UP017
 
 ROOT = Path(__file__).resolve().parents[3]
 EVIDENCE = (

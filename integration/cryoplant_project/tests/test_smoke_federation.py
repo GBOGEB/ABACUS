@@ -15,10 +15,13 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 
 import json
 import os
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+
+# datetime.UTC needs Python 3.11; the Unit Tests matrix still runs 3.10.
+UTC = timezone.utc  # noqa: UP017
 
 # Repo root is four levels up from this file:
 # integration/cryoplant_project/tests/test_smoke_federation.py
