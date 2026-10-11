@@ -183,6 +183,7 @@ class Evidence:
     ci_failed: tuple[str, ...]
     ci_seen: int
     deferred_comments: tuple[str, ...]
+    review_source: str = "codex"
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
@@ -537,6 +538,76 @@ def codex_security_review_complete(
     return False
 
 
+# Break-glass review path (used only when Codex itself cannot run).
+#
+# The gate normally requires exact-head Codex code + security reviews. When the
+# Codex allowance is exhausted those reviews cannot start, the gate stays
+# pending for every PR, and the ruleset (no bypass actors) blocks all merges.
+# An owner attestation may then stand in for the *review* requirement only:
+#   * the trusted Codex app must itself have reported it could not run on
+#     this PR (usage limit / exhausted allowance), and
+#   * the repository owner must attest the exact head SHA with a structured,
+#     machine-checkable marker.
+# Every CI requirement, the unresolved-thread rule and the workflow-identity
+# checks still apply unchanged. The attestation is an accountable human act:
+# automation and agents must never post it.
+OWNER_ATTESTORS = frozenset({"GBOGEB"})
+OWNER_ATTESTATION_MARKER = re.compile(
+    r"owner-security-attestation:v1\s+(\{.*?\})\s*-->"
+)
+CODEX_UNAVAILABLE_PATTERNS = (
+    "reached your Codex usage limits",
+    "exhausted its Codex",
+)
+OWNER_ATTESTATION_SCOPE = "code+security"
+
+
+def codex_unavailable(comments: list[dict[str, Any]]) -> bool:
+    """True when the trusted Codex app itself reported it could not run."""
+    return any(
+        is_trusted_codex_comment(comment)
+        and any(p in comment.get("body", "") for p in CODEX_UNAVAILABLE_PATTERNS)
+        for comment in comments
+    )
+
+
+def owner_attestation_complete(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+) -> bool:
+    """Latest owner attestation must bind this exact head and full scope."""
+    for comment in sorted(
+        comments,
+        key=lambda item: item.get("updated_at")
+        or item.get("created_at")
+        or "",
+        reverse=True,
+    ):
+        user = comment.get("user") or {}
+        if (
+            user.get("login") not in OWNER_ATTESTORS
+            or user.get("type", "User") != "User"
+            or comment.get("author_association") != "OWNER"
+            or comment.get("performed_via_github_app")
+        ):
+            continue
+        match = OWNER_ATTESTATION_MARKER.search(comment.get("body", ""))
+        if not match:
+            continue
+        try:
+            payload = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        return (
+            payload.get("headSha") == head_sha
+            and payload.get("status") == "completed"
+            and payload.get("scope") == OWNER_ATTESTATION_SCOPE
+            and payload.get("reason") == "codex_unavailable"
+            and bool(str(payload.get("reviewer", "")).strip())
+        )
+    return False
+
+
 def github_path_pattern_regex(pattern: str) -> re.Pattern[str]:
     """Translate the Actions path-filter glob subset used by this repo."""
     parts = ["^"]
@@ -713,21 +784,26 @@ def evaluate(
     )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
+    code_ok = codex_code_review_complete(comments, head_sha)
+    security_ok = codex_security_review_complete(comments, head_sha)
+    review_source = "codex"
+    if (
+        not (code_ok and security_ok)
+        and codex_unavailable(comments)
+        and owner_attestation_complete(comments, head_sha)
+    ):
+        code_ok = security_ok = True
+        review_source = "owner_attestation"
     return Evidence(
         head_sha=head_sha,
-        code_review_complete=codex_code_review_complete(
-            comments,
-            head_sha,
-        ),
-        security_review_complete=codex_security_review_complete(
-            comments,
-            head_sha,
-        ),
+        code_review_complete=code_ok,
+        security_review_complete=security_ok,
         unresolved_threads=unresolved,
         ci_pending=pending,
         ci_failed=failed,
         ci_seen=seen,
         deferred_comments=deferred,
+        review_source=review_source,
     )
 
 
@@ -738,6 +814,7 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         f"head={evidence.head_sha}\n"
         f"code_review_complete={evidence.code_review_complete}\n"
         f"security_review_complete={evidence.security_review_complete}\n"
+        f"review_source={evidence.review_source}\n"
         f"unresolved_threads={evidence.unresolved_threads}\n"
         f"ci_seen={evidence.ci_seen}\n"
         f"state={evidence.state}"
@@ -757,6 +834,8 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "Required invariants:",
         "- exact-head Codex code review complete",
         "- exact-head Codex security review complete",
+        "  (or, only if Codex reported it could not run: exact-head owner",
+        "  attestation, scope code+security; CI rules unchanged)",
         "- repository-native current-head admission evidence terminal and green",
         "- zero unresolved review threads",
         "- current-head GitHub Actions terminal and green",

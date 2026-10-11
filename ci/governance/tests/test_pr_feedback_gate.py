@@ -468,6 +468,118 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(pending, ())
         self.assertEqual(failed, ())
 
+    # --- owner-attestation fallback (Codex unavailable) -------------------
+
+    HEAD = "1234567890abcdef1234567890abcdef12345678"
+
+    @staticmethod
+    def owner_comment(payload: str, **overrides):
+        comment = {
+            "body": f"Owner sign-off\n<!-- owner-security-attestation:v1 {payload} -->",
+            "updated_at": "2026-10-11T20:00:00Z",
+            "author_association": "OWNER",
+            "user": {"login": "GBOGEB", "type": "User"},
+        }
+        comment.update(overrides)
+        return comment
+
+    def valid_payload(self, head=None):
+        return (
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}' % (head or self.HEAD)
+        )
+
+    def outage(self):
+        return self.trusted_codex_comment(
+            "You have reached your Codex usage limits for code reviews."
+        )
+
+    def test_owner_attestation_accepted_for_exact_head(self):
+        comments = [self.outage(), self.owner_comment(self.valid_payload())]
+        self.assertTrue(gate.codex_unavailable(comments))
+        self.assertTrue(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_owner_attestation_rejects_other_head(self):
+        comments = [self.owner_comment(self.valid_payload("f" * 40))]
+        self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_owner_attestation_rejects_non_owner_and_apps(self):
+        payload = self.valid_payload()
+        for override in (
+            {"user": {"login": "someone-else", "type": "User"}},
+            {"author_association": "COLLABORATOR"},
+            {"user": {"login": "GBOGEB", "type": "Bot"}},
+            {"performed_via_github_app": {"id": 1, "slug": "x"}},
+        ):
+            comments = [self.owner_comment(payload, **override)]
+            self.assertFalse(
+                gate.owner_attestation_complete(comments, self.HEAD), override
+            )
+
+    def test_owner_attestation_requires_full_scope_reason_and_reviewer(self):
+        for bad in (
+            '{"headSha":"%s","status":"completed","scope":"code",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}',
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"convenience","reviewer":"GBOGEB"}',
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"  "}',
+            '{"headSha":"%s","status":"pending","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}',
+        ):
+            comments = [self.owner_comment(bad % self.HEAD)]
+            self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_latest_owner_attestation_wins(self):
+        newer_wrong = self.owner_comment(
+            self.valid_payload("e" * 40), updated_at="2026-10-11T21:00:00Z"
+        )
+        comments = [self.owner_comment(self.valid_payload()), newer_wrong]
+        self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_codex_unavailable_requires_trusted_codex_identity(self):
+        forged = {
+            "body": "You have reached your Codex usage limits for code reviews.",
+            "user": {"login": "GBOGEB", "id": 1},
+        }
+        self.assertFalse(gate.codex_unavailable([forged]))
+
+    def test_evaluate_uses_attestation_only_during_outage(self):
+        class FakeGitHub:
+            def __init__(self, comments):
+                self._comments = comments
+
+            def issue_comments(self, number):
+                return self._comments
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return []
+
+            def pull_files(self, number):
+                return ["README.md"]
+
+            def issue(self, number):
+                return {"state": "open"}
+
+        pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
+        attested = self.owner_comment(self.valid_payload())
+
+        without_outage = gate.evaluate(FakeGitHub([attested]), 1, pull)
+        self.assertEqual(without_outage.review_source, "codex")
+        self.assertFalse(without_outage.security_review_complete)
+
+        with_outage = gate.evaluate(FakeGitHub([self.outage(), attested]), 1, pull)
+        self.assertEqual(with_outage.review_source, "owner_attestation")
+        self.assertTrue(with_outage.code_review_complete)
+        self.assertTrue(with_outage.security_review_complete)
+        # CI is still required: with no runs the gate stays pending, never green.
+        self.assertEqual(with_outage.state, "pending")
+        self.assertTrue(any("CI missing" in r for r in with_outage.pending_reasons))
+
+
     def test_gate_state_order_is_failure_then_pending_then_success(self):
         base = dict(
             head_sha="a" * 40,
