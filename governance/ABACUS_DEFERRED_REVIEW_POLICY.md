@@ -123,8 +123,9 @@ head and create/update exact-head debt evidence.
 
 Codex **security review** can be deferred only for PRs whose every changed
 path is non-executable content: `*.md`, `*.rst`, `*.png`, `*.jpg`, `*.jpeg`,
-`*.gif` or `*.pdf`. Any other path is sensitive, including `*.svg`, which can
-carry script and is published to GitHub Pages from `docs/**`. ABACUS runs many
+or `*.gif`. Any other path is sensitive, including `*.svg` and `*.pdf`, which
+can carry script or active content and are published to GitHub Pages from
+`docs/**`. ABACUS runs many
 workflows with write tokens that execute repository code after merge
 (`.github/scripts/**`, `scripts/**`, installed packages), so a list of
 "privileged" paths cannot be kept complete; the classifier is an allowlist

@@ -913,6 +913,8 @@ class FeedbackGateTests(unittest.TestCase):
             "handover/pipelines/SAMPLE_MARKDOWN_PIPELINE.md",
             # SVG can carry script and docs/** deploys to Pages.
             "docs/img/flow.SVG",
+            # PDF can carry JavaScript, embedded files and launch actions.
+            "docs/report.PDF",
         ):
             self.assertTrue(gate.security_sensitive_change([path]), path)
         for path in ("README.md", "docs/guide.rst", "docs/img/flow.PNG"):
