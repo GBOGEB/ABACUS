@@ -176,6 +176,13 @@ census never publishes over a result from one that started later. The stamp is
 taken once per job, so its pending mark, its result and its failure
 publication all carry the same start time.
 
+Because a tracking-issue close or edit re-censuses the PR in a job that
+queues behind any census already running, that running census re-runs the
+whole evaluation immediately before it publishes a success that rests on a
+deferral, and publishes it only if the re-census reproduces it exactly. If the
+evidence changed, the fresh result is published instead (up to three
+re-censuses, after which the check stays pending).
+
 Do not remove the required `PR Feedback Gate` status check merely to bypass
 review debt.
 
