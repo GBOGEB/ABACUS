@@ -336,6 +336,8 @@ class GitHub:
                       databaseId
                       body
                       author { login }
+                      createdAt
+                      lastEditedAt
                     }
                   }
                 }
@@ -474,6 +476,13 @@ class GitHub:
                 payload,
             )
         return True
+
+
+def thread_comment_time(comment: dict[str, Any]) -> str:
+    return max(
+        comment.get("createdAt") or "",
+        comment.get("lastEditedAt") or "",
+    )
 
 
 def utc_now() -> str:
@@ -853,6 +862,27 @@ def review_deferral_evidence(
             False,
             (),
             ("every unresolved review thread must be classified",),
+        )
+    # A classification covers the thread content it was made against. A
+    # reply or edit after the disposition may raise the severity, so the
+    # disposition must be at least as new as every comment it classifies.
+    disposition_time = comment.get("updated_at") or comment.get("created_at")
+    changed = sorted(
+        thread["id"]
+        for thread in unresolved_threads
+        if any(
+            thread_comment_time(item) > (disposition_time or "")
+            for item in (thread.get("comments") or {}).get("nodes") or []
+        )
+    )
+    if changed:
+        return (
+            False,
+            (),
+            (
+                "review thread changed after its classification: "
+                + ", ".join(changed),
+            ),
         )
 
     blocking_items = tuple(
@@ -1273,11 +1303,14 @@ def main() -> int:
 
         if args.mark_pending_only:
             if not args.dry_run:
+                # Stamp the pending mark too, so an older census that is
+                # still running cannot publish over it.
                 github.publish_gate(
                     head_sha,
                     "pending",
                     f"PR #{number} feedback gate: PREPARING",
-                    f"head={head_sha}\nstate=pending",
+                    f"head={head_sha}\nstate=pending\n"
+                    f"census_started={utc_now()}",
                     "Validation has started; stale success is invalidated.",
                 )
             continue

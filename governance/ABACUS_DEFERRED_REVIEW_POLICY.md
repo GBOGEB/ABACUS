@@ -64,6 +64,11 @@ Every unresolved thread must appear in `items` as S0, S1, S2, or S3.
 S0/S1 remains blocking. If S2 is present, or either Codex review is deferred,
 `trackingIssue` is mandatory.
 
+A classification covers only the thread content it was made against. If any
+comment in an unresolved thread is created or edited after the disposition
+comment was last updated, the deferral is invalid until the disposition is
+re-issued.
+
 The open tracking issue must be opened by a trusted repository collaborator
 (OWNER, MEMBER or COLLABORATOR) and contain:
 
