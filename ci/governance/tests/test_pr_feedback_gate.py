@@ -653,6 +653,8 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertTrue(evidence[0])
         for late in (
             {"createdAt": "2026-10-11T15:05:00Z"},
+            # Same second as the disposition: cannot prove it came first.
+            {"createdAt": "2026-10-11T15:00:00Z"},
             {
                 "createdAt": "2026-10-11T14:00:00Z",
                 "lastEditedAt": "2026-10-11T15:05:00Z",
@@ -909,9 +911,11 @@ class FeedbackGateTests(unittest.TestCase):
             "src/dmaic/federation.py",
             "docs/api/metrics.json",
             "handover/pipelines/SAMPLE_MARKDOWN_PIPELINE.md",
+            # SVG can carry script and docs/** deploys to Pages.
+            "docs/img/flow.SVG",
         ):
             self.assertTrue(gate.security_sensitive_change([path]), path)
-        for path in ("README.md", "docs/guide.rst", "docs/img/flow.SVG"):
+        for path in ("README.md", "docs/guide.rst", "docs/img/flow.PNG"):
             self.assertFalse(gate.security_sensitive_change([path]), path)
 
     def test_tracking_issue_change_recensuses_only_named_prs(self):
@@ -1020,6 +1024,11 @@ class FeedbackGateTests(unittest.TestCase):
         )
         # Not an Actions-supported trigger; declaring it would be a no-op.
         self.assertNotIn("pull_request_review_thread:", workflow)
+        # Every evaluator step shares the run's census stamp, including the
+        # failure publication.
+        self.assertEqual(
+            workflow.count('args+=(--census-started "$CENSUS_STARTED")'), 3
+        )
 
     def test_incomplete_file_census_fails_closed(self):
         records = [{"filename": "docs/note.md"}]
@@ -1128,6 +1137,14 @@ class FeedbackGateTests(unittest.TestCase):
             gate.census_started_from("a=1\ncensus_started=X\n"), "X"
         )
         self.assertIsNone(gate.census_started_from("state=pending"))
+
+    def test_census_stamps_are_fixed_width(self):
+        stamp = gate.utc_now()
+        self.assertEqual(gate.census_started_arg(stamp), stamp)
+        self.assertRegex(stamp, r"\.\d{6}Z$")
+        for bad in ("2026-10-11T15:00:01Z", "yesterday"):
+            with self.assertRaises(gate.argparse.ArgumentTypeError):
+                gate.census_started_arg(bad)
 
 
 if __name__ == "__main__":

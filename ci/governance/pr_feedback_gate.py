@@ -486,8 +486,22 @@ def thread_comment_time(comment: dict[str, Any]) -> str:
     )
 
 
+CENSUS_STARTED_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+CENSUS_STARTED_PATTERN = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$")
+
+
 def utc_now() -> str:
-    return dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
+    # Fixed width (always six fractional digits) so census stamps order
+    # correctly as strings; isoformat() drops the fraction at .000000.
+    return dt.datetime.now(dt.UTC).strftime(CENSUS_STARTED_FORMAT)
+
+
+def census_started_arg(value: str) -> str:
+    if not CENSUS_STARTED_PATTERN.match(value):
+        raise argparse.ArgumentTypeError(
+            f"expected UTC timestamp like 2026-10-11T15:00:01.000000Z: {value}"
+        )
+    return value
 
 
 def census_started_from(summary: str) -> str | None:
@@ -641,7 +655,6 @@ NON_SENSITIVE_SUFFIXES = (
     ".jpg",
     ".jpeg",
     ".gif",
-    ".svg",
     ".pdf",
 )
 
@@ -906,7 +919,9 @@ def review_deferral_evidence(
         thread["id"]
         for thread in unresolved_threads
         if any(
-            thread_comment_time(item) > (disposition_time or "")
+            # Ties are rejected: timestamps have second precision, so a
+            # comment edited in the same second may postdate the disposition.
+            thread_comment_time(item) >= (disposition_time or "")
             for item in (thread.get("comments") or {}).get("nodes") or []
         )
     )
@@ -1307,6 +1322,10 @@ def main() -> int:
     parser.add_argument("--event-path", type=Path)
     parser.add_argument("--pr-number", type=int)
     parser.add_argument("--dry-run", action="store_true")
+    # One stamp for the whole workflow run, so the pending mark, the result
+    # and a failure publication from the same run all order against
+    # overlapping runs by when that run started.
+    parser.add_argument("--census-started", type=census_started_arg)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--mark-pending-only", action="store_true")
     mode.add_argument("--mark-failure-only", action="store_true")
@@ -1335,6 +1354,7 @@ def main() -> int:
         if pull.get("base", {}).get("ref") != "main":
             continue
         head_sha = pull["head"]["sha"]
+        census_started = args.census_started or utc_now()
 
         if args.mark_pending_only:
             if not args.dry_run:
@@ -1345,8 +1365,9 @@ def main() -> int:
                     "pending",
                     f"PR #{number} feedback gate: PREPARING",
                     f"head={head_sha}\nstate=pending\n"
-                    f"census_started={utc_now()}",
+                    f"census_started={census_started}",
                     "Validation has started; stale success is invalidated.",
+                    census_started=census_started,
                 )
             continue
 
@@ -1356,12 +1377,13 @@ def main() -> int:
                     head_sha,
                     "failure",
                     f"PR #{number} feedback gate: EVALUATOR FAILED",
-                    f"head={head_sha}\nstate=failure",
+                    f"head={head_sha}\nstate=failure\n"
+                    f"census_started={census_started}",
                     "The feedback-gate workflow failed before a final result.",
+                    census_started=census_started,
                 )
             continue
 
-        census_started = utc_now()
         if not args.dry_run:
             github.publish_gate(
                 head_sha,
@@ -1370,6 +1392,7 @@ def main() -> int:
                 f"head={head_sha}\nstate=pending\n"
                 f"census_started={census_started}",
                 "Current-head evidence census is in progress.",
+                census_started=census_started,
             )
 
         try:
@@ -1400,8 +1423,10 @@ def main() -> int:
                     head_sha,
                     "failure",
                     f"PR #{number} feedback gate: EVALUATION ERROR",
-                    f"head={head_sha}\nstate=failure",
+                    f"head={head_sha}\nstate=failure\n"
+                    f"census_started={census_started}",
                     f"Evidence evaluation aborted: {exc}",
+                    census_started=census_started,
                 )
             raise
     return 0
