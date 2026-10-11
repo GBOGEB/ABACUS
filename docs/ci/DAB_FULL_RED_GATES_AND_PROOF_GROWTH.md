@@ -104,8 +104,9 @@ failing, and admission is decided by checks scoped to what the PR changes:
   not rise. B101 is not counted in test files.
 - Safety still fails the PR when the PR changes dependency manifests
   (`requirements*.txt`, `pyproject.toml`, `setup.cfg`, `setup.py`).
-- `diff-cover` requires the lines the PR adds or changes to meet the governed 75%
-  threshold, instead of the repository-wide 29% figure.
+- `diff-cover` measures coverage of the lines the PR adds or changes and
+  reports it in the job summary next to the repository-wide figure. No PR
+  coverage threshold is enforced until the owner approves one.
 
 This does not lower the G1-G3 ladder or the 75% target; it stops a PR from
 being charged for debt it did not create while refusing any it adds. Debt

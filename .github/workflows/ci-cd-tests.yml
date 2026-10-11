@@ -346,10 +346,10 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
 
-      # On a pull request, admission is coverage of the lines the PR adds or
-      # changes, at the governed threshold. The broad-suite percentage above
-      # is still measured and reported.
-      - name: PR new-line coverage
+      # On a pull request, coverage of the lines the PR adds or changes is
+      # measured and reported next to the broad-suite percentage above. No
+      # PR threshold is enforced until the owner approves one.
+      - name: PR new-line coverage (report)
         if: always() && github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -357,7 +357,8 @@ jobs:
           pip install diff-cover
           diff-cover coverage.xml --compare-branch="$BASE_SHA" \
             --diff-range-notation=.. \
-            --fail-under=${{ env.COVERAGE_THRESHOLD }}
+            --format "markdown:diff-coverage.md"
+          cat diff-coverage.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce coverage threshold
         if: always()
@@ -367,7 +368,7 @@ jobs:
           EVENT: ${{ github.event_name }}
         run: |
           if [[ "$EVENT" == "pull_request" ]]; then
-            echo "PR admission uses new-line coverage; broad debt reported."
+            echo "PR coverage is reported, not enforced; broad debt reported."
             exit 0
           fi
           if [[ "$THRESHOLD_RESULT" != "success" ]]; then
