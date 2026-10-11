@@ -48,12 +48,11 @@ permissions:
   issues: read
   pull-requests: read
 
-concurrency:
-  group: >-
-    pr-feedback-gate-${{ github.event.issue.number ||
-    github.event.pull_request.number || github.event.workflow_run.head_sha ||
-    'sweep' }}
-  cancel-in-progress: true
+# No workflow-level concurrency group. A run keyed on the triggering issue,
+# PR or commit could be cancelled or replaced by an unrelated no-op event for
+# the same key (for example a public comment on a deferral tracking issue)
+# before it marked its PRs pending. Serialization is per PR, on the evaluate
+# job below.
 
 jobs:
   route:

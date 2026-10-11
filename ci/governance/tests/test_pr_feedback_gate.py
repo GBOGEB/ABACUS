@@ -1126,6 +1126,10 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(
             workflow.count('args+=(--pr-number "$PR_NUMBER")'), 3
         )
+        # A no-op event must never cancel or displace a run that has PRs to
+        # re-census, so nothing may cancel in-progress runs.
+        self.assertNotIn("cancel-in-progress: true", workflow)
+        self.assertEqual(workflow.count("concurrency:"), 1)
 
     def test_list_prs_routes_only_open_main_pulls(self):
         class FakeGitHub:
