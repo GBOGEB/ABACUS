@@ -1207,6 +1207,11 @@ def event_pr_numbers(
     issue = event.get("issue")
     if issue and issue.get("pull_request"):
         return [int(issue["number"])]
+    if issue and event.get("comment") is not None:
+        # A comment on a plain issue. Deferral evidence lives in the issue
+        # body, and anyone can comment on a public issue, so comment churn
+        # must not be able to hold a PR's gate pending.
+        return []
     if issue:
         # A plain issue changed (e.g. a deferral tracking issue was closed or
         # edited). Re-census only the PRs a trusted tracking issue names, in

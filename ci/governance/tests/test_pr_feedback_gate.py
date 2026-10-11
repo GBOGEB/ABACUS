@@ -907,6 +907,18 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(
             gate.event_pr_numbers(FakeGitHub(), untrusted_issue, None), []
         )
+        public_comment = {
+            "action": "created",
+            "issue": {
+                "number": 1849,
+                "author_association": "OWNER",
+                "body": marker,
+            },
+            "comment": {"author_association": "NONE", "body": "spam"},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), public_comment, None), []
+        )
 
     def test_workflow_subscribes_to_tracking_issue_lifecycle(self):
         workflow = (
