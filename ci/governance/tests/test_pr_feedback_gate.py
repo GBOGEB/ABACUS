@@ -565,11 +565,25 @@ class FeedbackGateTests(unittest.TestCase):
              "created_at": "2026-10-11T08:00:00Z", "pull_requests": [{"number": 7}]},
         ]
         self.assertEqual(
-            gate.head_first_seen_at(runs, self.HEAD, 7), "2026-10-11T19:00:00Z"
+            gate.head_current_since(runs, self.HEAD, 7), "2026-10-11T19:05:00Z"
+        )
+
+    def test_force_push_back_to_old_sha_rebinds_to_new_transition(self):
+        # A ran at 18:00, B got an outage at 18:30, PR force-pushed back to A
+        # at 19:00 (fresh runs). The 18:30 outage must not cover A.
+        runs = [
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        since = gate.head_current_since(runs, self.HEAD, 7)
+        self.assertFalse(
+            gate.codex_unavailable([self.outage(at="2026-10-11T18:30:00Z")], since)
         )
 
     def test_no_server_head_time_keeps_fallback_closed(self):
-        self.assertEqual(gate.head_first_seen_at([], self.HEAD, 7), "")
+        self.assertEqual(gate.head_current_since([], self.HEAD, 7), "")
         self.assertFalse(gate.codex_unavailable([self.outage()], ""))
 
     def test_review_quoting_outage_text_is_not_an_outage(self):
