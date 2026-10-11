@@ -82,6 +82,32 @@ def test_unchanged_files_are_out_of_scope(repo):
 
 
 @needs_tools
+def test_rename_is_compared_against_its_original_path(repo):
+    base = commit(repo, {"pkg/old.py": DIRTY_FORMAT + BANDIT_HIT})
+    git(repo, "mv", "pkg/old.py", "pkg/new_name.py")
+    git(repo, "commit", "-q", "-m", "rename")
+    report = ratchet_mod.ratchet(base, TOOLS)
+    assert report["changed_python_files"] == ["pkg/new_name.py"]
+    assert report["renamed_from"] == {"pkg/new_name.py": "pkg/old.py"}
+    assert report["added_debt"] == []
+
+
+@needs_tools
+def test_rename_that_adds_debt_still_fails(repo):
+    base = commit(repo, {"pkg/old.py": CLEAN + "\n\nVALUE = 1\n"})
+    git(repo, "mv", "pkg/old.py", "pkg/new_name.py")
+    (repo / "pkg" / "new_name.py").write_text(
+        CLEAN + "\n\nVALUE = 1\n\n\ndef run(cmd):\n    return eval(cmd)\n",
+        encoding="utf-8",
+    )
+    commit(repo, {})
+    report = ratchet_mod.ratchet(base, TOOLS)
+    assert report["renamed_from"] == {"pkg/new_name.py": "pkg/old.py"}
+    added = {(row["path"], row["tool"]) for row in report["added_debt"]}
+    assert added == {("pkg/new_name.py", "bandit")}
+
+
+@needs_tools
 def test_asserts_in_tests_are_not_bandit_debt(repo):
     base = commit(repo, {"tests/test_x.py": "def test_a():\n    pass\n"})
     commit(repo, {"tests/test_x.py": "def test_a():\n    assert 1 + 1 == 2\n"})

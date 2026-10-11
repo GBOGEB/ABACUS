@@ -50,17 +50,40 @@ def git(*args: str) -> str:
     ).stdout
 
 
-def changed_python_files(base: str) -> list[str]:
-    output = git("diff", "--name-only", "--diff-filter=ACMR", base, "HEAD", "--")
-    return sorted(path for path in output.splitlines() if path.endswith(".py"))
+def changed_python_files(base: str) -> dict[str, str]:
+    """Map each changed head path to the path it had at the base.
+
+    A renamed file maps to its original path, so it is compared with its own
+    base content rather than treated as new.
+    """
+    output = git(
+        "diff", "--name-status", "-z", "-M", "--diff-filter=ACMR", base, "HEAD", "--"
+    )
+    fields = output.split("\0")
+    changed = {}
+    index = 0
+    while index < len(fields) and fields[index]:
+        status = fields[index]
+        if status[0] in "RC":
+            old, new = fields[index + 1], fields[index + 2]
+            if status[0] == "C":
+                # A copy is a new file: its debt is the PR's.
+                old = new
+            index += 3
+        else:
+            old = new = fields[index + 1]
+            index += 2
+        if new.endswith(".py"):
+            changed[new] = old
+    return dict(sorted(changed.items()))
 
 
-def base_snapshot(base: str, paths: list[str], target: Path) -> list[str]:
-    """Write the base version of each path that existed there into target."""
+def base_snapshot(base: str, paths: dict[str, str], target: Path) -> list[str]:
+    """Write each path's base content into target, under its head path."""
     existing = []
-    for path in paths:
+    for path, base_path in paths.items():
         result = subprocess.run(  # nosec B603 B607
-            ["git", "show", f"{base}:{path}"],
+            ["git", "show", f"{base}:{base_path}"],
             cwd=ROOT,
             capture_output=True,
             check=False,
@@ -209,7 +232,8 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
         "schema": "abacus-pr-debt-ratchet/1.0.0",
         "base": base,
         "tools": list(tools),
-        "changed_python_files": paths,
+        "changed_python_files": list(paths),
+        "renamed_from": {new: old for new, old in paths.items() if new != old},
         "rows": rows,
         "added_debt": added,
         "status": "FAIL" if added else "PASS",
