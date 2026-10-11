@@ -78,10 +78,14 @@ jobs:
         run: python -m pip install pytest pyyaml
 
       # Rewrites the receipt in the workspace from the member's current main.
+      # The committed receipt is removed first, so a failed probe cannot
+      # upload it as if it were this run's evidence.
       - name: Probe cryoplant-project live
         env:
           GH_TOKEN: ${{ secrets.CRYOPLANT_FEDERATION_TOKEN }}
-        run: python -m integration.cryoplant_project.scripts.reciprocal_smoke
+        run: |
+          rm -f integration/cryoplant_project/federation/reciprocal_smoke.json
+          python -m integration.cryoplant_project.scripts.reciprocal_smoke
 
       - name: Check the fresh receipt
         env:
@@ -97,4 +101,4 @@ jobs:
         with:
           name: cryoplant-reciprocal-smoke
           path: integration/cryoplant_project/federation/reciprocal_smoke.json
-          if-no-files-found: error
+          if-no-files-found: warn
