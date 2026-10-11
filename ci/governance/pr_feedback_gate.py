@@ -402,7 +402,8 @@ class GitHub:
         title: str,
         summary: str,
         text: str,
-    ) -> None:
+        census_started: str | None = None,
+    ) -> bool:
         existing = [
             check
             for check in self.check_runs(head_sha)
@@ -414,6 +415,15 @@ class GitHub:
             or "",
             reverse=True,
         )
+        if census_started is not None and existing:
+            # Runs for one PR can overlap (tracking-issue events use their
+            # own concurrency group). Never let an older census overwrite a
+            # result from a census that started later.
+            published = census_started_from(
+                (existing[0].get("output") or {}).get("summary") or ""
+            )
+            if published is not None and published > census_started:
+                return False
         now = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
         output = {
             "title": title[:255],
@@ -463,6 +473,16 @@ class GitHub:
                 f"/repos/{self.repository}/check-runs",
                 payload,
             )
+        return True
+
+
+def utc_now() -> str:
+    return dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
+
+
+def census_started_from(summary: str) -> str | None:
+    match = re.search(r"^census_started=(\S+)$", summary, re.MULTILINE)
+    return match.group(1) if match else None
 
 
 def is_trusted_codex_comment(comment: dict[str, Any]) -> bool:
@@ -1268,12 +1288,14 @@ def main() -> int:
                 )
             continue
 
+        census_started = utc_now()
         if not args.dry_run:
             github.publish_gate(
                 head_sha,
                 "pending",
                 f"PR #{number} feedback gate: EVALUATING",
-                f"head={head_sha}\nstate=pending",
+                f"head={head_sha}\nstate=pending\n"
+                f"census_started={census_started}",
                 "Current-head evidence census is in progress.",
             )
 
@@ -1282,16 +1304,23 @@ def main() -> int:
             if evidence is None:
                 continue
             title, summary, text = render(number, evidence)
+            summary += f"\ncensus_started={census_started}"
             print(summary)
             print(text)
             if not args.dry_run:
-                github.publish_gate(
+                published = github.publish_gate(
                     evidence.head_sha,
                     evidence.state,
                     title,
                     summary,
                     text,
+                    census_started=census_started,
                 )
+                if not published:
+                    print(
+                        "Skipped publishing: a newer census already "
+                        "published for this head"
+                    )
         except Exception as exc:
             if not args.dry_run:
                 github.publish_gate(

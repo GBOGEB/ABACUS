@@ -924,10 +924,8 @@ class FeedbackGateTests(unittest.TestCase):
             "issue_comment:\n    types: [created, edited, deleted]",
             workflow,
         )
-        self.assertIn(
-            "pull_request_review_thread:\n    types: [resolved, unresolved]",
-            workflow,
-        )
+        # Not an Actions-supported trigger; declaring it would be a no-op.
+        self.assertNotIn("pull_request_review_thread:", workflow)
 
     def test_incomplete_file_census_fails_closed(self):
         records = [{"filename": "docs/note.md"}]
@@ -984,6 +982,58 @@ class FeedbackGateTests(unittest.TestCase):
                 any(workflow in item for item in evidence.ci_pending),
                 workflow,
             )
+
+    def test_older_census_never_overwrites_newer_result(self):
+        calls = []
+
+        class FakeGitHub(gate.GitHub):
+            def __init__(self, published_summary):
+                self.repository = "GBOGEB/ABACUS"
+                self.published_summary = published_summary
+
+            def check_runs(self, head_sha):
+                return [
+                    {
+                        "id": 1,
+                        "name": gate.GATE_NAME,
+                        "status": "completed",
+                        "started_at": "2026-10-11T15:00:00Z",
+                        "output": {"summary": self.published_summary},
+                    }
+                ]
+
+            def request(self, method, path, payload=None):
+                calls.append((method, path, payload))
+                return {}
+
+        newer = "state=failure\ncensus_started=2026-10-11T15:00:05Z"
+        self.assertFalse(
+            FakeGitHub(newer).publish_gate(
+                "a" * 40,
+                "success",
+                "t",
+                "s",
+                "x",
+                census_started="2026-10-11T15:00:01Z",
+            )
+        )
+        self.assertEqual(calls, [])
+        older = "state=failure\ncensus_started=2026-10-11T14:59:00Z"
+        self.assertTrue(
+            FakeGitHub(older).publish_gate(
+                "a" * 40,
+                "success",
+                "t",
+                "s",
+                "x",
+                census_started="2026-10-11T15:00:01Z",
+            )
+        )
+        self.assertEqual(calls[0][0], "PATCH")
+        self.assertEqual(
+            gate.census_started_from("a=1\ncensus_started=X\n"), "X"
+        )
+        self.assertIsNone(gate.census_started_from("state=pending"))
 
 
 if __name__ == "__main__":

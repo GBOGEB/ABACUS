@@ -14,11 +14,6 @@ on:
     types: [submitted, dismissed]
   pull_request_review_comment:
     types: [created, edited, deleted]
-  # Resolving or unresolving a thread emits no comment/review event, so
-  # without this a re-opened thread would leave a stale green check until
-  # the scheduled sweep.
-  pull_request_review_thread:
-    types: [resolved, unresolved]
   workflow_run:
     workflows:
       - CI - ABACUS Matrix
