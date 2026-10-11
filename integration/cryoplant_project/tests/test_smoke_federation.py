@@ -13,6 +13,7 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 (pytest -m smoke) as well as the full suite.
 """
 
+import json
 from pathlib import Path
 
 import pytest
@@ -103,3 +104,62 @@ def test_assimilate_returns_ok():
         f"Expected status 'ok', got '{result.get('status')}'. "
         f"Details: {result.get('details')}"
     )
+
+
+_RECIPROCAL_EVIDENCE = (
+    _REPO_ROOT / "integration" / "cryoplant_project" / "federation"
+    / "reciprocal_smoke.json"
+)
+
+
+@pytest.mark.smoke
+def test_active_membership_has_reciprocal_evidence():
+    """An active cryoplant member needs a passing ABACUS-to-cryoplant run.
+
+    The tests above only read this repository. Activation also requires
+    scripts/reciprocal_smoke.py to have contacted cryoplant-project itself;
+    its recorded result must be ok in that direction.
+    """
+    import yaml
+
+    data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
+    entry = next(
+        m for m in data["federation"]["member_repos"]
+        if m.get("name") == "GBOGEB/cryoplant-project"
+    )
+    if entry.get("status") != "active":
+        return
+    evidence = json.loads(_RECIPROCAL_EVIDENCE.read_text(encoding="utf-8"))
+    assert evidence["direction"] == (
+        "GBOGEB/ABACUS -> GBOGEB/cryoplant-project"
+    )
+    assert evidence["status"] == "ok"
+    assert evidence["checks"] and all(evidence["checks"].values())
+    assert len(evidence["member_main_sha"]) == 40
+
+
+@pytest.mark.smoke
+def test_reciprocal_checks_reject_inactive_or_foreign_member():
+    from integration.cryoplant_project.scripts.reciprocal_smoke import (
+        checks_for,
+    )
+
+    good = {
+        "federation": {
+            "moniker": "DELTA_1",
+            "status": "active",
+            "self": {
+                "repository": "GBOGEB/cryoplant-project",
+                "plane": "auxiliary",
+            },
+            "hub": {"runtime_plane": {"repository": "GBOGEB/ABACUS"}},
+        }
+    }
+    assert all(checks_for(good).values())
+    proposed = json.loads(json.dumps(good))
+    proposed["federation"]["status"] = "proposed"
+    assert not checks_for(proposed)["member_status_active"]
+    foreign = json.loads(json.dumps(good))
+    foreign["federation"]["hub"]["runtime_plane"]["repository"] = "x/y"
+    assert not checks_for(foreign)["runtime_hub_is_abacus"]
+    assert not any(checks_for({}).values())
