@@ -28,6 +28,18 @@ federation:
       - artifact_visualization
       - jupyter_based_reporting
 
+  # Activated 2026-10-11 (pairwise smoke from both directions); member
+  # manifest: integration/cryoplant_project/federation/manifest.yaml
+  auxiliary_planes:
+    - repository: GBOGEB/cryoplant-project
+      branch: main
+      role: cryoplant_engineering_auxiliary_plane
+      authority: CHILD_ENGINEERING_AUTHORITY
+      responsibilities:
+        - myrrha_qps_qplant_cryoplant_engineering_analyses
+        - binaries_segregation_policy
+        - bidirectional_smoke_warmup_against_secondary_repo_cluster
+
   federation_objectives:
     - recursive governance convergence
     - autonomous operational orchestration
