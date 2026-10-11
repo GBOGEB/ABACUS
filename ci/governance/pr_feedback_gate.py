@@ -332,6 +332,7 @@ class GitHub:
                   id
                   isResolved
                   comments(first: 100) {
+                    pageInfo { hasNextPage }
                     nodes {
                       databaseId
                       body
@@ -633,6 +634,9 @@ def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
 def security_sensitive_change(paths: list[str]) -> bool:
     sensitive_patterns = (
         ".github/workflows/**",
+        # Composite actions and scripts that workflows run with write tokens.
+        ".github/actions/**",
+        ".github/scripts/**",
         ".github/codeql/**",
         "ci/governance/**",
         "runtime/federation/**",
@@ -866,6 +870,24 @@ def review_deferral_evidence(
     # A classification covers the thread content it was made against. A
     # reply or edit after the disposition may raise the severity, so the
     # disposition must be at least as new as every comment it classifies.
+    truncated = sorted(
+        thread["id"]
+        for thread in unresolved_threads
+        if ((thread.get("comments") or {}).get("pageInfo") or {}).get(
+            "hasNextPage"
+        )
+    )
+    if truncated:
+        # Comments past the first page cannot be checked against the
+        # disposition, so fail closed rather than trust a partial thread.
+        return (
+            False,
+            (),
+            (
+                "review thread too long to verify its classification: "
+                + ", ".join(truncated),
+            ),
+        )
     disposition_time = comment.get("updated_at") or comment.get("created_at")
     changed = sorted(
         thread["id"]

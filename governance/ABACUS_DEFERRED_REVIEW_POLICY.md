@@ -130,6 +130,8 @@ and every conditional CI workflow is required:
 
 ```text
 .github/workflows/**
+.github/actions/**
+.github/scripts/**
 .github/codeql/**
 ci/governance/**
 runtime/federation/**
@@ -153,6 +155,13 @@ unresolved after the gate turns green leaves a stale success until the
 five-minute scheduled sweep. Keep the native setting enabled if that window
 is unacceptable, or bridge the webhook into `repository_dispatch` through a
 GitHub App before disabling it.
+
+Overlapping evaluator runs for one PR (for example a tracking-issue event and
+a CI `workflow_run`) are ordered by the `census_started` stamp on the check:
+a run never publishes over a result from a census that started later. The
+read and the write are separate API calls, so two runs that publish within
+the same instant can still race; the later census then corrects the check
+when it finishes its own evaluation.
 
 Do not remove the required `PR Feedback Gate` status check merely to bypass
 review debt.

@@ -677,6 +677,28 @@ class FeedbackGateTests(unittest.TestCase):
             self.assertFalse(evidence[0])
             self.assertIn("changed after its classification", evidence[2][0])
 
+        truncated_thread = [
+            {
+                "id": "THREAD-1",
+                "isResolved": False,
+                "comments": {
+                    "pageInfo": {"hasNextPage": True},
+                    "nodes": [{"createdAt": "2026-10-11T14:00:00Z"}],
+                },
+            }
+        ]
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [timed_comment],
+            truncated_thread,
+            False,
+            False,
+        )
+        self.assertFalse(evidence[0])
+        self.assertIn("too long to verify", evidence[2][0])
+
         unmarked_comment = dict(comment)
         unmarked_comment["body"] = comment["body"].replace(
             "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n",
@@ -877,6 +899,13 @@ class FeedbackGateTests(unittest.TestCase):
                 gate.changed_paths_from_files([{"filename": "docs/note.md"}])
             )
         )
+
+    def test_privileged_workflow_inputs_are_sensitive(self):
+        for path in (
+            ".github/scripts/security_dashboard.py",
+            ".github/actions/runtime-guard/action.yml",
+        ):
+            self.assertTrue(gate.security_sensitive_change([path]), path)
 
     def test_tracking_issue_change_recensuses_only_named_prs(self):
         class FakeGitHub:
