@@ -655,7 +655,6 @@ NON_SENSITIVE_SUFFIXES = (
     ".jpg",
     ".jpeg",
     ".gif",
-    ".pdf",
 )
 
 
