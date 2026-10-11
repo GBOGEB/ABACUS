@@ -43,7 +43,7 @@ CODEX_CODE_REVIEW=DEFERRED_BUDGET
 CODEX_SECURITY_REVIEW=DEFERRED_BUDGET
 ```
 
-A trusted repository collaborator records one exact-head disposition comment
+A collaborator with write access records one exact-head disposition comment
 on the PR. The machine-readable marker is:
 
 ```html
@@ -69,8 +69,8 @@ comment in an unresolved thread is created or edited after, or in the same
 second as, the disposition comment's last update, the deferral is invalid
 until the disposition is re-issued.
 
-The open tracking issue must be opened by a trusted repository collaborator
-(OWNER, MEMBER or COLLABORATOR) and contain:
+The open tracking issue must be opened by a repository collaborator with
+write access or higher and contain:
 
 ```html
 <!-- abacus-deferred-security:v1
@@ -122,16 +122,22 @@ head and create/update exact-head debt evidence.
 ## Sensitive control-plane exception
 
 Codex **security review** can be deferred only for PRs whose every changed
-path is non-executable content: `*.md`, `*.rst`, `*.png`, `*.jpg`, `*.jpeg`,
-or `*.gif`. Any other path is sensitive, including `*.svg` and `*.pdf`, which
-can carry script or active content and are published to GitHub Pages from
-`docs/**`. ABACUS runs many
-workflows with write tokens that execute repository code after merge
-(`.github/scripts/**`, `scripts/**`, installed packages), so a list of
-"privileged" paths cannot be kept complete; the classifier is an allowlist
-and fails closed. Allowlisted file types that are themselves executed stay
-sensitive: Markdown pipelines under `handover/pipelines/**` run through
-`scripts/markdown_exec_runner.py`.
+path is an inert raster image: `*.png`, `*.jpg`, `*.jpeg` or `*.gif`. Any
+other path is sensitive. ABACUS runs many workflows with write tokens that
+execute repository code after merge (`.github/scripts/**`, `scripts/**`,
+installed packages), so a list of "privileged" paths cannot be kept complete;
+the classifier is an allowlist and fails closed. Formats that look like
+content are sensitive because they are executed or published as active
+content: Markdown pipelines under `handover/pipelines/**` run through
+`scripts/markdown_exec_runner.py`; Pandoc builds (`book-build.yml`,
+`export-docs.yml`) pass raw HTML in `*.md`/`*.rst` into published HTML/EPUB;
+`*.svg` and `*.pdf` can carry script and are published to GitHub Pages from
+`docs/**`.
+
+A deferral marker and its tracking issue are accepted only from authors with
+write, maintain or admin permission on the repository, resolved through the
+collaborator-permission API. Author association alone is not enough: `MEMBER`
+and `COLLABORATOR` include read- and triage-only users.
 
 A renamed file is classified by both its new path and its previous path. If
 the PR file listing is incomplete (GitHub caps it at 3,000 files, so the
