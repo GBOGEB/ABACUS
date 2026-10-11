@@ -1,8 +1,15 @@
 name: cryoplant-project Federation Check
 
 # Validates the DELTA_1 auxiliary-plane integration between
-# GBOGEB/cryoplant-project and GBOGEB/ABACUS, including the recorded
-# ABACUS-to-cryoplant reciprocal smoke that an active membership requires.
+# GBOGEB/cryoplant-project and GBOGEB/ABACUS, including a live
+# ABACUS-to-cryoplant reciprocal probe that an active membership requires.
+#
+# The probe reads the private member repository, so it needs
+# CRYOPLANT_FEDERATION_TOKEN: a fine-grained, read-only token for
+# GBOGEB/cryoplant-project (contents and metadata), stored as a secret of
+# the cryoplant-federation environment so its protection rules decide which
+# runs may use it. Without the token the probe fails, and an active
+# membership fails with it.
 
 on:
   push:
@@ -19,6 +26,9 @@ on:
       - 'runtime/federation/codex-abacus-federation.yaml'
       - 'integration/cryoplant_project/**'
       - '.github/workflows/cryoplant-federation.yml'
+  schedule:
+    # Daily, so a membership revoked on the member side turns this red.
+    - cron: "17 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -43,7 +53,48 @@ jobs:
       - name: Install dependencies
         run: python -m pip install pytest pyyaml
 
-      - name: Run cryoplant-project integration smoke tests
+      - name: Run cryoplant-project local smoke tests
         run: >-
           python -m pytest integration/cryoplant_project/tests
           -m smoke -v --tb=short -p no:cacheprovider
+
+  reciprocal-probe:
+    name: Reciprocal Probe (ABACUS -> cryoplant-project)
+    runs-on: ubuntu-latest
+    environment: cryoplant-federation
+    steps:
+      - name: Checkout ABACUS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install pytest pyyaml
+
+      # Rewrites the receipt in the workspace from the member's current main.
+      - name: Probe cryoplant-project live
+        env:
+          GH_TOKEN: ${{ secrets.CRYOPLANT_FEDERATION_TOKEN }}
+        run: python -m integration.cryoplant_project.scripts.reciprocal_smoke
+
+      - name: Check the fresh receipt
+        env:
+          RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: "900"
+        run: >-
+          python -m pytest integration/cryoplant_project/tests
+          -k reciprocal_evidence -v --tb=short -p no:cacheprovider
+
+      - name: Upload reciprocal receipt
+        if: always()
+        # actions/upload-artifact v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: cryoplant-reciprocal-smoke
+          path: integration/cryoplant_project/federation/reciprocal_smoke.json
+          if-no-files-found: error

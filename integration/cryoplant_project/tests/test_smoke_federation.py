@@ -14,6 +14,8 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 """
 
 import json
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -140,6 +142,28 @@ def test_active_membership_has_reciprocal_evidence():
     assert evidence["status"] == "ok"
     assert evidence["checks"] and all(evidence["checks"].values())
     assert len(evidence["member_main_sha"]) == 40
+    # The Reciprocal Probe CI job rewrites the receipt from the member's
+    # current main just before this runs and sets a maximum age, so a stale
+    # committed receipt cannot stand in for a live check there.
+    max_age = os.environ.get("RECIPROCAL_RECEIPT_MAX_AGE_SECONDS")
+    if max_age:
+        checked_at = datetime.strptime(
+            evidence["checked_at"], "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=UTC)
+        age = (datetime.now(UTC) - checked_at).total_seconds()
+        assert 0 <= age <= int(max_age), f"reciprocal receipt is {age:.0f}s old"
+
+
+@pytest.mark.smoke
+def test_stale_receipt_fails_when_a_maximum_age_is_set(monkeypatch, tmp_path):
+    stale = json.loads(_RECIPROCAL_EVIDENCE.read_text(encoding="utf-8"))
+    stale["checked_at"] = "2020-01-01T00:00:00Z"
+    receipt = tmp_path / "reciprocal_smoke.json"
+    receipt.write_text(json.dumps(stale), encoding="utf-8")
+    monkeypatch.setitem(globals(), "_RECIPROCAL_EVIDENCE", receipt)
+    monkeypatch.setenv("RECIPROCAL_RECEIPT_MAX_AGE_SECONDS", "900")
+    with pytest.raises(AssertionError, match="reciprocal receipt is"):
+        test_active_membership_has_reciprocal_evidence()
 
 
 @pytest.mark.smoke
