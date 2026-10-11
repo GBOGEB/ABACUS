@@ -77,6 +77,13 @@ jobs:
         id: pylint
         run: pylint **/*.py --exit-zero
 
+      # The ratchet's tests need the real lint tools, which this job has
+      # and the unit-test matrix does not.
+      - name: Test PR new-debt ratchet
+        run: |
+          pip install pytest bandit
+          python -m pytest tests/test_ci_pr_debt_ratchet.py -v
+
       - name: Fetch PR base for new-debt ratchet
         if: github.event_name == 'pull_request'
         env:

@@ -22,6 +22,7 @@ schedules and manual runs; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess  # nosec B404
 import sys
@@ -73,6 +74,22 @@ def base_snapshot(base: str, paths: list[str], target: Path) -> list[str]:
     return existing
 
 
+class ToolError(RuntimeError):
+    """A lint tool could not produce a result; the ratchet fails closed."""
+
+
+def require_tools(tools: tuple[str, ...]) -> None:
+    missing = [tool for tool in tools if importlib.util.find_spec(tool) is None]
+    if missing:
+        raise ToolError(f"not installed: {', '.join(missing)}")
+
+
+def tool_error(tool: str, path: str, result: subprocess.CompletedProcess) -> ToolError:
+    detail = (result.stderr or result.stdout or "").strip().splitlines()
+    tail = detail[-1] if detail else "no output"
+    return ToolError(f"{tool} exited {result.returncode} on {path}: {tail}")
+
+
 def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
     # Lint tools run through sys.executable with fixed arguments.
     return subprocess.run(  # nosec B603
@@ -98,10 +115,11 @@ def formatting_debt(tool: str, root: Path, path: str) -> int:
             path,
         ]
     result = run(cmd, root)
-    if result.returncode not in (0, 1):
-        # 123 (black) means it could not parse the file; count it as debt
-        # rather than as clean.
+    if tool == "black" and result.returncode == 123:
+        # Black could not parse the file: a syntax error is debt, not clean.
         return 1
+    if result.returncode not in (0, 1):
+        raise tool_error(tool, path, result)
     return result.returncode
 
 
@@ -117,7 +135,12 @@ def flake8_debt(root: Path, path: str) -> int:
         ],
         root,
     )
-    return len([line for line in result.stdout.splitlines() if line.strip()])
+    findings = [line for line in result.stdout.splitlines() if line.strip()]
+    # Flake8 exits 1 with findings; any other non-zero exit, or 1 with no
+    # findings printed, means it did not run (bad config, crash).
+    if result.returncode not in (0, 1) or (result.returncode == 1 and not findings):
+        raise tool_error("flake8", path, result)
+    return len(findings)
 
 
 def is_test_file(path: str) -> bool:
@@ -137,13 +160,17 @@ def bandit_debt(root: Path, path: str) -> int:
         # in test code.
         cmd += ["--skip", "B101"]
     result = run([*cmd, path], root)
+    if result.returncode not in (0, 1):
+        raise tool_error("bandit", path, result)
     try:
-        payload = json.loads(result.stdout or "{}")
-    except json.JSONDecodeError:
-        return 1
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise tool_error("bandit", path, result) from exc
+    results = payload.get("results", [])
     if payload.get("errors"):
-        return len(payload["results"]) + 1
-    return len(payload.get("results", []))
+        # Bandit could not scan the file (usually a syntax error): debt.
+        return len(results) + 1
+    return len(results)
 
 
 def debt(tool: str, root: Path, path: str) -> int:
@@ -155,6 +182,7 @@ def debt(tool: str, root: Path, path: str) -> int:
 
 
 def ratchet(base: str, tools: tuple[str, ...]) -> dict:
+    require_tools(tools)
     paths = changed_python_files(base)
     rows = []
     with tempfile.TemporaryDirectory() as scratch:
@@ -212,7 +240,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--summary", type=Path)
     args = parser.parse_args(argv)
 
-    report = ratchet(args.base, tuple(args.tools))
+    try:
+        report = ratchet(args.base, tuple(args.tools))
+    except ToolError as exc:
+        print(f"::error::PR new-debt ratchet could not run: {exc}")
+        return 2
     text = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
