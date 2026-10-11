@@ -42,7 +42,10 @@ def api(path: str, token: str) -> dict:
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
+    # Fixed https://api.github.com base; no caller-controlled scheme.
+    with urllib.request.urlopen(  # nosec B310
+        request, timeout=30
+    ) as response:
         return json.load(response)
 
 
