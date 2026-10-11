@@ -5,7 +5,7 @@ Lossless burn-down of stale branches, census of 2026-10-11 against `main`.
 are kept and not listed.
 
 | List | Mode | Branches |
-|---|---|---|
+| --- | --- | --- |
 | `W1_DELETE_MERGED_20261011.tsv` | delete | 134 |
 | `W2_ARCHIVE_SUPERSEDED_20261011.tsv` | archive | 191 |
 | `W3_ARCHIVE_EVOLVED_20261011.tsv` | archive | 105 |
@@ -24,4 +24,5 @@ Restore any branch with the command in the run's receipt:
 `git push origin <sha>:refs/heads/<branch>` (for archived ones the tag also works:
 `git push origin archive/<branch>:refs/heads/<branch>`).
 
-Run `W4_ARCHIVE_NEVER_LANDED` only after its branches are reviewed for unlanded fixes.
+Run `W4_ARCHIVE_NEVER_LANDED` only after its branches are reviewed for
+unlanded fixes.
