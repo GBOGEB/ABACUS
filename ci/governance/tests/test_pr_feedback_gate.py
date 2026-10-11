@@ -489,14 +489,18 @@ class FeedbackGateTests(unittest.TestCase):
             '"reason":"codex_unavailable","reviewer":"GBOGEB"}' % (head or self.HEAD)
         )
 
-    def outage(self):
-        return self.trusted_codex_comment(
-            "You have reached your Codex usage limits for code reviews."
+    HEAD_AT = "2026-10-11T19:00:00Z"
+
+    def outage(self, at="2026-10-11T19:30:00Z"):
+        comment = self.trusted_codex_comment(
+            "You have reached your Codex usage limits for code reviews.", at
         )
+        comment["created_at"] = at
+        return comment
 
     def test_owner_attestation_accepted_for_exact_head(self):
         comments = [self.outage(), self.owner_comment(self.valid_payload())]
-        self.assertTrue(gate.codex_unavailable(comments))
+        self.assertTrue(gate.codex_unavailable(comments, self.HEAD_AT))
         self.assertTrue(gate.owner_attestation_complete(comments, self.HEAD))
 
     def test_owner_attestation_rejects_other_head(self):
@@ -542,7 +546,30 @@ class FeedbackGateTests(unittest.TestCase):
             "body": "You have reached your Codex usage limits for code reviews.",
             "user": {"login": "GBOGEB", "id": 1},
         }
-        self.assertFalse(gate.codex_unavailable([forged]))
+        self.assertFalse(gate.codex_unavailable([forged], self.HEAD_AT))
+
+    def test_outage_from_earlier_push_does_not_carry_over(self):
+        stale = self.outage(at="2026-10-11T18:00:00Z")
+        self.assertFalse(gate.codex_unavailable([stale], self.HEAD_AT))
+
+    def test_later_codex_activity_cancels_outage(self):
+        recovered = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary --> review running",
+            "2026-10-11T19:45:00Z",
+        )
+        self.assertFalse(
+            gate.codex_unavailable([self.outage(), recovered], self.HEAD_AT)
+        )
+
+    def test_attestation_must_postdate_the_outage(self):
+        early = self.owner_comment(
+            self.valid_payload(), created_at="2026-10-11T19:10:00Z"
+        )
+        self.assertFalse(
+            gate.owner_attestation_complete(
+                [early], self.HEAD, not_before="2026-10-11T19:30:00Z"
+            )
+        )
 
     def test_evaluate_uses_attestation_only_during_outage(self):
         class FakeGitHub:
@@ -563,6 +590,9 @@ class FeedbackGateTests(unittest.TestCase):
 
             def issue(self, number):
                 return {"state": "open"}
+
+            def commit_date(self, sha):
+                return FeedbackGateTests.HEAD_AT
 
         pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
         attested = self.owner_comment(self.valid_payload())
