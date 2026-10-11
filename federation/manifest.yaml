@@ -34,7 +34,7 @@ federation:
       spec_ref: integration/cryoplant_project/federation/manifest.yaml
       responsibility:
         - myrrha_qps_qplant_cryoplant_engineering_analyses
-        - binaries_segregation_policy
+        - binaries_segregation_policy_and_manifest_generator
         - bidirectional_smoke_warmup_against_secondary_repo_cluster
 
   member_repos:

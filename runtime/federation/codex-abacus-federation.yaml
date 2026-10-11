@@ -37,7 +37,7 @@ federation:
       authority: CHILD_ENGINEERING_AUTHORITY
       responsibilities:
         - myrrha_qps_qplant_cryoplant_engineering_analyses
-        - binaries_segregation_policy
+        - binaries_segregation_policy_and_manifest_generator
         - bidirectional_smoke_warmup_against_secondary_repo_cluster
 
   federation_objectives:
