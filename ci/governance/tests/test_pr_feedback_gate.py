@@ -989,6 +989,9 @@ class FeedbackGateTests(unittest.TestCase):
             def open_pulls(self):
                 raise AssertionError("issue events must not sweep all PRs")
 
+            def can_write(self, login):
+                return login == "owner"
+
         marker = (
             '<!-- abacus-deferred-security:v1 {"pr": 1847, '
             '"headSha": "abc", "status": "OPEN"} -->'
@@ -999,6 +1002,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "number": 1849,
                 "state": "closed",
                 "author_association": "OWNER",
+                "user": {"login": "owner"},
                 "body": marker,
             },
         }
@@ -1011,6 +1015,7 @@ class FeedbackGateTests(unittest.TestCase):
             "issue": {
                 "number": 1849,
                 "author_association": "OWNER",
+                "user": {"login": "owner"},
                 "body": "debt cleared",
             },
             "changes": {"body": {"from": marker}},
@@ -1032,6 +1037,9 @@ class FeedbackGateTests(unittest.TestCase):
         class FakeGitHub:
             def open_pulls(self):
                 raise AssertionError("issue events must not sweep all PRs")
+
+            def can_write(self, login):
+                return login == "owner"
 
         marker = (
             '<!-- abacus-deferred-security:v1 {"pr": 1847, '
@@ -1058,6 +1066,18 @@ class FeedbackGateTests(unittest.TestCase):
         }
         self.assertEqual(
             gate.event_pr_numbers(FakeGitHub(), untrusted_issue, None), []
+        )
+        read_only_member = {
+            "action": "edited",
+            "issue": {
+                "number": 9,
+                "author_association": "MEMBER",
+                "user": {"login": "reader"},
+                "body": marker,
+            },
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), read_only_member, None), []
         )
         public_comment = {
             "action": "created",
