@@ -631,6 +631,52 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertTrue(evidence[0])
         self.assertEqual(evidence[1], ())
 
+        timed_comment = dict(comment, updated_at="2026-10-11T15:00:00Z")
+        classified_before = [
+            {
+                "id": "THREAD-1",
+                "isResolved": False,
+                "comments": {
+                    "nodes": [{"createdAt": "2026-10-11T14:00:00Z"}]
+                },
+            }
+        ]
+        evidence = gate.review_deferral_evidence(
+            FakeGitHub(issue_body),
+            42,
+            head,
+            [timed_comment],
+            classified_before,
+            False,
+            False,
+        )
+        self.assertTrue(evidence[0])
+        for late in (
+            {"createdAt": "2026-10-11T15:05:00Z"},
+            {
+                "createdAt": "2026-10-11T14:00:00Z",
+                "lastEditedAt": "2026-10-11T15:05:00Z",
+            },
+        ):
+            changed_after = [
+                {
+                    "id": "THREAD-1",
+                    "isResolved": False,
+                    "comments": {"nodes": [late]},
+                }
+            ]
+            evidence = gate.review_deferral_evidence(
+                FakeGitHub(issue_body),
+                42,
+                head,
+                [timed_comment],
+                changed_after,
+                False,
+                False,
+            )
+            self.assertFalse(evidence[0])
+            self.assertIn("changed after its classification", evidence[2][0])
+
         unmarked_comment = dict(comment)
         unmarked_comment["body"] = comment["body"].replace(
             "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n",
