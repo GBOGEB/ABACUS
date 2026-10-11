@@ -1,7 +1,8 @@
 # Branch hygiene
 
 Lossless burn-down of stale branches, census of 2026-10-11 against `main`.
-453 non-default branches were classified; 10 with an open pull request are kept and not listed.
+453 non-default branches were classified; 10 with an open pull request
+are kept and not listed.
 
 | List | Mode | Branches |
 |---|---|---|
