@@ -141,10 +141,13 @@ For ABACUS, the owner may disable GitHub's global **Require conversation
 resolution before merging** setting. The repository-native `PR Feedback Gate`
 then carries the materiality-aware disposition rule.
 
-Disable it only once the evaluator on `main` subscribes to
-`pull_request_review_thread` (`resolved`, `unresolved`). Without that
-trigger, a thread marked unresolved after the gate turns green would leave
-a stale success until the scheduled sweep.
+Known limitation: resolving or unresolving a thread emits only the
+`pull_request_review_thread` webhook, which GitHub Actions does not support
+as a workflow trigger. With the native setting disabled, a thread marked
+unresolved after the gate turns green leaves a stale success until the
+five-minute scheduled sweep. Keep the native setting enabled if that window
+is unacceptable, or bridge the webhook into `repository_dispatch` through a
+GitHub App before disabling it.
 
 Do not remove the required `PR Feedback Gate` status check merely to bypass
 review debt.
