@@ -144,6 +144,31 @@ def test_missing_tool_fails_closed_before_scanning(monkeypatch):
 
 
 def test_flake8_findings_are_counted(monkeypatch):
-    findings = completed(1, stdout="pkg/a.py\npkg/a.py\n")
+    findings = completed(1, stdout="F821\nF821\nE999\n")
     monkeypatch.setattr(ratchet_mod, "run", lambda cmd, cwd: findings)
-    assert ratchet_mod.debt("flake8", Path("."), "pkg/a.py") == 2
+    assert ratchet_mod.debt("flake8", Path("."), "pkg/a.py") == {"F821": 2, "E999": 1}
+
+
+@needs_tools
+def test_swapping_one_bandit_finding_for_another_still_fails(repo):
+    subprocess_call = "import subprocess\n\n\ndef run(cmd):\n"
+    base = commit(
+        repo,
+        {"pkg/a.py": subprocess_call + "    return subprocess.call(cmd, shell=True)\n"},
+    )
+    commit(repo, {"pkg/a.py": subprocess_call + "    return eval(cmd)\n"})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    [row] = report["added_debt"]
+    assert row["base"] >= row["head"]
+    assert any(key.startswith("B307:") for key in row["new_findings"])
+    assert report["status"] == "FAIL"
+
+
+@needs_tools
+def test_lint_config_change_requires_the_full_scan(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {"setup.cfg": "[flake8]\nselect = E9\n"})
+    report = ratchet_mod.ratchet(base, TOOLS)
+    assert report["changed_config_files"] == ["setup.cfg"]
+    assert report["status"] == "FULL_SCAN_REQUIRED"
+    assert ratchet_mod.main(["--base", base, "--tools", "flake8"]) == 3
