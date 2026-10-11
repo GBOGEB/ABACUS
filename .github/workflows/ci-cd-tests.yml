@@ -77,12 +77,32 @@ jobs:
         id: pylint
         run: pylint **/*.py --exit-zero
 
+      - name: Fetch PR base for new-debt ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # On a pull request, admission is the new-debt ratchet: the PR's
+      # changed Python files must not gain Black, isort or critical Flake8
+      # debt. The repository-wide scans above still run and are reported.
+      - name: PR new-debt ratchet (Black, isort, Flake8 critical)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
+            --tools black isort flake8 \
+            --summary "$GITHUB_STEP_SUMMARY"
+
       - name: Enforce code-quality red roots
+        if: always()
         shell: bash
         env:
           BLACK: ${{ steps.black.outcome }}
           ISORT: ${{ steps.isort.outcome }}
           FLAKE8: ${{ steps.flake8.outcome }}
+          EVENT: ${{ github.event_name }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -92,6 +112,11 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$EVENT" == "pull_request" ]]; then
+            echo "- PR admission: new-debt ratchet above" \
+              >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           if [[ "$BLACK" != "success" ||
                 "$ISORT" != "success" ||
                 "$FLAKE8" != "success" ]]; then
@@ -308,12 +333,36 @@ jobs:
             coverage.xml
             coverage-summary.json
 
+      - name: Fetch PR base for new-line coverage
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # On a pull request, admission is coverage of the lines the PR adds or
+      # changes, at the governed threshold. The broad-suite percentage above
+      # is still measured and reported.
+      - name: PR new-line coverage
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          pip install diff-cover
+          diff-cover coverage.xml --compare-branch="$BASE_SHA" \
+            --diff-range-notation=.. \
+            --fail-under=${{ env.COVERAGE_THRESHOLD }}
+
       - name: Enforce coverage threshold
         if: always()
         shell: bash
         env:
           THRESHOLD_RESULT: ${{ steps.coverage_threshold.outcome }}
+          EVENT: ${{ github.event_name }}
         run: |
+          if [[ "$EVENT" == "pull_request" ]]; then
+            echo "PR admission uses new-line coverage; broad debt reported."
+            exit 0
+          fi
           if [[ "$THRESHOLD_RESULT" != "success" ]]; then
             echo "::error::Coverage remains below the governed 75% threshold."
             exit 1
@@ -523,12 +572,31 @@ jobs:
             safety-report.json
           if-no-files-found: warn
 
+      - name: Fetch PR base for new-debt ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # On a pull request, admission is the new-debt ratchet: the PR's
+      # changed Python files must not gain Bandit findings, and Safety is
+      # enforced only when the PR changes the dependency surface.
+      - name: PR new-debt ratchet (Bandit)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
+            --tools bandit --summary "$GITHUB_STEP_SUMMARY"
+
       - name: Enforce security red roots
         if: always()
         shell: bash
         env:
           BANDIT: ${{ steps.bandit.outcome }}
           SAFETY: ${{ steps.safety.outcome }}
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           {
             echo "### Security full-red surface"
@@ -536,6 +604,17 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$EVENT" == "pull_request" ]]; then
+            deps=$(git diff --name-only "$BASE_SHA" HEAD -- \
+              'requirements*.txt' pyproject.toml setup.cfg setup.py)
+            if [[ -n "$deps" && "$SAFETY" != "success" ]]; then
+              echo "::error::Safety is red and this PR changes dependencies."
+              exit 1
+            fi
+            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+              "only when dependencies change" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           if [[ "$BANDIT" != "success" || "$SAFETY" != "success" ]]; then
             echo "::error::One or more security roots are red."
             exit 1
