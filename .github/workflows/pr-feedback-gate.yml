@@ -5,15 +5,20 @@ on:
     types: [created, edited, deleted]
   # A deferral is only valid while its tracking issue stays open with intact
   # debt evidence. Re-census on every tracking-issue lifecycle change so a
-  # closed or edited issue cannot leave a stale green check behind. Non-PR
-  # issue events fall through to a sweep of all open main PRs, which does not
-  # depend on the (possibly removed) marker to find the source PR.
+  # closed or edited issue cannot leave a stale green check behind. Only the
+  # PRs named by a trusted issue's current or previous marker are re-census'd;
+  # other issue events are no-ops.
   issues:
     types: [edited, closed, reopened, deleted, transferred]
   pull_request_review:
     types: [submitted, dismissed]
   pull_request_review_comment:
     types: [created, edited, deleted]
+  # Resolving or unresolving a thread emits no comment/review event, so
+  # without this a re-opened thread would leave a stale green check until
+  # the scheduled sweep.
+  pull_request_review_thread:
+    types: [resolved, unresolved]
   workflow_run:
     workflows:
       - CI - ABACUS Matrix

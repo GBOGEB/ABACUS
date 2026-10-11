@@ -1050,6 +1050,16 @@ def evaluate(
         f"required workflow definition modified by PR: {path}"
         for path in definition_changes
     )
+    if not census_complete:
+        # The definition-integrity check above only sees listed paths, so a
+        # truncated census cannot prove no required workflow was modified.
+        failed += (
+            (
+                "incomplete PR file census: listed "
+                f"{len(file_records)} of {pull.get('changed_files')} changed "
+                "files; protected workflow definitions cannot be verified"
+            ),
+        )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
     code_review_complete = codex_code_review_complete(comments, head_sha)
@@ -1128,6 +1138,42 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
     return title, summary, "\n".join(lines)
 
 
+DEFERRAL_MARKER = re.compile(
+    r"<!--\s*abacus-deferred-security:v1\s+(\{.*?\})\s*-->",
+    re.DOTALL,
+)
+
+
+def tracking_issue_pr_numbers(event: dict[str, Any]) -> list[int]:
+    issue = event.get("issue") or {}
+    if (
+        (issue.get("author_association") or "").upper()
+        not in TRUSTED_AUTHOR_ASSOCIATIONS
+    ):
+        return []
+    bodies = [issue.get("body") or ""]
+    previous = (event.get("changes") or {}).get("body") or {}
+    if isinstance(previous.get("from"), str):
+        bodies.append(previous["from"])
+    numbers: set[int] = set()
+    for body in bodies:
+        for match in DEFERRAL_MARKER.finditer(body):
+            try:
+                metadata = json.loads(match.group(1))
+            except json.JSONDecodeError:
+                continue
+            source_pr = (
+                metadata.get("pr") if isinstance(metadata, dict) else None
+            )
+            if (
+                isinstance(source_pr, int)
+                and not isinstance(source_pr, bool)
+                and source_pr > 0
+            ):
+                numbers.add(source_pr)
+    return sorted(numbers)
+
+
 def event_pr_numbers(
     github: GitHub,
     event: dict[str, Any],
@@ -1143,9 +1189,11 @@ def event_pr_numbers(
         return [int(issue["number"])]
     if issue:
         # A plain issue changed (e.g. a deferral tracking issue was closed or
-        # edited). Its marker may already be gone, so it cannot be trusted to
-        # name the source PR: re-census every open PR instead.
-        return sorted(int(item["number"]) for item in github.open_pulls())
+        # edited). Re-census only the PRs a trusted tracking issue names, in
+        # its current body or, for an edit, its previous body, so an edit
+        # that strips the marker still reaches the source PR. Other issue
+        # events are ignored; the scheduled sweep remains the backstop.
+        return tracking_issue_pr_numbers(event)
     workflow_run = event.get("workflow_run")
     if workflow_run:
         pulls = workflow_run.get("pull_requests") or []

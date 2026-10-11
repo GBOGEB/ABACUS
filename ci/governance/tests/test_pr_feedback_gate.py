@@ -832,18 +832,40 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
 
-    def test_tracking_issue_change_recensuses_all_open_prs(self):
+    def test_tracking_issue_change_recensuses_only_named_prs(self):
         class FakeGitHub:
             def open_pulls(self):
-                return [{"number": 1847}, {"number": 42}]
+                raise AssertionError("issue events must not sweep all PRs")
 
+        marker = (
+            '<!-- abacus-deferred-security:v1 {"pr": 1847, '
+            '"headSha": "abc", "status": "OPEN"} -->'
+        )
         closed_issue = {
             "action": "closed",
-            "issue": {"number": 1849, "state": "closed"},
+            "issue": {
+                "number": 1849,
+                "state": "closed",
+                "author_association": "OWNER",
+                "body": marker,
+            },
         }
         self.assertEqual(
             gate.event_pr_numbers(FakeGitHub(), closed_issue, None),
-            [42, 1847],
+            [1847],
+        )
+        marker_stripped = {
+            "action": "edited",
+            "issue": {
+                "number": 1849,
+                "author_association": "OWNER",
+                "body": "debt cleared",
+            },
+            "changes": {"body": {"from": marker}},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), marker_stripped, None),
+            [1847],
         )
         pr_comment_deleted = {
             "action": "deleted",
@@ -852,6 +874,38 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(
             gate.event_pr_numbers(FakeGitHub(), pr_comment_deleted, None),
             [1847],
+        )
+
+    def test_untracked_or_untrusted_issue_change_is_ignored(self):
+        class FakeGitHub:
+            def open_pulls(self):
+                raise AssertionError("issue events must not sweep all PRs")
+
+        marker = (
+            '<!-- abacus-deferred-security:v1 {"pr": 1847, '
+            '"headSha": "abc", "status": "OPEN"} -->'
+        )
+        plain_issue = {
+            "action": "edited",
+            "issue": {
+                "number": 7,
+                "author_association": "OWNER",
+                "body": "no marker here",
+            },
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), plain_issue, None), []
+        )
+        untrusted_issue = {
+            "action": "edited",
+            "issue": {
+                "number": 8,
+                "author_association": "NONE",
+                "body": marker,
+            },
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), untrusted_issue, None), []
         )
 
     def test_workflow_subscribes_to_tracking_issue_lifecycle(self):
@@ -868,6 +922,10 @@ class FeedbackGateTests(unittest.TestCase):
         )
         self.assertIn(
             "issue_comment:\n    types: [created, edited, deleted]",
+            workflow,
+        )
+        self.assertIn(
+            "pull_request_review_thread:\n    types: [resolved, unresolved]",
             workflow,
         )
 
@@ -914,6 +972,13 @@ class FeedbackGateTests(unittest.TestCase):
         }
         evidence = gate.evaluate(FakeGitHub(), 42, pull)
         self.assertTrue(evidence.security_sensitive)
+        self.assertTrue(
+            any(
+                "incomplete PR file census" in item
+                for item in evidence.ci_failed
+            )
+        )
+        self.assertEqual(evidence.state, "failure")
         for workflow in gate.CONDITIONAL_WORKFLOW_PATHS:
             self.assertTrue(
                 any(workflow in item for item in evidence.ci_pending),
