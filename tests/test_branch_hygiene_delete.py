@@ -183,3 +183,100 @@ def test_committed_lists_are_well_formed_and_unique():
             assert branch not in ("main", "master"), path
             assert branch not in seen, f"{branch} listed twice"
             seen.add(branch)
+
+
+class FakeResponse:
+    def __init__(self, payload: bytes):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def read(self):
+        return self.payload
+
+
+def http_error(code, **headers):
+    from email.message import Message
+
+    msg = Message()
+    for k, v in headers.items():
+        msg[k.replace("_", "-")] = v
+    return bh.urllib.error.HTTPError("u", code, "x", msg, None)
+
+
+def test_make_api_sends_auth_parses_json_and_maps_404_to_none(monkeypatch):
+    seen = []
+
+    def fake_urlopen(req, timeout):
+        seen.append(req)
+        if req.full_url.endswith("/missing"):
+            raise http_error(404)
+        if req.full_url.endswith("/boom"):
+            raise http_error(500)
+        return FakeResponse(b'{"ok": true}' if req.get_method() == "GET" else b"")
+
+    monkeypatch.setattr(bh.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(bh.time, "sleep", lambda s: None)
+    api = bh.make_api("GBOGEB/X", "tok")
+    assert api("GET", "/branches/a") == {"ok": True}
+    assert api("GET", "/missing") is None
+    assert api("DELETE", "/git/refs/heads/a") == {}
+    with pytest.raises(bh.urllib.error.HTTPError):
+        api("GET", "/boom")
+    assert seen[0].full_url == "https://api.github.com/repos/GBOGEB/X/branches/a"
+    assert seen[0].get_header("Authorization") == "Bearer tok"
+
+
+def test_make_api_waits_out_rate_limit_then_retries(monkeypatch):
+    calls = {"n": 0}
+    slept = []
+
+    def fake_urlopen(req, timeout):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise http_error(429, retry_after="7")
+        return FakeResponse(b"{}")
+
+    monkeypatch.setattr(bh.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(bh.time, "sleep", slept.append)
+    assert bh.make_api("GBOGEB/X", "tok")("GET", "") == {}
+    assert calls["n"] == 2 and slept == [7.0]
+
+
+def test_archive_readback_mismatch_keeps_branch():
+    class NoTag(FakeApi):
+        def __call__(self, method, path, body=None):
+            if method == "POST":
+                return {}
+            return super().__call__(method, path, body)
+
+    api = NoTag({"wip": (SHA, False)}, ahead={"wip": 1})
+    receipt = bh.run(api, "GBOGEB/X", [("wip", SHA, "archive")], True)
+    assert receipt["results"][0]["action"] == "error"
+    assert "wip" in api.branches
+
+
+def test_main_writes_receipt_and_needs_token(monkeypatch, tmp_path):
+    lst = tmp_path / "list.tsv"
+    lst.write_text(f"done\t{SHA}\n", encoding="utf-8")
+    receipt = tmp_path / "out" / "receipt.json"
+    api = FakeApi({"done": (SHA, False)})
+    monkeypatch.setattr(bh, "make_api", lambda repo, token: api)
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr(bh.sys, "argv", ["x", str(lst), "--repo", "GBOGEB/X"])
+    with pytest.raises(SystemExit):
+        bh.main()
+    monkeypatch.setenv("GITHUB_TOKEN", "tok")
+    monkeypatch.setattr(
+        bh.sys, "argv", ["x", str(lst), "--repo", "GBOGEB/X", "--receipt", str(receipt)]
+    )
+    assert bh.main() == 0
+    data = bh.json.loads(receipt.read_text(encoding="utf-8"))
+    assert (
+        data["mode"] == "dry_run" and data["eligible"] == 1 and "done" in api.branches
+    )
