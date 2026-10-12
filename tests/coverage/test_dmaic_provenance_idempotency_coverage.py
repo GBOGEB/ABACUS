@@ -107,3 +107,60 @@ def test_idempotent_memory_only_and_hash_helpers(tmp_path):
     assert idempotency.compute_file_hash(payload) == hashlib.sha256(
         b"ABACUS\x00pressure"
     ).hexdigest()
+
+
+def test_provenance_file_backed_lifecycle_and_missing_run(tmp_path, monkeypatch):
+    """Exercise persistence and explicit metadata without relying on global memory."""
+    db_path = tmp_path / "nested" / "provenance.json"
+    monkeypatch.setenv("DMAIC_PROVENANCE_DB", str(db_path))
+    empty = {"runs": [], "phases": [], "artifacts": []}
+
+    # Both a missing database and the initial schema creation have defined behavior.
+    assert provenance._load_db() == empty
+    provenance.ensure_schema()
+    assert json.loads(db_path.read_text(encoding="utf-8")) == empty
+
+    run_id = provenance.begin_run("0123456789abcdef", "input-sha")
+    provenance.record_phase(run_id, "analyze", 3, "ok", "in", "out", {"n": 3})
+    artifact_id = provenance.record_artifact(
+        run_id, "analyze", "json", "result.json", "feedbead1234",
+        meta={"origin": "file-backed"},
+    )
+    provenance.finish_run(run_id, "success", {"score": 9})
+
+    persisted = json.loads(db_path.read_text(encoding="utf-8"))
+    assert persisted["runs"][0]["run_id"] == run_id
+    assert persisted["runs"][0]["status"] == "success"
+    assert persisted["runs"][0]["metrics"] == {"score": 9}
+    assert persisted["phases"][0]["iteration"] == 3
+    assert persisted["artifacts"][0]["artifact_id"] == artifact_id
+    assert persisted["artifacts"][0]["meta"] == {"origin": "file-backed"}
+    assert provenance.get_run(run_id)["status"] == "success"
+    assert provenance.get_run("nonexistent-run") is None
+    assert provenance.get_recent_runs(1)[0]["run_id"] == run_id
+
+    # A missing ID must not mutate the persisted records.
+    provenance.finish_run("nonexistent-run", "failed", {"unexpected": True})
+    assert json.loads(db_path.read_text(encoding="utf-8")) == persisted
+
+
+def test_provenance_os_error_returns_empty_db(tmp_path, monkeypatch):
+    """A failure reading a present file follows the documented empty-DB fallback."""
+    db_path = tmp_path / "provenance.json"
+    db_path.write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("DMAIC_PROVENANCE_DB", str(db_path))
+
+    def fail_to_read(*_args, **_kwargs):
+        raise OSError("simulated transient read failure")
+
+    monkeypatch.setattr(provenance, "open", fail_to_read, raising=False)
+    assert provenance._load_db() == {"runs": [], "phases": [], "artifacts": []}
+
+
+def test_hash_json_dictionary_is_independent_of_insertion_order():
+    """Dictionary hashing should be reproducible across key orders."""
+    expected = hashlib.sha256(
+        json.dumps({"alpha": 1, "zeta": 2}, sort_keys=True).encode()
+    ).hexdigest()
+    assert idempotency.hash_json({"zeta": 2, "alpha": 1}) == expected
+    assert idempotency.hash_json({"alpha": 1, "zeta": 2}) == expected
