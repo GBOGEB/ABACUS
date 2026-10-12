@@ -255,34 +255,33 @@ def test_renaming_a_config_away_requires_the_full_scan(repo):
 
 
 @needs_tools
-def test_nested_config_applies_to_both_sides(repo):
+def test_a_nested_black_config_is_ignored_like_the_full_scan(repo):
+    # black . from the root reads only the root config, so a line a nested
+    # line-length = 200 would accept is still debt.
     long_line = "VALUE = " + " + ".join(["1"] * 30) + "\n"
     nested = "[tool.black]\nline-length = 200\n"
-    base = commit(repo, {"pkg/pyproject.toml": nested, "pkg/a.py": long_line})
-    commit(repo, {"pkg/a.py": long_line + "OTHER =  2\n"})
+    base = commit(repo, {"pkg/pyproject.toml": nested, "pkg/a.py": "X = 1\n"})
+    commit(repo, {"pkg/a.py": "X = 1\n" + long_line})
     report = ratchet_mod.ratchet(base, ("black",))
     [row] = report["added_debt"]
     assert row["base"] == 0 and row["head"] == 1
 
 
 @needs_tools
-def test_rename_base_is_scanned_under_its_original_config(repo):
-    line = "VALUE = " + " + ".join(["1"] * 25) + "\n"
-    base = commit(
-        repo,
-        {
-            "wide/pyproject.toml": "[tool.black]\nline-length = 200\n",
-            "narrow/pyproject.toml": "[tool.black]\nline-length = 88\n",
-            "narrow/keep.py": "X = 1\n",
-            "wide/a.py": line,
-        },
-    )
-    git(repo, "mv", "wide/a.py", "narrow/a.py")
-    git(repo, "commit", "-q", "-m", "move")
-    report = ratchet_mod.ratchet(base, ("black",))
-    [row] = report["added_debt"]
-    assert row["path"] == "narrow/a.py"
-    assert row["base"] == 0 and row["head"] == 1
+def test_a_nested_isort_config_is_ignored_like_the_full_scan(repo):
+    # isort . from the root reads only the root settings; a nested
+    # force_single_line must not turn a root-clean file into debt.
+    nested = "[settings]\nforce_single_line = true\n"
+    base = commit(repo, {"pkg/.isort.cfg": nested, "pkg/a.py": "X = 1\n"})
+    commit(repo, {"pkg/a.py": "from os import path, sep\n\nX = (path, sep)\n"})
+    report = ratchet_mod.ratchet(base, ("isort",))
+    assert report["added_debt"] == []
+
+
+def test_a_gitignore_change_requires_the_full_scan(repo):
+    base = commit(repo, {".gitignore": "build/\n", "pkg/a.py": CLEAN})
+    commit(repo, {".gitignore": "build/\npkg/\n"})
+    assert ratchet_mod.changed_config_files(base) == [".gitignore"]
 
 
 @needs_tools
