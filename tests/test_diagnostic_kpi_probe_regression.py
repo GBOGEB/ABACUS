@@ -1,11 +1,16 @@
 """Regression tests for the narrowly repaired diagnostic KPI command helper."""
 
 import ast
+import contextlib
+import io
+import os
+import runpy
 import shlex
 import subprocess
 import unittest
+import urllib.request
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,26 +18,24 @@ PROBE = ROOT / "scripts" / "diagnostic_kpi_probe.py"
 
 
 class DiagnosticKpiProbeTests(unittest.TestCase):
-    """Check syntax and command behavior without running probe side effects."""
+    """Check the helper with all top-level network/process activity mocked."""
 
     @classmethod
     def setUpClass(cls):
         source = PROBE.read_text(encoding="utf-8")
-        compile(source, str(PROBE), "exec")
-        parsed = ast.parse(source, filename=str(PROBE))
-        functions = [
-            node
-            for node in parsed.body
-            if isinstance(node, ast.FunctionDef) and node.name == "cmd"
-        ]
-        if len(functions) != 1:
-            raise AssertionError("exactly one cmd helper is required")
-        module = ast.Module(body=functions, type_ignores=[])
-        namespace = {"shlex": shlex, "subprocess": subprocess}
-        exec(compile(module, str(PROBE), "exec"), namespace)
+        ast.parse(source, filename=str(PROBE))
+        response = MagicMock()
+        response.__enter__.return_value.status = 200
+        with (
+            patch.object(urllib.request, "urlopen", return_value=response),
+            patch.object(os.path, "exists", return_value=False),
+            patch.object(subprocess, "run", return_value=Mock(returncode=0)),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            namespace = runpy.run_path(str(PROBE), run_name="probe_regression")
         cls.cmd_helper = staticmethod(namespace["cmd"])
 
-    def test_probe_parses_without_executing_network_or_processes(self):
+    def test_probe_parses_without_real_network_or_processes(self):
         self.assertTrue(PROBE.is_file())
 
     def test_string_command_is_split_and_timeout_is_bounded(self):
