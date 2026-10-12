@@ -67,18 +67,20 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          mkdir -p test_reports/code-quality
-          black --check --diff . 2>&1 >test_reports/code-quality/black.diff |
-            tee test_reports/code-quality/black.log
+          out=test_reports/code-quality
+          mkdir -p "$out"
+          black --check --diff . 2>&1 >"$out/black.diff" |
+            tee "$out/black.log"
 
       - name: Run isort
         id: isort
         continue-on-error: true
         shell: bash
         run: |
-          mkdir -p test_reports/code-quality
-          isort --check-only --diff . 2>&1 >test_reports/code-quality/isort.diff |
-            tee test_reports/code-quality/isort.log
+          out=test_reports/code-quality
+          mkdir -p "$out"
+          isort --check-only --diff . 2>&1 >"$out/isort.diff" |
+            tee "$out/isort.log"
 
       - name: Run Flake8
         id: flake8
