@@ -941,21 +941,11 @@ def evaluate(
     code_ok = codex_code_review_complete(comments, head_sha)
     security_ok = codex_security_review_complete(comments, head_sha)
     review_source = "codex"
-    outage = None
-    if not (code_ok and security_ok):
-        head_since = head_current_since(runs, head_sha, number)
-        candidate_outage = current_codex_outage(comments, head_since)
-        if (candidate_outage is not None
-            and not head_reused_across_transitions(runs, head_sha, number)
-            and current_head_codex_request(
-            comments, head_sha, head_since, candidate_outage
-        )):
-            outage = candidate_outage
-    if outage is not None and owner_attestation_complete(
-        comments, head_sha, not_before=outage
-    ):
-        code_ok = security_ok = True
-        review_source = "owner_attestation"
+    # Security hard stop: do not substitute mutable owner-attestation evidence
+    # for independent code and security review. A previously green SHA-bound
+    # check may be reused during A->B->A before async reevaluation starts.
+    # Only the normal exact-head reviews can satisfy admission here.
+    # Retain helper functions for forensic/backward-compatible tests only.
     return Evidence(
         head_sha=head_sha,
         code_review_complete=code_ok,
@@ -996,8 +986,6 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "Required invariants:",
         "- exact-head Codex code review complete",
         "- exact-head Codex security review complete",
-        "  (or, only if Codex reported it could not run: exact-head owner",
-        "  attestation, scope code+security; CI rules unchanged)",
         "- repository-native current-head admission evidence terminal and green",
         "- zero unresolved review threads",
         "- current-head GitHub Actions terminal and green",
