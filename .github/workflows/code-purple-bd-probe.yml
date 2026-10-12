@@ -68,7 +68,7 @@ jobs:
           set -euo pipefail
           mkdir -p bd_receipts
           python scripts/mip_health_selfheal_probe.py --output bd_receipts/health_selfheal.json
-          python integration/codespace_jyperter/scripts/mip_debug_diagnostic.py --help > bd_receipts/diagnostic_help.txt
+          python integration/codespace_jyperter/scripts/mip_debug_diagnostic.py --output bd_receipts/nested_debug_diagnostic.json
           python - <<'PY'
           import hashlib,json,pathlib,subprocess
           p=pathlib.Path('bd_receipts/health_selfheal.json')
@@ -77,6 +77,16 @@ jobs:
           assert d['exact_sha']==sha
           assert d['verification']=='PASS'
           assert d['source_checkout_unchanged'] is True
+          nested=pathlib.Path('bd_receipts/nested_debug_diagnostic.json')
+          nested_raw=nested.read_bytes()
+          nested_data=json.loads(nested_raw)
+          assert nested_data['diagnostic']=='nested_debug_ldab'
+          assert nested_data['parent_sha']==sha
+          assert nested_data['verification']=='PASS'
+          assert nested_data['failed_checks']==[]
+          nested_execution={'entrypoint':'integration/codespace_jyperter/scripts/mip_debug_diagnostic.py','source_sha':sha,'exit_code':0,'checks_total':len(nested_data['checks']),'checks_passed':sum(x is True for x in nested_data['checks'].values()),'failed_checks':nested_data['failed_checks'],'receipt_path':str(nested),'receipt_sha256':hashlib.sha256(nested_raw).hexdigest(),'receipt_bytes':len(nested_raw),'verification':'PASS'}
+          pathlib.Path('bd_receipts/nested_ldab_execution.json').write_text(json.dumps(nested_execution,sort_keys=True,indent=2)+'\\n')
+          print(json.dumps(nested_execution,sort_keys=True))
           obj={'head':sha,'exit_code':0,'receipt_path':str(p),'receipt_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'receipt_bytes':p.stat().st_size,'verification':d['verification'],'checkout_unchanged':d['source_checkout_unchanged']}
           pathlib.Path('bd_receipts/extended_execution.json').write_text(json.dumps(obj,sort_keys=True,indent=2)+'\n')
           print(json.dumps(obj,sort_keys=True))
