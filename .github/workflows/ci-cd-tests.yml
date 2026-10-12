@@ -137,7 +137,8 @@ jobs:
           EVENT: ${{ github.event_name }}
           BLACK_FULL_SCAN: ${{ steps.quality_ratchet.outputs.black_full_scan }}
           ISORT_FULL_SCAN: ${{ steps.quality_ratchet.outputs.isort_full_scan }}
-          FLAKE8_FULL_SCAN: ${{ steps.quality_ratchet.outputs.flake8_full_scan }}
+          FLAKE8_FULL_SCAN: >-
+            ${{ steps.quality_ratchet.outputs.flake8_full_scan }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -154,13 +155,15 @@ jobs:
               actual="${!tool}"
               fallback="${!flag_name}"
               if [[ "$fallback" == "required" ]]; then
-                echo "- ${tool}: affected config/toolchain changed; full scan=${actual}" >> "$GITHUB_STEP_SUMMARY"
+                echo "- ${tool}: config changed; full scan=${actual}" \
+                  >> "$GITHUB_STEP_SUMMARY"
                 if [[ "$actual" != "success" ]]; then
                   echo "::error::Required ${tool} full scan failed."
                   failed=1
                 fi
               else
-                echo "- ${tool}: per-tool new-debt ratchet governs" >> "$GITHUB_STEP_SUMMARY"
+                echo "- ${tool}: per-tool new-debt ratchet governs" \
+                  >> "$GITHUB_STEP_SUMMARY"
               fi
             done
             exit "$failed"
