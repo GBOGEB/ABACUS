@@ -51,3 +51,39 @@ jobs:
           name: code-purple-ldab-self-index
           path: bd_receipts/
           if-no-files-found: warn
+
+  ldab-extended:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute actual diagnostic and controlled self-heal probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bd_receipts
+          python scripts/mip_health_selfheal_probe.py --output bd_receipts/health_selfheal.json
+          python integration/codespace_jyperter/scripts/mip_debug_diagnostic.py --help > bd_receipts/diagnostic_help.txt
+          python - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          p=pathlib.Path('bd_receipts/health_selfheal.json')
+          d=json.loads(p.read_text())
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert d['exact_sha']==sha
+          assert d['verification']=='PASS'
+          assert d['source_checkout_unchanged'] is True
+          obj={'head':sha,'exit_code':0,'receipt_path':str(p),'receipt_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'receipt_bytes':p.stat().st_size,'verification':d['verification'],'checkout_unchanged':d['source_checkout_unchanged']}
+          pathlib.Path('bd_receipts/extended_execution.json').write_text(json.dumps(obj,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(obj,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-purple-ldab-extended
+          path: bd_receipts/
+          if-no-files-found: warn
