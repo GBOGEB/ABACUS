@@ -37,10 +37,15 @@ permissions:
 jobs:
   federation-smoke:
     name: Federation Smoke (cryoplant-project)
+    # Outside pull requests, this run's own probe writes the receipt, so the
+    # smoke waits for it rather than racing it. On a pull request the probe
+    # is skipped, and !cancelled() still runs the smoke.
+    needs: reciprocal-probe
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # Read the receipt artifact of the latest trusted probe run.
+      # Read the receipt artifact of this run or of a trusted probe run.
       actions: read
     steps:
       - name: Checkout ABACUS
@@ -58,13 +63,16 @@ jobs:
         run: python -m pip install pytest pyyaml
 
       # A committed receipt is never evidence: anyone editing this repo can
-      # write one. Replace it with the receipt uploaded by the latest
+      # write one. Outside pull requests, use the receipt this run's probe
+      # just uploaded, so a fresh probe is never judged by an older one. On
+      # a pull request, where no probe runs, use the receipt of the latest
       # successful run of this workflow on main (push, schedule or
-      # dispatch, where the token-bearing probe runs), or remove it if there
-      # is none, so an active member fails until a trusted probe has passed.
-      - name: Use the latest trusted probe receipt
+      # dispatch). With no receipt the file is removed, so an active member
+      # fails until a trusted probe has passed.
+      - name: Use the trusted probe receipt
         env:
           GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
           RECEIPT: >-
             integration/cryoplant_project/federation/reciprocal_smoke.json
           WORKFLOW: cryoplant-federation.yml
@@ -74,17 +82,26 @@ jobs:
             ][0].id // empty
         run: |
           rm -f "$RECEIPT"
-          runs="repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs"
-          run_id="$(gh api -X GET "$runs" -f branch=main -f status=success \
-            -f per_page=50 --jq "$TRUSTED")"
+          if [ "$EVENT" != "pull_request" ]; then
+            run_id="$GITHUB_RUN_ID"
+          else
+            runs="repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs"
+            run_id="$(gh api -X GET "$runs" -f branch=main \
+              -f status=success -f per_page=50 --jq "$TRUSTED")"
+          fi
           if [ -z "$run_id" ]; then
             echo "No successful probe run on main yet; no receipt."
             exit 0
           fi
-          echo "Trusted probe run: $run_id"
-          gh run download "$run_id" -R "$GITHUB_REPOSITORY" \
-            -n cryoplant-reciprocal-smoke -D "$RUNNER_TEMP/receipt"
-          cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
+          echo "Probe run: $run_id"
+          if ! gh run download "$run_id" -R "$GITHUB_REPOSITORY" \
+            -n cryoplant-reciprocal-smoke -D "$RUNNER_TEMP/receipt"; then
+            echo "Probe run $run_id uploaded no receipt."
+            exit 0
+          fi
+          if [ -f "$RUNNER_TEMP/receipt/reciprocal_smoke.json" ]; then
+            cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
+          fi
 
       # Its maximum age is the owner's call: set the repository variable
       # CRYOPLANT_RECEIPT_MAX_AGE_SECONDS to enforce one. Unset, no age is
