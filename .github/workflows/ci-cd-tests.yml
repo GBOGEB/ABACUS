@@ -163,10 +163,25 @@ jobs:
             pip install -r requirements-test.txt
           fi
 
+      - name: Prepare isolated coverage data
+        shell: bash
+        run: |
+          coverage_dir="$RUNNER_TEMP/abacus-broad-coverage"
+          mkdir -p "$coverage_dir"
+          {
+            echo "COVERAGE_FILE=$coverage_dir/.coverage"
+            echo "COVERAGE_RCFILE=$GITHUB_WORKSPACE/pyproject.toml"
+          } >> "$GITHUB_ENV"
+
       - name: Run Tests with Coverage
         run: |
+          python -m coverage erase
           pytest --benchmark-disable --cov=. \
-            --cov-report=xml --cov-report=html --cov-report=term-missing
+            --cov-branch \
+            --cov-config=pyproject.toml \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing
 
       - name: Check Coverage Threshold
         id: coverage_threshold
