@@ -103,13 +103,14 @@ jobs:
             cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
           fi
 
-      # Its maximum age is the owner's call: set the repository variable
-      # CRYOPLANT_RECEIPT_MAX_AGE_SECONDS to enforce one. Unset, no age is
-      # enforced; main's scheduled probe still re-checks live daily.
+      # Fail closed by default: retain the existing 900-second probe window
+      # for PR validation unless an owner-governed repository variable sets
+      # a different positive bound. Do not permit an absent value to disable
+      # receipt freshness.
       - name: Run cryoplant-project local smoke tests
         env:
           RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: >-
-            ${{ vars.CRYOPLANT_RECEIPT_MAX_AGE_SECONDS }}
+            ${{ vars.CRYOPLANT_RECEIPT_MAX_AGE_SECONDS || '900' }}
         run: >-
           python -m pytest integration/cryoplant_project/tests
           -m smoke -v --tb=short -p no:cacheprovider
