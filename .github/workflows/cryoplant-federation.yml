@@ -37,7 +37,16 @@ permissions:
 jobs:
   federation-smoke:
     name: Federation Smoke (cryoplant-project)
+    # On a non-PR run of main, this run's own probe writes the receipt, so
+    # the smoke waits for it rather than racing it. Elsewhere the probe is
+    # skipped, and !cancelled() still runs the smoke.
+    needs: reciprocal-probe
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Read the receipt artifact of this run or of a trusted probe run.
+      actions: read
     steps:
       - name: Checkout ABACUS
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
@@ -53,7 +62,74 @@ jobs:
       - name: Install dependencies
         run: python -m pip install pytest pyyaml
 
+      # A committed receipt is never evidence: anyone editing this repo can
+      # write one. When this run probed (a non-PR run of main), use the
+      # receipt its probe just uploaded, so a fresh probe is never judged by
+      # an older one. Otherwise (a pull request, or a dispatch of another
+      # branch), no probe ran: use the receipt of the latest successful
+      # non-PR run of this workflow on main. With no receipt the file is
+      # removed, so an active member fails until a trusted probe has passed.
+      - name: Use the trusted probe receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROBED: >-
+            ${{ github.event_name != 'pull_request'
+            && github.ref == 'refs/heads/main' }}
+          RECEIPT: >-
+            integration/cryoplant_project/federation/reciprocal_smoke.json
+          WORKFLOW: cryoplant-federation.yml
+          TRUSTED: >-
+            [.workflow_runs[] | select(.event != "pull_request")
+            | select(.head_repository.full_name == env.GITHUB_REPOSITORY)
+            ][0].id // empty
+          # A re-run keeps earlier attempts' same-named artifacts, and
+          # `gh run download -n` may pick the first, so take the newest
+          # unexpired one, uploaded no earlier than SINCE.
+          NEWEST: >-
+            [.artifacts[] | select(.expired | not)
+            | select(.created_at >= env.SINCE)]
+            | max_by(.created_at) | .id // empty
+        run: |
+          rm -f "$RECEIPT"
+          api="repos/$GITHUB_REPOSITORY/actions"
+          if [ "$PROBED" = "true" ]; then
+            run_id="$GITHUB_RUN_ID"
+            # Only this attempt's probe counts, not an earlier attempt's.
+            SINCE="$(gh api "$api/runs/$run_id/attempts/$GITHUB_RUN_ATTEMPT" \
+              --jq .run_started_at)"
+          else
+            run_id="$(gh api -X GET "$api/workflows/$WORKFLOW/runs" \
+              -f branch=main -f status=success -f per_page=50 \
+              --jq "$TRUSTED")"
+            SINCE=""
+          fi
+          export SINCE
+          if [ -z "$run_id" ]; then
+            echo "No successful probe run on main yet; no receipt."
+            exit 0
+          fi
+          echo "Probe run: $run_id (artifacts since: ${SINCE:-any})"
+          artifact="$(gh api -X GET "$api/runs/$run_id/artifacts" \
+            -f name=cryoplant-reciprocal-smoke -f per_page=100 \
+            --jq "$NEWEST")"
+          if [ -z "$artifact" ]; then
+            echo "Probe run $run_id uploaded no receipt."
+            exit 0
+          fi
+          gh api "$api/artifacts/$artifact/zip" > "$RUNNER_TEMP/receipt.zip"
+          unzip -q -o "$RUNNER_TEMP/receipt.zip" -d "$RUNNER_TEMP/receipt"
+          if [ -f "$RUNNER_TEMP/receipt/reciprocal_smoke.json" ]; then
+            cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
+          fi
+
+      # Fail closed by default: retain the existing 900-second probe window
+      # for PR validation unless an owner-governed repository variable sets
+      # a different positive bound. Do not permit an absent value to disable
+      # receipt freshness.
       - name: Run cryoplant-project local smoke tests
+        env:
+          RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: >-
+            ${{ vars.CRYOPLANT_RECEIPT_MAX_AGE_SECONDS || '900' }}
         run: >-
           python -m pytest integration/cryoplant_project/tests
           -m smoke -v --tb=short -p no:cacheprovider
@@ -66,8 +142,12 @@ jobs:
     # GitHub only offers once this file is on the default branch; the
     # cryoplant-federation environment's protection rules gate each run.
     # So this workflow lands with the member still proposed, and activation
-    # follows in its own PR once a run here has passed.
-    if: github.event_name != 'pull_request'
+    # follows in its own PR once a run here has passed. Only main's code
+    # gets the token: a dispatch can name any branch (--ref), whose edited
+    # probe could exfiltrate it.
+    if: >-
+      github.event_name != 'pull_request'
+      && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: cryoplant-federation
     steps:
