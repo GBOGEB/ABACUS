@@ -657,6 +657,19 @@ class FeedbackGateTests(unittest.TestCase):
             gate.codex_unavailable([self.outage(at="2026-10-11T18:30:00Z")], since)
         )
 
+    def test_reused_head_disables_break_glass_fallback(self):
+        h1 = self.HEAD
+        h2 = "f" * 40
+        runs = [
+            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": h2, "created_at": "2026-10-11T18:20:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        self.assertTrue(gate.head_reused_across_transitions(runs, h1, 7))
+        self.assertFalse(gate.head_reused_across_transitions(runs[:1], h1, 7))
+        self.assertTrue(gate.head_reused_across_transitions([], h1, 7))
+        self.assertTrue(gate.head_reused_across_transitions(runs, h2, 7))
+
     def test_no_server_head_time_keeps_fallback_closed(self):
         self.assertEqual(gate.head_current_since([], self.HEAD, 7), "")
         self.assertFalse(gate.codex_unavailable([self.outage()], ""))
