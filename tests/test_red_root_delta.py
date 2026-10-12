@@ -96,7 +96,61 @@ class RedRootDeltaTest(unittest.TestCase):
         self.assertEqual(black_row["parse_errors"]["files_on_touched"], ["pkg/new.py"])
         self.assertEqual(payload["tools"]["isort"]["files_on_touched"], [])
         self.assertEqual(payload["tools"]["isort"]["files_elsewhere"], 1)
+        # touched.py reformat + new.py parse failure: parse errors count.
+        self.assertEqual(payload["touched_findings_upper_bound"], 2)
+
+    def test_black_parse_failure_alone_is_visible(self) -> None:
+        root = self.repo.resolve().as_posix()
+        black = f"error: cannot format {root}/pkg/new.py: Cannot parse: 1:6\n"
+        summary = self.tmp / "summary.md"
+        out = self.tmp / "parse.json"
+        log = self.tmp / "black.log"
+        log.write_text(black, encoding="utf-8")
+        argv = ["--lane", "cq", "--root", str(self.repo), "--base", "HEAD~1"]
+        argv += ["--black-log", str(log), "--out", str(out)]
+        argv += ["--summary", str(summary)]
+        self.assertEqual(red_root_delta.main(argv), 0)
+        payload = json.loads(out.read_text(encoding="utf-8"))
         self.assertEqual(payload["touched_findings_upper_bound"], 1)
+        text = summary.read_text(encoding="utf-8")
+        self.assertIn("| black | 0 | 0 | 0 |", text)
+        self.assertIn("| black parse errors | 1 | 1 | 0 |", text)
+
+    def test_config_change_makes_attribution_indeterminate(self) -> None:
+        self._write("pyproject.toml", "[tool.black]\nline-length = 60\n")
+        self._git("add", ".")
+        self._git("commit", "-q", "-m", "config only")
+        root = self.repo.resolve().as_posix()
+        black = f"would reformat {root}/pkg/old.py\n"
+        summary = self.tmp / "summary.md"
+        out = self.tmp / "cfg.json"
+        log = self.tmp / "black.log"
+        log.write_text(black, encoding="utf-8")
+        argv = ["--lane", "cq", "--root", str(self.repo), "--base", "HEAD~1"]
+        argv += ["--black-log", str(log), "--out", str(out)]
+        argv += ["--summary", str(summary)]
+        self.assertEqual(red_root_delta.main(argv), 0)
+        payload = json.loads(out.read_text(encoding="utf-8"))
+        self.assertEqual(payload["attribution"], "indeterminate")
+        self.assertEqual(payload["config_changes"], ["pyproject.toml"])
+        self.assertEqual(payload["changed_python_files"], [])
+        text = summary.read_text(encoding="utf-8")
+        self.assertIn("Attribution indeterminate", text)
+        self.assertNotIn("Elsewhere (inherited)", text)
+
+    def test_requirements_change_is_config(self) -> None:
+        self.assertEqual(
+            red_root_delta.config_changes(
+                ["requirements-test.txt", "docs/a.md", "pkg/x.py", "setup.cfg"]
+            ),
+            ["requirements-test.txt", "setup.cfg"],
+        )
+
+    def test_deleted_python_file_is_not_touched(self) -> None:
+        self._git("rm", "-q", "pkg/old.py")
+        self._git("commit", "-q", "-m", "delete")
+        changed = red_root_delta.changed_python_files(self.repo, "HEAD~1")
+        self.assertEqual(changed, [])
 
     def test_flake8_and_bandit_rows(self) -> None:
         flake8 = (
@@ -180,6 +234,7 @@ class RedRootDeltaTest(unittest.TestCase):
         text = summary.read_text(encoding="utf-8")
         self.assertIn("Red-root delta census — code-quality", text)
         self.assertIn("| flake8_critical | 0 | 0 | 0 |", text)
+        self.assertIn("Elsewhere (inherited)", text)
         self.assertIn("does not change the enforcement verdict", text)
 
 
