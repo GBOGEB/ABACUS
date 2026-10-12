@@ -372,9 +372,12 @@ def test_a_bandit_config_change_keeps_the_formatting_ratchet(repo):
 @needs_tools
 def test_stub_changes_are_charged_to_black_and_isort(repo):
     base = commit(repo, {"README.md": "before\n"})
-    commit(repo, {
-        "pkg/types.pyi": "import sys\nimport os\n\ndef  get()->str:...\n",
-    })
+    commit(
+        repo,
+        {
+            "pkg/types.pyi": "import sys\nimport os\n\ndef  get()->str:...\n",
+        },
+    )
     report = ratchet_mod.ratchet(base, ("black", "isort"))
     assert report["changed_python_files"] == ["pkg/types.pyi"]
     assert {row["tool"] for row in report["added_debt"]} == {"black", "isort"}
@@ -405,7 +408,9 @@ def test_type_stub_added_from_non_stub_extension_is_new(repo):
 def test_quality_workflow_ratchets_each_tool_independently():
     workflow = (
         Path(__file__).resolve().parents[1]
-        / ".github" / "workflows" / "ci-cd-tests.yml"
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
     ).read_text(encoding="utf-8")
     assert workflow.count("- '**/*.pyi'") == 2
     assert "for tool in black isort flake8; do" in workflow
@@ -455,3 +460,27 @@ def test_a_config_change_on_clean_code_goes_to_the_full_scan(repo):
     report = ratchet_mod.ratchet(base, ("bandit",))
     assert report["base_policy_red"] == []
     assert ratchet_mod.main(["--base", base, "--tools", "bandit"]) == 3
+
+
+@needs_tools
+def test_deleting_a_package_rechecks_its_untouched_importers(repo):
+    imports = "import os\n\nimport requests\n\nimport localpkg\n\nX = (os, requests, localpkg)\n"
+    base = commit(repo, {"localpkg/__init__.py": "", "pkg/a.py": imports})
+    git(repo, "rm", "-q", "-r", "localpkg")
+    git(repo, "commit", "-q", "-m", "drop localpkg")
+    report = ratchet_mod.ratchet(base, ("isort",))
+    assert report["changed_python_files"] == []
+    assert report["import_roots_changed"] is True
+    assert [(row["path"], row["tool"]) for row in report["added_debt"]] == [
+        ("pkg/a.py", "isort")
+    ]
+    assert report["status"] == "FAIL"
+
+
+@needs_tools
+def test_a_new_nested_module_does_not_recheck_the_tree(repo):
+    base = commit(repo, {"pkg/__init__.py": "", "pkg/a.py": CLEAN})
+    commit(repo, {"pkg/b.py": CLEAN})
+    report = ratchet_mod.ratchet(base, ("isort",))
+    assert "import_roots_changed" not in report
+    assert report["status"] == "PASS"

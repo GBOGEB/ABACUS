@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess  # nosec B404
 import sys
 import tempfile
@@ -271,6 +272,52 @@ def formatting_debt(tool: str, root: Path, path: str) -> Counter:
     return Counter({"unformatted": 1}) if result.returncode else Counter()
 
 
+def import_roots(rev: str) -> tuple[list[str], list[str]]:
+    """The top-level names and top-level ``__init__.py`` files at ``rev``.
+
+    isort run with ``--src`` at the root classifies ``import x`` as
+    first-party when ``x`` is a top-level module or package there, so these
+    decide every import's section across the whole tree.
+    """
+    files = git("ls-tree", "-r", "-z", "--name-only", rev).split("\0")
+    roots = sorted({path.split("/", 1)[0] for path in files if path})
+    inits = sorted(
+        path for path in files if path.count("/") == 1 and path.endswith("/__init__.py")
+    )
+    return roots, inits
+
+
+ISORT_ERROR = re.compile(r"^ERROR: (.+?) Imports are incorrectly sorted")
+
+
+def unsorted_files(root: Path) -> set[str]:
+    """Paths ``isort --check-only .`` rejects in the tree at root."""
+    result = run(
+        [
+            *PYTHON,
+            "-m",
+            "isort",
+            "--check-only",
+            "--quiet",
+            "--settings-path",
+            str(root),
+            "--src",
+            str(root),
+            ".",
+        ],
+        root,
+    )
+    found = set()
+    for line in (result.stdout + result.stderr).splitlines():
+        match = ISORT_ERROR.match(line)
+        if match:
+            path = Path(match.group(1)).resolve()
+            found.add(path.relative_to(root.resolve()).as_posix())
+    if result.returncode not in (0, 1) or (result.returncode == 1 and not found):
+        raise tool_error("isort", ".", result)
+    return found
+
+
 def flake8_debt(root: Path, path: str) -> Counter:
     result = run(
         [
@@ -379,7 +426,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base, tools)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.6.0",
+        "schema": "abacus-pr-debt-ratchet/1.7.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
@@ -440,6 +487,23 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
                         "head": sum(head.values()),
                         "added": sum(new.values()),
                         "new_findings": dict(sorted(new.items())),
+                    }
+                )
+        # A PR that adds, removes or renames a top-level package changes how
+        # isort classifies that import in files the PR did not touch, so
+        # compare the whole tree on both sides, as the full scan would.
+        if "isort" in tools and import_roots(base) != import_roots("HEAD"):
+            report["import_roots_changed"] = True
+            base_unsorted = unsorted_files(base_root)
+            for path in sorted(unsorted_files(ROOT) - base_unsorted - set(paths)):
+                rows.append(
+                    {
+                        "path": path,
+                        "tool": "isort",
+                        "base": 0,
+                        "head": 1,
+                        "added": 1,
+                        "new_findings": {"unformatted": 1},
                     }
                 )
     added = [row for row in rows if row["added"]]
