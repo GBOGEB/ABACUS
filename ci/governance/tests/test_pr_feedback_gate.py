@@ -926,9 +926,18 @@ class FeedbackGateTests(unittest.TestCase):
                 "writer": {"permission": "write", "role_name": "write"},
                 "maintainer": {"permission": "write", "role_name": "maintain"},
                 "triager": {"permission": "read", "role_name": "triage"},
-                "outsider": RuntimeError("GitHub API GET failed: 404"),
+                "outsider": gate.GitHubAPIError("GitHub API GET failed", 404),
+                "throttled": gate.GitHubAPIError("GitHub API GET failed", 403),
+                "broken": gate.GitHubAPIError("GitHub API GET failed", 502),
             }
         )
+        # A lookup that failed for any reason but 404 is not "untrusted":
+        # it must fail the job, not silently drop the event.
+        with self.assertRaises(gate.GitHubAPIError):
+            github.can_write("throttled")
+        with self.assertRaises(gate.GitHubAPIError):
+            github.can_write("broken")
+        github.calls = 0
         self.assertTrue(github.can_write("writer"))
         self.assertTrue(github.can_write("maintainer"))
         self.assertFalse(github.can_write("triager"))
