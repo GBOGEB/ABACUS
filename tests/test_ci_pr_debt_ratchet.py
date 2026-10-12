@@ -371,9 +371,7 @@ def test_a_bandit_config_change_keeps_the_formatting_ratchet(repo):
 
 @needs_tools
 def test_stub_changes_are_charged_to_black_and_isort(repo):
-    base = commit(repo, {
-        "pkg/types.pyi": "import os\nimport sys\n\ndef get() -> str: ...\n",
-    })
+    base = commit(repo, {"README.md": "before\n"})
     commit(repo, {
         "pkg/types.pyi": "import sys\nimport os\n\ndef  get()->str:...\n",
     })
