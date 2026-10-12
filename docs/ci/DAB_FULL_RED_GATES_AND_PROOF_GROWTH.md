@@ -108,8 +108,12 @@ three tools moves to checks scoped to what the PR changes:
   is compared with its original path.
 - The ratchet fails closed: a missing tool, a tool that resolves inside the
   checkout, a crash or unparseable output fails the PR. Tools run in an
-  isolated interpreter (`python -I`). A PR that changes lint configuration
-  (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
+  isolated interpreter (`python -I`). CI runs the base revision's copy of
+  the ratchet, so a PR cannot weaken the check that admits it; the PR that
+  introduces it is judged by the full scans. Inline `# nosec` and `# noqa`
+  are ignored, so a PR cannot silence its own new finding, and Bandit
+  still compares changed files when `.bandit` changes. A PR that changes
+  lint configuration (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
   `.bandit`, `.editorconfig`, `.gitignore`, in any directory) is not
   admitted by the ratchet for the tools that read that file, because such
   a change can alter every file's result; the full-repository scan for

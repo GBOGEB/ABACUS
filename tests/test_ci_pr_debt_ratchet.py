@@ -484,3 +484,45 @@ def test_a_new_nested_module_does_not_recheck_the_tree(repo):
     report = ratchet_mod.ratchet(base, ("isort",))
     assert "import_roots_changed" not in report
     assert report["status"] == "PASS"
+
+
+@needs_tools
+def test_an_inline_nosec_cannot_hide_a_new_finding(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {"pkg/a.py": BANDIT_HIT.replace("eval(cmd)", "eval(cmd)  # nosec")})
+    assert ratchet_mod.ratchet(base, ("bandit",))["status"] == "FAIL"
+
+
+@needs_tools
+def test_an_inline_noqa_cannot_hide_a_new_critical_error(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {"pkg/a.py": CLEAN + "\n\ndef f():\n    return nope  # noqa\n"})
+    assert ratchet_mod.ratchet(base, ("flake8",))["status"] == "FAIL"
+
+
+@needs_tools
+def test_a_bandit_config_change_still_compares_changed_files(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN, "pkg/b.py": CLEAN})
+    commit(
+        repo,
+        {
+            ".bandit": "[bandit]\nexclude_dirs = pkg\n",
+            "pkg/a.py": BANDIT_HIT.replace("eval(cmd)", "eval(cmd)  # nosec"),
+        },
+    )
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert report["status"] in ("FAIL", "BASE_POLICY_RED")
+    assert [row["path"] for row in report["added_debt"]] == ["pkg/a.py"]
+    assert ratchet_mod.main(["--base", base, "--tools", "bandit"]) == 1
+
+
+@needs_tools
+def test_root_points_a_copied_ratchet_at_the_checkout(repo, monkeypatch):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {"pkg/a.py": BANDIT_HIT})
+    monkeypatch.setattr(ratchet_mod, "ROOT", repo / "elsewhere")
+    assert (
+        ratchet_mod.main(["--root", str(repo), "--base", base, "--tools", "bandit"])
+        == 1
+    )
+    assert ratchet_mod.ROOT == repo.resolve()
