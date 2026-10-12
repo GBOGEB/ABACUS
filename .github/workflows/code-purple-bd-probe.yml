@@ -141,3 +141,31 @@ jobs:
           name: code-purple-main-baseline
           path: bd_baseline/
           if-no-files-found: warn
+
+  measured-bd-dashboard:
+    name: Pinned baseline security coverage and LDAB HTML
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install measurement tooling
+        run: python -m pip install coverage bandit pip-audit safety
+      - name: Execute pinned-main and exact-head measurements
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/code_purple_bd_census.py
+      - name: Upload evidence dashboard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-purple-bd-measured-dashboard
+          path: bd_receipts/extended_bd/
+          if-no-files-found: warn
