@@ -1,41 +1,19 @@
-name: QPLANT Pages Runtime Publish
+name: QPLANT Runtime Evidence (manual only)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - build_qplant_visualization.py
-      - scripts/validate_runtime_foundation.py
-      - scripts/write_runtime_governance_status.py
-      - tools/gate_rollup.py
-      - logs/**
-      - content/qplant/**
-      - renderers/**
-      - rtm/**
-      - docs/runtime.html
-      - docs/runtime-artifact-manifest.json
-      - docs/api/rtm_trace_matrix.json
-      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  # Shared with deploy-docs.yml: both deploy the one github-pages site,
-  # so they must queue, not race.
-  group: pages
+  # Manual artifact evidence only. deploy-docs.yml is the sole Pages publisher.
+  group: qplant-runtime-evidence
   cancel-in-progress: false
 
 jobs:
-  publish-runtime:
+  build-runtime-evidence:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -56,7 +34,7 @@ jobs:
       - name: Copy runtime page to docs
         run: |
           mkdir -p docs
-          cp dist/qplant_visualization.html docs/index.html
+          cp dist/qplant_visualization.html docs/qplant_visualization.html
 
       - name: Build CI gate rollup feed
         run: python tools/gate_rollup.py
@@ -75,27 +53,15 @@ jobs:
           python scripts/write_runtime_governance_status.py
           --output docs/reports/runtime_governance_status.json
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
-
-      - name: Generate runtime publish status
+      - name: Record artifact-only runtime status
         run: |
           mkdir -p reports
           cat > reports/runtime_publish_status.json <<'JSON'
           {
             "wave": "W005.1",
-            "runtime_status": "published",
+            "runtime_status": "artifact_only",
             "runtime_evidence": true,
-            "deployment_evidence": true
+            "deployment_evidence": false
           }
           JSON
 
