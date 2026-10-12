@@ -1,0 +1,135 @@
+{
+  "schema": "code-purple-branch-recovery-census/1.0",
+  "repository": "GBOGEB/ABACUS",
+  "base_sha": "dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9",
+  "observation_date": "2026-10-12",
+  "method": "GitHub refs/heads exact SHA readback followed by GET compare/main...head; compare files represent branch effect relative to main, not guaranteed unique-commit change files",
+  "denominator": 8,
+  "counts": {
+    "ahead": 1,
+    "diverged": 3,
+    "behind": 4,
+    "unknown": 0,
+    "branches_with_unique_commits": 4,
+    "unique_commits_in_population": 9,
+    "verified_fixed_defects": null
+  },
+  "entries": [
+    {
+      "branch": "fix/code-purple-evidence-trigger-20261012",
+      "head_sha": "37501f834c02e670e499b357e9585ed19cd285c1",
+      "status": "ahead",
+      "ahead_by": 6,
+      "behind_by": 0,
+      "reported_changed_files": [
+        ".github/workflows/code-purple-bd-probe.yml",
+        ".github/workflows/pr-feedback-gate.yml",
+        "ci/governance/pr_feedback_gate.py",
+        "ci/governance/tests/test_pr_feedback_gate.py"
+      ],
+      "disposition": "P0_CONTROL_GATE_REVIEW",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...37501f834c02e670e499b357e9585ed19cd285c1",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "mission/code-purple-p0-burndown-taxonomy-20261012",
+      "head_sha": "d8a10b1f403b782e218e058e07da6dd930d2ab13",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 190,
+      "reported_changed_files": [
+        "governance/code_purple/README.md"
+      ],
+      "disposition": "P1_CHERRY_PICK_DOCS_ONLY",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...d8a10b1f403b782e218e058e07da6dd930d2ab13",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "fix/abacus-bd-queue-proof-lineage-r2-20260926",
+      "head_sha": "53e3ea35652147e27aaea351d816ad0d1c2e7636",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 919,
+      "reported_changed_files": [],
+      "disposition": "MERGED_EQUIVALENT_NO_RECOVERY",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...53e3ea35652147e27aaea351d816ad0d1c2e7636",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "coverage/quality-gate-recovery-eb9936c-20261002",
+      "head_sha": "cb5e60669935334826ddad69b6291d2db927eb88",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 502,
+      "reported_changed_files": [
+        "DMAIC_V3/tests/test_quality_gate_coverage_recovery.py"
+      ],
+      "disposition": "P1_TEST_RECOVERY_REVIEW",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...cb5e60669935334826ddad69b6291d2db927eb88",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "mip/b6-controller-coverage-90-rebased-20261001",
+      "head_sha": "2a3a46718dcf305f56aac5c238761f7846bf61e5",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 630,
+      "reported_changed_files": [],
+      "disposition": "MERGED_EQUIVALENT_NO_RECOVERY",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...2a3a46718dcf305f56aac5c238761f7846bf61e5",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "fix/pr-feedback-exe001-794c3fbb",
+      "head_sha": "794c3fbbdc171774a1c463322ab0a313a973858e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 293,
+      "reported_changed_files": [],
+      "disposition": "MERGED_EQUIVALENT_NO_RECOVERY",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...794c3fbbdc171774a1c463322ab0a313a973858e",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "federation/activate-cryoplant-status-20260831",
+      "head_sha": "788abfb83efbcd9aced87d27a13644c9b6394a45",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 2159,
+      "reported_changed_files": [
+        "federation/manifest.yaml",
+        "integration/cryoplant_project/federation/manifest.yaml"
+      ],
+      "disposition": "P0_HIGH_DRIFT_AVOID_BLIND_MERGE",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...788abfb83efbcd9aced87d27a13644c9b6394a45",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    },
+    {
+      "branch": "feature/gm14-flake8-gate-parity-20260930",
+      "head_sha": "ef65239af60903c8e865bf8bb666eebeccbd7aba",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 804,
+      "reported_changed_files": [],
+      "disposition": "MERGED_EQUIVALENT_NO_RECOVERY",
+      "comparison_url": "https://github.com/GBOGEB/ABACUS/compare/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9...ef65239af60903c8e865bf8bb666eebeccbd7aba",
+      "caveat": "Unique commit requires independent review/tests; do not infer missing feature or resolved bug from branch status"
+    }
+  ],
+  "governance": {
+    "main_protection_last_verified": false,
+    "main_ruleset_last_verified_rules": 0,
+    "merge_allowed": false,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  },
+  "next_actions": [
+    "restore native Main Hard Gate via repository admin",
+    "security review + tests of 6-ahead CODE PURPLE gate branch against exact current head",
+    "review one-commit coverage test against current code; do not weaken thresholds",
+    "preserve old taxonomy and federation branches as evidence; retarget only deliberately and verify cross-repo counterpart",
+    "avoid recovering 4 merged-equivalent branches"
+  ]
+}
