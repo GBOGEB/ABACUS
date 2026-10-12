@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `6575adc8815d298bc8e9414a329c2ad6057d483bec7a772674691d08d28e9dcb`
+Policy SHA-256: `5be3edca51eb29d9eb796e35433477965a6b4cb4b0d0a7c1114c75d447721553`
 
 ## Outcome
 
-The repository currently contains **151 workflow definitions**. All **151** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **152 workflow definitions**. All **152** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,7 +29,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `core_test` | `ci-abacus.yml` | 11 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 11 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 19 | Runtime evidence, governance, review artifacts and schema validation. |
@@ -77,6 +77,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 2 | `keep` | — |
 | 20 | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | — |
 | 20 | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `bridge_federation` | `gbogeb-abacus-integration-ci-cd.yml` | push, workflow_dispatch | 10 | `keep` | — |
@@ -220,6 +221,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
 - `pip install pytest pyyaml` — `ci-abacus.yml`, `codespace-federation.yml`, `dow-sprint6-cicd.yml`
 - `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
+- `python -m pip install pytest` — `cryoplant-federation.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `python -m pytest \` — `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
 - `bandit -r . -f json -o bandit-report.json` — `ci-cd-tests.yml`, `ci-cd.yml`
@@ -233,9 +235,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
-- `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
+- `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
-- `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 
 ## Control rule
 
