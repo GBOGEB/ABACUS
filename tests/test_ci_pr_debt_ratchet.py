@@ -367,3 +367,61 @@ def test_a_bandit_config_change_keeps_the_formatting_ratchet(repo):
     assert report["changed_config_files"] == []
     assert report["status"] == "FAIL"
     assert ratchet_mod.ratchet(base, ("bandit",))["status"] == "FULL_SCAN_REQUIRED"
+
+
+@needs_tools
+def test_stub_changes_are_charged_to_black_and_isort(repo):
+    base = commit(repo, {
+        "pkg/types.pyi": "import os\nimport sys\n\ndef get() -> str: ...\n",
+    })
+    commit(repo, {
+        "pkg/types.pyi": "import sys\nimport os\n\ndef  get()->str:...\n",
+    })
+    report = ratchet_mod.ratchet(base, ("black", "isort"))
+    assert report["changed_python_files"] == ["pkg/types.pyi"]
+    assert {row["tool"] for row in report["added_debt"]} == {"black", "isort"}
+    assert report["status"] == "FAIL"
+
+
+@needs_tools
+def test_stub_only_change_does_not_expand_bandit_flake8_scope(repo):
+    base = commit(repo, {"pkg/types.pyi": "def get() -> str: ...\n"})
+    commit(repo, {"pkg/types.pyi": "def  get()->str:...\n"})
+    report = ratchet_mod.ratchet(base, ("flake8", "bandit"))
+    assert report["changed_python_files"] == ["pkg/types.pyi"]
+    assert report["rows"] == []
+    assert report["added_debt"] == []
+    assert report["status"] == "PASS"
+
+
+@needs_tools
+def test_type_stub_added_from_non_stub_extension_is_new(repo):
+    base = commit(repo, {"api/interface.txt": "def  get()->str:...\n"})
+    git(repo, "mv", "api/interface.txt", "api/interface.pyi")
+    git(repo, "commit", "-q", "-m", "rename stub")
+    report = ratchet_mod.ratchet(base, ("black",))
+    assert report["renamed_from"] == {}
+    assert report["status"] == "FAIL"
+
+
+def test_quality_workflow_ratchets_each_tool_independently():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github" / "workflows" / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert workflow.count("- '**/*.pyi'") == 2
+    assert "for tool in black isort flake8; do" in workflow
+    for tool in ("black", "isort", "flake8"):
+        assert f"{tool}_full_scan=required" not in workflow  # dynamically emitted
+        assert f"steps.quality_ratchet.outputs.{tool}_full_scan" in workflow
+    assert 'echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"' in workflow
+    assert 'flag_name="${tool}_FULL_SCAN"' in workflow
+    assert 'fallback="${!flag_name}"' in workflow
+
+
+def test_per_tool_config_map_is_not_global_override(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {".flake8": "[flake8]\nselect=E9\n"})
+    assert ratchet_mod.changed_config_files(base, ("flake8",)) == [".flake8"]
+    assert ratchet_mod.changed_config_files(base, ("black",)) == []
+    assert ratchet_mod.changed_config_files(base, ("isort",)) == []
