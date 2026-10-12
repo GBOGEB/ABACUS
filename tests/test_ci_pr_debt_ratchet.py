@@ -295,3 +295,11 @@ def test_a_symlink_replaced_by_a_file_is_new(repo):
     report = ratchet_mod.ratchet(base, ("bandit",))
     assert "pkg/mod.py" in report["changed_python_files"]
     assert report["status"] == "FAIL"
+
+
+def test_changing_the_lint_job_requirements_requires_the_full_scan(repo):
+    base = commit(repo, {"requirements-test.txt": "pytest\n", "pkg/a.py": CLEAN})
+    commit(repo, {"requirements-test.txt": "pytest\nflake8==3.0.0\n"})
+    assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
+    commit(repo, {"docs/requirements-test.txt": "x\n"})
+    assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
