@@ -87,3 +87,47 @@ jobs:
           name: code-purple-ldab-extended
           path: bd_receipts/
           if-no-files-found: warn
+
+  main-baseline-census:
+    name: Main exact-SHA red-root census (report only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute main regression and compile diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bd_baseline
+          python - <<'PY'
+          import datetime,hashlib,json,pathlib,subprocess,sys
+          expected="dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9"
+          actual=subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()
+          assert actual==expected, (actual,expected)
+          commands=[
+            [sys.executable,"-m","unittest","ci.governance.tests.test_pr_feedback_gate","-v"],
+            [sys.executable,"-m","compileall","-q","ci/governance","scripts/mip_repo_self_index.py","scripts/mip_health_selfheal_probe.py"],
+          ]
+          results=[]
+          for cmd in commands:
+            start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+            p=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+            log=p.stdout.encode("utf-8")
+            target=pathlib.Path("bd_baseline")/f"command_{len(results)}.log"
+            target.write_bytes(log)
+            results.append({"command":cmd,"start_utc":start,"exit_code":p.returncode,"log":str(target),"log_sha256":hashlib.sha256(log).hexdigest()})
+          obj={"source_sha":actual,"classification":"REPORT_ONLY_NOT_ADMISSION","results":results}
+          pathlib.Path("bd_baseline/receipt.json").write_text(json.dumps(obj,indent=2,sort_keys=True)+"\\n")
+          print(json.dumps(obj,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-purple-main-baseline
+          path: bd_baseline/
+          if-no-files-found: warn
