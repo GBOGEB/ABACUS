@@ -1579,6 +1579,31 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, None), [7])
         self.assertEqual(gate.evaluable_pr_numbers(FakeGitHub(), {}, 8), [])
 
+    def test_revalidation_none_short_circuits_without_fetch(self):
+        with mock.patch.object(gate, "evaluate") as evaluate:
+            self.assertIsNone(gate.revalidated_evidence(object(), 42, None))
+        evaluate.assert_not_called()
+
+    def test_revalidation_failure_never_reopens_admission(self):
+        evidence = gate.Evidence(
+            head_sha="a" * 40,
+            code_review_complete=False,
+            security_review_complete=False,
+            unresolved_threads=1,
+            ci_pending=(),
+            ci_failed=("required quality check failed",),
+            ci_seen=1,
+            deferred_comments=(),
+            review_deferral_valid=True,
+            security_sensitive=True,
+        )
+        self.assertEqual(evidence.state, "failure")
+        with mock.patch.object(gate, "evaluate") as evaluate:
+            result = gate.revalidated_evidence(object(), 42, evidence)
+        self.assertEqual(result.state, "failure")
+        self.assertIn("required quality check failed", result.failure_reasons)
+        evaluate.assert_not_called()
+
     def test_deferral_success_is_revalidated_before_publication(self):
         def evidence(**changes):
             base = {
