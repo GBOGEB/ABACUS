@@ -128,7 +128,7 @@ def changed_python_files(base: str) -> dict[str, str | None]:
         status = fields[index]
         if status[0] in "RC":
             old, new = fields[index + 1], fields[index + 2]
-            if status[0] == "C" or not old.endswith(".py"):
+            if status[0] == "C" or not old.endswith((".py", ".pyi")):
                 # A copy, or a non-Python file renamed to .py, is a new
                 # Python file: its debt is the PR's.
                 old = None
@@ -139,7 +139,7 @@ def changed_python_files(base: str) -> dict[str, str | None]:
             # to a regular file) has no comparable base content either.
             old = None if status[0] in "AT" else new
             index += 2
-        if new.endswith(".py"):
+        if new.endswith((".py", ".pyi")):
             changed[new] = old
     return dict(sorted(changed.items()))
 
@@ -359,6 +359,11 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
                 destination.write_bytes((ROOT / name).read_bytes())
         for path in paths:
             for tool in tools:
+                # Black and isort scan type stubs in broad recursive mode.
+                # Flake8-critical and Bandit full-repo jobs target .py files;
+                # do not invent .pyi security findings outside their scope.
+                if path.endswith(".pyi") and tool not in ("black", "isort"):
+                    continue
                 head = debt(tool, ROOT, path)
                 # The base side is scanned at its own path, so a rename keeps
                 # its original directory's config and test-file status: a
