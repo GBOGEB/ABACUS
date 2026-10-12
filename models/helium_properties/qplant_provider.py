@@ -1,7 +1,9 @@
 """QPLANT-specific helium provider routing.
 
 Project rule:
-- 2.0 K <= T <= 4.5 K: governing values MUST come from the child HEPAK receipt.
+- 0 < T <= 4.5 K: governing values MUST come from the child HEPAK receipt. This
+  includes He-II below the lambda point (2.1768 K, e.g. 1.8 K), where the
+  CoolProp helium EOS is out of range.
 - outside that band: delegate to the existing CoolProp runtime provider.
 - NIST remains validation/reference only and is never substituted as governing runtime.
 
@@ -16,7 +18,6 @@ from typing import Any
 from . import provider as coolprop_provider
 from .qplant_hepak_runtime_export import HepakRuntimeReceipt, load_qplant_hepak_export
 
-HEPAK_T_MIN_K = 2.0
 HEPAK_T_MAX_K = 4.5
 
 
@@ -42,7 +43,9 @@ class QplantHeliumState:
 
 def governing_provider_for_temperature(temperature_K: float) -> str:
     t = float(temperature_K)
-    return "HEPAK" if HEPAK_T_MIN_K <= t <= HEPAK_T_MAX_K else "CoolProp"
+    if not t > 0.0:
+        raise ValueError(f"QPLANT_INVALID_TEMPERATURE: T={temperature_K} K must be positive")
+    return "HEPAK" if t <= HEPAK_T_MAX_K else "CoolProp"
 
 
 def _close(a: float, b: float, *, rtol: float = 1e-9, atol: float = 1e-7) -> bool:
@@ -57,7 +60,7 @@ def _hepak_exact_state(receipt: HepakRuntimeReceipt, temperature_K: float, press
     if not matches:
         raise RuntimeError(
             f"QPLANT_HEPAK_EXACT_STATE_MISSING: T={temperature_K} K P={pressure_Pa} Pa. "
-            "No interpolation or CoolProp fallback is permitted for governing 2.0-4.5 K execution."
+            "No interpolation or CoolProp fallback is permitted for governing T <= 4.5 K execution."
         )
     if len(matches) != 1:
         raise RuntimeError(f"QPLANT_HEPAK_STATE_AMBIGUOUS: {len(matches)} rows match T/P")
@@ -95,7 +98,7 @@ def state_tp(
     if governing_provider_for_temperature(t) == "HEPAK":
         if hepak_csv is None:
             raise RuntimeError(
-                "QPLANT_HEPAK_RECEIPT_REQUIRED: governing 2.0-4.5 K state requested without child HEPAK CSV"
+                "QPLANT_HEPAK_RECEIPT_REQUIRED: governing T <= 4.5 K state requested without child HEPAK CSV"
             )
         receipt = load_qplant_hepak_export(hepak_csv, hepak_manifest)
         return _hepak_exact_state(receipt, t, p)
