@@ -1,0 +1,176 @@
+{
+  "schema": "code-purple-evidence-census/0.1",
+  "generated_for": "2026-10-12 governed recovery",
+  "source_repository": "GBOGEB/ABACUS",
+  "source_main_sha": "dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9",
+  "provenance": {
+    "branch_endpoint": "https://api.github.com/repos/GBOGEB/ABACUS/branches/main",
+    "ruleset_endpoint": "https://api.github.com/repos/GBOGEB/ABACUS/rulesets/24494381",
+    "historical_baseline_main_coverage_pct": 36.85,
+    "baseline_date": "2026-10-11"
+  },
+  "admission": {
+    "branch_protected": false,
+    "active_ruleset_id": 24494381,
+    "rule_count": 0,
+    "restoration_verified": false,
+    "merge_credit": "UNKNOWN",
+    "sample_size": 5,
+    "audit_sample": [
+      {
+        "pr": 1847,
+        "head_sha": "93611b80bc8b85e07f584791819803b87ad5478b",
+        "merge_sha": "ec23615f431816cd6657648a9ad91216cc5c6783",
+        "approved_review_records": 0,
+        "failed_check_records": 2,
+        "feedback_gate_states": [
+          "skipped",
+          "skipped",
+          "skipped",
+          "skipped",
+          "in_progress"
+        ],
+        "admission": "NOT_CERTIFIED",
+        "limitation": "Current REST observation, not time-reconstructed pre-merge event ledger; first-page check records may be incomplete.",
+        "url": "https://github.com/GBOGEB/ABACUS/pull/1847"
+      },
+      {
+        "pr": 1858,
+        "head_sha": "1289b4db3bfca5023627976f777fefd7d62bfdf8",
+        "merge_sha": "e10e39d3289b917a11ba15252f5a5b9eddf077ba",
+        "approved_review_records": 0,
+        "failed_check_records": 5,
+        "feedback_gate_states": [
+          "skipped",
+          "skipped"
+        ],
+        "admission": "NOT_CERTIFIED",
+        "limitation": "Current REST observation, not time-reconstructed pre-merge event ledger; first-page check records may be incomplete.",
+        "url": "https://github.com/GBOGEB/ABACUS/pull/1858"
+      },
+      {
+        "pr": 1876,
+        "head_sha": "ef635d9c4f7f0b8a1533458655b2c45a22e1cf75",
+        "merge_sha": "8028511c5af9842edbe9d8bc3c89b2f89fe2a018",
+        "approved_review_records": 0,
+        "failed_check_records": 0,
+        "feedback_gate_states": [
+          "in_progress"
+        ],
+        "admission": "NOT_CERTIFIED",
+        "limitation": "Current REST observation, not time-reconstructed pre-merge event ledger; first-page check records may be incomplete.",
+        "url": "https://github.com/GBOGEB/ABACUS/pull/1876"
+      },
+      {
+        "pr": 1857,
+        "head_sha": "e7b45912a226267e6f751a729054e6fdf452c4f9",
+        "merge_sha": "c436d942ec3e38019259180b1c9b4e1981d38cd5",
+        "approved_review_records": 0,
+        "failed_check_records": 4,
+        "feedback_gate_states": [
+          "in_progress"
+        ],
+        "admission": "NOT_CERTIFIED",
+        "limitation": "Current REST observation, not time-reconstructed pre-merge event ledger; first-page check records may be incomplete.",
+        "url": "https://github.com/GBOGEB/ABACUS/pull/1857"
+      },
+      {
+        "pr": 1875,
+        "head_sha": "33497fddec7c5093ca6b45349bafb26e703f27dc",
+        "merge_sha": "dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9",
+        "approved_review_records": 0,
+        "failed_check_records": 17,
+        "feedback_gate_states": [
+          "skipped",
+          "skipped"
+        ],
+        "admission": "NOT_CERTIFIED",
+        "limitation": "Current REST observation, not time-reconstructed pre-merge event ledger; first-page check records may be incomplete.",
+        "url": "https://github.com/GBOGEB/ABACUS/pull/1875"
+      }
+    ]
+  },
+  "coverage": {
+    "python": "3.12",
+    "observed_pct": 40.72,
+    "coverage_log": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635355/job/114912466743",
+    "reported_statements": 28802,
+    "missing_statements": 16737,
+    "reported_branches": 7582,
+    "missing_branches": 667,
+    "baseline_main_pct": 36.85,
+    "arithmetic_delta_percentage_points": 3.87,
+    "comparability_verified": false,
+    "certified_improvement_pct": null,
+    "current_pr_diff_coverage_pct": null,
+    "workflow_result": "failure",
+    "artifact_id": 11761450146
+  },
+  "root_causes": {
+    "cohort": "independent first-red signature extracted from Python 3.10/3.11/3.12 and B0",
+    "confirmed_open_minimum": 1,
+    "global_open": null,
+    "global_closed": null,
+    "confirmed": [
+      {
+        "id": "RAT-QUALITY-WORKFLOW-LOOP",
+        "state": "OPEN_UNVERIFIED_REPAIR",
+        "signature": "tests/test_ci_pr_debt_ratchet.py::test_quality_workflow_ratchets_each_tool_independently",
+        "failure": "Expected independent black/isort/flake8 loop text is missing from workflow",
+        "observed_jobs": [
+          114912466682,
+          114912466715,
+          114912466743,
+          114911490394
+        ],
+        "urls": [
+          "https://github.com/GBOGEB/ABACUS/actions/runs/38277635355/job/114912466682",
+          "https://github.com/GBOGEB/ABACUS/actions/runs/38277635355/job/114912466715",
+          "https://github.com/GBOGEB/ABACUS/actions/runs/38277635432/job/114911490394"
+        ]
+      }
+    ]
+  },
+  "bd_queue": {
+    "scope": "explicit issue cohort only; not global BD count",
+    "open_issue_numbers": [
+      1860,
+      1864,
+      1865,
+      1866,
+      1867,
+      1868,
+      1877
+    ],
+    "open": 7,
+    "closed": 0,
+    "global_open": null,
+    "global_closed": null,
+    "source": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "separate_live_pr_count": null
+  },
+  "ldab": {
+    "entrypoint": "integration/codespace_jyperter/scripts/mip_debug_diagnostic.py",
+    "entrypoint_url": "https://github.com/GBOGEB/ABACUS/blob/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9/integration/codespace_jyperter/scripts/mip_debug_diagnostic.py",
+    "canonical_confirmation": "CANDIDATE_ONLY",
+    "actual_runtime_receipt": null,
+    "actual_exit_code": null,
+    "input_output_digest": null,
+    "acceptance": "UNKNOWN"
+  },
+  "worker_rex": {
+    "native_proposal_jobs_success": 8,
+    "native_run_id": 38277635432,
+    "authenticated_codex_launch_id": null,
+    "accepted_rex_receipt": null,
+    "launch_proof": "UNKNOWN",
+    "note": "Native proposal-worker jobs are not authenticated CODEX Mission Control dispatch."
+  },
+  "governance": {
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0,
+    "merge_allowed": false
+  }
+}
