@@ -18,7 +18,7 @@ jobs:
           python-version: '3.12'
       - name: Install targeted test dependencies
         run: |
-          python -m pip install pytest black isort flake8 bandit
+          python -m pip install pytest numpy black isort flake8 bandit
       - name: Verify exact-head and producer wiring
         shell: bash
         run: |
