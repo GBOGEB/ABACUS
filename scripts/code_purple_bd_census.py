@@ -17,11 +17,11 @@ def run(cmd,cwd,tag,timeout=150):
     dest=OUT/(tag+".log");dest.write_bytes(raw)
     return {"command":cmd,"exit_code":rc,"log":dest.name,"sha256":digest(raw),"bytes":len(raw)}
 def coverage_info(root,tag):
-    out=run([sys.executable,"-m","coverage","run","--source=ci.governance.pr_feedback_gate","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
-    x=run([sys.executable,"-m","coverage","xml","--fail-under=0","--include=*/ci/governance/pr_feedback_gate.py","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
+    out=run([sys.executable,"-m","coverage","run","--data-file",str(OUT/(tag+".coverage")),"--source=ci.governance.pr_feedback_gate","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
+    x=run([sys.executable,"-m","coverage","xml","--data-file",str(OUT/(tag+".coverage")),"--fail-under=0","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
     p=OUT/(tag+"_coverage.xml")
     info={"test":out,"xml_command":x,"measured":False,"scope":"ci.governance.pr_feedback_gate_only"}
-    if p.is_file():
+    if p.is_file() and x["exit_code"]==0:
         tree=ET.parse(p).getroot()
         info.update({"measured":int(tree.get("lines-valid","0"))>0,"lines_valid":int(tree.get("lines-valid","0")),"lines_covered":int(tree.get("lines-covered","0")),"line_rate":float(tree.get("line-rate","0"))})
         files=[]
@@ -31,6 +31,7 @@ def coverage_info(root,tag):
             files.append({"path":elem.get("filename"),"covered":hit,"total":denom,"missing":max(0,denom-hit)})
         info["files"]=sorted(files,key=lambda x:x["missing"],reverse=True)[:15]
         info["xml_sha256"]=digest(p.read_bytes())
+    if not info["measured"]: info["reason"]="coverage_xml_absent_or_zero_denominator"; info["test_exit"]=out["exit_code"]
     return info
 def security(root,tag):
     cmds={"bandit":[sys.executable,"-m","bandit","-q","-r","ci/governance","-f","json"],"safety":[sys.executable,"-m","safety","check","--json"],"pip_audit":[sys.executable,"-m","pip_audit","--format","json"]}
@@ -86,7 +87,7 @@ def main():
         old=result.get("main",{}).get("security",{}).get(scanner,{})
         new=result["repair"]["security"].get(scanner,{})
         if scanner=="bandit" and "findings" in old and "findings" in new:
-            identify=lambda f:(f["rule"],f["path"],f["line"])
+            identify=lambda f:(f["rule"],f["path"])
             a={identify(f) for f in old["findings"]};b={identify(f) for f in new["findings"]}
             result["security_delta"][scanner]={"unchanged":len(a&b),"new":len(b-a),"removed":len(a-b)}
         else:result["security_delta"][scanner]={"status":"UNKNOWN","reason":"unparsed_or_unpinned_dependency_inventory"}
