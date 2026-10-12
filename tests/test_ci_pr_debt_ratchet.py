@@ -245,3 +245,21 @@ def test_moving_a_test_into_production_charges_its_asserts(repo):
     assert report["renamed_from"] == {"pkg/x.py": "tests/test_x.py"}
     [row] = report["added_debt"]
     assert any(key.startswith("B101:") for key in row["new_findings"])
+
+
+def test_renaming_a_config_away_requires_the_full_scan(repo):
+    base = commit(repo, {".editorconfig": "root = true\n", "pkg/a.py": CLEAN})
+    git(repo, "mv", ".editorconfig", "editorconfig.old")
+    commit(repo, {"pkg/a.py": CLEAN + "\n# touched\n"})
+    assert ratchet_mod.changed_config_files(base) == [".editorconfig"]
+
+
+@needs_tools
+def test_nested_config_applies_to_both_sides(repo):
+    long_line = "VALUE = " + " + ".join(["1"] * 30) + "\n"
+    nested = "[tool.black]\nline-length = 200\n"
+    base = commit(repo, {"pkg/pyproject.toml": nested, "pkg/a.py": long_line})
+    commit(repo, {"pkg/a.py": long_line + "OTHER =  2\n"})
+    report = ratchet_mod.ratchet(base, ("black",))
+    [row] = report["added_debt"]
+    assert row["base"] == 0 and row["head"] == 1

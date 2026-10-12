@@ -58,10 +58,25 @@ def git(*args: str) -> str:
 
 
 def changed_config_files(base: str) -> list[str]:
-    output = git("diff", "--name-only", "-z", base, "HEAD", "--")
-    return sorted(
-        path for path in output.split("\0") if path and Path(path).name in CONFIG_FILES
-    )
+    """Lint config paths the PR adds, edits, deletes or renames.
+
+    Both sides of a rename count, so renaming ``.editorconfig`` away is a
+    config change too.
+    """
+    output = git("diff", "--name-status", "-z", "-M", base, "HEAD", "--")
+    fields = output.split("\0")
+    paths = set()
+    index = 0
+    while index < len(fields) and fields[index]:
+        width = 3 if fields[index][0] in "RC" else 2
+        paths.update(fields[index + 1 : index + width])
+        index += width
+    return sorted(path for path in paths if Path(path).name in CONFIG_FILES)
+
+
+def tracked_config_files() -> list[str]:
+    output = git("ls-files", "-z")
+    return [p for p in output.split("\0") if p and Path(p).name in CONFIG_FILES]
 
 
 def changed_python_files(base: str) -> dict[str, str]:
@@ -268,9 +283,14 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     with tempfile.TemporaryDirectory() as scratch:
         base_root = Path(scratch)
         at_base = set(base_snapshot(base, paths, base_root))
-        for name in CONFIG_FILES:
+        # Config is unchanged here (a change returns FULL_SCAN_REQUIRED), so
+        # copy every tracked config file to its own directory: tools find
+        # nested configs (e.g. pkg/pyproject.toml) the same way on both sides.
+        for name in tracked_config_files():
             if (ROOT / name).is_file():
-                (base_root / name).write_bytes((ROOT / name).read_bytes())
+                destination = base_root / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((ROOT / name).read_bytes())
         for path in paths:
             for tool in tools:
                 head = debt(tool, ROOT, path)
