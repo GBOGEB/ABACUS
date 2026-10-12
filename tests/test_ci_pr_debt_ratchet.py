@@ -423,3 +423,35 @@ def test_per_tool_config_map_is_not_global_override(repo):
     assert ratchet_mod.changed_config_files(base, ("flake8",)) == [".flake8"]
     assert ratchet_mod.changed_config_files(base, ("black",)) == []
     assert ratchet_mod.changed_config_files(base, ("isort",)) == []
+
+
+@needs_tools
+def test_a_bandit_config_cannot_silence_its_own_new_finding(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {".bandit": "[bandit]\nskips = B307\n", "pkg/a.py": BANDIT_HIT})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert report["base_policy_red"] == ["bandit"]
+    assert report["status"] == "BASE_POLICY_RED"
+    assert ratchet_mod.main(["--base", base, "--tools", "bandit"]) == 1
+
+
+@needs_tools
+def test_a_flake8_config_cannot_silence_its_own_new_finding(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(
+        repo,
+        {
+            ".flake8": "[flake8]\nextend-ignore = F821\n",
+            "pkg/a.py": CLEAN + "\n\ndef broken():\n    return missing_name\n",
+        },
+    )
+    assert ratchet_mod.ratchet(base, ("flake8",))["status"] == "BASE_POLICY_RED"
+
+
+@needs_tools
+def test_a_config_change_on_clean_code_goes_to_the_full_scan(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {".bandit": "[bandit]\nskips = B101\n"})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert report["base_policy_red"] == []
+    assert ratchet_mod.main(["--base", base, "--tools", "bandit"]) == 3

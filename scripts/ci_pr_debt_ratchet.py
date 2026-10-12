@@ -152,8 +152,21 @@ def base_snapshot(base: str, paths: dict[str, str | None], target: Path) -> list
     first-party on the base side. A renamed file keeps its original path, so
     it keeps its original test-file status.
     """
+    export_tree(base, target)
+    existing = []
+    for path, base_path in paths.items():
+        if base_path is None:
+            continue
+        source = target / base_path
+        if source.is_file() and not source.is_symlink():
+            existing.append(path)
+    return existing
+
+
+def export_tree(rev: str, target: Path) -> None:
+    """Write the tree of ``rev`` into target (no .git, no untracked files)."""
     archive = subprocess.Popen(  # nosec B603 B607
-        ["git", "archive", "--format=tar", base], cwd=ROOT, stdout=subprocess.PIPE
+        ["git", "archive", "--format=tar", rev], cwd=ROOT, stdout=subprocess.PIPE
     )
     extract = subprocess.run(  # nosec B603 B607
         ["tar", "-x", "-f", "-", "-C", str(target)],
@@ -163,15 +176,7 @@ def base_snapshot(base: str, paths: dict[str, str | None], target: Path) -> list
     )
     archive.stdout.close()
     if archive.wait() != 0 or extract.returncode != 0:
-        raise ToolError(f"could not export base {base}: {extract.stderr!r}")
-    existing = []
-    for path, base_path in paths.items():
-        if base_path is None:
-            continue
-        source = target / base_path
-        if source.is_file() and not source.is_symlink():
-            existing.append(path)
-    return existing
+        raise ToolError(f"could not export {rev}: {extract.stderr!r}")
 
 
 class ToolError(RuntimeError):
@@ -331,12 +336,50 @@ def debt(tool: str, root: Path, path: str) -> Counter:
     return bandit_debt(root, path)
 
 
+# Tools whose configuration can only suppress findings (skips, excludes,
+# ignores). When a PR changes such a config, the full scan that decides runs
+# under the PR's own config, so the PR could silence its new findings. The
+# head's code must therefore also be clean under the base's config. Black and
+# isort configs define the expected output instead, so a change to them
+# legitimately changes the full-scan result and is judged by it alone.
+POLICY_SCANS = {
+    "flake8": ["-m", "flake8", ".", f"--select={FLAKE8_SELECT}", "-q"],
+    "bandit": ["-m", "bandit", "-r", ".", "-q", "-f", "json", "-o", os.devnull],
+}
+
+
+def base_policy_scan(base: str, tool: str, configs: list[str]) -> bool:
+    """Whether the head's tree passes ``tool``'s full scan under the base's
+    version of the changed config files.
+
+    A config file the PR added is removed and one it changed or deleted is
+    restored, so a PR cannot relax the policy that judges it.
+    """
+    with tempfile.TemporaryDirectory() as scratch:
+        root = Path(scratch)
+        export_tree("HEAD", root)
+        for path in configs:
+            target = root / path
+            if target.is_file() or target.is_symlink():
+                target.unlink()
+            shown = subprocess.run(  # nosec B603 B607
+                ["git", "show", f"{base}:{path}"], cwd=ROOT, capture_output=True
+            )
+            if shown.returncode == 0:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(shown.stdout)
+        result = run([*PYTHON, *POLICY_SCANS[tool]], root)
+    if result.returncode not in (0, 1):
+        raise tool_error(tool, ".", result)
+    return result.returncode == 0
+
+
 def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     require_tools(tools)
     configs = changed_config_files(base, tools)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.5.0",
+        "schema": "abacus-pr-debt-ratchet/1.6.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
@@ -344,7 +387,24 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
         "renamed_from": {new: old for new, old in paths.items() if old and new != old},
     }
     if configs:
-        return {**report, "rows": [], "added_debt": [], "status": "FULL_SCAN_REQUIRED"}
+        policy = [path for path in configs if path not in TOOL_ENVIRONMENT_FILES]
+        red = [
+            tool
+            for tool in tools
+            if tool in POLICY_SCANS
+            and any(tool in config_tools(path) for path in policy)
+            and not base_policy_scan(
+                base, tool, [p for p in policy if tool in config_tools(p)]
+            )
+        ]
+        status = "BASE_POLICY_RED" if red else "FULL_SCAN_REQUIRED"
+        return {
+            **report,
+            "rows": [],
+            "added_debt": [],
+            "base_policy_red": red,
+            "status": status,
+        }
     rows = []
     with tempfile.TemporaryDirectory() as scratch:
         base_root = Path(scratch)
@@ -400,6 +460,11 @@ def summary(report: dict) -> str:
         f"- files/tools with added debt: **{len(report['added_debt'])}**",
         f"- status: **{report['status']}**",
     ]
+    for tool in report.get("base_policy_red", []):
+        lines.append(
+            f"- {tool}: the PR's code is not clean under the base's {tool}"
+            " configuration, so the config change cannot admit it"
+        )
     if report["changed_config_files"]:
         lines.append(
             "- lint configuration changed ("
@@ -439,6 +504,8 @@ def main(argv: list[str] | None = None) -> int:
         with args.summary.open("a", encoding="utf-8") as handle:
             handle.write(summary(report))
     print(summary(report), end="")
+    if report["status"] == "BASE_POLICY_RED":
+        return 1
     if report["changed_config_files"]:
         return 3
     return 1 if report["added_debt"] else 0
