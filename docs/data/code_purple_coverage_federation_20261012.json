@@ -1,0 +1,105 @@
+{
+  "schema": "code-purple-coverage-federation-surface/1.0",
+  "source_repo": "GBOGEB/ABACUS",
+  "pinned_main_sha": "dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9",
+  "scope_rule": "Never combine independent coverage populations; separate executed tests, source-line coverage, federation legs, runtime smoke and self-index.",
+  "repo_broad_coverage": {
+    "state": "OBSERVED_UNCERTIFIED",
+    "value_pct": 40.72,
+    "baseline_pct": 36.85,
+    "arithmetic_delta_pp": 3.87,
+    "comparable_denominator": false,
+    "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635355/job/114912466743",
+    "reported_source_statements": 28802,
+    "missing_statements": 16737,
+    "branches": 7582,
+    "partial_branches": 667,
+    "config": "pyproject.toml tool.coverage.run source='.' branch=true omit tests and environments",
+    "workflow_conclusion": "failure"
+  },
+  "test_execution": {
+    "canonical_b0": {
+      "passed": 1268,
+      "failed": 1,
+      "total_executed": 1269,
+      "test_pass_ratio_pct": 99.9212,
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635432/job/114911490394",
+      "note": "Test pass ratio is not code coverage"
+    },
+    "main_ci": {
+      "run_id": 38277635425,
+      "terminal_jobs": 6,
+      "successful_jobs": 6,
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635425"
+    },
+    "python_matrix": {
+      "run_id": 38277635355,
+      "python_310": "FAIL ratchet quality workflow",
+      "python_311": "FAIL same root",
+      "python_312": "FAIL same ratchet root after emitted coverage",
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635355"
+    }
+  },
+  "federation": {
+    "fully_bidirectional_accepted": false,
+    "abacus_main_current_sha": "dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9",
+    "prior_sha": "e7a25eead87e9e8901cf37b09f1ad7f342a45394",
+    "prior_sha_results": [
+      {
+        "surface": "codespace_jyperter",
+        "run_id": 38277502724,
+        "result": "success",
+        "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277502724"
+      },
+      {
+        "surface": "cryoplant-project reciprocal probe",
+        "run_id": 38277502687,
+        "result": "failure",
+        "failed_steps": [
+          "Probe cryoplant-project live",
+          "Run cryoplant-project local smoke tests"
+        ],
+        "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277502687"
+      },
+      {
+        "surface": "receipt-only federation consumer",
+        "run_id": 38277502748,
+        "result": "success",
+        "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277502748"
+      }
+    ],
+    "current_sha_results": [
+      {
+        "surface": "QPLANT runtime smoke",
+        "run_id": 38277635382,
+        "result": "success",
+        "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277635382"
+      }
+    ],
+    "cross_repo_federation_coverage_pct": null,
+    "denominator_verified": false
+  },
+  "self_smoke": {
+    "exact_main_local_execution": "NOT_EXECUTED",
+    "reason": "Working container could not resolve github.com for clone; GitHub connector can read individual files but does not supply complete authenticated repository checkout",
+    "local_command": "python scripts/mip_verify_self_index.py --help [inspect CLI first, then run canonical options]",
+    "federation_test": "pytest integration/codespace_jyperter/tests/test_smoke_federation.py -q",
+    "source_script": "https://github.com/GBOGEB/ABACUS/blob/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9/scripts/mip_verify_self_index.py",
+    "source_tests": "https://github.com/GBOGEB/ABACUS/blob/dfd56456bf2b7ce14d48fe136b0800cb6c44f6c9/integration/codespace_jyperter/tests/test_smoke_federation.py",
+    "acceptance": "UNKNOWN"
+  },
+  "pr_diff_coverage": {
+    "value_pct": null,
+    "baseline_reference_pct": 51,
+    "comparison": "UNKNOWN"
+  },
+  "governance": {
+    "branch_protected": false,
+    "main_ruleset_rules": 0,
+    "merge_admissible": false,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  }
+}
