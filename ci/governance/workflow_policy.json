@@ -79,6 +79,7 @@
     "intent": "Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.",
     "pr_write_allowed": [
       "bootstrap-integration.yml",
+      "branch-hygiene.yml",
       "codeql.yml",
       "dependency-review.yml",
       "gloob-causal-responder.yml",
@@ -251,6 +252,12 @@
       "pattern": "^(auto-merge-prs|branch-analysis|branch-pruner|ci-failure-debug-rerun|ci_monitor_and_issue_creator|copilot-pr-creator|dashboard-health|post-merge-pr-summary)\\.yml$",
       "cluster": "automation",
       "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^branch-hygiene\\.yml$",
+      "cluster": "automation",
+      "lifecycle": "manual",
       "disposition": "keep"
     },
     {
