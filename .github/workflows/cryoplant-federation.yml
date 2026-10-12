@@ -60,6 +60,12 @@ jobs:
 
   reciprocal-probe:
     name: Reciprocal Probe (ABACUS -> cryoplant-project)
+    # GitHub withholds secrets from pull requests opened from forks, so the
+    # probe would always fail there. Same-repository pull requests still
+    # run it, which keeps pre-merge evidence for an activation change.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     environment: cryoplant-federation
     steps:
