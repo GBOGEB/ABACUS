@@ -318,20 +318,21 @@ def unsorted_files(root: Path) -> set[str]:
     return found
 
 
-def flake8_debt(root: Path, path: str) -> Counter:
-    result = run(
-        [
-            *PYTHON,
-            "-m",
-            "flake8",
-            # Likewise an inline ``# noqa`` cannot hide a new critical error.
-            "--disable-noqa",
-            f"--select={FLAKE8_SELECT}",
-            "--format=%(code)s",
-            path,
-        ],
-        root,
-    )
+def flake8_debt(root: Path, path: str, isolated: bool = False) -> Counter:
+    cmd = [
+        *PYTHON,
+        "-m",
+        "flake8",
+        # Likewise an inline ``# noqa`` cannot hide a new critical error.
+        "--disable-noqa",
+        f"--select={FLAKE8_SELECT}",
+        "--format=%(code)s",
+    ]
+    if isolated:
+        # The PR changed Flake8 config: read none, so its ignores and
+        # per-file-ignores cannot hide a new error on either side.
+        cmd.append("--isolated")
+    result = run([*cmd, path], root)
     findings = [line for line in result.stdout.splitlines() if line.strip()]
     # Flake8 exits 1 with findings; any other non-zero exit, or 1 with no
     # findings printed, means it did not run (bad config, crash).
@@ -379,11 +380,11 @@ def bandit_debt(root: Path, path: str) -> Counter:
     return findings
 
 
-def debt(tool: str, root: Path, path: str) -> Counter:
+def debt(tool: str, root: Path, path: str, isolated: bool = False) -> Counter:
     if tool in ("black", "isort"):
         return formatting_debt(tool, root, path)
     if tool == "flake8":
-        return flake8_debt(root, path)
+        return flake8_debt(root, path, isolated)
     return bandit_debt(root, path)
 
 
@@ -430,7 +431,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base, tools)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.8.0",
+        "schema": "abacus-pr-debt-ratchet/1.9.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
@@ -448,12 +449,12 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
                 base, tool, [p for p in policy if tool in config_tools(p)]
             )
         ]
-        # Bandit given a file (not -r) reads no .bandit, so its per-file
-        # comparison still holds when the config changed, and still catches
-        # a new finding the head-configured full scan might skip.
-        rows = (
-            compare_files(base, paths, ("bandit",), report) if "bandit" in tools else []
-        )
+        # Bandit given a file (not -r) reads no .bandit, and Flake8 runs
+        # --isolated here, so their per-file comparisons still hold when the
+        # config changed, and still catch a new finding, even one under an
+        # inline nosec or noqa, that the full scans would not report.
+        compared = tuple(tool for tool in ("flake8", "bandit") if tool in tools)
+        rows = compare_files(base, paths, compared, report, isolated=True)
         added = [row for row in rows if row["added"]]
         if red:
             status = "BASE_POLICY_RED"
@@ -477,16 +478,23 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
 
 
 def compare_files(
-    base: str, paths: dict[str, str | None], tools: tuple[str, ...], report: dict
+    base: str,
+    paths: dict[str, str | None],
+    tools: tuple[str, ...],
+    report: dict,
+    isolated: bool = False,
 ) -> list[dict]:
-    """Per-file debt rows for ``tools`` over the changed paths."""
+    """Per-file debt rows for ``tools`` over the changed paths.
+
+    ``isolated`` makes Flake8 read no config, for when the PR changed it.
+    """
     rows = []
     with tempfile.TemporaryDirectory() as scratch:
         base_root = Path(scratch)
         at_base = set(base_snapshot(base, paths, base_root))
-        # Config is unchanged here (a change returns FULL_SCAN_REQUIRED), so
-        # copy every tracked config file to its own directory: tools find
-        # nested configs (e.g. pkg/pyproject.toml) the same way on both sides.
+        # Copy every tracked config file (the head's) to its own directory:
+        # tools find nested configs (e.g. pkg/pyproject.toml) the same way on
+        # both sides. Only Bandit and isolated Flake8 run here when it changed.
         for name in tracked_config_files():
             if (ROOT / name).is_file():
                 destination = base_root / name
@@ -499,12 +507,14 @@ def compare_files(
                 # do not invent .pyi security findings outside their scope.
                 if path.endswith(".pyi") and tool not in ("black", "isort"):
                     continue
-                head = debt(tool, ROOT, path)
+                head = debt(tool, ROOT, path, isolated)
                 # The base side is scanned at its own path, so a rename keeps
                 # its original directory's config and test-file status: a
                 # test moved into production code loses its B101 exemption.
                 at_base_debt = (
-                    debt(tool, base_root, paths[path]) if path in at_base else Counter()
+                    debt(tool, base_root, paths[path], isolated)
+                    if path in at_base
+                    else Counter()
                 )
                 new = head - at_base_debt
                 rows.append(

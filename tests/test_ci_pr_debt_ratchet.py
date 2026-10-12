@@ -501,6 +501,29 @@ def test_an_inline_noqa_cannot_hide_a_new_critical_error(repo):
 
 
 @needs_tools
+@pytest.mark.parametrize(
+    "config",
+    [
+        "[flake8]\nmax-line-length = 100\n",
+        "[flake8]\nper-file-ignores = pkg/a.py:F821\n",
+    ],
+)
+def test_a_flake8_config_change_still_compares_changed_files(repo, config):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(
+        repo,
+        {
+            ".flake8": config,
+            "pkg/a.py": CLEAN + "\n\ndef f():\n    return nope  # noqa\n",
+        },
+    )
+    report = ratchet_mod.ratchet(base, ("flake8",))
+    assert [row["path"] for row in report["added_debt"]] == ["pkg/a.py"]
+    assert report["added_debt"][0]["new_findings"] == {"F821": 1}
+    assert ratchet_mod.main(["--base", base, "--tools", "flake8"]) == 1
+
+
+@needs_tools
 def test_a_bandit_config_change_still_compares_changed_files(repo):
     base = commit(repo, {"pkg/a.py": CLEAN, "pkg/b.py": CLEAN})
     commit(
