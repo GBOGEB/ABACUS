@@ -111,8 +111,11 @@ three tools moves to checks scoped to what the PR changes:
   isolated interpreter (`python -I`). CI runs the base revision's copy of
   the ratchet, so a PR cannot weaken the check that admits it; the PR that
   introduces it is judged by the full scans. Inline `# nosec` and `# noqa`
-  are ignored, so a PR cannot silence its own new finding, and Bandit
-  still compares changed files when `.bandit` changes. A PR that changes
+  are ignored, so a PR cannot silence its own new finding. When their
+  config changes, Bandit and Flake8 (reading no config) still compare
+  changed files. The workflow that fetches the base ratchet is itself
+  PR-editable, so a PR that edits it is held only by review until the
+  owner makes the admission steps a required workflow. A PR that changes
   lint configuration (`pyproject.toml`, `setup.cfg`, `tox.ini`,
   `.flake8`, `.isort.cfg`, `.bandit`, `.editorconfig`, `.gitignore`, in
   any directory) is not
