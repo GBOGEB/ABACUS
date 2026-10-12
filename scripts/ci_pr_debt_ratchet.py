@@ -16,9 +16,11 @@ fails only if the PR adds debt:
   test files B101 (``assert`` use) is not counted, since that is how pytest
   tests assert.
 
-A PR that changes lint configuration (any of ``CONFIG_FILES``) can change
-results for every file, which a per-file comparison cannot attribute, so the
-ratchet does not admit it: it exits 3 and the full-repository result applies.
+A PR that changes lint configuration (``CONFIG_TOOLS``) or the files that
+install and invoke the tools (``TOOL_ENVIRONMENT_FILES``) can change results
+for every file, which a per-file comparison cannot attribute, so the ratchet
+does not admit it for the tools that file affects: it exits 3 and the
+full-repository result applies.
 
 The full-repository scans still run and are still enforced on main pushes,
 schedules and manual runs; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
@@ -39,24 +41,38 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FLAKE8_SELECT = "E9,F63,F7,F82"
 TOOLS = ("black", "isort", "flake8", "bandit")
-# Copied into the base snapshot so both sides run under the head's config.
-CONFIG_FILES = (
-    "pyproject.toml",
-    "setup.cfg",
-    "tox.ini",
-    ".flake8",
-    ".isort.cfg",
-    ".bandit",
+# Lint config, mapped to the tools that read it. Copied into the base
+# snapshot so both sides run under the head's config; a change sends only
+# the tools that read the file to the full scan, so tightening .bandit is
+# not judged by the repository-wide Black result.
+CONFIG_TOOLS = {
+    # Black reads only pyproject.toml; Flake8 does not read it. Bandit
+    # reads .bandit only (no -c is passed).
+    "pyproject.toml": ("black", "isort"),
+    "setup.cfg": ("isort", "flake8"),
+    "tox.ini": ("isort", "flake8"),
+    ".flake8": ("flake8",),
+    ".isort.cfg": ("isort",),
+    ".bandit": ("bandit",),
     # isort reads indent and line_length from .editorconfig.
-    ".editorconfig",
-    # Black's and isort's recursive discovery in the full scan skip
-    # ignored paths, so .gitignore changes what the full scan covers.
-    ".gitignore",
-)
-# Installed by the Code Quality job after the lint tools (repo-root path), so
-# a pin there can replace Black, isort, Flake8 or add a Flake8 plugin. Not
-# copied to the base snapshot; a change to it always needs the full scan.
-TOOL_ENVIRONMENT_FILES = ("requirements-test.txt",)
+    ".editorconfig": ("isort",),
+    # Black's, isort's and Bandit's recursive discovery in the full scan
+    # skip ignored paths, so .gitignore changes what the full scan covers.
+    ".gitignore": ("black", "isort", "bandit"),
+}
+CONFIG_FILES = tuple(CONFIG_TOOLS)
+# Repo-root paths that install or invoke the tools. Not copied to the base
+# snapshot; a change to one always needs the full scan for its tools.
+TOOL_ENVIRONMENT_FILES = {
+    # Installed by the Code Quality job after the lint tools, so a pin
+    # there can replace Black, isort, Flake8 or add a Flake8 plugin. The
+    # Security job installs Bandit on its own.
+    "requirements-test.txt": ("black", "isort", "flake8"),
+    # Installs every tool and sets the full-scan commands and flags.
+    ".github/workflows/ci-cd-tests.yml": TOOLS,
+    # The ratchet runs from the head, so it would admit its own weakening.
+    "scripts/ci_pr_debt_ratchet.py": TOOLS,
+}
 
 
 def git(*args: str) -> str:
@@ -65,9 +81,16 @@ def git(*args: str) -> str:
     ).stdout
 
 
-def changed_config_files(base: str) -> list[str]:
+def config_tools(path: str) -> tuple[str, ...]:
+    """Tools whose full-scan result a change to ``path`` can alter."""
+    if path in TOOL_ENVIRONMENT_FILES:
+        return TOOL_ENVIRONMENT_FILES[path]
+    return CONFIG_TOOLS.get(Path(path).name, ())
+
+
+def changed_config_files(base: str, tools: tuple[str, ...] = TOOLS) -> list[str]:
     """Lint config and tool-environment paths the PR adds, edits, deletes
-    or renames.
+    or renames that ``tools`` read.
 
     Both sides of a rename count, so renaming ``.editorconfig`` away is a
     config change too.
@@ -80,11 +103,7 @@ def changed_config_files(base: str) -> list[str]:
         width = 3 if fields[index][0] in "RC" else 2
         paths.update(fields[index + 1 : index + width])
         index += width
-    return sorted(
-        path
-        for path in paths
-        if Path(path).name in CONFIG_FILES or path in TOOL_ENVIRONMENT_FILES
-    )
+    return sorted(path for path in paths if set(config_tools(path)) & set(tools))
 
 
 def tracked_config_files() -> list[str]:
@@ -314,10 +333,10 @@ def debt(tool: str, root: Path, path: str) -> Counter:
 
 def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     require_tools(tools)
-    configs = changed_config_files(base)
+    configs = changed_config_files(base, tools)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.4.0",
+        "schema": "abacus-pr-debt-ratchet/1.5.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,

@@ -111,15 +111,19 @@ three tools moves to checks scoped to what the PR changes:
   isolated interpreter (`python -I`). A PR that changes lint configuration
   (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
   `.bandit`, `.editorconfig`, `.gitignore`, in any directory) is not
-  admitted by the ratchet, because such a change can alter every file's
-  result; the full-repository scan decides, and the workflow triggers on
-  each of those files. The same holds for the root
-  `requirements-test.txt`, which the Code Quality job installs after the
-  lint tools. A file renamed to `.py`
-  from another extension, or a symlink or submodule replaced by a regular
-  file, counts as new. A rename's base side is scanned at its original
-  path, so it keeps its test-file status. The base side is the whole base
-  tree, so isort classifies its imports against the base's own packages.
+  admitted by the ratchet for the tools that read that file, because such
+  a change can alter every file's result; the full-repository scan for
+  those tools decides, and the workflow triggers on each of those files.
+  A `.bandit` change leaves the Black/isort/Flake8 ratchet in place, and a
+  `.flake8` change leaves the Bandit ratchet in place. The same holds for
+  `ci-cd-tests.yml` and the ratchet script, which install and run every
+  tool, and for the root `requirements-test.txt`, which the Code Quality
+  job installs after the lint tools (it does not affect Bandit). A file
+  renamed to `.py` from another extension, or a symlink or submodule
+  replaced by a regular file, counts as new. A rename's base side is
+  scanned at its original path, so it keeps its test-file status. The
+  base side is the whole base tree, so isort classifies its imports
+  against the base's own packages.
   Black and isort are pinned to the root configuration, as the full
   `black .` and `isort .` scans are.
 - Safety is not relaxed and stays enforced on pull requests.
