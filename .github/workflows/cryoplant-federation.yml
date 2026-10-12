@@ -62,8 +62,11 @@ jobs:
     name: Reciprocal Probe (ABACUS -> cryoplant-project)
     # Never on pull requests: this job hands the token to checked-out code,
     # and PR code (even from a same-repository branch) could exfiltrate it.
-    # For pre-merge evidence, the owner dispatches it on the branch; the
-    # cryoplant-federation environment's protection rules gate that run.
+    # It runs on main pushes, the daily schedule and manual dispatch, which
+    # GitHub only offers once this file is on the default branch; the
+    # cryoplant-federation environment's protection rules gate each run.
+    # So this workflow lands with the member still proposed, and activation
+    # follows in its own PR once a run here has passed.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment: cryoplant-federation
