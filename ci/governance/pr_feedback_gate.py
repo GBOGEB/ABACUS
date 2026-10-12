@@ -615,6 +615,37 @@ def head_current_since(
     return max(stamps) if stamps else ""
 
 
+def head_reused_across_transitions(
+    runs: list[dict[str, Any]], head_sha: str, pr_number: int
+) -> bool:
+    """Deny fallback on A->B->A; GitHub server-stamped PR run observations.
+
+    An incomplete or ambiguous history conservatively disables the fallback.
+    This is a re-evaluation guard, NOT an atomic GitHub merge protection.
+    """
+    events = sorted(
+        (
+            run.get("created_at"), run.get("head_sha")
+        )
+        for run in runs
+        if run.get("event") == "pull_request"
+        and run.get("created_at")
+        and run.get("head_sha")
+        and any(
+            item.get("number") is not None
+            and int(item["number"]) == pr_number
+            for item in run.get("pull_requests") or []
+        )
+    )
+    if not events:
+        return True
+    observed = []
+    for _, head in events:
+        if not observed or observed[-1] != head:
+            observed.append(head)
+    return head_sha in observed[:-1] or observed[-1] != head_sha
+
+
 def current_codex_outage(
     comments: list[dict[str, Any]],
     head_committed_at: str,
@@ -914,9 +945,11 @@ def evaluate(
     if not (code_ok and security_ok):
         head_since = head_current_since(runs, head_sha, number)
         candidate_outage = current_codex_outage(comments, head_since)
-        if candidate_outage is not None and current_head_codex_request(
+        if (candidate_outage is not None
+            and not head_reused_across_transitions(runs, head_sha, number)
+            and current_head_codex_request(
             comments, head_sha, head_since, candidate_outage
-        ):
+        )):
             outage = candidate_outage
     if outage is not None and owner_attestation_complete(
         comments, head_sha, not_before=outage
