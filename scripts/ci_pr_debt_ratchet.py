@@ -46,6 +46,8 @@ CONFIG_FILES = (
     ".flake8",
     ".isort.cfg",
     ".bandit",
+    # isort reads indent and line_length from .editorconfig.
+    ".editorconfig",
 )
 
 
@@ -78,8 +80,9 @@ def changed_python_files(base: str) -> dict[str, str]:
         status = fields[index]
         if status[0] in "RC":
             old, new = fields[index + 1], fields[index + 2]
-            if status[0] == "C":
-                # A copy is a new file: its debt is the PR's.
+            if status[0] == "C" or not old.endswith(".py"):
+                # A copy, or a non-Python file renamed to .py, is a new
+                # Python file: its debt is the PR's.
                 old = new
             index += 3
         else:
@@ -211,9 +214,10 @@ def is_test_file(path: str) -> bool:
     return "/tests/" in f"/{path}"
 
 
-def bandit_debt(root: Path, path: str) -> Counter:
+def bandit_debt(root: Path, path: str, scope: str | None = None) -> Counter:
+    """Bandit findings; ``scope`` is the path that decides test-file status."""
     cmd = [*PYTHON, "-m", "bandit", "-q", "-f", "json"]
-    if is_test_file(path):
+    if is_test_file(scope or path):
         # B101 (assert_used) is how pytest tests assert; it is not a finding
         # in test code.
         cmd += ["--skip", "B101"]
@@ -238,12 +242,12 @@ def bandit_debt(root: Path, path: str) -> Counter:
     return findings
 
 
-def debt(tool: str, root: Path, path: str) -> Counter:
+def debt(tool: str, root: Path, path: str, scope: str | None = None) -> Counter:
     if tool in ("black", "isort"):
         return formatting_debt(tool, root, path)
     if tool == "flake8":
         return flake8_debt(root, path)
-    return bandit_debt(root, path)
+    return bandit_debt(root, path, scope)
 
 
 def ratchet(base: str, tools: tuple[str, ...]) -> dict:
@@ -270,8 +274,12 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
         for path in paths:
             for tool in tools:
                 head = debt(tool, ROOT, path)
+                # The base side is classified by its own path, so moving a
+                # test into production code cannot carry its B101 exemption.
                 at_base_debt = (
-                    debt(tool, base_root, path) if path in at_base else Counter()
+                    debt(tool, base_root, path, paths[path])
+                    if path in at_base
+                    else Counter()
                 )
                 new = head - at_base_debt
                 rows.append(

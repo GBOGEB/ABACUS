@@ -222,3 +222,26 @@ def test_a_tool_resolved_inside_the_checkout_fails_closed(monkeypatch, tmp_path)
 )
 def test_only_files_under_tests_skip_assert_findings(path, is_test):
     assert ratchet_mod.is_test_file(path) is is_test
+
+
+@needs_tools
+def test_a_text_file_renamed_to_python_is_a_new_file(repo):
+    base = commit(repo, {"payload.txt": BANDIT_HIT})
+    git(repo, "mv", "payload.txt", "payload.py")
+    git(repo, "commit", "-q", "-m", "rename")
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert report["renamed_from"] == {}
+    assert report["status"] == "FAIL"
+
+
+@needs_tools
+def test_moving_a_test_into_production_charges_its_asserts(repo):
+    body = "def check(x):\n    assert x\n    return x\n"
+    base = commit(repo, {"tests/test_x.py": body})
+    (repo / "pkg").mkdir()
+    git(repo, "mv", "tests/test_x.py", "pkg/x.py")
+    git(repo, "commit", "-q", "-m", "move")
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert report["renamed_from"] == {"pkg/x.py": "tests/test_x.py"}
+    [row] = report["added_debt"]
+    assert any(key.startswith("B101:") for key in row["new_findings"])
