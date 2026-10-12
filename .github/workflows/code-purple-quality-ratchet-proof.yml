@@ -29,7 +29,8 @@ jobs:
           source=pathlib.Path('.github/workflows/ci-cd-tests.yml').read_text()
           assert 'id: quality_ratchet' in source
           assert 'for tool in black isort flake8; do' in source
-          assert 'echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"' in source
+          expected = 'echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"'
+          assert expected in source
           assert 'git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py"' in source
           assert 'elif [[ "$rc" -ne 0 ]]' in source
           print('exact_head='+sha)
@@ -44,7 +45,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python ci/governance/audit_ci_workflows.py --markdown-output /tmp/code-purple-ratchet-inventory.md
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output /tmp/code-purple-ratchet-inventory.md
           python - <<'PY'
           import base64, pathlib
           raw=pathlib.Path('/tmp/code-purple-ratchet-inventory.md').read_bytes()
