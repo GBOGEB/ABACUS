@@ -184,6 +184,11 @@ class Evidence:
     ci_seen: int
     deferred_comments: tuple[str, ...]
     review_source: str = "codex"
+    # Explicit, fail-closed governance fields consumed by the state evaluator.
+    review_deferral_valid: bool = False
+    security_sensitive: bool = True
+    blocking_review_items: tuple[str, ...] = ()
+    review_deferral_details: tuple[str, ...] = ()
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
@@ -1436,6 +1441,13 @@ def evaluate(
         ci_seen=seen,
         deferred_comments=deferred,
         review_source=review_source,
+        # A truncated file census cannot establish that a PR is non-sensitive.
+        security_sensitive=(
+            not census_complete or security_sensitive_change(changed_paths)
+        ),
+        # Review deferral is intentionally NOT an owner-attestation fallback.
+        # No mutable comment may silently bypass exact-head Codex review.
+        review_deferral_valid=False,
     )
 
 
