@@ -38,6 +38,10 @@ jobs:
   federation-smoke:
     name: Federation Smoke (cryoplant-project)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Read the receipt artifact of the latest trusted probe run.
+      actions: read
     steps:
       - name: Checkout ABACUS
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
@@ -53,11 +57,38 @@ jobs:
       - name: Install dependencies
         run: python -m pip install pytest pyyaml
 
-      # On pull requests the committed receipt is all there is (the live
-      # probe never runs there). Its maximum age is the owner's call: set the
-      # repository variable CRYOPLANT_RECEIPT_MAX_AGE_SECONDS to enforce one.
-      # Unset, no age is enforced; main's scheduled probe still re-checks
-      # live daily.
+      # A committed receipt is never evidence: anyone editing this repo can
+      # write one. Replace it with the receipt uploaded by the latest
+      # successful run of this workflow on main (push, schedule or
+      # dispatch, where the token-bearing probe runs), or remove it if there
+      # is none, so an active member fails until a trusted probe has passed.
+      - name: Use the latest trusted probe receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RECEIPT: >-
+            integration/cryoplant_project/federation/reciprocal_smoke.json
+          WORKFLOW: cryoplant-federation.yml
+          TRUSTED: >-
+            [.workflow_runs[] | select(.event != "pull_request")
+            | select(.head_repository.full_name == env.GITHUB_REPOSITORY)
+            ][0].id // empty
+        run: |
+          rm -f "$RECEIPT"
+          runs="repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs"
+          run_id="$(gh api -X GET "$runs" -f branch=main -f status=success \
+            -f per_page=50 --jq "$TRUSTED")"
+          if [ -z "$run_id" ]; then
+            echo "No successful probe run on main yet; no receipt."
+            exit 0
+          fi
+          echo "Trusted probe run: $run_id"
+          gh run download "$run_id" -R "$GITHUB_REPOSITORY" \
+            -n cryoplant-reciprocal-smoke -D "$RUNNER_TEMP/receipt"
+          cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
+
+      # Its maximum age is the owner's call: set the repository variable
+      # CRYOPLANT_RECEIPT_MAX_AGE_SECONDS to enforce one. Unset, no age is
+      # enforced; main's scheduled probe still re-checks live daily.
       - name: Run cryoplant-project local smoke tests
         env:
           RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: >-
