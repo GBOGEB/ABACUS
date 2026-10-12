@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess  # nosec B404
 import sys
 import tempfile
@@ -48,6 +49,9 @@ CONFIG_FILES = (
     ".bandit",
     # isort reads indent and line_length from .editorconfig.
     ".editorconfig",
+    # Black's and isort's recursive discovery in the full scan skip
+    # ignored paths, so .gitignore changes what the full scan covers.
+    ".gitignore",
 )
 # Installed by the Code Quality job after the lint tools (repo-root path), so
 # a pin there can replace Black, isort, Flake8 or add a Flake8 plugin. Not
@@ -198,8 +202,22 @@ def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 
 def formatting_debt(tool: str, root: Path, path: str) -> Counter:
     """One "unformatted" finding if the formatter would change the file."""
+    # The full scan runs ``black .`` and ``isort .`` from the root, which
+    # read only the root's configuration. Given a single file, both would
+    # look upward from that file's directory and could pick a nested
+    # config instead, so pin them to the root like the full scan.
     if tool == "black":
-        cmd = [*PYTHON, "-m", "black", "--check", "--quiet", path]
+        config = root / "pyproject.toml"
+        cmd = [
+            *PYTHON,
+            "-m",
+            "black",
+            "--check",
+            "--quiet",
+            "--config",
+            str(config) if config.is_file() else os.devnull,
+            path,
+        ]
     else:
         # --src keeps first-party import detection tied to the repository,
         # so the base snapshot sorts imports the same way the head does.
@@ -209,6 +227,8 @@ def formatting_debt(tool: str, root: Path, path: str) -> Counter:
             "isort",
             "--check-only",
             "--quiet",
+            "--settings-path",
+            str(root),
             "--src",
             str(ROOT),
             path,

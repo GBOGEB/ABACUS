@@ -110,14 +110,15 @@ three tools moves to checks scoped to what the PR changes:
   checkout, a crash or unparseable output fails the PR. Tools run in an
   isolated interpreter (`python -I`). A PR that changes lint configuration
   (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
-  `.bandit`, `.editorconfig`, in any directory) is not admitted by the
-  ratchet, because such a change can alter every file's result; the
-  full-repository scan decides, and the workflow triggers on each of those
-  files. The same holds for the root `requirements-test.txt`, which the
+  `.bandit`, `.editorconfig`, `.gitignore`, in any directory) is not
+  admitted by the ratchet, because such a change can alter every file's
+  result; the full-repository scan decides, and the workflow triggers on
+  each of those files. The same holds for the root `requirements-test.txt`, which the
   Code Quality job installs after the lint tools. A file renamed to `.py`
   from another extension, or a symlink or submodule replaced by a regular
   file, counts as new. A rename's base side is scanned at its original
-  path, under that directory's configuration and test-file status.
+  path, so it keeps its test-file status. Black and isort are pinned to
+  the root configuration, as the full `black .` and `isort .` scans are.
 - Safety is not relaxed and stays enforced on pull requests.
 - `diff-cover` measures coverage of the lines the PR adds or changes and
   reports it next to the repository-wide figure. No PR coverage threshold is
