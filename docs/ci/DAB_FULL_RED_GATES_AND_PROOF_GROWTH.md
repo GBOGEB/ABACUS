@@ -127,7 +127,10 @@ three tools moves to checks scoped to what the PR changes:
   replaced by a regular file, counts as new. A rename's base side is
   scanned at its original path, so it keeps its test-file status. The
   base side is the whole base tree, so isort classifies its imports
-  against the base's own packages.
+  against the base's own packages. A PR that adds, removes or renames a
+  top-level package or module changes how isort classifies its imports in
+  files the PR did not touch, so isort then compares the whole tree on
+  both sides.
   Black and isort are pinned to the root configuration, as the full
   `black .` and `isort .` scans are.
 - Safety is not relaxed and stays enforced on pull requests.
