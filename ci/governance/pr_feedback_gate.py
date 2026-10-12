@@ -638,6 +638,47 @@ def current_codex_outage(
     return stamp
 
 
+# CODE PURPLE P1: an outage cannot authorize the owner fallback unless the
+# owner actually requested a Codex review on this precise current PR head.
+# GitHub comments do not carry an outage response correlation ID. Therefore
+# timestamp ties, older-head requests, app-posted requests, and requests made
+# after the outage fail closed. Independent security review still applies.
+CODEX_REVIEW_REQUEST = re.compile(
+    r"(?m)^\s*@codex\s+(?:security\s+)?review\s*$",
+    re.IGNORECASE,
+)
+
+
+def current_head_codex_request(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+    head_since: str,
+    outage_at: str,
+) -> bool:
+    """Require a GitHub-timestamped owner request between head arrival and outage.
+
+    This closes the no-current-head-request case; it is not cryptographic
+    request/reply correlation because Codex outage text lacks a request ID.
+    """
+    if not head_since or not outage_at or not head_since < outage_at:
+        return False
+    for comment in comments:
+        user = comment.get("user") or {}
+        body = comment.get("body") or ""
+        posted = comment.get("created_at") or comment.get("updated_at") or ""
+        if (
+            user.get("login") in OWNER_ATTESTORS
+            and user.get("type", "User") == "User"
+            and comment.get("author_association") == "OWNER"
+            and not comment.get("performed_via_github_app")
+            and CODEX_REVIEW_REQUEST.search(body)
+            and head_sha in body
+            and head_since < posted < outage_at
+        ):
+            return True
+    return False
+
+
 def codex_unavailable(
     comments: list[dict[str, Any]],
     head_committed_at: str,
@@ -871,9 +912,12 @@ def evaluate(
     review_source = "codex"
     outage = None
     if not (code_ok and security_ok):
-        outage = current_codex_outage(
-            comments, head_current_since(runs, head_sha, number)
-        )
+        head_since = head_current_since(runs, head_sha, number)
+        candidate_outage = current_codex_outage(comments, head_since)
+        if candidate_outage is not None and current_head_codex_request(
+            comments, head_sha, head_since, candidate_outage
+        ):
+            outage = candidate_outage
     if outage is not None and owner_attestation_complete(
         comments, head_sha, not_before=outage
     ):
