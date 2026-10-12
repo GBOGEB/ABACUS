@@ -23,7 +23,17 @@ def test_workflow_yaml_present() -> None:
     workflow_path = REPO_ROOT / ".github" / "workflows" / "pages.yml"
     assert workflow_path.exists()
     workflow_text = workflow_path.read_text(encoding="utf-8")
-    assert "cp dist/qplant_visualization.html docs/index.html" in workflow_text
+    assert "cp dist/qplant_visualization.html docs/qplant_visualization.html" in workflow_text
+    # Manual evidence only: deploy-docs.yml is the sole Pages publisher.
+    assert "deploy-pages" not in workflow_text
+
+
+def test_deploy_docs_is_sole_publisher_and_keeps_docs_homepage() -> None:
+    workflow_path = REPO_ROOT / ".github" / "workflows" / "deploy-docs.yml"
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    assert "actions/deploy-pages" in workflow_text
+    assert "cp dist/qplant_visualization.html docs/qplant_visualization.html" in workflow_text
+    assert "cp dist/qplant_visualization.html docs/index.html" not in workflow_text
 
 
 def test_runtime_publish_status_json_generated() -> None:

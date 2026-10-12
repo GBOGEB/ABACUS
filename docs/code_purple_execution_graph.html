@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ABACUS · CODE PURPLE Execution Graph</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1324;--pane:#17213a;--ink:#ebf2ff;--muted:#a8b5cb;--line:#566889;--green:#3bbf87;--red:#fb7185;--amber:#ffc36b;--purple:#a78bfa}body.light{color-scheme:light;--bg:#f5f7fc;--pane:#fff;--ink:#19253c;--muted:#54657f;--line:#adbad1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 system-ui,Segoe UI,sans-serif}header,.toolbar{padding:18px 24px;border-bottom:1px solid var(--line)}h1{font-size:23px;margin:0}h2{font-size:17px}small,.muted{color:var(--muted)}button,select{padding:9px 12px;border-radius:9px;background:var(--pane);color:var(--ink);border:1px solid var(--line);cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid var(--purple)}a{color:#76baff}body.light a{color:#1557c0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}main{padding:20px;max-width:1520px;margin:auto}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.metric,.panel,.node,.detail{background:var(--pane);border:1px solid var(--line);border-radius:13px;padding:15px}.metric strong{display:block;font-size:22px}.metric span{color:var(--muted)}.grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,1fr);gap:15px;margin-top:18px}.lanes{display:grid;gap:12px}.lane{border:1px solid var(--line);border-radius:12px;padding:14px}.lane h3{margin:0 0 14px;font-size:14px}.chain{display:flex;align-items:stretch;gap:11px;overflow-x:auto;padding:2px 0 12px}.node{min-width:190px;max-width:240px;text-align:left;cursor:pointer;position:relative;flex:1}.node .state{font-weight:700}.node.success{border-left:5px solid var(--green)}.node.failure{border-left:5px solid var(--red)}.node.pending{border-left:5px solid var(--amber)}.node.unknown{border-left:5px solid var(--line)}.arrow{align-self:center;font-size:20px;color:var(--muted)}.node.selected{outline:2px solid var(--purple)}.node:disabled{opacity:.5;cursor:not-allowed}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:13px 0}.chip{padding:3px 8px;border-radius:10px;border:1px solid var(--line)}.detail p{overflow-wrap:anywhere}.detail ul{padding-left:18px}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left}code{overflow-wrap:anywhere}footer{padding:25px;color:var(--muted)}@media(max-width:870px){.grid{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}</style></head>
+<body><header><h1>CODE PURPLE · ABACUS execution & evidence</h1><div class="muted">Governed viewer prototype · workflow job success ≠ independent crew dispatch ≠ PR admission · read-only</div></header>
+<div class="toolbar"><button id="theme">Toggle light / dark</button><label for="filter">Focus</label><select id="filter"><option value="all">All lanes</option><option value="matrix">ABACUS Matrix</option><option value="mip">MIP Coverage</option><option value="admission">Admission</option></select><button id="qa">QA overlay: off</button><a href="https://github.com/GBOGEB/ABACUS/actions">Actions</a><a href="https://github.com/GBOGEB/ABACUS/issues/1860">Recovery #1860</a><a href="https://github.com/GBOGEB/CODEX/issues/977">Dispatch #977</a></div>
+<main><section class="summary" id="summary"></section><div class="legend"><span class="chip">🟢 Job succeeded</span><span class="chip">🔴 First red / failed</span><span class="chip">🟠 Pending</span><span class="chip">⚪ Unknown / not ingested</span></div>
+<div class="grid"><section class="panel"><h2>Workflow dependency lanes</h2><div id="lanes" class="lanes"></div></section><aside class="detail" id="detail" aria-live="polite"><h2>Evidence inspector</h2>Select a node to inspect its source URL, identity, dependency and next action. Screenshots are navigation evidence, not a current live measurement.</aside></div>
+<section class="panel" style="margin-top:16px" id="mergeRunway"><h2>ABACUS merge runway · target ZERO open PRs</h2>
+<p class="muted">Static pinned census, not live GitHub state. Zero completed red checks ≠ admitted, and one red workflow may be inherited or propagated. Changes to a head invalidate its previous gate proof.</p>
+<div class="summary" id="mergeMetrics" aria-live="polite"><div class="metric"><strong>UNKNOWN</strong><span>Awaiting exact-head snapshot JSON</span></div></div>
+<div class="toolbar" style="padding:12px 0;border:0"><label for="mergeFilter">Queue slice</label><select id="mergeFilter"><option value="all">All open PRs</option><option value="zero">No completed red checks</option><option value="red">At least one completed red</option><option value="gate">Feedback gate failed</option><option value="stale">Stale base pin</option></select><a id="mergeSource" href="data/code_purple_abacus_merge_census_20261012.json">Source snapshot JSON</a></div>
+<div style="overflow:auto"><table><thead><tr><th>PR</th><th>Class</th><th>Recorded check reds</th><th>Feedback gate</th><th>Head</th></tr></thead><tbody id="mergeRows"><tr><td colspan="5">UNKNOWN until snapshot loads</td></tr></tbody></table></div>
+<p id="mergeCaveat" class="muted">Operational progress requires an accepted exact-head gate and governed merge/main readback, not a favourable check count.</p></section>
+<section class="panel" style="margin-top:16px"><h2>Top 7 / 14 / 21 and LDAB health</h2><p class="muted">No computed values without a timestamped, exact-head producer receipt. Rank by recurrence × criticality × blocked downstream volume; never use invented issue totals.</p><table><thead><tr><th>Window</th><th>Root causes open / closed</th><th>BD queue open / closed</th><th>LDAB signals</th><th>Coverage main / diff</th></tr></thead><tbody id="health"></tbody></table></section>
+<section class="panel" style="margin-top:16px"><h2>CODE PURPLE control boundary</h2><p>Observe → classify → evidence-linked first red → request authorized local worker → verify authenticated run ID and REX receipt → exact-head admission → controlled merge → main readback → DMAIC coverage and health trend. A green test matrix alone never implies a MissionControl worker launch.</p><p><a href="https://github.com/GBOGEB/ABACUS/blob/main/MIP/README.md">LDAB self-assessment lanes</a> · <a href="https://github.com/GBOGEB/CODEX/blob/main/docs/missioncontrol_mycelium.html">CODEX MissionControl</a></p></section></main>
+<footer>Read-only architecture projection. Defaults intentionally show a historical evidence example and UNKNOWN live health. Import via an approved, pinned JSON producer in a follow-on PR; no direct GitHub token or automatic mutation in browser.</footer>
+<script>
+"use strict";
+const example={kind:"historical_example",observed_at:null,head_sha:null,run_id:null,metrics:{main_coverage:{value:36.85,unit:"%",as_of:"2026-10-11",scope:"historical_verified_baseline"},pr_coverage:{value:36.92,unit:"%",as_of:"2026-10-12",scope:"historical_PR_side_baseline"},diff_coverage:{value:51,unit:"%",as_of:"2026-10-12",scope:"historical_PR_side_baseline"},root_cause:null,bd_queue:null,ldab:null,worker_launch:null,merge:null},lanes:[
+{id:"matrix",title:"ci-abacus.yml · ABACUS Matrix",url:"https://github.com/GBOGEB/ABACUS/actions/workflows/ci-abacus.yml",nodes:[
+{id:"planner",title:"ABACUS CI proof planner",status:"success",duration:"6 s"},
+{id:"matrix",title:"Matrix · 3 jobs completed",status:"success",duration:null},
+{id:"proof",title:"Python proof completeness",status:"success",duration:"8 s"},
+{id:"compat",title:"ABACUS compatibility gate",status:"success",duration:"3 s"}]},
+{id:"mip",title:"MIP · B0 source producers",url:"https://github.com/GBOGEB/ABACUS/actions/workflows/mip-coverage-evidence.yml",nodes:[
+{id:"census",title:"Static/DAB source census",status:"success",duration:"48 s"},
+{id:"producerSet",title:"Canonical coverage + report producer + false-green + static analysis",status:"success",duration:null}]},
+{id:"mip-proposal",title:"MIP branch A · proposal-workers (needs static-analysis ONLY)",url:"https://github.com/GBOGEB/ABACUS/blob/main/.github/workflows/mip-coverage-evidence.yml",nodes:[
+{id:"static",title:"Static-analysis proposal queue",status:"success",duration:null},
+{id:"proposal",title:"Read-only proposal-worker matrix (conditional)",status:"success",duration:null}]},
+{id:"mip-report",title:"MIP branch B · b0-report-only (needs four source producers; NOT proposal-workers)",url:"https://github.com/GBOGEB/ABACUS/blob/main/.github/workflows/mip-coverage-evidence.yml",nodes:[
+{id:"producers",title:"canonical-coverage + report-only-producer + false-green-census + static-analysis",status:"success",duration:null},
+{id:"report",title:"B0 report-only admission census",status:"success",duration:"22 s"}]},
+{id:"admission",title:"Governed feedback / dispatch (not inferred from jobs)",url:"https://github.com/GBOGEB/ABACUS/issues/1860",nodes:[
+{id:"firstred",title:"Exact-head first-red classifier",status:"unknown"},
+{id:"crew",title:"Authenticated local crew dispatch",status:"unknown"},
+{id:"rex",title:"REX worker evidence return",status:"unknown"},
+{id:"gate",title:"PR Feedback Gate admission",status:"unknown"},
+{id:"merge",title:"Main merge and SHA readback",status:"unknown"}]}]};
+let data=example,selected=null,qa=false;const $=id=>document.getElementById(id);
+function validUrl(url){try{const u=new URL(url);return u.protocol==="https:"&&u.hostname==="github.com"}catch{return false}}
+function nodeDetail(l,n){const url=validUrl(n.url)?n.url:l.url;$("detail").innerHTML="<h2>"+esc(n.title)+"</h2><p><b>Status:</b> "+esc(n.status)+"</p><p><b>Lane:</b> "+esc(l.title)+"</p><p><b>Duration:</b> "+esc(n.duration??"UNKNOWN")+"</p><p><b>Exact head:</b> "+esc(data.head_sha??"UNKNOWN")+"</p><p><b>Run ID:</b> "+esc(data.run_id??"UNKNOWN")+"</p><p><b>Evidence:</b> "+(validUrl(url)?'<a rel="noopener noreferrer" target="_blank" href="'+url+'">Open GitHub evidence</a>':"UNKNOWN")+"</p><p><b>Next:</b> Inspect first failing dependency and attach terminal exact-head receipt. Dispatch only under an authenticated, approved CODEX #977 executor.</p>"+(qa?"<p><b>QA:</b> source and exact SHA required; screenshot status is historical.</p>":"")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmt(v){return v==null?"UNKNOWN":typeof v==="object"?(v.value==null?"UNKNOWN":esc(v.value)+(v.unit||"")):esc(v)}
+function render(){const m=data.metrics||{};$("summary").innerHTML=[["main baseline",fmt(m.main_coverage)],["PR broad baseline",fmt(m.pr_coverage)],["PR diff baseline",fmt(m.diff_coverage)],["worker launches",fmt(m.worker_launch)],["merged PR",fmt(m.merge)]].map(([a,b])=>'<div class="metric"><strong>'+b+'</strong><span>'+esc(a)+'</span></div>').join("");
+$("lanes").innerHTML="";for(const l of data.lanes||[]){if($("filter").value!=="all"&&$("filter").value!==l.id&&!( $("filter").value==="mip"&&l.id.startsWith("mip-")))continue;const box=document.createElement("div");box.className="lane";const h=document.createElement("h3");h.textContent=l.title;box.append(h);const ch=document.createElement("div");ch.className="chain";l.nodes.forEach((n,i)=>{if(i && !(l.id==="mip" && i===2)){const arrow=document.createElement("span");arrow.className="arrow";arrow.textContent="→";ch.append(arrow)}const button=document.createElement("button");button.className="node "+(n.status||"unknown");button.innerHTML='<span class="state">'+({success:"● Success",failure:"● Failed",pending:"● Pending",unknown:"○ UNKNOWN"}[n.status]||"○ UNKNOWN")+'</span><p>'+esc(n.title)+'</p><small>'+esc(n.duration??"Duration unknown")+'</small>';button.onclick=()=>{document.querySelectorAll(".node").forEach(x=>x.classList.remove("selected"));button.classList.add("selected");selected={l,n};nodeDetail(l,n)};ch.append(button)});box.append(ch);$("lanes").append(box)}
+$("health").innerHTML=[7,14,21].map(d=>'<tr><td>Top '+d+'</td><td>UNKNOWN / UNKNOWN</td><td>UNKNOWN / UNKNOWN</td><td>UNKNOWN</td><td>Baseline '+fmt(m.main_coverage)+' / '+fmt(m.diff_coverage)+' (not current)</td></tr>').join("")}
+function loadMergeCensus(){
+  const metric=$("mergeMetrics"),rows=$("mergeRows"),filter=$("mergeFilter");
+  const source="data/code_purple_abacus_merge_census_20261012.json";
+  fetch(source,{credentials:"omit"}).then(r=>{if(!r.ok)throw Error("snapshot unavailable");return r.json()}).then(d=>{
+    if(d.schema!=="code-purple.abacus-merge-census/0.1"||d.scope!=="GBOGEB/ABACUS"||
+       !/^[a-f0-9]{40}$/.test(d.main_sha)||!Array.isArray(d.prs))throw Error("invalid snapshot identity");
+    const seen=new Set();
+    for(const p of d.prs){
+      if(!Number.isInteger(p.number)||seen.has(p.number)||!/^[a-f0-9]{40}$/.test(p.head_sha)||
+         !/^[a-f0-9]{40}$/.test(p.base_sha)||!Array.isArray(p.completed_red_check_names)||
+         !["failure","pending","success"].includes(p.feedback_gate))throw Error("invalid PR evidence row");
+      seen.add(p.number);
+    }
+    const all=d.prs,open=all.length,drafts=all.filter(p=>p.draft).length;
+    const red=all.filter(p=>p.completed_red_check_names.length>0).length;
+    const zero=all.length-red;
+    const gateFailed=all.filter(p=>p.feedback_gate==="failure").length;
+    const gatePassed=all.filter(p=>p.feedback_gate==="success").length;
+    const stale=all.filter(p=>p.base_sha!==d.main_sha).length;
+    const measurements=[
+      ["Open PRs (goal 0)",open],
+      ["No completed reds (NOT admitted)",zero],
+      ["PR heads with red checks",red],
+      ["Feedback gate terminal PASS",gatePassed],
+      ["Feedback gate terminal FAIL",gateFailed],
+      ["Draft / stale-base heads",drafts+" / "+stale]
+    ];
+    metric.replaceChildren();
+    for(const [name,val] of measurements){
+      const box=document.createElement("div");box.className="metric";
+      const strong=document.createElement("strong");strong.textContent=String(val);
+      const label=document.createElement("span");label.textContent=name;
+      box.append(strong,label);metric.append(box);
+    }
+    const caption=$("mergeCaveat");
+    caption.textContent="Observation "+d.observed_date+" · main@"+d.main_sha.slice(0,12)+
+      " · exact-head check-run names only; root-cause uniqueness, current reviews and merge eligibility remain UNKNOWN until separately verified.";
+    function draw(){
+      const f=filter.value;
+      rows.replaceChildren();
+      for(const p of all){
+        const hasRed=p.completed_red_check_names.length>0;
+        if(f==="zero"&&hasRed||f==="red"&&!hasRed||f==="gate"&&p.feedback_gate!=="failure"||
+           f==="stale"&&p.base_sha===d.main_sha)continue;
+        const tr=document.createElement("tr"),cells=[];
+        for(let i=0;i<5;i++)cells.push(document.createElement("td"));
+        const url="https://github.com/GBOGEB/ABACUS/pull/"+p.number;
+        const link=document.createElement("a");link.href=url;link.textContent="#"+p.number;
+        cells[0].append(link);
+        cells[1].textContent=p.domain+(p.draft?" · Draft":" · Ready");
+        cells[2].textContent=p.completed_red_check_names.length===0?
+          "0 completed reds":p.completed_red_check_names.join(", ");
+        cells[3].textContent=p.feedback_gate.toUpperCase();
+        cells[4].textContent=p.head_sha.slice(0,12);
+        tr.append(...cells);rows.append(tr);
+      }
+      if(!rows.childElementCount){const tr=document.createElement("tr"),cell=document.createElement("td");cell.colSpan=5;cell.textContent="No matching PRs in this snapshot";tr.append(cell);rows.append(tr)}
+    }
+    filter.onchange=draw;draw();
+  }).catch(error=>{metric.replaceChildren();rows.replaceChildren();
+    const cell=document.createElement("td");cell.colSpan=5;cell.textContent="Snapshot unavailable or invalid: UNKNOWN; "+error.message;
+    const row=document.createElement("tr");row.append(cell);rows.append(row);
+  });
+}
+loadMergeCensus();
+$("theme").onclick=()=>document.body.classList.toggle("light");$("filter").onchange=render;$("qa").onclick=()=>{qa=!qa;$("qa").textContent="QA overlay: "+(qa?"on":"off");if(selected)nodeDetail(selected.l,selected.n)};render();
+</script></body></html>
