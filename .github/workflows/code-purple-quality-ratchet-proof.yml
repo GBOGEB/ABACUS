@@ -40,3 +40,13 @@ jobs:
         run: |
           set -euo pipefail
           python -m pytest tests/test_ci_pr_debt_ratchet.py -q --tb=short
+      - name: Emit deterministic generated governance inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python ci/governance/audit_ci_workflows.py --markdown-output /tmp/code-purple-ratchet-inventory.md
+          python - <<'PY'
+          import base64, pathlib
+          raw=pathlib.Path('/tmp/code-purple-ratchet-inventory.md').read_bytes()
+          print('BD_INVENTORY_B64='+base64.b64encode(raw).decode('ascii'))
+          PY
