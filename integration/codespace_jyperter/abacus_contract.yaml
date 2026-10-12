@@ -10,7 +10,7 @@
 
 contract:
   version: "1.0.0"
-  consumer: GBOGEB/codespace_jyperter
+  consumer: GBOGEB/CODESPACES_jyperter
   provider: GBOGEB/ABACUS
   federation_moniker: DELTA_1
   plane: auxiliary
