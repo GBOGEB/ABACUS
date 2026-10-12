@@ -1054,12 +1054,35 @@ class FeedbackGateTests(unittest.TestCase):
             def pull(self, number):
                 return {"head": {"sha": "abc"}}
 
+            def __init__(self, cited_by_latest=True):
+                self.cited_by_latest = cited_by_latest
+
             def check_runs(self, head_sha):
+                latest = (
+                    "- tracked by open issue #1849"
+                    if self.cited_by_latest
+                    else "- tracked by open issue #1900"
+                )
                 return [
                     {
                         "name": gate.GATE_NAME,
+                        "status": "completed",
+                        "completed_at": "2026-10-12T10:00:00Z",
                         "output": {"text": "- tracked by open issue #1849"},
-                    }
+                    },
+                    {
+                        "name": gate.GATE_NAME,
+                        "status": "completed",
+                        "completed_at": "2026-10-12T11:00:00Z",
+                        "output": {"text": latest},
+                    },
+                    {
+                        # A census in flight is not yet a result.
+                        "name": gate.GATE_NAME,
+                        "status": "in_progress",
+                        "started_at": "2026-10-12T12:00:00Z",
+                        "output": {"text": "evaluating"},
+                    },
                 ]
 
         marker = (
@@ -1092,6 +1115,13 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(
             gate.event_pr_numbers(FakeGitHub(), closed, None), [1847]
         )
+        # Only an older, superseded result cites #1849: ignore the edit.
+        self.assertEqual(
+            gate.event_pr_numbers(
+                FakeGitHub(cited_by_latest=False), marker_stripped, None
+            ),
+            [],
+        )
 
     def test_untracked_or_untrusted_issue_change_is_ignored(self):
         class FakeGitHub:
@@ -1109,6 +1139,7 @@ class FeedbackGateTests(unittest.TestCase):
                 return [
                     {
                         "name": gate.GATE_NAME,
+                        "status": "completed",
                         "output": {"text": "tracked by open issue #18490"},
                     }
                 ]
