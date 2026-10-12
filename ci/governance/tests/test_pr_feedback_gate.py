@@ -779,9 +779,11 @@ class FeedbackGateTests(unittest.TestCase):
             FakeGitHub([self.current_head_request(), self.outage(), attested]),
             1, pull,
         )
-        self.assertEqual(with_outage.review_source, "owner_attestation")
-        self.assertTrue(with_outage.code_review_complete)
-        self.assertTrue(with_outage.security_review_complete)
+        # Security regression: outage + exact-head owner attestation must never
+        # replace independent code/security review, even when all evidence is fresh.
+        self.assertEqual(with_outage.review_source, "codex")
+        self.assertFalse(with_outage.code_review_complete)
+        self.assertFalse(with_outage.security_review_complete)
         # CI is still required: with no runs the gate stays pending, never green.
         self.assertEqual(with_outage.state, "pending")
         self.assertTrue(any("CI missing" in r for r in with_outage.pending_reasons))
