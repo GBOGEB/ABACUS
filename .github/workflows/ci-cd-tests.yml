@@ -135,7 +135,8 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" && "$FULL_SCAN" != "required" ]]; then
+          if [[ "$EVENT" == "pull_request" &&
+                "$FULL_SCAN" != "required" ]]; then
             echo "- PR admission: new-debt ratchet above" \
               >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -640,7 +641,8 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" && "$FULL_SCAN" != "required" ]]; then
+          if [[ "$EVENT" == "pull_request" &&
+                "$FULL_SCAN" != "required" ]]; then
             echo "- PR admission: Bandit ratchet above; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then
