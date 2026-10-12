@@ -10,7 +10,10 @@ and writes JSON evidence plus a step-summary table.
 
 Findings on touched files are an upper bound on what the pull request
 introduced: they include pre-existing findings on lines the PR did not edit.
-Findings elsewhere cannot have been introduced by the pull request.
+Findings elsewhere are inherited only when the PR leaves tool configuration
+alone. If it changes a file that steers the tools (``pyproject.toml``,
+``setup.cfg``, the workflow, ...), every finding may be new, so attribution
+is reported as ``indeterminate`` instead.
 """
 
 from __future__ import annotations
@@ -27,6 +30,21 @@ SCHEMA = "abacus-red-root-delta/1.0.0"
 BLACK_REFORMAT = re.compile(r"^would reformat (?P<path>.+?)\s*$")
 BLACK_ERROR = re.compile(r"^error: cannot format (?P<path>.+?): ")
 ISORT_ERROR = re.compile(r"^ERROR: (?P<path>.+?) Imports are incorrectly sorted")
+# Files that can change Black/isort/Flake8/Bandit results repo-wide.
+CONFIG_FILES = frozenset(
+    {
+        "pyproject.toml",
+        "setup.cfg",
+        "tox.ini",
+        ".flake8",
+        ".isort.cfg",
+        ".bandit",
+        "bandit.yaml",
+        "bandit.yml",
+        ".github/workflows/ci-cd-tests.yml",
+    }
+)
+CONFIG_PREFIXES = ("requirements",)
 FLAKE8_ROW = re.compile(
     r"^(?P<path>[^:\s][^:]*\.pyi?):(?P<line>\d+):(?P<col>\d+): "
     r"(?P<code>[A-Z]+\d+) (?P<message>.*)$"
@@ -43,8 +61,8 @@ def normalise(path: str, root: Path) -> str:
     return text
 
 
-def changed_python_files(root: Path, base: str | None) -> list[str] | None:
-    """List ``.py`` files changed between ``base`` and ``HEAD``.
+def changed_files(root: Path, base: str | None) -> list[str] | None:
+    """List every path changed between ``base`` and ``HEAD``.
 
     Returns ``None`` when there is no usable base (push, schedule, or a
     shallow checkout without the parent commit), so callers can report the
@@ -65,7 +83,7 @@ def changed_python_files(root: Path, base: str | None) -> list[str] | None:
     if verify.returncode != 0:
         return None
     diff = subprocess.run(  # nosec B603 - fixed argv, shell=False
-        [git, "diff", "--name-only", "--diff-filter=ACMR", base, "HEAD"],
+        [git, "diff", "--name-only", base, "HEAD"],
         cwd=root,
         capture_output=True,
         text=True,
@@ -73,11 +91,28 @@ def changed_python_files(root: Path, base: str | None) -> list[str] | None:
     )
     if diff.returncode != 0:
         return None
-    return sorted(
-        line.strip()
-        for line in diff.stdout.splitlines()
-        if line.strip().endswith((".py", ".pyi"))
-    )
+    return sorted({line.strip() for line in diff.stdout.splitlines() if line.strip()})
+
+
+def changed_python_files(root: Path, base: str | None) -> list[str] | None:
+    """Changed ``.py``/``.pyi`` files that still exist at ``HEAD``."""
+    paths = changed_files(root, base)
+    if paths is None:
+        return None
+    return [
+        path
+        for path in paths
+        if path.endswith((".py", ".pyi")) and (root / path).is_file()
+    ]
+
+
+def config_changes(paths: list[str]) -> list[str]:
+    """Changed files that can alter tool results across the whole repo."""
+    return [
+        path
+        for path in paths
+        if path in CONFIG_FILES or Path(path).name.startswith(CONFIG_PREFIXES)
+    ]
 
 
 def _read(path: Path | None) -> str | None:
@@ -177,17 +212,26 @@ def census_bandit(text: str | None, root: Path, changed: set[str] | None):
 
 
 def touched_count(tool: dict[str, Any]) -> int:
+    """Touched findings, counting parse failures as findings too."""
     if "findings_on_touched" in tool:
-        return len(tool["findings_on_touched"])
-    if "files_on_touched" in tool:
-        return len(tool["files_on_touched"])
-    return 0
+        count = len(tool["findings_on_touched"])
+    else:
+        count = len(tool.get("files_on_touched", []))
+    return count + len(tool.get("parse_errors", {}).get("files_on_touched", []))
 
 
 def build_payload(args: argparse.Namespace) -> dict[str, Any]:
     root = Path(args.root)
+    all_changed = changed_files(root, args.base)
     changed_list = changed_python_files(root, args.base)
     changed = set(changed_list) if changed_list is not None else None
+    configs = config_changes(all_changed) if all_changed is not None else []
+    if changed is None:
+        attribution = "no_pr_context"
+    elif configs:
+        attribution = "indeterminate"
+    else:
+        attribution = "attributable"
     tools: dict[str, Any] = {}
     if args.black_log is not None:
         tools["black"] = census_black(_read(args.black_log), root, changed)
@@ -203,37 +247,60 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         "pr_context": changed is not None,
         "base": args.base if changed is not None else None,
         "changed_python_files": changed_list or [],
+        "config_changes": configs,
+        "attribution": attribution,
         "tools": tools,
         "touched_findings_upper_bound": sum(touched_count(t) for t in tools.values()),
         "verdict_effect": "none: evidence only, enforcement steps unchanged",
     }
 
 
+def _row(name: str, part: dict[str, Any], pr_context: bool) -> str:
+    total = part.get("findings_total", part.get("files_total", 0))
+    elsewhere = part.get("findings_elsewhere", part.get("files_elsewhere", 0))
+    if "findings_on_touched" in part:
+        touched = len(part["findings_on_touched"])
+    else:
+        touched = len(part.get("files_on_touched", []))
+    shown = touched if pr_context else "–"
+    return f"| {name} | {total} | {shown} | {elsewhere} |"
+
+
 def summary_markdown(payload: dict[str, Any]) -> str:
     lines = [f"### Red-root delta census — {payload['lane']}", ""]
-    if not payload["pr_context"]:
+    attribution = payload.get("attribution", "no_pr_context")
+    if attribution == "no_pr_context":
         lines.append(
             "_No pull-request base available; all findings are whole-repo totals._"
         )
-        lines.append("")
     else:
         count = len(payload["changed_python_files"])
         lines.append(f"PR-changed Python files: **{count}**")
+    if attribution == "indeterminate":
+        changed = ", ".join(f"`{path}`" for path in payload["config_changes"])
         lines.append("")
-    lines.append("| Tool | Total | On PR-touched files | Elsewhere (inherited) |")
+        lines.append(
+            f"**Attribution indeterminate:** this PR changes {changed}, which "
+            "can alter results for every file, so findings elsewhere are not "
+            "proven inherited."
+        )
+    lines.append("")
+    label = "Elsewhere (inherited)" if attribution == "attributable" else "Elsewhere"
+    lines.append(f"| Tool | Total | On PR-touched files | {label} |")
     lines.append("|---|---:|---:|---:|")
+    pr_context = attribution != "no_pr_context"
     for name, tool in payload["tools"].items():
         if tool.get("status") != "parsed":
             lines.append(f"| {name} | {tool.get('status')} | – | – |")
             continue
-        total = tool.get("findings_total", tool.get("files_total", 0))
-        elsewhere = tool.get("findings_elsewhere", tool.get("files_elsewhere", 0))
-        touched = touched_count(tool) if payload["pr_context"] else "–"
-        lines.append(f"| {name} | {total} | {touched} | {elsewhere} |")
+        lines.append(_row(name, tool, pr_context))
+        if "parse_errors" in tool:
+            lines.append(_row(f"{name} parse errors", tool["parse_errors"], pr_context))
     lines.append("")
     lines.append(
-        "Touched-file counts are an upper bound on PR-introduced findings. "
-        "This census does not change the enforcement verdict."
+        "Touched-file counts (parse errors included) are an upper bound on "
+        "PR-introduced findings. This census does not change the enforcement "
+        "verdict."
     )
     return "\n".join(lines) + "\n"
 
