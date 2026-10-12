@@ -633,7 +633,7 @@ def current_codex_outage(
     if not is_codex_outage_notice(latest):
         return None
     stamp = latest.get("created_at") or _stamp(latest)
-    if stamp < head_committed_at:
+    if stamp <= head_committed_at:
         return None
     return stamp
 
@@ -680,7 +680,7 @@ def owner_attestation_complete(
             continue
         posted = comment.get("created_at") or _stamp(comment)
         return (
-            posted >= not_before
+            posted > not_before
             and payload.get("headSha") == head_sha
             and payload.get("status") == "completed"
             and payload.get("scope") == OWNER_ATTESTATION_SCOPE
