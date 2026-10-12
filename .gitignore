@@ -72,6 +72,7 @@ reports/*
 !metrics/federation/federation_rollup.json
 !metrics/federation/federation_scree.json
 !metrics/federation/runtime_registry.json
+!integration/cryoplant_project/federation/reciprocal_smoke.json
 !patterns/scientific_visualization/schema.json
 !bottleneck_report.json
 !requirements.json
