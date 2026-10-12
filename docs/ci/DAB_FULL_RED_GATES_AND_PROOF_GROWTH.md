@@ -114,6 +114,10 @@ three tools moves to checks scoped to what the PR changes:
   admitted by the ratchet for the tools that read that file, because such
   a change can alter every file's result; the full-repository scan for
   those tools decides, and the workflow triggers on each of those files.
+  A Flake8 or Bandit config change can only suppress findings, so the
+  PR's code must also pass that tool's full scan under the base's version
+  of the changed config; otherwise the ratchet fails, and a PR cannot
+  silence its own new finding by editing `.bandit` or `.flake8`.
   A `.bandit` change leaves the Black/isort/Flake8 ratchet in place, and a
   `.flake8` change leaves the Bandit ratchet in place. The same holds for
   `ci-cd-tests.yml` and the ratchet script, which install and run every
