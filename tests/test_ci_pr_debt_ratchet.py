@@ -302,3 +302,31 @@ def test_changing_the_lint_job_requirements_requires_the_full_scan(repo):
     assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
     commit(repo, {"docs/requirements-test.txt": "x\n"})
     assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
+
+
+@needs_tools
+def test_base_imports_are_classified_against_the_base_tree(repo):
+    # localpkg is first-party at the base; deleting it makes the head's
+    # import a third-party one that isort . would re-sort.
+    imports = "import os\n\nimport requests\n\nimport localpkg\n"
+    base = commit(repo, {"localpkg/__init__.py": "", "pkg/a.py": imports})
+    git(repo, "rm", "-q", "-r", "localpkg")
+    commit(repo, {"pkg/a.py": imports + "\nX = (os, requests, localpkg)\n"})
+    report = ratchet_mod.ratchet(base, ("isort",))
+    [row] = report["added_debt"]
+    assert row["base"] == 0 and row["head"] == 1
+
+
+@needs_tools
+def test_a_multiline_finding_is_keyed_by_its_whole_call(repo):
+    def module(argument):
+        return (
+            CLEAN + f"\n\ndef run(cmd):\n    return eval(\n        {argument}\n    )\n"
+        )
+
+    base = commit(repo, {"pkg/a.py": module('"1 + 1"')})
+    commit(repo, {"pkg/a.py": module("cmd")})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    [row] = report["added_debt"]
+    assert row["base"] == row["head"] == 1
+    assert any("cmd" in key for key in row["new_findings"])
