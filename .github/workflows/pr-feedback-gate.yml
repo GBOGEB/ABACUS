@@ -2,7 +2,14 @@ name: PR Feedback Gate Evaluator
 
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
+  # A deferral is only valid while its tracking issue stays open with intact
+  # debt evidence. Re-census on every tracking-issue lifecycle change so a
+  # closed or edited issue cannot leave a stale green check behind. Only the
+  # PRs named by a trusted issue's current or previous marker are re-census'd;
+  # other issue events are no-ops.
+  issues:
+    types: [edited, closed, reopened, deleted, transferred]
   pull_request_review:
     types: [submitted, dismissed]
   pull_request_review_comment:
@@ -41,18 +48,68 @@ permissions:
   issues: read
   pull-requests: read
 
-concurrency:
-  group: >-
-    pr-feedback-gate-${{ github.event.issue.number ||
-    github.event.pull_request.number || github.event.workflow_run.head_sha ||
-    'sweep' }}
-  cancel-in-progress: true
+# No workflow-level concurrency group. A run keyed on the triggering issue,
+# PR or commit could be cancelled or replaced by an unrelated no-op event for
+# the same key (for example a public comment on a deferral tracking issue)
+# before it marked its PRs pending. Serialization is per PR, on the evaluate
+# job below.
 
 jobs:
-  evaluate:
-    name: Evaluate PR feedback gate
+  route:
+    name: Route PRs to evaluate
     runs-on: ubuntu-latest
+    outputs:
+      prs: ${{ steps.route.outputs.prs }}
     steps:
+      - name: Checkout trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: List PRs this event re-censuses
+        id: route
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          if [ -n "$INPUT_PR_NUMBER" ]; then
+            args+=(--pr-number "$INPUT_PR_NUMBER")
+          fi
+          prs=$(python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --list-prs)
+          echo "prs=$prs" >> "$GITHUB_OUTPUT"
+
+  # A tracking-issue close or edit must invalidate a deferral-backed success
+  # at once. The census it triggers queues behind any census already running
+  # for the PR, which could otherwise publish a success computed from the old
+  # issue. This job sits outside that queue and marks the check pending with
+  # a newer census stamp, so the running census cannot publish over it and
+  # any success it already published is replaced.
+  invalidate:
+    name: Invalidate PR feedback gate (#${{ matrix.pr }})
+    needs: route
+    if: >-
+      github.event_name == 'issues'
+      && needs.route.outputs.prs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.route.outputs.prs) }}
+    steps:
+      - name: Stamp invalidation
+        run: |
+          stamp=$(date -u +%Y-%m-%dT%H:%M:%S.%6NZ)
+          echo "CENSUS_STARTED=$stamp" >> "$GITHUB_ENV"
+
       - name: Checkout trusted default branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
@@ -68,12 +125,58 @@ jobs:
       - name: Mark feedback gate pending
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--census-started "$CENSUS_STARTED")
+          args+=(--pr-number "$PR_NUMBER")
+          python ci/governance/pr_feedback_gate.py \
+            "${args[@]}" --mark-pending-only
+
+  evaluate:
+    name: Evaluate PR feedback gate (#${{ matrix.pr }})
+    needs: route
+    if: needs.route.outputs.prs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.route.outputs.prs) }}
+    # Every census of one PR runs in that PR's group, whatever triggered it
+    # (PR event, tracking issue, CI run or sweep), so two censuses never
+    # read and write the same check at once. A newer queued census replaces
+    # an older queued one; this group never cancels a running census.
+    concurrency:
+      group: pr-feedback-gate-pr-${{ matrix.pr }}
+      cancel-in-progress: false
+    steps:
+      # One census stamp per job orders this job's pending, result and
+      # failure publications against any earlier census of the same PR.
+      - name: Stamp census start
+        run: |
+          stamp=$(date -u +%Y-%m-%dT%H:%M:%S.%6NZ)
+          echo "CENSUS_STARTED=$stamp" >> "$GITHUB_ENV"
+
+      - name: Checkout trusted default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Mark feedback gate pending
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ matrix.pr }}
+        run: |
+          args=(--event-path "$GITHUB_EVENT_PATH")
+          args+=(--census-started "$CENSUS_STARTED")
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py \
             "${args[@]}" --mark-pending-only
 
@@ -83,23 +186,21 @@ jobs:
       - name: Evaluate and publish gate
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--census-started "$CENSUS_STARTED")
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py "${args[@]}"
 
       - name: Fail gate if evaluator workflow failed
         if: failure()
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ matrix.pr }}
         run: |
           args=(--event-path "$GITHUB_EVENT_PATH")
-          if [ -n "$INPUT_PR_NUMBER" ]; then
-            args+=(--pr-number "$INPUT_PR_NUMBER")
-          fi
+          args+=(--census-started "$CENSUS_STARTED")
+          args+=(--pr-number "$PR_NUMBER")
           python ci/governance/pr_feedback_gate.py \
             "${args[@]}" --mark-failure-only
