@@ -2,8 +2,6 @@ name: CODE PURPLE BD exact-head diagnostic
 on:
   push:
     branches: [fix/code-purple-evidence-trigger-20261012]
-    paths:
-      - .github/workflows/code-purple-bd-probe.yml
   workflow_dispatch:
 permissions:
   contents: read
