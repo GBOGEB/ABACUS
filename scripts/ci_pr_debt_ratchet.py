@@ -49,6 +49,10 @@ CONFIG_FILES = (
     # isort reads indent and line_length from .editorconfig.
     ".editorconfig",
 )
+# Installed by the Code Quality job after the lint tools (repo-root path), so
+# a pin there can replace Black, isort, Flake8 or add a Flake8 plugin. Not
+# copied to the base snapshot; a change to it always needs the full scan.
+TOOL_ENVIRONMENT_FILES = ("requirements-test.txt",)
 
 
 def git(*args: str) -> str:
@@ -58,7 +62,8 @@ def git(*args: str) -> str:
 
 
 def changed_config_files(base: str) -> list[str]:
-    """Lint config paths the PR adds, edits, deletes or renames.
+    """Lint config and tool-environment paths the PR adds, edits, deletes
+    or renames.
 
     Both sides of a rename count, so renaming ``.editorconfig`` away is a
     config change too.
@@ -71,7 +76,11 @@ def changed_config_files(base: str) -> list[str]:
         width = 3 if fields[index][0] in "RC" else 2
         paths.update(fields[index + 1 : index + width])
         index += width
-    return sorted(path for path in paths if Path(path).name in CONFIG_FILES)
+    return sorted(
+        path
+        for path in paths
+        if Path(path).name in CONFIG_FILES or path in TOOL_ENVIRONMENT_FILES
+    )
 
 
 def tracked_config_files() -> list[str]:
