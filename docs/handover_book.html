@@ -951,9 +951,11 @@ QPLANT helium system at MYRRHA/SCK&bull;CEN. Content is derived from:</p>
 <ul>
 <li><strong>Gistau Baguer, G.</strong> — <em>Cryogenic Engineering for Scientists and Engineers</em>, Chapter&nbsp;15:
 Engineering Tools (thermodynamic tables, calculator methods, design charts)</li>
-<li>NIST REFPROP 10 / Helmholtz EOS (Ortiz-Vega <em>et al.</em> 2015; Donnelly &amp; Barenghi 1998)</li>
-<li>CODEX repository: <code>engineering_tools/hbhs_ep/</code> — HBHS-EP v8.3 SSoT parameters</li>
-<li>ABACUS: <code>cryo_dashboard_v0_3_0/</code> — interactive cryogenic properties reference</li>
+<li><strong>QPLANT provider control:</strong> HEPAK 3.40 is the governing low-temperature property engine for 2.0–4.5 K inclusive; licensed runtime execution is GREEN, while governing promotion remains withheld pending stable-source SHA-256 attestation.</li>
+<li><strong>CoolProp / HEOS:</strong> operational WORKING / CONTROL as the independent-check engine and the runtime provider outside the QPLANT HEPAK band, within its enforced 1.8–300 K envelope, unless a narrower child rule applies; temperatures outside that envelope are rejected.</li>
+<li><strong>NIST REFPROP 10 / published helium references:</strong> validation/reference evidence only; never a silent substitute for the governing low-temperature HEPAK receipt.</li>
+<li>CODEX repository: <code>engineering_tools/hbhs_ep/</code> — HBHS-EP engineering-method / SSoT context.</li>
+<li>Canonical human surface: <code>GBOGEB/cryoplant-project/docs/QPS_HELIUM_PROPERTIES_WORKBENCH_CURRENT.html</code>. The focused <code>docs/hepak_workbench.html</code> remains subordinate technical/playground tooling.</li>
 </ul>
 <br>
 <h2>15.1 QPLANT Operating Envelope</h2>
@@ -981,10 +983,21 @@ operating window. Source: <code>CODEX/engineering_tools/hbhs_ep/docs/data/hcc_wc
 </div>
 <p style="font-size:0.8em;color:#8b949e">VLP and PVPS values in mbar abs; supply and inventory values in barg × 1000 for scale.</p>
 <br>
-<h2>15.2 He-4 Thermodynamic Properties (NIST REFPROP 10)</h2>
+<h2>15.2 He-4 Thermodynamic Properties — Provider-Controlled Use</h2>
 <br>
 <p>Helium-4 is the working fluid at 4.2 K (normal boiling point) and 2 K (superfluid bath) throughout the QPLANT
-cryogenic system. The following table and charts are the primary reference for thermal design and safety margin calculations.</p>
+cryogenic system. Chapter 15 provides engineering methods, tables and charts, but it is <strong>not</strong> an independent property authority.
+For QPLANT governing calculations from 2.0–4.5 K inclusive, HEPAK 3.40 governs. CoolProp / HEOS is the operational
+independent-check engine and the outside-band runtime only within its enforced 1.8–300 K envelope; temperatures outside
+that envelope are rejected. A narrower child rule may also apply. NIST / REFPROP values below remain
+reference and validation anchors only.</p>
+<br>
+<table>
+<tr><th>Provider / source</th><th>Role</th><th>Current execution state</th><th>Promotion state</th></tr>
+<tr><td><strong>HEPAK 3.40</strong></td><td>Governing QPLANT low-T engine, 2.0–4.5 K inclusive</td><td><strong>EXECUTED / GREEN</strong></td><td>WITHHELD pending stable-source SHA-256 rerun and repository receipt return</td></tr>
+<tr><td><strong>CoolProp / HEOS</strong></td><td>Independent check; outside-band runtime within 1.8–300 K only</td><td><strong>WORKING / CONTROL</strong></td><td>Rejects temperatures outside 1.8–300 K; may not silently replace HEPAK inside the governing low-T band</td></tr>
+<tr><td>NIST / REFPROP / published tables</td><td>Reference / validation</td><td>Available as reference evidence</td><td>Not governing runtime authority</td></tr>
+</table>
 <br>
 <h3>Key Constants — He-4</h3>
 <table>
@@ -1000,7 +1013,8 @@ cryogenic system. The following table and charts are the primary reference for t
 <tr><td>Latent heat at NBP ΔH<sub>vap</sub></td><td>20.4</td><td>kJ/kg</td></tr>
 </table>
 <br>
-<h3>Table 15.1 — He-4 Saturation Properties (NIST REFPROP 10)</h3>
+<h3>Table 15.1 — He-4 Saturation Reference Properties (NIST / REFPROP)</h3>
+<p style="font-size:0.8em;color:#d29922"><strong>Reference-only:</strong> these values support visualization, teaching and cross-checking. They do not override the QPLANT provider router or constitute a governing HEPAK receipt.</p>
 <div style="overflow-x:auto">
 <table>
 <tr><th>T (K)</th><th>P<sub>sat</sub> (kPa)</th><th>ρ<sub>liq</sub> (kg/m³)</th><th>ρ<sub>vap</sub> (kg/m³)</th><th>ΔH<sub>vap</sub> (kJ/kg)</th><th>Note</th></tr>
@@ -1019,7 +1033,8 @@ cryogenic system. The following table and charts are the primary reference for t
 </table>
 </div>
 <br>
-<h2>15.3 He-4 Property Charts</h2>
+<h2>15.3 He-4 Reference Charts</h2>
+<p>Charts in this section visualize reference data. Engineering calculations shall retain provider identity, authority role and receipt provenance; a plotted NIST/REFPROP curve is not equivalent to an executed HEPAK or CoolProp result.</p>
 <br>
 <h3>Figure 15.2 — He-4 Saturation Pressure vs Temperature</h3>
 <div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px;margin:10px 0;height:280px">
@@ -1098,10 +1113,11 @@ cryogenic system. The following table and charts are the primary reference for t
   └───────────────────────────────────────────────────────────┘
 </code></pre>
 <br>
-<h2>15.5 Helium Engineering Calculator</h2>
+<h2>15.5 Helium Engineering Calculator &amp; Provider Router</h2>
 <br>
-<p>Interactive unit and property conversions for cryogenic helium engineering. All formulas use
-CODATA 2018 constants (R = 8 314.46 J/(kmol·K), M<sub>He</sub> = 4.0026 g/mol) and NIST saturation data.</p>
+<p>This embedded Chapter 15 calculator is limited to deterministic engineering conversions plus a provider-routing check.
+It does <strong>not</strong> calculate governing helium thermophysical properties in the browser. Full point/path/property work belongs
+to the canonical QPLANT Helium Properties Workbench, which consumes governed provider evidence.</p>
 <br>
 <div style="background:#161b22;border:1px solid #30363d;border-radius:6px;padding:16px;max-width:600px">
 <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
@@ -1112,7 +1128,7 @@ CODATA 2018 constants (R = 8 314.46 J/(kmol·K), M<sub>He</sub> = 4.0026 g/mol) 
       <option value="leak_std_cc_s">Leak rate: mbar·L/s → std cm³/s</option>
       <option value="pres_kpa_barg">Pressure: kPa (abs) → barg</option>
       <option value="pres_barg_kpa">Pressure: barg → kPa (abs)</option>
-      <option value="he_lookup">He-4 saturation lookup at T (K)</option>
+      <option value="he_lookup">Provider route at T (K)</option>
     </select>
   </div>
   <div style="display:flex;flex-direction:column;gap:4px">
@@ -1132,7 +1148,7 @@ CODATA 2018 constants (R = 8 314.46 J/(kmol·K), M<sub>He</sub> = 4.0026 g/mol) 
 <tr><td>Leak rate mbar·L/s → std cm³/s</td><td>× 0.9869</td><td>At 0 °C, 101.325 kPa (STP)</td></tr>
 <tr><td>kPa (abs) → barg</td><td>(P_kPa − 101.325) / 100</td><td>P_atm = 101.325 kPa</td></tr>
 <tr><td>barg → kPa (abs)</td><td>P_barg × 100 + 101.325</td><td>—</td></tr>
-<tr><td>He-4 sat. lookup</td><td>Linear interpolation of NIST REFPROP 10 table</td><td>Valid 2.18–5.19 K</td></tr>
+<tr><td>Provider route at T</td><td>2.0 ≤ T ≤ 4.5 K → HEPAK governing; otherwise CoolProp runtime only for 1.8 ≤ T ≤ 300 K; outside 1.8–300 K is rejected. A narrower child rule may apply.</td><td>NIST / REFPROP remain validation/reference only</td></tr>
 </table>
 <br>
 <h2>15.6 QPLANT System Block Diagram</h2>
@@ -1198,7 +1214,24 @@ Data source: NIST REFPROP 10 / Span et al. 2000.</p>
 <tr><td>Triple point T<sub>tr</sub></td><td>63.15</td><td>K</td></tr>
 </table>
 <br>
-<h2>15.8 References &amp; Data Sources</h2>
+<h2>15.8 Runtime Evidence &amp; Human-Surface Hierarchy</h2>
+<br>
+<table>
+<tr><th>Item</th><th>Current state</th></tr>
+<tr><td>CoolProp foreign source</td><td><code>a3c743026521ff557f8c2e85701c726898b00e0b</code></td></tr>
+<tr><td>CoolProp workflow</td><td><code>37185757928</code> · WORKING / CONTROL</td></tr>
+<tr><td>HEPAK runtime</td><td>3.40 · licensed <code>HEPAK.xla</code> / HeCalc · EXECUTED / GREEN</td></tr>
+<tr><td>HEPAK probe</td><td><code>HeCalc(9,0,2,4.5,1,300000,1) = 11780.63427898351 J/kg</code></td></tr>
+<tr><td>HEPAK 8-state CSV SHA-256</td><td><code>c0c1f82d046a5af967982f09370571c9be4c35b12b2cae6e2a294307d955b943</code></td></tr>
+<tr><td>HEPAK manifest SHA-256</td><td><code>19d90ea83d0d242476e86c92e7807eb2a725618684921f29105d9835e639910f</code></td></tr>
+<tr><td>Remaining HEPAK gate</td><td><strong>WITHHELD_SOURCE_HASH_DRIFT</strong> — repeat from stable local XLA and return governed receipt artifacts</td></tr>
+<tr><td>Main human GUI</td><td><code>cryoplant-project/docs/QPS_HELIUM_PROPERTIES_WORKBENCH_CURRENT.html</code></td></tr>
+<tr><td>Focused technical playground</td><td><code>cryoplant-project/docs/hepak_workbench.html</code> — subordinate diagnostics only</td></tr>
+</table>
+<br>
+<p><strong>Hierarchy:</strong> Chapter 15 explains methods and reference data → the full QPLANT Helium Properties Workbench is the primary human engineering surface → provider receipts and source hashes govern numerical authority → the HEPAK playground remains a technical execution/diagnostics view.</p>
+<br>
+<h2>15.9 References &amp; Data Sources</h2>
 <br>
 <ul>
 <li><strong>Gistau Baguer, G.</strong> (2013). <em>Cryogenic Engineering for Scientists and Engineers</em>. CERN Yellow Report.
@@ -1216,7 +1249,9 @@ Helmholtz EOS for He-4: Ortiz-Vega <em>et al.</em> (2015).
 </ul>
 <br>
 <blockquote>⚠️ This chapter provides representative NIST data and engineering estimates for preliminary design and DMAIC analysis.
-For high-accuracy calculations, obtain data directly from NIST REFPROP 10 or the original Gistau source PDF.</blockquote>
+For governing QPLANT calculations from 2.0–4.5 K inclusive, execute HEPAK 3.40 and retain the governed provider receipt.
+Use NIST REFPROP 10 and the original Gistau source PDF only as reference or validation evidence; outside the governing band,
+CoolProp / HEOS is the runtime provider only within its enforced 1.8–300 K envelope, and temperatures outside that envelope are rejected.</blockquote>
 <br>
 </div>
 </main>
@@ -1436,12 +1471,14 @@ function ch15Calc() {
     out = ((inp * 100) + 101.325).toFixed(2); unit = 'kPa (abs) — at 0 barg = 101.325 kPa abs';
   } else if (mode === 'he_lookup') {
     const T = inp;
-    const P   = ch15Interp(CH15_HE4.sat, T, 1);
-    const rho = ch15Interp(CH15_HE4.sat, T, 2);
-    const dH  = ch15Interp(CH15_HE4.sat, T, 4);
-    if (P === null) { out = 'Out of range (2.18–5.20 K)'; }
-    else { out = `P_sat=${P.toFixed(2)} kPa  ρ_liq=${rho.toFixed(1)} kg/m³  ΔH_vap=${dH.toFixed(1)} kJ/kg`; }
-    unit = `(He-4 at ${T} K)`;
+    if (T >= 2.0 && T <= 4.5) {
+      out = 'HEPAK 3.40 → GOVERNING low-T route; runtime EXECUTED/GREEN; promotion WITHHELD pending stable-source SHA-256 attestation';
+    } else {
+      out = T >= 1.8 && T <= 300
+        ? 'CoolProp / HEOS → operational runtime route within its enforced 1.8–300 K envelope outside the QPLANT 2.0–4.5 K HEPAK governing band; validate any narrower child rule'
+        : 'Rejected: CoolProp / HEOS runtime supports only 1.8–300 K';
+    }
+    unit = 'NIST / REFPROP = validation/reference only';
   }
   document.getElementById('ch15CalcResult').textContent = out + (unit ? '  [' + unit + ']' : '');
 }

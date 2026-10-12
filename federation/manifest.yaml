@@ -34,7 +34,7 @@ federation:
       spec_ref: integration/cryoplant_project/federation/manifest.yaml
       responsibility:
         - myrrha_qps_qplant_cryoplant_engineering_analyses
-        - binaries_segregation_policy
+        - binaries_segregation_policy_and_manifest_generator
         - bidirectional_smoke_warmup_against_secondary_repo_cluster
 
   member_repos:
@@ -53,7 +53,18 @@ federation:
       role: interactive_execution_plane
     - name: GBOGEB/cryoplant-project
       plane: auxiliary
-      status: proposed
+      status: active
+      # Activated 2026-10-11 after the pairwise smoke ran from both
+      # directions: cryoplant-project scripts/federation_smoke.py (all
+      # targets reachable, status ok) and, from this side,
+      # integration/cryoplant_project/scripts/reciprocal_smoke.py, which
+      # reads cryoplant-project's own manifest at its main head over the
+      # GitHub API (evidence in
+      # integration/cryoplant_project/federation/reciprocal_smoke.json,
+      # status ok at 101695a). The local tests in
+      # integration/cryoplant_project/tests only read this repository and
+      # require that evidence while the member is active. Registration
+      # history below.
       # Self-declared on the cryoplant-project side (see its own
       # federation/manifest.yaml, branch
       # federation/delta1-auxiliary-member-20260831). Registered here on
@@ -63,7 +74,8 @@ federation:
       role: cryoplant_engineering_auxiliary_plane
 
   dev_snapshots:
-    # DEV snapshot folders registered here for provenance; NOT integrated into main src tree.
+    # DEV snapshot folders registered here for provenance;
+    # NOT integrated into main src tree.
     - path: ABACUS-v031/
       status: legacy
       note: Pre-V3 baseline snapshot

@@ -1,5 +1,6 @@
 # integration/cryoplant_project/federation/manifest.yaml
-# Federation manifest stub for GBOGEB/cryoplant-project (DELTA_1 auxiliary plane).
+# Federation manifest stub for GBOGEB/cryoplant-project
+# (DELTA_1 auxiliary plane).
 #
 # This file mirrors the manifest GBOGEB/cryoplant-project carries in its own
 # repository under federation/manifest.yaml (see that repo's branch
@@ -30,7 +31,7 @@ federation:
   member_self:
     name: GBOGEB/cryoplant-project
     plane: auxiliary
-    status: proposed
+    status: active
     responsibilities:
       - myrrha_qps_qplant_cryoplant_engineering_analyses
       - binaries_segregation_policy_and_manifest_generator

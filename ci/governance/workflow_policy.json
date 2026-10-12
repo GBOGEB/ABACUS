@@ -36,7 +36,8 @@
         "validate_docs.yml",
         "v5-w62-self-smoke.yml",
         "governance.yml",
-        "validation.yml"
+        "validation.yml",
+        "a10-guard.yml"
       ]
     },
     "full": {
@@ -79,11 +80,13 @@
     "intent": "Make PR-triggered workflows with write-class GitHub token scopes explicit and reviewable.",
     "pr_write_allowed": [
       "bootstrap-integration.yml",
+      "branch-hygiene.yml",
       "codeql.yml",
       "dependency-review.yml",
       "gloob-causal-responder.yml",
       "osv-scanner.yml",
       "post-merge-pr-summary.yml",
+      "pr-feedback-gate.yml",
       "semgrep.yml",
       "w67-measured-id-pulse.yml"
     ],
@@ -205,7 +208,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(bridge-ci|codespace-federation|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact)\\.yml$",
+      "pattern": "^(bridge-ci|codespace-federation|cryoplant-federation|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact)\\.yml$",
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -250,6 +253,12 @@
       "pattern": "^(auto-merge-prs|branch-analysis|branch-pruner|ci-failure-debug-rerun|ci_monitor_and_issue_creator|copilot-pr-creator|dashboard-health|post-merge-pr-summary)\\.yml$",
       "cluster": "automation",
       "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^branch-hygiene\\.yml$",
+      "cluster": "automation",
+      "lifecycle": "manual",
       "disposition": "keep"
     },
     {
@@ -321,6 +330,12 @@
     {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
+      "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^a10-guard\\.yml$",
+      "cluster": "security",
       "lifecycle": "pr_fast",
       "disposition": "keep"
     }
