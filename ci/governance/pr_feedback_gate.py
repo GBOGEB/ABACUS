@@ -11,7 +11,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -183,15 +183,22 @@ class Evidence:
     ci_failed: tuple[str, ...]
     ci_seen: int
     deferred_comments: tuple[str, ...]
+    review_source: str = "codex"
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if self.unresolved_threads:
+        reasons.extend(self.blocking_review_items)
+        if self.unresolved_threads and not self.review_deferral_valid:
             reasons.append(
                 f"{self.unresolved_threads} unresolved review thread(s)"
             )
         reasons.extend(self.ci_failed)
+        reasons.extend(
+            item
+            for item in self.review_deferral_details
+            if "has no open issue" in item
+        )
         reasons.extend(
             item
             for item in self.deferred_comments
@@ -202,10 +209,18 @@ class Evidence:
     @property
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if not self.code_review_complete:
+        if not self.code_review_complete and not self.review_deferral_valid:
             reasons.append("Codex code review is not complete on current head")
-        if not self.security_review_complete:
+        if (
+            not self.security_review_complete
+            and not self.review_deferral_valid
+        ):
             reasons.append("Codex security review is not complete on current head")
+        if self.security_sensitive and not self.security_review_complete:
+            reasons.append(
+                "Codex security review is mandatory pre-merge for "
+                "security-sensitive changes"
+            )
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
@@ -218,6 +233,14 @@ class Evidence:
         if self.pending_reasons:
             return "pending"
         return "success"
+
+
+class GitHubAPIError(RuntimeError):
+    """A GitHub API request that returned an HTTP error status."""
+
+    def __init__(self, message: str, status: int):
+        super().__init__(message)
+        self.status = status
 
 
 class GitHub:
@@ -250,8 +273,9 @@ class GitHub:
                 raw = response.read().decode("utf-8")
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(
-                f"GitHub API {method} {url} failed: {exc.code}: {body}"
+            raise GitHubAPIError(
+                f"GitHub API {method} {url} failed: {exc.code}: {body}",
+                exc.code,
             ) from exc
         return json.loads(raw) if raw else None
 
@@ -271,19 +295,45 @@ class GitHub:
                 return items
             page += 1
 
+    def can_write(self, login: str) -> bool:
+        """Whether login holds write-or-higher on this repository.
+
+        Author association is not authorization: MEMBER and COLLABORATOR
+        include read- and triage-only users.
+        """
+        cache = self.__dict__.setdefault("_can_write", {})
+        if login not in cache:
+            try:
+                data = self.request(
+                    "GET",
+                    f"/repos/{self.repository}/collaborators/"
+                    f"{urllib.parse.quote(login, safe='')}/permission",
+                )
+            except GitHubAPIError as exc:
+                # Only a 404 means "not a collaborator". Any other failure
+                # (403, rate limit, 5xx) propagates, so the job fails rather
+                # than treating the author as untrusted and silently
+                # dropping an event that should invalidate evidence.
+                if exc.status != 404:
+                    raise
+                data = {}
+            cache[login] = (data or {}).get("permission") in {
+                "admin",
+                "write",
+            } or (data or {}).get("role_name") in WRITE_ROLES
+        return cache[login]
+
     def pull(self, number: int) -> dict[str, Any]:
         return self.request(
             "GET",
             f"/repos/{self.repository}/pulls/{number}",
         )
 
+    def pull_file_records(self, number: int) -> list[dict[str, Any]]:
+        return self.paged(f"/repos/{self.repository}/pulls/{number}/files")
+
     def pull_files(self, number: int) -> list[str]:
-        return [
-            item["filename"]
-            for item in self.paged(
-                f"/repos/{self.repository}/pulls/{number}/files"
-            )
-        ]
+        return changed_paths_from_files(self.pull_file_records(number))
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
         return self.paged(
@@ -316,10 +366,13 @@ class GitHub:
                   id
                   isResolved
                   comments(first: 100) {
+                    pageInfo { hasNextPage }
                     nodes {
                       databaseId
                       body
                       author { login }
+                      createdAt
+                      lastEditedAt
                     }
                   }
                 }
@@ -386,7 +439,8 @@ class GitHub:
         title: str,
         summary: str,
         text: str,
-    ) -> None:
+        census_started: str | None = None,
+    ) -> bool:
         existing = [
             check
             for check in self.check_runs(head_sha)
@@ -398,6 +452,15 @@ class GitHub:
             or "",
             reverse=True,
         )
+        if census_started is not None and existing:
+            # Runs for one PR can overlap (a tracking-issue event's
+            # invalidate job runs outside the PR's census queue). Never let
+            # an older census overwrite a result from one that started later.
+            published = census_started_from(
+                (existing[0].get("output") or {}).get("summary") or ""
+            )
+            if published is not None and published > census_started:
+                return False
         now = dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")
         output = {
             "title": title[:255],
@@ -447,6 +510,37 @@ class GitHub:
                 f"/repos/{self.repository}/check-runs",
                 payload,
             )
+        return True
+
+
+def thread_comment_time(comment: dict[str, Any]) -> str:
+    return max(
+        comment.get("createdAt") or "",
+        comment.get("lastEditedAt") or "",
+    )
+
+
+CENSUS_STARTED_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+CENSUS_STARTED_PATTERN = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$")
+
+
+def utc_now() -> str:
+    # Fixed width (always six fractional digits) so census stamps order
+    # correctly as strings; isoformat() drops the fraction at .000000.
+    return dt.datetime.now(dt.UTC).strftime(CENSUS_STARTED_FORMAT)
+
+
+def census_started_arg(value: str) -> str:
+    if not CENSUS_STARTED_PATTERN.match(value):
+        raise argparse.ArgumentTypeError(
+            f"expected UTC timestamp like 2026-10-11T15:00:01.000000Z: {value}"
+        )
+    return value
+
+
+def census_started_from(summary: str) -> str | None:
+    match = re.search(r"^census_started=(\S+)$", summary, re.MULTILINE)
+    return match.group(1) if match else None
 
 
 def is_trusted_codex_comment(comment: dict[str, Any]) -> bool:
@@ -537,6 +631,230 @@ def codex_security_review_complete(
     return False
 
 
+# Break-glass review path (used only when Codex itself cannot run).
+#
+# The gate normally requires exact-head Codex code + security reviews. When the
+# Codex allowance is exhausted those reviews cannot start, the gate stays
+# pending for every PR, and the ruleset (no bypass actors) blocks all merges.
+# An owner attestation may then stand in for the *review* requirement only:
+#   * the trusted Codex app must itself have reported it could not run on
+#     this PR (usage limit / exhausted allowance), and
+#   * the repository owner must attest the exact head SHA with a structured,
+#     machine-checkable marker.
+# Every CI requirement, the unresolved-thread rule and the workflow-identity
+# checks still apply unchanged. The attestation is an accountable human act:
+# automation and agents must never post it.
+OWNER_ATTESTORS = frozenset({"GBOGEB"})
+OWNER_ATTESTATION_MARKER = re.compile(
+    r"owner-security-attestation:v1\s+(\{.*?\})\s*-->"
+)
+# Codex's outage replies carry no machine marker, so they are matched as the
+# exact, complete comment body (whitespace-trimmed). A review that merely
+# quotes these sentences is not an outage. If Codex rewords them, the fallback
+# stops activating (fail-closed) until these strings are updated.
+CODEX_UNAVAILABLE_BODIES = frozenset({
+    "You have reached your Codex usage limits for code reviews. You can see "
+    "your limits in the [Codex usage dashboard]"
+    "(https://chatgpt.com/codex/cloud/settings/usage).",
+    "This security review couldn\u2019t start because the paying account has "
+    "exhausted its Codex allowance and has insufficient available credits. "
+    "The payer can check their balance and add credits in the [Codex usage "
+    "dashboard](https://chatgpt.com/codex/cloud/settings/usage), then try "
+    "again. If you do not manage the paying account, contact this "
+    "repository's admins.",
+})
+
+
+def is_codex_outage_notice(comment: dict[str, Any]) -> bool:
+    return (
+        is_trusted_codex_comment(comment)
+        and (comment.get("body") or "").strip() in CODEX_UNAVAILABLE_BODIES
+    )
+OWNER_ATTESTATION_SCOPE = "code+security"
+
+
+def _stamp(comment: dict[str, Any]) -> str:
+    return comment.get("updated_at") or comment.get("created_at") or ""
+
+
+def head_current_since(
+    runs: list[dict[str, Any]],
+    head_sha: str,
+    pr_number: int,
+) -> str:
+    """Server-recorded time this SHA most recently became the PR head.
+
+    Uses the latest Actions run GitHub created for the exact head SHA from a
+    pull_request event of this PR. These timestamps are set by GitHub when the
+    head moves (they cannot be backdated like Git committer dates), and taking
+    the latest one binds the outage to the current head transition: a PR
+    force-pushed back to an older SHA gets fresh runs, so the SHA's historical
+    runs no longer count. Extra or late runs only make the fallback stricter.
+    Returns "" when no such run exists, which keeps the fallback closed.
+    """
+    stamps = [
+        run.get("created_at") or ""
+        for run in runs
+        if run.get("head_sha") == head_sha
+        and run.get("event") == "pull_request"
+        and pr_number
+        in {
+            int(item["number"])
+            for item in (run.get("pull_requests") or [])
+            if item.get("number") is not None
+        }
+        and run.get("created_at")
+    ]
+    return max(stamps) if stamps else ""
+
+
+def head_reused_across_transitions(
+    runs: list[dict[str, Any]], head_sha: str, pr_number: int
+) -> bool:
+    """Deny fallback on A->B->A; GitHub server-stamped PR run observations.
+
+    An incomplete or ambiguous history conservatively disables the fallback.
+    This is a re-evaluation guard, NOT an atomic GitHub merge protection.
+    """
+    events = sorted(
+        (
+            run.get("created_at"), run.get("head_sha")
+        )
+        for run in runs
+        if run.get("event") == "pull_request"
+        and run.get("created_at")
+        and run.get("head_sha")
+        and any(
+            item.get("number") is not None
+            and int(item["number"]) == pr_number
+            for item in run.get("pull_requests") or []
+        )
+    )
+    if not events:
+        return True
+    observed = []
+    for _, head in events:
+        if not observed or observed[-1] != head:
+            observed.append(head)
+    return head_sha in observed[:-1] or observed[-1] != head_sha
+
+
+def current_codex_outage(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> str | None:
+    """Timestamp of a Codex outage that applies to the current head, else None.
+
+    The outage counts only if (a) the most recent trusted Codex activity on the
+    PR is itself an "could not run" notice, so any later successful Codex
+    activity cancels it, and (b) that notice is newer than the head commit, so
+    a notice from an earlier push never carries over to new commits.
+    """
+    trusted = [c for c in comments if is_trusted_codex_comment(c)]
+    if not trusted or not head_committed_at:
+        return None
+    latest = max(trusted, key=_stamp)
+    if not is_codex_outage_notice(latest):
+        return None
+    stamp = latest.get("created_at") or _stamp(latest)
+    if stamp <= head_committed_at:
+        return None
+    return stamp
+
+
+# CODE PURPLE P1: an outage cannot authorize the owner fallback unless the
+# owner actually requested a Codex review on this precise current PR head.
+# GitHub comments do not carry an outage response correlation ID. Therefore
+# timestamp ties, older-head requests, app-posted requests, and requests made
+# after the outage fail closed. Independent security review still applies.
+CODEX_REVIEW_REQUEST = re.compile(
+    r"(?m)^\s*@codex\s+(?:security\s+)?review\s*$",
+    re.IGNORECASE,
+)
+
+
+def current_head_codex_request(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+    head_since: str,
+    outage_at: str,
+) -> bool:
+    """Require a GitHub-timestamped owner request between head arrival and outage.
+
+    This closes the no-current-head-request case; it is not cryptographic
+    request/reply correlation because Codex outage text lacks a request ID.
+    """
+    if not head_since or not outage_at or not head_since < outage_at:
+        return False
+    for comment in comments:
+        user = comment.get("user") or {}
+        body = comment.get("body") or ""
+        posted = comment.get("created_at") or comment.get("updated_at") or ""
+        if (
+            user.get("login") in OWNER_ATTESTORS
+            and user.get("type", "User") == "User"
+            and comment.get("author_association") == "OWNER"
+            and not comment.get("performed_via_github_app")
+            and CODEX_REVIEW_REQUEST.search(body)
+            and head_sha in body
+            and head_since < posted < outage_at
+        ):
+            return True
+    return False
+
+
+def codex_unavailable(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> bool:
+    """True when the trusted Codex app reported it could not run on this head."""
+    return current_codex_outage(comments, head_committed_at) is not None
+
+
+def owner_attestation_complete(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+    not_before: str = "",
+) -> bool:
+    """Latest owner attestation must bind this exact head and full scope.
+
+    With not_before set, the attestation must also post-date that moment (the
+    outage notice), so it answers the current failed review attempt.
+    """
+    for comment in sorted(
+        comments,
+        key=lambda item: item.get("updated_at")
+        or item.get("created_at")
+        or "",
+        reverse=True,
+    ):
+        user = comment.get("user") or {}
+        if (
+            user.get("login") not in OWNER_ATTESTORS
+            or user.get("type", "User") != "User"
+            or comment.get("author_association") != "OWNER"
+            or comment.get("performed_via_github_app")
+        ):
+            continue
+        match = OWNER_ATTESTATION_MARKER.search(comment.get("body", ""))
+        if not match:
+            continue
+        try:
+            payload = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        posted = comment.get("created_at") or _stamp(comment)
+        return (
+            posted > not_before
+            and payload.get("headSha") == head_sha
+            and payload.get("status") == "completed"
+            and payload.get("scope") == OWNER_ATTESTATION_SCOPE
+            and payload.get("reason") == "codex_unavailable"
+            and bool(str(payload.get("reviewer", "")).strip())
+        )
+    return False
+
+
 def github_path_pattern_regex(pattern: str) -> re.Pattern[str]:
     """Translate the Actions path-filter glob subset used by this repo."""
     parts = ["^"]
@@ -564,6 +882,76 @@ def github_path_pattern_regex(pattern: str) -> re.Pattern[str]:
 
 def github_path_match(path: str, pattern: str) -> bool:
     return bool(github_path_pattern_regex(pattern).match(path))
+
+
+TRUSTED_AUTHOR_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
+WRITE_ROLES = frozenset({"admin", "maintain", "write"})
+
+
+def trusted_writer(github: GitHub, item: dict[str, Any]) -> bool:
+    """Association pre-filter, then the author's effective permission."""
+    if (
+        (item.get("author_association") or "").upper()
+        not in TRUSTED_AUTHOR_ASSOCIATIONS
+    ):
+        return False
+    login = (item.get("user") or {}).get("login")
+    return isinstance(login, str) and bool(login) and github.can_write(login)
+
+
+def changed_paths_from_files(files: list[dict[str, Any]]) -> list[str]:
+    """Return every path a PR touches, including the source of a rename.
+
+    A rename out of a protected directory changes protected code even though
+    the destination path is not protected, so ``previous_filename`` must be
+    classified alongside ``filename``.
+    """
+    paths: list[str] = []
+    for item in files:
+        for key in ("filename", "previous_filename"):
+            value = item.get(key)
+            if isinstance(value, str) and value and value not in paths:
+                paths.append(value)
+    return paths
+
+
+# Only inert raster images may defer Codex security review. Any other path is
+# sensitive: with many workflows holding write tokens, a deny-list of
+# "privileged" code paths cannot be kept complete, so classify fail-closed.
+# Markdown and reST are excluded too: Markdown pipelines execute fenced code
+# (scripts/markdown_exec_runner.py) and Pandoc builds (book-build.yml,
+# export-docs.yml) pass raw HTML in docs/**/*.md and root *.md through into
+# published HTML/EPUB.
+NON_SENSITIVE_SUFFIXES = (
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+)
+
+
+def security_sensitive_change(paths: list[str]) -> bool:
+    return any(
+        not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths
+    )
+
+
+def file_census_complete(
+    records: list[dict[str, Any]],
+    pull: dict[str, Any],
+) -> bool:
+    """True only when the listed files cover every file the PR changes.
+
+    GitHub caps the PR files listing (3,000 files). A truncated census could
+    hide a protected-path change, so callers must fail closed when the record
+    count does not match ``pull.changed_files``.
+    """
+    expected = pull.get("changed_files")
+    return (
+        isinstance(expected, int)
+        and not isinstance(expected, bool)
+        and expected == len(records)
+    )
 
 
 def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
@@ -682,6 +1070,300 @@ def deferred_comment_evidence(
     return tuple(evidence)
 
 
+def review_deferral_evidence(
+    github: GitHub,
+    number: int,
+    head_sha: str,
+    comments: list[dict[str, Any]],
+    threads: list[dict[str, Any]],
+    code_review_complete: bool,
+    security_review_complete: bool,
+) -> tuple[bool, tuple[str, ...], tuple[str, ...]]:
+    marker = re.compile(
+        r"<!--\s*abacus-review-disposition:v2\s+(\{.*?\})\s*-->",
+        re.DOTALL,
+    )
+    candidates = [
+        (comment, match)
+        for comment in comments
+        for match in [marker.search(comment.get("body", ""))]
+        if match and trusted_writer(github, comment)
+    ]
+    if not candidates:
+        return False, (), ()
+
+    comment, match = max(
+        candidates,
+        key=lambda item: item[0].get("updated_at")
+        or item[0].get("created_at")
+        or "",
+    )
+    try:
+        disposition = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False, (), ("review deferral marker contains invalid JSON",)
+    if not isinstance(disposition, dict):
+        return False, (), ("review deferral marker must be a JSON object",)
+    if disposition.get("headSha") != head_sha:
+        return False, (), ("review deferral marker does not match current head",)
+
+    if (
+        type(disposition.get("codexCodeReviewRequired")) is not bool
+        or not disposition["codexCodeReviewRequired"]
+        or type(disposition.get("codexSecurityReviewRequired")) is not bool
+        or not disposition["codexSecurityReviewRequired"]
+    ):
+        return False, (), ("review deferral must retain both Codex obligations",)
+
+    items = disposition.get("items")
+    if not isinstance(items, list):
+        return False, (), ("review deferral items must be a list",)
+    classifications: dict[str, str] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            return False, (), ("review deferral item must be an object",)
+        thread_id = item.get("threadId")
+        classification = item.get("classification")
+        if (
+            not isinstance(thread_id, str)
+            or not thread_id
+            or not isinstance(classification, str)
+            or classification not in {"S0", "S1", "S2", "S3"}
+            or thread_id in classifications
+        ):
+            return False, (), ("review deferral has an invalid or duplicate item",)
+        classifications[thread_id] = classification
+
+    unresolved_threads = [
+        thread
+        for thread in threads
+        if not thread.get("isResolved")
+    ]
+    unresolved_ids = {
+        thread.get("id")
+        for thread in unresolved_threads
+        if isinstance(thread.get("id"), str)
+    }
+    if len(unresolved_ids) != len(unresolved_threads):
+        return False, (), ("unresolved review thread is missing its identifier",)
+    if not unresolved_ids.issubset(classifications):
+        return (
+            False,
+            (),
+            ("every unresolved review thread must be classified",),
+        )
+    # A classification covers the thread content it was made against. A
+    # reply or edit after the disposition may raise the severity, so the
+    # disposition must be at least as new as every comment it classifies.
+    truncated = sorted(
+        thread["id"]
+        for thread in unresolved_threads
+        if ((thread.get("comments") or {}).get("pageInfo") or {}).get(
+            "hasNextPage"
+        )
+    )
+    if truncated:
+        # Comments past the first page cannot be checked against the
+        # disposition, so fail closed rather than trust a partial thread.
+        return (
+            False,
+            (),
+            (
+                "review thread too long to verify its classification: "
+                + ", ".join(truncated),
+            ),
+        )
+    disposition_time = comment.get("updated_at") or comment.get("created_at")
+    changed = sorted(
+        thread["id"]
+        for thread in unresolved_threads
+        if any(
+            # Ties are rejected: timestamps have second precision, so a
+            # comment edited in the same second may postdate the disposition.
+            thread_comment_time(item) >= (disposition_time or "")
+            for item in (thread.get("comments") or {}).get("nodes") or []
+        )
+    )
+    if changed:
+        return (
+            False,
+            (),
+            (
+                "review thread changed after its classification: "
+                + ", ".join(changed),
+            ),
+        )
+
+    blocking_items = tuple(
+        f"{classifications[thread_id]} review item remains open: {thread_id}"
+        for thread_id in sorted(unresolved_ids)
+        if classifications[thread_id] in {"S0", "S1"}
+    )
+    deferred_code_review = not code_review_complete
+    deferred_security_review = not security_review_complete
+    body = comment.get("body", "")
+    if deferred_code_review and "CODEX_CODE_REVIEW=DEFERRED_BUDGET" not in body:
+        return (
+            False,
+            blocking_items,
+            ("deferred Codex code review must be marked DEFERRED_BUDGET",),
+        )
+    if (
+        deferred_security_review
+        and "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET" not in body
+    ):
+        return (
+            False,
+            blocking_items,
+            ("deferred Codex security review must be marked DEFERRED_BUDGET",),
+        )
+
+    requires_tracking = (
+        deferred_code_review
+        or deferred_security_review
+        or any(
+            classifications[thread_id] == "S2"
+            for thread_id in unresolved_ids
+        )
+    )
+    if not requires_tracking:
+        return True, blocking_items, ()
+
+    issue_number = disposition.get("trackingIssue")
+    if (
+        isinstance(issue_number, bool)
+        or not isinstance(issue_number, int)
+        or issue_number <= 0
+    ):
+        return (
+            False,
+            blocking_items,
+            ("review deferral requires a valid open tracking issue",),
+        )
+    issue = github.issue(issue_number)
+    issue_marker = re.search(
+        r"<!--\s*abacus-deferred-security:v1\s+(\{.*?\})\s*-->",
+        issue.get("body") or "",
+        re.DOTALL,
+    )
+    try:
+        issue_metadata = json.loads(issue_marker.group(1)) if issue_marker else {}
+    except json.JSONDecodeError:
+        issue_metadata = {}
+    source_pr = (
+        issue_metadata.get("pr") if isinstance(issue_metadata, dict) else None
+    )
+    issue_matches = (
+        issue.get("state") == "open"
+        and issue.get("number", issue_number) == issue_number
+        and not issue.get("pull_request")
+        and isinstance(issue_metadata, dict)
+        and isinstance(source_pr, int)
+        and not isinstance(source_pr, bool)
+        and source_pr == number
+        and issue_metadata.get("headSha") == head_sha
+        and issue_metadata.get("status") == "OPEN"
+    )
+    if not issue_matches:
+        return (
+            False,
+            blocking_items,
+            (
+                f"review deferral has no open issue #{issue_number} "
+                f"bound to PR #{number} and the current head",
+            ),
+        )
+    if not trusted_writer(github, issue):
+        return (
+            False,
+            blocking_items,
+            (
+                f"review deferral issue #{issue_number} must be opened by a "
+                "repository collaborator with write access",
+            ),
+        )
+    debt_problem = deferred_debt_problem(
+        issue_metadata,
+        deferred_code_review=deferred_code_review,
+        deferred_security_review=deferred_security_review,
+        s2_thread_ids={
+            thread_id
+            for thread_id in unresolved_ids
+            if classifications[thread_id] == "S2"
+        },
+    )
+    if debt_problem:
+        return (
+            False,
+            blocking_items,
+            (f"review deferral issue #{issue_number} {debt_problem}",),
+        )
+    return True, blocking_items, (f"tracked by open issue #{issue_number}",)
+
+
+def _non_empty_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def deferred_debt_problem(
+    metadata: dict[str, Any],
+    *,
+    deferred_code_review: bool,
+    deferred_security_review: bool,
+    s2_thread_ids: set[str],
+) -> str | None:
+    """Return why the tracking issue does not durably retain the debt.
+
+    The issue is the only record consumed at burn-down time, so it must carry
+    the obligation itself, not merely a pointer back to the PR.
+    """
+    if not _non_empty_text(metadata.get("reason")):
+        return "must record a non-empty deferral reason"
+    for flag, deferred in (
+        ("codexCodeReviewRequired", deferred_code_review),
+        ("codexSecurityReviewRequired", deferred_security_review),
+    ):
+        if deferred and metadata.get(flag) is not True:
+            return f"must retain {flag}=true for the deferred Codex review"
+    items = metadata.get("items")
+    if not isinstance(items, list):
+        return "must list deferred review items"
+    recorded: dict[str, str] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            return "has a deferred item that is not an object"
+        thread_id = item.get("threadId")
+        if (
+            not _non_empty_text(thread_id)
+            or item.get("classification") not in {"S2", "S3"}
+            or not all(
+                _non_empty_text(item.get(field))
+                for field in ("source", "finding", "rationale")
+            )
+        ):
+            return (
+                "has a deferred item missing threadId, S2/S3 classification, "
+                "source, finding or rationale"
+            )
+        if thread_id in recorded:
+            return f"records thread {thread_id} more than once"
+        recorded[thread_id] = item["classification"]
+    missing = sorted(s2_thread_ids - recorded.keys())
+    if missing:
+        return "does not retain S2 item(s): " + ", ".join(missing)
+    downgraded = sorted(
+        thread_id
+        for thread_id in s2_thread_ids
+        if recorded[thread_id] != "S2"
+    )
+    if downgraded:
+        return (
+            "downgrades S2 item(s) from the PR disposition: "
+            + ", ".join(downgraded)
+        )
+    return None
+
+
 def evaluate(
     github: GitHub,
     number: int,
@@ -696,8 +1378,21 @@ def evaluate(
     comments = github.issue_comments(number)
     threads = github.review_threads(number)
     runs = github.actions_runs(head_sha)
-    changed_paths = github.pull_files(number)
-    required_workflows = required_workflows_for_paths(changed_paths)
+    file_records = github.pull_file_records(number)
+    changed_paths = changed_paths_from_files(file_records)
+    census_complete = file_census_complete(file_records, pull)
+    required_workflows = (
+        required_workflows_for_paths(changed_paths)
+        if census_complete
+        # Fail closed: an incomplete census cannot prove a workflow is
+        # not applicable, so every conditional workflow is required.
+        else tuple(
+            sorted(
+                set(ALWAYS_REQUIRED_WORKFLOWS)
+                | set(CONDITIONAL_WORKFLOW_PATHS)
+            )
+        )
+    )
     pending, failed, seen = classify_runs(
         runs,
         required_workflows=required_workflows,
@@ -711,23 +1406,36 @@ def evaluate(
         f"required workflow definition modified by PR: {path}"
         for path in definition_changes
     )
+    if not census_complete:
+        # The definition-integrity check above only sees listed paths, so a
+        # truncated census cannot prove no required workflow was modified.
+        failed += (
+            (
+                "incomplete PR file census: listed "
+                f"{len(file_records)} of {pull.get('changed_files')} changed "
+                "files; protected workflow definitions cannot be verified"
+            ),
+        )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
+    code_ok = codex_code_review_complete(comments, head_sha)
+    security_ok = codex_security_review_complete(comments, head_sha)
+    review_source = "codex"
+    # Security hard stop: do not substitute mutable owner-attestation evidence
+    # for independent code and security review. A previously green SHA-bound
+    # check may be reused during A->B->A before async reevaluation starts.
+    # Only the normal exact-head reviews can satisfy admission here.
+    # Retain helper functions for forensic/backward-compatible tests only.
     return Evidence(
         head_sha=head_sha,
-        code_review_complete=codex_code_review_complete(
-            comments,
-            head_sha,
-        ),
-        security_review_complete=codex_security_review_complete(
-            comments,
-            head_sha,
-        ),
+        code_review_complete=code_ok,
+        security_review_complete=security_ok,
         unresolved_threads=unresolved,
         ci_pending=pending,
         ci_failed=failed,
         ci_seen=seen,
         deferred_comments=deferred,
+        review_source=review_source,
     )
 
 
@@ -738,6 +1446,7 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         f"head={evidence.head_sha}\n"
         f"code_review_complete={evidence.code_review_complete}\n"
         f"security_review_complete={evidence.security_review_complete}\n"
+        f"review_source={evidence.review_source}\n"
         f"unresolved_threads={evidence.unresolved_threads}\n"
         f"ci_seen={evidence.ci_seen}\n"
         f"state={evidence.state}"
@@ -753,14 +1462,15 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "",
         "Deferred evidence:",
         *(f"- {item}" for item in evidence.deferred_comments),
+        *(f"- {item}" for item in evidence.review_deferral_details),
         "",
         "Required invariants:",
-        "- exact-head Codex code review complete",
-        "- exact-head Codex security review complete",
+        "- exact-head Codex code review complete or valid durable deferral",
+        "- exact-head Codex security review complete for sensitive changes",
         "- repository-native current-head admission evidence terminal and green",
-        "- zero unresolved review threads",
+        "- no unresolved S0/S1 items; all other threads explicitly classified",
         "- current-head GitHub Actions terminal and green",
-        "- known deferred warnings remain linked to open issues",
+        "- S2/Codex deferrals linked to open exact-head issues",
     ]
     if not evidence.failure_reasons:
         lines[2] = "Failure reasons: none"
@@ -768,6 +1478,79 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         pending_index = lines.index("Pending reasons:")
         lines[pending_index] = "Pending reasons: none"
     return title, summary, "\n".join(lines)
+
+
+DEFERRAL_MARKER = re.compile(
+    r"<!--\s*abacus-deferred-security:v1\s+(\{.*?\})\s*-->",
+    re.DOTALL,
+)
+
+
+def tracking_issue_pr_numbers(
+    github: GitHub,
+    event: dict[str, Any],
+) -> list[int]:
+    issue = event.get("issue") or {}
+    bodies = [issue.get("body") or ""]
+    previous = (event.get("changes") or {}).get("body") or {}
+    if isinstance(previous.get("from"), str):
+        bodies.append(previous["from"])
+    numbers: set[int] = set()
+    for body in bodies:
+        for match in DEFERRAL_MARKER.finditer(body):
+            try:
+                metadata = json.loads(match.group(1))
+            except json.JSONDecodeError:
+                continue
+            source_pr = (
+                metadata.get("pr") if isinstance(metadata, dict) else None
+            )
+            if (
+                isinstance(source_pr, int)
+                and not isinstance(source_pr, bool)
+                and source_pr > 0
+            ):
+                numbers.add(source_pr)
+    if not numbers or trusted_writer(github, issue):
+        return sorted(numbers)
+    # The author is not a writer now. Ignore the change, so a read- or
+    # triage-only member cannot churn marker issues to hold a PR pending,
+    # unless a PR's current gate admitted this very issue: its author may
+    # since have lost write access yet can still edit or close it, and that
+    # must invalidate the deferral now, not at the next sweep.
+    issue_number = issue.get("number")
+    if not isinstance(issue_number, int) or isinstance(issue_number, bool):
+        return []
+    return [
+        number
+        for number in sorted(numbers)
+        if gate_admits_issue(github, number, issue_number)
+    ]
+
+
+def gate_admits_issue(github: GitHub, number: int, issue_number: int) -> bool:
+    """Whether PR ``number``'s current-head gate cites the tracking issue."""
+    head_sha = ((github.pull(number) or {}).get("head") or {}).get("sha")
+    if not head_sha:
+        return False
+    # Only the latest completed result is authoritative: an older run on
+    # the same head may still cite a tracker the gate no longer relies on.
+    completed = [
+        run
+        for run in github.check_runs(head_sha)
+        if run.get("name") == GATE_NAME and run.get("status") == "completed"
+    ]
+    if not completed:
+        return False
+    current = max(
+        completed,
+        key=lambda run: run.get("completed_at")
+        or run.get("started_at")
+        or run.get("created_at")
+        or "",
+    )
+    cited = re.compile(rf"tracked by open issue #{issue_number}(?!\d)")
+    return bool(cited.search((current.get("output") or {}).get("text") or ""))
 
 
 def event_pr_numbers(
@@ -783,6 +1566,18 @@ def event_pr_numbers(
     issue = event.get("issue")
     if issue and issue.get("pull_request"):
         return [int(issue["number"])]
+    if issue and event.get("comment") is not None:
+        # A comment on a plain issue. Deferral evidence lives in the issue
+        # body, and anyone can comment on a public issue, so comment churn
+        # must not be able to hold a PR's gate pending.
+        return []
+    if issue:
+        # A plain issue changed (e.g. a deferral tracking issue was closed or
+        # edited). Re-census only the PRs a trusted tracking issue names, in
+        # its current body or, for an edit, its previous body, so an edit
+        # that strips the marker still reaches the source PR. Other issue
+        # events are ignored; the scheduled sweep remains the backstop.
+        return tracking_issue_pr_numbers(github, event)
     workflow_run = event.get("workflow_run")
     if workflow_run:
         pulls = workflow_run.get("pull_requests") or []
@@ -801,14 +1596,39 @@ def event_pr_numbers(
     return sorted(int(item["number"]) for item in github.open_pulls())
 
 
+def evaluable_pr_numbers(
+    github: GitHub,
+    event: dict[str, Any],
+    explicit: int | None,
+) -> list[int]:
+    """Open main-targeting PRs this event should re-census."""
+    numbers = []
+    for number in event_pr_numbers(github, event, explicit):
+        pull = github.pull(number)
+        if pull.get("state") != "open":
+            continue
+        if pull.get("base", {}).get("ref") != "main":
+            continue
+        numbers.append(number)
+    return numbers
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-path", type=Path)
     parser.add_argument("--pr-number", type=int)
     parser.add_argument("--dry-run", action="store_true")
+    # One stamp for the whole workflow run, so the pending mark, the result
+    # and a failure publication from the same run all order against
+    # overlapping runs by when that run started.
+    parser.add_argument("--census-started", type=census_started_arg)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--mark-pending-only", action="store_true")
     mode.add_argument("--mark-failure-only", action="store_true")
+    # Route only: print the PRs to evaluate as a JSON list, so the workflow
+    # can fan out one job per PR, each serialized in that PR's own
+    # concurrency group.
+    mode.add_argument("--list-prs", action="store_true")
     args = parser.parse_args()
 
     repository = os.environ.get("GITHUB_REPOSITORY")
@@ -822,6 +1642,10 @@ def main() -> int:
     if args.event_path and args.event_path.exists():
         event = json.loads(args.event_path.read_text(encoding="utf-8"))
 
+    if args.list_prs:
+        print(json.dumps(evaluable_pr_numbers(github, event, args.pr_number)))
+        return 0
+
     numbers = event_pr_numbers(github, event, args.pr_number)
     if not numbers:
         print("No open main-targeting PRs to evaluate")
@@ -834,15 +1658,20 @@ def main() -> int:
         if pull.get("base", {}).get("ref") != "main":
             continue
         head_sha = pull["head"]["sha"]
+        census_started = args.census_started or utc_now()
 
         if args.mark_pending_only:
             if not args.dry_run:
+                # Stamp the pending mark too, so an older census that is
+                # still running cannot publish over it.
                 github.publish_gate(
                     head_sha,
                     "pending",
                     f"PR #{number} feedback gate: PREPARING",
-                    f"head={head_sha}\nstate=pending",
+                    f"head={head_sha}\nstate=pending\n"
+                    f"census_started={census_started}",
                     "Validation has started; stale success is invalidated.",
+                    census_started=census_started,
                 )
             continue
 
@@ -852,8 +1681,10 @@ def main() -> int:
                     head_sha,
                     "failure",
                     f"PR #{number} feedback gate: EVALUATOR FAILED",
-                    f"head={head_sha}\nstate=failure",
+                    f"head={head_sha}\nstate=failure\n"
+                    f"census_started={census_started}",
                     "The feedback-gate workflow failed before a final result.",
+                    census_started=census_started,
                 )
             continue
 
@@ -862,33 +1693,48 @@ def main() -> int:
                 head_sha,
                 "pending",
                 f"PR #{number} feedback gate: EVALUATING",
-                f"head={head_sha}\nstate=pending",
+                f"head={head_sha}\nstate=pending\n"
+                f"census_started={census_started}",
                 "Current-head evidence census is in progress.",
+                census_started=census_started,
             )
 
         try:
-            evidence = evaluate(github, number, pull=pull)
+            evidence = revalidated_evidence(
+                github,
+                number,
+                evaluate(github, number, pull=pull),
+            )
             if evidence is None:
                 continue
             title, summary, text = render(number, evidence)
+            summary += f"\ncensus_started={census_started}"
             print(summary)
             print(text)
             if not args.dry_run:
-                github.publish_gate(
+                published = github.publish_gate(
                     evidence.head_sha,
                     evidence.state,
                     title,
                     summary,
                     text,
+                    census_started=census_started,
                 )
+                if not published:
+                    print(
+                        "Skipped publishing: a newer census already "
+                        "published for this head"
+                    )
         except Exception as exc:
             if not args.dry_run:
                 github.publish_gate(
                     head_sha,
                     "failure",
                     f"PR #{number} feedback gate: EVALUATION ERROR",
-                    f"head={head_sha}\nstate=failure",
+                    f"head={head_sha}\nstate=failure\n"
+                    f"census_started={census_started}",
                     f"Evidence evaluation aborted: {exc}",
+                    census_started=census_started,
                 )
             raise
     return 0
