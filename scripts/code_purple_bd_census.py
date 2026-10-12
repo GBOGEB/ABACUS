@@ -31,7 +31,12 @@ def coverage_info(root,tag):
             files.append({"path":elem.get("filename"),"covered":hit,"total":denom,"missing":max(0,denom-hit)})
         info["files"]=sorted(files,key=lambda x:x["missing"],reverse=True)[:15]
         info["xml_sha256"]=digest(p.read_bytes())
-    if not info["measured"]: info["reason"]="coverage_xml_absent_or_zero_denominator"; info["test_exit"]=out["exit_code"]
+    if not info["measured"]:
+        info["reason"]="coverage_xml_absent_or_zero_denominator"
+        info["test_exit"]=out["exit_code"]
+        info["test_tail"]=(OUT/(tag+"_tests.log")).read_text(errors="replace")[-1800:]
+        info["xml_tail"]=(OUT/(tag+"_xml.log")).read_text(errors="replace")[-800:]
+        print(json.dumps({"coverage_failure":tag,"details":info},sort_keys=True))
     return info
 def security(root,tag):
     cmds={"bandit":[sys.executable,"-m","bandit","-q","-r","ci/governance","-f","json"],"safety":[sys.executable,"-m","safety","check","--json"],"pip_audit":[sys.executable,"-m","pip_audit","--format","json"]}
