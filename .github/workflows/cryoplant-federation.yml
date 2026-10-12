@@ -80,25 +80,42 @@ jobs:
             [.workflow_runs[] | select(.event != "pull_request")
             | select(.head_repository.full_name == env.GITHUB_REPOSITORY)
             ][0].id // empty
+          # A re-run keeps earlier attempts' same-named artifacts, and
+          # `gh run download -n` may pick the first, so take the newest
+          # unexpired one, uploaded no earlier than SINCE.
+          NEWEST: >-
+            [.artifacts[] | select(.expired | not)
+            | select(.created_at >= env.SINCE)]
+            | max_by(.created_at) | .id // empty
         run: |
           rm -f "$RECEIPT"
+          api="repos/$GITHUB_REPOSITORY/actions"
           if [ "$EVENT" != "pull_request" ]; then
             run_id="$GITHUB_RUN_ID"
+            # Only this attempt's probe counts, not an earlier attempt's.
+            SINCE="$(gh api "$api/runs/$run_id/attempts/$GITHUB_RUN_ATTEMPT" \
+              --jq .run_started_at)"
           else
-            runs="repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs"
-            run_id="$(gh api -X GET "$runs" -f branch=main \
-              -f status=success -f per_page=50 --jq "$TRUSTED")"
+            run_id="$(gh api -X GET "$api/workflows/$WORKFLOW/runs" \
+              -f branch=main -f status=success -f per_page=50 \
+              --jq "$TRUSTED")"
+            SINCE=""
           fi
+          export SINCE
           if [ -z "$run_id" ]; then
             echo "No successful probe run on main yet; no receipt."
             exit 0
           fi
-          echo "Probe run: $run_id"
-          if ! gh run download "$run_id" -R "$GITHUB_REPOSITORY" \
-            -n cryoplant-reciprocal-smoke -D "$RUNNER_TEMP/receipt"; then
+          echo "Probe run: $run_id (artifacts since: ${SINCE:-any})"
+          artifact="$(gh api -X GET "$api/runs/$run_id/artifacts" \
+            -f name=cryoplant-reciprocal-smoke -f per_page=100 \
+            --jq "$NEWEST")"
+          if [ -z "$artifact" ]; then
             echo "Probe run $run_id uploaded no receipt."
             exit 0
           fi
+          gh api "$api/artifacts/$artifact/zip" > "$RUNNER_TEMP/receipt.zip"
+          unzip -q -o "$RUNNER_TEMP/receipt.zip" -d "$RUNNER_TEMP/receipt"
           if [ -f "$RUNNER_TEMP/receipt/reciprocal_smoke.json" ]; then
             cp "$RUNNER_TEMP/receipt/reciprocal_smoke.json" "$RECEIPT"
           fi
