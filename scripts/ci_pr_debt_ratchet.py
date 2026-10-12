@@ -324,6 +324,8 @@ def flake8_debt(root: Path, path: str) -> Counter:
             *PYTHON,
             "-m",
             "flake8",
+            # Likewise an inline ``# noqa`` cannot hide a new critical error.
+            "--disable-noqa",
             f"--select={FLAKE8_SELECT}",
             "--format=%(code)s",
             path,
@@ -345,7 +347,9 @@ def is_test_file(path: str) -> bool:
 
 
 def bandit_debt(root: Path, path: str) -> Counter:
-    cmd = [*PYTHON, "-m", "bandit", "-q", "-f", "json"]
+    # --ignore-nosec: a PR cannot silence its own new finding with an inline
+    # ``# nosec``; suppressed findings count on both sides alike.
+    cmd = [*PYTHON, "-m", "bandit", "-q", "--ignore-nosec", "-f", "json"]
     if is_test_file(path):
         # B101 (assert_used) is how pytest tests assert; it is not a finding
         # in test code.
@@ -426,7 +430,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base, tools)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.7.0",
+        "schema": "abacus-pr-debt-ratchet/1.8.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
@@ -444,14 +448,38 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
                 base, tool, [p for p in policy if tool in config_tools(p)]
             )
         ]
-        status = "BASE_POLICY_RED" if red else "FULL_SCAN_REQUIRED"
+        # Bandit given a file (not -r) reads no .bandit, so its per-file
+        # comparison still holds when the config changed, and still catches
+        # a new finding the head-configured full scan might skip.
+        rows = (
+            compare_files(base, paths, ("bandit",), report) if "bandit" in tools else []
+        )
+        added = [row for row in rows if row["added"]]
+        if red:
+            status = "BASE_POLICY_RED"
+        else:
+            status = "FAIL" if added else "FULL_SCAN_REQUIRED"
         return {
             **report,
-            "rows": [],
-            "added_debt": [],
+            "rows": rows,
+            "added_debt": added,
             "base_policy_red": red,
             "status": status,
         }
+    rows = compare_files(base, paths, tools, report)
+    added = [row for row in rows if row["added"]]
+    return {
+        **report,
+        "rows": rows,
+        "added_debt": added,
+        "status": "FAIL" if added else "PASS",
+    }
+
+
+def compare_files(
+    base: str, paths: dict[str, str | None], tools: tuple[str, ...], report: dict
+) -> list[dict]:
+    """Per-file debt rows for ``tools`` over the changed paths."""
     rows = []
     with tempfile.TemporaryDirectory() as scratch:
         base_root = Path(scratch)
@@ -506,13 +534,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
                         "new_findings": {"unformatted": 1},
                     }
                 )
-    added = [row for row in rows if row["added"]]
-    return {
-        **report,
-        "rows": rows,
-        "added_debt": added,
-        "status": "FAIL" if added else "PASS",
-    }
+    return rows
 
 
 def summary(report: dict) -> str:
@@ -551,9 +573,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", required=True, help="PR base commit SHA")
     parser.add_argument("--tools", nargs="+", choices=TOOLS, required=True)
+    # CI runs the base revision's copy of this script, so a PR cannot weaken
+    # the check that admits it; --root points that copy at the checkout.
+    parser.add_argument("--root", type=Path, help="checkout to check")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--summary", type=Path)
     args = parser.parse_args(argv)
+    global ROOT
+    if args.root:
+        ROOT = args.root.resolve()
 
     try:
         report = ratchet(args.base, tuple(args.tools))
@@ -568,11 +596,9 @@ def main(argv: list[str] | None = None) -> int:
         with args.summary.open("a", encoding="utf-8") as handle:
             handle.write(summary(report))
     print(summary(report), end="")
-    if report["status"] == "BASE_POLICY_RED":
+    if report["status"] in ("BASE_POLICY_RED", "FAIL"):
         return 1
-    if report["changed_config_files"]:
-        return 3
-    return 1 if report["added_debt"] else 0
+    return 3 if report["changed_config_files"] else 0
 
 
 if __name__ == "__main__":

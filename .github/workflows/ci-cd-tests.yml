@@ -112,12 +112,25 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         shell: bash
+        # The base revision's ratchet runs, not the PR's, so a PR cannot
+        # weaken the check that admits it. Without one at the base (the PR
+        # that introduces it), every full scan decides.
         run: |
+          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
+          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+            > "$ratchet" 2>/dev/null; then
+            echo "::notice::No ratchet at the base; full scans decide."
+            for tool in black isort flake8; do
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            done
+            exit 0
+          fi
           failed=0
           for tool in black isort flake8; do
             rc=0
-            python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
-              --tools "$tool" --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+            python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
+              --base "$BASE_SHA" --tools "$tool" \
+              --summary "$GITHUB_STEP_SUMMARY" || rc=$?
             if [[ "$rc" -eq 3 ]]; then
               echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
             elif [[ "$rc" -ne 0 ]]; then
@@ -638,10 +651,19 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # The base revision's ratchet runs, as in Code Quality.
         run: |
+          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
+          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+            > "$ratchet" 2>/dev/null; then
+            echo "::notice::No ratchet at the base; the full scan decides."
+            echo "full_scan=required" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           rc=0
-          python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
-            --tools bandit --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+          python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
+            --base "$BASE_SHA" --tools bandit \
+            --summary "$GITHUB_STEP_SUMMARY" || rc=$?
           # Exit 3: Bandit's config, install or invocation changed; the
           # full Bandit scan decides.
           if [[ "$rc" -eq 3 ]]; then
