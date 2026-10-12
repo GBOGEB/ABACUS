@@ -1,0 +1,120 @@
+{
+  "schema": "code-purple-disjoint-workstream-census/v1",
+  "observed_at": "2026-10-12",
+  "repository": "GBOGEB/ABACUS",
+  "main_sha": "4c2f6695b177975c8983aff74e00ea37905835e3",
+  "pr1882": {
+    "number": 1882,
+    "draft": true,
+    "last_read_head": "473f34e50216d5eb2fb594761ddba284c3605156",
+    "branch": "fix/code-purple-quality-ratchet-20261012"
+  },
+  "independent_workstreams": [
+    {
+      "id": "W1",
+      "owner": "security-feedback",
+      "priority": "P0",
+      "files": [
+        "ci/governance/pr_feedback_gate.py",
+        ".github/workflows/pr-feedback-gate.yml",
+        "ci/governance/tests/test_pr_feedback_gate.py"
+      ],
+      "branch": "fix/code-purple-evidence-trigger-20261012",
+      "last_read_sha": "40be6dd527fdb2eafb5f5f9b02480bc58884a0f8",
+      "first_red": "Current main gate tests 1 failure + 8 errors; F821 undefined revalidated_evidence on current main",
+      "acceptance": "Independent trust-boundary review, A-B-A real required-check lifecycle, exact-head tests; owner-admin protection",
+      "status": "BLOCKED_REVIEW_AND_SERVER_PROTECTION"
+    },
+    {
+      "id": "W2",
+      "owner": "quality-ratchet",
+      "priority": "P1",
+      "files": [
+        ".github/workflows/ci-cd-tests.yml",
+        ".github/workflows/code-purple-quality-ratchet-proof.yml"
+      ],
+      "branch": "fix/code-purple-quality-ratchet-20261012",
+      "first_red": "Native PR-event quality fallback FULL_SCAN_REQUIRED because quality workflow itself changed; 0 changed Python and 0 added per-file debt",
+      "acceptance": "55-test regression preserved, native exact-head CI and check lifecycle evaluated without waivers",
+      "status": "FUNCTIONAL_REGRESSION_PASS_NATIVE_RED"
+    },
+    {
+      "id": "W3",
+      "owner": "workflow-generated-docs",
+      "priority": "P1",
+      "files": [
+        "ci/governance/audit_ci_workflows.py",
+        "docs/ci/WORKFLOW_RATIONALIZATION.md",
+        "ci/governance/workflow_policy.json"
+      ],
+      "first_red": "Previous generated markdown lint red; latest PR head observed Validate Docs SUCCESS and YAML Validation SUCCESS; a10-guard BLOCKs policy and report restricted content",
+      "acceptance": "Exact generation parity and independent A10 sensitivity disposition; no allowlisting without approval",
+      "status": "LINT_GREEN_A10_HOLD"
+    },
+    {
+      "id": "W4",
+      "owner": "python-quality",
+      "priority": "P2",
+      "files": [
+        "non-governance Python sources only"
+      ],
+      "baseline": {
+        "black_files": 683,
+        "isort_findings": 450,
+        "flake8_F821": 1
+      },
+      "pr_observation": {
+        "black_files": 683,
+        "isort_findings": 450,
+        "flake8_F821": 1
+      },
+      "acceptance": "Batch owned source fixes with separate exact-base counts, no overlapping W1 files",
+      "status": "INHERITED_DEBT"
+    },
+    {
+      "id": "W5",
+      "owner": "dependency-security",
+      "priority": "P1",
+      "files": [
+        "security/dependency configuration excluding W1 files"
+      ],
+      "baseline": {
+        "bandit_findings": 5862,
+        "safety_exit": 64
+      },
+      "pr_observation": {
+        "bandit_findings": 5862,
+        "safety_exit": 64
+      },
+      "acceptance": "Severity-ranked deduplicated individual findings and Safety artifact-based parity; preserve scan enforcement",
+      "status": "INHERITED_DEBT_NEEDS_FINGERPRINT"
+    },
+    {
+      "id": "W6",
+      "owner": "independent-evidence-qa",
+      "priority": "P1",
+      "files": [
+        "docs/data/code_purple*"
+      ],
+      "acceptance": "Exact-head receipts, all six worker status/sha, distinct root counts, admission gate and permitted credit",
+      "status": "ACTIVE_CENSUS"
+    }
+  ],
+  "shared_constraints": {
+    "main_protected": false,
+    "ruleset_id": 24494381,
+    "rules_count": 0,
+    "merge_allowed": false,
+    "authority_transfer": false,
+    "security_waiver": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  },
+  "sources": [
+    "https://github.com/GBOGEB/ABACUS/pull/1882",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38292389533",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38292389639",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38292389399",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38290478896"
+  ]
+}
