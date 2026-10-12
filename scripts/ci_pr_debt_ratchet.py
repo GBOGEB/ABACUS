@@ -79,14 +79,15 @@ def tracked_config_files() -> list[str]:
     return [p for p in output.split("\0") if p and Path(p).name in CONFIG_FILES]
 
 
-def changed_python_files(base: str) -> dict[str, str]:
+def changed_python_files(base: str) -> dict[str, str | None]:
     """Map each changed head path to the path it had at the base.
 
     A renamed file maps to its original path, so it is compared with its own
-    base content rather than treated as new.
+    base content rather than treated as new. A file with no base counterpart
+    maps to None: all of its debt is the PR's.
     """
     output = git(
-        "diff", "--name-status", "-z", "-M", "--diff-filter=ACMR", base, "HEAD", "--"
+        "diff", "--name-status", "-z", "-M", "--diff-filter=ACMRT", base, "HEAD", "--"
     )
     fields = output.split("\0")
     changed = {}
@@ -98,20 +99,29 @@ def changed_python_files(base: str) -> dict[str, str]:
             if status[0] == "C" or not old.endswith(".py"):
                 # A copy, or a non-Python file renamed to .py, is a new
                 # Python file: its debt is the PR's.
-                old = new
+                old = None
             index += 3
         else:
-            old = new = fields[index + 1]
+            new = fields[index + 1]
+            # An added path has no base. A type change (symlink or submodule
+            # to a regular file) has no comparable base content either.
+            old = None if status[0] in "AT" else new
             index += 2
         if new.endswith(".py"):
             changed[new] = old
     return dict(sorted(changed.items()))
 
 
-def base_snapshot(base: str, paths: dict[str, str], target: Path) -> list[str]:
-    """Write each path's base content into target, under its head path."""
+def base_snapshot(base: str, paths: dict[str, str | None], target: Path) -> list[str]:
+    """Write each path's base content into target at its base path.
+
+    A renamed file keeps its original path, so tools apply the configuration
+    that governed it at the base and classify it by its original directory.
+    """
     existing = []
     for path, base_path in paths.items():
+        if base_path is None:
+            continue
         result = subprocess.run(  # nosec B603 B607
             ["git", "show", f"{base}:{base_path}"],
             cwd=ROOT,
@@ -120,7 +130,7 @@ def base_snapshot(base: str, paths: dict[str, str], target: Path) -> list[str]:
         )
         if result.returncode != 0:
             continue
-        destination = target / path
+        destination = target / base_path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(result.stdout)
         existing.append(path)
@@ -229,10 +239,9 @@ def is_test_file(path: str) -> bool:
     return "/tests/" in f"/{path}"
 
 
-def bandit_debt(root: Path, path: str, scope: str | None = None) -> Counter:
-    """Bandit findings; ``scope`` is the path that decides test-file status."""
+def bandit_debt(root: Path, path: str) -> Counter:
     cmd = [*PYTHON, "-m", "bandit", "-q", "-f", "json"]
-    if is_test_file(scope or path):
+    if is_test_file(path):
         # B101 (assert_used) is how pytest tests assert; it is not a finding
         # in test code.
         cmd += ["--skip", "B101"]
@@ -257,12 +266,12 @@ def bandit_debt(root: Path, path: str, scope: str | None = None) -> Counter:
     return findings
 
 
-def debt(tool: str, root: Path, path: str, scope: str | None = None) -> Counter:
+def debt(tool: str, root: Path, path: str) -> Counter:
     if tool in ("black", "isort"):
         return formatting_debt(tool, root, path)
     if tool == "flake8":
         return flake8_debt(root, path)
-    return bandit_debt(root, path, scope)
+    return bandit_debt(root, path)
 
 
 def ratchet(base: str, tools: tuple[str, ...]) -> dict:
@@ -270,12 +279,12 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.2.0",
+        "schema": "abacus-pr-debt-ratchet/1.3.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
         "changed_python_files": list(paths),
-        "renamed_from": {new: old for new, old in paths.items() if new != old},
+        "renamed_from": {new: old for new, old in paths.items() if old and new != old},
     }
     if configs:
         return {**report, "rows": [], "added_debt": [], "status": "FULL_SCAN_REQUIRED"}
@@ -294,12 +303,11 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
         for path in paths:
             for tool in tools:
                 head = debt(tool, ROOT, path)
-                # The base side is classified by its own path, so moving a
-                # test into production code cannot carry its B101 exemption.
+                # The base side is scanned at its own path, so a rename keeps
+                # its original directory's config and test-file status: a
+                # test moved into production code loses its B101 exemption.
                 at_base_debt = (
-                    debt(tool, base_root, path, paths[path])
-                    if path in at_base
-                    else Counter()
+                    debt(tool, base_root, paths[path]) if path in at_base else Counter()
                 )
                 new = head - at_base_debt
                 rows.append(
