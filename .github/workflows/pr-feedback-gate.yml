@@ -2,7 +2,7 @@ name: PR Feedback Gate Evaluator
 
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
   pull_request_review:
     types: [submitted, dismissed]
   pull_request_review_comment:
