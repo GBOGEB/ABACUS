@@ -1319,10 +1319,6 @@ def tracking_issue_pr_numbers(
     event: dict[str, Any],
 ) -> list[int]:
     issue = event.get("issue") or {}
-    # Same authorization as the deferral itself: otherwise a read- or
-    # triage-only member could churn marker issues to hold a PR pending.
-    if not trusted_writer(github, issue):
-        return []
     bodies = [issue.get("body") or ""]
     previous = (event.get("changes") or {}).get("body") or {}
     if isinstance(previous.get("from"), str):
@@ -1343,7 +1339,34 @@ def tracking_issue_pr_numbers(
                 and source_pr > 0
             ):
                 numbers.add(source_pr)
-    return sorted(numbers)
+    if not numbers or trusted_writer(github, issue):
+        return sorted(numbers)
+    # The author is not a writer now. Ignore the change, so a read- or
+    # triage-only member cannot churn marker issues to hold a PR pending,
+    # unless a PR's current gate admitted this very issue: its author may
+    # since have lost write access yet can still edit or close it, and that
+    # must invalidate the deferral now, not at the next sweep.
+    issue_number = issue.get("number")
+    if not isinstance(issue_number, int) or isinstance(issue_number, bool):
+        return []
+    return [
+        number
+        for number in sorted(numbers)
+        if gate_admits_issue(github, number, issue_number)
+    ]
+
+
+def gate_admits_issue(github: GitHub, number: int, issue_number: int) -> bool:
+    """Whether PR ``number``'s current-head gate cites the tracking issue."""
+    head_sha = ((github.pull(number) or {}).get("head") or {}).get("sha")
+    if not head_sha:
+        return False
+    cited = re.compile(rf"tracked by open issue #{issue_number}(?!\d)")
+    return any(
+        run.get("name") == GATE_NAME
+        and cited.search((run.get("output") or {}).get("text") or "")
+        for run in github.check_runs(head_sha)
+    )
 
 
 def event_pr_numbers(

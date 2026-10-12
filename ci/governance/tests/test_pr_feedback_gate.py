@@ -1043,6 +1043,56 @@ class FeedbackGateTests(unittest.TestCase):
             [1847],
         )
 
+    def test_admitted_tracker_change_recensuses_after_access_loss(self):
+        class FakeGitHub:
+            def open_pulls(self):
+                raise AssertionError("issue events must not sweep all PRs")
+
+            def can_write(self, login):
+                return False  # the author has since lost write access
+
+            def pull(self, number):
+                return {"head": {"sha": "abc"}}
+
+            def check_runs(self, head_sha):
+                return [
+                    {
+                        "name": gate.GATE_NAME,
+                        "output": {"text": "- tracked by open issue #1849"},
+                    }
+                ]
+
+        marker = (
+            '<!-- abacus-deferred-security:v1 {"pr": 1847, '
+            '"headSha": "abc", "status": "OPEN"} -->'
+        )
+        marker_stripped = {
+            "action": "edited",
+            "issue": {
+                "number": 1849,
+                "author_association": "MEMBER",
+                "user": {"login": "former-writer"},
+                "body": "debt cleared",
+            },
+            "changes": {"body": {"from": marker}},
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), marker_stripped, None),
+            [1847],
+        )
+        closed = {
+            "action": "closed",
+            "issue": {
+                "number": 1849,
+                "author_association": "NONE",
+                "user": {"login": "former-writer"},
+                "body": marker,
+            },
+        }
+        self.assertEqual(
+            gate.event_pr_numbers(FakeGitHub(), closed, None), [1847]
+        )
+
     def test_untracked_or_untrusted_issue_change_is_ignored(self):
         class FakeGitHub:
             def open_pulls(self):
@@ -1050,6 +1100,18 @@ class FeedbackGateTests(unittest.TestCase):
 
             def can_write(self, login):
                 return login == "owner"
+
+            def pull(self, number):
+                return {"head": {"sha": "abc"}}
+
+            def check_runs(self, head_sha):
+                # The PR's gate never admitted these issues.
+                return [
+                    {
+                        "name": gate.GATE_NAME,
+                        "output": {"text": "tracked by open issue #18490"},
+                    }
+                ]
 
         marker = (
             '<!-- abacus-deferred-security:v1 {"pr": 1847, '
