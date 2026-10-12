@@ -491,6 +491,81 @@ class FeedbackGateTests(unittest.TestCase):
 
     HEAD_AT = "2026-10-11T19:00:00Z"
 
+    def current_head_request(self, at="2026-10-11T19:10:00Z",
+                             head=None, **overrides):
+        comment = {
+            "body": "@codex security review\n\nExact head \`%s\`" % (head or self.HEAD),
+            "created_at": at,
+            "updated_at": at,
+            "user": {"login": "GBOGEB", "type": "User"},
+            "author_association": "OWNER",
+        }
+        comment.update(overrides)
+        return comment
+
+    def test_current_head_request_binding_and_order(self):
+        since = self.HEAD_AT
+        outage_at = "2026-10-11T19:30:00Z"
+        good = self.current_head_request()
+        self.assertTrue(
+            gate.current_head_codex_request([good], self.HEAD, since, outage_at)
+        )
+        for wrong in (
+            self.current_head_request(head="a" * 40),
+            self.current_head_request(at="2026-10-11T18:59:59Z"),
+            self.current_head_request(at=since),
+            self.current_head_request(at=outage_at),
+            self.current_head_request(
+                performed_via_github_app={"id": gate.CODEX_APP_ID}
+            ),
+            self.current_head_request(author_association="COLLABORATOR"),
+            self.current_head_request(user={"login": "attacker", "type": "User"}),
+        ):
+            self.assertFalse(
+                gate.current_head_codex_request(
+                    [wrong], self.HEAD, since, outage_at
+                )
+            )
+
+    def test_delayed_old_head_outage_does_not_enable_fallback(self):
+        # A requested before B became head; Codex replies late, after B.
+        # A new exact-head owner attestation must not inherit the stale request.
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return [
+                    self_outer.current_head_request(
+                        at="2026-10-11T18:30:00Z", head="a" * 40
+                    ),
+                    self_outer.outage(),
+                    self_outer.owner_comment(self_outer.valid_payload()),
+                ]
+            def review_threads(self, number):
+                return []
+            def actions_runs(self, head_sha):
+                return [{
+                    "event": "pull_request", "head_sha": self_outer.HEAD,
+                    "created_at": self_outer.HEAD_AT,
+                    "pull_requests": [{"number": 1}],
+                }]
+            def pull_files(self, number):
+                return ["README.md"]
+            def issue(self, number):
+                return {"state": "open"}
+        self_outer = self
+        pull = {
+            "state": "open", "base": {"ref": "main"},
+            "head": {"sha": self.HEAD}
+        }
+        evidence = gate.evaluate(FakeGitHub(), 1, pull)
+        self.assertEqual(evidence.review_source, "codex")
+        self.assertFalse(evidence.security_review_complete)
+
+    def test_outage_without_explicit_current_head_request_fails_closed(self):
+        self.assertFalse(gate.current_head_codex_request(
+            [self.outage()], self.HEAD, self.HEAD_AT,
+            "2026-10-11T19:30:00Z"
+        ))
+
     def outage(self, at="2026-10-11T19:30:00Z"):
         comment = self.trusted_codex_comment(
             "You have reached your Codex usage limits for code reviews. You can "
@@ -687,7 +762,10 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(without_outage.review_source, "codex")
         self.assertFalse(without_outage.security_review_complete)
 
-        with_outage = gate.evaluate(FakeGitHub([self.outage(), attested]), 1, pull)
+        with_outage = gate.evaluate(
+            FakeGitHub([self.current_head_request(), self.outage(), attested]),
+            1, pull,
+        )
         self.assertEqual(with_outage.review_source, "owner_attestation")
         self.assertTrue(with_outage.code_review_complete)
         self.assertTrue(with_outage.security_review_complete)
