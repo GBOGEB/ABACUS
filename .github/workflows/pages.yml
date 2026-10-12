@@ -25,7 +25,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: qplant-pages
+  # Shared with deploy-docs.yml: both deploy the one github-pages site, so they must queue, not race.
+  group: pages
   cancel-in-progress: false
 
 jobs:
