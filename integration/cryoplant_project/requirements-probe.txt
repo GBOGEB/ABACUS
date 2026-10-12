@@ -1,0 +1,8 @@
+# Hash-locked install for the Reciprocal Probe job, which runs with
+# CRYOPLANT_FEDERATION_TOKEN. Install with:
+#   python -m pip install --require-hashes --only-binary :all: -r <this file>
+# The probe needs only PyYAML (it is otherwise stdlib). Hashes are PyPI's
+# sha256 for the CPython 3.12 manylinux x86_64 wheel and the sdist.
+pyyaml==6.0.3 \
+    --hash=sha256:ba1cc08a7ccde2d2ec775841541641e4548226580ab850948cbfda66a1befcdc \
+    --hash=sha256:d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f

@@ -221,6 +221,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
 - `pip install pytest pyyaml` — `ci-abacus.yml`, `codespace-federation.yml`, `dow-sprint6-cicd.yml`
 - `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
+- `python -m pip install pytest` — `cryoplant-federation.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `python -m pytest \` — `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
 - `bandit -r . -f json -o bandit-report.json` — `ci-cd-tests.yml`, `ci-cd.yml`
@@ -234,7 +235,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
-- `python -m pip install pytest` — `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
 
