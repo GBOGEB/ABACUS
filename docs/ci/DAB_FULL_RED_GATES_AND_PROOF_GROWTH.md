@@ -102,7 +102,7 @@ three tools moves to checks scoped to what the PR changes:
 - `scripts/ci_pr_debt_ratchet.py` compares each changed Python file at the
   PR base and at the head. A file clean at the base must stay clean and a
   new file must be clean; for Flake8-critical (E9, F63, F7, F82) codes and
-  for Bandit test id, severity and flagged source line, no per-file count
+  for Bandit test id, severity and flagged source lines, no per-file count
   may rise, so removing one finding cannot pay for a different new one.
   B101 is not counted in files under a `tests/` directory. A renamed file
   is compared with its original path.
@@ -118,8 +118,10 @@ three tools moves to checks scoped to what the PR changes:
   lint tools. A file renamed to `.py`
   from another extension, or a symlink or submodule replaced by a regular
   file, counts as new. A rename's base side is scanned at its original
-  path, so it keeps its test-file status. Black and isort are pinned to
-  the root configuration, as the full `black .` and `isort .` scans are.
+  path, so it keeps its test-file status. The base side is the whole base
+  tree, so isort classifies its imports against the base's own packages.
+  Black and isort are pinned to the root configuration, as the full
+  `black .` and `isort .` scans are.
 - Safety is not relaxed and stays enforced on pull requests.
 - `diff-cover` measures coverage of the lines the PR adds or changes and
   reports it next to the repository-wide figure. No PR coverage threshold is

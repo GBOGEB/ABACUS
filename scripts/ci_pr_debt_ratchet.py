@@ -126,27 +126,32 @@ def changed_python_files(base: str) -> dict[str, str | None]:
 
 
 def base_snapshot(base: str, paths: dict[str, str | None], target: Path) -> list[str]:
-    """Write each path's base content into target at its base path.
+    """Export the whole base tree into target; list the head paths it covers.
 
-    A renamed file keeps its original path, so tools apply the configuration
-    that governed it at the base and classify it by its original directory.
+    The full tree, not only the changed files, so isort classifies imports
+    against the base's own packages: a package the PR deletes is still
+    first-party on the base side. A renamed file keeps its original path, so
+    it keeps its original test-file status.
     """
+    archive = subprocess.Popen(  # nosec B603 B607
+        ["git", "archive", "--format=tar", base], cwd=ROOT, stdout=subprocess.PIPE
+    )
+    extract = subprocess.run(  # nosec B603 B607
+        ["tar", "-x", "-f", "-", "-C", str(target)],
+        stdin=archive.stdout,
+        capture_output=True,
+        check=False,
+    )
+    archive.stdout.close()
+    if archive.wait() != 0 or extract.returncode != 0:
+        raise ToolError(f"could not export base {base}: {extract.stderr!r}")
     existing = []
     for path, base_path in paths.items():
         if base_path is None:
             continue
-        result = subprocess.run(  # nosec B603 B607
-            ["git", "show", f"{base}:{base_path}"],
-            cwd=ROOT,
-            capture_output=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            continue
-        destination = target / base_path
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(result.stdout)
-        existing.append(path)
+        source = target / base_path
+        if source.is_file() and not source.is_symlink():
+            existing.append(path)
     return existing
 
 
@@ -219,8 +224,8 @@ def formatting_debt(tool: str, root: Path, path: str) -> Counter:
             path,
         ]
     else:
-        # --src keeps first-party import detection tied to the repository,
-        # so the base snapshot sorts imports the same way the head does.
+        # --src is the tree being scanned (the checkout, or the exported
+        # base), so each side classifies imports against its own packages.
         cmd = [
             *PYTHON,
             "-m",
@@ -230,7 +235,7 @@ def formatting_debt(tool: str, root: Path, path: str) -> Counter:
             "--settings-path",
             str(root),
             "--src",
-            str(ROOT),
+            str(root),
             path,
         ]
     result = run(cmd, root)
@@ -286,8 +291,12 @@ def bandit_debt(root: Path, path: str) -> Counter:
     lines = (root / path).read_text(encoding="utf-8", errors="replace").splitlines()
     findings = Counter()
     for item in payload.get("results", []):
-        number = item.get("line_number") or 0
-        source = lines[number - 1].strip() if 0 < number <= len(lines) else ""
+        # The whole reported range: a multi-line call is flagged on its
+        # first line, and its arguments are on the lines that follow.
+        numbers = item.get("line_range") or [item.get("line_number") or 0]
+        source = " ".join(
+            lines[number - 1].strip() for number in numbers if 0 < number <= len(lines)
+        )
         findings[f"{item.get('test_id')}:{item.get('issue_severity')}:{source}"] += 1
     if payload.get("errors"):
         # Bandit could not scan the file (usually a syntax error): debt.
@@ -308,7 +317,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.3.0",
+        "schema": "abacus-pr-debt-ratchet/1.4.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
