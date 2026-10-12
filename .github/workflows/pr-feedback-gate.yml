@@ -1,6 +1,8 @@
 name: PR Feedback Gate Evaluator
 
 on:
+  issues:
+    types: [edited, closed, reopened, deleted, transferred]
   issue_comment:
     types: [created, edited, deleted]
   pull_request_review:
