@@ -11,6 +11,9 @@ on:
       - 'pyproject.toml'
       - 'setup.cfg'
       - 'tox.ini'
+      - '.flake8'
+      - '.isort.cfg'
+      - '.bandit'
       - 'Dockerfile*'
       - 'docker-compose.yml'
       - '.dockerignore'
@@ -25,6 +28,9 @@ on:
       - 'pyproject.toml'
       - 'setup.cfg'
       - 'tox.ini'
+      - '.flake8'
+      - '.isort.cfg'
+      - '.bandit'
       - 'Dockerfile*'
       - 'docker-compose.yml'
       - '.dockerignore'
@@ -93,14 +99,23 @@ jobs:
       # On a pull request, admission is the new-debt ratchet: the PR's
       # changed Python files must not gain Black, isort or critical Flake8
       # debt. The repository-wide scans above still run and are reported.
+      # Exit 3 means the PR changed a lint config, so per-file comparison is
+      # not meaningful; the repository-wide scans above decide instead.
       - name: PR new-debt ratchet (Black, isort, Flake8 critical)
+        id: quality_ratchet
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          rc=0
           python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
             --tools black isort flake8 \
-            --summary "$GITHUB_STEP_SUMMARY"
+            --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+          if [[ "$rc" -eq 3 ]]; then
+            echo "full_scan=required" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$rc"
 
       - name: Enforce code-quality red roots
         if: always()
@@ -110,6 +125,7 @@ jobs:
           ISORT: ${{ steps.isort.outcome }}
           FLAKE8: ${{ steps.flake8.outcome }}
           EVENT: ${{ github.event_name }}
+          FULL_SCAN: ${{ steps.quality_ratchet.outputs.full_scan }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -119,10 +135,14 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" ]]; then
+          if [[ "$EVENT" == "pull_request" && "$FULL_SCAN" != "required" ]]; then
             echo "- PR admission: new-debt ratchet above" \
               >> "$GITHUB_STEP_SUMMARY"
             exit 0
+          fi
+          if [[ "$FULL_SCAN" == "required" ]]; then
+            echo "- PR admission: lint config changed, full scan decides" \
+              >> "$GITHUB_STEP_SUMMARY"
           fi
           if [[ "$BLACK" != "success" ||
                 "$ISORT" != "success" ||
@@ -590,12 +610,20 @@ jobs:
       # PR's changed Python files must not gain Bandit findings. Safety is
       # not relaxed: its outcome is enforced on every event.
       - name: PR new-debt ratchet (Bandit)
+        id: bandit_ratchet
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          rc=0
           python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
-            --tools bandit --summary "$GITHUB_STEP_SUMMARY"
+            --tools bandit --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+          # Exit 3: a lint config changed; the full Bandit scan decides.
+          if [[ "$rc" -eq 3 ]]; then
+            echo "full_scan=required" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$rc"
 
       - name: Enforce security red roots
         if: always()
@@ -604,6 +632,7 @@ jobs:
           BANDIT: ${{ steps.bandit.outcome }}
           SAFETY: ${{ steps.safety.outcome }}
           EVENT: ${{ github.event_name }}
+          FULL_SCAN: ${{ steps.bandit_ratchet.outputs.full_scan }}
         run: |
           {
             echo "### Security full-red surface"
@@ -611,7 +640,7 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" ]]; then
+          if [[ "$EVENT" == "pull_request" && "$FULL_SCAN" != "required" ]]; then
             echo "- PR admission: Bandit ratchet above; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then

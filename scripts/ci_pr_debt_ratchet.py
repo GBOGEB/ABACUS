@@ -206,13 +206,9 @@ def flake8_debt(root: Path, path: str) -> Counter:
 
 
 def is_test_file(path: str) -> bool:
-    name = Path(path).name
-    return (
-        "/tests/" in f"/{path}"
-        or name.startswith("test_")
-        or name.endswith("_test.py")
-        or name == "conftest.py"
-    )
+    # Only files under a tests/ directory: a test_-named module elsewhere
+    # can be production code (e.g. DMAIC_V3/core/test_system_bridge.py).
+    return "/tests/" in f"/{path}"
 
 
 def bandit_debt(root: Path, path: str) -> Counter:

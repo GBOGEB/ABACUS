@@ -102,14 +102,17 @@ three tools moves to checks scoped to what the PR changes:
 - `scripts/ci_pr_debt_ratchet.py` compares each changed Python file at the
   PR base and at the head. A file clean at the base must stay clean and a
   new file must be clean; for Flake8-critical (E9, F63, F7, F82) codes and
-  for Bandit test id and severity, no per-file count may rise, so removing
-  one finding cannot pay for a different new one. B101 is not counted in
-  test files. A renamed file is compared with its original path.
-- The ratchet fails closed: a missing tool, a crash or unparseable output
-  fails the PR. A PR that changes lint configuration (`pyproject.toml`,
-  `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`, `.bandit`) is not
-  admitted by the ratchet, because such a change can alter every file's
-  result; the full-repository scan decides.
+  for Bandit test id, severity and flagged source line, no per-file count
+  may rise, so removing one finding cannot pay for a different new one.
+  B101 is not counted in files under a `tests/` directory. A renamed file
+  is compared with its original path.
+- The ratchet fails closed: a missing tool, a tool that resolves inside the
+  checkout, a crash or unparseable output fails the PR. Tools run in an
+  isolated interpreter (`python -I`). A PR that changes lint configuration
+  (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
+  `.bandit`) is not admitted by the ratchet, because such a change can
+  alter every file's result; the full-repository scan decides, and the
+  workflow triggers on each of those files.
 - Safety is not relaxed and stays enforced on pull requests.
 - `diff-cover` measures coverage of the lines the PR adds or changes and
   reports it next to the repository-wide figure. No PR coverage threshold is
