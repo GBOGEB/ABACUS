@@ -113,8 +113,9 @@ three tools moves to checks scoped to what the PR changes:
   introduces it is judged by the full scans. Inline `# nosec` and `# noqa`
   are ignored, so a PR cannot silence its own new finding, and Bandit
   still compares changed files when `.bandit` changes. A PR that changes
-  lint configuration (`pyproject.toml`, `setup.cfg`, `tox.ini`, `.flake8`, `.isort.cfg`,
-  `.bandit`, `.editorconfig`, `.gitignore`, in any directory) is not
+  lint configuration (`pyproject.toml`, `setup.cfg`, `tox.ini`,
+  `.flake8`, `.isort.cfg`, `.bandit`, `.editorconfig`, `.gitignore`, in
+  any directory) is not
   admitted by the ratchet for the tools that read that file, because such
   a change can alter every file's result; the full-repository scan for
   those tools decides, and the workflow triggers on each of those files.
