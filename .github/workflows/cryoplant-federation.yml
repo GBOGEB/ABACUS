@@ -79,8 +79,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: python -m pip install pytest pyyaml
+      # Only hash-locked PyYAML is installed before the token is exposed,
+      # so no unpinned package can plant code that runs in the probe.
+      - name: Install probe dependencies (hash-locked)
+        run: >-
+          python -m pip install --require-hashes --only-binary :all:
+          -r integration/cryoplant_project/requirements-probe.txt
 
       # Rewrites the receipt in the workspace from the member's current main.
       # The committed receipt is removed first, so a failed probe cannot
@@ -91,6 +95,11 @@ jobs:
         run: |
           rm -f integration/cryoplant_project/federation/reciprocal_smoke.json
           python -m integration.cryoplant_project.scripts.reciprocal_smoke
+
+      # pytest is installed after the token step; the token is not in the
+      # environment of this or any later step.
+      - name: Install test runner
+        run: python -m pip install pytest
 
       - name: Check the fresh receipt
         env:
