@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Governed cross-repository CODE PURPLE roll-up. Unknown is not zero. No inherited formal credit.",
+  "generated_context_date": "2026-10-12",
+  "authority": {
+    "source_repo": "GBOGEB/ABACUS",
+    "pr": 1876,
+    "head_at_authoring": "ff1dbad388d81e1abea422dfdf74ba0d0e5d208c",
+    "authority_transfer": false,
+    "engineering_credit_delta": 0,
+    "formal_credit_delta": 0
+  },
+  "metric_taxonomy": {
+    "line_coverage_pct": {
+      "numerator": "covered lines",
+      "denominator": "executable instrumented lines",
+      "unit": "percent",
+      "source_required": "exact-SHA coverage report artifact",
+      "comparability": "same instrumented scope and configuration"
+    },
+    "branch_coverage_pct": {
+      "numerator": "covered branches",
+      "denominator": "instrumented branches",
+      "unit": "percent",
+      "source_required": "exact-SHA coverage report artifact"
+    },
+    "workflow_success_pct": {
+      "numerator": "successful completed workflow runs",
+      "denominator": "all terminal workflows at one exact head, including failed/cancelled/skipped",
+      "unit": "percent",
+      "caution": "not source-code coverage or admission"
+    },
+    "federation_edge_verified": {
+      "numerator": "reciprocal edges with trusted live proof",
+      "denominator": "required edges in approved federation manifest",
+      "unit": "ratio",
+      "source_required": "trusted run and artifact identities"
+    },
+    "first_red_recurrence": {
+      "numerator": "recurring first-red signatures",
+      "denominator": "observed failing CI cycles",
+      "unit": "ratio"
+    },
+    "admission": {
+      "unit": "categorical",
+      "allowed": [
+        "admitted",
+        "hold",
+        "unknown"
+      ],
+      "rule": "exact-head required checks, security, review, freshness and provenance"
+    }
+  },
+  "observations": [
+    {
+      "repository": "GBOGEB/ABACUS",
+      "scope": "PR #1873 current head",
+      "head": "41a26056f56f0a699cead7970c6e9ce5a516149d",
+      "metric": "workflow_success_pct",
+      "numerator": 26,
+      "denominator": 27,
+      "value_pct": 96.2963,
+      "admission": "hold",
+      "note": "CI/CD Test Suite failed; workflow success alone does not confer admission"
+    },
+    {
+      "repository": "GBOGEB/ABACUS",
+      "scope": "PR #1871 earlier reported global CI",
+      "head": "4192c8bf46fe9c696477d37710cebc8ee3f88d32",
+      "metric": "branch_inclusive_coverage_pct",
+      "value_pct": 37.22,
+      "threshold_pct": 75,
+      "verification": "historical CI measurement; per-module deltas not independently reproduced",
+      "admission": "hold"
+    }
+  ],
+  "rollout": {
+    "top21_definition": "pending owner-approved ranked inventory; do not rank unobserved repositories",
+    "repository_candidates": [
+      "GBOGEB/ABACUS",
+      "GBOGEB/CODEX",
+      "GBOGEB/cryoplant-project",
+      "GBOGEB/CODESPACES_jyperter",
+      "GBOGEB/morris.js"
+    ],
+    "other_repo_coverage": "unknown",
+    "collectors": [
+      "READ: enumerate default-branch checks, workflow conclusions, coverage artifacts and commit SHA",
+      "DEEP_READ: inspect coverage configuration, thresholds, denominator, receipt provenance and CI logs",
+      "SCOUT: map shared test infrastructure and repeated failure signatures without writing",
+      "FIX: own one disjoint path group and introduce behavioral tests or corrections",
+      "VERIFY: rerun exact-head tests and compare against same-scope baseline"
+    ],
+    "edge_schema": [
+      "source_repo",
+      "target_repo",
+      "edge_type",
+      "contract_path",
+      "source_sha",
+      "target_sha",
+      "probe_run_id",
+      "artifact_id",
+      "checked_at",
+      "freshness_seconds",
+      "verified"
+    ],
+    "edge_types": [
+      "governance",
+      "runtime",
+      "notebook",
+      "engineering",
+      "artifact",
+      "security",
+      "test"
+    ],
+    "promotion_rule": "Only accept per-repo measurements at immutable heads; missing evidence stays null. Update SSOT after successful independently repeatable verification."
+  }
+}
