@@ -13,7 +13,8 @@ def timed(name, fn):
 
 
 def cmd(c):
-    argv = shlex.split(c) if isinstance(c, str) else c\n    p = subprocess.run(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=120)
+    argv = shlex.split(c) if isinstance(c, str) else c
+    p = subprocess.run(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=120)
     if p.returncode: raise RuntimeError('nonzero')
     return p.returncode
 
