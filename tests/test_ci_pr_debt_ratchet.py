@@ -137,7 +137,7 @@ def test_tool_that_cannot_run_fails_closed(monkeypatch, tool, result):
 
 
 def test_missing_tool_fails_closed_before_scanning(monkeypatch):
-    monkeypatch.setattr(ratchet_mod.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(ratchet_mod, "tool_origin", lambda tool: "")
     with pytest.raises(ratchet_mod.ToolError, match="not installed"):
         ratchet_mod.ratchet("HEAD", ("flake8",))
     assert ratchet_mod.main(["--base", "HEAD", "--tools", "flake8"]) == 2
@@ -172,3 +172,39 @@ def test_lint_config_change_requires_the_full_scan(repo):
     assert report["changed_config_files"] == ["setup.cfg"]
     assert report["status"] == "FULL_SCAN_REQUIRED"
     assert ratchet_mod.main(["--base", base, "--tools", "flake8"]) == 3
+
+
+@needs_tools
+def test_replacing_a_finding_under_the_same_rule_still_fails(repo):
+    base = commit(
+        repo, {"pkg/a.py": CLEAN + "\n\ndef run(cmd):\n    return eval(cmd)\n"}
+    )
+    commit(
+        repo,
+        {"pkg/a.py": CLEAN + "\n\ndef run(cmd, env):\n    return eval(env[cmd])\n"},
+    )
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    [row] = report["added_debt"]
+    assert row["base"] == row["head"] == 1
+    assert any("eval(env[cmd])" in key for key in row["new_findings"])
+    assert report["status"] == "FAIL"
+
+
+@needs_tools
+def test_a_pr_module_cannot_stand_in_for_a_tool(repo):
+    fake = 'print(\'{"results": [], "errors": []}\')\n'
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {"pkg/a.py": BANDIT_HIT, "bandit.py": fake})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    rows = {row["path"]: row for row in report["added_debt"]}
+    assert "pkg/a.py" in rows
+    assert report["status"] == "FAIL"
+
+
+def test_a_tool_resolved_inside_the_checkout_fails_closed(monkeypatch, tmp_path):
+    monkeypatch.setattr(ratchet_mod, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        ratchet_mod, "tool_origin", lambda tool: str(tmp_path / f"{tool}.py")
+    )
+    with pytest.raises(ratchet_mod.ToolError, match="inside the checkout"):
+        ratchet_mod.require_tools(("bandit",))
