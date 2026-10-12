@@ -201,7 +201,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
 | 30 | `documentation` | `docs-build.yml` | push | 1 | `keep` | — |
 | 30 | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
-| 30 | `documentation` | `pages.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 30 | `documentation` | `pages.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | — |
 | 30 | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 40 | `automation` | `auto-merge-prs.yml` | workflow_dispatch | 1 | `keep` | — |
