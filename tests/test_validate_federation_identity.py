@@ -17,7 +17,7 @@ def data():
                           "plane": "notebook"}],
     }}
     runtime = {"federation": {"notebook_plane": {"repository": CANON}}}
-    contract = {"contract": {"consumer": "GBOGEB/codespace_jyperter",
+    contract = {"contract": {"consumer": "GBOGEB/codespaces_jyperter",
                              "provider": "GBOGEB/ABACUS",
                              "federation_moniker": "DELTA_1"}}
     return manifest, runtime, contract
