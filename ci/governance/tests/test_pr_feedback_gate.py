@@ -761,7 +761,7 @@ class FeedbackGateTests(unittest.TestCase):
             def issue(self, number):
                 return {"state": "open"}
 
-        pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
+        pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}, "changed_files": 1}
         attested = self.owner_comment(self.valid_payload())
 
         FakeGitHub._runs = [
@@ -1591,6 +1591,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "ci_seen": 1,
                 "deferred_comments": (),
                 "review_deferral_valid": True,
+                "security_sensitive": False,  # explicit non-sensitive deferral scenario
             }
             base.update(changes)
             return gate.Evidence(**base)
