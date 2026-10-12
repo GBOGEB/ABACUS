@@ -73,6 +73,11 @@ jobs:
             pip install -r DMAIC_V3/requirements.txt
           fi
 
+      - name: Validate canonical federation identity (fail closed)
+        run: |
+          python scripts/validate_federation_identity.py
+          python -m pytest tests/test_validate_federation_identity.py -q
+
       - name: Validate federation manifest YAML
         run: |
           python -c "
