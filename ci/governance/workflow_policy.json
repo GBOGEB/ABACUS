@@ -338,6 +338,12 @@
       "cluster": "security",
       "lifecycle": "pr_fast",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_fast",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
