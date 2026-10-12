@@ -137,6 +137,35 @@ jobs:
           path: test_reports/code-quality/
           if-no-files-found: warn
 
+      - name: Per-tool code-quality new-debt ratchet
+        id: quality_ratchet
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          # Run the policy from the PR base rather than untrusted proposed code.
+          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
+          if ! git cat-file -e "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
+            for tool in black isort flake8; do
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            done
+            exit 0
+          fi
+          git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
+          for tool in black isort flake8; do
+            rc=0
+            python -I "$ratchet" --root "$GITHUB_WORKSPACE" --base "$BASE_SHA" --tools "$tool" --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+            if [[ "$rc" -eq 3 ]]; then
+              # Config/tool invocation changes require successful full tool scan.
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            elif [[ "$rc" -ne 0 ]]; then
+              echo "::error::Per-tool $tool new-debt ratchet failed (exit $rc)."
+              exit "$rc"
+            fi
+          done
+
       - name: Enforce code-quality red roots
         if: always()
         shell: bash
