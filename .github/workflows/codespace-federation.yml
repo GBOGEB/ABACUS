@@ -78,8 +78,8 @@ jobs:
               data = yaml.safe_load(f)
           assert 'federation' in data, 'missing federation key'
           members = [m['name'] for m in data['federation'].get('member_repos', [])]
-          assert 'GBOGEB/codespace_jyperter' in members, \
-              f'GBOGEB/codespace_jyperter not in member_repos: {members}'
+          assert 'GBOGEB/CODESPACES_jyperter' in members, \
+              f'GBOGEB/CODESPACES_jyperter not in member_repos: {members}'
           print('federation/manifest.yaml OK — codespace_jyperter registered')
           "
 
@@ -90,11 +90,10 @@ jobs:
           with open('runtime/federation/codex-abacus-federation.yaml') as f:
               data = yaml.safe_load(f)
           assert 'federation' in data
-          planes = data['federation'].get('auxiliary_planes', [])
-          repos = [p.get('repository') for p in planes]
-          assert 'GBOGEB/codespace_jyperter' in repos, \
-              f'codespace_jyperter not in auxiliary_planes: {repos}'
-          print('codex-abacus-federation.yaml OK — auxiliary plane registered')
+          notebook = data['federation'].get('notebook_plane', {})
+          assert notebook.get('repository') == 'GBOGEB/CODESPACES_jyperter', \
+              f'expected canonical notebook plane, got: {notebook}'
+          print('codex-abacus-federation.yaml OK — notebook plane registered')
           "
 
       - name: Run ABACUS federation assimilation smoke tests
