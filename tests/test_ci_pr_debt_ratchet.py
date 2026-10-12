@@ -208,3 +208,17 @@ def test_a_tool_resolved_inside_the_checkout_fails_closed(monkeypatch, tmp_path)
     )
     with pytest.raises(ratchet_mod.ToolError, match="inside the checkout"):
         ratchet_mod.require_tools(("bandit",))
+
+
+@pytest.mark.parametrize(
+    ("path", "is_test"),
+    [
+        ("tests/test_x.py", True),
+        ("integration/cryoplant_project/tests/test_smoke.py", True),
+        ("tests/conftest.py", True),
+        ("DMAIC_V3/core/test_system_bridge.py", False),
+        ("pkg/thing_test.py", False),
+    ],
+)
+def test_only_files_under_tests_skip_assert_findings(path, is_test):
+    assert ratchet_mod.is_test_file(path) is is_test
