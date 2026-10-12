@@ -57,6 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Depth 2 keeps the PR merge commit's base parent for the
+          # red-root delta census; no extra history is fetched otherwise.
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -75,70 +79,63 @@ jobs:
       - name: Run Black
         id: black
         continue-on-error: true
-        run: black --check --diff .
+        shell: bash
+        run: |
+          out=test_reports/code-quality
+          mkdir -p "$out"
+          black --check --diff . 2>&1 >"$out/black.diff" |
+            tee "$out/black.log"
 
       - name: Run isort
         id: isort
         continue-on-error: true
-        run: isort --check-only --diff .
+        shell: bash
+        run: |
+          out=test_reports/code-quality
+          mkdir -p "$out"
+          isort --check-only --diff . 2>&1 >"$out/isort.diff" |
+            tee "$out/isort.log"
 
       - name: Run Flake8
         id: flake8
         continue-on-error: true
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        shell: bash
+        run: |
+          mkdir -p test_reports/code-quality
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics |
+            tee test_reports/code-quality/flake8.log
 
       - name: Run Pylint
         id: pylint
         run: pylint **/*.py --exit-zero
 
-      # The ratchet's tests need the real lint tools, which this job has
-      # and the unit-test matrix does not.
-      - name: Test PR new-debt ratchet
-        run: |
-          pip install pytest bandit
-          python -m pytest tests/test_ci_pr_debt_ratchet.py -v
-
-      - name: Fetch PR base for new-debt ratchet
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
-
-      # Per-tool independent fallback avoids allowing a .flake8 change to
-      # demand unrelated Black/isort cleanliness or skip their new-debt tests.
-      - name: PR new-debt ratchets (Black, isort, Flake8 critical)
-        id: quality_ratchet
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - name: Census code-quality red-root delta
+        if: always()
         shell: bash
-        # The base revision's ratchet runs, not the PR's, so a PR cannot
-        # weaken the check that admits it. Without one at the base (the PR
-        # that introduces it), every full scan decides.
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
-          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
-            > "$ratchet" 2>/dev/null; then
-            echo "::notice::No ratchet at the base; full scans decide."
-            for tool in black isort flake8; do
-              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
-            done
-            exit 0
+          base_args=()
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base_args=(--base HEAD^1)
           fi
-          failed=0
-          for tool in black isort flake8; do
-            rc=0
-            python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
-              --base "$BASE_SHA" --tools "$tool" \
-              --summary "$GITHUB_STEP_SUMMARY" || rc=$?
-            if [[ "$rc" -eq 3 ]]; then
-              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
-            elif [[ "$rc" -ne 0 ]]; then
-              echo "::error::PR ${tool} ratchet failed with exit code ${rc}"
-              failed=1
-            fi
-          done
-          exit "$failed"
+          python scripts/red_root_delta.py \
+            --lane code-quality \
+            "${base_args[@]}" \
+            --black-log test_reports/code-quality/black.log \
+            --isort-log test_reports/code-quality/isort.log \
+            --flake8-log test_reports/code-quality/flake8.log \
+            --out test_reports/code-quality/red-root-delta.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload code-quality evidence
+        if: always()
+        # actions/upload-artifact v7.0.1, pinned to the full commit SHA.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: code-quality-evidence-${{ github.sha }}
+          path: test_reports/code-quality/
+          if-no-files-found: warn
 
       - name: Enforce code-quality red roots
         if: always()
@@ -621,6 +618,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Depth 2 keeps the PR merge commit's base parent for the
+          # red-root delta census.
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -642,6 +643,23 @@ jobs:
         continue-on-error: true
         run: safety check --json > safety-report.json
 
+      - name: Census security red-root delta
+        if: always()
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          base_args=()
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base_args=(--base HEAD^1)
+          fi
+          python scripts/red_root_delta.py \
+            --lane security \
+            "${base_args[@]}" \
+            --bandit-json bandit-report.json \
+            --out security-red-root-delta.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+
       - name: Upload Security Reports
         if: always()
         uses: actions/upload-artifact@v7
@@ -650,6 +668,7 @@ jobs:
           path: |
             bandit-report.json
             safety-report.json
+            security-red-root-delta.json
           if-no-files-found: warn
 
       - name: Fetch PR base for new-debt ratchet
