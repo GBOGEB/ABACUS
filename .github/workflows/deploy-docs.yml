@@ -90,7 +90,8 @@ jobs:
       # One canonical site artifact: the checked-out docs homepage remains
       # authoritative; QPLANT is built as a separate route.
       - name: Setup Python for QPLANT
-        uses: actions/setup-python@v7
+        # actions/setup-python v7.0.0, pinned by SHA
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
 
