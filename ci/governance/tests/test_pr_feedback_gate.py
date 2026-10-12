@@ -1216,7 +1216,7 @@ class FeedbackGateTests(unittest.TestCase):
         # Every evaluator step shares the run's census stamp, including the
         # failure publication.
         self.assertEqual(
-            workflow.count('args+=(--census-started "$CENSUS_STARTED")'), 3
+            workflow.count('args+=(--census-started "$CENSUS_STARTED")'), 4
         )
         # Every census of one PR, whatever its trigger, shares that PR's
         # job concurrency group, so two censuses cannot interleave their
@@ -1227,8 +1227,17 @@ class FeedbackGateTests(unittest.TestCase):
             workflow,
         )
         self.assertEqual(
-            workflow.count('args+=(--pr-number "$PR_NUMBER")'), 3
+            workflow.count('args+=(--pr-number "$PR_NUMBER")'), 4
         )
+        # A tracking-issue event invalidates the check outside the PR's
+        # census queue, so a census already running cannot leave a success
+        # computed from the old issue standing.
+        invalidate = workflow.split("  invalidate:\n", 1)[1].split(
+            "\n  evaluate:\n", 1
+        )[0]
+        self.assertIn("github.event_name == 'issues'", invalidate)
+        self.assertIn("--mark-pending-only", invalidate)
+        self.assertNotIn("concurrency:", invalidate)
         # A no-op event must never cancel or displace a run that has PRs to
         # re-census, so nothing may cancel in-progress runs.
         self.assertNotIn("cancel-in-progress: true", workflow)

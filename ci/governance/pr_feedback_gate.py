@@ -456,9 +456,9 @@ class GitHub:
             reverse=True,
         )
         if census_started is not None and existing:
-            # Runs for one PR can overlap (tracking-issue events use their
-            # own concurrency group). Never let an older census overwrite a
-            # result from a census that started later.
+            # Runs for one PR can overlap (a tracking-issue event's
+            # invalidate job runs outside the PR's census queue). Never let
+            # an older census overwrite a result from one that started later.
             published = census_started_from(
                 (existing[0].get("output") or {}).get("summary") or ""
             )
@@ -1244,9 +1244,11 @@ def revalidated_evidence(
     """Re-census a deferral-backed success just before it is published.
 
     A tracking-issue close or edit re-censuses the PR in a run that queues
-    behind this one, so it cannot invalidate the check until this run has
-    published. Deferral evidence is mutable, so a success that rests on it
-    is only published if an immediate re-census reproduces it exactly.
+    behind this one. The workflow's invalidate job marks the check pending
+    outside that queue with a newer census stamp, which this run will not
+    publish over; this re-census narrows the window before that job lands.
+    Deferral evidence is mutable, so a success that rests on it is only
+    published if an immediate re-census reproduces it exactly.
     """
     for _ in range(DEFERRAL_RECHECKS):
         if (
