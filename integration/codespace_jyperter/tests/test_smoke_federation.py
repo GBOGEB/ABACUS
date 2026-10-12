@@ -102,3 +102,37 @@ def test_assimilate_returns_ok():
         f"Expected status 'ok', got '{result.get('status')}'. "
         f"Details: {result.get('details')}"
     )
+
+
+@pytest.mark.smoke
+def test_notebook_repository_identity_is_canonical_across_authorities():
+    """Enforce the canonical notebook-plane identity, not the legacy alias."""
+    import yaml
+
+    expected = "GBOGEB/CODESPACES_jyperter"
+    global_data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
+    spec_data = yaml.safe_load(_FEDERATION_SPEC.read_text(encoding="utf-8"))
+    federation = global_data["federation"]
+    members = federation["member_repos"]
+    notebook_members = [m for m in members if m.get("plane") == "notebook"]
+    assert len(notebook_members) == 1
+    assert notebook_members[0]["name"] == expected
+    assert federation["planes"]["notebook"]["repository"] == expected
+    assert spec_data["federation"]["notebook_plane"]["repository"] == expected
+
+
+@pytest.mark.smoke
+def test_notebook_identity_rejects_case_variants_and_duplicate_aliases():
+    """Case-insensitive aliases must not silently create two members."""
+    import yaml
+
+    global_data = yaml.safe_load(_GLOBAL_MANIFEST.read_text(encoding="utf-8"))
+    names = [m["name"] for m in global_data["federation"]["member_repos"]]
+    canonical = "GBOGEB/CODESPACES_jyperter"
+    aliases = [name for name in names if name.casefold() == canonical.casefold()]
+    assert aliases == [canonical], (
+        "notebook identity collision or noncanonical case: " + repr(aliases)
+    )
+    assert len(names) == len(set(name.casefold() for name in names)), (
+        "federation members contain case-insensitive duplicate identities"
+    )
