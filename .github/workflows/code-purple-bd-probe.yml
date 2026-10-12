@@ -1,0 +1,55 @@
+name: CODE PURPLE BD exact-head diagnostic
+on:
+  push:
+    branches: [fix/code-purple-evidence-trigger-20261012]
+    paths:
+      - .github/workflows/code-purple-bd-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  feedback-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute actual governance tests
+        run: python -m unittest ci.governance.tests.test_pr_feedback_gate -v
+  ldab-self-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute diagnostic receipt and verify bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bd_receipts
+          python scripts/mip_repo_self_index.py --output bd_receipts/ldab_self_index.json
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,time
+          p=pathlib.Path('bd_receipts/ldab_self_index.json')
+          raw=p.read_bytes()
+          data=json.loads(raw)
+          assert isinstance(data['assessments']['repo_self_assess_debug_ldab'],dict)
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert data['repo']['sha']==sha,(data['repo']['sha'],sha)
+          receipt={'source_sha':sha,'output_path':str(p),'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'assessment':data['assessments']['repo_self_assess_debug_ldab'],'process':'scripts/mip_repo_self_index.py','validated':True}
+          pathlib.Path('bd_receipts/ldab_execution.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          print(json.dumps(receipt,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-purple-ldab-self-index
+          path: bd_receipts/
+          if-no-files-found: warn
