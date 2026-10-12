@@ -88,13 +88,16 @@ jobs:
 
       # Rewrites the receipt in the workspace from the member's current main.
       # The committed receipt is removed first, so a failed probe cannot
-      # upload it as if it were this run's evidence.
+      # upload it as if it were this run's evidence. The script runs as a
+      # file under -I so neither the checkout root nor the script directory
+      # is on sys.path: a checked-in yaml.py cannot shadow the locked wheel
+      # while the token is set.
       - name: Probe cryoplant-project live
         env:
           GH_TOKEN: ${{ secrets.CRYOPLANT_FEDERATION_TOKEN }}
         run: |
           rm -f integration/cryoplant_project/federation/reciprocal_smoke.json
-          python -m integration.cryoplant_project.scripts.reciprocal_smoke
+          python -I integration/cryoplant_project/scripts/reciprocal_smoke.py
 
       # pytest is installed after the token step; the token is not in the
       # environment of this or any later step.
