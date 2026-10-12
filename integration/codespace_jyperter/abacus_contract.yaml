@@ -4,7 +4,8 @@
 # and GBOGEB/ABACUS (runtime plane) within the DELTA_1 federation.
 #
 # This contract is referenced by:
-#   - runtime/federation/codex-abacus-federation.yaml (auxiliary_planes[].integration_contract)
+#   - runtime/federation/codex-abacus-federation.yaml
+#     (auxiliary_planes[].integration_contract)
 #   - src/dmaic/contract.py::DOWNSTREAM_CONSUMERS["codespace_jyperter"]
 #   - DMAIC_V3/phases/phase6_knowledge.py (_load_notebook_knowledge_sources)
 
@@ -54,7 +55,8 @@ contract:
             outputs: {type: array}
             execution_count: {type: [integer, "null"]}
             metadata: {type: object}
-      path_pattern: "integration/codespace_jyperter/extracts/notebook_cells_*.json"
+      path_pattern: >-
+        integration/codespace_jyperter/extracts/notebook_cells_*.json
 
     - artifact: notebook_knowledge_source
       description: >
@@ -74,14 +76,16 @@ contract:
           cell_count: {type: integer}
           code_cell_count: {type: integer}
           markdown_cell_count: {type: integer}
-      path_pattern: "integration/codespace_jyperter/extracts/knowledge_source_*.json"
+      path_pattern: >-
+        integration/codespace_jyperter/extracts/knowledge_source_*.json
 
   # Tuple metadata to be emitted by codespace_jyperter when publishing extracts.
   # Validated by src/dmaic/tuple_metadata.py::validate_tuple_metadata().
   tuple_template:
     tuple_id: "codespace_jyperter-notebook-extract-<iteration>"
     source: "GBOGEB/codespace_jyperter"
-    validation_log: "integration/codespace_jyperter/extracts/validation_<iteration>.log"
+    validation_log: >-
+      integration/codespace_jyperter/extracts/validation_<iteration>.log
     downstream_consumer: "GBOGEB/ABACUS"
     status: "validated"
     consumed_from: []
