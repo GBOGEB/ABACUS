@@ -238,6 +238,14 @@ class Evidence:
         return "success"
 
 
+class GitHubAPIError(RuntimeError):
+    """A GitHub API request that returned an HTTP error status."""
+
+    def __init__(self, message: str, status: int):
+        super().__init__(message)
+        self.status = status
+
+
 class GitHub:
     def __init__(self, token: str, repository: str):
         self.token = token
@@ -268,8 +276,9 @@ class GitHub:
                 raw = response.read().decode("utf-8")
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(
-                f"GitHub API {method} {url} failed: {exc.code}: {body}"
+            raise GitHubAPIError(
+                f"GitHub API {method} {url} failed: {exc.code}: {body}",
+                exc.code,
             ) from exc
         return json.loads(raw) if raw else None
 
@@ -303,8 +312,13 @@ class GitHub:
                     f"/repos/{self.repository}/collaborators/"
                     f"{urllib.parse.quote(login, safe='')}/permission",
                 )
-            except RuntimeError:
-                # Not a collaborator (404) or lookup failed: fail closed.
+            except GitHubAPIError as exc:
+                # Only a 404 means "not a collaborator". Any other failure
+                # (403, rate limit, 5xx) propagates, so the job fails rather
+                # than treating the author as untrusted and silently
+                # dropping an event that should invalidate evidence.
+                if exc.status != 404:
+                    raise
                 data = {}
             cache[login] = (data or {}).get("permission") in {
                 "admin",
