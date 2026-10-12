@@ -53,7 +53,15 @@ jobs:
       - name: Install dependencies
         run: python -m pip install pytest pyyaml
 
+      # On pull requests the committed receipt is all there is (the live
+      # probe never runs there). Its maximum age is the owner's call: set the
+      # repository variable CRYOPLANT_RECEIPT_MAX_AGE_SECONDS to enforce one.
+      # Unset, no age is enforced; main's scheduled probe still re-checks
+      # live daily.
       - name: Run cryoplant-project local smoke tests
+        env:
+          RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: >-
+            ${{ vars.CRYOPLANT_RECEIPT_MAX_AGE_SECONDS }}
         run: >-
           python -m pytest integration/cryoplant_project/tests
           -m smoke -v --tb=short -p no:cacheprovider
