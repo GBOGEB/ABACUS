@@ -5,12 +5,19 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '**/*.pyi'
       - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'tox.ini'
+      # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
+      - '**/pyproject.toml'
+      - '**/setup.cfg'
+      - '**/tox.ini'
+      - '**/.flake8'
+      - '**/.isort.cfg'
+      - '**/.bandit'
+      - '**/.editorconfig'
+      - '**/.gitignore'
       - 'Dockerfile*'
       - 'docker-compose.yml'
       - '.dockerignore'
@@ -19,12 +26,19 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '**/*.pyi'
       - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
-      - 'pyproject.toml'
-      - 'setup.cfg'
-      - 'tox.ini'
+      # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
+      - '**/pyproject.toml'
+      - '**/setup.cfg'
+      - '**/tox.ini'
+      - '**/.flake8'
+      - '**/.isort.cfg'
+      - '**/.bandit'
+      - '**/.editorconfig'
+      - '**/.gitignore'
       - 'Dockerfile*'
       - 'docker-compose.yml'
       - '.dockerignore'
@@ -77,12 +91,67 @@ jobs:
         id: pylint
         run: pylint **/*.py --exit-zero
 
+      # The ratchet's tests need the real lint tools, which this job has
+      # and the unit-test matrix does not.
+      - name: Test PR new-debt ratchet
+        run: |
+          pip install pytest bandit
+          python -m pytest tests/test_ci_pr_debt_ratchet.py -v
+
+      - name: Fetch PR base for new-debt ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # Per-tool independent fallback avoids allowing a .flake8 change to
+      # demand unrelated Black/isort cleanliness or skip their new-debt tests.
+      - name: PR new-debt ratchets (Black, isort, Flake8 critical)
+        id: quality_ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        # The base revision's ratchet runs, not the PR's, so a PR cannot
+        # weaken the check that admits it. Without one at the base (the PR
+        # that introduces it), every full scan decides.
+        run: |
+          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
+          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+            > "$ratchet" 2>/dev/null; then
+            echo "::notice::No ratchet at the base; full scans decide."
+            for tool in black isort flake8; do
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            done
+            exit 0
+          fi
+          failed=0
+          for tool in black isort flake8; do
+            rc=0
+            python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
+              --base "$BASE_SHA" --tools "$tool" \
+              --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+            if [[ "$rc" -eq 3 ]]; then
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            elif [[ "$rc" -ne 0 ]]; then
+              echo "::error::PR ${tool} ratchet failed with exit code ${rc}"
+              failed=1
+            fi
+          done
+          exit "$failed"
+
       - name: Enforce code-quality red roots
+        if: always()
         shell: bash
         env:
           BLACK: ${{ steps.black.outcome }}
           ISORT: ${{ steps.isort.outcome }}
           FLAKE8: ${{ steps.flake8.outcome }}
+          EVENT: ${{ github.event_name }}
+          BLACK_FULL_SCAN: ${{ steps.quality_ratchet.outputs.black_full_scan }}
+          ISORT_FULL_SCAN: ${{ steps.quality_ratchet.outputs.isort_full_scan }}
+          FLAKE8_FULL_SCAN: >-
+            ${{ steps.quality_ratchet.outputs.flake8_full_scan }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -92,6 +161,26 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$EVENT" == "pull_request" ]]; then
+            failed=0
+            for tool in BLACK ISORT FLAKE8; do
+              flag_name="${tool}_FULL_SCAN"
+              actual="${!tool}"
+              fallback="${!flag_name}"
+              if [[ "$fallback" == "required" ]]; then
+                echo "- ${tool}: config changed; full scan=${actual}" \
+                  >> "$GITHUB_STEP_SUMMARY"
+                if [[ "$actual" != "success" ]]; then
+                  echo "::error::Required ${tool} full scan failed."
+                  failed=1
+                fi
+              else
+                echo "- ${tool}: per-tool new-debt ratchet governs" \
+                  >> "$GITHUB_STEP_SUMMARY"
+              fi
+            done
+            exit "$failed"
+          fi
           if [[ "$BLACK" != "success" ||
                 "$ISORT" != "success" ||
                 "$FLAKE8" != "success" ]]; then
@@ -163,10 +252,25 @@ jobs:
             pip install -r requirements-test.txt
           fi
 
+      - name: Prepare isolated coverage data
+        shell: bash
+        run: |
+          coverage_dir="$RUNNER_TEMP/abacus-broad-coverage"
+          mkdir -p "$coverage_dir"
+          {
+            echo "COVERAGE_FILE=$coverage_dir/.coverage"
+            echo "COVERAGE_RCFILE=$GITHUB_WORKSPACE/pyproject.toml"
+          } >> "$GITHUB_ENV"
+
       - name: Run Tests with Coverage
         run: |
+          python -m coverage erase
           pytest --benchmark-disable --cov=. \
-            --cov-report=xml --cov-report=html --cov-report=term-missing
+            --cov-branch \
+            --cov-config=pyproject.toml \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing
 
       - name: Check Coverage Threshold
         id: coverage_threshold
@@ -308,12 +412,37 @@ jobs:
             coverage.xml
             coverage-summary.json
 
+      - name: Fetch PR base for new-line coverage
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # On a pull request, coverage of the lines the PR adds or changes is
+      # measured and reported next to the broad-suite percentage above. No
+      # PR threshold is enforced until the owner approves one.
+      - name: PR new-line coverage (report)
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          pip install diff-cover
+          diff-cover coverage.xml --compare-branch="$BASE_SHA" \
+            --diff-range-notation=.. \
+            --format "markdown:diff-coverage.md"
+          cat diff-coverage.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Enforce coverage threshold
         if: always()
         shell: bash
         env:
           THRESHOLD_RESULT: ${{ steps.coverage_threshold.outcome }}
+          EVENT: ${{ github.event_name }}
         run: |
+          if [[ "$EVENT" == "pull_request" ]]; then
+            echo "PR coverage is reported, not enforced; broad debt reported."
+            exit 0
+          fi
           if [[ "$THRESHOLD_RESULT" != "success" ]]; then
             echo "::error::Coverage remains below the governed 75% threshold."
             exit 1
@@ -523,12 +652,49 @@ jobs:
             safety-report.json
           if-no-files-found: warn
 
+      - name: Fetch PR base for new-debt ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      # On a pull request, Bandit admission is the new-debt ratchet: the
+      # PR's changed Python files must not gain Bandit findings. Safety is
+      # not relaxed: its outcome is enforced on every event.
+      - name: PR new-debt ratchet (Bandit)
+        id: bandit_ratchet
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # The base revision's ratchet runs, as in Code Quality.
+        run: |
+          ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
+          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+            > "$ratchet" 2>/dev/null; then
+            echo "::notice::No ratchet at the base; the full scan decides."
+            echo "full_scan=required" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          rc=0
+          python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
+            --base "$BASE_SHA" --tools bandit \
+            --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+          # Exit 3: Bandit's config, install or invocation changed; the
+          # full Bandit scan decides.
+          if [[ "$rc" -eq 3 ]]; then
+            echo "full_scan=required" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$rc"
+
       - name: Enforce security red roots
         if: always()
         shell: bash
         env:
           BANDIT: ${{ steps.bandit.outcome }}
           SAFETY: ${{ steps.safety.outcome }}
+          EVENT: ${{ github.event_name }}
+          FULL_SCAN: ${{ steps.bandit_ratchet.outputs.full_scan }}
         run: |
           {
             echo "### Security full-red surface"
@@ -536,6 +702,16 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$EVENT" == "pull_request" &&
+                "$FULL_SCAN" != "required" ]]; then
+            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+              >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$SAFETY" != "success" ]]; then
+              echo "::error::Safety is red."
+              exit 1
+            fi
+            exit 0
+          fi
           if [[ "$BANDIT" != "success" || "$SAFETY" != "success" ]]; then
             echo "::error::One or more security roots are red."
             exit 1

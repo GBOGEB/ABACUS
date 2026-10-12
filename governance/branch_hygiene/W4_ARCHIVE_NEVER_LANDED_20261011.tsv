@@ -1,0 +1,15 @@
+# W4_ARCHIVE_NEVER_LANDED (13 branches, mode archive). Census 2026-10-11 against main.
+# Executable files that never reached main. Run only after the known-fix backlog review. Tagged archive/<branch> first.
+bd8k-wave2-mech-b2-20261002	13fb54f5fc88e064f3d7e40304855e519b31f040	archive
+bd8k-wave2-struct-a-20261001	376515be0c87320654d02d8c6b64e6ffa362f6f3	archive
+bd8k-wave2r3f-worker4-20261002	1c13170a59997a1a0b1cb7e179d1658c950d96e3	archive
+control/federation-w43-runtime-orchestration	a62fef94cdc8f070caf19d2f50c281dede3a3522	archive
+dow/temporal-pca-i-b-independent-challenge	51cd310ef6185a2cb3f63d7283bb010f7ceaff64	archive
+federation/w43-orchestration-pulse	79b6109f1863998e95ec2f46e0caa2977b2d7cba	archive
+fix/numpy-python-matrix-20261001	8ce1d48635b6129e23afcc9b351b6a6813362ebc	archive
+gm14/flake8-ratchet-baseline	e3886b45ca62dd3c420a08010f489a959c3254c4	archive
+gm14/residual-census-20261001	1d5474d1917ecc04225ab25894b45b14f7744987	archive
+mip/dmaic-provenance-idempotency-pressure-20261002	80d4f6eecc6b54aa023897cd981f325f101a9583	archive
+mission/gm-i-a-fast-heavy-federation	f9dc83edf9f2a5e6a9a41a2de5aa0974ae071c6b	archive
+qps-v24-exact-metadata-extract	1051d68841096047e1df17226fbc43a670b600f7	archive
+qps-v24-next-priority-extract	4597fbc08fa89a6dc677eef8abe5c4df4ac88878	archive
