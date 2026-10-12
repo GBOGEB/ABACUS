@@ -37,9 +37,9 @@ permissions:
 jobs:
   federation-smoke:
     name: Federation Smoke (cryoplant-project)
-    # Outside pull requests, this run's own probe writes the receipt, so the
-    # smoke waits for it rather than racing it. On a pull request the probe
-    # is skipped, and !cancelled() still runs the smoke.
+    # On a non-PR run of main, this run's own probe writes the receipt, so
+    # the smoke waits for it rather than racing it. Elsewhere the probe is
+    # skipped, and !cancelled() still runs the smoke.
     needs: reciprocal-probe
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
@@ -63,16 +63,18 @@ jobs:
         run: python -m pip install pytest pyyaml
 
       # A committed receipt is never evidence: anyone editing this repo can
-      # write one. Outside pull requests, use the receipt this run's probe
-      # just uploaded, so a fresh probe is never judged by an older one. On
-      # a pull request, where no probe runs, use the receipt of the latest
-      # successful run of this workflow on main (push, schedule or
-      # dispatch). With no receipt the file is removed, so an active member
-      # fails until a trusted probe has passed.
+      # write one. When this run probed (a non-PR run of main), use the
+      # receipt its probe just uploaded, so a fresh probe is never judged by
+      # an older one. Otherwise (a pull request, or a dispatch of another
+      # branch), no probe ran: use the receipt of the latest successful
+      # non-PR run of this workflow on main. With no receipt the file is
+      # removed, so an active member fails until a trusted probe has passed.
       - name: Use the trusted probe receipt
         env:
           GH_TOKEN: ${{ github.token }}
-          EVENT: ${{ github.event_name }}
+          PROBED: >-
+            ${{ github.event_name != 'pull_request'
+            && github.ref == 'refs/heads/main' }}
           RECEIPT: >-
             integration/cryoplant_project/federation/reciprocal_smoke.json
           WORKFLOW: cryoplant-federation.yml
@@ -90,7 +92,7 @@ jobs:
         run: |
           rm -f "$RECEIPT"
           api="repos/$GITHUB_REPOSITORY/actions"
-          if [ "$EVENT" != "pull_request" ]; then
+          if [ "$PROBED" = "true" ]; then
             run_id="$GITHUB_RUN_ID"
             # Only this attempt's probe counts, not an earlier attempt's.
             SINCE="$(gh api "$api/runs/$run_id/attempts/$GITHUB_RUN_ATTEMPT" \
@@ -140,8 +142,12 @@ jobs:
     # GitHub only offers once this file is on the default branch; the
     # cryoplant-federation environment's protection rules gate each run.
     # So this workflow lands with the member still proposed, and activation
-    # follows in its own PR once a run here has passed.
-    if: github.event_name != 'pull_request'
+    # follows in its own PR once a run here has passed. Only main's code
+    # gets the token: a dispatch can name any branch (--ref), whose edited
+    # probe could exfiltrate it.
+    if: >-
+      github.event_name != 'pull_request'
+      && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: cryoplant-federation
     steps:
