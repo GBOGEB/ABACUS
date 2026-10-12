@@ -1,0 +1,124 @@
+name: cryoplant-project Federation Check
+
+# Validates the DELTA_1 auxiliary-plane integration between
+# GBOGEB/cryoplant-project and GBOGEB/ABACUS, including a live
+# ABACUS-to-cryoplant reciprocal probe that an active membership requires.
+#
+# The probe reads the private member repository, so it needs
+# CRYOPLANT_FEDERATION_TOKEN: a fine-grained, read-only token for
+# GBOGEB/cryoplant-project (contents and metadata), stored as a secret of
+# the cryoplant-federation environment so its protection rules decide which
+# runs may use it. Without the token the probe fails, and an active
+# membership fails with it.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'federation/manifest.yaml'
+      - 'runtime/federation/codex-abacus-federation.yaml'
+      - 'integration/cryoplant_project/**'
+      - '.github/workflows/cryoplant-federation.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'federation/manifest.yaml'
+      - 'runtime/federation/codex-abacus-federation.yaml'
+      - 'integration/cryoplant_project/**'
+      - '.github/workflows/cryoplant-federation.yml'
+  schedule:
+    # Daily, so a membership revoked on the member side turns this red.
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  federation-smoke:
+    name: Federation Smoke (cryoplant-project)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ABACUS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install pytest pyyaml
+
+      - name: Run cryoplant-project local smoke tests
+        run: >-
+          python -m pytest integration/cryoplant_project/tests
+          -m smoke -v --tb=short -p no:cacheprovider
+
+  reciprocal-probe:
+    name: Reciprocal Probe (ABACUS -> cryoplant-project)
+    # Never on pull requests: this job hands the token to checked-out code,
+    # and PR code (even from a same-repository branch) could exfiltrate it.
+    # It runs on main pushes, the daily schedule and manual dispatch, which
+    # GitHub only offers once this file is on the default branch; the
+    # cryoplant-federation environment's protection rules gate each run.
+    # So this workflow lands with the member still proposed, and activation
+    # follows in its own PR once a run here has passed.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: cryoplant-federation
+    steps:
+      - name: Checkout ABACUS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        # actions/setup-python v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      # Only hash-locked PyYAML is installed before the token is exposed,
+      # so no unpinned package can plant code that runs in the probe.
+      - name: Install probe dependencies (hash-locked)
+        run: >-
+          python -m pip install --require-hashes --only-binary :all:
+          -r integration/cryoplant_project/requirements-probe.txt
+
+      # Rewrites the receipt in the workspace from the member's current main.
+      # The committed receipt is removed first, so a failed probe cannot
+      # upload it as if it were this run's evidence. The script runs as a
+      # file under -I so neither the checkout root nor the script directory
+      # is on sys.path: a checked-in yaml.py cannot shadow the locked wheel
+      # while the token is set.
+      - name: Probe cryoplant-project live
+        env:
+          GH_TOKEN: ${{ secrets.CRYOPLANT_FEDERATION_TOKEN }}
+        run: |
+          rm -f integration/cryoplant_project/federation/reciprocal_smoke.json
+          python -I integration/cryoplant_project/scripts/reciprocal_smoke.py
+
+      # pytest is installed after the token step; the token is not in the
+      # environment of this or any later step.
+      - name: Install test runner
+        run: python -m pip install pytest
+
+      - name: Check the fresh receipt
+        env:
+          RECIPROCAL_RECEIPT_MAX_AGE_SECONDS: "900"
+        run: >-
+          python -m pytest integration/cryoplant_project/tests
+          -k reciprocal_evidence -v --tb=short -p no:cacheprovider
+
+      - name: Upload reciprocal receipt
+        if: always()
+        # actions/upload-artifact v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: cryoplant-reciprocal-smoke
+          path: integration/cryoplant_project/federation/reciprocal_smoke.json
+          if-no-files-found: warn
