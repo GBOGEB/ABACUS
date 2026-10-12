@@ -105,8 +105,9 @@ jobs:
       # On a pull request, admission is the new-debt ratchet: the PR's
       # changed Python files must not gain Black, isort or critical Flake8
       # debt. The repository-wide scans above still run and are reported.
-      # Exit 3 means the PR changed a lint config, so per-file comparison is
-      # not meaningful; the repository-wide scans above decide instead.
+      # Exit 3 means the PR changed a config these tools read, or how they
+      # are installed or run, so per-file comparison is not meaningful; the
+      # repository-wide scans above decide instead.
       - name: PR new-debt ratchet (Black, isort, Flake8 critical)
         id: quality_ratchet
         if: github.event_name == 'pull_request'
@@ -148,7 +149,7 @@ jobs:
             exit 0
           fi
           if [[ "$FULL_SCAN" == "required" ]]; then
-            echo "- PR admission: lint config changed, full scan decides" \
+            echo "- PR admission: tool config changed, full scan decides" \
               >> "$GITHUB_STEP_SUMMARY"
           fi
           if [[ "$BLACK" != "success" ||
@@ -625,7 +626,8 @@ jobs:
           rc=0
           python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
             --tools bandit --summary "$GITHUB_STEP_SUMMARY" || rc=$?
-          # Exit 3: a lint config changed; the full Bandit scan decides.
+          # Exit 3: Bandit's config, install or invocation changed; the
+          # full Bandit scan decides.
           if [[ "$rc" -eq 3 ]]; then
             echo "full_scan=required" >> "$GITHUB_OUTPUT"
             exit 0

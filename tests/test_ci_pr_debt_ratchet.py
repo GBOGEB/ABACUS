@@ -330,3 +330,40 @@ def test_a_multiline_finding_is_keyed_by_its_whole_call(repo):
     [row] = report["added_debt"]
     assert row["base"] == row["head"] == 1
     assert any("cmd" in key for key in row["new_findings"])
+
+
+@pytest.mark.parametrize(
+    "path", [".github/workflows/ci-cd-tests.yml", "scripts/ci_pr_debt_ratchet.py"]
+)
+def test_changing_how_the_tools_run_requires_the_full_scan(repo, path):
+    base = commit(repo, {path: "a\n", "pkg/a.py": CLEAN})
+    commit(repo, {path: "b\n"})
+    for tool in TOOLS:
+        assert ratchet_mod.changed_config_files(base, (tool,)) == [path]
+
+
+def test_a_config_change_only_affects_the_tools_that_read_it(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {".bandit": "[bandit]\nskips = B101\n"})
+    assert ratchet_mod.changed_config_files(base, ("bandit",)) == [".bandit"]
+    assert ratchet_mod.changed_config_files(base, ("black", "isort", "flake8")) == []
+    commit(repo, {".flake8": "[flake8]\nselect = E9\n"})
+    assert ratchet_mod.changed_config_files(base, ("bandit",)) == [".bandit"]
+    assert ratchet_mod.changed_config_files(base, ("flake8",)) == [".flake8"]
+    assert ratchet_mod.changed_config_files(base, ("black", "isort")) == []
+
+
+def test_the_lint_job_requirements_do_not_affect_bandit(repo):
+    base = commit(repo, {"requirements-test.txt": "pytest\n"})
+    commit(repo, {"requirements-test.txt": "pytest\nflake8==3.0.0\n"})
+    assert ratchet_mod.changed_config_files(base, ("bandit",)) == []
+
+
+@needs_tools
+def test_a_bandit_config_change_keeps_the_formatting_ratchet(repo):
+    base = commit(repo, {"pkg/a.py": CLEAN})
+    commit(repo, {".bandit": "[bandit]\nskips = B101\n", "pkg/a.py": DIRTY_FORMAT})
+    report = ratchet_mod.ratchet(base, ("black",))
+    assert report["changed_config_files"] == []
+    assert report["status"] == "FAIL"
+    assert ratchet_mod.ratchet(base, ("bandit",))["status"] == "FULL_SCAN_REQUIRED"
