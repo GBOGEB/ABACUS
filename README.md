@@ -2,7 +2,8 @@
 
 <!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD040 MD060 -->
 
-[![Version](https://img.shields.io/badge/version-v4.4.0-blue?style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)
+[![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
+[![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)
 [![v4.4.0 completion](https://img.shields.io/badge/v4.4.0%20completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
 [![Build](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci.yml?branch=main&style=flat-square&label=build)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/smoke-test.yml?branch=main&style=flat-square&label=tests)](https://github.com/GBOGEB/ABACUS/actions/workflows/smoke-test.yml)
@@ -25,7 +26,7 @@
 [![metrics SHA](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.sha&label=metrics%20SHA&color=lightgrey&style=flat-square)](docs/api/dmaic_metrics.json)
 
 **Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** v4.4.0 release baseline — active mainline hardening and completeness-census evolution  
+**Current Version:** main declares v5.0.0 in [`pyproject.toml`](pyproject.toml) (the release identity SSOT); the last published release is v4.4.0 — active mainline hardening and completeness-census evolution  
 **Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)  
 **Live-State Reference:** `main@329562a6da8d8d6f724036ed11267f51a1855483`  
 **Last Updated:** 2026-10-02
