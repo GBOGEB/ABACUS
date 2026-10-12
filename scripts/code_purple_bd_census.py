@@ -17,7 +17,7 @@ def run(cmd,cwd,tag,timeout=150):
     dest=OUT/(tag+".log");dest.write_bytes(raw)
     return {"command":cmd,"exit_code":rc,"log":dest.name,"sha256":digest(raw),"bytes":len(raw)}
 def coverage_info(root,tag):
-    out=run([sys.executable,"-m","coverage","run","--source=ci.governance","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
+    out=run([sys.executable,"-m","coverage","run","--include=*/ci/governance/pr_feedback_gate.py","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
     x=run([sys.executable,"-m","coverage","xml","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
     p=OUT/(tag+"_coverage.xml")
     info={"test":out,"xml_command":x,"measured":False}
@@ -38,6 +38,8 @@ def security(root,tag):
     for name,cmd in cmds.items():
         result=run(cmd,root,tag+"_"+name,timeout=120)
         body=(OUT/(tag+"_"+name+".log")).read_text(errors="replace")
+        # Some scanners prefix JSON with warnings; never equate parse failure with zero findings.
+        if name=="bandit" and "{" in body: body=body[body.find("{"): ]
         try:
             data=json.loads(body)
             if name=="bandit":result["finding_count"]=len(data.get("results",[]))
