@@ -17,13 +17,13 @@ def run(cmd,cwd,tag,timeout=150):
     dest=OUT/(tag+".log");dest.write_bytes(raw)
     return {"command":cmd,"exit_code":rc,"log":dest.name,"sha256":digest(raw),"bytes":len(raw)}
 def coverage_info(root,tag):
-    out=run([sys.executable,"-m","coverage","run","--include=*/ci/governance/pr_feedback_gate.py","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
-    x=run([sys.executable,"-m","coverage","xml","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
+    out=run([sys.executable,"-m","coverage","run","--source=ci.governance.pr_feedback_gate","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
+    x=run([sys.executable,"-m","coverage","xml","--fail-under=0","--include=*/ci/governance/pr_feedback_gate.py","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
     p=OUT/(tag+"_coverage.xml")
-    info={"test":out,"xml_command":x,"measured":False}
+    info={"test":out,"xml_command":x,"measured":False,"scope":"ci.governance.pr_feedback_gate_only"}
     if p.is_file():
         tree=ET.parse(p).getroot()
-        info.update({"measured":True,"lines_valid":int(tree.get("lines-valid","0")),"lines_covered":int(tree.get("lines-covered","0")),"line_rate":float(tree.get("line-rate","0"))})
+        info.update({"measured":int(tree.get("lines-valid","0"))>0,"lines_valid":int(tree.get("lines-valid","0")),"lines_covered":int(tree.get("lines-covered","0")),"line_rate":float(tree.get("line-rate","0"))})
         files=[]
         for elem in tree.findall(".//class"):
             denom=int(elem.get("lines-valid","0")) if elem.get("lines-valid") else len(elem.findall("./lines/line"))
@@ -42,7 +42,9 @@ def security(root,tag):
         if name=="bandit" and "{" in body: body=body[body.find("{"): ]
         try:
             data=json.loads(body)
-            if name=="bandit":result["finding_count"]=len(data.get("results",[]))
+            if name=="bandit":
+                result["finding_count"]=len(data.get("results",[]))
+                result["findings"]=sorted([{"rule":v.get("test_id"),"path":str(v.get("filename","")).split("/ci/governance/")[-1],"line":v.get("line_number"),"severity":v.get("issue_severity")} for v in data.get("results",[])],key=lambda x:(str(x["rule"]),str(x["path"]),int(x["line"] or 0)))
             elif name=="pip_audit":result["finding_count"]=sum(len(d.get("vulns",[])) for d in data.get("dependencies",[]))
             else:result["finding_count"]=len(data.get("vulnerabilities",[])) if isinstance(data,dict) else None
         except (ValueError,TypeError,AttributeError):
@@ -79,9 +81,20 @@ def main():
         finally:run(["git","worktree","remove","--force",str(baseline)],ROOT,"baseline_remove")
     result["repair"]={"coverage":coverage_info(ROOT,"repair"),"security":security(ROOT,"repair")}
     result["ldab"]=ldab_runs()
+    result["security_delta"]={}
+    for scanner in ("bandit","pip_audit","safety"):
+        old=result.get("main",{}).get("security",{}).get(scanner,{})
+        new=result["repair"]["security"].get(scanner,{})
+        if scanner=="bandit" and "findings" in old and "findings" in new:
+            identify=lambda f:(f["rule"],f["path"],f["line"])
+            a={identify(f) for f in old["findings"]};b={identify(f) for f in new["findings"]}
+            result["security_delta"][scanner]={"unchanged":len(a&b),"new":len(b-a),"removed":len(a-b)}
+        else:result["security_delta"][scanner]={"status":"UNKNOWN","reason":"unparsed_or_unpinned_dependency_inventory"}
     result["coverage_delta"]=None
     m=result.get("main",{}).get("coverage",{});r=result["repair"]["coverage"]
-    if m.get("measured") and r.get("measured"):result["coverage_delta"]=round(100*(r["line_rate"]-m["line_rate"]),3)
+    if m.get("measured") and r.get("measured") and m.get("scope")==r.get("scope") and m.get("lines_valid")==r.get("lines_valid"):
+        result["coverage_delta"]=round(100*(r["line_rate"]-m["line_rate"]),3)
+    else:result["coverage_delta_reason"]="denominator_or_scope_mismatch"
     result["finished_utc"]=datetime.datetime.now(datetime.timezone.utc).isoformat()
     output=OUT/"census.json";output.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     def status(n):return "GREEN" if n["exit_code"]==0 else ("ORANGE" if n["exit_code"] in (124,127) else "RED")
@@ -98,6 +111,6 @@ def main():
     (OUT/"index.html").write_text(document)
     manifest={p.name:{"bytes":p.stat().st_size,"sha256":digest(p.read_bytes())} for p in OUT.iterdir() if p.is_file()}
     (OUT/"manifest.json").write_text(json.dumps(manifest,indent=2,sort_keys=True)+"\n")
-    print(json.dumps({"head":head,"main":BASE_SHA,"coverage":{k:result.get(k,{}).get("coverage",{}).get("line_rate") for k in ("main","repair")},"delta_pp":result["coverage_delta"],"security":{k:{t:v.get("finding_count") for t,v in result.get(k,{}).get("security",{}).items()} for k in ("main","repair")},"ldab_events":result["ldab"].get("failed_or_cancelled"),"manifest":manifest},sort_keys=True))
+    print(json.dumps({"head":head,"main":BASE_SHA,"coverage":{k:result.get(k,{}).get("coverage",{}).get("line_rate") for k in ("main","repair")},"delta_pp":result["coverage_delta"],"security":{k:{t:v.get("finding_count") for t,v in result.get(k,{}).get("security",{}).items()} for k in ("main","repair")},"ldab_events":result["ldab"].get("failed_or_cancelled"),"security_delta":result["security_delta"],"manifest":manifest},sort_keys=True))
     return 0
 if __name__=="__main__":raise SystemExit(main())
