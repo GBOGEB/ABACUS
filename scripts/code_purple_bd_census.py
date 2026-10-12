@@ -17,8 +17,8 @@ def run(cmd,cwd,tag,timeout=150):
     dest=OUT/(tag+".log");dest.write_bytes(raw)
     return {"command":cmd,"exit_code":rc,"log":dest.name,"sha256":digest(raw),"bytes":len(raw)}
 def coverage_info(root,tag):
-    out=run([sys.executable,"-m","coverage","run","--data-file",str(OUT/(tag+".coverage")),"--source=ci.governance.pr_feedback_gate","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
-    x=run([sys.executable,"-m","coverage","xml","--data-file",str(OUT/(tag+".coverage")),"--fail-under=0","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
+    out=run([sys.executable,"-m","coverage","run","--data-file",str(OUT/(tag+".coverage")),"--source=ci/governance","-m","unittest","ci.governance.tests.test_pr_feedback_gate"],root,tag+"_tests")
+    x=run([sys.executable,"-m","coverage","xml","--data-file",str(OUT/(tag+".coverage")),"--include=*/ci/governance/pr_feedback_gate.py","--fail-under=0","-o",str(OUT/(tag+"_coverage.xml"))],root,tag+"_xml")
     p=OUT/(tag+"_coverage.xml")
     info={"test":out,"xml_command":x,"measured":False,"scope":"ci.governance.pr_feedback_gate_only"}
     if p.is_file() and x["exit_code"]==0:
