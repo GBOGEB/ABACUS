@@ -124,7 +124,7 @@ jobs:
               data = yaml.safe_load(f)
           assert 'contract' in data
           c = data['contract']
-          assert c.get('consumer') == 'GBOGEB/codespace_jyperter'
+          assert c.get('consumer') == 'GBOGEB/CODESPACES_jyperter'
           assert c.get('provider') == 'GBOGEB/ABACUS'
           assert 'consumed_from_abacus' in c
           assert 'produced_for_abacus' in c
