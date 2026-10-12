@@ -27,7 +27,6 @@ schedules and manual runs; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import subprocess  # nosec B404
 import sys
@@ -114,10 +113,37 @@ class ToolError(RuntimeError):
     """A lint tool could not produce a result; the ratchet fails closed."""
 
 
+# Every scan runs in an isolated interpreter (-I): the checkout is not on
+# sys.path, so a PR that adds bandit.py or black.py cannot stand in for the
+# installed tool.
+PYTHON = (sys.executable, "-I")
+FIND_ORIGIN = (
+    "import importlib.util, sys; "
+    "spec = importlib.util.find_spec(sys.argv[1]); "
+    "print(spec.origin if spec and spec.origin else '')"
+)
+
+
+def tool_origin(tool: str) -> str:
+    """Where an isolated interpreter in the checkout imports ``tool`` from."""
+    return run([*PYTHON, "-c", FIND_ORIGIN, tool], ROOT).stdout.strip()
+
+
 def require_tools(tools: tuple[str, ...]) -> None:
-    missing = [tool for tool in tools if importlib.util.find_spec(tool) is None]
+    missing, shadowed = [], []
+    root, prefix = ROOT.resolve(), Path(sys.prefix).resolve()
+    for tool in tools:
+        origin = tool_origin(tool)
+        if not origin:
+            missing.append(tool)
+            continue
+        path = Path(origin).resolve()
+        if path.is_relative_to(root) and not path.is_relative_to(prefix):
+            shadowed.append(f"{tool} ({origin})")
     if missing:
         raise ToolError(f"not installed: {', '.join(missing)}")
+    if shadowed:
+        raise ToolError(f"resolved inside the checkout: {', '.join(shadowed)}")
 
 
 def tool_error(tool: str, path: str, result: subprocess.CompletedProcess) -> ToolError:
@@ -136,12 +162,12 @@ def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 def formatting_debt(tool: str, root: Path, path: str) -> Counter:
     """One "unformatted" finding if the formatter would change the file."""
     if tool == "black":
-        cmd = [sys.executable, "-m", "black", "--check", "--quiet", path]
+        cmd = [*PYTHON, "-m", "black", "--check", "--quiet", path]
     else:
         # --src keeps first-party import detection tied to the repository,
         # so the base snapshot sorts imports the same way the head does.
         cmd = [
-            sys.executable,
+            *PYTHON,
             "-m",
             "isort",
             "--check-only",
@@ -162,7 +188,7 @@ def formatting_debt(tool: str, root: Path, path: str) -> Counter:
 def flake8_debt(root: Path, path: str) -> Counter:
     result = run(
         [
-            sys.executable,
+            *PYTHON,
             "-m",
             "flake8",
             f"--select={FLAKE8_SELECT}",
@@ -190,7 +216,7 @@ def is_test_file(path: str) -> bool:
 
 
 def bandit_debt(root: Path, path: str) -> Counter:
-    cmd = [sys.executable, "-m", "bandit", "-q", "-f", "json"]
+    cmd = [*PYTHON, "-m", "bandit", "-q", "-f", "json"]
     if is_test_file(path):
         # B101 (assert_used) is how pytest tests assert; it is not a finding
         # in test code.
@@ -202,10 +228,14 @@ def bandit_debt(root: Path, path: str) -> Counter:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
         raise tool_error("bandit", path, result) from exc
-    findings = Counter(
-        f"{item.get('test_id')}:{item.get('issue_severity')}"
-        for item in payload.get("results", [])
-    )
+    # A finding is its rule, severity and the flagged source line, so a PR
+    # cannot remove one eval() and add a different one under the same rule.
+    lines = (root / path).read_text(encoding="utf-8", errors="replace").splitlines()
+    findings = Counter()
+    for item in payload.get("results", []):
+        number = item.get("line_number") or 0
+        source = lines[number - 1].strip() if 0 < number <= len(lines) else ""
+        findings[f"{item.get('test_id')}:{item.get('issue_severity')}:{source}"] += 1
     if payload.get("errors"):
         # Bandit could not scan the file (usually a syntax error): debt.
         findings["scan_error"] += 1
@@ -225,7 +255,7 @@ def ratchet(base: str, tools: tuple[str, ...]) -> dict:
     configs = changed_config_files(base)
     paths = changed_python_files(base)
     report = {
-        "schema": "abacus-pr-debt-ratchet/1.1.0",
+        "schema": "abacus-pr-debt-ratchet/1.2.0",
         "base": base,
         "tools": list(tools),
         "changed_config_files": configs,
