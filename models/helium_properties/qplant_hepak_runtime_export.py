@@ -5,7 +5,7 @@ Consumes the engineer-generated child receipt emitted by cryoplant-project:
   - he_reference_hepak_lowT_grid.csv.manifest.json
 
 This module never executes or embeds HEPAK. It verifies exact provenance and
-fails closed when the governing 2.0-4.5 K receipt is absent or inconsistent.
+fails closed when the governing T <= 4.5 K receipt is absent or inconsistent.
 """
 from __future__ import annotations
 
@@ -92,7 +92,7 @@ def load_qplant_hepak_export(csv_path: Path, manifest_path: Path | None = None) 
     if manifest["status"] != "PASS":
         raise ValueError("HEPAK manifest status must be PASS")
     if str(manifest["provider"]).upper() != "HEPAK":
-        raise ValueError("QPLANT 2.0-4.5 K governing provider must be HEPAK")
+        raise ValueError("QPLANT T <= 4.5 K governing provider must be HEPAK")
     if manifest["unit_set"] != 1:
         raise ValueError("QPLANT HEPAK receipt requires unit_set=1")
     if manifest["pressure_basis"] != "ABSOLUTE_PA":
