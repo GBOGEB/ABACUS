@@ -6,7 +6,8 @@ name: codespace_jyperter Federation Check
 # Triggers:
 #   - push / PR touching federation files or the integration bridge
 #   - workflow_dispatch (manual trigger from CI or codespace_jyperter via
-#     repository_dispatch is handled by the separate codespace-federation-dispatch.yml)
+#     repository_dispatch is handled by the separate
+#     codespace-federation-dispatch.yml)
 
 on:
   push:
@@ -58,7 +59,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-federation-${{ hashFiles('DMAIC_V3/requirements.txt') }}
+          key: >-
+            ${{ runner.os }}-pip-federation-${{
+            hashFiles('DMAIC_V3/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -70,6 +73,11 @@ jobs:
             pip install -r DMAIC_V3/requirements.txt
           fi
 
+      - name: Validate canonical federation identity (fail closed)
+        run: |
+          python scripts/validate_federation_identity.py
+          python -m pytest tests/test_validate_federation_identity.py -q
+
       - name: Validate federation manifest YAML
         run: |
           python -c "
@@ -77,9 +85,10 @@ jobs:
           with open('federation/manifest.yaml') as f:
               data = yaml.safe_load(f)
           assert 'federation' in data, 'missing federation key'
-          members = [m['name'] for m in data['federation'].get('member_repos', [])]
-          assert 'GBOGEB/codespace_jyperter' in members, \
-              f'GBOGEB/codespace_jyperter not in member_repos: {members}'
+          repos = data['federation'].get('member_repos', [])
+          members = [m['name'] for m in repos]
+          assert 'GBOGEB/CODESPACES_jyperter' in members, \
+              f'GBOGEB/CODESPACES_jyperter not in member_repos: {members}'
           print('federation/manifest.yaml OK — codespace_jyperter registered')
           "
 
@@ -90,20 +99,22 @@ jobs:
           with open('runtime/federation/codex-abacus-federation.yaml') as f:
               data = yaml.safe_load(f)
           assert 'federation' in data
-          planes = data['federation'].get('auxiliary_planes', [])
-          repos = [p.get('repository') for p in planes]
-          assert 'GBOGEB/codespace_jyperter' in repos, \
-              f'codespace_jyperter not in auxiliary_planes: {repos}'
-          print('codex-abacus-federation.yaml OK — auxiliary plane registered')
+          notebook = data['federation'].get('notebook_plane', {})
+          assert notebook.get('repository') == 'GBOGEB/CODESPACES_jyperter', \
+              f'expected canonical notebook plane, got: {notebook}'
+          print('codex-abacus-federation.yaml OK — notebook plane registered')
           "
 
       - name: Run ABACUS federation assimilation smoke tests
         run: |
-          python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short
+          python -m pytest DMAIC_V3/tests/test_smoke_federation.py \
+            -m smoke -v --tb=short
 
       - name: Run codespace_jyperter integration smoke tests
         run: |
-          python -m pytest integration/codespace_jyperter/tests/test_smoke_federation.py -v --tb=short
+          python -m pytest \
+            integration/codespace_jyperter/tests/test_smoke_federation.py \
+            -v --tb=short
 
       - name: Validate integration contract YAML
         run: |
@@ -113,7 +124,7 @@ jobs:
               data = yaml.safe_load(f)
           assert 'contract' in data
           c = data['contract']
-          assert c.get('consumer') == 'GBOGEB/codespace_jyperter'
+          assert c.get('consumer') == 'GBOGEB/CODESPACES_jyperter'
           assert c.get('provider') == 'GBOGEB/ABACUS'
           assert 'consumed_from_abacus' in c
           assert 'produced_for_abacus' in c
@@ -135,9 +146,14 @@ jobs:
 
       - name: Upload federation check summary
         if: always()
+        env:
+          TRIGGERED_BY: >-
+            ${{ github.event.inputs.triggered_by || github.event_name }}
         run: |
-          echo "## 🔗 codespace_jyperter Federation Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Triggered by:** ${{ github.event.inputs.triggered_by || github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "**SHA:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🔗 codespace_jyperter Federation Check"
+            echo ""
+            echo "**Triggered by:** $TRIGGERED_BY"
+            echo "**SHA:** \`$GITHUB_SHA\`"
+            echo "**Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          } >> "$GITHUB_STEP_SUMMARY"

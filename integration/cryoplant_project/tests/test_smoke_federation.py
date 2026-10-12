@@ -159,10 +159,26 @@ def test_active_membership_has_reciprocal_evidence():
 
 @pytest.mark.smoke
 def test_stale_receipt_fails_when_a_maximum_age_is_set(monkeypatch, tmp_path):
-    stale = json.loads(_RECIPROCAL_EVIDENCE.read_text(encoding="utf-8"))
-    stale["checked_at"] = "2020-01-01T00:00:00Z"
+    # Self-contained: an active entry and an otherwise passing receipt, so
+    # only its age can fail, whatever the committed status and receipt are.
+    manifest = tmp_path / "manifest.yaml"
+    manifest.write_text(
+        "federation:\n"
+        "  member_repos:\n"
+        "    - name: GBOGEB/cryoplant-project\n"
+        "      status: active\n",
+        encoding="utf-8",
+    )
+    stale = {
+        "direction": "GBOGEB/ABACUS -> GBOGEB/cryoplant-project",
+        "checked_at": "2020-01-01T00:00:00Z",
+        "member_main_sha": "0" * 40,
+        "checks": {"member_status_active": True},
+        "status": "ok",
+    }
     receipt = tmp_path / "reciprocal_smoke.json"
     receipt.write_text(json.dumps(stale), encoding="utf-8")
+    monkeypatch.setitem(globals(), "_GLOBAL_MANIFEST", manifest)
     monkeypatch.setitem(globals(), "_RECIPROCAL_EVIDENCE", receipt)
     monkeypatch.setenv("RECIPROCAL_RECEIPT_MAX_AGE_SECONDS", "900")
     with pytest.raises(AssertionError, match="reciprocal receipt is"):
