@@ -114,10 +114,10 @@ three tools moves to checks scoped to what the PR changes:
   ratchet, because such a change can alter every file's result; the
   full-repository scan decides, and the workflow triggers on each of those
   files. The same holds for the root `requirements-test.txt`, which the
-  Code Quality job installs after the lint tools. A file renamed to `.py` from another extension, or a symlink or
-  submodule replaced by a regular file, counts as new. A rename's base side
-  is scanned at its original path, under that directory's configuration
-  and test-file status.
+  Code Quality job installs after the lint tools. A file renamed to `.py`
+  from another extension, or a symlink or submodule replaced by a regular
+  file, counts as new. A rename's base side is scanned at its original
+  path, under that directory's configuration and test-file status.
 - Safety is not relaxed and stays enforced on pull requests.
 - `diff-cover` measures coverage of the lines the PR adds or changes and
   reports it next to the repository-wide figure. No PR coverage threshold is
