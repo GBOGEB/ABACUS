@@ -147,7 +147,8 @@ jobs:
           set -euo pipefail
           # Run the policy from the PR base rather than untrusted proposed code.
           ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
-          if ! git cat-file -e "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
+          if ! git cat-file -e \
+            "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
             for tool in black isort flake8; do
               echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
             done
@@ -156,9 +157,11 @@ jobs:
           git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
           for tool in black isort flake8; do
             rc=0
-            python -I "$ratchet" --root "$GITHUB_WORKSPACE" --base "$BASE_SHA" --tools "$tool" --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+            python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
+              --base "$BASE_SHA" --tools "$tool" \
+              --summary "$GITHUB_STEP_SUMMARY" || rc=$?
             if [[ "$rc" -eq 3 ]]; then
-              # Config/tool invocation changes require successful full tool scan.
+              # Config/tool changes require a successful full scan.
               echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
             elif [[ "$rc" -ne 0 ]]; then
               echo "::error::Per-tool $tool new-debt ratchet failed (exit $rc)."
