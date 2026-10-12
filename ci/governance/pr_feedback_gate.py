@@ -1361,12 +1361,24 @@ def gate_admits_issue(github: GitHub, number: int, issue_number: int) -> bool:
     head_sha = ((github.pull(number) or {}).get("head") or {}).get("sha")
     if not head_sha:
         return False
-    cited = re.compile(rf"tracked by open issue #{issue_number}(?!\d)")
-    return any(
-        run.get("name") == GATE_NAME
-        and cited.search((run.get("output") or {}).get("text") or "")
+    # Only the latest completed result is authoritative: an older run on
+    # the same head may still cite a tracker the gate no longer relies on.
+    completed = [
+        run
         for run in github.check_runs(head_sha)
+        if run.get("name") == GATE_NAME and run.get("status") == "completed"
+    ]
+    if not completed:
+        return False
+    current = max(
+        completed,
+        key=lambda run: run.get("completed_at")
+        or run.get("started_at")
+        or run.get("created_at")
+        or "",
     )
+    cited = re.compile(rf"tracked by open issue #{issue_number}(?!\d)")
+    return bool(cited.search((current.get("output") or {}).get("text") or ""))
 
 
 def event_pr_numbers(
