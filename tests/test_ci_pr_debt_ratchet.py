@@ -263,3 +263,35 @@ def test_nested_config_applies_to_both_sides(repo):
     report = ratchet_mod.ratchet(base, ("black",))
     [row] = report["added_debt"]
     assert row["base"] == 0 and row["head"] == 1
+
+
+@needs_tools
+def test_rename_base_is_scanned_under_its_original_config(repo):
+    line = "VALUE = " + " + ".join(["1"] * 25) + "\n"
+    base = commit(
+        repo,
+        {
+            "wide/pyproject.toml": "[tool.black]\nline-length = 200\n",
+            "narrow/pyproject.toml": "[tool.black]\nline-length = 88\n",
+            "narrow/keep.py": "X = 1\n",
+            "wide/a.py": line,
+        },
+    )
+    git(repo, "mv", "wide/a.py", "narrow/a.py")
+    git(repo, "commit", "-q", "-m", "move")
+    report = ratchet_mod.ratchet(base, ("black",))
+    [row] = report["added_debt"]
+    assert row["path"] == "narrow/a.py"
+    assert row["base"] == 0 and row["head"] == 1
+
+
+@needs_tools
+def test_a_symlink_replaced_by_a_file_is_new(repo):
+    commit(repo, {"pkg/real.py": CLEAN})
+    (repo / "pkg" / "mod.py").symlink_to("real.py")
+    base = commit(repo, {})
+    (repo / "pkg" / "mod.py").unlink()
+    commit(repo, {"pkg/mod.py": BANDIT_HIT})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    assert "pkg/mod.py" in report["changed_python_files"]
+    assert report["status"] == "FAIL"
