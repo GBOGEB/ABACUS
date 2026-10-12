@@ -1,0 +1,307 @@
+{
+  "schema": "code-purple.abacus-merge-census/0.1",
+  "kind": "exact-head-observation-not-admission",
+  "observed_date": "2026-10-12",
+  "scope": "GBOGEB/ABACUS",
+  "main_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+  "sources": [
+    "https://api.github.com/repos/GBOGEB/ABACUS/pulls?state=open&per_page=100",
+    "https://api.github.com/repos/GBOGEB/ABACUS/rulesets/24494381",
+    "https://api.github.com/repos/GBOGEB/ABACUS/commits/{head_sha}/check-runs?per_page=100"
+  ],
+  "description": "Read-only current-head GitHub API census from 12 October session. Counts of recorded check-runs are not independent tests; first-red attribution and admission remain separate.",
+  "ruleset": {
+    "id": 24494381,
+    "strict": true,
+    "required": "PR Feedback Gate",
+    "bypass_actors": 0
+  },
+  "prs": [
+    {
+      "number": 1876,
+      "head_sha": "6a24ad04c28222d1348b86a95dde9496fed105c8",
+      "draft": true,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Changed docs lint"
+      ],
+      "domain": "graph",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1876"
+    },
+    {
+      "number": 1875,
+      "head_sha": "4d857922cd031c4e4b666fb803d76cfff7ce45b2",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "verify-outcomes"
+      ],
+      "domain": "delta",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1875"
+    },
+    {
+      "number": 1873,
+      "head_sha": "b16eb5740243d422a54b9a1ac765cfcbb1e68c0b",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Federation Smoke"
+      ],
+      "domain": "federation",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1873"
+    },
+    {
+      "number": 1872,
+      "head_sha": "b2b1cda9b220e9f3b355d85baa0bb12423f0d06f",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Security Scanning",
+        "Code Quality Checks"
+      ],
+      "domain": "tests",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1872"
+    },
+    {
+      "number": 1871,
+      "head_sha": "4192c8bf46fe9c696477d37710cebc8ee3f88d32",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Security Scanning",
+        "Code Quality Checks"
+      ],
+      "domain": "tests",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1871"
+    },
+    {
+      "number": 1869,
+      "head_sha": "0e943e23c7ad7ea01597d82d3e2840d7431b4ae7",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [],
+      "domain": "pages",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1869"
+    },
+    {
+      "number": 1859,
+      "head_sha": "f91c12f31df3d7148e4dd0bdc3e4cf245205b9c8",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Quality Checks",
+        "Security Scanning",
+        "validate-scripts"
+      ],
+      "domain": "ratchet",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1859"
+    },
+    {
+      "number": 1858,
+      "head_sha": "10fdaaa53afc5b96bb8cc783b3c74a7006f6b887",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [],
+      "domain": "gate",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1858"
+    },
+    {
+      "number": 1857,
+      "head_sha": "e7b45912a226267e6f751a729054e6fdf452c4f9",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Code Quality Checks",
+        "Security Scanning"
+      ],
+      "domain": "syntax",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1857"
+    },
+    {
+      "number": 1856,
+      "head_sha": "f11d8044cfc583c4c4f99d38b7c78aa22770bfe1",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Code Quality Checks"
+      ],
+      "domain": "branch-hygiene",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1856"
+    },
+    {
+      "number": 1855,
+      "head_sha": "89a9bc6bfa011998208cc47689cdc072c8b1c898",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "failure",
+      "completed_red_check_names": [
+        "PR Feedback Gate",
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Security Scanning",
+        "Code Quality Checks",
+        "Federation Smoke"
+      ],
+      "domain": "federation",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1855"
+    },
+    {
+      "number": 1854,
+      "head_sha": "b011572f3f89b2fc31f450867e0c962ab931b592",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [],
+      "domain": "badges",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1854"
+    },
+    {
+      "number": 1847,
+      "head_sha": "95039ebfdd492df1884eb40f8fef7442d3b39b69",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "failure",
+      "completed_red_check_names": [
+        "PR Feedback Gate",
+        "Route PRs to evaluate",
+        "Route PRs to evaluate"
+      ],
+      "domain": "governance",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1847"
+    },
+    {
+      "number": 1844,
+      "head_sha": "50a09703a25291d469784ab7f10e92aac0a66f74",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Security Scanning",
+        "Code Quality Checks"
+      ],
+      "domain": "coverage",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1844"
+    },
+    {
+      "number": 1843,
+      "head_sha": "86c65ee85eb5cbdf888f76eed1985d24b57de598",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [],
+      "domain": "dependency",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1843"
+    },
+    {
+      "number": 1842,
+      "head_sha": "b88de6ca0480abe05ad4b39996b360530c3f4384",
+      "draft": false,
+      "base_sha": "904a0968c72276e5fe694a0bb85834b783a5d7e0",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [],
+      "domain": "cryogenics",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1842"
+    },
+    {
+      "number": 1841,
+      "head_sha": "cd2d4219522716e536d4822b48dfd7bbb5f727aa",
+      "draft": false,
+      "base_sha": "904a0968c72276e5fe694a0bb85834b783a5d7e0",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Code Quality Checks",
+        "Security Scanning"
+      ],
+      "domain": "tests",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1841"
+    },
+    {
+      "number": 1840,
+      "head_sha": "d86728f5ebbd1d37e48633b1f189149d3087c481",
+      "draft": false,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Security Scanning",
+        "Code Quality Checks"
+      ],
+      "domain": "tests",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1840"
+    },
+    {
+      "number": 1839,
+      "head_sha": "c4c65706a795b548456805e805d12d0808f4be96",
+      "draft": false,
+      "base_sha": "904a0968c72276e5fe694a0bb85834b783a5d7e0",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Code Quality Checks",
+        "Security Scanning"
+      ],
+      "domain": "tests",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1839"
+    },
+    {
+      "number": 1834,
+      "head_sha": "0a19dba1a26956a3e3cd36913640fd18d028e1eb",
+      "draft": true,
+      "base_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+      "feedback_gate": "pending",
+      "completed_red_check_names": [
+        "Full Red Proof Summary",
+        "Code Coverage",
+        "Code Quality Checks"
+      ],
+      "domain": "ci",
+      "source_url": "https://github.com/GBOGEB/ABACUS/pull/1834"
+    }
+  ],
+  "nonclaims": {
+    "accepted_security_reviews": "NOT_ESTABLISHED",
+    "owner_waivers": "NONE_OBSERVED",
+    "confirmed_merge_ready": 0,
+    "unique_first_red_roots": "UNKNOWN",
+    "historical_main_debt_delta": "UNKNOWN",
+    "runner_capacity": "UNKNOWN",
+    "statistical_independence": "NOT_PROVEN"
+  },
+  "data_policy": {
+    "unknown_not_zero": true,
+    "exact_head_each_pr": true,
+    "head_change_invalidates_check_admission": true,
+    "material_root_dedup_required": true,
+    "semantic_delta_only_on_change": true,
+    "merge_credit_requires_main_readback": true
+  }
+}

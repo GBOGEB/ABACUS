@@ -85,6 +85,7 @@
       "gloob-causal-responder.yml",
       "osv-scanner.yml",
       "post-merge-pr-summary.yml",
+      "pr-feedback-gate.yml",
       "semgrep.yml",
       "w67-measured-id-pulse.yml"
     ],
