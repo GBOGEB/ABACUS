@@ -549,8 +549,8 @@ class FeedbackGateTests(unittest.TestCase):
                     "created_at": self_outer.HEAD_AT,
                     "pull_requests": [{"number": 1}],
                 }]
-            def pull_files(self, number):
-                return ["README.md"]
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
             def issue(self, number):
                 return {"state": "open"}
         self_outer = self
@@ -755,8 +755,8 @@ class FeedbackGateTests(unittest.TestCase):
 
             _runs: list = []
 
-            def pull_files(self, number):
-                return ["README.md"]
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
 
             def issue(self, number):
                 return {"state": "open"}
