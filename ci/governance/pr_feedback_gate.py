@@ -183,10 +183,7 @@ class Evidence:
     ci_failed: tuple[str, ...]
     ci_seen: int
     deferred_comments: tuple[str, ...]
-    review_deferral_valid: bool = False
-    security_sensitive: bool = False
-    blocking_review_items: tuple[str, ...] = ()
-    review_deferral_details: tuple[str, ...] = ()
+    review_source: str = "codex"
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
@@ -630,6 +627,230 @@ def codex_security_review_complete(
         return (
             payload.get("headSha") == head_sha
             and payload.get("status") == "completed"
+        )
+    return False
+
+
+# Break-glass review path (used only when Codex itself cannot run).
+#
+# The gate normally requires exact-head Codex code + security reviews. When the
+# Codex allowance is exhausted those reviews cannot start, the gate stays
+# pending for every PR, and the ruleset (no bypass actors) blocks all merges.
+# An owner attestation may then stand in for the *review* requirement only:
+#   * the trusted Codex app must itself have reported it could not run on
+#     this PR (usage limit / exhausted allowance), and
+#   * the repository owner must attest the exact head SHA with a structured,
+#     machine-checkable marker.
+# Every CI requirement, the unresolved-thread rule and the workflow-identity
+# checks still apply unchanged. The attestation is an accountable human act:
+# automation and agents must never post it.
+OWNER_ATTESTORS = frozenset({"GBOGEB"})
+OWNER_ATTESTATION_MARKER = re.compile(
+    r"owner-security-attestation:v1\s+(\{.*?\})\s*-->"
+)
+# Codex's outage replies carry no machine marker, so they are matched as the
+# exact, complete comment body (whitespace-trimmed). A review that merely
+# quotes these sentences is not an outage. If Codex rewords them, the fallback
+# stops activating (fail-closed) until these strings are updated.
+CODEX_UNAVAILABLE_BODIES = frozenset({
+    "You have reached your Codex usage limits for code reviews. You can see "
+    "your limits in the [Codex usage dashboard]"
+    "(https://chatgpt.com/codex/cloud/settings/usage).",
+    "This security review couldn\u2019t start because the paying account has "
+    "exhausted its Codex allowance and has insufficient available credits. "
+    "The payer can check their balance and add credits in the [Codex usage "
+    "dashboard](https://chatgpt.com/codex/cloud/settings/usage), then try "
+    "again. If you do not manage the paying account, contact this "
+    "repository's admins.",
+})
+
+
+def is_codex_outage_notice(comment: dict[str, Any]) -> bool:
+    return (
+        is_trusted_codex_comment(comment)
+        and (comment.get("body") or "").strip() in CODEX_UNAVAILABLE_BODIES
+    )
+OWNER_ATTESTATION_SCOPE = "code+security"
+
+
+def _stamp(comment: dict[str, Any]) -> str:
+    return comment.get("updated_at") or comment.get("created_at") or ""
+
+
+def head_current_since(
+    runs: list[dict[str, Any]],
+    head_sha: str,
+    pr_number: int,
+) -> str:
+    """Server-recorded time this SHA most recently became the PR head.
+
+    Uses the latest Actions run GitHub created for the exact head SHA from a
+    pull_request event of this PR. These timestamps are set by GitHub when the
+    head moves (they cannot be backdated like Git committer dates), and taking
+    the latest one binds the outage to the current head transition: a PR
+    force-pushed back to an older SHA gets fresh runs, so the SHA's historical
+    runs no longer count. Extra or late runs only make the fallback stricter.
+    Returns "" when no such run exists, which keeps the fallback closed.
+    """
+    stamps = [
+        run.get("created_at") or ""
+        for run in runs
+        if run.get("head_sha") == head_sha
+        and run.get("event") == "pull_request"
+        and pr_number
+        in {
+            int(item["number"])
+            for item in (run.get("pull_requests") or [])
+            if item.get("number") is not None
+        }
+        and run.get("created_at")
+    ]
+    return max(stamps) if stamps else ""
+
+
+def head_reused_across_transitions(
+    runs: list[dict[str, Any]], head_sha: str, pr_number: int
+) -> bool:
+    """Deny fallback on A->B->A; GitHub server-stamped PR run observations.
+
+    An incomplete or ambiguous history conservatively disables the fallback.
+    This is a re-evaluation guard, NOT an atomic GitHub merge protection.
+    """
+    events = sorted(
+        (
+            run.get("created_at"), run.get("head_sha")
+        )
+        for run in runs
+        if run.get("event") == "pull_request"
+        and run.get("created_at")
+        and run.get("head_sha")
+        and any(
+            item.get("number") is not None
+            and int(item["number"]) == pr_number
+            for item in run.get("pull_requests") or []
+        )
+    )
+    if not events:
+        return True
+    observed = []
+    for _, head in events:
+        if not observed or observed[-1] != head:
+            observed.append(head)
+    return head_sha in observed[:-1] or observed[-1] != head_sha
+
+
+def current_codex_outage(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> str | None:
+    """Timestamp of a Codex outage that applies to the current head, else None.
+
+    The outage counts only if (a) the most recent trusted Codex activity on the
+    PR is itself an "could not run" notice, so any later successful Codex
+    activity cancels it, and (b) that notice is newer than the head commit, so
+    a notice from an earlier push never carries over to new commits.
+    """
+    trusted = [c for c in comments if is_trusted_codex_comment(c)]
+    if not trusted or not head_committed_at:
+        return None
+    latest = max(trusted, key=_stamp)
+    if not is_codex_outage_notice(latest):
+        return None
+    stamp = latest.get("created_at") or _stamp(latest)
+    if stamp <= head_committed_at:
+        return None
+    return stamp
+
+
+# CODE PURPLE P1: an outage cannot authorize the owner fallback unless the
+# owner actually requested a Codex review on this precise current PR head.
+# GitHub comments do not carry an outage response correlation ID. Therefore
+# timestamp ties, older-head requests, app-posted requests, and requests made
+# after the outage fail closed. Independent security review still applies.
+CODEX_REVIEW_REQUEST = re.compile(
+    r"(?m)^\s*@codex\s+(?:security\s+)?review\s*$",
+    re.IGNORECASE,
+)
+
+
+def current_head_codex_request(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+    head_since: str,
+    outage_at: str,
+) -> bool:
+    """Require a GitHub-timestamped owner request between head arrival and outage.
+
+    This closes the no-current-head-request case; it is not cryptographic
+    request/reply correlation because Codex outage text lacks a request ID.
+    """
+    if not head_since or not outage_at or not head_since < outage_at:
+        return False
+    for comment in comments:
+        user = comment.get("user") or {}
+        body = comment.get("body") or ""
+        posted = comment.get("created_at") or comment.get("updated_at") or ""
+        if (
+            user.get("login") in OWNER_ATTESTORS
+            and user.get("type", "User") == "User"
+            and comment.get("author_association") == "OWNER"
+            and not comment.get("performed_via_github_app")
+            and CODEX_REVIEW_REQUEST.search(body)
+            and head_sha in body
+            and head_since < posted < outage_at
+        ):
+            return True
+    return False
+
+
+def codex_unavailable(
+    comments: list[dict[str, Any]],
+    head_committed_at: str,
+) -> bool:
+    """True when the trusted Codex app reported it could not run on this head."""
+    return current_codex_outage(comments, head_committed_at) is not None
+
+
+def owner_attestation_complete(
+    comments: list[dict[str, Any]],
+    head_sha: str,
+    not_before: str = "",
+) -> bool:
+    """Latest owner attestation must bind this exact head and full scope.
+
+    With not_before set, the attestation must also post-date that moment (the
+    outage notice), so it answers the current failed review attempt.
+    """
+    for comment in sorted(
+        comments,
+        key=lambda item: item.get("updated_at")
+        or item.get("created_at")
+        or "",
+        reverse=True,
+    ):
+        user = comment.get("user") or {}
+        if (
+            user.get("login") not in OWNER_ATTESTORS
+            or user.get("type", "User") != "User"
+            or comment.get("author_association") != "OWNER"
+            or comment.get("performed_via_github_app")
+        ):
+            continue
+        match = OWNER_ATTESTATION_MARKER.search(comment.get("body", ""))
+        if not match:
+            continue
+        try:
+            payload = json.loads(match.group(1))
+        except json.JSONDecodeError:
+            continue
+        posted = comment.get("created_at") or _stamp(comment)
+        return (
+            posted > not_before
+            and payload.get("headSha") == head_sha
+            and payload.get("status") == "completed"
+            and payload.get("scope") == OWNER_ATTESTATION_SCOPE
+            and payload.get("reason") == "codex_unavailable"
+            and bool(str(payload.get("reviewer", "")).strip())
         )
     return False
 
@@ -1197,76 +1418,24 @@ def evaluate(
         )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
-    code_review_complete = codex_code_review_complete(comments, head_sha)
-    security_review_complete = codex_security_review_complete(
-        comments,
-        head_sha,
-    )
-    deferral_valid, blocking_items, deferral_details = (
-        review_deferral_evidence(
-            github,
-            number,
-            head_sha,
-            comments,
-            threads,
-            code_review_complete,
-            security_review_complete,
-        )
-    )
+    code_ok = codex_code_review_complete(comments, head_sha)
+    security_ok = codex_security_review_complete(comments, head_sha)
+    review_source = "codex"
+    # Security hard stop: do not substitute mutable owner-attestation evidence
+    # for independent code and security review. A previously green SHA-bound
+    # check may be reused during A->B->A before async reevaluation starts.
+    # Only the normal exact-head reviews can satisfy admission here.
+    # Retain helper functions for forensic/backward-compatible tests only.
     return Evidence(
         head_sha=head_sha,
-        code_review_complete=code_review_complete,
-        security_review_complete=security_review_complete,
+        code_review_complete=code_ok,
+        security_review_complete=security_ok,
         unresolved_threads=unresolved,
         ci_pending=pending,
         ci_failed=failed,
         ci_seen=seen,
         deferred_comments=deferred,
-        review_deferral_valid=deferral_valid,
-        # Fail closed: an incomplete file census is treated as sensitive, so
-        # no Codex review can be waived for it.
-        security_sensitive=(
-            not census_complete or security_sensitive_change(changed_paths)
-        ),
-        blocking_review_items=blocking_items,
-        review_deferral_details=deferral_details,
-    )
-
-
-DEFERRAL_RECHECKS = 3
-
-
-def revalidated_evidence(
-    github: GitHub,
-    number: int,
-    evidence: Evidence | None,
-) -> Evidence | None:
-    """Re-census a deferral-backed success just before it is published.
-
-    A tracking-issue close or edit re-censuses the PR in a run that queues
-    behind this one. The workflow's invalidate job marks the check pending
-    outside that queue with a newer census stamp, which this run will not
-    publish over; this re-census narrows the window before that job lands.
-    Deferral evidence is mutable, so a success that rests on it is only
-    published if an immediate re-census reproduces it exactly.
-    """
-    for _ in range(DEFERRAL_RECHECKS):
-        if (
-            evidence is None
-            or evidence.state != "success"
-            or not evidence.review_deferral_valid
-        ):
-            return evidence
-        fresh = evaluate(github, number)
-        if fresh == evidence:
-            return evidence
-        evidence = fresh
-    if evidence is None or evidence.state != "success":
-        return evidence
-    return replace(
-        evidence,
-        ci_pending=evidence.ci_pending
-        + ("review deferral evidence changed during the census",),
+        review_source=review_source,
     )
 
 
@@ -1277,6 +1446,7 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         f"head={evidence.head_sha}\n"
         f"code_review_complete={evidence.code_review_complete}\n"
         f"security_review_complete={evidence.security_review_complete}\n"
+        f"review_source={evidence.review_source}\n"
         f"unresolved_threads={evidence.unresolved_threads}\n"
         f"ci_seen={evidence.ci_seen}\n"
         f"state={evidence.state}"

@@ -470,6 +470,327 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(pending, ())
         self.assertEqual(failed, ())
 
+    # --- owner-attestation fallback (Codex unavailable) -------------------
+
+    HEAD = "1234567890abcdef1234567890abcdef12345678"
+
+    @staticmethod
+    def owner_comment(payload: str, **overrides):
+        comment = {
+            "body": f"Owner sign-off\n<!-- owner-security-attestation:v1 {payload} -->",
+            "updated_at": "2026-10-11T20:00:00Z",
+            "author_association": "OWNER",
+            "user": {"login": "GBOGEB", "type": "User"},
+        }
+        comment.update(overrides)
+        return comment
+
+    def valid_payload(self, head=None):
+        return (
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}' % (head or self.HEAD)
+        )
+
+    HEAD_AT = "2026-10-11T19:00:00Z"
+
+    def current_head_request(self, at="2026-10-11T19:10:00Z",
+                             head=None, **overrides):
+        comment = {
+            "body": "@codex security review\n\nExact head \`%s\`" % (head or self.HEAD),
+            "created_at": at,
+            "updated_at": at,
+            "user": {"login": "GBOGEB", "type": "User"},
+            "author_association": "OWNER",
+        }
+        comment.update(overrides)
+        return comment
+
+    def test_current_head_request_binding_and_order(self):
+        since = self.HEAD_AT
+        outage_at = "2026-10-11T19:30:00Z"
+        good = self.current_head_request()
+        self.assertTrue(
+            gate.current_head_codex_request([good], self.HEAD, since, outage_at)
+        )
+        for wrong in (
+            self.current_head_request(head="a" * 40),
+            self.current_head_request(at="2026-10-11T18:59:59Z"),
+            self.current_head_request(at=since),
+            self.current_head_request(at=outage_at),
+            self.current_head_request(
+                performed_via_github_app={"id": gate.CODEX_APP_ID}
+            ),
+            self.current_head_request(author_association="COLLABORATOR"),
+            self.current_head_request(user={"login": "attacker", "type": "User"}),
+        ):
+            self.assertFalse(
+                gate.current_head_codex_request(
+                    [wrong], self.HEAD, since, outage_at
+                )
+            )
+
+    def test_delayed_old_head_outage_does_not_enable_fallback(self):
+        # A requested before B became head; Codex replies late, after B.
+        # A new exact-head owner attestation must not inherit the stale request.
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return [
+                    self_outer.current_head_request(
+                        at="2026-10-11T18:30:00Z", head="a" * 40
+                    ),
+                    self_outer.outage(),
+                    self_outer.owner_comment(self_outer.valid_payload()),
+                ]
+            def review_threads(self, number):
+                return []
+            def actions_runs(self, head_sha):
+                return [{
+                    "event": "pull_request", "head_sha": self_outer.HEAD,
+                    "created_at": self_outer.HEAD_AT,
+                    "pull_requests": [{"number": 1}],
+                }]
+            def pull_files(self, number):
+                return ["README.md"]
+            def issue(self, number):
+                return {"state": "open"}
+        self_outer = self
+        pull = {
+            "state": "open", "base": {"ref": "main"},
+            "head": {"sha": self.HEAD}
+        }
+        evidence = gate.evaluate(FakeGitHub(), 1, pull)
+        self.assertEqual(evidence.review_source, "codex")
+        self.assertFalse(evidence.security_review_complete)
+
+    def test_outage_without_explicit_current_head_request_fails_closed(self):
+        self.assertFalse(gate.current_head_codex_request(
+            [self.outage()], self.HEAD, self.HEAD_AT,
+            "2026-10-11T19:30:00Z"
+        ))
+
+    def outage(self, at="2026-10-11T19:30:00Z"):
+        comment = self.trusted_codex_comment(
+            "You have reached your Codex usage limits for code reviews. You can "
+            "see your limits in the [Codex usage dashboard]"
+            "(https://chatgpt.com/codex/cloud/settings/usage).\n",
+            at,
+        )
+        comment["created_at"] = at
+        return comment
+
+    def test_owner_attestation_accepted_for_exact_head(self):
+        comments = [self.outage(), self.owner_comment(self.valid_payload())]
+        self.assertTrue(gate.codex_unavailable(comments, self.HEAD_AT))
+        self.assertTrue(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_owner_attestation_rejects_other_head(self):
+        comments = [self.owner_comment(self.valid_payload("f" * 40))]
+        self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_owner_attestation_rejects_non_owner_and_apps(self):
+        payload = self.valid_payload()
+        for override in (
+            {"user": {"login": "someone-else", "type": "User"}},
+            {"author_association": "COLLABORATOR"},
+            {"user": {"login": "GBOGEB", "type": "Bot"}},
+            {"performed_via_github_app": {"id": 1, "slug": "x"}},
+        ):
+            comments = [self.owner_comment(payload, **override)]
+            self.assertFalse(
+                gate.owner_attestation_complete(comments, self.HEAD), override
+            )
+
+    def test_owner_attestation_requires_full_scope_reason_and_reviewer(self):
+        for bad in (
+            '{"headSha":"%s","status":"completed","scope":"code",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}',
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"convenience","reviewer":"GBOGEB"}',
+            '{"headSha":"%s","status":"completed","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"  "}',
+            '{"headSha":"%s","status":"pending","scope":"code+security",'
+            '"reason":"codex_unavailable","reviewer":"GBOGEB"}',
+        ):
+            comments = [self.owner_comment(bad % self.HEAD)]
+            self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_latest_owner_attestation_wins(self):
+        newer_wrong = self.owner_comment(
+            self.valid_payload("e" * 40), updated_at="2026-10-11T21:00:00Z"
+        )
+        comments = [self.owner_comment(self.valid_payload()), newer_wrong]
+        self.assertFalse(gate.owner_attestation_complete(comments, self.HEAD))
+
+    def test_codex_unavailable_requires_trusted_codex_identity(self):
+        forged = {
+            "body": "You have reached your Codex usage limits for code reviews.",
+            "user": {"login": "GBOGEB", "id": 1},
+        }
+        self.assertFalse(gate.codex_unavailable([forged], self.HEAD_AT))
+
+    def test_head_time_comes_from_server_runs_not_commit_metadata(self):
+        runs = [
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:05:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "push", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T10:00:00Z", "pull_requests": []},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T09:00:00Z", "pull_requests": [{"number": 8}]},
+            {"event": "pull_request", "head_sha": "f" * 40,
+             "created_at": "2026-10-11T08:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        self.assertEqual(
+            gate.head_current_since(runs, self.HEAD, 7), "2026-10-11T19:05:00Z"
+        )
+
+    def test_force_push_back_to_old_sha_rebinds_to_new_transition(self):
+        # A ran at 18:00, B got an outage at 18:30, PR force-pushed back to A
+        # at 19:00 (fresh runs). The 18:30 outage must not cover A.
+        runs = [
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": self.HEAD,
+             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        since = gate.head_current_since(runs, self.HEAD, 7)
+        self.assertFalse(
+            gate.codex_unavailable([self.outage(at="2026-10-11T18:30:00Z")], since)
+        )
+
+    def test_reused_head_disables_break_glass_fallback(self):
+        h1 = self.HEAD
+        h2 = "f" * 40
+        runs = [
+            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": h2, "created_at": "2026-10-11T18:20:00Z", "pull_requests": [{"number": 7}]},
+            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+        ]
+        self.assertTrue(gate.head_reused_across_transitions(runs, h1, 7))
+        self.assertFalse(gate.head_reused_across_transitions(runs[:1], h1, 7))
+        self.assertTrue(gate.head_reused_across_transitions([], h1, 7))
+        self.assertTrue(gate.head_reused_across_transitions(runs, h2, 7))
+
+    def test_no_server_head_time_keeps_fallback_closed(self):
+        self.assertEqual(gate.head_current_since([], self.HEAD, 7), "")
+        self.assertFalse(gate.codex_unavailable([self.outage()], ""))
+
+    def test_review_quoting_outage_text_is_not_an_outage(self):
+        quoting = self.trusted_codex_comment(
+            "### Codex Review\nThe gate matches 'You have reached your Codex "
+            "usage limits for code reviews. You can see your limits in the "
+            "[Codex usage dashboard](https://chatgpt.com/codex/cloud/settings/"
+            "usage).' as an outage.",
+            "2026-10-11T19:30:00Z",
+        )
+        self.assertFalse(gate.codex_unavailable([quoting], self.HEAD_AT))
+
+    def test_security_allowance_notice_is_an_outage(self):
+        notice = self.trusted_codex_comment(
+            "This security review couldn\u2019t start because the paying account "
+            "has exhausted its Codex allowance and has insufficient available "
+            "credits. The payer can check their balance and add credits in the "
+            "[Codex usage dashboard](https://chatgpt.com/codex/cloud/settings/"
+            "usage), then try again. If you do not manage the paying account, "
+            "contact this repository's admins.",
+            "2026-10-11T19:30:00Z",
+        )
+        self.assertTrue(gate.codex_unavailable([notice], self.HEAD_AT))
+
+    def test_outage_from_earlier_push_does_not_carry_over(self):
+        stale = self.outage(at="2026-10-11T18:00:00Z")
+        self.assertFalse(gate.codex_unavailable([stale], self.HEAD_AT))
+
+    def test_later_codex_activity_cancels_outage(self):
+        recovered = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary --> review running",
+            "2026-10-11T19:45:00Z",
+        )
+        self.assertFalse(
+            gate.codex_unavailable([self.outage(), recovered], self.HEAD_AT)
+        )
+
+    def test_attestation_must_postdate_the_outage(self):
+        early = self.owner_comment(
+            self.valid_payload(), created_at="2026-10-11T19:10:00Z"
+        )
+        self.assertFalse(
+            gate.owner_attestation_complete(
+                [early], self.HEAD, not_before="2026-10-11T19:30:00Z"
+            )
+        )
+
+    def test_outage_timestamp_tie_with_head_is_rejected(self):
+        # GitHub timestamps have one-second resolution: ties prove no order.
+        self.assertFalse(
+            gate.codex_unavailable(
+                [self.outage(at=self.HEAD_AT)], self.HEAD_AT
+            )
+        )
+
+    def test_attestation_timestamp_tie_with_outage_is_rejected(self):
+        same_second = self.owner_comment(
+            self.valid_payload(), created_at="2026-10-11T19:30:00Z"
+        )
+        self.assertFalse(
+            gate.owner_attestation_complete(
+                [same_second], self.HEAD, not_before="2026-10-11T19:30:00Z"
+            )
+        )
+
+    def test_evaluate_uses_attestation_only_during_outage(self):
+        class FakeGitHub:
+            def __init__(self, comments):
+                self._comments = comments
+
+            def issue_comments(self, number):
+                return self._comments
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return self._runs
+
+            _runs: list = []
+
+            def pull_files(self, number):
+                return ["README.md"]
+
+            def issue(self, number):
+                return {"state": "open"}
+
+        pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
+        attested = self.owner_comment(self.valid_payload())
+
+        FakeGitHub._runs = [
+            {
+                "name": "Advisory lint",  # not a required workflow
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": self.HEAD_AT,
+                "pull_requests": [{"number": 1}],
+            }
+        ]
+        without_outage = gate.evaluate(FakeGitHub([attested]), 1, pull)
+        self.assertEqual(without_outage.review_source, "codex")
+        self.assertFalse(without_outage.security_review_complete)
+
+        with_outage = gate.evaluate(
+            FakeGitHub([self.current_head_request(), self.outage(), attested]),
+            1, pull,
+        )
+        # Security regression: outage + exact-head owner attestation must never
+        # replace independent code/security review, even when all evidence is fresh.
+        self.assertEqual(with_outage.review_source, "codex")
+        self.assertFalse(with_outage.code_review_complete)
+        self.assertFalse(with_outage.security_review_complete)
+        # CI is still required: with no runs the gate stays pending, never green.
+        self.assertEqual(with_outage.state, "pending")
+        self.assertTrue(any("CI missing" in r for r in with_outage.pending_reasons))
+
+
     def test_gate_state_order_is_failure_then_pending_then_success(self):
         base = dict(
             head_sha="a" * 40,

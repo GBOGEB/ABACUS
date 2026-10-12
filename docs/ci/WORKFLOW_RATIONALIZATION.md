@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `6575adc8815d298bc8e9414a329c2ad6057d483bec7a772674691d08d28e9dcb`
+Policy SHA-256: `201d0a650472a526ab350420f4f7a9d52f13ab0a97a5957f78107d3bba4dcfc2`
 
 ## Outcome
 
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -119,7 +119,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
-| 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, issues, pull_request_review, pull_request_review_comment, workflow_run, schedule, workflow_dispatch | 3 | `keep` | — |
+| 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, pull_request_review, pull_request_review_comment, pull_request, workflow_run, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
