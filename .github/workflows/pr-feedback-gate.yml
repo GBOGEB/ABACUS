@@ -3,17 +3,13 @@ name: PR Feedback Gate Evaluator
 on:
   issue_comment:
     types: [created, edited, deleted]
-  # A deferral is only valid while its tracking issue stays open with intact
-  # debt evidence. Re-census on every tracking-issue lifecycle change so a
-  # closed or edited issue cannot leave a stale green check behind. Only the
-  # PRs named by a trusted issue's current or previous marker are re-census'd;
-  # other issue events are no-ops.
-  issues:
-    types: [edited, closed, reopened, deleted, transferred]
   pull_request_review:
     types: [submitted, dismissed]
   pull_request_review_comment:
     types: [created, edited, deleted]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
   workflow_run:
     workflows:
       - CI - ABACUS Matrix
