@@ -1,0 +1,13 @@
+{
+  "direction": "GBOGEB/ABACUS -> GBOGEB/cryoplant-project",
+  "checked_at": "2026-10-11T20:55:19Z",
+  "member_main_sha": "101695aa3aa5f4a490f439d394d406e1d3f2e837",
+  "checks": {
+    "moniker_is_delta_1": true,
+    "member_status_active": true,
+    "member_is_auxiliary_plane": true,
+    "member_names_itself": true,
+    "runtime_hub_is_abacus": true
+  },
+  "status": "ok"
+}
