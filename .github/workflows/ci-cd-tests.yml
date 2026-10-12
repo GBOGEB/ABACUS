@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '**/*.pyi'
       - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
@@ -25,6 +26,7 @@ on:
     branches: [main, develop]
     paths:
       - '**/*.py'
+      - '**/*.pyi'
       - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
@@ -102,27 +104,28 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
 
-      # On a pull request, admission is the new-debt ratchet: the PR's
-      # changed Python files must not gain Black, isort or critical Flake8
-      # debt. The repository-wide scans above still run and are reported.
-      # Exit 3 means the PR changed a config these tools read, or how they
-      # are installed or run, so per-file comparison is not meaningful; the
-      # repository-wide scans above decide instead.
-      - name: PR new-debt ratchet (Black, isort, Flake8 critical)
+      # Per-tool independent fallback avoids allowing a .flake8 change to
+      # demand unrelated Black/isort cleanliness or skip their new-debt tests.
+      - name: PR new-debt ratchets (Black, isort, Flake8 critical)
         id: quality_ratchet
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
         run: |
-          rc=0
-          python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
-            --tools black isort flake8 \
-            --summary "$GITHUB_STEP_SUMMARY" || rc=$?
-          if [[ "$rc" -eq 3 ]]; then
-            echo "full_scan=required" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          exit "$rc"
+          failed=0
+          for tool in black isort flake8; do
+            rc=0
+            python scripts/ci_pr_debt_ratchet.py --base "$BASE_SHA" \
+              --tools "$tool" --summary "$GITHUB_STEP_SUMMARY" || rc=$?
+            if [[ "$rc" -eq 3 ]]; then
+              echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
+            elif [[ "$rc" -ne 0 ]]; then
+              echo "::error::PR ${tool} ratchet failed with exit code ${rc}"
+              failed=1
+            fi
+          done
+          exit "$failed"
 
       - name: Enforce code-quality red roots
         if: always()
@@ -132,7 +135,9 @@ jobs:
           ISORT: ${{ steps.isort.outcome }}
           FLAKE8: ${{ steps.flake8.outcome }}
           EVENT: ${{ github.event_name }}
-          FULL_SCAN: ${{ steps.quality_ratchet.outputs.full_scan }}
+          BLACK_FULL_SCAN: ${{ steps.quality_ratchet.outputs.black_full_scan }}
+          ISORT_FULL_SCAN: ${{ steps.quality_ratchet.outputs.isort_full_scan }}
+          FLAKE8_FULL_SCAN: ${{ steps.quality_ratchet.outputs.flake8_full_scan }}
         run: |
           {
             echo "### Code-quality full-red surface"
@@ -142,15 +147,23 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" &&
-                "$FULL_SCAN" != "required" ]]; then
-            echo "- PR admission: new-debt ratchet above" \
-              >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          if [[ "$FULL_SCAN" == "required" ]]; then
-            echo "- PR admission: tool config changed, full scan decides" \
-              >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$EVENT" == "pull_request" ]]; then
+            failed=0
+            for tool in BLACK ISORT FLAKE8; do
+              flag_name="${tool}_FULL_SCAN"
+              actual="${!tool}"
+              fallback="${!flag_name}"
+              if [[ "$fallback" == "required" ]]; then
+                echo "- ${tool}: affected config/toolchain changed; full scan=${actual}" >> "$GITHUB_STEP_SUMMARY"
+                if [[ "$actual" != "success" ]]; then
+                  echo "::error::Required ${tool} full scan failed."
+                  failed=1
+                fi
+              else
+                echo "- ${tool}: per-tool new-debt ratchet governs" >> "$GITHUB_STEP_SUMMARY"
+              fi
+            done
+            exit "$failed"
           fi
           if [[ "$BLACK" != "success" ||
                 "$ISORT" != "success" ||
