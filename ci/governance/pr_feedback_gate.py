@@ -1625,6 +1625,36 @@ def evaluable_pr_numbers(
     return numbers
 
 
+
+def revalidated_evidence(
+    github: GitHub,
+    number: int,
+    initial: Evidence | None,
+) -> Evidence | None:
+    """Re-census deferral-backed success before publishing a gate result.
+
+    Mutable tracking issues can change during the census. A success relying
+    on that evidence requires two consecutive identical observations. An
+    unstable census is pending, never admitted as success.
+    """
+    if initial is None or initial.state != "success" or not initial.review_deferral_valid:
+        return initial
+    prior = initial
+    for _ in range(3):
+        current = evaluate(github, number)
+        if current is None:
+            return None
+        if current.state != "success":
+            return current
+        if current == prior:
+            return current
+        prior = current
+    return replace(
+        prior,
+        ci_pending=prior.ci_pending + ("review deferral evidence changed during revalidation",),
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--event-path", type=Path)
