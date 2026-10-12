@@ -1,0 +1,68 @@
+{
+  "schema": "code-purple-shared-scan-parity/1.0",
+  "repo": "GBOGEB/ABACUS",
+  "observed_base_sha": "4c2f6695b177975c8983aff74e00ea37905835e3",
+  "observed_pr_sha": "93d00b5d72069f68c279b5fab6bd3c39e8258ae9",
+  "baseline_run": 38290478896,
+  "pr_run": 38290804200,
+  "measurements": {
+    "black": {
+      "base": 683,
+      "pr": 683,
+      "unit": "files requiring reformat",
+      "new_delta": 0
+    },
+    "isort": {
+      "base": 450,
+      "pr": 450,
+      "unit": "reported red-root findings",
+      "new_delta": 0
+    },
+    "bandit": {
+      "base": 5862,
+      "pr": 5862,
+      "unit": "reported findings",
+      "new_delta": 0
+    },
+    "flake8": {
+      "base": 1,
+      "pr": 1,
+      "unit": "critical F821 undefined name revalidated_evidence",
+      "new_delta": 0,
+      "path": "ci/governance/pr_feedback_gate.py",
+      "line": 1703
+    },
+    "safety": {
+      "base": "FAIL (exit 64)",
+      "pr": "FAIL (exit 64)",
+      "finding_comparison": "NOT_VERIFIED"
+    }
+  },
+  "fallback": {
+    "all_three": "FULL_SCAN_REQUIRED",
+    "cause": ".github/workflows/ci-cd-tests.yml changed; classified config change by base-pinned ratchet",
+    "changed_python_files": 0,
+    "new_per_file_debt": 0,
+    "security_scan": "Native full scan still FAIL; not exempted"
+  },
+  "disposition": {
+    "black": "INHERITED_BASELINE_NO_OBSERVED_INCREMENT",
+    "isort": "INHERITED_BASELINE_NO_OBSERVED_INCREMENT",
+    "flake8": "INHERITED_BASELINE_NO_OBSERVED_INCREMENT",
+    "bandit": "INHERITED_BASELINE_NO_OBSERVED_INCREMENT",
+    "safety": "INHERITED_FAILURE_EXACT_FINDING_DELTA_UNKNOWN",
+    "policy_relaxation": false,
+    "formal_credit": 0,
+    "merged": false
+  },
+  "sources": [
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38290478896",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38290804200"
+  ],
+  "next": "Review exact Flake8 and Safety artifacts before asserting parity. Repair inherited roots on approved foundation workstream separately from #1882, with actual independent tests.",
+  "recovery_pointer": {
+    "branch": "fix/code-purple-evidence-trigger-20261012",
+    "head_last_inspected": "40be6dd527fdb2eafb5f5f9b02480bc58884a0f8",
+    "note": "Separate P0 branch declares def revalidated_evidence; do not duplicate/admit security-sensitive repair without review."
+  }
+}

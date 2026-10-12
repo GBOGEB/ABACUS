@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `5be3edca51eb29d9eb796e35433477965a6b4cb4b0d0a7c1114c75d447721553`
+Policy SHA-256: `3aaf4143e11cf6bc0bd34a12f9aca4cc17bd9385387686a2b547fd8e5927fe56`
 
 ## Outcome
 
-The repository currently contains **152 workflow definitions**. All **152** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **155 workflow definitions**. All **155** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -26,7 +26,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 
 | Cluster | Canonical workflow | Definitions | Intent |
 |---|---|---:|---|
-| `core_test` | `ci-abacus.yml` | 11 | Fast cross-version unit, pre-commit and smoke evidence. |
+| `core_test` | `ci-abacus.yml` | 12 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -68,6 +68,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `core_test` | `ci-abacus.yml` | push, pull_request, schedule, workflow_dispatch | 6 | `keep` | — |
 | 10 | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
 | 10 | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
+| 10 | `core_test` | `code-purple-quality-ratchet-proof.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
 | 10 | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | — |
@@ -121,7 +122,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
-| 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, pull_request_review, pull_request_review_comment, pull_request, workflow_run, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, pull_request_review, pull_request_review_comment, pull_request, workflow_run, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-smoke.yml` | push, workflow_dispatch | 1 | `keep` | — |
@@ -219,10 +220,11 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 ## Repeated quality/test commands
 
+- `python -m pip install pytest` — `branch-hygiene.yml`, `cryoplant-federation.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
+- `python -m pytest \` — `codespace-federation.yml`, `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
 - `pip install pytest pyyaml` — `ci-abacus.yml`, `codespace-federation.yml`, `dow-sprint6-cicd.yml`
 - `python -m pip install --quiet pytest numpy` — `w77-phase-runtime-instrumentation.yml`, `w78-deterministic-work-census.yml`, `w81-repair-outcome-block.yml`
-- `python -m pip install pytest` — `cryoplant-federation.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`, `w72-clean-clone-proof.yml`
 - `bandit -r . -f json -o bandit-report.json` — `ci-cd-tests.yml`, `ci-cd.yml`
 - `black --check --diff .` — `ci-cd.yml`, `ci-pipeline.yml`
@@ -238,7 +240,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
 - `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
-- `python -m pytest DMAIC_V3/tests/test_smoke_federation.py -m smoke -v --tb=short` — `codespace-federation.yml`, `federation-notebook.yml`
 
 ## Control rule
 

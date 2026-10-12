@@ -1,0 +1,54 @@
+name: CODE PURPLE quality-ratchet targeted regression
+on:
+  push:
+    branches: [fix/code-purple-quality-ratchet-20261012]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ratchet-negative-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install targeted test dependencies
+        run: |
+          python -m pip install pytest numpy black isort flake8 bandit
+      - name: Verify exact-head and producer wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          source=pathlib.Path('.github/workflows/ci-cd-tests.yml').read_text()
+          assert 'id: quality_ratchet' in source
+          assert 'for tool in black isort flake8; do' in source
+          expected = 'echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"'
+          assert expected in source
+          assert 'git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py"' in source
+          assert 'elif [[ "$rc" -ne 0 ]]' in source
+          print('exact_head='+sha)
+          print('producer_wiring=PASS')
+          PY
+      - name: Execute positive contract and negative debt/config/rename tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest tests/test_ci_pr_debt_ratchet.py -q --tb=short
+      - name: Emit deterministic generated governance inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output /tmp/code-purple-ratchet-inventory.md
+          python - <<'PY'
+          import base64, pathlib
+          raw=pathlib.Path('/tmp/code-purple-ratchet-inventory.md').read_bytes()
+          print('BD_INVENTORY_B64='+base64.b64encode(raw).decode('ascii'))
+          PY
