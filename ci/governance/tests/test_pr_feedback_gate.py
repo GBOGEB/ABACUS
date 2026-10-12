@@ -631,6 +631,24 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
 
+    def test_outage_timestamp_tie_with_head_is_rejected(self):
+        # GitHub timestamps have one-second resolution: ties prove no order.
+        self.assertFalse(
+            gate.codex_unavailable(
+                [self.outage(at=self.HEAD_AT)], self.HEAD_AT
+            )
+        )
+
+    def test_attestation_timestamp_tie_with_outage_is_rejected(self):
+        same_second = self.owner_comment(
+            self.valid_payload(), created_at="2026-10-11T19:30:00Z"
+        )
+        self.assertFalse(
+            gate.owner_attestation_complete(
+                [same_second], self.HEAD, not_before="2026-10-11T19:30:00Z"
+            )
+        )
+
     def test_evaluate_uses_attestation_only_during_outage(self):
         class FakeGitHub:
             def __init__(self, comments):
