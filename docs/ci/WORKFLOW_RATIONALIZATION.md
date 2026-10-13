@@ -244,3 +244,37 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 ## Control rule
 
 A workflow change fails CI governance when a definition is unclassified, a canonical owner is missing, or the generated report no longer matches the policy. This report is derived; `ci/governance/workflow_policy.json` is the SSOT.
+
+
+## MIP / 3P* SIPOC-DAG reuse (advisory, 2026-10-13)
+
+| Supplier | Input | Process | Output | Consumer |
+|---|---|---|---|---|
+| PR / GitHub | Exact SHA, diff, pytest IDs | Deduplicate and classify | Unique test denominator | MIP planner |
+| CI / runners | JUnit, coverage XML, runner and timestamps | Parallel B0, B1, static/DAB, report-only, matrix | Hashed evidence and first-red queue | Independent reviewer |
+| 3P / LDAB | Disjoint worker receipts | Repeat, compare, measure drift | p50/p95, critical path, stability receipt | CI owner / REX (non-authoritative) |
+
+```mermaid
+flowchart TD
+  A[Exact SHA and diff] --> B[Test inventory and taxonomy]
+  B --> C[Risk planner and focused first-red]
+  C --> D{Critical failure?}
+  D -->|Yes| E[Escalate affected family]
+  D -->|No| F[Parallel evidence]
+  E --> F
+  F --> G[B0 coverage and JUnit]
+  F --> H[B1 false-green]
+  F --> I[Static DAB and Bandit]
+  F --> J[Report-only and Python matrix]
+  G --> K[Exact-head reconciliation]
+  H --> K
+  I --> K
+  J --> K
+  K --> L{Complete terminal evidence?}
+  L -->|No| M[Root-specific repair or wait]
+  M --> C
+  L -->|Yes| N[3P timing and stability]
+  N --> O[Independent review and protected admission]
+```
+
+Reuse existing B0/B1 and CI matrix. Measure test duration from JUnit and queue/setup separately; do not invent timings. Classifications may overlap, but total node IDs remain unique. Fail closed on missing coverage provenance. Python 3.9 source-only validation does not imply package compatibility when metadata requires >=3.11. Fast diagnostic runs never replace required exact-head gates. Retire legacy workflows only after owner-reviewed equivalence. Authority transfer: false.
