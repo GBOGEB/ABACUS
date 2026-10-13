@@ -163,9 +163,12 @@ def test_cli_blocks_uncategorized_skip_with_explicit_head(tmp_path: Path, monkey
         encoding="utf-8",
     )
     monkeypatch.setenv("GITHUB_SHA", "5" * 40)
-    assert census.main(
-        ["--junit", str(junit), "--out", str(receipt), "--exact-sha", "6" * 40]
-    ) == 1
+    assert (
+        census.main(
+            ["--junit", str(junit), "--out", str(receipt), "--exact-sha", "6" * 40]
+        )
+        == 1
+    )
     payload = json.loads(receipt.read_text(encoding="utf-8"))
     assert payload["exact_sha"] == "6" * 40
     assert payload["ratchet_status"] == "FAIL"
@@ -181,18 +184,21 @@ def test_cli_blocks_xfail_ratchet_with_explicit_head(tmp_path: Path):
         '<skipped message="expected"/></testcase></testsuite>',
         encoding="utf-8",
     )
-    assert census.main(
-        [
-            "--junit",
-            str(junit),
-            "--out",
-            str(receipt),
-            "--exact-sha",
-            "7" * 40,
-            "--max-xfails",
-            "0",
-        ]
-    ) == 1
+    assert (
+        census.main(
+            [
+                "--junit",
+                str(junit),
+                "--out",
+                str(receipt),
+                "--exact-sha",
+                "7" * 40,
+                "--max-xfails",
+                "0",
+            ]
+        )
+        == 1
+    )
     payload = json.loads(receipt.read_text(encoding="utf-8"))
     assert payload["xfail_count"] == 1
     assert "xfail ratchet exceeded: 1 > 0" in payload["ratchet_errors"]
@@ -207,18 +213,21 @@ def test_cli_blocks_skip_count_above_limit_with_exact_head(tmp_path: Path):
         '<skipped message="TEST_BLOCKED_CONFIG: unavailable"/></testcase></testsuite>',
         encoding="utf-8",
     )
-    assert census.main(
-        [
-            "--junit",
-            str(junit),
-            "--out",
-            str(receipt),
-            "--exact-sha",
-            "8" * 40,
-            "--max-skips",
-            "0",
-        ]
-    ) == 1
+    assert (
+        census.main(
+            [
+                "--junit",
+                str(junit),
+                "--out",
+                str(receipt),
+                "--exact-sha",
+                "8" * 40,
+                "--max-skips",
+                "0",
+            ]
+        )
+        == 1
+    )
     payload = json.loads(receipt.read_text(encoding="utf-8"))
     assert payload["exact_sha"] == "8" * 40
     assert payload["skip_count"] == 1
