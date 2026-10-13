@@ -183,7 +183,7 @@ def test_primary_registry_wins_over_output_fallback(integration):
 def test_custom_report_destination_and_empty_trace_log(integration, tmp_path):
     trace_dir = integration.workspace_root / ".ariana"
     trace_dir.mkdir(exist_ok=True)
-    (trace_dir / "trace_log.json").write_text("\\n\\n")
+    (trace_dir / "trace_log.json").write_text("")
     assert integration._collect_ariana_traces(9) == []
     integration.generate_integration_metrics()
     target = tmp_path / "nested" / "report.json"
