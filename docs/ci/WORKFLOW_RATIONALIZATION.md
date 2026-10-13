@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `3aaf4143e11cf6bc0bd34a12f9aca4cc17bd9385387686a2b547fd8e5927fe56`
+Policy SHA-256: `58ea7789507310eafb974cd0ad7e444c98a255bafe44faf9040825bff497f002`
 
 ## Outcome
 
-The repository currently contains **155 workflow definitions**. All **155** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **156 workflow definitions**. All **156** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -33,7 +33,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 19 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 10 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 9 | Repository maintenance, reporting, branch and PR automation. |
@@ -135,6 +135,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `validation.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `w64-census-p3.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
+| 20 | `security` | `bandit-disjoint-census.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
 | 20 | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
