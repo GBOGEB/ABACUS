@@ -152,3 +152,40 @@ def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     assert result.returncode == 0, result.stdout + result.stderr
     assert out.is_file()
     assert '"ratchet_status": "PASS"' in out.read_text(encoding="utf-8")
+
+
+def test_cli_blocks_uncategorized_skip_with_explicit_head(tmp_path: Path, monkeypatch):
+    junit = tmp_path / "junit.xml"
+    receipt = tmp_path / "receipt.json"
+    junit.write_text(
+        '<testsuite><testcase classname="a" name="skip">'
+        '<skipped message="unclassified"/></testcase></testsuite>',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("GITHUB_SHA", "5" * 40)
+    assert census.main(
+        ["--junit", str(junit), "--out", str(receipt), "--exact-sha", "6" * 40]
+    ) == 1
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    assert payload["exact_sha"] == "6" * 40
+    assert payload["ratchet_status"] == "FAIL"
+    assert payload["uncategorized_skips"] == ["a::skip"]
+
+
+def test_cli_blocks_xfail_ratchet_with_explicit_head(tmp_path: Path):
+    junit = tmp_path / "junit.xml"
+    receipt = tmp_path / "receipt.json"
+    junit.write_text(
+        '<testsuite><testcase classname="a" name="xfail">'
+        '<properties><property name="xfail" value="true"/></properties>'
+        '<skipped message="expected"/></testcase></testsuite>',
+        encoding="utf-8",
+    )
+    assert census.main(
+        ["--junit", str(junit), "--out", str(receipt), "--exact-sha", "7" * 40,
+         "--max-xfails", "0"]
+    ) == 1
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    assert payload["xfail_count"] == 1
+    assert "xfail ratchet exceeded: 1 > 0" in payload["ratchet_errors"]
+    assert payload["ratchet_status"] == "FAIL"
