@@ -169,7 +169,7 @@ class DMAICTestOrchestrator:
 
         # Parse results
         if not report_file.is_file() or not coverage_file.is_file():
-            raise RuntimeError(f"Measurement reports missing; evidence: {run_dir}")
+            raise RuntimeError(\n                f"Measurement reports missing; evidence: {run_dir}; "\n                f"subprocess_exit={result.returncode}; "\n                f"stdout_tail={result.stdout[-500:]!r}; "\n                f"stderr_tail={result.stderr[-500:]!r}"\n            )
 
         test_data = self._parse_test_report(report_file)
         coverage_data = self._parse_coverage_report(coverage_file)
