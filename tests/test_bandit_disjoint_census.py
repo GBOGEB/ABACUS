@@ -107,3 +107,29 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
     assert result["lanes"]["B5-tests"]["findings"] == 3
     assert result["lanes"]["B3-subprocess"]["files"] == 0
     assert result["lanes"]["B4-files-secrets"]["files"] == 0
+
+
+@pytest.mark.parametrize(
+    "test_path",
+    ["tests/test_worker.py", "nested/tests/test_worker.py", "src/test_worker.py"],
+)
+def test_nested_test_file_ownership_overrides_subprocess_rules(test_path):
+    """A test file with multiple rules belongs to a single B5 owner."""
+    rows = [finding(test_path, "B603"), finding(test_path, "B105", 2)]
+    result = module.partition({"results": rows}, "b" * 40)
+    assert result["total_unique"] == 2
+    assert result["lanes"]["B5-tests"]["findings"] == 2
+    assert result["lanes"]["B3-subprocess"]["findings"] == 0
+    assert result["lanes"]["B4-files-secrets"]["findings"] == 0
+    assert result["authority_transfer"] is False
+
+
+def test_normalized_paths_deduplicate_identical_bandit_findings():
+    """Equivalent source paths do not inflate the finding denominator."""
+    result = module.partition(
+        {"results": [finding("src\\\\a.py", "B603"), finding("src/a.py", "B603")]},
+        "b" * 40,
+    )
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["findings"] == 1
