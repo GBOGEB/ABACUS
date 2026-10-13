@@ -218,3 +218,6 @@ venv*/
 
 # Local TestPilot receipts
 .testpilot/
+
+# Raw security alerts are not versioned in the public repository
+/.github/security/alerts.yaml
