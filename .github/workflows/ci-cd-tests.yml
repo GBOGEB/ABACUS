@@ -673,7 +673,29 @@ jobs:
       - name: Run Safety Check
         id: safety
         continue-on-error: true
-        run: safety check --json > safety-report.json
+        shell: bash
+        run: |
+          # Preserve a failing exit status (including Safety's exit 64).
+          # Capture diagnostics privately as an artifact; never echo a raw
+          # scanner response that could contain credentials or URLs.
+          set +e
+          safety check --json > safety-report.json 2> safety-stderr.log
+          status=$?
+          set -e
+          echo "Safety exit status: $status" >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          report = Path("safety-report.json")
+          try:
+              payload = json.loads(report.read_text(encoding="utf-8"))
+          except (OSError, ValueError):
+              print("Safety JSON: missing or invalid; inspect the retained diagnostic artifact.")
+          else:
+              print(f"Safety JSON: valid {type(payload).__name__}; inspect artifact for classification.")
+          PY
+          exit "$status"
 
       - name: Census security red-root delta
         if: always()
@@ -700,6 +722,7 @@ jobs:
           path: |
             bandit-report.json
             safety-report.json
+            safety-stderr.log
             security-red-root-delta.json
           if-no-files-found: warn
 
