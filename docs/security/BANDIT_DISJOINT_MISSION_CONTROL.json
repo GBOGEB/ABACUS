@@ -1,0 +1,108 @@
+{
+  "schema": "missioncontrol.bandit_disjoint_dispatch.v1",
+  "created_at": "2026-10-13",
+  "source_repo": "GBOGEB/ABACUS",
+  "pr": 1909,
+  "baseline": {
+    "historical_full_findings": 6270,
+    "historical_touched_file_upper_bound": 200,
+    "historical_outside_touched": 6070,
+    "historical_test_file_B603_delta": 4,
+    "comparable_current_full_findings": null,
+    "comparable_current_configured_findings": null
+  },
+  "lanes": [
+    {
+      "id": "B1",
+      "role": "security census",
+      "mode": "CI workflow",
+      "state": "configured_not_verified",
+      "inputs": [
+        "exact_sha",
+        "full.json",
+        "configured.json"
+      ],
+      "exit": [
+        "JSON",
+        "rule counts",
+        "SHA256SUMS"
+      ]
+    },
+    {
+      "id": "B2",
+      "role": "production source",
+      "mode": "disjoint owner",
+      "state": "awaiting census",
+      "exit": [
+        "source fix",
+        "regression tests",
+        "before/after delta"
+      ]
+    },
+    {
+      "id": "B3",
+      "role": "subprocess",
+      "mode": "disjoint owner",
+      "state": "awaiting census",
+      "exit": [
+        "B602/B603/B607 audit",
+        "negative tests"
+      ]
+    },
+    {
+      "id": "B4",
+      "role": "files and secrets",
+      "mode": "disjoint owner",
+      "state": "awaiting census",
+      "exit": [
+        "negative-path tests",
+        "reviewed alert delta"
+      ]
+    },
+    {
+      "id": "B5",
+      "role": "test infrastructure",
+      "mode": "disjoint owner",
+      "state": "awaiting census",
+      "exit": [
+        "stable tests",
+        "no introduced alerts"
+      ]
+    },
+    {
+      "id": "B6",
+      "role": "Mission Control",
+      "mode": "read-only aggregator",
+      "state": "configured_not_verified",
+      "exit": [
+        "deduplicated owner queue",
+        "verified before/after receipts"
+      ]
+    }
+  ],
+  "metrics": {
+    "unique_findings": null,
+    "assigned_files": null,
+    "duplicate_assignments": null,
+    "changed_line_coverage": {
+      "covered": null,
+      "eligible": null
+    },
+    "authenticated_active_workers": null,
+    "ldab_sessions": null,
+    "runner_capacity": null,
+    "queue_wait_seconds": null,
+    "failed_job_retry_rate": null,
+    "time_to_green_seconds": null
+  },
+  "authority_transfer": false,
+  "security_waiver": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "acceptance": {
+    "b1": "full and configured scan artifacts, SHA and rule counts",
+    "b2_b5": "exclusive owner, before/after comparable fingerprint delta, regression proof",
+    "b6": "read-only receipts and independently reviewed status",
+    "coverage": "exact-head XML and changed-line numerator/denominator; target >=80% not credited until measured"
+  }
+}

@@ -184,6 +184,12 @@
       "replacement": "bridge-ci.yml"
     },
     {
+      "pattern": "^bandit-disjoint-census\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^bandit\\.yml$",
       "cluster": "security",
       "lifecycle": "scheduled",

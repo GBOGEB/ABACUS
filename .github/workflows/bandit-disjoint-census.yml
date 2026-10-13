@@ -1,0 +1,82 @@
+name: Bandit Disjoint Census
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/bandit_disjoint_census.py'
+      - 'tests/test_bandit_disjoint_census.py'
+      - '.github/workflows/bandit-disjoint-census.yml'
+permissions:
+  contents: read
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scanner and test runner
+        run: python -m pip install 'bandit[toml]' pytest pytest-cov numpy
+      - name: Regression contracts
+        run: |
+          mkdir -p bandit-evidence
+          python -m pytest --noconftest -q \
+            tests/test_bandit_disjoint_census.py \
+            --cov=scripts.bandit_disjoint_census \
+            --cov-report=xml:bandit-evidence/coverage.xml \
+            --cov-report=term-missing \
+            --junitxml=bandit-evidence/junit.xml
+      - name: Run full and configured scans with separate denominators
+        shell: bash
+        run: |
+          mkdir -p bandit-evidence
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+          scans = {
+              "full": ["-r", ".", "--exclude", ".git,.venv,venv,node_modules"],
+              "configured": [
+                  "-r", "DMAIC_V3", "--exclude",
+                  "DMAIC_V3/tests,DMAIC_V3/generators/"
+                  "test_integration_pipeline.py",
+                  "--skip", "B101,B603", "--severity-level", "medium",
+                  "--confidence-level", "medium",
+              ],
+          }
+          for name, flags in scans.items():
+              output = Path("bandit-evidence") / f"{name}.json"
+              cmd = [sys.executable, "-m", "bandit", *flags,
+                     "-f", "json", "-o", str(output)]
+              run = subprocess.run(
+                  cmd, capture_output=True, text=True, check=False
+              )
+              if run.returncode not in (0, 1) or not output.is_file():
+                  print(run.stdout, run.stderr, file=sys.stderr)
+                  raise SystemExit(
+                      f"Bandit {name} scan failed ({run.returncode})"
+                  )
+              data = json.loads(output.read_text(encoding="utf-8"))
+              if not isinstance(data.get("results"), list):
+                  raise SystemExit(f"Bandit {name} produced invalid report")
+              print(f"{name}: {len(data['results'])} findings")
+          PY
+      - name: Partition full scan by exclusive file owner
+        run: |
+          SCAN_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          python scripts/bandit_disjoint_census.py \
+            --report bandit-evidence/full.json \
+            --exact-sha "$SCAN_SHA" \
+            --out bandit-evidence/disjoint.json
+          sha256sum bandit-evidence/*.json > bandit-evidence/SHA256SUMS
+      - name: Upload evidence regardless of scan findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-disjoint-${{ github.run_id }}
+          path: bandit-evidence/
+          if-no-files-found: error
+          retention-days: 30
