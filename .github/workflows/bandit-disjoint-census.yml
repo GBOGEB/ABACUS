@@ -32,6 +32,7 @@ jobs:
             --cov=scripts \
             --cov-branch \
             --cov-report=xml:bandit-evidence/coverage.xml \
+            --cov-report=json:bandit-evidence/coverage.json \
             --cov-report=term-missing \
             --junitxml=bandit-evidence/junit.xml
       - name: Generate governance inventory as evidence
@@ -85,6 +86,34 @@ jobs:
               "branch_coverage_percent": round(100 * branch_covered / branch_valid, 2),
               "changed_line_coverage_percent": None,
           }
+          detailed = json.loads((root / "coverage.json").read_text(encoding="utf-8"))
+          selected = {}
+          for filename in ("scripts/bandit_disjoint_census.py",
+                           "scripts/bandit_comparable_delta.py"):
+              files = detailed.get("files", {})
+              matches = [v for k, v in files.items()
+                         if k.replace("\\\\", "/").lstrip("./") == filename]
+              if len(matches) != 1:
+                  raise SystemExit(f"Missing/ambiguous module coverage: {filename}")
+              summary = matches[0].get("summary", {})
+              statements = int(summary.get("num_statements", -1))
+              missing = int(summary.get("missing_lines", -1))
+              branches = int(summary.get("num_branches", -1))
+              partial = int(summary.get("num_partial_branches", -1))
+              if statements < 1 or not 0 <= missing <= statements or branches < 1:
+                  raise SystemExit(f"Invalid module coverage: {filename}")
+              covered_statements = statements - missing
+              # coverage.py summary reports missing_branches directly.
+              missing_branches = int(summary.get("missing_branches", -1))
+              if not 0 <= missing_branches <= branches:
+                  raise SystemExit(f"Invalid branch numerator: {filename}")
+              selected[filename] = {
+                  "covered_lines": covered_statements,
+                  "eligible_lines": statements,
+                  "covered_branches": branches - missing_branches,
+                  "eligible_branches": branches,
+              }
+          receipt["selected_modules"] = selected
           (root / "coverage-receipt.json").write_text(
               json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
           )
