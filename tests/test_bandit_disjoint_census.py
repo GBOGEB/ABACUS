@@ -253,3 +253,40 @@ def test_empty_findings_preserve_four_disjoint_lanes_and_no_approval():
     }
     assert census["security_disposition"] == "pending independent review"
     assert census["authority_transfer"] is False
+
+
+@pytest.mark.parametrize("invalid_sha", ["short", "G" * 40, "A" * 40])
+def test_disjoint_cli_rejects_invalid_sha(tmp_path, monkeypatch, invalid_sha):
+    import sys
+    report = tmp_path / "bandit.json"
+    report.write_text('{"results": []}', encoding="utf-8")
+    output = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_disjoint_census.py", "--report", str(report),
+        "--exact-sha", invalid_sha, "--out", str(output),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        module.main()
+    assert exc.value.code == 2
+    assert not output.exists()
+
+
+def test_disjoint_cli_writes_deterministic_receipt(tmp_path, monkeypatch):
+    import json
+    import sys
+    report = tmp_path / "bandit.json"
+    report.write_text(json.dumps({"results": [finding("src/a.py", "B603")]}),
+                      encoding="utf-8")
+    output = tmp_path / "nested" / "disjoint.json"
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_disjoint_census.py", "--report", str(report),
+        "--exact-sha", "a" * 40, "--out", str(output),
+    ])
+    module.main()
+    first = output.read_bytes()
+    module.main()
+    assert output.read_bytes() == first
+    receipt = json.loads(first)
+    assert receipt["total_unique"] == 1
+    assert receipt["exact_sha"] == "a" * 40
+    assert receipt["security_disposition"] == "pending independent review"
