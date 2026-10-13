@@ -33,9 +33,17 @@ def test_both_required_phase_receipts_allow_prerequisite(tmp_path: Path):
     phase = Phase9_DocumentationGeneration()
     phase.output_dir = tmp_path / "output"
     iteration_dir = phase.output_dir / "iteration_3"
-    for name in ("phase1_define", "phase2_measure"):
+    receipts = {
+        "phase1_define": {"status": "success", "total_files": 130000},
+        "phase2_measure": {"status": "success", "metrics": {}},
+    }
+    for name, payload in receipts.items():
         directory = iteration_dir / name
         directory.mkdir(parents=True)
-        (directory / f"{name}.json").write_text("{}", encoding="utf-8")
+        (directory / f"{name}.json").write_text(
+            json.dumps(payload), encoding="utf-8"
+        )
 
+    # Existing implementation checks presence only. This test deliberately
+    # uses nonempty receipts; content validation is a separate production gate.
     assert phase._verify_execution_success(3) is True
