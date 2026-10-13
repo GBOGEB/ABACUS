@@ -7,12 +7,14 @@ branch-local evidence leaf, **not** a promotion or merge authorization.
 
 - Repository: GBOGEB/ABACUS; exact source main SHA:
   `efdd1ec49ae5dacd9db1a68e9faf944fc5a81239`.
-- [DAB census run 38381405952](https://github.com/GBOGEB/ABACUS/actions/runs/38381405952), [artifact 11802689708](https://github.com/GBOGEB/ABACUS/actions/runs/38381405952/artifacts/11802689708).
+- [DAB census run 38381405952][dab-run]; artifact 11802689708.
+  This receipt is linked from the run's Artifacts section.
 - Full red total: **2973**; E999: **0**; compatible proposal envelopes:
   **890**; active G1 threshold `<3000`, numeric G1 met, **companion pending**.
 - G2 threshold `<2500`: requires >=474 verified net reductions from this
   baseline. G3 threshold `<2000`: >=974 net reductions.
-- Existing classification authority: [DAB-HARD issue #1488](https://github.com/GBOGEB/ABACUS/issues/1488); recovery/admission: [#1860](https://github.com/GBOGEB/ABACUS/issues/1860).
+- Existing classification authority: [DAB-HARD #1488][dab-hard].
+  Recovery and merge admission: [ABACUS #1860][abacus-admission].
 
 ## Action ledger — single-writer discipline
 
@@ -93,7 +95,13 @@ independently verified. Governance remains `authority_transfer=false`,
 
 ## 2026-10-13 artifact-level census reconciliation and Mission Control reuse
 
-Actual archive [11802689708](https://github.com/GBOGEB/ABACUS/actions/runs/38381405952/artifacts/11802689708) inspected: **890/890** proposal envelopes parsed; **750 MEDIUM**, **140 LOW_MECHANICAL**, **0 HIGH_OR_PROTECTED** envelopes. Value lanes: **268 P2_MAINTAINABILITY**, **622 P3_STYLE**. Unique proposal-affected files **369**. These are classifications, not 890 repairs or 890 independent files. All envelopes bind the frozen source SHA. Counts apply only to this receipt.
+Actual archive 11802689708 from [run 38381405952][dab-run] was
+inspected: **890/890** proposal envelopes parsed; **750 MEDIUM**,
+**140 LOW_MECHANICAL**, **0 HIGH_OR_PROTECTED** envelopes. Value lanes:
+**268 P2_MAINTAINABILITY**, **622 P3_STYLE**. Unique proposal-affected
+files: **369**. These are classifications, not 890 repairs or 890
+independent files. All envelopes bind the frozen source SHA. Counts
+apply only to this receipt.
 
 Measured high-volume families (proposal envelopes / enumerated findings): F401
 **155 / 330**, F541 **113 / 295**, E402 **211 / 612**, E501 **95 / 943**, E305
@@ -105,12 +113,22 @@ approval.
 
 ### Reused assets, not recreated
 
-- **MissionControl dispatch:** [CODEX #977](https://github.com/GBOGEB/CODEX/issues/977) requires authenticated ABACUS-local principal, exact-head lease, allowlisted paths, dry-run, idempotency and replay/path locks; CODEX remote mutation is **disabled**. Read-only analysis via GitHub is not an authenticated Crew launch.
-- **REX return:** use CODEX `federation/rex/REPO_REX_RETURN_TEMPLATE_v1.yaml` and [CODEX #989](https://github.com/GBOGEB/CODEX/issues/989), with signature+authority-scope merge; search historical REX first, then update recurrence and verification receipts rather than minting duplicate signatures.
+- **MissionControl dispatch:** [CODEX #977][codex-977] requires an
+  authenticated ABACUS-local principal, exact-head lease, allowlisted
+  paths, dry-run, idempotency and replay/path locks. CODEX remote mutation
+  is **disabled**. Read-only GitHub analysis is not an authenticated
+  Crew launch.
+- **REX return:** use CODEX
+  `federation/rex/REPO_REX_RETURN_TEMPLATE_v1.yaml` and
+  [CODEX #989][codex-989], with signature+authority-scope merge. Search
+  historical REX first; update recurrence and verification receipts
+  rather than minting duplicate signatures.
 - **Proposal contract:**
   `governance/proposals/PROPOSAL_COMPATIBILITY_CONTRACT.json`; no new
   schema/producer or parallel Pages deployment.
-- **Governed security:** ABACUS [#1860](https://github.com/GBOGEB/ABACUS/issues/1860), hard semantic [#1488](https://github.com/GBOGEB/ABACUS/issues/1488); P0 branch enforcement remains independent.
+- **Governed security:** ABACUS [#1860][abacus-admission],
+  hard semantic [#1488][dab-hard]; P0 branch enforcement
+  remains independent.
 
 ### Proposed disjoint worker sets — PLAN ONLY, no dispatch or fix credit
 
@@ -183,3 +201,11 @@ execution evidence for an unlaunched worker.
 **Pilot status at this update:** source F401 = 1 confirmed; actual target
 full-census delta = UNKNOWN; targeted regression = NOT RUN; Crew authenticated
 launch = NOT PROVEN; G1-C DoV pending; G2 on HOLD.
+
+### Evidence links
+
+[dab-run]: https://github.com/GBOGEB/ABACUS/actions/runs/38381405952
+[dab-hard]: https://github.com/GBOGEB/ABACUS/issues/1488
+[abacus-admission]: https://github.com/GBOGEB/ABACUS/issues/1860
+[codex-977]: https://github.com/GBOGEB/CODEX/issues/977
+[codex-989]: https://github.com/GBOGEB/CODEX/issues/989
