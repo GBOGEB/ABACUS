@@ -250,8 +250,7 @@ class TestPhase9EvidenceBoundaries:
         (2, {"python_files_analyzed": 5,
              "analysis_success_rate": 0.8}, "80.0%"),
         (4, {"modifications": [{"file": "a.py"}]}, "1"),
-        (5, {"quality_gates": {"a": {"passed": True},
-                              "b": {"passed": False}}}, "1/2 passed"),
+        (5, {"quality_gates": {"a": {"passed": True}, "b": {"passed": False}}}, "1/2 passed"),
         (6, {"books_loaded": 3, "maturity_score": 72}, "72/100"),
     ])
     def test_phase_summary_reporting_paths(
