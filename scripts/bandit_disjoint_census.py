@@ -19,11 +19,11 @@ def partition(report: dict, sha: str) -> dict:
         line = finding.get("line_number")
         if not isinstance(path, str) or not path or not isinstance(rule, str) or not rule:
             raise ValueError("Finding missing filename or test_id")
-        # Coalesce repeated Windows/POSIX separators before fingerprinting and ownership.
-        normalized = "/".join(part for part in path.replace("\\", "/").split("/") if part)
-        if normalized.startswith("/") or any(part == ".." for part in normalized.split("/")):
+        # Reject absolute and traversal paths before collapsing separators.
+        raw = path.replace("\\", "/")
+        if raw.startswith("/") or any(part == ".." for part in raw.split("/")):
             raise ValueError("Unsafe report path")
-        normalized = normalized.removeprefix("./")
+        normalized = "/".join(part for part in raw.split("/") if part and part != ".")
         if not isinstance(line, int) or isinstance(line, bool) or line < 1:
             raise ValueError("Finding missing positive integer line_number")
         key = (normalized, rule, line, finding.get("issue_text", ""))
