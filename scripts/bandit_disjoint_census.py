@@ -19,9 +19,10 @@ def partition(report: dict, sha: str) -> dict:
         line = finding.get("line_number")
         if not isinstance(path, str) or not path or not isinstance(rule, str):
             raise ValueError("Finding missing filename or test_id")
-        normalized = path.replace("\\", "/").lstrip("./")
-        if normalized.startswith("../") or normalized.startswith("/"):
+        normalized = path.replace("\\", "/")
+        if normalized.startswith("/") or any(part == ".." for part in normalized.split("/")):
             raise ValueError("Unsafe report path")
+        normalized = normalized.removeprefix("./")
         key = (normalized, rule, line, finding.get("issue_text", ""))
         if key in seen:
             continue
@@ -30,8 +31,8 @@ def partition(report: dict, sha: str) -> dict:
             lane = "B5-tests"
         elif rule in {"B602", "B603", "B604", "B605", "B606", "B607", "B609"}:
             lane = "B3-subprocess"
-        elif rule in {"B102", "B103", "B105", "B106", "B107", "B108", "B110", "B301", "B302", "B303", "B306", "B307", "B308", "B310", "B311", "B312", "B313", "B314", "B315", "B316", "B317", "B318", "B319", "B320", "B321", "B323", "B324", "B325", "B401", "B402", "B403", "B404", "B405", "B406", "B407", "B408", "B409", "B410", "B411", "B412", "B413", "B501", "B502", "B503", "B504", "B505", "B506", "B507", "B508", "B509", "B610", "B611", "B612", "B613", "B614", "B615", "B616", "B617", "B618", "B619", "B620", "B621", "B622", "B623", "B624", "B625", "B626", "B627", "B628", "B629", "B630", "B631", "B632", "B633", "B634", "B635", "B636", "B637", "B638", "B639", "B640", "B641", "B642", "B643", "B644", "B645", "B646", "B647", "B648", "B649", "B650", "B651", "B652", "B653", "B654", "B655", "B656", "B657", "B658", "B659", "B660", "B661", "B662", "B663", "B664", "B665", "B666", "B667", "B668", "B669", "B670", "B671", "B672", "B673", "B674", "B675", "B676", "B677", "B678", "B679", "B680", "B681", "B682", "B683", "B684", "B685", "B686", "B687", "B688", "B689", "B690", "B691", "B692", "B693", "B694", "B695", "B696", "B697", "B698", "B699"}:
-            lane = "B4-files-secrets"
+        elif rule.startswith(("B1", "B3", "B4", "B5", "B6")):
+                lane = "B4-files-secrets"
         else:
             lane = "B2-source"
         lanes[lane].append({"path": normalized, "rule": rule, "line": line, "severity": finding.get("issue_severity"), "confidence": finding.get("issue_confidence"), "fingerprint": hashlib.sha256(json.dumps(key, sort_keys=True).encode()).hexdigest()})
