@@ -30,6 +30,7 @@ jobs:
             tests/test_bandit_disjoint_census.py \
             tests/test_bandit_comparable_delta.py \
             --cov=scripts.bandit_disjoint_census \
+            --cov=scripts.bandit_comparable_delta \
             --cov-report=xml:bandit-evidence/coverage.xml \
             --cov-report=term-missing \
             --junitxml=bandit-evidence/junit.xml
