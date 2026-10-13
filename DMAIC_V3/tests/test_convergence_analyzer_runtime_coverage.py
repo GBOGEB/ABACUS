@@ -113,12 +113,17 @@ def test_analyze_writes_true_counts_scores_and_report(analyzer, monkeypatch):
     )[0]["iteration"] == 1
 
 
-def test_second_iteration_trend_and_degraded_scenario(analyzer, monkeypatch):
-    monkeypatch.setattr(analyzer, "scan_workspace_files", lambda: (2, 2))
+def test_second_iteration_trend_and_degraded_scenario(analyzer, tmp_path):
+    source = tmp_path / "changing.py"
+    source.write_text("VALUE = 1\\n")
+    for _ in range(3):
+        analyzer.scan_workspace_files()
     first = analyzer.analyze()
-    monkeypatch.setattr(analyzer, "scan_workspace_files", lambda: (2, 0))
+    source.write_text("VALUE = 2\\n")
     second = analyzer.analyze()
-    assert second.iteration == 2
+    assert second.iteration == first.iteration + 1
+    assert first.stable_files == 1
+    assert second.stable_files == 0
     assert second.convergence_score < first.convergence_score
     assert analyzer.get_trend() == pytest.approx(
         second.convergence_score - first.convergence_score
