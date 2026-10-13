@@ -116,3 +116,13 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
     assert result["lanes"]["B5-tests"]["findings"] == 3
     assert result["lanes"]["B3-subprocess"]["files"] == 0
     assert result["lanes"]["B4-files-secrets"]["files"] == 0
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    ["/root.py", "///tmp/report.py", r"\root.py", r"\\server\share.py"],
+)
+def test_absolute_path_variants_remain_rejected_after_normalization(unsafe):
+    """Repeated separators and Windows root paths shall never become relative."""
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "c" * 40)
