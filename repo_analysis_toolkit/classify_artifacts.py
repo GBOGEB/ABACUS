@@ -65,7 +65,7 @@ def git_last_commit(repo: Path, rel: str) -> tuple[str, str]:
 
 
 def sha1_of(path: Path) -> str:
-    h = hashlib.sha1()
+    h = hashlib.sha1(usedforsecurity=False)
     try:
         with open(path, "rb") as f:
             for chunk in iter(lambda: f.read(8192), b""):
