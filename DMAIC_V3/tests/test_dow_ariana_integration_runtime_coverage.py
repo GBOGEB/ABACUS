@@ -102,7 +102,7 @@ def test_trace_collection_missing_valid_and_invalid(integration):
         "end",
     ]
     trace_file.write_text('{"valid": true}\nnot-json\n')
-    assert integration._collect_ariana_traces(1) == []
+    assert integration._collect_ariana_traces(1) == [{"valid": True}]
 
 
 def test_registry_orchestration_and_metrics_output(integration):
