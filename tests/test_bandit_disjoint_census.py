@@ -161,3 +161,31 @@ def test_mixed_safe_and_unsafe_paths_fail_atomically():
     with pytest.raises(ValueError, match="Unsafe report path"):
         module.partition(report, "e" * 40)
     assert len(report["results"]) == 2
+
+
+@pytest.mark.parametrize("unsafe", [
+    "C:relative.py", "D:/absolute.py", r"D:\\relative.py",
+    "src/../escape.py", r"src\\..\\escape.py",
+    "//host/share.py", r"\\\\host\\share.py",
+    "/absolute.py",
+])
+def test_drive_unc_and_traversal_are_rejected(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B105")]}, "f" * 40)
+
+
+def test_same_file_mixed_b3_b4_b5_rules_have_one_owner():
+    rows = [finding("tests/test_mix.py", "B603"),
+            finding("tests/test_mix.py", "B105", 2),
+            finding("tests/test_mix.py", "B101", 3)]
+    result = module.partition({"results": rows}, "f" * 40)
+    assert result["total_unique"] == 3
+    assert result["lanes"]["B5-tests"]["findings"] == 3
+    assert sum(v["files"] for v in result["lanes"].values()) == 1
+
+
+@pytest.mark.parametrize("invalid", [123, [], None, {"results": "invalid"},
+                                     {"results": [None]}])
+def test_malformed_report_fails_closed(invalid):
+    with pytest.raises((ValueError, AttributeError, TypeError)):
+        module.partition(invalid, "f" * 40)
