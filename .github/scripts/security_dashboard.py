@@ -16,8 +16,8 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError
+from http.client import HTTPSConnection
+from urllib.parse import urlsplit
 
 REPO     = os.environ.get("GITHUB_REPO", "GBOGEB/ABACUS")
 TOKEN    = os.environ.get("GITHUB_TOKEN", "")
@@ -72,29 +72,57 @@ SEVERITY_ORDER = {"critical": 0, "high": 1, "error": 1,
 
 
 def gh_get(path: str) -> list:
-    """Paginate through GitHub API and collect all results."""
+    """Fetch code-scanning pages from one HTTPS origin, without redirects.
+
+    An untrusted GitHub Link header must never receive the bearer token on
+    another host or change the API resource being read.
+    """
     results = []
+    expected_path = path.split("?", 1)[0]
     url = f"{API_BASE}{path}"
     while url:
-        req = Request(url, headers={
-            "Authorization": f"Bearer {TOKEN}",
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        })
-        try:
-            with urlopen(req) as r:
-                data = json.loads(r.read())
-                results.extend(data if isinstance(data, list) else [data])
-                link = r.headers.get("Link", "")
-                url = None
-                for part in link.split(","):
-                    if 'rel="next"' in part:
-                        url = part.split(";")[0].strip().strip("<>")
-        except HTTPError as e:
-            print(f"GitHub API error {e.code}: {e.reason} — {path}", file=sys.stderr)
-            break
-    return results
+        parsed = urlsplit(url)
+        if (
+            parsed.scheme != "https"
+            or parsed.netloc != "api.github.com"
+            or parsed.path != expected_path
+            or parsed.fragment
+        ):
+            raise ValueError("Unsafe GitHub pagination URL")
 
+        target = parsed.path
+        if parsed.query:
+            target += "?" + parsed.query
+        connection = HTTPSConnection("api.github.com", timeout=20)
+        try:
+            connection.request(
+                "GET",
+                target,
+                headers={
+                    "Authorization": f"Bearer {TOKEN}",
+                    "Accept": "application/vnd.github+json",
+                    "X-GitHub-Api-Version": "2022-11-28",
+                },
+            )
+            response = connection.getresponse()
+            if response.status != 200:
+                raise RuntimeError(
+                    f"GitHub code-scanning API returned HTTP {response.status}"
+                )
+            data = json.loads(response.read())
+            if not isinstance(data, list):
+                raise ValueError("Expected list of code-scanning alerts")
+            results.extend(data)
+            link = response.getheader("Link", "")
+        finally:
+            connection.close()
+
+        url = None
+        for part in link.split(","):
+            if 'rel="next"' in part:
+                url = part.split(";", 1)[0].strip().strip("<>")
+                break
+    return results
 
 def classify_rex(rule_id: str) -> str:
     """Map a rule ID to a REX group name."""
