@@ -7,6 +7,8 @@ on:
       - 'tests/test_bandit_disjoint_census.py'
       - 'scripts/bandit_comparable_delta.py'
       - 'tests/test_bandit_comparable_delta.py'
+      - 'ci/governance/workflow_policy.json'
+      - 'docs/ci/WORKFLOW_RATIONALIZATION.md'
       - '.github/workflows/bandit-disjoint-census.yml'
 permissions:
   contents: read
@@ -31,6 +33,20 @@ jobs:
             --cov-report=xml:bandit-evidence/coverage.xml \
             --cov-report=term-missing \
             --junitxml=bandit-evidence/junit.xml
+      - name: Generate governance inventory as evidence
+        if: always()
+        run: |
+          mkdir -p bandit-evidence
+          python -m pip install PyYAML
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output bandit-evidence/WORKFLOW_RATIONALIZATION.md \
+            --json-output bandit-evidence/workflow-audit.json
+      - name: Check committed governance inventory
+        if: always()
+        run: |
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md \
+            --check
       - name: Run full and configured scans with separate denominators
         shell: bash
         run: |
