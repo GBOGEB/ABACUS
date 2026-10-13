@@ -92,6 +92,15 @@ def test_repeated_separators_share_one_fingerprint_and_owner():
     assert {item["path"] for item in result["lanes"]["B3-subprocess"]["items"]} == {"src/a.py"}
 
 
+@pytest.mark.parametrize("unsafe", [
+    "/etc/passwd", "//server/share.py", r"\\server\share.py",
+    "src/../outside.py", "src\\..\\outside.py",
+])
+def test_normalized_absolute_and_parent_paths_remain_rejected(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
+
+
 def test_scan_does_not_claim_security_approval():
     result = module.partition({"results": [finding("src/a.py", "B603")]}, "a" * 40)
     assert result["security_disposition"] == "pending independent review"
@@ -107,3 +116,13 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
     assert result["lanes"]["B5-tests"]["findings"] == 3
     assert result["lanes"]["B3-subprocess"]["files"] == 0
     assert result["lanes"]["B4-files-secrets"]["files"] == 0
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    ["/root.py", "///tmp/report.py", r"\root.py", r"\\server\share.py"],
+)
+def test_absolute_path_variants_remain_rejected_after_normalization(unsafe):
+    """Repeated separators and Windows root paths shall never become relative."""
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "c" * 40)
