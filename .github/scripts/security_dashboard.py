@@ -79,13 +79,20 @@ def gh_get(path: str) -> list:
     """
     results = []
     expected_path = path.split("?", 1)[0]
+    allowed_paths = {expected_path}
+    # GitHub may canonicalize this public repository's code-scanning route
+    # to its stable numeric repository ID in the Link header.
+    if REPO == "GBOGEB/ABACUS" and expected_path == (
+        "/repos/GBOGEB/ABACUS/code-scanning/alerts"
+    ):
+        allowed_paths.add("/repositories/1054507184/code-scanning/alerts")
     url = f"{API_BASE}{path}"
     while url:
         parsed = urlsplit(url)
         if (
             parsed.scheme != "https"
             or parsed.netloc != "api.github.com"
-            or parsed.path != expected_path
+            or parsed.path not in allowed_paths
             or parsed.fragment
         ):
             raise ValueError("Unsafe GitHub pagination URL")
