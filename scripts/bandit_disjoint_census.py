@@ -19,7 +19,8 @@ def partition(report: dict, sha: str) -> dict:
         line = finding.get("line_number")
         if not isinstance(path, str) or not path or not isinstance(rule, str) or not rule:
             raise ValueError("Finding missing filename or test_id")
-        normalized = path.replace("\\", "/")
+        # Coalesce repeated Windows/POSIX separators before fingerprinting and ownership.
+        normalized = "/".join(part for part in path.replace("\\", "/").split("/") if part)
         if normalized.startswith("/") or any(part == ".." for part in normalized.split("/")):
             raise ValueError("Unsafe report path")
         normalized = normalized.removeprefix("./")
