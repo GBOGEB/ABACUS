@@ -79,6 +79,19 @@ def test_windows_separator_normalized_to_single_owner():
     assert result["lanes"]["B3-subprocess"]["findings"] == 2
 
 
+def test_repeated_separators_share_one_fingerprint_and_owner():
+    rows = [
+        finding("src\\\\a.py", "B603"),
+        finding("src/a.py", "B603"),
+        finding("src//a.py", "B105", 2),
+    ]
+    result = module.partition({"results": rows}, "a" * 40)
+    assert result["total_unique"] == 2
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["findings"] == 2
+    assert {item["path"] for item in result["lanes"]["B3-subprocess"]["items"]} == {"src/a.py"}
+
+
 def test_scan_does_not_claim_security_approval():
     result = module.partition({"results": [finding("src/a.py", "B603")]}, "a" * 40)
     assert result["security_disposition"] == "pending independent review"
