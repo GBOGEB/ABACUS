@@ -577,3 +577,34 @@ def summarize_test_nodeids(nodeids: list[str]) -> dict[str, object]:
             "duplicate_entries": len(nodeids) - len(unique),
             "categories": categories, "source": "provided-nodeids",
             "admission_proof": False}
+
+
+# Wave 2: advisory execution planning. Never substitutes for required CI gates.
+def plan_test_execution(changed_paths: list[str], failed_categories: list[str] | None = None) -> dict[str, object]:
+    """Fail closed to thorough proof when change classification is uncertain."""
+    if not isinstance(changed_paths, list) or not changed_paths or any(
+        not isinstance(p, str) or not p.strip() for p in changed_paths
+    ):
+        raise ValueError("Nonempty changed-path list required")
+    failures = failed_categories or []
+    known = {name for name, _ in TEST_CATEGORY_RULES}
+    if not isinstance(failures, list) or any(f not in known for f in failures):
+        raise ValueError("Unknown failing test category")
+    normalized = [p.replace("\\", "/").lower() for p in changed_paths]
+    critical = any(p.startswith((".github/", "governance/", "ci/")) or
+                   p.endswith(("pyproject.toml", "requirements.txt", "setup.py", "tox.ini")) or
+                   "security" in p or "bandit" in p for p in normalized)
+    escalation = sorted(set(failures) & {"C0_SECURITY", "C1_GOVERNANCE", "C4_RUNTIME", "C5_COMPATIBILITY"})
+    thorough = critical or bool(escalation)
+    return {
+        "schema": "abacus-test-execution-plan/1.0",
+        "mode": "thorough" if thorough else "fast-advisory",
+        "python_versions": ["3.9", "3.10", "3.11", "3.12"] if thorough else ["3.12"],
+        "python_3_9_role": "source-compatibility-only",
+        "triggered_categories": escalation,
+        "required_checks_preserved": True,
+        "admission_proof": False,
+        "estimated_seconds": None,
+        "duration_measurement": "required",
+        "complexity": "high" if thorough else "unmeasured",
+    }
