@@ -21,7 +21,7 @@ def compare(before, after, *, before_sha, after_sha, before_config, after_config
     if before_sha == after_sha:
         raise ValueError("Before and after SHA shall differ")
     for report in (before, after):
-        if not isinstance(report.get("results"), list):
+        if not isinstance(report, dict) or not isinstance(report.get("results"), list):
             raise ValueError("Bandit report missing results")
     a = {fingerprint(item) for item in before["results"]}
     b = {fingerprint(item) for item in after["results"]}
