@@ -7,6 +7,7 @@ on:
       - tests/test_test_evidence_census.py
       - tests/test_changed_line_coverage.py
       - .github/workflows/recovery-first-red-testflight.yml
+      - scripts/bandit_touched_census.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -58,6 +59,7 @@ jobs:
       - name: Report all Bandit findings and enforce bounded new-debt census
         run: |
           bandit -q -f json -o outputs/recovery/bandit.json tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py || scan_rc=$?
+          python scripts/bandit_touched_census.py outputs/recovery/bandit.json outputs/recovery/bandit-census.json
           python - <<'PY'
           import json
           from collections import Counter
@@ -81,7 +83,8 @@ jobs:
           python - <<'PY'
           import hashlib,json,os
           from pathlib import Path
-          files=['outputs/recovery/junit.xml','outputs/recovery/coverage.xml','outputs/recovery/diff-coverage.json','outputs/recovery/bandit.json']
+          files=['outputs/recovery/junit.xml','outputs/recovery/coverage.xml','outputs/recovery/diff-coverage.json','outputs/recovery/bandit.json',
+                   'outputs/recovery/bandit-census.json']
           receipt={'exact_sha':os.environ['GITHUB_SHA'],
                    'files':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in files if Path(p).is_file()},
                    'authority_transfer':False,'formal_credit_delta':0,'engineering_credit_delta':0}
