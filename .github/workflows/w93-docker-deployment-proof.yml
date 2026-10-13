@@ -23,21 +23,52 @@ jobs:
         run: docker compose config --quiet
       - name: Build exact-head root image
         run: docker build --pull -t abacus-w93:${GITHUB_SHA} .
-      - name: Execute root service shell
+      - name: Execute root service shell and capture bounded diagnostics
+        shell: bash
         run: |
-          cid=$(docker run -d -p 18000:8000 abacus-w93:${GITHUB_SHA})
-          trap 'docker logs "$cid" || true; docker rm -f "$cid" || true' EXIT
+          set -Eeuo pipefail
+          out=.artifacts/w93/root
+          mkdir -p "$out"
+          image="abacus-w93:${GITHUB_SHA}"
+          cid=""
+          finish() {
+            rc=$?
+            trap - EXIT
+            if [ -n "$cid" ]; then
+              docker logs --tail 100 "$cid" > "$out/container.log" 2>&1 || true
+              docker inspect --format '{{json .State}}' "$cid" > "$out/container-state.json" 2>/dev/null || true
+              docker rm -f "$cid" >/dev/null 2>&1 || true
+            fi
+            printf 'exit_code=%s\n' "$rc" > "$out/exit-code.txt"
+            (cd "$out" && sha256sum ./*.txt ./*.log ./*.json 2>/dev/null > SHA256SUMS) || true
+            exit "$rc"
+          }
+          trap finish EXIT
+          docker image inspect "$image" --format '{{.Id}}' > "$out/image-id.txt"
+          # Restrict runner publication to loopback; expose only the intended HTTP port.
+          cid=$(docker run -d -p 127.0.0.1:18000:8000 "$image")
+          docker port "$cid" 8000/tcp > "$out/port.txt"
+          grep -Fxq '127.0.0.1:18000' "$out/port.txt"
+          http_status=000
           for i in $(seq 1 20); do
-            if curl --fail --silent http://127.0.0.1:18000/ >/dev/null; then break; fi
+            http_status=$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 2 --max-time 3 http://127.0.0.1:18000/ || true)
+            if [ "$http_status" = 200 ]; then break; fi
             sleep 1
           done
-          curl --fail --silent http://127.0.0.1:18000/ >/dev/null
-          test "$(docker inspect -f '{{.State.Health.Status}}' "$cid")" = healthy
-          printf 'source_sha=%s\nruntime_role=SERVICE_SHELL\ncontainer_execution=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_root_docker_receipt.txt
-      - uses: actions/upload-artifact@v7
+          printf '%s\n' "$http_status" > "$out/http-status.txt"
+          test "$http_status" = 200
+          health=$(docker inspect -f '{{.State.Health.Status}}' "$cid")
+          printf '%s\n' "$health" > "$out/health.txt"
+          test "$health" = healthy
+          printf 'source_sha=%s\nruntime_role=SERVICE_SHELL\ncontainer_execution=PASS\nhost_bind=127.0.0.1:18000\ncontainer_port=8000/tcp\nhttp_status=%s\nhealth=%s\nengineering_credit_delta=0\n' "$GITHUB_SHA" "$http_status" "$health" > "$out/receipt.txt"
+      - name: Upload root service port, health, and debug evidence
+        if: always()
+        uses: actions/upload-artifact@v7
         with:
           name: w93-abacus-root-docker-${{ github.sha }}
-          path: w93_root_docker_receipt.txt
+          path: .artifacts/w93/root/
+          retention-days: 7
+          if-no-files-found: warn
 
   qplant-application:
     runs-on: ubuntu-latest
