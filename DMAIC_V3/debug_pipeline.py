@@ -381,6 +381,8 @@ class PipelineDebugger:
         else:
             print("  ✓ All phase outputs valid")
 
+        return result
+
     def _check_failed_iterations(self) -> Dict[str, Any]:
         """Check for failed iterations"""
         result = {'status': 'ok', 'failures': []}
