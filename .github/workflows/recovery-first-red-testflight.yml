@@ -23,7 +23,7 @@ jobs:
       - name: Verify exact checkout and changed-file formatter state
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          black --check tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
+          black --diff --check tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
           isort --check-only tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
       - name: Execute source-bound JUnit and coverage
         run: |
