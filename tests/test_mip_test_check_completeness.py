@@ -284,3 +284,35 @@ def test_workflow_step_name_missing_file_is_withheld(tmp_path):
         )
         == "WITHHELD"
     )
+
+
+# Wave 1 taxonomy regression contract.
+def test_taxonomy_unique_denominator_with_overlapping_categories():
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    rows = ["tests/test_bandit_security.py::test_regression",
+            "tests/test_bandit_security.py::test_regression",
+            "tests/test_mip_integration.py::test_bridge"]
+    result = summarize_test_nodeids(rows)
+    assert result["collected_unique"] == 2
+    assert result["duplicate_entries"] == 1
+    assert result["categories"]["C0_SECURITY"] == 1
+    assert result["categories"]["C7_REGRESSION"] == 1
+    assert result["categories"]["C8_END_TO_END"] == 1
+    assert result["admission_proof"] is False
+
+
+def test_taxonomy_rejects_malformed_nodeids():
+    import pytest
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    for invalid in (None, "test_a", [""], [None], ["ok", " "]):
+        with pytest.raises(ValueError):
+            summarize_test_nodeids(invalid)
+
+
+def test_taxonomy_fallback_and_order_invariant():
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    a = ["tests/test_unclassified.py::test_a", "tests/test_runtime.py::test_b"]
+    first = summarize_test_nodeids(a)
+    assert first == summarize_test_nodeids(list(reversed(a)))
+    assert first["categories"]["C2_CORE"] == 1
+    assert first["categories"]["C4_RUNTIME"] == 1
