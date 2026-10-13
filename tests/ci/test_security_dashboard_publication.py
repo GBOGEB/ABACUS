@@ -22,16 +22,18 @@ class SecurityDashboardPublicationTests(TestCase):
         source_path = "sensitive_internal_component/fixture.py"
         source_message = "a source-only finding must not be published"
         source_url = "https://example.invalid/security/secret-case"
-        alerts = [{
-            "tool": {"name": "Bandit"},
-            "rule": {"id": "B101", "severity": "warning"},
-            "number": 99,
-            "html_url": source_url,
-            "most_recent_instance": {
-                "location": {"path": source_path, "start_line": 9},
-                "message": {"text": source_message},
-            },
-        }]
+        alerts = [
+            {
+                "tool": {"name": "Bandit"},
+                "rule": {"id": "B101", "severity": "warning"},
+                "number": 99,
+                "html_url": source_url,
+                "most_recent_instance": {
+                    "location": {"path": source_path, "start_line": 9},
+                    "message": {"text": source_message},
+                },
+            }
+        ]
         summary = dashboard.render_markdown(dashboard.build_telemetry(alerts))
         self.assertIn("1 open alerts", summary)
         self.assertIn("Bandit", summary)
@@ -51,9 +53,11 @@ class SecurityDashboardPublicationTests(TestCase):
             },
         }
         cwd = Path.cwd()
-        with TemporaryDirectory() as tmp, \
-             patch.object(dashboard, "TOKEN", "dummy"), \
-             patch.object(dashboard, "fetch_alerts", return_value=[alert]):
+        with (
+            TemporaryDirectory() as tmp,
+            patch.object(dashboard, "TOKEN", "dummy"),
+            patch.object(dashboard, "fetch_alerts", return_value=[alert]),
+        ):
             try:
                 os.chdir(tmp)
                 dashboard.main()
@@ -68,8 +72,10 @@ class SecurityDashboardPublicationTests(TestCase):
             encoding="utf-8"
         )
         self.assertIn("git add -- .github/security/dashboard.md", workflow)
-        self.assertNotIn("git add .github/security/dashboard.md .github/security/alerts.yaml",
-                         workflow)
+        self.assertNotIn(
+            "git add .github/security/dashboard.md .github/security/alerts.yaml",
+            workflow,
+        )
 
     def test_cross_host_pagination_is_rejected_before_token_send(self) -> None:
         response = Mock(status=200)
