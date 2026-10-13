@@ -381,6 +381,8 @@ class PipelineDebugger:
         else:
             print("  ✓ All phase outputs valid")
 
+        return result
+
     def _check_failed_iterations(self) -> Dict[str, Any]:
         """Check for failed iterations"""
         result = {'status': 'ok', 'failures': []}
@@ -471,7 +473,9 @@ class PipelineDebugger:
                     })
                     print("  ✗ phase1_define.py: Missing ensure_directory import")
 
-        if not result['errors']:
+        if result['errors']:
+            result['status'] = 'error'
+        else:
             print("  ✓ No common errors detected")
 
         return result

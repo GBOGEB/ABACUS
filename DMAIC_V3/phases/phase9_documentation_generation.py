@@ -26,7 +26,7 @@ class Phase9_DocumentationGeneration:
         """Execute Phase 9: Documentation Generation"""
         try:
             print(f"\n{'='*80}")
-            print(f"PHASE 9: DOCUMENTATION GENERATION (POST-EXECUTION)")
+            print("PHASE 9: DOCUMENTATION GENERATION (POST-EXECUTION)")
             print(f"Iteration: {iteration}")
             print(f"{'='*80}\n")
 
@@ -131,7 +131,7 @@ class Phase9_DocumentationGeneration:
                 print(f"  ❌ Missing minimum phase output: {phase_variants[0]}")
                 return False
 
-        print(f"  ✅ Minimum phases present (Phase 1, 2)")
+        print("  ✅ Minimum phases present (Phase 1, 2)")
         return True
 
     def _verify_bug_free(self, iteration: int) -> List[Dict]:
@@ -154,7 +154,7 @@ class Phase9_DocumentationGeneration:
         phase5_file = self.output_dir / f"iteration_{iteration}" / "phase5_control" / "phase5_control.json"
 
         if not phase5_file.exists():
-            print(f"  ℹ️ Phase 5 output not found - skipping quality gate check")
+            print("  ℹ️ Phase 5 output not found - skipping quality gate check")
             return True  # Pass if Phase 5 didn't run
 
         with open(phase5_file, 'r') as f:
@@ -460,7 +460,7 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 
     def _format_phase_summary(self, phase_num: int, phase_data: Dict) -> str:
         """Format phase summary for book"""
-        summary = f"**Status:** ✅ SUCCESS\n\n"
+        summary = "**Status:** ✅ SUCCESS\n\n"
 
         # Add key metrics based on phase
         if phase_num == 1:  # Define

@@ -158,3 +158,62 @@ def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     assert result.returncode == 0, result.stdout + result.stderr
     assert out.is_file()
     assert '"ratchet_status": "PASS"' in out.read_text(encoding="utf-8")
+
+
+def test_explicit_sha_overrides_synthetic_merge_sha(tmp_path: Path, monkeypatch):
+    import json
+
+    junit = tmp_path / "junit.xml"
+    out = tmp_path / "evidence.json"
+    sha = "a" * 40
+    junit.write_text(
+        '<testsuite><testcase classname="x" name="ok"/></testsuite>',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("GITHUB_SHA", "b" * 40)
+
+    assert census.main(
+        ["--junit", str(junit), "--out", str(out), "--exact-sha", sha]
+    ) == 0
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    assert receipt["exact_sha"] == sha
+    assert receipt["ratchet_status"] == "PASS"
+
+
+def test_exact_sha_cli_rejects_invalid_identity(tmp_path: Path, capsys):
+    import pytest
+
+    junit = tmp_path / "junit.xml"
+    out = tmp_path / "evidence.json"
+    junit.write_text(
+        '<testsuite><testcase classname="x" name="ok"/></testsuite>',
+        encoding="utf-8",
+    )
+    with pytest.raises(SystemExit) as exc:
+        census.main(
+            ["--junit", str(junit), "--out", str(out), "--exact-sha", "not-a-sha"]
+        )
+    assert exc.value.code == 2
+    assert "40-character Git SHA" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_explicit_sha_preserves_fail_closed_uncategorized_skip(tmp_path: Path, monkeypatch):
+    import json
+
+    junit = tmp_path / "junit.xml"
+    out = tmp_path / "evidence.json"
+    sha = "c" * 40
+    junit.write_text(
+        '<testsuite><testcase classname="x" name="skipped"><skipped message="unknown"/></testcase></testsuite>',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("GITHUB_SHA", "d" * 40)
+
+    assert census.main(
+        ["--junit", str(junit), "--out", str(out), "--exact-sha", sha]
+    ) == 1
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    assert receipt["exact_sha"] == sha
+    assert receipt["ratchet_status"] == "FAIL"
+    assert receipt["uncategorized_skips"] == ["x::skipped"]
