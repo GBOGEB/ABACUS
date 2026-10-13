@@ -201,3 +201,55 @@ def test_non_object_report_rejected_explicitly(malformed):
 def test_non_object_finding_rejected_explicitly(malformed_row):
     with pytest.raises(ValueError, match="Bandit finding shall be an object"):
         module.partition({"results": [malformed_row]}, "f" * 40)
+
+
+@pytest.mark.parametrize(
+    ("path", "rule", "expected_lane"),
+    [
+        ("src/worker.py", "B603", "B3-subprocess"),
+        ("src/worker.py", "B602", "B3-subprocess"),
+        ("src/worker.py", "B609", "B3-subprocess"),
+        ("src/worker.py", "B105", "B4-files-secrets"),
+        ("src/worker.py", "B404", "B4-files-secrets"),
+        ("src/worker.py", "B701", "B2-source"),
+        ("tests/helper.py", "B603", "B5-tests"),
+        ("src/test_worker.py", "B105", "B5-tests"),
+    ],
+)
+def test_rule_and_file_classification_branches(path, rule, expected_lane):
+    census = module.partition({"results": [finding(path, rule)]}, "a" * 40)
+    assert census["total_unique"] == 1
+    assert census["lanes"][expected_lane]["findings"] == 1
+    assert sum(x["findings"] for x in census["lanes"].values()) == 1
+
+
+def test_file_owner_priority_reassigns_all_rows_to_subprocess():
+    census = module.partition({"results": [
+        finding("pkg/tool.py", "B701", 1),
+        finding("pkg/tool.py", "B105", 2),
+        finding("pkg/tool.py", "B603", 3),
+    ]}, "a" * 40)
+    assert census["total_unique"] == 3
+    assert census["lanes"]["B3-subprocess"]["findings"] == 3
+    assert all(census["lanes"][lane]["findings"] == 0 for lane in
+               ("B2-source", "B4-files-secrets", "B5-tests"))
+
+
+def test_deduplication_key_distinguishes_issue_text():
+    a = finding("pkg/tool.py", "B105")
+    b = dict(a)
+    a["issue_text"] = "first finding"
+    b["issue_text"] = "second finding"
+    census = module.partition({"results": [a, b]}, "a" * 40)
+    items = census["lanes"]["B4-files-secrets"]["items"]
+    assert len(items) == 2
+    assert len({item["fingerprint"] for item in items}) == 2
+
+
+def test_empty_findings_preserve_four_disjoint_lanes_and_no_approval():
+    census = module.partition({"results": []}, "a" * 40)
+    assert set(census["lanes"]) == {
+        "B2-source", "B3-subprocess", "B4-files-secrets", "B5-tests"
+    }
+    assert census["security_disposition"] == "pending independent review"
+    assert census["authority_transfer"] is False
