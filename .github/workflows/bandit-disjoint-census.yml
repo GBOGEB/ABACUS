@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/bandit_disjoint_census.py'
       - 'tests/test_bandit_disjoint_census.py'
+      - 'scripts/bandit_comparable_delta.py'
+      - 'tests/test_bandit_comparable_delta.py'
       - '.github/workflows/bandit-disjoint-census.yml'
 permissions:
   contents: read
@@ -24,6 +26,7 @@ jobs:
           mkdir -p bandit-evidence
           python -m pytest --noconftest -q \
             tests/test_bandit_disjoint_census.py \
+            tests/test_bandit_comparable_delta.py \
             --cov=scripts.bandit_disjoint_census \
             --cov-report=xml:bandit-evidence/coverage.xml \
             --cov-report=term-missing \
