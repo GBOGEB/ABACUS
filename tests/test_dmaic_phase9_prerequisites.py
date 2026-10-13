@@ -25,7 +25,11 @@ def test_missing_required_phase_prevents_documentation(tmp_path: Path, present):
     assert ok is False
     assert receipt["status"] == "skipped"
     assert receipt["reason"] == "execution_not_successful"
-    saved = iteration_dir / "phase9_documentation_generation" / "phase9_documentation_generation.json"
+    saved = (
+        iteration_dir
+        / "phase9_documentation_generation"
+        / "phase9_documentation_generation.json"
+    )
     assert json.loads(saved.read_text(encoding="utf-8"))["reason"] == receipt["reason"]
 
 
