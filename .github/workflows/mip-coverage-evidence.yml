@@ -125,6 +125,7 @@ jobs:
           python scripts/test_evidence_census.py \
             --junit test_reports/post-b0/canonical-junit.xml \
             --out test_reports/post-b0/canonical-test-evidence.json \
+            --exact-sha "$EXACT_SHA" \
             --max-skips 5 \
             --max-xfails 0
 
