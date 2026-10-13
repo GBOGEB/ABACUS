@@ -130,3 +130,44 @@ def test_comparable_delta_does_not_mutate_original_reports():
                              after_config="full")
     assert (repr(before), repr(after)) == snapshots
     assert receipt["new"] == receipt["resolved"] == 0
+
+
+@pytest.mark.parametrize("invalid_sha", ["short", "G" * 40, "A" * 40])
+def test_comparable_cli_rejects_invalid_sha(tmp_path, monkeypatch, invalid_sha):
+    import sys
+    before = tmp_path / "before.json"
+    after = tmp_path / "after.json"
+    before.write_text('{"results": []}', encoding="utf-8")
+    after.write_text('{"results": []}', encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_comparable_delta.py", "--before", str(before),
+        "--after", str(after), "--before-sha", invalid_sha,
+        "--after-sha", "b" * 40, "--before-config", "full",
+        "--after-config", "full", "--out", str(tmp_path / "out.json"),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        module.main()
+    assert exc.value.code == 2
+    assert not (tmp_path / "out.json").exists()
+
+
+def test_comparable_cli_writes_source_bound_receipt(tmp_path, monkeypatch):
+    import json
+    import sys
+    before = tmp_path / "before.json"
+    after = tmp_path / "after.json"
+    before.write_text(json.dumps({"results": [item()]}), encoding="utf-8")
+    after.write_text(json.dumps({"results": []}), encoding="utf-8")
+    output = tmp_path / "nested" / "delta.json"
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_comparable_delta.py", "--before", str(before),
+        "--after", str(after), "--before-sha", "a" * 40,
+        "--after-sha", "b" * 40, "--before-config", "full",
+        "--after-config", "full", "--out", str(output),
+    ])
+    module.main()
+    receipt = json.loads(output.read_text(encoding="utf-8"))
+    assert receipt["before_sha"] == "a" * 40
+    assert receipt["after_sha"] == "b" * 40
+    assert receipt["resolved"] == 1
+    assert receipt["security_clearance"] is False
