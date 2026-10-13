@@ -34,8 +34,11 @@ def measure(xml: Path, base: str, root: Path) -> dict:
     observed_paths: set[str] = set()
     for cls in tree.findall(".//class"):
         filename = cls.get("filename", "")
-        candidates = [filename, f"src/{filename}"]
-        matched = next((x for x in candidates if x in changes), None)
+        candidates = [filename, f"src/{filename}", f"scripts/{filename}", f"tests/{filename}"]
+        matches = sorted({x for x in candidates if x in changes})
+        if len(matches) > 1:
+            raise ValueError(f"Ambiguous coverage source path: {filename}: {matches}")
+        matched = matches[0] if matches else None
         if matched is None:
             continue
         observed_paths.add(matched)
