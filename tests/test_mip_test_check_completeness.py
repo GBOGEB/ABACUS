@@ -337,3 +337,13 @@ def test_execution_plan_unknown_inputs_fail_closed():
         with pytest.raises(ValueError):
             plan_test_execution(paths, failures)
     assert plan_test_execution([".github/workflows/ci-abacus.yml"])["mode"] == "thorough"
+
+
+def test_taxonomy_rejects_blank_nodeid_directly():
+    """Exercise the fail-closed classifier guard on changed source line 558."""
+    import pytest
+    from scripts.mip_test_check_completeness import classify_test_nodeid
+
+    for invalid in (None, "", "   "):
+        with pytest.raises(ValueError, match="Nonempty pytest nodeid required"):
+            classify_test_nodeid(invalid)
