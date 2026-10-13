@@ -68,6 +68,10 @@ jobs:
           valid = int(coverage.get("lines-valid", "-1"))
           if valid < 1 or covered < 0 or covered > valid:
               raise SystemExit("Invalid coverage numerator/denominator")
+          branch_covered = int(coverage.get("branches-covered", "-1"))
+          branch_valid = int(coverage.get("branches-valid", "-1"))
+          if branch_valid < 1 or branch_covered < 0 or branch_covered > branch_valid:
+              raise SystemExit("Missing or invalid branch coverage denominator")
           receipt = {
               "schema": "bandit.coverage.receipt.v1",
               "tests": tests,
@@ -76,6 +80,9 @@ jobs:
               "covered_lines": covered,
               "eligible_lines": valid,
               "line_coverage_percent": round(100 * covered / valid, 2),
+              "covered_branches": branch_covered,
+              "eligible_branches": branch_valid,
+              "branch_coverage_percent": round(100 * branch_covered / branch_valid, 2),
               "changed_line_coverage_percent": None,
           }
           (root / "coverage-receipt.json").write_text(
