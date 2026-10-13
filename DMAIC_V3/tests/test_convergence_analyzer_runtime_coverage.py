@@ -115,11 +115,11 @@ def test_analyze_writes_true_counts_scores_and_report(analyzer, monkeypatch):
 
 def test_second_iteration_trend_and_degraded_scenario(analyzer, tmp_path):
     source = tmp_path / "changing.py"
-    source.write_text("VALUE = 1\\n")
+    source.write_text("VALUE = 1\n")
     for _ in range(3):
         analyzer.scan_workspace_files()
     first = analyzer.analyze()
-    source.write_text("VALUE = 2\\n")
+    source.write_text("VALUE = 2\n")
     second = analyzer.analyze()
     assert second.iteration == first.iteration + 1
     assert first.stable_files == 1
