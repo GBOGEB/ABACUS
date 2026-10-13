@@ -96,3 +96,37 @@ def test_invalid_after_report_fails_closed(bad):
             before_sha="a" * 40, after_sha="b" * 40,
             before_config="full", after_config="full",
         )
+
+
+@pytest.mark.parametrize("before_sha,after_sha", [
+    ("a" * 40, "a" * 40),
+    ("b" * 40, "b" * 40),
+])
+def test_same_sha_rejects_comparable_delta(before_sha, after_sha):
+    with pytest.raises(ValueError, match="shall differ"):
+        module.compare({"results": []}, {"results": []},
+                       before_sha=before_sha, after_sha=after_sha,
+                       before_config="full", after_config="full")
+
+
+def test_mixed_rules_report_opened_resolved_and_net_separately():
+    previous = [item(rule="B101"), item(rule="B603", line=8)]
+    current = [item(rule="B603", line=8), item(rule="B105", line=9)]
+    receipt = compare(previous, current)
+    assert receipt["before_unique"] == receipt["after_unique"] == 2
+    assert receipt["new"] == receipt["resolved"] == 1
+    assert receipt["new_by_rule"] == {"B105": 1}
+    assert receipt["resolved_by_rule"] == {"B101": 1}
+    assert receipt["net_reduction"] == 0
+    assert receipt["security_clearance"] is False
+
+
+def test_comparable_delta_does_not_mutate_original_reports():
+    before = {"results": [item()]}
+    after = {"results": [item()]}
+    snapshots = (repr(before), repr(after))
+    receipt = module.compare(before, after, before_sha="a" * 40,
+                             after_sha="b" * 40, before_config="full",
+                             after_config="full")
+    assert (repr(before), repr(after)) == snapshots
+    assert receipt["new"] == receipt["resolved"] == 0
