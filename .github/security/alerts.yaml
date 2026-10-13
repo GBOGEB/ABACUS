@@ -1,9 +1,9 @@
 # ABACUS Security Telemetry — machine-readable
 # generated: 2026-10-05T08:15:46Z
 
-generated_at: "2026-10-05T08:15:46Z"
-repo: GBOGEB/ABACUS
-total_open: 4922
+generated_at:"2026-10-05T08:15:46Z"
+repo:GBOGEB/ABACUS
+total_open:4922
 by_severity:
   note: 3556
   warning: 1227
