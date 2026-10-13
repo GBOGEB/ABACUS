@@ -48,14 +48,13 @@ def test_normalize_execute_results(phase, raw, expected_code, expected_docs):
     result = phase._normalize_execute_results(raw)
     assert result["code_files"] == expected_code
     assert result["documentation_files"] == expected_docs
-    assert result["categorized"] == (raw[1] if isinstance(raw, tuple) else raw).get(
-        "categorized", {}
-    ) or result["categorized"] == {}
+    expected_categories = raw[1] if isinstance(raw, tuple) else raw
+    assert result["categorized"] == (expected_categories.get("categorized") or {})
 
 
 @pytest.mark.parametrize("raw", [None, [], (True, {}), (False, "no")])
 def test_normalize_rejects_unsupported_payload(phase, raw):
-    if raw == (True, {}):
+    if isinstance(raw, tuple) and raw == (True, {}):
         assert phase._normalize_execute_results(raw)["code_files"] == 0
     else:
         with pytest.raises(TypeError):
