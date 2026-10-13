@@ -78,7 +78,7 @@ jobs:
               "changed_line_coverage_percent": None,
           }
           (root / "coverage-receipt.json").write_text(
-              json.dumps(receipt, indent=2) + "\\n", encoding="utf-8"
+              json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
           )
           PY
       - name: Run full and configured scans with separate denominators
