@@ -48,8 +48,20 @@ def test_normalize_execute_results(phase, raw, expected_code, expected_docs):
     result = phase._normalize_execute_results(raw)
     assert result["code_files"] == expected_code
     assert result["documentation_files"] == expected_docs
-    expected_categories = raw[1] if isinstance(raw, tuple) else raw
-    assert result["categorized"] == (expected_categories.get("categorized") or {})
+    # Normalization computes zero-based counters from an absent or non-map
+    # categorized value; it intentionally preserves the original payload.
+    expected_payload = raw[1] if isinstance(raw, tuple) else raw
+    assert result["categorized"] == expected_payload.get("categorized")
+
+
+def test_normalize_preserves_null_category_without_mutating_input(phase):
+    raw = {"categorized": None, "extra": {"source": "control"}}
+    result = phase._normalize_execute_results(raw)
+    assert result["categorized"] is None
+    assert result["code_files"] == 0
+    assert result["documentation_files"] == 0
+    assert result["extra"] == {"source": "control"}
+    assert raw == {"categorized": None, "extra": {"source": "control"}}
 
 
 @pytest.mark.parametrize("raw", [None, [], (True, {}), (False, "no")])
