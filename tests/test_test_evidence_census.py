@@ -182,8 +182,16 @@ def test_cli_blocks_xfail_ratchet_with_explicit_head(tmp_path: Path):
         encoding="utf-8",
     )
     assert census.main(
-        ["--junit", str(junit), "--out", str(receipt), "--exact-sha", "7" * 40,
-         "--max-xfails", "0"]
+        [
+            "--junit",
+            str(junit),
+            "--out",
+            str(receipt),
+            "--exact-sha",
+            "7" * 40,
+            "--max-xfails",
+            "0",
+        ]
     ) == 1
     payload = json.loads(receipt.read_text(encoding="utf-8"))
     assert payload["xfail_count"] == 1
