@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install test and quality tools
-        run: python -m pip install pytest pytest-cov black isort bandit
+        run: python -m pip install pytest pytest-cov black isort bandit numpy
       - name: Verify exact checkout and changed-file formatter state
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
