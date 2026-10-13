@@ -61,3 +61,43 @@ def test_registry_filters_do_not_mutate_rows(
     output = getattr(tracker, method)(query)
     assert [item["todo_id"] for item in output] == expected
     assert len(rows) == 3
+
+
+@pytest.mark.parametrize(
+    ("initial", "new", "expected"),
+    [
+        ("pending", "completed", 100.0),
+        ("pending", "done", 100.0),
+        ("completed", "pending", 0.0),
+    ],
+)
+def test_status_transition_recomputes_registry_statistics(
+    tracker, monkeypatch, initial, new, expected
+):
+    registry = {
+        "todos": [{"todo_id": "T1", "status": initial, "priority": "high"}]
+    }
+    persisted = []
+    monkeypatch.setattr(tracker, "_load_global_registry", lambda: registry)
+    monkeypatch.setattr(
+        "DMAIC_V3.phases.phase8_todo_management.safe_write_json",
+        lambda data, path: persisted.append((data.copy(), path)),
+    )
+    tracker.update_todo_status("T1", new)
+    assert registry["todos"][0]["status"] == new
+    assert registry["statistics"]["completion_rate"] == expected
+    assert persisted and persisted[0][1] == tracker.global_registry_path
+
+
+def test_missing_todo_transition_keeps_rows_unchanged(tracker, monkeypatch):
+    registry = {"todos": [{"todo_id": "T1", "status": "pending"}]}
+    persisted = []
+    monkeypatch.setattr(tracker, "_load_global_registry", lambda: registry)
+    monkeypatch.setattr(
+        "DMAIC_V3.phases.phase8_todo_management.safe_write_json",
+        lambda data, path: persisted.append(path),
+    )
+    tracker.update_todo_status("missing", "completed")
+    assert registry["todos"] == [{"todo_id": "T1", "status": "pending"}]
+    assert registry["statistics"]["completion_rate"] == 0.0
+    assert persisted == [tracker.global_registry_path]
