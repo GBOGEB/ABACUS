@@ -91,3 +91,35 @@ def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     assert result.returncode == 0, result.stdout + result.stderr
     assert out.is_file()
     assert '"ratchet_status": "PASS"' in out.read_text(encoding="utf-8")
+
+
+def test_exact_sha_cli_records_provenance(tmp_path: Path):
+    import json
+    junit = tmp_path / "junit.xml"
+    out = tmp_path / "evidence.json"
+    sha = "a" * 40
+    junit.write_text('<testsuite><testcase classname="x" name="ok"/></testsuite>', encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, "scripts/test_evidence_census.py", "--junit", str(junit),
+         "--out", str(out), "--exact-sha", sha],
+        cwd=Path(__file__).resolve().parents[1], text=True, capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "EXACT_SHA": sha, "GITHUB_SHA": sha},
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(out.read_text(encoding="utf-8"))["exact_sha"] == sha
+
+
+def test_exact_sha_cli_rejects_identity_mismatch(tmp_path: Path):
+    junit = tmp_path / "junit.xml"
+    out = tmp_path / "evidence.json"
+    junit.write_text('<testsuite><testcase classname="x" name="ok"/></testsuite>', encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, "scripts/test_evidence_census.py", "--junit", str(junit),
+         "--out", str(out), "--exact-sha", "b" * 40],
+        cwd=Path(__file__).resolve().parents[1], text=True, capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "EXACT_SHA": "a" * 40, "GITHUB_SHA": "a" * 40},
+    )
+    assert result.returncode != 0
+    assert "exact-sha mismatch" in out.read_text(encoding="utf-8")
