@@ -123,6 +123,27 @@ jobs:
                   "covered_branches": branches - missing_branches,
                   "eligible_branches": branches,
               }
+          # Retain uncovered arc coordinates for successive bounded test waves.
+          for filename in selected:
+              filedata = next(v for k, v in detailed["files"].items()
+                              if k.replace(chr(92), "/").removeprefix("./") == filename)
+              missing_lines = filedata.get("missing_lines")
+              missing_arcs = filedata.get("missing_branches")
+              if not isinstance(missing_lines, list) or not isinstance(missing_arcs, list):
+                  raise SystemExit(f"Missing uncovered-line/arc telemetry: {filename}")
+              selected[filename]["uncovered_lines"] = missing_lines
+              selected[filename]["uncovered_arcs"] = missing_arcs
+          receipt["junit"] = {
+              "tests": tests, "failures": failures, "errors": errors,
+              "skipped": sum(int(s.get("skipped", "0")) for s in suites),
+          }
+          receipt["historical_reference"] = {
+              "status": "REFERENCE_ONLY_NOT_COMPARABLE_UNTIL_CONFIG_VERIFIED",
+              "source": "PR1923 coverage artifact 11852621313",
+              "source_sha": "bcf7766119355734655a184b1ae8b2fd7bab5131",
+              "covered_lines": 68, "eligible_lines": 94,
+              "covered_branches": 35, "eligible_branches": 46,
+          }
           receipt["selected_modules"] = selected
           selected_totals = {
               key: sum(values[key] for values in selected.values())
