@@ -189,3 +189,30 @@ def test_cli_blocks_xfail_ratchet_with_explicit_head(tmp_path: Path):
     assert payload["xfail_count"] == 1
     assert "xfail ratchet exceeded: 1 > 0" in payload["ratchet_errors"]
     assert payload["ratchet_status"] == "FAIL"
+
+
+def test_cli_blocks_skip_count_above_limit_with_exact_head(tmp_path: Path):
+    junit = tmp_path / "junit.xml"
+    receipt = tmp_path / "receipt.json"
+    junit.write_text(
+        '<testsuite><testcase classname="a" name="blocked">'
+        '<skipped message="TEST_BLOCKED_CONFIG: unavailable"/></testcase></testsuite>',
+        encoding="utf-8",
+    )
+    assert census.main(
+        [
+            "--junit",
+            str(junit),
+            "--out",
+            str(receipt),
+            "--exact-sha",
+            "8" * 40,
+            "--max-skips",
+            "0",
+        ]
+    ) == 1
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    assert payload["exact_sha"] == "8" * 40
+    assert payload["skip_count"] == 1
+    assert "skip ratchet exceeded: 1 > 0" in payload["ratchet_errors"]
+    assert payload["ratchet_status"] == "FAIL"
