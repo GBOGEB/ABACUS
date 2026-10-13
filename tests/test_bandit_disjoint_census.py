@@ -189,3 +189,15 @@ def test_same_file_mixed_b3_b4_b5_rules_have_one_owner():
 def test_malformed_report_fails_closed(invalid):
     with pytest.raises((ValueError, AttributeError, TypeError)):
         module.partition(invalid, "f" * 40)
+
+
+@pytest.mark.parametrize("malformed", [None, [], 12, "not a report"])
+def test_non_object_report_rejected_explicitly(malformed):
+    with pytest.raises(ValueError, match="Bandit JSON shall be an object"):
+        module.partition(malformed, "f" * 40)
+
+
+@pytest.mark.parametrize("malformed_row", [None, [], 12, "not a finding"])
+def test_non_object_finding_rejected_explicitly(malformed_row):
+    with pytest.raises(ValueError, match="Bandit finding shall be an object"):
+        module.partition({"results": [malformed_row]}, "f" * 40)
