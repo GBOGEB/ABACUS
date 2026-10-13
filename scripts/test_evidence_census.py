@@ -124,6 +124,7 @@ def build_census(junit_xml: Path) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--junit", type=Path, required=True)
+    parser.add_argument("--exact-sha", default=None, help="Expected exact Git commit SHA")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--max-skips", type=int, default=None)
     parser.add_argument("--max-xfails", type=int, default=None)
@@ -131,6 +132,14 @@ def main(argv: list[str] | None = None) -> int:
 
     census = build_census(args.junit)
     errors: list[str] = []
+    if args.exact_sha is not None:
+        if not __import__("re").fullmatch(r"[0-9a-fA-F]{40}", args.exact_sha):
+            errors.append("invalid exact-sha: expected 40 hexadecimal characters")
+        elif os.environ.get("EXACT_SHA") and os.environ["EXACT_SHA"].lower() != args.exact_sha.lower():
+            errors.append("exact-sha mismatch with EXACT_SHA environment")
+        elif os.environ.get("GITHUB_SHA") and os.environ["GITHUB_SHA"].lower() != args.exact_sha.lower():
+            errors.append("exact-sha mismatch with GITHUB_SHA environment")
+        census["exact_sha"] = args.exact_sha.lower()
     if census["uncategorized_skips"]:
         errors.append(
             f"uncategorized skips: {len(census['uncategorized_skips'])}"
