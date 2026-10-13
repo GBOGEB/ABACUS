@@ -8,6 +8,7 @@ on:
       - tests/test_changed_line_coverage.py
       - .github/workflows/recovery-first-red-testflight.yml
       - scripts/bandit_touched_census.py
+      - tests/test_bandit_touched_census.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,7 +34,7 @@ jobs:
         run: |
           mkdir -p outputs/recovery
           printf '[run]\nbranch = True\nsource = .\n' > outputs/recovery/coverage-including-tests.ini
-          python -m pytest -q tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py tests/test_changed_line_coverage.py \
+          python -m pytest -q tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py tests/test_changed_line_coverage.py tests/test_bandit_touched_census.py \
             --junitxml=outputs/recovery/junit.xml \
             --cov=DMAIC_V3.phases.phase4_improve \
             --cov=scripts \
