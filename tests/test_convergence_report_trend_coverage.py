@@ -86,14 +86,20 @@ def test_converged_report_has_no_unnecessary_actions(analyzer, metrics):
         converged=True,
         maturity_level=3,
         file_stability_pct=100.0,
+        stable_files=10,
         test_stability_pct=100.0,
+        passing_tests=10,
         metric_stability_pct=100.0,
+        stable_metrics=10,
         regressions_detected=0,
     )
     analyzer._save_metrics(complete)
     path = analyzer.generate_report(complete)
     body = path.read_text(encoding="utf-8")
     assert "[OK] CONVERGED" in body
+    assert "Stable Files:** 10/10" in body
+    assert "Passing Tests:** 10/10" in body
+    assert "Stable Metrics:** 10/10" in body
     assert "3 - Production" in body
     assert "## Next Steps to Achieve Convergence" not in body
     history = json.loads(
