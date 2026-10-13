@@ -3,7 +3,7 @@
 import argparse
 import hashlib
 import json
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 
@@ -17,13 +17,13 @@ def partition(report: dict, sha: str) -> dict:
         path = finding.get("filename")
         rule = finding.get("test_id")
         line = finding.get("line_number")
-        if not isinstance(path, str) or not path or not isinstance(rule, str):
+        if not isinstance(path, str) or not path or not isinstance(rule, str) or not rule:
             raise ValueError("Finding missing filename or test_id")
         normalized = path.replace("\\", "/")
         if normalized.startswith("/") or any(part == ".." for part in normalized.split("/")):
             raise ValueError("Unsafe report path")
         normalized = normalized.removeprefix("./")
-        key = (normalized, rule, line, finding.get("issue_text", ""))
+        if not isinstance(line, int) or isinstance(line, bool) or line < 1:\n            raise ValueError("Finding missing positive integer line_number")\n        key = (normalized, rule, line, finding.get("issue_text", ""))
         if key in seen:
             continue
         seen.add(key)
@@ -49,7 +49,7 @@ def partition(report: dict, sha: str) -> dict:
     for rows in lanes.values():
         for row in rows:
             reassigned[owner[row["path"]]].append(row)
-    return {"schema": "bandit.disjoint.census.v1", "exact_sha": sha, "total_unique": len(seen), "lanes": {name: {"findings": len(rows), "files": len({r["path"] for r in rows}), "rules": dict(sorted(Counter(r["rule"] for r in rows).items())), "items": sorted(rows, key=lambda r: (r["path"], r["line"] or 0, r["rule"]))} for name, rows in reassigned.items()}, "authority_transfer": False, "security_disposition": "pending independent review"}
+    if sum(len(rows) for rows in reassigned.values()) != len(seen):\n        raise ValueError("Disjoint partition invariant failed")\n    return {"schema": "bandit.disjoint.census.v1", "exact_sha": sha, "total_unique": len(seen), "lanes": {name: {"findings": len(rows), "files": len({r["path"] for r in rows}), "rules": dict(sorted(Counter(r["rule"] for r in rows).items())), "items": sorted(rows, key=lambda r: (r["path"], r["line"] or 0, r["rule"]))} for name, rows in reassigned.items()}, "authority_transfer": False, "security_disposition": "pending independent review"}
 
 
 def main() -> None:
