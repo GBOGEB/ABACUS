@@ -50,9 +50,9 @@ jobs:
 
           log = Path("debug_pytest.log").read_text(encoding="utf-8", errors="replace")
 
-          nodeid_match = re.search(r"FAILED\\s+([\\w\\-/.:\\[\\]]+)", log)
-          file_line_match = re.search(r'File "([^"]+)", line (\\d+)', log)
-          longrepr_match = re.search(r"E\\s+(.+)", log)
+          nodeid_match = re.search(r"(?m)^FAILED\s+(\S+)", log)
+          file_line_match = re.search(r'File "([^"]+)", line (\d+)', log)
+          longrepr_match = re.search(r"(?m)^E\s+(.+)", log)
 
           result = {
               "failed_test": nodeid_match.group(1) if nodeid_match else "not-detected",
