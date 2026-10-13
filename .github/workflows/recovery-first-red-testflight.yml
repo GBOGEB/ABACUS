@@ -43,6 +43,16 @@ jobs:
           git fetch --no-tags origin main
           base_sha="$(git merge-base HEAD origin/main)"
           python scripts/measure_changed_line_coverage.py outputs/recovery/coverage.xml "$base_sha" outputs/recovery/diff-coverage.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("outputs/recovery/diff-coverage.json").read_text())
+          assert d["status"] == "MEASURED", d
+          assert not d["missing_source_files"], d
+          assert d["eligible_lines"] > 0, d
+          assert d["covered_lines"] <= d["eligible_lines"], d
+          assert d["percent"] >= 80, d
+          PY
       - name: Report all Bandit findings and enforce bounded new-debt census
         run: |
           bandit -q -f json -o outputs/recovery/bandit.json tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py || scan_rc=$?
