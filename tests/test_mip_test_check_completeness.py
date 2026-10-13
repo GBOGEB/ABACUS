@@ -316,3 +316,24 @@ def test_taxonomy_fallback_and_order_invariant():
     assert first == summarize_test_nodeids(list(reversed(a)))
     assert first["categories"]["C2_CORE"] == 1
     assert first["categories"]["C4_RUNTIME"] == 1
+
+
+def test_execution_plan_fast_and_security_escalation():
+    from scripts.mip_test_check_completeness import plan_test_execution
+    fast = plan_test_execution(["docs/readme.md"])
+    assert fast["mode"] == "fast-advisory"
+    assert fast["python_versions"] == ["3.12"]
+    assert fast["admission_proof"] is False
+    escalated = plan_test_execution(["docs/readme.md"], ["C0_SECURITY"])
+    assert escalated["mode"] == "thorough"
+    assert escalated["python_versions"] == ["3.9", "3.10", "3.11", "3.12"]
+    assert escalated["required_checks_preserved"] is True
+
+
+def test_execution_plan_unknown_inputs_fail_closed():
+    import pytest
+    from scripts.mip_test_check_completeness import plan_test_execution
+    for paths, failures in (([], []), ([""], []), (["ok"], ["UNKNOWN"])):
+        with pytest.raises(ValueError):
+            plan_test_execution(paths, failures)
+    assert plan_test_execution([".github/workflows/ci-abacus.yml"])["mode"] == "thorough"
