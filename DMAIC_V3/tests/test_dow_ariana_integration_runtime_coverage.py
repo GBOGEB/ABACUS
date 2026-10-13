@@ -158,3 +158,36 @@ def test_registry_output_fallback_list_and_transition_metadata(integration):
     assert transition["agents_involved"] == ["smoke_test"]
     assert transition["metadata"] == {}
     assert len(integration.metrics.phase_transitions) == 1
+
+
+def test_registry_missing_and_unexpected_entries_fail_to_match(integration):
+    assert integration._load_agents_registry() == {"agents": {}}
+    assert integration._get_agent_info({"agents": {"bad": "not a mapping"}}, "target") is None
+    assert integration._get_agent_info({"agents": [{"name": "other"}, "invalid"]}, "target") is None
+    assert integration._get_agent_info({"agents": None}, "target") is None
+
+
+def test_primary_registry_wins_over_output_fallback(integration):
+    integration.output_root.mkdir(parents=True, exist_ok=True)
+    (integration.output_root / "agent_registry.json").write_text(
+        json.dumps({"agents": {"fallback": {"name": "fallback"}}})
+    )
+    integration.agents_registry_file.write_text(
+        json.dumps({"agents": {"primary": {"name": "primary"}}})
+    )
+    selected = integration._load_agents_registry()
+    assert integration._get_agent_info(selected, "primary")["name"] == "primary"
+    assert integration._get_agent_info(selected, "fallback") is None
+
+
+def test_custom_report_destination_and_empty_trace_log(integration, tmp_path):
+    trace_dir = integration.workspace_root / ".ariana"
+    trace_dir.mkdir(exist_ok=True)
+    (trace_dir / "trace_log.json").write_text("\\n\\n")
+    assert integration._collect_ariana_traces(9) == []
+    integration.generate_integration_metrics()
+    target = tmp_path / "nested" / "report.json"
+    integration.save_integration_report(target)
+    report = json.loads(target.read_text())
+    assert report["version"] == "test-version"
+    assert report["metrics"]["dow_pipeline_status"] == "active"
