@@ -74,7 +74,7 @@ class SecurityDashboardPublicationTests(TestCase):
         self.assertIn("contents: read", workflow)
         self.assertIn("security-events: read", workflow)
         self.assertIn("persist-credentials: false", workflow)
-        self.assertIn("actions/upload-artifact@v4", workflow)
+        self.assertIn("actions/upload-artifact@v7", workflow)
         self.assertIn("if-no-files-found: error", workflow)
         self.assertIn("sha256sum dashboard.md", workflow)
         self.assertNotIn("contents: write", workflow)
