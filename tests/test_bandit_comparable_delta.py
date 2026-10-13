@@ -15,11 +15,11 @@ def item(path="src/a.py", rule="B603", line=4):
             "issue_text": "unsafe execution"}
 
 
-def compare(before, after, **kwargs):
+def compare(before, after):
     return module.compare(
         {"results": before}, {"results": after},
         before_sha="a" * 40, after_sha="b" * 40,
-        before_config="full-default", after_config="full-default", **kwargs,
+        before_config="full-default", after_config="full-default",
     )
 
 
