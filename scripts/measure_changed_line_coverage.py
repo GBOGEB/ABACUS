@@ -31,18 +31,21 @@ def measure(xml: Path, base: str, root: Path) -> dict:
                 changes.setdefault(path, set()).update(range(start, start + count))
     tree = ET.parse(xml)
     eligible, covered = [], []
+    observed_paths: set[str] = set()
     for cls in tree.findall(".//class"):
         filename = cls.get("filename", "")
         candidates = [filename, f"src/{filename}"]
         matched = next((x for x in candidates if x in changes), None)
         if matched is None:
             continue
+        observed_paths.add(matched)
         for element in cls.findall("./lines/line"):
             number = int(element.get("number", "0"))
             if number in changes[matched]:
                 eligible.append((matched, number))
                 if int(element.get("hits", "0")) > 0:
                     covered.append((matched, number))
+    missing_source_files = sorted(set(changes) - observed_paths)
     total = len(eligible)
     return {
         "schema": "changed-line-coverage/1",
@@ -50,8 +53,9 @@ def measure(xml: Path, base: str, root: Path) -> dict:
         "base_sha": base,
         "eligible_lines": total,
         "covered_lines": len(covered),
-        "percent": round(100 * len(covered) / total, 2) if total else None,
-        "status": "MEASURED" if total else "NO_ELIGIBLE_CHANGED_LINES",
+        "percent": round(100 * len(covered) / total, 2) if total and not missing_source_files else None,
+        "status": "INCOMPLETE_INSTRUMENTATION" if missing_source_files else ("MEASURED" if total else "NO_ELIGIBLE_CHANGED_LINES"),
+        "missing_source_files": missing_source_files,
         "uncovered": [f"{p}:{n}" for p, n in eligible if (p, n) not in set(covered)],
     }
 
