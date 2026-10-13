@@ -98,5 +98,11 @@
   "authority_transfer": false,
   "security_waiver": false,
   "formal_credit_delta": 0,
-  "engineering_credit_delta": 0
+  "engineering_credit_delta": 0,
+  "acceptance": {
+    "b1": "full and configured scan artifacts, SHA and rule counts",
+    "b2_b5": "exclusive owner, before/after comparable fingerprint delta, regression proof",
+    "b6": "read-only receipts and independently reviewed status",
+    "coverage": "exact-head XML and changed-line numerator/denominator; target >=80% not credited until measured"
+  }
 }
