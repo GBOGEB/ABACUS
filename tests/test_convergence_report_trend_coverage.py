@@ -107,3 +107,34 @@ def test_converged_report_has_no_unnecessary_actions(analyzer, metrics):
         )
     )
     assert history[0]["converged"] is True
+
+
+def test_single_history_entry_does_not_invent_a_trend(analyzer, metrics):
+    (analyzer.output_dir / ".convergence_history.json").write_text(
+        json.dumps([{"convergence_score": 80.0}]), encoding="utf-8"
+    )
+    report = analyzer.generate_report(metrics).read_text(encoding="utf-8")
+    assert "## Trend" not in report
+    assert "## Next Steps to Achieve Convergence" in report
+
+
+def test_exact_thresholds_have_no_false_stabilization_actions(analyzer, metrics):
+    edge = replace(
+        metrics,
+        total_files=20,
+        stable_files=19,
+        file_stability_pct=95.0,
+        total_tests=10,
+        passing_tests=10,
+        test_stability_pct=100.0,
+        tracked_metrics=20,
+        stable_metrics=19,
+        metric_stability_pct=95.0,
+        regressions_detected=0,
+        converged=False,
+    )
+    report = analyzer.generate_report(edge).read_text(encoding="utf-8")
+    assert "🔄 DEVELOPING" in report
+    assert "## Next Steps to Achieve Convergence" in report
+    assert "- Stabilize " not in report
+    assert "- Fix " not in report
