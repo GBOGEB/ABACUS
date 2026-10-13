@@ -114,6 +114,39 @@ jobs:
                   "eligible_branches": branches,
               }
           receipt["selected_modules"] = selected
+          selected_totals = {
+              key: sum(values[key] for values in selected.values())
+              for key in ("covered_lines", "eligible_lines",
+                          "covered_branches", "eligible_branches")
+          }
+          if (selected_totals["eligible_lines"] < 1
+                  or selected_totals["eligible_branches"] < 1):
+              raise SystemExit("Empty focused coverage denominator")
+          receipt["exact_head_sha"] = "${{ github.event.pull_request.head.sha || github.sha }}"
+          receipt["producer_run_id"] = "${{ github.run_id }}"
+          receipt["producer_run_attempt"] = "${{ github.run_attempt }}"
+          receipt["source_scope"] = sorted(selected)
+          receipt["selected_modules_totals"] = {
+              **selected_totals,
+              "line_coverage_percent": round(
+                  100 * selected_totals["covered_lines"] /
+                  selected_totals["eligible_lines"], 2),
+              "branch_coverage_percent": round(
+                  100 * selected_totals["covered_branches"] /
+                  selected_totals["eligible_branches"], 2),
+              "target_branch_coverage_percent": 90.0,
+              "target_reached": (
+                  10 * selected_totals["covered_branches"] >=
+                  9 * selected_totals["eligible_branches"]),
+          }
+          receipt["comparability"] = {
+              "status": "UNVERIFIED",
+              "required": ["same source module scope",
+                           "same coverage instrumentation and configuration",
+                           "previous and current source SHA"],
+              "main_coverage_uplift": None,
+              "changed_line_coverage": None,
+          }
           (root / "coverage-receipt.json").write_text(
               json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
           )
