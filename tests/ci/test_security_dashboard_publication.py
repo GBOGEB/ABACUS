@@ -67,15 +67,20 @@ class SecurityDashboardPublicationTests(TestCase):
                 # On Windows, restore CWD before TemporaryDirectory cleanup.
                 os.chdir(cwd)
 
-    def test_scheduled_workflow_never_stages_raw_yaml(self) -> None:
+    def test_scheduled_workflow_publishes_without_main_writes(self) -> None:
         workflow = (ROOT / ".github/workflows/security-dashboard.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn("git add -- .github/security/dashboard.md", workflow)
-        self.assertNotIn(
-            "git add .github/security/dashboard.md .github/security/alerts.yaml",
-            workflow,
-        )
+        self.assertIn("contents: read", workflow)
+        self.assertIn("security-events: read", workflow)
+        self.assertIn("persist-credentials: false", workflow)
+        self.assertIn("actions/upload-artifact@v4", workflow)
+        self.assertIn("if-no-files-found: error", workflow)
+        self.assertIn("sha256sum dashboard.md", workflow)
+        self.assertNotIn("contents: write", workflow)
+        self.assertNotIn("git push", workflow)
+        self.assertNotIn("git add", workflow)
+        self.assertNotIn(".github/security/alerts.yaml", workflow)
 
     def test_cross_host_pagination_is_rejected_before_token_send(self) -> None:
         response = Mock(status=200)
