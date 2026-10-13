@@ -320,7 +320,7 @@ jobs:
           persist-credentials: false
 
       - name: Download metrics publication payload
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-metrics-publication-${{ github.run_id }}
           path: docs/api
