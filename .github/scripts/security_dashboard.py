@@ -305,7 +305,9 @@ def render_yaml(tel: dict) -> str:
     for k, v in tel.items():
         if k == "groups":
             continue   # groups go in separate block to keep yaml readable
-        lines.append(f"{k}:{_val(v)}")
+        rendered = _val(v)
+        sep = "" if rendered.startswith("\n") else " "
+        lines.append(f"{k}:{sep}{rendered}")
     lines.append("")
     lines.append("groups:")
     for rex, items in tel["groups"].items():
@@ -317,7 +319,7 @@ def render_yaml(tel: dict) -> str:
             lines.append(f"      severity: {it['severity']}")
             lines.append(f"      file: \"{it['file']}\"")
             lines.append(f"      line: {it['line']}")
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 def main():
