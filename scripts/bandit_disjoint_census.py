@@ -51,7 +51,9 @@ def partition(report: dict, sha: str) -> dict:
     for rows in lanes.values():
         for row in rows:
             reassigned[owner[row["path"]]].append(row)
-    if sum(len(rows) for rows in reassigned.values()) != len(seen):\n        raise ValueError("Disjoint partition invariant failed")\n    return {"schema": "bandit.disjoint.census.v1", "exact_sha": sha, "total_unique": len(seen), "lanes": {name: {"findings": len(rows), "files": len({r["path"] for r in rows}), "rules": dict(sorted(Counter(r["rule"] for r in rows).items())), "items": sorted(rows, key=lambda r: (r["path"], r["line"] or 0, r["rule"]))} for name, rows in reassigned.items()}, "authority_transfer": False, "security_disposition": "pending independent review"}
+    if sum(len(rows) for rows in reassigned.values()) != len(seen):
+        raise ValueError("Disjoint partition invariant failed")
+    return {"schema": "bandit.disjoint.census.v1", "exact_sha": sha, "total_unique": len(seen), "lanes": {name: {"findings": len(rows), "files": len({r["path"] for r in rows}), "rules": dict(sorted(Counter(r["rule"] for r in rows).items())), "items": sorted(rows, key=lambda r: (r["path"], r["line"] or 0, r["rule"]))} for name, rows in reassigned.items()}, "authority_transfer": False, "security_disposition": "pending independent review"}
 
 
 def main() -> None:
