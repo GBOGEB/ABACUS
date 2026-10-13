@@ -38,7 +38,8 @@ jobs:
         run: |
           git config user.name "ABACUS Security Bot"
           git config user.email "abacus-security@noreply"
-          git add .github/security/dashboard.md .github/security/alerts.yaml
+          # The full alert ledger stays in the code-scanning source service.
+          git add -- .github/security/dashboard.md
           if git diff --cached --quiet; then
             echo "No changes to dashboard - skipping commit"
           else
