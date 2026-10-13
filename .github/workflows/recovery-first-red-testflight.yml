@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
@@ -37,7 +39,7 @@ jobs:
             --cov-report=term-missing
       - name: Measure changed executable-line coverage
         run: |
-          git fetch --no-tags --depth=100 origin main
+          git fetch --no-tags origin main
           base_sha="$(git merge-base HEAD origin/main)"
           python scripts/measure_changed_line_coverage.py outputs/recovery/coverage.xml "$base_sha" outputs/recovery/diff-coverage.json
       - name: Report all Bandit findings and enforce bounded new-debt census
