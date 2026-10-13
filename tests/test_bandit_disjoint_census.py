@@ -126,3 +126,13 @@ def test_redundant_separators_do_not_create_duplicate_owners():
     ]}, "a" * 40)
     assert result["total_unique"] == 1
     assert result["lanes"]["B3-subprocess"]["files"] == 1
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    ["/root.py", "///tmp/report.py", r"\root.py", r"\\server\share.py"],
+)
+def test_repeated_root_separators_fail_closed(unsafe):
+    """Rooted paths remain unsafe before canonical separator coalescing."""
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "d" * 40)
