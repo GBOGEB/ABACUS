@@ -32,7 +32,7 @@ def partition(report: dict, sha: str) -> dict:
         elif rule in {"B602", "B603", "B604", "B605", "B606", "B607", "B609"}:
             lane = "B3-subprocess"
         elif rule.startswith(("B1", "B3", "B4", "B5", "B6")):
-                lane = "B4-files-secrets"
+            lane = "B4-files-secrets"
         else:
             lane = "B2-source"
         lanes[lane].append({"path": normalized, "rule": rule, "line": line, "severity": finding.get("issue_severity"), "confidence": finding.get("issue_confidence"), "fingerprint": hashlib.sha256(json.dumps(key, sort_keys=True).encode()).hexdigest()})
