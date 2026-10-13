@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 MD060 -->
+
 # MIP / 3P* SIPOC-DAG reuse contract
 
 Status: advisory engineering design; not admission evidence.
@@ -14,25 +16,27 @@ Status: advisory engineering design; not admission evidence.
 
 ```mermaid
 flowchart TD
- A[Exact SHA and diff] --> B[Test census and taxonomy]
- B --> C[Risk planner and focused first-red]
- C --> D{Critical failure?}
- D -->|Yes| E[Escalate affected test family]
- D -->|No| F[Parallel evidence lanes]
- E --> F
- F --> G[B0 canonical JUnit and coverage]
- F --> H[B1 false-green]
- F --> I[Static DAB and Bandit]
- F --> J[Report-only and Python matrix]
- G --> K[Exact-head evidence reconciliation]
- H --> K
- I --> K
- J --> K
- K --> L{Terminal and complete?}
- L -->|No| M[Root-specific repair or runner wait]
- M --> C
- L -->|Yes| N[3P timing and repeatability]
- N --> O[Independent security review and protected admission]
+  A[Exact SHA and diff] --> B[Inventory and taxonomy]
+  B --> C[SIPOC: risk and impact analysis]
+  C --> D{Critical failure?}
+  D -->|Yes| E[Escalate affected family]
+  D -->|No| F[Parallel evidence]
+  E --> F
+  F --> G[B0 canonical JUnit and coverage]
+  F --> H[B1 false-green]
+  F --> I[Static DAB and Bandit]
+  F --> J[Report-only and Python matrix]
+  G --> K[Exact-head evidence join]
+  H --> K
+  I --> K
+  J --> K
+  K --> L{Terminal and complete?}
+  L -->|No| M[Root-specific repair and remeasure]
+  M --> C
+  L -->|Yes| N[3P stability and time comparison]
+  N --> O[Independent protected admission]
+  O --> P[Consumer feedback and new baseline]
+  P -.->|Next iteration only| B
 ```
 
 ## Evidence contract
