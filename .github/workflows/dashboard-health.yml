@@ -183,5 +183,5 @@ jobs:
           steps.check_files.outputs.missing_count != '0' ||
           steps.link_check.outputs.broken_links != '0'
         run: |
-          echo 'Dashboard health failed: missing dashboards or broken internal links.'
+          echo 'Dashboard health failed: dashboards missing or links broken.'
           exit 1
