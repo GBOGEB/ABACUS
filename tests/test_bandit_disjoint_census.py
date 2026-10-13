@@ -83,3 +83,14 @@ def test_scan_does_not_claim_security_approval():
     result = module.partition({"results": [finding("src/a.py", "B603")]}, "a" * 40)
     assert result["security_disposition"] == "pending independent review"
     assert result["authority_transfer"] is False
+
+
+def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
+    result = module.partition({"results": [
+        finding("tests/test_worker.py", "B603"),
+        finding("tests/test_worker.py", "B105", 2),
+        finding("tests/test_worker.py", "B101", 3),
+    ]}, "a" * 40)
+    assert result["lanes"]["B5-tests"]["findings"] == 3
+    assert result["lanes"]["B3-subprocess"]["files"] == 0
+    assert result["lanes"]["B4-files-secrets"]["files"] == 0
