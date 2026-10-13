@@ -1,6 +1,9 @@
-from pathlib import Path
+import json
 import subprocess
 import sys
+from pathlib import Path
+
+import pytest
 
 from scripts import test_evidence_census as census
 
@@ -76,23 +79,19 @@ def test_cli_rejects_invalid_sha_instead_of_publishing_green(tmp_path: Path):
     junit = tmp_path / "junit.xml"
     result_file = tmp_path / "result.json"
     junit.write_text('<testsuite><testcase name="passes"/></testsuite>')
-    result = subprocess.run(
-        [
-            sys.executable,
-            "scripts/test_evidence_census.py",
-            "--junit",
-            str(junit),
-            "--out",
-            str(result_file),
-            "--exact-sha",
-            "synthetic-head",
-        ],
-        cwd=Path(__file__).resolve().parents[1],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    assert result.returncode != 0
+
+    with pytest.raises(SystemExit) as invalid_sha:
+        census.main(
+            [
+                "--junit",
+                str(junit),
+                "--out",
+                str(result_file),
+                "--exact-sha",
+                "synthetic-head",
+            ]
+        )
+    assert invalid_sha.value.code == 2
     assert not result_file.exists()
 
 
@@ -103,27 +102,22 @@ def test_cli_stamps_explicit_pr_head_despite_synthetic_github_sha(
     result_file = tmp_path / "result.json"
     junit.write_text('<testsuite><testcase name="passes"/></testsuite>')
     monkeypatch.setenv("GITHUB_SHA", "3" * 40)
-    result = subprocess.run(
+
+    result = census.main(
         [
-            sys.executable,
-            "scripts/test_evidence_census.py",
             "--junit",
             str(junit),
             "--out",
             str(result_file),
             "--exact-sha",
             "4" * 40,
-        ],
-        cwd=Path(__file__).resolve().parents[1],
-        text=True,
-        capture_output=True,
-        check=False,
+        ]
     )
-    assert result.returncode == 0, result.stdout + result.stderr
-    import json
-    receipt = json.loads(result_file.read_text())
+    assert result == 0
+    receipt = json.loads(result_file.read_text(encoding="utf-8"))
     assert receipt["exact_sha"] == "4" * 40
     assert receipt["ratchet_status"] == "PASS"
+
 
 def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     junit = tmp_path / "junit.xml"
