@@ -49,6 +49,14 @@ jobs:
           echo "=== Checking JS/CSS references ==="
           for f in $(find docs -name '*.html' -type f); do
             for src in $(grep -oP 'src="\K[^"]+' "$f" | grep -v '^http'); do
+              # Generated JavaScript template placeholders are not static URLs.
+              # Count genuine missing paths separately from dynamic expressions.
+              case "$href" in
+                *"+url+"*|*"'+url+'"*)
+                  echo "Dynamic href skipped: $f -> $href"
+                  continue
+                  ;;
+              esac
               dir=$(dirname "$f")
               if [ ! -f "$dir/$src" ] && [ ! -f "$src" ]; then
                 echo "⚠️  Missing JS: $f → $src"
