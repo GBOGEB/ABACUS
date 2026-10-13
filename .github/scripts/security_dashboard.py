@@ -168,81 +168,50 @@ def build_telemetry(alerts: list) -> dict:
 
 
 def render_markdown(tel: dict) -> str:
-    ts    = tel["generated_at"]
-    total = tel["total_open"]
-    lines = []
-
-    lines.append(f"# ABACUS Security Dashboard")
-    lines.append(f"> Auto-generated {ts} · repo: `{tel['repo']}`  ")
-    lines.append(f"> **{total} open alerts** across {len(tel['by_tool'])} tools")
-    lines.append("")
-
-    # ── Severity summary ──────────────────────────────────────────────────────
-    lines.append("## Severity Overview")
-    lines.append("")
-    lines.append("| Severity | Count |")
-    lines.append("|----------|------:|")
-    for sev in ["critical", "high", "error", "medium", "warning", "low", "note", "none"]:
-        c = tel["by_severity"].get(sev, 0)
-        if c:
-            lines.append(f"| {sev.capitalize()} | {c} |")
-    lines.append("")
-
-    # ── Per-tool counts ───────────────────────────────────────────────────────
-    lines.append("## Alerts by Tool")
-    lines.append("")
-    lines.append("| Tool | Open Alerts |")
-    lines.append("|------|------------:|")
-    for tool, cnt in sorted(tel["by_tool"].items(), key=lambda x: -x[1]):
-        lines.append(f"| {tool} | {cnt} |")
-    lines.append("")
-
-    # ── REX group summary ─────────────────────────────────────────────────────
-    lines.append("## REX Group Summary")
-    lines.append("_Groups are defined in [security.toml](security.toml)_")
-    lines.append("")
-    lines.append("| REX Group | Risk | Count | Fix Priority |")
-    lines.append("|-----------|------|------:|-------------|")
-    risk_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "INFO": 3}
-    sorted_groups = sorted(
-        tel["by_rex_group"].items(),
-        key=lambda x: (risk_order.get(REX_META.get(x[0], {}).get("risk", "INFO"), 9), -x[1])
-    )
-    for rex, cnt in sorted_groups:
-        meta  = REX_META.get(rex, REX_META["OTHER"])
-        emoji = meta["emoji"]
-        risk  = meta["risk"]
-        pri   = "Fix now" if risk == "HIGH" else ("Fix next sprint" if risk == "MEDIUM" else "Suppress / defer")
-        lines.append(f"| {emoji} {rex} | {risk} | {cnt} | {pri} |")
-    lines.append("")
-
-    # Do not put per-alert file paths, URLs or messages in public summaries.
-    # Source alert records remain available in GitHub code-scanning.
-    lines.append("## Per-alert details")
-    lines.append("See the repository Security tab for source alert evidence.")
-    lines.append("")
-
-    # ── Quick-win table ───────────────────────────────────────────────────────
-    lines.append("## Quick-Win Fix Order")
-    lines.append("")
-    lines.append("| Priority | REX Group | Est. Alerts | Action |")
-    lines.append("|----------|-----------|------------:|--------|")
-    quick_wins = [
-        (1, "SEC_SUBPROCESS",       "~40", "Add `# noqa: S603` — all calls use list-form args"),
-        (2, "SEC_PATH_TRAVERSAL",   "~20", "`pathlib.Path(p).resolve(); assert is_relative_to(BASE)`"),
-        (3, "SEC_COMPILE_EXEC",     "~10", "Replace `compile+exec` with `ast.parse()` (syntax-only)"),
-        (4, "SEC_TEMPFILE",         "~15", "Remove `delete=False` from `NamedTemporaryFile`"),
-        (5, "SEC_ASSERT",           "~10", "Add `# noqa: S101` in pytest files, raise in prod"),
-        (6, "QUAL_DEAD_CODE",       "~30", "`ruff check --fix --select F401,F841 DMAIC_V3/`"),
+    """Render aggregate-only Markdown; never publish alert-level source data."""
+    lines = [
+        "# ABACUS Security Dashboard",
+        "",
+        f"> Auto-generated {tel['generated_at']} from GitHub code scanning",
+        f"> **{tel['total_open']} open alerts** across "
+        f"{len(tel['by_tool'])} tools",
+        "",
+        "## Severity counts",
+        "",
     ]
-    for pri, rex, est, action in quick_wins:
-        cnt = tel["by_rex_group"].get(rex, 0)
-        lines.append(f"| {pri} | {rex} | {cnt} live / {est} est. | {action} |")
-    lines.append("")
-    lines.append(f"_Dashboard last updated: {ts}_")
+    for sev, count in sorted(
+        tel["by_severity"].items(),
+        key=lambda item: (SEVERITY_ORDER.get(item[0], 9), item[0]),
+    ):
+        lines.append(f"- {sev}: {count}")
 
+    lines.extend(["", "## Scanner counts", ""])
+    for tool, count in sorted(
+        tel["by_tool"].items(), key=lambda item: (-item[1], item[0])
+    ):
+        lines.append(f"- {tool}: {count}")
+
+    lines.extend(["", "## REX group counts", ""])
+    for group, count in sorted(
+        tel["by_rex_group"].items(), key=lambda item: (-item[1], item[0])
+    ):
+        risk = REX_META.get(group, REX_META["OTHER"])["risk"]
+        lines.append(f"- {group} ({risk}): {count}")
+
+    lines.extend(
+        [
+            "",
+            "## Source and limitations",
+            "",
+            "Individual findings, source file paths and evidence belong in the",
+            "repository Security code-scanning interface. These aggregate",
+            "counts do not constitute acceptance or formal engineering credit.",
+            "",
+            f"_Dashboard last updated: {tel['generated_at']}_",
+            "",
+        ]
+    )
     return "\n".join(lines)
-
 
 def render_yaml(tel: dict) -> str:
     """Minimal YAML serializer (no external deps)."""
