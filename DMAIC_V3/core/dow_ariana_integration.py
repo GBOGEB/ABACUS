@@ -301,7 +301,7 @@ class DOWArianaIntegration:
                        for name, r in results.items()}
         }
 
-        print(f"  ✅ Integration tests: {test_summary['passed']}/{test_summary['total']} passed")
+        print(f"  ✅ Integration tests: {test_summary['passed']}/{test_summary['total_tests']} passed")
 
         return test_summary
 
