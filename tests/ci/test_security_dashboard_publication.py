@@ -81,7 +81,7 @@ class SecurityDashboardPublicationTests(TestCase):
         response = Mock(status=200)
         response.read.return_value = b'[{"number": 1}]'
         response.getheader.return_value = (
-            '<https://different.example.invalid/repos/GBOGEB/ABACUS/'
+            "<https://different.example.invalid/repos/GBOGEB/ABACUS/"
             'code-scanning/alerts?page=2>; rel="next"'
         )
         connection = Mock()
@@ -111,7 +111,7 @@ class SecurityDashboardPublicationTests(TestCase):
         first = Mock(status=200)
         first.read.return_value = b'[{"number": 1}]'
         first.getheader.return_value = (
-            '<https://api.github.com/repos/GBOGEB/ABACUS/'
+            "<https://api.github.com/repos/GBOGEB/ABACUS/"
             'code-scanning/alerts?page=2>; rel="next"'
         )
         second = Mock(status=200)
@@ -132,3 +132,46 @@ class SecurityDashboardPublicationTests(TestCase):
         self.assertEqual([x["number"] for x in result], [1, 2])
         first_conn.close.assert_called_once()
         second_conn.close.assert_called_once()
+
+    def test_canonical_repository_id_pagination_is_accepted(self) -> None:
+        first = Mock(status=200)
+        first.read.return_value = b'[{"number": 1}]'
+        first.getheader.return_value = (
+            "<https://api.github.com/repositories/1054507184/"
+            'code-scanning/alerts?page=2>; rel="next"'
+        )
+        second = Mock(status=200)
+        second.read.return_value = b'[{"number": 2}]'
+        second.getheader.return_value = ""
+        connections = [Mock(), Mock()]
+        connections[0].getresponse.return_value = first
+        connections[1].getresponse.return_value = second
+        with patch.object(
+            dashboard, "HTTPSConnection", side_effect=connections
+        ) as factory:
+            records = dashboard.gh_get(
+                "/repos/GBOGEB/ABACUS/code-scanning/alerts?per_page=100"
+            )
+        self.assertEqual([item["number"] for item in records], [1, 2])
+        self.assertEqual(factory.call_count, 2)
+        for conn in connections:
+            conn.close.assert_called_once()
+
+    def test_other_repository_id_is_rejected(self) -> None:
+        first = Mock(status=200)
+        first.read.return_value = b'[{"number": 1}]'
+        first.getheader.return_value = (
+            "<https://api.github.com/repositories/1054507185/"
+            'code-scanning/alerts?page=2>; rel="next"'
+        )
+        connection = Mock()
+        connection.getresponse.return_value = first
+        with patch.object(
+            dashboard, "HTTPSConnection", return_value=connection
+        ) as factory:
+            with self.assertRaisesRegex(ValueError, "Unsafe GitHub"):
+                dashboard.gh_get(
+                    "/repos/GBOGEB/ABACUS/code-scanning/alerts?per_page=100"
+                )
+        factory.assert_called_once_with("api.github.com", timeout=20)
+        connection.close.assert_called_once()
