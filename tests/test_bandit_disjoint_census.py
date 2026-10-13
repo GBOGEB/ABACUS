@@ -115,8 +115,6 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
      "src/../secret.py", r"C:\\Windows\\system32.py"],
 )
 def test_unsafe_paths_rejected_before_normalization(unsafe):
-    if unsafe.startswith("C:"):
-        pytest.skip("Drive-qualified path validation is a separate contract")
     with pytest.raises(ValueError, match="Unsafe report path"):
         module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
 
