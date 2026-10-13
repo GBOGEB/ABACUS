@@ -191,3 +191,30 @@ def test_custom_report_destination_and_empty_trace_log(integration, tmp_path):
     report = json.loads(target.read_text())
     assert report["version"] == "test-version"
     assert report["metrics"]["dow_pipeline_status"] == "active"
+
+
+def test_registry_dict_lookup_skips_unnamed_and_nonmatching_agents(integration):
+    registry = {"agents": {
+        "bad": {"version": "1"},
+        "other": {"name": "other"},
+        "target": {"name": "target", "version": "3"},
+    }}
+    assert integration._get_agent_info(registry, "target") == registry["agents"]["target"]
+    assert integration._get_agent_info(registry, "absent") is None
+
+
+def test_trace_file_absent_does_not_create_fake_activity(integration):
+    trace_dir = integration.workspace_root / ".ariana"
+    trace_dir.mkdir(exist_ok=True)
+    assert integration._collect_ariana_traces(8) == []
+    assert not (trace_dir / "trace_log.json").exists()
+
+
+def test_orchestration_report_persists_real_metrics_not_worker_claims(integration):
+    integration.generate_integration_metrics()
+    integration.save_integration_report()
+    report_path = integration.dow_dir / "DOW_ARIANA_INTEGRATION_REPORT.json"
+    report = json.loads(report_path.read_text())
+    assert report["metrics"]["dow_pipeline_status"] == "active"
+    assert report["metrics"]["ariana_agent_status"] == "monitoring"
+    assert report["version"] == "test-version"
