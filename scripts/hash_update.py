@@ -9,7 +9,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Any
 
 
 def sha256_file(p: Path) -> str:
