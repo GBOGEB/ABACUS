@@ -4,7 +4,7 @@ ABACUS Security Dashboard Generator
 Fetches all code-scanning alerts from GitHub, groups them by tool and REX
 category, and writes:
   - .github/security/dashboard.md   (human-readable, committed to repo)
-  - .github/security/alerts.yaml    (machine-readable telemetry)
+  - aggregates only, without per-alert file paths or messages
 
 Run locally:  GITHUB_TOKEN=<pat> GITHUB_REPO=GBOGEB/ABACUS python security_dashboard.py
 Run in CI:    Called by .github/workflows/security-dashboard.yml
@@ -216,37 +216,11 @@ def render_markdown(tel: dict) -> str:
         lines.append(f"| {emoji} {rex} | {risk} | {cnt} | {pri} |")
     lines.append("")
 
-    # ── Hot files ─────────────────────────────────────────────────────────────
-    lines.append("## Hottest Files (most alerts)")
+    # Do not put per-alert file paths, URLs or messages in public summaries.
+    # Source alert records remain available in GitHub code-scanning.
+    lines.append("## Per-alert details")
+    lines.append("See the repository Security tab for source alert evidence.")
     lines.append("")
-    lines.append("| File | Alert Count |")
-    lines.append("|------|------------:|")
-    for entry in tel["hot_files"]:
-        lines.append(f"| `{entry['file']}` | {entry['count']} |")
-    lines.append("")
-
-    # ── Per-group detail ──────────────────────────────────────────────────────
-    lines.append("## Alert Detail by REX Group")
-    lines.append("")
-    for rex, cnt in sorted_groups:
-        if cnt == 0:
-            continue
-        meta  = REX_META.get(rex, REX_META["OTHER"])
-        items = tel["groups"].get(rex, [])
-        lines.append(f"### {meta['emoji']} {rex} ({cnt} alerts)")
-        lines.append("")
-        lines.append("| # | Tool | Rule | File | Line | Severity |")
-        lines.append("|---|------|------|------|-----:|---------:|")
-        for it in items[:30]:   # cap at 30 rows per group in the MD
-            num  = f"[{it['number']}]({it['url']})" if it.get("url") else str(it["number"])
-            tool = it["tool"].replace("CodeQL", "CodeQL").replace("Bandit", "Bandit")
-            lines.append(
-                f"| {num} | {tool} | `{it['rule_id']}` "
-                f"| `{it['file'].split('/')[-1]}` | {it['line']} | {it['severity']} |"
-            )
-        if len(items) > 30:
-            lines.append(f"| … | _{len(items) - 30} more — see alerts.yaml_ | | | | |")
-        lines.append("")
 
     # ── Quick-win table ───────────────────────────────────────────────────────
     lines.append("## Quick-Win Fix Order")
@@ -336,14 +310,12 @@ def main():
     out_dir = Path(".github/security")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    md_path   = out_dir / "dashboard.md"
-    yaml_path = out_dir / "alerts.yaml"
+    md_path = out_dir / "dashboard.md"
 
+    # Per-alert details stay in the authoritative code-scanning service.
+    # No raw alert snapshot is published into this public worktree.
     md_path.write_text(render_markdown(tel), encoding="utf-8")
-    yaml_path.write_text(render_yaml(tel),   encoding="utf-8")
-
     print(f"  → Wrote {md_path}")
-    print(f"  → Wrote {yaml_path}")
     print(f"\nSummary:")
     print(f"  Total open : {tel['total_open']}")
     for tool, cnt in sorted(tel["by_tool"].items(), key=lambda x: -x[1]):
