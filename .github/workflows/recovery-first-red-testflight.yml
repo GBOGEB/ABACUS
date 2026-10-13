@@ -1,0 +1,59 @@
+name: ABACUS bounded first-red acceptance
+on:
+  push:
+    branches: [repair/20261013-postmerge-black-bandit]
+    paths:
+      - tests/test_dmaic_phase4_noop_contract_20261013.py
+      - tests/test_test_evidence_census.py
+      - .github/workflows/recovery-first-red-testflight.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bounded-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install test and quality tools
+        run: python -m pip install pytest pytest-cov black isort bandit
+      - name: Verify exact checkout and changed-file formatter state
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          black --check tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
+          isort --check-only tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
+      - name: Execute source-bound JUnit and coverage
+        run: |
+          mkdir -p outputs/recovery
+          python -m pytest -q tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py \
+            --junitxml=outputs/recovery/junit.xml \
+            --cov=DMAIC_V3.phases.phase4_improve \
+            --cov=scripts.test_evidence_census \
+            --cov-report=xml:outputs/recovery/coverage.xml \
+            --cov-report=term-missing
+      - name: Run Bandit on changed test files without suppression
+        run: |
+          bandit -q -f json -o outputs/recovery/bandit.json tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py
+      - name: Write exact-SHA artifact hashes
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          files=['outputs/recovery/junit.xml','outputs/recovery/coverage.xml','outputs/recovery/bandit.json']
+          receipt={'exact_sha':os.environ['GITHUB_SHA'],
+                   'files':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in files if Path(p).is_file()},
+                   'authority_transfer':False,'formal_credit_delta':0,'engineering_credit_delta':0}
+          p=Path('outputs/recovery/receipt.json')
+          p.parent.mkdir(parents=True,exist_ok=True)
+          p.write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: abacus-bounded-recovery-evidence
+          path: outputs/recovery/
+          if-no-files-found: warn
