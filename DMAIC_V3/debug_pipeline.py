@@ -473,7 +473,9 @@ class PipelineDebugger:
                     })
                     print("  ✗ phase1_define.py: Missing ensure_directory import")
 
-        if not result['errors']:
+        if result['errors']:
+            result['status'] = 'error'
+        else:
             print("  ✓ No common errors detected")
 
         return result
