@@ -40,7 +40,7 @@ def partition(report: dict, sha: str) -> dict:
         lanes[lane].append({"path": normalized, "rule": rule, "line": line, "severity": finding.get("issue_severity"), "confidence": finding.get("issue_confidence"), "fingerprint": hashlib.sha256(json.dumps(key, sort_keys=True).encode()).hexdigest()})
     # Exclusive file ownership: move all findings for a shared file to the
     # highest-priority lane, preserving disjoint worker write sets.
-    priority = {"B3-subprocess": 0, "B4-files-secrets": 1, "B5-tests": 2, "B2-source": 3}
+    priority = {"B5-tests": 0, "B3-subprocess": 1, "B4-files-secrets": 2, "B2-source": 3}
     owner = {}
     for lane, rows in lanes.items():
         for row in rows:
