@@ -21,7 +21,8 @@ def partition(report: dict, sha: str) -> dict:
             raise ValueError("Finding missing filename or test_id")
         # Reject absolute and traversal paths before collapsing separators.
         raw = path.replace("\\", "/")
-        if raw.startswith("/") or any(part == ".." for part in raw.split("/")):
+        if (raw.startswith("/") or (len(raw) >= 2 and raw[1] == ":")
+                or any(part == ".." for part in raw.split("/")):
             raise ValueError("Unsafe report path")
         normalized = "/".join(part for part in raw.split("/") if part and part != ".")
         if not isinstance(line, int) or isinstance(line, bool) or line < 1:
