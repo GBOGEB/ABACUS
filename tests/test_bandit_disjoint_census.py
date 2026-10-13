@@ -54,3 +54,32 @@ def test_invalid_reports_fail_closed(bad):
 def test_unsafe_paths_fail_closed(bad_path):
     with pytest.raises(ValueError):
         module.partition({"results": [finding(bad_path, "B603")]}, "a" * 40)
+
+
+@pytest.mark.parametrize("line", [None, 0, -1, "3", True])
+def test_invalid_line_identity_fails_closed(line):
+    with pytest.raises(ValueError, match="line_number"):
+        module.partition({"results": [finding("src/a.py", "B603", line)]}, "a" * 40)
+
+
+def test_rule_counts_reconcile_with_unique_findings():
+    result = module.partition({"results": [
+        finding("src/a.py", "B603"), finding("src/a.py", "B105", 2),
+        finding("src/b.py", "B603"), finding("tests/test_c.py", "B603"),
+    ]}, "a" * 40)
+    assert sum(lane["findings"] for lane in result["lanes"].values()) == 4
+    assert sum(sum(lane["rules"].values()) for lane in result["lanes"].values()) == 4
+
+
+def test_windows_separator_normalized_to_single_owner():
+    result = module.partition({"results": [
+        finding("src\\\\a.py", "B603"), finding("src/a.py", "B105", 2)
+    ]}, "a" * 40)
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["findings"] == 2
+
+
+def test_scan_does_not_claim_security_approval():
+    result = module.partition({"results": [finding("src/a.py", "B603")]}, "a" * 40)
+    assert result["security_disposition"] == "pending independent review"
+    assert result["authority_transfer"] is False
