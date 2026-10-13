@@ -30,7 +30,7 @@ def measure(xml: Path, base: str, root: Path) -> dict:
                 count = int(match.group(2) or "1")
                 changes.setdefault(path, set()).update(range(start, start + count))
     tree = ET.parse(xml)
-    eligible, covered = [], []
+    eligible, covered = set(), set()
     observed_paths: set[str] = set()
     for cls in tree.findall(".//class"):
         filename = cls.get("filename", "")
@@ -45,9 +45,9 @@ def measure(xml: Path, base: str, root: Path) -> dict:
         for element in cls.findall("./lines/line"):
             number = int(element.get("number", "0"))
             if number in changes[matched]:
-                eligible.append((matched, number))
+                eligible.add((matched, number))
                 if int(element.get("hits", "0")) > 0:
-                    covered.append((matched, number))
+                    covered.add((matched, number))
     missing_source_files = sorted(set(changes) - observed_paths)
     total = len(eligible)
     return {
