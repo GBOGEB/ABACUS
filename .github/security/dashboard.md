@@ -8,7 +8,7 @@
 ## Severity overview
 
 | Severity | Count |
-|---|---:|
+| --- | ---: |
 | Error | 139 |
 | Warning | 1,227 |
 | Note | 3,556 |
@@ -16,7 +16,7 @@
 ## Tool counts
 
 | Tool | Alerts |
-|---|---:|
+| --- | ---: |
 | Bandit | 3,318 |
 | Semgrep OSS | 1,016 |
 | CodeQL | 406 |
@@ -26,7 +26,7 @@
 ## Risk-group counts
 
 | Group | Count |
-|---|---:|
+| --- | ---: |
 | SEC_SUBPROCESS | 118 |
 | SEC_HARDCODED_SECRET | 21 |
 | SEC_TEMPFILE | 32 |
