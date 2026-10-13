@@ -20,7 +20,7 @@ jobs:
       - name: Install scanner and test runner
         run: python -m pip install 'bandit[toml]' pytest numpy
       - name: Regression contracts
-        run: python -m pytest -q tests/test_bandit_disjoint_census.py
+        run: python -m pytest --noconftest -q tests/test_bandit_disjoint_census.py
       - name: Run full and configured scans with separate denominators
         shell: bash
         run: |
