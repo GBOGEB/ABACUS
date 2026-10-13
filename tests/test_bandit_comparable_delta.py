@@ -71,3 +71,28 @@ def test_missing_results_rejected(bad):
             bad, {"results": []}, before_sha="a" * 40,
             after_sha="b" * 40, before_config="full", after_config="full",
         )
+
+
+@pytest.mark.parametrize("before,after,expected_new,expected_resolved", [
+    ([], [], 0, 0),
+    ([item(rule="B101")], [item(rule="B101"), item(rule="B603", line=8)], 1, 0),
+    ([item(rule="B101"), item(rule="B603", line=8)], [item(rule="B603", line=8)], 0, 1),
+    ([item(path="src/a.py")], [item(path="src/b.py")], 1, 1),
+])
+def test_comparable_delta_adversarial_transitions(
+        before, after, expected_new, expected_resolved):
+    receipt = compare(before, after)
+    assert receipt["new"] == expected_new
+    assert receipt["resolved"] == expected_resolved
+    assert receipt["net_reduction"] == expected_resolved - expected_new
+    assert receipt["security_clearance"] is False
+
+
+@pytest.mark.parametrize("bad", [None, False, 4, {"results": {}}])
+def test_invalid_after_report_fails_closed(bad):
+    with pytest.raises((ValueError, TypeError, AttributeError)):
+        module.compare(
+            {"results": []}, bad,
+            before_sha="a" * 40, after_sha="b" * 40,
+            before_config="full", after_config="full",
+        )
