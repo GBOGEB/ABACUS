@@ -58,6 +58,73 @@ def test_uncategorized_skip_is_visible_not_silently_accepted(tmp_path: Path):
     assert result["states"]["UNCLASSIFIED_SKIP"] == 1
 
 
+def test_explicit_exact_checkout_sha_overrides_synthetic_merge_sha(
+    tmp_path: Path, monkeypatch
+):
+    junit = tmp_path / "junit.xml"
+    junit.write_text('<testsuite><testcase name="passes"/></testsuite>')
+    fake_merge = "1" * 40
+    checked_out_head = "2" * 40
+    monkeypatch.setenv("GITHUB_SHA", fake_merge)
+
+    outcome = census.build_census(junit, exact_sha=checked_out_head)
+    assert outcome["exact_sha"] == checked_out_head
+    assert outcome["exact_sha"] != fake_merge
+
+
+def test_cli_rejects_invalid_sha_instead_of_publishing_green(tmp_path: Path):
+    junit = tmp_path / "junit.xml"
+    result_file = tmp_path / "result.json"
+    junit.write_text('<testsuite><testcase name="passes"/></testsuite>')
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/test_evidence_census.py",
+            "--junit",
+            str(junit),
+            "--out",
+            str(result_file),
+            "--exact-sha",
+            "synthetic-head",
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    assert not result_file.exists()
+
+
+def test_cli_stamps_explicit_pr_head_despite_synthetic_github_sha(
+    tmp_path: Path, monkeypatch
+):
+    junit = tmp_path / "junit.xml"
+    result_file = tmp_path / "result.json"
+    junit.write_text('<testsuite><testcase name="passes"/></testsuite>')
+    monkeypatch.setenv("GITHUB_SHA", "3" * 40)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/test_evidence_census.py",
+            "--junit",
+            str(junit),
+            "--out",
+            str(result_file),
+            "--exact-sha",
+            "4" * 40,
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    import json
+    receipt = json.loads(result_file.read_text())
+    assert receipt["exact_sha"] == "4" * 40
+    assert receipt["ratchet_status"] == "PASS"
+
 def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     junit = tmp_path / "junit.xml"
     out = tmp_path / "evidence.json"
