@@ -110,6 +110,60 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
 
 
 @pytest.mark.parametrize(
+    "unsafe",
+    ["/etc/passwd", "//server/share.py", "../secret.py",
+     "src/../secret.py", r"C:\\Windows\\system32.py"],
+)
+def test_unsafe_paths_rejected_before_normalization(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
+
+
+def test_redundant_separators_do_not_create_duplicate_owners():
+    result = module.partition({"results": [
+        finding("src//worker.py", "B603"),
+        finding("src/worker.py", "B603"),
+    ]}, "a" * 40)
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    ["/root.py", "///tmp/report.py", r"\root.py", r"\\server\share.py"],
+)
+def test_repeated_root_separators_fail_closed(unsafe):
+    """Rooted paths remain unsafe before canonical separator coalescing."""
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "d" * 40)
+
+
+@pytest.mark.parametrize(
+    "safe",
+    ["./src/worker.py", "src//worker.py", r"src\\worker.py", "src/./worker.py"],
+)
+def test_safe_relative_aliases_deduplicate_without_mutation(safe):
+    row = finding(safe, "B603")
+    snapshot = dict(row)
+    result = module.partition({"results": [row, finding("src/worker.py", "B603")]}, "e" * 40)
+    assert row == snapshot
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["items"][0]["path"] == "src/worker.py"
+    assert result["authority_transfer"] is False
+
+
+def test_mixed_safe_and_unsafe_paths_fail_atomically():
+    report = {"results": [
+        finding("src/safe.py", "B603"),
+        finding("src/../outside.py", "B603"),
+    ]}
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition(report, "e" * 40)
+    assert len(report["results"]) == 2
+
+
+@pytest.mark.parametrize(
     "test_path",
     ["tests/test_worker.py", "nested/tests/test_worker.py", "src/test_worker.py"],
 )
