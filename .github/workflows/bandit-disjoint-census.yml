@@ -43,6 +43,16 @@ jobs:
           python ci/governance/audit_ci_workflows.py \
             --markdown-output bandit-evidence/WORKFLOW_RATIONALIZATION.md \
             --json-output bandit-evidence/workflow-audit.json
+      - name: Verify deterministic second-pass governance generation
+        if: always()
+        run: |
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output bandit-evidence/WORKFLOW_RATIONALIZATION.second.md \
+            --json-output bandit-evidence/workflow-audit.second.json
+          cmp bandit-evidence/WORKFLOW_RATIONALIZATION.md \
+              bandit-evidence/WORKFLOW_RATIONALIZATION.second.md
+          cmp bandit-evidence/workflow-audit.json \
+              bandit-evidence/workflow-audit.second.json
       - name: Check committed governance inventory
         if: always()
         run: |
