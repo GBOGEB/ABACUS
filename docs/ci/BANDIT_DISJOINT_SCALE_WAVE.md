@@ -45,50 +45,50 @@ No two workers may edit the same file or publish a shared census artifact. The
 
 ## Small batch dispatch
 
-1.  1. Require frozen exact-head full and configured scan artifacts with valid
+1. Require frozen exact-head full and configured scan artifacts with valid
   SHA256 and scanner/settings identities; preserve raw input immutable.
-2.  2. Run deterministic disjoint census; publish path-owner manifest,
+1. Run deterministic disjoint census; publish path-owner manifest,
   finding-count reconciliation, per-lane root signatures and counts. Reject
   sum-of-lanes mismatch.
-3.  3. Rank within each lane by severity, confidence, blast radius and
+1. Rank within each lane by severity, confidence, blast radius and
   repeated first-red evidence. Group 1-5 files per candidate repair PR; avoid
   large shotgun edits.
-4.  4. Dispatch a worker **only** through an authorized authenticated runner.
+1. Dispatch a worker **only** through an authorized authenticated runner.
   Record `worker_id`, `launch_id`, `runner_id`, `start/end`,
   `input_artifact_sha`, `owned_paths`, `branch`, `commit_sha`, `job_url`,
   `exit_code`, `junit_url`, `coverage_url`, `bandit_url`, `ldab_session_id`
   and `rex_receipt_url` (null if unavailable).
-5.  5. First pass: focused tests and re-scan exact owned paths. Second pass:
+1. First pass: focused tests and re-scan exact owned paths. Second pass:
   one integrated exact-head full/configured canonical scan and mandatory
   quality/security CI. Calculate unique opened and resolved fingerprints
   against comparable frozen base; report raw finding counts and eligible-file
   denominators separately.
-6.  6. Require independent non-author security review, effective main branch
+1. Require independent non-author security review, effective main branch
   protection and terminal required checks before any admission or merge. Merge
   serially, rebase descendants and remeasure main after each batch.
 
 ## Checkpoints / fail-closed assertions
 
--  - Every reported file maps to exactly one owner, with `sum(lane_findings)
+- Every reported file maps to exactly one owner, with `sum(lane_findings)
   == global_unique_findings`.
--  - Every worker's changed paths are a subset of owned paths. Violation
+- Every worker's changed paths are a subset of owned paths. Violation
   invalidates the proposal.
--  - `new = |after - before|`, `resolved = |before - after|`, `net = resolved
+- `new = |after - before|`, `resolved = |before - after|`, `net = resolved
   - new`; identity/config mismatch makes each delta UNKNOWN.
--  - If Bandit fails with exit 1 and valid JSON, treat as findings-present,
+- If Bandit fails with exit 1 and valid JSON, treat as findings-present,
   not scanner crash. Other exit codes require classified diagnostics.
--  - Safety exit 64 is a separate dependency/scanner root until stderr/JSON
+- Safety exit 64 is a separate dependency/scanner root until stderr/JSON
   establishes a diagnosis.
--  - Coverage requires source-matched XML, JUnit and exact eligible-line
+- Coverage requires source-matched XML, JUnit and exact eligible-line
   numerators. Changed-line instrumentation gaps remain UNKNOWN.
--  - Full Red Proof Summary is propagated until its security and coverage
+- Full Red Proof Summary is propagated until its security and coverage
   dependencies pass.
--  - LDAB count means authenticated sessions with steps/port/trace receipt; an
+- LDAB count means authenticated sessions with steps/port/trace receipt; an
   assessment or declared capability is not a launch.
--  - Required CI producers may share artifact/parsing utilities, but shall not
+- Required CI producers may share artifact/parsing utilities, but shall not
   be consolidated away until check-name continuity, runtime savings and
   equivalent enforcement are demonstrated.
--  - Work is complete only when current protected main has source-bound
+- Work is complete only when current protected main has source-bound
   accepted CI/security coverage, independent approval, and a recorded BD
   root-cause delta.
 
