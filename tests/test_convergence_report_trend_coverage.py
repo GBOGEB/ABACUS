@@ -138,3 +138,20 @@ def test_exact_thresholds_have_no_false_stabilization_actions(analyzer, metrics)
     assert "## Next Steps to Achieve Convergence" in report
     assert "- Stabilize " not in report
     assert "- Fix " not in report
+
+
+def test_short_history_trend_ignores_older_entries(analyzer, metrics):
+    (analyzer.output_dir / ".convergence_history.json").write_text(
+        json.dumps(
+            [
+                {"convergence_score": 10.0},
+                {"convergence_score": 79.0},
+                {"convergence_score": 80.0},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    report = analyzer.generate_report(metrics).read_text(encoding="utf-8")
+    assert "## Trend" in report
+    assert "+1.0% from previous iteration" in report
+    assert "+70.0% from previous iteration" not in report
