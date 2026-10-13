@@ -23,7 +23,9 @@ def partition(report: dict, sha: str) -> dict:
         if normalized.startswith("/") or any(part == ".." for part in normalized.split("/")):
             raise ValueError("Unsafe report path")
         normalized = normalized.removeprefix("./")
-        if not isinstance(line, int) or isinstance(line, bool) or line < 1:\n            raise ValueError("Finding missing positive integer line_number")\n        key = (normalized, rule, line, finding.get("issue_text", ""))
+        if not isinstance(line, int) or isinstance(line, bool) or line < 1:
+            raise ValueError("Finding missing positive integer line_number")
+        key = (normalized, rule, line, finding.get("issue_text", ""))
         if key in seen:
             continue
         seen.add(key)
