@@ -51,16 +51,17 @@ class SecurityDashboardPublicationTests(TestCase):
             },
         }
         cwd = Path.cwd()
-        try:
-            with TemporaryDirectory() as tmp, \
-                 patch.object(dashboard, "TOKEN", "dummy"), \
-                 patch.object(dashboard, "fetch_alerts", return_value=[alert]):
+        with TemporaryDirectory() as tmp, \
+             patch.object(dashboard, "TOKEN", "dummy"), \
+             patch.object(dashboard, "fetch_alerts", return_value=[alert]):
+            try:
                 os.chdir(tmp)
                 dashboard.main()
                 self.assertTrue(Path(".github/security/dashboard.md").is_file())
                 self.assertFalse(Path(".github/security/alerts.yaml").exists())
-        finally:
-            os.chdir(cwd)
+            finally:
+                # On Windows, restore CWD before TemporaryDirectory cleanup.
+                os.chdir(cwd)
 
     def test_scheduled_workflow_never_stages_raw_yaml(self) -> None:
         workflow = (ROOT / ".github/workflows/security-dashboard.yml").read_text(
