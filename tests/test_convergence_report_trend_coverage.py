@@ -9,10 +9,7 @@ from dataclasses import replace
 
 import pytest
 
-from DMAIC_V3.convergence.convergence_analyzer import (
-    ConvergenceAnalyzer,
-    ConvergenceMetrics,
-)
+from DMAIC_V3.convergence.convergence_analyzer import ConvergenceAnalyzer, ConvergenceMetrics
 
 
 @pytest.fixture
@@ -54,14 +51,14 @@ def metrics():
         (80.0, 80.0, "+0.0%"),
     ],
 )
-def test_report_includes_signed_measured_trend(
-    analyzer, metrics, previous, current, expected
-):
+def test_report_includes_signed_measured_trend(analyzer, metrics, previous, current, expected):
     (analyzer.output_dir / ".convergence_history.json").write_text(
-        json.dumps([
-            {"convergence_score": previous},
-            {"convergence_score": current},
-        ]),
+        json.dumps(
+            [
+                {"convergence_score": previous},
+                {"convergence_score": current},
+            ]
+        ),
         encoding="utf-8",
     )
     path = analyzer.generate_report(replace(metrics, convergence_score=current))
@@ -73,9 +70,7 @@ def test_report_includes_signed_measured_trend(
     assert path.name == "convergence_report_iteration_2.md"
 
 
-def test_report_with_no_history_omits_trend_but_retains_actions(
-    analyzer, metrics
-):
+def test_report_with_no_history_omits_trend_but_retains_actions(analyzer, metrics):
     path = analyzer.generate_report(metrics)
     body = path.read_text(encoding="utf-8")
     assert "## Trend" not in body
