@@ -1,6 +1,6 @@
 name: Security Dashboard — REX Telemetry
 
-# Aggregation is deliberately scheduled/manual. Scanner results remain authoritative
+# Scheduled aggregation; source scans remain authoritative in their own jobs.
 # in their own workflows; rebuilding a dashboard after every scanner completion
 # creates workflow_run fan-out without adding evidence authority.
 on:
@@ -38,10 +38,11 @@ jobs:
         run: |
           git config user.name "ABACUS Security Bot"
           git config user.email "abacus-security@noreply"
-          git add .github/security/dashboard.md .github/security/alerts.yaml
+          # The full alert ledger stays in the code-scanning source service.
+          git add -- .github/security/dashboard.md
           if git diff --cached --quiet; then
             echo "No changes to dashboard - skipping commit"
           else
-            git commit -m "security(dashboard): auto-update REX telemetry [skip ci]"
+            git commit -m "security(dashboard): update counts [skip ci]"
             git push
           fi
