@@ -34,6 +34,11 @@ jobs:
             --cov=scripts.test_evidence_census \
             --cov-report=xml:outputs/recovery/coverage.xml \
             --cov-report=term-missing
+      - name: Measure changed executable-line coverage
+        run: |
+          git fetch --no-tags --depth=100 origin main
+          base_sha="$(git merge-base HEAD origin/main)"
+          python scripts/measure_changed_line_coverage.py outputs/recovery/coverage.xml "$base_sha" outputs/recovery/diff-coverage.json
       - name: Report all Bandit findings and enforce bounded new-debt census
         run: |
           bandit -q -f json -o outputs/recovery/bandit.json tests/test_dmaic_phase4_noop_contract_20261013.py tests/test_test_evidence_census.py || scan_rc=$?
@@ -60,7 +65,7 @@ jobs:
           python - <<'PY'
           import hashlib,json,os
           from pathlib import Path
-          files=['outputs/recovery/junit.xml','outputs/recovery/coverage.xml','outputs/recovery/bandit.json']
+          files=['outputs/recovery/junit.xml','outputs/recovery/coverage.xml','outputs/recovery/diff-coverage.json','outputs/recovery/bandit.json']
           receipt={'exact_sha':os.environ['GITHUB_SHA'],
                    'files':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in files if Path(p).is_file()},
                    'authority_transfer':False,'formal_credit_delta':0,'engineering_credit_delta':0}
