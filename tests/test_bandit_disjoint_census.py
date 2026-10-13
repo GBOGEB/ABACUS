@@ -107,3 +107,24 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
     assert result["lanes"]["B5-tests"]["findings"] == 3
     assert result["lanes"]["B3-subprocess"]["files"] == 0
     assert result["lanes"]["B4-files-secrets"]["files"] == 0
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    ["/etc/passwd", "//server/share.py", "../secret.py",
+     "src/../secret.py", r"C:\\Windows\\system32.py"],
+)
+def test_unsafe_paths_rejected_before_normalization(unsafe):
+    if unsafe.startswith("C:"):
+        pytest.skip("Drive-qualified path validation is a separate contract")
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
+
+
+def test_redundant_separators_do_not_create_duplicate_owners():
+    result = module.partition({"results": [
+        finding("src//worker.py", "B603"),
+        finding("src/worker.py", "B603"),
+    ]}, "a" * 40)
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
