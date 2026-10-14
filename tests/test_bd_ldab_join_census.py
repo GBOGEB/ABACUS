@@ -89,7 +89,7 @@ def test_explicit_same_head_ci_and_debug_join_but_do_not_promote():
     assert len(out["roots"]) == 1
     sources = {x["source"] for x in out["roots"][0]["observations"]}
     assert sources == {"bandit_disjoint", "ci_failure", "debug_receipt"}
-    assert out["metrics"]["debug_confirmed_sessions"] == 1
+    assert out["metrics"]["debug_reported_sessions"] == 1
     assert out["merge_admission"] == "HOLD"
 
 
@@ -119,7 +119,7 @@ def test_codex_runtime_stays_unlinked_without_cross_repo_authority():
         image_digest="sha256:" + "e" * 64)]
     out = module.join(b)
     assert len(out["unlinked_debug_receipts"]) == 1
-    assert out["unlinked_debug_receipts"][0]["proof_level"] == "OBSERVED"
+    assert out["unlinked_debug_receipts"][0]["proof_level"] == "REPORTED_UNVERIFIED"
     assert out["roots"][0]["observations"][0]["source"] == "bandit_disjoint"
 
 
@@ -127,7 +127,7 @@ def test_partial_debug_is_not_counted_as_real_session():
     b = bundle()
     b["debug_receipts"] = [debug(session_id=None, real_probe_steps=10)]
     out = module.join(b)
-    assert out["metrics"]["debug_confirmed_sessions"] == 0
+    assert out["metrics"]["debug_reported_sessions"] == 0
     assert out["unlinked_debug_receipts"][0]["proof_level"] == "PARTIAL"
 
 
