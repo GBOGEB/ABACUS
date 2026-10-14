@@ -85,10 +85,10 @@ class TestPilotReceiptContractTests(TestCase):
             receipt_path = Path(folder) / "receipt.json"
             with (
                 patch.object(sys, "argv", [
-                    "testpilot_preflight.py", "--mode", "fast", "--parity",
+                    "testpilot_preflight.py", "--mode", "fast",
                     "--receipt", str(receipt_path)
                 ]),
-                patch.object(pilot, "parity_subject_files", return_value=[]),
+                patch.object(pilot, "changed_files", return_value=[]),
                 patch.object(pilot, "targeted_pytest", return_value=[]),
                 patch.object(pilot, "ruff_check", return_value={
                     "name": "ruff", "status": "SKIP"
