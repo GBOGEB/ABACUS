@@ -14,7 +14,7 @@ import native_ingest
 from admission import effective_policy_from_rules, evaluate
 from control import append_history, history_record, read_history, recurrence_alerts
 from coordination import apply_operation, registry, sane_path
-from everred import InvalidEvidence, read_ledger, snapshot
+from everred import InvalidEvidence
 from replay import check_manifest
 
 GitHubReadOnly = native_ingest.GitHubReadOnly
