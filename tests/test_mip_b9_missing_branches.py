@@ -23,9 +23,30 @@ native = load("mip_native_b9", "scripts/mip_native_metric_ingest.py")
 unknown = load("mip_unknown_b9", "scripts/code_purple_mip_unknown_rollup.py")
 
 
+def stat_row():
+    return {"schema": "mip.stat.observation.v1", "repository": "GBOGEB/ABACUS",
+            "family": "ci_reliability", "metric": "workflow_failure_rate",
+            "metric_version": "1.0", "exact_sha": "a" * 40,
+            "run_id": 100, "job_id": 101, "observed_at": "2026-10-14T20:00:00Z",
+            "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/100",
+            "collection_quality": "NATIVE", "status": "PASS",
+            "numerator": 0, "denominator": 1}
+
+
+def native_row(**changes):
+    r = dict(stat_row(), family="coverage", metric="statement_coverage",
+             verified_native=True)
+    r.update(changes)
+    return r
+
+
+def native_payload(rows):
+    return {"schema": "mip.native.metric.receipts.v1", "receipts": rows}
+
+
 class B9MissingBranches(unittest.TestCase):
     def test_stat_schema_and_provenance_rejections(self):
-        from tests.test_mip_statistical_readiness import row
+        row = stat_row
         bad = (
             {"schema": "other"}, {"repository": "other"},
             {"metric": ""}, {"evidence_url": "https://invalid"},
@@ -58,7 +79,7 @@ class B9MissingBranches(unittest.TestCase):
                 native.convert(data)
 
     def test_native_ingestion_rejects_partial_counts(self):
-        from tests.test_mip_native_metric_ingest import row, payload
+        row, payload = native_row, native_payload
         for change in ({"numerator": None}, {"denominator": None},
                        {"numerator": -1}, {"numerator": 5},
                        {"numerator": True}, {"denominator": 0},
@@ -93,7 +114,7 @@ class B9MissingBranches(unittest.TestCase):
             self.assertEqual("HOLD", result["merge_admission"])
 
     def test_ingest_cli_writes_native_jsonl(self):
-        from tests.test_mip_native_metric_ingest import payload, row
+        payload, row = native_payload, native_row
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / "native.json"
             output = Path(td) / "out" / "receipts.jsonl"
