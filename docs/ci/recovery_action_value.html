@@ -75,13 +75,13 @@ code{overflow-wrap:anywhere}
 </section>
 <section id="coverage" class="panel"><h2>Coverage / BD closure / admission remain independent</h2>
 <div class="scroll"><table><thead><tr><th>Metric</th><th>Verified historical baseline</th><th>Current comparable</th></tr></thead><tbody>
-<tr><td>Broad main coverage</td><td id="main-h">36.85%</td><td>UNKNOWN</td></tr>
+<tr><td>Broad main coverage</td><td id="main-h">36.85%</td><td id="main-measured">UNKNOWN</td></tr>
 <tr><td>PR-side broad coverage</td><td id="pr-h">36.92%</td><td>UNKNOWN</td></tr>
 <tr><td>PR-side diff coverage</td><td id="diff-h">51%</td><td>UNKNOWN</td></tr>
 <tr><td>BD roots closed</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
 <tr><td>Authenticated Crew launches / accepted REX</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
 <tr><td>Correctly admitted merge</td><td>Not established</td><td class="hold">HOLD</td></tr>
-</tbody></table></div><p class="muted">Comparable coverage requires matched collection scope/configuration and terminal reports. Different SHA or source scope is not a valid coverage delta.</p>
+</tbody></table></div><p id="main-coverage-proof" class="muted">Current-main coverage denominator and artifact: UNKNOWN.</p><p class="muted">Comparable coverage requires matched collection scope/configuration and terminal reports. Different SHA or source scope is not a valid coverage delta.</p>
 </section>
 <section id="provenance" class="panel"><h2>Source identities and integrity guards</h2>
 <p id="source-sha" class="muted">Waiting for source JSON.</p>
@@ -109,6 +109,13 @@ async function refresh(){
  put("ruff-detail","Exact head "+r.head_sha+" · run "+r.workflow_run_id+" / job "+r.job_id+" · "+r.resolved_occurrences+" resolved, 0 introduced across "+r.identical_scoped_paths.length+" identical paths · 6 focused tests passed · formatting: 9 → 0 trailing whitespace lines and 2 → 0 missing final newlines on 3 paths. Full repo DOW and RHEL remain HOLD.");
  }else{put("ruff-score","UNKNOWN");put("ruff-state","UNKNOWN");put("ruff-detail","No accepted same-scope Ruff receipt; DOW after-state UNKNOWN.");}
  put("main-h",source.coverage.historical_main.value_pct+"%");
+ const m=source.coverage.current_main_measured;
+ if(m&&m.exact_main_sha===b.main_sha&&m.job_conclusion==="success"&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT"&&m.scope_vs_historical_main==="NOT_RECONCILED"&&m.covered_lines===17088&&m.num_statements===30735&&m.covered_branches===4200&&m.num_branches===8290){
+  put("main-measured",m.percent_combined_covered.toFixed(2)+"% measured; historical comparison NOT COMPARABLE");
+  const p=$("main-coverage-proof");p.replaceChildren();
+  const a=document.createElement("a");a.href=m.artifact_url;a.textContent="Exact-main coverage XML + DAB artifact";
+  p.append("Main "+m.exact_main_sha+" · "+m.covered_lines+"/"+m.num_statements+" covered statements ("+m.percent_statements_covered.toFixed(2)+"%) · "+m.covered_branches+"/"+m.num_branches+" branches ("+m.percent_branches_covered.toFixed(2)+"%) · branch-inclusive "+m.percent_combined_covered.toFixed(2)+"% · ",a,". This is not a certified increase over 36.85%.");
+ }else{put("main-measured","UNKNOWN");put("main-coverage-proof","Current-main matched coverage artifact absent or invalid; no measured value credited.");}
  put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
  put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
  $("before-link").href=b.docs.job_url;
