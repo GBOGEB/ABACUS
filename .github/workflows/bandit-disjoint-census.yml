@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install scanner and test runner
@@ -127,7 +127,7 @@ jobs:
           sha256sum bandit-evidence/*.json > bandit-evidence/SHA256SUMS
       - name: Upload evidence regardless of scan findings
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bandit-disjoint-${{ github.run_id }}
           path: bandit-evidence/

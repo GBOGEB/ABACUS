@@ -92,6 +92,15 @@ def test_repeated_separators_share_one_fingerprint_and_owner():
     assert {item["path"] for item in result["lanes"]["B3-subprocess"]["items"]} == {"src/a.py"}
 
 
+@pytest.mark.parametrize("unsafe", [
+    "/etc/passwd", "//server/share.py", r"\\server\share.py",
+    "src/../outside.py", "src\\..\\outside.py",
+])
+def test_normalized_absolute_and_parent_paths_remain_rejected(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
+
+
 def test_scan_does_not_claim_security_approval():
     result = module.partition({"results": [finding("src/a.py", "B603")]}, "a" * 40)
     assert result["security_disposition"] == "pending independent review"
