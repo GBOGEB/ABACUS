@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/dow_gate_telemetry.py"
       - "tests/test_dow_gate_telemetry.py"
+      - "scripts/recovery_five_lane_evidence.py"
+      - "tests/test_recovery_five_lane_evidence.py"
       - ".github/workflows/dow-remaining-gates-telemetry.yml"
       - "docs/ci/DOW_REMAINING_GATES_TELEMETRY.md"
   workflow_dispatch:
@@ -43,7 +45,10 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           python -m pip install PyYAML==6.0.3
-          python -m unittest discover -s tests -p test_dow_gate_telemetry.py -v
+          python -m unittest discover -s tests \
+            -p test_dow_gate_telemetry.py -v
+          python -m unittest discover -s tests \
+            -p test_recovery_five_lane_evidence.py -v
       - name: Collect exact-source GitHub observations (read-only)
         env:
           GH_TOKEN: ${{ github.token }}
