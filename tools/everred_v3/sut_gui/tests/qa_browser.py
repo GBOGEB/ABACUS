@@ -113,6 +113,16 @@ with sync_playwright() as p:
             assert 'eigRank' in pca
             assert page.locator('#pca-chart .model-bar').count()==3
             qa['model_checks']['pca_synthetic']='PASS_DESCRIPTIVE_ONLY'
+            reference={'schema':'code-purple.pca.panel.v1','source_sha':'f'*40,
+                       'columns':[{'name':'a','unit':'s'},{'name':'b','unit':'s'}],
+                       'rows':[{'independent_unit':'r'+str(i),'values':[float(i),float(i*3+2)]}
+                               for i in range(40)]}
+            page.locator('#empirical-input').fill(json.dumps(reference))
+            page.locator('#analyze-model').click()
+            pca_ref=json.loads(page.locator('#model-result').inner_text())
+            assert abs(pca_ref['pc1_variance_pct']-100.0)<1e-8,pca_ref
+            assert pca_ref['eigRank']==1,pca_ref
+            qa['model_checks']['pca_perfect_correlation_reference']='PASS_100PCT_PC1'
             page.locator('#analysis-type').select_option('bt')
             page.locator('#load-demo').click()
             page.locator('#analyze-model').click()
@@ -120,6 +130,17 @@ with sync_playwright() as p:
             assert 'EXPLORATORY_FIT_NO_ACCEPTANCE' in bt, bt
             assert page.locator('#bt-chart .model-bar').count()==3
             qa['model_checks']['bt_synthetic']='PASS_EXPLORATORY_ONLY'
+            balanced={'schema':'code-purple.bt.pairs.v1','source_sha':'f'*40,
+                      'items':['A','B'],
+                      'comparisons':[{'winner':'A' if i%2 else 'B',
+                                      'loser':'B' if i%2 else 'A',
+                                      'independent_unit':str(i)} for i in range(40)]}
+            page.locator('#empirical-input').fill(json.dumps(balanced))
+            page.locator('#analyze-model').click()
+            bt_ref=json.loads(page.locator('#model-result').inner_text())
+            assert len(bt_ref['rank'])==2,bt_ref
+            assert all(abs(r['relative_strength']-1.0)<1e-7 for r in bt_ref['rank']),bt_ref
+            qa['model_checks']['bt_balanced_reference']='PASS_EQUAL_STRENGTH'
             row={'schema':'code-purple.bt.pairs.v1','source_sha':'f'*40,'items':['A','B'],
                  'comparisons':[{'winner':'A','loser':'B','independent_unit':str(i)} for i in range(35)]}
             page.locator('#empirical-input').fill(json.dumps(row))
