@@ -176,6 +176,58 @@ class LDABTelemetryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "repository identity"):
             telemetry.summarize(root(), None, None, SHA, "GBOGEB/CODEX")
 
+    def test_full_inventory_classifies_debug_logs_and_incidental(self):
+        paths = ["DOW_LOGS/latest.json", "scripts/debug.py",
+                 "tools/build_catalog.py"]
+        a = root(count=3, paths=paths)
+        a["assessments"][LANE]["all_candidate_paths"] = paths
+        report = telemetry.summarize(a, None, None, SHA)
+        scope = report["source_census"]["root"]
+        self.assertTrue(scope["inventory_complete"])
+        self.assertEqual(scope["source_taxonomy"], "ldab.lexical.v1")
+        self.assertEqual(scope["source_class_counts"], {
+            "explicit_debug": 1,
+            "telemetry_logs_trace": 1,
+            "lexical_incidental": 1,
+        })
+        self.assertEqual(len(scope["full_source_inventory"]), 3)
+
+    def test_broad_substrings_are_not_real_debuggers(self):
+        classify = telemetry._candidate_class
+        self.assertEqual(classify("runtime/adaptive-governance.yaml"),
+                         "lexical_incidental")
+        self.assertEqual(classify("tools/build_catalog.py"),
+                         "lexical_incidental")
+        self.assertEqual(classify("src/semantic-topology.py"),
+                         "lexical_incidental")
+        self.assertEqual(classify("scripts/lldb_dap_probe.py"),
+                         "explicit_debug")
+
+    def test_full_inventory_must_reconcile_denominator(self):
+        a = root(count=3)
+        a["assessments"][LANE]["all_candidate_paths"] = ["scripts/debug.py"]
+        with self.assertRaisesRegex(ValueError, "denominator mismatch"):
+            telemetry.summarize(a, None, None, SHA)
+
+    def test_full_inventory_must_be_sorted_unique_and_match_sample(self):
+        a = root(count=2, paths=["docs/debug.md", "scripts/debug.py"])
+        a["assessments"][LANE]["all_candidate_paths"] = [
+            "scripts/debug.py", "docs/debug.md"
+        ]
+        with self.assertRaisesRegex(ValueError, "order/sample mismatch"):
+            telemetry.summarize(a, None, None, SHA)
+
+    def test_nested_full_inventory_is_not_added_to_root(self):
+        a = root(count=1, paths=["scripts/debug.py"])
+        a["assessments"][LANE]["all_candidate_paths"] = ["scripts/debug.py"]
+        b = nested()
+        b["assessments"][LANE]["all_candidate_paths"] = [
+            "scripts/mip_debug_diagnostic.py"
+        ]
+        result = telemetry.summarize(a, b, diagnostic(), SHA)
+        self.assertTrue(result["source_census"]["nested"]["inventory_complete"])
+        self.assertIsNone(result["source_census"]["combined_candidates"])
+
     def test_rejects_unknown_execution_origin(self):
         d = diagnostic()
         d["parent_sha"] = "c" * 40
