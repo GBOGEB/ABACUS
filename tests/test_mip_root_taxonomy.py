@@ -1,9 +1,13 @@
 """Regression tests for observational BD/LDAB taxonomy labels."""
+
 import copy
 import unittest
 
 from scripts.mip_root_taxonomy import (
-    CLASSES, annotate_join, canonical_bytes, classify,
+    CLASSES,
+    annotate_join,
+    canonical_bytes,
+    classify,
 )
 
 
@@ -23,6 +27,7 @@ class TaxonomyTests(unittest.TestCase):
     def test_every_class_has_an_explicit_code(self):
         self.assertEqual(len(CLASSES), 10)
         from scripts.mip_root_taxonomy import CODES
+
         self.assertEqual(set(CODES.values()), set(CLASSES) - {"UNKNOWN"})
 
     def test_unknown_fails_closed_to_unknown(self):
