@@ -1,0 +1,264 @@
+{
+  "schema": "code-purple.mip.unknown-backlog.v1",
+  "source_repository": "GBOGEB/ABACUS",
+  "reference_head": "fcd1b1138ca2e233182ec40cca82345cd70f6fb8",
+  "authority": "OBSERVATIONAL_ONLY",
+  "items": [
+    {
+      "id": "U01",
+      "title": "LLDB launch count",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "CODEX_DEBUG",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "native LLDB launch receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U02",
+      "title": "DAP successes and failures",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "CODEX_DEBUG",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "authenticated DAP session result",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U03",
+      "title": "LDAB fingerprint matches",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "ANALYZE",
+      "root_id": null,
+      "owner": "ABACUS_LDAB",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "exact SHA/run/job/fingerprint join",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U04",
+      "title": "BD opened roots",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "BD_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "verified opening transition",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U05",
+      "title": "BD closed roots",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "BD_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "native resolved root receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U06",
+      "title": "BD reopened roots",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "BD_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "verified reopening transition",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U07",
+      "title": "Ubuntu compatibility",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "RUNTIME_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "terminal Ubuntu-native OS receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U08",
+      "title": "RHEL8 compatibility",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "RUNTIME_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "terminal RHEL8-native OS receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U09",
+      "title": "RHEL9 compatibility",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "RUNTIME_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "terminal RHEL9-native OS receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U10",
+      "title": "UBI9 compatibility",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "RUNTIME_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "terminal UBI9-native OS receipt",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U11",
+      "title": "Crew REX accepted execution",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "CREW_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "authenticated Crew launch and accepted return",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U12",
+      "title": "Exact-head bootstrap tests",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "TEST_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "native test counts tied to exact SHA",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U13",
+      "title": "Exact-head governance",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "GOVERNANCE_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "exact-head governance PASS",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U14",
+      "title": "Changed-line coverage",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "MEASURE",
+      "root_id": null,
+      "owner": "COVERAGE_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "covered and eligible changed-line receipts",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U15",
+      "title": "Distinct root burndown",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "ANALYZE",
+      "root_id": null,
+      "owner": "BD_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "comparable fingerprint transition census",
+      "proof_reference": null,
+      "overflow": false
+    },
+    {
+      "id": "U16",
+      "title": "Independent admission",
+      "evidence_state": "UNKNOWN",
+      "dmaic_phase": "CONTROL",
+      "root_id": null,
+      "owner": "REPO_OWNER",
+      "age": {
+        "first_observed": "2026-10-14",
+        "days": null
+      },
+      "measurement_value": null,
+      "acceptance_target": "effective required checks and eligible approval",
+      "proof_reference": null,
+      "overflow": false
+    }
+  ]
+}
