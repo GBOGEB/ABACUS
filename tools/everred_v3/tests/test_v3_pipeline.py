@@ -579,8 +579,6 @@ class NativeArtifactLinkage(unittest.TestCase):
     def test_native_bandit_artifact_bound_without_security_credit(self):
         from unittest.mock import patch
 
-        from native_ingest import collect_native
-
         run, jobs, artifact = self.base()
 
         class Stub:
@@ -605,7 +603,7 @@ class NativeArtifactLinkage(unittest.TestCase):
             "native_ingest._zip_from_github",
             return_value={"bandit.json": b'{"results":[]}'},
         ):
-            es = collect_native(REPO, SHA, 123, plan, reader=Stub())
+            es = native_ingest.collect_native(REPO, SHA, 123, plan, reader=Stub())
         bandit = [x for x in es if x["kind"] == "security_census"][0]
         self.assertEqual(bandit["evidence"]["raw_findings"], 0)
         self.assertEqual(
@@ -618,8 +616,6 @@ class NativeArtifactLinkage(unittest.TestCase):
         )
 
     def test_foreign_artifact_sha_rejected(self):
-        from native_ingest import collect_native
-
         run, jobs, artifact = self.base()
         artifact["workflow_run"]["head_sha"] = SHA2
 
@@ -631,7 +627,7 @@ class NativeArtifactLinkage(unittest.TestCase):
                 return [artifact]
 
         with self.assertRaises(InvalidEvidence):
-            collect_native(
+            native_ingest.collect_native(
                 REPO,
                 SHA,
                 123,
