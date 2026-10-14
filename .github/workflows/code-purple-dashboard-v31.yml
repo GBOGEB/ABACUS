@@ -8,7 +8,13 @@ on:
       - 'tools/everred_v3/sut_gui/tests/test_observability.py'
       - 'tools/everred_v3/sut_gui/visual_taxonomy_v4.json'
       - '.github/workflows/code-purple-dashboard-v31.yml'
+      - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Exact 40-hex source SHA to census read-only
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -106,3 +112,50 @@ jobs:
         run: |
           python -m compileall -q tools/everred_v3/sut_gui/test_observability.py
           python -m unittest discover -s tools/everred_v3/sut_gui/tests -p 'test_observability.py' -q
+
+  native-census:
+    name: Read-only exact-SHA test evidence producer
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Obtain versioned exact-source workflow/job census
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$TARGET_SHA" =~ ^[a-f0-9]{40}$ ]] || { echo 'Invalid exact SHA'; exit 2; }
+          python tools/everred_v3/sut_gui/test_observability.py \
+            --repo "$GITHUB_REPOSITORY" --sha "$TARGET_SHA" \
+            --run-limit 100 --job-limit 20 \
+            --out tools/everred_v3/sut_gui/evidence/latest.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path('tools/everred_v3/sut_gui/evidence/latest.json').read_text())
+          assert data['schema'] == 'code-purple.test-observability.v1'
+          assert data['repo'] == os.environ['GITHUB_REPOSITORY']
+          assert data['source_sha'] == os.environ['TARGET_SHA']
+          assert data['provenance'] == 'GITHUB_API_METADATA_ONLY'
+          assert data['authority_transfer'] is False
+          assert data['merge_authorized'] is False
+          assert data['runs']['observed'] > 0
+          print('Observational producer only, NOT coverage or admission PASS')
+          PY
+      - name: Publish observational JSON to workflow artifacts, never push
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: code-purple-test-observability-${{ inputs.target_sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 14
+          path: tools/everred_v3/sut_gui/evidence/latest.json
