@@ -5,8 +5,8 @@ Without an explicit config override, --include is ignored, reporting global
 repository coverage as if it were SUT server coverage. This test is independent
 of the execution environment and preserves strict threshold semantics.
 """
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -34,7 +34,7 @@ class CoverageWorkflowContract(unittest.TestCase):
     def test_threshold_not_relaxed_and_negative_receipt_is_failure(self):
         self.assertIn("totals['percent_statements_covered'] >= 80.0", self.source)
         self.assertIn("totals['percent_branches_covered'] >= 80.0", self.source)
-        self.assertIn("if-no-files-found: warn", self.source)
+        self.assertIn("if-no-files-found: error", self.source)
 
 
 if __name__ == "__main__":
