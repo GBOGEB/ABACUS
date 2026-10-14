@@ -81,7 +81,9 @@ def select_runs(payload: dict[str, Any] | None, sha: str) -> tuple[dict[str, dic
         return {}, False
     rows = payload.get("workflow_runs")
     total = payload.get("total_count")
-    if not isinstance(rows, list) or type(total) is not int or total < len(rows):
+    if not isinstance(rows, list) or type(total) is not int or total < 0:
+        raise ValueError("Workflow run pagination / denominator invalid")
+    if total < len(rows) and payload.get("source_complete") is not False:
         raise ValueError("Workflow run pagination / denominator invalid")
     good: dict[str, dict] = {}
     for row in rows:
@@ -102,7 +104,7 @@ def select_runs(payload: dict[str, Any] | None, sha: str) -> tuple[dict[str, dic
             old.get("created_at", ""), old["id"], old.get("run_attempt", 1)
         ):
             good[name] = row
-    return good, len(rows) == total
+    return good, payload.get("source_complete") is not False and len(rows) == total
 
 
 def workflow_gate(runs: dict[str, dict], names: tuple[str, ...],
@@ -189,7 +191,9 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
                  for name, spec in dag.items()}, "completeness": "UNKNOWN"}
     rows = payload.get("jobs")
     total = payload.get("total_count")
-    if not isinstance(rows, list) or type(total) is not int or total < len(rows):
+    if not isinstance(rows, list) or type(total) is not int or total < 0:
+        raise ValueError("DOW job census has invalid denominator")
+    if total < len(rows) and payload.get("source_complete") is not False:
         raise ValueError("DOW job census has invalid denominator")
     chosen: dict[str, dict] = {}
     for row in rows:
@@ -203,7 +207,7 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
         current = chosen.get(name)
         if current is None or row["id"] > current["id"]:
             chosen[name] = row
-    complete = total == len(rows)
+    complete = payload.get("source_complete") is not False and total == len(rows)
     # The API's page can be complete while GitHub has not instantiated jobs.
     # A queued workflow is not evidence that unlisted dependent jobs are absent.
     terminal_run = run_state(run) in {"PASS", "FAIL", "SKIPPED", "CANCELLED"}
