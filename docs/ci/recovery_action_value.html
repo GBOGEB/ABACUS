@@ -63,6 +63,7 @@ code{overflow-wrap:anywhere}
 <div class="bar" aria-label="Verified remaining errors if known"><div id="after-bar"></div></div>
 <p><a id="after-link" href="https://github.com/GBOGEB/ABACUS/pull/1966">Scoped fix PR #1966</a></p>
 </article></div><p class="muted">13 → 0 is recorded only after the expected changed-docs job finishes SUCCESS on the exact configured source SHA. PR-side clearance is not current-main clearance.</p>
+<p id="latest-docs-root" class="hold">Current-main additional documentation first-red: UNKNOWN.</p>
 </section>
 <section id="dow" class="panel"><h2>DOW first-red / reverse-pressure fan-out</h2>
 <p>Observed on main: <strong id="hooks">3</strong> failing hooks; <strong id="skipped">6</strong> downstream jobs skipped. A skip is not a repaired defect, and a potentially unblocked edge is not a verified executed job.</p>
@@ -89,6 +90,7 @@ code{overflow-wrap:anywhere}
 <section id="governance" class="panel" aria-labelledby="governance-title"><h2 id="governance-title">P0 protection — source-bound restoration, admission HOLD</h2>
 <p id="governance-state" class="proof">UNKNOWN — awaiting current-main rule readback</p>
 <p id="governance-rules" class="muted">Known ruleset: 0 → 3 rules; independent review and effective required CI checks are separate outstanding gates.</p>
+<p id="gov-first-red" class="hold">Current-main workflow-classification first-red: UNKNOWN.</p>
 <p class="muted"><a href="https://github.com/GBOGEB/ABACUS/settings/rules/24494381">Owner/admin ruleset</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1860">Governed recovery #1860</a>. A green docs or Ruff job cannot substitute for protected-branch admission.</p>
 </section>
 <section id="provenance" class="panel"><h2>Source identities and integrity guards</h2>
@@ -164,6 +166,18 @@ async function refresh(){
   }else{
    put("governance-state","UNKNOWN — known 3-rule snapshot is from "+gov.observed_main_sha+"; current main differs or unavailable");
   }
+ }
+ const reds=source.current_main_first_reds;
+ if(reds&&liveSha===reds.exact_main_sha&&reds.docs?.finding_count===33&&reds.workflow_governance?.unclassified_workflow_count===2){
+  const docs=$("latest-docs-root");docs.replaceChildren();
+  const a=document.createElement("a");a.href=reds.docs.job_url;a.textContent="Native current-main docs first-red";
+  docs.append("NEW main-side docs debt: 33 findings across V3.1 and V3.2 (separate from #1966's 13 resolved PR findings) · ",a," · candidate #1972, after-count UNKNOWN.");
+  const gov=$("gov-first-red");gov.replaceChildren();
+  const g=document.createElement("a");g.href=reds.workflow_governance.job_url;g.textContent="Native policy-and-inventory job";
+  gov.append("NEW main-side governance first-red: 2 unclassified SUT workflows plus stale generated report · ",g," · candidate #1973, closure UNKNOWN.");
+ }else{
+  put("latest-docs-root","Current-main latest documentation debt UNKNOWN; first-red source SHA is stale or unavailable.");
+  put("gov-first-red","Current-main workflow-governance root UNKNOWN; source SHA mismatch/unavailable.");
  }
  put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
  put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
