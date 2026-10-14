@@ -295,3 +295,18 @@ def test_disjoint_cli_writes_deterministic_receipt(tmp_path, monkeypatch):
     assert receipt["total_unique"] == 1
     assert receipt["exact_sha"] == "a" * 40
     assert receipt["security_disposition"] == "pending independent review"
+
+
+@pytest.mark.parametrize("empty_alias", [".", "./", "././", ".\\\\.", "./././"])
+def test_empty_normalized_filename_rejected_before_ownership(empty_alias):
+    with pytest.raises(ValueError, match="Unsafe empty report path"):
+        module.partition({"results": [finding(empty_alias, "B603")]}, "a" * 40)
+
+
+def test_b5_tests_directory_classifier_without_test_basename():
+    census = module.partition(
+        {"results": [finding("nested/tests/conftest.py", "B603")]}, "a" * 40
+    )
+    assert census["lanes"]["B5-tests"]["findings"] == 1
+    assert census["lanes"]["B3-subprocess"]["findings"] == 0
+
