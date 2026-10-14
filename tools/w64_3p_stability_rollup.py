@@ -84,7 +84,9 @@ def run_metric(run: dict[str, object], key: str) -> float:
 
 def comparable(a: dict[str, object], b: dict[str, object]) -> bool:
     return (
-        a.get("stratum") == b.get("stratum")
+        bool(a.get("stratum"))
+        and bool(a.get("measurement_contract"))
+        and a.get("stratum") == b.get("stratum")
         and a.get("measurement_contract") == b.get("measurement_contract")
     )
 
@@ -100,6 +102,8 @@ def speed_view(base: dict[str, object], current: dict[str, object]) -> dict[str,
 
 
 def classify(comparable_runs: list[dict[str, object]], current: dict[str, object]) -> tuple[str, list[str]]:
+    if measurement_errors(current) or any(measurement_errors(r) for r in comparable_runs):
+        return "INSUFFICIENT_EVIDENCE", ["incomplete_or_invalid_run_metrics"]
     if len(comparable_runs) < 3:
         return "INSUFFICIENT_EVIDENCE", ["fewer_than_3_comparable_valid_runs"]
     baseline = comparable_runs[0]
