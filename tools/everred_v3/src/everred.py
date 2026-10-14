@@ -360,9 +360,6 @@ def snapshot(events: list[dict]) -> dict:
         (e["sha"] for e in coverage if e["evidence"].get("scope") == "broad"), None
     )
 
-    def known(value):
-        return value if value is not None else "UNKNOWN"
-
     # Only infer exact data from recorded receipts. Never interpret raw scanner count as burndown.
     items = [
         {
