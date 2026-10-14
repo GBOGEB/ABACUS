@@ -101,7 +101,7 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertIn('r.before_findings===11&&r.after_findings===0', self.html)
 
     def test_main_coverage_is_measured_not_baseline_comparable(self):
-        m = self.data["coverage"]["current_main_measured"]
+        m = self.data["coverage"]["measured_main_at_sha"]
         self.assertEqual(m["exact_main_sha"], self.data["baseline"]["main_sha"])
         self.assertEqual(m["job_conclusion"], "success")
         self.assertEqual(m["covered_lines"], 17088)
@@ -115,6 +115,9 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertEqual(m["scope_vs_historical_main"], "NOT_RECONCILED")
         self.assertIsNone(m["comparable_delta_to_36_85_pp"])
         self.assertIsNone(self.data["coverage"]["current_main_comparable_pct"])
+        self.assertIsNone(self.data["coverage"]["latest_main_measured_pct"])
+        self.assertIn('liveSha===m.exact_main_sha', self.html)
+        self.assertIn('main advanced since measured source', self.html)
         self.assertIn("historical comparison NOT COMPARABLE", self.html)
 
     def test_dow_root_count_distinct_from_downstream_skip(self):
