@@ -1,4 +1,4 @@
-name: CODE PURPLE Dashboard V3.1
+name: CODE PURPLE Dashboard V3.2
 on:
   pull_request:
     paths:
@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: dashboard-v31-${{ github.ref }}
+  group: dashboard-v32-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   dashboard-contract:
@@ -57,7 +57,14 @@ jobs:
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v3.1' in html
+          assert 'code-purple.sut-gui.v3.2' in html
+          assert 'architecture-legend' in doc.ids
+          assert 'arch-loop feedback' in html
+          assert 'arch-loop feedforward' in html
+          assert 'P7 | CONDITIONAL YES ONLY' in html
+          assert 'Copyable Mermaid DAG source: strict forward graph / NO cycles' in html
+          assert 'NO / HOLD (red)' in html and 'YES / eligible path (green)' in html
+          assert 'Feedback and feedforward (separate control graph, NOT part of the DAG)' in html
           assert 'Cancelled = GitHub' in html
           assert 'Native paired outcome records: UNKNOWN' in html
           assert len(doc.scripts) == 1, 'expected inline JS'
