@@ -30,6 +30,7 @@ on:
       - 'tests/test_mip_statistical_readiness.py'
       - 'scripts/mip_native_metric_ingest.py'
       - 'tests/test_mip_native_metric_ingest.py'
+      - 'tests/test_mip_b9_missing_branches.py'
       - 'bootstrap_eval.py'
       - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
@@ -108,6 +109,8 @@ jobs:
             -p 'test_mip_statistical_readiness.py' -v
           python -m unittest discover -s tests \
             -p 'test_mip_native_metric_ingest.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_mip_b9_missing_branches.py' -v
           python scripts/mip_statistical_readiness.py \
             --input MIP/mip_statistical_observations.jsonl \
             --output test_reports/mip_statistical_readiness.json
