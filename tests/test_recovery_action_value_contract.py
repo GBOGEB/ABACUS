@@ -61,6 +61,29 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertFalse(d["governance"]["authority_transfer"])
         self.assertEqual(d["governance"]["observed_enforced_rule_count"], 0)
 
+    def test_native_scoped_ruff_receipt_is_not_full_dow_clearance(self):
+        r = self.data["candidates"]["dow_ruff"]
+        self.assertEqual(r["tool"], "ruff==0.17.0")
+        self.assertTrue(SHA.fullmatch(r["head_sha"]))
+        self.assertEqual(r["before_findings"], 11)
+        self.assertEqual(r["after_findings"], 0)
+        self.assertEqual(r["opened_occurrences"], 0)
+        self.assertEqual(r["resolved_occurrences"], 11)
+        self.assertEqual(r["net_reduction"], 11)
+        self.assertEqual(len(r["identical_scoped_paths"]), 4)
+        self.assertEqual(len(r["formatting_identical_paths"]), 3)
+        self.assertEqual(r["formatting_before"]["trailing_whitespace_lines"], 9)
+        self.assertEqual(r["formatting_after"]["trailing_whitespace_lines"], 0)
+        self.assertEqual(r["formatting_before"]["missing_final_newline_files"], 2)
+        self.assertEqual(r["formatting_after"]["missing_final_newline_files"], 0)
+        self.assertEqual(r["focused_regression_pass"], 6)
+        self.assertEqual(r["mainwide_precommit"], "NOT_VERIFIED")
+        self.assertTrue(r["artifact_zip_sha256"])
+        self.assertIsNone(
+            self.data["metrics_contract"]["verified_unblocked_downstream_jobs"]
+        )
+        self.assertIn('r.before_findings===11&&r.after_findings===0', self.html)
+
     def test_dow_root_count_distinct_from_downstream_skip(self):
         d = self.data["baseline"]["dow"]
         self.assertEqual(d["failed_hook_count"], 3)
