@@ -28,19 +28,27 @@ jobs:
       - name: Test allowlisted SUT harness and fail-closed controls
         run: |
           python -m pip install coverage==7.13.3
-          python -m coverage run --rcfile=/dev/null --branch --include='*/sut_gui/server.py' -m unittest discover -s tools/everred_v3/sut_gui/tests -p 'test_*.py' -q
+          python -m coverage run --rcfile=/dev/null --branch \
+            --include='*/sut_gui/server.py' -m unittest discover \
+            -s tools/everred_v3/sut_gui/tests -p 'test_*.py' -q
           mkdir -p tools/everred_v3/sut_gui/qa
-          python -m coverage json --rcfile=/dev/null -o tools/everred_v3/sut_gui/qa/native-coverage.json
+          python -m coverage json --rcfile=/dev/null \
+            -o tools/everred_v3/sut_gui/qa/native-coverage.json
           python - <<'PY'
           import json
           from pathlib import Path
           report=json.loads(Path('tools/everred_v3/sut_gui/qa/native-coverage.json').read_text())
           observed=list(report['files'])
-          assert len(observed) == 1 and observed[0].replace('\\', '/').endswith('tools/everred_v3/sut_gui/server.py'), f'wrong coverage source denominator: {observed}'
+          assert (len(observed) == 1 and observed[0].replace('\\', '/').endswith(
+              'tools/everred_v3/sut_gui/server.py'
+          )), f'wrong coverage source denominator: {observed}'
           totals=report['totals']
-          assert totals['num_statements'] > 0 and totals['num_branches'] > 0, 'coverage denominator missing'
-          print('SUT GUI server statement coverage',totals['percent_statements_covered'])
-          print('SUT GUI server branch coverage',totals['percent_branches_covered'])
+          assert (totals['num_statements'] > 0 and
+                  totals['num_branches'] > 0), 'coverage denominator missing'
+          print('SUT GUI server statement coverage',
+                totals['percent_statements_covered'])
+          print('SUT GUI server branch coverage',
+                totals['percent_branches_covered'])
           assert totals['percent_statements_covered'] >= 80.0
           assert totals['percent_branches_covered'] >= 80.0
           PY
@@ -79,15 +87,18 @@ jobs:
           assert html.startswith('<!doctype html>')
           structure = Structure()
           structure.feed(html)
-          assert structure.titles == 1, 'expected exactly one title element'
+          assert structure.titles == 1, 'expected one title element'
           assert structure.headings == 1, 'expected exactly one semantic h1'
           positive = Structure()
           positive.feed('<title>X</title><h1 class="title">Y</h1>')
           assert positive.titles == 1 and positive.headings == 1
-          for invalid in ('<title>X</title><div class="title">Y</div>', '<title>X</title><h1>A</h1><h1>B</h1>'):
+          for invalid in (
+              '<title>X</title><div class="title">Y</div>',
+              '<title>X</title><h1>A</h1><h1>B</h1>',
+          ):
               negative = Structure()
               negative.feed(invalid)
-              assert negative.headings != 1, 'negative heading fixture unexpectedly accepted'
+              assert negative.headings != 1, 'negative fixture accepted'
           must = {'refresh', 'run', 'token', 'profile', 'ci-body', 'connection'}
           assert must.issubset(structure.ids), must - structure.ids
           assert structure.scripts, 'JavaScript missing'
@@ -97,7 +108,7 @@ jobs:
 
       - name: Publish source-bound local coverage receipt
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
           name: code-purple-sut-coverage-py-${{ matrix.python-version }}
           if-no-files-found: error
