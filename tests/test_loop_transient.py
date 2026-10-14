@@ -7,7 +7,6 @@ from models.qps_line_s.ssot_tables import (
     static_heat_loads_w,
 )
 
-
 # --- NIST conductivity sanity ---
 
 def test_nist_k_at_4k():
