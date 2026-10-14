@@ -1,7 +1,8 @@
 """Fail-closed tests for Pandoc book outputs and input contract."""
+
+import importlib.util
 from pathlib import Path
 from unittest.mock import patch
-import importlib.util
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "build_book.py"
 spec = importlib.util.spec_from_file_location("dmaic_book_builder", SCRIPT)
