@@ -29,6 +29,11 @@ class TestPilotReceiptContractTests(TestCase):
             [{"status": "PASS"}, {"name": "ruff", "status": "SKIP"}], "fast"
         ))
 
+    def test_ci_fast_parity_skips_are_blocking(self):
+        self.assertEqual(("FAIL", 1), pilot.receipt_outcome(
+            [{"status": "PASS"}, {"status": "SKIP"}], "fast", parity=True
+        ))
+
     def test_unknown_check_state_is_never_pass(self):
         self.assertEqual(("FAIL", 1), pilot.receipt_outcome(
             [{"status": "UNKNOWN"}], "gate"
