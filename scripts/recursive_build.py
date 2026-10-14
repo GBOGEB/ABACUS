@@ -14,7 +14,7 @@ Recursive build orchestrator (lightweight stub):
 import argparse
 import csv
 import json
-from datetime import datetime, timezone
+import time
 from pathlib import Path
 
 
@@ -49,7 +49,7 @@ def main():
         return
 
     # Basic metrics
-    now = datetime.now(timezone.utc).date().isoformat()
+    now = time.strftime("%Y-%m-%d", time.gmtime())
     data = {
         "date": now,
         "iteration": 1,
