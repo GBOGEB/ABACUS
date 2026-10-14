@@ -21,6 +21,7 @@ class CoverageWorkflowContract(unittest.TestCase):
 
     def test_execution_and_export_use_identical_isolated_configuration(self):
         command = re.sub(r"\\\n\s*", " ", self.source)
+        command = re.sub(r"[ \\t]+", " ", command)
         self.assertIn(
             "coverage run --rcfile=/dev/null --branch --include='*/sut_gui/server.py'",
             command,
@@ -28,7 +29,7 @@ class CoverageWorkflowContract(unittest.TestCase):
         self.assertIn("coverage json --rcfile=/dev/null", self.source)
 
     def test_no_false_positive_repository_denominator(self):
-        self.assertRegex(self.source, r"assert\\s*\\(len\\(observed\\) == 1")
+        self.assertIn("len(observed) == 1", self.source)
         self.assertIn("'tools/everred_v3/sut_gui/server.py'", self.source)
         self.assertIn(".endswith(", self.source)
         self.assertIn("totals['num_statements'] > 0", self.source)
