@@ -7,8 +7,16 @@ from __future__ import annotations
 import json
 
 CLASSES = (
-    "CONTRACT", "GOVERNANCE", "CONTENT", "FORMAT", "SECURITY",
-    "COVERAGE", "RUNTIME", "PRODUCER", "INFRA", "UNKNOWN",
+    "CONTRACT",
+    "GOVERNANCE",
+    "CONTENT",
+    "FORMAT",
+    "SECURITY",
+    "COVERAGE",
+    "RUNTIME",
+    "PRODUCER",
+    "INFRA",
+    "UNKNOWN",
 )
 
 # Only explicit diagnostic codes; do not classify by guessing log text.
@@ -39,9 +47,11 @@ def annotate_join(report: dict, code_by_root: dict) -> dict:
         raise ValueError("report must be an object")
     if report.get("schema") != "bd.ldab.joined.census.v1":
         raise ValueError("canonical join schema required")
-    if (report.get("merge_admission") != "HOLD"
-            or report.get("authority_transfer") is not False
-            or report.get("security_waiver") is not False):
+    if (
+        report.get("merge_admission") != "HOLD"
+        or report.get("authority_transfer") is not False
+        or report.get("security_waiver") is not False
+    ):
         raise ValueError("admission boundary violated")
     rows = report.get("roots")
     if not isinstance(rows, list) or not isinstance(code_by_root, dict):
@@ -58,12 +68,14 @@ def annotate_join(report: dict, code_by_root: dict) -> dict:
         code = code_by_root.get(root)
         if code is not None and not isinstance(code, str):
             raise ValueError("diagnostic code must be text")
-        annotations.append({
-            "root_id": root,
-            "diagnostic_code": code,
-            "secondary_class": classify(code) if code is not None else "UNKNOWN",
-            "causal_root_confirmed": None,
-        })
+        annotations.append(
+            {
+                "root_id": root,
+                "diagnostic_code": code,
+                "secondary_class": classify(code) if code is not None else "UNKNOWN",
+                "causal_root_confirmed": None,
+            }
+        )
     return {
         "schema": "mip.root.taxonomy.annotations.v1",
         "source_schema": report["schema"],
@@ -75,5 +87,9 @@ def annotate_join(report: dict, code_by_root: dict) -> dict:
 
 
 def canonical_bytes(obj: dict) -> bytes:
-    return (json.dumps(obj, sort_keys=True, separators=(",", ":"),
-                       ensure_ascii=True, allow_nan=False) + "\n").encode()
+    return (
+        json.dumps(
+            obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False
+        )
+        + "\n"
+    ).encode()
