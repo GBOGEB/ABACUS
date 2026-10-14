@@ -1,0 +1,23 @@
+flowchart TD
+    M["MISSION: classify priority and scope"] --> W["WAVE: disjoint eligible repair slices"]
+    W --> P["PULSE: execute checks at exact SHA"]
+    P --> R["RECEIPT: native run/job evidence and denominator"]
+    R --> A{"P0 security / governance cleared?"}
+    A -->|No| H["HOLD: P0 overrides PCA / BT"]
+    A -->|Yes| D{"DoV / eligible dependency evidence complete?"}
+    D -->|No| Q["UNKNOWN: obtain proof, do not claim unlock"]
+    D -->|Yes| U["REALLOCATE: verified newly unblocked actions"]
+    H --> X["RECURSE: repeat first-red census"]
+    Q --> X
+    U --> X
+    X --> M
+    C["PCA readiness, not fitted score"] -.-> W
+    B["Empirical paired BT, not priority"] -.-> W
+    G["Confirmed causal reverse-pressure DAG"] -.-> D
+
+    classDef phase fill:#cfe6fa,color:#143756,stroke:#477ba8
+    classDef pause fill:#ffe2d5,color:#70321d,stroke:#c77456
+    classDef accepted fill:#dcf6e6,color:#164936,stroke:#3e8865
+    class M,W,P,R,X,C,B,G phase
+    class H,Q pause
+    class U accepted
