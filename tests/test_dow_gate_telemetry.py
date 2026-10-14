@@ -102,6 +102,22 @@ class RemainingGateTests(unittest.TestCase):
         self.assertEqual(result["gates"]["build-artifacts"]["status"], "SKIPPED")
         self.assertNotEqual(result["gates"]["dmaic-full-cycle"]["status"], "PASS")
 
+    def test_queued_dow_does_not_infer_missing_runner_or_downstream(self):
+        partial_jobs = {"total_count": 1, "jobs": [
+            {"id": 555, "name": "Lint & Validate",
+             "status": "queued", "conclusion": None}
+        ]}
+        result = inputs(
+            main_runs={"total_count": 1, "workflow_runs": [run(
+                "DOW + Recursive DMAIC - Unified CD Pipeline", 921, MAIN,
+                state="queued", result=None)]},
+            dow_jobs=partial_jobs,
+        )
+        self.assertEqual(result["gates"]["lint-and-validate"]["status"], "QUEUED")
+        self.assertEqual(result["gates"]["ci-rhel-8"]["status"], "UNKNOWN")
+        self.assertEqual(result["gates"]["ci-rhel-9"]["status"], "UNKNOWN")
+        self.assertEqual(result["gates"]["build-artifacts"]["status"], "UNKNOWN")
+
     def test_security_needs_all_four_exact_head_producers(self):
         items = [
             run("Security Scan — Ruff", 1, HEAD),
