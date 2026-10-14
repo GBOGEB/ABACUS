@@ -6,16 +6,16 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
-from everred import (
-    SCHEMA,
-    InvalidEvidence,
-    append_event,
-    coverage_rate,
-    overlap,
-    read_ledger,
-    snapshot,
-    validate_event,
-)
+import everred
+
+SCHEMA = everred.SCHEMA
+InvalidEvidence = everred.InvalidEvidence
+append_event = everred.append_event
+coverage_rate = everred.coverage_rate
+overlap = everred.overlap
+read_ledger = everred.read_ledger
+snapshot = everred.snapshot
+validate_event = everred.validate_event
 
 SHA = "e9f34b22967064c779891a4d2ac40541f370e812"
 WHEN = "2026-10-14T08:04:49Z"

@@ -5,27 +5,27 @@ import json
 import pathlib
 import sys
 import tempfile
-import urllib.error
 import unittest
+import urllib.error
 import zipfile
 from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
+import native_ingest
 from admission import GATES, effective_policy_from_rules, evaluate
 from control import append_history, history_record, read_history, recurrence_alerts
 from coordination import apply_operation, registry, sane_path
 from everred import InvalidEvidence, read_ledger, snapshot
-from native_ingest import (
-    GitHubReadOnly,
-    bandit_event,
-    coverage_event,
-    events_from_run,
-    junit_events,
-    runtime_event,
-    safe_zip_entries,
-    _zip_from_github,
-)
 from replay import check_manifest
+
+GitHubReadOnly = native_ingest.GitHubReadOnly
+_zip_from_github = native_ingest._zip_from_github
+bandit_event = native_ingest.bandit_event
+coverage_event = native_ingest.coverage_event
+events_from_run = native_ingest.events_from_run
+junit_events = native_ingest.junit_events
+runtime_event = native_ingest.runtime_event
+safe_zip_entries = native_ingest.safe_zip_entries
 
 SHA = "e9f34b22967064c779891a4d2ac40541f370e812"
 SHA2 = "b45cf45eaad8303c6c4287616492895be4638f56"
