@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import re
 from collections import defaultdict
 
 
@@ -116,22 +117,66 @@ def compute_metrics(events: list[dict], roots: dict) -> dict:
         e for e in events if e["kind"] == "occurrence" and e.get("root_id") in confirmed
     ]
     amp = round(len(occurrences) / len(confirmed), 2) if confirmed else None
-    consumers = set()
-    passed = set()
-    for rid, d in roots.items():
+    # Replays must be tied to the actual consumer head. Isolated merge-tree
+    # previews, older heads and manually imported PASS claims earn no credit.
+    expected = {}
+    complete_registry = True
+    for rid, root in roots.items():
         if rid not in confirmed:
             continue
-        for c in d.get("applicable_consumers") or []:
-            consumers.add((rid, c))
+        declared = root.get("applicable_consumers")
+        if not isinstance(declared, list):
+            complete_registry = False
+            continue
+        for consumer in declared:
+            if (
+                not isinstance(consumer, dict)
+                or not isinstance(consumer.get("consumer_id"), str)
+                or not consumer["consumer_id"]
+                or not isinstance(consumer.get("repository"), str)
+                or not consumer["repository"]
+                or not isinstance(consumer.get("head_sha"), str)
+                or not re.fullmatch(r"[0-9a-f]{40}", consumer["head_sha"])
+            ):
+                complete_registry = False
+                continue
+            key = (rid, consumer["consumer_id"])
+            if key in expected:
+                complete_registry = False
+                continue
+            expected[key] = (consumer["repository"], consumer["head_sha"])
+    native_pass = set()
     for e in events:
+        if e.get("kind") != "replay" or e.get("provenance") != "observed":
+            continue
+        evidence = e.get("evidence", {})
+        if not isinstance(evidence, dict):
+            continue
+        key = (e.get("root_id"), evidence.get("consumer_id"))
+        binding = evidence.get("source_binding")
+        if key not in expected or not isinstance(binding, dict):
+            continue
+        repo, sha = expected[key]
         if (
-            e["kind"] == "replay"
-            and e.get("root_id") in confirmed
-            and e.get("evidence", {}).get("status") == "PASS"
-            and e.get("sha")
+            e.get("repo") == repo
+            and e.get("sha") == sha
+            and binding.get("repository") == repo
+            and binding.get("source_sha") == sha
+            and type(binding.get("run_id")) is int
+            and binding["run_id"] > 0
+            and type(binding.get("job_id")) is int
+            and binding["job_id"] > 0
+            and evidence.get("proof_type") == "NATIVE_EXACT_HEAD_CI"
+            and evidence.get("status") == "PASS"
+            and evidence.get("job_status") == "completed"
+            and evidence.get("job_conclusion") == "success"
         ):
-            passed.add((e["root_id"], e["evidence"].get("consumer_id")))
-    replay = rate(len(consumers & passed), len(consumers)) if consumers else None
+            native_pass.add(key)
+    replay = (
+        rate(len(native_pass), len(expected))
+        if complete_registry and expected
+        else None
+    )
     closed = {
         e["root_id"]
         for e in events
@@ -169,7 +214,7 @@ def compute_metrics(events: list[dict], roots: dict) -> dict:
         "queue_wait_mean_seconds": round(sum(waits) / len(waits), 1) if waits else None,
         "security_comparable_pairs": burndown,
         "coverage_comparable_pairs": deltas,
-        "known_consumer_denominator": len(consumers) if consumers else None,
+        "known_consumer_denominator": len(expected) if complete_registry and expected else None,
         "queue_wait_samples": len(waits),
-        "method": "Only complete comparable evidence produces measured KPIs; absent denominator is null.",
+        "method": "Exact consumer-head, source-bound native PASS claims only; incomplete registries remain null. Source claims are not admission authority.",
     }
