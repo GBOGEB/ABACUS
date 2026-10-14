@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 import native_ingest
-from admission import GATES, effective_policy_from_rules, evaluate
+from admission import effective_policy_from_rules, evaluate
 from control import append_history, history_record, read_history, recurrence_alerts
 from coordination import apply_operation, registry, sane_path
 from everred import InvalidEvidence, read_ledger, snapshot
