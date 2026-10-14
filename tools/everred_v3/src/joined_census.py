@@ -6,7 +6,6 @@ scanner configurations, repositories, code revisions or causal hypotheses.
 
 from __future__ import annotations
 
-import hashlib
 from collections import defaultdict
 
 from everred import InvalidEvidence, valid_sha
