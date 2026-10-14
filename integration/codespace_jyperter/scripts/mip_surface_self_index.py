@@ -76,6 +76,7 @@ def classify(files: list[Path]) -> dict:
             "status": "green" if debug else "red",
             "signals": len(debug),
             "sample_paths": sample(debug),
+            "all_candidate_paths": sample(debug, limit=len(debug)),
             "sample_is_complete": len(debug) <= 12,
             "evidence_level": "SOURCE_DISCOVERY_ONLY",
             "native_debug_sessions": None,
