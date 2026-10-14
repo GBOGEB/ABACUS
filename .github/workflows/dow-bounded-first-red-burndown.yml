@@ -122,6 +122,10 @@ jobs:
               "after_findings": len(after),
               "opened_occurrences": sum(opened.values()),
               "resolved_occurrences": sum(resolved.values()),
+              "remaining_signatures": [dict(code=code, path=path, message=message, count=count)
+                                       for (code, path, message), count in sorted(b.items())],
+              "introduced_signatures": [dict(code=code, path=path, message=message, count=count)
+                                        for (code, path, message), count in sorted(opened.items())],
               "net_reduction": len(before) - len(after),
               "closure_unit": "Ruff finding occurrence, not root cause",
               "main_coverage": None,
