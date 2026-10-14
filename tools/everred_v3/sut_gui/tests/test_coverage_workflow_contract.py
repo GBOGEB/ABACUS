@@ -21,7 +21,7 @@ class CoverageWorkflowContract(unittest.TestCase):
 
     def test_execution_and_export_use_identical_isolated_configuration(self):
         command = re.sub(r"\\\n\s*", " ", self.source)
-        command = re.sub(r"[ \\t]+", " ", command)
+        command = re.sub(r" +", " ", command)
         self.assertIn(
             "coverage run --rcfile=/dev/null --branch --include='*/sut_gui/server.py'",
             command,
