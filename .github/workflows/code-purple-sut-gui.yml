@@ -58,7 +58,7 @@ jobs:
                   self._inside = False
               def handle_starttag(self, tag, attrs):
                   d = dict(attrs)
-              self.tags.add(tag)
+                  self.tags.add(tag)
                   if 'id' in d:
                       assert d['id'] not in self.ids, 'duplicate id'
                       self.ids.add(d['id'])
