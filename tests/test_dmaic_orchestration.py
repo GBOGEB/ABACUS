@@ -180,7 +180,11 @@ class DMAICTestOrchestrator:
         start_time = time.time()
         env = dict(os.environ)
         for key in list(env):
-            if key.startswith("COV_CORE_") or key == "COVERAGE_PROCESS_START":
+            # Nested pytest shall discover the SUT-local coverage configuration.
+            # Inherited CI config may omit the entire temporary workspace.
+            if key.startswith("COV_CORE_") or key in (
+                "COVERAGE_PROCESS_START", "COVERAGE_RCFILE"
+            ):
                 env.pop(key, None)
         env["COVERAGE_FILE"] = str(run_dir / ".coverage")
         result = subprocess.run(

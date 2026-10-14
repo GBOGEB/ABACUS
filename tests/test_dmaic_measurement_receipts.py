@@ -44,16 +44,40 @@ async def test_real_measurement_and_repeat(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_real_measurement_ignores_parent_coverage_config(tmp_path, monkeypatch):
+    """An outer CI config cannot silently omit the nested temporary SUT."""
+    (tmp_path / "test_sample.py").write_text(
+        "def test_real():\n    assert 2 + 2 == 4\n",
+        encoding="utf-8",
+    )
+    parent_config = tmp_path / "parent-coverage.toml"
+    parent_config.write_text(
+        "[tool.coverage.run]\n"
+        'source = ["."]\n'
+        'omit = ["*/test_sample.py"]\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("COVERAGE_RCFILE", str(parent_config))
+    metrics = await DMAICTestOrchestrator(tmp_path).measure_test_performance(
+        "test_sample.py"
+    )
+    assert metrics.total_tests == metrics.passed_tests == 1
+    assert metrics.coverage_score > 0.0
+
+
+@pytest.mark.asyncio
 async def test_measurement_scrubs_parent_pytest_cov_environment(tmp_path, monkeypatch):
     orchestrator = DMAICTestOrchestrator(tmp_path)
     monkeypatch.setenv("COV_CORE_SOURCE", "outer-source")
     monkeypatch.setenv("COV_CORE_CONFIG", "outer-config")
     monkeypatch.setenv("COV_CORE_DATAFILE", "outer-data")
     monkeypatch.setenv("COVERAGE_PROCESS_START", "outer-start")
+    monkeypatch.setenv("COVERAGE_RCFILE", "outer-config.toml")
 
     def run(cmd, **kwargs):
         child_env = kwargs["env"]
         assert "COVERAGE_PROCESS_START" not in child_env
+        assert "COVERAGE_RCFILE" not in child_env
         assert not any(key.startswith("COV_CORE_") for key in child_env)
         assert Path(child_env["COVERAGE_FILE"]).parent.parent == orchestrator.metrics_dir
 
