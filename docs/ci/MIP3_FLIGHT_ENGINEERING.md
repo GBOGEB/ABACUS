@@ -9,6 +9,12 @@ Convert MIP2 method qualification into an attributable, repeatable local-first
 
 ## SIPOC
 
+- Supplier: developer, scanner and CI.
+- Input: exact SHA, configuration, test corpus and tool versions.
+- Process: preflight -> seeded testflight -> postflight.
+- Output: evidence receipt, JUnit and artifact hashes.
+- Consumer: method registry, Mission Control and owner.
+
 ## Flight stages
 
 1. **F0 discovery:** enumerate Python, OS, tools, versions, executable paths,
