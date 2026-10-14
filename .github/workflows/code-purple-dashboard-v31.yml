@@ -70,12 +70,14 @@ jobs:
               'arch-hierarchy', 'arch-dag',
               'arch-wireframe', 'pca-live', 'bt-live',
               'mip-register', 'mip-grid', 'mip-overall',
+              'sipoc-drawing','sipoc-canvas','sipoc-zoom','sipoc-dialog',
+              'sipoc-reference','sipoc-dialog-content',
               'model-proof-register', 'pca-checks', 'bt-checks', 'sipoc'
           }
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v4.2' in html
+          assert 'code-purple.sut-gui.v4.3' in html
           assert 'architecture-legend' in doc.ids
           assert 'arch-loop feedback' in html
           assert 'arch-loop feedforward' in html
@@ -123,6 +125,33 @@ jobs:
           assert 'function protectionDisplay' in html
           assert 'function familyTag' in html
           print('Visual taxonomy disjointness contract PASS')
+          PY
+
+      - name: Assert four SIPOC swimlanes and exact adapter cell parity
+        run: |
+          python - <<'PY'
+          import html
+          import json
+          import re
+          from pathlib import Path
+          root=Path('tools/everred_v3/sut_gui')
+          source=json.loads((root/'mip_sipoc_adapter_v42.json').read_text())
+          view=(root/'dashboard_v3.html').read_text()
+          rows=source['sipoc']
+          assert len(rows)==4
+          assert view.count('class="sipoc-lane"')==4
+          assert view.count('class="sipoc-transfer"')==3
+          assert view.count('data-sipoc-role=')==20
+          assert view.count('class="sipoc-key ') == 8
+          blocks=[html.unescape(x) for x in re.findall(r'<div class="sipoc-block-body">(.*?)</div>',view,re.S)]
+          expected=[row[k] for row in rows for k in ('supplier','input','process','output','customer')]
+          assert blocks == expected, 'SIPOC drawing diverged from controlled source adapter'
+          assert 'class="sipoc-control feedback"' in view
+          assert 'class="sipoc-control feedforward"' in view
+          assert 'id="sipoc-reference"' in view
+          assert 'id="sipoc-dialog"' in view
+          assert 'Enlarge diagram' in view
+          print('SIPOC swimlanes PASS: 4 lanes, 20 source-bound cells, 3 handoffs, 2 independent control overlays')
           PY
 
       - name: Verify MIP/PCA/BT/SIPOC machine-readable action parity
