@@ -27,8 +27,10 @@ class LocalSUT(unittest.TestCase):
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
             result = manager.records[rid]
-            if result['status'] != 'RUNNING':
-                return result
+            # Status may become terminal before the receipt hash is finalized.
+            # Require the signed-off receipt, never accept a partial result.
+            if result['status'] != 'RUNNING' and result['receipt_sha256']:
+                return result.copy()
             time.sleep(.02)
         self.fail('execution not terminal')
 
