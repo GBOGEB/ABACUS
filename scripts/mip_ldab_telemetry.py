@@ -40,6 +40,20 @@ def _path(value: Any) -> str:
     return path
 
 
+def _candidate_class(path: str) -> str:
+    """Versioned lexical triage; never treat file names as executed tools."""
+    tokens = set(re.split(r"[^a-z0-9]+", path.lower())) - {""}
+    if tokens.intersection({
+        "debug", "lldb", "dap", "diagnostic", "diagnostics", "observability"
+    }):
+        return "explicit_debug"
+    if tokens.intersection({
+        "log", "logs", "logger", "logging", "trace", "tracing", "traceability"
+    }):
+        return "telemetry_logs_trace"
+    return "lexical_incidental"
+
+
 def _source_census(receipt: dict[str, Any], location: str) -> dict[str, Any]:
     _require(isinstance(receipt, dict), location + " receipt absent")
     assessments = receipt.get("assessments")
@@ -65,8 +79,40 @@ def _source_census(receipt: dict[str, Any], location: str) -> dict[str, Any]:
         and (status == "green") == (count > 0),
         location + " LDAB source status mismatch",
     )
+    full = lane.get("all_candidate_paths")
+    full_paths = None
+    inventory = None
+    if full is not None:
+        _require(
+            isinstance(full, list) and len(full) == count,
+            location + " full source inventory denominator mismatch",
+        )
+        full_paths = [_path(value) for value in full]
+        _require(
+            full_paths == sorted(set(full_paths))
+            and full_paths[:len(paths)] == paths,
+            location + " full source inventory order/sample mismatch",
+        )
+        counts = {
+            "explicit_debug": 0,
+            "telemetry_logs_trace": 0,
+            "lexical_incidental": 0,
+        }
+        inventory = []
+        for path in full_paths:
+            classification = _candidate_class(path)
+            counts[classification] += 1
+            inventory.append({"path": path, "source_class": classification})
+        _require(sum(counts.values()) == count, "source triage count mismatch")
+    else:
+        counts = None
+
     return {
         "candidate_file_count": count,
+        "inventory_complete": full_paths is not None,
+        "source_taxonomy": "ldab.lexical.v1",
+        "source_class_counts": counts,
+        "full_source_inventory": inventory,
         "sample_paths": paths,
         "sample_count": len(paths),
         "sample_truncated": count > len(paths),
