@@ -28,7 +28,8 @@ Run from the repository root:
 ```bash
 python tools/everred_v3/scripts/build_bd_queue.py
 python tools/everred_v3/scripts/build_bd_queue.py --check
-python -m unittest discover -s tools/everred_v3/tests -p test_bd_queue_dashboard.py -v
+python -m unittest discover -s tools/everred_v3/tests \
+  -p test_bd_queue_dashboard.py -v
 ```
 
 The normal `scripts/build_dashboard.py` invokes this generator as well, so
