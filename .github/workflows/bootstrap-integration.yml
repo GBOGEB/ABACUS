@@ -90,6 +90,11 @@ jobs:
           python -c "from tests.bootstrap_bridge import BootstrapBridge; print('✅ Bootstrap bridge importable')"
           ls -la bootstrap_eval.py tests/test_bootstrap_eval.py tests/bootstrap_bridge.py
 
+      - name: Validate CODE PURPLE native census contract
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_bootstrap_ldab_census.py' -v
+
       - name: Run Bootstrap Statistics Tests (pytest)
         run: |
           echo "📊 Running 28 Bootstrap Statistical Tests"
