@@ -1,6 +1,6 @@
 # MIP root taxonomy extension v1
 
-Status: PROPOSED / OBSERVATIONAL. No security waiver, approval, or merge authority.
+Status: PROPOSED / OBSERVATIONAL. No security waiver or merge authority.
 Canonical authority remains `docs/ci/BD_LDAB_JOIN_CONTRACT_20261014.md`,
 `tools/everred_v3/src/four_planes.py`, and the existing LDAB adapter.
 This extension does not replace their root IDs, schema, or evidence rules.
