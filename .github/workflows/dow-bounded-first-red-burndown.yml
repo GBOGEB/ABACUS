@@ -90,12 +90,34 @@ jobs:
           after, b = measure(head)
           opened = b - a
           resolved = a - b
+          format_paths = (
+              ".devcontainer/devcontainer.json",
+              "requirements.txt",
+              "qps_slide_reviewer/components/ui/label.tsx",
+          )
+
+          def formatting_debt(directory):
+              totals = {"trailing_whitespace_lines": 0, "missing_final_newline_files": 0}
+              for target in format_paths:
+                  raw = (directory / target).read_text(encoding="utf-8")
+                  totals["trailing_whitespace_lines"] += sum(
+                      line.endswith((" ", "\t")) for line in raw.splitlines()
+                  )
+                  totals["missing_final_newline_files"] += int(not raw.endswith("\n"))
+              return totals
+
+          format_before = formatting_debt(base)
+          format_after = formatting_debt(head)
+
           output = {
               "schema": "abacus.dow.ruff.scope-comparable.v1",
               "base_sha": os.environ["EXPECTED_BASE"],
               "head_sha": os.environ["EXPECTED_HEAD"],
               "tool": "ruff==0.17.0",
               "identical_paths": list(paths),
+              "formatting_identical_paths": list(format_paths),
+              "formatting_before": format_before,
+              "formatting_after": format_after,
               "before_findings": len(before),
               "after_findings": len(after),
               "opened_occurrences": sum(opened.values()),
@@ -110,6 +132,8 @@ jobs:
           destination = pathlib.Path(os.environ["RUNNER_TEMP"]) / "dow-ruff-scope-parity.json"
           destination.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n")
           print(json.dumps(output, sort_keys=True))
+          if any(format_after.values()):
+              raise SystemExit("Fail-closed: scoped pre-commit formatting debt remains")
           if len(before) == 0 or len(after) >= len(before) or opened:
               raise SystemExit("Fail-closed: no comparable reduction or newly introduced findings")
           PY
@@ -121,6 +145,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: dow-ruff-scope-parity-${{ github.sha }}
+          name: dow-ruff-scope-parity-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/dow-ruff-scope-parity.json
           if-no-files-found: warn
