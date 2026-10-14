@@ -62,13 +62,16 @@ jobs:
               'mini-queue', 'ci-filter', 'ci-family', 'trend-dialog',
               'test-architecture', 'producer-file', 'zoom-chart',
               'producer-metrics', 'expand-trend',
-              'ci-search', 'arch-hierarchy', 'arch-dag',
+              'ci-search', 'group-duplicates', 'abacus-badges',
+              'codex-badges', 'rules-badges', 'rules-explain',
+              'rules-list', 'rules-gap', 'pr-badges',
+              'arch-hierarchy', 'arch-dag',
               'arch-wireframe', 'pca-live', 'bt-live'
           }
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v4.0' in html
+          assert 'code-purple.sut-gui.v4.1' in html
           assert 'architecture-legend' in doc.ids
           assert 'arch-loop feedback' in html
           assert 'arch-loop feedforward' in html
@@ -100,11 +103,16 @@ jobs:
           assert axes['phase']['channel'] == 'explicit_P_number'
           assert axes['node_function']['channel'] == 'shape'
           assert axes['edge_flow']['channel'] == 'line_style_plus_label'
+          assert axes['repository_protection']['channel'] == 'card_border + explicit status text + scoped shield'
+          assert axes['workflow_repetition']['channel'] == 'expandable grouped cohort with preserved native run links'
           html = (root / 'dashboard_v3.html').read_text()
           for id in ('trend-dialog','zoom-chart','test-architecture','taxonomy-grid','producer-file','dmaic-list'):
               assert f'id="{id}"' in html
           for token in ('FEEDBACK', 'FEEDFORWARD', 'NO / HOLD', 'YES / eligible path'):
               assert token in html
+          assert 'function renderPolicy' in html
+          assert 'function protectionDisplay' in html
+          assert 'function familyTag' in html
           print('Visual taxonomy disjointness contract PASS')
           PY
 
