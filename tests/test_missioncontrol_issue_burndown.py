@@ -219,7 +219,12 @@ class TestMissionBurndown(unittest.TestCase):
 
     def test_paginated_issue_census_filters_pull_requests(self):
         first = [item(1885, "Dashboard health check failure")]
-        first.append(dict(item(100, "PR excluded"), pull_request={}))
+        first.append(
+            dict(
+                item(100, "PR excluded"),
+                pull_request={"url": "https://github.com/GBOGEB/ABACUS/pull/100"},
+            )
+        )
         second = [item(1929, "BD LDAB census")]
         next_url = (
             '<https://api.github.com/repos/GBOGEB/ABACUS/issues'
