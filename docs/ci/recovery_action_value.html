@@ -75,7 +75,8 @@ code{overflow-wrap:anywhere}
 </section>
 <section id="coverage" class="panel"><h2>Coverage / BD closure / admission remain independent</h2>
 <div class="scroll"><table><thead><tr><th>Metric</th><th>Verified historical baseline</th><th>Current comparable</th></tr></thead><tbody>
-<tr><td>Broad main coverage</td><td id="main-h">36.85%</td><td id="main-measured">UNKNOWN</td></tr>
+<tr><td>Measured predecessor-main broad coverage</td><td id="main-h">36.85% historical baseline</td><td id="main-measured">UNKNOWN</td></tr>
+<tr><td>Latest main broad coverage</td><td id="main-current-sha">UNKNOWN SHA</td><td id="main-live">UNKNOWN</td></tr>
 <tr><td>PR-side broad coverage</td><td id="pr-h">36.92%</td><td>UNKNOWN</td></tr>
 <tr><td>PR-side diff coverage</td><td id="diff-h">51%</td><td>UNKNOWN</td></tr>
 <tr><td>BD roots closed</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
@@ -109,13 +110,26 @@ async function refresh(){
  put("ruff-detail","Exact head "+r.head_sha+" · run "+r.workflow_run_id+" / job "+r.job_id+" · "+r.resolved_occurrences+" resolved, 0 introduced across "+r.identical_scoped_paths.length+" identical paths · 6 focused tests passed · formatting: 9 → 0 trailing whitespace lines and 2 → 0 missing final newlines on 3 paths. Full repo DOW and RHEL remain HOLD.");
  }else{put("ruff-score","UNKNOWN");put("ruff-state","UNKNOWN");put("ruff-detail","No accepted same-scope Ruff receipt; DOW after-state UNKNOWN.");}
  put("main-h",source.coverage.historical_main.value_pct+"%");
- const m=source.coverage.current_main_measured;
- if(m&&m.exact_main_sha===b.main_sha&&m.job_conclusion==="success"&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT"&&m.scope_vs_historical_main==="NOT_RECONCILED"&&m.covered_lines===17088&&m.num_statements===30735&&m.covered_branches===4200&&m.num_branches===8290){
-  put("main-measured",m.percent_combined_covered.toFixed(2)+"% measured; historical comparison NOT COMPARABLE");
+ const m=source.coverage.measured_main_at_sha;
+ if(m&&m.exact_main_sha===b.main_sha&&m.job_conclusion==="success"&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"&&m.scope_vs_historical_main==="NOT_RECONCILED"&&m.covered_lines===17088&&m.num_statements===30735&&m.covered_branches===4200&&m.num_branches===8290){
+  put("main-measured",m.percent_combined_covered.toFixed(2)+"% measured on "+m.exact_main_sha.slice(0,9)+"; historical comparison NOT COMPARABLE");
   const p=$("main-coverage-proof");p.replaceChildren();
-  const a=document.createElement("a");a.href=m.artifact_url;a.textContent="Exact-main coverage XML + DAB artifact";
-  p.append("Main "+m.exact_main_sha+" · "+m.covered_lines+"/"+m.num_statements+" covered statements ("+m.percent_statements_covered.toFixed(2)+"%) · "+m.covered_branches+"/"+m.num_branches+" branches ("+m.percent_branches_covered.toFixed(2)+"%) · branch-inclusive "+m.percent_combined_covered.toFixed(2)+"% · ",a,". This is not a certified increase over 36.85%.");
- }else{put("main-measured","UNKNOWN");put("main-coverage-proof","Current-main matched coverage artifact absent or invalid; no measured value credited.");}
+  const a=document.createElement("a");a.href=m.artifact_url;a.textContent="Predecessor-main coverage XML + DAB artifact";
+  p.append("Main as measured at "+m.exact_main_sha+" · "+m.covered_lines+"/"+m.num_statements+" covered statements ("+m.percent_statements_covered.toFixed(2)+"%) · "+m.covered_branches+"/"+m.num_branches+" branches ("+m.percent_branches_covered.toFixed(2)+"%) · branch-inclusive "+m.percent_combined_covered.toFixed(2)+"% · ",a,". No certified improvement over 36.85%.");
+ }else{put("main-measured","UNKNOWN");put("main-coverage-proof","Historical main coverage artifact absent or invalid; no value credited.");}
+ put("main-live","UNKNOWN");
+ put("main-current-sha","Main SHA UNKNOWN");
+ try{
+  const current=await getJSON("https://api.github.com/repos/"+source.subject_repo+"/branches/main");
+  const liveSha=current&&current.commit&&current.commit.sha;
+  if(!/^[0-9a-f]{40}$/.test(liveSha))throw Error("main branch identity missing");
+  put("main-current-sha",liveSha);
+  if(m&&liveSha===m.exact_main_sha&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"){
+   put("main-live",m.percent_combined_covered.toFixed(2)+"% SAME-SHA, historical comparator UNKNOWN");
+  }else{
+   put("main-live","UNKNOWN — main advanced since measured source");
+  }
+ }catch(e){put("main-live","UNKNOWN — branch readback unavailable");}
  put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
  put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
  $("before-link").href=b.docs.job_url;
