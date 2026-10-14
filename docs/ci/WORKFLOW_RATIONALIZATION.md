@@ -238,9 +238,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
+- `python -m pip install pytest numpy` — `book-build.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
-- `python -m pytest -q \` — `ci-abacus.yml`, `leg5-federation-dashboard-proof.yml`
 
 ## Control rule
 
