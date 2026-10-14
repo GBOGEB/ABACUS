@@ -27,7 +27,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test allowlisted SUT harness and fail-closed controls
         run: |
-          python -m unittest discover -s tools/everred_v3/sut_gui/tests -p test_server.py -q
+          python -m pip install coverage==7.13.3
+          python -m coverage run --branch --include='*/sut_gui/server.py' -m unittest discover -s tools/everred_v3/sut_gui/tests -p 'test_*.py' -q
+          mkdir -p tools/everred_v3/sut_gui/qa
+          python -m coverage json -o tools/everred_v3/sut_gui/qa/native-coverage.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          totals=json.loads(Path('tools/everred_v3/sut_gui/qa/native-coverage.json').read_text())['totals']
+          print('SUT GUI server statement coverage',totals['percent_statements_covered'])
+          print('SUT GUI server branch coverage',totals['percent_branches_covered'])
+          assert totals['percent_statements_covered'] >= 80.0
+          assert totals['percent_branches_covered'] >= 80.0
+          PY
       - name: Validate HTML structure and launch contract
         run: |
           python - <<'PY'
@@ -64,3 +76,11 @@ jobs:
           Path('/tmp/code-purple-sut-gui.js').write_text('\n'.join(structure.scripts))
           PY
           node --check /tmp/code-purple-sut-gui.js
+
+      - name: Publish source-bound local coverage receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: code-purple-sut-coverage-py-${{ matrix.python-version }}
+          if-no-files-found: warn
+          path: tools/everred_v3/sut_gui/qa/native-coverage.json
