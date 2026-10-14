@@ -6,6 +6,7 @@ on:
       - 'tools/everred_v3/sut_gui/DASHBOARD_V4_TEST_ARCHITECTURE.md'
       - 'tools/everred_v3/sut_gui/test_observability.py'
       - 'tools/everred_v3/sut_gui/tests/test_observability.py'
+      - 'tools/everred_v3/sut_gui/visual_taxonomy_v4.json'
       - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
 permissions:
@@ -75,6 +76,32 @@ jobs:
           Path('/tmp/dashboard-v31.js').write_text(doc.scripts[0])
           PY
           node --check /tmp/dashboard-v31.js
+      - name: Assert visual taxonomy color uniqueness and disjoint roles
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('tools/everred_v3/sut_gui')
+          taxonomy = json.loads((root / 'visual_taxonomy_v4.json').read_text())
+          assert taxonomy['schema'] == 'code-purple.visual-taxonomy.v4'
+          assert taxonomy['authority_transfer'] is False
+          outcomes = taxonomy['axes']['execution_outcome']['mapping']
+          assert len(outcomes) == 6
+          colors = [entry['color'] for entry in outcomes.values()]
+          assert len(set(colors)) == len(colors), 'native status colors reused'
+          axes = taxonomy['axes']
+          assert axes['owner']['channel'] == 'role_text'
+          assert axes['phase']['channel'] == 'explicit_P_number'
+          assert axes['node_function']['channel'] == 'shape'
+          assert axes['edge_flow']['channel'] == 'line_style_plus_label'
+          html = (root / 'dashboard_v3.html').read_text()
+          for id in ('trend-dialog','zoom-chart','test-architecture','taxonomy-grid','producer-file','dmaic-list'):
+              assert f'id="{id}"' in html
+          for token in ('FEEDBACK', 'FEEDFORWARD', 'NO / HOLD', 'YES / eligible path'):
+              assert token in html
+          print('Visual taxonomy disjointness contract PASS')
+          PY
+
       - name: Test normalized evidence producer and empirical model qualifications
         run: |
           python -m compileall -q tools/everred_v3/sut_gui/test_observability.py
