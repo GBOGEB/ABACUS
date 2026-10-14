@@ -224,12 +224,12 @@ def source_sha() -> str | None:
 
 
 
-def receipt_outcome(checks: list[dict], mode: str) -> tuple[str, int]:
+def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> tuple[str, int]:
     """Unexecuted checks cannot be reported as complete, especially in gate mode."""
     if any(c.get("status") == "FAIL" for c in checks):
         return "FAIL", 1
     if any(c.get("status") == "SKIP" for c in checks):
-        return ("FAIL", 1) if mode == "gate" else ("PARTIAL", 0)
+        return ("FAIL", 1) if mode == "gate" or parity else ("PARTIAL", 0)
     if any(c.get("status") != "PASS" for c in checks):
         return ("FAIL", 1) if mode == "gate" else ("PARTIAL", 0)
     return "PASS", 0
@@ -269,7 +269,7 @@ def main() -> int:
 
     failures = [c for c in checks if c.get("status") == "FAIL"]
     unverified = [c for c in checks if c.get("status") not in {"PASS", "FAIL"}]
-    outcome, exit_code = receipt_outcome(checks, args.mode)
+    outcome, exit_code = receipt_outcome(checks, args.mode, parity=args.parity)
     receipt = {
         "schema": "abacus.testpilot.preflight.v1",
         "source_sha": source_sha(),
