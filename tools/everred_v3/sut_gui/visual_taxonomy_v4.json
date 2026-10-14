@@ -72,6 +72,50 @@
         "feedback": "dashed amber | next-pulse recurrence/RCA",
         "feedforward": "double cyan | planned SUT preflight"
       }
+    },
+    "repository_protection": {
+      "channel": "card_border + explicit status text + scoped shield",
+      "mapping": {
+        "protected": {
+          "treatment": "green",
+          "label": "PROTECTED",
+          "meaning": "effective branch protection reported (independent merge approval not claimed)"
+        },
+        "unprotected": {
+          "treatment": "orange",
+          "label": "UNPROTECTED",
+          "meaning": "protection action outstanding"
+        },
+        "unknown": {
+          "treatment": "neutral",
+          "label": "UNKNOWN",
+          "meaning": "readback missing or unavailable"
+        }
+      }
+    },
+    "ruleset_configuration": {
+      "channel": "gold configuration count + action badge + expanded native rule names",
+      "mapping": {
+        "active": "gold",
+        "required_checks_missing": "orange",
+        "required_checks_configured": "green",
+        "unknown": "neutral"
+      },
+      "guard": "Count of rules is NOT the number of passing CI checks."
+    },
+    "workflow_family": {
+      "channel": "outlined badge with text family code, independent from execution outcome",
+      "mapping": {
+        "governance": "GOV (lilac outline)",
+        "measurement": "DATA (teal outline)",
+        "tests": "QA (blue outline)",
+        "security": "SEC (gold outline)",
+        "other": "OTHER (grey outline)"
+      }
+    },
+    "workflow_repetition": {
+      "channel": "expandable grouped cohort with preserved native run links",
+      "guard": "Roll-up affects presentation only; never removes runs from numerator/denominator."
     }
   },
   "constraints": [
@@ -81,7 +125,10 @@
     "Conditional green YES does not signify actual present admission.",
     "Forward DAG is acyclic; feedback/feedforward visualized in independent overlay.",
     "The rendered UI must retain text state labels for accessibility and disambiguation.",
-    "Repository test/coverage proof and physical plant safety colors are separate domains."
+    "Repository test/coverage proof and physical plant safety colors are separate domains.",
+    "Branch protected=true is not equivalent to admission PASS; show mandatory CI and review separately.",
+    "Configuration colors, execution colors, and ownership/phase markings must not be used as interchangeable evidence.",
+    "Workflow roll-ups retain native individual run IDs and SHA links for audit."
   ],
   "authority_transfer": false
 }
