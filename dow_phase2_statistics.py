@@ -57,6 +57,8 @@ def measure(source: Path, destination: Path, alpha: float = 0.05) -> Path:
         groups.setdefault(group, []).append(value)
     if len(groups) < 2 or any(len(values) < 2 for values in groups.values()):
         raise ValueError("at least two groups with two scores each are required")
+    if len(groups) > 32:
+        raise ValueError("at most 32 groups permitted for bounded comparisons")
     if sum(map(len, groups.values())) > 10000:
         raise ValueError("too many observations for bounded bootstrap")
     summaries = {}

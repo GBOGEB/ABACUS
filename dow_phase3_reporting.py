@@ -1,4 +1,4 @@
-"""Fail-closed DOW Phase 3 renderer of authenticated candidate Phase 2 data."""
+"""Fail-closed DOW Phase 3 renderer of digest-checked candidate data."""
 
 from __future__ import annotations
 

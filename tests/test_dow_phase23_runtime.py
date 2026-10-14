@@ -74,3 +74,13 @@ def test_rejects_unreadable_metadata(tmp_path):
 def test_rejects_missing_metadata(tmp_path):
     with pytest.raises(FileNotFoundError):
         report(tmp_path / 'no.json', tmp_path / 'reports')
+
+
+def test_group_count_bounded(tmp_path):
+    source = tmp_path / "many_groups.csv"
+    source.write_text(
+        "group,score\n" + "".join(f"g{i},1\ng{i},2\n" for i in range(33))
+    )
+    with pytest.raises(ValueError, match="at most 32 groups"):
+        measure(source, tmp_path / "out")
+    assert not (tmp_path / "out").exists()
