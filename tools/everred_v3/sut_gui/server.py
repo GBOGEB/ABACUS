@@ -44,12 +44,17 @@ def git_revision(path: Path):
         return None
 
 
+class _NoRedirect(request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise OSError("GitHub API redirect refused")
+
+
 def fetch_github(path: str, token: str | None):
     headers = {"Accept": "application/vnd.github+json", "User-Agent": UA, "X-GitHub-Api-Version": "2022-11-28"}
     if token:
         headers["Authorization"] = "Bearer " + token
     req = request.Request("https://api.github.com" + path, headers=headers)
-    with request.urlopen(req, timeout=7) as res:
+    with request.build_opener(_NoRedirect()).open(req, timeout=7) as res:
         if res.status != 200:
             raise OSError("GitHub HTTP " + str(res.status))
         data = res.read(1_500_001)
