@@ -34,7 +34,8 @@ jobs:
       - name: Run fail-closed book builder regression tests
         run: |
           python -m pip install pytest numpy
-          python -m pytest -q --confcutdir=tests/ci tests/ci/test_dmaic_book_builder_contract.py
+          python -m pytest -q --confcutdir=tests/ci \
+            tests/ci/test_dmaic_book_builder_contract.py
 
       - name: Build DMAIC V3 BOOK
         run: python scripts/build_book.py
