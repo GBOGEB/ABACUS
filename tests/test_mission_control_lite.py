@@ -8,7 +8,11 @@ class TestMissionControlLite(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"output.json"; p.write_text('{"ok":true}')
             r=receipt("m1","t1","root1","a"*40,"run1",[p])
-            self.assertTrue(verify(r))
+            self.assertTrue(verify(r, d))
+            p.write_text('{"ok":false}')
+            self.assertFalse(verify(r, d))
+            p.write_text('{"ok":true}')
+            self.assertTrue(verify(r, d))
             db=Path(d)/"registry.sqlite"
             ingest(db,r)
             result=census(db)
