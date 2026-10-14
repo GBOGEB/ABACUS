@@ -15,7 +15,10 @@ import re
 import subprocess
 import sys
 import time
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 compatibility
+    import tomli as tomllib
 from pathlib import Path
 
 import yaml
@@ -231,7 +234,7 @@ def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> t
     if any(c.get("status") == "SKIP" for c in checks):
         return ("FAIL", 1) if mode == "gate" or parity else ("PARTIAL", 0)
     if any(c.get("status") != "PASS" for c in checks):
-        return ("FAIL", 1) if mode == "gate" else ("PARTIAL", 0)
+        return ("FAIL", 1) if mode == "gate" or parity else ("PARTIAL", 0)
     return "PASS", 0
 
 
