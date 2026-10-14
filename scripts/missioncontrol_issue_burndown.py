@@ -9,13 +9,13 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import http.client
 import io
 import json
 import os
 import re
 import sys
 import urllib.parse
-import urllib.request
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -45,15 +45,26 @@ def sha256(content):
 def github_get(path, token):
     if not token:
         raise ValueError("read-only GitHub token required for live evidence")
-    url = API + path
-    req = urllib.request.Request(url, headers={
-        "Authorization": "Bearer " + token,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "ABACUS-MissionControl-Issue-Burndown",
-    })
-    with urllib.request.urlopen(req, timeout=25) as response:
-        return json.loads(response.read()), response.headers.get("Link", "")
+    if not path.startswith("/repos/" + REPO + "/"):
+        raise ValueError("GitHub endpoint outside authorized repository")
+    connection = http.client.HTTPSConnection("api.github.com", timeout=25)
+    try:
+        connection.request(
+            "GET",
+            path,
+            headers={
+                "Authorization": "Bearer " + token,
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "User-Agent": "ABACUS-MissionControl-Issue-Burndown",
+            },
+        )
+        response = connection.getresponse()
+        if response.status != 200:
+            raise ValueError(f"GitHub API HTTP {response.status}")
+        return json.loads(response.read()), response.getheader("Link", "")
+    finally:
+        connection.close()
 
 
 def next_link(link):
@@ -259,8 +270,8 @@ def emit(envelope, out):
     summary = [
         "# ABACUS — MissionControl horizontal issue burndown",
         "",
-        f"- Source main: \`{evidence['authority']['main_sha']}\`",
-        f"- Effective protected flag: \`{evidence['authority']['main_protected']}\`",
+        f"- Source main: `{evidence['authority']['main_sha']}`",
+        f"- Effective protected flag: `{evidence['authority']['main_protected']}`",
         f"- Open issues: **{counts['open_issues']}**",
         f"- Dashboard incidents: **{counts['dashboard_incidents']}** (same counts are not proof of duplicate root)",
         f"- Staged disjoint candidate locks: **{counts['worker_packets_staged']}**",
@@ -273,7 +284,7 @@ def emit(envelope, out):
     summary += [f"| {k} | {v} |" for k, v in counts["category_counts"].items()]
     summary += ["", "## Work packets"]
     for packet in plan["packets"]:
-        summary.append(f"- {packet['packet_id']} — \`{packet['owner_lock']}\` "
+        summary.append(f"- {packet['packet_id']} — `{packet['owner_lock']}` "
                        f"issues {packet['issues']}; STAGED only")
     summary.append("")
     payloads = {
@@ -283,7 +294,7 @@ def emit(envelope, out):
         "mission_summary.md": "\n".join(summary) + "\n",
     }
     for name, content in payloads.items():
-        (out / name).write_text(content, encoding="utf-8")
+        (out / name).write_bytes(content.encode("utf-8"))
     manifest = {"schema": "abacus.missioncontrol.issue_burndown.manifest.v1",
                 "repository": REPO, "main_sha": evidence["authority"]["main_sha"],
                 "sha256": {name: sha256(data) for name, data in sorted(payloads.items())}}
