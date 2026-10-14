@@ -1,14 +1,19 @@
 """Exact-head, graph fan-out and UNKNOWN regression controls for DOW telemetry."""
 from __future__ import annotations
 
+import io
 import json
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dow_gate_telemetry import (
-    build, coverage, markdown, mermaid, select_runs, workflow_dag,
+    affected, build, coverage, job_census, load, main, markdown, mermaid,
+    run_state, select_runs, workflow_dag, workflow_gate,
 )
 
 MAIN = "a" * 40
@@ -167,6 +172,178 @@ class RemainingGateTests(unittest.TestCase):
         self.assertIn(MAIN, markdown(report))
         self.assertIn("not a pass rate", report["observation_completeness"]["meaning"])
         self.assertIn("UNKNOWN", markdown(report))
+
+
+    def test_load_optional_and_invalid_json_object(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertIsNone(load(root, "missing.json"))
+            (root / "receipt.json").write_text("[]", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "not a JSON object"):
+                load(root, "receipt.json")
+            (root / "receipt.json").write_text('{"ok": true}', encoding="utf-8")
+            self.assertEqual(load(root, "receipt.json"), {"ok": True})
+
+    def test_run_state_all_nonterminal_and_unsupported(self):
+        self.assertEqual(run_state({"status": "queued"}), "QUEUED")
+        self.assertEqual(run_state({"status": "in_progress"}), "RUNNING")
+        self.assertEqual(run_state({"status": "completed", "conclusion": "cancelled"}), "CANCELLED")
+        self.assertEqual(run_state({"status": "completed", "conclusion": "neutral"}), "NEUTRAL")
+        self.assertEqual(run_state({"status": "completed", "conclusion": "failure"}), "FAIL")
+        self.assertEqual(run_state({"status": "completed", "conclusion": "unknown"}), "UNKNOWN")
+
+    def test_workflow_gate_negative_state_priority(self):
+        name = ("Gate",)
+        for state, conclusion, expected in (
+            ("completed", "failure", "FAIL"),
+            ("completed", "action_required", "HOLD"),
+            ("queued", None, "NONTERMINAL"),
+            ("in_progress", None, "NONTERMINAL"),
+            ("completed", "skipped", "NOT_PROVED"),
+            ("completed", "neutral", "NOT_PROVED"),
+            ("completed", "unclassified", "UNKNOWN"),
+        ):
+            with self.subTest(state=state, conclusion=conclusion):
+                item = run("Gate", 77, HEAD, state=state, result=conclusion)
+                self.assertEqual(
+                    workflow_gate({"Gate": item}, name, True)["status"],
+                    expected,
+                )
+        self.assertEqual(workflow_gate({}, name, False)["status"], "UNKNOWN")
+        self.assertEqual(workflow_gate({}, name, True)["status"], "NOT_OBSERVED")
+
+    def test_run_index_rejects_bad_identity_and_pagination(self):
+        item = run("CI/CD Test Suite", 12, HEAD)
+        mutations = [
+            ({"total_count": 0, "workflow_runs": [item]}, "pagination"),
+            ({"total_count": 1, "workflow_runs": [None]}, "Malformed"),
+            ({"total_count": 1, "workflow_runs": [dict(item, name="")]}, "identity"),
+            ({"total_count": 1, "workflow_runs": [dict(item, id="12")]}, "Run ID"),
+            ({"total_count": 1, "workflow_runs": [dict(item, run_attempt="1")]}, "Run ID"),
+            ({"total_count": 1, "workflow_runs": [dict(item, html_url="bogus")]}, "URL"),
+        ]
+        for payload, message in mutations:
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    select_runs(payload, HEAD)
+        older = dict(item, id=11, created_at="2026-10-13T00:00:00Z")
+        selected, complete = select_runs(
+            {"total_count": 2, "workflow_runs": [older, item]}, HEAD
+        )
+        self.assertTrue(complete)
+        self.assertEqual(selected["CI/CD Test Suite"]["id"], 12)
+        self.assertEqual(select_runs(None, HEAD), ({}, False))
+
+    def test_dag_bad_structures_and_missing_source(self):
+        for source in ("[]", "jobs: []", "jobs:\n  A: bad\n"):
+            with self.subTest(source=source):
+                with self.assertRaisesRegex(ValueError, "jobs absent|Malformed job"):
+                    workflow_dag(source)
+        with self.assertRaisesRegex(ValueError, "Unknown workflow dependency"):
+            workflow_dag("jobs:\n  A:\n    needs: [MISSING]\n")
+        with self.assertRaisesRegex(ValueError, "Unknown DOW job"):
+            affected(workflow_dag(YAML), "missing")
+        dag = workflow_dag("jobs:\n  A: {}\n  B:\n    needs: A\n")
+        self.assertEqual(affected(dag, "A"), ["B"])
+
+    def test_dow_job_receipt_validation_and_latest_job(self):
+        dag = workflow_dag(YAML)
+        dow = run("DOW + Recursive DMAIC - Unified CD Pipeline", 921, MAIN)
+        row = {"id": 123, "name": "Lint & Validate", "status": "completed",
+               "conclusion": "failure", "html_url": "https://github.com/ok"}
+        mutations = [
+            ({"total_count": 0, "jobs": [row]}, "denominator"),
+            ({"total_count": 1, "jobs": [None]}, "Invalid job ID"),
+            ({"total_count": 1, "jobs": [dict(row, run_id=777)]}, "Foreign run"),
+            ({"total_count": 1, "jobs": [dict(row, name=None)]}, "Unnamed job"),
+        ]
+        for payload, message in mutations:
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    job_census(payload, dow, dag)
+        newer = dict(row, id=124, status="completed", conclusion="success")
+        data = job_census(
+            {"total_count": 2, "jobs": [row, newer]}, dow, dag
+        )
+        self.assertEqual(data["jobs"]["lint-and-validate"]["job_id"], 124)
+        self.assertEqual(data["jobs"]["lint-and-validate"]["status"], "PASS")
+        self.assertEqual(data["jobs"]["ci-ubuntu"]["status"], "UNKNOWN")
+
+    def test_coverage_wrong_base_duplicate_and_diff_provenance(self):
+        receipt = {
+            "kind": "diff", "sha": HEAD, "base_sha": MAIN,
+            "covered": 87, "eligible": 100,
+            "scope_id": "changed-lines", "config_sha256": "c" * 64,
+            "run_id": 10, "artifact_id": 12,
+        }
+        self.assertEqual(
+            coverage({"receipts": [receipt]}, HEAD, "diff", MAIN)["numerator"],
+            87,
+        )
+        self.assertEqual(
+            coverage({"receipts": [receipt]}, HEAD, "diff", "d" * 40)["status"],
+            "UNKNOWN",
+        )
+        self.assertEqual(
+            coverage({"receipts": [receipt, receipt]}, HEAD, "diff", MAIN)["status"],
+            "UNKNOWN",
+        )
+        with self.assertRaisesRegex(ValueError, "receipts must be a list"):
+            coverage({"receipts": "incorrect"}, HEAD, "diff", MAIN)
+        with self.assertRaisesRegex(ValueError, "provenance"):
+            coverage({"receipts": [dict(receipt, artifact_id=None)]},
+                     HEAD, "diff", MAIN)
+
+    def test_cli_writes_three_evidence_outputs_without_runtime_inference(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            snapshot = root / "snapshots"
+            out = root / "outputs"
+            snapshot.mkdir()
+            (snapshot / "branch.json").write_text(
+                json.dumps({"commit": {"sha": MAIN}, "protected": False}),
+                encoding="utf-8",
+            )
+            for name in ("main-runs.json", "head-runs.json"):
+                (snapshot / name).write_text(
+                    json.dumps({"total_count": 0, "workflow_runs": []}),
+                    encoding="utf-8",
+                )
+            workflow = root / "dow.yml"
+            workflow.write_text(YAML, encoding="utf-8")
+            args = [
+                "dow_gate_telemetry.py", "--snapshot-dir", str(snapshot),
+                "--workflow", str(workflow), "--main-sha", MAIN,
+                "--head-sha", HEAD, "--output-dir", str(out),
+            ]
+            with patch.object(sys, "argv", args), redirect_stdout(io.StringIO()):
+                self.assertEqual(main(), 0)
+            payload = json.loads(
+                (out / "remaining-gates.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(payload["source"]["main_sha"], MAIN)
+            self.assertEqual(payload["gates"]["ci-rhel-9"]["status"], "UNKNOWN")
+            self.assertFalse(payload["admission"]["merge_authorized"])
+            self.assertIn("flowchart LR",
+                          (out / "remaining-gates.mmd").read_text())
+            self.assertIn("Highest dependency fan-out",
+                          (out / "remaining-gates.md").read_text())
+
+    def test_markdown_includes_native_identifiers_and_distinct_denominators(self):
+        report = inputs()
+        report["gates"]["lint-and-validate"].update({
+            "job_id": 391, "status": "FAIL", "downstream_count": 6,
+        })
+        report["gates"]["canonical_main_coverage"].update({
+            "numerator": 80, "denominator": 100,
+        })
+        report["gates"]["bd_distinct_roots"]["closed"] = 2
+        out = markdown(report)
+        self.assertIn("job 391", out)
+        self.assertIn("80/100", out)
+        self.assertIn("closed roots 2", out)
+        self.assertIn("potential descendants 6", out)
+
 
 
 if __name__ == "__main__":
