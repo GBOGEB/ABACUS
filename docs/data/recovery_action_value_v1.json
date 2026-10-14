@@ -145,8 +145,49 @@
       "collected_on_main": "TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"
     },
     "latest_main_readback_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
-    "latest_main_measured_pct": null,
-    "latest_main_coverage_status": "UNKNOWN_SOURCE_ADVANCED"
+    "latest_main_measured_pct": 54.65392575180766,
+    "latest_main_coverage_status": "VERIFIED_EXACT_SOURCE_MAIN",
+    "current_main_measured": {
+      "exact_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "workflow": "CI - ABACUS Matrix",
+      "run_id": 38592202379,
+      "job_id": null,
+      "artifact_id": 11909575868,
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202379/artifacts/11909575868",
+      "zip_sha256": "632185b94fd2dd1fca2b108f3d4b3cde75290ae8ce9e4bae6deffea5bbc9bb36",
+      "coverage_xml_sha256": "86174b8855be4574f355dfbbfa049755a60596a899aaa9840a751b27cc43f73c",
+      "coverage_version": "7.16.2",
+      "dab_schema": "abacus-coverage-dab/1.0.0",
+      "covered_lines": 17158,
+      "num_statements": 30815,
+      "covered_branches": 4233,
+      "num_branches": 8324,
+      "percent_combined_covered": 54.65392575180766,
+      "percent_lines": 55.68,
+      "percent_branches": 50.85,
+      "collection_files": 299,
+      "old_collection_files": 298,
+      "source_additions": [
+        "scripts/dow_first_red_census.py"
+      ],
+      "existing_file_coverage_changed_count": 0,
+      "complete_native_matrix": "success",
+      "baseline_36_85_scope_comparable": false
+    },
+    "sequential_main_comparison": {
+      "from_sha": "5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+      "to_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "before_pct": 54.54964766175529,
+      "after_pct": 54.65392575180766,
+      "delta_percentage_points": 0.1042780900523752,
+      "same_coverage_version": true,
+      "same_dab_schema": true,
+      "common_files": 298,
+      "added_files": 1,
+      "removed_files": 0,
+      "same_source_denominator": false,
+      "note": "Increase comes from an added highly covered source module, not increased coverage in 298 previously collected files. Not comparable to 36.85% legacy baseline."
+    }
   },
   "governance": {
     "main_protected_at_baseline": false,
