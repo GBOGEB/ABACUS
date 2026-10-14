@@ -1,0 +1,11 @@
+digraph S {
+  graph [rankdir=LR, bgcolor="transparent", pad="0.23", nodesep=".32", ranksep=".46", fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11, penwidth=1.3, margin=".20,.22"];
+  edge [color="#5C7087",penwidth=1.7,arrowsize=.7];
+  s [label="SUPPLIERS\nGitHub · CODEX\nRHEL / Docker owners",fillcolor="#E0EDFF",color="#3372C8"];
+  i [label="INPUTS\nExact SHA · job/run\nYAML · logs · digests",fillcolor="#EDE9FE",color="#7C3AED"];
+  p [label="PROCESS\nValidate → Ingest\nJoin → Replay → Review",fillcolor="#E3F8EC",color="#00836D"];
+  o [label="OUTPUTS\nCensus · root hypotheses\nKPIs · HOLD",fillcolor="#FFF2DA",color="#D97706"];
+  c [label="CUSTOMERS\nDOW · Mission Control\nIndependent reviewers",fillcolor="#E0EDFF",color="#3372C8"];
+  s->i->p->o->c;
+}

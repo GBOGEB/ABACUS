@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "abacus.everred.four_plane.receipt.v1",
+  "title": "EVERRED source-bound four-plane observation",
+  "type": "object",
+  "required": ["schema", "receipt_id", "plane", "domain", "source_binding", "data", "trust", "causal_disposition", "merge_authority"],
+  "properties": {
+    "schema": {"const": "abacus.everred.four_plane.receipt.v1"},
+    "receipt_id": {"type": "string", "pattern": "^FP-[0-9a-f]{28}$"},
+    "plane": {"enum": ["diagnostic", "runtime", "orchestration", "evidence"]},
+    "domain": {"type": "string", "minLength": 1},
+    "trust": {"enum": ["DECLARED_UNVERIFIED", "LOCAL_OBSERVED", "ARTIFACT_HASH_MATCHED"]},
+    "causal_disposition": {"const": "UNCLASSIFIED"},
+    "merge_authority": {"const": false},
+    "artifact_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "source_binding": {
+      "type": "object",
+      "required": ["repository", "source_sha", "run_id"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[\\w.-]+/[\\w.-]+$"},
+        "source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "run_id": {"type": "integer", "minimum": 1},
+        "job_id": {"type": ["integer", "null"], "minimum": 1},
+        "executed_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "data": {"type": "object"}
+  },
+  "additionalProperties": false
+}
