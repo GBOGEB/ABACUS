@@ -71,6 +71,10 @@ class LocalSUT(unittest.TestCase):
         self.assertIsNone(r['ruleset']['rule_count'])
         self.assertGreaterEqual(len(r['errors']), 4)
 
+    def test_api_redirect_refused(self):
+        with self.assertRaisesRegex(OSError, "redirect refused"):
+            mod._NoRedirect().redirect_request(None, None, 302, "redirect", {}, "https://other.example/")
+
     def test_symlink_rejected(self):
         (self.root / 'src' / 'unsafe.py').symlink_to(self.root / 'tests' / 'test_demo.py')
         manager = mod.RunManager(self.root, execution_enabled=True)
