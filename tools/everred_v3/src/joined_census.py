@@ -56,6 +56,7 @@ def join(events):
                 "events": [],
                 "first_red": [],
                 "bandit": [],
+                "bd_ldab": [],
                 "coverage": [],
                 "runtime": [],
                 "verification": [],
@@ -67,6 +68,17 @@ def join(events):
         g["events"].append(e["id"])
         if e.get("provenance") != "observed":
             g["unverified_entries"] += 1
+        if e["kind"] == "note" and ev.get("producer_schema") == "bd.ldab.joined.census.v1":
+            # A source-bound imported census is an observation, never a causal root.
+            # It shares the native run identity without rewriting BD/CI IDs.
+            g["bd_ldab"].append({
+                "event_id": e["id"],
+                "source_digest": ev.get("producer_sha256"),
+                "fingerprint_observations": ev.get("bandit_fingerprint_observations"),
+                "join_groups": ev.get("join_groups"),
+                "root_causality": "UNCONFIRMED",
+                "trust": "MANUAL_UNVERIFIED",
+            })
         if e["kind"] == "occurrence":
             g["first_red"].append(e["id"])
         if e["kind"] == "security_census" and ev.get("scanner") == "Bandit":
@@ -117,7 +129,7 @@ def join(events):
         g["job_ids"] = sorted(g["job_ids"])
         g["events"].sort()
         g["first_red"].sort()
-        for field in ("bandit", "coverage", "runtime", "verification"):
+        for field in ("bandit", "bd_ldab", "coverage", "runtime", "verification"):
             g[field].sort(key=lambda a: a["event_id"])
         g["first_red_count"] = len(g["first_red"])
         g["job_count"] = len(g["job_ids"])
