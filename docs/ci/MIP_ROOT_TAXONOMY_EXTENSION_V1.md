@@ -12,18 +12,18 @@ remedies. A failed job is not automatically a distinct causal root.
 
 ## Root classes (secondary labels, never replacement identities)
 
-| Code | Class | Decision rule |
-| --- | --- | --- |
-| CONTRACT | Test/consumer contract mismatch | Producer is valid but assertion rejects it |
-| GOVERNANCE | Policy/inventory divergence | Authoritative policy and derived inventory disagree |
-| CONTENT | Restricted-content security gate | Native security guard blocks changed content |
-| FORMAT | Source formatting or lint | Exact file/line and configured linter fail |
-| SECURITY | Scanner-confirmed finding | Scanner fingerprint, configuration and scope present |
-| COVERAGE | Test/coverage deficiency | Source-bound numerator and denominator present |
-| RUNTIME | Execution/transport/debugger | Authenticated session/run/port receipt present |
-| PRODUCER | Missing or invalid generated output | Artifact bytes and provenance examined |
-| INFRA | Runner/toolchain/transient | Native infrastructure failure, not presumed code defect |
-| UNKNOWN | Insufficient evidence | Keep first-red unresolved |
+| Code | Decision |
+| --- | --- |
+| CONTRACT | Producer and test contract disagree |
+| GOVERNANCE | Policy and inventory diverge |
+| CONTENT | Restricted-content guard blocks a change |
+| FORMAT | Linter identifies a source-format defect |
+| SECURITY | Scanner reports a scoped finding |
+| COVERAGE | Tested source numerator or denominator fails |
+| RUNTIME | Authenticated execution or debugger failure |
+| PRODUCER | Missing or invalid output artifact |
+| INFRA | Runner or toolchain failure |
+| UNKNOWN | Evidence insufficient |
 
 ## Observation contract
 
