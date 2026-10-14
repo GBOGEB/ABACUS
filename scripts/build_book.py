@@ -56,11 +56,11 @@ def build_pdf():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0:
+    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.pdf").is_file() and Path("build/DMAIC_V3_BOOK.pdf").stat().st_size > 0:
         print("✅ PDF built successfully: build/DMAIC_V3_BOOK.pdf")
         return True
     else:
-        print(f"❌ PDF build failed: {result.stderr}")
+        print(f"❌ PDF build failed or artifact missing/empty: {result.stderr}")
         return False
 
 
@@ -81,11 +81,11 @@ def build_html():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0:
+    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.html").is_file() and Path("build/DMAIC_V3_BOOK.html").stat().st_size > 0:
         print("✅ HTML built successfully: build/DMAIC_V3_BOOK.html")
         return True
     else:
-        print(f"❌ HTML build failed: {result.stderr}")
+        print(f"❌ HTML build failed or artifact missing/empty: {result.stderr}")
         return False
 
 
@@ -103,11 +103,11 @@ def build_epub():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0:
+    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.epub").is_file() and Path("build/DMAIC_V3_BOOK.epub").stat().st_size > 0:
         print("✅ EPUB built successfully: build/DMAIC_V3_BOOK.epub")
         return True
     else:
-        print(f"❌ EPUB build failed: {result.stderr}")
+        print(f"❌ EPUB build failed or artifact missing/empty: {result.stderr}")
         return False
 
 
