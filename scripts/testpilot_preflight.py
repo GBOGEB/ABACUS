@@ -9,12 +9,16 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import math
 import py_compile
 import re
 import subprocess
 import sys
 import time
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 compatibility
+    import tomli as tomllib
 from pathlib import Path
 
 import yaml
@@ -222,6 +226,19 @@ def source_sha() -> str | None:
     return values[0] if values else None
 
 
+
+def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> tuple[str, int]:
+    """Unexecuted checks cannot be reported as complete, especially in gate mode."""
+    if any(c.get("status") == "FAIL" for c in checks):
+        return "FAIL", 1
+    if any(c.get("status") == "SKIP" for c in checks):
+        return ("FAIL", 1) if mode == "gate" or parity else ("PARTIAL", 0)
+    if any(c.get("status") != "PASS" for c in checks):
+        return ("FAIL", 1) if mode == "gate" or parity else ("PARTIAL", 0)
+    return "PASS", 0
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["fast", "full", "gate"], default="fast")
@@ -230,6 +247,14 @@ def main() -> int:
     ap.add_argument("--coverage-floor", type=float)
     ap.add_argument("--receipt", default=str(DEFAULT_RECEIPT))
     args = ap.parse_args()
+
+    if args.coverage_floor is not None and (
+        not math.isfinite(args.coverage_floor)
+        or args.coverage_floor < 0
+        or args.coverage_floor > 100
+        or (args.mode == "gate" and args.coverage_floor < 75)
+    ):
+        ap.error("invalid coverage floor: gate mode requires at least 75%")
 
     files = parity_subject_files() if args.parity else changed_files()
     checks: list[dict] = [
@@ -246,6 +271,8 @@ def main() -> int:
         checks.append(coverage_check(floor))
 
     failures = [c for c in checks if c.get("status") == "FAIL"]
+    unverified = [c for c in checks if c.get("status") not in {"PASS", "FAIL"}]
+    outcome, exit_code = receipt_outcome(checks, args.mode, parity=args.parity)
     receipt = {
         "schema": "abacus.testpilot.preflight.v1",
         "source_sha": source_sha(),
@@ -259,8 +286,9 @@ def main() -> int:
         "parity_scope": args.parity,
         "subject_files": [str(p.relative_to(ROOT)) for p in files],
         "checks": checks,
-        "status": "FAIL" if failures else "PASS",
+        "status": outcome,
         "failure_count": len(failures),
+        "unverified_check_count": len(unverified),
     }
     receipt_path = Path(args.receipt)
     if not receipt_path.is_absolute():
@@ -268,7 +296,7 @@ def main() -> int:
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(receipt, indent=2))
-    return 1 if failures else 0
+    return exit_code
 
 
 if __name__ == "__main__":
