@@ -7,7 +7,6 @@ replaced by these bounded review profiles.
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from collections import deque
 from pathlib import Path
