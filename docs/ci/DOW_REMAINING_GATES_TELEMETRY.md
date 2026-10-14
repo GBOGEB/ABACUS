@@ -14,10 +14,11 @@ Run by PR for changed telemetry implementation, or via dispatch/schedule once
 landed on main. With read-only GitHub token it captures (1) authoritative main
 branch SHA and protected flag, (2) exact-main and exact-PR-head workflow run
 snapshots, (3) exact-main DOW jobs if that run is present in the enumerated
-window, and (4) the DOW YAML **from exact main**, not from a potentially modified
+window, and (4) the DOW YAML **from exact main**, not from a modified
 PR file. Native run/job IDs and URLs appear only if returned by GitHub.
 
 Artifacts:
+
 - `remaining-gates.json`: typed per-gate status, source SHA, run/job links,
   evidence completeness, nullable coverage/BD/Crew counts and critical nodes
 - `remaining-gates.md`: readable remaining-gates table, exact main/head and
