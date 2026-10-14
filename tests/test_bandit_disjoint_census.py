@@ -168,27 +168,130 @@ def test_mixed_safe_and_unsafe_paths_fail_atomically():
     assert len(report["results"]) == 2
 
 
+@pytest.mark.parametrize("unsafe", [
+    "C:relative.py", "D:/absolute.py", r"D:\\relative.py",
+    "src/../escape.py", r"src\\..\\escape.py",
+    "//host/share.py", r"\\\\host\\share.py",
+    "/absolute.py",
+])
+def test_drive_unc_and_traversal_are_rejected(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B105")]}, "f" * 40)
+
+
+def test_same_file_mixed_b3_b4_b5_rules_have_one_owner():
+    rows = [finding("tests/test_mix.py", "B603"),
+            finding("tests/test_mix.py", "B105", 2),
+            finding("tests/test_mix.py", "B101", 3)]
+    result = module.partition({"results": rows}, "f" * 40)
+    assert result["total_unique"] == 3
+    assert result["lanes"]["B5-tests"]["findings"] == 3
+    assert sum(v["files"] for v in result["lanes"].values()) == 1
+
+
+@pytest.mark.parametrize("invalid", [123, [], None, {"results": "invalid"},
+                                     {"results": [None]}])
+def test_malformed_report_fails_closed(invalid):
+    with pytest.raises((ValueError, AttributeError, TypeError)):
+        module.partition(invalid, "f" * 40)
+
+
+@pytest.mark.parametrize("malformed", [None, [], 12, "not a report"])
+def test_non_object_report_rejected_explicitly(malformed):
+    with pytest.raises(ValueError, match="Bandit JSON shall be an object"):
+        module.partition(malformed, "f" * 40)
+
+
+@pytest.mark.parametrize("malformed_row", [None, [], 12, "not a finding"])
+def test_non_object_finding_rejected_explicitly(malformed_row):
+    with pytest.raises(ValueError, match="Bandit finding shall be an object"):
+        module.partition({"results": [malformed_row]}, "f" * 40)
+
+
 @pytest.mark.parametrize(
-    "test_path",
-    ["tests/test_worker.py", "nested/tests/test_worker.py", "src/test_worker.py"],
+    ("path", "rule", "expected_lane"),
+    [
+        ("src/worker.py", "B603", "B3-subprocess"),
+        ("src/worker.py", "B602", "B3-subprocess"),
+        ("src/worker.py", "B609", "B3-subprocess"),
+        ("src/worker.py", "B105", "B4-files-secrets"),
+        ("src/worker.py", "B404", "B4-files-secrets"),
+        ("src/worker.py", "B701", "B2-source"),
+        ("tests/helper.py", "B603", "B5-tests"),
+        ("src/test_worker.py", "B105", "B5-tests"),
+    ],
 )
-def test_nested_test_file_ownership_overrides_subprocess_rules(test_path):
-    """A test file with multiple rules belongs to a single B5 owner."""
-    rows = [finding(test_path, "B603"), finding(test_path, "B105", 2)]
-    result = module.partition({"results": rows}, "b" * 40)
-    assert result["total_unique"] == 2
-    assert result["lanes"]["B5-tests"]["findings"] == 2
-    assert result["lanes"]["B3-subprocess"]["findings"] == 0
-    assert result["lanes"]["B4-files-secrets"]["findings"] == 0
-    assert result["authority_transfer"] is False
+def test_rule_and_file_classification_branches(path, rule, expected_lane):
+    census = module.partition({"results": [finding(path, rule)]}, "a" * 40)
+    assert census["total_unique"] == 1
+    assert census["lanes"][expected_lane]["findings"] == 1
+    assert sum(x["findings"] for x in census["lanes"].values()) == 1
 
 
-def test_normalized_paths_deduplicate_identical_bandit_findings():
-    """Equivalent source paths do not inflate the finding denominator."""
-    result = module.partition(
-        {"results": [finding("src\\\\a.py", "B603"), finding("src/a.py", "B603")]},
-        "b" * 40,
-    )
-    assert result["total_unique"] == 1
-    assert result["lanes"]["B3-subprocess"]["files"] == 1
-    assert result["lanes"]["B3-subprocess"]["findings"] == 1
+def test_file_owner_priority_reassigns_all_rows_to_subprocess():
+    census = module.partition({"results": [
+        finding("pkg/tool.py", "B701", 1),
+        finding("pkg/tool.py", "B105", 2),
+        finding("pkg/tool.py", "B603", 3),
+    ]}, "a" * 40)
+    assert census["total_unique"] == 3
+    assert census["lanes"]["B3-subprocess"]["findings"] == 3
+    assert all(census["lanes"][lane]["findings"] == 0 for lane in
+               ("B2-source", "B4-files-secrets", "B5-tests"))
+
+
+def test_deduplication_key_distinguishes_issue_text():
+    a = finding("pkg/tool.py", "B105")
+    b = dict(a)
+    a["issue_text"] = "first finding"
+    b["issue_text"] = "second finding"
+    census = module.partition({"results": [a, b]}, "a" * 40)
+    items = census["lanes"]["B4-files-secrets"]["items"]
+    assert len(items) == 2
+    assert len({item["fingerprint"] for item in items}) == 2
+
+
+def test_empty_findings_preserve_four_disjoint_lanes_and_no_approval():
+    census = module.partition({"results": []}, "a" * 40)
+    assert set(census["lanes"]) == {
+        "B2-source", "B3-subprocess", "B4-files-secrets", "B5-tests"
+    }
+    assert census["security_disposition"] == "pending independent review"
+    assert census["authority_transfer"] is False
+
+
+@pytest.mark.parametrize("invalid_sha", ["short", "G" * 40, "A" * 40])
+def test_disjoint_cli_rejects_invalid_sha(tmp_path, monkeypatch, invalid_sha):
+    import sys
+    report = tmp_path / "bandit.json"
+    report.write_text('{"results": []}', encoding="utf-8")
+    output = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_disjoint_census.py", "--report", str(report),
+        "--exact-sha", invalid_sha, "--out", str(output),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        module.main()
+    assert exc.value.code == 2
+    assert not output.exists()
+
+
+def test_disjoint_cli_writes_deterministic_receipt(tmp_path, monkeypatch):
+    import json
+    import sys
+    report = tmp_path / "bandit.json"
+    report.write_text(json.dumps({"results": [finding("src/a.py", "B603")]}),
+                      encoding="utf-8")
+    output = tmp_path / "nested" / "disjoint.json"
+    monkeypatch.setattr(sys, "argv", [
+        "bandit_disjoint_census.py", "--report", str(report),
+        "--exact-sha", "a" * 40, "--out", str(output),
+    ])
+    module.main()
+    first = output.read_bytes()
+    module.main()
+    assert output.read_bytes() == first
+    receipt = json.loads(first)
+    assert receipt["total_unique"] == 1
+    assert receipt["exact_sha"] == "a" * 40
+    assert receipt["security_disposition"] == "pending independent review"

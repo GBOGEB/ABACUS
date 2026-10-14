@@ -9,12 +9,16 @@ from pathlib import Path
 
 
 def partition(report: dict, sha: str) -> dict:
+    if not isinstance(report, dict):
+        raise ValueError("Bandit JSON shall be an object")
     findings = report.get("results")
     if not isinstance(findings, list):
         raise ValueError("Bandit JSON shall contain a results array")
     lanes = {name: [] for name in ("B2-source", "B3-subprocess", "B4-files-secrets", "B5-tests")}
     seen = set()
     for finding in findings:
+        if not isinstance(finding, dict):
+            raise ValueError("Bandit finding shall be an object")
         path = finding.get("filename")
         rule = finding.get("test_id")
         line = finding.get("line_number")
