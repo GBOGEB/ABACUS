@@ -42,7 +42,7 @@ jobs:
           test "${#EXPECTED_BASE}" -eq 40
           git worktree add --detach "$RUNNER_TEMP/dow-baseline" "$EXPECTED_BASE"
       - name: Install pinned measurement tools
-        run: python -m pip install "ruff==0.17.0" "pytest==8.4.2"
+        run: python -m pip install "ruff==0.17.0" "pytest==8.4.2" "numpy==2.3.4"
       - name: Scope-comparable fingerprint burndown
         shell: bash
         env:
