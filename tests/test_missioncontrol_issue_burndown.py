@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import json
 import tempfile
@@ -93,7 +94,13 @@ class TestMissionBurndown(unittest.TestCase):
                     mod.build(case)
 
     def test_determinism_and_sha_manifest(self):
-        with tempfile.Te               "Broken internal links | 53",
+        with tempfile.TemporaryDirectory() as d:
+            e = envelope(
+                [
+                    item(
+                        1885,
+                        "Dashboard health check failure",
+                        "Broken internal links | 53",
                     ),
                     item(1861, "P1 issue"),
                 ]
@@ -105,7 +112,9 @@ class TestMissionBurndown(unittest.TestCase):
             self.assertEqual(before, {x.name: x.read_bytes() for x in p.iterdir()})
             m = json.loads((p / "manifest.json").read_text())
             for name, digest in m["sha256"].items():
-                self.assertEqual(mod.sha256((p / name).read_text()), digest)
+                self.assertEqual(
+                    hashlib.sha256((p / name).read_bytes()).hexdigest(), digest
+                )
 
     def test_pagination_host_guard(self):
         self.assertEqual(
