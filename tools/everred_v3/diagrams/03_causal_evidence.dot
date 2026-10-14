@@ -1,0 +1,17 @@
+digraph causal {
+ graph [rankdir=LR,bgcolor="#0d1020",pad="0.5",ranksep="0.63",nodesep="0.35",splines=polyline,fontname="DejaVu Sans",labelloc=t,label=<<FONT POINT-SIZE="24" COLOR="#f4efff"><B>EVERRED / V3     CAUSAL EVIDENCE GRAPH</B></FONT><BR/><FONT POINT-SIZE="12" COLOR="#aea6c6">Many occurrences ≠ many causes     |     shared signature ≠ proven common cause</FONT>>];
+ node[shape=box,style="rounded,filled",fillcolor="#232540",color="#6c6b98",fontcolor="#f4efff",fontname="DejaVu Sans",fontsize=10,margin="0.19,0.13"];
+ edge[color="#8583a5",penwidth=1.3,arrowsize=0.6];
+ o1[label="PR #A\noccurrence 1"];o2[label="PR #B\noccurrence 2"];o3[label="RHEL/LDAB\noccurrence 3"];
+ s1[label="Signature S1\nnormalized hash",color="#a88bff"];s2[label="Signature S2\ndifferent symptom",color="#a88bff"];
+ h[label="Hypothesis H1",fillcolor="#352c4b"];h2[label="Unattributed",fillcolor="#43223b",color="#ee83a1"];
+ cf[label="Counterfactual RCA\nmain / PR / environment"]; q[label="Cause verified?",shape=diamond,fillcolor="#38304a"];
+ u[label="Candidate only\nno admission",fillcolor="#43223b",color="#ee83a1"];
+ r[label="Persistent root ID\nABACUS-RC-...",fillcolor="#32274c",color="#b299ff"];
+ lease[label="Owner / path lease"];fix[label="Canonical repair"];proof[label="Producer proof +\nnegative tests",color="#53caba",fillcolor="#203b3b"];
+ c1[label="Consumer A\nisolated replay"];c2[label="Consumer B\nisolated replay"];
+ gate[label="Independent\nadmission gate",shape=diamond,fillcolor="#38304a"];
+ main[label="Exact-main receipt",color="#53caba",fillcolor="#203b3b"];
+ sentinel[label="Recurrence sentinel",color="#53caba",fillcolor="#203b3b"];
+ o1->s1;o2->s1;o3->s2;s1->h;s2->h2;h->cf->q;q->u[label="no",color="#ee83a1"];q->r[label="yes",color="#53caba"];r->lease->fix->proof;proof->c1;proof->c2;c1->gate;c2->gate;gate->main->sentinel;
+}

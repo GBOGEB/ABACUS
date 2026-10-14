@@ -1,0 +1,260 @@
+{
+  "schema": "abacus.everred.snapshot.v3",
+  "generated_at": "2026-10-14T09:56:16.600324+00:00",
+  "mode": "HISTORICAL_EVIDENCE_NOT_LIVE",
+  "repository": "GBOGEB/ABACUS",
+  "base_sha": "e9f34b22967064c779891a4d2ac40541f370e812",
+  "events_count": 14,
+  "root_count": 2,
+  "roots": [
+    {
+      "id": "CANDIDATE-DMAIC-1914",
+      "title": "DMAIC missing measurement receipts",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": null,
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010346/job/115748918574",
+      "provenance": "historical_source"
+    },
+    {
+      "id": "CANDIDATE-SAFETY-1914",
+      "title": "Safety exit 64",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": null,
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010346",
+      "provenance": "historical_source"
+    }
+  ],
+  "metrics_derived": {
+    "occurrence_amplification": null,
+    "consumer_replay_coverage_pct": null,
+    "recurrence_rate_pct": null,
+    "queue_wait_mean_seconds": null,
+    "security_comparable_pairs": [],
+    "coverage_comparable_pairs": [],
+    "known_consumer_denominator": null,
+    "queue_wait_samples": 0,
+    "method": "Only complete comparable evidence produces measured KPIs; absent denominator is null."
+  },
+  "occurrences": [
+    {
+      "evidence": {
+        "job_id": "115748918574",
+        "run_id": "38532010346",
+        "signature": "RuntimeError: Measurement reports missing",
+        "test": "tests/test_dmaic_measurement_receipts.py::test_real_measurement_and_repeat",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010346/job/115748918574"
+      },
+      "id": "HIST-1914-010",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    }
+  ],
+  "coverage_scopes": {
+    "focused:statements": {
+      "value": 80.33,
+      "covered": 49,
+      "eligible": 61,
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812",
+      "config_id": "#1914-bandit-focused",
+      "run_id": "38532010232",
+      "reported_combined": 82.8,
+      "provenance": "historical_source"
+    },
+    "changed_lines:lines": {
+      "value": 100.0,
+      "covered": 3,
+      "eligible": 3,
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812",
+      "config_id": "#1914-pr-changed-source",
+      "run_id": "38532010346",
+      "reported_combined": null,
+      "provenance": "historical_source"
+    },
+    "broad:statements": {
+      "value": 43.76,
+      "covered": 12731,
+      "eligible": 29093,
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812",
+      "config_id": "#1914-broad-ci-statement",
+      "run_id": "38532010346",
+      "reported_combined": 42.63,
+      "provenance": "historical_source"
+    }
+  },
+  "security_scans": [
+    {
+      "evidence": {
+        "config_digest": "UNKNOWN",
+        "fingerprint_burndown": null,
+        "raw_findings": 6363,
+        "run_id": "38532010346",
+        "scanner": "Bandit",
+        "scope": "full"
+      },
+      "id": "HIST-1914-007",
+      "kind": "security_census",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "config_digest": "UNKNOWN",
+        "fingerprint_burndown": null,
+        "raw_findings": 3,
+        "run_id": "38532010346",
+        "scanner": "Bandit",
+        "scope": "separately_configured"
+      },
+      "id": "HIST-1914-008",
+      "kind": "security_census",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "cause": "UNKNOWN",
+        "exit_code": 64,
+        "run_id": "38532010346",
+        "scanner": "Safety",
+        "status": "RED"
+      },
+      "id": "HIST-1914-009",
+      "kind": "security_census",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    }
+  ],
+  "admissions": [
+    {
+      "evidence": {
+        "decision": "HOLD",
+        "gates": {
+          "branch_protection": "RED",
+          "coverage": "RED",
+          "exact_head_ci": "RED",
+          "independent_review": "UNKNOWN",
+          "review_conversations": "UNKNOWN",
+          "security": "RED",
+          "workflow_governance": "PASS"
+        }
+      },
+      "id": "HIST-1914-014",
+      "kind": "admission",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    }
+  ],
+  "other_events": [
+    {
+      "evidence": {
+        "name": "Bandit disjoint census",
+        "run_id": "38532010232",
+        "statements_covered": 49,
+        "statements_eligible": 61,
+        "status": "PASS",
+        "tests_passed": 52,
+        "tests_total": 52,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010232"
+      },
+      "id": "HIST-1914-001",
+      "kind": "verification",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "name": "Workflow governance",
+        "run_id": "38532010504",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010504",
+        "workflow_inventory": 156
+      },
+      "id": "HIST-1914-002",
+      "kind": "verification",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "artifact_id": "11878143808",
+        "name": "MIP B0 canonical",
+        "run_id": "38532010296",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010296"
+      },
+      "id": "HIST-1914-003",
+      "kind": "verification",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "branch": "main",
+        "effective_protection": false,
+        "main_sha": "02cca5020d59cc339cea486ed38857f53eea3e88",
+        "ruleset_id": 24494381,
+        "state": "HISTORICAL",
+        "url": "https://github.com/GBOGEB/ABACUS/settings/rules/24494381"
+      },
+      "id": "HIST-1914-013",
+      "kind": "governance",
+      "occurred_at": "2026-10-14T08:04:49Z",
+      "provenance": "historical_source",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    }
+  ],
+  "kpis": [
+    {
+      "name": "confirmed_roots",
+      "value": 0,
+      "denominator": null,
+      "status": "OBSERVED",
+      "scope": "ledger"
+    }
+  ],
+  "kpi_unknowns": [
+    "occurrence_amplification",
+    "root_fanout",
+    "recurrence_rate",
+    "consumer_replay_coverage",
+    "root_lead_time",
+    "queue_wait_time",
+    "security_fingerprint_burndown",
+    "governed_admission_ratio",
+    "ldab_active_sessions",
+    "rhel_verified_jobs",
+    "cross_pr_replay_rate"
+  ],
+  "disclaimer": "Imported records are historical evidence only. Snapshot does not confer merge or security authority."
+}

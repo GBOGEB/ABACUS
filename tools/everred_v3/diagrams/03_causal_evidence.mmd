@@ -1,0 +1,19 @@
+flowchart LR
+ O1["Observation 01 · CI failure"] --> S["Signature fingerprint v1"]
+ O2["Observation 02 · repeated PR"] --> S
+ O3["Observation 03 · RHEL/LDAB"] --> S2["Other signature"]
+ S --> H["Causal hypothesis"]
+ S2 --> H2["Unattributed hypothesis"]
+ H --> CF["Exact-main vs PR vs environment"]
+ CF --> D{"Causal claim verified?"}
+ D -->|Yes| R["Persistent root ID"]
+ D -->|No| U["Candidate only"]
+ R --> L["Authorized one-owner lease"]
+ L --> FIX["Canonical repair"]
+ FIX --> P["Producer proof + negatives"]
+ P --> C1["Consumer #A snapshot replay"]
+ P --> C2["Consumer #B snapshot replay"]
+ C1 --> G["Independent admission"]
+ C2 --> G
+ G --> INT["Exact-main integration"]
+ INT --> RC["Recurrence contract"]

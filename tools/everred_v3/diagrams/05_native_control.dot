@@ -1,0 +1,39 @@
+digraph EVERRED_NATIVE {
+  graph [rankdir=LR, bgcolor="transparent", pad="0.45", nodesep="0.32", ranksep="0.55", splines=ortho, fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans", fontsize=12, style="rounded,filled", shape=box, color="#635790", penwidth=1.2, fillcolor="#241f3d", fontcolor="#f5f1ff", margin="0.20,0.16"];
+  edge [color="#957fbf", penwidth=1.3, arrowsize=0.65];
+  subgraph cluster_ing {label="A   SOURCE RECEIPTS";color="#545070";fontcolor="#d8c7ff";style="rounded";
+    GH [label="GitHub Actions\nrun · job · attempt · SHA"];
+    ZIP [label="Immutable artifact digest\nZIP path and size checks"];
+    SCAN [label="Bandit · JUnit · coverage\nRHEL · Docker · LDAB"];
+    GH -> ZIP -> SCAN;
+  }
+  subgraph cluster_causal {label="B   EVIDENCE GRAPH";color="#545070";fontcolor="#d8c7ff";style="rounded";
+    BIND [label="Source binding\nrepo + SHA + run + job"];
+    ROOT [label="Failure signature → RCA\nUNKNOWN ≠ confirmed"];
+    LEDGER [label="Append-only\nhash chain"];
+    BIND -> ROOT -> LEDGER;
+  }
+  subgraph cluster_execute {label="C   DISJOINT EXECUTION";color="#545070";fontcolor="#d8c7ff";style="rounded";
+    LEASE [label="Atomic Git ref CAS lease\ncanonical file ownership",fillcolor="#153859",color="#438ed7"];
+    REPLAY [label="Immutable replay tree\n3 source SHAs",fillcolor="#153859",color="#438ed7"];
+    LEASE -> REPLAY;
+  }
+  subgraph cluster_control {label="D   METRICS & CONTROL";color="#545070";fontcolor="#d8c7ff";style="rounded";
+    KPI [label="Comparable KPI pulses\nprovenance + denominators",fillcolor="#1a3f46",color="#4ebcb1"];
+    ALERT [label="Recurrence sentinel\nreview required",fillcolor="#1a3f46",color="#4ebcb1"];
+    KPI -> ALERT;
+  }
+  subgraph cluster_admit {label="E   NO IMPLIED MERGE AUTHORITY";color="#805568";fontcolor="#f1b1d1";style="rounded";
+    GATE [label="Native head CI + independent security\neffective policy + eligible review",fillcolor="#513040",color="#d28ba9"];
+    HOLD [label="ADMISSION HOLD\nif any gate UNKNOWN / RED",fillcolor="#602a39",color="#e56f91"];
+    ELIGIBLE [label="Eligible for independent\nmerge authorization",fillcolor="#1d4c37",color="#56bd82"];
+    GATE -> HOLD [label="red / unknown",fontcolor="#f5aabb"];
+    GATE -> ELIGIBLE [label="all pass",fontcolor="#9de0ba"];
+  }
+  SCAN -> BIND;
+  LEDGER -> LEASE;
+  LEDGER -> KPI;
+  REPLAY -> GATE;
+  KPI -> GATE;
+}

@@ -1,0 +1,11 @@
+{
+  "authority_transfer": false,
+  "evidence_integrity": "EXACT_SCOPE_JOIN_ONLY",
+  "global_merge_admission": "HOLD",
+  "note": "Raw native events cannot certify root causality, live worker count or merge admission.",
+  "run_group_count": 0,
+  "run_groups": [],
+  "schema": "abacus.everred.joined.native.v1",
+  "security_waiver": false,
+  "source_bound_events": 0
+}
