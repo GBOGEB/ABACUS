@@ -1,0 +1,105 @@
+"""Fail-closed source and HTML contracts for the recovery-action value view."""
+from __future__ import annotations
+
+import json
+import re
+import unittest
+from html.parser import HTMLParser
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+RECEIPT = ROOT / "docs/data/recovery_action_value_v1.json"
+VIEW = ROOT / "docs/ci/recovery_action_value.html"
+SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+class Markup(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.ids = []
+        self.hrefs = []
+
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if "id" in values:
+            self.ids.append(values["id"])
+        if tag == "a":
+            self.hrefs.append(values.get("href"))
+
+
+class RecoveryActionValueTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = json.loads(RECEIPT.read_text(encoding="utf-8"))
+        cls.html = VIEW.read_text(encoding="utf-8")
+        cls.dom = Markup()
+        cls.dom.feed(cls.html)
+
+    def test_baseline_exact_sha_and_distinct_run_job(self):
+        d = self.data
+        self.assertEqual(d["schema"], "abacus.recovery.action-value.v1")
+        self.assertTrue(SHA.fullmatch(d["baseline"]["main_sha"]))
+        self.assertTrue(SHA.fullmatch(d["candidates"]["documentation"]["head_sha"]))
+        self.assertGreater(d["baseline"]["docs"]["run_id"], 0)
+        self.assertGreater(d["baseline"]["docs"]["job_id"], 0)
+        self.assertEqual(d["baseline"]["docs"]["finding_count"], 13)
+        self.assertEqual(sum(d["baseline"]["docs"]["findings_by_rule"].values()), 13)
+
+    def test_current_unknown_and_no_fabricated_acceptance(self):
+        d = self.data
+        m = d["metrics_contract"]
+        self.assertIsNone(m["docs_after_count"])
+        self.assertIsNone(m["docs_reduction_count"])
+        self.assertIsNone(m["verified_unblocked_downstream_jobs"])
+        self.assertIsNone(m["verified_closed_bd_roots"])
+        self.assertIsNone(m["verified_authenticated_crew_launches"])
+        self.assertIsNone(m["accepted_rex_returns"])
+        self.assertFalse(d["coverage"]["scope_parity_verified"])
+        self.assertIsNone(d["coverage"]["current_main_comparable_pct"])
+        self.assertIsNone(d["coverage"]["current_pr_diff_comparable_pct"])
+        self.assertFalse(d["governance"]["security_waiver"])
+        self.assertFalse(d["governance"]["authority_transfer"])
+        self.assertEqual(d["governance"]["observed_enforced_rule_count"], 0)
+
+    def test_dow_root_count_distinct_from_downstream_skip(self):
+        d = self.data["baseline"]["dow"]
+        self.assertEqual(d["failed_hook_count"], 3)
+        self.assertEqual(len(d["failure_signatures"]), 3)
+        self.assertEqual(len(d["skipped_jobs"]), 6)
+        self.assertEqual(d["observed_downstream_skipped"], 6)
+
+    def test_unique_ids_and_navigation_targets(self):
+        self.assertEqual(len(self.dom.ids), len(set(self.dom.ids)))
+        for anchor in ("summary", "docs", "dow", "coverage", "provenance"):
+            with self.subTest(anchor=anchor):
+                self.assertIn(anchor, self.dom.ids)
+                self.assertIn("#" + anchor, self.dom.hrefs)
+        self.assertIn('aria-live="polite"', self.html)
+        self.assertIn("prefers-reduced-motion", self.html)
+
+    def test_native_success_requires_run_and_job_identity(self):
+        code = self.html
+        for guard in (
+            "run.head_sha!==c.head_sha",
+            "run.name!==c.workflow_name",
+            'run.status!=="completed"',
+            'run.conclusion!=="success"',
+            "jobs.total_count!==jobs.jobs.length",
+            "candidates.length!==1",
+            'j.conclusion!=="success"',
+            "j.head_sha!==c.head_sha",
+        ):
+            with self.subTest(guard=guard):
+                self.assertIn(guard, code)
+        self.assertIn('put("after",0)', code)
+
+    def test_no_mutation_and_no_automatic_merging(self):
+        self.assertNotIn("method:'POST'", self.html)
+        self.assertNotIn('method:"POST"', self.html)
+        self.assertNotIn('method:"PATCH"', self.html)
+        self.assertIn("PR-side clearance is not current-main clearance", self.html)
+        self.assertIn("No automatic admission", self.html)
+
+
+if __name__ == "__main__":
+    unittest.main()
