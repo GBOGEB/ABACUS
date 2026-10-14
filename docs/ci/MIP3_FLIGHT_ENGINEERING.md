@@ -46,6 +46,21 @@ For **each** scanner or repair method: DEFINE intended rule/defect class and
 
 ## KPIs and evidence fields
 
+- **Detection:** TP, FP, FN and TN where ground truth exists; precision
+  TP/(TP+FP), recall TP/(TP+FN); undefined denominators are UNKNOWN.
+- **Diagnosis:** stable root-ID rate, duplicate signatures, attribution
+  latency and provenance completeness.
+- **Repair:** attempted, committed, verified, root-resolved and newly
+  introduced first-reds; proposals are never counted as closure.
+- **Efficiency:** p50/p95 wall time, worker hours, saved CI reruns,
+  verification latency and verified roots per hour.
+- **Coverage:** line and branch covered/eligible counts, percentage-point
+  delta, new branch tests and risk weighting.
+- **Integrity:** exact SHA, UTC, tool versions, JUnit, artifact SHA256,
+  negative controls and immutable run links.
+- **Governance:** A10 confidentiality, security, branch rules and
+  independent acceptance, without pilot-driven waivers.
+
 ## Statistical plan
 
 - Record paired baseline/candidate results on identical labeled cases;
