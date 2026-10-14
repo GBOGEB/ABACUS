@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CODE PURPLE | LIVE MIP · DMAIC · KPI · RED | SUT</title>
-<meta name="code-purple-schema" content="code-purple.sut-gui.v3.1">
+<meta name="code-purple-schema" content="code-purple.sut-gui.v3.2">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--surface:#131d2b;--surface2:#1a2940;--stroke:#34455b;--text:#f2f7fd;--muted:#b8c8dc;--blue:#74c9ff;--purple:#c2a2ff;--green:#77e2b0;--red:#ff9f9f;--amber:#ffda90;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--blue)}button,select,input{font:inherit}button{cursor:pointer;background:#263b57;border:1px solid #5d82ac;color:var(--text);padding:.7rem 1rem;border-radius:9px;font-weight:650}button:hover:not(:disabled){background:#355477}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.shell{display:grid;grid-template-columns:232px minmax(0,1fr);max-width:1800px;min-height:100vh;margin:auto}.sidebar{position:sticky;top:0;height:100vh;padding:26px 17px;border-right:1px solid var(--stroke);background:#111827}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.logo{display:grid;place-items:center;width:42px;height:42px;background:#6040a3;border-radius:12px;font-weight:850}.brand small{display:block;color:var(--muted);letter-spacing:.1em}.nav{display:grid;gap:6px}.nav a{display:block;padding:10px 12px;color:var(--muted);text-decoration:none;border-radius:8px}.nav a:hover{background:var(--surface2);color:var(--text)}.side-note{border-top:1px solid var(--stroke);margin-top:24px;padding-top:16px;font-size:12px;color:var(--muted)}main{min-width:0;padding:30px clamp(16px,3vw,54px) 70px}.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}h1{font-size:clamp(27px,3vw,43px);margin:8px 0;font-weight:770;letter-spacing:-.03em}h2{font-size:22px;margin:0 0 12px}h3{font-size:15px;margin:0 0 9px}.eyebrow{color:var(--blue);text-transform:uppercase;font-size:11px;letter-spacing:.12em;font-weight:800}.sub{color:var(--muted);margin:4px 0 15px}.badge{display:inline-flex;padding:5px 9px;border-radius:8px;border:1px solid #526781;background:#24334a;font-weight:750;font-size:12px}.badge.red{color:var(--red);border-color:#ae5b66;background:#3a202a}.badge.green{color:var(--green);border-color:#438d70;background:#17362e}.badge.amber{color:var(--amber);border-color:#a88a47;background:#362f20}.badge.unknown{color:#d6dfef}.layout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card{border:1px solid var(--stroke);background:var(--surface);border-radius:12px;padding:18px;min-width:0}.stat-label{font-size:12px;color:var(--muted);font-weight:700}.stat-value{font-weight:780;font-size:clamp(20px,2vw,30px);margin:5px 0;overflow-wrap:anywhere}.small{font-size:12px;color:var(--muted)}.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.mono{font-size:12px}.panel{margin-top:24px}.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn-secondary{background:#172436}.divider{border:0;border-top:1px solid var(--stroke);margin:21px 0}.table-wrap{max-width:100%;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:12px 9px;text-align:left;vertical-align:top;border-bottom:1px solid var(--stroke)}th{color:var(--muted);font-size:12px;font-weight:800;background:#1b293c}td{font-size:13px}p{color:var(--muted)}.stack{display:grid;gap:12px}.split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:13px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:12px;color:var(--muted);font-weight:700}input,select{min-width:0;width:100%;padding:11px;border:1px solid #5b7695;border-radius:9px;background:#0e1a2b;color:var(--text)}pre{background:#080e18;color:#d5e4f5;border:1px solid #40526a;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-word;max-height:390px;overflow:auto;font-size:12px;line-height:1.5}.notice{border-left:4px solid var(--amber);padding:12px 16px;background:#302719;border-radius:0 10px 10px 0;color:#ffe7b6}.notice strong{color:#fff}.notice.red{border-color:var(--red);background:#341e29;color:#ffd5dc}.summary-row{display:flex;flex-wrap:wrap;gap:8px}.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.pill{border:1px solid #46566c;border-radius:7px;padding:4px 8px;font-size:11px;color:var(--muted)}.footer{font-size:12px;color:var(--muted);margin-top:36px}#live-meta{font-size:12px;color:var(--muted)}.hidden{display:none!important}
@@ -21,6 +21,46 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 .legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:13px 0}.mini{height:37px;width:100%;display:block;overflow:visible;margin-top:7px}.mini-note{font-size:11px;color:#c1d5eb}.kpi-context{font-size:11px;color:#a9bdd2;overflow-wrap:anywhere}.compare-controls{display:flex;flex-wrap:wrap;gap:11px;align-items:end;margin:13px 0}.compare-controls label{font-size:12px;display:grid;gap:5px;min-width:180px}.source-chip{font-size:11px;padding:5px 8px;border-radius:6px;background:#1b3246;border:1px solid #4f7c9a;color:#bfe6fa}
 .arch-controls{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}.arch-panel{margin-top:10px}.arch-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:stretch}.arch-node{border:1px solid #5b7290;background:#192940;border-radius:11px;padding:15px;min-width:0}.arch-node strong{color:#fff;display:block;font-size:13px}.arch-node p{font-size:11px;margin:7px 0 0}.arch-node small{display:block;color:#a8d8fa;margin-bottom:6px;font-size:10px}.arch-node.observed{border-top:4px solid #79d9ff}.arch-node.controlled{border-top:4px solid #7bdcaf}.arch-node.hold{border-top:4px solid #ffa075}.arch-connector{display:flex;align-items:center;justify-content:center;color:#9bceff;font-size:24px}.arch-columns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.arch-stage{padding:12px;border:1px solid #54708f;border-radius:9px;background:#1b2d43;font-size:12px}.arch-stage b{display:block;color:#fff}.arch-stage span{display:block;font-size:11px;color:#bcd0e2;margin-top:5px} .arch-panel pre{max-height:280px}
 @media(max-width:1000px){.arch-map,.arch-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:550px){.arch-map,.arch-columns{grid-template-columns:1fr}.ci-filters label{min-width:100%}}
+
+/* V3.2 process semantics: neutral activity fill; status encoded by explicit labels. */
+.arch-key{border:1px solid #45647e;background:#152438;border-radius:12px;padding:14px;margin:14px 0}
+.arch-key h3{margin:0 0 8px;font-size:14px}.arch-key-grid{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px}
+.arch-key-item{font-size:12px;display:inline-flex;align-items:center;gap:8px;color:#e3edf7}
+.arch-symbol{display:inline-block;min-width:21px;min-height:19px;border:2px solid #a7bbce;border-radius:4px;background:#1b2c3c}
+.arch-symbol.diamond{transform:rotate(45deg);width:15px;height:15px;min-width:15px;min-height:15px;margin:0 5px;border-color:#c9bcfa;background:#222d45}
+.arch-symbol.owner{border-style:dotted;border-color:#a5c3dd}.arch-symbol.pass{background:#194335;border-color:#78e0aa}
+.arch-symbol.fail{background:#512630;border-color:#ffabab}.arch-legend-line{display:inline-block;width:44px;border-top:3px solid #c6d3e4;position:relative}
+.arch-legend-line::after{content:'';position:absolute;right:-1px;top:-6px;border-left:7px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent;color:#c6d3e4}
+.arch-legend-line.feedback{border-top:3px dashed #ffb25d}.arch-legend-line.feedback::after{color:#ffb25d}
+.arch-legend-line.feedforward{border-top:4px double #74d7ed}.arch-legend-line.feedforward::after{color:#74d7ed}
+.arch-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin:18px 0 13px}
+.arch-step{position:relative;border:1px solid #6f8ca8;border-radius:12px;background:#17283a;padding:13px 13px 14px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.arch-step:not(:last-child)::after{content:'\2192';position:absolute;right:-19px;top:43%;color:#d9e8f5;font-weight:900;font-size:24px;z-index:2}
+.arch-step .p{font-size:10px;color:#b8d9fa;font-weight:900;letter-spacing:.1em}
+.arch-step b{font-size:13px;color:#fff}.arch-step .type{border:1px solid #7e94a8;border-radius:5px;padding:1px 5px;color:#ddeaf7;font-size:10px;white-space:nowrap}
+.arch-step .ownerline{font-size:11px;color:#c0d4e6;margin-top:auto;border-top:1px solid #426078;padding-top:5px;overflow-wrap:anywhere}
+.arch-step small{font-size:11px;color:#d1ddea}
+.arch-decision-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:stretch;margin:0 0 15px}
+.arch-branch{border:2px solid;border-radius:12px;padding:15px;background:#17283a;display:flex;flex-direction:column;gap:7px}
+.arch-branch.yes{border-color:#6fdfa9}.arch-branch.no{border-color:#ffaaa3}
+.arch-branch .route{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.08em}
+.arch-branch.yes .route{color:#8cf5bd}.arch-branch.no .route{color:#ffb0af}
+.arch-branch b{font-size:14px;color:#fff}.arch-branch small{font-size:11px;color:#d2e3ef}
+.arch-diamond{border:2px solid #c4a2fb;border-radius:12px;background:#252b46;text-align:center;padding:18px 12px;display:flex;justify-content:center;flex-direction:column;gap:6px}
+.arch-diamond .shape{font-size:22px;line-height:1;color:#e2c8ff}.arch-diamond b{color:#fff}.arch-diamond small{color:#e3e8f7;font-size:11px}
+.arch-bridge{color:#d8eafa;text-align:center;font-size:12px;font-weight:800;margin:6px 0;padding:9px;border:1px dashed #7793ac;border-radius:8px;background:#14243a}.arch-diagram-note{font-size:12px;border-left:3px solid #89a6cb;padding:6px 10px;color:#e1eaf5;background:#1b2a3b;margin:12px 0}
+.arch-loop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.arch-loop{border:1px solid #45647e;background:#14243a;border-radius:12px;padding:13px}
+.arch-loop.feedback{border-left:5px solid #ffb25d}.arch-loop.feedforward{border-left:5px solid #74d7ed}
+.arch-loop strong{color:#fff;display:block;margin-bottom:4px}.arch-loop p{color:#d0e1ef;font-size:11px;margin:5px 0 0}
+.arch-signal{width:100%;height:52px;display:block}.arch-code{margin-top:12px}.arch-code pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b192c;color:#d8e9fa;padding:12px;border-radius:7px;font-size:11px;line-height:1.55}
+.arch-role-table{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.arch-role{border:1px solid #5c748a;border-left:4px solid #aebfd1;background:#17283a;border-radius:8px;padding:12px}
+.arch-role b,.arch-role strong{font-size:12px;color:#fff}.arch-role p{font-size:11px;color:#cbdeed;margin:5px 0 0}
+.arch-status-note{color:#eccefa;background:#28223c;border:1px solid #7966a3;border-radius:9px;padding:11px;font-size:12px;margin-top:12px}
+@media(max-width:990px){.arch-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.arch-step::after{display:none!important}.arch-role-table{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:610px){.arch-flow,.arch-loop-grid,.arch-role-table,.arch-decision-layout{grid-template-columns:minmax(0,1fr)}.arch-key-grid{gap:10px}.arch-branch{min-height:0}}
+
 </style>
 </head>
 <body>
@@ -29,7 +69,7 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 <nav class="nav" aria-label="Sections"><a href="#overview">Overview</a><a href="#ci">CI first-reds</a><a href="#measurement">DMAIC/KPI</a><a href="#model">PCA/BT</a><a href="#sut">SUT testflight</a><a href="#architecture">Architecture</a><a href="#evidence">Evidence</a></nav>
 <div class="side-note">Live readback is advisory. The dashboard never authorizes merges or executes remote workflows without an independent authorized action.</div></aside>
 <main>
-<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 3.1</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
+<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 3.2</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
 <section class="panel"><div class="layout">
 <article class="card"><div class="stat-label">ABACUS · main</div><div class="stat-value" id="abacus-state">UNKNOWN</div><div class="mono" id="abacus-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
 <article class="card"><div class="stat-label">CODEX · main</div><div class="stat-value" id="codex-state">UNKNOWN</div><div class="mono" id="codex-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
@@ -63,35 +103,106 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 <div class="card"><h3>Execution receipt</h3><div class="summary-row"><span id="run-status" class="badge unknown">NO EXECUTION</span><span id="run-id" class="pill">No run ID</span></div><p class="small" id="run-provenance">Local output is engineering preview only, never native CI or merge authority.</p><pre id="console" role="log" aria-live="polite">Ready. No command has been executed.</pre></div></div>
 <div class="card" style="margin-top:13px"><h3>GitHub workflow handoff</h3><p class="small">Remote workflow dispatch requires GitHub authentication and permissions. Open the native workflow form; this static HTML does not hold tokens or bypass repository rules.</p><div class="actions"><a href="https://github.com/GBOGEB/ABACUS/actions/workflows/everred-v3-validation.yml" target="_blank" rel="noopener noreferrer">EVERRED V3 Workflow ↗</a><a href="https://github.com/GBOGEB/ABACUS/actions" target="_blank" rel="noopener noreferrer">Browse ABACUS workflows ↗</a></div></div>
 </section>
-<section class="panel" id="architecture"><div class="panel-head"><h2>CODE PURPLE system architecture</h2><span class="source-chip">Three diagrams · offline HTML · governed boundaries</span></div>
-<div class="arch-controls"><button type="button" class="arch-tab" data-arch="hierarchy">Repository hierarchy</button><button type="button" class="arch-tab" data-arch="dag">Root-cause recovery DAG</button><button type="button" class="arch-tab" data-arch="wireframe">SUT / pipeline wireframe</button></div>
-<div class="arch-panel" id="arch-hierarchy"><div class="arch-map">
-<div class="arch-node observed"><small>OBSERVE · READ ONLY</small><strong>GitHub ABACUS / CODEX</strong><p>Native Actions, security, protection, main and PR exact SHAs; repo-scoped query receipts</p></div>
-<div class="arch-node observed"><small>INGEST · BOUND DATA</small><strong>ABACUS EVERRED V3</strong><p>Occurrence → signature → root hypothesis → evidence ledger / BD + LDAB federation</p></div>
-<div class="arch-node controlled"><small>PROPOSE · VERIFY</small><strong>gg_MATH / Crew / SUT</strong><p>Exploratory PCA; BT only from real paired outcomes; local testflight, RHEL, Docker, LLDB</p></div>
-<div class="arch-node hold"><small>AUTHORITY · NO BYPASS</small><strong>Review + Security + Policy</strong><p>Exact-head required checks ∧ protected main ∧ eligible independent approval</p></div>
-</div><p class="small">Arrows are intended flow from left to right. Successful worker execution never confers merge authority.</p></div>
-<div class="arch-panel hidden" id="arch-dag"><div class="arch-columns"><div class="arch-stage"><b>1 · Native occurrence</b><span>run / attempt / job / step / SHA</span></div><div class="arch-stage"><b>2 · Counterfactual RCA</b><span>main vs PR vs environment; UNKNOWN allowed</span></div><div class="arch-stage"><b>3 · Canonical repair</b><span>one root ID · one owner · disjoint path lease</span></div><div class="arch-stage"><b>4 · Exact-head native verification</b><span>coverage, security, matrix, negative tests</span></div><div class="arch-stage"><b>5 · Consumer replay</b><span>synthetic testflight ≠ PR native PASS</span></div><div class="arch-stage"><b>6 · Independent admission</b><span>hard AND across reviews, checks and branch rules</span></div><div class="arch-stage"><b>7 · Integrated main</b><span>new SHA and regression evidence</span></div><div class="arch-stage"><b>8 · Recurrence sentinel</b><span>compare historical fingerprints; reopen on recurrence</span></div></div>
-<details><summary>Mermaid DAG source · reusable in engineering docs</summary><pre>flowchart LR
-A[Native CI / LDAB / scanners] --> B[Occurrence ledger]
-B --> C{Confirmed root?}
-C -->|No| D[Counterfactual RCA / UNKNOWN]
-D --> C
-C -->|Yes| E[One canonical owner / repair]
-E --> F[Exact-head tests / security / coverage]
-F --> G{Mandatory gates complete?}
-G -->|No| H[ADMISSION HOLD]
-G -->|Yes| I[Independent approval + protected main]
-I --> J[Governed merge + recurrence]</pre></details></div>
-<div class="arch-panel hidden" id="arch-wireframe"><div class="arch-columns"><div class="arch-stage"><b>Operator GUI</b><span>Read-only GitHub telemetry, refresh, filters and provenance</span></div><div class="arch-stage"><b>Local SUT gate</b><span>Loopback-only token, origin guard, profiles allowlist</span></div><div class="arch-stage"><b>Isolated testflight</b><span>Temporary checkout, bounded subprocesses; no GitHub write</span></div><div class="arch-stage"><b>Local receipt</b><span>Return code, logs digest, source SHA; LOCAL_ONLY</span></div></div><details><summary>ASCII wiring</summary><pre>GitHub Actions ─┬─► READ-ONLY LIVE DASHBOARD ─► DMAIC / KPI / MIP
-                ├─► BD + LDAB source-bound census
-                └─► EVERRED causal ledger
-Operator ─► Local GUI ─► Token + Allowlist ─► Temp SUT ─► Logs/Receipt
-                                           ╳          NO MERGE
-Authoritative admission ◄── Native CI + Security + Review + Effective Rules</pre></details></div>
+<section class="panel" id="architecture">
+<div class="panel-head"><h2>CODE PURPLE architecture / ownership &amp; control signals</h2><span class="source-chip">Forward DAG + separate control overlay | V3.2</span></div>
+<p class="small">The previous purple filled boxes were decorative, <strong>not</strong> proof of ownership, completion or phase. Phase is numbered, responsibility is written on the node, state is explicit, and branch decisions use opposite meaning and color.</p>
+<div class="arch-key" id="architecture-legend" aria-label="Architecture visual legend"><h3>Visual grammar / legend</h3>
+<div class="arch-key-grid">
+<span class="arch-key-item"><i class="arch-symbol"></i> Activity / process (neutral fill)</span>
+<span class="arch-key-item"><i class="arch-symbol diamond"></i> Decision (diamond)</span>
+<span class="arch-key-item"><i class="arch-symbol owner"></i> Owner is a <b>role label</b>, not fill</span>
+<span class="arch-key-item"><i class="arch-symbol pass"></i> YES / eligible path (green)</span>
+<span class="arch-key-item"><i class="arch-symbol fail"></i> NO / HOLD (red)</span>
+<span class="arch-key-item"><i class="arch-legend-line"></i> Forward dependency (DAG)</span>
+<span class="arch-key-item"><i class="arch-legend-line feedback"></i> Feedback, dashed amber / next pulse</span>
+<span class="arch-key-item"><i class="arch-legend-line feedforward"></i> Feedforward, double cyan / preflight</span>
+</div><p class="small" style="margin:9px 0 0">Filled colors on branch terminals encode <em>proposed path disposition</em>, not observed governance approval. Purple borders identify a decision <em>type</em> only; no single global owner is implied.</p></div>
+<div class="arch-controls"><button type="button" class="arch-tab" data-arch="hierarchy">Repository hierarchy / responsibilities</button><button type="button" class="arch-tab" data-arch="dag">Strict forward DAG + control overlay</button><button type="button" class="arch-tab" data-arch="wireframe">SUT / pipeline wireframe</button></div>
+<div class="arch-panel" id="arch-hierarchy">
+<h3>Roles are distributed; one root has one accountable repair owner</h3>
+<div class="arch-role-table">
+<div class="arch-role"><strong>Source producers</strong><p>GitHub Actions / scanners / Docker / RHEL / LLDB. Responsibility: emit source-bound native receipts.</p></div>
+<div class="arch-role"><strong>Control-plane ledger</strong><p>ABACUS EVERRED. Responsibility: stable root identifiers, immutable evidence and deterministic joins.</p></div>
+<div class="arch-role"><strong>Dispatch &amp; triage</strong><p>Mission Control / REX. Responsibility: diagnose, classify and assign; actual named operator: <b>UNKNOWN until authenticated</b>.</p></div>
+<div class="arch-role"><strong>Bounded repair</strong><p>One canonical root owner per confirmed root. Disjoint source paths and leased scope; not ownership of entire programme.</p></div>
+<div class="arch-role"><strong>Technical verification</strong><p>Trusted SUT/CI runners and gg_MATH provider. Local previews never replace exact-head native evidence.</p></div>
+<div class="arch-role"><strong>Independent admission</strong><p>Effective repository policy + eligible independent reviewers; separate from tool authors and executing workers.</p></div>
+</div><div class="arch-status-note">Purple branding has <b>no semantic operational meaning</b>. No universal single owner, and no phase is inferred from color. Each role is a contract, not evidence of a live assigned person.</div></div>
+<div class="arch-panel hidden" id="arch-dag">
+<h3>1. Forward processing DAG (acyclic, left-to-right)</h3>
+<div class="arch-flow" role="group" aria-label="Four ordered forward phases">
+<div class="arch-step"><span class="p">P1 | OBSERVE</span><b>Native CI, LDAB, scanners</b><small>Run / attempt / job / exact SHA</small><span class="ownerline">Role: GitHub / source producers</span></div>
+<div class="arch-step"><span class="p">P2 | NORMALIZE</span><b>Immutable evidence ledger</b><small>Fingerprint, run identity, provenance</small><span class="ownerline">Role: ABACUS EVERRED</span></div>
+<div class="arch-step"><span class="p">P3 | DIAGNOSE</span><b>Counterfactual root analysis</b><small>Confirmed vs candidate vs UNKNOWN</small><span class="ownerline">Role: triage / REX</span></div>
+<div class="arch-step"><span class="p">P4 | REPAIR</span><b>Bounded canonical root fix</b><small>Disjoint paths and one repair owner per root</small><span class="ownerline">Role: assigned worker, actual identity UNKNOWN</span></div>
+</div>
+<div class="arch-bridge" aria-label="Forward directed connection P4 to P5">P4 repair &#8595; P5 native verification | forward dependency, NOT a new phase</div>
+<div class="arch-flow" role="group" aria-label="Four ordered verification and admission phases">
+<div class="arch-step"><span class="p">P5 | VERIFY</span><b>Exact-head native CI</b><small>Coverage + security + negative tests</small><span class="ownerline">Role: trusted CI runners</span></div>
+<div class="arch-step"><span class="p">P6 | REVIEW</span><b>Independent gates</b><small>Reviews + policy + effective branch protection</small><span class="ownerline">Role: qualified reviewer / repo administrator</span></div>
+<div class="arch-step"><span class="p">P7 | CONDITIONAL YES ONLY</span><b>Authorized merge only</b><small>New integration SHA, no worker bypass</small><span class="ownerline">Role: authorized merger</span></div>
+<div class="arch-step"><span class="p">P8 | AFTER AUTHORIZED MERGE</span><b>Main recurrence sentinel</b><small>Source-bound comparison at later pulse</small><span class="ownerline">Role: EVERRED / Mission Control</span></div>
+</div>
+<div class="arch-diagram-note">Forward arrows indicate ordered dependencies, not elapsed time or automatic transitions. P6 feeds the decision: <b>NO stops at HOLD</b>; only <b>YES continues to P7/P8</b>. The decision below has two <b>different</b> outcomes; the green path is conditional and is <b>not</b> current admission.</div>
+<div class="arch-decision-layout" role="group" aria-label="Independent admission decision and labeled branches">
+<div class="arch-branch no"><span class="route">NO &#8592; FAIL / UNKNOWN</span><b>ADMISSION HOLD</b><small>Repair the missing gate or acquire authoritative evidence. Return to another pulse; not a merge.</small><small>Role: Mission Control / gate owner</small></div>
+<div class="arch-diamond"><span class="shape" aria-hidden="true">&#9671;</span><b>ALL mandatory independent gates PASS?</b><small>Exact SHA + security + coverage + review + protected main</small><small>Role: independent admission evaluator</small></div>
+<div class="arch-branch yes"><span class="route">YES &#8594; CONDITIONAL</span><b>ELIGIBLE FOR AUTHORIZED MERGE</b><small>Not an automatic merge; only separately authorized integration and main recheck.</small><small>Role: eligible reviewer + authorized merger</small></div>
+</div>
+<h3>2. Feedback and feedforward (separate control graph, NOT part of the DAG)</h3>
+<div class="arch-loop-grid">
+<div class="arch-loop feedback"><strong>FEEDBACK &#8592; corrective learning (amber dashed)</strong>
+<svg class="arch-signal" viewBox="0 0 460 52" role="img" aria-label="Failed downstream CI in a later pulse returns to root diagnosis"><defs><marker id="fbArr32" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ffb25d"/></marker></defs><text x="5" y="14" font-size="11" fill="#e3e9f1">New RED / recurrence</text><text x="310" y="14" font-size="11" fill="#e3e9f1">RCA next pulse</text><path d="M345 21 V41 H75 V22" fill="none" stroke="#ffb25d" stroke-width="3" stroke-dasharray="8 5" marker-end="url(#fbArr32)"/></svg>
+<p>Observed first-red, new root signature or regression triggers <b>a new causal investigation</b>. This creates a cycle only across iterations; it cannot be drawn as an edge inside a strict DAG.</p></div>
+<div class="arch-loop feedforward"><strong>FEEDFORWARD &#8594; predictive preflight (cyan double)</strong>
+<svg class="arch-signal" viewBox="0 0 460 52" role="img" aria-label="Past evidence risk sentinels inform planned focused tests"><defs><marker id="ffArr32" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#74d7ed"/></marker></defs><text x="5" y="14" font-size="11" fill="#e3e9f1">Risk / earlier telemetry</text><text x="317" y="14" font-size="11" fill="#e3e9f1">SUT preflight</text><path d="M142 26 H314 M142 31 H314" fill="none" stroke="#74d7ed" stroke-width="2.5" marker-end="url(#ffArr32)"/></svg>
+<p>Earlier fingerprint recurrence or risk estimates inform <b>which tests to stage before expensive CI</b>. This is a proposed control strategy, not evidence that a forecasting worker is currently operating.</p></div>
+</div>
+<details class="arch-code"><summary>Copyable Mermaid DAG source: strict forward graph / NO cycles</summary><pre>flowchart LR
+    A[&quot;P1 Observe | GitHub / scanners&quot;] --&gt; B[&quot;P2 Evidence | EVERRED&quot;]
+    B --&gt; C{&quot;P3 Confirmed root?&quot;}
+    C --&gt;|NO| X[&quot;Diagnosis HOLD | Evidence gap&quot;]
+    C --&gt;|YES| D[&quot;P4 Bounded repair | Root owner&quot;]
+    D --&gt; E[&quot;P5 Exact-head CI | Native runner&quot;]
+    E --&gt; F{&quot;P6 All independent gates PASS?&quot;}
+    F --&gt;|NO| H[&quot;ADMISSION HOLD&quot;]
+    F --&gt;|YES| J[&quot;Eligible for authorized merge&quot;]
+    J --&gt; K[&quot;P7 Integrated-main verification&quot;]
+    classDef operation fill:#17283a,color:#eef6ff,stroke:#87a2bf
+    classDef decision fill:#252b46,color:#ffffff,stroke:#c4a2fb,stroke-width:2px
+    classDef no fill:#52252e,color:#ffffff,stroke:#ffaaaa,stroke-width:2px
+    classDef yes fill:#174236,color:#ffffff,stroke:#85dfad,stroke-width:2px
+    class A,B,D,E,K operation
+    class C,F decision
+    class X,H no
+    class J yes</pre></details>
+<details class="arch-code"><summary>Copyable Mermaid: feedback and feedforward overlay / can be cyclic</summary><pre>flowchart LR
+    C[&quot;Observed RED in native CI&quot;] -. &quot;FEEDBACK: new pulse&quot; .-&gt; R[&quot;RCA / new repair proposal&quot;]
+    P[&quot;Prior fingerprints / risk cues&quot;] == &quot;FEEDFORWARD: preflight&quot; ==&gt; T[&quot;Focused SUT tests before expensive CI&quot;]
+    classDef fb fill:#4a3326,color:#ffdebb,stroke:#ffb25d,stroke-width:2px
+    classDef ff fill:#143949,color:#c1f4ff,stroke:#74d7ed,stroke-width:2px
+    class C,R fb
+    class P,T ff</pre></details>
+</div>
+<div class="arch-panel hidden" id="arch-wireframe"><h3>Pipeline wiring and authority boundaries</h3>
+<div class="arch-flow">
+<div class="arch-step"><span class="p">SOURCE</span><b>GitHub Actions</b><small>Native exact-SHA API and artifacts</small><span class="ownerline">Role: source runner</span></div>
+<div class="arch-step"><span class="p">VIEW</span><b>Read-only dashboard</b><small>Queue / RED / DMAIC / KPI / MIP</small><span class="ownerline">Role: observational UI</span></div>
+<div class="arch-step"><span class="p">TEST</span><b>Local SUT testflight</b><small>Loopback token + allowlist + temporary checkout</small><span class="ownerline">Role: local operator</span></div>
+<div class="arch-step"><span class="p">RECEIPT</span><b>Local run evidence</b><small>Exit code / log SHA / LOCAL_ONLY</small><span class="ownerline">Role: evidence collector</span></div>
+</div>
+<div class="arch-status-note">The read-only dashboard does not launch remote workers, and local testflight does not authorize merge. Native CI, independent security, repository administration and independent reviewers remain separate actors.</div>
+<details class="arch-code"><summary>ASCII architecture, role edges and signal loop</summary><pre>GitHub / scanners --source data--&gt; EVERRED ledger --verified roots--&gt; canonical repair
+                 |                                        |                   |
+                 +--read-only--&gt; KPI GUI               |                   +--&gt; native tests
+                                                          |                           |
+RCA new pulse &lt;............... FEEDBACK from new first-red ............................+
+Risk cues ==================== FEEDFORWARD to preflight / SUT selection =============&gt;
+Separate independent governance gates: native CI + security + coverage + reviews + protected main
+No gate bypass; no global single-owner assertion.</pre></details></div>
 </section>
 <section class="panel" id="evidence"><h2>Evidence and lineage</h2><div class="card"><div class="stack"><div><strong>Bootstrap snapshot</strong><p class="small">No current state is asserted from the HTML bootstrap. All source-dependent KPIs remain UNKNOWN until a new GitHub API receipt completes.</p></div><div><strong>Source reference</strong><p class="small">EVERRED V3 exists in <code>GBOGEB/ABACUS/tools/everred_v3</code>; the MIP improvement is PR #1951. Historical and native receipts remain distinct.</p></div><div><strong>GUI evidence contract</strong><p class="small" id="evidence-state">A refresh timestamps its readback. Any API failure must show UNKNOWN rather than preserve an apparently live old value. Local execution never claims current-main proof.</p></div></div></div></section>
-<footer class="footer">CODE PURPLE / SUT GUI v3.1 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
+<footer class="footer">CODE PURPLE / SUT GUI v3.2 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
 </main></div>
 <script>
 (()=>{'use strict';
