@@ -459,6 +459,7 @@ class ContractSchemaIntegration(unittest.TestCase):
             import jsonschema
         except ImportError:
             self.skipTest("jsonschema absent")
+            return
         schema = json.loads((BASE / "contracts/execution-plan.schema.json").read_text())
         p = copy.deepcopy(PLAN)
         p["tasks"][0]["mode"] = "BYPASS_GATE"
