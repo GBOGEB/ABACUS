@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+<title>CODE PURPLE — Mission Cycle</title>
+<style>
+:root{color-scheme:dark;font:14px/1.5 system-ui,-apple-system,sans-serif;background:#0a1626;color:#f5f9ff;--line:#7792b2;--muted:#c8dbf3;--green:#65dfb0;--red:#ff8a95;--amber:#ffdb94;--blue:#9acfff}
+*{box-sizing:border-box}body{margin:0}button,select,textarea{font:inherit}button,select,textarea{border:1px solid #95adc7;border-radius:7px;background:#253f5a;color:#fff;padding:8px}button{cursor:pointer}button:hover{background:#345778}button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.shell{max-width:1380px;margin:auto;padding:20px clamp(12px,3vw,36px) 50px}
+.head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.over{font-size:11px;font-weight:900;letter-spacing:.14em;color:var(--blue)}h1{font-size:clamp(23px,3vw,37px);letter-spacing:-.03em;margin:6px 0}.help{color:var(--muted);margin:4px 0}
+.badge-hold{align-self:start;color:#ffe6e8;background:#532933;border:1px solid #d26d80;padding:8px 11px;border-radius:8px;font-size:11px;font-weight:850}
+.legend{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#1f344c;border:1px solid #90a8c6;box-shadow:0 6px 17px #0009;border-radius:9px;margin:15px 0;padding:10px 13px}
+.legend span{font-size:11px;font-weight:700}.dot{display:inline-block;width:9px;height:9px;margin-right:4px;border-radius:50%;background:#fff}
+.cycle{display:flex;align-items:stretch;gap:6px;overflow-x:auto;padding:9px 0 15px}
+.stage{min-width:140px;flex:1;background:#1b3c54;border:1px solid #568cba;border-radius:9px;padding:11px;min-height:70px}
+.stage strong{display:block;font-size:13px}.stage small{color:#cbdef1}.arrow{display:grid;place-items:center;color:#a5d0ff;font-weight:900}
+.controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:12px;background:#122a42;border:1px solid #547b9f;border-radius:9px;margin-bottom:13px}
+.controls input{min-width:160px;flex:1;border:1px solid #95adc7;border-radius:7px;background:#253f5a;color:#fff;padding:10px}
+.controls a{color:#c9e6ff}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,315px),1fr));gap:13px}
+.card{background:#183249;border:1px solid #6688a7;border-left:5px solid #ffd285;border-radius:10px;padding:13px;min-width:0}
+.card[data-hard=true]{border-left-color:#ff8797}.top{display:flex;gap:9px;align-items:flex-start}.pbtn{min-width:42px;font-weight:900;padding:5px 7px}.p0{background:#8a2d40;border-color:#ff8e9c}.p1{background:#87532c;border-color:#ffd08d}.p2{background:#716226;border-color:#f9dc81}.p3{background:#285789;border-color:#a2d4ff}
+.titlebtn{background:transparent;color:#fff;font-size:15px;font-weight:850;border:none;text-align:left;padding:4px 0;flex:1;overflow-wrap:anywhere}.minor{color:#b9d5f3;font:10px/1.5 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+.metricrow{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0}.metric{font-size:10px;background:#264763;border:1px solid #7295b8;border-radius:6px;padding:4px 7px}.metric.w{color:#ffdfad;border-color:#bb9258;background:#4d3929}
+.card details{border-top:1px solid #6687a4;padding-top:9px;margin-top:10px}.card summary{cursor:pointer;font-size:12px;font-weight:800;color:#d4edff}.mini{color:#dce9f7;font-size:12px;margin:9px 0}.stepname{color:#a6d3ff;font-weight:800;margin-right:6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:9px 0}.row label,.comment label{display:block;color:#d6e6fa;font-weight:750;font-size:11px;margin-bottom:4px}.row select{width:100%}.comment textarea{width:100%;min-height:58px;resize:vertical}.cta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:9px 0}.cta button{font-weight:800}.output{white-space:pre-wrap;overflow-wrap:anywhere;color:#cfe6ff;font:10px/1.5 ui-monospace,Consolas,monospace;background:#0b2134;border-radius:7px;padding:9px}.more a{color:#bbe1ff;font-size:11px}.note{color:#cbdff4;font-size:11px;margin:15px 0;border:1px solid #5f809e;background:#1b354a;border-radius:9px;padding:11px}
+footer{font-size:11px;color:#bdd2e8;border-top:1px solid #49698b;margin-top:20px;padding-top:14px}
+@media(max-width:480px){.row{grid-template-columns:1fr}.stage{min-width:115px}.shell{padding:11px}}
+</style>
+</head>
+<body><main class="shell">
+<header class="head"><div><div class="over">CODE PURPLE / EVERRED / MISSION CONTROL</div><h1>Evidence → Decision → Verified Unlock</h1><p class="help">One canonical BD root family, one compact decision, no inferred admission.</p></div><span class="badge-hold">P0 GOVERNANCE HOLD</span></header>
+<div class="legend" aria-label="Sticky legend"><b>PINNED</b><span><i class="dot" style="background:#ff8a95"></i>P0 safety / governance</span><span><i class="dot" style="background:#ffdb94"></i>P1–P3 priority</span><span><i class="dot" style="background:#9acfff"></i>BT/PCA diagnostic only</span><span><i class="dot" style="background:#65dfb0"></i>Verified unlock only</span></div>
+<nav class="cycle" id="cycle" aria-label="Mission sequence"></nav>
+<div class="controls"><input id="find" type="search" placeholder="Search root, cause, issue…" aria-label="Find an issue"><select id="filter" aria-label="Filter root priority"><option value="ALL">All priorities</option><option value="P0">P0 only</option><option value="P1">P1 only</option><option value="P2">P2 only</option></select><a href="bd_queue.html">BD native evidence</a><a href="index.html">EVERRED overview</a></div>
+<div id="count" class="help" role="status" aria-live="polite"></div>
+<section class="cards" id="cards" aria-label="BD decision cards"></section>
+<p class="note">PCA component / Bradley–Terry rank is withheld without qualified fitted evidence. Reverse pressure needs confirmed causal edges. Unlock Yield is UNKNOWN without a complete comparable denominator and independently authenticated before/after native jobs. A local decision is not a GitHub comment, issue update, root closure or worker dispatch.</p>
+<footer>Read-only source projection · No network polling · No automatic queue write · No security waiver · GitHub admission HOLD. Current source is a frozen historical BD snapshot; refresh native evidence before any follow-up execution.</footer>
+</main>
+<script id="guidance" type="application/json">@@GUIDANCE_JSON@@</script>
+<script src="mission_cycle.js" defer></script>
+</body></html>
