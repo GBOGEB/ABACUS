@@ -4,6 +4,7 @@
 Requires GITHUB_TOKEN with Actions:read. --artifact-plan is a JSON array of
 explicit job/artifact/member bindings and normalized scanner configurations.
 """
+
 import argparse
 import json
 import pathlib

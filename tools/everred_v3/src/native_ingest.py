@@ -21,7 +21,6 @@ import zipfile
 from typing import Any
 
 from defusedxml.ElementTree import fromstring as safe_xml_fromstring
-
 from everred import SCHEMA, InvalidEvidence, digest, valid_sha
 
 GH_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
@@ -107,7 +106,9 @@ class GitHubReadOnly:
             data = self.transport(req)
         else:
             try:
-                with urllib.request.build_opener(_NoRedirect()).open(req, timeout=20) as res:
+                with urllib.request.build_opener(_NoRedirect()).open(
+                    req, timeout=20
+                ) as res:
                     require(res.status == 200, "GitHub API not HTTP 200")
                     data = res.read(MAX_ARTIFACT + 1)
             except urllib.error.HTTPError as e:

@@ -4,6 +4,7 @@
 This bridge deliberately does not promote BD-* fingerprint groups to causal roots.
 It appends an immutable observation-only event. Source producer remains authoritative.
 """
+
 import argparse
 import hashlib
 import json

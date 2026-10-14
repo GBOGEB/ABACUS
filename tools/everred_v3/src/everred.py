@@ -2,6 +2,7 @@
 """EVERRED v3 evidence ledger: append-only, integrity-checked, fail closed.
 No external dependencies. Historical import is not an authorization mechanism.
 """
+
 from __future__ import annotations
 
 import argparse
