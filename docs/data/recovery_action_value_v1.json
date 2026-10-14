@@ -155,7 +155,34 @@
     "independent_review_accepted": null,
     "security_waiver": false,
     "authority_transfer": false,
-    "formal_credit_delta": 0
+    "formal_credit_delta": 0,
+    "recovery_observation": {
+      "schema": "abacus.p0.ruleset-readback.v1",
+      "repository": "GBOGEB/ABACUS",
+      "observed_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "branch_protected": true,
+      "ruleset_id": 24494381,
+      "ruleset_enforcement": "active",
+      "enforced_ruleset_types": [
+        "deletion",
+        "pull_request",
+        "non_fast_forward"
+      ],
+      "ruleset_rule_count": 3,
+      "ruleset_bypass_actor_count": 0,
+      "required_approvals": 1,
+      "dismiss_stale_approvals": true,
+      "require_latest_push_approval": true,
+      "require_conversation_resolution": true,
+      "required_status_checks_present_in_observed_ruleset": false,
+      "independent_review_receipt": null,
+      "admission": "HOLD",
+      "evidence_urls": [
+        "https://api.github.com/repos/GBOGEB/ABACUS/branches/main",
+        "https://api.github.com/repos/GBOGEB/ABACUS/rulesets/24494381"
+      ],
+      "note": "Ruleset-specific, not a proof that no other active rule or branch protection policy exists. Effective required checks across every applicable policy remain UNKNOWN."
+    }
   },
   "metrics_contract": {
     "verified_unblocked_downstream_jobs": null,
@@ -173,7 +200,13 @@
     "scoped_ruff_new_count": 0,
     "source_verified_unblocking_scope": "PR_RUFF_4_FILES_ONLY",
     "docs_verified_run_id": 38589957927,
-    "docs_verified_job_id": 115941877977
+    "docs_verified_job_id": 115941877977,
+    "p0_known_ruleset_delta": {
+      "before": 0,
+      "after": 3,
+      "credit": "PARTIAL_GOVERNANCE_RESTORATION_ONLY",
+      "correct_admitted_merge_count": null
+    }
   },
   "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero."
 }
