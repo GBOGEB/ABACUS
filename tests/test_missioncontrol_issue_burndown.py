@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SCRIPT = (
     Path(__file__).resolve().parents[1] / "scripts" / "missioncontrol_issue_burndown.py"
@@ -115,6 +116,55 @@ class TestMissionBurndown(unittest.TestCase):
                 self.assertEqual(
                     hashlib.sha256((p / name).read_bytes()).hexdigest(), digest
                 )
+
+    def test_latest_dashboard_bot_comment_ignores_forged_updates(self):
+        def comment(login, broken, marker):
+            return {
+                "user": {"login": login},
+                "id": marker,
+                "created_at": f"2026-10-14T{marker:02d}:00:00Z",
+                "body": (
+                    "## 🚨 Dashboard Health Check Failed\\n"
+                    "| Missing dashboards | 0 |\\n"
+                    f"| Broken internal links | {broken} |\\n"
+                ),
+            }
+
+        rows = [
+            comment("github-actions[bot]", 53, 1),
+            comment("arbitrary-contributor", 0, 2),
+            comment("github-actions[bot]", 5, 3),
+            {"user": {"login": "github-actions[bot]"}, "body": "unrelated"},
+        ]
+        with patch.object(mod, "github_get", return_value=(rows, "")):
+            latest = mod.latest_dashboard_bot_comment(1885, "test-token")
+        self.assertEqual(latest["id"], 3)
+        self.assertIn("Broken internal links | 5", latest["body"])
+
+    def test_recent_bot_count_supersedes_stale_issue_body(self):
+        original = item(
+            1885, "Dashboard health check failure",
+            "Broken internal links | 53",
+        )
+        original["latest_dashboard_comment"] = {
+            "id": 321,
+            "body": (
+                "## 🚨 Dashboard Health Check Failed\\n"
+                "| Missing dashboards | 0 |\\n"
+                "| Broken internal links | 5 |\\n"
+            ),
+        }
+        evidence, _ = mod.build(envelope([original]))
+        row = evidence["issues"][0]
+        self.assertEqual(row["root_candidate"], "DASHBOARD_LINK_COUNTS:5:0")
+        self.assertEqual(row["source_class"], "DASHBOARD_BOT_COMMENT")
+        self.assertEqual(row["latest_dashboard_comment_id"], 321)
+
+    def test_malformed_dashboard_comment_fails_closed(self):
+        issue = item(1885, "Dashboard health check failure")
+        issue["latest_dashboard_comment"] = "untrusted string"
+        with self.assertRaises(ValueError):
+            mod.build(envelope([issue]))
 
     def test_pagination_host_guard(self):
         self.assertEqual(
