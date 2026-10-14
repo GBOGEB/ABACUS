@@ -41,22 +41,20 @@ on a source-equivalent inventory or explain changed source membership.
 
 ## Evidence fields and invariants
 
-| Key | Source | Meaning |
-|---|---|---|
-| `repository`, `source_sha` | Git exact checkout | Immutable observation source |
-| `source_census.root.candidate_file_count` | MIP root emitter | Debug-associated path count |
-| `source_census.root.sample_paths` | MIP root emitter | First 20 sorted relative paths |
-| `source_census.nested.candidate_file_count` | Nested MIP emitter | Nested local path count |
-| `source_census.nested.sample_paths` | Nested emitter | First 12 sorted relative paths |
-| `source_census.*.sample_truncated` | Computed | Full count exceeds sample |
-| `source_census.*.full_source_inventory` | Exact tree | Every relative candidate path + source class |
-| `source_census.*.source_class_counts` | Versioned tokens | Explicit debug / logs / incidental |
-| `diagnostic_execution.contract_checks_total` | Executed diagnostic | Federation contract checks, not debugger steps |
-| `diagnostic_execution.source_contract_sha256` | Diagnostic receipt | Test-contract content identity |
-| `runtime.abacus_native_debug_sessions` | Not produced here | Always null, not zero |
-| `runtime.authenticated_port_leases` | Not produced here | Always null, not zero |
-| `runtime.ldab_verified_repairs` | Not produced here | Always null, not zero |
-| `merge_admission` | Read-only report | HOLD independently of tests |
+- `repository`, `source_sha`: immutable source identity.
+- `source_census.root.candidate_file_count`: full root count.
+- `source_census.root.sample_paths`: first 20 relative paths.
+- `source_census.nested.candidate_file_count`: nested count.
+- `source_census.nested.sample_paths`: first 12 relative paths.
+- `source_census.*.sample_truncated`: sample not complete.
+- `source_census.*.full_source_inventory`: full path/class list.
+- `source_census.*.source_class_counts`: lexical-class totals.
+- `diagnostic_execution.contract_checks_total`: executed checks.
+- `diagnostic_execution.source_contract_sha256`: contract hash.
+- `runtime.abacus_native_debug_sessions`: null, not zero.
+- `runtime.authenticated_port_leases`: null, not zero.
+- `runtime.ldab_verified_repairs`: null, not zero.
+- `merge_admission`: HOLD regardless of test result.
 
 The source-level `green` from the legacy MIP assessment is retained
 for backwards-compatible discovery status only. The telemetry exposes
@@ -82,19 +80,19 @@ contracts; the CI workflow supplies that controlled environment.
 
 ## Testflight and hardening priorities
 
-| ID | Goal | DoV |
+| ID | Goal | Acceptance |
 |---|---|---|
-| L01 | Validate repo, exact SHA and file census scope | Invalid SHA rejected |
-| L02 | Enumerate root path count and sample coverage | Nonnegative full count |
-| L03 | Enumerate nested path count separately | No duplicate summation |
-| L04 | Reject path traversal, duplicates and malformed denominators | Negative tests fail closed |
-| L05 | Bind nested federation execution to SHA and contract digest | Count positive and all checks PASS |
-| L06 | Reject green despite missing/failed native diagnostic | Negative tests fail closed |
-| L07 | Produce two normalized repeatable receipts | Identical digests |
-| L08 | Upload sanitized telemetry and verify consumer | Both workflow jobs pass on same SHA |
-| L08b | Enumerate and classify every source candidate | Full paths/counts reconcile; no substring false authority |
-| L09 | Add separate real debugger/protocol/port producer | Authenticated run/job/session/steps/port receipt |
-| L10 | Reconcile persistent root IDs to repair and consumer replay | Accepted source-bound repair lineage |
+| L01 | Exact SHA and scope | Invalid SHA rejected |
+| L02 | Root count and sample | Nonnegative denominator |
+| L03 | Nested count | No duplicate total |
+| L04 | Negative path tests | Reject invalid paths |
+| L05 | Nested diagnostic | Positive checks, all pass |
+| L06 | No false-green | Reject absent diagnostics |
+| L07 | Two-pass repeatability | Equal output digests |
+| L08 | Consumer artifact | Same-SHA jobs pass |
+| L08b | All candidate paths | Full taxonomy reconciles |
+| L09 | Real LLDB/port proof | Native run/session steps |
+| L10 | Root repair lineage | Accepted replay evidence |
 
 L01-L08 are implementation candidates until native exact-head CI passes.
 L09-L10 are deliberately not credited by this patch.
