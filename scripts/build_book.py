@@ -53,7 +53,6 @@ def build_pdf():
         "--variable=linkcolor:blue",
         "--variable=urlcolor:blue",
         "--variable=citecolor:green",
-        "book.yaml",
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -78,8 +77,7 @@ def build_html():
         "--number-sections",
         "--highlight-style=tango",
         "--standalone",
-        "--self-contained",
-        "book.yaml",
+        "--embed-resources",
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -102,7 +100,6 @@ def build_epub():
         "--toc",
         "--toc-depth=3",
         "--number-sections",
-        "book.yaml",
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
