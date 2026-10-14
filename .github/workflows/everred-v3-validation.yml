@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       artifact_plan_json:
-        description: 'Optional JSON array describing exact artifact IDs and scopes'
+        description: 'JSON artifact plan with exact IDs, source SHAs and scopes'
         required: false
         type: string
       target_sha:
