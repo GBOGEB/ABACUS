@@ -71,6 +71,31 @@ class CensusTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MODULE.summarize(base([good, good]))
 
+    def test_reject_missing_or_negative_native_identifiers(self):
+        for run, job in [(0, 2), (1, -2), ("1", 2)]:
+            row = receipt("lldb", run, job, native=True, status="DAP_PASS")
+            with self.subTest(run=run, job=job), self.assertRaises(ValueError):
+                MODULE.summarize(base([row]))
+
+    def test_reject_fake_debugger_and_os_success(self):
+        with self.assertRaises(ValueError):
+            MODULE.summarize(base([receipt("lldb", native=False,
+                                           status="DAP_PASS")]))
+        with self.assertRaises(ValueError):
+            MODULE.summarize(base([receipt("compatibility", platform="ubi9",
+                                           native=False, status="PASS",
+                                           runner="reported-only")]))
+
+    def test_reject_unlinked_invalid_fingerprint(self):
+        with self.assertRaises(ValueError):
+            MODULE.summarize(base([receipt("ldab", root_id="BD-X",
+                                           fingerprint="bad",
+                                           debug_job={"run_id": 5, "job_id": 6})]))
+
+    def test_malformed_proposals_fail_closed(self):
+        with self.assertRaises(ValueError):
+            MODULE.summarize(base([None]))
+
     def test_dependency_order_preserved(self):
         stages = MODULE.summarize(base())["stage_order"]
         edges = {x["id"]: x["needs"] for x in stages}
