@@ -183,7 +183,10 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
                dag: dict[str, dict]) -> dict[str, Any]:
     if run is None or payload is None:
         return {"jobs": {name: {"status": "UNKNOWN", "job_id": None,
-                 "url": None} for name in dag}, "completeness": "UNKNOWN"}
+                 "url": None, "needs": spec["needs"],
+                 "downstream_count": len(affected(dag, name)),
+                 "downstream": affected(dag, name)}
+                 for name, spec in dag.items()}, "completeness": "UNKNOWN"}
     rows = payload.get("jobs")
     total = payload.get("total_count")
     if not isinstance(rows, list) or type(total) is not int or total < len(rows):
