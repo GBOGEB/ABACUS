@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 
-from four_planes import Source, EvidenceError, demand, ldab_receipt
+from four_planes import Source, demand, ldab_receipt
 
 
 def consume_bd_ldab(report: dict, *, expected_source: Source) -> dict:
