@@ -17,14 +17,14 @@ jobs:
           python-version: '3.11'
       - name: Install pinned method tools
         run: python -m pip install pytest coverage black==26.10.0 isort==7.0.0 bandit
-      - name: Validate method contracts
+      - name: MIP3 preflight\n        run: python tools/mip2/mip3_flight.py --phase preflight --output mip3-preflight.json\n      - name: Validate method contracts
         run: python tools/mip2/validate_method_contracts.py
       - name: Execute seeded qualification corpus
-        run: python -m pytest tools/mip2/tests/test_method_qualification.py -v -rs --junitxml=mip2-junit.xml
-      - name: Upload native evidence
+        run: python -m pytest tools/mip2/tests -v -rs --junitxml=mip2-junit.xml
+      - name: Create local-compatible flight receipt\n        if: success()\n        run: python tools/mip2/local_testflight.py --mode full --output mip2-local-receipt.json\n      - name: MIP3 postflight\n        if: success()\n        run: python tools/mip2/mip3_flight.py --phase postflight --junit mip2-junit.xml --receipt mip2-local-receipt.json --output mip3-postflight.json\n      - name: Upload native evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mip2-qualification
-          path: mip2-junit.xml
+          path: |\n            mip2-junit.xml\n            mip2-local-receipt.json\n            mip2-local-junit.xml\n            mip3-preflight.json\n            mip3-postflight.json
           if-no-files-found: warn
