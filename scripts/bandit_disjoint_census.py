@@ -30,6 +30,8 @@ def partition(report: dict, sha: str) -> dict:
                 or any(part == ".." for part in raw.split("/"))):
             raise ValueError("Unsafe report path")
         normalized = "/".join(part for part in raw.split("/") if part and part != ".")
+        if not normalized:
+            raise ValueError("Unsafe empty report path")
         if not isinstance(line, int) or isinstance(line, bool) or line < 1:
             raise ValueError("Finding missing positive integer line_number")
         key = (normalized, rule, line, finding.get("issue_text", ""))
