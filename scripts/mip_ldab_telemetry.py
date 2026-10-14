@@ -158,12 +158,7 @@ def summarize(
         "source_census": {
             "root": root_census,
             "nested": nested_census,
-            "combined_candidates": (
-                root_census["candidate_file_count"]
-                + nested_census["candidate_file_count"]
-                if nested_census is not None
-                else None
-            ),
+            "combined_candidates": None,
             "combined_is_disjoint": False,
             "candidate_files_are_not_sessions": True,
         },
