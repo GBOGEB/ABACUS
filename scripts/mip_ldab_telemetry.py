@@ -12,8 +12,8 @@ import re
 from pathlib import PurePosixPath
 from typing import Any
 
-_SHA = re.compile(r"[0-9a-f]{40}\\Z")
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+_SHA = re.compile(r"[0-9a-f]{40}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _CONTRACT = "integration/codespace_jyperter/tests/test_smoke_federation.py"
 _LANE = "repo_self_assess_debug_ldab"
 
@@ -25,7 +25,7 @@ def _require(condition: bool, message: str) -> None:
 
 def _path(value: Any) -> str:
     _require(isinstance(value, str) and bool(value), "invalid source path")
-    path = value.replace("\\\\", "/")
+    path = value.replace("\\", "/")
     parts = path.split("/")
     _require(
         not path.startswith("/")
