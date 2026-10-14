@@ -75,7 +75,7 @@ class FiveLaneTests(unittest.TestCase):
         item = {"sha": HEAD, "authority_verified": True, "receipts": [r]}
         self.assertEqual(crew(item, HEAD)["accepted_rex"], 1)
         self.assertEqual(crew(item, HEAD)["ldab_sessions"], 1)
-        with self.assertRaisesRegex(ValueError, "Duplicate"):
+        with self.assertRaisesRegex(ValueError, "duplicate"):
             crew(dict(item, receipts=[r, r]), HEAD)
 
     def test_comments_and_self_review_cannot_approve(self):
