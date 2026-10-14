@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 from collections import defaultdict
 
-from everred import InvalidEvidence, digest, valid_sha
+from everred import InvalidEvidence, valid_sha
 
 
 def join(events):
