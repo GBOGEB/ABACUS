@@ -20,6 +20,8 @@ on:
   pull_request:
     branches: [main, develop]
     paths:
+      - 'scripts/code_purple_bootstrap_ldab_census.py'
+      - 'tests/test_code_purple_bootstrap_ldab_census.py'
       - 'bootstrap_eval.py'
       - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
