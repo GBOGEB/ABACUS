@@ -78,6 +78,7 @@ code{overflow-wrap:anywhere}
 <div class="scroll"><table><thead><tr><th>Metric</th><th>Verified historical baseline</th><th>Current comparable</th></tr></thead><tbody>
 <tr><td>Measured predecessor-main broad coverage</td><td id="main-h">36.85% historical baseline</td><td id="main-measured">UNKNOWN</td></tr>
 <tr><td>Latest main broad coverage</td><td id="main-current-sha">UNKNOWN SHA</td><td id="main-live">UNKNOWN</td></tr>
+<tr><td>Sequential main coverage change</td><td>Same Coverage.py/DAB; source count 298 → 299</td><td id="main-coverage-delta">UNKNOWN</td></tr>
 <tr><td>PR-side broad coverage</td><td id="pr-h">36.92%</td><td>UNKNOWN</td></tr>
 <tr><td>PR-side diff coverage</td><td id="diff-h">51%</td><td>UNKNOWN</td></tr>
 <tr><td>BD roots closed</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
@@ -132,7 +133,12 @@ async function refresh(){
   liveProtected=current&&current.protected;
   if(!/^[0-9a-f]{40}$/.test(liveSha))throw Error("main branch identity missing");
   put("main-current-sha",liveSha);
-  if(m&&liveSha===m.exact_main_sha&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"){
+  const currentMeasure=source.coverage.current_main_measured;
+  if(currentMeasure&&currentMeasure.exact_main_sha===liveSha&&currentMeasure.dab_schema==="abacus-coverage-dab/1.0.0"&&currentMeasure.coverage_version==="7.16.2"&&currentMeasure.covered_lines===17158&&currentMeasure.num_statements===30815&&currentMeasure.covered_branches===4233&&currentMeasure.num_branches===8324&&currentMeasure.complete_native_matrix==="success"){
+   put("main-live",currentMeasure.percent_combined_covered.toFixed(2)+"% exact-main VERIFIED; +0.1043 pp versus predecessor same-instrument main; historical 36.85% NOT COMPARABLE");
+   const cmp=source.coverage.sequential_main_comparison;
+   put("main-coverage-delta",cmp&&cmp.to_sha===liveSha&&cmp.common_files===298&&cmp.added_files===1?"+0.1043 pp · 298 unchanged collected files; one new covered module":"UNKNOWN");
+  }else if(m&&liveSha===m.exact_main_sha&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"){
    put("main-live",m.percent_combined_covered.toFixed(2)+"% SAME-SHA, historical comparator UNKNOWN");
   }else{
    put("main-live","UNKNOWN — main advanced since measured source");
