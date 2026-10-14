@@ -22,7 +22,8 @@ def verify(r, artifact_root=None):
     return bool(r.get("schema") == "mcl.receipt.v1" and all(r.get(k) for k in
         ("mission_id", "task_id", "root_id", "source_sha", "run_id")) and
         r.get("artifacts") and all(a.get("bytes", 0) > 0 and
-        len(a.get("sha256", "")) == 64 for a in r["artifacts"]) and\n        (artifact_root is None or all(_verify_artifact(a, artifact_root) for a in r["artifacts"])))
+        len(a.get("sha256", "")) == 64 for a in r["artifacts"]) and
+        (artifact_root is None or all(_verify_artifact(a, artifact_root) for a in r["artifacts"])))
 
 def _verify_artifact(artifact, artifact_root):
     """Validate content against trusted local artifact directory."""
