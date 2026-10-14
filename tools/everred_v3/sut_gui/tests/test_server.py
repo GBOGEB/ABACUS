@@ -75,6 +75,39 @@ class LocalSUT(unittest.TestCase):
         with self.assertRaisesRegex(OSError, "redirect refused"):
             mod._NoRedirect().redirect_request(None, None, 302, "redirect", {}, "https://other.example/")
 
+    def test_http_origin_and_token_enforced(self):
+        import json
+        import threading
+        from http.server import ThreadingHTTPServer
+        from urllib.request import Request, urlopen
+        from urllib.error import HTTPError
+
+        manager = mod.RunManager(self.root, execution_enabled=True)
+        cls = type('TestHandler', (mod.Handler,), {'manager': manager})
+        httpd = ThreadingHTTPServer(('127.0.0.1', 0), cls)
+        worker = threading.Thread(target=httpd.serve_forever, daemon=True)
+        worker.start()
+        try:
+            address = 'http://127.0.0.1:' + str(httpd.server_port)
+            body = json.dumps({'profile': 'ledger-verify'}).encode()
+            def post(origin, token):
+                req = Request(address + '/api/run', data=body, headers={
+                    'Content-Type': 'application/json',
+                    'Origin': origin,
+                    'X-SUT-Token': token}, method='POST')
+                return urlopen(req, timeout=5)
+            with self.assertRaises(HTTPError) as wrong_origin:
+                post('http://foreign.example', manager.token)
+            self.assertEqual(wrong_origin.exception.code, 403)
+            with self.assertRaises(HTTPError) as wrong_token:
+                post(address, 'wrong')
+            self.assertEqual(wrong_token.exception.code, 403)
+            result = json.loads(post(address, manager.token).read())
+            self.assertEqual(self.wait(manager, result['result']['id'])['status'], 'PASS_LOCAL_ONLY')
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+
     def test_symlink_rejected(self):
         (self.root / 'src' / 'unsafe.py').symlink_to(self.root / 'tests' / 'test_demo.py')
         manager = mod.RunManager(self.root, execution_enabled=True)
