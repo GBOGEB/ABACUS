@@ -5,8 +5,10 @@ import json
 import pathlib
 import sys
 import tempfile
+import urllib.error
 import unittest
 import zipfile
+from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from admission import GATES, effective_policy_from_rules, evaluate
@@ -21,6 +23,7 @@ from native_ingest import (
     junit_events,
     runtime_event,
     safe_zip_entries,
+    _zip_from_github,
 )
 from replay import check_manifest
 
@@ -106,6 +109,36 @@ class Native(unittest.TestCase):
             GitHubReadOnly("test-token", transport=transport).run_and_jobs(
                 REPO, 123, SHA
             )
+
+    def test_github_api_refuses_redirects_before_auth_reuse(self):
+        reader = GitHubReadOnly("fake-token")
+        redirect = urllib.error.HTTPError(
+            "https://api.github.com/repos/GBOGEB/ABACUS",
+            302,
+            "location changed",
+            {"Location": "https://untrusted.example.com/"},
+            None,
+        )
+        with patch("native_ingest.urllib.request.build_opener") as make_opener:
+            make_opener.return_value.open.side_effect = redirect
+            with self.assertRaisesRegex(InvalidEvidence, "GitHub API HTTP 302"):
+                reader.get("/repos/GBOGEB/ABACUS/actions/runs/123")
+            self.assertEqual(make_opener.return_value.open.call_count, 1)
+
+    def test_artifact_storage_redirect_rejects_foreign_host(self):
+        reader = GitHubReadOnly("fake-token")
+        redirect = urllib.error.HTTPError(
+            "https://api.github.com/repos/GBOGEB/ABACUS/actions/artifacts/1/zip",
+            302,
+            "location changed",
+            {"Location": "https://attacker.example.com/fake.zip"},
+            None,
+        )
+        with patch("native_ingest.urllib.request.build_opener") as make_opener:
+            make_opener.return_value.open.side_effect = redirect
+            with self.assertRaisesRegex(InvalidEvidence, "unrecognized artifact"):
+                _zip_from_github(reader, REPO, {"id": 1})
+            self.assertEqual(make_opener.return_value.open.call_count, 1)
 
     def test_bandit_exact_config_fingerprint(self):
         finding = {

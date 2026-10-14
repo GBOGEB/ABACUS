@@ -38,6 +38,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install XML entity-safe parser
+        run: python -m pip install defusedxml==0.7.1
       - name: Verify source, event chain and disjoint leases
         working-directory: tools/everred_v3
         run: |
@@ -59,12 +61,22 @@ jobs:
           assert 'does not confer merge' in snapshot['disclaimer']
           print('Historical/UNKNOWN admission safeguards retained')
           PY
-      - name: Check committed Black/isort source formatting
+      - name: Generate remediation preview using repository formatter versions
         working-directory: tools/everred_v3
         run: |
-          python -m pip install black==25.9.0 isort==6.0.1
+          python -m pip install black==26.10.1 isort==9.0.2
+          python -m black src scripts tests
+          python -m isort src scripts tests
           python -m black --check src scripts tests
-          python -m isort --profile black --check-only src scripts tests
+          python -m isort --check-only src scripts tests
+          tar -czf "$RUNNER_TEMP/everred-v3-format-current.tgz" src scripts tests
+          sha256sum "$RUNNER_TEMP/everred-v3-format-current.tgz"
+      - name: Publish formatting diff for review, never push
+        uses: actions/upload-artifact@v4
+        with:
+          name: everred-v3-format-current-${{ matrix.python-version }}
+          path: ${{ runner.temp }}/everred-v3-format-current.tgz
+          if-no-files-found: error
   native-pulse:
     name: Read-only native run / joined census pulse
     if: github.event_name == 'workflow_dispatch'

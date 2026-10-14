@@ -17,9 +17,10 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-import xml.etree.ElementTree as ET
 import zipfile
 from typing import Any
+
+from defusedxml.ElementTree import fromstring as safe_xml_fromstring
 
 from everred import SCHEMA, InvalidEvidence, digest, valid_sha
 
@@ -106,7 +107,7 @@ class GitHubReadOnly:
             data = self.transport(req)
         else:
             try:
-                with urllib.request.urlopen(req, timeout=20) as res:
+                with urllib.request.build_opener(_NoRedirect()).open(req, timeout=20) as res:
                     require(res.status == 200, "GitHub API not HTTP 200")
                     data = res.read(MAX_ARTIFACT + 1)
             except urllib.error.HTTPError as e:
@@ -414,7 +415,7 @@ def coverage_event(
         b"<!DOCTYPE" not in blob.upper() and b"<!ENTITY" not in blob.upper(),
         "XML entities prohibited",
     )
-    root = ET.fromstring(blob)
+    root = safe_xml_fromstring(blob)
     require(root.tag == "coverage", "expected Cobertura coverage XML")
     classes = root.findall(".//class")
     require(classes, "coverage XML lacks classes")
@@ -468,7 +469,7 @@ def junit_events(blob: bytes, scope: dict, *, trusted=False):
         b"<!DOCTYPE" not in blob.upper() and b"<!ENTITY" not in blob.upper(),
         "XML entities prohibited",
     )
-    root = ET.fromstring(blob)
+    root = safe_xml_fromstring(blob)
     require(root.tag in ("testsuite", "testsuites"), "invalid JUnit XML root")
     cases = root.findall(".//testcase")
     out = []
@@ -575,10 +576,14 @@ def _zip_from_github(reader: GitHubReadOnly, repo: str, artifact: dict):
             host.endswith(".actions.githubusercontent.com")
             or host.endswith(".blob.core.windows.net")
             or host == "objects.githubusercontent.com"
-        ),
+        )
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.port in (None, 443)
+        and not parsed.fragment,
         "unrecognized artifact storage host; bearer not forwarded",
     )
-    with urllib.request.urlopen(
+    with urllib.request.build_opener(_NoRedirect()).open(
         urllib.request.Request(dest, headers={"User-Agent": "ABACUS-EVERRED-V3"}),
         timeout=30,
     ) as res:
