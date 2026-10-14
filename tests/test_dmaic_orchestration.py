@@ -142,7 +142,7 @@ class DMAICTestOrchestrator:
         cmd = [
             sys.executable, "-m", "pytest",
             test_suite,
-            "--cov=.",
+            "--cov",
             f"--cov-report=json:{coverage_file}",
             "--json-report",
             f"--json-report-file={report_file}",
