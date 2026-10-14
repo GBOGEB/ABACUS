@@ -47,7 +47,7 @@ related_bandit_fingerprint field and an identical repository/head SHA.
 Each debugger receipt requires repository, source_sha, run_id, job_id,
 evidence_url and nonnegative real_probe_steps. Optional runner_id,
 session_id, port_lease_id, container_id, image_digest and host_binding
-are retained. A counted observed session requires both session_id
+are retained. A reported (not independently verified) session requires both session_id
 and runner_id as well as a positive real_probe_steps count.
 
 Cross-repository CODEX runtime receipts remain unlinked observations
@@ -85,7 +85,7 @@ Publish only appropriately sanitized exact-SHA summaries.
 
 ## Mermaid: evidence to repair and admission
 
-\`\`\`mermaid
+```mermaid
 flowchart TD
     A[Exact-SHA producer evidence] --> B{Source identity valid?}
     B -- No --> H[Hold: do not credit]
@@ -108,7 +108,7 @@ flowchart TD
     P --> Q{Protected main and all admission gates green?}
     Q -- No --> H
     Q -- Yes --> R[Separate authorized merge decision]
-\`\`\`
+```
 
 ## Ordered traceable work
 
