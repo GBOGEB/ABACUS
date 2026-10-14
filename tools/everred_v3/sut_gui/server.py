@@ -63,29 +63,157 @@ def fetch_github(path: str, token: str | None):
         return json.loads(data)
 
 
+def _native_ci(token, sha):
+    """Conservative exact-head GitHub Actions census (one page, fail closed)."""
+    result = {
+        "schema": "code-purple.native-ci.v2", "source_sha": sha, "repository": "GBOGEB/ABACUS",
+        "status": "UNKNOWN", "total_count": None, "sample_complete": False,
+        "runs": [], "first_reds": [], "first_red_completeness": "UNKNOWN",
+        "metrics": {"total_observed": None, "terminal": None, "success": None,
+                    "failure": None, "queued": None, "in_progress": None,
+                    "cancelled_or_other": None},
+    }
+    if not isinstance(sha, str) or len(sha) != 40 or any(ch not in "0123456789abcdef" for ch in sha):
+        return result
+    data = fetch_github(f"/repos/GBOGEB/ABACUS/actions/runs?head_sha={sha}&per_page=100", token)
+    total, rows = data.get("total_count"), data.get("workflow_runs")
+    if type(total) is not int or not isinstance(rows, list):
+        raise ValueError("Native workflow collection lacks denominator")
+    if any(not isinstance(row, dict) or row.get("head_sha") != sha for row in rows):
+        raise ValueError("Workflow census mixes source SHA identities")
+    result["status"] = "OBSERVED"
+    result["total_count"] = total
+    result["sample_complete"] = len(rows) == total and total <= 100
+    for row in rows:
+        result["runs"].append({
+            "id": row.get("id"), "name": row.get("name"), "status": row.get("status"),
+            "conclusion": row.get("conclusion"), "head_sha": row.get("head_sha"),
+            "created_at": row.get("created_at"), "updated_at": row.get("updated_at"),
+            "url": row.get("html_url"), "event": row.get("event"),
+        })
+    terminal = [row for row in result["runs"] if row["status"] == "completed"]
+    result["metrics"] = {
+        "total_observed": len(result["runs"]), "terminal": len(terminal),
+        "success": sum(row["conclusion"] == "success" for row in terminal),
+        "failure": sum(row["conclusion"] in ("failure", "timed_out", "action_required") for row in terminal),
+        "queued": sum(row["status"] in ("queued", "pending", "waiting", "requested") for row in result["runs"]),
+        "in_progress": sum(row["status"] == "in_progress" for row in result["runs"]),
+        "cancelled_or_other": sum(row["conclusion"] not in ("success", "failure", "timed_out", "action_required") for row in terminal),
+    }
+    failed = [row for row in terminal if row["conclusion"] in ("failure", "timed_out", "action_required")]
+    inspected = 0
+    for row in failed[:4]:
+        try:
+            detail = fetch_github(f"/repos/GBOGEB/ABACUS/actions/runs/{row['id']}/jobs?per_page=100", token)
+            jobs = detail.get("jobs")
+            if not isinstance(jobs, list) or type(detail.get("total_count")) is not int:
+                raise ValueError("Job census denominator unavailable")
+            if len(jobs) != detail["total_count"]:
+                raise ValueError("Job census incomplete")
+            inspected += 1
+            for job in jobs:
+                if job.get("conclusion") not in ("failure", "timed_out", "action_required"):
+                    continue
+                steps = job.get("steps") or []
+                first = next((step for step in steps if step.get("conclusion") in ("failure", "timed_out", "action_required")), None)
+                result["first_reds"].append({
+                    "workflow": row["name"], "run_id": row["id"],
+                    "job_id": job.get("id"), "job": job.get("name"),
+                    "step": first.get("name") if first else None,
+                    "step_number": first.get("number") if first else None,
+                    "sha": sha, "url": job.get("html_url") or row["url"],
+                    "classification": "UNCLASSIFIED", "root_id": None,
+                    "evidence": "NATIVE_JOB_STEP_METADATA",
+                })
+        except (OSError, error.URLError, ValueError, KeyError, TypeError, TimeoutError):
+            result["first_reds"].append({
+                "workflow": row["name"], "run_id": row["id"], "job_id": None,
+                "job": None, "step": None, "sha": sha, "url": row["url"],
+                "classification": "UNKNOWN", "root_id": None,
+                "evidence": "JOB_READBACK_UNAVAILABLE",
+            })
+    result["first_red_completeness"] = (
+        "COMPLETE" if result["sample_complete"] and inspected == len(failed) else "PARTIAL"
+    )
+    return result
+
+
 def live_snapshot(token: str | None = None):
-    result = {"schema": "code-purple.live.v1", "collected_at": now_iso(), "source": "GITHUB_API_READ_ONLY", "repositories": {}, "prs": {}, "errors": []}
+    """Read-only GitHub evidence. No local/remote run is inferred successful."""
+    result = {"schema": "code-purple.live.v2", "collected_at": now_iso(),
+              "source": "GITHUB_API_READ_ONLY", "poll_policy": "AUTHENTICATED_90S" if token else "PUBLIC_900S", "repositories": {}, "prs": {},
+              "errors": [], "ci": None, "independent_review": "UNKNOWN"}
     for repo in REPOS:
         try:
             j = fetch_github(f"/repos/{repo}/branches/main", token)
-            result["repositories"][repo] = {"sha": j["commit"]["sha"], "protected": j.get("protected"), "url": f"https://github.com/{repo}/tree/main", "source": "API"}
+            result["repositories"][repo] = {
+                "sha": j["commit"]["sha"], "protected": j.get("protected"),
+                "url": f"https://github.com/{repo}/tree/main", "source": "API"}
         except (OSError, error.URLError, ValueError, KeyError, TimeoutError) as ex:
             result["repositories"][repo] = {"sha": None, "protected": None, "source": "UNKNOWN"}
             result["errors"].append(f"{repo}: {type(ex).__name__}")
     try:
         j = fetch_github("/repos/GBOGEB/ABACUS/rulesets/24494381", token)
-        result["ruleset"] = {"id": j.get("id"), "enforcement": j.get("enforcement"), "rule_count": len(j.get("rules", [])), "url": "https://github.com/GBOGEB/ABACUS/settings/rules/24494381"}
+        rules = j.get("rules")
+        result["ruleset"] = {"id": j.get("id"), "enforcement": j.get("enforcement"),
+                             "rule_count": len(rules) if isinstance(rules, list) else None,
+                             "url": "https://github.com/GBOGEB/ABACUS/settings/rules/24494381"}
     except (OSError, error.URLError, ValueError, KeyError, TimeoutError) as ex:
         result["ruleset"] = {"rule_count": None, "enforcement": "UNKNOWN"}
         result["errors"].append(f"Ruleset: {type(ex).__name__}")
-    for number in (1951, 1946):
+    for number in (1956, 1951):
         try:
             j = fetch_github(f"/repos/GBOGEB/ABACUS/pulls/{number}", token)
-            result["prs"][str(number)] = {"state": j.get("state"), "draft": j.get("draft"), "merged": j.get("merged"), "sha": j.get("head", {}).get("sha"), "url": j.get("html_url"), "title": j.get("title")}
+            result["prs"][str(number)] = {
+                "state": j.get("state"), "draft": j.get("draft"),
+                "merged": j.get("merged"), "sha": j.get("head", {}).get("sha"),
+                "url": j.get("html_url"), "title": j.get("title"),
+                "author": (j.get("user") or {}).get("login")}
         except (OSError, error.URLError, ValueError, KeyError, TimeoutError) as ex:
             result["prs"][str(number)] = {"state": "UNKNOWN", "sha": None}
             result["errors"].append(f"PR #{number}: {type(ex).__name__}")
+    primary = result["prs"].get("1956", {})
+    try:
+        result["ci"] = _native_ci(token, primary.get("sha"))
+    except (OSError, error.URLError, ValueError, KeyError, TimeoutError) as ex:
+        result["errors"].append(f"Native CI: {type(ex).__name__}")
+        result["ci"] = {"status": "UNKNOWN", "source_sha": primary.get("sha"),
+                        "runs": [], "metrics": None, "first_reds": [],
+                        "total_count": None, "sample_complete": False,
+                        "first_red_completeness": "UNKNOWN"}
+    try:
+        reviews = fetch_github("/repos/GBOGEB/ABACUS/pulls/1956/reviews?per_page=100", token)
+        if not isinstance(reviews, list):
+            raise ValueError("Reviews not a list")
+        exact = [x for x in reviews if x.get("state") == "APPROVED"
+                 and x.get("commit_id") == primary.get("sha")
+                 and (x.get("user") or {}).get("login") != primary.get("author")]
+        # Review existence is not eligibility or a policy acceptance.
+        result["independent_review"] = "OBSERVED_NOT_ELIGIBILITY" if exact else "NOT_OBSERVED"
+    except (OSError, error.URLError, ValueError, KeyError, TimeoutError):
+        result["independent_review"] = "UNKNOWN"
+        result["errors"].append("Reviews: readback unavailable")
+    result["collection"] = "COMPLETE" if not result["errors"] and result["ci"]["sample_complete"] and result["ci"]["first_red_completeness"] == "COMPLETE" else "PARTIAL"
+    result["merge_authorized"] = False
+    result["authority_transfer"] = False
+    result["security_waiver"] = False
     return result
+
+
+LIVE_CACHE = {"time": 0.0, "result": None}
+LIVE_CACHE_LOCK = threading.Lock()
+
+
+def cached_live_snapshot(token: str | None = None):
+    # Conservatively cache read-only GETs for 60 seconds. The original
+    # collected_at remains unchanged, preventing a false freshness reset.
+    with LIVE_CACHE_LOCK:
+        if LIVE_CACHE["result"] is not None and time.monotonic() - LIVE_CACHE["time"] < (60 if token else 600):
+            return LIVE_CACHE["result"]
+        result = live_snapshot(token)
+        LIVE_CACHE["time"] = time.monotonic()
+        LIVE_CACHE["result"] = result
+        return result
 
 
 def clean_tree(source: Path, dest: Path):
@@ -172,7 +300,7 @@ class RunManager:
 class Handler(BaseHTTPRequestHandler):
     manager: RunManager
     public_index = APP / "index.html"
-    server_version = "CodePurpleSUT/1.0"
+    server_version = "CodePurpleSUT/2.0"
 
     def _send(self, code, body, content_type="application/json; charset=utf-8"):
         payload = json.dumps(body).encode() if not isinstance(body, bytes) else body
@@ -194,7 +322,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/status":
             return self._send(200, {"schema": "code-purple.local-sut.v1", "execution_enabled": self.manager.execution_enabled, "profiles": list(WORKFLOWS), "sut_present": (self.manager.root / "src" / "everred.py").is_file(), "source_sha": git_revision(self.manager.root), "active_run": self.manager.active, "transport": "LOCALHOST_ONLY"})
         if path == "/api/live":
-            return self._send(200, live_snapshot(os.environ.get("GITHUB_TOKEN")))
+            return self._send(200, cached_live_snapshot(os.environ.get("GITHUB_TOKEN")))
         if path == "/api/runs":
             return self._send(200, {"runs": list(self.manager.records.values())[-30:]})
         if path.startswith("/api/runs/"):
