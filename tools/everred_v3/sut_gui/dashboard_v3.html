@@ -36,7 +36,7 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 .arch-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin:18px 0 13px}
 .arch-step{position:relative;border:1px solid #6f8ca8;border-radius:12px;background:#17283a;padding:13px 13px 14px;min-width:0;display:flex;flex-direction:column;gap:6px}
 .arch-step:not(:last-child)::after{content:'\2192';position:absolute;right:-19px;top:43%;color:#d9e8f5;font-weight:900;font-size:24px;z-index:2}
-.arch-step .p{font-size:10px;color:#b8d9fa;font-weight:900;letter-spacing:.1em}
+.arch-step.stop-forward::after{display:none!important}.arch-step .p{font-size:10px;color:#b8d9fa;font-weight:900;letter-spacing:.1em}
 .arch-step b{font-size:13px;color:#fff}.arch-step .type{border:1px solid #7e94a8;border-radius:5px;padding:1px 5px;color:#ddeaf7;font-size:10px;white-space:nowrap}
 .arch-step .ownerline{font-size:11px;color:#c0d4e6;margin-top:auto;border-top:1px solid #426078;padding-top:5px;overflow-wrap:anywhere}
 .arch-step small{font-size:11px;color:#d1ddea}
@@ -116,7 +116,7 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 <span class="arch-key-item"><i class="arch-legend-line"></i> Forward dependency (DAG)</span>
 <span class="arch-key-item"><i class="arch-legend-line feedback"></i> Feedback, dashed amber / next pulse</span>
 <span class="arch-key-item"><i class="arch-legend-line feedforward"></i> Feedforward, double cyan / preflight</span>
-</div><p class="small" style="margin:9px 0 0">Filled colors on branch terminals encode <em>proposed path disposition</em>, not observed governance approval. Purple borders identify a decision <em>type</em> only; no single global owner is implied.</p></div>
+</div><p class="small" style="margin:9px 0 0">Green/red branch outlines and labels encode <em>conditional dispositions</em>, not observed governance approval. Purple borders identify a decision <em>type</em> only; no single global owner is implied.</p></div>
 <div class="arch-controls"><button type="button" class="arch-tab" data-arch="hierarchy">Repository hierarchy / responsibilities</button><button type="button" class="arch-tab" data-arch="dag">Strict forward DAG + control overlay</button><button type="button" class="arch-tab" data-arch="wireframe">SUT / pipeline wireframe</button></div>
 <div class="arch-panel" id="arch-hierarchy">
 <h3>Roles are distributed; one root has one accountable repair owner</h3>
@@ -139,15 +139,15 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 <div class="arch-bridge" aria-label="Forward directed connection P4 to P5">P4 repair &#8595; P5 native verification | forward dependency, NOT a new phase</div>
 <div class="arch-flow" role="group" aria-label="Four ordered verification and admission phases">
 <div class="arch-step"><span class="p">P5 | VERIFY</span><b>Exact-head native CI</b><small>Coverage + security + negative tests</small><span class="ownerline">Role: trusted CI runners</span></div>
-<div class="arch-step"><span class="p">P6 | REVIEW</span><b>Independent gates</b><small>Reviews + policy + effective branch protection</small><span class="ownerline">Role: qualified reviewer / repo administrator</span></div>
+<div class="arch-step stop-forward"><span class="p">P6 | REVIEW / DECIDE BELOW</span><b>Independent gates</b><small>Reviews + policy + effective branch protection</small><span class="ownerline">Role: qualified reviewer / repo administrator</span></div>
 <div class="arch-step"><span class="p">P7 | CONDITIONAL YES ONLY</span><b>Authorized merge only</b><small>New integration SHA, no worker bypass</small><span class="ownerline">Role: authorized merger</span></div>
 <div class="arch-step"><span class="p">P8 | AFTER AUTHORIZED MERGE</span><b>Main recurrence sentinel</b><small>Source-bound comparison at later pulse</small><span class="ownerline">Role: EVERRED / Mission Control</span></div>
 </div>
 <div class="arch-diagram-note">Forward arrows indicate ordered dependencies, not elapsed time or automatic transitions. P6 feeds the decision: <b>NO stops at HOLD</b>; only <b>YES continues to P7/P8</b>. The decision below has two <b>different</b> outcomes; the green path is conditional and is <b>not</b> current admission.</div>
 <div class="arch-decision-layout" role="group" aria-label="Independent admission decision and labeled branches">
-<div class="arch-branch no"><span class="route">NO &#8592; FAIL / UNKNOWN</span><b>ADMISSION HOLD</b><small>Repair the missing gate or acquire authoritative evidence. Return to another pulse; not a merge.</small><small>Role: Mission Control / gate owner</small></div>
+<div class="arch-branch no"><span class="route">NO &#8592; STOP / HOLD</span><b>ADMISSION HOLD</b><small>Repair the missing gate or acquire authoritative evidence. Return to another pulse; not a merge.</small><small>Role: Mission Control / gate owner</small></div>
 <div class="arch-diamond"><span class="shape" aria-hidden="true">&#9671;</span><b>ALL mandatory independent gates PASS?</b><small>Exact SHA + security + coverage + review + protected main</small><small>Role: independent admission evaluator</small></div>
-<div class="arch-branch yes"><span class="route">YES &#8594; CONDITIONAL</span><b>ELIGIBLE FOR AUTHORIZED MERGE</b><small>Not an automatic merge; only separately authorized integration and main recheck.</small><small>Role: eligible reviewer + authorized merger</small></div>
+<div class="arch-branch yes"><span class="route">YES &#8594; P7 / P8 CONDITIONAL</span><b>ELIGIBLE FOR AUTHORIZED MERGE</b><small>Not an automatic merge; only separately authorized integration and main recheck.</small><small>Role: eligible reviewer + authorized merger</small></div>
 </div>
 <h3>2. Feedback and feedforward (separate control graph, NOT part of the DAG)</h3>
 <div class="arch-loop-grid">
