@@ -135,6 +135,20 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertIn('main advanced since measured source', self.html)
         self.assertIn("historical comparison NOT COMPARABLE", self.html)
 
+    def test_current_main_reds_do_not_erase_pr_scoped_repairs(self):
+        d = self.data["current_main_first_reds"]
+        self.assertEqual(d["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"])
+        self.assertEqual(d["docs"]["finding_count"], 33)
+        self.assertEqual(len(d["docs"]["files"]), 2)
+        self.assertIsNone(d["docs"]["verified_after_count"])
+        self.assertEqual(d["workflow_governance"]["unclassified_workflow_count"], 2)
+        self.assertIsNone(d["workflow_governance"]["verified_after_count"])
+        self.assertEqual(d["docs"]["candidate_pr"], 1972)
+        self.assertEqual(d["workflow_governance"]["candidate_pr"], 1973)
+        self.assertEqual(self.data["metrics_contract"]["docs_reduction_count"], 13)
+        self.assertIn("liveSha===reds.exact_main_sha", self.html)
+        self.assertIn("separate from #1966", self.html)
+
     def test_p0_ruleset_is_partial_and_not_merge_authority(self):
         g = self.data["governance"]["recovery_observation"]
         self.assertEqual(g["schema"], "abacus.p0.ruleset-readback.v1")
