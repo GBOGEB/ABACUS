@@ -1,0 +1,76 @@
+import unittest
+
+from mission_control_lite.rex import build_index, fingerprint, wave_delta
+
+
+class TestRexWave(unittest.TestCase):
+    def setUp(self):
+        self.event = {
+            "event_id": "e1", "repository": "GBOGEB/ABACUS",
+            "source_sha": "a" * 40, "run_id": 12, "job_id": 34,
+            "topic_id": "PYTHON.SQLITE.WINDOWS.FILE_LOCK",
+            "fingerprint": fingerprint("GBOGEB/ABACUS", "pytest", "WinError32",
+                                       "mission_control_lite/core.py", "sqlite lock"),
+            "manifestation": "WinError 32", "root_candidate_id": "r1",
+        }
+        self.root = {"root_id": "r1", "rex_id": "rex1",
+                     "hypothesis": "sqlite context does not close handle"}
+        self.rex = {"rex_id": "rex1", "repair": "contextlib.closing",
+                    "verification": "native Windows Python 3.11/3.12"}
+
+    def test_index_links_without_promoting_authority(self):
+        result = build_index([self.event], [self.root], [self.rex])
+        self.assertEqual(result["event_count"], 1)
+        self.assertEqual(result["events"][0]["rex"]["rex_id"], "rex1")
+        self.assertFalse(result["events"][0]["root_confirmed"])
+        self.assertEqual(result["verified_root_closures"], 0)
+
+    def test_multiple_manifestations_one_root(self):
+        second = dict(self.event, event_id="e2", run_id=13)
+        result = build_index([self.event, second], [self.root], [self.rex])
+        self.assertEqual(result["event_count"], 2)
+        self.assertEqual(result["root_candidates"], 1)
+
+    def test_missing_rex_fails_closed(self):
+        with self.assertRaises(ValueError):
+            build_index([self.event], [self.root], [])
+
+    def test_duplicate_event_fails_closed(self):
+        with self.assertRaises(ValueError):
+            build_index([self.event, self.event], [self.root], [self.rex])
+
+    def test_missing_native_provenance_fails_closed(self):
+        bad = dict(self.event, job_id=None)
+        with self.assertRaises(ValueError):
+            build_index([bad], [self.root], [self.rex])
+
+    def test_comparable_wave_delta(self):
+        base = {"repository": "GBOGEB/ABACUS",
+                "scanner_config_sha256": "f" * 64, "coverage_scope": "changed",
+                "fingerprints": ["a", "b"], "covered_lines": 60,
+                "total_lines": 100, "covered_branches": 8, "total_branches": 10}
+        now = dict(base, fingerprints=["b", "c"], covered_lines=85,
+                   covered_branches=9)
+        result = wave_delta(base, now)
+        self.assertEqual(result["opened"], ["c"])
+        self.assertEqual(result["resolved_candidates"], ["a"])
+        self.assertEqual(result["persistent"], ["b"])
+        self.assertAlmostEqual(result["line_coverage_delta_pp"], 25)
+        self.assertEqual(result["root_closure_credit"], 0)
+
+    def test_incomparable_scope_fails_closed(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": []}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base, scanner_config_sha256="y"))
+
+    def test_unknown_coverage_not_zero(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": []}
+        result = wave_delta(base, dict(base))
+        self.assertIsNone(result["line_coverage_delta_pp"])
+        self.assertIsNone(result["branch_coverage_delta_pp"])
+
+
+if __name__ == "__main__":
+    unittest.main()
