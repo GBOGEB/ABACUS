@@ -249,5 +249,38 @@
       "correct_admitted_merge_count": null
     }
   },
-  "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero."
+  "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero.",
+  "current_main_first_reds": {
+    "exact_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+    "docs": {
+      "run_id": 38592202343,
+      "job_id": 115949686085,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202343/job/115949686085",
+      "finding_count": 33,
+      "files": [
+        "tools/everred_v3/sut_gui/DASHBOARD_V31.md",
+        "tools/everred_v3/sut_gui/DASHBOARD_V32_VISUAL_CONTRACT.md"
+      ],
+      "candidate_pr": 1972,
+      "candidate_head_sha": "357ace9e09e04795f4bd9cdca49a9c81dc469772",
+      "candidate_run_id": 38596841036,
+      "verified_after_count": null,
+      "scope": "MAIN_DOCS_NEW_ROOT_NOT_PRIOR_PR_1966"
+    },
+    "workflow_governance": {
+      "run_id": 38592202482,
+      "job_id": 115949687742,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202482/job/115949687742",
+      "unclassified_workflow_count": 2,
+      "unclassified": [
+        "code-purple-dashboard-v31.yml",
+        "code-purple-sut-gui.yml"
+      ],
+      "derived_report_stale": true,
+      "candidate_pr": 1973,
+      "candidate_head_sha": "007642a995f87519b3510277bec997df3522dee0",
+      "verified_after_count": null
+    },
+    "ownership_contract": "These are current-main first-red observations, distinct from the PR-scoped 13-to-0 docs repair and 11-to-0 Ruff repair. No closure before native same-SHA after-check."
+  }
 }
