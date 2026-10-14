@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  actions: read
+  issues: read
 
 concurrency:
   group: abacus-missioncontrol-burndown-${{ github.ref }}
