@@ -43,7 +43,7 @@ class TestMissionControlLite(unittest.TestCase):
                 main()
             self.assertTrue(verify(json.loads(rec.read_text()), d))
             with patch.object(sys, "argv", [
-                "mcl", "ingest", str(rec), "--db", str(db),
+                "mcl", "ingest", str(rec), "--db", str(db), "--artifact-root", d,
             ]):
                 main()
             buf = StringIO()
@@ -62,7 +62,7 @@ class TestMissionControlLite(unittest.TestCase):
             rec.write_text("{}")
             with patch.object(sys, "argv", [
                 "mcl", "ingest", str(rec), "--db",
-                str(Path(d) / "registry.sqlite"),
+                str(Path(d) / "registry.sqlite"), "--artifact-root", d,
             ]):
                 with self.assertRaises(ValueError):
                     main()
