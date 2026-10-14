@@ -10,7 +10,7 @@ a{color:var(--cyan)}button{cursor:pointer;background:#233552;color:var(--ink);bo
 button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 header,main,footer{max-width:1250px;margin:auto;padding:22px}h1{font-size:clamp(1.6rem,3vw,2.5rem);line-height:1.2;margin:4px 0 10px}h2{margin:0 0 12px;font-size:1.3rem}
 small,.muted{color:var(--muted)}.top{position:sticky;top:0;z-index:8;background:#101d32f8;border-bottom:2px solid var(--line);padding:9px 16px;display:flex;gap:12px;align-items:center;overflow-x:auto}
-.top a{white-space:nowrap;font-size:.87rem;font-weight:700}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.top a{white-space:nowrap;font-size:.87rem;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
 .tile,.panel{border:2px solid var(--line);border-radius:13px;padding:17px;background:var(--panel)}
 .tile{border-top:5px solid var(--accent)}.tile:nth-child(1){--accent:var(--red)}.tile:nth-child(2){--accent:var(--cyan)}.tile:nth-child(3){--accent:var(--amber)}.tile:nth-child(4){--accent:var(--green)}
 .tile strong{font-size:clamp(1.3rem,3vw,2.05rem);display:block;line-height:1.3;overflow-wrap:anywhere}.tile span{font-size:.9rem}
@@ -49,6 +49,7 @@ code{overflow-wrap:anywhere}
 <article class="tile"><span>Document lint · before</span><strong id="before">13</strong><small>Native historical failed job</small></article>
 <article class="tile"><span>Document lint · after</span><strong id="after">UNKNOWN</strong><small>Only same-SHA terminal check</small></article>
 <article class="tile"><span>Verified findings resolved</span><strong id="resolved">UNKNOWN</strong><small>No credit from commit alone</small></article>
+<article class="tile"><span>Ruff · bounded 4-file slice</span><strong id="ruff-score">UNKNOWN</strong><small>Native run source/receipt, not full repo</small></article>
 <article class="tile"><span>Downstream DOW jobs unblocked</span><strong id="unblocked">UNKNOWN</strong><small>Potential 6; executed proof required</small></article>
 </div></section>
 <section id="docs" class="panel"><h2>Documentation first-red — exact file and job</h2>
@@ -67,9 +68,10 @@ code{overflow-wrap:anywhere}
 <div class="scroll"><table><thead><tr><th>Root or consequence</th><th>Baseline</th><th>Verified after</th><th>Action lane</th></tr></thead><tbody>
 <tr><td>EOF fixer</td><td>FAILED</td><td>UNKNOWN</td><td>Controlled formatting repair, not mass uncontrolled rewrite</td></tr>
 <tr><td>Trailing whitespace</td><td>FAILED</td><td>UNKNOWN</td><td>File-owned normalization / exact-head pre-commit</td></tr>
-<tr><td>TestPilot / Ruff</td><td>FAILED</td><td id="ruff-state">UNKNOWN</td><td><a href="https://github.com/GBOGEB/ABACUS/pull/1965">Disjoint #1965</a></td></tr>
+<tr><td>TestPilot / Ruff</td><td>FAILED</td><td id="ruff-state">UNKNOWN</td><td><a id="ruff-link" href="https://github.com/GBOGEB/ABACUS/pull/1965">Disjoint #1965</a></td></tr>
 <tr><td>Ubuntu / RHEL8 / RHEL9 / DMAIC / build / release</td><td>6 SKIPPED</td><td>UNKNOWN</td><td>Must execute natively after lint green</td></tr>
 </tbody></table></div>
+<p id="ruff-detail" class="muted">Measured Ruff and formatting delta requires a source-matched exact-head receipt; no full DOW PASS inferred.</p>
 </section>
 <section id="coverage" class="panel"><h2>Coverage / BD closure / admission remain independent</h2>
 <div class="scroll"><table><thead><tr><th>Metric</th><th>Verified historical baseline</th><th>Current comparable</th></tr></thead><tbody>
@@ -101,6 +103,11 @@ async function refresh(){
  const b=source.baseline,c=source.candidates.documentation;
  put("before",b.docs.finding_count);put("md013",b.docs.findings_by_rule.MD013);put("md022",b.docs.findings_by_rule.MD022);put("md032",b.docs.findings_by_rule.MD032);
  put("hooks",b.dow.failed_hook_count);put("skipped",b.dow.observed_downstream_skipped);
+ const r=source.candidates.dow_ruff;
+ const exact=r&&r.comparison_status==="VERIFIED_TERMINAL_PR_SCOPED"&&r.tool==="ruff==0.17.0"&&/^[0-9a-f]{40}$/.test(r.head_sha)&&r.before_findings===11&&r.after_findings===0&&r.opened_occurrences===0&&r.resolved_occurrences===11&&r.identical_scoped_paths.length===4;
+ if(exact){put("ruff-score",r.before_findings+" → "+r.after_findings);put("ruff-state","11 → 0 native PR-scope PASS");$("ruff-state").className="pass";$("ruff-link").href=r.job_url;
+ put("ruff-detail","Exact head "+r.head_sha+" · run "+r.workflow_run_id+" / job "+r.job_id+" · "+r.resolved_occurrences+" resolved, 0 introduced across "+r.identical_scoped_paths.length+" identical paths · 6 focused tests passed · formatting: 9 → 0 trailing whitespace lines and 2 → 0 missing final newlines on 3 paths. Full repo DOW and RHEL remain HOLD.");
+ }else{put("ruff-score","UNKNOWN");put("ruff-state","UNKNOWN");put("ruff-detail","No accepted same-scope Ruff receipt; DOW after-state UNKNOWN.");}
  put("main-h",source.coverage.historical_main.value_pct+"%");
  put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
  put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
