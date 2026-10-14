@@ -25,6 +25,20 @@ The root index includes the nested tree. Therefore the two file
 counts cannot be added into a deduplicated repository-wide total.
 The `combined_candidates` field is null by design.
 
+The original filename detector uses permissive substring matching.
+For example, `log` occurs in `catalog` and `topology`;
+`dap` occurs in `adaptive`. A 104-file lexical count is not a
+104-tool inventory. The producer now also retains every candidate path
+and classifies it with explicit, versioned path-component token rules.
+
+The independently enumerated baseline from exact SHA
+`a3ccc0bc5ceebe3806f393d507ef3de2e4271408` is:
+29 explicit debug/diagnostic names, 29 log/trace-related names,
+46 incidental lexical matches (total 104). These are observations,
+not repairs, live workers, or executable tool availability.
+The new `ldab.lexical.v1` contract shall reproduce these counts
+on a source-equivalent inventory or explain changed source membership.
+
 ## Evidence fields and invariants
 
 | Key | Source | Meaning |
@@ -35,6 +49,8 @@ The `combined_candidates` field is null by design.
 | `source_census.nested.candidate_file_count` | Nested MIP emitter | Nested local path count |
 | `source_census.nested.sample_paths` | Nested emitter | First 12 sorted relative paths |
 | `source_census.*.sample_truncated` | Computed | Full count exceeds sample |
+| `source_census.*.full_source_inventory` | Exact tree | Every relative candidate path + source class |
+| `source_census.*.source_class_counts` | Versioned tokens | Explicit debug / logs / incidental |
 | `diagnostic_execution.contract_checks_total` | Executed diagnostic | Federation contract checks, not debugger steps |
 | `diagnostic_execution.source_contract_sha256` | Diagnostic receipt | Test-contract content identity |
 | `runtime.abacus_native_debug_sessions` | Not produced here | Always null, not zero |
@@ -76,6 +92,7 @@ contracts; the CI workflow supplies that controlled environment.
 | L06 | Reject green despite missing/failed native diagnostic | Negative tests fail closed |
 | L07 | Produce two normalized repeatable receipts | Identical digests |
 | L08 | Upload sanitized telemetry and verify consumer | Both workflow jobs pass on same SHA |
+| L08b | Enumerate and classify every source candidate | Full paths/counts reconcile; no substring false authority |
 | L09 | Add separate real debugger/protocol/port producer | Authenticated run/job/session/steps/port receipt |
 | L10 | Reconcile persistent root IDs to repair and consumer replay | Accepted source-bound repair lineage |
 
