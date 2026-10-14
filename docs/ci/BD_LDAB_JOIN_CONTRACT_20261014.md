@@ -89,6 +89,7 @@ Publish only appropriately sanitized exact-SHA summaries.
 Mermaid source: [BD / LDAB joined workflow](BD_LDAB_JOIN_WORKFLOW_20261014.mmd).
 
 The corresponding GitHub issue #1929 also includes a rendered flowchart.
+
 ## Ordered traceable work
 
 - J01: validate exact-head inputs and authenticated run/job identity.
