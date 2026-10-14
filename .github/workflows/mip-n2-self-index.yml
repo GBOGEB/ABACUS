@@ -241,6 +241,22 @@ jobs:
                   and root_debug.get("evidence_level")
                   == "SOURCE_DISCOVERY_ONLY"
                   and root_debug.get("live_runtime_inferred") is False,
+                  "ldab_root_complete_inventory":
+                  isinstance(root_debug, dict)
+                  and root_debug.get("inventory_complete") is True
+                  and isinstance(root_debug.get("full_source_inventory"), list)
+                  and len(root_debug["full_source_inventory"])
+                  == root_debug.get("candidate_file_count"),
+                  "ldab_root_lexical_triage":
+                  isinstance(root_debug, dict)
+                  and isinstance(root_debug.get("source_class_counts"), dict)
+                  and sum(root_debug["source_class_counts"].values())
+                  == root_debug.get("candidate_file_count")
+                  and root_debug.get("source_taxonomy") == "ldab.lexical.v1",
+                  "ldab_nested_inventory_complete":
+                  not isinstance(nested, dict)
+                  or (isinstance(nested_debug, dict)
+                      and nested_debug.get("inventory_complete") is True),
                   "ldab_nested_count": not isinstance(nested, dict)
                   or (
                       isinstance(nested_debug, dict)
