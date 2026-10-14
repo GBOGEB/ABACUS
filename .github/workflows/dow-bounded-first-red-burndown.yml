@@ -70,9 +70,14 @@ jobs:
           def measure(directory):
               for target in paths:
                   if not (directory / target).is_file():
-                      raise RuntimeError("Expected scoped file is missing: " + target)
+                      raise RuntimeError(
+                          "Expected scoped file is missing: " + target
+                      )
               result = subprocess.run(
-                  [sys.executable, "-m", "ruff", "check", "--output-format", "json", *paths],
+                  [
+                      sys.executable, "-m", "ruff", "check",
+                      "--output-format", "json", *paths,
+                  ],
                   cwd=directory, text=True, capture_output=True, check=False,
               )
               if result.returncode not in (0, 1):
@@ -97,13 +102,18 @@ jobs:
           )
 
           def formatting_debt(directory):
-              totals = {"trailing_whitespace_lines": 0, "missing_final_newline_files": 0}
+              totals = {
+                  "trailing_whitespace_lines": 0,
+                  "missing_final_newline_files": 0,
+              }
               for target in format_paths:
                   raw = (directory / target).read_text(encoding="utf-8")
                   totals["trailing_whitespace_lines"] += sum(
                       line.endswith((" ", "\t")) for line in raw.splitlines()
                   )
-                  totals["missing_final_newline_files"] += int(not raw.endswith("\n"))
+                  totals["missing_final_newline_files"] += int(
+                      not raw.endswith("\n")
+                  )
               return totals
 
           format_before = formatting_debt(base)
@@ -122,10 +132,14 @@ jobs:
               "after_findings": len(after),
               "opened_occurrences": sum(opened.values()),
               "resolved_occurrences": sum(resolved.values()),
-              "remaining_signatures": [dict(code=code, path=path, message=message, count=count)
-                                       for (code, path, message), count in sorted(b.items())],
-              "introduced_signatures": [dict(code=code, path=path, message=message, count=count)
-                                        for (code, path, message), count in sorted(opened.items())],
+              "remaining_signatures": [
+                  dict(code=code, path=path, message=message, count=count)
+                  for (code, path, message), count in sorted(b.items())
+              ],
+              "introduced_signatures": [
+                  dict(code=code, path=path, message=message, count=count)
+                  for (code, path, message), count in sorted(opened.items())
+              ],
               "net_reduction": len(before) - len(after),
               "closure_unit": "Ruff finding occurrence, not root cause",
               "main_coverage": None,
@@ -133,22 +147,34 @@ jobs:
               "crew_launch_receipts": None,
               "admission": "HOLD",
           }
-          destination = pathlib.Path(os.environ["RUNNER_TEMP"]) / "dow-ruff-scope-parity.json"
-          destination.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n")
+          destination = (
+              pathlib.Path(os.environ["RUNNER_TEMP"])
+              / "dow-ruff-scope-parity.json"
+          )
+          destination.write_text(
+              json.dumps(output, indent=2, sort_keys=True) + "\n"
+          )
           print(json.dumps(output, sort_keys=True))
           if any(format_after.values()):
-              raise SystemExit("Fail-closed: scoped pre-commit formatting debt remains")
+              raise SystemExit(
+                  "Fail-closed: scoped pre-commit formatting debt remains"
+              )
           if len(before) == 0 or len(after) >= len(before) or opened:
-              raise SystemExit("Fail-closed: no comparable reduction or newly introduced findings")
+              raise SystemExit(
+                  "Fail-closed: no comparable reduction or "
+                  "newly introduced findings"
+              )
           PY
       - name: Focused behavioral regression
         run: |
-          python -m compileall -q scripts/preview_diff.py scripts/recursive_build.py tests/test_dow_bounded_testpilot_repairs.py
+          python -m compileall -q \
+            scripts/preview_diff.py scripts/recursive_build.py \
+            tests/test_dow_bounded_testpilot_repairs.py
           python -m pytest -q tests/test_dow_bounded_testpilot_repairs.py
       # SHA-pinned upload-artifact v4.6.2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: dow-ruff-scope-parity-${{ github.event.pull_request.head.sha || github.sha }}
+          name: dow-ruff-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/dow-ruff-scope-parity.json
           if-no-files-found: warn
