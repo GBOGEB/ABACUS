@@ -134,6 +134,10 @@ class DMAICTestOrchestrator:
         "tests/test_master_doc_manager.py": "master_doc_manager",
         "tests/test_user_library_rag.py": "user_library_rag",
         "tests/test_action_tracker.py": "action_tracker",
+        # The Week 3 integration exercises these three production modules.
+        "tests/test_week3_integration.py": (
+            "master_doc_manager", "user_library_rag", "action_tracker"
+        ),
     }
 
     @classmethod
@@ -144,8 +148,12 @@ class DMAICTestOrchestrator:
         nor callers can supply an arbitrary coverage source through this API.
         """
         suite_path = test_suite.replace(chr(92), "/").split("::", 1)[0]
-        source = cls._COMPONENT_COVERAGE_SOURCES.get(suite_path)
-        return [f"--cov={source}"] if source else ["--cov"]
+        sources = cls._COMPONENT_COVERAGE_SOURCES.get(suite_path)
+        if not sources:
+            return ["--cov"]
+        if isinstance(sources, str):
+            sources = (sources,)
+        return [f"--cov={source}" for source in sources]
 
     # MEASURE Phase
     async def measure_test_performance(self, test_suite: str = "tests/") -> DMAICMetrics:

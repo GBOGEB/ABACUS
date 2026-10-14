@@ -120,3 +120,41 @@ def test_undeclared_measurement_scope_stays_broad():
         "tests/../test_master_doc_manager.py"
     ) == ["--cov"]
 
+@pytest.mark.asyncio
+async def test_week3_measurement_covers_all_three_production_modules(
+    tmp_path, monkeypatch
+):
+    """The shared integration denominator uses the three exercised modules."""
+    suite = "tests/test_week3_integration.py"
+    orchestrator = DMAICTestOrchestrator(tmp_path)
+    expected = {
+        "--cov=master_doc_manager",
+        "--cov=user_library_rag",
+        "--cov=action_tracker",
+    }
+
+    def run(cmd, **kwargs):
+        assert set(arg for arg in cmd if arg.startswith("--cov=")) == expected
+        assert "--cov=." not in cmd
+        assert "--cov" not in cmd
+        report = Path(next(x.split("=", 1)[1] for x in cmd
+                           if x.startswith("--json-report-file=")))
+        report.write_text(json.dumps({
+            "summary": {"total": 8, "passed": 8, "failed": 0, "skipped": 0}
+        }))
+        coverage = Path(next(x.split("json:", 1)[1] for x in cmd
+                             if x.startswith("--cov-report=")))
+        coverage.write_text(json.dumps({
+            "totals": {
+                "num_statements": 400, "covered_lines": 300,
+                "percent_covered": 72.0,
+            }
+        }))
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    metrics = await orchestrator.measure_test_performance(suite)
+    assert metrics.total_tests == 8
+    assert metrics.passed_tests == 8
+    assert metrics.coverage_score == 75.0
+
