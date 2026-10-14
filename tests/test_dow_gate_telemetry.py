@@ -267,7 +267,7 @@ class RemainingGateTests(unittest.TestCase):
         )
         self.assertEqual(data["jobs"]["lint-and-validate"]["job_id"], 124)
         self.assertEqual(data["jobs"]["lint-and-validate"]["status"], "PASS")
-        self.assertEqual(data["jobs"]["ci-ubuntu"]["status"], "UNKNOWN")
+        self.assertEqual(data["jobs"]["ci-ubuntu"]["status"], "NOT_OBSERVED")
 
     def test_coverage_wrong_base_duplicate_and_diff_provenance(self):
         receipt = {
