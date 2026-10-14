@@ -34,7 +34,11 @@ on:
       - W71 Residual Generated-Lineage Census
       - DAB Flake8 Census
       - MIP B0 Test Admission and Coverage Evidence
-    types: [requested, in_progress, completed]
+    # Fan-in on terminal upstream evidence only. An initial PR event still
+    # marks the gate pending; requested/in_progress events produced repeated
+    # no-op evaluator runs and runner queue amplification before results exist.
+    # Direct review, issue, comment and scheduled invalidation remain active.
+    types: [completed]
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
