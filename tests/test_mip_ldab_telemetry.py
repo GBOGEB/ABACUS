@@ -220,7 +220,9 @@ class LDABTelemetryTests(unittest.TestCase):
     def test_nested_full_inventory_is_not_added_to_root(self):
         a = root(count=1, paths=["scripts/debug.py"])
         a["assessments"][LANE]["all_candidate_paths"] = ["scripts/debug.py"]
-        b = nested()
+        b = nested(
+            count=1, paths=["scripts/mip_debug_diagnostic.py"]
+        )
         b["assessments"][LANE]["all_candidate_paths"] = [
             "scripts/mip_debug_diagnostic.py"
         ]
