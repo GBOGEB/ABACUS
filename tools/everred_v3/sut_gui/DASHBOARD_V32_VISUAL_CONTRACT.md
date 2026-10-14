@@ -7,22 +7,22 @@ governance admission.
 
 ## Architecture legend
 
--  **Neutral process card:** Activity or phase. Does not establish:
+- **Neutral process card:** Activity or phase. Does not establish:
   Green/success or global owner.
 - **P1-P8:** Ordered process phase. Does not establish: A completed task.
--  **Role: ...:** Contractual actor/function. Does not establish:
+- **Role: ...:** Contractual actor/function. Does not establish:
   Authenticated worker assignment.
--  **Purple border plus decision diamond:** Decision/question type. Does not
+- **Purple border plus decision diamond:** Decision/question type. Does not
   establish: Approved Yes and No outcomes.
--  **Green conditional Yes route:** Eligible path if all gates have proved
+- **Green conditional Yes route:** Eligible path if all gates have proved
   PASS. Does not establish: Current merge authority.
--  **Red No / Hold route:** Admission stopped, requires another measured
+- **Red No / Hold route:** Admission stopped, requires another measured
   pulse. Does not establish: A single root automatically confirmed.
--  **Solid neutral arrow:** Acyclic forward dependency. Does not establish:
+- **Solid neutral arrow:** Acyclic forward dependency. Does not establish:
   Feedback or causal proof.
--  **Dashed amber left/backwards signal:** Corrective feedback, new RCA
+- **Dashed amber left/backwards signal:** Corrective feedback, new RCA
   pulse. Does not establish: Same-pulse DAG edge.
--  **Double cyan forward signal:** Risk-informed feedforward / focused test
+- **Double cyan forward signal:** Risk-informed feedforward / focused test
   preflight. Does not establish: A live or calibrated predictive worker.
 
 **Source roles are distributed.** There may be one canonical accountable
@@ -47,16 +47,16 @@ worker actions.
 
 ## Tested
 
--  HTML structure: primary heading/title, unique IDs, local nav anchor
+- HTML structure: primary heading/title, unique IDs, local nav anchor
   resolution.
 - JavaScript syntax: Node `--check` on extracted inline script.
--  Browser QA: Playwright `page.set_content` with controlled mock GitHub
+- Browser QA: Playwright `page.set_content` with controlled mock GitHub
   response at 1440x1000, 1280x800, 390x844. Interactive architecture tabs,
   source-bound KPI rendering, explicit Yes/No branches, signal overlay, no
   script exceptions, no overflow.
--  Direct local-file and authenticated native-browser integration: not
+- Direct local-file and authenticated native-browser integration: not
   established by mock-backed QA.
--  Repository-native exact-head workflow: evaluate separately; no release
+- Repository-native exact-head workflow: evaluate separately; no release
   credit unless terminal native receipt matches the committed SHA.
 
 ## Evidence authority
