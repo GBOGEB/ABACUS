@@ -18,6 +18,8 @@ async def test_measurement_rejects_invalid_evidence(tmp_path, monkeypatch, exit_
 
     def run(cmd, **kwargs):
         assert kwargs["cwd"] == tmp_path
+        assert "--cov" in cmd
+        assert "--cov=." not in cmd
         if emit:
             report = Path(next(x.split("=", 1)[1] for x in cmd if x.startswith("--json-report-file=")))
             report.write_text(json.dumps({"summary": {"total": total}}))
@@ -66,3 +68,93 @@ async def test_measurement_scrubs_parent_pytest_cov_environment(tmp_path, monkey
     assert metrics.total_tests == 1
     assert metrics.passed_tests == 1
     assert metrics.coverage_score == 90.0
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "suite, module_name",
+    [
+        ("tests/test_master_doc_manager.py", "master_doc_manager"),
+        ("tests/test_user_library_rag.py", "user_library_rag"),
+        ("tests/test_action_tracker.py", "action_tracker"),
+    ],
+)
+async def test_component_measurement_uses_declared_source_scope(
+    tmp_path, monkeypatch, suite, module_name
+):
+    """An individual component shall not be measured against the whole repo."""
+    orchestrator = DMAICTestOrchestrator(tmp_path)
+
+    def run(cmd, **kwargs):
+        assert f"--cov={module_name}" in cmd
+        assert "--cov=." not in cmd
+        assert "--cov" not in cmd
+        assert kwargs["cwd"] == tmp_path
+        report = Path(next(x.split("=", 1)[1] for x in cmd
+                           if x.startswith("--json-report-file=")))
+        report.write_text(json.dumps({
+            "summary": {"total": 2, "passed": 2, "failed": 0, "skipped": 0}
+        }))
+        coverage = Path(next(x.split("json:", 1)[1] for x in cmd
+                             if x.startswith("--cov-report=")))
+        coverage.write_text(json.dumps({
+            "totals": {
+                "num_statements": 100, "covered_lines": 83,
+                "percent_covered": 76.5,
+            }
+        }))
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    metrics = await orchestrator.measure_test_performance(suite)
+    assert metrics.total_tests == metrics.passed_tests == 2
+    assert metrics.coverage_score == 83.0
+    assert metrics.pass_rate() == 100.0
+
+
+def test_undeclared_measurement_scope_stays_broad():
+    """Unknown suite names must not mint optimistic component coverage."""
+    assert DMAICTestOrchestrator._coverage_options_for_suite(
+        "tests/not_registered.py"
+    ) == ["--cov"]
+    assert DMAICTestOrchestrator._coverage_options_for_suite(
+        "tests/../test_master_doc_manager.py"
+    ) == ["--cov"]
+
+@pytest.mark.asyncio
+async def test_week3_measurement_covers_all_three_production_modules(
+    tmp_path, monkeypatch
+):
+    """The shared integration denominator uses the three exercised modules."""
+    suite = "tests/test_week3_integration.py"
+    orchestrator = DMAICTestOrchestrator(tmp_path)
+    expected = {
+        "--cov=master_doc_manager",
+        "--cov=user_library_rag",
+        "--cov=action_tracker",
+    }
+
+    def run(cmd, **kwargs):
+        assert set(arg for arg in cmd if arg.startswith("--cov=")) == expected
+        assert "--cov=." not in cmd
+        assert "--cov" not in cmd
+        report = Path(next(x.split("=", 1)[1] for x in cmd
+                           if x.startswith("--json-report-file=")))
+        report.write_text(json.dumps({
+            "summary": {"total": 8, "passed": 8, "failed": 0, "skipped": 0}
+        }))
+        coverage = Path(next(x.split("json:", 1)[1] for x in cmd
+                             if x.startswith("--cov-report=")))
+        coverage.write_text(json.dumps({
+            "totals": {
+                "num_statements": 400, "covered_lines": 300,
+                "percent_covered": 72.0,
+            }
+        }))
+        return SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    metrics = await orchestrator.measure_test_performance(suite)
+    assert metrics.total_tests == 8
+    assert metrics.passed_tests == 8
+    assert metrics.coverage_score == 75.0
+
