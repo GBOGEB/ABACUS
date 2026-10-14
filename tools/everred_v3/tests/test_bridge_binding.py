@@ -71,9 +71,7 @@ class BridgeBindingTests(unittest.TestCase):
         self.assertEqual(report["run_group_count"], 1)
         self.assertEqual(report["source_bound_events"], 1)
         g = report["run_groups"][0]
-        self.assertEqual(
-            (g["repo"], g["sha"], g["run_id"]), (REPO, SHA, RUN)
-        )
+        self.assertEqual((g["repo"], g["sha"], g["run_id"]), (REPO, SHA, RUN))
         self.assertEqual(g["job_ids"], [JOB])
         self.assertEqual(g["unverified_entries"], 1)
         self.assertEqual(len(g["bd_ldab"]), 1)
@@ -94,9 +92,7 @@ class BridgeBindingTests(unittest.TestCase):
     def test_join_rejects_imported_scope_mismatch(self):
         e = to_event(fixture())
         e["evidence"]["source_binding"]["source_sha"] = "b" * 40
-        with self.assertRaisesRegex(
-            InvalidEvidence, "source/census mismatch"
-        ):
+        with self.assertRaisesRegex(InvalidEvidence, "source/census mismatch"):
             join([e])
 
     def test_import_cannot_be_treated_as_a_worker_or_a_code_review(self):
