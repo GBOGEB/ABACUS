@@ -115,7 +115,22 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertEqual(m["scope_vs_historical_main"], "NOT_RECONCILED")
         self.assertIsNone(m["comparable_delta_to_36_85_pp"])
         self.assertIsNone(self.data["coverage"]["current_main_comparable_pct"])
-        self.assertIsNone(self.data["coverage"]["latest_main_measured_pct"])
+        self.assertAlmostEqual(
+            self.data["coverage"]["latest_main_measured_pct"], 54.65392575180766
+        )
+        current = self.data["coverage"]["current_main_measured"]
+        self.assertEqual(current["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"])
+        self.assertEqual(current["covered_lines"], 17158)
+        self.assertEqual(current["num_statements"], 30815)
+        self.assertEqual(current["covered_branches"], 4233)
+        self.assertEqual(current["num_branches"], 8324)
+        self.assertEqual(current["source_additions"], ["scripts/dow_first_red_census.py"])
+        self.assertEqual(current["existing_file_coverage_changed_count"], 0)
+        cohort = self.data["coverage"]["sequential_main_comparison"]
+        self.assertAlmostEqual(cohort["delta_percentage_points"], 0.1042780900523752)
+        self.assertEqual(cohort["common_files"], 298)
+        self.assertFalse(cohort["same_source_denominator"])
+        self.assertIn("currentMeasure.exact_main_sha===liveSha", self.html)
         self.assertIn('liveSha===m.exact_main_sha', self.html)
         self.assertIn('main advanced since measured source', self.html)
         self.assertIn("historical comparison NOT COMPARABLE", self.html)
