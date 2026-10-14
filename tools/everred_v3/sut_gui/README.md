@@ -85,7 +85,7 @@ Reverse-pressure *causal* prioritization is not inferred from matching step name
 
 ```bash
 python -m unittest discover -s tests -p 'test_*.py' -q
-coverage run --branch --include='*/code_purple_dashboard_v2/server.py' -m unittest discover -s tests -p 'test_*.py' -q
+coverage run --branch --include='*/server.py' -m unittest discover -s tests -p 'test_*.py' -q
 coverage report -m
 python tests/qa_browser.py
 ```
