@@ -49,6 +49,7 @@ evidence_url and nonnegative real_probe_steps. Optional runner_id,
 session_id, port_lease_id, container_id, image_digest and host_binding
 are retained. A reported (not independently verified) session requires both session_id
 and runner_id as well as a positive real_probe_steps count.
+The joiner checks field shape only; external authenticity is not proven.
 
 Cross-repository CODEX runtime receipts remain unlinked observations
 until a separate, reviewed producer/consumer authority binding is
