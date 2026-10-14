@@ -123,8 +123,10 @@ async function refresh(){
  put("source-sha","Baseline main: "+b.main_sha+" · Docs run "+b.docs.run_id+" / job "+b.docs.job_id);
  put("pr-sha","Candidate PR #"+c.pr+" · head "+c.head_sha+" · workflow "+c.workflow_run_id);
  put("notice","Inspecting exact-source native docs producer. No admission assumed.");
- put("after","UNKNOWN");put("resolved","UNKNOWN");put("docs-state","UNKNOWN — verifying GitHub");
- $("docs-state").className="proof";
+ const recorded=c.comparison_status==="VERIFIED_TERMINAL_EXACT_HEAD_PR_ONLY"&&c.workflow_run_status==="completed"&&c.workflow_run_conclusion==="success"&&c.job_status==="completed"&&c.job_conclusion==="success"&&c.job_id===115941877977&&c.after_findings===0&&b.docs.finding_count===13;
+ put("after",recorded?0:"UNKNOWN");put("resolved",recorded?13:"UNKNOWN");
+ put("docs-state",recorded?"Recorded PR-head PASS — 13 → 0; confirming freshness":"UNKNOWN — verifying GitHub");
+ $("docs-state").className=recorded?"pass":"proof";
  try{
   const u="https://api.github.com/repos/"+source.subject_repo+"/actions/runs/"+c.workflow_run_id;
   const run=await getJSON(u);
@@ -142,7 +144,7 @@ async function refresh(){
   $("docs-state").className="pass";
   $("after-bar").style.width="0%";
   put("notice","Native exact-head docs job PASS. PR-side lint root resolved; integrated-main, DOW and coverage remain HOLD/UNKNOWN.");
- }catch(e){put("docs-state","UNKNOWN — "+e.message);put("notice","Cannot independently establish exact-head after-proof; no improvement credited.");}
+ }catch(e){put("docs-state",recorded?"Recorded exact-head PR PASS; live refresh unavailable":"UNKNOWN — "+e.message);put("notice",recorded?"Source-bound terminal PR receipt retained; live GitHub refresh UNKNOWN. No main/DOW admission credited.":"Cannot independently establish exact-head after-proof; no improvement credited.");}
 }
 $("refresh").addEventListener("click",()=>{void refresh()});
 void refresh();
