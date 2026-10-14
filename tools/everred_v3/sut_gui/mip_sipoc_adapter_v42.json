@@ -1,0 +1,150 @@
+{
+  "schema": "code-purple.mip-sipoc.adapter.v4.2",
+  "kind": "DESCRIPTIVE_PROJECTION_NOT_NEW_SSOT",
+  "authority_transfer": false,
+  "merge_authorized": false,
+  "canonical_sources": [
+    "docs/CODE_PURPLE_EXECUTION_GRAPH_ARCHITECTURE.md",
+    "docs/code_purple_execution_graph.html",
+    "MIP/README.md"
+  ],
+  "observation_identity": "SOURCE_REPO_EXACT_SHA_RUN_ATTEMPT_JOB_REQUIRED",
+  "states": [
+    "OBSERVED",
+    "PARTIAL",
+    "BLOCKED",
+    "UNKNOWN"
+  ],
+  "mip": [
+    {
+      "id": "MIP-01",
+      "title": "Exact SHA and source ID",
+      "owner_role": "CI provenance / EVERRED",
+      "priority": "P1",
+      "proof_gate": "40-hex SHA and native run link",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-02",
+      "title": "Run/job/first-red census",
+      "owner_role": "CI evidence collector",
+      "priority": "P1",
+      "proof_gate": "Full pagination, attempts, failing job and step",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-03",
+      "title": "Protection and mandatory checks",
+      "owner_role": "Repository admin + reviewer",
+      "priority": "P0",
+      "proof_gate": "Effective protected branch, required CI contexts, approval",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-04",
+      "title": "Comparable coverage/JUnit",
+      "owner_role": "Coverage producer/test owner",
+      "priority": "P1",
+      "proof_gate": "Matched line/branch denominators, same config, base/head",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-05",
+      "title": "Scanner fingerprint delta",
+      "owner_role": "Security/BD owner",
+      "priority": "P1",
+      "proof_gate": "Matched scanner scope/version/fingerprint sets",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-06",
+      "title": "Runtime receipts",
+      "owner_role": "Runtime worker + LDAB",
+      "priority": "P2",
+      "proof_gate": "Actual Docker/RHEL/LLDB/LDAB session bound to source",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-07",
+      "title": "Distinct causal root closure",
+      "owner_role": "Canonical root owner",
+      "priority": "P1",
+      "proof_gate": "Counterfactual proof plus exact-head regression",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    },
+    {
+      "id": "MIP-08",
+      "title": "Independent admission + recurrence",
+      "owner_role": "Independent merger + EVERRED",
+      "priority": "P0",
+      "proof_gate": "Required checks, approval, security, integration SHA, main retest",
+      "observed_status": "DERIVE_FROM_RUNTIME_NOT_STORED"
+    }
+  ],
+  "pca": [
+    {
+      "id": "PCA-01",
+      "proof_gate": "Observed n x p independent-unit numerical matrix; n>=max(30,5p) is heuristic"
+    },
+    {
+      "id": "PCA-02",
+      "proof_gate": "Finite, standardized, nonconstant complete variables; rank/missingness"
+    },
+    {
+      "id": "PCA-03",
+      "proof_gate": "Eigenpairs, EVR and descriptive fit with source SHA"
+    },
+    {
+      "id": "PCA-04",
+      "proof_gate": "Drift, eigengap, independence and uncertainty/calibration"
+    }
+  ],
+  "bt": [
+    {
+      "id": "BT-01",
+      "proof_gate": "Real test-contract matched paired outcomes"
+    },
+    {
+      "id": "BT-02",
+      "proof_gate": "At least 30 independent matched trials (process heuristic)"
+    },
+    {
+      "id": "BT-03",
+      "proof_gate": "Strongly connected directed win graph for unpenalized finite MLE"
+    },
+    {
+      "id": "BT-04",
+      "proof_gate": "Uncertainty, calibration and stability"
+    }
+  ],
+  "sipoc": [
+    {
+      "supplier": "ABACUS CI and runtime producers",
+      "input": "SHA, run, job, JUnit, coverage, scanner fingerprint, debugger receipt",
+      "process": "P1 observe to P2 normalize",
+      "output": "source-bound evidence",
+      "customer": "EVERRED and MIP"
+    },
+    {
+      "supplier": "EVERRED/LDAB/BD",
+      "input": "stable roots and signatures",
+      "process": "P3 diagnose to P4 bounded repair",
+      "output": "root lineage and patched exact head",
+      "customer": "SUT and native runners"
+    },
+    {
+      "supplier": "CI/SUT and gg_MATH",
+      "input": "tests, qualified numeric panels, real matched pairs",
+      "process": "P5 verify and descriptive models",
+      "output": "native proof and qualified diagnostics",
+      "customer": "independent gate reviewer"
+    },
+    {
+      "supplier": "Repo admin and independent reviewers",
+      "input": "policy, required CI, review, security",
+      "process": "P6 decide to P8 monitor",
+      "output": "HOLD or authorized integration and main receipt",
+      "customer": "ABACUS, CODEX, QPS separately"
+    }
+  ]
+}
