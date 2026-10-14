@@ -346,5 +346,39 @@ class RemainingGateTests(unittest.TestCase):
 
 
 
+    def test_concurrent_pages_are_partial_not_false_terminal(self):
+        first = run("CI/CD Test Suite", 20, HEAD)
+        second = run("Security Scan — Ruff", 21, HEAD)
+        unstable = {
+            "total_count": 2,
+            "source_complete": False,
+            "workflow_runs": [first, second],
+        }
+        selected, complete = select_runs(unstable, HEAD)
+        self.assertFalse(complete)
+        self.assertEqual(len(selected), 2)
+        result = inputs(head_runs=unstable)
+        self.assertEqual(result["gates"]["security"]["status"], "UNKNOWN")
+
+    def test_dow_partial_jobs_do_not_overstate_runner_completion(self):
+        dag = workflow_dag(YAML)
+        origin = run("DOW + Recursive DMAIC - Unified CD Pipeline", 31, MAIN)
+        snapshot = {
+            "total_count": 1,
+            "source_complete": False,
+            "jobs": [
+                {"id": 201, "name": "Lint & Validate",
+                 "status": "completed", "conclusion": "failure"},
+                {"id": 202, "name": "CI - RHEL 8",
+                 "status": "completed", "conclusion": "skipped"},
+            ],
+        }
+        result = job_census(snapshot, origin, dag)
+        self.assertEqual(result["completeness"], "PARTIAL")
+        self.assertEqual(result["jobs"]["lint-and-validate"]["status"], "FAIL")
+        self.assertEqual(result["jobs"]["ci-rhel-8"]["status"], "SKIPPED")
+        self.assertEqual(result["jobs"]["ci-rhel-9"]["status"], "UNKNOWN")
+
+
 if __name__ == "__main__":
     unittest.main()
