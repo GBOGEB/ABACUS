@@ -2,4 +2,5 @@
 
 Mission -> Wave -> Pulse -> Receipt -> Reallocate -> Recurse.
 
-Unlock Yield requires authenticated comparable native receipts. Missing proof remains UNKNOWN. P0 safety and governance always override analytical ranking.
+Unlock Yield requires comparable authenticated native receipts.
+Absent proof remains UNKNOWN; P0 safety/governance overrides BT/PCA.
