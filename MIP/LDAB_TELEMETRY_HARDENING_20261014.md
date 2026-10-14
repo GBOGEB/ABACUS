@@ -81,7 +81,7 @@ contracts; the CI workflow supplies that controlled environment.
 ## Testflight and hardening priorities
 
 | ID | Goal | Acceptance |
-|---|---|---|
+| --- | --- | --- |
 | L01 | Exact SHA and scope | Invalid SHA rejected |
 | L02 | Root count and sample | Nonnegative denominator |
 | L03 | Nested count | No duplicate total |
