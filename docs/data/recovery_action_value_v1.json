@@ -50,8 +50,15 @@
       "workflow_name": "Validate Docs (Markdown/YAML/JSON)",
       "job_name": "Changed docs lint",
       "same_file_required": true,
-      "comparison_status": "UNKNOWN_UNTIL_TERMINAL_EXACT_HEAD",
-      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1966"
+      "comparison_status": "VERIFIED_TERMINAL_EXACT_HEAD_PR_ONLY",
+      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1966",
+      "workflow_run_status": "completed",
+      "workflow_run_conclusion": "success",
+      "job_id": 115941877977,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38589957927/job/115941877977",
+      "job_status": "completed",
+      "job_conclusion": "success",
+      "after_findings": 0
     },
     "dow_ruff": {
       "pr": 1965,
@@ -153,15 +160,17 @@
     "verified_authenticated_crew_launches": null,
     "accepted_rex_returns": null,
     "docs_before_count": 13,
-    "docs_after_count": null,
-    "docs_reduction_count": null,
+    "docs_after_count": 0,
+    "docs_reduction_count": 13,
     "docs_candidate_change_committed": true,
-    "docs_native_verify": "UNKNOWN",
+    "docs_native_verify": "VERIFIED_EXACT_HEAD_PR_NOT_MAIN",
     "scoped_ruff_net_resolved": 11,
     "scoped_ruff_before_count": 11,
     "scoped_ruff_after_count": 0,
     "scoped_ruff_new_count": 0,
-    "source_verified_unblocking_scope": "PR_RUFF_4_FILES_ONLY"
+    "source_verified_unblocking_scope": "PR_RUFF_4_FILES_ONLY",
+    "docs_verified_run_id": 38589957927,
+    "docs_verified_job_id": 115941877977
   },
   "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero."
 }
