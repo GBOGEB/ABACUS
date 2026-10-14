@@ -72,18 +72,32 @@ jobs:
           git show "$MAIN_SHA:.github/workflows/cd-unified.yml" \
             > "$SNAPSHOT_DIR/cd-unified.yml"
           API_ROOT="repos/$GITHUB_REPOSITORY/actions"
+          join_pages() {
+            local field="$1"
+            jq -c --arg field "$field" '
+              . as $pages
+              | ([$pages[] | .[$field][]] | unique_by(.id)) as $records
+              | ([$pages[].total_count] | max) as $declared
+              | {
+                  total_count: ([$declared, ($records | length)] | max),
+                  source_complete: (
+                    ([$pages[].total_count] | unique | length) == 1
+                    and $declared == ($records | length)
+                  ),
+                  ($field): $records
+                }
+            '
+          }
           gh api --paginate --slurp \
             "$API_ROOT/runs?head_sha=$MAIN_SHA&per_page=100" \
-            | jq -c '{total_count: .[0].total_count,
-                       workflow_runs: [.[].workflow_runs[]]}' \
+            | join_pages workflow_runs \
             > "$SNAPSHOT_DIR/main-runs.json"
           if [ "$TARGET_HEAD" = "$MAIN_SHA" ]; then
             cp "$SNAPSHOT_DIR/main-runs.json" "$SNAPSHOT_DIR/head-runs.json"
           else
             gh api --paginate --slurp \
               "$API_ROOT/runs?head_sha=$TARGET_HEAD&per_page=100" \
-              | jq -c '{total_count: .[0].total_count,
-                         workflow_runs: [.[].workflow_runs[]]}' \
+              | join_pages workflow_runs \
               > "$SNAPSHOT_DIR/head-runs.json"
           fi
           export DOW_RUN
@@ -103,8 +117,7 @@ jobs:
           if [ -n "$DOW_RUN" ]; then
             gh api --paginate --slurp \
               "$API_ROOT/runs/$DOW_RUN/jobs?per_page=100" \
-              | jq -c '{total_count: .[0].total_count,
-                         jobs: [.[].jobs[]]}' \
+              | join_pages jobs \
               > "$SNAPSHOT_DIR/dow-jobs.json"
           fi
       - name: Generate machine-readable receipt and operator report
