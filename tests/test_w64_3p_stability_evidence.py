@@ -102,3 +102,70 @@ class StabilityEvidenceGuardTests(TestCase):
         state, reasons = classify(base, base[-1])
         self.assertIn(state, {"DIRECTIONAL_IMPROVEMENT", "PROVISIONALLY_STABLE", "NO_STABLE_GAIN_YET"})
         self.assertTrue(reasons)
+
+
+    def test_out_of_range_rework_and_negative_gap_rejected(self):
+        for field, value in (
+            ("rework_rate", 1.5),
+            ("rework_rate", -0.01),
+            ("DoV_gap_after", -1),
+        ):
+            with self.subTest(field=field, value=value):
+                bad = complete_run("invalid")
+                bad[field] = value
+                self.assertIn("invalid_" + field, measurement_errors(bad))
+
+    def test_direct_classifier_cannot_promote_invalid_current(self):
+        a = complete_run("r1")
+        invalid = complete_run("r2")
+        invalid["information_loss_failures"] = None
+        state, reasons = classify([a, invalid, a], invalid)
+        self.assertEqual("INSUFFICIENT_EVIDENCE", state)
+        self.assertIn("incomplete_or_invalid_run_metrics", reasons)
+
+    def test_empty_history_is_explicit_failure(self):
+        with TemporaryDirectory() as folder:
+            source = Path(folder) / "history.jsonl"
+            output = Path(folder) / "rollup.json"
+            source.write_text("", encoding="utf-8")
+            with patch.object(sys, "argv", [
+                "3p", "--history", str(source), "--out", str(output)
+            ]):
+                with self.assertRaisesRegex(ValueError, "history contains no runs"):
+                    main()
+
+    def test_valid_comparable_history_emits_real_speedup(self):
+        runs = [complete_run("r1", wall=100.0),
+                complete_run("r2", wall=90.0),
+                complete_run("r3", wall=80.0)]
+        with TemporaryDirectory() as folder:
+            source = Path(folder) / "history.jsonl"
+            output = Path(folder) / "rollup.json"
+            source.write_text(
+                "".join(json.dumps(x) + "\n" for x in runs), encoding="utf-8"
+            )
+            with patch.object(sys, "argv", [
+                "3p", "--history", str(source), "--out", str(output)
+            ]), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, main())
+            result = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(3, result["comparable_valid_run_count"])
+            self.assertEqual(0, result["incomplete_run_count"])
+            self.assertAlmostEqual(
+                1.25, result["speed_vs_fixed_baseline"]["wall_speedup_x"]
+            )
+
+    def test_single_complete_run_is_measured_but_not_stable(self):
+        with TemporaryDirectory() as folder:
+            source = Path(folder) / "history.jsonl"
+            output = Path(folder) / "rollup.json"
+            source.write_text(
+                json.dumps(complete_run("only")) + "\n", encoding="utf-8"
+            )
+            with patch.object(sys, "argv", [
+                "3p", "--history", str(source), "--out", str(output)
+            ]), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, main())
+            result = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual("INSUFFICIENT_EVIDENCE", result["stability_class"])
+            self.assertEqual(1, result["comparable_valid_run_count"])
