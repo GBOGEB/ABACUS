@@ -1,13 +1,9 @@
 """Regression tests for disjoint Bandit worker census."""
-import importlib.util
-from pathlib import Path
+from importlib import import_module
 
 import pytest
 
-PATH = Path(__file__).resolve().parents[1] / "scripts" / "bandit_disjoint_census.py"
-SPEC = importlib.util.spec_from_file_location("bandit_disjoint_census", PATH)
-module = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(module)
+module = import_module("scripts.bandit_disjoint_census")
 
 
 def finding(path, rule, line=1):
@@ -120,9 +116,79 @@ def test_mixed_rules_in_test_file_remain_owned_by_test_lane():
 
 @pytest.mark.parametrize(
     "unsafe",
+    ["/etc/passwd", "//server/share.py", "../secret.py",
+     "src/../secret.py", r"C:\\Windows\\system32.py"],
+)
+def test_unsafe_paths_rejected_before_normalization(unsafe):
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition({"results": [finding(unsafe, "B603")]}, "a" * 40)
+
+
+def test_redundant_separators_do_not_create_duplicate_owners():
+    result = module.partition({"results": [
+        finding("src//worker.py", "B603"),
+        finding("src/worker.py", "B603"),
+    ]}, "a" * 40)
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+
+
+@pytest.mark.parametrize(
+    "unsafe",
     ["/root.py", "///tmp/report.py", r"\root.py", r"\\server\share.py"],
 )
-def test_absolute_path_variants_remain_rejected_after_normalization(unsafe):
-    """Repeated separators and Windows root paths shall never become relative."""
+def test_repeated_root_separators_fail_closed(unsafe):
+    """Rooted paths remain unsafe before canonical separator coalescing."""
     with pytest.raises(ValueError, match="Unsafe report path"):
-        module.partition({"results": [finding(unsafe, "B603")]}, "c" * 40)
+        module.partition({"results": [finding(unsafe, "B603")]}, "d" * 40)
+
+
+@pytest.mark.parametrize(
+    "safe",
+    ["./src/worker.py", "src//worker.py", r"src\\worker.py", "src/./worker.py"],
+)
+def test_safe_relative_aliases_deduplicate_without_mutation(safe):
+    row = finding(safe, "B603")
+    snapshot = dict(row)
+    result = module.partition({"results": [row, finding("src/worker.py", "B603")]}, "e" * 40)
+    assert row == snapshot
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["items"][0]["path"] == "src/worker.py"
+    assert result["authority_transfer"] is False
+
+
+def test_mixed_safe_and_unsafe_paths_fail_atomically():
+    report = {"results": [
+        finding("src/safe.py", "B603"),
+        finding("src/../outside.py", "B603"),
+    ]}
+    with pytest.raises(ValueError, match="Unsafe report path"):
+        module.partition(report, "e" * 40)
+    assert len(report["results"]) == 2
+
+
+@pytest.mark.parametrize(
+    "test_path",
+    ["tests/test_worker.py", "nested/tests/test_worker.py", "src/test_worker.py"],
+)
+def test_nested_test_file_ownership_overrides_subprocess_rules(test_path):
+    """A test file with multiple rules belongs to a single B5 owner."""
+    rows = [finding(test_path, "B603"), finding(test_path, "B105", 2)]
+    result = module.partition({"results": rows}, "b" * 40)
+    assert result["total_unique"] == 2
+    assert result["lanes"]["B5-tests"]["findings"] == 2
+    assert result["lanes"]["B3-subprocess"]["findings"] == 0
+    assert result["lanes"]["B4-files-secrets"]["findings"] == 0
+    assert result["authority_transfer"] is False
+
+
+def test_normalized_paths_deduplicate_identical_bandit_findings():
+    """Equivalent source paths do not inflate the finding denominator."""
+    result = module.partition(
+        {"results": [finding("src\\\\a.py", "B603"), finding("src/a.py", "B603")]},
+        "b" * 40,
+    )
+    assert result["total_unique"] == 1
+    assert result["lanes"]["B3-subprocess"]["files"] == 1
+    assert result["lanes"]["B3-subprocess"]["findings"] == 1
