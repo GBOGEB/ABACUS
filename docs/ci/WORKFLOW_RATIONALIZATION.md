@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `d3456f8b3de8a56383e32183d8ee73df2557779be71db78129f89569e471802a`
+Policy SHA-256: `2f9363ee417b61e125cd2ebb8a73c4332aae7022d449cbbfc0ef4aa7bf6847f7`
 
 ## Outcome
 
