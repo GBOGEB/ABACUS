@@ -47,7 +47,8 @@ jobs:
         if: always()
         run: |
           python ci/governance/audit_ci_workflows.py \
-            --markdown-output bandit-evidence/WORKFLOW_RATIONALIZATION.second.md \
+            --markdown-output \
+              bandit-evidence/WORKFLOW_RATIONALIZATION.second.md \
             --json-output bandit-evidence/workflow-audit.second.json
           cmp bandit-evidence/WORKFLOW_RATIONALIZATION.md \
               bandit-evidence/WORKFLOW_RATIONALIZATION.second.md
@@ -81,7 +82,8 @@ jobs:
               raise SystemExit("Invalid coverage numerator/denominator")
           branch_covered = int(coverage.get("branches-covered", "-1"))
           branch_valid = int(coverage.get("branches-valid", "-1"))
-          if branch_valid < 1 or branch_covered < 0 or branch_covered > branch_valid:
+          if (branch_valid < 1 or branch_covered < 0
+                  or branch_covered > branch_valid):
               raise SystemExit("Missing or invalid branch coverage denominator")
           receipt = {
               "schema": "bandit.coverage.receipt.v1",
@@ -93,10 +95,12 @@ jobs:
               "line_coverage_percent": round(100 * covered / valid, 2),
               "covered_branches": branch_covered,
               "eligible_branches": branch_valid,
-              "branch_coverage_percent": round(100 * branch_covered / branch_valid, 2),
+              "branch_coverage_percent": round(
+                  100 * branch_covered / branch_valid, 2),
               "changed_line_coverage_percent": None,
           }
-          detailed = json.loads((root / "coverage.json").read_text(encoding="utf-8"))
+          detailed = json.loads(
+              (root / "coverage.json").read_text(encoding="utf-8"))
           selected = {}
           for filename in ("scripts/bandit_disjoint_census.py",
                            "scripts/bandit_comparable_delta.py"):
@@ -104,13 +108,15 @@ jobs:
               matches = [v for k, v in files.items()
                          if k.replace("\\\\", "/").lstrip("./") == filename]
               if len(matches) != 1:
-                  raise SystemExit(f"Missing/ambiguous module coverage: {filename}")
+                  raise SystemExit(
+                      f"Missing/ambiguous module coverage: {filename}")
               summary = matches[0].get("summary", {})
               statements = int(summary.get("num_statements", -1))
               missing = int(summary.get("missing_lines", -1))
               branches = int(summary.get("num_branches", -1))
               partial = int(summary.get("num_partial_branches", -1))
-              if statements < 1 or not 0 <= missing <= statements or branches < 1:
+              if (statements < 1 or not 0 <= missing <= statements
+                      or branches < 1):
                   raise SystemExit(f"Invalid module coverage: {filename}")
               covered_statements = statements - missing
               # coverage.py summary reports missing_branches directly.
@@ -126,11 +132,14 @@ jobs:
           # Retain uncovered arc coordinates for successive bounded test waves.
           for filename in selected:
               filedata = next(v for k, v in detailed["files"].items()
-                              if k.replace(chr(92), "/").removeprefix("./") == filename)
+                              if k.replace(chr(92), "/").removeprefix("./")
+                              == filename)
               missing_lines = filedata.get("missing_lines")
               missing_arcs = filedata.get("missing_branches")
-              if not isinstance(missing_lines, list) or not isinstance(missing_arcs, list):
-                  raise SystemExit(f"Missing uncovered-line/arc telemetry: {filename}")
+              if (not isinstance(missing_lines, list)
+                      or not isinstance(missing_arcs, list)):
+                  raise SystemExit(
+                      f"Missing uncovered-line/arc telemetry: {filename}")
               selected[filename]["uncovered_lines"] = missing_lines
               selected[filename]["uncovered_arcs"] = missing_arcs
           receipt["junit"] = {
@@ -153,7 +162,9 @@ jobs:
           if (selected_totals["eligible_lines"] < 1
                   or selected_totals["eligible_branches"] < 1):
               raise SystemExit("Empty focused coverage denominator")
-          receipt["exact_head_sha"] = "${{ github.event.pull_request.head.sha || github.sha }}"
+          receipt["exact_head_sha"] = (
+              "${{ github.event.pull_request.head.sha || github.sha }}"
+          )
           receipt["producer_run_id"] = "${{ github.run_id }}"
           receipt["producer_run_attempt"] = "${{ github.run_attempt }}"
           receipt["source_scope"] = sorted(selected)
