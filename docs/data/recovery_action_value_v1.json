@@ -1,0 +1,103 @@
+{
+  "schema": "abacus.recovery.action-value.v1",
+  "mode": "SOURCE_BOUND_OBSERVATION_NOT_MERGE_AUTHORITY",
+  "subject_repo": "GBOGEB/ABACUS",
+  "baseline": {
+    "main_sha": "5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+    "docs": {
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V3.md",
+      "finding_count": 13,
+      "findings_by_rule": {
+        "MD013": 10,
+        "MD022": 2,
+        "MD032": 1
+      },
+      "run_id": 38584212177,
+      "job_id": 115921732409,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "job": "Changed docs lint",
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212177",
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212177/job/115921732409",
+      "status": "FAILED"
+    },
+    "dow": {
+      "run_id": 38584212029,
+      "job_id": 115921743487,
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212029",
+      "failure_signatures": [
+        "end-of-file-fixer",
+        "trailing-whitespace",
+        "abacus-testpilot-fast"
+      ],
+      "failed_hook_count": 3,
+      "observed_downstream_skipped": 6,
+      "skipped_jobs": [
+        "CI - Ubuntu",
+        "CI - RHEL 9",
+        "CI - RHEL 8",
+        "DMAIC Full Cycle",
+        "Build Release Artifacts",
+        "Create GitHub Release"
+      ],
+      "note": "Downstream skip count is observed, not six resolved defects."
+    }
+  },
+  "candidates": {
+    "documentation": {
+      "pr": 1966,
+      "head_sha": "38069df650544f19db7967ecc5ec253d6e36afde",
+      "workflow_run_id": 38589957927,
+      "workflow_name": "Validate Docs (Markdown/YAML/JSON)",
+      "job_name": "Changed docs lint",
+      "same_file_required": true,
+      "comparison_status": "UNKNOWN_UNTIL_TERMINAL_EXACT_HEAD",
+      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1966"
+    },
+    "dow_ruff": {
+      "pr": 1965,
+      "head_sha": "1662d52f379f31bb65d2578799a79c8725507e6a",
+      "workflow_run_id": 38589625287,
+      "comparison_status": "UNKNOWN_UNTIL_COMPARABLE_ARTIFACT",
+      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1965"
+    }
+  },
+  "coverage": {
+    "historical_main": {
+      "value_pct": 36.85,
+      "date": "2026-10-11"
+    },
+    "historical_pr_broad": {
+      "value_pct": 36.92,
+      "date": "2026-10-12"
+    },
+    "historical_pr_diff": {
+      "value_pct": 51,
+      "date": "2026-10-12"
+    },
+    "current_main_comparable_pct": null,
+    "current_pr_broad_comparable_pct": null,
+    "current_pr_diff_comparable_pct": null,
+    "scope_parity_verified": false
+  },
+  "governance": {
+    "main_protected_at_baseline": false,
+    "observed_ruleset_id": 24494381,
+    "observed_enforced_rule_count": 0,
+    "independent_review_accepted": null,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0
+  },
+  "metrics_contract": {
+    "verified_unblocked_downstream_jobs": null,
+    "verified_closed_bd_roots": null,
+    "verified_authenticated_crew_launches": null,
+    "accepted_rex_returns": null,
+    "docs_before_count": 13,
+    "docs_after_count": null,
+    "docs_reduction_count": null,
+    "docs_candidate_change_committed": true,
+    "docs_native_verify": "UNKNOWN"
+  },
+  "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero."
+}
