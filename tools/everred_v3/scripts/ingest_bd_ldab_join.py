@@ -6,6 +6,7 @@ It appends an immutable observation-only event. Source producer remains authorit
 """
 
 import argparse
+import datetime as dt
 import hashlib
 import json
 import pathlib
@@ -33,7 +34,9 @@ def to_event(obj):
         not isinstance(url, str)
         or not url.startswith("https://github.com/")
         or type(run) is not int
+        or run <= 0
         or type(job) is not int
+        or job <= 0
     ):
         raise InvalidEvidence("unbound source run/job/URL")
     if (
@@ -70,16 +73,23 @@ def to_event(obj):
             obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False
         ).encode()
     ).hexdigest()
+    ingestion_time = dt.datetime.now(dt.timezone.utc).isoformat()
     return {
         "schema": SCHEMA,
         "id": "BDLDAB-" + dg[:24],
         "kind": "note",
         "repo": repo,
         "sha": sha,
-        "occurred_at": "2026-10-14T10:47:00+02:00",
+        "occurred_at": ingestion_time,
         "provenance": "manual",
         "evidence": {
             "producer_schema": obj["schema"],
+            "source_binding": {
+                "repository": repo, "source_sha": sha, "run_id": run,
+                "job_id": job, "run_url": url,
+            },
+            "ingested_at": ingestion_time,
+            "evidence_trust": "MANUAL_UNVERIFIED",
             "producer_sha256": dg,
             "head_sha": sha,
             "run_id": run,
