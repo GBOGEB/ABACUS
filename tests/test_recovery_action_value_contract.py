@@ -48,8 +48,10 @@ class RecoveryActionValueTests(unittest.TestCase):
     def test_current_unknown_and_no_fabricated_acceptance(self):
         d = self.data
         m = d["metrics_contract"]
-        self.assertIsNone(m["docs_after_count"])
-        self.assertIsNone(m["docs_reduction_count"])
+        self.assertEqual(m["docs_after_count"], 0)
+        self.assertEqual(m["docs_reduction_count"], 13)
+        self.assertEqual(m["docs_native_verify"], "VERIFIED_EXACT_HEAD_PR_NOT_MAIN")
+        self.assertEqual(m["docs_verified_job_id"], 115941877977)
         self.assertIsNone(m["verified_unblocked_downstream_jobs"])
         self.assertIsNone(m["verified_closed_bd_roots"])
         self.assertIsNone(m["verified_authenticated_crew_launches"])
@@ -60,6 +62,20 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertFalse(d["governance"]["security_waiver"])
         self.assertFalse(d["governance"]["authority_transfer"])
         self.assertEqual(d["governance"]["observed_enforced_rule_count"], 0)
+
+    def test_native_docs_receipt_is_pr_scoped_not_current_main(self):
+        d = self.data["candidates"]["documentation"]
+        self.assertEqual(d["comparison_status"], "VERIFIED_TERMINAL_EXACT_HEAD_PR_ONLY")
+        self.assertEqual(d["workflow_run_id"], 38589957927)
+        self.assertEqual(d["job_id"], 115941877977)
+        self.assertEqual(d["workflow_run_conclusion"], "success")
+        self.assertEqual(d["job_conclusion"], "success")
+        self.assertEqual(d["after_findings"], 0)
+        self.assertTrue(SHA.fullmatch(d["head_sha"]))
+        self.assertIn('const recorded=c.comparison_status===', self.html)
+        self.assertIsNone(
+            self.data["metrics_contract"]["verified_closed_bd_roots"]
+        )
 
     def test_native_scoped_ruff_receipt_is_not_full_dow_clearance(self):
         r = self.data["candidates"]["dow_ruff"]
