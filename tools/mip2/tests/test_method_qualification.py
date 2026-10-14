@@ -29,7 +29,11 @@ def test_formatter_idempotence_and_semantics(tmp_path):
         return black.format_str(isort.code(text), mode=black.Mode())
     first = format_once(original)
     assert format_once(first) == first
-    assert ast.dump(ast.parse(original), include_attributes=False) != ''\n    before = {}; after = {}\n    exec(compile(original, '<before>', 'exec'), before)\n    exec(compile(first, '<after>', 'exec'), after)\n    assert before['add'](2, 3) == after['add'](2, 3) == 5
+    before = {}
+    after = {}
+    exec(compile(original, "<before>", "exec"), before)
+    exec(compile(first, "<after>", "exec"), after)
+    assert before["add"](2, 3) == after["add"](2, 3) == 5
 
 
 def test_bandit_positive_and_negative(tmp_path):
