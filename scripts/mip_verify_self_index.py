@@ -19,6 +19,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from mip_ldab_telemetry import summarize as summarize_ldab
+
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_EMITTER = ROOT / "scripts" / "mip_repo_self_index.py"
 NESTED_EMITTER = (
@@ -317,6 +319,8 @@ def main() -> int:
             actual_sha,
         )
 
+        nested_receipt = None
+        diagnostic = None
         if NESTED_EMITTER.exists():
             nested_receipt, nested_norm = verify_pair(
                 NESTED_EMITTER,
@@ -381,6 +385,14 @@ def main() -> int:
                         "raw_receipt_retention"
                     ),
                 }
+
+        summary["ldab_telemetry"] = summarize_ldab(
+            root_receipt,
+            nested_receipt,
+            diagnostic,
+            actual_sha,
+            os.environ.get("GITHUB_REPOSITORY", "GBOGEB/ABACUS"),
+        )
 
         summary["shareable_skill"] = validate_shareable_skill(
             summary,
