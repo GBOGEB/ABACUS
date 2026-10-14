@@ -71,9 +71,10 @@ jobs:
           p = Path('tools/everred_v3/sut_gui/index.html')
           html = p.read_text(encoding='utf-8')
           assert html.startswith('<!doctype html>')
-          assert '<title>' in html and '<h1>' in html
+          assert '<title>' in html
           structure = Structure()
           structure.feed(html)
+          assert structure.headings == 1, 'expected exactly one semantic h1'
           must = {'refresh', 'run', 'token', 'profile', 'ci-body', 'connection'}
           assert must.issubset(structure.ids), must - structure.ids
           assert structure.scripts, 'JavaScript missing'
