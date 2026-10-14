@@ -1,0 +1,7 @@
+flowchart LR
+ NEWRED["New RED / recurrence"] -. "FEEDBACK: next causal pulse" .-> RCA["RCA / root classification"]
+ RISK["Previous fingerprint / hazard evidence"] == "FEEDFORWARD: before testflight" ==> PREFLIGHT["SUT focused preflight"]
+ classDef fb fill:#3a3022,stroke:#ffbe6e,color:#ffffff
+ classDef ff fill:#143741,stroke:#6bddea,color:#ffffff
+ class NEWRED,RCA fb
+ class RISK,PREFLIGHT ff
