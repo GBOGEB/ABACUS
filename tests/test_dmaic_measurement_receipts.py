@@ -18,6 +18,8 @@ async def test_measurement_rejects_invalid_evidence(tmp_path, monkeypatch, exit_
 
     def run(cmd, **kwargs):
         assert kwargs["cwd"] == tmp_path
+        assert "--cov" in cmd
+        assert "--cov=." not in cmd
         if emit:
             report = Path(next(x.split("=", 1)[1] for x in cmd if x.startswith("--json-report-file=")))
             report.write_text(json.dumps({"summary": {"total": total}}))
