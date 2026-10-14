@@ -125,3 +125,15 @@ class WormholeDOWTests(TestCase):
         self.assertEqual(1, a["measurement"]["received"])
         self.assertEqual(1, a["measurement"]["invalid"])
         self.assertEqual("DEFER_INVALID_CONTRACT", a["status"])
+
+
+    def test_native_provider_proposal_source_bound_but_unverified(self):
+        fixture = ROOT / "tests/fixtures/qps_math_wormhole_provider_v1.json"
+        provider = json.loads(fixture.read_text(encoding="utf-8"))
+        sha = "2f84623180bafbd582f90febb542381ed9ce679e"
+        artifact = "114e9fa0ded6adc8d1020bef1826c45bb63417a851efac9f2ed35aef7e501759"
+        evidence = mod.observe(provider, expected_sha=sha,
+                               expected_artifact_digest=artifact)
+        self.assertEqual("VALID_PROPOSAL_ONLY", evidence["status"])
+        self.assertEqual(0, evidence["measurement"]["runtime_authenticated"])
+        self.assertFalse(evidence["qps_acceptance"])
