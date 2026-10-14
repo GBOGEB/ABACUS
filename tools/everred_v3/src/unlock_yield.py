@@ -42,7 +42,9 @@ def evaluate(payload=None, *, native_verifier=None):
     for item in items:
         for side, sha in (("before", before), ("after", after)):
             row = item.get(side)
-            if not isinstance(row, dict) or row.get("source_sha") != sha or row.get("repository") != repo or row.get("gate_id") != item["gate_id"] or row.get("config_digest") != config:
+            if not isinstance(row, dict) or row.get("source_sha") != sha:
+                raise ValueError("source receipt mismatch")
+            if row.get("repository") != repo or row.get("gate_id") != item["gate_id"] or row.get("config_digest") != config:
                 raise ValueError("unbound receipt")
             run, job = row.get("run_id"), row.get("job_id")
             if type(run) is not int or type(job) is not int or min(run, job) <= 0 or row.get("evidence_url") != f"https://github.com/{repo}/actions/runs/{run}/job/{job}":
