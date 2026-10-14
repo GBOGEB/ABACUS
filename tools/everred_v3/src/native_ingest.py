@@ -17,7 +17,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
-from typing import Any
 
 from defusedxml.ElementTree import fromstring as safe_xml_fromstring
 from everred import SCHEMA, InvalidEvidence, digest, valid_sha
