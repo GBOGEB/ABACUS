@@ -204,11 +204,16 @@ def job_census(payload: dict[str, Any] | None, run: dict | None,
         if current is None or row["id"] > current["id"]:
             chosen[name] = row
     complete = total == len(rows)
+    # The API's page can be complete while GitHub has not instantiated jobs.
+    # A queued workflow is not evidence that unlisted dependent jobs are absent.
+    terminal_run = run_state(run) in {"PASS", "FAIL", "SKIPPED", "CANCELLED"}
     result = {}
     for key, spec in dag.items():
         row = chosen.get(spec["name"])
         result[key] = {
-            "status": run_state(row) if row else ("NOT_OBSERVED" if complete else "UNKNOWN"),
+            "status": run_state(row) if row else (
+                "NOT_OBSERVED" if complete and terminal_run else "UNKNOWN"
+            ),
             "job_id": row["id"] if row else None,
             "url": row.get("html_url") if row else None,
             "needs": spec["needs"],
