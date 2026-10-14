@@ -29,7 +29,7 @@ code{overflow-wrap:anywhere}
 </style>
 </head><body>
 <nav class="top" aria-label="Persistent recovery navigation">
-<a href="#summary">Action value</a><a href="#docs">Documentation</a><a href="#dow">DOW</a><a href="#coverage">Coverage</a><a href="#provenance">Provenance</a>
+<a href="#summary">Action value</a><a href="#docs">Documentation</a><a href="#dow">DOW</a><a href="#coverage">Coverage</a><a href="#governance">Governance</a><a href="#provenance">Provenance</a>
 </nav>
 <header><small>CODE PURPLE / ABACUS #1860 · Read-only recovery projection</small>
 <h1>Action → verified improvement → downstream unblocking</h1>
@@ -51,6 +51,7 @@ code{overflow-wrap:anywhere}
 <article class="tile"><span>Verified findings resolved</span><strong id="resolved">UNKNOWN</strong><small>No credit from commit alone</small></article>
 <article class="tile"><span>Ruff · bounded 4-file slice</span><strong id="ruff-score">UNKNOWN</strong><small>Native run source/receipt, not full repo</small></article>
 <article class="tile"><span>Downstream DOW jobs unblocked</span><strong id="unblocked">UNKNOWN</strong><small>Potential 6; executed proof required</small></article>
+<article class="tile"><span>P0 known ruleset</span><strong id="rules-delta">0 → 3</strong><small>Protection restored in server readback; required checks still under review</small></article>
 </div></section>
 <section id="docs" class="panel"><h2>Documentation first-red — exact file and job</h2>
 <div class="action"><article><h3>Before · current-main failure</h3>
@@ -84,10 +85,15 @@ code{overflow-wrap:anywhere}
 <tr><td>Correctly admitted merge</td><td>Not established</td><td class="hold">HOLD</td></tr>
 </tbody></table></div><p id="main-coverage-proof" class="muted">Current-main coverage denominator and artifact: UNKNOWN.</p><p class="muted">Comparable coverage requires matched collection scope/configuration and terminal reports. Different SHA or source scope is not a valid coverage delta.</p>
 </section>
+<section id="governance" class="panel" aria-labelledby="governance-title"><h2 id="governance-title">P0 protection — source-bound restoration, admission HOLD</h2>
+<p id="governance-state" class="proof">UNKNOWN — awaiting current-main rule readback</p>
+<p id="governance-rules" class="muted">Known ruleset: 0 → 3 rules; independent review and effective required CI checks are separate outstanding gates.</p>
+<p class="muted"><a href="https://github.com/GBOGEB/ABACUS/settings/rules/24494381">Owner/admin ruleset</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1860">Governed recovery #1860</a>. A green docs or Ruff job cannot substitute for protected-branch admission.</p>
+</section>
 <section id="provenance" class="panel"><h2>Source identities and integrity guards</h2>
 <p id="source-sha" class="muted">Waiting for source JSON.</p>
 <p id="pr-sha" class="muted">Candidate source SHA UNKNOWN.</p>
-<p class="hold">No enforced main rules, eligible independent approval, or security-waiver authority is inferred by this view.</p>
+<p class="hold">Partial protection restored. Full required-check policy and eligible independent approval are not inferred by this view. No security waiver or merge authority.</p>
 <p class="muted">Source file: <code>../data/recovery_action_value_v1.json</code>. Uses GitHub's read-only public REST responses for the configured run and job; API failures return UNKNOWN. Loaded view does not mutate the source file or any repository settings.</p>
 </section>
 </main><footer>Evidence-first recovery metrics · Source-bound PR candidate only · Governance HOLD · No automatic admission</footer>
@@ -119,9 +125,11 @@ async function refresh(){
  }else{put("main-measured","UNKNOWN");put("main-coverage-proof","Historical main coverage artifact absent or invalid; no value credited.");}
  put("main-live","UNKNOWN");
  put("main-current-sha","Main SHA UNKNOWN");
+ let liveSha=null;let liveProtected=null;
  try{
   const current=await getJSON("https://api.github.com/repos/"+source.subject_repo+"/branches/main");
-  const liveSha=current&&current.commit&&current.commit.sha;
+  liveSha=current&&current.commit&&current.commit.sha;
+  liveProtected=current&&current.protected;
   if(!/^[0-9a-f]{40}$/.test(liveSha))throw Error("main branch identity missing");
   put("main-current-sha",liveSha);
   if(m&&liveSha===m.exact_main_sha&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"){
@@ -130,6 +138,27 @@ async function refresh(){
    put("main-live","UNKNOWN — main advanced since measured source");
   }
  }catch(e){put("main-live","UNKNOWN — branch readback unavailable");}
+ const gov=source.governance.recovery_observation;
+ put("governance-state","UNKNOWN — live branch/rules not established");
+ put("rules-delta","UNKNOWN");
+ if(gov&&gov.schema==="abacus.p0.ruleset-readback.v1"&&gov.repository===source.subject_repo&&gov.ruleset_rule_count===3&&gov.ruleset_bypass_actor_count===0&&gov.admission==="HOLD"){
+  if(liveSha===gov.observed_main_sha&&liveProtected===true){
+   put("rules-delta","0 → 3");
+   put("governance-state","PARTIAL RESTORATION · main protected=true at "+liveSha+" · required CI checks NOT observed in known ruleset");
+   try{
+    const active=await getJSON("https://api.github.com/repos/"+source.subject_repo+"/rulesets/"+gov.ruleset_id);
+    const types=Array.isArray(active.rules)?active.rules.map(r=>r.type):[];
+    if(active.enforcement!=="active"||active.id!==gov.ruleset_id||types.length!==3||!["deletion","pull_request","non_fast_forward"].every(t=>types.includes(t)))throw Error("ruleset identity/contract drift");
+    const approvals=active.rules.find(r=>r.type==="pull_request")?.parameters;
+    if(!approvals||approvals.required_approving_review_count!==1)throw Error("review policy drift");
+    put("governance-rules","LIVE known ruleset #"+gov.ruleset_id+": 3 enforceable rules; 1 independent approval required; deletion/force-push blocked; required-status-check rule NOT configured in this ruleset. Applicable other policies and reviewer proof UNKNOWN. ADMISSION HOLD.");
+   }catch(e){put("governance-rules","Branch protected=true; known 3-rule snapshot from "+gov.observed_main_sha+". Current ruleset recheck UNKNOWN ("+e.message+"); independent approval and CI admission unverified.");}
+  }else if(liveSha&&liveProtected===false){
+   put("governance-state","RED — current branch reports protected=false; admission HOLD");
+  }else{
+   put("governance-state","UNKNOWN — known 3-rule snapshot is from "+gov.observed_main_sha+"; current main differs or unavailable");
+  }
+ }
  put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
  put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
  $("before-link").href=b.docs.job_url;
