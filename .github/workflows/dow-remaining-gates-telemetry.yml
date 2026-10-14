@@ -52,20 +52,39 @@ jobs:
           set -euo pipefail
           export SNAPSHOT_DIR="$RUNNER_TEMP/dow-gate-snapshot"
           mkdir -p "$SNAPSHOT_DIR"
-          gh api "repos/$GITHUB_REPOSITORY/branches/main" > "$SNAPSHOT_DIR/branch.json"
+          gh api \
+            "repos/$GITHUB_REPOSITORY/branches/main" \
+            > "$SNAPSHOT_DIR/branch.json"
           export MAIN_SHA
-          MAIN_SHA="$(python -c 'import json,os; print(json.load(open(os.environ["SNAPSHOT_DIR"]+"/branch.json"))["commit"]["sha"])')"
+          MAIN_SHA="$(python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          p = Path(os.environ["SNAPSHOT_DIR"]) / "branch.json"
+          print(json.loads(p.read_text())["commit"]["sha"])
+          PY
+          )"
           test "${#MAIN_SHA}" -eq 40
           test "${#TARGET_HEAD}" -eq 40
           echo "MAIN_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
           echo "TARGET_HEAD=$TARGET_HEAD" >> "$GITHUB_ENV"
           git cat-file -e "$MAIN_SHA^{commit}"
-          git show "$MAIN_SHA:.github/workflows/cd-unified.yml" > "$SNAPSHOT_DIR/cd-unified.yml"
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$MAIN_SHA&per_page=100" > "$SNAPSHOT_DIR/main-runs.json"
+          git show "$MAIN_SHA:.github/workflows/cd-unified.yml" \
+            > "$SNAPSHOT_DIR/cd-unified.yml"
+          API_ROOT="repos/$GITHUB_REPOSITORY/actions"
+          gh api --paginate --slurp \
+            "$API_ROOT/runs?head_sha=$MAIN_SHA&per_page=100" \
+            | jq -c '{total_count: .[0].total_count,
+                       workflow_runs: [.[].workflow_runs[]]}' \
+            > "$SNAPSHOT_DIR/main-runs.json"
           if [ "$TARGET_HEAD" = "$MAIN_SHA" ]; then
             cp "$SNAPSHOT_DIR/main-runs.json" "$SNAPSHOT_DIR/head-runs.json"
           else
-            gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$TARGET_HEAD&per_page=100" > "$SNAPSHOT_DIR/head-runs.json"
+            gh api --paginate --slurp \
+              "$API_ROOT/runs?head_sha=$TARGET_HEAD&per_page=100" \
+              | jq -c '{total_count: .[0].total_count,
+                         workflow_runs: [.[].workflow_runs[]]}' \
+              > "$SNAPSHOT_DIR/head-runs.json"
           fi
           export DOW_RUN
           DOW_RUN="$(python - <<'PY'
@@ -73,14 +92,20 @@ jobs:
           path = os.environ["SNAPSHOT_DIR"] + "/main-runs.json"
           payload = json.load(open(path))
           rows = [r for r in payload.get("workflow_runs", [])
-                  if r.get("name") == "DOW + Recursive DMAIC - Unified CD Pipeline"
+                  if r.get("name") == (
+                      "DOW + Recursive DMAIC - Unified CD Pipeline"
+                  )
                   and r.get("head_sha") == os.environ["MAIN_SHA"]]
           print(max(rows, key=lambda r: (r.get("created_at",""), r["id"]))["id"]
                 if rows else "")
           PY
           )"
           if [ -n "$DOW_RUN" ]; then
-            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$DOW_RUN/jobs?per_page=100" > "$SNAPSHOT_DIR/dow-jobs.json"
+            gh api --paginate --slurp \
+              "$API_ROOT/runs/$DOW_RUN/jobs?per_page=100" \
+              | jq -c '{total_count: .[0].total_count,
+                         jobs: [.[].jobs[]]}' \
+              > "$SNAPSHOT_DIR/dow-jobs.json"
           fi
       - name: Generate machine-readable receipt and operator report
         run: |
@@ -91,11 +116,12 @@ jobs:
             --main-sha "$MAIN_SHA" \
             --head-sha "$TARGET_HEAD" \
             --output-dir "$RUNNER_TEMP/dow-gate-report"
-          cat "$RUNNER_TEMP/dow-gate-report/remaining-gates.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/dow-gate-report/remaining-gates.md" \
+            >> "$GITHUB_STEP_SUMMARY"
       # Immutable upload-artifact v4.6.2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: dow-remaining-gates-${{ github.event.pull_request.head.sha || github.sha }}
+          name: dow-gates-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/dow-gate-report/
           if-no-files-found: warn
