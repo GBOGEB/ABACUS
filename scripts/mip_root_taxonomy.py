@@ -2,6 +2,7 @@
 
 No causal-root promotion, security disposition or merge authority.
 """
+
 from __future__ import annotations
 
 import json
