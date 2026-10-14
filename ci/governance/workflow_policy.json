@@ -298,6 +298,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^qps-math-wormhole-dow\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^w259-p4-method-cards-independent-dow\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",

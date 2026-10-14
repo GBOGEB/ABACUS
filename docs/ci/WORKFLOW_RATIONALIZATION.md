@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `2035f917c563ab3b076e0f0b6bb3f607ce4c6e047c26b905c3b0ab392ae5e434`
+Policy SHA-256: `6c0995a08703a303ebb16a20af7d52f80e4cd66956ea27ca7215698174e631af`
 
 ## Outcome
 
-The repository currently contains **157 workflow definitions**. All **157** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **158 workflow definitions**. All **158** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -31,7 +31,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
-| `dow` | `dow-integration.yml` | 18 | DOW parent mechanics, integration, monitoring and warm-up. |
+| `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 20 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
@@ -107,6 +107,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
 | 20 | `dow` | `qps-dow-wave01-warmup.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `dow` | `qps-math-wormhole-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `qps-triage-dow-contract.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | — |
 | 20 | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
