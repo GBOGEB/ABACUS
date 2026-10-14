@@ -102,22 +102,35 @@ class KPI(unittest.TestCase):
             2.0,
         )
 
-    def test_kpi_replay(self):
-        ev = [
-            {
-                "kind": "replay",
-                "root_id": "r1",
-                "sha": A,
-                "evidence": {"consumer_id": "PR1", "status": "PASS"},
-            }
-        ]
-        self.assertEqual(
-            compute_metrics(
-                ev,
-                {"r1": {"state": "CONFIRMED", "applicable_consumers": ["PR1", "PR2"]}},
-            )["consumer_replay_coverage_pct"],
-            50.0,
-        )
+    def test_kpi_replay_requires_native_exact_head(self):
+        root = {"r1": {"state": "CONFIRMED", "applicable_consumers": [
+            {"consumer_id": "PR1", "repository": "GBOGEB/ABACUS", "head_sha": A},
+            {"consumer_id": "PR2", "repository": "GBOGEB/ABACUS", "head_sha": B},
+        ]}}
+        ev = [{"kind": "replay", "root_id": "r1", "sha": A,
+               "repo": "GBOGEB/ABACUS", "provenance": "observed",
+               "evidence": {"consumer_id": "PR1", "status": "PASS",
+                            "proof_type": "NATIVE_EXACT_HEAD_CI",
+                            "job_status": "completed", "job_conclusion": "success",
+                            "source_binding": {"repository": "GBOGEB/ABACUS",
+                                               "source_sha": A, "run_id": 21, "job_id": 22}}}]
+        self.assertEqual(compute_metrics(ev, root)["consumer_replay_coverage_pct"], 50.0)
+        ev[0]["evidence"]["proof_type"] = "ISOLATED_PREVIEW_PASS"
+        self.assertEqual(compute_metrics(ev, root)["consumer_replay_coverage_pct"], 0.0)
+        ev[0]["evidence"]["proof_type"] = "NATIVE_EXACT_HEAD_CI"
+        ev[0]["sha"] = B
+        self.assertEqual(compute_metrics(ev, root)["consumer_replay_coverage_pct"], 0.0)
+
+    def test_replay_legacy_registry_unknown(self):
+        root = {"r1": {"state": "CONFIRMED", "applicable_consumers": ["PR1"]}}
+        self.assertIsNone(compute_metrics([], root)["consumer_replay_coverage_pct"])
+
+    def test_replay_unregistered_consumer_not_credit(self):
+        root = {"r1": {"state": "CONFIRMED", "applicable_consumers": [
+            {"consumer_id": "PR1", "repository": "GBOGEB/ABACUS", "head_sha": A}]}}
+        ev = [{"kind": "replay", "root_id": "r1", "sha": A,
+               "provenance": "observed", "evidence": {"consumer_id": "PR-OTHER", "status": "PASS"}}]
+        self.assertEqual(compute_metrics(ev, root)["consumer_replay_coverage_pct"], 0.0)
 
 
 if __name__ == "__main__":
