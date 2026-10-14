@@ -120,6 +120,25 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertIn('main advanced since measured source', self.html)
         self.assertIn("historical comparison NOT COMPARABLE", self.html)
 
+    def test_p0_ruleset_is_partial_and_not_merge_authority(self):
+        g = self.data["governance"]["recovery_observation"]
+        self.assertEqual(g["schema"], "abacus.p0.ruleset-readback.v1")
+        self.assertTrue(SHA.fullmatch(g["observed_main_sha"]))
+        self.assertTrue(g["branch_protected"])
+        self.assertEqual(g["ruleset_id"], 24494381)
+        self.assertEqual(g["ruleset_rule_count"], 3)
+        self.assertEqual(g["ruleset_bypass_actor_count"], 0)
+        self.assertEqual(g["required_approvals"], 1)
+        self.assertFalse(g["required_status_checks_present_in_observed_ruleset"])
+        self.assertIsNone(g["independent_review_receipt"])
+        self.assertEqual(g["admission"], "HOLD")
+        self.assertIn("main protected=true", self.html)
+        self.assertIn("required CI checks NOT observed", self.html)
+        self.assertIn('active.enforcement!=="active"', self.html)
+        self.assertIn('liveSha===gov.observed_main_sha', self.html)
+        self.assertIn("#governance", self.dom.hrefs)
+        self.assertIn("governance", self.dom.ids)
+
     def test_dow_root_count_distinct_from_downstream_skip(self):
         d = self.data["baseline"]["dow"]
         self.assertEqual(d["failed_hook_count"], 3)
