@@ -1,13 +1,9 @@
 """Regression tests for disjoint Bandit worker census."""
-import importlib.util
-from pathlib import Path
+from importlib import import_module
 
 import pytest
 
-PATH = Path(__file__).resolve().parents[1] / "scripts" / "bandit_disjoint_census.py"
-SPEC = importlib.util.spec_from_file_location("bandit_disjoint_census", PATH)
-module = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(module)
+module = import_module("scripts.bandit_disjoint_census")
 
 
 def finding(path, rule, line=1):
