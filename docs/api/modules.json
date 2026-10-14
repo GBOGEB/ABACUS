@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-30T16:19:40.545177",
-  "module_count": 190,
+  "generated_at": "2026-10-14T16:09:21.830901",
+  "module_count": 193,
   "modules": {
     "DMAIC_V3/quick_output_analysis.py": {
       "docstring": "Quick Analysis of DMAIC V3 Outputs\nAnalyzes existing iteration outputs without running full pipeline",
@@ -53,7 +53,7 @@
       ]
     },
     "DMAIC_V3/full_pipeline_orchestrator.py": {
-      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header",
+      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header\n\nDMAIC V3.3 - FULL PIPELINE ORCHESTRATOR\n=============================================================================\nPhase 0:     Initialization (12-agent orchestration)\nPhases 1-5:  DMAIC Core (Define, Measure, Analy",
       "members": [
         {
           "name": "Phase7AdvancedAnalytics",
@@ -2933,6 +2933,22 @@
           "doc": ""
         },
         {
+          "name": "test_execute_rejects_non_dict_payload",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_rejects_empty_tuple",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_rejects_scalar",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_preserves_failure",
+          "doc": ""
+        },
+        {
           "name": "test_calculate_statistics",
           "doc": ""
         },
@@ -3254,6 +3270,10 @@
         },
         {
           "name": "test_workflow_yaml_present",
+          "doc": ""
+        },
+        {
+          "name": "test_deploy_docs_is_sole_publisher_and_keeps_docs_homepage",
           "doc": ""
         },
         {
@@ -3593,6 +3613,43 @@
         },
         {
           "name": "slow_task",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_quality_gate_coverage_recovery.py": {
+      "docstring": "",
+      "members": [
+        {
+          "name": "test_agent_manager_loads_existing_agent_config",
+          "doc": ""
+        },
+        {
+          "name": "test_metrics_exporter_uses_default_phase_and_csv_names",
+          "doc": ""
+        },
+        {
+          "name": "test_mcp_detects_parent_mutation_outside_worker_isolation",
+          "doc": ""
+        },
+        {
+          "name": "test_canonical_name_collapses_consecutive_separators",
+          "doc": ""
+        },
+        {
+          "name": "test_state_missing_phase_and_completed_resume_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_state_save_failure_is_reported_without_masking",
+          "doc": ""
+        },
+        {
+          "name": "mutate_outer_parent",
+          "doc": ""
+        },
+        {
+          "name": "fail_dump",
           "doc": ""
         }
       ]
@@ -4196,6 +4253,43 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_convergence_analyzer_runtime_coverage.py": {
+      "docstring": "Measured convergence scoring, history, and runtime artifact regressions.",
+      "members": [
+        {
+          "name": "analyzer",
+          "doc": ""
+        },
+        {
+          "name": "test_default_thresholds_and_score_bounds",
+          "doc": ""
+        },
+        {
+          "name": "test_custom_yaml_config_and_hashing",
+          "doc": ""
+        },
+        {
+          "name": "test_workspace_history_three_sample_stability_contract",
+          "doc": ""
+        },
+        {
+          "name": "test_knowledge_growth_missing_and_present",
+          "doc": ""
+        },
+        {
+          "name": "test_analyze_writes_true_counts_scores_and_report",
+          "doc": ""
+        },
+        {
+          "name": "test_second_iteration_trend_and_degraded_scenario",
+          "doc": ""
+        },
+        {
+          "name": "test_history_missing_does_not_fabricate_progress",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_phase5_control.py": {
       "docstring": "",
       "members": [
@@ -4336,6 +4430,14 @@
         {
           "name": "test_w000_validator_tracks_required_bootstrap_domains",
           "doc": ""
+        },
+        {
+          "name": "test_w000_externalized_alat_intent_is_provenance_bound",
+          "doc": ""
+        },
+        {
+          "name": "test_w000_rejects_unregistered_externalized_artifact",
+          "doc": ""
         }
       ]
     },
@@ -4462,6 +4564,18 @@
           "doc": ""
         },
         {
+          "name": "test_ensure_contract_appends_current_version_to_history",
+          "doc": ""
+        },
+        {
+          "name": "test_contract_error_branches_are_fail_closed",
+          "doc": ""
+        },
+        {
+          "name": "test_downstream_consumer_registry_defaults_and_lookup",
+          "doc": ""
+        },
+        {
           "name": "run",
           "doc": ""
         }
@@ -4485,6 +4599,10 @@
         {
           "name": "TestPhase9DocumentationGeneration",
           "doc": ""
+        },
+        {
+          "name": "TestPhase9EvidenceBoundaries",
+          "doc": "Exercise the real skip, verification and report-generation branches."
         },
         {
           "name": "test_initialization",
@@ -4532,6 +4650,46 @@
         },
         {
           "name": "test_multiple_iterations_are_independent",
+          "doc": ""
+        },
+        {
+          "name": "test_both_minimum_phase_receipts_are_required",
+          "doc": ""
+        },
+        {
+          "name": "test_valid_minimum_receipts_are_accepted",
+          "doc": ""
+        },
+        {
+          "name": "test_open_bugs_block_publication",
+          "doc": ""
+        },
+        {
+          "name": "test_failed_quality_gate_blocks_books",
+          "doc": ""
+        },
+        {
+          "name": "test_passed_gates_and_closed_bugs_allow_publication",
+          "doc": ""
+        },
+        {
+          "name": "test_discrepancy_classifies_canonical_difference",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_summary_reporting_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_lookup_has_explicit_unknown_fallback",
+          "doc": ""
+        },
+        {
+          "name": "test_actual_books_include_metrics_actions_and_adjustment_receipt",
+          "doc": ""
+        },
+        {
+          "name": "test_invalid_quality_json_cannot_be_reported_as_success",
           "doc": ""
         }
       ]
@@ -5287,6 +5445,10 @@
           "doc": ""
         },
         {
+          "name": "test_save_cache_retries_transient_permission_error",
+          "doc": ""
+        },
+        {
           "name": "test_enable_idempotency_rebinds_global_configuration",
           "doc": ""
         },
@@ -5347,6 +5509,10 @@
           "doc": ""
         },
         {
+          "name": "flaky_replace",
+          "doc": ""
+        },
+        {
           "name": "__init__",
           "doc": ""
         },
@@ -5404,6 +5570,83 @@
     "DMAIC_V3/tests/__init__.py": {
       "docstring": "DMAIC V3 Test Suite\nVersion: 3.2.0",
       "members": []
+    },
+    "DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py": {
+      "docstring": "Behavioral and artifact coverage for the DOW/Ariana integration boundary.",
+      "members": [
+        {
+          "name": "_Bridge",
+          "doc": ""
+        },
+        {
+          "name": "integration",
+          "doc": ""
+        },
+        {
+          "name": "test_initialization_writes_real_configuration_and_agent_files",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_success_writes_report_and_auditable_result",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_records_failed_test_without_forging_success",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_exception_is_persisted_as_failure",
+          "doc": ""
+        },
+        {
+          "name": "test_trace_collection_missing_valid_and_invalid",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_orchestration_and_metrics_output",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_output_fallback_list_and_transition_metadata",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_missing_and_unexpected_entries_fail_to_match",
+          "doc": ""
+        },
+        {
+          "name": "test_primary_registry_wins_over_output_fallback",
+          "doc": ""
+        },
+        {
+          "name": "test_custom_report_destination_and_empty_trace_log",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_dict_lookup_skips_unnamed_and_nonmatching_agents",
+          "doc": ""
+        },
+        {
+          "name": "test_trace_file_absent_does_not_create_fake_activity",
+          "doc": ""
+        },
+        {
+          "name": "test_orchestration_report_persists_real_metrics_not_worker_claims",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "run_tests_parallel",
+          "doc": ""
+        },
+        {
+          "name": "fail_phase",
+          "doc": ""
+        }
+      ]
     },
     "DMAIC_V3/tests/test_phase8_todo_management.py": {
       "docstring": "DMAIC V3 Test Suite - Phase 8: TODO Management Tests",
@@ -6633,6 +6876,10 @@
         {
           "name": "_decode_cache_value",
           "doc": "Recursively restore values encoded by _encode_cache_value."
+        },
+        {
+          "name": "_replace_with_retry",
+          "doc": "Atomically replace target, retrying transient Windows file-lock races."
         },
         {
           "name": "_save_cache",
