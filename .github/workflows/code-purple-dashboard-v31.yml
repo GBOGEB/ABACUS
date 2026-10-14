@@ -7,6 +7,8 @@ on:
       - 'tools/everred_v3/sut_gui/test_observability.py'
       - 'tools/everred_v3/sut_gui/tests/test_observability.py'
       - 'tools/everred_v3/sut_gui/visual_taxonomy_v4.json'
+      - 'tools/everred_v3/sut_gui/mip_sipoc_adapter_v42.json'
+      - 'tools/everred_v3/sut_gui/DASHBOARD_V42_SIPOC_BRIDGE.md'
       - '.github/workflows/code-purple-dashboard-v31.yml'
       - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
@@ -66,12 +68,14 @@ jobs:
               'codex-badges', 'rules-badges', 'rules-explain',
               'rules-list', 'rules-gap', 'pr-badges',
               'arch-hierarchy', 'arch-dag',
-              'arch-wireframe', 'pca-live', 'bt-live'
+              'arch-wireframe', 'pca-live', 'bt-live',
+              'mip-register', 'mip-grid', 'mip-overall',
+              'model-proof-register', 'pca-checks', 'bt-checks', 'sipoc'
           }
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v4.1' in html
+          assert 'code-purple.sut-gui.v4.2' in html
           assert 'architecture-legend' in doc.ids
           assert 'arch-loop feedback' in html
           assert 'arch-loop feedforward' in html
@@ -81,6 +85,11 @@ jobs:
           assert 'Feedback and feedforward (separate control graph, NOT part of the DAG)' in html
           assert 'Cancelled = GitHub' in html
           assert 'Native paired outcome records: UNKNOWN' in html
+          assert 'MIP-01' in html and 'MIP-08' in html
+          assert 'PCA-01' in html and 'PCA-04' in html
+          assert 'BT-01' in html and 'BT-04' in html
+          assert 'CODE PURPLE integrated SIPOC' in html
+          assert 'SOURCE-BOUND' in html or 'source-bound' in html
           assert len(doc.scripts) == 1, 'expected inline JS'
           Path('/tmp/dashboard-v31.js').write_text(doc.scripts[0])
           PY
@@ -114,6 +123,25 @@ jobs:
           assert 'function protectionDisplay' in html
           assert 'function familyTag' in html
           print('Visual taxonomy disjointness contract PASS')
+          PY
+
+      - name: Verify MIP/PCA/BT/SIPOC machine-readable action parity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('tools/everred_v3/sut_gui')
+          d=json.loads((root/'mip_sipoc_adapter_v42.json').read_text())
+          html=(root/'dashboard_v3.html').read_text()
+          assert d['schema']=='code-purple.mip-sipoc.adapter.v4.2'
+          assert d['merge_authorized'] is False and d['authority_transfer'] is False
+          assert len(d['mip'])==8 and len(d['pca'])==4 and len(d['bt'])==4 and len(d['sipoc'])==4
+          assert len({r['id'] for r in d['mip']})==8
+          for group in ('mip','pca','bt'):
+              for row in d[group]:
+                  assert row['id'] in html, row['id']
+          assert 'id="sipoc"' in html
+          print('MIP/SIPOC projection parity PASS; native evidence still separately required')
           PY
 
       - name: Test normalized evidence producer and empirical model qualifications
