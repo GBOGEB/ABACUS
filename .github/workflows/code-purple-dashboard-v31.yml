@@ -1,15 +1,17 @@
-name: CODE PURPLE Dashboard V3.2
+name: CODE PURPLE Dashboard V4 Test Observability
 on:
   pull_request:
     paths:
       - 'tools/everred_v3/sut_gui/dashboard_v3.html'
-      - 'tools/everred_v3/sut_gui/DASHBOARD_V31.md'
+      - 'tools/everred_v3/sut_gui/DASHBOARD_V4_TEST_ARCHITECTURE.md'
+      - 'tools/everred_v3/sut_gui/test_observability.py'
+      - 'tools/everred_v3/sut_gui/tests/test_observability.py'
       - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: dashboard-v32-${{ github.ref }}
+  group: dashboard-v4-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   dashboard-contract:
@@ -50,14 +52,16 @@ jobs:
           doc.feed(html)
           required = {
               'scope-target', 'mini-success', 'mini-failure',
-              'mini-queue', 'ci-filter', 'ci-family',
+              'mini-queue', 'ci-filter', 'ci-family', 'trend-dialog',
+              'test-architecture', 'producer-file', 'zoom-chart',
+              'producer-metrics', 'expand-trend',
               'ci-search', 'arch-hierarchy', 'arch-dag',
               'arch-wireframe', 'pca-live', 'bt-live'
           }
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v3.2' in html
+          assert 'code-purple.sut-gui.v4.0' in html
           assert 'architecture-legend' in doc.ids
           assert 'arch-loop feedback' in html
           assert 'arch-loop feedforward' in html
@@ -71,3 +75,7 @@ jobs:
           Path('/tmp/dashboard-v31.js').write_text(doc.scripts[0])
           PY
           node --check /tmp/dashboard-v31.js
+      - name: Test normalized evidence producer and empirical model qualifications
+        run: |
+          python -m compileall -q tools/everred_v3/sut_gui/test_observability.py
+          python -m unittest discover -s tools/everred_v3/sut_gui/tests -p 'test_observability.py' -q
