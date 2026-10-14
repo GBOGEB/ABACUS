@@ -10,6 +10,8 @@ import json
 import pathlib
 import re
 import fcntl
+import os
+import tempfile
 from metrics import compute_metrics
 from typing import Any
 
@@ -131,6 +133,44 @@ def append_event(path: pathlib.Path, event: dict) -> dict:
     with path.with_suffix(path.suffix+'.lock').open('a+b') as lock:
         fcntl.flock(lock.fileno(),fcntl.LOCK_EX)
         try:return _append_unlocked(path,event)
+        finally:fcntl.flock(lock.fileno(),fcntl.LOCK_UN)
+
+def append_events_batch(path: pathlib.Path, events: list[dict]) -> int:
+    """All-or-nothing batch append under one POSIX lock, no partially accepted run.
+
+    Existing bytes are retained verbatim; only a complete verified successor
+    hash chain is atomically published. Requires a single shared POSIX volume.
+    """
+    require(isinstance(events,list) and bool(events), 'empty native event batch')
+    path.parent.mkdir(parents=True,exist_ok=True)
+    lock_path=path.with_suffix(path.suffix+'.lock')
+    with lock_path.open('a+b') as lock:
+        fcntl.flock(lock.fileno(),fcntl.LOCK_EX)
+        try:
+            previous=read_ledger(path)
+            ids={e['id'] for e in previous}
+            require(not any(e.get('id') in ids for e in events), 'native batch contains existing event ID')
+            require(len({e.get('id') for e in events})==len(events), 'native batch contains duplicate event ID')
+            for e in events:validate_event(e)
+            validate_cross_events(previous+events)
+            original=path.read_bytes() if path.exists() else b''
+            require(not original or original.endswith(b'\n'), 'ledger has incomplete final line')
+            prev='GENESIS'
+            if original:
+                prev=json.loads(original.splitlines()[-1])['hash']
+            added=[]
+            for e in events:
+                row={'event':e,'prev_hash':prev,'hash':digest({'event':e,'prev_hash':prev})}
+                added.append(stable_json(row)+'\n');prev=row['hash']
+            fd,name=tempfile.mkstemp(prefix='.everred-ledger-',dir=path.parent)
+            try:
+                with os.fdopen(fd,'wb') as f:
+                    f.write(original);f.write(''.join(added).encode('utf-8'))
+                    f.flush();os.fsync(f.fileno())
+                os.replace(name,path)
+            finally:
+                if os.path.exists(name):os.unlink(name)
+            return len(events)
         finally:fcntl.flock(lock.fileno(),fcntl.LOCK_UN)
 
 def coverage_rate(e: dict) -> float | None:

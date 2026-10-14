@@ -1,0 +1,48 @@
+flowchart LR
+  subgraph ING["A · Evidence ingress"]
+    GH["GitHub Actions<br/>run/job/attempt + exact SHA"]
+    AR["Artifact ZIP<br/>SHA-256 + archive safety"]
+    SC["Bandit / coverage / JUnit<br/>declared scope and config"]
+    RT["RHEL/UBI/Docker/LDAB<br/>runner / port / session"]
+    GH --> AR --> SC
+    AR --> RT
+  end
+  subgraph ID["B · Normalize & bind"]
+    C["Source-bound typed receipts"]
+    F["Fingerprint + first-red<br/>UNKNOWN until RCA"]
+    L["Append-only event ledger"]
+    C --> F --> L
+  end
+  subgraph DIS["C · Governed execution"]
+    OWNER["One canonical root owner"]
+    LEASE["Repo ref atomic CAS lease<br/>expected SHA + file scope"]
+    REPLAY["Immutable consumer replay<br/>main / consumer / repair SHAs"]
+    OWNER --> LEASE --> REPLAY
+  end
+  subgraph MEAS["D · DMAIC control"]
+    KPI["Scope-comparable KPIs<br/>hash-chained pulse history"]
+    ALERT["Recurrence sentinel<br/>ALERT, not automatic closure"]
+    L --> KPI --> ALERT
+  end
+  subgraph GOV["E · Independent admission"]
+    NATIVE["Native exact-head CI"]
+    POLICY["Effective rules + eligible review"]
+    SEC["Independent security disposition"]
+    HOLD{"ALL evidence complete?"}
+    NATIVE --> HOLD
+    POLICY --> HOLD
+    SEC --> HOLD
+    HOLD -->|"No / UNKNOWN"| BLOCK["HOLD · WIP continues"]
+    HOLD -->|"Yes"| AUTH["Eligible only<br/>authorized merge separately"]
+  end
+  SC --> C
+  RT --> C
+  L --> OWNER
+  REPLAY --> NATIVE
+  KPI --> HOLD
+  classDef good fill:#dcfce7,stroke:#16a34a,color:#14532d
+  classDef block fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+  classDef work fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  class LEASE,REPLAY,KPI work
+  class BLOCK block
+  class AUTH good

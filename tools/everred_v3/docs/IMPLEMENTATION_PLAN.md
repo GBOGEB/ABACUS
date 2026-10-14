@@ -1,37 +1,90 @@
-# EVERRED V3 · implementation register
+# EVERRED V3 implementation and evidence register
 
-## Implementation boundary
+## Scope and authority
 
-The local build has a functioning event ledger, derived KPIs, vector diagrams and self-contained HTML. It does **not** have a live authenticated GitHub poll, server-side distributed lease service, human reviewer attestation, new confirmed causal roots, a running LDAB fleet, or approved merge authority.
+The control plane provides source-bound measurement, coordination,
+preview verification, KPI history and recurrence sentinels. It shall
+not authorize merges, security waivers or repository-policy changes.
 
-## Next controlled implementation slices
+## Work packages
 
-| ID | Owner lane | Required work | Verifiable acceptance |
-|---|---|---|---|
-| V3-A1 | A observer | Native GitHub Actions/JUnit/Bandit/coverage fetch adapter with caching, pagination and exact-source checks | Read-only authenticated receipt tests; no guessed fields |
-| V3-A2 | B RCA | Canonical signature normalization + root candidate graph with counterfactual contracts | Same signature can split into two causes; several signatures can join one cause, with recorded evidence |
-| V3-A3 | C canonical repair | Repository-wide lease coordinator (CAS, TTL, role validation, idempotency; non-overlapping ownership) | Two simultaneous writers on same path cannot both acquire; stale SHA rejected |
-| V3-A4 | D replay | Immutable worktree / Docker snapshot consumer testflight | Synthetic replay explicitly not mislabelled native exact-head PASS |
-| V3-A5 | E security | Fingerprint normalization, B101 intent-classification and Safety exit-64 diagnosis | Identical scanner/rule/config before/after; opened/resolved/persisting counts |
-| V3-A6 | F runtime | LDAB/LLDB/RHEL8-9/UBI/Docker launcher and typed receipts | Real signed job/session/port, runtime, logs and source binding |
-| V3-A7 | G governance | Independent protection+review verifier; merge done outside local engine | Server readback of branch protection; eligible reviewer; all native P5 checks |
-| V3-A8 | H federation | CODEX Mission Control/REX accepted-receipt contract | Read-only aggregation without authority propagation |
-| V3-A9 | Observability | Snapshot federation and history, KPI trend windows, rate denominators and alert thresholds | Two or more comparable census runs; UNKNOWN preserved |
+| ID | Lane | Delivered scope | Remaining native gate |
+| --- | --- | --- | --- |
+| V3-A1 | A | Actions run/job reader | Artifact producer readback |
+| V3-A2 | B | Candidate-only native joins | Counterfactual root proof |
+| V3-A3 | C | Atomic Git ref leases | Authenticated worker dispatch |
+| V3-A4 | D | Immutable Git replay | Native consumer CI |
+| V3-A5 | E | Bandit fingerprints | Independent security review |
+| V3-A6 | F | Typed RHEL/Docker/LDAB | Real runtime session census |
+| V3-A7 | G | Admission evaluator | Effective branch rules |
+| V3-A8 | H | Read-only federation path | REX acceptance |
+| V3-A9 | M | KPI history and alerts | Two comparable cycles |
 
-## Disjoint wave approach
+## Evidence quality and acceptance
 
-A can run with E and F (read-only) in parallel. B may classify independently while C waits for confirmed root ownership. D may fan out immutable replays in parallel; only after verified canonical repair. G owns admission separately. H consumes *accepted* typed evidence without modifying the canonical registry.
+**Input identity:** repository, full source SHA, run/attempt, job, test
+or scanner profile, producer version, artifact digest and time source.
 
-## DMAIC / DoV / DoD
+**Native source:** GitHub Actions metadata is read-only and authenticated
+only when fetched through an authorized API reader. Offline imports
+remain self-reported, not independently authenticated.
 
-**Define:** exact failure intent, scope, blocked consumer and authority. **Measure:** run/job/sha/test IDs plus comparable denominators. **Analyze:** counterfactual main-vs-PR-vs-env, downstream first-red dependencies. **Improve:** bounded canonical repair, negative regression and disjoint replay. **Control:** effective protection, independent approval, exact-main verification and recurrence sentinel.
+**Scanning:** full and configured Bandit findings are different scopes.
+Raw finding counts are not fingerprint-matched resolved debt. Safety
+failure classification is separate from Bandit findings.
 
-**Technical DoV:** reproduce + repair original behavior; negative controls fail closed; exact-head producer proof; attribution and permitted paths logged.
+**Coverage:** report the scope, unit, numerator, denominator, tool,
+configuration and test selection. No eligible lines means N/A.
 
-**Global DoD:** authorized protected merge, eligible independent security review, exact-main proof, known consumer reconciliation, recurrence observation and final typed release receipt. A locally passing producer remains `TECHNICALLY_VERIFIED / ADMISSION_HOLD` until all global gates pass.
+**Runtime:** RHEL/UBI, Docker, debugger sessions and ports require
+exact-source, authenticated job/runner and attached execution data.
+A historical mapped port does not establish a presently active port.
 
-## Current-main integration finding (14 October 2026 connector readback)
+**Lease:** the dedicated ref uses server-side Git compare-and-swap.
+Expired claims remain owned pending an auditable release or recovery.
+An approved source mutation requires independent execution authority.
 
-The original #1914 dashboard numbers remain an immutable **historical case study**. A newer GitHub main SHA was observed as `b45cf45eaad8303c6c4287616492895be4638f56`, 52 commits ahead of the case study's `02cca5020d59cc339cea486ed38857f53eea3e88`. The current repo contains `scripts/bd_ldab_join_census.py` (schema `bd.ldab.joined.census.v1`) and tracking issue #1929. Do not republish #1914 metrics as current-main security or coverage levels.
+**Replay:** an isolated preview captures the main-base, consumer and
+repair SHAs plus the resulting tree. It is not a native consumer-head
+check and has no admission authority.
 
-EVERRED's new `scripts/ingest_bd_ldab_join.py` consumes the current main joiner's explicit output without changing its producer or converting its BD/CI group IDs to confirmed causal roots.
+**KPI:** history pulses preserve numerator and denominator scope and
+hash-chain provenance. Alert generation does not establish delivery.
+
+**Governance:** server-read effective rules, eligible independent
+approval, resolved review conversations and every applicable mandatory
+check must be verified. Missing data stays UNKNOWN and blocks admission.
+
+## DMAIC delivery loop
+
+- **Define:** intended behavior, authoritative requirement and owner.
+- **Measure:** native exact-source evidence and scope-bound counters.
+- **Analyze:** first-red dependency DAG and counterfactual RCA.
+- **Improve:** bounded canonical repair, tests and replay consumers.
+- **Control:** immutable histories, recurrence and independent policy.
+
+## Definition of verification
+
+A local repair requires original failure reproduction, a preserved
+engineering-intent contract, focused and negative tests, source-bound
+receipts and unambiguous mutation authority. Producer PASS is not merge
+permission.
+
+## Definition of done
+
+Global closure requires protected admission, independent review,
+authoritative security disposition, exact-main verification, all
+relevant consumer replay receipts and recurrence observation.
+
+## Previously observed evidence
+
+PR #1914's case-study SHA is
+`e9f34b22967064c779891a4d2ac40541f370e812`. Its reported
+coverage and Bandit counts remain historical. The later V3 base at
+`b45cf45eaad8303c6c4287616492895be4638f56` is a separate
+revision. No cross-SHA delta can be inferred from raw counts.
+
+The previously observed V3 draft PR #1933 includes a documentation
+validation failure. The relevant source was corrected in this wave
+without disabling markdownlint. A new exact-head native run is still
+required before crediting that correction as verified.

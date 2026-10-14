@@ -1,0 +1,118 @@
+name: EVERRED V3 Governed Control Plane
+on:
+  pull_request:
+    paths:
+      - 'tools/everred_v3/**'
+      - '.github/workflows/everred-v3-validation.yml'
+  workflow_dispatch:
+    inputs:
+      target_run_id:
+        description: 'Existing GitHub Actions run ID to inspect read-only'
+        required: true
+        type: string
+      artifact_plan_json:
+        description: 'Optional JSON array describing exact artifact IDs and scopes'
+        required: false
+        type: string
+      target_sha:
+        description: 'Exact 40-character source SHA of the target run'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: everred-v3-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  local-contract:
+    name: EVERRED source, provenance and negative tests
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify source, event chain and disjoint leases
+        working-directory: tools/everred_v3
+        run: |
+          python -m compileall -q src scripts tests
+          python -m unittest discover -s tests -q
+          python src/everred.py verify
+          python scripts/build_joined_census.py
+          python scripts/build_dashboard.py
+          git diff --exit-code -- dashboard/index.html
+      - name: Confirm generation does not promote admission
+        working-directory: tools/everred_v3
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          snapshot = json.loads(Path('data/snapshot.json').read_text())
+          assert snapshot['schema'] == 'abacus.everred.snapshot.v3'
+          assert snapshot['mode'] == 'HISTORICAL_EVIDENCE_NOT_LIVE'
+          assert 'does not confer merge' in snapshot['disclaimer']
+          print('Historical/UNKNOWN admission safeguards retained')
+          PY
+  native-pulse:
+    name: Read-only native run / joined census pulse
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read existing run; reject SHA mismatch
+        working-directory: tools/everred_v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_RUN_ID: ${{ inputs.target_run_id }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+          SOURCE_REPO: ${{ github.repository }}
+          ARTIFACT_PLAN_JSON: ${{ inputs.artifact_plan_json }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          val=os.environ.get('ARTIFACT_PLAN_JSON','').strip()
+          if val:
+              arr=json.loads(val)
+              assert isinstance(arr,list) and len(arr)<=32
+              Path('artifact-plan.json').write_text(json.dumps(arr))
+          PY
+          extra=()
+          if [ -s artifact-plan.json ]; then
+            extra=(--artifact-plan artifact-plan.json)
+          fi
+          python scripts/collect_native.py \
+            --repo "$SOURCE_REPO" --sha "$TARGET_SHA" \
+            --run-id "$TARGET_RUN_ID" \
+            --output native-batch.json --apply-ledger "${extra[@]}"
+          python src/everred.py verify
+          python src/everred.py snapshot
+          python src/control.py
+          python scripts/build_joined_census.py
+          python scripts/build_dashboard.py
+      - name: Publish source-bound review artifacts, never push
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: everred-v3-observation-${{ github.run_id }}
+          if-no-files-found: error
+          path: |
+            tools/everred_v3/native-batch.json
+            tools/everred_v3/data/joined_native.json
+            tools/everred_v3/data/kpi_history.jsonl
+            tools/everred_v3/data/alerts.json
+            tools/everred_v3/dashboard/index.html
