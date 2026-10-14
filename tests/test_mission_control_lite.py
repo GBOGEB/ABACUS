@@ -1,4 +1,9 @@
 import tempfile
+import json
+import sys
+from unittest.mock import patch
+from contextlib import redirect_stdout
+from io import StringIO
 import unittest
 from pathlib import Path
 from mission_control_lite.core import receipt, verify, ingest, census
@@ -23,6 +28,45 @@ class TestMissionControlLite(unittest.TestCase):
             p=Path(d)/"empty";p.write_bytes(b"")
             with self.assertRaises(ValueError):
                 receipt("m","t","r","a"*40,"run",[p])
+    def test_cli_produce_ingest_census(self):
+        from mission_control_lite.cli import main
+        with tempfile.TemporaryDirectory() as d:
+            output = Path(d) / "output.json"
+            output.write_text('{"ok":true}')
+            rec = Path(d) / "receipt.json"
+            db = Path(d) / "registry.sqlite"
+            with patch.object(sys, "argv", [
+                "mcl", "produce", "--mission", "m", "--task", "t",
+                "--root", "r", "--sha", "a" * 40, "--run", "1",
+                "--output", str(output), "--receipt", str(rec),
+            ]):
+                main()
+            self.assertTrue(verify(json.loads(rec.read_text()), d))
+            with patch.object(sys, "argv", [
+                "mcl", "ingest", str(rec), "--db", str(db),
+            ]):
+                main()
+            buf = StringIO()
+            with patch.object(sys, "argv", [
+                "mcl", "census", "--db", str(db),
+            ]), redirect_stdout(buf):
+                main()
+            data = json.loads(buf.getvalue())
+            self.assertEqual(data["verified_roots_with_receipts"], 1)
+            self.assertFalse(data["roots"][0]["closed"])
+
+    def test_cli_rejects_invalid_receipt(self):
+        from mission_control_lite.cli import main
+        with tempfile.TemporaryDirectory() as d:
+            rec = Path(d) / "invalid.json"
+            rec.write_text("{}")
+            with patch.object(sys, "argv", [
+                "mcl", "ingest", str(rec), "--db",
+                str(Path(d) / "registry.sqlite"),
+            ]):
+                with self.assertRaises(ValueError):
+                    main()
+
     def test_agent_denials(self):
         s={"repository":"GBOGEB/ABACUS","source_sha":"a"*40,"write":False}
         for action in ("merge","modify_ruleset","shell","patch"):
