@@ -65,6 +65,7 @@ def summarize(payload):
     observed = set()
     groups = {}
     for item in receipts:
+        require(isinstance(item, dict), "receipt must be object")
         if item.get("kind") == "proposal":
             continue
         scoped(item, repository, sha)
