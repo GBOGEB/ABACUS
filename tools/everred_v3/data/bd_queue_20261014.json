@@ -1,0 +1,309 @@
+{
+  "schema": "abacus.everred.bd-queue.observation.v1",
+  "mode": "FROZEN_HISTORICAL_EVIDENCE_NOT_LIVE",
+  "repository": "GBOGEB/ABACUS",
+  "observed_date_utc": "2026-10-14",
+  "main_sha_at_census": "e319fc877fd928dae3a67aa61427eefdcddd1211",
+  "default_branch_protected_at_census": false,
+  "merged_prs": [
+    1954,
+    1955
+  ],
+  "disposition": "ADMISSION_HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "causal_confirmation": "NO_SHARED_ROOTS_CONFIRMED",
+  "note": "Failures are exact native job observations. Family groupings are analyst hypotheses. This read-only projection is not an authenticated EVERRED ledger event nor a live GitHub census.",
+  "families": [
+    {
+      "id": "BD-ER-FORMAT-20261014",
+      "title": "EVERRED Python formatting",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P1",
+      "causal_status": "SHARED_SIGNATURE_NOT_CONFIRMED_ROOT",
+      "owner": "UNASSIGNED",
+      "summary": "Python 3.10 and 3.12 on both PRs reject Black formatting. Shared model_readiness/metrics files recur; #1955 also introduces TOP21 files.",
+      "justification": "Four native jobs fail the same formatter check; repeated paths justify one coordinated source-owner investigation but do not prove one causal defect.",
+      "remediation": "Use pinned Black 26.10.1/isort 9.0.2 against current main; format only affected files, maintain py310 compatibility, and compare shared versus introduced paths.",
+      "dov": "At successor SHA, both Python-version formatter checks and isort pass; affected-file receipts and independent review verified.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567609,
+          "job_id": 115874345830,
+          "step": "Verify committed Black and isort styles",
+          "detail": "Black reports model_readiness.py, metrics.py and two associated test modules.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567609/job/115874345830",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567609,
+          "job_id": 115874346331,
+          "step": "Verify committed Black and isort styles",
+          "detail": "Same four shared formatting candidates on Python 3.12.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567609/job/115874346331",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591700,
+          "job_id": 115870964507,
+          "step": "Verify committed Black and isort styles",
+          "detail": "Seven flagged files, including three TOP21 files and four shared files.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591700/job/115870964507",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591700,
+          "job_id": 115870964639,
+          "step": "Verify committed Black and isort styles",
+          "detail": "Seven files would reformat under pinned Black 26.10.1.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591700/job/115870964639",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-ER-COVERAGE-20261014",
+      "title": "Broad coverage below 75%",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P1",
+      "causal_status": "THRESHOLD_FAILURE_CAUSE_UNATTRIBUTED",
+      "owner": "UNASSIGNED",
+      "summary": "Both broad CI reports: 30,600 statements, 13,858 missed, 8,242 branches, combined 53.58%; requirement 75%. #1954 has a separate 60/84 changed-line report (71%).",
+      "justification": "Same broad numerator/denominator reported on distinct PRs implies inherited repository-wide coverage debt is plausible. Changed-line 71% must never be substituted for 53.58% broad.",
+      "remediation": "Extract full coverage JSON/XML under one configuration and source SHA; prioritize high-denominator modules with attributed uncovered lines, add tests without moving thresholds.",
+      "dov": "New current-main JSON with eligible+covered lines/branches and matching config digest; broad threshold 75% met or reported RED; changed-line coverage separately measured.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567519,
+          "job_id": 115886313568,
+          "step": "Code Coverage threshold",
+          "detail": "TOTAL 30,600 statements / 13,858 missed / 8,242 branches; 53.58% combined; diff-cover 60/84 = 71%.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567519/job/115886313568",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591556,
+          "job_id": 115883574880,
+          "step": "Code Coverage threshold",
+          "detail": "Same combined 53.58%, 75% required; diff-cover has no measurable source lines in that diff.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591556/job/115883574880",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-ER-SAFETY-20261014",
+      "title": "Safety scanner exit 64",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P0",
+      "causal_status": "UNKNOWN_SCANNER_CAUSE",
+      "owner": "UNASSIGNED",
+      "summary": "Safety exits 64 on both PRs. The parallel Bandit scan reports 6,527 raw findings and zero parse errors, not a comparable finding delta.",
+      "justification": "Scanner failure is independent from formatter and coverage checks. Bandit raw volume is a census; it is not 6,527 new vulnerabilities or 6,527 confirmed causes.",
+      "remediation": "Retrieve Safety JSON/stderr and scanner versions, classify exit 64 and advisory/config/license causes, rerun comparable scan; fingerprint Bandit against same base/config.",
+      "dov": "Safety terminal report and explicit security reviewer disposition; comparable Bandit opened/resolved/net and config digest. No security waivers.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567519,
+          "job_id": 115874345229,
+          "step": "Enforce security red roots",
+          "detail": "Safety exit 64; Bandit raw 6,527 findings, parse errors 0.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567519/job/115874345229",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591556,
+          "job_id": 115870965002,
+          "step": "Enforce security red roots",
+          "detail": "Safety exit 64; Bandit raw 6,527 findings, parse errors 0.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591556/job/115870965002",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-A10-CONFIDENTIALITY-1954",
+      "title": "A10 tender-material guard",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P0",
+      "causal_status": "GUARD_FLAG_CONFIRMED_EXPOSURE_UNKNOWN",
+      "owner": "UNASSIGNED",
+      "summary": "The a10 guard detects two files resembling tender material on #1954. The inspected summary does not establish sensitivity or disclose filenames.",
+      "justification": "Potential protected material requires human confidentiality review; do not auto-allowlist based solely on a common file signature.",
+      "remediation": "Review the guard artifact in authorized context, determine exact files and exposure; move sensitive material to private storage or document approved hashes through a governed review.",
+      "dov": "Authorized reviewer records disposition, historical exposure assessment where applicable, and passing guard on the exact successor SHA.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567462,
+          "job_id": 115874345569,
+          "step": "a10-guard",
+          "detail": "Two files flagged as tender-like; paths not confirmed in available summary.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567462/job/115874345569",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-TOP21-DOCS-1955",
+      "title": "TOP21 Markdownlint defects",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P2",
+      "causal_status": "DIRECT_RULE_FAILURE",
+      "owner": "UNASSIGNED",
+      "summary": "Markdownlint reports MD031 at line 12 (fence separation) and MD032 at line 36 (list separation) in TOP21_ROLLOUT_CONTRACT.md.",
+      "justification": "Exact file, rules and line numbers are present in native job logs; repair is directly attributable to the TOP21 documentation.",
+      "remediation": "Add blank lines around fenced Bash block and list. Keep requirements semantics unchanged; run same markdownlint config.",
+      "dov": "MD031 and MD032 checks pass in new exact-head docs lint; file diff contains only spacing changes.",
+      "observations": [
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591720,
+          "job_id": 115870965815,
+          "step": "Changed docs lint",
+          "detail": "tools/everred_v3/docs/TOP21_ROLLOUT_CONTRACT.md:12 MD031 and :36 MD032.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591720/job/115870965815",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-ER-QUALITY-20261014",
+      "title": "Broad code-quality roots",
+      "lane": "ROOT_CANDIDATE",
+      "severity": "P1",
+      "causal_status": "FIRST_RED_NOT_FULLY_SPLIT",
+      "owner": "UNASSIGNED",
+      "summary": "Code Quality Checks fail on both PRs. A full-scan Black/isort gate reports red; additional historical lint output requires separate new-debt attribution.",
+      "justification": "This broader gate must not be automatically marked repaired by the EVERRED-only formatting work. Per-tool full scans and base/PR ratchets differ.",
+      "remediation": "Fingerprint Black/isort/Flake8/Pylint by path/rule and exact configuration, separate inherited debt from introduced lines, then assign disjoint workers.",
+      "dov": "Independent per-tool full scan or accepted ratchet receipts match exact SHA and review policy without bypasses.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567519,
+          "job_id": 115874344914,
+          "step": "Enforce code-quality red roots",
+          "detail": "Required BLACK and ISORT full scan failed; broad lint debt also present.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567519/job/115874344914",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591556,
+          "job_id": 115870965466,
+          "step": "Enforce code-quality red roots",
+          "detail": "Code quality native job red; specific scanner/ratchet reconciliation still required.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591556/job/115870965466",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-ER-FULL-RED-20261014",
+      "title": "Full Red Proof rollup",
+      "lane": "DOWNSTREAM",
+      "severity": "P1",
+      "causal_status": "CONSEQUENCE_NOT_INDEPENDENT_ROOT",
+      "owner": "UNASSIGNED",
+      "summary": "Full Red Proof Summary fails because lint/format, coverage and security remain red.",
+      "justification": "One aggregate red is a dependency outcome, not proof of another independent defect. Keep references but avoid duplicate BD debt totals.",
+      "remediation": "Re-evaluate rollup only after producer checks complete; retain all required checks.",
+      "dov": "All referenced producer receipts terminal and admissible; rollup recomputes to PASS at the same SHA.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570567519,
+          "job_id": 115894107226,
+          "step": "Full Red Proof Summary",
+          "detail": "Aggregate gate fails while producer checks remain red.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570567519/job/115894107226",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38569591556,
+          "job_id": 115892093667,
+          "step": "Full Red Proof Summary",
+          "detail": "Explicit rollup: lint_and_format, coverage, security_scan.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569591556/job/115892093667",
+          "result": "FAILURE",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    },
+    {
+      "id": "BD-ER-FEEDBACK-20261014",
+      "title": "Feedback evaluator cancellations",
+      "lane": "DOWNSTREAM",
+      "severity": "P2",
+      "causal_status": "CONSEQUENCE_OR_QUEUE_PRESSURE",
+      "owner": "UNASSIGNED",
+      "summary": "Both PRs show cancelled PR Feedback Gate Evaluator executions and failed feedback gates; cancelling alone does not prove causality.",
+      "justification": "High-frequency evaluator reruns can amplify queue pressure. A cancelled evaluator must never be promoted to a passing required gate.",
+      "remediation": "Group by PR head, run attempt, trigger and concurrency key; coalesce repeated triggers while preserving exact-head required checks.",
+      "dov": "Terminal canonical feedback gate with source-bound producer receipts and no stale/skipped required evidence.",
+      "observations": [
+        {
+          "pr": 1954,
+          "sha": "90dc5873ab4445e5faa751f2ce8713eca8ac58e5",
+          "run_id": 38570776472,
+          "job_id": 115885154069,
+          "step": "Evaluate PR feedback gate (#1954)",
+          "detail": "Cancelled pull_request_review evaluator, not causal proof.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38570776472/job/115885154069",
+          "result": "CANCELLED",
+          "provenance": "NATIVE_JOB_LOG"
+        },
+        {
+          "pr": 1955,
+          "sha": "13011f88f28d4c3433d05c10e91ca6e7f6ab54b3",
+          "run_id": 38572976937,
+          "job_id": 115889172924,
+          "step": "Evaluate PR feedback gate (#1955)",
+          "detail": "Cancelled pull_request_review evaluator, not causal proof.",
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38572976937/job/115889172924",
+          "result": "CANCELLED",
+          "provenance": "NATIVE_JOB_LOG"
+        }
+      ]
+    }
+  ]
+}
