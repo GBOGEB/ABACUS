@@ -5,6 +5,7 @@ on:
     paths:
       - 'mission_control_lite/**'
       - 'tests/test_mission_control_lite.py'
+      - 'tests/test_mission_control_lite_rex.py'
       - '.github/workflows/mission-control-lite-testflight.yml'
 permissions:
   contents: read
@@ -18,7 +19,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Focused tests
-        run: python -m unittest discover -s tests -p test_mission_control_lite.py -v
+        run: |
+          python -m unittest discover -s tests -p test_mission_control_lite.py -v
+          python -m unittest discover -s tests -p test_mission_control_lite_rex.py -v
       - name: Native output and evidence
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
