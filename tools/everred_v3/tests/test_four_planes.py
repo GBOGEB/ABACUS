@@ -385,9 +385,12 @@ class JoinAndNative(unittest.TestCase):
         self.assertIsNone(r["claims"]["self_hosted_rhel_verified"])
 
     def test_schema_validator(self):
+        jsonschema = None
         try:
             import jsonschema
         except ImportError:
+            self.skipTest("jsonschema not installed")
+        if jsonschema is None:
             self.skipTest("jsonschema not installed")
         schema = json.loads((BASE / "contracts/four-plane-receipt.schema.json").read_text())
         instance = diagnostic_receipt(SRC, debug())
