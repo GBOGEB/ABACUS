@@ -5,6 +5,12 @@ on:
       - 'tools/mip2/**'
       - '.github/workflows/mip2-method-qualification.yml'
   workflow_dispatch:
+  push:
+    branches:
+      - bd/mip2-control-20261014
+    paths:
+      - 'tools/mip2/**'
+      - '.github/workflows/mip2-method-qualification.yml'
 permissions:
   contents: read
 jobs:
