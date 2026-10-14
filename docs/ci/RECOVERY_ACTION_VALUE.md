@@ -34,7 +34,17 @@ displays UNKNOWN rather than substituting values when source loading fails.
 - Coverage: retrieved Cobertura + DAB measured **54.55% combined
   branch-inclusive** at the *predecessor main* SHA above, with
   17,088 / 30,735 covered lines and 4,200 / 8,290 covered branches.
-  Current main has advanced; latest-main coverage remains UNKNOWN.
+  Latest main at `85dad8fbdab530d40e6ccf2f664c455f89454aad`
+  measured **54.6539% combined** in native CI matrix #38592202379,
+  +0.1043 percentage points over the prior same-instrument main.
+  The addition of `scripts/dow_first_red_census.py` accounts for the
+  numerator/denominator difference; the 298 previously collected files
+  have unchanged line coverage.
+- Current-main separate first-reds: 33 Markdownlint findings in V3.1/V3.2
+  dashboard documents ([repair #1972](https://github.com/GBOGEB/ABACUS/pull/1972))
+  and two unclassified workflow definitions plus stale derived policy report
+  ([repair #1973](https://github.com/GBOGEB/ABACUS/pull/1973)).
+  They do not reverse #1966's scoped 13-to-0 verification.
 - Coverage gain over the historical 36.85% main baseline is NOT
   comparable without matching instrumented source/config identity.
   PR broad and diff comparable gains also remain UNKNOWN.
