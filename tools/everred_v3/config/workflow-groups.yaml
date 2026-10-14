@@ -1,0 +1,53 @@
+schema: abacus.everred.execution-plan.v1
+version: '3.1.0-alpha'
+canonical_workflow_policy: ci/governance/workflow_policy.json
+authority: observational_only
+tasks:
+  - id: YAML_PREFLIGHT
+    plane: orchestration
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: []
+    write_paths: []
+  - id: GITHUB_RECEIPT
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [YAML_PREFLIGHT]
+    write_paths: []
+  - id: DEBUG_LLDB
+    plane: diagnostic
+    owner: CODEX
+    mode: NATIVE_PROBE
+    needs: [YAML_PREFLIGHT]
+    write_paths: []
+  - id: RUNTIME_HOST
+    plane: runtime
+    owner: ABACUS
+    mode: NATIVE_PROBE
+    needs: [YAML_PREFLIGHT]
+    write_paths: []
+  - id: LDAB_CORRELATION
+    plane: diagnostic
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [GITHUB_RECEIPT, DEBUG_LLDB]
+    write_paths: []
+  - id: JOINED_CENSUS
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [GITHUB_RECEIPT, LDAB_CORRELATION, RUNTIME_HOST]
+    write_paths: []
+  - id: KPI_PULSE
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [JOINED_CENSUS]
+    write_paths: []
+  - id: CONTROLLED_MUTATION
+    plane: orchestration
+    owner: ELIGIBLE_REVIEWER
+    mode: REVIEW_REQUIRED
+    needs: [KPI_PULSE]
+    write_paths: [tools/everred_v3/src]
