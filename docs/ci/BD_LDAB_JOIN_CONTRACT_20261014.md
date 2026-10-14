@@ -47,8 +47,8 @@ related_bandit_fingerprint field and an identical repository/head SHA.
 Each debugger receipt requires repository, source_sha, run_id, job_id,
 evidence_url and nonnegative real_probe_steps. Optional runner_id,
 session_id, port_lease_id, container_id, image_digest and host_binding
-are retained. A reported (not independently verified) session requires both session_id
-and runner_id as well as a positive real_probe_steps count.
+are retained. A reported session requires both session_id and runner_id
+plus a positive real_probe_steps count. These fields remain unverified.
 The joiner checks field shape only; external authenticity is not proven.
 
 Cross-repository CODEX runtime receipts remain unlinked observations
