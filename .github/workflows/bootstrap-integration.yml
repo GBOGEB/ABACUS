@@ -102,7 +102,7 @@ jobs:
           python scripts/code_purple_mip_unknown_rollup.py \
             --input MIP/code_purple_unknown_backlog.json \
             --output test_reports/code-purple-unknown-kpi.json \
-            --as-of 2026-10-14
+            --as-of "$(date -u +%F)"
 
       - name: Run Bootstrap Statistics Tests (pytest)
         run: |
