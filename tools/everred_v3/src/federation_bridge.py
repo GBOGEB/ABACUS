@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import hashlib
-from typing import Any
 
 from four_planes import Source, HEX64, demand, fingerprint
 from yaml_control import validate_federation_policy
