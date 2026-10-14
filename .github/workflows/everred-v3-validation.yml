@@ -61,22 +61,25 @@ jobs:
           assert 'does not confer merge' in snapshot['disclaimer']
           print('Historical/UNKNOWN admission safeguards retained')
           PY
-      - name: Generate remediation preview using repository formatter versions
+      - name: Generate formatter source preview
         working-directory: tools/everred_v3
         run: |
           python -m pip install black==26.10.1 isort==9.0.2
-          python -m black src scripts tests
           python -m isort src scripts tests
-          python -m black --check src scripts tests
-          python -m isort --check-only src scripts tests
+          python -m black src scripts tests
           tar -czf "$RUNNER_TEMP/everred-v3-format-current.tgz" src scripts tests
           sha256sum "$RUNNER_TEMP/everred-v3-format-current.tgz"
-      - name: Publish formatting diff for review, never push
+      - name: Upload immutable formatting preview, never push
         uses: actions/upload-artifact@v4
         with:
-          name: everred-v3-format-current-${{ matrix.python-version }}
+          name: everred-formatted-${{ matrix.python-version }}
           path: ${{ runner.temp }}/everred-v3-format-current.tgz
           if-no-files-found: error
+      - name: Check formatter outputs without exemptions
+        working-directory: tools/everred_v3
+        run: |
+          python -m black --check src scripts tests
+          python -m isort --check-only src scripts tests
   native-pulse:
     name: Read-only native run / joined census pulse
     if: github.event_name == 'workflow_dispatch'
