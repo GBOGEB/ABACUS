@@ -1,0 +1,30 @@
+name: MIP2 Method Qualification
+on:
+  pull_request:
+    paths:
+      - 'tools/mip2/**'
+      - '.github/workflows/mip2-method-qualification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned method tools
+        run: python -m pip install pytest coverage black==26.10.0 isort==7.0.0 bandit
+      - name: Validate method contracts
+        run: python tools/mip2/validate_method_contracts.py
+      - name: Execute seeded qualification corpus
+        run: python -m pytest tools/mip2/tests/test_method_qualification.py -v -rs --junitxml=mip2-junit.xml
+      - name: Upload native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mip2-qualification
+          path: mip2-junit.xml
+          if-no-files-found: warn
