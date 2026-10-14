@@ -56,8 +56,15 @@ Browser QA at 1440×1000, 1280×800, 390×844 and live GitHub readback are
 required before claiming published dashboard acceptance. Neither opening
 this static HTML nor passing a visual test authorizes a merge.
 
-Main remains unprotected in the latest server-side readback. An owner/admin
-must restore enforceable protection and obtain independent review.
+Main now reports `protected=true` at
+`85dad8fbdab530d40e6ccf2f664c455f89454aad`. Ruleset `24494381`
+has three enforced rules (pull-request approval, deletion and
+non-fast-forward), versus zero in the prior observation. One independent
+approval, latest-push approval and resolved review conversations are
+required. However, that ruleset has no required-status-check rule.
+No eligible reviewer approval or fully governed merge has been established.
+The owner/admin shall verify all applicable policy and configure trusted
+required status contexts before treating the gate as complete.
 
 `security_waiver=false` · `authority_transfer=false` ·
 `formal_credit_delta=0`
