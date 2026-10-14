@@ -7,6 +7,11 @@ on:
       - '**.md'
       - 'book.yaml'
       - 'scripts/build_book.py'
+  pull_request:
+    paths:
+      - 'scripts/build_book.py'
+      - 'tests/ci/test_dmaic_book_builder_contract.py'
+      - '.github/workflows/book-build.yml'
   workflow_dispatch:
 
 jobs:
@@ -30,9 +35,20 @@ jobs:
       - name: Verify Pandoc installation
         run: pandoc --version
       
+      - name: Run fail-closed book builder regression tests
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/ci/test_dmaic_book_builder_contract.py
+
       - name: Build DMAIC V3 BOOK
         run: python scripts/build_book.py
       
+      - name: Verify three nonempty outputs
+        run: |
+          test -s build/DMAIC_V3_BOOK.pdf
+          test -s build/DMAIC_V3_BOOK.html
+          test -s build/DMAIC_V3_BOOK.epub
+
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v7
         with:
