@@ -181,7 +181,7 @@ def join(bundle):
             "container_id": obs.get("container_id"), "image_digest": obs.get("image_digest"),
             "host_binding": obs.get("host_binding"),
             "source": "debug_receipt",
-            "proof_level": "OBSERVED" if steps > 0 and obs.get("session_id") and obs.get("runner_id")
+            "proof_level": "REPORTED_UNVERIFIED" if steps > 0 and obs.get("session_id") and obs.get("runner_id")
                 else "PARTIAL",
         }
         fp = obs.get("related_bandit_fingerprint")
@@ -228,10 +228,10 @@ def join(bundle):
             "duplicate_file_owners": 0,
             "ci_observations": len(ci),
             "debug_receipts": len(debugger),
-            "debug_confirmed_sessions": sum(
-                o["proof_level"] == "OBSERVED" for o in unmatched_debug
+            "debug_reported_sessions": sum(
+                o["proof_level"] == "REPORTED_UNVERIFIED" for o in unmatched_debug
             ) + sum(
-                o.get("proof_level") == "OBSERVED"
+                o.get("proof_level") == "REPORTED_UNVERIFIED"
                 for root in roots.values() for o in root["observations"]
             ),
             "comparable_delta": comparable,
