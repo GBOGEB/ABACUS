@@ -1,0 +1,241 @@
+{
+  "schema": "mip2.method-qualification.v1",
+  "levels": {
+    "M0": "discovered",
+    "M1": "native execution receipt",
+    "M2": "measured against labeled corpus",
+    "M3": "verified root-specific repair",
+    "M4": "positive and negative regression corpus",
+    "M5": "independent native PASS across applicable repositories",
+    "M6": "adaptive improvements backed by measured gain"
+  },
+  "phase_contract": [
+    "PREPARE",
+    "PROVE",
+    "PROPAGATE"
+  ],
+  "methods": [
+    {
+      "method_id": "formatter",
+      "tools": [
+        "Black",
+        "isort",
+        "Ruff"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "idempotence, conflict rate, changed-file stability",
+      "acceptance": "format-only, native tests",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "lint_complexity",
+      "tools": [
+        "Ruff",
+        "Flake8",
+        "Pylint",
+        "Radon"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "unique-rule recall, complexity delta",
+      "acceptance": "focused refactor regression",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "typing",
+      "tools": [
+        "mypy",
+        "Pyright"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "typed surface, contract violations",
+      "acceptance": "type and contract tests",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "testing",
+      "tools": [
+        "pytest",
+        "JUnit",
+        "matrix"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "flakiness, platform reproducibility",
+      "acceptance": "reruns and matrix",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "coverage",
+      "tools": [
+        "coverage.py",
+        "pytest-cov",
+        "diff-cover"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "covered line and branch units, risk-weighted gain",
+      "acceptance": "exact-head comparable report",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "sast",
+      "tools": [
+        "Bandit",
+        "CodeQL",
+        "Semgrep"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "unique TP/FP/FN, rule overlap",
+      "acceptance": "secure-fix negative tests",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "dependency",
+      "tools": [
+        "pip-audit",
+        "OSV",
+        "Safety"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "advisory identity, reachable dependency path",
+      "acceptance": "upgrade compatibility",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "secrets",
+      "tools": [
+        "Gitleaks",
+        "detect-secrets",
+        "A10"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "secret pattern TP/FP, protected handling",
+      "acceptance": "authorized confidential review",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "container",
+      "tools": [
+        "Trivy",
+        "Hadolint",
+        "Docker"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "reproducibility, CVE overlap",
+      "acceptance": "container integration",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "runtime",
+      "tools": [
+        "LLDB",
+        "GDB",
+        "faulthandler",
+        "sanitizers"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "reproducer success, stack fingerprint stability",
+      "acceptance": "debugger receipts",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    },
+    {
+      "method_id": "memory",
+      "tools": [
+        "Valgrind",
+        "ASan",
+        "UBSan",
+        "tracemalloc"
+      ],
+      "maturity": "M0_UNVERIFIED",
+      "metrics": "leak/crash detection recall",
+      "acceptance": "seeded leak tests",
+      "baseline_sha": null,
+      "candidate_sha": null,
+      "corpus_id": null,
+      "native_receipt": null,
+      "propagation": {
+        "GBOGEB/ABACUS": "NOT_QUALIFIED",
+        "GBOGEB/CODEX": "NOT_QUALIFIED",
+        "GBOGEB/cryoplant-project": "NOT_QUALIFIED"
+      }
+    }
+  ]
+}
