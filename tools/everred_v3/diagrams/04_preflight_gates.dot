@@ -1,0 +1,12 @@
+digraph gates {
+ graph [rankdir=LR,bgcolor="#0d1020",pad="0.55",ranksep="0.45",nodesep="0.40",splines=polyline,fontname="DejaVu Sans",labelloc=t,label=<<FONT POINT-SIZE="24" COLOR="#f4efff"><B>EVERRED / V3     PREFLIGHT → TESTFLIGHT → ADMISSION</B></FONT><BR/><FONT POINT-SIZE="12" COLOR="#aea6c6">Progressive cost / immutable snapshots / no synthetic admission</FONT>>];
+ node[shape=box,style="rounded,filled",fillcolor="#25233d",color="#8271c7",fontcolor="#f4efff",fontname="DejaVu Sans",fontsize=11,margin="0.24,0.20"];
+ edge[color="#8a83a9",arrowsize=0.65,penwidth=1.4];
+ p0[label="P0\nEvidence preflight"];p1[label="P1\nLocal checks"];p2[label="P2\nProducer proof"];p3[label="P3\nIsolated replay"];p4[label="P4\nExact-head CI"];
+ p5[label="P5\nIndependent admission",shape=diamond,fillcolor="#3d2f4b"];
+ p6[label="P6\nExact-main proof",fillcolor="#173b3f",color="#47ccbd"];
+ p7[label="P7\nRecurrence control",fillcolor="#173b3f",color="#47ccbd"];
+ hold[label="HOLD\nNo merge",fillcolor="#47263c",color="#f17b9e"];
+ invalid[label="INVALID RECEIPT\nStay UNKNOWN / RED",fillcolor="#47263c",color="#f17b9e"];
+ p0->p1->p2->p3->p4->p5;p5->p6[label="ALL PASS",color="#47ccbd"];p6->p7;p5->hold[label="RED/UNKNOWN",color="#f17b9e"];p2->invalid[style=dashed,constraint=false];
+}

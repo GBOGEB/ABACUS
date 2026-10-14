@@ -1,0 +1,11 @@
+flowchart LR
+ P0["P0 · Evidence preflight"] --> P1["P1 · Local lint / tests"]
+ P1 --> P2["P2 · Canonical producer"]
+ P2 --> P3["P3 · Isolated testflight"]
+ P3 --> P4["P4 · Native exact-head CI"]
+ P4 --> P5{"P5 · Admission gates"}
+ P5 -->|ALL PASS| P6["P6 · Exact-main checks"]
+ P6 --> P7["P7 · Recurrence control"]
+ P5 -->|RED or UNKNOWN| H["HOLD · no merge"]
+ P2 -.->|missing receipt| F["FAIL-CLOSED"]
+ P3 -.->|synthetic ≠ native| H

@@ -1,0 +1,151 @@
+{
+  "schema": "abacus.everred.release.v3",
+  "version": "3.0.0-alpha.1",
+  "status": "LOCAL_PROTOTYPE_PENDING_GITHUB_DRAFT",
+  "tested_unittests": 40,
+  "tests_status": "PASS",
+  "new_python_engine_coverage": "88% statements (src only)",
+  "browser_qa": "BLOCKED_BY_MANAGED_CHROMIUM_POLICY",
+  "files": [
+    {
+      "path": "README.md",
+      "size": 5058,
+      "sha256": "7ca335d54f07a324bb6ba3000624200af465ddd8f064ae887f429a2db7593f9a"
+    },
+    {
+      "path": "dashboard/index.html",
+      "size": 104943,
+      "sha256": "04fd9d048f09b78aea5633c399bf9ec3497fb3d5b7bd446380bbd69cbcaa03ea"
+    },
+    {
+      "path": "dashboard/template.html",
+      "size": 28154,
+      "sha256": "d0be6aedc605664444f03ae9a246513fdc88661cf2fd3b88ceb9fb5985277654"
+    },
+    {
+      "path": "data/ledger.jsonl",
+      "size": 7790,
+      "sha256": "1cb7964c8728665aadaa9141990d7468f51fd8d8f4dcfbb73bed22c87b06fbb7"
+    },
+    {
+      "path": "data/snapshot.json",
+      "size": 8040,
+      "sha256": "d5d1bd912b1c220f3e7829c6b0cc6a7279008c8452cc10bb0c4bec75916d4770"
+    },
+    {
+      "path": "diagrams/01_execution_dag.dot",
+      "size": 3006,
+      "sha256": "de53960dd1f4279d5f552471119bab3e85e4ed03c01409dd5944d7a9dbf176a6"
+    },
+    {
+      "path": "diagrams/01_execution_dag.mmd",
+      "size": 1510,
+      "sha256": "3d0baf7ad70acb842c51bb068870c51690d2a129523f25023a9586ef7bf4501b"
+    },
+    {
+      "path": "diagrams/01_execution_dag.svg",
+      "size": 26401,
+      "sha256": "7064f2c7c07a93ac106870fc449fa3144555bad62fb245008ae10adeaf25d9c9"
+    },
+    {
+      "path": "diagrams/02_sipoc.dot",
+      "size": 1681,
+      "sha256": "c144a5ea176f47c39369e3334d21a8e071bb4fbb5918f022729dc5fdbc69fb1b"
+    },
+    {
+      "path": "diagrams/02_sipoc.mmd",
+      "size": 735,
+      "sha256": "2ec84e8b87023e5dadc52f665bba10969c8a5b7f78db3c93f3ca02a495b682c8"
+    },
+    {
+      "path": "diagrams/02_sipoc.svg",
+      "size": 11121,
+      "sha256": "d57d2a27f2395c144686a5633a9d671ce72b2571e2e569c4f15fb6fa8ca96de5"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.dot",
+      "size": 1843,
+      "sha256": "6391f4fa1fe4ccb5f0a7e2dcd5afcb1571185efd45c96ddd768ea47b3af7560e"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.mmd",
+      "size": 713,
+      "sha256": "16616ccafe892c726e18501abdce578bc534a676c3ed3bab9e52f6b130614653"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.svg",
+      "size": 17543,
+      "sha256": "ff81fc8eded3e56a34e71c497235fa0fd6595336f71c4f3f861da366f53db239"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.dot",
+      "size": 1278,
+      "sha256": "7ce10e013b5c0375be28b2f698435bf53bc91022d1960b5f6e4c06f1b463bf59"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.mmd",
+      "size": 445,
+      "sha256": "25017db59f03c8ddf59bcdbac1e467061bc8ab47b106625c11a616c70d02e5dd"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.svg",
+      "size": 10149,
+      "sha256": "f4ac4f87e2f776a8e21eb388984ac578dcede2867e05871d5357438eb935644f"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_PLAN.md",
+      "size": 4010,
+      "sha256": "4700cf3883753b34b27e6b614aa8f80eae444c1130146df4c9c841ebbc21bc7d"
+    },
+    {
+      "path": "samples/new_event.json",
+      "size": 331,
+      "sha256": "4e36820987ce4ed4ff33bf717649ad7e720ade920849b5f10766dbb3858d555f"
+    },
+    {
+      "path": "scripts/build_dashboard.py",
+      "size": 698,
+      "sha256": "f0bff96cca6707ada36ffd9883908ca354120449346febc14f4152de90401f58"
+    },
+    {
+      "path": "scripts/ingest_bd_ldab_join.py",
+      "size": 3242,
+      "sha256": "fbe531e2f693436ecbbe6f5e7bc87db29953e39790aed66ebefed3b9edf4be21"
+    },
+    {
+      "path": "scripts/seed.py",
+      "size": 3557,
+      "sha256": "9adc0cdf72e29e30d860afc9073ac02dab977211d4495a10ecf302a971681103"
+    },
+    {
+      "path": "src/everred.py",
+      "size": 11452,
+      "sha256": "d357686f97dfab25e530eead4fbd7f71969782b2f6c8f095e1c7d0aff79b1fbf"
+    },
+    {
+      "path": "src/metrics.py",
+      "size": 4917,
+      "sha256": "3f5af8399a39fd41fed2c89861019d49d192dcf98177ed2d8342b2702f0ac0e2"
+    },
+    {
+      "path": "tests/qa_browser.py",
+      "size": 2311,
+      "sha256": "632861f454785479deedb8e5c6fdc42295bddb1a3ac315834dcfa0bba2bbe500"
+    },
+    {
+      "path": "tests/test_everred.py",
+      "size": 5933,
+      "sha256": "242c0e12836b2480f27447eda370b626f8e3ee8c1dfec9bef9f40866b79ff3c6"
+    },
+    {
+      "path": "tests/test_join_adapter.py",
+      "size": 1549,
+      "sha256": "dc18e77d4f2228ffd7a8742c077b32ca85b5a64d3199cc46030a24885aaf2f53"
+    },
+    {
+      "path": "tests/test_metrics.py",
+      "size": 2773,
+      "sha256": "8481c4dc01a86bb2a9bdbe4f0dc137c20e86855d2dcf95ac4a84780c7ce9782f"
+    }
+  ]
+}

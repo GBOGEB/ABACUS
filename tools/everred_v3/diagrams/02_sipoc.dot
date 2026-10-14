@@ -1,0 +1,17 @@
+digraph sipoc {
+ graph [rankdir=LR,bgcolor="#0d1020",pad="0.48",ranksep="0.36",nodesep="0.35",splines=polyline,fontname="DejaVu Sans",labelloc=t,label=<<FONT POINT-SIZE="24" COLOR="#f4efff"><B>EVERRED / V3     SIPOC OWNERSHIP MAP</B></FONT><BR/><FONT POINT-SIZE="12" COLOR="#aea6c6">Controlled process boundary  ·  ABACUS authority  ·  CODEX/REX as evidence consumers</FONT>>];
+ node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=11,margin="0.23,0.18",fontcolor="#f5f0ff",color="#7167a6",fillcolor="#25233e"];
+ edge[color="#8480a7",penwidth=1.35,arrowsize=0.7];
+ S[label="SUPPLIERS\n\nGitHub Actions / pytest\nScanners · coverage\nRHEL · Docker · LDAB\nEngineers / CODEX",fillcolor="#202d43",color="#5da9e9"];
+ I[label="INPUTS\n\nExact SHAs + runs/jobs\nJUnit / Bandit / coverage\nDiff + config identity\nOwner + policy ledger",fillcolor="#2c294b",color="#9c84f0"];
+ subgraph cluster_proc { label="PROCESS · CONTROLLED TRANSFORMATION";style="rounded,dashed";color="#55506c";fontcolor="#b8a9ef";
+ P1[label="01  INGEST\nFingerprint",fillcolor="#332947"];
+ P2[label="02  ANALYZE\nCausality",fillcolor="#332947"];
+ P3[label="03  IMPROVE\nCanonical repair",fillcolor="#332947"];
+ P4[label="04  VERIFY\nConsumer replay",fillcolor="#332947"];
+ P5[label="05  CONTROL\nAdmit + sentinel",fillcolor="#332947"];
+ P1->P2->P3->P4->P5; }
+ O[label="OUTPUTS\n\nRoot and occurrence IDs\nTyped verification receipts\nComparable metrics\nAdmission HOLD / PASS",fillcolor="#213b3b",color="#53caba"];
+ C[label="CUSTOMERS\n\nEngineers + maintainers\nSecurity + repo admins\nCODEX / REX (read only)\nRelease authority",fillcolor="#202d43",color="#5da9e9"];
+ S->I->P1;P5->O->C;
+}
