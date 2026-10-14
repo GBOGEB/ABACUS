@@ -97,17 +97,56 @@ def list_open_issues(token):
     raise ValueError("issue census truncated: 20 pages exceeded")
 
 
+
+def latest_dashboard_bot_comment(number, token):
+    """Read the newest count-bearing Actions comment; never trust user comments."""
+    path = f"/repos/{REPO}/issues/{number}/comments?per_page=100"
+    visited = set()
+    latest = None
+    for _ in range(20):
+        if path in visited:
+            raise ValueError("dashboard comment pagination cycle")
+        visited.add(path)
+        comments, link = github_get(path, token)
+        if not isinstance(comments, list):
+            raise ValueError("dashboard comments API returned non-list")
+        for comment in comments:
+            author = comment.get("user") or {}
+            body = comment.get("body") or ""
+            if (
+                author.get("login") == "github-actions[bot]"
+                and body.startswith("## 🚨 Dashboard Health Check Failed")
+                and ROOT_LINKS.search(body)
+                and ROOT_MISSING.search(body)
+            ):
+                latest = {
+                    "body": body,
+                    "id": comment.get("id"),
+                    "created_at": comment.get("created_at"),
+                }
+        path = next_link(link)
+        if not path:
+            return latest
+    raise ValueError("dashboard comment census truncated")
+
+
 def collect_live(token):
     branch, _ = github_get("/repos/" + REPO + "/branches/main", token)
     main = branch["commit"]["sha"]
     runs, _ = github_get(
         "/repos/" + REPO + "/actions/runs?head_sha=" + main + "&per_page=100", token
     )
+    issues = list_open_issues(token)
+    for issue in issues:
+        if "dashboard health check failure" in issue["title"].lower():
+            comment = latest_dashboard_bot_comment(issue["number"], token)
+            if comment is not None:
+                issue["latest_dashboard_comment"] = comment
     return {
         "repository": REPO,
         "main_sha": main,
         "protected": branch.get("protected"),
-        "issues": list_open_issues(token),
+        "issues": issues,
         "runs": runs.get("workflow_runs", []),
         "run_sample_truncated": runs.get("total_count", 0)
         > len(runs.get("workflow_runs", [])),
@@ -158,6 +197,15 @@ def classify(issues, head):
             raise ValueError("issue link does not match canonical repository")
         category, route, priority = evidence_route(item)
         body = item.get("body") or ""
+        latest = item.get("latest_dashboard_comment")
+        source = "ISSUE_BODY"
+        if category == "INCIDENT_DASHBOARD" and latest is not None:
+            if not isinstance(latest, dict) or not isinstance(
+                latest.get("body"), str
+            ):
+                raise ValueError("invalid dashboard comment observation")
+            body = latest["body"]
+            source = "DASHBOARD_BOT_COMMENT"
         signature = None
         if category == "INCIDENT_DASHBOARD":
             broken, missing = ROOT_LINKS.search(body), ROOT_MISSING.search(body)
@@ -187,7 +235,10 @@ def classify(issues, head):
                 "file_lock_candidate": lock,
                 "root_verified": False,
                 "fix_verified": False,
-                "source_class": "ISSUE_TEXT_ONLY",
+                "source_class": source,
+                "latest_dashboard_comment_id": (
+                    latest.get("id") if source == "DASHBOARD_BOT_COMMENT" else None
+                ),
                 "target_main_sha": head,
                 "disposition": "OPEN_UNPROVEN",
             }
