@@ -86,31 +86,9 @@ Publish only appropriately sanitized exact-SHA summaries.
 
 ## Mermaid: evidence to repair and admission
 
-```mermaid
-flowchart TD
-    A[Exact-SHA producer evidence] --> B{Source identity valid?}
-    B -- No --> H[Hold: do not credit]
-    B -- Yes --> C[Bandit full and configured census]
-    B -- Yes --> D[DAB and CI first-red signatures]
-    B -- Yes --> E[LDAB / CODEX debugger receipts]
-    C --> F[Verify fingerprint and exclusive B2-B5 owner]
-    D --> G[Explicit root linkage, no fuzzy matching]
-    E --> I[Verify run, job, session, port and SHA]
-    F --> J[Read-only deterministic root join]
-    G --> J
-    I --> J
-    J --> K{Same-config previous scan?}
-    K -- Yes --> L[New, resolved and net debt]
-    K -- No --> M[Unknown delta, no improvement claim]
-    L --> N[BD queue plus sanitized provenance receipt]
-    M --> N
-    N --> O[Bounded disjoint source fixes and regressions]
-    O --> P[Exact-head CI and independent security review]
-    P --> Q{Protected main and all admission gates green?}
-    Q -- No --> H
-    Q -- Yes --> R[Separate authorized merge decision]
-```
+Mermaid source: [BD / LDAB joined workflow](BD_LDAB_JOIN_WORKFLOW_20261014.mmd).
 
+The corresponding GitHub issue #1929 also includes a rendered flowchart.
 ## Ordered traceable work
 
 - J01: validate exact-head inputs and authenticated run/job identity.
