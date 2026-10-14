@@ -284,3 +284,66 @@ def test_workflow_step_name_missing_file_is_withheld(tmp_path):
         )
         == "WITHHELD"
     )
+
+
+# Wave 1 taxonomy regression contract.
+def test_taxonomy_unique_denominator_with_overlapping_categories():
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    rows = ["tests/test_bandit_security.py::test_regression",
+            "tests/test_bandit_security.py::test_regression",
+            "tests/test_mip_integration.py::test_bridge"]
+    result = summarize_test_nodeids(rows)
+    assert result["collected_unique"] == 2
+    assert result["duplicate_entries"] == 1
+    assert result["categories"]["C0_SECURITY"] == 1
+    assert result["categories"]["C7_REGRESSION"] == 1
+    assert result["categories"]["C8_END_TO_END"] == 1
+    assert result["admission_proof"] is False
+
+
+def test_taxonomy_rejects_malformed_nodeids():
+    import pytest
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    for invalid in (None, "test_a", [""], [None], ["ok", " "]):
+        with pytest.raises(ValueError):
+            summarize_test_nodeids(invalid)
+
+
+def test_taxonomy_fallback_and_order_invariant():
+    from scripts.mip_test_check_completeness import summarize_test_nodeids
+    a = ["tests/test_unclassified.py::test_a", "tests/test_runtime.py::test_b"]
+    first = summarize_test_nodeids(a)
+    assert first == summarize_test_nodeids(list(reversed(a)))
+    assert first["categories"]["C2_CORE"] == 1
+    assert first["categories"]["C4_RUNTIME"] == 1
+
+
+def test_execution_plan_fast_and_security_escalation():
+    from scripts.mip_test_check_completeness import plan_test_execution
+    fast = plan_test_execution(["docs/readme.md"])
+    assert fast["mode"] == "fast-advisory"
+    assert fast["python_versions"] == ["3.12"]
+    assert fast["admission_proof"] is False
+    escalated = plan_test_execution(["docs/readme.md"], ["C0_SECURITY"])
+    assert escalated["mode"] == "thorough"
+    assert escalated["python_versions"] == ["3.9", "3.10", "3.11", "3.12"]
+    assert escalated["required_checks_preserved"] is True
+
+
+def test_execution_plan_unknown_inputs_fail_closed():
+    import pytest
+    from scripts.mip_test_check_completeness import plan_test_execution
+    for paths, failures in (([], []), ([""], []), (["ok"], ["UNKNOWN"])):
+        with pytest.raises(ValueError):
+            plan_test_execution(paths, failures)
+    assert plan_test_execution([".github/workflows/ci-abacus.yml"])["mode"] == "thorough"
+
+
+def test_taxonomy_rejects_blank_nodeid_directly():
+    """Exercise the fail-closed classifier guard on changed source line 558."""
+    import pytest
+    from scripts.mip_test_check_completeness import classify_test_nodeid
+
+    for invalid in (None, "", "   "):
+        with pytest.raises(ValueError, match="Nonempty pytest nodeid required"):
+            classify_test_nodeid(invalid)
