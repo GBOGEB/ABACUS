@@ -55,9 +55,42 @@
     },
     "dow_ruff": {
       "pr": 1965,
-      "head_sha": "1662d52f379f31bb65d2578799a79c8725507e6a",
-      "workflow_run_id": 38589625287,
-      "comparison_status": "UNKNOWN_UNTIL_COMPARABLE_ARTIFACT",
+      "head_sha": "c3f7d2f852139ea54c64b325cea44d1e5706f26e",
+      "workflow_run_id": 38590675476,
+      "workflow_name": "DOW Bounded First-Red Burndown",
+      "job_id": 115944391508,
+      "job_name": "Exact-base vs exact-head Ruff and CLI contracts",
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38590675476/job/115944391508",
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38590675476/artifacts/11906997311",
+      "artifact_zip_sha256": "fe241c5534a441e907d78c762a4a5758b4cf6a6fb3f8d68bac58ed5f910e6118",
+      "tool": "ruff==0.17.0",
+      "identical_scoped_paths": [
+        "scripts/preview_diff.py",
+        "scripts/recursive_build.py",
+        "tests/test_dmaic_measurement_receipts.py",
+        "tests/test_loop_transient.py"
+      ],
+      "before_findings": 11,
+      "after_findings": 0,
+      "opened_occurrences": 0,
+      "resolved_occurrences": 11,
+      "net_reduction": 11,
+      "formatting_identical_paths": [
+        ".devcontainer/devcontainer.json",
+        "requirements.txt",
+        "qps_slide_reviewer/components/ui/label.tsx"
+      ],
+      "formatting_before": {
+        "missing_final_newline_files": 2,
+        "trailing_whitespace_lines": 9
+      },
+      "formatting_after": {
+        "missing_final_newline_files": 0,
+        "trailing_whitespace_lines": 0
+      },
+      "focused_regression_pass": 6,
+      "comparison_status": "VERIFIED_TERMINAL_PR_SCOPED",
+      "mainwide_precommit": "NOT_VERIFIED",
       "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1965"
     }
   },
@@ -97,7 +130,12 @@
     "docs_after_count": null,
     "docs_reduction_count": null,
     "docs_candidate_change_committed": true,
-    "docs_native_verify": "UNKNOWN"
+    "docs_native_verify": "UNKNOWN",
+    "scoped_ruff_net_resolved": 11,
+    "scoped_ruff_before_count": 11,
+    "scoped_ruff_after_count": 0,
+    "scoped_ruff_new_count": 0,
+    "source_verified_unblocking_scope": "PR_RUFF_4_FILES_ONLY"
   },
   "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero."
 }
