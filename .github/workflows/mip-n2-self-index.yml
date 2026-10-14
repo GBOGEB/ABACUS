@@ -268,7 +268,9 @@ jobs:
                       not isinstance(nested, dict)
                       or (
                           execution.get("state") == "EXECUTED_PASS"
-                          and type(execution.get("contract_checks_total")) is int
+                          and type(execution.get(
+                              "contract_checks_total"
+                          )) is int
                           and execution["contract_checks_total"] > 0
                           and execution.get("contract_checks_passed")
                           == execution["contract_checks_total"]
