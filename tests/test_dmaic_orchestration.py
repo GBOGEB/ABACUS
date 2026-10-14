@@ -127,6 +127,26 @@ class DMAICTestOrchestrator:
         self._save_phase_data(DMAICPhase.DEFINE, objectives)
         return objectives
 
+    # Explicit measurement contracts: suites are never allowed to shrink
+    # the global CI coverage denominator by inference or arbitrary input.
+    # Each registered suite has one directly exercised production module.
+    _COMPONENT_COVERAGE_SOURCES = {
+        "tests/test_master_doc_manager.py": "master_doc_manager",
+        "tests/test_user_library_rag.py": "user_library_rag",
+        "tests/test_action_tracker.py": "action_tracker",
+    }
+
+    @classmethod
+    def _coverage_options_for_suite(cls, test_suite: str) -> List[str]:
+        """Choose a declared production module for a focused suite.
+
+        Unregistered suites retain the broad source contract; neither tests
+        nor callers can supply an arbitrary coverage source through this API.
+        """
+        suite_path = test_suite.replace(chr(92), "/").split("::", 1)[0]
+        source = cls._COMPONENT_COVERAGE_SOURCES.get(suite_path)
+        return [f"--cov={source}"] if source else ["--cov"]
+
     # MEASURE Phase
     async def measure_test_performance(self, test_suite: str = "tests/") -> DMAICMetrics:
         """
@@ -142,7 +162,7 @@ class DMAICTestOrchestrator:
         cmd = [
             sys.executable, "-m", "pytest",
             test_suite,
-            "--cov",
+            *self._coverage_options_for_suite(test_suite),
             f"--cov-report=json:{coverage_file}",
             "--json-report",
             f"--json-report-file={report_file}",
