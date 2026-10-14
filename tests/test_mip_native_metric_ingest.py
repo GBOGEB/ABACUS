@@ -40,7 +40,7 @@ class NativeIngestTests(unittest.TestCase):
             mod.convert(payload([row(verified_native=False)]))
 
     def test_proposals_not_credited(self):
-        self.assertEqual([], mod.convert(payload([row(proposal_only=True)]))
+        self.assertEqual([], mod.convert(payload([row(proposal_only=True)])))
 
     def test_bd_needs_fingerprint(self):
         with self.assertRaises(ValueError):
