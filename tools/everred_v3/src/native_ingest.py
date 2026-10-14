@@ -12,7 +12,6 @@ import hashlib
 import io
 import json
 import os
-import pathlib
 import re
 import urllib.error
 import urllib.parse
