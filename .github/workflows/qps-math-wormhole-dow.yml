@@ -28,3 +28,55 @@ jobs:
         run: >-
           python -m unittest discover -s tests
           -p test_qps_math_wormhole_dow.py -v
+
+      - name: Run fixture-based DOW candidate flight (not native federation)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          fixture = Path("tests/fixtures/qps_math_wormhole_provider_v1.json")
+          provider = json.loads(fixture.read_text(encoding="utf-8"))["producer"]
+          out = Path("artifacts/qps_math_dow")
+          out.mkdir(parents=True, exist_ok=True)
+          subprocess.run([
+              sys.executable, "runtime/federation/qps_math_wormhole_dow.py",
+              "--provider-receipt", str(fixture),
+              "--provider-sha", provider["source_sha"],
+              "--artifact-sha256", provider["artifact_sha256"],
+              "--out", str(out / "candidate.json"),
+          ], check=True)
+          result = json.loads((out / "candidate.json").read_text())
+          assert result["status"] == "VALID_PROPOSAL_ONLY"
+          assert result["measurement"]["runtime_authenticated"] == 0
+          manifest = {
+              "schema": "qps-wormhole-fixture-flight/v1",
+              "repo": "GBOGEB/ABACUS",
+              "checked_out_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
+              "provider_sha": provider["source_sha"],
+              "provider_artifact_sha256": provider["artifact_sha256"],
+              "candidate_file_sha256": hashlib.sha256(
+                  (out / "candidate.json").read_bytes()
+              ).hexdigest(),
+              "flight_type": "SYNTHETIC_FIXTURE_ONLY",
+              "native_cross_repository_attested": False,
+              "qps_disposition": "DEFER",
+              "authority_transfer": False,
+          }
+          (out / "manifest.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
+          )
+          PY
+      - name: Upload read-only DOW fixture candidate evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: qps-dow-fixture-${{ matrix.python-version }}-${{ github.run_id }}
+          path: artifacts/qps_math_dow/
+          if-no-files-found: error
