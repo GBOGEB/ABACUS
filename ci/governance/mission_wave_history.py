@@ -226,7 +226,7 @@ def as_markdown(payload):
         "Read-only telemetry. Counts below are **workflow runs**, not test cases.",
         "Unknown or incomparable evidence is not a measured zero.",
         "",
-        "| Wave | Repos | Dimensions | Pass | Fail | Skipped | "
+        "| Wave | Repos | Dimensions | Pass | Fail | Skipped | " +
         "Cancelled | Pending | Jobs sampled | Coverage |",
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
