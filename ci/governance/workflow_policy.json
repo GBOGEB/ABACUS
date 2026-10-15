@@ -362,6 +362,12 @@
       "cluster": "core_test",
       "lifecycle": "pr_fast",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-(dashboard-v31|sut-gui)\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
