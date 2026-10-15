@@ -63,7 +63,6 @@ locally byte-matched members is not an authenticated GitHub success rate.
 
 The tool never claims release readiness or native federation operation.
 
-
 ## Source-observation adapters (MCL, LDAB, BD)
 
 Use the existing producer JSON without interpreting an LDAB path as an
