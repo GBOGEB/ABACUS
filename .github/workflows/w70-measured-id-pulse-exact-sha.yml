@@ -55,7 +55,7 @@ jobs:
           python -m coverage run --branch \
             --include='*/tools/w70_wave_pulse_metrics.py' \
             -m unittest discover -s tests -p 'test_w70_wave_pulse_metrics.py' -v
-          # Apply the owned-module scope at reporting as well as instrumentation.
+          # Apply owned-module scope at both run time and reporting.
           # Retain the producer's exactly-one-source fail-closed validation.
           python -m coverage json \
             --include='*/tools/w70_wave_pulse_metrics.py' \
