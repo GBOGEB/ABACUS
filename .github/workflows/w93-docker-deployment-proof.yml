@@ -92,7 +92,7 @@ jobs:
           } > "$out/receipt.txt"
       - name: Upload root service port, health, and debug evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-abacus-root-docker-${{ github.sha }}
           path: .artifacts/w93/root/
@@ -127,7 +127,7 @@ jobs:
             printf 'compose_validation=PASS\n'
             printf 'engineering_credit_delta=0\n'
           } | tee w93_qplant_docker_receipt.txt
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-qplant-docker-${{ github.sha }}
           path: w93_qplant_docker_receipt.txt
