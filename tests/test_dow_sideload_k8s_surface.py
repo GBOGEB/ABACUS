@@ -1,4 +1,5 @@
 """DOW K8S side-load registry invariants; no QPS authority or runtime fabrications."""
+
 import json
 from pathlib import Path
 
@@ -59,7 +60,8 @@ def test_native_and_child_admission_remain_explicit_hold():
     assert a["merge_admission"] == "HOLD"
     assert a["qps_child_disposition"] == "DEFER"
     assert cand["claims"] == {
-        "authority_transfer": False, "engineering_credit_delta": 0,
+        "authority_transfer": False,
+        "engineering_credit_delta": 0,
         "release_admitted": False,
     }
 
