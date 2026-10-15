@@ -3,6 +3,8 @@
 import hashlib
 import importlib.util
 import json
+import sys
+from unittest import mock
 import tempfile
 import unittest
 from pathlib import Path
@@ -152,6 +154,39 @@ class HistoryTests(unittest.TestCase):
         self.rewrite_receipt()
         with self.assertRaisesRegex(ValueError, "invalid comparable delta"):
             self.run_history()
+
+    def test_cli_emits_two_text_only_receipts(self):
+        manifest_file = self.root / "input.json"
+        out = self.root / "output"
+        manifest_file.write_text(json.dumps(self.manifest), encoding="utf-8")
+        argv = [
+            "pulse-history",
+            "--manifest", str(manifest_file),
+            "--artifact-root", str(self.root),
+            "--output-dir", str(out),
+        ]
+        with mock.patch.object(sys, "argv", argv):
+            MODULE.main()
+        report = json.loads((out / "mip_wave_history.json").read_text())
+        text = (out / "mip_wave_history.md").read_text()
+        self.assertEqual(report["pulse_count"], 1)
+        self.assertIn("SYNTHETIC_CONTROL", text)
+        self.assertIn("UNKNOWN", text)
+
+    def test_cli_rejects_wrong_schema_without_outputs(self):
+        manifest_file = self.root / "input.json"
+        out = self.root / "output"
+        manifest_file.write_text(json.dumps({"schema": "bad"}), encoding="utf-8")
+        argv = [
+            "pulse-history",
+            "--manifest", str(manifest_file),
+            "--artifact-root", str(self.root),
+            "--output-dir", str(out),
+        ]
+        with mock.patch.object(sys, "argv", argv):
+            with self.assertRaisesRegex(ValueError, "invalid history schema"):
+                MODULE.main()
+        self.assertFalse(out.exists())
 
     def test_output_is_deterministic(self):
         a = json.dumps(self.run_history(), sort_keys=True)
