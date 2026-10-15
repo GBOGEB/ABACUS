@@ -7,23 +7,23 @@ governance admission.
 
 ## Architecture legend
 
-- **Neutral process card:** Activity or phase. Does not establish:
-  Green/success or global owner.
-- **P1-P8:** Ordered process phase. Does not establish: A completed task.
-- **Role: ...:** Contractual actor/function. Does not establish:
-  Authenticated worker assignment.
-- **Purple border plus decision diamond:** Decision/question type. Does not
-  establish: Approved Yes and No outcomes.
+- **Neutral process card:** Activity or phase; does not establish
+  green/success or global owner.
+- **P1-P8:** Ordered process phase; does not establish a completed task.
+- **Role: ...:** Contractual actor/function; does not establish authenticated
+  worker assignment.
+- **Purple border plus decision diamond:** Decision/question type; does not
+  establish approved Yes and No outcomes.
 - **Green conditional Yes route:** Eligible path if all gates have proved
-  PASS. Does not establish: Current merge authority.
+  PASS; does not establish current merge authority.
 - **Red No / Hold route:** Admission stopped, requires another measured
-  pulse. Does not establish: A single root automatically confirmed.
-- **Solid neutral arrow:** Acyclic forward dependency. Does not establish:
-  Feedback or causal proof.
+  pulse; does not establish a single root automatically confirmed.
+- **Solid neutral arrow:** Acyclic forward dependency; does not establish
+  feedback or causal proof.
 - **Dashed amber left/backwards signal:** Corrective feedback, new RCA
-  pulse. Does not establish: Same-pulse DAG edge.
+  pulse; does not establish a same-pulse DAG edge.
 - **Double cyan forward signal:** Risk-informed feedforward / focused test
-  preflight. Does not establish: A live or calibrated predictive worker.
+  preflight; does not establish a live or calibrated predictive worker.
 
 **Source roles are distributed.** There may be one canonical accountable
 repair owner per confirmed causal root; there is no unique global controller

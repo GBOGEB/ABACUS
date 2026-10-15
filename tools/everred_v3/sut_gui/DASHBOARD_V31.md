@@ -38,12 +38,12 @@ merge/security authority.
   DAG (with readable Mermaid source), and local-SUT / pipeline wireframe
   with ASCII wiring. No CDN or external diagram runtime.
 - Existing allowlisted localhost SUT execution is unchanged. GUI is
-  read-only for remote Github; no remote dispatch or merge API.
+  read-only for remote GitHub; no remote dispatch or merge API.
 
 ## QA and limitations
 
 - HTML parser: title/IDs/anchors, unique DOM IDs and static structures passed.
-- Node JS syntax validation passed.
+- Node.js syntax validation passed.
 - Mock-source Playwright `page.set_content` interaction passed at
   1440x1000, 1280x800 and 390x844 with 0 page errors / overflow; tests
   covered grouping, filtering, cancellation, temporal traces and graph tabs.
