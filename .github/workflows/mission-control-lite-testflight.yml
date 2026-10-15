@@ -20,8 +20,10 @@ jobs:
           python-version: '3.11'
       - name: Focused tests
         run: |
-          python -m unittest discover -s tests -p test_mission_control_lite.py -v
-          python -m unittest discover -s tests -p test_mission_control_lite_rex.py -v
+          python -m unittest discover -s tests \
+            -p test_mission_control_lite.py -v
+          python -m unittest discover -s tests \
+            -p test_mission_control_lite_rex.py -v
       - name: Native output and evidence
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -29,16 +31,18 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           mkdir -p evidence
-          python -c 'import json;json.dump({"status":"executed","kind":"native-testflight"},open("evidence/output.json","w"))'
-          python -m mission_control_lite.cli produce --mission MCL-P0 --task native-proof --root MCL-ROOT-1 --sha "$SOURCE_SHA" --run "$RUN_ID" --output evidence/output.json --receipt evidence/receipt.json
-          python -m mission_control_lite.cli ingest evidence/receipt.json --artifact-root . --db evidence/registry.sqlite
-          python -m mission_control_lite.cli census --db evidence/registry.sqlite > evidence/census.json
+          python -c 'import json; from pathlib import Path; p=Path("evidence/output.json"); p.write_text(json.dumps({"status":"executed","kind":"native-testflight"}))'
+          python -m mission_control_lite.cli produce \
+            --mission MCL-P0 --task native-proof --root MCL-ROOT-1 \
+            --sha "$SOURCE_SHA" --run "$RUN_ID" \
+            --output evidence/output.json --receipt evidence/receipt.json
+          python -m mission_control_lite.cli ingest evidence/receipt.json \
+            --artifact-root . --db evidence/registry.sqlite
+          python -m mission_control_lite.cli census \
+            --db evidence/registry.sqlite > evidence/census.json
       - uses: actions/upload-artifact@v4
         with:
           name: mission-control-lite-evidence
-          path: |
-            evidence/output.json
-            evidence/receipt.json
-            evidence/registry.sqlite
-            evidence/census.json
+          path: evidence/
+          include-hidden-files: false
           if-no-files-found: error
