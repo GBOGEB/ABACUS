@@ -74,7 +74,8 @@ jobs:
             --timing-tests-log evidence/timing-tests.log \
             --timing-log evidence/phase-times.json \
             --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
-            --run-id "$RUN_ID" --output evidence/coverage-pulse.json
+            --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
+            --summary "$GITHUB_STEP_SUMMARY"
       - name: Native output and evidence
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
