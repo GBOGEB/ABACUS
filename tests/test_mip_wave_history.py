@@ -88,6 +88,26 @@ class HistoryTests(unittest.TestCase):
         self.assertLess(rendered.index("P01"), rendered.index("P02"))
         self.assertIn("not verified JUnit", rendered)
 
+    def test_wave_summary_counts_pulses_not_independent_runs(self):
+        _, second = fixture(self.root, pulse="P02", sequence=2)
+        self.manifest["records"].append(second)
+        result = self.run_history()
+        wave = result["waves"][0]
+        self.assertEqual(wave["pulse_count"], 2)
+        self.assertEqual(wave["distinct_run_ids"], 1)
+        self.assertEqual(wave["synthetic_pulses"], 2)
+        self.assertEqual(wave["open_root_observations"], [1, 1])
+        self.assertEqual(wave["coverage_gains_verified"], "UNKNOWN")
+        self.assertIn("Per-wave scale census", MODULE.render_markdown(result))
+
+    def test_multiple_waves_are_not_cross_credited(self):
+        _, second = fixture(self.root, pulse="P02", wave="W2")
+        self.manifest["records"].append(second)
+        result = self.run_history()
+        self.assertEqual(len(result["waves"]), 2)
+        self.assertEqual(result["waves"][0]["pulse_count"], 1)
+        self.assertEqual(result["waves"][1]["root_closures_verified"], "UNKNOWN")
+
     def test_bad_digest_rejected(self):
         self.entry["receipt_sha256"] = "b" * 64
         with self.assertRaisesRegex(ValueError, "bytes mismatch"):
