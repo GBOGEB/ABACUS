@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Measure DOW fixture-test yield on one exact source head, without promotion."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,10 +8,13 @@ import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
+import tempfile
+import unittest
 from pathlib import Path
 from typing import Any
+
+from coverage import Coverage
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = "runtime/federation/qps_math_wormhole_dow.py"
@@ -22,16 +26,41 @@ def digest(value: bytes) -> str:
 
 
 def source_head() -> str:
-    sha = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-    ).strip()
+    """Read the checked-out Git identity without spawning an external process."""
+    git_dir = ROOT / ".git"
+    if git_dir.is_file():
+        marker = git_dir.read_text(encoding="utf-8").strip()
+        if not marker.startswith("gitdir: "):
+            raise ValueError("invalid gitdir link")
+        location = Path(marker[len("gitdir: ") :])
+        git_dir = (location if location.is_absolute() else ROOT / location).resolve()
+    sha = (git_dir / "HEAD").read_text(encoding="utf-8").strip()
+    if sha.startswith("ref: "):
+        ref = sha[len("ref: ") :]
+        if not ref.startswith("refs/") or ".." in Path(ref).parts:
+            raise ValueError("invalid Git HEAD ref")
+        loose = git_dir / ref
+        if loose.is_file():
+            sha = loose.read_text(encoding="utf-8").strip()
+        else:
+            packed = git_dir / "packed-refs"
+            if not packed.is_file():
+                raise ValueError("missing exact git SHA")
+            matches = [
+                line.split(" ", 1)[0]
+                for line in packed.read_text(encoding="utf-8").splitlines()
+                if line.endswith(" " + ref)
+            ]
+            if len(matches) != 1:
+                raise ValueError("missing or ambiguous Git ref")
+            sha = matches[0]
     if re.fullmatch(r"[a-f0-9]{40}", sha) is None:
         raise ValueError("missing exact git SHA")
     return sha
 
 
 def parse_coverage(obj: Any, *, tests: int) -> dict[str, Any]:
-    """Fail closed if the requested module is missing or unmeasured."""
+    """Fail closed on wrong source scope, inconsistent units or missing tests."""
     if not isinstance(obj, dict):
         raise ValueError("missing coverage report")
     meta = obj.get("meta", {})
@@ -43,24 +72,32 @@ def parse_coverage(obj: Any, *, tests: int) -> dict[str, Any]:
     if not isinstance(files, dict) or len(files) != 1:
         raise ValueError("expected exactly one source module")
     name, details = next(iter(files.items()))
-    if name != TARGET:
+    if not isinstance(name, str) or not isinstance(details, dict):
+        raise ValueError("invalid source module entry")
+    path = Path(name)
+    report_path = (path if path.is_absolute() else ROOT / path).resolve()
+    if report_path != (ROOT / TARGET).resolve():
         raise ValueError("source module scope mismatch")
     values = details.get("summary", {})
     counts = (
-        "num_statements", "covered_lines", "num_branches",
+        "covered_lines",
+        "missing_lines",
+        "num_branches",
         "covered_branches",
     )
     if not isinstance(values, dict) or any(
         type(values.get(k)) is not int or values[k] < 0 for k in counts
     ):
         raise ValueError("invalid coverage numerators or denominators")
-    total_lines = values["num_statements"]
-    branch_total = values["num_branches"]
     covered_lines = values["covered_lines"]
+    total_lines = covered_lines + values["missing_lines"]
+    branch_total = values["num_branches"]
     covered_branches = values["covered_branches"]
     if (
-        tests <= 0 or total_lines <= 0 or branch_total <= 0
-        or covered_lines > total_lines or covered_branches > branch_total
+        tests <= 0
+        or total_lines <= 0
+        or branch_total <= 0
+        or covered_branches > branch_total
     ):
         raise ValueError("ineligible zero or inconsistent measurement")
     return {
@@ -71,44 +108,49 @@ def parse_coverage(obj: Any, *, tests: int) -> dict[str, Any]:
         "branches_covered": covered_branches,
         "branches_eligible": branch_total,
         "combined_percent": round(
-            100 * (covered_lines + covered_branches)
-            / (total_lines + branch_total), 4
+            100
+            * (covered_lines + covered_branches)
+            / (total_lines + branch_total),
+            4,
         ),
     }
 
 
 def run_suite(pattern: str, output: Path) -> dict[str, Any]:
-    environment = dict(os.environ)
-    environment["COVERAGE_RCFILE"] = os.devnull
-    def execute(args: list[str]) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(
-            [sys.executable, "-m", "coverage", *args],
-            cwd=ROOT, env=environment, capture_output=True, text=True,
-            check=False,
+    """Run the selected unittest population through coverage's in-process API."""
+    suite = unittest.TestLoader().discover(
+        start_dir=str(ROOT / "tests"),
+        pattern=pattern,
+    )
+    with tempfile.TemporaryDirectory(prefix="qps-dow-coverage-") as tmp:
+        monitor = Coverage(
+            branch=True,
+            config_file=False,
+            include=[str(ROOT / TARGET)],
+            data_file=str(Path(tmp) / ".coverage"),
         )
-    erased = execute(["erase"])
-    if erased.returncode:
-        raise RuntimeError("coverage erase failed: " + erased.stderr)
-    tested = execute([
-        "run", "--branch", "-m", "unittest", "discover",
-        "-s", "tests", "-p", pattern, "-v",
-    ])
-    print(tested.stdout, end="")
-    print(tested.stderr, end="", file=sys.stderr)
-    if tested.returncode:
-        raise RuntimeError("focused unittest suite failed")
-    counts = re.findall(r"Ran\s+(\d+)\s+tests?\s+in", tested.stderr)
-    if len(counts) != 1:
-        raise ValueError("missing or ambiguous executed test denominator")
-    report = execute([
-        "json", "--include", TARGET,
-        "-o", str(output),
-    ])
-    if report.returncode:
-        raise RuntimeError("coverage JSON generation failed: " + report.stdout + report.stderr)
+        monitor.erase()
+        monitor.start()
+        try:
+            result = unittest.TextTestRunner(
+                stream=sys.stderr,
+                verbosity=2,
+            ).run(suite)
+        finally:
+            monitor.stop()
+        monitor.save()
+        if not result.wasSuccessful():
+            raise RuntimeError("focused unittest suite failed")
+        if result.testsRun <= 0:
+            raise ValueError("missing executed test denominator")
+        monitor.json_report(
+            morfs=[str(ROOT / TARGET)],
+            outfile=str(output),
+            ignore_errors=False,
+        )
     raw = output.read_bytes()
-    result = parse_coverage(json.loads(raw), tests=int(counts[0]))
-    return {**result, "coverage_sha256": digest(raw)}
+    measurement = parse_coverage(json.loads(raw), tests=result.testsRun)
+    return {**measurement, "coverage_sha256": digest(raw)}
 
 
 def pulse(out: Path, *, expected_head: str | None) -> dict[str, Any]:
@@ -117,15 +159,16 @@ def pulse(out: Path, *, expected_head: str | None) -> dict[str, Any]:
         raise ValueError("checked-out SHA != expected PR head")
     out.mkdir(parents=True, exist_ok=True)
     baseline = run_suite(
-        "test_qps_math_wormhole_dow.py", out / "coverage_baseline.json"
+        "test_qps_math_wormhole_dow.py",
+        out / "coverage_baseline.json",
     )
     expanded = run_suite(
-        "test_qps_math_wormhole_dow*.py", out / "coverage_expanded.json"
+        "test_qps_math_wormhole_dow*.py",
+        out / "coverage_expanded.json",
     )
     if any(
-        baseline[key] != expanded[key] for key in (
-            "source", "lines_eligible", "branches_eligible",
-        )
+        baseline[key] != expanded[key]
+        for key in ("source", "lines_eligible", "branches_eligible")
     ):
         raise ValueError("not a source-matched coverage comparison")
     if expanded["tests_executed"] <= baseline["tests_executed"]:
@@ -180,12 +223,17 @@ def main() -> int:
     parser.add_argument("--expected-head", default=None)
     args = parser.parse_args()
     report = pulse(args.out, expected_head=args.expected_head)
-    print(json.dumps({
-        "sha": report["exact_source_sha"],
-        "additional_tests": report["additional_tests"],
-        "delta_points": report["combined_delta_percentage_points"],
-        "qps_disposition": report["qps_disposition"],
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "sha": report["exact_source_sha"],
+                "additional_tests": report["additional_tests"],
+                "delta_points": report["combined_delta_percentage_points"],
+                "qps_disposition": report["qps_disposition"],
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

@@ -63,8 +63,10 @@ jobs:
               "--out", str(out / "candidate.json"),
           ], check=True)
           result = json.loads((out / "candidate.json").read_text())
-          assert result["status"] == "VALID_PROPOSAL_ONLY"
-          assert result["measurement"]["runtime_authenticated"] == 0
+          if result["status"] != "VALID_PROPOSAL_ONLY":
+              raise SystemExit("DOW fixture must remain proposal-only")
+          if result["measurement"]["runtime_authenticated"] != 0:
+              raise SystemExit("DOW fixture cannot claim runtime authentication")
           manifest = {
               "schema": "qps-wormhole-fixture-flight/v1",
               "repo": "GBOGEB/ABACUS",
