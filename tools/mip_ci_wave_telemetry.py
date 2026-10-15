@@ -85,7 +85,7 @@ def summarize(payload):
         "nonterminal": pending,
         "queue_seconds_p50": median(queue) if queue else None,
         "queue_seconds_p95": _percentile(queue, 95),
-        "runtime_seconds_sum": sum(elapsed) if len(elapsed) == (
+        "runtime_seconds_sum": sum(elapsed) if elapsed and len(elapsed) == (
             counts["success"] + counts["failure"]
         ) else None,
         "queue_samples": len(queue),

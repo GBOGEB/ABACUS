@@ -40,7 +40,7 @@ def test_nonterminal_is_not_a_failed_or_finished_job():
         "jobs": [job(status="queued", conclusion=None)],
     })
     assert result["nonterminal"] == 1
-    assert result["runtime_seconds_sum"] == 0
+    assert result["runtime_seconds_sum"] is None
     assert result["queue_seconds_p95"] is None
 
 
