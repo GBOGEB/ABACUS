@@ -18,7 +18,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Execute A-E census at exact SHA
@@ -75,7 +75,7 @@ jobs:
           assert d["admission"] == "HOLD"
           PY
       - name: Upload exact-SHA measurement
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w70-measured-id-pulse-${{ env.SOURCE_SHA }}
           path: architecture/w70/receipts/${{ env.SOURCE_SHA }}/
