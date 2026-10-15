@@ -8,7 +8,6 @@ import json
 import pathlib
 import tempfile
 import unittest
-from unittest import mock
 
 PATH = pathlib.Path(__file__).resolve().parents[1] / "tools/mip2/mip_python_dependency_guard.py"
 SPEC = importlib.util.spec_from_file_location("mip_python_dependency_guard", PATH)
@@ -85,7 +84,7 @@ class PythonDependencyMIPTests(unittest.TestCase):
             output = pathlib.Path(work) / "receipt.json"
             requirement.write_text(GOOD, encoding="utf-8")
             buffer = io.StringIO()
-            with mock.patch(
+            with unittest.mock.patch(
                 "sys.argv",
                 ["guard", "--requirements", str(requirement), "--out", str(output)],
             ), contextlib.redirect_stdout(buffer):
@@ -104,7 +103,7 @@ class PythonDependencyMIPTests(unittest.TestCase):
             requirement.write_text(
                 "matplotlib>=3.11.2,<4.0.0\n", encoding="utf-8"
             )
-            with mock.patch(
+            with unittest.mock.patch(
                 "sys.argv",
                 ["guard", "--requirements", str(requirement)],
             ), contextlib.redirect_stdout(io.StringIO()):
