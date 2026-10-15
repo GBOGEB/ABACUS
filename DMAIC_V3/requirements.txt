@@ -33,7 +33,10 @@ numpy>=2.5.3,<3.0.0; python_version >= '3.12'
 # ============================================================================
 
 # Plotting and visualization
-matplotlib>=3.4.0,<4.0.0
+# Python 3.10 cannot install Matplotlib 3.11.x; keep distinct ranges.
+matplotlib>=3.10.8,<3.11.0; python_version >= '3.10' and python_version < '3.11'
+matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'
+matplotlib>=3.4.0,<3.11.0; python_version < '3.10'
 seaborn>=0.11.0,<1.0.0
 
 # ============================================================================
