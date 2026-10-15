@@ -114,7 +114,11 @@ jobs:
           python -m mission_control_lite.cli produce \
             --mission MCL-P0 --task native-proof --root MCL-ROOT-1 \
             --sha "$SOURCE_SHA" --run "$RUN_ID" \
-            --output evidence/output.json --receipt evidence/receipt.json
+            --output evidence/output.json \
+            --output evidence/coverage-pulse.json \
+            --output evidence/coverage.json \
+            --output evidence/phase-times.json \
+            --receipt evidence/receipt.json
           python -m mission_control_lite.cli ingest evidence/receipt.json \
             --artifact-root . --db evidence/registry.sqlite
           python -m mission_control_lite.cli census \

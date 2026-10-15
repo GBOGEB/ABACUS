@@ -137,6 +137,28 @@ class TestMissionControlLite(unittest.TestCase):
             with self.assertRaises(ValueError):
                 ingest(Path(d) / "db.sqlite", r, root)
 
+    def test_cli_receipt_binds_multiple_telemetry_outputs(self):
+        from mission_control_lite.cli import main
+        with tempfile.TemporaryDirectory() as d:
+            first = Path(d) / "output.json"
+            second = Path(d) / "coverage-pulse.json"
+            first.write_bytes(b"proof")
+            second.write_bytes(b'{"coverage":"UNKNOWN"}')
+            rec = Path(d) / "receipt.json"
+            with patch.object(sys, "argv", [
+                "mcl", "produce", "--mission", "m", "--task", "t",
+                "--root", "r", "--sha", "a" * 40, "--run", "1",
+                "--output", str(first), "--output", str(second),
+                "--receipt", str(rec),
+            ]):
+                main()
+            content = json.loads(rec.read_text())
+            self.assertEqual(len(content["artifacts"]), 2)
+            self.assertTrue(verify(content, d))
+            second.write_bytes(b'{"coverage":"FORGED"}')
+            with self.assertRaises(ValueError):
+                ingest(Path(d) / "registry.sqlite", content, d)
+
     def test_empty_output_rejected(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"empty";p.write_bytes(b"")
