@@ -67,7 +67,8 @@ def source_hash(reader, repo, sha, path):
     data = reader.get(f"/repos/{repo}/contents/{path}?ref={sha}")
     demand(data.get("type") == "file" and data.get("encoding") == "base64",
            "source configuration not bound to immutable Git blob")
-    raw = base64.b64decode(data["content"], validate=True)
+    encoded = "".join(data["content"].split())
+    raw = base64.b64decode(encoded, validate=True)
     demand(bool(raw), "empty source configuration")
     return hashlib.sha256(raw).hexdigest()
 
@@ -106,6 +107,9 @@ def latest_runs(reader, repo, sha, *, number=None, branch=None):
     return matching, {
         "state": "OBSERVED" if matching else "UNKNOWN_NO_RUN_AT_HEAD",
         "listing_complete": len(rows) == total,
+        "current_window_complete": len(rows) == min(100, total),
+        "window_size": len(rows),
+        "window_limit": 100,
         "total_sha_runs": total,
         "matched_runs": result,
     }
@@ -233,7 +237,7 @@ def collect(reader, repo, *, prior=None, max_prs=50):
             reader, repo, pr["sha"], number=pr["number"],
             branch=pr["branch"],
         )
-        complete = complete and census["listing_complete"]
+        complete = complete and census["current_window_complete"]
         observations.append({
             "pr_number": pr["number"], "source_sha": pr["sha"],
             "ci": census,
@@ -249,6 +253,10 @@ def collect(reader, repo, *, prior=None, max_prs=50):
             "number": p["number"], "sha": p["sha"], "base_sha": p["base_sha"]
         } for p in prs],
         "inventory_complete": complete,
+        "history_census_complete": all(
+            x["ci"]["listing_complete"] for x in observations
+        ),
+        "run_window_scope": "latest 100 per exact source head",
         "observations": observations,
         "provenance": "GITHUB_API_AND_SHA256_VERIFIED_NATIVE_ARTIFACTS",
         "merge_authorized": False, "security_waiver": False,
@@ -294,6 +302,21 @@ def main():
         "repository": args.repo, "main_sha": report["main_sha"],
         "prs": len(report["active_heads"]),
         "inventory_complete": report["inventory_complete"],
+        "history_census_complete": report["history_census_complete"],
+        "main_historical_runs": report["observations"][0]["ci"]["total_sha_runs"],
+        "current_window_size": report["observations"][0]["ci"]["window_size"],
+        "ldab_verified": sum(
+            x["producers"]["ldab"]["state"].startswith("SOURCE_DISCOVERY_VERIFIED")
+            for x in report["observations"]
+        ),
+        "coverage_measured": sum(
+            x["producers"]["coverage"]["state"].startswith("MEASURED")
+            for x in report["observations"]
+        ),
+        "coverage_invalid": sum(
+            x["producers"]["coverage"]["state"] == "INVALID_NATIVE_PRODUCER"
+            for x in report["observations"]
+        ),
         "n_plus_one": report["comparison"]["state"],
         "merges_authorized": False,
     }, sort_keys=True))

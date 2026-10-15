@@ -85,12 +85,13 @@ class LiveSpineTests(unittest.TestCase):
             "SOURCE_REVISION_OR_PR_SET_CHANGED",
         )
 
-    def test_missing_native_listing_is_not_stable(self):
+    def test_history_truncation_is_explicit_and_window_valid(self):
         api = FakeReader()
         api.run["total_count"] = 200
         x = collect(api, "GBOGEB/ABACUS")
         self.assertFalse(x["inventory_complete"])
-        self.assertFalse(x["observations"][1]["ci"]["listing_complete"])
+        self.assertFalse(x["history_census_complete"])
+        self.assertFalse(x["observations"][1]["ci"]["current_window_complete"])
 
     def test_wrong_head_run_fails_closed(self):
         api = FakeReader()
