@@ -67,6 +67,32 @@ class PythonDependencyMIPTests(unittest.TestCase):
                 self.assertTrue(active[0].specifier.contains(valid))
                 self.assertFalse(active[0].specifier.contains(invalid))
 
+    def test_py39_pylint_requirement_is_exclusive_and_compatible(self):
+        source = (PATH.parents[2] / "DMAIC_V3/requirements.txt").read_text(
+            encoding="utf-8"
+        )
+        requirements = [
+            MOD.Requirement(line)
+            for line in source.splitlines()
+            if line.startswith("pylint")
+        ]
+        self.assertEqual(len(requirements), 2)
+        for lane, valid, excluded in (
+            ("3.9", "3.3.9", "4.1.3"),
+            ("3.10", "4.1.3", "3.3.9"),
+        ):
+            with self.subTest(python=lane):
+                env = MOD.default_environment()
+                env["python_version"] = lane
+                active = [
+                    item
+                    for item in requirements
+                    if item.marker.evaluate(environment=env)
+                ]
+                self.assertEqual(len(active), 1)
+                self.assertTrue(active[0].specifier.contains(valid))
+                self.assertFalse(active[0].specifier.contains(excluded))
+
     def test_original_20261015_regression_rejected(self):
         receipt = MOD.audit("matplotlib>=3.11.2,<4.0.0\n")
         self.assertEqual(receipt["static_fail"], 4)
