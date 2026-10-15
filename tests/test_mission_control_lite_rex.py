@@ -64,6 +64,61 @@ class TestRexWave(unittest.TestCase):
         with self.assertRaises(ValueError):
             wave_delta(base, dict(base, scanner_config_sha256="y"))
 
+    def test_fingerprint_stable_and_symptom_sensitive(self):
+        first = fingerprint("A", "pytest", "E32", "core.py", "locked")
+        self.assertEqual(first, fingerprint("A", "pytest", "E32", "core.py", "locked"))
+        self.assertNotEqual(
+            first, fingerprint("A", "pytest", "E32", "core.py", "different")
+        )
+
+    def test_fingerprint_rejects_empty_and_non_string(self):
+        for bad in ("", None, 12):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                fingerprint("A", "pytest", "E32", "core.py", bad)
+
+    def test_index_rejects_duplicate_roots(self):
+        with self.assertRaises(ValueError):
+            build_index([self.event], [self.root, self.root], [self.rex])
+
+    def test_index_rejects_duplicate_rex(self):
+        with self.assertRaises(ValueError):
+            build_index([self.event], [self.root], [self.rex, self.rex])
+
+    def test_index_rejects_unknown_root(self):
+        bad = dict(self.event, root_candidate_id="missing")
+        with self.assertRaises(ValueError):
+            build_index([bad], [self.root], [self.rex])
+
+    def test_index_rejects_non_list_inputs(self):
+        with self.assertRaises(ValueError):
+            build_index(None, [], [])
+
+    def test_wave_rejects_duplicate_fingerprints(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": ["a", "a"]}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
+    def test_wave_rejects_impossible_coverage(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": [],
+                "covered_lines": 11, "total_lines": 10}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
+    def test_wave_rejects_invalid_branch_denominator(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": [],
+                "covered_branches": 0, "total_branches": 0}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
+    def test_wave_rejects_missing_census(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed"}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
     def test_unknown_coverage_not_zero(self):
         base = {"repository": "A", "scanner_config_sha256": "x",
                 "coverage_scope": "changed", "fingerprints": []}
