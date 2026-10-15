@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from unittest import mock
 
 PATH = pathlib.Path(__file__).resolve().parents[1] / "tools/mip2/mip_wave_pulse.py"
 SPEC = importlib.util.spec_from_file_location("mip_wave_pulse", PATH)
