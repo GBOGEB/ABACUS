@@ -53,5 +53,49 @@ class TupleLineageTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.semantic_check(s)
 
+
+    def test_pulse_telemetry_exact_head(self):
+        head="269de48db9b70a91383b2fcdf8822ec0e6496634"
+        runs={
+            "38775913287": {"source_sha":head,"conclusion":"success",
+                             "url":"https://github.com/GBOGEB/ABACUS/actions/runs/38775913287"},
+            "38775913386": {"source_sha":head,"conclusion":"success",
+                             "url":"https://github.com/GBOGEB/ABACUS/actions/runs/38775913386"},
+        }
+        receipt=core.pulse_metrics(json.loads(INPUT),head_sha=head,observed_ci=runs)
+        self.assertEqual((2,2),(receipt["workflow_terminal"],receipt["workflow_pass"]))
+        self.assertEqual(100.0,receipt["workflow_pass_pct"])
+        self.assertEqual(15,sum(receipt["todo_state_count"].values()))
+        self.assertIsNone(receipt["operational_roots_closed"])
+        self.assertIsNone(receipt["canonical_coverage"])
+    def test_pulse_unknown_is_not_zero(self):
+        head="269de48db9b70a91383b2fcdf8822ec0e6496634"
+        receipt=core.pulse_metrics(json.loads(INPUT),head_sha=head,observed_ci={})
+        self.assertIsNone(receipt["workflow_pass_pct"])
+        self.assertIsNone(receipt["todo_closed"])
+        self.assertIsNone(receipt["crew_launches"])
+    def test_pulse_rejects_cross_head_green(self):
+        head="269de48db9b70a91383b2fcdf8822ec0e6496634"
+        with self.assertRaises(ValueError):
+            core.pulse_metrics(json.loads(INPUT),head_sha=head,observed_ci={
+                "1":{"source_sha":"0"*40,"conclusion":"success",
+                     "url":"https://github.com/GBOGEB/ABACUS/actions/runs/1"}
+            })
+    def test_pulse_rejects_pending_as_terminal(self):
+        head="269de48db9b70a91383b2fcdf8822ec0e6496634"
+        with self.assertRaises(ValueError):
+            core.pulse_metrics(json.loads(INPUT),head_sha=head,observed_ci={
+                "1":{"source_sha":head,"conclusion":"pending",
+                     "url":"https://github.com/GBOGEB/ABACUS/actions/runs/1"}
+            })
+    def test_scope_changed_does_not_claim_uplift(self):
+        ledger=json.loads(INPUT)
+        before=core.pulse_metrics(ledger,head_sha="0"*40,observed_ci={})
+        after=core.pulse_metrics(ledger,head_sha="1"*40,observed_ci={})
+        delta=core.compare_pulses(before,after)
+        self.assertFalse(delta["same_exact_head_and_run_set"])
+        self.assertIsNone(delta["workflow_pass_delta"])
+        self.assertIsNone(delta["coverage_delta"])
+
 if __name__=="__main__":
     unittest.main()
