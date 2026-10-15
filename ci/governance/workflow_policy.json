@@ -362,6 +362,12 @@
       "cluster": "core_test",
       "lifecycle": "pr_fast",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^mcw-artifact-cold-build\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
