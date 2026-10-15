@@ -159,6 +159,49 @@ class TestRexWave(unittest.TestCase):
         with self.assertRaises(ValueError):
             wave_delta(base, dict(base))
 
+    def test_duplicate_root_and_rex_fail_closed(self):
+        with self.assertRaises(ValueError):
+            build_index([self.event], [self.root, self.root], [self.rex])
+        with self.assertRaises(ValueError):
+            build_index([self.event], [self.root], [self.rex, self.rex])
+
+    def test_unknown_root_and_incomplete_event_fail_closed(self):
+        with self.assertRaises(ValueError):
+            build_index([dict(self.event, root_candidate_id="missing")],
+                        [self.root], [self.rex])
+        for field in ("repository", "source_sha", "run_id", "job_id",
+                      "topic_id", "fingerprint", "manifestation"):
+            with self.subTest(field=field):
+                with self.assertRaises(ValueError):
+                    build_index([dict(self.event, **{field: None})],
+                                [self.root], [self.rex])
+
+    def test_wave_duplicate_and_invalid_counts_fail_closed(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": ["one"],
+                "covered_lines": 1, "total_lines": 2}
+        for bad in (dict(base, fingerprints=["one", "one"]),
+                    dict(base, covered_lines=3),
+                    dict(base, total_lines=0),
+                    dict(base, covered_lines=-1),
+                    dict(base, covered_lines="1")):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    wave_delta(base, bad)
+
+    def test_wave_branch_coverage_and_new_roots_not_closure(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": ["persistent"],
+                "covered_lines": 1, "total_lines": 2,
+                "covered_branches": 1, "total_branches": 4}
+        new = dict(base, fingerprints=["persistent", "new"],
+                   covered_branches=3)
+        result = wave_delta(base, new)
+        self.assertAlmostEqual(result["branch_coverage_delta_pp"], 50)
+        self.assertEqual(result["opened"], ["new"])
+        self.assertEqual(result["root_closure_credit"], 0)
+        self.assertEqual(result["merge_admission"], "HOLD")
+
     def test_unknown_coverage_not_zero(self):
         base = {"repository": "A", "scanner_config_sha256": "x",
                 "coverage_scope": "changed", "fingerprints": []}
