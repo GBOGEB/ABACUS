@@ -80,6 +80,12 @@ def measure(output, phase, command):
     """Run a native subprocess; persist duration even on test failure."""
     if not phase or not command:
         raise ValueError("phase and command required")
+    path = Path(output)
+    previous = json.loads(path.read_text()) if path.exists() else []
+    if not isinstance(previous, list) or any(
+        not isinstance(r, dict) or r.get("phase") == phase for r in previous
+    ):
+        raise ValueError("duplicate phase or invalid metrics")
     clock = time.perf_counter_ns()
     try:
         completed = subprocess.run(command, check=False)
@@ -87,10 +93,6 @@ def measure(output, phase, command):
     except OSError:
         rc = 127
     elapsed = round((time.perf_counter_ns() - clock) / 1_000_000_000, 6)
-    path = Path(output)
-    previous = json.loads(path.read_text()) if path.exists() else []
-    if not isinstance(previous, list) or any(r.get("phase") == phase for r in previous):
-        raise ValueError("duplicate phase or invalid metrics")
     previous.append({"phase": phase, "duration_seconds": elapsed,
                      "exit_code": rc})
     path.parent.mkdir(parents=True, exist_ok=True)
