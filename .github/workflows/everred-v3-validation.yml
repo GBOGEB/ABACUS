@@ -10,7 +10,7 @@ on:
     inputs:
       target_run_id:
         description: 'Existing GitHub Actions run ID to inspect read-only'
-        required: true
+        required: false
         type: string
       artifact_plan_json:
         description: 'JSON artifact plan with exact IDs, source SHAs and scopes'
@@ -18,7 +18,7 @@ on:
         type: string
       target_sha:
         description: 'Exact 40-character source SHA of the target run'
-        required: true
+        required: false
         type: string
 permissions:
   contents: read
@@ -110,7 +110,7 @@ jobs:
           python -m isort --check-only src scripts tests
   native-pulse:
     name: Read-only native run / joined census pulse
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.target_run_id != '' && inputs.target_sha != ''
     runs-on: ubuntu-24.04
     permissions:
       actions: read

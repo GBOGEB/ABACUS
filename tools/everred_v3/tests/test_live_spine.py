@@ -17,22 +17,35 @@ class FakeReader:
         self.head = A
         self.run = {
             "total_count": 1,
-            "workflow_runs": [{
-                "id": 18, "head_sha": B, "head_branch": "worker",
-                "name": "smoke-test", "status": "completed",
-                "conclusion": "success", "created_at": "2026-10-15T00:00:00Z",
-                "pull_requests": [{"number": 1994}],
-            }],
+            "workflow_runs": [
+                {
+                    "id": 18,
+                    "head_sha": B,
+                    "head_branch": "worker",
+                    "name": "smoke-test",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "created_at": "2026-10-15T00:00:00Z",
+                    "pull_requests": [{"number": 1994}],
+                }
+            ],
         }
 
     def get(self, route):
         if route.endswith("/git/ref/heads/main"):
             return {"object": {"sha": self.head}}
         if "/pulls?" in route:
-            return ([{
-                "number": 1994, "head": {"sha": B, "ref": "worker"},
-                "base": {"sha": self.head},
-            }] if "page=1" in route else [])
+            return (
+                [
+                    {
+                        "number": 1994,
+                        "head": {"sha": B, "ref": "worker"},
+                        "base": {"sha": self.head},
+                    }
+                ]
+                if "page=1" in route
+                else []
+            )
         if "/actions/runs?" in route:
             if "head_sha=" + B in route:
                 return self.run
@@ -45,9 +58,7 @@ class LiveSpineTests(unittest.TestCase):
         api = FakeReader()
         self.assertEqual(main_head(api, "GBOGEB/ABACUS"), A)
         self.assertEqual(open_prs(api, "GBOGEB/ABACUS")[0]["sha"], B)
-        _, history = latest_runs(
-            api, "GBOGEB/ABACUS", A, branch="main"
-        )
+        _, history = latest_runs(api, "GBOGEB/ABACUS", A, branch="main")
         self.assertEqual(history["state"], "UNKNOWN_NO_RUN_AT_HEAD")
         pulse = collect(api, "GBOGEB/ABACUS")
         self.assertEqual(pulse["main_sha"], A)
@@ -71,9 +82,7 @@ class LiveSpineTests(unittest.TestCase):
         )
         api.run["workflow_runs"][0]["conclusion"] = "failure"
         revised = collect(api, "GBOGEB/ABACUS", prior=previous)
-        self.assertEqual(
-            revised["comparison"]["state"], "SAME_HEADS_EVIDENCE_CHANGED"
-        )
+        self.assertEqual(revised["comparison"]["state"], "SAME_HEADS_EVIDENCE_CHANGED")
 
     def test_main_move_causes_new_revision(self):
         api = FakeReader()

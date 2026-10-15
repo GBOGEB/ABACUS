@@ -17,13 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from native_ingest import GitHubReadOnly, _zip_from_github
-from spine_census import (
-    SCHEMA,
-    compare_pulses,
-    coverage_snapshot,
-    ldab_snapshot,
-    state_fingerprint,
-)
+import spine_census as spine
 
 
 def demand(condition, reason):
@@ -34,39 +28,47 @@ def demand(condition, reason):
 def main_head(reader, repo):
     item = reader.get(f"/repos/{repo}/git/ref/heads/main")
     sha = item.get("object", {}).get("sha")
-    demand(isinstance(sha, str) and len(sha) == 40,
-           "main ref is missing exact SHA")
+    demand(isinstance(sha, str) and len(sha) == 40, "main ref is missing exact SHA")
     return sha
 
 
 def open_prs(reader, repo):
     result = []
     for page in range(1, 6):
-        rows = reader.get(
-            f"/repos/{repo}/pulls?state=open&per_page=100&page={page}"
-        )
+        rows = reader.get(f"/repos/{repo}/pulls?state=open&per_page=100&page={page}")
         demand(isinstance(rows, list), "invalid open PR inventory")
         for item in rows:
             n = item.get("number")
             head = item.get("head", {})
             base = item.get("base", {})
-            demand(type(n) is int and type(head.get("sha")) is str
-                   and len(head["sha"]) == 40, "invalid current PR head")
-            result.append({
-                "number": n, "sha": head["sha"],
-                "branch": head.get("ref"), "base_sha": base.get("sha"),
-            })
+            demand(
+                type(n) is int
+                and type(head.get("sha")) is str
+                and len(head["sha"]) == 40,
+                "invalid current PR head",
+            )
+            result.append(
+                {
+                    "number": n,
+                    "sha": head["sha"],
+                    "branch": head.get("ref"),
+                    "base_sha": base.get("sha"),
+                }
+            )
         if len(rows) < 100:
-            demand(len({p["number"] for p in result}) == len(result),
-                   "duplicate open PR")
+            demand(
+                len({p["number"] for p in result}) == len(result), "duplicate open PR"
+            )
             return sorted(result, key=lambda p: p["number"])
     raise ValueError("PR inventory exceeds bounded page range")
 
 
 def source_hash(reader, repo, sha, path):
     data = reader.get(f"/repos/{repo}/contents/{path}?ref={sha}")
-    demand(data.get("type") == "file" and data.get("encoding") == "base64",
-           "source configuration not bound to immutable Git blob")
+    demand(
+        data.get("type") == "file" and data.get("encoding") == "base64",
+        "source configuration not bound to immutable Git blob",
+    )
     encoded = "".join(data["content"].split())
     raw = base64.b64decode(encoded, validate=True)
     demand(bool(raw), "empty source configuration")
@@ -74,16 +76,16 @@ def source_hash(reader, repo, sha, path):
 
 
 def latest_runs(reader, repo, sha, *, number=None, branch=None):
-    obj = reader.get(
-        f"/repos/{repo}/actions/runs?head_sha={sha}&per_page=100"
-    )
+    obj = reader.get(f"/repos/{repo}/actions/runs?head_sha={sha}&per_page=100")
     rows = obj.get("workflow_runs")
     total = obj.get("total_count")
-    demand(isinstance(rows, list) and type(total) is int,
-           "missing native run denominator")
-    demand(len(rows) <= total and
-           all(r.get("head_sha") == sha for r in rows),
-           "native workflow source SHA mismatch")
+    demand(
+        isinstance(rows, list) and type(total) is int, "missing native run denominator"
+    )
+    demand(
+        len(rows) <= total and all(r.get("head_sha") == sha for r in rows),
+        "native workflow source SHA mismatch",
+    )
     matching = []
     for row in rows:
         links = row.get("pull_requests") or []
@@ -98,12 +100,18 @@ def latest_runs(reader, repo, sha, *, number=None, branch=None):
         key=lambda r: (r.get("created_at") or "", r.get("id") or 0),
         reverse=True,
     )
-    result = [{
-        "id": r["id"],
-        "name": r.get("name"), "run_attempt": r.get("run_attempt"),
-        "status": r.get("status"), "conclusion": r.get("conclusion"),
-        "event": r.get("event"), "source_sha": sha,
-    } for r in matching]
+    result = [
+        {
+            "id": r["id"],
+            "name": r.get("name"),
+            "run_attempt": r.get("run_attempt"),
+            "status": r.get("status"),
+            "conclusion": r.get("conclusion"),
+            "event": r.get("event"),
+            "source_sha": sha,
+        }
+        for r in matching
+    ]
     return matching, {
         "state": "OBSERVED" if matching else "UNKNOWN_NO_RUN_AT_HEAD",
         "listing_complete": len(rows) == total,
@@ -119,7 +127,8 @@ def _artifact_members(reader, repo, run, sha, prefix):
     demand(run.get("head_sha") == sha, "source changed during extraction")
     artifacts = reader.artifacts(repo, run["id"])
     found = [
-        a for a in artifacts
+        a
+        for a in artifacts
         if a.get("name", "").startswith(prefix)
         and a.get("expired") is False
         and a.get("workflow_run", {}).get("id") == run["id"]
@@ -131,7 +140,8 @@ def _artifact_members(reader, repo, run, sha, prefix):
 
 def _one(entries, filename):
     candidates = [
-        value for name, value in entries.items()
+        value
+        for name, value in entries.items()
         if name == filename or name.endswith("/" + filename)
     ]
     demand(len(candidates) == 1, "missing or ambiguous artifact member")
@@ -152,21 +162,29 @@ def evidence_from_runs(reader, repo, sha, runs):
                 receipt = json.loads(_one(members, "coverage-receipt.json"))
                 content = json.loads(_one(members, "coverage.json"))
                 digest = artifact["digest"]
-                demand(digest.startswith("sha256:"),
-                       "native coverage artifact hash absent")
+                demand(
+                    digest.startswith("sha256:"), "native coverage artifact hash absent"
+                )
                 identity = {
-                    "repository": repo, "sha": sha,
-                    "run_id": run["id"], "artifact_id": artifact["id"],
+                    "repository": repo,
+                    "sha": sha,
+                    "run_id": run["id"],
+                    "artifact_id": artifact["id"],
                     "artifact_sha256": digest[7:],
                     "workflow_sha256": source_hash(
-                        reader, repo, sha,
+                        reader,
+                        repo,
+                        sha,
                         ".github/workflows/bandit-disjoint-census.yml",
                     ),
                     "config_sha256": source_hash(
-                        reader, repo, sha, "pyproject.toml",
+                        reader,
+                        repo,
+                        sha,
+                        "pyproject.toml",
                     ),
                 }
-                coverage = coverage_snapshot(content, receipt, identity)
+                coverage = spine.coverage_snapshot(content, receipt, identity)
                 coverage["workflow_conclusion"] = run.get("conclusion")
             except (ValueError, KeyError, TypeError, OSError) as error:
                 coverage = {
@@ -179,15 +197,10 @@ def evidence_from_runs(reader, repo, sha, runs):
                 members, artifact = _artifact_members(
                     reader, repo, run, sha, "mip-n2-self-index-sanitized-"
                 )
-                summary = json.loads(
-                    _one(members, "mip-n2-self-index-summary.json")
-                )
+                summary = json.loads(_one(members, "mip-n2-self-index-summary.json"))
                 digest = artifact["digest"]
-                demand(digest.startswith("sha256:"),
-                       "native LDAB artifact hash absent")
-                ldab = ldab_snapshot(
-                    summary, repo, sha, artifact_sha256=digest[7:]
-                )
+                demand(digest.startswith("sha256:"), "native LDAB artifact hash absent")
+                ldab = spine.ldab_snapshot(summary, repo, sha, artifact_sha256=digest[7:])
                 ldab["workflow_conclusion"] = run.get("conclusion")
             except (ValueError, KeyError, TypeError, OSError) as error:
                 ldab = {
@@ -198,12 +211,22 @@ def evidence_from_runs(reader, repo, sha, runs):
         if coverage is not None and ldab is not None:
             break
     return {
-        "coverage": coverage if coverage is not None else {
-            "state": "UNKNOWN_NO_EXACT_HEAD_COVERAGE", "source_sha": sha,
-        },
-        "ldab": ldab if ldab is not None else {
-            "state": "UNKNOWN_NO_EXACT_HEAD_LDAB", "source_sha": sha,
-        },
+        "coverage": (
+            coverage
+            if coverage is not None
+            else {
+                "state": "UNKNOWN_NO_EXACT_HEAD_COVERAGE",
+                "source_sha": sha,
+            }
+        ),
+        "ldab": (
+            ldab
+            if ldab is not None
+            else {
+                "state": "UNKNOWN_NO_EXACT_HEAD_LDAB",
+                "source_sha": sha,
+            }
+        ),
     }
 
 
@@ -214,8 +237,11 @@ def _prior(reader, repo):
     rows = obj.get("artifacts", [])
     demand(isinstance(rows, list), "invalid previous-pulse inventory")
     usable = sorted(
-        (x for x in rows if x.get("name") == "everred-spine-current"
-         and x.get("expired") is False),
+        (
+            x
+            for x in rows
+            if x.get("name") == "everred-spine-current" and x.get("expired") is False
+        ),
         key=lambda x: (x.get("created_at") or "", x.get("id") or 0),
         reverse=True,
     )
@@ -234,24 +260,32 @@ def collect(reader, repo, *, prior=None, max_prs=50):
     complete = all_prs
     for pr in [{"number": None, "sha": first, "branch": "main"}] + selected:
         runs, census = latest_runs(
-            reader, repo, pr["sha"], number=pr["number"],
+            reader,
+            repo,
+            pr["sha"],
+            number=pr["number"],
             branch=pr["branch"],
         )
         complete = complete and census["current_window_complete"]
-        observations.append({
-            "pr_number": pr["number"], "source_sha": pr["sha"],
-            "ci": census,
-            "producers": evidence_from_runs(reader, repo, pr["sha"], runs),
-        })
+        observations.append(
+            {
+                "pr_number": pr["number"],
+                "source_sha": pr["sha"],
+                "ci": census,
+                "producers": evidence_from_runs(reader, repo, pr["sha"], runs),
+            }
+        )
     second = main_head(reader, repo)
-    demand(first == second,
-           "main advanced during pulse: reject mixed-source snapshot")
+    demand(first == second, "main advanced during pulse: reject mixed-source snapshot")
     result = {
-        "schema": SCHEMA, "repository": repo, "main_sha": first,
+        "schema": spine.SCHEMA,
+        "repository": repo,
+        "main_sha": first,
         "observed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "active_heads": [{
-            "number": p["number"], "sha": p["sha"], "base_sha": p["base_sha"]
-        } for p in prs],
+        "active_heads": [
+            {"number": p["number"], "sha": p["sha"], "base_sha": p["base_sha"]}
+            for p in prs
+        ],
         "inventory_complete": complete,
         "history_census_complete": all(
             x["ci"]["listing_complete"] for x in observations
@@ -259,10 +293,11 @@ def collect(reader, repo, *, prior=None, max_prs=50):
         "run_window_scope": "latest 100 per exact source head",
         "observations": observations,
         "provenance": "GITHUB_API_AND_SHA256_VERIFIED_NATIVE_ARTIFACTS",
-        "merge_authorized": False, "security_waiver": False,
+        "merge_authorized": False,
+        "security_waiver": False,
         "authority_transfer": False,
     }
-    result["state_digest"] = state_fingerprint(result)
+    result["state_digest"] = spine.state_fingerprint(result)
     if prior is None:
         result["comparison"] = {
             "state": "FIRST_OBSERVATION_NOT_STABILITY",
@@ -270,7 +305,7 @@ def collect(reader, repo, *, prior=None, max_prs=50):
         }
     else:
         try:
-            result["comparison"] = compare_pulses(prior, result)
+            result["comparison"] = spine.compare_pulses(prior, result)
         except ValueError as error:
             result["comparison"] = {
                 "state": "UNKNOWN_INCOMPLETE_OR_INCOMPATIBLE_PRIOR",
@@ -290,7 +325,8 @@ def main():
     reader = GitHubReadOnly()
     previous = (
         json.loads(args.previous.read_text(encoding="utf-8"))
-        if args.previous else _prior(reader, args.repo)
+        if args.previous
+        else _prior(reader, args.repo)
     )
     report = collect(reader, args.repo, prior=previous, max_prs=args.max_prs)
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -298,28 +334,38 @@ def main():
         json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    print(json.dumps({
-        "repository": args.repo, "main_sha": report["main_sha"],
-        "prs": len(report["active_heads"]),
-        "inventory_complete": report["inventory_complete"],
-        "history_census_complete": report["history_census_complete"],
-        "main_historical_runs": report["observations"][0]["ci"]["total_sha_runs"],
-        "current_window_size": report["observations"][0]["ci"]["window_size"],
-        "ldab_verified": sum(
-            x["producers"]["ldab"]["state"].startswith("SOURCE_DISCOVERY_VERIFIED")
-            for x in report["observations"]
-        ),
-        "coverage_measured": sum(
-            x["producers"]["coverage"]["state"].startswith("MEASURED")
-            for x in report["observations"]
-        ),
-        "coverage_invalid": sum(
-            x["producers"]["coverage"]["state"] == "INVALID_NATIVE_PRODUCER"
-            for x in report["observations"]
-        ),
-        "n_plus_one": report["comparison"]["state"],
-        "merges_authorized": False,
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "repository": args.repo,
+                "main_sha": report["main_sha"],
+                "prs": len(report["active_heads"]),
+                "inventory_complete": report["inventory_complete"],
+                "history_census_complete": report["history_census_complete"],
+                "main_historical_runs": report["observations"][0]["ci"][
+                    "total_sha_runs"
+                ],
+                "current_window_size": report["observations"][0]["ci"]["window_size"],
+                "ldab_verified": sum(
+                    x["producers"]["ldab"]["state"].startswith(
+                        "SOURCE_DISCOVERY_VERIFIED"
+                    )
+                    for x in report["observations"]
+                ),
+                "coverage_measured": sum(
+                    x["producers"]["coverage"]["state"].startswith("MEASURED")
+                    for x in report["observations"]
+                ),
+                "coverage_invalid": sum(
+                    x["producers"]["coverage"]["state"] == "INVALID_NATIVE_PRODUCER"
+                    for x in report["observations"]
+                ),
+                "n_plus_one": report["comparison"]["state"],
+                "merges_authorized": False,
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

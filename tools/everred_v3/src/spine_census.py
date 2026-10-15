@@ -28,31 +28,37 @@ def _identity(value):
     require(isinstance(value, dict), "invalid source identity")
     require(isinstance(value.get("repository"), str), "missing repository")
     require(bool(value["repository"]), "empty repository")
-    require(isinstance(value.get("sha"), str) and SHA.fullmatch(value["sha"]),
-            "missing exact SHA")
-    require(integer(value.get("run_id")) and value["run_id"] > 0,
-            "missing native run")
-    require(integer(value.get("artifact_id")) and value["artifact_id"] > 0,
-            "missing artifact ID")
+    require(
+        isinstance(value.get("sha"), str) and SHA.fullmatch(value["sha"]),
+        "missing exact SHA",
+    )
+    require(integer(value.get("run_id")) and value["run_id"] > 0, "missing native run")
+    require(
+        integer(value.get("artifact_id")) and value["artifact_id"] > 0,
+        "missing artifact ID",
+    )
     for key in ("artifact_sha256", "workflow_sha256", "config_sha256"):
-        require(isinstance(value.get(key), str) and DIGEST.fullmatch(value[key]),
-                "invalid identity: " + key)
+        require(
+            isinstance(value.get(key), str) and DIGEST.fullmatch(value[key]),
+            "invalid identity: " + key,
+        )
 
 
 def _module(path, item):
     require(isinstance(item, dict), "invalid coverage file")
     summary = item.get("summary")
     require(isinstance(summary, dict), "missing module coverage summary")
-    names = ("num_statements", "missing_lines",
-             "num_branches", "missing_branches")
-    require(all(integer(summary.get(k)) for k in names),
-            "invalid module coverage counts")
+    names = ("num_statements", "missing_lines", "num_branches", "missing_branches")
+    require(
+        all(integer(summary.get(k)) for k in names), "invalid module coverage counts"
+    )
     statements = summary["num_statements"]
     missing_lines = summary["missing_lines"]
     branches = summary["num_branches"]
     missing_branches = summary["missing_branches"]
-    require(statements > 0 and missing_lines <= statements,
-            "invalid eligible statements")
+    require(
+        statements > 0 and missing_lines <= statements, "invalid eligible statements"
+    )
     require(missing_branches <= branches, "invalid eligible branches")
     return {
         "path": path,
@@ -70,29 +76,49 @@ def _module(path, item):
 def coverage_snapshot(raw, receipt, identity):
     """Validate producer bytes and independent per-module denominators."""
     _identity(identity)
-    require(isinstance(raw, dict) and isinstance(receipt, dict),
-            "coverage receipt must be an object")
-    require(receipt.get("schema") == "bandit.coverage.receipt.v1",
-            "unrecognized coverage contract")
-    require(receipt.get("exact_head_sha") == identity["sha"],
-            "coverage head differs from native run")
-    require(str(receipt.get("producer_run_id")) == str(identity["run_id"]),
-            "coverage run mismatch")
-    require(all(integer(receipt.get(k)) for k in
-                ("tests", "failures", "errors")),
-            "JUnit counters missing")
-    require(receipt["tests"] > 0 and receipt["failures"] == 0
-            and receipt["errors"] == 0, "failing or empty JUnit evidence")
+    require(
+        isinstance(raw, dict) and isinstance(receipt, dict),
+        "coverage receipt must be an object",
+    )
+    require(
+        receipt.get("schema") == "bandit.coverage.receipt.v1",
+        "unrecognized coverage contract",
+    )
+    require(
+        receipt.get("exact_head_sha") == identity["sha"],
+        "coverage head differs from native run",
+    )
+    require(
+        str(receipt.get("producer_run_id")) == str(identity["run_id"]),
+        "coverage run mismatch",
+    )
+    require(
+        all(integer(receipt.get(k)) for k in ("tests", "failures", "errors")),
+        "JUnit counters missing",
+    )
+    require(
+        receipt["tests"] > 0 and receipt["failures"] == 0 and receipt["errors"] == 0,
+        "failing or empty JUnit evidence",
+    )
     scope = receipt.get("source_scope")
     require(isinstance(scope, list) and scope, "missing coverage source scope")
-    require(all(isinstance(p, str) and p and not p.startswith("/")
-                and ".." not in p.split("/") for p in scope),
-            "unsafe source scope")
+    require(
+        all(
+            isinstance(p, str)
+            and p
+            and not p.startswith("/")
+            and ".." not in p.split("/")
+            for p in scope
+        ),
+        "unsafe source scope",
+    )
     require(scope == sorted(set(scope)), "source scope not canonical")
     files = raw.get("files")
     meta = raw.get("meta")
-    require(isinstance(files, dict) and isinstance(meta, dict),
-            "missing Coverage.py files or metadata")
+    require(
+        isinstance(files, dict) and isinstance(meta, dict),
+        "missing Coverage.py files or metadata",
+    )
     version = meta.get("version")
     require(isinstance(version, str) and version, "missing instrumentor version")
     normalized = {}
@@ -101,8 +127,7 @@ def coverage_snapshot(raw, receipt, identity):
         key = path.replace("\\", "/").removeprefix("./")
         require(key not in normalized, "duplicate normalized coverage path")
         normalized[key] = item
-    require(all(path in normalized for path in scope),
-            "source-matched module absent")
+    require(all(path in normalized for path in scope), "source-matched module absent")
     modules = [_module(path, normalized[path]) for path in scope]
     totals = {
         family: {
@@ -116,8 +141,10 @@ def coverage_snapshot(raw, receipt, identity):
     for family, prefix in (("statements", "lines"), ("branches", "branches")):
         for kind in ("covered", "eligible"):
             name = kind + "_" + prefix
-            require(advertised.get(name) == totals[family][kind],
-                    "producer totals conflict with raw coverage")
+            require(
+                advertised.get(name) == totals[family][kind],
+                "producer totals conflict with raw coverage",
+            )
     return {
         "schema": SCHEMA + ".coverage",
         "source": dict(identity),
@@ -135,12 +162,14 @@ def coverage_snapshot(raw, receipt, identity):
 def compare_coverage(before, after, *, goal_pct=90):
     """Report changing denominator without inventing old-debt closure."""
     for item in (before, after):
-        require(isinstance(item, dict) and
-                item.get("schema") == SCHEMA + ".coverage",
-                "invalid coverage snapshot")
+        require(
+            isinstance(item, dict) and item.get("schema") == SCHEMA + ".coverage",
+            "invalid coverage snapshot",
+        )
         _identity(item.get("source"))
-    require(type(goal_pct) in (int, float) and 0 < goal_pct <= 100,
-            "invalid coverage goal")
+    require(
+        type(goal_pct) in (int, float) and 0 < goal_pct <= 100, "invalid coverage goal"
+    )
     a, b = before["source"], after["source"]
     require(a["repository"] == b["repository"], "cross-repository coverage")
     scope_equal = before["scope"] == after["scope"]
@@ -154,28 +183,33 @@ def compare_coverage(before, after, *, goal_pct=90):
     for family in ("statements", "branches"):
         old, new = before["totals"][family], after["totals"][family]
         for record in (old, new):
-            require(integer(record.get("covered")) and
-                    integer(record.get("eligible")) and
-                    record["covered"] <= record["eligible"],
-                    "invalid coverage family totals")
+            require(
+                integer(record.get("covered"))
+                and integer(record.get("eligible"))
+                and record["covered"] <= record["eligible"],
+                "invalid coverage family totals",
+            )
         eligible_delta = new["eligible"] - old["eligible"]
         covered_delta = new["covered"] - old["covered"]
         old_rate = percentage(old["covered"], old["eligible"])
         new_rate = percentage(new["covered"], new["eligible"])
         required = (
-            max(0, int(-(-goal_pct * new["eligible"] // 100))
-                - new["covered"])
-            if new["eligible"] else None
+            max(0, int(-(-goal_pct * new["eligible"] // 100)) - new["covered"])
+            if new["eligible"]
+            else None
         )
         families[family] = {
-            "before": dict(old), "after": dict(new),
+            "before": dict(old),
+            "after": dict(new),
             "eligible_net_delta": eligible_delta,
             "covered_net_delta": covered_delta,
             "uncovered_net_delta": eligible_delta - covered_delta,
-            "before_pct": old_rate, "after_pct": new_rate,
+            "before_pct": old_rate,
+            "after_pct": new_rate,
             "delta_percentage_points": (
                 round(new_rate - old_rate, 4)
-                if old_rate is not None and new_rate is not None else None
+                if old_rate is not None and new_rate is not None
+                else None
             ),
             "additional_covered_for_goal": required,
             "goal_pct": goal_pct,
@@ -185,8 +219,8 @@ def compare_coverage(before, after, *, goal_pct=90):
         }
     same_sha = a["sha"] == b["sha"]
     same_result = all(
-        families[key]["eligible_net_delta"] == 0 and
-        families[key]["covered_net_delta"] == 0
+        families[key]["eligible_net_delta"] == 0
+        and families[key]["covered_net_delta"] == 0
         for key in families
     )
     if not profile_equal:
@@ -203,7 +237,8 @@ def compare_coverage(before, after, *, goal_pct=90):
         "schema": SCHEMA + ".coverage-delta",
         "status": status,
         "profile_comparable": profile_equal,
-        "before_sha": a["sha"], "after_sha": b["sha"],
+        "before_sha": a["sha"],
+        "after_sha": b["sha"],
         "families": families,
         "causal_coverage_gain_credited": False,
         "exact_arc_mapping_verified": False,
@@ -214,41 +249,52 @@ def compare_coverage(before, after, *, goal_pct=90):
 def ldab_snapshot(report, repository, head_sha, *, artifact_sha256):
     """Keep a discovery census separate from authenticated runtime sessions."""
     require(isinstance(report, dict), "LDAB summary must be an object")
-    require(isinstance(artifact_sha256, str) and
-            DIGEST.fullmatch(artifact_sha256), "missing LDAB artifact hash")
+    require(
+        isinstance(artifact_sha256, str) and DIGEST.fullmatch(artifact_sha256),
+        "missing LDAB artifact hash",
+    )
     ldab = report.get("ldab_telemetry")
-    require(isinstance(ldab, dict) and
-            ldab.get("schema") == "mip.ldab.telemetry.v1",
-            "unrecognized LDAB producer")
-    require(report.get("repository") == repository and
-            report.get("head_sha") == head_sha and
-            ldab.get("source_sha") == head_sha and
-            ldab.get("repository") == repository,
-            "stale or mismatched LDAB evidence")
-    require(report.get("verification") == "PASS",
-            "LDAB producer not verified")
+    require(
+        isinstance(ldab, dict) and ldab.get("schema") == "mip.ldab.telemetry.v1",
+        "unrecognized LDAB producer",
+    )
+    require(
+        report.get("repository") == repository
+        and report.get("head_sha") == head_sha
+        and ldab.get("source_sha") == head_sha
+        and ldab.get("repository") == repository,
+        "stale or mismatched LDAB evidence",
+    )
+    require(report.get("verification") == "PASS", "LDAB producer not verified")
     source = ldab.get("source_census")
     runtime = ldab.get("runtime")
-    require(isinstance(source, dict) and isinstance(runtime, dict),
-            "LDAB surfaces missing")
+    require(
+        isinstance(source, dict) and isinstance(runtime, dict), "LDAB surfaces missing"
+    )
     root = source.get("root")
-    require(isinstance(root, dict) and
-            integer(root.get("candidate_file_count")) and
-            root.get("inventory_complete") is True and
-            root.get("evidence_level") == "SOURCE_DISCOVERY_ONLY",
-            "invalid root LDAB discovery census")
-    require(runtime.get("abacus_native_debug_sessions") is None and
-            runtime.get("authenticated_port_leases") is None and
-            runtime.get("ldab_verified_repairs") is None,
-            "source discovery cannot claim runtime proof")
+    require(
+        isinstance(root, dict)
+        and integer(root.get("candidate_file_count"))
+        and root.get("inventory_complete") is True
+        and root.get("evidence_level") == "SOURCE_DISCOVERY_ONLY",
+        "invalid root LDAB discovery census",
+    )
+    require(
+        runtime.get("abacus_native_debug_sessions") is None
+        and runtime.get("authenticated_port_leases") is None
+        and runtime.get("ldab_verified_repairs") is None,
+        "source discovery cannot claim runtime proof",
+    )
     return {
         "schema": SCHEMA + ".ldab",
-        "repository": repository, "source_sha": head_sha,
+        "repository": repository,
+        "source_sha": head_sha,
         "artifact_sha256": artifact_sha256,
         "root_candidate_files": root["candidate_file_count"],
         "nested_candidate_files": (
             source.get("nested", {}).get("candidate_file_count")
-            if isinstance(source.get("nested"), dict) else None
+            if isinstance(source.get("nested"), dict)
+            else None
         ),
         "native_debug_sessions": None,
         "authenticated_port_leases": None,
@@ -259,24 +305,36 @@ def ldab_snapshot(report, repository, head_sha, *, artifact_sha256):
 
 def state_fingerprint(pulse):
     """Ignore timestamps and prior comparisons, retain *all* observed facts."""
-    require(isinstance(pulse, dict) and pulse.get("schema") == SCHEMA,
-            "invalid spine snapshot")
-    payload = {k: v for k, v in pulse.items()
-               if k not in ("observed_at", "comparison", "state_digest")}
+    require(
+        isinstance(pulse, dict) and pulse.get("schema") == SCHEMA,
+        "invalid spine snapshot",
+    )
+    payload = {
+        k: v
+        for k, v in pulse.items()
+        if k not in ("observed_at", "comparison", "state_digest")
+    }
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(raw).hexdigest()
 
 
 def compare_pulses(before, after):
-    require(isinstance(before, dict) and before.get("schema") == SCHEMA,
-            "invalid previous spine")
-    require(isinstance(after, dict) and after.get("schema") == SCHEMA,
-            "invalid current spine")
-    require(before.get("repository") == after.get("repository"),
-            "spine repository mismatch")
-    require(before.get("inventory_complete") is True and
-            after.get("inventory_complete") is True,
-            "cannot assert stable with incomplete inventory")
+    require(
+        isinstance(before, dict) and before.get("schema") == SCHEMA,
+        "invalid previous spine",
+    )
+    require(
+        isinstance(after, dict) and after.get("schema") == SCHEMA,
+        "invalid current spine",
+    )
+    require(
+        before.get("repository") == after.get("repository"), "spine repository mismatch"
+    )
+    require(
+        before.get("inventory_complete") is True
+        and after.get("inventory_complete") is True,
+        "cannot assert stable with incomplete inventory",
+    )
     old_hash, new_hash = state_fingerprint(before), state_fingerprint(after)
     heads_match = before.get("main_sha") == after.get("main_sha") and (
         before.get("active_heads") == after.get("active_heads")
