@@ -326,6 +326,15 @@ def collect(reader, repo, *, prior=None, max_prs=50):
         )
     second = main_head(reader, repo)
     demand(first == second, "main advanced during pulse: reject mixed-source snapshot")
+    current_prs = open_prs(reader, repo)
+    demand(
+        current_prs == prs,
+        "PR heads advanced during pulse: reject mixed-source snapshot",
+    )
+    demand(
+        main_head(reader, repo) == first,
+        "main advanced after PR readback: reject mixed-source snapshot",
+    )
     result = {
         "schema": spine.SCHEMA,
         "repository": repo,

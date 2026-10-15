@@ -391,9 +391,7 @@ def _material_state(pulse):
                 }
             )
         else:
-            observations.append(
-                {k: v for k, v in observation.items() if k != "id"}
-            )
+            observations.append({k: v for k, v in observation.items() if k != "id"})
     return {
         "schema": SCHEMA,
         "repository": pulse.get("repository"),
@@ -423,7 +421,8 @@ def receipt_fingerprint(pulse):
         {
             k: v
             for k, v in pulse.items()
-            if k not in (
+            if k
+            not in (
                 "observed_at",
                 "comparison",
                 "state_digest",
@@ -431,6 +430,7 @@ def receipt_fingerprint(pulse):
             )
         }
     )
+
 
 def compare_pulses(before, after):
     require(

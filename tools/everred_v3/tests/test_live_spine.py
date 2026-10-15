@@ -173,12 +173,27 @@ class LiveSpineTests(unittest.TestCase):
             "SOURCE_DENOMINATOR_EVOLVED",
         )
         self.assertEqual(
-            delta[0]["measurement"]["families"]["branches"][
-                "eligible_net_delta"
-            ],
+            delta[0]["measurement"]["families"]["branches"]["eligible_net_delta"],
             4,
         )
         self.assertFalse(delta[0]["measurement"]["causal_coverage_gain_credited"])
+
+    def test_pr_advance_during_pulse_is_rejected(self):
+        class AdvancingReader(FakeReader):
+            def __init__(self):
+                super().__init__()
+                self.pr_reads = 0
+
+            def get(self, route):
+                value = super().get(route)
+                if "/pulls?" in route:
+                    self.pr_reads += 1
+                    if self.pr_reads == 2:
+                        value[0]["head"]["sha"] = "c" * 40
+                return value
+
+        with self.assertRaisesRegex(ValueError, "PR heads advanced"):
+            collect(AdvancingReader(), "GBOGEB/ABACUS")
 
     def test_wrong_head_run_fails_closed(self):
         api = FakeReader()

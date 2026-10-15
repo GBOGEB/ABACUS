@@ -235,25 +235,21 @@ class SpineCensusTests(unittest.TestCase):
         new = copy.deepcopy(old)
         new["observations"][0]["ci"]["matched_runs"][0]["id"] = 20
         new["observations"][0]["ci"]["matched_runs"][1]["id"] = 21
-        new["observations"][0]["producers"]["coverage"]["source"][
-            "artifact_id"
-        ] = 22
+        new["observations"][0]["producers"]["coverage"]["source"]["artifact_id"] = 22
         result = spine.compare_pulses(old, new)
         self.assertEqual(result["state"], "N_PLUS_1_EQUALS_N_OBSERVED_STATE")
         self.assertFalse(result["material_state_changed"])
         self.assertTrue(result["new_evidence_receipts"])
         self.assertFalse(result["full_history_claim"])
-        new["observations"][0]["ci"]["matched_runs"][0][
-            "conclusion"
-        ] = "failure"
+        new["observations"][0]["ci"]["matched_runs"][0]["conclusion"] = "failure"
         self.assertEqual(
             spine.compare_pulses(old, new)["state"],
             "SAME_HEADS_EVIDENCE_CHANGED",
         )
         new = copy.deepcopy(old)
-        new["observations"][0]["producers"]["coverage"]["totals"][
-            "branches"
-        ]["eligible"] += 1
+        new["observations"][0]["producers"]["coverage"]["totals"]["branches"][
+            "eligible"
+        ] += 1
         self.assertEqual(
             spine.compare_pulses(old, new)["state"],
             "SAME_HEADS_EVIDENCE_CHANGED",
