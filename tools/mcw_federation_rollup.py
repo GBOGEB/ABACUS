@@ -124,11 +124,20 @@ def rollup(bundle, artifact_root, previous=None):
         sha(node.get("source_sha"), 40, "source SHA")
         require(node.get("family") in FAMILIES, "unknown federation family")
         proof = read_proof(node, root)
+        observation = node.get("source_observation")
+        if observation is not None:
+            require(isinstance(observation, dict) and
+                    observation.get("evidence_grade") == "UNAUTHENTICATED_SOURCE_BYTES" and
+                    isinstance(observation.get("schema"), str) and
+                    isinstance(observation.get("metrics"), dict),
+                    "invalid source observation")
+            sha(observation.get("local_sha256"), 64, "source observation digest")
         counts[node["family"]] += 1
         reports.append({"id": identity, "repository": repo, "source_sha": node["source_sha"],
                         "family": node["family"], "byte_verified": proof is not None,
                         "evidence_grade": ("LOCAL_BYTE_MATCH_ONLY" if proof else "SOURCE_DISCOVERY_ONLY"),
                         "native_gha_authenticated": False,
+                        "source_observation": observation,
                         "proof": proof})
     graph = set()
     outgoing = Counter()
@@ -163,6 +172,8 @@ def rollup(bundle, artifact_root, previous=None):
             "counts": {"nodes": len(reports), "repositories": len({r["repository"] for r in reports}),
                        "families": len(counts), "local_byte_verified_nodes": evidenced,
                        "source_only_nodes": len(reports) - evidenced,
+                       "unverified_source_metric_nodes": sum(
+                           row["source_observation"] is not None for row in reports),
                        "declared_edges": len(graph), "declared_cross_repository_edges": cross,
                        "declared_fanout_sources": len(outgoing),
                        "max_declared_outdegree": max(outgoing.values(), default=0),

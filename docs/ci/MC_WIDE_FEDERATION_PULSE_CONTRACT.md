@@ -62,3 +62,42 @@ locally byte-matched members is not an authenticated GitHub success rate.
    comparable observations, and require separate M1-M3 qualification.
 
 The tool never claims release readiness or native federation operation.
+
+
+## Source-observation adapters (MCL, LDAB, BD)
+
+Use the existing producer JSON without interpreting an LDAB path as an
+executed debugger, a BD fingerprint as a resolved causal root, or an MCL
+test-passed count as a complete test denominator:
+
+```bash
+python tools/mcw_receipt_adapters.py \
+  --artifact-root ./source-receipts \
+  --repository GBOGEB/ABACUS \
+  --source-sha <exact-40-character-commit> \
+  --wave-id W1 --mcl mcl-pulse.json \
+  --ldab ldab-telemetry.json --bd bd-ldab-joined.json \
+  --output out/mcw-source-input.json
+python tools/mcw_federation_rollup.py \
+  --input out/mcw-source-input.json \
+  --artifact-root ./source-receipts \
+  --output out/mcw-source-rollup.json
+```
+
+All supplied producer receipts must describe the same repository and source
+commit. Each source file receives a local SHA-256, but this is not authenticated
+GitHub ZIP evidence. Their observations are tagged
+`UNAUTHENTICATED_SOURCE_BYTES`, never mapped to authenticated native proof.
+
+LDAB root and nested counts are **not added**; the nested index can overlap
+the root inventory. Actual debugger sessions, active workers, accepted root
+closures and formal admission remain UNKNOWN or HOLD. MCL coverage percentages
+are source-reported without a complete native test denominator or independent
+CI proof. BD findings remain candidate groups, subject to independent security
+review. The roll-up counts such observation nodes separately from byte-verified
+native-proof nodes.
+
+Local qualification of this disjoint adapter slice exercised 18/18 focused
+unit tests, with 244/244 statements and 46/46 branches covered under Python
+3.13 / Coverage.py 7.13.3. GitHub native CI and authenticated peer receipts
+remain separate decisions.
