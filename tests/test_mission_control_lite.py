@@ -100,6 +100,43 @@ class TestMissionControlLite(unittest.TestCase):
                                   authenticated_actor="GBOGEB",
                                   trusted_actors={"GBOGEB"}))
 
+    def test_receipt_rejects_same_size_byte_forgery(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "payload.json"
+            p.write_bytes(b"first")
+            r = receipt("m", "t", "root", "a" * 40, "run", [p])
+            p.write_bytes(b"other")
+            self.assertEqual(p.stat().st_size, r["artifacts"][0]["bytes"])
+            with self.assertRaises(ValueError):
+                ingest(Path(d) / "db.sqlite", r, d)
+
+    def test_receipt_rejects_parent_directory_traversal(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "trusted"
+            root.mkdir()
+            outside = Path(d) / "payload"
+            outside.write_bytes(b"proof")
+            r = receipt("m", "t", "root", "a" * 40, "run", [outside])
+            r["artifacts"][0]["path"] = "../payload"
+            with self.assertRaises(ValueError):
+                ingest(Path(d) / "db.sqlite", r, root)
+
+    def test_receipt_rejects_symlink_escape(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "trusted"
+            root.mkdir()
+            outside = Path(d) / "payload"
+            outside.write_bytes(b"proof")
+            link = root / "payload"
+            try:
+                link.symlink_to(outside)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable")
+            r = receipt("m", "t", "root", "a" * 40, "run", [outside])
+            r["artifacts"][0]["path"] = "payload"
+            with self.assertRaises(ValueError):
+                ingest(Path(d) / "db.sqlite", r, root)
+
     def test_empty_output_rejected(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"empty";p.write_bytes(b"")
