@@ -61,7 +61,7 @@ def compare(previous, current):
     }
 
 
-def build(report, test_logs, source_sha, event_sha, run_id, previous=None):
+def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phases=None):
     if not isinstance(source_sha, str) or not SHA.fullmatch(source_sha):
         raise ValueError("invalid executed source SHA")
     if not isinstance(event_sha, str) or not SHA.fullmatch(event_sha):
@@ -121,6 +121,34 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None):
         "verified_root_closures": 0,
         "merge_admission": "HOLD",
     }
+    if phases is not None:
+        if not isinstance(phases, list) or not phases:
+            raise ValueError("missing native phase timings")
+        names = set()
+        elapsed = 0.0
+        for phase in phases:
+            if not isinstance(phase, dict):
+                raise ValueError("invalid native phase record")
+            label = phase.get("phase")
+            seconds = phase.get("duration_seconds")
+            if not isinstance(label, str) or not label or label in names:
+                raise ValueError("duplicate or missing native phase")
+            if (not isinstance(seconds, (int, float)) or isinstance(seconds, bool)
+                    or seconds < 0 or phase.get("exit_code") != 0):
+                raise ValueError("invalid/failed native phase")
+            names.add(label)
+            elapsed += seconds
+        obj["execution_phases"] = phases
+        obj["timed_execution_seconds"] = round(elapsed, 6)
+        obj["tests_per_timed_second"] = (
+            round(obj["tests_passed"] / elapsed, 6) if elapsed else None
+        )
+        obj["job_queue_seconds"] = None
+        obj["wheel_unpack_seconds"] = None
+        obj["measurement_note"] = (
+            "Inside-job monotonic phase times only; queue and wheel extraction "
+            "require separate independent measurements."
+        )
     obj["comparison"] = compare(previous, obj)
     return obj
 
@@ -130,7 +158,7 @@ def main():
     parser.add_argument("--coverage-json", required=True, type=Path)
     parser.add_argument("--core-log", required=True, type=Path)
     parser.add_argument("--rex-log", required=True, type=Path)
-    parser.add_argument("--metrics-log", required=True, type=Path)
+    parser.add_argument("--metrics-log", required=True, type=Path)\n    parser.add_argument("--timing-log", type=Path)\n    parser.add_argument("--timing-tests-log", type=Path)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
