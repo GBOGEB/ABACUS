@@ -75,8 +75,8 @@ jobs:
           )
           PY
       - name: Upload read-only DOW fixture candidate evidence
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: qps-dow-fixture-${{ matrix.python-version }}-${{ github.run_id }}
+          name: qps-dow-fixture-${{matrix.python-version}}-${{github.run_id}}
           path: artifacts/qps_math_dow/
           if-no-files-found: error
