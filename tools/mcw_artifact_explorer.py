@@ -181,7 +181,6 @@ def render(report, style):
                        esc(item["stage"]) + '</td><td>' +
                        esc(item.get("action", "")) + '</td></tr>'
                        for item in report["triggers"])
-    count = report["role_counts"]
     warning = ("This is a cold-build snapshot. Generated binaries and remote "
                "attestation are NOT proven.")
     missing = report.get("missing_style_probes")
