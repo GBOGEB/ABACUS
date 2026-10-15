@@ -9,7 +9,10 @@ import pathlib
 import tempfile
 import unittest
 
-PATH = pathlib.Path(__file__).resolve().parents[1] / "tools/mip2/mip_python_dependency_guard.py"
+PATH = (
+    pathlib.Path(__file__).resolve().parents[1]
+    / "tools/mip2/mip_python_dependency_guard.py"
+)
 SPEC = importlib.util.spec_from_file_location("mip_python_dependency_guard", PATH)
 MOD = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MOD)
