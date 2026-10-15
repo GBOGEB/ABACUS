@@ -26,6 +26,7 @@ on:
       - 'scripts/code_purple_mip_unknown_rollup.py'
       - 'tests/test_code_purple_mip_unknown_rollup.py'
       - 'MIP/mip_statistical_observations.jsonl'
+      - 'MIP/mip_statistical_native_snapshot.json'
       - 'scripts/mip_statistical_readiness.py'
       - 'tests/test_mip_statistical_readiness.py'
       - 'tests/test_mip_statistical_negative_controls.py'
@@ -116,7 +117,9 @@ jobs:
             -p 'test_mip_b9_missing_branches.py' -v
           python scripts/mip_statistical_readiness.py \
             --input MIP/mip_statistical_observations.jsonl \
+            --native-evidence MIP/mip_statistical_native_snapshot.json \
             --output test_reports/mip_statistical_readiness.json
+          cp MIP/mip_statistical_native_snapshot.json test_reports/
           python scripts/code_purple_mip_unknown_rollup.py \
             --input MIP/code_purple_unknown_backlog.json \
             --output test_reports/code-purple-unknown-kpi.json \

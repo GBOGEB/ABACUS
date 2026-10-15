@@ -43,7 +43,7 @@ class ReadinessTests(unittest.TestCase):
         r = row()
         r.update(status="UNKNOWN", numerator=None, denominator=None)
         result = mod.evaluate([r])
-        self.assertEqual(0, result["series"][0]["native_comparable"])
+        self.assertEqual(0, result["series"][0]["native_marked_records"])
         self.assertFalse(result["series"][0]["MEASUREMENT_VALID"])
 
     def test_forged_receipt_rejected(self):
@@ -65,11 +65,15 @@ class ReadinessTests(unittest.TestCase):
     def test_multiple_jobs_same_run_do_not_certify_independence(self):
         a, b = row(1), row(2)
         b["run_id"] = a["run_id"]
+        b["evidence_url"] = a["evidence_url"]
+        b["exact_sha"] = a["exact_sha"]
         result = mod.evaluate([a, b])
         self.assertFalse(result["series"][0]["MEASUREMENT_VALID"])
 
     def test_unequal_denominators_block_backtest(self):
         rows = [row(i, numerator=0, denominator=i + 1) for i in range(1, 31)]
+        for r in rows:
+            r.update(family="coverage", metric="statement_coverage")
         result = mod.evaluate(rows, minimum=20, holdout=5)
         self.assertFalse(result["series"][0]["BACKTEST_ELIGIBLE"])
 
@@ -77,11 +81,12 @@ class ReadinessTests(unittest.TestCase):
         rows = [row(i, numerator=0) for i in range(1, 31)]
         result = mod.evaluate(rows, minimum=20, holdout=5)
         x = result["series"][0]
-        self.assertTrue(x["STABILITY_ASSESSABLE"])
+        self.assertFalse(x["STABILITY_ASSESSABLE"])
         self.assertFalse(x["PROCESS_STABLE"])
         self.assertFalse(x["CAPABILITY_ASSESSABLE"])
-        self.assertTrue(x["BACKTEST_ELIGIBLE"])
-        self.assertEqual(5, x["backtest"]["forecast_count"])
+        self.assertFalse(x["BACKTEST_ELIGIBLE"])
+        self.assertTrue(x["diagnostic_sample_threshold_met"])
+        self.assertEqual(5, x["diagnostic_backtest"]["forecast_count"])
 
 
 if __name__ == "__main__":

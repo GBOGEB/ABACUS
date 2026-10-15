@@ -60,3 +60,54 @@ security A10, BLACK/ISORT, Bandit/Safety, and eligible review separate.
 Deployment must preserve merge_admission=HOLD. Missing data, failed
 collection, and missing native OS/REX evidence remain UNKNOWN, never
 silent zero.
+
+## Readiness v2: selected receipts and process evidence
+
+The existing producer now emits `mip.statistical.readiness.v2`.
+Consumers shall check the schema before interpreting the following fields.
+
+| v1 field or inference | v2 treatment |
+| --- | --- |
+| `native_comparable` | `native_marked_records`: a label/count, not comparability |
+| `independent_runs` as distinct IDs | `distinct_runs`; `independent_runs` is null |
+| Label-only `MEASUREMENT_VALID` | Requires structure and supplied snapshot matches |
+| Count-only stability eligibility | `diagnostic_sample_threshold_met` only |
+| Count-only backtest eligibility | `diagnostic_backtest` only; admission stays false |
+
+`MEASUREMENT_VALID` and `M1_DECISION` apply only to
+`measurement_scope=SELECTED_RECEIPTS_ONLY`. They do not validate the
+workflow sampling frame. `PROCESS_SERIES_DECISION` remains HOLD;
+comparability and independence remain UNKNOWN. M2/M3 and merge admission
+remain HOLD even when selected receipts match their snapshot.
+
+The optional `--native-evidence` file uses `mip.github.snapshot.v1` with
+`runs` and `jobs` arrays containing selected GitHub API response fields.
+The matcher joins source SHA, run/job IDs, attempt, repository, exact
+run URL, terminal state, workflow outcome and observation time. A job
+may succeed in a failed workflow; the metric counts workflow outcomes.
+An offline snapshot match does not authenticate who acquired the file.
+Acquisition remains a separate review obligation. This is not a signed
+receipt or authorization to replace native evidence with a fixture.
+
+The committed snapshot was obtained through GitHub run and attempt-1
+job APIs during the assessment linked from PR #1989. It covers the
+13 historical ledger rows only. It does not add process observations
+or describe the current producer head. New observations require a
+corresponding independently acquired snapshot update.
+
+The existing Bootstrap workflow supplies and uploads that snapshot.
+Without a supplied snapshot, receipt M1 stays HOLD. Other statistical
+families require metric-specific artifact evidence and remain UNKNOWN
+when absent. The producer records SHA256 of its source, exact input
+bytes and supplied evidence bytes for replay.
+
+```sh
+python scripts/mip_statistical_readiness.py \
+  --input MIP/mip_statistical_observations.jsonl \
+  --native-evidence MIP/mip_statistical_native_snapshot.json \
+  --output test_reports/mip_statistical_readiness.json
+```
+
+Security repair remains owned by PR #2027 / issue #1738. A10 and
+independent review remain separate gates. Test and coverage increases
+are implementation evidence, not BD root closure or process samples.
