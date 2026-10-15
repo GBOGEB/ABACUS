@@ -59,6 +59,18 @@ def _github_diff_ranges() -> List[List[str]]:
     sha = os.environ.get("GITHUB_SHA", "HEAD")
     ranges: List[List[str]] = []
 
+    # PRs must use their merge base, not the first available event range.
+    # A base..synthetic-merge diff can include unrelated base-branch history.
+    if event_name == "pull_request" and base_sha:
+        if not _commit_exists(base_sha):
+            _fetch_ref(base_sha)
+        if _commit_exists(base_sha):
+            merge_base = _run(["git", "merge-base", base_sha, "HEAD"], check=False)
+            if merge_base.returncode == 0:
+                ancestor = merge_base.stdout.strip()
+                if ancestor and _commit_exists(ancestor):
+                    return [[f"{ancestor}..HEAD"]]
+
     for candidate in (base_sha, before):
         if not _is_real_sha(candidate):
             continue
