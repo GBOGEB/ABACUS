@@ -4,6 +4,7 @@ on:
     paths:
       - 'runtime/federation/qps_math_wormhole_dow.py'
       - 'tests/test_qps_math_wormhole_dow.py'
+      - 'tests/fixtures/qps_math_wormhole_provider_v1.json'
       - 'tests/test_qps_math_wormhole_dow_adversarial.py'
       - 'scripts/qps_math_dow_coverage_flight.py'
       - 'docs/ci/QPS_MATH_WORMHOLE_DOW_V1.md'
