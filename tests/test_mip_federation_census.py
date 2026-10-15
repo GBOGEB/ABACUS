@@ -58,7 +58,7 @@ class FederationCensusTests(unittest.TestCase):
 
     def test_missing_domains_are_unknown_not_zero(self):
         result = self.evaluate()
-        self.assertEqual(16, result["total_domain_slots"])
+        self.assertEqual(24, result["total_domain_slots"])
         self.assertEqual(0, result["filled_receipt_slots"])
         self.assertEqual("UNKNOWN", result["cells"][0]["locally_hash_verified_receipts"])
         self.assertEqual("UNKNOWN", result["authenticated_fanout"])
@@ -126,6 +126,33 @@ class FederationCensusTests(unittest.TestCase):
         self.assertEqual(result["authenticated_fanout"], "UNKNOWN")
         self.assertEqual(result["federation_main_coverage_delta"], "UNKNOWN")
 
+    def test_three_repositories_extend_breadth_without_rex_credit(self):
+        """Three SHA observations are not three authenticated runtimes."""
+        self.manifest["repositories"].extend([
+            {"repository": "GBOGEB/CODEX", "head_sha": "b" * 40,
+             "evidence": []},
+            {"repository": "GBOGEB/cryoplant-project",
+             "head_sha": "c" * 40, "evidence": []},
+        ])
+        result = self.evaluate()
+        self.assertEqual(result["repository_breadth"], 3)
+        self.assertEqual(result["domain_breadth"], 8)
+        self.assertEqual(result["total_domain_slots"], 24)
+        self.assertEqual(result["filled_receipt_slots"], 0)
+        self.assertEqual(result["authenticated_fanout"], "UNKNOWN")
+        self.assertEqual(result["merged_root_closures"], "UNKNOWN")
+        self.assertIn("GBOGEB/cryoplant-project", MODULE.markdown(result))
+
+    def test_private_remote_repo_missing_is_unknown_not_zero(self):
+        """A registered but unseen private repository must remain UNKNOWN."""
+        result = self.evaluate()
+        cells = [row for row in result["cells"] if row["repository"]
+                 == "GBOGEB/cryoplant-project"]
+        self.assertEqual(len(cells), 8)
+        self.assertTrue(all(x["head_sha"] == "UNKNOWN" for x in cells))
+        self.assertTrue(all(x["locally_hash_verified_receipts"]
+                            == "UNKNOWN" for x in cells))
+
     def test_cli_emits_two_deterministic_text_receipts(self):
         """Cover the executable entrypoint and verify its paired outputs."""
         source = self.root / "manifest.json"
@@ -143,7 +170,7 @@ class FederationCensusTests(unittest.TestCase):
         markdown_path = output / "mip_federation_census.md"
         data = json.loads(json_path.read_text(encoding="utf-8"))
         markdown = markdown_path.read_text(encoding="utf-8")
-        self.assertEqual(data["total_domain_slots"], 16)
+        self.assertEqual(data["total_domain_slots"], 24)
         self.assertEqual(data["filled_receipt_slots"], 0)
         self.assertEqual(data["merge_admission"], "HOLD")
         self.assertIn("Mission Control-wide federation census", markdown)
