@@ -266,6 +266,7 @@ class TestMissionBurndown(unittest.TestCase):
             if path.endswith("/comments?per_page=100"):
                 return [latest], ""
             self.fail(f"unexpected GitHub API route: {path}")
+            raise AssertionError(f"unexpected GitHub API route: {path}")
 
         with patch.object(mod, "list_open_issues", return_value=[incident, ordinary]):
             with patch.object(mod, "github_get", side_effect=get):
