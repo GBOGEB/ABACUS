@@ -16,6 +16,11 @@ INPUT_SCHEMA = "mcw.federation.input.v1"
 PROOF_SCHEMA = "mcw.federation.proof.v1"
 OUTPUT_SCHEMA = "mcw.federation.rollup.v1"
 FAMILIES = frozenset(("MCL", "MIP", "DMAIC", "REX", "LDAB", "CENSUS", "3P", "PCA"))
+SOURCE_OBSERVATION_SCHEMAS = {
+    "MCL": "mcl.coverage.pulse.v1",
+    "LDAB": "mip.ldab.telemetry.v1",
+    "CENSUS": "bd.ldab.joined.census.v1",
+}
 EDGE_KINDS = frozenset(("evidence", "feedback", "dependency", "challenge"))
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
@@ -128,7 +133,8 @@ def rollup(bundle, artifact_root, previous=None):
         if observation is not None:
             require(isinstance(observation, dict) and
                     observation.get("evidence_grade") == "UNAUTHENTICATED_SOURCE_BYTES" and
-                    isinstance(observation.get("schema"), str) and
+                    observation.get("schema") ==
+                    SOURCE_OBSERVATION_SCHEMAS.get(node["family"]) and
                     isinstance(observation.get("metrics"), dict),
                     "invalid source observation")
             sha(observation.get("local_sha256"), 64, "source observation digest")
