@@ -6,13 +6,8 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "scripts"))
 
-from live_spine import (
-    collect,
-    coverage_transitions,
-    latest_runs,
-    main_head,
-    open_prs,
-)
+import live_spine as observer
+from live_spine import collect, coverage_transitions, latest_runs, main_head, open_prs
 
 A = "a" * 40
 B = "b" * 40
@@ -194,6 +189,30 @@ class LiveSpineTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "PR heads advanced"):
             collect(AdvancingReader(), "GBOGEB/ABACUS")
+
+    def test_one_source_race_is_retried_with_new_heads(self):
+        class OneMove(FakeReader):
+            def __init__(self):
+                super().__init__()
+                self.pr_reads = 0
+
+            def get(self, route):
+                response = super().get(route)
+                if "/pulls?" in route:
+                    self.pr_reads += 1
+                    if self.pr_reads >= 2:
+                        response[0]["head"]["sha"] = "c" * 40
+                return response
+
+        report = observer.collect_with_readback_retry(
+            OneMove(), "GBOGEB/ABACUS", retries=1
+        )
+        self.assertEqual(report["collection_attempts"], 2)
+        self.assertEqual(report["active_heads"][0]["sha"], "c" * 40)
+        self.assertTrue(report["inventory_complete"])
+        self.assertEqual(
+            report["comparison"]["state"], "FIRST_OBSERVATION_NOT_STABILITY"
+        )
 
     def test_wrong_head_run_fails_closed(self):
         api = FakeReader()

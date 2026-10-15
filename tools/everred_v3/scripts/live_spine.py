@@ -373,12 +373,33 @@ def collect(reader, repo, *, prior=None, max_prs=50):
     return result
 
 
+def collect_with_readback_retry(reader, repo, *, prior=None, max_prs=50, retries=1):
+    """Retry a genuine source race once, never reuse an inconsistent census."""
+    demand(type(retries) is int and 0 <= retries <= 2, "invalid retry budget")
+    for index in range(retries + 1):
+        try:
+            report = collect(reader, repo, prior=prior, max_prs=max_prs)
+        except ValueError as error:
+            reason = str(error)
+            race = (
+                "advanced during pulse" in reason
+                or "advanced after PR readback" in reason
+            )
+            if not race or index == retries:
+                raise
+            continue
+        report["collection_attempts"] = index + 1
+        return report
+    raise AssertionError("unreachable observation state")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--max-prs", type=int, default=50)
     parser.add_argument("--previous", type=Path)
+    parser.add_argument("--readback-retries", type=int, default=1)
     args = parser.parse_args()
     demand(args.max_prs > 0, "max-prs must be positive")
     reader = GitHubReadOnly()
@@ -387,7 +408,13 @@ def main():
         if args.previous
         else _prior(reader, args.repo)
     )
-    report = collect(reader, args.repo, prior=previous, max_prs=args.max_prs)
+    report = collect_with_readback_retry(
+        reader,
+        args.repo,
+        prior=previous,
+        max_prs=args.max_prs,
+        retries=args.readback_retries,
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -419,6 +446,7 @@ def main():
                     x["producers"]["coverage"]["state"] == "INVALID_NATIVE_PRODUCER"
                     for x in report["observations"]
                 ),
+                "readback_attempts": report["collection_attempts"],
                 "n_plus_one": report["comparison"]["state"],
                 "coverage_transition_count": len(report["coverage_transitions"]),
                 "material_state_digest": report["state_digest"],
