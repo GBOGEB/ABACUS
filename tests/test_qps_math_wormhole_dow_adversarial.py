@@ -83,7 +83,7 @@ class DOWAdversarialTests(TestCase):
 
     def test_path_traversal_and_absolute_paths(self):
         for path in (
-            "../private.json", "/tmp/private.json", r"private\secret.json",
+            "../private.json", (Path(tempfile.gettempdir()) / "private.json").as_posix(), r"private\secret.json",
             "C:private.json", "folder/./file.json", "folder/../file.json",
         ):
             with self.subTest(path=path):
