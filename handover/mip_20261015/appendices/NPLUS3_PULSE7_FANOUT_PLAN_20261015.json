@@ -1,0 +1,155 @@
+{
+  "schema": "code-purple.nplus3.pulse7-fanout/v1",
+  "date": "2026-10-15",
+  "authority": "APPEND_ONLY_PROPOSAL_AND_READBACK",
+  "admission": "HOLD",
+  "dispatch_executed": false,
+  "verified_worker_sessions": 0,
+  "fanout_configuration": {
+    "planned_lanes": 6,
+    "max_simultaneous_writer_per_root": 1,
+    "exact_sha_required": true,
+    "first_red_dedupe": true,
+    "root_owner_lease_required": true,
+    "dependency_ordered_fanin": true
+  },
+  "observations": [
+    {
+      "pr": 1997,
+      "head": "d548c28c47cff6b450c5f28712b123ae1dec4530",
+      "head_moved": true,
+      "new_head_coverage": null
+    },
+    {
+      "pr": 2024,
+      "head": "4aae61e3cfd52061e1183db4b3281a77b22fd5c0",
+      "checks_total": 111,
+      "first_page_returned": 100,
+      "first_page_pass": 88,
+      "first_page_fail": [
+        "Full Red Proof Summary",
+        "Security Scanning"
+      ],
+      "first_page_pending": 1
+    },
+    {
+      "pr": 2027,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "checks_total": 75,
+      "checks_fail": 12
+    },
+    {
+      "pr": 2030,
+      "head": "f56dddc7e13d67b65712691332ceb180d100c64a",
+      "checks_total": 108,
+      "first_page_returned": 100,
+      "first_page_pass": 87,
+      "first_page_fail": [
+        "PR Feedback Gate",
+        "Test - Ubuntu (3.11)",
+        "Security Scanning"
+      ],
+      "first_page_pending": 1
+    }
+  ],
+  "lanes": [
+    {
+      "id": "L1",
+      "root": "PYTHON_COMPAT",
+      "prs": [
+        2024,
+        2026,
+        2029
+      ],
+      "action": "Evaluate one compatibility source repair and reconcile dependent branches after governed integration"
+    },
+    {
+      "id": "L2",
+      "root": "SAFETY_A10",
+      "prs": [
+        2027,
+        1995
+      ],
+      "action": "Independent Security/Safety/A10 disposition; no waivers or automatic allowlist"
+    },
+    {
+      "id": "L3",
+      "root": "COVERAGE_C0_C5",
+      "prs": [
+        1997,
+        2030
+      ],
+      "action": "New-head W70 and C1 scoped numerator and denominator; matched common test cohort only"
+    },
+    {
+      "id": "L4",
+      "root": "CI_GOVERNANCE",
+      "prs": [
+        1995,
+        1997,
+        2027
+      ],
+      "action": "Canonical workflow inventory and feedback exact head; keep independent checks"
+    },
+    {
+      "id": "L5",
+      "root": "MISSIONCONTROL_M3",
+      "prs": [
+        552,
+        553,
+        554,
+        555,
+        556,
+        557
+      ],
+      "action": "Choose source-owned M3 repair and exact-head validate Atlas; no duplicate commits"
+    },
+    {
+      "id": "L6",
+      "root": "FEDERATION_H1_H4",
+      "prs": [
+        2025
+      ],
+      "action": "Authenticate gg_MATH→CODEX→ABACUS→QPS origin, payload bytes and receiver receipt; owner acceptance separate"
+    }
+  ],
+  "telemetry_contract": {
+    "fields": [
+      "root_id",
+      "owner",
+      "source_sha",
+      "base_sha",
+      "run_id",
+      "job_id",
+      "run_attempt",
+      "artifact_sha256",
+      "test_passed",
+      "test_total",
+      "covered_lines",
+      "eligible_lines",
+      "covered_branches",
+      "eligible_branches",
+      "scope_digest",
+      "source_cohort_id",
+      "queue_started_at",
+      "queue_duration_ms",
+      "execution_duration_ms",
+      "first_red_fingerprint",
+      "prior_first_red_fingerprint",
+      "review_identity",
+      "authority_gate",
+      "result"
+    ],
+    "qualified_gain_only_if": "same cohort, tool, scope, source class and eligible denominator or controlled normalized comparison",
+    "missing_values": null
+  },
+  "unknowns": [
+    "new-head W70 coverage",
+    "C1 exact-head coverage uplift",
+    "true queue p95",
+    "authenticated worker fanout throughput",
+    "distinct root closures",
+    "governed merge eligibility",
+    "QPS engineering approval"
+  ]
+}
