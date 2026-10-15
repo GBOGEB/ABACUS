@@ -54,6 +54,7 @@ class ColdBuildTests(unittest.TestCase):
             self.assertIn("Build DAG", page)
             self.assertIn("SHA-256", page)
             self.assertIn('id="format"', page)
+            self.assertIn('[hidden]{display:none!important}', page)
             self.assertIn("Merge admission: HOLD", page)
             self.assertNotIn("<script src=", page)
 

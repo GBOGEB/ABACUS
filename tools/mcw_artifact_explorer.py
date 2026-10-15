@@ -186,7 +186,7 @@ def render(report, style):
 <style>
 :root{--purple:%s;--measure:%s;--analyze:%s;--improve:%s;--control:%s;--red:%s;--bg:#f7f7fa;--panel:#fff;--ink:#242331;--muted:#595668;--border:#dad8e2}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Aptos,Arial,sans-serif}
-a{color:var(--purple)}.shell{max-width:1200px;margin:auto;padding:0 22px 70px}
+[hidden]{display:none!important}a{color:var(--purple)}.shell{max-width:1200px;margin:auto;padding:0 22px 70px}
 header{background:#261a35;color:white;padding:22px max(22px,calc((100vw - 1156px)/2));border-bottom:5px solid var(--purple)}
 header small{letter-spacing:.1em;text-transform:uppercase;color:#d6cae1}header h1{font-size:clamp(1.6rem,3vw,2.5rem);margin:.3rem 0}
 header p{max-width:800px;color:#e3dced;margin:0}.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
