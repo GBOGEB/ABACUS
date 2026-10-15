@@ -171,7 +171,9 @@ class SpineCensusTests(unittest.TestCase):
         }
         next_read = copy.deepcopy(original)
         next_read["observed_at"] = "2026-10-15T01:00:00Z"
-        self.assertEqual(spine.state_fingerprint(original), spine.state_fingerprint(next_read))
+        self.assertEqual(
+            spine.state_fingerprint(original), spine.state_fingerprint(next_read)
+        )
         self.assertEqual(
             spine.compare_pulses(original, next_read)["state"],
             "N_PLUS_1_EQUALS_N_OBSERVED_STATE",
@@ -185,6 +187,76 @@ class SpineCensusTests(unittest.TestCase):
         self.assertEqual(
             spine.compare_pulses(original, next_read)["state"],
             "SOURCE_REVISION_OR_PR_SET_CHANGED",
+        )
+
+    def test_new_observer_receipt_is_not_a_source_change(self):
+        old = {
+            "schema": spine.SCHEMA,
+            "repository": "GBOGEB/ABACUS",
+            "main_sha": A,
+            "inventory_complete": True,
+            "active_heads": [{"number": 99, "sha": B}],
+            "observations": [
+                {
+                    "pr_number": 99,
+                    "source_sha": B,
+                    "ci": {
+                        "current_window_complete": True,
+                        "matched_runs": [
+                            {
+                                "id": 10,
+                                "name": "Full CI",
+                                "event": "pull_request",
+                                "status": "completed",
+                                "conclusion": "success",
+                            },
+                            {
+                                "id": 11,
+                                "name": "EVERRED V3 Governed Control Plane",
+                                "event": "pull_request",
+                                "status": "completed",
+                                "conclusion": "success",
+                            },
+                        ],
+                    },
+                    "producers": {
+                        "coverage": {
+                            **coverage(B, 98, 1, 50, 1),
+                            "workflow_conclusion": "success",
+                        },
+                        "ldab": {
+                            "state": "UNKNOWN_NO_EXACT_HEAD_LDAB",
+                            "source_sha": B,
+                        },
+                    },
+                }
+            ],
+        }
+        new = copy.deepcopy(old)
+        new["observations"][0]["ci"]["matched_runs"][0]["id"] = 20
+        new["observations"][0]["ci"]["matched_runs"][1]["id"] = 21
+        new["observations"][0]["producers"]["coverage"]["source"][
+            "artifact_id"
+        ] = 22
+        result = spine.compare_pulses(old, new)
+        self.assertEqual(result["state"], "N_PLUS_1_EQUALS_N_OBSERVED_STATE")
+        self.assertFalse(result["material_state_changed"])
+        self.assertTrue(result["new_evidence_receipts"])
+        self.assertFalse(result["full_history_claim"])
+        new["observations"][0]["ci"]["matched_runs"][0][
+            "conclusion"
+        ] = "failure"
+        self.assertEqual(
+            spine.compare_pulses(old, new)["state"],
+            "SAME_HEADS_EVIDENCE_CHANGED",
+        )
+        new = copy.deepcopy(old)
+        new["observations"][0]["producers"]["coverage"]["totals"][
+            "branches"
+        ]["eligible"] += 1
+        self.assertEqual(
+            spine.compare_pulses(old, new)["state"],
+            "SAME_HEADS_EVIDENCE_CHANGED",
         )
 
     def test_incomplete_inventory_does_not_assert_stability(self):

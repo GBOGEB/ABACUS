@@ -16,8 +16,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from native_ingest import GitHubReadOnly, _zip_from_github
 import spine_census as spine
+from native_ingest import GitHubReadOnly, _zip_from_github
 
 
 def demand(condition, reason):
@@ -200,7 +200,9 @@ def evidence_from_runs(reader, repo, sha, runs):
                 summary = json.loads(_one(members, "mip-n2-self-index-summary.json"))
                 digest = artifact["digest"]
                 demand(digest.startswith("sha256:"), "native LDAB artifact hash absent")
-                ldab = spine.ldab_snapshot(summary, repo, sha, artifact_sha256=digest[7:])
+                ldab = spine.ldab_snapshot(
+                    summary, repo, sha, artifact_sha256=digest[7:]
+                )
                 ldab["workflow_conclusion"] = run.get("conclusion")
             except (ValueError, KeyError, TypeError, OSError) as error:
                 ldab = {
@@ -251,6 +253,53 @@ def _prior(reader, repo):
     return json.loads(_one(members, "everred-spine-state.json"))
 
 
+def coverage_transitions(previous, current):
+    """Scope-checked source growth for each comparable main/PR lineage."""
+    if not isinstance(previous, dict):
+        return []
+    old = previous.get("observations", [])
+    require(isinstance(old, list), "invalid previous observations")
+    prior_by_pr = {x.get("pr_number"): x for x in old if isinstance(x, dict)}
+    deltas = []
+    for observation in current.get("observations", []):
+        key = observation["pr_number"]
+        older = prior_by_pr.get(key)
+        current_cov = observation["producers"].get("coverage", {})
+        earlier_cov = (
+            older.get("producers", {}).get("coverage", {})
+            if isinstance(older, dict)
+            else {}
+        )
+        if (
+            earlier_cov.get("state") == "MEASURED_SOURCE_BOUND_NOT_ADMISSION"
+            and current_cov.get("state") == "MEASURED_SOURCE_BOUND_NOT_ADMISSION"
+        ):
+            try:
+                result = spine.compare_coverage(earlier_cov, current_cov)
+            except ValueError as exc:
+                result = {
+                    "status": "UNKNOWN_INVALID_COMPARISON",
+                    "reason": str(exc)[:180],
+                }
+        else:
+            result = {
+                "status": "UNKNOWN_MISSING_MATCHED_NATIVE_COVERAGE",
+                "before_state": earlier_cov.get("state"),
+                "after_state": current_cov.get("state"),
+            }
+        deltas.append(
+            {
+                "pr_number": key,
+                "before_sha": (
+                    older.get("source_sha") if isinstance(older, dict) else None
+                ),
+                "after_sha": observation["source_sha"],
+                "measurement": result,
+            }
+        )
+    return deltas
+
+
 def collect(reader, repo, *, prior=None, max_prs=50):
     first = main_head(reader, repo)
     prs = open_prs(reader, repo)
@@ -298,6 +347,7 @@ def collect(reader, repo, *, prior=None, max_prs=50):
         "authority_transfer": False,
     }
     result["state_digest"] = spine.state_fingerprint(result)
+    result["coverage_transitions"] = coverage_transitions(prior, result)
     if prior is None:
         result["comparison"] = {
             "state": "FIRST_OBSERVATION_NOT_STABILITY",
@@ -361,6 +411,8 @@ def main():
                     for x in report["observations"]
                 ),
                 "n_plus_one": report["comparison"]["state"],
+                "coverage_transition_count": len(report["coverage_transitions"]),
+                "material_state_digest": report["state_digest"],
                 "merges_authorized": False,
             },
             sort_keys=True,

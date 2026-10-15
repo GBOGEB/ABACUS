@@ -303,20 +303,134 @@ def ldab_snapshot(report, repository, head_sha, *, artifact_sha256):
     }
 
 
-def state_fingerprint(pulse):
-    """Ignore timestamps and prior comparisons, retain *all* observed facts."""
+def _material_producer(producer):
+    """Strip volatile receipt IDs, never convert missing evidence to zero."""
+    if not isinstance(producer, dict):
+        return {"state": "UNKNOWN_PRODUCER"}
+    state = producer.get("state")
+    if state == "MEASURED_SOURCE_BOUND_NOT_ADMISSION":
+        binding = producer.get("source") or {}
+        return {
+            "state": state,
+            "source_sha": binding.get("sha"),
+            "workflow_sha256": binding.get("workflow_sha256"),
+            "config_sha256": binding.get("config_sha256"),
+            "tool_version": producer.get("tool_version"),
+            "scope": producer.get("scope"),
+            "totals": producer.get("totals"),
+            "modules": producer.get("modules"),
+        }
+    if state == "SOURCE_DISCOVERY_VERIFIED_RUNTIME_UNKNOWN":
+        return {
+            k: producer.get(k)
+            for k in (
+                "state",
+                "source_sha",
+                "root_candidate_files",
+                "nested_candidate_files",
+                "native_debug_sessions",
+                "authenticated_port_leases",
+                "verified_repairs",
+            )
+        }
+    return {
+        "state": state,
+        "source_sha": producer.get("source_sha"),
+        "reason": producer.get("reason"),
+    }
+
+
+def _material_ci(census):
+    """Compare latest observed conclusion by workflow, not volatile run IDs."""
+    require(isinstance(census, dict), "invalid workflow census")
+    rows = census.get("matched_runs")
+    require(isinstance(rows, list), "native run window missing")
+    latest = {}
+    for row in rows:
+        require(isinstance(row, dict), "invalid native workflow record")
+        name, event = row.get("name"), row.get("event")
+        require(isinstance(name, str) and name, "missing workflow identity")
+        if name == "EVERRED V3 Governed Control Plane":
+            continue  # A new observation must not alter its own comparison.
+        require(isinstance(event, str), "missing workflow event")
+        key = (name, event)
+        if key not in latest:  # Native producer enumerates newest first.
+            latest[key] = {
+                "workflow": name,
+                "event": event,
+                "status": row.get("status"),
+                "conclusion": row.get("conclusion"),
+            }
+    return {
+        "window_complete": census.get("current_window_complete"),
+        "workflow_states": [latest[k] for k in sorted(latest)],
+    }
+
+
+def _material_state(pulse):
+    """Logical exact-head snapshot; excludes new run/attempt/ZIP identities."""
     require(
         isinstance(pulse, dict) and pulse.get("schema") == SCHEMA,
         "invalid spine snapshot",
     )
-    payload = {
-        k: v
-        for k, v in pulse.items()
-        if k not in ("observed_at", "comparison", "state_digest")
+    items = pulse.get("observations", [])
+    require(isinstance(items, list), "observations must be a list")
+    observations = []
+    for observation in items:
+        require(isinstance(observation, dict), "invalid observation")
+        if "ci" in observation:
+            producers = observation.get("producers", {})
+            require(isinstance(producers, dict), "invalid producer observations")
+            observations.append(
+                {
+                    "pr_number": observation.get("pr_number"),
+                    "source_sha": observation.get("source_sha"),
+                    "ci": _material_ci(observation["ci"]),
+                    "coverage": _material_producer(producers.get("coverage")),
+                    "ldab": _material_producer(producers.get("ldab")),
+                }
+            )
+        else:
+            observations.append(
+                {k: v for k, v in observation.items() if k != "id"}
+            )
+    return {
+        "schema": SCHEMA,
+        "repository": pulse.get("repository"),
+        "main_sha": pulse.get("main_sha"),
+        "active_heads": pulse.get("active_heads"),
+        "inventory_complete": pulse.get("inventory_complete"),
+        "history_census_complete": pulse.get("history_census_complete"),
+        "run_window_scope": pulse.get("run_window_scope"),
+        "observations": observations,
     }
-    raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+
+
+def _sha256_object(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(raw).hexdigest()
 
+
+def state_fingerprint(pulse):
+    """Material observed state, not workflow-run self-observation churn."""
+    return _sha256_object(_material_state(pulse))
+
+
+def receipt_fingerprint(pulse):
+    """Separate digest tracks new run/artifact evidence even at a stable N."""
+    require(isinstance(pulse, dict), "invalid receipt input")
+    return _sha256_object(
+        {
+            k: v
+            for k, v in pulse.items()
+            if k not in (
+                "observed_at",
+                "comparison",
+                "state_digest",
+                "coverage_transitions",
+            )
+        }
+    )
 
 def compare_pulses(before, after):
     require(
@@ -350,6 +464,12 @@ def compare_pulses(before, after):
         "old_digest": old_hash,
         "new_digest": new_hash,
         "source_heads_identical": heads_match,
+        "material_state_changed": old_hash != new_hash,
+        "new_evidence_receipts": (
+            receipt_fingerprint(before) != receipt_fingerprint(after)
+        ),
+        "stability_scope": "CURRENT_EXACT_HEAD_LATEST_100_RUNS_PER_HEAD",
+        "full_history_claim": False,
         "unknowns_resolved_implicitly": False,
         "merge_authorized": False,
     }

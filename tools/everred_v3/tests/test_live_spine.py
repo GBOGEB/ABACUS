@@ -6,7 +6,13 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "scripts"))
 
-from live_spine import collect, latest_runs, main_head, open_prs
+from live_spine import (
+    collect,
+    coverage_transitions,
+    latest_runs,
+    main_head,
+    open_prs,
+)
 
 A = "a" * 40
 B = "b" * 40
@@ -101,6 +107,77 @@ class LiveSpineTests(unittest.TestCase):
         self.assertFalse(x["inventory_complete"])
         self.assertFalse(x["history_census_complete"])
         self.assertFalse(x["observations"][1]["ci"]["current_window_complete"])
+
+    def test_inherited_run_ids_do_not_manufacture_state_change(self):
+        api = FakeReader()
+        previous = collect(api, "GBOGEB/ABACUS")
+        api.run["workflow_runs"][0]["id"] = 91
+        current = collect(api, "GBOGEB/ABACUS", prior=previous)
+        self.assertEqual(
+            current["comparison"]["state"],
+            "N_PLUS_1_EQUALS_N_OBSERVED_STATE",
+        )
+        self.assertTrue(current["comparison"]["new_evidence_receipts"])
+
+    def test_coverage_transitions_include_new_denominator(self):
+        from spine_census import SCHEMA
+
+        def metric(sha, covered, eligible, branches, branch_total):
+            return {
+                "schema": SCHEMA + ".coverage",
+                "source": {
+                    "repository": "GBOGEB/ABACUS",
+                    "sha": sha,
+                    "run_id": 42,
+                    "artifact_id": 44,
+                    "artifact_sha256": "a" * 64,
+                    "workflow_sha256": "b" * 64,
+                    "config_sha256": "c" * 64,
+                },
+                "tool_version": "7.16.2",
+                "scope": ["scripts/bandit.py"],
+                "totals": {
+                    "statements": {"covered": covered, "eligible": eligible},
+                    "branches": {"covered": branches, "eligible": branch_total},
+                },
+                "state": "MEASURED_SOURCE_BOUND_NOT_ADMISSION",
+            }
+
+        before = {
+            "observations": [
+                {
+                    "pr_number": 99,
+                    "source_sha": A,
+                    "producers": {
+                        "coverage": metric(A, 68, 94, 35, 46),
+                    },
+                }
+            ]
+        }
+        after = {
+            "observations": [
+                {
+                    "pr_number": 99,
+                    "source_sha": B,
+                    "producers": {
+                        "coverage": metric(B, 97, 98, 49, 50),
+                    },
+                }
+            ]
+        }
+        delta = coverage_transitions(before, after)
+        self.assertEqual(len(delta), 1)
+        self.assertEqual(
+            delta[0]["measurement"]["status"],
+            "SOURCE_DENOMINATOR_EVOLVED",
+        )
+        self.assertEqual(
+            delta[0]["measurement"]["families"]["branches"][
+                "eligible_net_delta"
+            ],
+            4,
+        )
+        self.assertFalse(delta[0]["measurement"]["causal_coverage_gain_credited"])
 
     def test_wrong_head_run_fails_closed(self):
         api = FakeReader()
