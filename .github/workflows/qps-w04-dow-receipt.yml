@@ -14,7 +14,7 @@ jobs:
   validate-w04-dow-receipt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
@@ -126,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ABACUS parent
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '3.12'}
       - run: python -m pip install --disable-pip-version-check PyYAML
@@ -146,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ABACUS parent
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with: {path: parent}
       - name: Check private child credential
         id: credential
@@ -157,7 +157,7 @@ jobs:
           if [ -n "$QPS_REPO_READ_TOKEN" ]; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
       - name: Checkout request-bound QPS child SSOT
         if: steps.credential.outputs.available == 'true'
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: GBOGEB/cryoplant-project
           ref: ${{ env.QPS_W04_CHILD_SHA }}

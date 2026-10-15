@@ -36,7 +36,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -96,7 +96,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -145,7 +145,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -186,7 +186,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -248,7 +248,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -281,7 +281,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -321,7 +321,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Download registry artifacts
         uses: actions/download-artifact@v8
@@ -357,7 +357,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Download registry artifacts
         uses: actions/download-artifact@v8
@@ -423,7 +423,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       
       - name: Update workstream manifest
         run: |

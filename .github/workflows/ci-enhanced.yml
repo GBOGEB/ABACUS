@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '${{ env.PYTHON_VERSION }}'}
       - uses: actions/cache@v6
@@ -68,7 +68,7 @@ jobs:
       matrix:
         python-version: ["3.11"]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '${{ matrix.python-version }}'}
       - uses: actions/cache@v6
@@ -93,7 +93,7 @@ jobs:
     needs: lint
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - run: |
           set -euxo pipefail
           if command -v dnf >/dev/null 2>&1; then sudo dnf install -y python3.11 python3-devel gcc git; elif command -v yum >/dev/null 2>&1; then sudo yum install -y python3.11 python3-devel gcc git; fi
@@ -113,7 +113,7 @@ jobs:
     needs: lint
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - run: |
           set -euxo pipefail
           if command -v dnf >/dev/null 2>&1; then sudo dnf install -y python3.11 python3-devel gcc git; fi
@@ -132,7 +132,7 @@ jobs:
     timeout-minutes: 10
     needs: [test-ubuntu]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '${{ env.PYTHON_VERSION }}'}
       - run: |
@@ -149,7 +149,7 @@ jobs:
     needs: [test-ubuntu]
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7
         with: {python-version: '${{ env.PYTHON_VERSION }}'}
       - run: |
