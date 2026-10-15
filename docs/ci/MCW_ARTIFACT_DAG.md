@@ -107,3 +107,35 @@ Current style SSOT references a missing QPS navigator/style probe.
 Show it as missing instead of claiming style convergence.
 Native peer execution, security approval, merge and fourteen-package
 closure remain independent HOLD decisions.
+
+## Executable bounded DAG receipt
+
+The native cold-build job runs `tools/mcw_artifact_dag_execute.py` after
+the existing source/style validation and deterministic HTML generation.
+The executable reads the typed catalog and the previously generated
+artifact receipt; it never rewrites the child QPS SSOT.
+
+Run using the checked-out Git SHA:
+
+```bash
+python tools/mcw_artifact_dag_execute.py --root . \
+  --catalog docs/mcw/artifact_catalog.v1.json \
+  --style ssot/ssot_style.json \
+  --style-status /tmp/mcw-style-status.json \
+  --html /tmp/mcw-a/artifacts.html \
+  --receipt /tmp/mcw-a/receipt.json \
+  --child-reference docs/mcw/qps_child_reference.v1.json \
+  --sha "$(git rev-parse HEAD)" \
+  --output /tmp/mcw-a/dag-execution.json
+```
+
+`CENSUS` and `SSOT_PIN` pass only after exact-head, artifact, catalog
+and style hashes match the checked-out bytes. The QPS child pointer
+is version-bound metadata, explicitly **not** authenticated source
+binary evidence. `SOURCE_FREEZE` remains `BLOCKED` until the child
+owner supplies the actual controlled evidence. Downstream modeling,
+binary rendering, replay and release are not executed on a cold view.
+
+The run artifact publishes `dag-execution.json` next to the HTML,
+style report and read-only receipt. A source-only PASS is never a
+release, engineering acceptance or merge authorization.
