@@ -19,7 +19,11 @@ DOMAINS = (
     "CENSUS",
     "THREE_P",
 )
-REPOSITORIES = (\n    "GBOGEB/ABACUS", "GBOGEB/CODEX", "GBOGEB/cryoplant-project"\n)
+REPOSITORIES = (
+    "GBOGEB/ABACUS",
+    "GBOGEB/CODEX",
+    "GBOGEB/cryoplant-project",
+)
 SHA = re.compile(r"^[a-f0-9]{40}$")
 DIGEST = re.compile(r"^[a-f0-9]{64}$")
 
