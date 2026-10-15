@@ -96,11 +96,14 @@ jobs:
           export COVERAGE_FILE="$OUT/.coverage.workflow-transitions"
           python -m coverage run --branch \
             --include='*/tools/w70_workflow_transitions.py' \
-            -m unittest discover -s tests -p 'test_w70_workflow_transitions.py' -v
+            -m unittest discover -s tests \
+            -p 'test_w70_workflow_transitions.py' -v
           python -m coverage json \
             --include='*/tools/w70_workflow_transitions.py' \
             -o "$OUT/WORKFLOW_TRANSITIONS_COVERAGE.json"
-          python - "$OUT/WORKFLOW_TRANSITIONS_COVERAGE.json" "$OUT/WORKFLOW_TRANSITIONS_RECEIPT.json" <<'PYTRANS'
+          python - \
+            "$OUT/WORKFLOW_TRANSITIONS_COVERAGE.json" \
+            "$OUT/WORKFLOW_TRANSITIONS_RECEIPT.json" <<'PYTRANS'
           import hashlib
           import json
           import os
@@ -121,7 +124,8 @@ jobs:
           branches = summary["num_branches"]
           covered_branches = summary["covered_branches"]
           assert statements > 0 and branches > 0, "empty coverage denominator"
-          assert 0 <= covered <= statements and 0 <= covered_branches <= branches
+          assert 0 <= covered <= statements
+          assert 0 <= covered_branches <= branches
           exact_sha = subprocess.check_output(
               ["git", "rev-parse", "HEAD"], text=True
           ).strip()
@@ -151,8 +155,13 @@ jobs:
               json.dumps(receipt, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
-          print("TRANSITION_COVERAGE_RECEIPT", json.dumps(receipt, sort_keys=True))
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fh:
+          print(
+              "TRANSITION_COVERAGE_RECEIPT",
+              json.dumps(receipt, sort_keys=True),
+          )
+          with open(
+              os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8"
+          ) as fh:
               fh.write(
                   f"\n### Workflow-transition module (separate scope)\n"
                   f"- Statements: {covered}/{statements}\n"
