@@ -7,8 +7,8 @@ import runpy
 import sys
 import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 SOURCE = Path(__file__).resolve().parents[1] / "tools/mip2/mip_federation_census.py"
 SPEC = importlib.util.spec_from_file_location("mip_federation_census", SOURCE)
