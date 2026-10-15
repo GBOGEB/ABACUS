@@ -5,6 +5,7 @@ No external IO beyond explicit input/output files; absent metrics produce no num
 """
 
 from __future__ import annotations
+
 import argparse
 import json
 from pathlib import Path

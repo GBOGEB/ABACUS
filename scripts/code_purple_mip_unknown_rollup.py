@@ -2,6 +2,7 @@
 """Fail-closed read-only MIP U01-U16 backlog validator and roll-up."""
 
 from __future__ import annotations
+
 import argparse
 import datetime as dt
 import json
