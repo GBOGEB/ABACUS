@@ -38,8 +38,30 @@ jobs:
           SOURCE_SHA="$(git rev-parse HEAD)"
           export SOURCE_SHA
           test "$SOURCE_SHA" = "$PR_HEAD_SHA"
-          python -c 'import json,os;json.dump({"executed_sha":os.environ["SOURCE_SHA"],"pull_head_sha":os.environ["PR_HEAD_SHA"],"event_sha":os.environ["EVENT_SHA"],"checkout_kind":"pull_head" if os.environ["SOURCE_SHA"]==os.environ["PR_HEAD_SHA"] else "merge_or_other"},open("evidence/provenance.json","w"))'
-          python -c 'import json; from pathlib import Path; p=Path("evidence/output.json"); p.write_text(json.dumps({"status":"executed","kind":"native-testflight"}))'
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source = os.environ["SOURCE_SHA"]
+          head = os.environ["PR_HEAD_SHA"]
+          event = os.environ["EVENT_SHA"]
+          Path("evidence/provenance.json").write_text(json.dumps({
+              "executed_sha": source,
+              "pull_head_sha": head,
+              "event_sha": event,
+              "checkout_kind": "pull_head" if source == head else "merge_or_other",
+          }))
+          PY
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          Path("evidence/output.json").write_text(json.dumps({
+              "status": "executed",
+              "kind": "native-testflight",
+          }))
+          PY
           python -m mission_control_lite.cli produce \
             --mission MCL-P0 --task native-proof --root MCL-ROOT-1 \
             --sha "$SOURCE_SHA" --run "$RUN_ID" \
