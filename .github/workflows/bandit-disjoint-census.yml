@@ -193,7 +193,10 @@ jobs:
               json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
           )
           PY
+      # Keep scanner evidence independent of the governance inventory gate.
+      # The failed inventory check remains a red job step.
       - name: Run full and configured scans with separate denominators
+        if: always()
         shell: bash
         run: |
           mkdir -p bandit-evidence
@@ -230,6 +233,7 @@ jobs:
               print(f"{name}: {len(data['results'])} findings")
           PY
       - name: Partition full scan by exclusive file owner
+        if: always()
         run: |
           SCAN_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           python scripts/bandit_disjoint_census.py \
