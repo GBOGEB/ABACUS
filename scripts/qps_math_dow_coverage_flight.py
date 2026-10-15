@@ -101,11 +101,11 @@ def run_suite(pattern: str, output: Path) -> dict[str, Any]:
     if len(counts) != 1:
         raise ValueError("missing or ambiguous executed test denominator")
     report = execute([
-        "json", "--include", "*" + TARGET,
+        "json", "--include", TARGET,
         "-o", str(output),
     ])
     if report.returncode:
-        raise RuntimeError("coverage JSON generation failed: " + report.stderr)
+        raise RuntimeError("coverage JSON generation failed: " + report.stdout + report.stderr)
     raw = output.read_bytes()
     result = parse_coverage(json.loads(raw), tests=int(counts[0]))
     return {**result, "coverage_sha256": digest(raw)}
