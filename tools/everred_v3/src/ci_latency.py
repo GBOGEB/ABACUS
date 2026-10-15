@@ -38,7 +38,9 @@ def duration(begin, end):
 
 
 def percentile(values, probability):
-    demand(type(probability) in (float, int) and 0 <= probability <= 1, "invalid quantile")
+    demand(
+        type(probability) in (float, int) and 0 <= probability <= 1, "invalid quantile"
+    )
     demand(isinstance(values, list) and bool(values), "nonempty sample required")
     demand(
         all(type(v) in (int, float) and math.isfinite(v) and v >= 0 for v in values),
@@ -105,7 +107,9 @@ def _stage(name):
         return "dependency_install"
     if "checkout@" in label or "setup-python@" in label or "set up job" in label:
         return "environment_setup"
-    if any(x in label for x in ("pytest", "regression", "testflight", "unittest", " test")):
+    if any(
+        x in label for x in ("pytest", "regression", "testflight", "unittest", " test")
+    ):
         return "test"
     if any(x in label for x in ("bandit", "security", "scanner", "semgrep", "codeql")):
         return "security_scan"
@@ -116,7 +120,9 @@ def _stage(name):
 
 def measure_run(run, jobs, expected_repo, expected_sha):
     demand(isinstance(run, dict) and isinstance(jobs, list), "invalid GitHub objects")
-    demand(isinstance(expected_sha, str) and SHA_RE.fullmatch(expected_sha), "invalid SHA")
+    demand(
+        isinstance(expected_sha, str) and SHA_RE.fullmatch(expected_sha), "invalid SHA"
+    )
     demand(run.get("head_sha") == expected_sha, "run exact-head mismatch")
     demand(
         run.get("repository", {}).get("full_name") == expected_repo,
@@ -160,7 +166,10 @@ def measure_run(run, jobs, expected_repo, expected_sha):
             created = timestamp(job.get("created_at"))
             launched = timestamp(job.get("started_at"))
             completed = timestamp(job.get("completed_at"))
-            demand(start <= created <= launched <= completed <= finish, "job timeline invalid")
+            demand(
+                start <= created <= launched <= completed <= finish,
+                "job timeline invalid",
+            )
             record["queue_seconds"] = duration(job["created_at"], job["started_at"])
             record["runner_seconds"] = duration(job["started_at"], job["completed_at"])
             intervals.append((launched, completed))
@@ -248,15 +257,9 @@ def cohort(receipts):
         "population": list(identities[0]),
         "eligible_runs": len(usable),
         "observed_runs": len(receipts),
-        "queue": distribution(
-            [j["queue_seconds"] for r in usable for j in r["jobs"]]
-        ),
-        "workflow_wall": distribution(
-            [r["workflow_wall_seconds"] for r in usable]
-        ),
-        "runner_sum": distribution(
-            [r["runner_sum_seconds"] for r in usable]
-        ),
+        "queue": distribution([j["queue_seconds"] for r in usable for j in r["jobs"]]),
+        "workflow_wall": distribution([r["workflow_wall_seconds"] for r in usable]),
+        "runner_sum": distribution([r["runner_sum_seconds"] for r in usable]),
         "pca": {
             "status": "HANDOFF_REQUIRED_GG_MATH",
             "candidate_features": [

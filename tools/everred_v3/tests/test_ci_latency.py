@@ -85,7 +85,11 @@ class NativeLatency(unittest.TestCase):
         )
         r = measure_run(run, jobs, "GBOGEB/ABACUS", A)
         self.assertEqual(
-            (r["workflow_wall_seconds"], r["jobs"][0]["queue_seconds"], r["runner_sum_seconds"]),
+            (
+                r["workflow_wall_seconds"],
+                r["jobs"][0]["queue_seconds"],
+                r["runner_sum_seconds"],
+            ),
             (14, 3, 11),
         )
 
