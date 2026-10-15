@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
       - name: Run P1 census
@@ -88,7 +88,7 @@ jobs:
             'w64_dov': p3['w64_dov'],
           },sort_keys=True))
           PY
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: w64-census-p1-p2-p3-receipts
           path: architecture/w64/receipts/

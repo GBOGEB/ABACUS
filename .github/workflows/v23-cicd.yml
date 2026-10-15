@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -65,7 +65,7 @@ jobs:
           cp local_mcp/agent_orchestrator_v3.0.py artifacts/v2.3/ || true
 
       - name: Upload V2.3 Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: v23-agents-${{ github.run_id }}
           path: artifacts/v2.3/

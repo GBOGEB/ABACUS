@@ -13,8 +13,8 @@ jobs:
   helium-proof:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
           cache: pip
@@ -39,7 +39,7 @@ jobs:
           test -s artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
           python -m json.tool artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json >/dev/null
       - name: Upload receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w52-p2m-helium-receipt
           path: artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json

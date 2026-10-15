@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Execute A-E census
@@ -42,7 +42,7 @@ jobs:
           print(d)
           PY
       - name: Upload measured pulse
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w67-measured-id-pulse-${{ env.SOURCE_SHA }}
           path: architecture/w66/receipts/history/${{ env.SOURCE_SHA }}/

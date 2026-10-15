@@ -21,7 +21,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Install from clean checkout
@@ -54,7 +54,7 @@ jobs:
           p.write_text(json.dumps(payload, indent=2)+'\n')
           print(p.read_text())
           PY
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
           name: w72-clean-clone-receipt

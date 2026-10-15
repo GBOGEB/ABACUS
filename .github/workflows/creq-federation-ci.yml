@@ -12,8 +12,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Resolve and enforce ABACUS CReq
@@ -23,7 +23,7 @@ jobs:
             --overlay triage/requirements/ABACUS_CREQ_OVERLAY.json \
             --resolver triage/requirements/creq_resolver.py \
             --out triage/requirements/receipts/ABACUS_CREQ_CI_RESOLUTION.json
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: creq-abacus-receipt
           path: triage/requirements/receipts/ABACUS_CREQ_CI_*.json

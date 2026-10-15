@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
       
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -83,7 +83,7 @@ jobs:
       
       - name: Upload Artifacts
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: orchestrator-artifacts-${{ github.run_number }}
           path: artifacts/
@@ -128,7 +128,7 @@ jobs:
         uses: actions/checkout@v7.0.1
       
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
       

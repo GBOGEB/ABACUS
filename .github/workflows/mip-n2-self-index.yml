@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -55,7 +55,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload sanitized evidence only
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-self-index-summary.json
@@ -70,7 +70,7 @@ jobs:
       EXPECTED_REPOSITORY: ${{ github.repository }}
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -333,7 +333,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload sanitized consumer evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mip-n2-self-index-consumer-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-consumer-summary.json

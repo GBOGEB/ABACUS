@@ -11,8 +11,8 @@ jobs:
   jt-flash-runtime:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
       - name: Install governed helium runtime
@@ -41,7 +41,7 @@ jobs:
               print('A=', row['A_g_s'], 'flash=', row['JT_flash_g_s'], 'liquid=', row['post_flash_liquid_g_s'])
           PY
       - name: Upload receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w53-p05t-qcell-jt-flash-receipt
           path: artifacts/w53_p05t/qcell_jt_flash_receipt.json
