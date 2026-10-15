@@ -1,4 +1,5 @@
 """Negative controls for exact-SHA workflow wave transitions."""
+
 import unittest
 
 from tools.w70_workflow_transitions import compare
