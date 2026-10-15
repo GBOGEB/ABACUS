@@ -286,7 +286,7 @@
   "debug_rerun": {
     "user_reported": true,
     "screen_capture_shared": true,
-    "verified_run_attempt_increment": false,
+    "verified_run_attempt_increment": true,
     "sampled_failed_run_ids": [
       38729175805,
       38729176052,
@@ -301,7 +301,11 @@
     ],
     "sampled_attempts_at_readback": 1,
     "debug_markers_verified": false,
-    "terminal_rerun_result": null
+    "terminal_rerun_result": "Both named workflow runs still FAIL at latest attempts",
+    "verified_attempts_by_run": {
+      "38690911565": 2,
+      "38690911605": 3
+    }
   },
   "restrictions": {
     "no_merge": true,
@@ -317,12 +321,109 @@
     "Publication commits move #2006 head after this snapshot; refresh branch",
     "Some PRs are technically mergeable but admission withheld",
     "Source/pr status may move before next receiver opens",
-    "PR #2006 flipped from draft at initial census to OPEN NON-DRAFT at 13:23Z; live mergeable_state=blocked, no admission"
+    "PR #2006 flipped from draft at initial census to OPEN NON-DRAFT at 13:23Z; live mergeable_state=blocked, no admission",
+    "Later GitHub verification: historical ff385c7e source Full CI run #38690911565 now terminal FAILURE attempt 2 and A10 #38690911605 terminal FAILURE attempt 3; debug markers not verified"
   ],
   "receiver_paths": {
     "handover": "handover/mip_20261015/LOSSLESS_OPERATIONS_HANDOVER_v1.md",
     "dropin": "handover/mip_20261015/DROPIN.md",
     "machine_snapshot": "handover/mip_20261015/state_snapshot_v1.json",
     "protocol": "tools/handover_v2/process_spec.json"
+  },
+  "historical_bd_3pulse": {
+    "classification": "HISTORICAL_RECONCILED",
+    "pr_number": 1989,
+    "source_head_sha": "ff385c7e257a38b5b215764de17f7680e9c73e74",
+    "superseded_by_head": "7c93c5d54e5e790f0066cfbe79e5416508262ebb",
+    "midflight_readback": {
+      "governance": "PASS",
+      "bandit": "PASS",
+      "a10": "FAIL",
+      "full_ci": "IN_PROGRESS",
+      "format": "IN_PROGRESS",
+      "canonical_b0": "QUEUED"
+    },
+    "terminal_runs": [
+      {
+        "id": 38690911366,
+        "type": "Governance",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911441,
+        "type": "Bandit Disjoint Census",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911605,
+        "type": "A10",
+        "attempt": 3,
+        "conclusion": "FAILURE",
+        "failed_job_id": 116442630825
+      },
+      {
+        "id": 38690911565,
+        "type": "Full CI",
+        "attempt": 2,
+        "conclusion": "FAILURE",
+        "failed_quality_job_id": 116442248459,
+        "failed_security_job_id": 116442247871,
+        "downstream_summary_job_id": 116445153784
+      },
+      {
+        "id": 38690911424,
+        "type": "Format Check",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911464,
+        "type": "Canonical B0",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      }
+    ],
+    "issues": [
+      {
+        "id": 1864,
+        "lane": "DAB T1 Tooling",
+        "comment_id": 6185779264,
+        "state": "OPEN"
+      },
+      {
+        "id": 1865,
+        "lane": "DAB T2 Python matrix",
+        "comment_id": 6185779844,
+        "state": "OPEN"
+      },
+      {
+        "id": 1866,
+        "lane": "DAB T3 Canonical coverage",
+        "comment_id": 6185780450,
+        "state": "OPEN"
+      },
+      {
+        "id": 1867,
+        "lane": "DAB T4 Proof propagation",
+        "comment_id": 6185781048,
+        "state": "OPEN"
+      },
+      {
+        "id": 1868,
+        "lane": "DAB R1 Ratchet false-green",
+        "comment_id": 6185781612,
+        "state": "OPEN"
+      }
+    ],
+    "local_git_dns_failure": "HISTORICAL_EXECUTION_ENVIRONMENT_ONLY",
+    "local_black_toolchain_unavailable": "HISTORICAL_EXECUTION_ENVIRONMENT_ONLY",
+    "confirmed_root_closure": false,
+    "distinct_roots_opened": null,
+    "distinct_roots_closed": null,
+    "new_comparable_coverage_gain": null,
+    "authenticated_worker_returns": null,
+    "acceptance": "HISTORICAL_ONLY_NOT_CURRENT_HEAD_PROOF"
   }
 }
