@@ -3,6 +3,7 @@
 
 No external IO beyond explicit input/output files; absent metrics produce no numeric rows.
 """
+
 from __future__ import annotations
 import argparse
 import json
@@ -19,7 +20,10 @@ FAMILIES = {
 
 
 def convert(payload):
-    if not isinstance(payload, dict) or payload.get("schema") != "mip.native.metric.receipts.v1":
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema") != "mip.native.metric.receipts.v1"
+    ):
         raise ValueError("native metric receipt schema required")
     rows = payload.get("receipts")
     if not isinstance(rows, list):
@@ -35,10 +39,21 @@ def convert(payload):
             continue
         n, d = r.get("numerator"), r.get("denominator")
         if n is not None or d is not None:
-            if (type(n) is not int or type(d) is not int or
-                    d <= 0 or n < 0 or n > d or r.get("verified_native") is not True):
+            if (
+                type(n) is not int
+                or type(d) is not int
+                or d <= 0
+                or n < 0
+                or n > d
+                or r.get("verified_native") is not True
+            ):
                 raise ValueError("numeric receipt requires verified native count pair")
-        if family in ("bd_burndown", "debug_ldab", "repair_effectiveness", "throughput"):
+        if family in (
+            "bd_burndown",
+            "debug_ldab",
+            "repair_effectiveness",
+            "throughput",
+        ):
             if n is not None and not r.get("root_fingerprint"):
                 raise ValueError("root-level metric needs fingerprint provenance")
         out = {
@@ -55,7 +70,7 @@ def convert(payload):
             "collection_quality": "NATIVE" if n is not None else "INCOMPLETE",
             "status": r.get("status") if n is not None else "UNKNOWN",
             "numerator": n,
-            "denominator": d
+            "denominator": d,
         }
         result.append(out)
     return result
@@ -68,7 +83,9 @@ def main():
     a = p.parse_args()
     rows = convert(json.loads(a.input.read_text(encoding="utf-8")))
     a.output.parent.mkdir(parents=True, exist_ok=True)
-    a.output.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
+    a.output.write_text(
+        "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows), encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
