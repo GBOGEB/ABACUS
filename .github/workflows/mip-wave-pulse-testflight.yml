@@ -75,9 +75,9 @@ jobs:
               "",
               "| Signal | Value |",
               "| --- | --- |",
-              f"| Wave ID | \`{pulse['wave_id']}\` |",
+              f"| Wave ID | {pulse['wave_id']} |",
               "| Iteration ID | UNKNOWN — not recorded by this contract |",
-              f"| Head SHA | \`{pulse['head_sha']}\` |",
+              f"| Head SHA | {pulse['head_sha']} |",
               f"| CI run | {os.environ.get('GITHUB_RUN_ID', 'UNKNOWN')} |",
               f"| Tests in synthetic payload | {pulse['tests']['passed']} pass, "
               f"{pulse['tests']['failed']} fail, {pulse['tests']['skipped']} skip |",
@@ -87,12 +87,12 @@ jobs:
               f"| Admission | {pulse['disposition']} |",
               "",
               "Machine-readable receipts: workflow artifact",
-              "\`mip-wave-pulse-synthetic-control\`.",
+              "mip-wave-pulse-synthetic-control.",
               "Actual regression-test outcome is the native job result,",
               "not the synthetic payload's test counts.",
               "",
           ]
-          summary = "\\n".join(rows)
+          summary = chr(10).join(rows)
           Path("wave-output/mip_wave_pulse_summary.md").write_text(
               summary, encoding="utf-8"
           )
