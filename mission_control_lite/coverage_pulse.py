@@ -153,6 +153,47 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
     return obj
 
 
+def render_summary(pulse):
+    """Display exact-SHA metrics; never substitute missing deltas with zero."""
+    comparison = pulse["comparison"]
+    delta = comparison.get("line_delta_pp")
+    bdelta = comparison.get("branch_delta_pp")
+    def display(value, suffix=""):
+        return "UNKNOWN" if value is None else str(value) + suffix
+
+    lines = [
+        "## Mission Control Lite: measured wave",
+        "",
+        "| Metric | Native evidence |",
+        "| --- | ---: |",
+        "| Executed SHA | `" + pulse["source_sha"] + "` |",
+        "| Run ID | " + pulse["run_id"] + " |",
+        "| Passed focused tests | " + str(pulse["tests_passed"]) + " |",
+        "| Line coverage | " + display(pulse["line_percent"], "%") + " |",
+        "| Branch coverage | " + display(pulse["branch_percent"], "%") + " |",
+        "| Comparable baseline | " + comparison["status"] + " |",
+        "| Line delta | " + display(delta, " pp") + " |",
+        "| Branch delta | " + display(bdelta, " pp") + " |",
+        "| Timed native phases | " +
+        display(pulse.get("timed_execution_seconds"), " s") + " |",
+        "| Runner queue | UNKNOWN (external run metadata needed) |",
+        "| Verified root closures | 0 |",
+        "| Merge admission | HOLD |",
+        "",
+        "### Timed phases",
+        "",
+        "| Phase | Seconds | Exit |",
+        "| --- | ---: | ---: |",
+    ]
+    for item in pulse.get("execution_phases", []):
+        lines.append(
+            "| " + item["phase"] + " | " +
+            str(item["duration_seconds"]) + " | " +
+            str(item["exit_code"]) + " |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--coverage-json", required=True, type=Path)
@@ -163,7 +204,7 @@ def main():
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--baseline", type=Path)
-    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path)\n    parser.add_argument("--summary", type=Path)
     args = parser.parse_args()
     logs = {
         "core": args.core_log.read_text(),
