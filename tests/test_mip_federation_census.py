@@ -153,7 +153,7 @@ class FederationCensusTests(unittest.TestCase):
         self.assertTrue(all(x["locally_hash_verified_receipts"]
                             == "UNKNOWN" for x in cells))
 
-    def test_cli_emits_two_deterministic_text_receipts(self):
+    def test_cli_emits_three_deterministic_receipts(self):
         """Cover the executable entrypoint and verify its paired outputs."""
         source = self.root / "manifest.json"
         output = self.root / "federation-output"
@@ -168,6 +168,7 @@ class FederationCensusTests(unittest.TestCase):
             runpy.run_path(str(SOURCE), run_name="__main__")
         json_path = output / "mip_federation_census.json"
         markdown_path = output / "mip_federation_census.md"
+        html_path = output / "mip_federation_census.html"
         data = json.loads(json_path.read_text(encoding="utf-8"))
         markdown = markdown_path.read_text(encoding="utf-8")
         self.assertEqual(data["total_domain_slots"], 24)
@@ -175,11 +176,20 @@ class FederationCensusTests(unittest.TestCase):
         self.assertEqual(data["merge_admission"], "HOLD")
         self.assertIn("Mission Control-wide federation census", markdown)
         self.assertIn("UNKNOWN", markdown)
-        before = (json_path.read_bytes(), markdown_path.read_bytes())
+        html_report = html_path.read_text(encoding="utf-8")
+        self.assertIn("24 configured cells", html_report)
+        self.assertIn("GBOGEB/cryoplant-project", html_report)
+        self.assertEqual(html_report.count("class='slot unknown'"), 24)
+        before = (
+            json_path.read_bytes(), markdown_path.read_bytes(),
+            html_path.read_bytes(),
+        )
         with mock.patch.object(sys, "argv", argv):
             runpy.run_path(str(SOURCE), run_name="__main__")
         self.assertEqual(
-            before, (json_path.read_bytes(), markdown_path.read_bytes())
+            before,
+            (json_path.read_bytes(), markdown_path.read_bytes(),
+             html_path.read_bytes()),
         )
 
     def test_cli_invalid_manifest_creates_no_census(self):
