@@ -47,6 +47,59 @@ class TestMissionControlLite(unittest.TestCase):
             self.assertFalse(authorize(action, scope, authenticated_actor="untrusted-external", trusted_actors={"GBOGEB"}))
         self.assertFalse(authorize("test", scope, authenticated_actor="untrusted-external", trusted_actors={"GBOGEB"}))
 
+    def test_ingest_rejects_missing_outside_and_length_mismatch(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "trusted"
+            root.mkdir()
+            other = Path(d) / "other"
+            other.mkdir()
+            p = root / "evidence.json"
+            p.write_bytes(b"payload")
+            db = Path(d) / "registry.sqlite"
+            valid = receipt("m", "t", "r", "a" * 40, "run", [p])
+            self.assertTrue(verify(valid, root))
+            cases = []
+            missing = json.loads(json.dumps(valid))
+            missing["artifacts"][0]["path"] = str(root / "absent.json")
+            cases.append(missing)
+            bad_length = json.loads(json.dumps(valid))
+            bad_length["artifacts"][0]["bytes"] += 1
+            cases.append(bad_length)
+            outside = other / "evidence.json"
+            outside.write_bytes(p.read_bytes())
+            escapes = json.loads(json.dumps(valid))
+            escapes["artifacts"][0]["path"] = str(outside)
+            cases.append(escapes)
+            for candidate in cases:
+                with self.subTest(candidate=candidate["artifacts"][0]["path"]):
+                    with self.assertRaises(ValueError):
+                        ingest(db, candidate, root)
+            self.assertEqual(census(db)["verified_roots_with_receipts"], 0)
+
+    def test_sqlite_handle_reopens_and_census_is_nonclosure(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "output.json"
+            p.write_text('{"ok":true}')
+            db = Path(d) / "registry.sqlite"
+            for task in ("one", "two"):
+                ingest(db, receipt("mission", task, "root", "a" * 40,
+                                   task, [p]), d)
+                self.assertEqual(census(db)["roots"][0]["closed"], False)
+            self.assertEqual(census(db)["roots"][0]["tasks_with_receipts"], 2)
+            db.unlink()
+            self.assertFalse(db.exists())
+
+    def test_actor_scope_cannot_self_assert_trust(self):
+        scope = {"repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
+                 "write": False, "actor": "GBOGEB", "trusted": True}
+        self.assertFalse(authorize("test", scope))
+        self.assertFalse(authorize("test", scope,
+                                   authenticated_actor="external",
+                                   trusted_actors={"GBOGEB"}))
+        self.assertTrue(authorize("test", scope,
+                                  authenticated_actor="GBOGEB",
+                                  trusted_actors={"GBOGEB"}))
+
     def test_empty_output_rejected(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"empty";p.write_bytes(b"")
