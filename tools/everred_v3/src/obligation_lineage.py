@@ -14,7 +14,13 @@ import re
 SHA = re.compile(r"^[0-9a-f]{40}$")
 HEX = re.compile(r"^[0-9a-f]{64}$")
 SCHEMA = "abacus.everred.coverage-obligations.v1"
-PROFILE = ("tool_version", "config_digest", "test_selection", "exclusions", "instrumentation")
+PROFILE = (
+    "tool_version",
+    "config_digest",
+    "test_selection",
+    "exclusions",
+    "instrumentation",
+)
 FAMILIES = ("statements", "branches")
 
 
@@ -31,9 +37,7 @@ def valid_path(path):
         "absolute coverage path prohibited",
     )
     parts = value.split("/")
-    demand(
-        all(x and x not in (".", "..") for x in parts), "unsafe coverage path"
-    )
+    demand(all(x and x not in (".", "..") for x in parts), "unsafe coverage path")
     return "/".join(parts)
 
 
@@ -95,7 +99,10 @@ def _file(raw, blob):
 
 
 def snapshot(report, manifest):
-    demand(isinstance(report, dict) and isinstance(manifest, dict), "invalid snapshot inputs")
+    demand(
+        isinstance(report, dict) and isinstance(manifest, dict),
+        "invalid snapshot inputs",
+    )
     demand(manifest.get("schema") == SCHEMA + ".manifest", "bad manifest schema")
     repo, sha = manifest.get("repository"), manifest.get("source_sha")
     demand(isinstance(repo, str) and "/" in repo, "invalid repository")
@@ -114,7 +121,9 @@ def snapshot(report, manifest):
     demand(profile["instrumentation"] == "branch", "branch mode required")
     files = report.get("files")
     blobs = manifest.get("file_blobs")
-    demand(isinstance(files, dict) and isinstance(blobs, dict), "coverage files missing")
+    demand(
+        isinstance(files, dict) and isinstance(blobs, dict), "coverage files missing"
+    )
     demand(bool(files), "empty coverage scope")
     demand(isinstance(report.get("meta"), dict), "missing Coverage.py metadata")
     demand(
@@ -124,12 +133,14 @@ def snapshot(report, manifest):
     normalized_files = {valid_path(p): v for p, v in files.items()}
     normalized_blobs = {valid_path(p): v for p, v in blobs.items()}
     demand(
-        len(normalized_files) == len(files)
-        and len(normalized_blobs) == len(blobs),
+        len(normalized_files) == len(files) and len(normalized_blobs) == len(blobs),
         "duplicate normalized path",
     )
     demand(set(normalized_files) == set(normalized_blobs), "source blob scope mismatch")
-    selected = {p: _file(normalized_files[p], normalized_blobs[p]) for p in sorted(normalized_files)}
+    selected = {
+        p: _file(normalized_files[p], normalized_blobs[p])
+        for p in sorted(normalized_files)
+    }
     totals = {}
     for family in FAMILIES:
         totals[family] = {
@@ -176,7 +187,8 @@ def compare(before, after):
     new_files = set(all_right) - set(all_left)
     retired_files = set(all_left) - set(all_right)
     unchanged = {
-        path for path in intersection
+        path
+        for path in intersection
         if all_left[path]["git_blob_sha"] == all_right[path]["git_blob_sha"]
     }
     modified = intersection - unchanged
@@ -196,7 +208,9 @@ def compare(before, after):
                     family, current, "missing"
                 )
                 if old_eligible != new_eligible:
-                    raise ValueError("unchanged blob has inconsistent eligible obligations")
+                    raise ValueError(
+                        "unchanged blob has inconsistent eligible obligations"
+                    )
                 for obligation in _set(family, previous, "missing") & _set(
                     family, current, "executed"
                 ):
@@ -205,8 +219,16 @@ def compare(before, after):
                     family, current, "missing"
                 ):
                     regress.add((path, obligation))
-        percent_old = round(100 * old["covered"] / old["eligible"], 4) if old["eligible"] else None
-        percent_new = round(100 * new["covered"] / new["eligible"], 4) if new["eligible"] else None
+        percent_old = (
+            round(100 * old["covered"] / old["eligible"], 4)
+            if old["eligible"]
+            else None
+        )
+        percent_new = (
+            round(100 * new["covered"] / new["eligible"], 4)
+            if new["eligible"]
+            else None
+        )
         families[family] = {
             "eligible_before": old["eligible"],
             "eligible_after": new["eligible"],
@@ -223,8 +245,12 @@ def compare(before, after):
                 if percent_old is not None and percent_new is not None
                 else None
             ),
-            "previously_uncovered_now_covered_verified": len(gain) if profile_ok else None,
-            "previously_covered_now_uncovered_verified": len(regress) if profile_ok else None,
+            "previously_uncovered_now_covered_verified": (
+                len(gain) if profile_ok else None
+            ),
+            "previously_covered_now_uncovered_verified": (
+                len(regress) if profile_ok else None
+            ),
             "true_gain_obligation_keys": [
                 {"path": path, "obligation": list(ob) if isinstance(ob, tuple) else ob}
                 for path, ob in sorted(gain)
@@ -250,9 +276,11 @@ def compare(before, after):
         "status": (
             "PROFILE_CHANGED_NO_OLD_DEBT_CREDIT"
             if not profile_ok
-            else "PARTIALLY_ATTRIBUTABLE"
-            if modified or new_files or retired_files
-            else "FULLY_STABLE_SOURCE_BLOB_MAPPING"
+            else (
+                "PARTIALLY_ATTRIBUTABLE"
+                if modified or new_files or retired_files
+                else "FULLY_STABLE_SOURCE_BLOB_MAPPING"
+            )
         ),
         "source_code_churn_semantically_resolved": False,
         "independent_native_receipt_verification": False,
@@ -269,5 +297,8 @@ def source_digest(blob):
 
 def parse_artifact(raw_bytes, manifest):
     """Verify exact supplied bytes; native origin must be proven separately."""
-    demand(source_digest(raw_bytes) == manifest.get("coverage_artifact_sha256"), "coverage ZIP member digest mismatch")
+    demand(
+        source_digest(raw_bytes) == manifest.get("coverage_artifact_sha256"),
+        "coverage ZIP member digest mismatch",
+    )
     return snapshot(json.loads(raw_bytes), manifest)

@@ -103,7 +103,8 @@ class SourceObligations(unittest.TestCase):
             out["families"]["branches"]["previously_covered_now_uncovered_verified"], 1
         )
         self.assertEqual(
-            out["families"]["statements"]["previously_covered_now_uncovered_verified"], 1
+            out["families"]["statements"]["previously_covered_now_uncovered_verified"],
+            1,
         )
 
     def test_changed_git_blob_withholds_old_debt_credit(self):
@@ -176,8 +177,8 @@ class SourceObligations(unittest.TestCase):
 
     def test_artifact_bytes_digest_required(self):
         raw, manifest = inputs()
-        import json
         import hashlib
+        import json
 
         encoded = json.dumps(raw, sort_keys=True).encode()
         with self.assertRaisesRegex(ValueError, "digest mismatch"):

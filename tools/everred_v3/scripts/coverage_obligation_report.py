@@ -14,7 +14,9 @@ def main():
     parser = argparse.ArgumentParser()
     for label in ("before", "after"):
         parser.add_argument("--" + label + "-json", type=pathlib.Path, required=True)
-        parser.add_argument("--" + label + "-manifest", type=pathlib.Path, required=True)
+        parser.add_argument(
+            "--" + label + "-manifest", type=pathlib.Path, required=True
+        )
     parser.add_argument("--out", type=pathlib.Path, required=True)
     args = parser.parse_args()
     values = []
