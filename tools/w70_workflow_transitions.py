@@ -1,4 +1,5 @@
 """Deterministic matched-workflow wave metrics, not merge/root authority."""
+
 from __future__ import annotations
 
 import hashlib
@@ -34,9 +35,7 @@ def compare(previous, current, *, previous_sha, current_sha):
     same = set(a) == set(b)
     matched = sorted(set(a) & set(b))
     moved = [
-        {"workflow": n, "before": a[n], "after": b[n]}
-        for n in matched
-        if a[n] != b[n]
+        {"workflow": n, "before": a[n], "after": b[n]} for n in matched if a[n] != b[n]
     ]
     output = {
         "schema": "abacus.mip.workflow-wave-transition/v1",
@@ -64,7 +63,8 @@ def compare(previous, current, *, previous_sha, current_sha):
     }
     if same and all(v is not None for v in list(a.values()) + list(b.values())):
         output["success_rate_delta_pp"] = round(
-            100 * (
+            100
+            * (
                 output["current_successes"] / len(b)
                 - output["previous_successes"] / len(a)
             ),
