@@ -199,22 +199,33 @@ def main():
     parser.add_argument("--coverage-json", required=True, type=Path)
     parser.add_argument("--core-log", required=True, type=Path)
     parser.add_argument("--rex-log", required=True, type=Path)
-    parser.add_argument("--metrics-log", required=True, type=Path)\n    parser.add_argument("--timing-log", type=Path)\n    parser.add_argument("--timing-tests-log", type=Path)
+    parser.add_argument("--metrics-log", required=True, type=Path)
+    parser.add_argument("--timing-log", type=Path)
+    parser.add_argument("--timing-tests-log", type=Path)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--baseline", type=Path)
-    parser.add_argument("--output", required=True, type=Path)\n    parser.add_argument("--summary", type=Path)
+    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--summary", type=Path)
     args = parser.parse_args()
     logs = {
         "core": args.core_log.read_text(),
         "rex": args.rex_log.read_text(),
         "metrics": args.metrics_log.read_text(),
     }
+    if args.timing_tests_log:
+        logs["timing"] = args.timing_tests_log.read_text()
     old = json.loads(args.baseline.read_text()) if args.baseline else None
-    pulse = build(json.loads(args.coverage_json.read_text()), logs,
-                  args.source_sha, args.event_sha, args.run_id, old)
+    phases = json.loads(args.timing_log.read_text()) if args.timing_log else None
+    pulse = build(
+        json.loads(args.coverage_json.read_text()), logs,
+        args.source_sha, args.event_sha, args.run_id, old, phases,
+    )
     args.output.write_text(json.dumps(pulse, indent=2, sort_keys=True) + "\n")
+    if args.summary:
+        with args.summary.open("a") as summary:
+            summary.write(render_summary(pulse))
     print(json.dumps({
         "source_sha": pulse["source_sha"],
         "tests": pulse["tests_passed"],
