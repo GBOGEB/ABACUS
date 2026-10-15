@@ -33,9 +33,11 @@ jobs:
           import json, os
           from pathlib import Path
           s=os.environ["SOURCE_SHA"]
-          payload={"schema":"abacus.mip.wave-pulse.v1","repository":"GBOGEB/ABACUS",
+          payload={"schema":"abacus.mip.wave-pulse.v1",
+                   "repository":"GBOGEB/ABACUS",
                    "base_sha":s,"head_sha":s,"wave_id":"CI-NEGATIVE-CONTROL",
-                   "roots":[{"root_id":"EXAMPLE","owner":"CI","status":"OPEN","fingerprints":["SYNTHETIC"]}],
+                   "roots":[{"root_id":"EXAMPLE","owner":"CI",
+                             "status":"OPEN","fingerprints":["SYNTHETIC"]}],
                    "workers":[],"tests":{"passed":6,"failed":0,"skipped":0},
                    "first_reds":[],"admission":{"merge_admitted":False}}
           Path("wave-input.json").write_text(json.dumps(payload))
@@ -60,17 +62,17 @@ jobs:
           from pathlib import Path
 
           pulse = json.loads(
-              Path("wave-output/mip_wave_pulse.json").read_text(encoding="utf-8")
+              Path("wave-output/mip_wave_pulse.json").read_text()
           )
           backlog = json.loads(
-              Path("wave-output/mip_backlog_delta.json").read_text(encoding="utf-8")
+              Path("wave-output/mip_backlog_delta.json").read_text()
           )
-          # This workflow deliberately runs synthetic controls, not a live BD wave.
+          # Synthetic CI fixture, never a live BD wave.
           counts = backlog["distinct_root_counts"]
           rows = [
               "## MIP wave/pulse — SYNTHETIC CONTROL (not operational)",
               "",
-              "> CI regression fixture. No worker launch, REX receipt, verified",
+              "> Synthetic fixture. No worker launch or accepted REX receipt.",
               "> root closure, coverage gain or merge approval is implied.",
               "",
               "| Signal | Value |",
@@ -79,11 +81,12 @@ jobs:
               "| Iteration ID | UNKNOWN — not recorded by this contract |",
               f"| Head SHA | {pulse['head_sha']} |",
               f"| CI run | {os.environ.get('GITHUB_RUN_ID', 'UNKNOWN')} |",
-              f"| Tests in synthetic payload | {pulse['tests']['passed']} pass, "
-              f"{pulse['tests']['failed']} fail, {pulse['tests']['skipped']} skip |",
+              f"| Synthetic tests | {pulse['tests']['passed']} pass, "
+              f"{pulse['tests']['failed']} fail, "
+              f"{pulse['tests']['skipped']} skip |",
               f"| Coverage comparison | {pulse['coverage']['status']} |",
               f"| Synthetic roots | {counts['open']} OPEN |",
-              f"| Formal closure disposition | {backlog['closure_disposition']} |",
+              f"| Closure credit | {backlog['closure_disposition']} |",
               f"| Admission | {pulse['disposition']} |",
               "",
               "Machine-readable receipts: workflow artifact",
