@@ -91,6 +91,19 @@ def validate_graph(actions: dict) -> None:
                 raise ValueError("Dependency cannot run after dependent action: " + row["id"])
 
 
+def validate_admission_gates(authority: dict, gates: dict) -> None:
+    """Fail closed when a non-HOLD decision has no required admission evidence."""
+    if authority["merge_decision"] == "HOLD":
+        return
+    required = [g for g in gates.values() if g["required_for_admission"]]
+    if not required:
+        raise ValueError("Admission requires at least one required gate")
+    if (authority["effective_branch_protection"] != "EFFECTIVE" or
+            authority["independent_approval"] != "ESTABLISHED" or
+            any(g["status"] != "PASS" for g in required)):
+        raise ValueError("Admission cannot proceed without protected main, review and required PASS gates")
+
+
 def semantic_validate(s: dict, raw_base: Path) -> None:
     if s["protocol"] != PROTOCOL:
         raise ValueError("Unsupported protocol")
@@ -302,11 +315,7 @@ def semantic_validate(s: dict, raw_base: Path) -> None:
         raise ValueError("No security waiver or authority transfer admitted by this protocol")
     if authority["merged"] != (authority["merge_decision"] == "MERGED"):
         raise ValueError("merged=true requires MERGED decision, and vice versa")
-    if authority["merge_decision"] != "HOLD":
-        if (authority["effective_branch_protection"] != "EFFECTIVE" or
-                authority["independent_approval"] != "ESTABLISHED" or
-                any(g["status"] != "PASS" for g in gates.values() if g["required_for_admission"])):
-            raise ValueError("Admission cannot proceed without protected main, review and required PASS gates")
+    validate_admission_gates(authority, gates)
 
 
 def validate_input(s: dict, schema: dict, raw_base: Path) -> None:
