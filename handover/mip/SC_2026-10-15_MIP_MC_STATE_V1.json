@@ -169,9 +169,10 @@
     },
     "change": {
       "delta_covered": 57,
-      "delta_percentage_points": 27.02,
+      "delta_percentage_points": 27.01,
       "uncovered_reduction_pct": 90.4762,
-      "denominator_constant": true
+      "denominator_constant": true,
+      "delta_percentage_points_exact": 27.01421800947867
     },
     "main_coverage": {
       "historical_sample": "21391/39139=54.65% from earlier reported main context",
