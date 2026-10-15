@@ -85,9 +85,11 @@ def summarize(payload):
         "nonterminal": pending,
         "queue_seconds_p50": median(queue) if queue else None,
         "queue_seconds_p95": _percentile(queue, 95),
-        "runtime_seconds_sum": sum(elapsed) if elapsed and len(elapsed) == (
-            counts["success"] + counts["failure"]
-        ) else None,
+        "runtime_seconds_sum": (
+            sum(elapsed)
+            if elapsed and len(elapsed) == (counts["success"] + counts["failure"])
+            else None
+        ),
         "queue_samples": len(queue),
         "runtime_samples": len(elapsed),
         "crew_dispatch_authenticated": None,
@@ -101,9 +103,13 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path)
     options = parser.parse_args(argv)
-    print(json.dumps(summarize(json.loads(
-        options.input.read_text(encoding="utf-8")
-    )), sort_keys=True, indent=2))
+    print(
+        json.dumps(
+            summarize(json.loads(options.input.read_text(encoding="utf-8"))),
+            sort_keys=True,
+            indent=2,
+        )
+    )
     return 0
 
 
