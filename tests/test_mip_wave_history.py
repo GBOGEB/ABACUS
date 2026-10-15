@@ -4,7 +4,6 @@ import hashlib
 import importlib.util
 import json
 import sys
-from unittest import mock
 import tempfile
 import unittest
 from pathlib import Path
