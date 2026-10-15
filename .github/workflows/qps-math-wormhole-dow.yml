@@ -4,6 +4,8 @@ on:
     paths:
       - 'runtime/federation/qps_math_wormhole_dow.py'
       - 'tests/test_qps_math_wormhole_dow.py'
+      - 'tests/test_qps_math_wormhole_dow_adversarial.py'
+      - 'scripts/qps_math_dow_coverage_flight.py'
       - 'docs/ci/QPS_MATH_WORMHOLE_DOW_V1.md'
       - '.github/workflows/qps-math-wormhole-dow.yml'
   workflow_dispatch:
@@ -29,6 +31,14 @@ jobs:
           python -m unittest discover -s tests
           -p test_qps_math_wormhole_dow.py -v
 
+      - name: Source-matched DOW coverage pulse
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'coverage==7.16.2'
+          python scripts/qps_math_dow_coverage_flight.py \
+            --expected-head "$(git rev-parse HEAD)" \
+            --out artifacts/qps_math_dow
       - name: Run fixture-based DOW candidate flight (not native federation)
         shell: bash
         run: |
