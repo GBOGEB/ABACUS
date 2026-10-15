@@ -294,10 +294,29 @@ jobs:
           name: mip-wave-retained-native-github-api-metadata
           path: test_reports/native-fanout/
           if-no-files-found: error
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Upload synthetic-only wave controls
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-pulse-synthetic-control
           path: |
             wave-input.json
-            wave-output/
+            wave-output/mip_wave_pulse.json
+            wave-output/mip_backlog_delta.json
+            wave-output/mip_wave_pulse_summary.md
+            wave-output/pulse02-input.json
+            wave-output/p02/
+          if-no-files-found: error
+      - name: Upload hash-verified local pulse history
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-wave-history-local-hash
+          path: |
+            wave-output/history/
+            wave-output/pulse-history-manifest.json
+          if-no-files-found: error
+      - name: Upload read-only federation census including HTML
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-federation-read-only-census
+          path: wave-output/federation/
           if-no-files-found: error
