@@ -8,6 +8,10 @@ on:
       - 'tests/test_mission_control_lite_rex.py'
       - 'tests/test_mission_control_lite_coverage.py'
       - 'tests/test_mission_control_lite_timing.py'
+      - 'scripts/validate_changed_docs.py'
+      - 'tests/test_validate_changed_docs_selector.py'
+      - 'tests/test_bd_telemetry.py'
+      - 'DMAIC_V3/requirements.txt'
       - '.github/workflows/mission-control-lite-testflight.yml'
 permissions:
   contents: read
