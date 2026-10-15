@@ -25,26 +25,33 @@ class TupleLineageTest(unittest.TestCase):
     def test_manifest_tampering_rejected(self):
         with self.assertRaises(ValueError):
             core.check(INPUT,TEXT+b"tampered",MANIFEST)
+    def semantic_check(self, modified):
+        """Reseal a modified input so tests reach semantic validation."""
+        payload=(json.dumps(modified)+"\n").encode()
+        updated=json.loads(MANIFEST)
+        updated["files"]["CHAT_TUPLE_LEDGER.json"]=core.h(payload)
+        sealed=(json.dumps(updated)+"\n").encode()
+        return core.check(payload,TEXT,sealed)
     def test_false_root_closure_rejected(self):
         s=json.loads(INPUT)
         s["todo_records"][0]["operational_root_credit"]="CLOSED"
         with self.assertRaises(ValueError):
-            core.check((json.dumps(s)+"\n").encode(),TEXT,MANIFEST)
+            self.semantic_check(s)
     def test_zero_is_not_unknown(self):
         s=json.loads(INPUT)
         s["operational_roots_closed"]=0
         with self.assertRaises(ValueError):
-            core.check((json.dumps(s)+"\n").encode(),TEXT,MANIFEST)
+            self.semantic_check(s)
     def test_no_fake_verbatim(self):
         s=json.loads(INPUT)
         s["fidelity"]="VERBATIM"
         with self.assertRaises(ValueError):
-            core.check((json.dumps(s)+"\n").encode(),TEXT,MANIFEST)
+            self.semantic_check(s)
     def test_no_orphan_source_tuple(self):
         s=json.loads(INPUT)
         s["todo_records"][0]["source_tuple_ids"]=["T99"]
         with self.assertRaises(ValueError):
-            core.check((json.dumps(s)+"\n").encode(),TEXT,MANIFEST)
+            self.semantic_check(s)
 
 if __name__=="__main__":
     unittest.main()
