@@ -23,6 +23,72 @@ def valid_digest(value):
     )
 
 
+def canonical_coverage_record(report, source_sha, scope, config_id, selected_paths=None):
+    """Derive a cohort fingerprint from actual Coverage.py eligible IDs."""
+    require(valid_sha(source_sha), "coverage source SHA invalid")
+    require(isinstance(report, dict), "canonical coverage report absent")
+    require(report.get("meta", {}).get("branch_coverage") is True,
+            "branch coverage required")
+    files = report.get("files")
+    require(isinstance(files, dict) and bool(files), "canonical files absent")
+    paths = sorted(files) if selected_paths is None else sorted(selected_paths)
+    require(bool(paths) and len(set(paths)) == len(paths), "invalid selected paths")
+    require(all(path in files for path in paths), "selected path missing")
+    require(isinstance(scope, str) and bool(scope), "scope missing")
+    require(isinstance(config_id, str) and bool(config_id), "config missing")
+    manifest = []
+    totals = dict.fromkeys(("covered_lines", "total_lines",
+                            "covered_branches", "total_branches"), 0)
+    for path in paths:
+        item = files[path]
+        summary = item.get("summary")
+        require(isinstance(summary, dict), "file coverage summary missing")
+        used = item.get("executed_lines")
+        missing = item.get("missing_lines")
+        used_arcs = item.get("executed_branches")
+        missing_arcs = item.get("missing_branches")
+        require(all(isinstance(values, list) for values in
+                    (used, missing, used_arcs, missing_arcs)),
+                "invalid line or branch identities")
+        def arc(value):
+            require(isinstance(value, list) and len(value) == 2 and
+                    all(type(n) is int for n in value),
+                    "invalid branch identity")
+            return tuple(value)
+        arcs_used = [arc(value) for value in used_arcs]
+        arcs_missing = [arc(value) for value in missing_arcs]
+        require(all(type(n) is int for n in used + missing),
+                "invalid line identity")
+        require(len(set(used + missing)) == len(used) + len(missing),
+                "overlapping or duplicate line identities")
+        require(len(set(arcs_used + arcs_missing)) ==
+                len(arcs_used) + len(arcs_missing),
+                "overlapping or duplicate branch identities")
+        counts = {
+            "covered_lines": len(used), "total_lines": len(used) + len(missing),
+            "covered_branches": len(arcs_used),
+            "total_branches": len(arcs_used) + len(arcs_missing),
+        }
+        for source, target in (
+            ("covered_lines", "covered_lines"),
+            ("total_lines", "num_statements"),
+            ("covered_branches", "covered_branches"),
+            ("total_branches", "num_branches"),
+        ):
+            require(summary.get(target) == counts[source],
+                    "file summary and eligible IDs disagree")
+            totals[source] += counts[source]
+        manifest.append([path, sorted(used + missing),
+                         sorted([list(a) for a in arcs_used + arcs_missing])])
+    material = json.dumps(manifest, sort_keys=True,
+                          separators=(",", ":")).encode("utf-8")
+    return {
+        "scope": scope, "config_id": config_id, "source_sha": source_sha,
+        "scope_manifest_sha256": hashlib.sha256(material).hexdigest(),
+        **totals,
+    }
+
+
 def coverage_delta(before, after):
     if before is None or after is None:
         return {"status": "UNKNOWN", "reason": "missing comparable evidence"}
