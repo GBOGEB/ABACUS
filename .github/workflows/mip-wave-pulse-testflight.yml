@@ -5,6 +5,8 @@ on:
       - 'tools/mip2/mip_wave_pulse.py'
       - 'tools/mip2/mip_wave_history.py'
       - 'tests/test_mip_wave_history.py'
+      - 'tools/mip2/mip_federation_census.py'
+      - 'tests/test_mip_federation_census.py'
       - 'tests/test_mip_wave_pulse.py'
       - '.github/workflows/mip-wave-pulse-testflight.yml'
   workflow_dispatch:
@@ -221,6 +223,35 @@ jobs:
                   "This is producer scope, not main coverage.\\n"
               )
           PY
+      - name: Federation breadth contract and read-only census
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python -m unittest discover -s tests \
+            -p test_mip_federation_census.py -v
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = {
+              "schema": "abacus.mip.federation-manifest.v1",
+              "repositories": [{
+                  "repository": "GBOGEB/ABACUS",
+                  "head_sha": os.environ["SOURCE_SHA"],
+                  "evidence": [],
+              }],
+          }
+          Path("wave-output/federation-input.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2)
+          )
+          PY
+          python tools/mip2/mip_federation_census.py \
+            --input wave-output/federation-input.json \
+            --artifact-root wave-output \
+            --output-dir wave-output/federation
+          cat wave-output/federation/mip_federation_census.md \
+            >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-pulse-synthetic-control
