@@ -39,17 +39,18 @@ independent native/admission credit**.
 
 ## Pulse KPI readback
 
-| Family | Per-wave measurement | Constraint |
-| --- | --- | --- |
-| Roots | OPEN, REPAIRED, VERIFIED, REOPENED, DEFERRED, ROOT_CLOSED | Source reports only; formal closure credit remains zero |
-| Burndown | New, missing, source-claimed closed, reopened IDs | Missing root is not a closure |
-| Errors | Manifestations; first-seen versus repeated root-fingerprint pairs | Signatures are not causal root identities |
-| First-red | new / inherited / repaired classifications | Must have a canonical root ID |
-| Coverage | Matched lines and branches, denominator, delta pp | UNKNOWN or INCOMPARABLE is never zero improvement |
-| CI | Source-reported pass/fail/skip counts | Real native job evidence must be verified separately |
-| Capacity | Source-reported worker records | Not authenticated Crew/runner capacity |
-| Maturity | M1 evidence / M2 stability / M3 capability | M2/M3 HOLD without independent history and control limits |
-| PCA / BT | Ineligible here | Needs repeated matched vectors / legitimate pairwise outcomes |
+The series report separates these measurement families:
+
+- **Roots:** six source states; claimed closure is not verification.
+- **Burndown:** new, disappeared, claimed closed and reopened root IDs.
+- **Errors:** occurrence totals and first-seen/repeated fingerprint pairs.
+- **First-red:** new, inherited and repaired; each requires an owner.
+- **Coverage:** numerator, denominator, scope, and delta (pp).
+  UNKNOWN and INCOMPARABLE never mean zero improvement.
+- **CI:** source-reported pass/fail/skip; independently verify jobs.
+- **Capacity:** source worker records, not authenticated Crew capacity.
+- **Maturity:** M1 evidence and separately gated M2/M3 decisions.
+- **PCA / BT:** not assessable without matched independent series.
 
 Inspect one row per pulse and the JSON breakdown. Do not present
 different cohort percentages as an improvement or subtract raw scanner
