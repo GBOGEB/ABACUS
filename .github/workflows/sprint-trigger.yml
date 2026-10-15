@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -28,7 +28,7 @@ jobs:
         run: |
           python scoring/iterative_scoring.py --iteration ${{ github.event.inputs.sprint_number }}
       - name: Upload results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: sprint-results
           path: DMAIC_V3_OUTPUT/sprints/
