@@ -44,7 +44,8 @@ updates:
       include: "scope"
     open-pull-requests-limit: 5
 
-  # QPS Yarn: small, attributable npm security/version update PRs.
+  # QPS Yarn (managed by Dependabot via package-ecosystem: "npm" for yarn.lock):
+  # small, attributable npm security/version update PRs.
   - package-ecosystem: "npm"
     directory: "/qps_slide_reviewer"
     schedule:
