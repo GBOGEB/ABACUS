@@ -125,3 +125,46 @@ The V2 package's actual generator expects schema-valid `input.json` and must emi
 For future reuse, maintain ONE primary GitHub receiver, an exact-SHA state JSON, short drop-in, and sequential immutable successor revisions. Do not create many competing handover SSOTs. Existing #1975 historical EVERRED receiver and #2006 V2 tooling remain separate until schema/test/owner acceptance and pointer convergence.
 
 **No GitHub merge, review approval, confidentiality waiver, Crew/REX launch, BD root closure or new coverage gain is conveyed by publishing this handover.** Further evidence after this dated cut supersedes the relevant row without erasing historical receipts.
+
+## J. Three-pulse DAB / BD queue report — historical pulse, independently reconciled
+
+**Reason for appendix:** The earlier operational receiver listed all five DAB issues but did not include the exact `ff385c7e...` head, six workflow IDs, issue-comment receipts, temporary environment blocker or subsequently confirmed workflow run attempts. Retain this section as immutable historical lineage, **not** as current #1989 source authority.
+
+### J1. C0 / P1 historical census on exact PR #1989 head
+
+Historical source head: `ff385c7e257a38b5b215764de17f7680e9c73e74`, branch `codex/mip-statistical-m1-m3-20261014`, later superseded by `7c93c5d54e5e790f0066cfbe79e5416508262ebb`. Earlier mid-flight readback was Governance PASS, Bandit PASS, A10 FAIL, Full CI in progress, Format in progress, B0 queued. **The eventual native terminal status must replace the provisional status when assessing this SAME head; retain the provisional status as observation history.**
+
+| Workflow | Native run ID | Latest GitHub terminal state / run attempt (reconciled 2026-10-15) |
+| --- | --- | --- |
+| [CI Workflow Governance](https://github.com/GBOGEB/ABACUS/actions/runs/38690911366) | `38690911366` | SUCCESS, attempt 1 |
+| [Bandit Disjoint Census](https://github.com/GBOGEB/ABACUS/actions/runs/38690911441) | `38690911441` | SUCCESS, attempt 1 |
+| [A10 guard](https://github.com/GBOGEB/ABACUS/actions/runs/38690911605) | `38690911605` | FAILURE, **attempt 3**, latest failed job `116442630825` |
+| [CI/CD Test Suite](https://github.com/GBOGEB/ABACUS/actions/runs/38690911565) | `38690911565` | FAILURE, **attempt 2**; latest jobs: Code Quality `116442248459` FAIL, Security `116442247871` FAIL, downstream Proof Summary `116445153784` FAIL |
+| [Format Check](https://github.com/GBOGEB/ABACUS/actions/runs/38690911424) | `38690911424` | SUCCESS, attempt 1 |
+| [Canonical B0](https://github.com/GBOGEB/ABACUS/actions/runs/38690911464) | `38690911464` | SUCCESS, attempt 1 |
+
+**Versioned interpretation:** Native Format Check SUCCESS does not supersede native Full CI code-quality new-debt FAIL on this old head. The later #1989 head `7c93c5d...` DOES have native Full CI Code Quality SUCCESS and therefore supersedes the older Black first-red for new repair selection. Safety and A10 remained FAIL in the later head. Rerun attempt increments are now **verified for the two named workflow runs**, but runner-debug feature enablement and individual `ACTIONS_STEP_DEBUG` markers are **not independently attested**. Do not project attempt 2/3 evidence to other runs or later SHAs.
+
+### J2. DAB T1–T4 / R1, exact issue-comment receipts
+
+All five issue records remain OPEN; each has an independent evidence contract and is **not closed** by comments or adjacent CI PASS:
+
+| Existing issue / disjoint lane | Evidence-comment anchor | Required next admissible action |
+| --- | --- | --- |
+| [#1864 DAB T1 — Tooling](https://github.com/GBOGEB/ABACUS/issues/1864) | [#6185779264](https://github.com/GBOGEB/ABACUS/issues/1864#issuecomment-6185779264) | Reproduce tooling first-red on exact main vs head; classify NEW/INHERITED/PROPAGATED/INTENTIONAL-SKIP/UNKNOWN |
+| [#1865 DAB T2 — Python matrix](https://github.com/GBOGEB/ABACUS/issues/1865) | [#6185779844](https://github.com/GBOGEB/ABACUS/issues/1865#issuecomment-6185779844) | Preserve nine native-matrix PASS observations only on matching head; recheck tests on successor |
+| [#1866 DAB T3 — Canonical coverage](https://github.com/GBOGEB/ABACUS/issues/1866) | [#6185780450](https://github.com/GBOGEB/ABACUS/issues/1866#issuecomment-6185780450) | Extract canonical coverage bytes, exact SHA/config/statement+branch denominators; reject cross-cohort uplift |
+| [#1867 DAB T4 — Proof roles](https://github.com/GBOGEB/ABACUS/issues/1867) | [#6185781048](https://github.com/GBOGEB/ABACUS/issues/1867#issuecomment-6185781048) | Test verified proof propagation, authenticated identities and review/admission against source |
+| [#1868 DAB R1 — Ratchet false-green](https://github.com/GBOGEB/ABACUS/issues/1868) | [#6185781612](https://github.com/GBOGEB/ABACUS/issues/1868#issuecomment-6185781612) | Distinguish standalone Format PASS from full CI ratchet FAIL; verify rename baseline and current head |
+
+### J3. Historical blockers, parent updates and measurement
+
+- Historical **environment blocker**: local shell/Git could not resolve GitHub DNS and could not install the CI-pinned Black package; connected GitHub API still allowed source reads, comments, issue tracking and commits. This is specific to that execution environment, **not proof that future agents or native GitHub CI lack Black**.
+- Historical BD parent [#1929 evidence pulse](https://github.com/GBOGEB/ABACUS/issues/1929#issuecomment-6185743289) and [subsequent artifact pointer](https://github.com/GBOGEB/ABACUS/issues/1929#issuecomment-6185817224). Security [#1738](https://github.com/GBOGEB/ABACUS/issues/1738#issuecomment-6185747049), [artifact follow-up](https://github.com/GBOGEB/ABACUS/issues/1738#issuecomment-6185816711), and [parsed actual Safety JSON](https://github.com/GBOGEB/ABACUS/issues/1738#issuecomment-6190553252).
+- Canonical exact-main historical coverage **21,391/39,139** combined; historical B9 changed-line **266/291** on a different PR SHA/instrumentation. These are **not comparable metrics**. New uplift, BD distinct roots opened/closed and accepted Crew/LDAB/REX returns remain UNKNOWN. No new verified BD root closure, approved review or governed merge was claimed in the three-pulse report.
+- The terminal `ff385c7e...` B0 PASS is a true native producer completion, **not** proof of new coverage or accepted worker execution. Its proposal-worker artifacts are not authenticated Crew launches.
+- The correct receiving action is a **new live exact-head census**, not waiting for the historical `ff385c7e...` full CI to finish or performing ten-file Black formatting again without a successor-head red.
+
+### J4. Evidence-state fidelity
+
+Track each phase as `OBSERVED_AT`, `SOURCE_SHA`, `RUN_ID`, `RUN_ATTEMPT`, `JOB_ID`, `TERMINAL_CONCLUSION`, `ROOT_FINGERPRINT`, `OWNER`, `ARTIFACT_DIGEST`, `IMPLEMENTED`, `VERIFIED`, `ROOT_RESOLVED`, `ADMISSION`, `NEXT_ACTION`. The latest run attempts supersede provisional status **for the same SHA**; older SHA receipts remain immutable historical ancestors. `UNKNOWN` is not `0`.
