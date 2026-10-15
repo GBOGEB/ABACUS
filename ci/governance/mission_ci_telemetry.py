@@ -130,6 +130,7 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
     require(isinstance(records, list) and type(total) is int, "bad API run result")
     require(total >= len(records), "API count discrepancy")
     identifiers = set()
+    manifest = []
     states = Counter()
     by_family = {}
     terminal = 0
@@ -139,6 +140,9 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
         require(type(number) is int and number not in identifiers,
                 "duplicate run ID")
         identifiers.add(number)
+        manifest.append({"run_id": number, "workflow_id": run.get("workflow_id"),
+                         "name": run.get("name"), "status": run.get("status"),
+                         "conclusion": run.get("conclusion")})
         state = run.get("status", "unknown")
         conclusion = run.get("conclusion") or "none"
         states[state + "/" + conclusion] += 1
@@ -163,6 +167,7 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
         "run_census_complete": total == len(records),
         "terminal_run_count": terminal,
         "run_states": dict(sorted(states.items())),
+        "run_manifest": manifest,
         "family_run_states": {k: dict(sorted(v.items()))
                               for k, v in sorted(by_family.items())},
         "job_sampling": {
